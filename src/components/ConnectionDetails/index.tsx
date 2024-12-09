@@ -5,6 +5,7 @@ import {
 	Alert,
 	Box,
 	Button,
+	Collapse,
 	Divider,
 	Group,
 	Image,
@@ -17,6 +18,7 @@ import {
 	Stack,
 	TextInput,
 	Tooltip,
+	UnstyledButton,
 } from "@mantine/core";
 
 import {
@@ -29,20 +31,19 @@ import {
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { fork } from "radash";
+import { fork, trim } from "radash";
 import { useMemo } from "react";
 import type { Updater } from "use-immer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import type { AuthMode, Connection, Protocol } from "~/types";
-import { fastParseJwt } from "~/util/helpers";
+import { fastParseJwt, isHostLocal } from "~/util/helpers";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { Spacer } from "../Spacer";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -84,6 +85,8 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const [showIcons, showIconsHandle] = useDisclosure();
 	const isLight = useIsLight();
 
+	const { hostname, protocol, mode, token } = value.authentication;
+
 	const addAccessField = useStable(() => {
 		onChange((draft) => {
 			draft.authentication.accessFields.push({
@@ -122,24 +125,16 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 		});
 	};
 
-	const isMemory = value.authentication.protocol === "mem";
-	const isIndexDB = value.authentication.protocol === "indxdb";
-	const isCloud = value.authentication.mode === "cloud";
+	const isMemory = protocol === "mem";
+	const isIndexDB = protocol === "indxdb";
+	const isCloud = mode === "cloud";
 
-	const placeholder = isMemory ? "Not applicable" : isIndexDB ? "database_name" : "address:port";
+	const placeholder = isMemory ? "Not applicable" : isIndexDB ? "database_name" : "hostname:port";
 
-	const isSystemMethod = SYSTEM_METHODS.has(value.authentication.mode);
-	const showDatabase =
-		value.authentication.mode === "database" ||
-		value.authentication.mode === "scope" ||
-		value.authentication.mode === "access";
-
-	const showNamespace = showDatabase || value.authentication.mode === "namespace";
-
-	const tokenPayload = useMemo(
-		() => fastParseJwt(value.authentication.token),
-		[value.authentication.token],
-	);
+	const isSystemMethod = SYSTEM_METHODS.has(mode);
+	const showDatabase = mode === "database" || mode === "scope" || mode === "access";
+	const showNamespace = showDatabase || mode === "namespace";
+	const tokenPayload = useMemo(() => fastParseJwt(token), [token]);
 
 	const protocols = useMemo(() => {
 		const [remote, local] = fork(CONNECTION_PROTOCOLS, (p) => p.remote);
@@ -162,6 +157,10 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
 	const tokenExpireSoon = tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
+	const isLocalhost = isHostLocal(hostname);
+	const isSecure = protocol === "https" || protocol === "wss";
+	const showSslNotice = isLocalhost && isSecure;
+	const insecureVariant = protocol === "wss" ? "ws" : "http";
 
 	const groups = useConfigStore((s) => s.connectionGroups);
 	const groupItems = useMemo(() => {
@@ -270,7 +269,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					subtitle="Database address and connection protocol"
 				/>
 
-				<Group>
+				<Group align="start">
 					<Select
 						data={protocols}
 						maw={125}
@@ -287,15 +286,43 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 							})
 						}
 					/>
-					<TextInput
-						flex={1}
-						name="hostname"
-						value={value.authentication.hostname}
-						disabled={isMemory || isCloud}
-						placeholder={placeholder}
-						onChange={handleEndpointChange}
-					/>
+					<Box flex={1}>
+						<TextInput
+							name="hostname"
+							value={value.authentication.hostname}
+							disabled={isMemory || isCloud}
+							placeholder={placeholder}
+							onChange={handleEndpointChange}
+						/>
+					</Box>
 				</Group>
+
+				<Collapse in={showSslNotice}>
+					<Alert
+						title="SSL verification"
+						color="orange"
+						mt="xs"
+					>
+						<Text>
+							If you do not have SSL configured for your local database you may need
+							to use the {insecureVariant.toUpperCase()} protocol to avoid connection
+							issues.
+						</Text>
+						<Button
+							size="xs"
+							mt="md"
+							color={isLight ? "slate.9" : "slate.0"}
+							variant="light"
+							onClick={() =>
+								onChange((draft) => {
+									draft.authentication.protocol = insecureVariant;
+								})
+							}
+						>
+							Switch to {insecureVariant.toUpperCase()} protocol
+						</Button>
+					</Alert>
+				</Collapse>
 
 				<Divider
 					mb={6}
