@@ -18,18 +18,21 @@ import {
 	iconWarning,
 } from "~/util/icons";
 
-import { Prec, type SelectionRange } from "@codemirror/state";
+import { historyField } from "@codemirror/commands";
+import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
 import { Text } from "@mantine/core";
-import { surrealql, surrealqlVersionLinter } from "@surrealdb/codemirror";
+import { surrealql } from "@surrealdb/codemirror";
 import { trim } from "radash";
+import { useMemo, useRef } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
-import { CodeEditor } from "~/components/CodeEditor";
+import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
+import { setEditorText } from "~/editor/helpers";
 import { useActiveConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
@@ -41,17 +44,21 @@ import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { extractVariables, showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue } from "~/util/surrealql";
+import { readQuery, writeQuery } from "../QueryView/strategy";
+
+const SERIALIZE = {
+	history: historyField,
+};
 
 export interface QueryPaneProps {
 	activeTab: QueryTab;
-	editor: EditorView | null;
+	editor: EditorView;
 	showVariables: boolean;
 	switchPortal?: HtmlPortalNode<any>;
 	selection: SelectionRange | undefined;
 	lineNumbers: boolean;
 	corners?: string;
 	setShowVariables: (show: boolean) => void;
-	onUpdateBuffer: (query: string) => void;
 	onSaveQuery: () => void;
 	onSelectionChange: (value: SelectionRange) => void;
 	onEditorMounted: (editor: EditorView) => void;
@@ -66,16 +73,50 @@ export function QueryPane({
 	setShowVariables,
 	lineNumbers,
 	corners,
-	onUpdateBuffer,
 	onSaveQuery,
 	onSelectionChange,
 	onEditorMounted,
 }: QueryPaneProps) {
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
+	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
 	const connection = useActiveConnection();
 	const surqlVersion = useDatabaseVersionLinter(editor);
-	const buffer = useQueryStore((s) => s.queryBuffer);
+	const queryStateMap = useQueryStore((s) => s.queryState);
+	const saveTasks = useRef<Map<string, any>>(new Map());
+
+	// Retrieve a cached editor state, or compute when missing
+	const queryState = useMemo(() => {
+		const cache = queryStateMap[activeTab.id];
+
+		if (cache) {
+			return cache;
+		}
+
+		const state = EditorState.create().toJSON(SERIALIZE) as StateSnapshot;
+
+		Promise.resolve(readQuery(activeTab)).then((query) => {
+			updateQueryState(activeTab.id, EditorState.create({ doc: query }).toJSON(SERIALIZE));
+		});
+
+		return state;
+	}, [queryStateMap, activeTab, updateQueryState]);
+
+	// Cache the editor state and schedule query writing
+	const updateState = useStable((query: string, state: StateSnapshot) => {
+		const id = activeTab.id;
+		const task = saveTasks.current.get(id);
+
+		updateQueryState(activeTab.id, state);
+		clearTimeout(task);
+
+		const newTask = setTimeout(() => {
+			saveTasks.current.delete(id);
+			writeQuery(activeTab, query);
+		}, 500);
+
+		saveTasks.current.set(id, newTask);
+	});
 
 	const openQueryList = useStable(() => {
 		updateCurrentConnection({
@@ -84,14 +125,17 @@ export function QueryPane({
 	});
 
 	const handleFormat = useStable(() => {
-		try {
-			const formatted = hasSelection
-				? buffer.slice(0, selection.from) +
-					formatQuery(buffer.slice(selection.from, selection.to)) +
-					buffer.slice(selection.to)
-				: formatQuery(buffer);
+		if (!editor) return;
 
-			onUpdateBuffer(formatted);
+		try {
+			const document = editor.state.doc;
+			const formatted = hasSelection
+				? document.sliceString(0, selection.from) +
+					formatQuery(document.sliceString(selection.from, selection.to)) +
+					document.sliceString(selection.to)
+				: formatQuery(document.toString());
+
+			setEditorText(editor, formatted);
 		} catch {
 			showError({
 				title: "Failed to format",
@@ -107,9 +151,12 @@ export function QueryPane({
 	const inferVariables = useStable(() => {
 		if (!activeTab) return;
 
+		const document = editor.state.doc;
 		const currentVars = tryParseParams(activeTab.variables);
 		const currentKeys = Object.keys(currentVars);
-		const variables = extractVariables(buffer).filter((v) => !currentKeys.includes(v));
+		const variables = extractVariables(document.toString()).filter(
+			(v) => !currentKeys.includes(v),
+		);
 
 		const newVars = variables.reduce(
 			(acc, v) => {
@@ -133,6 +180,10 @@ export function QueryPane({
 
 	const resolveVariables = useStable(() => {
 		return Object.keys(tryParseParams(activeTab.variables));
+	});
+
+	const updateValid = useStable((status: string) => {
+		setQueryValid(!status.length);
 	});
 
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
@@ -177,7 +228,7 @@ export function QueryPane({
 						gap="sm"
 						style={{ flexShrink: 0 }}
 					>
-						{buffer.length > MAX_HISTORY_QUERY_LENGTH && (
+						{queryState.doc.length > MAX_HISTORY_QUERY_LENGTH && (
 							<HoverCard position="bottom">
 								<HoverCard.Target>
 									<ThemeIcon
@@ -253,15 +304,15 @@ export function QueryPane({
 			}
 		>
 			<CodeEditor
-				value={buffer}
-				onChange={onUpdateBuffer}
-				historyKey={activeTab.id}
+				state={queryState}
+				onChange={updateState}
 				onMount={onEditorMounted}
 				lineNumbers={lineNumbers}
+				serialize={SERIALIZE}
 				extensions={[
 					surrealql(),
 					surqlVersion,
-					surqlLinting(),
+					surqlLinting(updateValid),
 					surqlRecordLinks(inspect),
 					surqlTableCompletion(),
 					surqlVariableCompletion(resolveVariables),

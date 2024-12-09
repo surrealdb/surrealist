@@ -48,47 +48,56 @@ export const getQueryRange = (view: EditorView): [number, number] | null => {
 
 /**
  * SurrealQL error linting
+ *
+ * @param onValidate Callback to run when the query is validated
  */
-export const surqlLinting = (): Extension =>
-	linter((view) => {
-		const isEnabled = getSetting("behavior", "queryErrorChecker");
-		const content = view.state.doc.toString();
+export const surqlLinting = (onValidate?: (status: string) => void): Extension =>
+	linter(
+		(view) => {
+			const isEnabled = getSetting("behavior", "queryErrorChecker");
+			const content = view.state.doc.toString();
 
-		if (!isEnabled || !content) {
+			if (!isEnabled || !content) {
+				return [];
+			}
+
+			const message = validateQuery(content) || "";
+			const match = message.match(
+				/parse error: (failed to parse query at line (\d+) column (\d+).+)\n/i,
+			);
+
+			onValidate?.(message);
+
+			if (match) {
+				const reason = match[1].trim();
+				const lineNumber = Number.parseInt(match[2]);
+				const column = Number.parseInt(match[3]);
+
+				const position = view.state.doc.line(lineNumber).from + column - 1;
+				const word = view.state.wordAt(position);
+
+				return [
+					word
+						? {
+								from: word.from,
+								to: word.to,
+								message: reason,
+								severity: "error",
+								source: "SurrealQL",
+							}
+						: {
+								from: position,
+								to: position + 1,
+								message: reason,
+								severity: "error",
+								source: "SurrealQL",
+							},
+				];
+			}
+
 			return [];
-		}
-
-		const message = validateQuery(content) || "";
-		const match = message.match(
-			/parse error: (failed to parse query at line (\d+) column (\d+).+)\n/i,
-		);
-
-		if (match) {
-			const reason = match[1].trim();
-			const lineNumber = Number.parseInt(match[2]);
-			const column = Number.parseInt(match[3]);
-
-			const position = view.state.doc.line(lineNumber).from + column - 1;
-			const word = view.state.wordAt(position);
-
-			return [
-				word
-					? {
-							from: word.from,
-							to: word.to,
-							message: reason,
-							severity: "error",
-							source: "SurrealQL",
-						}
-					: {
-							from: position,
-							to: position + 1,
-							message: reason,
-							severity: "error",
-							source: "SurrealQL",
-						},
-			];
-		}
-
-		return [];
-	});
+		},
+		{
+			delay: 250,
+		},
+	);
