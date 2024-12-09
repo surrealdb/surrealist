@@ -21,7 +21,8 @@ import {
 import { Stack } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeAllModals, openModal } from "@mantine/modals";
-import { useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
+import { BetaBadge } from "~/components/BetaBadge";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -96,6 +97,7 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 
 	const [scripting, setScripting] = useState(false);
 	const [guestAccess, setGuestAccess] = useState(false);
+	const [graphQL, setGraphQL] = useState(false);
 	const [enabledRpcs, setEnabledRpcs] = useState<string[]>(RPCS);
 	const [enabledEndpoints, setEnabledEndpoints] = useState<string[]>(ENDPOINTS);
 	const [networkAccess, setNetworkAccess] = useState({ base: false, overrides: [] as string[] });
@@ -147,6 +149,19 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 						description="Allow non-authenticated users to execute queries when authentication is enabled"
 						value={guestAccess}
 						onChange={setGuestAccess}
+						disabled
+					/>
+
+					<BinaryCapability
+						name={
+							<Group gap="xs">
+								GraphQL
+								<BetaBadge />
+							</Group>
+						}
+						description="Allow execution queries using the GraphQL API"
+						value={graphQL}
+						onChange={setGraphQL}
 						disabled
 					/>
 
@@ -211,8 +226,8 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 }
 
 export interface CapabilityProps<V> {
-	name: string;
-	description?: string;
+	name: ReactNode;
+	description?: ReactNode;
 	value: V;
 	disabled?: boolean;
 	onChange: (value: V) => void;
