@@ -14,6 +14,7 @@ export interface CategoryPickerProps extends BoxProps {
 	organization: CloudOrganization;
 	value?: string;
 	onBody?: boolean;
+	hideFree?: boolean;
 	onChange?: (value: string) => void;
 }
 
@@ -22,6 +23,7 @@ export function CategoryPicker({
 	value,
 	onBody,
 	onChange,
+	hideFree,
 	...other
 }: CategoryPickerProps) {
 	const instanceTypes = useAvailableInstanceTypes();
@@ -68,44 +70,46 @@ export function CategoryPicker({
 				</Group>
 				<Text mt="sm">For testing, starter projects, or for low-traffic applications.</Text>
 			</Tile>
-			<Tile
-				isActive={value === "free"}
-				onClick={() => onChange?.("free")}
-				disabled={!freeInstanceAvailable}
-				onBody={onBody}
-			>
-				<Group>
-					<Icon path={iconStar} />
-					<PrimaryTitle
-						c="bright"
-						fw={600}
-						fz="lg"
-					>
-						Free instance
-					</PrimaryTitle>
-				</Group>
-				<Text mt="sm">
-					Experience Surreal Cloud with a single free instance to get started.
-				</Text>
-				{!freeInstanceAvailable && (
-					<Group
-						mt="sm"
-						gap="xs"
-					>
-						<Icon
-							path={iconWarning}
-							c="orange"
-							size="sm"
-						/>
-						<Text
-							c="orange"
-							fw={500}
+			{!hideFree && (
+				<Tile
+					isActive={value === "free"}
+					onClick={() => onChange?.("free")}
+					disabled={!freeInstanceAvailable}
+					onBody={onBody}
+				>
+					<Group>
+						<Icon path={iconStar} />
+						<PrimaryTitle
+							c="bright"
+							fw={600}
+							fz="lg"
 						>
-							Maximum amount of free instances in use
-						</Text>
+							Free instance
+						</PrimaryTitle>
 					</Group>
-				)}
-			</Tile>
+					<Text mt="sm">
+						Experience Surreal Cloud with a single free instance to get started.
+					</Text>
+					{!freeInstanceAvailable && (
+						<Group
+							mt="sm"
+							gap="xs"
+						>
+							<Icon
+								path={iconWarning}
+								c="orange"
+								size="sm"
+							/>
+							<Text
+								c="orange"
+								fw={500}
+							>
+								Maximum amount of free instances in use
+							</Text>
+						</Group>
+					)}
+				</Tile>
+			)}
 		</Stack>
 	);
 }

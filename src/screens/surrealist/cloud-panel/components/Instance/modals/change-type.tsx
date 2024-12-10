@@ -179,6 +179,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 							organization={organization}
 							value={category}
 							onChange={setCategory}
+							hideFree={instance.type.category === "free"}
 							onBody
 						/>
 					)}
