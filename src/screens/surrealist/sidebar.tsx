@@ -59,6 +59,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 	const setLocation = useStable((location: string) => {
 		navigate(location);
 		hoverSidebarHandle.close();
+		console.log("Reee");
 	});
 
 	const navigation = useMemo(() => {
@@ -72,10 +73,6 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 			return items.length > 0 ? [items] : [];
 		});
 	}, [flags]);
-
-	const isViewAvailable = useStable((info: ViewInfo) => {
-		return connection && (info.require !== "database" || connection?.lastDatabase);
-	});
 
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
@@ -176,7 +173,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}
 										style={{
-											opacity: isViewAvailable(info) ? 1 : 0.5,
+											opacity: connection ? 1 : 0.5,
 										}}
 									/>
 								</Group>

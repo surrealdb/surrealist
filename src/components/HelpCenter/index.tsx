@@ -12,6 +12,7 @@ import {
 	iconSidekick,
 	iconSurreal,
 	iconSurrealist,
+	iconUniversity,
 	iconVideo,
 } from "~/util/icons";
 
@@ -98,7 +99,7 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 				<HelpTile
 					title="University"
 					description="Learn the fundamentals of SurrealDB in as little as 3 hours"
-					icon={iconQuery}
+					icon={iconUniversity}
 					onClick={() => adapter.openUrl("https://surrealdb.com/learn/fundamentals")}
 				/>
 				<HelpTile

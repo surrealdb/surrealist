@@ -73,9 +73,19 @@
 }
 
 .cloud-image {
+	width: 500px;
+	position: absolute;
+	right: -64px;
+	bottom: 0;
 	display: none;
 
-	@include sm-and-up {
+	@include md-and-up {
 		display: block;
+	}
+}
+
+.cloud-action .start-action-icon {
+	@include md-and-up {
+		display: none;
 	}
 }

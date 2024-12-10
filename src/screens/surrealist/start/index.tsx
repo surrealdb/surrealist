@@ -1,7 +1,5 @@
 import classes from "./style.module.scss";
 
-import clsx from "clsx";
-import dayjs from "dayjs";
 import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import glowUrl from "~/assets/images/gradient-glow.webp";
@@ -12,204 +10,44 @@ import {
 	Box,
 	Button,
 	Center,
-	Flex,
-	Group,
 	Image,
-	Paper,
 	ScrollArea,
 	SimpleGrid,
 	Skeleton,
 	Stack,
 	Text,
 	Title,
-	UnstyledButton,
 } from "@mantine/core";
 
 import {
 	iconBook,
 	iconChevronRight,
+	iconCloud,
 	iconCog,
+	iconCommunity,
 	iconDiscord,
 	iconPlus,
 	iconQuery,
 	iconSandbox,
 	iconServer,
 	iconSidekick,
+	iconUniversity,
 } from "~/util/icons";
 
-import { PropsWithChildren, useRef } from "react";
 import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
-import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
 import { SANDBOX } from "~/constants";
-import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
+import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { useThemeImage } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
-
-interface StartActionProps {
-	title: string;
-	subtitle: string;
-	icon?: string;
-	onClick: () => void;
-}
-
-function StartAction({
-	title,
-	subtitle,
-	icon,
-	onClick,
-	children,
-}: PropsWithChildren<StartActionProps>) {
-	const containerRef = useRef<HTMLDivElement>(null);
-
-	return (
-		<UnstyledButton onClick={onClick}>
-			<Paper
-				p="xl"
-				pos="relative"
-				ref={containerRef}
-				className={clsx(classes.startBox, classes.startAction)}
-				renderRoot={(props) => <Stack {...props} />}
-			>
-				<Group
-					wrap="nowrap"
-					align="start"
-					h="100%"
-				>
-					<Text
-						c="bright"
-						fw={600}
-						fz={15}
-					>
-						{title}
-					</Text>
-					<Spacer />
-					{icon && (
-						<Icon
-							className={classes.startActionIcon}
-							path={icon}
-							size="xl"
-						/>
-					)}
-				</Group>
-				<Text maw={450}>{subtitle}</Text>
-				{children}
-				<Faint containerRef={containerRef} />
-			</Paper>
-		</UnstyledButton>
-	);
-}
-
-interface StartResourceProps {
-	title: string;
-	subtitle: string;
-	icon: string;
-	onClick: () => void;
-}
-
-function StartResource({ title, subtitle, icon, onClick }: StartResourceProps) {
-	const containerRef = useRef<HTMLDivElement>(null);
-	return (
-		<UnstyledButton onClick={onClick}>
-			<Paper
-				p="lg"
-				className={clsx(classes.startBox, classes.startResource)}
-				ref={containerRef}
-			>
-				<Group
-					wrap="nowrap"
-					h="100%"
-				>
-					<Icon
-						path={icon}
-						mx="md"
-						size="xl"
-					/>
-					<Box flex={1}>
-						<Text
-							c="bright"
-							fw={600}
-							fz="xl"
-						>
-							{title}
-						</Text>
-						<Text>{subtitle}</Text>
-					</Box>
-					<Icon
-						path={iconChevronRight}
-						ml="md"
-					/>
-				</Group>
-				<Faint containerRef={containerRef} />
-			</Paper>
-		</UnstyledButton>
-	);
-}
-
-interface StartNewsProps {
-	post: NewsPost;
-}
-
-function StartNews({ post }: StartNewsProps) {
-	const containerRef = useRef<HTMLDivElement>(null);
-	const handleClick = useStable(() => {
-		dispatchIntent("open-news", { id: post.id });
-	});
-
-	return (
-		<UnstyledButton onClick={handleClick}>
-			<Paper
-				p="lg"
-				className={clsx(classes.startBox, classes.startNews)}
-				ref={containerRef}
-			>
-				<Flex
-					gap="xl"
-					className={classes.startNewsInner}
-				>
-					<Paper
-						className={classes.startNewsThumbnail}
-						style={{
-							backgroundImage: `url("${post.thumbnail}")`,
-						}}
-					/>
-					<Box
-						h="100%"
-						flex={1}
-						style={{ alignSelf: "start" }}
-					>
-						<Title
-							c="bright"
-							fz="xl"
-						>
-							{post.title}
-						</Title>
-						<Text c="slate">{dayjs(post.published).fromNow()}</Text>
-						<Text mt="sm">{post.description}</Text>
-					</Box>
-					<Icon
-						path={iconChevronRight}
-						c="slate"
-						size="xl"
-						style={{
-							alignSelf: "center",
-						}}
-					/>
-				</Flex>
-				<Faint containerRef={containerRef} />
-			</Paper>
-		</UnstyledButton>
-	);
-}
+import { StartAction, StartNews, StartResource } from "./content";
 
 export function StartPage() {
 	const { setActiveConnection } = useConfigStore.getState();
 	const newsQuery = useLatestNewsQuery();
-
 	const [, navigate] = useLocation();
 
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
@@ -294,17 +132,13 @@ export function StartPage() {
 					>
 						<StartAction
 							title="Explore Surreal Cloud"
-							subtitle="Surreal Cloud redefines the database experience, offering the power and
-					flexibility of SurrealDB without the pain of managing infrastructure."
+							subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
+							icon={iconCloud}
 							onClick={openCloud}
+							className={classes.cloudAction}
 						>
 							<Image
 								src={splashUrl}
-								w={325}
-								pos="absolute"
-								right={0}
-								bottom={0}
-								style={{ zIndex: 0 }}
 								className={classes.cloudImage}
 							/>
 						</StartAction>
@@ -366,20 +200,20 @@ export function StartPage() {
 						<StartResource
 							title="Community"
 							subtitle="Join the discussion on Discord"
-							icon={iconDiscord}
+							icon={iconCommunity}
 							onClick={() => adapter.openUrl("https://discord.com/invite/surrealdb")}
 						/>
 						<StartResource
 							title="University"
 							subtitle="Learn the SurrealDB fundamentals in 3 hours"
-							icon={iconQuery}
-							onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
+							icon={iconUniversity}
+							onClick={() => adapter.openUrl("https://surrealdb.com/learn")}
 						/>
 						<StartResource
 							title="Sidekick"
 							subtitle="Get support from your personal Surreal AI assistant"
 							icon={iconSidekick}
-							onClick={() => adapter.openUrl("https://discord.com/invite/surrealdb")}
+							onClick={() => navigate("/cloud/chat")}
 						/>
 					</SimpleGrid>
 
