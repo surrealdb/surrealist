@@ -21,7 +21,7 @@ export function createBaseConfig(): SurrealistConfig {
 		connections: [],
 		connectionGroups: [],
 		sandbox: createSandboxConnection(settings),
-		activeResource: "/query",
+		activeResource: "/start",
 		activeConnection: "",
 		activeCloudOrg: "",
 		savedQueries: [],

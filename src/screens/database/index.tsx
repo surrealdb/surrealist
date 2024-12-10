@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
 import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
-import { type FC, Suspense, lazy, memo } from "react";
+import { type FC, Suspense, memo } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
@@ -10,18 +10,17 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { VIEW_MODES } from "~/constants";
 import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
-import { useActiveConnection, useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewInfo, ViewMode } from "~/types";
 import { iconWarning } from "~/util/icons";
-import { themeColor } from "~/util/mantine";
 import CloudView from "../cloud-panel/view";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
-import { DatabaseToolbar } from "./toolbar";
+import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DesignerView from "./views/designer/DesignerView";
 import DocumentationView from "./views/documentation/DocumentationView";
@@ -30,6 +29,7 @@ import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
+import { StartScreen } from "./start";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 
@@ -61,7 +61,7 @@ const VIEW_COMPONENTS: Record<ViewMode, FC> = {
 	documentation: DocumentationView,
 };
 
-export function DatabaseScreen() {
+export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
@@ -130,12 +130,16 @@ export function DatabaseScreen() {
 								wrap="nowrap"
 								className={classes.toolbar}
 							>
-								<DatabaseToolbar />
+								<SurrealistToolbar />
 							</Group>
 						)}
 
 						<Switch>
 							<Route path="/" />
+
+							<Route path="/start">
+								<StartScreen />
+							</Route>
 
 							{connection &&
 								Object.values(VIEW_MODES).map((mode) => (

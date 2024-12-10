@@ -4,7 +4,7 @@ import "../assets/styles/override.scss";
 import "../assets/styles/global.scss";
 
 import { createRoot } from "react-dom/client";
-import { CloudCallbackScreen } from "~/screens/cloud-callback";
+import { CloudCallbackScreen } from "~/screens/auth-callback";
 
 (async () => {
 	const root = document.querySelector("#root");

@@ -17,15 +17,13 @@ const ENTRYPOINTS = {
 	surrealist: "/index.html",
 	mini_run: "/tools/mini-run.html",
 	mini_new: "/tools/mini-new.html",
-	cloud_manage: "/tools/cloud-manage.html",
-	cloud_callback: "/tools/cloud-callback.html",
+	auth_callback: "/tools/auth-callback.html",
 };
 
 const TOOLS = {
 	"tools/mini-run.html": "mini/run/index.html",
 	"tools/mini-new.html": "mini/new/index.html",
-	"tools/cloud-manage.html": "cloud/manage/index.html",
-	"tools/cloud-callback.html": "cloud/callback/index.html",
+	"tools/auth-callback.html": "cloud/callback/index.html", // TODO rename to cloud/callback
 };
 
 export default defineConfig(({ mode }) => {

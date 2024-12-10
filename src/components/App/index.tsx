@@ -1,7 +1,7 @@
 import { isDesktop } from "~/adapter";
 import { DesignerProvider } from "~/providers/Designer";
 import { InspectorProvider } from "~/providers/Inspector";
-import { DatabaseScreen } from "~/screens/database";
+import { SurrealistScreen } from "~/screens/database";
 import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
@@ -29,7 +29,7 @@ function Surrealist() {
 	return (
 		<InspectorProvider>
 			<DesignerProvider>
-				<DatabaseScreen />
+				<SurrealistScreen />
 			</DesignerProvider>
 		</InspectorProvider>
 	);
