@@ -57,8 +57,8 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
 
 	const setLocation = useStable((location: string) => {
-		navigate(location);
 		hoverSidebarHandle.close();
+		navigate(location);
 	});
 
 	const navigation = useMemo(() => {
