@@ -24,7 +24,7 @@ export async function openInstanceTypeModal(instance: CloudInstance) {
 		title: (
 			<Box>
 				<PrimaryTitle>Change instance type</PrimaryTitle>
-				<Text fz="lg">{instance.name}</Text>
+				<Text fz="lg">Instance: {instance.name}</Text>
 			</Box>
 		),
 		children: <InstanceTypeModal instance={instance} />,
@@ -99,7 +99,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 						mt="xl"
 						mb="sm"
 					>
-						<PrimaryTitle>Select an instance type</PrimaryTitle>
+						<PrimaryTitle>Instance type</PrimaryTitle>
 						<Text mt={2}>
 							Instance types define the resources allocated to your cloud instance.
 							Choose a configuration that best fits your needs.
@@ -167,9 +167,10 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 						mt="xl"
 						mb="sm"
 					>
-						<PrimaryTitle>Select a category</PrimaryTitle>
+						<PrimaryTitle>Instance category</PrimaryTitle>
 						<Text mt={2}>
-							Select an instance type category to view available configurations.
+							Select a category to view available configurations and change the
+							instance type
 						</Text>
 					</Box>
 
