@@ -44,7 +44,11 @@ export function SandboxModal() {
 
 			<Box p={24}>
 				<Stack>
-					<Text c="bright">
+					<Text
+						c="bright"
+						fw={500}
+						fz="lg"
+					>
 						The Sandbox provides an easy to use playground to test, experiment, and
 						learn SurrealDB.
 					</Text>
