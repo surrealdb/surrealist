@@ -1,5 +1,4 @@
 import {
-	iconChevronDown,
 	iconClose,
 	iconDownload,
 	iconEdit,
@@ -80,7 +79,7 @@ export function ConnectionStatus() {
 
 	return (
 		<>
-			{connection ? (
+			{connection && (
 				<Group gap="xs">
 					<Menu
 						opened={isDropped}
@@ -226,15 +225,6 @@ export function ConnectionStatus() {
 						</Menu.Dropdown>
 					</Menu>
 				</Group>
-			) : (
-				<Button
-					variant="subtle"
-					color="slate"
-					onClick={openConnections}
-					rightSection={<Icon path={iconChevronDown} />}
-				>
-					Select a connection
-				</Button>
 			)}
 
 			<Modal
