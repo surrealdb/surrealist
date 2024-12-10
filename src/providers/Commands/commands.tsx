@@ -48,6 +48,7 @@ import {
 
 import { dash } from "radash";
 import { useMemo } from "react";
+import { useLocation } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
@@ -68,7 +69,6 @@ import type { IntentPayload, IntentType } from "~/util/intents";
 import { type PreferenceController, computePreferences } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
-import { useLocation } from "wouter";
 
 /** Create a launch command */
 const launch = (handler: () => void) => ({ type: "launch", handler }) as const;
