@@ -7,7 +7,6 @@ import type {
 	QueryTab,
 	QueryType,
 	SavedQuery,
-	Screen,
 	SurrealistAppearanceSettings,
 	SurrealistBehaviorSettings,
 	SurrealistCloudSettings,
@@ -64,7 +63,6 @@ export type ConfigStore = SurrealistConfig & {
 	updateConnection: (payload: PartialId<Connection>) => void;
 	updateCurrentConnection: (payload: Partial<Connection>) => void;
 	setConnections: (connections: Connection[]) => void;
-	setActiveScreen: (screen: Screen) => void;
 	setActiveResource: (resource: string) => void;
 	setActiveConnection: (connectionId: string) => void;
 	setActiveCloudOrg: (activeOrg: string) => void;
@@ -144,7 +142,7 @@ export const useConfigStore = create<ConfigStore>()(
 						(connection) => connection.id !== connectionId,
 					),
 					activeConnection:
-						state.activeConnection === connectionId ? SANDBOX : state.activeConnection,
+						state.activeConnection === connectionId ? "" : state.activeConnection,
 				};
 			}),
 
@@ -160,30 +158,25 @@ export const useConfigStore = create<ConfigStore>()(
 
 		setConnections: (connections) => set(() => ({ connections })),
 
-		setActiveScreen: (activeScreen) => set(() => ({ activeScreen })),
-
 		setActiveResource: (activeResource) => set(() => ({ activeResource })),
 
 		setActiveConnection: (activeConnection) =>
 			set(({ connections }) => {
-				if (activeConnection === "sandbox") {
-					return {
-						activeConnection,
-						activeScreen: "database",
-					};
-				}
+				if (activeConnection.length > 0 && activeConnection !== SANDBOX) {
+					const connection = connections.find(({ id }) => id === activeConnection);
 
-				const connection = connections.find(({ id }) => id === activeConnection);
-				if (!connection) return {};
+					if (!connection) {
+						return {};
+					}
 
-				if (!isConnectionValid(connection.authentication)) {
-					dispatchIntent("edit-connection", { id: connection.id, select: "true" });
-					return {};
+					if (!isConnectionValid(connection.authentication)) {
+						dispatchIntent("edit-connection", { id: connection.id, select: "true" });
+						return {};
+					}
 				}
 
 				return {
 					activeConnection,
-					activeScreen: "database",
 				};
 			}),
 

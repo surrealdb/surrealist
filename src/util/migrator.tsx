@@ -1,6 +1,5 @@
 import { isArray, isObject } from "radash";
-import { SANDBOX } from "~/constants";
-import type { Connection, SurrealistConfig } from "~/types";
+import type { SurrealistConfig } from "~/types";
 
 /**
  * Apply migrations to the config object
@@ -71,18 +70,6 @@ export function applyMigrations(config: any): SurrealistConfig {
 			query.type ??= "config";
 		}
 	});
-
-	// Repair: active connection
-
-	if (config.activeConnection) {
-		const valid = config.connections.some(
-			(con: Connection) => con.id === config.activeConnection,
-		);
-
-		if (!valid) {
-			config.activeConnection = SANDBOX;
-		}
-	}
 
 	return config;
 }

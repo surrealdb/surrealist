@@ -25,7 +25,6 @@ export type ResultFormat = "json" | "sql";
 export type ResultMode = "table" | "single" | "combined" | "live";
 export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 export type SchemaMode = "schemaless" | "schemafull";
-export type Screen = "start" | "database";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
 export type SourceMode = "schema" | "infer";
 export type SyntaxTheme = "default" | "vivid";
@@ -240,7 +239,6 @@ export interface SurrealistConfig {
 	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
 	activeResource: string;
-	activeScreen: Screen;
 	activeConnection: string;
 	activeCloudOrg: string;
 	savedQueries: SavedQuery[];

@@ -89,7 +89,7 @@ const intent = (intent: IntentType, payload?: IntentPayload) =>
  * Compute available commands based on the current state
  */
 export function useInternalCommandBuilder(): CommandCategory[] {
-	const { setActiveConnection, setActiveScreen, resetOnboardings } = useConfigStore.getState();
+	const { setActiveConnection, resetOnboardings } = useConfigStore.getState();
 
 	const connections = useConnections();
 	const commandHistory = useConfigStore((state) => state.commandHistory);
@@ -648,14 +648,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: intent("open-desktop-download"),
 					},
 					{
-						id: "open-db-screen",
-						name: "Open Database Screen",
-						icon: iconServer,
-						action: launch(() => {
-							setActiveScreen("database");
-						}),
-					},
-					{
 						id: "open-node-status",
 						name: "Open node status",
 						icon: iconRelation,
@@ -681,7 +673,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						name: "Open start screen",
 						icon: iconChevronRight,
 						action: launch(() => {
-							setActiveScreen("start");
+							setActiveConnection("");
 						}),
 					},
 					{
@@ -740,7 +732,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		isServing,
 		preferences,
 		setActiveConnection,
-		setActiveScreen,
 		resetOnboardings,
 	]);
 }

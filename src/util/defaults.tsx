@@ -1,7 +1,5 @@
-import { SANDBOX } from "~/constants";
 import type {
 	Authentication,
-	CloudInstance,
 	Connection,
 	ConnectionSchema,
 	QueryTab,
@@ -9,8 +7,8 @@ import type {
 	SurrealistConfig,
 	SurrealistSettings,
 } from "~/types";
+
 import { newId } from "./helpers";
-import { validateQuery } from "./surrealql";
 
 export const CONFIG_VERSION = 2;
 
@@ -23,9 +21,8 @@ export function createBaseConfig(): SurrealistConfig {
 		connections: [],
 		connectionGroups: [],
 		sandbox: createSandboxConnection(settings),
-		activeScreen: "start",
 		activeResource: "/query",
-		activeConnection: SANDBOX,
+		activeConnection: "",
 		activeCloudOrg: "",
 		savedQueries: [],
 		lastPromptedVersion: null,

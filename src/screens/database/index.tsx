@@ -10,7 +10,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { VIEW_MODES } from "~/constants";
 import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useActiveConnection, useConnection, useIsConnected } from "~/hooks/connection";
 import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -67,7 +67,7 @@ export function DatabaseScreen() {
 	const isLight = useIsLight();
 	const isCloud = useCloudRoute();
 	const cloudEnabled = useSurrealCloud();
-	const connection = useActiveConnection();
+	const connection = useConnection();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
@@ -83,17 +83,9 @@ export function DatabaseScreen() {
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 
 	return (
-		<div
+		<Box
 			className={classes.root}
-			style={{
-				backgroundColor: isLight
-					? connection
-						? themeColor("slate.0")
-						: "white"
-					: connection
-						? themeColor("slate.9")
-						: "black",
-			}}
+			bg={isLight ? "slate.0" : "slate.9"}
 		>
 			{customTitlebar && (
 				<Flex
@@ -145,21 +137,22 @@ export function DatabaseScreen() {
 						<Switch>
 							<Route path="/" />
 
-							{Object.values(VIEW_MODES).map((mode) => (
-								<Route
-									key={mode.id}
-									path={`/${mode.id}`}
-								>
-									{requestDatabase ? (
-										<DatabaseSelection
-											key={mode.id}
-											info={mode}
-										/>
-									) : (
-										<OutPortal node={VIEW_PORTALS[mode.id]} />
-									)}
-								</Route>
-							))}
+							{connection &&
+								Object.values(VIEW_MODES).map((mode) => (
+									<Route
+										key={mode.id}
+										path={`/${mode.id}`}
+									>
+										{requestDatabase ? (
+											<DatabaseSelection
+												key={mode.id}
+												info={mode}
+											/>
+										) : (
+											<OutPortal node={VIEW_PORTALS[mode.id]} />
+										)}
+									</Route>
+								))}
 
 							{cloudEnabled && (
 								<Route path="/cloud/*?">
@@ -168,27 +161,28 @@ export function DatabaseScreen() {
 							)}
 
 							<Route>
-								<Redirect to="/query" />
+								<Redirect to="/start" />
 							</Route>
 						</Switch>
 					</Stack>
 				</Box>
 			</Flex>
 
-			{Object.values(VIEW_MODES).map((mode) => {
-				const Content = VIEW_COMPONENTS[mode.id];
+			{connection &&
+				Object.values(VIEW_MODES).map((mode) => {
+					const Content = VIEW_COMPONENTS[mode.id];
 
-				return (
-					<InPortal
-						key={mode.id}
-						node={VIEW_PORTALS[mode.id]}
-					>
-						<Suspense fallback={null}>
-							<Content />
-						</Suspense>
-					</InPortal>
-				);
-			})}
+					return (
+						<InPortal
+							key={mode.id}
+							node={VIEW_PORTALS[mode.id]}
+						>
+							<Suspense fallback={null}>
+								<Content />
+							</Suspense>
+						</InPortal>
+					);
+				})}
 
 			<Drawer
 				opened={overlaySidebar}
@@ -200,7 +194,7 @@ export function DatabaseScreen() {
 					withTitlebarOffset={customTitlebar}
 				/>
 			</Drawer>
-		</div>
+		</Box>
 	);
 }
 

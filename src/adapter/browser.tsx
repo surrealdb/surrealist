@@ -1,6 +1,6 @@
 import { isFunction, shake } from "radash";
 import * as v from "valibot";
-import { INSTANCE_CONFIG, INSTANCE_GROUP, SANDBOX } from "~/constants";
+import { INSTANCE_CONFIG, INSTANCE_GROUP } from "~/constants";
 import { type InstanceConfig, InstanceConfigSchema } from "~/schemas";
 import type { Authentication, Platform, SurrealistConfig, UrlTarget } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
@@ -287,14 +287,13 @@ export class BrowserAdapter implements SurrealistAdapter {
 				instanceConfig.connections.some((ic) => ic.id === c.id),
 		);
 
-		// Change activeScreen if instance config is valid
 		const isValidActiveConnection = config.connections.some(
 			(c) => c.id === instanceConfig.defaultConnection,
 		);
 
-		if (isValidActiveConnection && config.activeScreen === "start") {
-			config.activeScreen = "database";
-			config.activeConnection = instanceConfig.defaultConnection ?? SANDBOX;
+		// Change activeConnection if instance config is valid
+		if (isValidActiveConnection) {
+			config.activeConnection = instanceConfig.defaultConnection ?? "";
 		}
 
 		return config;

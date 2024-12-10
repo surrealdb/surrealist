@@ -14,10 +14,8 @@ import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useConnection } from "~/hooks/connection";
-import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SidebarMode, ViewInfo, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -72,7 +70,7 @@ export function DatabaseSidebar({
 	}, [flags]);
 
 	const isViewAvailable = useStable((info: ViewInfo) => {
-		return info.require !== "database" || connection?.lastDatabase;
+		return connection && (info.require !== "database" || connection?.lastDatabase);
 	});
 
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
@@ -155,33 +153,32 @@ export function DatabaseSidebar({
 						</>
 					)}
 
-					{connection &&
-						navigation.map((items, i) => (
-							<Fragment key={i}>
-								{items.map((info) => (
-									<Group
-										key={info.id}
-										gap="lg"
-										wrap="nowrap"
-									>
-										<NavigationIcon
-											name={info.name}
-											path={info.id}
-											icon={info.anim || info.icon}
-											onClick={() => setLocation(`/${info.id}`)}
-											onMouseEnter={hoverSidebarHandle.open}
-											withTooltip={sidebarMode === "compact"}
-											style={{
-												opacity: isViewAvailable(info) ? 1 : 0.5,
-											}}
-										/>
-									</Group>
-								))}
-								{i < navigation.length - 1 && (
-									<Divider color={isLight ? "slate.2" : "slate.7"} />
-								)}
-							</Fragment>
-						))}
+					{navigation.map((items, i) => (
+						<Fragment key={i}>
+							{items.map((info) => (
+								<Group
+									key={info.id}
+									gap="lg"
+									wrap="nowrap"
+								>
+									<NavigationIcon
+										name={info.name}
+										path={info.id}
+										icon={info.anim || info.icon}
+										onClick={() => setLocation(`/${info.id}`)}
+										onMouseEnter={hoverSidebarHandle.open}
+										withTooltip={sidebarMode === "compact"}
+										style={{
+											opacity: isViewAvailable(info) ? 1 : 0.5,
+										}}
+									/>
+								</Group>
+							))}
+							{i < navigation.length - 1 && (
+								<Divider color={isLight ? "slate.2" : "slate.7"} />
+							)}
+						</Fragment>
+					))}
 
 					<Spacer />
 

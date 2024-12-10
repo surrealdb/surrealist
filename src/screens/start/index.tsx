@@ -42,7 +42,6 @@ import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
-import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useThemeImage } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
@@ -197,7 +196,7 @@ function StartNews({ post }: StartNewsProps) {
 }
 
 export function StartScreen() {
-	const { setActiveConnection, setActiveScreen } = useConfigStore.getState();
+	const { setActiveConnection } = useConfigStore.getState();
 	const newsQuery = useLatestNewsQuery();
 
 	const [, navigate] = useLocation();
@@ -214,7 +213,6 @@ export function StartScreen() {
 	});
 
 	const openCloud = useStable(() => {
-		setActiveScreen("database");
 		navigate("/cloud");
 	});
 
