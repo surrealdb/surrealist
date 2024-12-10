@@ -4,22 +4,11 @@
 }
 
 .glow {
-	pointer-events: none;
-	aspect-ratio: 1;
-	background-size: contain;
+	background-position: top center;
 	background-repeat: no-repeat;
-	position: absolute;
-	z-index: -1;
-	transform-origin: top center;
-	width: 65vw;
-	top: -68px;
-	left: 0;
-	right: 0;
-	margin-inline: auto;
-
-	@include light {
-		opacity: 0.5;
-	}
+	background-size: min(1300px, 100vw);
+	height: 650px;
+	z-index: 0;
 }
 
 .start-box {
@@ -45,6 +34,7 @@
 .start-action {
 	position: relative;
 	overflow: hidden;
+	height: 115px;
 
 	.start-action-icon {
 		transition: all 0.2s;
@@ -56,8 +46,12 @@
 	}
 
 	@include md-and-up {
-		aspect-ratio: 1;
+		height: 135px;
 	}
+}
+
+.start-resource {
+	height: 82px;
 }
 
 .start-news-inner {
@@ -75,5 +69,13 @@
 
 	@include xs-and-up {
 		height: 110px;
+	}
+}
+
+.cloud-image {
+	display: none;
+
+	@include sm-and-up {
+		display: block;
 	}
 }

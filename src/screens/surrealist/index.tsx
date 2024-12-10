@@ -18,10 +18,11 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { ViewInfo, ViewMode } from "~/types";
 import { iconWarning } from "~/util/icons";
 import { CloudPanelPage } from "./cloud-panel";
+import { CloudToolbar } from "./cloud-panel/toolbar";
 import { SelectDatabase } from "./components/SelectDatabase";
 import { DatabaseSidebar } from "./sidebar";
-import { SurrealistToolbar } from "./toolbar";
 import { StartPage } from "./start";
+import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DesignerView from "./views/designer/DesignerView";
 import DocumentationView from "./views/documentation/DocumentationView";
@@ -30,7 +31,6 @@ import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
-import { CloudToolbar } from "./cloud-panel/toolbar";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 
@@ -83,11 +83,16 @@ export function SurrealistScreen() {
 
 	const requestDatabase = !connection?.lastDatabase && activeView?.require === "database";
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
+	const titlebarOffset = customTitlebar ? 15 : 0;
 
 	return (
 		<Box
 			className={classes.root}
 			bg={isLight ? "slate.0" : "slate.9"}
+			__vars={{
+				"--sidebar-offset": `${sidebarOffset}px`,
+				"--titlebar-offset": `${titlebarOffset}px`,
+			}}
 		>
 			<Flex
 				direction="column"
@@ -96,17 +101,10 @@ export function SurrealistScreen() {
 			>
 				<DatabaseSidebarLazy
 					sidebarMode={sidebarMode}
-					withTitlebarOffset={customTitlebar}
 					visibleFrom="md"
 				/>
 
-				<Box
-					pt={customTitlebar ? 16 : 0}
-					className={classes.wrapper}
-					__vars={{
-						"--offset": `${sidebarOffset}px`,
-					}}
-				>
+				<Box className={classes.wrapper}>
 					{customTitlebar && (
 						<Flex
 							data-tauri-drag-region
@@ -211,10 +209,7 @@ export function SurrealistScreen() {
 				onClose={onCloseSidebar}
 				size={215}
 			>
-				<DatabaseSidebarLazy
-					sidebarMode="fill"
-					withTitlebarOffset={customTitlebar}
-				/>
+				<DatabaseSidebarLazy sidebarMode="fill" />
 			</Drawer>
 		</Box>
 	);

@@ -2,6 +2,7 @@ import classes from "./style.module.scss";
 
 import clsx from "clsx";
 import dayjs from "dayjs";
+import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import glowUrl from "~/assets/images/gradient-glow.webp";
 import iconUrl from "~/assets/images/icon.webp";
@@ -27,19 +28,21 @@ import {
 import {
 	iconBook,
 	iconChevronRight,
-	iconCloud,
 	iconCog,
 	iconDiscord,
 	iconPlus,
+	iconQuery,
 	iconSandbox,
 	iconServer,
+	iconSidekick,
 } from "~/util/icons";
 
-import { useRef } from "react";
+import { PropsWithChildren, useRef } from "react";
 import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { SANDBOX } from "~/constants";
 import { type NewsPost, useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
@@ -50,21 +53,24 @@ import { dispatchIntent } from "~/util/intents";
 interface StartActionProps {
 	title: string;
 	subtitle: string;
-	icon: string;
+	icon?: string;
 	onClick: () => void;
 }
 
-function StartAction({ title, subtitle, icon, onClick }: StartActionProps) {
+function StartAction({
+	title,
+	subtitle,
+	icon,
+	onClick,
+	children,
+}: PropsWithChildren<StartActionProps>) {
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	return (
-		<UnstyledButton
-			onClick={onClick}
-			h="100%"
-		>
+		<UnstyledButton onClick={onClick}>
 			<Paper
-				p="lg"
-				h="100%"
+				p="xl"
+				pos="relative"
 				ref={containerRef}
 				className={clsx(classes.startBox, classes.startAction)}
 				renderRoot={(props) => <Stack {...props} />}
@@ -72,22 +78,26 @@ function StartAction({ title, subtitle, icon, onClick }: StartActionProps) {
 				<Group
 					wrap="nowrap"
 					align="start"
+					h="100%"
 				>
 					<Text
 						c="bright"
 						fw={600}
 						fz={15}
-						flex={1}
 					>
 						{title}
 					</Text>
-					<Icon
-						className={classes.startActionIcon}
-						path={icon}
-						size="xl"
-					/>
+					<Spacer />
+					{icon && (
+						<Icon
+							className={classes.startActionIcon}
+							path={icon}
+							size="xl"
+						/>
+					)}
 				</Group>
-				<Text>{subtitle}</Text>
+				<Text maw={450}>{subtitle}</Text>
+				{children}
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>
@@ -107,10 +117,13 @@ function StartResource({ title, subtitle, icon, onClick }: StartResourceProps) {
 		<UnstyledButton onClick={onClick}>
 			<Paper
 				p="lg"
-				className={clsx(classes.startBox)}
+				className={clsx(classes.startBox, classes.startResource)}
 				ref={containerRef}
 			>
-				<Group wrap="nowrap">
+				<Group
+					wrap="nowrap"
+					h="100%"
+				>
 					<Icon
 						path={icon}
 						mx="md"
@@ -164,30 +177,28 @@ function StartNews({ post }: StartNewsProps) {
 							backgroundImage: `url("${post.thumbnail}")`,
 						}}
 					/>
-					<Group
-						gap="xl"
-						wrap="nowrap"
+					<Box
+						h="100%"
+						flex={1}
+						style={{ alignSelf: "start" }}
 					>
-						<Box
-							h="100%"
-							flex={1}
-							style={{ alignSelf: "start" }}
+						<Title
+							c="bright"
+							fz="xl"
 						>
-							<Title
-								c="bright"
-								fz="xl"
-							>
-								{post.title}
-							</Title>
-							<Text c="slate">{dayjs(post.published).fromNow()}</Text>
-							<Text mt="sm">{post.description}</Text>
-						</Box>
-						<Icon
-							path={iconChevronRight}
-							c="slate"
-							size="xl"
-						/>
-					</Group>
+							{post.title}
+						</Title>
+						<Text c="slate">{dayjs(post.published).fromNow()}</Text>
+						<Text mt="sm">{post.description}</Text>
+					</Box>
+					<Icon
+						path={iconChevronRight}
+						c="slate"
+						size="xl"
+						style={{
+							alignSelf: "center",
+						}}
+					/>
 				</Flex>
 				<Faint containerRef={containerRef} />
 			</Paper>
@@ -238,7 +249,6 @@ export function StartPage() {
 				className={classes.glow}
 				style={{
 					backgroundImage: `url(${glowUrl})`,
-					zIndex: 0,
 				}}
 			/>
 
@@ -252,7 +262,7 @@ export function StartPage() {
 					maw={952}
 					px="xl"
 					mx="auto"
-					py="5vw"
+					py={96}
 				>
 					<Stack
 						align="center"
@@ -278,46 +288,61 @@ export function StartPage() {
 						</Text>
 					</Stack>
 
-					<SimpleGrid
+					<Stack
 						mt={50}
-						spacing="lg"
-						cols={{
-							xs: 1,
-							sm: 3,
-							md: 5,
-						}}
+						gap="lg"
 					>
 						<StartAction
-							title="Create Connection"
-							subtitle="Connect to a remote or local database"
-							icon={iconPlus}
-							onClick={openConnectionCreator}
-						/>
-						<StartAction
-							title="Open the Sandbox"
-							subtitle="Explore SurrealDB right inside Surrealist"
-							icon={iconSandbox}
-							onClick={openSandbox}
-						/>
-						<StartAction
 							title="Explore Surreal Cloud"
-							subtitle="Manage your databases in the cloud"
-							icon={iconCloud}
+							subtitle="Surreal Cloud redefines the database experience, offering the power and
+					flexibility of SurrealDB without the pain of managing infrastructure."
 							onClick={openCloud}
-						/>
-						<StartAction
-							title="Manage Connections"
-							subtitle="List and manage your existing connections"
-							icon={iconServer}
-							onClick={openConnectionList}
-						/>
-						<StartAction
-							title="Customize Settings"
-							subtitle="Configure Surrealist to your liking"
-							icon={iconCog}
-							onClick={openSettings}
-						/>
-					</SimpleGrid>
+						>
+							<Image
+								src={splashUrl}
+								w={325}
+								pos="absolute"
+								right={0}
+								bottom={0}
+								style={{ zIndex: 0 }}
+								className={classes.cloudImage}
+							/>
+						</StartAction>
+
+						<SimpleGrid
+							spacing="lg"
+							cols={{
+								xs: 1,
+								sm: 2,
+								md: 4,
+							}}
+						>
+							<StartAction
+								title="Create Connection"
+								subtitle="Connect to a remote or local database"
+								icon={iconPlus}
+								onClick={openConnectionCreator}
+							/>
+							<StartAction
+								title="Open the Sandbox"
+								subtitle="Explore SurrealDB right inside Surrealist"
+								icon={iconSandbox}
+								onClick={openSandbox}
+							/>
+							<StartAction
+								title="Manage Connections"
+								subtitle="List and manage your existing connections"
+								icon={iconServer}
+								onClick={openConnectionList}
+							/>
+							<StartAction
+								title="Customize Settings"
+								subtitle="Configure Surrealist to your liking"
+								icon={iconCog}
+								onClick={openSettings}
+							/>
+						</SimpleGrid>
+					</Stack>
 
 					<Title
 						mt="xl"
@@ -342,6 +367,18 @@ export function StartPage() {
 							title="Community"
 							subtitle="Join the discussion on Discord"
 							icon={iconDiscord}
+							onClick={() => adapter.openUrl("https://discord.com/invite/surrealdb")}
+						/>
+						<StartResource
+							title="University"
+							subtitle="Learn the SurrealDB fundamentals in 3 hours"
+							icon={iconQuery}
+							onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
+						/>
+						<StartResource
+							title="Sidekick"
+							subtitle="Get support from your personal Surreal AI assistant"
+							icon={iconSidekick}
 							onClick={() => adapter.openUrl("https://discord.com/invite/surrealdb")}
 						/>
 					</SimpleGrid>

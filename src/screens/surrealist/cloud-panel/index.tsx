@@ -29,7 +29,6 @@ import ProvisionPage from "./pages/Provision";
 import SettingsPage from "./pages/Settings";
 import SupportPage from "./pages/Support";
 import { CloudSidebar } from "./sidebar";
-import { CloudToolbar } from "./toolbar";
 
 const PORTAL_OPTIONS = {
 	attributes: {

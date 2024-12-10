@@ -7,6 +7,7 @@ import {
 	Group,
 	Image,
 	ScrollArea,
+	Space,
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
@@ -40,15 +41,9 @@ const NAVIGATION: ViewMode[][] = [
 
 export interface SidebarProps extends BoxProps {
 	sidebarMode: SidebarMode;
-	withTitlebarOffset?: boolean;
 }
 
-export function DatabaseSidebar({
-	sidebarMode,
-	withTitlebarOffset,
-	className,
-	...other
-}: SidebarProps) {
+export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarProps) {
 	const [flags] = useFeatureFlags();
 
 	const logoUrl = useLogoUrl();
@@ -110,11 +105,12 @@ export function DatabaseSidebar({
 			{...other}
 		>
 			<Flex
-				pt={withTitlebarOffset ? 38 : 22}
 				direction="column"
 				h="100%"
 				px={16}
+				pt={22}
 			>
+				<Space h="var(--titlebar-offset)" />
 				<UnstyledButton onClick={() => setLocation("/start")}>
 					<Flex
 						wrap="nowrap"

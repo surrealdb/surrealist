@@ -12,7 +12,7 @@
 	flex-wrap: nowrap;
 
 	@include md-and-up {
-		margin-left: var(--offset) !important;
+		margin-left: var(--sidebar-offset) !important;
 	}
 }
 
@@ -26,11 +26,16 @@
 	right: 0;
 	height: 32px;
 	z-index: 10000;
+
+	@include md-and-up {
+		padding-left: var(--sidebar-offset) !important;
+	}
 }
 
 .toolbar {
 	z-index: 1;
 	padding: var(--mantine-spacing-lg);
+	padding-top: calc(var(--mantine-spacing-lg) + var(--titlebar-offset));
 
 	@include md-and-up {
 		padding-left: 0;
@@ -70,7 +75,7 @@ $sidebar-wide: 215px;
 
 .inner {
 	padding: var(--mantine-spacing-lg);
-	padding-top: 68px;
+	padding-top: calc(68px + var(--titlebar-offset));
 
 	@include md-and-up {
 		padding-left: 0;
