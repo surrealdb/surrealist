@@ -106,7 +106,6 @@ export function backupConfig({ stripSensitive, connections }: ConfigBackupOption
 	// Omit unnecessary fields
 	config.previousVersion = undefined;
 	config.activeResource = undefined;
-	config.activeScreen = undefined;
 	config.activeConnection = undefined;
 	config.activeCloudOrg = undefined;
 	config.lastPromptedVersion = undefined;

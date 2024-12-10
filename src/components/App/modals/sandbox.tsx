@@ -7,22 +7,20 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useOnboarding } from "~/hooks/onboarding";
 import { useActiveView } from "~/hooks/routing";
-import { useConfigStore } from "~/stores/config";
 import { iconChevronRight, iconClose } from "~/util/icons";
 
 export function SandboxModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [completed, complete] = useOnboarding("sandbox");
 	const [activeView] = useActiveView();
-	const activeScreen = useConfigStore((s) => s.activeScreen);
 	const connection = useConnection();
 
 	useEffect(() => {
-		if (connection?.id === SANDBOX && activeScreen === "database" && activeView && !completed) {
+		if (connection?.id === SANDBOX && activeView && !completed) {
 			openHandle.open();
 			complete();
 		}
-	}, [connection, activeView, activeScreen, completed]);
+	}, [connection, activeView, completed]);
 
 	return (
 		<Modal
@@ -46,7 +44,11 @@ export function SandboxModal() {
 
 			<Box p={24}>
 				<Stack>
-					<Text c="bright">
+					<Text
+						c="bright"
+						fw={500}
+						fz="lg"
+					>
 						The Sandbox provides an easy to use playground to test, experiment, and
 						learn SurrealDB.
 					</Text>

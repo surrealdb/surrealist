@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import type { Uuid } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { executeQuerySingle } from "~/screens/database/connection/connection";
+import { executeQuerySingle } from "~/screens/surrealist/connection/connection";
 import { showError } from "~/util/helpers";
 import { iconCircle, iconCircleFilled } from "~/util/icons";
 

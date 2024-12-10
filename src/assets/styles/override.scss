@@ -1,6 +1,6 @@
 :root {
 	--surrealist-divider-size: 6px;
-	--surrealist-gradient: linear-gradient(110deg, var(--mantine-color-surreal-filled) 0%, #9600FF 100%);
+	--surrealist-gradient: linear-gradient(135deg, var(--mantine-color-surreal-filled) 0%, #9600FF 100%);
 }
 
 :root[data-mantine-color-scheme="light"] {
@@ -62,8 +62,13 @@ body.mod .cm-record-link:hover {
 	-webkit-backdrop-filter: blur(5px);
 }
 
-.mantine-Button-root:where(:disabled:not([data-loading]), [data-disabled]:not([data-loading])) {
-	background-color: transparent;
+.mantine-Button-root:where(:disabled:not([data-loading]), [data-disabled]:not([data-loading])),
+.mantine-ActionIcon-root:where(:disabled:not([data-loading]), [data-disabled]:not([data-loading])) {
+	background-color: var(--mantine-color-slate-9);
+
+	@include light {
+		background-color: var(--mantine-color-slate-0);
+	}
 }
 
 .mantine-Menu-itemSection {

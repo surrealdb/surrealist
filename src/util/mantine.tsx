@@ -133,7 +133,7 @@ export const MANTINE_THEME = createTheme({
 	defaultGradient: {
 		from: "surreal",
 		to: "#9600FF",
-		deg: 110,
+		deg: 135,
 	},
 	components: {
 		Modal: Modal.extend({

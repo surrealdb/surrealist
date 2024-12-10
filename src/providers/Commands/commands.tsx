@@ -35,6 +35,7 @@ import {
 	iconStar,
 	iconStarPlus,
 	iconStop,
+	iconSurrealist,
 	iconTable,
 	iconText,
 	iconTextBoxMinus,
@@ -47,6 +48,7 @@ import {
 
 import { dash } from "radash";
 import { useMemo } from "react";
+import { useLocation } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
@@ -58,7 +60,7 @@ import {
 	closeConnection,
 	openConnection,
 	resetConnection,
-} from "~/screens/database/connection/connection";
+} from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { featureFlags } from "~/util/feature-flags";
@@ -89,7 +91,7 @@ const intent = (intent: IntentType, payload?: IntentPayload) =>
  * Compute available commands based on the current state
  */
 export function useInternalCommandBuilder(): CommandCategory[] {
-	const { setActiveConnection, setActiveScreen, resetOnboardings } = useConfigStore.getState();
+	const { setActiveConnection, resetOnboardings } = useConfigStore.getState();
 
 	const connections = useConnections();
 	const commandHistory = useConfigStore((state) => state.commandHistory);
@@ -99,6 +101,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 
 	const [datasets, applyDataset] = useDatasets();
 	const [activeView, setActiveView] = useActiveView();
+	const [, navigate] = useLocation();
 
 	const activeCon = useConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
@@ -585,6 +588,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 				name: "Navigation",
 				commands: [
 					{
+						id: "open-start-screen",
+						name: "Open start screen",
+						icon: iconSurrealist,
+						action: launch(() => navigate("/start")),
+					},
+					{
 						id: "open-search",
 						name: "Open Surrealist Search",
 						icon: iconSearch,
@@ -648,14 +657,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: intent("open-desktop-download"),
 					},
 					{
-						id: "open-db-screen",
-						name: "Open Database Screen",
-						icon: iconServer,
-						action: launch(() => {
-							setActiveScreen("database");
-						}),
-					},
-					{
 						id: "open-node-status",
 						name: "Open node status",
 						icon: iconRelation,
@@ -676,14 +677,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			{
 				name: "Developer",
 				commands: [
-					{
-						id: "open-start-screen",
-						name: "Open start screen",
-						icon: iconChevronRight,
-						action: launch(() => {
-							setActiveScreen("start");
-						}),
-					},
 					{
 						id: "reload-win",
 						name: "Reload window",
@@ -740,7 +733,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		isServing,
 		preferences,
 		setActiveConnection,
-		setActiveScreen,
 		resetOnboardings,
 	]);
 }

@@ -52,7 +52,7 @@ export function useActiveConnection() {
 	const connection = useConnection();
 
 	if (!connection) {
-		throw new Error("Session unavailable");
+		throw new Error("Active connection expected");
 	}
 
 	return connection;

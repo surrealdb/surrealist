@@ -7,8 +7,7 @@ import { connectionUri, fastParseJwt } from "./helpers";
  * Returns the currently active connection
  */
 export function getConnection() {
-	const { connections, activeConnection, sandbox } =
-		useConfigStore.getState();
+	const { connections, activeConnection, sandbox } = useConfigStore.getState();
 
 	if (activeConnection === SANDBOX) {
 		return sandbox;
@@ -24,7 +23,7 @@ export function getActiveConnection() {
 	const connection = getConnection();
 
 	if (!connection) {
-		throw new Error("Session unavailable");
+		throw new Error("Active connection expected");
 	}
 
 	return connection;
@@ -130,19 +129,13 @@ export function isConnectionValid(auth: Authentication | undefined) {
 	}
 
 	// Check for hostname
-	if (
-		auth.protocol !== "mem" &&
-		auth.protocol !== "indxdb" &&
-		!auth.hostname
-	) {
+	if (auth.protocol !== "mem" && auth.protocol !== "indxdb" && !auth.hostname) {
 		return false;
 	}
 
 	// Check for username and password
 	const checkUserPass =
-		auth.mode === "root" ||
-		auth.mode === "database" ||
-		auth.mode === "namespace";
+		auth.mode === "root" || auth.mode === "database" || auth.mode === "namespace";
 	const hasUserPass = auth.username && auth.password;
 
 	if (checkUserPass && !hasUserPass) {

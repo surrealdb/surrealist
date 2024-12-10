@@ -9,7 +9,7 @@ import { SCHEMA_MODES } from "~/constants";
 import { useActiveView, useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { executeQuery } from "~/screens/database/connection/connection";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SchemaMode } from "~/types";

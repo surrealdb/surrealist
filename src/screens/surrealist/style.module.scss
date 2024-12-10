@@ -1,0 +1,83 @@
+.root {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.wrapper {
+	gap: 16px;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+
+	@include md-and-up {
+		margin-left: var(--sidebar-offset) !important;
+	}
+}
+
+.titlebar {
+	user-select: none;
+	cursor: default;
+	color: var(--mantine-color-bright);
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 32px;
+	z-index: 10000;
+
+	@include md-and-up {
+		padding-left: var(--sidebar-offset) !important;
+	}
+}
+
+.toolbar {
+	z-index: 1;
+	padding: var(--mantine-spacing-lg);
+	padding-top: calc(var(--mantine-spacing-lg) + var(--titlebar-offset));
+
+	@include md-and-up {
+		padding-left: 0;
+	}
+}
+
+$sidebar-thin: 74px;
+$sidebar-wide: 215px;
+
+.sidebar {
+	z-index: 10;
+	transition: all .15s ease-out;
+	border-right: 1px solid transparent;
+	width: $sidebar-wide;
+
+	&-fill {
+		width: 100%;
+	}
+
+	&-collapsed {
+		width: $sidebar-thin;
+	}
+
+	&-hoverable:hover {
+		width: 230px;
+		border-color: var(--mantine-color-slate-7);
+
+		@include light {
+			border-color: var(--mantine-color-slate-1);
+		}
+	}
+
+	:global(.mantine-ScrollArea-viewport)>div {
+		display: unset !important;
+	}
+}
+
+.inner {
+	padding: var(--mantine-spacing-lg);
+	padding-top: calc(68px + var(--titlebar-offset));
+
+	@include md-and-up {
+		padding-left: 0;
+	}
+}

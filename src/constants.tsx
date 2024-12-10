@@ -44,7 +44,6 @@ import {
 	iconAccount,
 	iconAuth,
 	iconBraces,
-	iconCloud,
 	iconCog,
 	iconCombined,
 	iconCreditCard,

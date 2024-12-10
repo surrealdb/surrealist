@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useCloudRoute } from "~/hooks/cloud";
 import { useConnection } from "~/hooks/connection";
 import { useActiveView } from "~/hooks/routing";
-import { getOpenConnection, openConnection } from "~/screens/database/connection/connection";
+import { getOpenConnection, openConnection } from "~/screens/surrealist/connection/connection";
 import { featureFlags } from "~/util/feature-flags";
 
 /**

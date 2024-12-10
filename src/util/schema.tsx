@@ -17,7 +17,7 @@ import {
 	executeQuery,
 	executeQueryFirst,
 	executeQuerySingle,
-} from "~/screens/database/connection/connection";
+} from "~/screens/surrealist/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";

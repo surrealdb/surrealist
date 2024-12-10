@@ -14,7 +14,7 @@ import { useConnection, useMinimumVersion } from "~/hooks/connection";
 import { useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { requestDatabaseExport } from "~/screens/database/connection/connection";
+import { requestDatabaseExport } from "~/screens/surrealist/connection/connection";
 import { showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";

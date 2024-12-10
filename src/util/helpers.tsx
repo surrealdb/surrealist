@@ -473,3 +473,14 @@ export function formatMemory(amountInMB: number) {
 
 	return `${amountInMB / 1024} GB`;
 }
+
+/**
+ * Returns whether the given hostname is considered localhost
+ */
+export function isHostLocal(hostname: string) {
+	return (
+		hostname.startsWith("localhost") ||
+		hostname.startsWith("127.") ||
+		hostname.startsWith("::1")
+	);
+}

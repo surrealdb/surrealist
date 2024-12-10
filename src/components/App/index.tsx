@@ -1,9 +1,7 @@
 import { isDesktop } from "~/adapter";
 import { DesignerProvider } from "~/providers/Designer";
 import { InspectorProvider } from "~/providers/Inspector";
-import { DatabaseScreen } from "~/screens/database";
-import { useConfigStore } from "~/stores/config";
-import { StartScreen } from "../../screens/start";
+import { SurrealistScreen } from "~/screens/surrealist";
 import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
@@ -31,20 +29,18 @@ function Surrealist() {
 	return (
 		<InspectorProvider>
 			<DesignerProvider>
-				<DatabaseScreen />
+				<SurrealistScreen />
 			</DesignerProvider>
 		</InspectorProvider>
 	);
 }
 
 export function App() {
-	const screen = useConfigStore((s) => s.activeScreen);
-
 	return (
 		<Scaffold>
 			<Globals />
 
-			{screen === "start" ? <StartScreen /> : <Surrealist />}
+			<Surrealist />
 
 			<Settings />
 
