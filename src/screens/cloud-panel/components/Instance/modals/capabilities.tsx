@@ -167,7 +167,7 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 
 					<OptionsCapability
 						data={rpcs}
-						name="Enabled RPCs"
+						name="Enabled RPC methods"
 						description="Select which RPC methods are available for use"
 						value={enabledRpcs}
 						onChange={setEnabledRpcs}

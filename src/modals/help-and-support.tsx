@@ -11,5 +11,6 @@ export async function openHelpAndSupport() {
 		withCloseButton: true,
 		size: 900,
 		children: <HelpCenter onBody />,
+		padding: 32,
 	});
 }
