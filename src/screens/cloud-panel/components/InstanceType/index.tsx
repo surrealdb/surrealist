@@ -1,4 +1,5 @@
 import { Box, Group, Stack, Table, Text } from "@mantine/core";
+import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
 import type { CloudInstanceType } from "~/types";
 import { formatMemory } from "~/util/helpers";
@@ -7,6 +8,7 @@ import { Tile } from "../Tile";
 
 export interface InstanceTypeProps {
 	type: CloudInstanceType;
+	status?: ReactNode;
 	isSelected: boolean;
 	isActive?: boolean;
 	inactive?: boolean;
@@ -16,6 +18,7 @@ export interface InstanceTypeProps {
 
 export function InstanceType({
 	type,
+	status,
 	isSelected,
 	isActive,
 	inactive,
@@ -38,11 +41,12 @@ export function InstanceType({
 					flex={1}
 					gap={0}
 				>
+					{status}
 					<Group>
 						<Text
 							c="bright"
 							fw={600}
-							fz="xl"
+							fz={18}
 						>
 							{type.display_name}
 						</Text>

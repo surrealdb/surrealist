@@ -21,6 +21,12 @@ import { InstanceType } from "../../InstanceType";
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({
 		size: "lg",
+		title: (
+			<Box>
+				<PrimaryTitle>Change instance type</PrimaryTitle>
+				<Text fz="lg">{instance.name}</Text>
+			</Box>
+		),
 		children: <InstanceTypeModal instance={instance} />,
 	});
 }
@@ -70,28 +76,35 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 
 	return (
 		<Stack>
+			<InstanceType
+				type={instance.type}
+				isSelected={false}
+				inactive
+				onBody
+				status={
+					<Text
+						c="surreal"
+						fz="sm"
+						fw={500}
+						tt="uppercase"
+					>
+						Currently active
+					</Text>
+				}
+			/>
+
 			{category ? (
 				<>
-					<Group mb="md">
-						<Box flex={1}>
-							<PrimaryTitle>Select instance type</PrimaryTitle>
-							<Text fz="lg">{instance.name}</Text>
-						</Box>
-						<Box>
-							<Button
-								leftSection={<Icon path={iconChevronLeft} />}
-								color="slate"
-								variant="subtle"
-								py={0}
-								onClick={() => {
-									setCategory("");
-									setInstanceType("");
-								}}
-							>
-								Change category
-							</Button>
-						</Box>
-					</Group>
+					<Box
+						mt="xl"
+						mb="sm"
+					>
+						<PrimaryTitle>Select an instance type</PrimaryTitle>
+						<Text mt={2}>
+							Instance types define the resources allocated to your cloud instance.
+							Choose a configuration that best fits your needs.
+						</Text>
+					</Box>
 
 					{!hasBilling && category !== "free" && (
 						<Alert
@@ -150,10 +163,16 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 				</>
 			) : (
 				<>
-					<Box mb="md">
-						<PrimaryTitle>Select instance category</PrimaryTitle>
-						<Text fz="lg">{instance.name}</Text>
+					<Box
+						mt="xl"
+						mb="sm"
+					>
+						<PrimaryTitle>Select a category</PrimaryTitle>
+						<Text mt={2}>
+							Select an instance type category to view available configurations.
+						</Text>
 					</Box>
+
 					{organization && (
 						<CategoryPicker
 							organization={organization}
@@ -165,15 +184,30 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 				</>
 			)}
 
-			<Group mt="md">
-				<Button
-					onClick={() => closeAllModals()}
-					color="slate"
-					variant="light"
-					flex={1}
-				>
-					Close
-				</Button>
+			<Group mt="lg">
+				{category ? (
+					<Button
+						leftSection={<Icon path={iconChevronLeft} />}
+						color="slate"
+						variant="light"
+						flex={1}
+						onClick={() => {
+							setCategory("");
+							setInstanceType("");
+						}}
+					>
+						Change category
+					</Button>
+				) : (
+					<Button
+						onClick={() => closeAllModals()}
+						color="slate"
+						variant="light"
+						flex={1}
+					>
+						Close
+					</Button>
+				)}
 				<Button
 					type="submit"
 					variant="gradient"

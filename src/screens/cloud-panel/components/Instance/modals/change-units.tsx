@@ -36,7 +36,7 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 
 	const minComputeUnits = instance.type.compute_units.min;
 	const maxComputeUnits = instance.type.compute_units.max;
-	// const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
+	const hasSingleCompute = minComputeUnits === 1 && maxComputeUnits === 1;
 
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: (compute_units: number) =>
@@ -56,62 +56,78 @@ function ComputeUnitsModal({ instance }: ComputeUnitsModalProps) {
 
 	return (
 		<Stack>
-			<Paper
-				bg={isLight ? "slate.0" : "slate.9"}
-				p="xl"
+			<InstanceType
+				type={instance.type}
+				isSelected={false}
+				inactive
+				onBody
+				status={
+					<Text
+						c="surreal"
+						fz="sm"
+						fw={500}
+						tt="uppercase"
+					>
+						Currently active
+					</Text>
+				}
+			/>
+
+			<Box
+				mt="xl"
+				mb="sm"
 			>
-				<Stack>
-					<Text mb="lg">
-						Select the number of compute nodes you would like to use for your instance.
-						Each compute node provides additional processing power to your instance.
+				<PrimaryTitle>Select desired compute nodes</PrimaryTitle>
+				<Text mt={2}>
+					Select the number of compute nodes you would like to use for your instance. Each
+					compute node provides additional processing power to your instance.
+				</Text>
+			</Box>
+
+			<Alert
+				color="blue"
+				title="Coming soon"
+			>
+				Compute node customisation will be available soon
+			</Alert>
+
+			{/* {hasSingleCompute ? (
+				<Alert
+					color="blue"
+					title="Upgrade to use compute nodes"
+				>
+					Compute nodes are not customisable for free instances
+				</Alert>
+			) : (
+				<>
+					<Text
+						fw={600}
+						fz="xl"
+						c="bright"
+					>
+						Your selected instance
+					</Text>
+					<InstanceType
+						type={instance.type}
+						inactive
+					/>
+					<Text
+						mt="xl"
+						fw={600}
+						fz="xl"
+						c="bright"
+					>
+						Desired compute nodes
 					</Text>
 
-					<Alert
-						color="blue"
-						title="Coming soon"
-					>
-						Compute node customisation will be available soon
-					</Alert>
-
-					{/* {hasSingleCompute ? (
-						<Alert
-							color="blue"
-							title="Upgrade to use compute nodes"
-						>
-							Compute nodes are not customisable for free instances
-						</Alert>
-					) : (
-						<>
-							<Text
-								fw={600}
-								fz="xl"
-								c="bright"
-							>
-								Your selected instance
-							</Text>
-							<InstanceType
-								type={instance.type}
-								inactive
-							/>
-							<Text
-								mt="xl"
-								fw={600}
-								fz="xl"
-								c="bright"
-							>
-								Desired compute nodes
-							</Text>
-
-							<CounterInput
-								value={units}
-								onChange={setUnits}
-								min={minComputeUnits}
-								max={maxComputeUnits}
-							/>
-						</>
-					)} */}
-				</Stack>
-			</Paper>
+					<CounterInput
+						value={units}
+						onChange={setUnits}
+						min={minComputeUnits}
+						max={maxComputeUnits}
+					/>
+				</>
+			)} */}
 
 			<EstimatedCost
 				type={instance.type}
