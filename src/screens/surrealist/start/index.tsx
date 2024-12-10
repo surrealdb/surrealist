@@ -35,6 +35,7 @@ import {
 
 import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
+import { BetaBadge } from "~/components/BetaBadge";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
@@ -43,7 +44,6 @@ import { useThemeImage } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
 import { StartAction, StartNews, StartResource } from "./content";
-import { BetaBadge } from "~/components/BetaBadge";
 
 export function StartPage() {
 	const { setActiveConnection } = useConfigStore.getState();
