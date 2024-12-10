@@ -6,7 +6,7 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openConnection } from "~/screens/surrealist/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
-import { getActiveConnection } from "~/util/connection";
+import { getConnection } from "~/util/connection";
 import { isHostLocal } from "~/util/helpers";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
@@ -48,11 +48,14 @@ export function DatabaseServing() {
 	});
 
 	useEffect(() => {
-		const { authentication } = getActiveConnection();
-		const isLocal = isHostLocal(authentication.hostname);
+		const connection = getConnection();
 
-		if (isServing && isLocal) {
-			openConnection();
+		if (connection) {
+			const isLocal = isHostLocal(connection.authentication.hostname);
+
+			if (isServing && isLocal) {
+				openConnection();
+			}
 		}
 	}, [isServing]);
 
