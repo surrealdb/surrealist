@@ -97,145 +97,131 @@ export function CloudPanelPage() {
 		}
 	}, [isCloud, isCloudHome, state]);
 
-	return (
+	return isCloudHome ? (
 		<>
-			<Group
-				gap="md"
-				pos="relative"
+			<Stack
+				gap={38}
+				flex={1}
 				align="center"
-				wrap="nowrap"
+				justify="center"
+				style={{ zIndex: 1 }}
+				pb={175}
 			>
-				<CloudToolbar showBreadcrumb={!isCloudHome} />
-			</Group>
-
-			{isCloudHome ? (
-				<>
-					<Stack
-						gap={38}
-						flex={1}
-						align="center"
-						justify="center"
-						style={{ zIndex: 1 }}
-						pb={175}
-					>
-						<Image
-							src={logoUrl}
-							alt="Surreal Cloud"
-							maw={500}
-						/>
-						<Text
-							maw={500}
-							fz="lg"
-							ta="center"
-						>
-							Surreal Cloud redefines the database experience, offering the power and
-							flexibility of SurrealDB without the pain of managing infrastructure.
-							Elevate your business to unparalleled levels of scale and resilience.
-							Focus on building tomorrow's applications. Let us take care of the rest.
-						</Text>
-						{!cloud_access ? (
-							<Button
-								w={264}
-								color="slate"
-								variant="gradient"
-								rightSection={<Icon path={iconChevronRight} />}
-								onClick={() => adapter.openUrl("https://surrealdb.com/signup")}
-								style={{
-									border: "1px solid rgba(255, 255, 255, 0.3)",
-									backgroundOrigin: "border-box",
-								}}
-							>
-								Join the waitlist
-							</Button>
-						) : isSupported ? (
-							<Group>
-								<Button
-									w={164}
-									color="slate"
-									variant="gradient"
-									rightSection={<Icon path={iconChevronRight} />}
-									onClick={openCloudAuthentication}
-								>
-									Continue
-								</Button>
-								<Button
-									w={164}
-									color="slate"
-									variant="light"
-									rightSection={<Icon path={iconOpen} />}
-									onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
-								>
-									Learn more
-								</Button>
-							</Group>
-						) : (
-							<Alert
-								icon={<Icon path={iconErrorCircle} />}
-								color={isLight ? "red.6" : "red.5"}
-								title="Client update required"
-								maw={500}
-							>
-								Please update your version of Surrealist to continue using Surreal
-								Cloud.
-							</Alert>
-						)}
-					</Stack>
-					<Box className={classes.splashImageContainer}>
-						<Image
-							src={splashUrl}
-							alt="Surreal Cloud"
-							h="100%"
-							className={classes.splashImage}
-						/>
-					</Box>
-				</>
-			) : (
-				<Flex
-					flex={1}
-					className={classes.cloudContent}
-					align="stretch"
-					gap="xl"
+				<Image
+					src={logoUrl}
+					alt="Surreal Cloud"
+					maw={500}
+				/>
+				<Text
+					maw={500}
+					fz="lg"
+					ta="center"
 				>
-					<CloudSidebar />
-					<Stack flex={1}>
-						{hasAlert && <StatusAlert alert={alertQuery.data} />}
-
-						<Switch>
-							{Object.values(CLOUD_PAGES).map((page) => (
-								<Route
-									key={page.id}
-									path={`/cloud/${page.id}`}
-								>
-									<Suspense fallback={null}>
-										<OutPortal node={PAGE_PORTALS[page.id]} />
-									</Suspense>
-								</Route>
-							))}
-
-							{isCloud && (
-								<Route>
-									<Redirect to="/cloud/instances" />
-								</Route>
-							)}
-						</Switch>
-					</Stack>
-
-					{Object.values(CLOUD_PAGES).map((page) => {
-						const Content = PAGE_COMPONENTS[page.id];
-
-						return (
-							<InPortal
-								key={page.id}
-								node={PAGE_PORTALS[page.id]}
-							>
-								<Suspense fallback={null}>
-									<Content />
-								</Suspense>
-							</InPortal>
-						);
-					})}
-				</Flex>
-			)}
+					Surreal Cloud redefines the database experience, offering the power and
+					flexibility of SurrealDB without the pain of managing infrastructure. Elevate
+					your business to unparalleled levels of scale and resilience. Focus on building
+					tomorrow's applications. Let us take care of the rest.
+				</Text>
+				{!cloud_access ? (
+					<Button
+						w={264}
+						color="slate"
+						variant="gradient"
+						rightSection={<Icon path={iconChevronRight} />}
+						onClick={() => adapter.openUrl("https://surrealdb.com/signup")}
+						style={{
+							border: "1px solid rgba(255, 255, 255, 0.3)",
+							backgroundOrigin: "border-box",
+						}}
+					>
+						Join the waitlist
+					</Button>
+				) : isSupported ? (
+					<Group>
+						<Button
+							w={164}
+							color="slate"
+							variant="gradient"
+							rightSection={<Icon path={iconChevronRight} />}
+							onClick={openCloudAuthentication}
+						>
+							Continue
+						</Button>
+						<Button
+							w={164}
+							color="slate"
+							variant="light"
+							rightSection={<Icon path={iconOpen} />}
+							onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
+						>
+							Learn more
+						</Button>
+					</Group>
+				) : (
+					<Alert
+						icon={<Icon path={iconErrorCircle} />}
+						color={isLight ? "red.6" : "red.5"}
+						title="Client update required"
+						maw={500}
+					>
+						Please update your version of Surrealist to continue using Surreal Cloud.
+					</Alert>
+				)}
+			</Stack>
+			<Box className={classes.splashImageContainer}>
+				<Image
+					src={splashUrl}
+					alt="Surreal Cloud"
+					h="100%"
+					className={classes.splashImage}
+				/>
+			</Box>
 		</>
+	) : (
+		<Flex
+			flex={1}
+			className={classes.cloudContent}
+			align="stretch"
+			gap="xl"
+		>
+			<CloudSidebar />
+			<Stack flex={1}>
+				{hasAlert && <StatusAlert alert={alertQuery.data} />}
+
+				<Switch>
+					{Object.values(CLOUD_PAGES).map((page) => (
+						<Route
+							key={page.id}
+							path={`/cloud/${page.id}`}
+						>
+							<Suspense fallback={null}>
+								<OutPortal node={PAGE_PORTALS[page.id]} />
+							</Suspense>
+						</Route>
+					))}
+
+					{isCloud && (
+						<Route>
+							<Redirect to="/cloud/instances" />
+						</Route>
+					)}
+				</Switch>
+			</Stack>
+
+			{Object.values(CLOUD_PAGES).map((page) => {
+				const Content = PAGE_COMPONENTS[page.id];
+
+				return (
+					<InPortal
+						key={page.id}
+						node={PAGE_PORTALS[page.id]}
+					>
+						<Suspense fallback={null}>
+							<Content />
+						</Suspense>
+					</InPortal>
+				);
+			})}
+		</Flex>
 	);
 }

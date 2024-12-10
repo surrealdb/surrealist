@@ -10,19 +10,31 @@
 	display: flex;
 	flex-direction: column;
 	flex-wrap: nowrap;
-	
+
 	@include md-and-up {
 		margin-left: var(--offset) !important;
 	}
 }
 
 .titlebar {
-	height: 22px;
 	user-select: none;
 	cursor: default;
 	color: var(--mantine-color-bright);
-	position: relative;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 32px;
+	z-index: 10000;
+}
+
+.toolbar {
 	z-index: 1;
+	padding: var(--mantine-spacing-lg);
+
+	@include md-and-up {
+		padding-left: 0;
+	}
 }
 
 $sidebar-thin: 74px;
@@ -51,7 +63,16 @@ $sidebar-wide: 215px;
 		}
 	}
 
-	:global(.mantine-ScrollArea-viewport) > div {
+	:global(.mantine-ScrollArea-viewport)>div {
 		display: unset !important;
+	}
+}
+
+.inner {
+	padding: var(--mantine-spacing-lg);
+	padding-top: 68px;
+
+	@include md-and-up {
+		padding-left: 0;
 	}
 }

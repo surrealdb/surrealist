@@ -3,7 +3,7 @@ import classes from "./style.module.scss";
 import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
 import { type FC, Suspense, memo } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { Redirect, Route, Switch } from "wouter";
+import { Redirect, Route, Switch, useRoute } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -30,6 +30,7 @@ import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
+import { CloudToolbar } from "./cloud-panel/toolbar";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 
@@ -67,6 +68,7 @@ export function SurrealistScreen() {
 	const isLight = useIsLight();
 	const isCloud = useCloudRoute();
 	const cloudEnabled = useSurrealCloud();
+	const [isCloudHome] = useRoute("/cloud");
 	const connection = useConnection();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
@@ -87,17 +89,6 @@ export function SurrealistScreen() {
 			className={classes.root}
 			bg={isLight ? "slate.0" : "slate.9"}
 		>
-			{customTitlebar && (
-				<Flex
-					data-tauri-drag-region
-					className={classes.titlebar}
-					justify="center"
-					align="end"
-				>
-					{title}
-				</Flex>
-			)}
-
 			<Flex
 				direction="column"
 				flex={1}
@@ -110,29 +101,44 @@ export function SurrealistScreen() {
 				/>
 
 				<Box
-					m="lg"
-					mt={customTitlebar ? "sm" : "lg"}
+					pt={customTitlebar ? 16 : 0}
 					className={classes.wrapper}
 					__vars={{
 						"--offset": `${sidebarOffset}px`,
 					}}
 				>
+					{customTitlebar && (
+						<Flex
+							data-tauri-drag-region
+							className={classes.titlebar}
+							justify="center"
+							align="center"
+						>
+							{title}
+						</Flex>
+					)}
+
 					<Stack
 						flex={1}
 						pos="relative"
 						gap="lg"
 					>
-						{!isCloud && (
-							<Group
-								gap="md"
-								pos="relative"
-								align="center"
-								wrap="nowrap"
-								className={classes.toolbar}
-							>
+						<Group
+							gap="md"
+							pos="absolute"
+							left={0}
+							right={0}
+							top={0}
+							align="center"
+							wrap="nowrap"
+							className={classes.toolbar}
+						>
+							{isCloud ? (
+								<CloudToolbar showBreadcrumb={!isCloudHome} />
+							) : (
 								<SurrealistToolbar />
-							</Group>
-						)}
+							)}
+						</Group>
 
 						<Switch>
 							<Route path="/" />
@@ -153,14 +159,26 @@ export function SurrealistScreen() {
 												info={mode}
 											/>
 										) : (
-											<OutPortal node={VIEW_PORTALS[mode.id]} />
+											<Stack
+												className={classes.inner}
+												flex={1}
+												gap={0}
+											>
+												<OutPortal node={VIEW_PORTALS[mode.id]} />
+											</Stack>
 										)}
 									</Route>
 								))}
 
 							{cloudEnabled && (
 								<Route path="/cloud/*?">
-									<CloudPanelPage />
+									<Stack
+										className={classes.inner}
+										flex={1}
+										gap={0}
+									>
+										<CloudPanelPage />
+									</Stack>
 								</Route>
 							)}
 
