@@ -10,6 +10,7 @@ import {
 	Box,
 	Button,
 	Center,
+	Group,
 	Image,
 	ScrollArea,
 	SimpleGrid,
@@ -25,9 +26,7 @@ import {
 	iconCloud,
 	iconCog,
 	iconCommunity,
-	iconDiscord,
 	iconPlus,
-	iconQuery,
 	iconSandbox,
 	iconServer,
 	iconSidekick,
@@ -44,6 +43,7 @@ import { useThemeImage } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
 import { StartAction, StartNews, StartResource } from "./content";
+import { BetaBadge } from "~/components/BetaBadge";
 
 export function StartPage() {
 	const { setActiveConnection } = useConfigStore.getState();
@@ -131,7 +131,12 @@ export function StartPage() {
 						gap="lg"
 					>
 						<StartAction
-							title="Explore Surreal Cloud"
+							title={
+								<Group gap="xs">
+									Explore Surreal Cloud
+									<BetaBadge />
+								</Group>
+							}
 							subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
 							icon={iconCloud}
 							onClick={openCloud}
