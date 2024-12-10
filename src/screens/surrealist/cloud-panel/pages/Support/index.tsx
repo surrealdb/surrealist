@@ -1,4 +1,4 @@
-import { Box, ScrollArea } from "@mantine/core";
+import { Box, Center, ScrollArea } from "@mantine/core";
 import { HelpCenter } from "~/components/HelpCenter";
 import classes from "./style.module.scss";
 
@@ -14,17 +14,15 @@ export function SupportPage() {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBottom: 75 },
-				}}
 			>
-				<Box
-					w="100%"
+				<Center
+					h="100%"
 					maw={900}
 					mx="auto"
+					pb={75}
 				>
 					<HelpCenter />
-				</Box>
+				</Center>
 			</ScrollArea>
 		</Box>
 	);
