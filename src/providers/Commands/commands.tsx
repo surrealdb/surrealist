@@ -35,6 +35,7 @@ import {
 	iconStar,
 	iconStarPlus,
 	iconStop,
+	iconSurrealist,
 	iconTable,
 	iconText,
 	iconTextBoxMinus,
@@ -67,6 +68,7 @@ import type { IntentPayload, IntentType } from "~/util/intents";
 import { type PreferenceController, computePreferences } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
+import { useLocation } from "wouter";
 
 /** Create a launch command */
 const launch = (handler: () => void) => ({ type: "launch", handler }) as const;
@@ -99,6 +101,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 
 	const [datasets, applyDataset] = useDatasets();
 	const [activeView, setActiveView] = useActiveView();
+	const [, navigate] = useLocation();
 
 	const activeCon = useConnection();
 	const isSandbox = activeCon?.id === SANDBOX;
@@ -585,6 +588,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 				name: "Navigation",
 				commands: [
 					{
+						id: "open-start-screen",
+						name: "Open start screen",
+						icon: iconSurrealist,
+						action: launch(() => navigate("/start")),
+					},
+					{
 						id: "open-search",
 						name: "Open Surrealist Search",
 						icon: iconSearch,
@@ -668,14 +677,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			{
 				name: "Developer",
 				commands: [
-					{
-						id: "open-start-screen",
-						name: "Open start screen",
-						icon: iconChevronRight,
-						action: launch(() => {
-							setActiveConnection("");
-						}),
-					},
 					{
 						id: "reload-win",
 						name: "Reload window",
