@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { openConnection } from "~/screens/database/connection/connection";
+import { openConnection } from "~/screens/surrealist/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { getActiveConnection } from "~/util/connection";
 import { isHostLocal } from "~/util/helpers";

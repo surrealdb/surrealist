@@ -7,7 +7,7 @@ import {
 	openCloudAuthentication,
 	refreshAccess,
 	verifyAuthentication,
-} from "~/screens/cloud-panel/api/auth";
+} from "~/screens/surrealist/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { featureFlags, useFeatureFlags } from "~/util/feature-flags";

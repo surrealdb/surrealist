@@ -1,6 +1,6 @@
 import { omit } from "radash";
 import { create } from "zustand";
-import type { GraphqlResponse } from "~/screens/database/connection/connection";
+import type { GraphqlResponse } from "~/screens/surrealist/connection/connection";
 import type { ConnectionSchema, QueryResponse } from "~/types";
 import { createConnectionSchema } from "~/util/defaults";
 

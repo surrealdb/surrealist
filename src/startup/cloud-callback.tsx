@@ -4,7 +4,7 @@ import "../assets/styles/override.scss";
 import "../assets/styles/global.scss";
 
 import { createRoot } from "react-dom/client";
-import { CloudCallbackScreen } from "~/screens/auth-callback";
+import { AuthCallbackScreen } from "~/screens/auth-callback";
 
 (async () => {
 	const root = document.querySelector("#root");
@@ -13,5 +13,5 @@ import { CloudCallbackScreen } from "~/screens/auth-callback";
 		throw new Error("Root element not found");
 	}
 
-	createRoot(root).render(<CloudCallbackScreen />);
+	createRoot(root).render(<AuthCallbackScreen />);
 })();

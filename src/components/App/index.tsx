@@ -1,7 +1,7 @@
 import { isDesktop } from "~/adapter";
 import { DesignerProvider } from "~/providers/Designer";
 import { InspectorProvider } from "~/providers/Inspector";
-import { SurrealistScreen } from "~/screens/database";
+import { SurrealistScreen } from "~/screens/surrealist";
 import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";

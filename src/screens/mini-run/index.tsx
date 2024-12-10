@@ -3,7 +3,7 @@ import { adapter } from "~/adapter";
 import type { MiniAdapter } from "~/adapter/mini";
 import { Scaffold } from "~/components/Scaffold";
 import { useIsLight } from "~/hooks/theme";
-import QueryView from "~/screens/database/views/query/QueryView";
+import QueryView from "~/screens/surrealist/views/query/QueryView";
 
 export function MiniRunScreen() {
 	const { appearance, transparent } = adapter as MiniAdapter;

@@ -1,18 +1,12 @@
 import { useDisclosure } from "@mantine/hooks";
 import posthog from "posthog-js";
-import {
-	type PropsWithChildren,
-	createContext,
-	useContext,
-	useMemo,
-	useState,
-} from "react";
+import { type PropsWithChildren, createContext, useContext, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { useMinimumVersion } from "~/hooks/connection";
 import { useSaveable } from "~/hooks/save";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { executeQuery } from "~/screens/database/connection/connection";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { TableInfo } from "~/types";
 import { showError } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
@@ -123,10 +117,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 					if (r.success) return [];
 
 					return [
-						(r.result as string).replace(
-							"There was a problem with the database: ",
-							"",
-						),
+						(r.result as string).replace("There was a problem with the database: ", ""),
 					];
 				});
 

@@ -15,7 +15,7 @@ import { useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { executeQuery } from "~/screens/database/connection/connection";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";

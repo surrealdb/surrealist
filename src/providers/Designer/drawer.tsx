@@ -33,7 +33,7 @@ import { Spacer } from "~/components/Spacer";
 import type { SaveableHandle } from "~/hooks/save";
 import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/database/connection/connection";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import type { TableInfo } from "~/types";
 import { syncConnectionSchema } from "~/util/schema";

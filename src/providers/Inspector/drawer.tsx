@@ -24,7 +24,7 @@ import { useSaveable } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useValueValidator } from "~/hooks/surrealql";
 import { useIsLight } from "~/hooks/theme";
-import { executeQuery } from "~/screens/database/connection/connection";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { formatValue, parseValue } from "~/util/surrealql";
 import { useConfirmation } from "../Confirmation";
 import { ContentTab } from "./tabs/content";

@@ -13,7 +13,7 @@ const REDIRECT_ENDPOINT = isDevelopment ? "http://localhost:1420" : `https://${l
 
 // http://localhost:1420/cloud/callback/index.html?error=access_denied&error_description=Please%20verify%20your%20email%20before%20continuing.&state=browser2NP1~m7q8.NGa_Z7RIHDTY6sZN7hUaUPqZhlGsvLKfQ4sJkniN
 
-export function CloudCallbackScreen() {
+export function AuthCallbackScreen() {
 	const [result, setResult] = useState<Result>("redirect");
 	const [error, setError] = useState<string | undefined>(undefined);
 	const codeRef = useRef("");

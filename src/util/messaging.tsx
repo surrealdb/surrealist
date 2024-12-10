@@ -1,5 +1,5 @@
 import { RESULT_MODES } from "~/constants";
-import { executeQuery, executeUserQuery } from "~/screens/database/connection/connection";
+import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useQueryStore } from "~/stores/query";

@@ -1,7 +1,7 @@
 import { sleep } from "radash";
 import { useMemo, useState } from "react";
 import { DATASETS } from "~/constants";
-import { executeQuery } from "~/screens/database/connection/connection";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { Selectable } from "~/types";
 import { showInfo } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
@@ -17,7 +17,7 @@ export function useDatasets() {
 	const datasets = useMemo<Selectable[]>(() => {
 		return Object.entries(DATASETS).map(([id, info]) => ({
 			value: id,
-			label: info.name
+			label: info.name,
 		}));
 	}, []);
 

@@ -58,7 +58,7 @@ import {
 	closeConnection,
 	openConnection,
 	resetConnection,
-} from "~/screens/database/connection/connection";
+} from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { featureFlags } from "~/util/feature-flags";
