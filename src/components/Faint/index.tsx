@@ -1,17 +1,19 @@
 import { type RefObject, useEffect, useRef } from "react";
+import { adapter, isDesktop } from "~/adapter";
 import { useIsLight } from "~/hooks/theme";
 
 export interface FaintProps {
 	containerRef: RefObject<HTMLDivElement>;
 }
 
-export function Faint({
-	containerRef
-}: FaintProps) {
+export function Faint({ containerRef }: FaintProps) {
+	const disable = adapter.platform === "darwin" && isDesktop; // NOTE Extremely bad performance on Mac WebView
 	const faintRef = useRef<HTMLDivElement>(null);
 	const isLight = useIsLight();
 
 	useEffect(() => {
+		if (disable) return;
+
 		function effect(e: MouseEvent) {
 			if (!containerRef.current || !faintRef.current) return;
 
@@ -46,23 +48,25 @@ export function Faint({
 		window.addEventListener("mousemove", effect);
 
 		return () => window.removeEventListener("mousemove", effect);
-	}, [containerRef.current]);
+	}, [disable, containerRef.current]);
 
 	return (
-		<div
-			ref={faintRef}
-			style={{
-				width: "150px",
-				height: "150px",
-				position: "absolute",
-				top: "-150px",
-				left: "-150px",
-				borderRadius: "100.153px",
-				background: "linear-gradient(276deg, #8200E3 42.56%, #FF01A8 78.41%)",
-				filter: "blur(50px)",
-				opacity: isLight ? 0.5 : 1,
-				zIndex: -1,
-			}}
-		/>
+		!disable && (
+			<div
+				ref={faintRef}
+				style={{
+					width: "150px",
+					height: "150px",
+					position: "absolute",
+					top: "-150px",
+					left: "-150px",
+					borderRadius: "100.153px",
+					background: "linear-gradient(276deg, #8200E3 42.56%, #FF01A8 78.41%)",
+					filter: "blur(50px)",
+					opacity: isLight ? 0.5 : 1,
+					zIndex: -1,
+				}}
+			/>
+		)
 	);
 }
