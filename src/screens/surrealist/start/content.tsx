@@ -17,7 +17,7 @@ import {
 
 import { iconChevronRight } from "~/util/icons";
 
-import { PropsWithChildren, useRef } from "react";
+import { PropsWithChildren, ReactNode, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -26,8 +26,8 @@ import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/util/intents";
 
 export interface StartActionProps extends BoxProps {
-	title: string;
-	subtitle: string;
+	title: ReactNode;
+	subtitle: ReactNode;
 	icon?: string;
 	onClick: () => void;
 }
