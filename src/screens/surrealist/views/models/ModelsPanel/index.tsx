@@ -8,6 +8,7 @@ import {
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
+import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -21,7 +22,6 @@ import {
 	iconUpload,
 } from "~/util/icons";
 import classes from "./style.module.scss";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface ModelsPanelProps {
 	active: string;

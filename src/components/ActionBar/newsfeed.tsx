@@ -3,8 +3,8 @@ import { useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconNewspaper } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { Icon } from "../Icon";
 import { ActionButton } from "../ActionButton";
+import { Icon } from "../Icon";
 
 export function NewsFeed() {
 	const [{ newsfeed }] = useFeatureFlags();

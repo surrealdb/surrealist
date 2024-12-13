@@ -24,6 +24,7 @@ import type { EditorView } from "@codemirror/view";
 import { useMemo, useState } from "react";
 import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
@@ -42,7 +43,6 @@ import { CombinedPreview } from "./previews/combined";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
-import { ActionButton } from "~/components/ActionButton";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {

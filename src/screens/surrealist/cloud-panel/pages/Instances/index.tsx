@@ -30,6 +30,7 @@ import {
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { Fragment, useMemo, useState } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { FloatingButton } from "~/components/FloatingButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -48,7 +49,6 @@ import { useCloudInstancesQuery } from "../../hooks/instances";
 import { openConnectCli } from "../../modals/connect-cli";
 import { openConnectCurl } from "../../modals/connect-curl";
 import { openConnectSdk } from "../../modals/connect-sdk";
-import { ActionButton } from "~/components/ActionButton";
 
 interface Filter {
 	type: string;

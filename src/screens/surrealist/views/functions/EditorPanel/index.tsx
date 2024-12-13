@@ -37,6 +37,7 @@ import { surrealql } from "@surrealdb/codemirror";
 import { useState } from "react";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { FieldKindInput, PermissionInput } from "~/components/Inputs";
@@ -57,7 +58,6 @@ import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;

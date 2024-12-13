@@ -24,6 +24,7 @@ import { Text } from "@mantine/core";
 import { graphql, updateSchema } from "cm6-graphql";
 import { type GraphQLSchema, parse, print } from "graphql";
 import { useEffect } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -35,7 +36,6 @@ import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { showError, showInfo, tryParseParams } from "~/util/helpers";
 import { formatValue } from "~/util/surrealql";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface QueryPaneProps {
 	showVariables: boolean;

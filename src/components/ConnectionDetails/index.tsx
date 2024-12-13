@@ -39,10 +39,10 @@ import type { AuthMode, Connection, Protocol } from "~/types";
 import { fastParseJwt, isHostLocal } from "~/util/helpers";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
+import { ActionButton } from "../ActionButton";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { ActionButton } from "../ActionButton";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);

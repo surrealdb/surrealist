@@ -14,6 +14,7 @@ import { Center, Drawer, Group, Paper, Tabs, Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { RecordId } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
@@ -29,7 +30,6 @@ import { formatValue, parseValue } from "~/util/surrealql";
 import { useConfirmation } from "../Confirmation";
 import { ContentTab } from "./tabs/content";
 import { RelationsTab } from "./tabs/relations";
-import { ActionButton } from "~/components/ActionButton";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,

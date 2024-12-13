@@ -25,13 +25,13 @@ import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import posthog from "posthog-js";
 import { Fragment, useEffect, useState } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { ActionButton } from "~/components/ActionButton";
 
 interface NewsItem {
 	id: string;

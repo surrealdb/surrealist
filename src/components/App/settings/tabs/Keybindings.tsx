@@ -15,6 +15,7 @@ import {
 
 import { useInputState } from "@mantine/hooks";
 import { Fragment, useMemo, useState } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { KeybindInput } from "~/components/Inputs/keybinding";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -32,7 +33,6 @@ import { displayBinding } from "~/providers/Commands/keybindings";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconEdit, iconPlus, iconSearch } from "~/util/icons";
-import { ActionButton } from "~/components/ActionButton";
 
 export function KeybindingsTab() {
 	const [search, setSearch] = useInputState("");

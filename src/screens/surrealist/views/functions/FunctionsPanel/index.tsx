@@ -10,6 +10,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -24,7 +25,6 @@ import {
 	iconSearch,
 } from "~/util/icons";
 import classes from "./style.module.scss";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface FunctionsPanelProps {
 	active: string;

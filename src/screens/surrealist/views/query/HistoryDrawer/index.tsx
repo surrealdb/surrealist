@@ -15,6 +15,7 @@ import { useInputState } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { capitalize } from "radash";
 import { memo, useMemo } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -24,7 +25,6 @@ import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
-import { ActionButton } from "~/components/ActionButton";
 
 const MAX_PREVIEW_LENGTH = 500;
 

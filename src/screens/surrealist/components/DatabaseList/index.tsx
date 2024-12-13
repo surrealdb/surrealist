@@ -17,6 +17,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import { type MouseEvent, type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -31,7 +32,6 @@ import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface DatabaseProps {
 	value: string;

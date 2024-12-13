@@ -1,8 +1,8 @@
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconChevronRight } from "~/util/icons";
-import { Icon } from "../Icon";
 import { ActionButton } from "../ActionButton";
+import { Icon } from "../Icon";
 
 export function SidebarToggle() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();

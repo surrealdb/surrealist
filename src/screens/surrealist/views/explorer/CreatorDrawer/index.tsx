@@ -18,6 +18,7 @@ import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { useLayoutEffect, useState } from "react";
 import { RecordId, StringRecordId, Table } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
@@ -34,7 +35,6 @@ import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { extractEdgeRecords } from "~/util/schema";
-import { ActionButton } from "~/components/ActionButton";
 
 type EdgeInfo = [boolean, string[], string[]];
 

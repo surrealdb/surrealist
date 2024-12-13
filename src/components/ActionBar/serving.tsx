@@ -9,8 +9,8 @@ import { getConnection } from "~/util/connection";
 import { isHostLocal } from "~/util/helpers";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { Icon } from "../Icon";
 import { ActionButton } from "../ActionButton";
+import { Icon } from "../Icon";
 
 export function DatabaseServing() {
 	const [hasStarted, setHasStarted] = useState(false);

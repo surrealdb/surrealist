@@ -11,6 +11,7 @@ import {
 
 import { useState } from "react";
 import { ActionBar } from "~/components/ActionBar";
+import { ActionButton } from "~/components/ActionButton";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { SidebarToggle } from "~/components/SidebarToggle";
@@ -30,7 +31,6 @@ import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
 import { resetConnection } from "./connection/connection";
-import { ActionButton } from "~/components/ActionButton";
 
 export function SurrealistToolbar() {
 	const { readChangelog } = useInterfaceStore.getState();

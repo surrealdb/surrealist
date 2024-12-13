@@ -4,9 +4,9 @@ import { useInputState } from "@mantine/hooks";
 import { type FocusEvent, type KeyboardEvent, useLayoutEffect } from "react";
 import { useStable } from "~/hooks/stable";
 import { iconChevronLeft, iconChevronRight } from "~/util/icons";
+import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
 import type { PaginationStore } from "./hook";
-import { ActionButton } from "../ActionButton";
 
 const PAGE_SIZES: ComboboxData = [
 	{ label: "10 Results per page", value: "10" },

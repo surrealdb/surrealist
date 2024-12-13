@@ -3,15 +3,15 @@ import classes from "./style.module.scss";
 // TODO Split into multiple files
 
 import {
-	type AutocompleteProps,
-	type InputBaseProps,
-	type PillsInputProps,
 	ActionIcon,
 	Autocomplete,
+	type AutocompleteProps,
 	Group,
 	InputBase,
+	type InputBaseProps,
 	Pill,
 	PillsInput,
+	type PillsInputProps,
 	TextInput
 } from "@mantine/core";
 
