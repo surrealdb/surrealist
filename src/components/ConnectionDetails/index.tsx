@@ -16,9 +16,7 @@ import {
 	Select,
 	SimpleGrid,
 	Stack,
-	TextInput,
-	Tooltip,
-	UnstyledButton,
+	TextInput
 } from "@mantine/core";
 
 import {
@@ -31,7 +29,7 @@ import {
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { fork, trim } from "radash";
+import { fork } from "radash";
 import { useMemo } from "react";
 import type { Updater } from "use-immer";
 import { useStable } from "~/hooks/stable";
@@ -44,6 +42,7 @@ import { USER_ICONS } from "~/util/user-icons";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
+import { ActionButton } from "../ActionButton";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -582,25 +581,23 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 												})
 											}
 										/>
-										<Tooltip label="Remove field">
-											<ActionIcon
-												color="pink.9"
-												aria-label="Remove access field"
-												onClick={() =>
-													onChange((draft) => {
-														draft.authentication.accessFields.splice(
-															i,
-															1,
-														);
-													})
-												}
-											>
-												<Icon
-													path={iconClose}
-													color="red"
-												/>
-											</ActionIcon>
-										</Tooltip>
+										<ActionButton
+											color="pink.9"
+											label="Remove field"
+											onClick={() =>
+												onChange((draft) => {
+													draft.authentication.accessFields.splice(
+														i,
+														1,
+													);
+												})
+											}
+										>
+											<Icon
+												path={iconClose}
+												color="red"
+											/>
+										</ActionButton>
 									</Group>
 								</Paper>
 							);

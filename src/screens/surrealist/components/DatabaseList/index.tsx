@@ -31,6 +31,7 @@ import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
+import { ActionButton } from "~/components/ActionButton";
 
 export interface DatabaseProps {
 	value: string;
@@ -72,19 +73,18 @@ function Database({ value, isActive, onOpen, onRemove }: DatabaseProps) {
 			isActive={isActive}
 			className={classes.database}
 			rightSection={
-				<ActionIcon
-					component="div"
+				<ActionButton
 					variant="transparent"
 					className={classes.databaseOptions}
 					onClick={requestRemove}
-					aria-label="Remove database"
+					label="Remove database"
 					size="xs"
 				>
 					<Icon
 						path={iconClose}
 						size="sm"
 					/>
-				</ActionIcon>
+				</ActionButton>
 			}
 		>
 			{value}
@@ -200,16 +200,17 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 								>
 									Databases
 								</Text>
-								<ActionIcon
+								<ActionButton
 									color="slate"
 									variant="light"
 									disabled={
 										!connected || (level !== "root" && level !== "namespace")
 									}
+									label="Create database"
 									onClick={openCreator}
 								>
 									<Icon path={iconPlus} />
-								</ActionIcon>
+								</ActionButton>
 							</Group>
 							<Divider />
 							<ScrollArea.Autosize mah={250}>

@@ -24,6 +24,7 @@ import {
 	iconSearch,
 } from "~/util/icons";
 import classes from "./style.module.scss";
+import { ActionButton } from "~/components/ActionButton";
 
 export interface FunctionsPanelProps {
 	active: string;
@@ -69,15 +70,13 @@ export function FunctionsPanel({
 				</Badge>
 			}
 			rightSection={
-				<Tooltip label="New function">
-					<ActionIcon
-						onClick={onCreate}
-						aria-label="Create new function"
-						disabled={!isConnected}
-					>
-						<Icon path={iconPlus} />
-					</ActionIcon>
-				</Tooltip>
+				<ActionButton
+					disabled={!isConnected}
+					label="New function"
+					onClick={onCreate}
+				>
+					<Icon path={iconPlus} />
+				</ActionButton>
 			}
 		>
 			<ScrollArea

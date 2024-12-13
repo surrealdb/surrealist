@@ -10,7 +10,7 @@ import {
 	iconTransfer,
 } from "~/util/icons";
 
-import { ActionIcon, Center, Drawer, Group, Paper, Tabs, Text, Tooltip } from "@mantine/core";
+import { Center, Drawer, Group, Paper, Tabs, Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useEffect, useState } from "react";
 import { RecordId } from "surrealdb";
@@ -29,6 +29,7 @@ import { formatValue, parseValue } from "~/util/surrealql";
 import { useConfirmation } from "../Confirmation";
 import { ContentTab } from "./tabs/content";
 import { RelationsTab } from "./tabs/relations";
+import { ActionButton } from "~/components/ActionButton";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -195,42 +196,36 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 				<Group align="center">
 					{history.canPop && (
-						<Tooltip label="Go back">
-							<ActionIcon
-								onClick={history.pop}
-								aria-label="Go back in history"
-							>
-								<Icon path={iconArrowLeftFat} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton
+							label="Go back"
+							onClick={history.pop}
+						>
+							<Icon path={iconArrowLeftFat} />
+						</ActionButton>
 					)}
 
-					<Tooltip label="Delete record">
-						<ActionIcon
-							disabled={!currentRecord.exists}
-							onClick={deleteRecord}
-							color="pink.7"
-							aria-label="Delete record"
-						>
-							<Icon path={iconDelete} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						disabled={!currentRecord.exists}
+						color="pink.7"
+						label="Delete record"
+						onClick={deleteRecord}
+					>
+						<Icon path={iconDelete} />
+					</ActionButton>
 
-					<Tooltip label="Refetch from database">
-						<ActionIcon
-							onClick={refreshRecord}
-							aria-label="Refetch record"
-						>
-							<Icon path={iconRefresh} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						onClick={refreshRecord}
+						label="Refetch record"
+					>
+						<Icon path={iconRefresh} />
+					</ActionButton>
 
-					<ActionIcon
+					<ActionButton
 						onClick={onClose}
-						aria-label="Close inspector drawer"
+						label="Close drawer"
 					>
 						<Icon path={iconClose} />
-					</ActionIcon>
+					</ActionButton>
 				</Group>
 			</Group>
 

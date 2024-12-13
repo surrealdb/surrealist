@@ -1,9 +1,10 @@
-import { ActionIcon, Indicator, Tooltip } from "@mantine/core";
+import { Indicator } from "@mantine/core";
 import { useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconNewspaper } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
+import { ActionButton } from "../ActionButton";
 
 export function NewsFeed() {
 	const [{ newsfeed }] = useFeatureFlags();
@@ -11,23 +12,21 @@ export function NewsFeed() {
 
 	return (
 		newsfeed && (
-			<Tooltip label="Latest news">
-				<Indicator disabled={unread.length === 0}>
-					<ActionIcon
-						w={36}
-						h={36}
-						radius="md"
-						onClick={() => dispatchIntent("open-news")}
-						aria-label="Open news feed drawer"
-						variant="subtle"
-					>
-						<Icon
-							path={iconNewspaper}
-							size="lg"
-						/>
-					</ActionIcon>
-				</Indicator>
-			</Tooltip>
+			<Indicator disabled={unread.length === 0}>
+				<ActionButton
+					w={36}
+					h={36}
+					radius="md"
+					variant="subtle"
+					label="Latest news"
+					onClick={() => dispatchIntent("open-news")}
+				>
+					<Icon
+						path={iconNewspaper}
+						size="lg"
+					/>
+				</ActionButton>
+			</Indicator>
 		)
 	);
 }

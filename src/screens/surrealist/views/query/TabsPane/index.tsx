@@ -203,20 +203,19 @@ function Query({
 					)}
 
 					{queries.length > 1 && queryQuickClose && (
-						<ActionIcon
+						<ActionButton
 							size="sm"
-							component="div"
 							variant="transparent"
 							className={classes.queryClose}
 							onClick={handleQuickRemove}
 							color={isActive && isLight ? "white" : undefined}
-							aria-label="Close query tab"
+							label="Close query"
 						>
 							<Icon
 								path={iconClose}
 								size="sm"
 							/>
-						</ActionIcon>
+						</ActionButton>
 					)}
 				</>
 			}

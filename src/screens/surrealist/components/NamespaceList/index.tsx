@@ -31,6 +31,7 @@ import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
+import { ActionButton } from "~/components/ActionButton";
 
 export interface NamespaceProps {
 	value: string;
@@ -72,19 +73,18 @@ function Namespace({ value, isActive, onOpen, onRemove }: NamespaceProps) {
 			isActive={isActive}
 			className={classes.namespace}
 			rightSection={
-				<ActionIcon
-					component="div"
+				<ActionButton
 					variant="transparent"
 					className={classes.namespaceOptions}
 					onClick={requestRemove}
-					aria-label="Remove namespace"
+					label="Remove namespace"
 					size="xs"
 				>
 					<Icon
 						path={iconClose}
 						size="sm"
 					/>
-				</ActionIcon>
+				</ActionButton>
 			}
 		>
 			{value}
@@ -200,16 +200,17 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 								>
 									Namespaces
 								</Text>
-								<ActionIcon
+								<ActionButton
 									color="slate"
 									variant="light"
 									disabled={
 										!connected || (level !== "root" && level !== "namespace")
 									}
+									label="Create namespace"
 									onClick={openCreator}
 								>
 									<Icon path={iconPlus} />
-								</ActionIcon>
+								</ActionButton>
 							</Group>
 							<Divider />
 							<ScrollArea.Autosize mah={250}>

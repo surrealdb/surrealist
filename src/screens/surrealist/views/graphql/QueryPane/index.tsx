@@ -35,6 +35,7 @@ import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { showError, showInfo, tryParseParams } from "~/util/helpers";
 import { formatValue } from "~/util/surrealql";
+import { ActionButton } from "~/components/ActionButton";
 
 export interface QueryPaneProps {
 	showVariables: boolean;
@@ -169,25 +170,21 @@ export function QueryPane({
 						</Badge>
 					)}
 
-					<Tooltip label="Refetch schema">
-						<ActionIcon
-							onClick={handleIntrospect}
-							variant="light"
-							aria-label="Refetch schema"
-						>
-							<Icon path={iconRefresh} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						variant="light"
+						label="Refetch schema"
+						onClick={handleIntrospect}
+					>
+						<Icon path={iconRefresh} />
+					</ActionButton>
 
-					<Tooltip label="Format query">
-						<ActionIcon
-							onClick={handleFormat}
-							variant="light"
-							aria-label="Format query"
-						>
-							<Icon path={iconText} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						variant="light"
+						label="Format query"
+						onClick={handleFormat}
+					>
+						<Icon path={iconText} />
+					</ActionButton>
 
 					<Tooltip
 						maw={175}
@@ -213,15 +210,13 @@ export function QueryPane({
 						</ActionIcon>
 					</Tooltip>
 
-					<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
-						<ActionIcon
-							onClick={toggleVariables}
-							variant="light"
-							aria-label={showVariables ? "Hide variables" : "Show variables"}
-						>
-							<Icon path={iconDollar} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						variant="light"
+						label={showVariables ? "Hide variables" : "Show variables"}
+						onClick={toggleVariables}
+					>
+						<Icon path={iconDollar} />
+					</ActionButton>
 				</Group>
 			}
 		>

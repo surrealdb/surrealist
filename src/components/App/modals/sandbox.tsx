@@ -1,6 +1,7 @@
-import { ActionIcon, Box, Button, Image, Modal, Stack, Text } from "@mantine/core";
+import { Box, Button, Image, Modal, Stack, Text } from "@mantine/core";
 import { useEffect } from "react";
 import banner from "~/assets/images/sandbox.webp";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
@@ -30,15 +31,15 @@ export function SandboxModal() {
 			padding={0}
 			size={475}
 		>
-			<ActionIcon
+			<ActionButton
 				pos="absolute"
 				top={16}
 				right={16}
+				label="Close"
 				onClick={openHandle.close}
-				aria-label="Close modal"
 			>
 				<Icon path={iconClose} />
-			</ActionIcon>
+			</ActionButton>
 
 			<Image src={banner} />
 

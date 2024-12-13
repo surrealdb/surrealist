@@ -1,6 +1,4 @@
-import classes from "./style.module.scss";
-
-import { ActionIcon, Divider, Group, Menu, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Divider, Group, Menu, Stack, Text, TextInput } from "@mantine/core";
 
 import {
 	iconClose,
@@ -26,6 +24,7 @@ import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
+import { ActionButton } from "~/components/ActionButton";
 
 const MAX_PREVIEW_LENGTH = 500;
 
@@ -189,23 +188,21 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 
 				<Spacer />
 
-				<Tooltip label="Clear history">
-					<ActionIcon
-						onClick={clearHistory}
-						title="Clear history"
-						aria-label="Clear query history"
-						color="red"
-					>
-						<Icon path={iconDelete} />
-					</ActionIcon>
-				</Tooltip>
 
-				<ActionIcon
+				<ActionButton
+					onClick={clearHistory}
+					label="Clear history"
+					color="red"
+				>
+					<Icon path={iconDelete} />
+				</ActionButton>
+
+				<ActionButton
+					label="Close drawer"
 					onClick={onClose}
-					aria-label="Close history drawer"
 				>
 					<Icon path={iconClose} />
-				</ActionIcon>
+				</ActionButton>
 			</Group>
 			<Stack>
 				<TextInput

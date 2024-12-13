@@ -1,4 +1,4 @@
-import { ActionIcon, type ComboboxData, Group, Select, TextInput } from "@mantine/core";
+import { type ComboboxData, Group, Select, TextInput } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { type FocusEvent, type KeyboardEvent, useLayoutEffect } from "react";
@@ -6,6 +6,7 @@ import { useStable } from "~/hooks/stable";
 import { iconChevronLeft, iconChevronRight } from "~/util/icons";
 import { Icon } from "../Icon";
 import type { PaginationStore } from "./hook";
+import { ActionButton } from "../ActionButton";
 
 const PAGE_SIZES: ComboboxData = [
 	{ label: "10 Results per page", value: "10" },
@@ -43,14 +44,14 @@ export function Pagination({ store, loading }: PaginationProps) {
 				gap="xs"
 				wrap="nowrap"
 			>
-				<ActionIcon
+				<ActionButton
+					loading={loading}
+					label="Previous page"
 					onClick={store.previousPage}
 					disabled={store.currentPage <= 1}
-					loading={loading}
-					aria-label="Previous page"
 				>
 					<Icon path={iconChevronLeft} />
-				</ActionIcon>
+				</ActionButton>
 
 				<TextInput
 					value={customPage}
@@ -72,14 +73,14 @@ export function Pagination({ store, loading }: PaginationProps) {
 
 				<Text c="slate">of {store.pageCount} pages</Text>
 
-				<ActionIcon
+				<ActionButton
+					loading={loading}
+					label="Next page"
 					onClick={store.nextPage}
 					disabled={store.currentPage >= store.pageCount}
-					loading={loading}
-					aria-label="Next page"
 				>
 					<Icon path={iconChevronRight} />
-				</ActionIcon>
+				</ActionButton>
 			</Group>
 
 			<Select

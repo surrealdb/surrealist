@@ -34,6 +34,7 @@ import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { extractEdgeRecords } from "~/util/schema";
+import { ActionButton } from "~/components/ActionButton";
 
 type EdgeInfo = [boolean, string[], string[]];
 
@@ -165,12 +166,12 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					</Badge>
 				)}
 
-				<ActionIcon
+				<ActionButton
+					label="Close drawer"
 					onClick={onClose}
-					aria-label="Close creator drawer"
 				>
 					<Icon path={iconClose} />
-				</ActionIcon>
+				</ActionButton>
 			</Group>
 
 			<Stack

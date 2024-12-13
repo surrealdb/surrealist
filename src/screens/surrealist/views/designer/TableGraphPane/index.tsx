@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 
 import {
-	ActionIcon,
 	Badge,
 	Box,
 	Button,
@@ -14,7 +13,6 @@ import {
 	SimpleGrid,
 	Stack,
 	Text,
-	Tooltip,
 } from "@mantine/core";
 
 import {
@@ -364,15 +362,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 							</HoverCard.Dropdown>
 						</HoverCard>
 					)}
-					<Tooltip label="New table">
-						<ActionIcon
-							onClick={openTableCreator}
-							aria-label="Create new table"
-							disabled={!isConnected}
-						>
-							<Icon path={iconPlus} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						label="New table"
+						disabled={!isConnected}
+						onClick={openTableCreator}
+					>
+						<Icon path={iconPlus} />
+					</ActionButton>
 					<Popover
 						position="bottom-end"
 						transitionProps={{ transition: "scale-y" }}
@@ -380,11 +376,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						shadow="sm"
 					>
 						<Popover.Target>
-							<Tooltip label="Graph Options">
-								<ActionIcon aria-label="Expand graph options">
-									<Icon path={iconCog} />
-								</ActionIcon>
-							</Tooltip>
+							<ActionButton label="Graph options">
+								<Icon path={iconCog} />
+							</ActionButton>
 						</Popover.Target>
 						<Popover.Dropdown maw={325}>
 							<Text
@@ -448,11 +442,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</Popover.Dropdown>
 					</Popover>
 					<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
-						<Tooltip label="Designer help">
-							<ActionIcon aria-label="Open designer help">
-								<Icon path={iconHelp} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton label="Designer help">
+							<Icon path={iconHelp} />
+						</ActionButton>
 					</Link>
 				</Group>
 			}

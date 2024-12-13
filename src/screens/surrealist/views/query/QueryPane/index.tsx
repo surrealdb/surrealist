@@ -131,8 +131,8 @@ export function QueryPane({
 			const document = editor.state.doc;
 			const formatted = hasSelection
 				? document.sliceString(0, selection.from) +
-					formatQuery(document.sliceString(selection.from, selection.to)) +
-					document.sliceString(selection.to)
+				formatQuery(document.sliceString(selection.from, selection.to)) +
+				document.sliceString(selection.to)
 				: formatQuery(document.toString());
 
 			setEditorText(editor, formatted);
@@ -246,25 +246,22 @@ export function QueryPane({
 							</HoverCard>
 						)}
 
-						<Tooltip label="Save query">
-							<ActionIcon
-								onClick={onSaveQuery}
-								variant="light"
-								aria-label="Save query"
-							>
-								<Icon path={iconStar} />
-							</ActionIcon>
-						</Tooltip>
 
-						<Tooltip label={`Format ${hasSelection ? "selection" : "query"}`}>
-							<ActionIcon
-								onClick={handleFormat}
-								variant="light"
-								aria-label={`Format ${hasSelection ? "selection" : "query"}`}
-							>
-								<Icon path={iconText} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton
+							variant="light"
+							label="Save query"
+							onClick={onSaveQuery}
+						>
+							<Icon path={iconStar} />
+						</ActionButton>
+
+						<ActionButton
+							variant="light"
+							label={`Format ${hasSelection ? "selection" : "query"}`}
+							onClick={handleFormat}
+						>
+							<Icon path={iconText} />
+						</ActionButton>
 
 						<Tooltip
 							maw={175}
@@ -290,15 +287,13 @@ export function QueryPane({
 							</ActionIcon>
 						</Tooltip>
 
-						<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
-							<ActionIcon
-								onClick={toggleVariables}
-								variant="light"
-								aria-label={showVariables ? "Hide variables" : "Show variables"}
-							>
-								<Icon path={iconDollar} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton
+							variant="light"
+							label={showVariables ? "Hide variables" : "Show variables"}
+							onClick={toggleVariables}
+						>
+							<Icon path={iconDollar} />
+						</ActionButton>
 					</Group>
 				)
 			}

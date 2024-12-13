@@ -1,4 +1,3 @@
-import { ActionIcon, Tooltip } from "@mantine/core";
 import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
@@ -11,6 +10,7 @@ import { isHostLocal } from "~/util/helpers";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
+import { ActionButton } from "../ActionButton";
 
 export function DatabaseServing() {
 	const [hasStarted, setHasStarted] = useState(false);
@@ -63,40 +63,37 @@ export function DatabaseServing() {
 
 	return (
 		<>
-			<Tooltip label={isServing ? "Stop serving" : "Start serving"}>
-				<ActionIcon
+			<ActionButton
+				w={36}
+				h={36}
+				onClick={handleToggle}
+				loading={isPending}
+				label={isServing ? "Stop serving" : "Start serving"}
+				color={isServing ? "pink.7" : undefined}
+				aria-label={
+					isServing ? "Stop serving local database" : "Start serving local database"
+				}
+				variant="subtle"
+			>
+				<Icon
+					path={isServing ? iconStop : iconPlay}
+					size="lg"
+				/>
+			</ActionButton>
+
+			{hasStarted && (
+				<ActionButton
 					w={36}
 					h={36}
-					onClick={handleToggle}
-					loading={isPending}
-					color={isServing ? "pink.7" : undefined}
-					aria-label={
-						isServing ? "Stop serving local database" : "Start serving local database"
-					}
+					onClick={openConsole}
+					label="Open console"
 					variant="subtle"
 				>
 					<Icon
-						path={isServing ? iconStop : iconPlay}
+						path={iconConsole}
 						size="lg"
 					/>
-				</ActionIcon>
-			</Tooltip>
-
-			{hasStarted && (
-				<Tooltip label="Open console">
-					<ActionIcon
-						w={36}
-						h={36}
-						onClick={openConsole}
-						aria-label="Open serving console drawer"
-						variant="subtle"
-					>
-						<Icon
-							path={iconConsole}
-							size="lg"
-						/>
-					</ActionIcon>
-				</Tooltip>
+				</ActionButton>
 			)}
 		</>
 	);

@@ -217,32 +217,26 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			rightSection={
 				activeTable && (
 					<Group align="center">
-						<Tooltip label="New record">
-							<ActionIcon
-								onClick={openCreator}
-								aria-label="Create new record"
-							>
-								<Icon path={iconPlus} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton
+							onClick={openCreator}
+							label="Create record"
+						>
+							<Icon path={iconPlus} />
+						</ActionButton>
 
-						<Tooltip label="Refresh records">
-							<ActionIcon
-								onClick={refetch}
-								aria-label="Refresh records"
-							>
-								<Icon path={iconRefresh} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton
+							onClick={refetch}
+							label="Refresh records"
+						>
+							<Icon path={iconRefresh} />
+						</ActionButton>
 
-						<Tooltip label={filtering ? "Hide filter" : "Filter records"}>
-							<ActionIcon
-								onClick={toggleFilter}
-								aria-label={filtering ? "Hide filter" : "Show record filter"}
-							>
-								<Icon path={iconFilter} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton
+							onClick={toggleFilter}
+							label={filtering ? "Hide filter" : "Filter records"}
+						>
+							<Icon path={iconFilter} />
+						</ActionButton>
 
 						<Divider orientation="vertical" />
 

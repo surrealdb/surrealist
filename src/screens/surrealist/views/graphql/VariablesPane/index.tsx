@@ -1,8 +1,8 @@
-import { lineNumbers } from "@codemirror/view";
-import { ActionIcon, Badge, Group } from "@mantine/core";
+import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
 import { decodeCbor } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -56,13 +56,13 @@ export function VariablesPane(props: VariablesPaneProps) {
 							Invalid syntax
 						</Badge>
 					)}
-					<ActionIcon
+					<ActionButton
 						color="slate"
+						label="Close panel"
 						onClick={props.closeVariables}
-						aria-label="Close variables panel"
 					>
 						<Icon path={iconClose} />
-					</ActionIcon>
+					</ActionButton>
 				</Group>
 			}
 		>

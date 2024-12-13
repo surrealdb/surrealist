@@ -23,6 +23,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { iconCheck, iconDotsVertical, iconPlus, iconSearch, iconTune } from "~/util/icons";
 import { InviteModal } from "./modals/invite";
 import classes from "./style.module.scss";
+import { ActionButton } from "~/components/ActionButton";
 
 interface Filter {
 	type: string;
@@ -134,21 +135,20 @@ export function MembersPage() {
 						<Spacer />
 						<Menu>
 							<Menu.Target>
-								<Tooltip label="Filter members">
-									<Indicator
-										disabled={!filter}
-										color="blue"
-										size={7}
+								<Indicator
+									disabled={!filter}
+									color="blue"
+									size={7}
+								>
+									<ActionButton
+										variant="subtle"
+										color="slate"
+										label="Filter members"
+										disabled={members.length === 0}
 									>
-										<ActionIcon
-											variant="subtle"
-											color="slate"
-											disabled={members.length === 0}
-										>
-											<Icon path={iconTune} />
-										</ActionIcon>
-									</Indicator>
-								</Tooltip>
+										<Icon path={iconTune} />
+									</ActionButton>
+								</Indicator>
 							</Menu.Target>
 							<Menu.Dropdown miw={150}>
 								{filterTypes.map((type) => (
@@ -177,7 +177,7 @@ export function MembersPage() {
 						</Menu>
 						<TextInput
 							value={""}
-							onChange={() => {}}
+							onChange={() => { }}
 							placeholder="Search members"
 							leftSection={
 								<Icon

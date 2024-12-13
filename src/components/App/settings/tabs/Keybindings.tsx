@@ -1,13 +1,10 @@
 import equal from "fast-deep-equal";
 
 import {
-	ActionIcon,
-	Alert,
 	Box,
 	Button,
 	Divider,
 	Group,
-	List,
 	Modal,
 	Paper,
 	ScrollArea,
@@ -34,7 +31,8 @@ import {
 import { displayBinding } from "~/providers/Commands/keybindings";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconEdit, iconPlus, iconSearch, iconWarning } from "~/util/icons";
+import { iconEdit, iconPlus, iconSearch } from "~/util/icons";
+import { ActionButton } from "~/components/ActionButton";
 
 export function KeybindingsTab() {
 	const [search, setSearch] = useInputState("");
@@ -132,16 +130,17 @@ export function KeybindingsTab() {
 												) : (
 													<Text c="slate">&mdash;</Text>
 												)}
-												<ActionIcon
+												<ActionButton
 													ml="xl"
 													variant="subtle"
+													label={active ? "Edit keybinding" : "Add keybinding"}
 													onClick={() => {
 														setRecordCommand(cmd);
 														recordingHandle.open();
 													}}
 												>
 													<Icon path={active ? iconEdit : iconPlus} />
-												</ActionIcon>
+												</ActionButton>
 											</Group>
 											{j < category.commands.length - 1 && <Divider />}
 										</Fragment>

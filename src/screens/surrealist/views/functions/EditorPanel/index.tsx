@@ -57,6 +57,7 @@ import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
+import { ActionButton } from "~/components/ActionButton";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
@@ -138,14 +139,12 @@ export function EditorPanel({
 				)
 			}
 			rightSection={
-				<Tooltip label="Format function">
-					<ActionIcon
-						onClick={formatFunction}
-						aria-label="Format function"
-					>
-						<Icon path={iconText} />
-					</ActionIcon>
-				</Tooltip>
+				<ActionButton
+					label="Format function"
+					onClick={formatFunction}
+				>
+					<Icon path={iconText} />
+				</ActionButton>
 			}
 		>
 			<Group

@@ -48,6 +48,7 @@ import { useCloudInstancesQuery } from "../../hooks/instances";
 import { openConnectCli } from "../../modals/connect-cli";
 import { openConnectCurl } from "../../modals/connect-curl";
 import { openConnectSdk } from "../../modals/connect-sdk";
+import { ActionButton } from "~/components/ActionButton";
 
 interface Filter {
 	type: string;
@@ -201,21 +202,20 @@ export function InstancesPage() {
 					<Spacer visibleFrom="xs" />
 					<Menu>
 						<Menu.Target>
-							<Tooltip label="Filter instances">
-								<Indicator
-									disabled={!filter}
-									color="blue"
-									size={7}
+							<Indicator
+								disabled={!filter}
+								color="blue"
+								size={7}
+							>
+								<ActionButton
+									variant="subtle"
+									color="slate"
+									label="Filter instances"
+									disabled={instances.length === 0}
 								>
-									<ActionIcon
-										variant="subtle"
-										color="slate"
-										disabled={instances.length === 0}
-									>
-										<Icon path={iconTune} />
-									</ActionIcon>
-								</Indicator>
-							</Tooltip>
+									<Icon path={iconTune} />
+								</ActionButton>
+							</Indicator>
 						</Menu.Target>
 						<Menu.Dropdown miw={150}>
 							{filterTypes.map((type) => (

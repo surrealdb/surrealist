@@ -6,6 +6,7 @@ import { Value } from "@surrealdb/ql-wasm";
 import { useEffect, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { decodeCbor } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -86,13 +87,13 @@ export function VariablesPane({
 								Invalid syntax
 							</Badge>
 						)}
-						<ActionIcon
+						<ActionButton
 							color="slate"
 							onClick={closeVariables}
-							aria-label="Close variables panel"
+							label="Close panel"
 						>
 							<Icon path={iconClose} />
-						</ActionIcon>
+						</ActionButton>
 					</Group>
 				)
 			}

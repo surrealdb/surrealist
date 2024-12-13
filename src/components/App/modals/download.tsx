@@ -1,5 +1,6 @@
-import { ActionIcon, Button, Image, List, Modal, Stack, Text } from "@mantine/core";
+import { Button, Image, List, Modal, Stack, Text } from "@mantine/core";
 import banner from "~/assets/images/desktop.webp";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
@@ -17,15 +18,15 @@ export function DownloadModal() {
 			size={475}
 			padding={0}
 		>
-			<ActionIcon
+			<ActionButton
 				pos="absolute"
 				top={16}
 				right={16}
+				label="Close"
 				onClick={openHandle.close}
-				aria-label="Close modal"
 			>
 				<Icon path={iconClose} />
-			</ActionIcon>
+			</ActionButton>
 
 			<Image src={banner} />
 

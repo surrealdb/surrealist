@@ -35,6 +35,7 @@ import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { AccessEditorModal } from "./models/access";
 import { UserEditorModal } from "./models/users";
+import { ActionButton } from "~/components/ActionButton";
 
 interface DisabledState {
 	message: string;
@@ -118,14 +119,12 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 			rightSection={
 				<Menu position="bottom">
 					<Menu.Target>
-						<Tooltip label="New authentication...">
-							<ActionIcon
-								aria-label="Create new authentication"
-								disabled={!isConnected || !!disabled}
-							>
-								<Icon path={iconPlus} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton
+							label="New authentication..."
+							disabled={!isConnected || !!disabled}
+						>
+							<Icon path={iconPlus} />
+						</ActionButton>
 					</Menu.Target>
 					<Menu.Dropdown>
 						<Menu.Item

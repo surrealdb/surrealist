@@ -21,7 +21,6 @@ import {
 import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "~/util/icons";
 
 import { Text } from "@mantine/core";
-import { ActionIcon } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
 import posthog from "posthog-js";
@@ -32,6 +31,7 @@ import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
+import { ActionButton } from "~/components/ActionButton";
 
 interface NewsItem {
 	id: string;
@@ -98,16 +98,16 @@ export function NewsFeedDrawer() {
 					body: classes.newsDrawerBody,
 				}}
 			>
-				<ActionIcon
+				<ActionButton
 					pos="absolute"
 					top={20}
 					right={20}
+					label="Close"
 					onClick={openHandle.close}
 					style={{ zIndex: 1 }}
-					aria-label="Close news feed drawer"
 				>
 					<Icon path={iconClose} />
-				</ActionIcon>
+				</ActionButton>
 
 				<Transition
 					mounted={isReading}

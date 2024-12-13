@@ -1,11 +1,9 @@
 import {
-	ActionIcon,
 	Badge,
 	Group,
 	ScrollArea,
 	Stack,
 	TextInput,
-	Tooltip,
 } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
@@ -23,6 +21,7 @@ import {
 	iconUpload,
 } from "~/util/icons";
 import classes from "./style.module.scss";
+import { ActionButton } from "~/components/ActionButton";
 
 export interface ModelsPanelProps {
 	active: string;
@@ -64,15 +63,13 @@ export function ModelsPanel({
 			}
 			rightSection={
 				<Group>
-					<Tooltip label="Upload SurrealML Model">
-						<ActionIcon
-							onClick={onUpload}
-							aria-label="Upload SurrealML model"
-							disabled={!isConnected}
-						>
-							<Icon path={iconUpload} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						disabled={!isConnected}
+						label="Upload SurrealML model"
+						onClick={onUpload}
+					>
+						<Icon path={iconUpload} />
+					</ActionButton>
 				</Group>
 			}
 		>

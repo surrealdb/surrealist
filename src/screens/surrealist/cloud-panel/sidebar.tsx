@@ -18,6 +18,7 @@ import {
 import { Text } from "@mantine/core";
 import { Fragment, useMemo } from "react";
 import { useRoute } from "wouter";
+import { ActionButton } from "~/components/ActionButton";
 import { BetaBadge } from "~/components/BetaBadge";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -99,23 +100,19 @@ export function CloudSidebar(props: BoxProps) {
 			{...props}
 		>
 			<Group wrap="nowrap">
-				<Tooltip
+				<ActionButton
+					size={38}
+					hiddenFrom="sm"
+					variant="gradient"
 					label="Manage organization"
-					position="bottom"
+					className={classes.openNavigation}
+					onClick={navModalHandle.open}
 				>
-					<ActionIcon
-						size={38}
-						hiddenFrom="sm"
-						variant="gradient"
-						className={classes.openNavigation}
-						onClick={navModalHandle.open}
-					>
-						<Icon
-							path={iconViewGrid}
-							size="lg"
-						/>
-					</ActionIcon>
-				</Tooltip>
+					<Icon
+						path={iconViewGrid}
+						size="lg"
+					/>
+				</ActionButton>
 				<Popover
 					width="target"
 					position="bottom-start"

@@ -11,8 +11,7 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
-	TextInput,
-	Tooltip,
+	TextInput
 } from "@mantine/core";
 
 import {
@@ -49,6 +48,7 @@ import type { Connection } from "~/types";
 import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch, newId } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
+import { ActionButton } from "~/components/ActionButton";
 
 const UNGROUPED = "__ungrouped__";
 
@@ -284,20 +284,18 @@ export function ConnectionsModal() {
 										/>
 										<Spacer />
 										{!isInstanceLocal && (
-											<Tooltip label="Remove group">
-												<ActionIcon
-													className={classes.connectionGroupRemove}
-													aria-label="Remove group"
-													onClick={() => removeConnectionGroup(group.id)}
-													variant="subtle"
+											<ActionButton
+												className={classes.connectionGroupRemove}
+												label="Remove group"
+												onClick={() => removeConnectionGroup(group.id)}
+												variant="subtle"
+												size="sm"
+											>
+												<Icon
+													path={iconDelete}
 													size="sm"
-												>
-													<Icon
-														path={iconDelete}
-														size="sm"
-													/>
-												</ActionIcon>
-											</Tooltip>
+												/>
+											</ActionButton>
 										)}
 									</>
 								}
