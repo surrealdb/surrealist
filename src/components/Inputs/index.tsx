@@ -41,7 +41,7 @@ import { iconCancel, iconCheck } from "~/util/icons";
 
 export interface CodeInputProps
 	extends InputBaseProps,
-		Omit<HTMLAttributes<HTMLDivElement>, "style" | "value" | "onChange"> {
+	Omit<HTMLAttributes<HTMLDivElement>, "style" | "value" | "onChange"> {
 	value: string;
 	height?: number;
 	autoFocus?: boolean;
@@ -188,14 +188,14 @@ export function CodeInput({
 				multiline
 					? [acceptWithTab]
 					: [
-							{
-								key: "Enter",
-								run: () => {
-									onSubmit?.();
-									return true;
-								},
+						{
+							key: "Enter",
+							run: () => {
+								onSubmit?.();
+								return true;
 							},
-						],
+						},
+					],
 			),
 		);
 
@@ -261,7 +261,7 @@ export function PermissionInput({
 
 	return (
 		<CodeInput
-			placeholder="WHERE user = $auth.id"
+			placeholder="user = $auth.id"
 			multiline
 			value={textValue}
 			onChange={handleChange}
