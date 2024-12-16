@@ -1,6 +1,7 @@
 import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
+import { useMemo } from "react";
 import { decodeCbor } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -41,6 +42,8 @@ export function VariablesPane(props: VariablesPaneProps) {
 		}
 	}, 50);
 
+	const extensions = useMemo(() => [surrealql(), surqlLinting()], []);
+
 	return (
 		<ContentPane
 			title="Variables"
@@ -69,7 +72,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 				value={variablesText}
 				onChange={setVariables}
 				lineNumbers
-				extensions={[surrealql(), surqlLinting()]}
+				extensions={extensions}
 			/>
 		</ContentPane>
 	);

@@ -3,7 +3,7 @@ import { type EditorView, keymap } from "@codemirror/view";
 import { ActionIcon, Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { decodeCbor } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
@@ -69,6 +69,11 @@ export function VariablesPane({
 		}
 	}, [variableEditor, editor]);
 
+	const extensions = useMemo(
+		() => [surrealql(), surqlLinting(), queryEditorField, Prec.high(keymap.of(runQueryKeymap))],
+		[],
+	);
+
 	return (
 		<ContentPane
 			title="Variables"
@@ -103,12 +108,7 @@ export function VariablesPane({
 				onChange={setVariables}
 				onMount={setVariableEditor}
 				lineNumbers={lineNumbers}
-				extensions={[
-					surrealql(),
-					surqlLinting(),
-					queryEditorField,
-					Prec.high(keymap.of(runQueryKeymap)),
-				]}
+				extensions={extensions}
 			/>
 		</ContentPane>
 	);

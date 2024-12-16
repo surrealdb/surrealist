@@ -20,11 +20,10 @@ import {
 
 import { Prec } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
-import { Text } from "@mantine/core";
 import { graphql, updateSchema } from "cm6-graphql";
 import { type GraphQLSchema, parse, print } from "graphql";
-import { useEffect } from "react";
 import { ActionButton } from "~/components/ActionButton";
+import { useEffect, useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -151,6 +150,18 @@ export function QueryPane({
 		}
 	}, [schema, editor]);
 
+	const extensions = useMemo(
+		() => [
+			graphql(undefined, {
+				onFillAllFields: handleFillFields,
+			}),
+			graphqlParser(),
+			// graphqlFillFields(),
+			Prec.high(keymap.of([...runGraphqlQueryKeymap, ...graphqlSuggestions])),
+		],
+		[],
+	);
+
 	useIntent("format-graphql-query", handleFormat);
 	useIntent("infer-graphql-variables", inferVariables);
 
@@ -211,14 +222,7 @@ export function QueryPane({
 					onChange={scheduleSetQuery}
 					onMount={onEditorMount}
 					lineNumbers
-					extensions={[
-						graphql(undefined, {
-							onFillAllFields: handleFillFields,
-						}),
-						graphqlParser(),
-						// graphqlFillFields(),
-						Prec.high(keymap.of([...runGraphqlQueryKeymap, ...graphqlSuggestions])),
-					]}
+					extensions={extensions}
 				/>
 			) : (
 				<Alert

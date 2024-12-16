@@ -26,11 +26,16 @@ export function CombinedPreview({ responses }: PreviewProps) {
 			.trim();
 	}, [responses, format]);
 
+	const extensions = useMemo(
+		() => [surrealql("combined-results"), surqlRecordLinks(inspect)],
+		[inspect],
+	);
+
 	return (
 		<CodeEditor
 			value={contents}
 			readOnly
-			extensions={[surrealql("combined-results"), surqlRecordLinks(inspect)]}
+			extensions={extensions}
 		/>
 	);
 }

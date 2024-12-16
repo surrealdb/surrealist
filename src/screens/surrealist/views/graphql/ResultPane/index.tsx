@@ -1,5 +1,6 @@
 import { Center, Stack, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -11,6 +12,8 @@ export function ResultPane() {
 	const connection = useConnection((c) => c?.id ?? "");
 	const response = useDatabaseStore((s) => s.graphqlResponse[connection]);
 
+	const extensions = useMemo(() => [surrealql()], []);
+
 	return (
 		<ContentPane
 			title="Results"
@@ -21,7 +24,7 @@ export function ResultPane() {
 					ml="sm"
 					value={response.result || ""}
 					readOnly
-					extensions={[surrealql()]}
+					extensions={extensions}
 				/>
 			) : response ? (
 				<Text c="red">{JSON.stringify(response.result)}</Text>

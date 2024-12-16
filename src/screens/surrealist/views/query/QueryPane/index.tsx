@@ -189,6 +189,21 @@ export function QueryPane({
 	const setSelection = useDebouncedFunction(onSelectionChange, 50);
 	const hasSelection = selection?.empty === false;
 
+	const extensions = useMemo(
+		() => [
+			surrealql(),
+			surqlVersion,
+			surqlLinting(updateValid),
+			surqlRecordLinks(inspect),
+			surqlTableCompletion(),
+			surqlVariableCompletion(resolveVariables),
+			surqlCustomFunctionCompletion(),
+			selectionChanged(setSelection),
+			Prec.high(keymap.of(runQueryKeymap)),
+		],
+		[inspect, setSelection, surqlVersion],
+	);
+
 	useIntent("format-query", handleFormat);
 	useIntent("infer-variables", inferVariables);
 
@@ -289,17 +304,7 @@ export function QueryPane({
 				onMount={onEditorMounted}
 				lineNumbers={lineNumbers}
 				serialize={SERIALIZE}
-				extensions={[
-					surrealql(),
-					surqlVersion,
-					surqlLinting(updateValid),
-					surqlRecordLinks(inspect),
-					surqlTableCompletion(),
-					surqlVariableCompletion(resolveVariables),
-					surqlCustomFunctionCompletion(),
-					selectionChanged(setSelection),
-					Prec.high(keymap.of(runQueryKeymap)),
-				]}
+				extensions={extensions}
 			/>
 		</ContentPane>
 	);

@@ -25,6 +25,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { LiveMessage } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { type PreviewProps, attemptFormat } from ".";
+import { useMemo } from "react";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],
@@ -52,6 +53,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 
 	const { showContextMenu } = useContextMenu();
 	const [format] = useResultFormatter();
+	const extensions = useMemo(() => [surrealql(), surqlRecordLinks(inspect)], [inspect]);
 
 	useRefreshTimer(30_000);
 
@@ -143,10 +145,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 											<CodeEditor
 												value={attemptFormat(format, msg.data)}
 												readOnly
-												extensions={[
-													surrealql(),
-													surqlRecordLinks(inspect),
-												]}
+												extensions={extensions}
 											/>
 										</Accordion.Panel>
 									)}

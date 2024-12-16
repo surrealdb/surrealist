@@ -9,6 +9,7 @@ import type { SaveableHandle } from "~/hooks/save";
 import { iconWarning } from "~/util/icons";
 import { useInspector } from "..";
 import classes from "../style.module.scss";
+import { useMemo } from "react";
 
 export interface ContentTabProps {
 	value: string;
@@ -20,6 +21,11 @@ export interface ContentTabProps {
 export function ContentTab({ value, error, onChange, saveHandle }: ContentTabProps) {
 	const { inspect } = useInspector();
 	const [hasLineNumbers] = useSetting("appearance", "inspectorLineNumbers");
+
+	const extensions = useMemo(
+		() => [surrealql(), surqlLinting(inspect), surqlRecordLinks(inspect)],
+		[inspect],
+	);
 
 	return (
 		<>
@@ -45,7 +51,7 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 					value={value}
 					onChange={onChange}
 					lineNumbers={hasLineNumbers}
-					extensions={[surrealql(), surqlLinting(), surqlRecordLinks(inspect)]}
+					extensions={extensions}
 				/>
 			</Paper>
 
