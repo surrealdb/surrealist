@@ -54,6 +54,7 @@ export type ViewMode =
 	| "authentication"
 	| "functions"
 	| "models"
+	| "sidekick"
 	| "documentation";
 export type CloudPage =
 	| "instances"
