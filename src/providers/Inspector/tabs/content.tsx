@@ -23,7 +23,7 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 	const [hasLineNumbers] = useSetting("appearance", "inspectorLineNumbers");
 
 	const extensions = useMemo(
-		() => [surrealql(), surqlLinting(inspect), surqlRecordLinks(inspect)],
+		() => [surrealql(), surqlLinting(), surqlRecordLinks(inspect)],
 		[inspect],
 	);
 
