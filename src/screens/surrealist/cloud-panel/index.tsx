@@ -168,9 +168,11 @@ export function CloudPanelPage() {
 						Please update your version of Surrealist to continue using Surreal Cloud.
 					</Alert>
 				)}
-				<Box
+				<Paper
 					w="100%"
-					maw={345}
+					maw={338}
+					shadow="xl"
+					className={classes.sidekickBox}
 				>
 					<Group
 						wrap="nowrap"
@@ -179,9 +181,9 @@ export function CloudPanelPage() {
 						<Image
 							src={sidekickImg}
 							alt="Sidekick"
-							h={164}
+							h={125}
 						/>
-						<Box>
+						<Box pr="xl">
 							<Text
 								c="slate"
 								tt="uppercase"
@@ -192,7 +194,7 @@ export function CloudPanelPage() {
 							<Text>Your personal AI assistant for all things Surreal.</Text>
 						</Box>
 					</Group>
-				</Box>
+				</Paper>
 			</Stack>
 			<Box className={classes.splashImageContainer}>
 				<Image
