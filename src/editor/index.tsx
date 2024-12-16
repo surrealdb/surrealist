@@ -5,7 +5,6 @@ export * from "./icons";
 export * from "./keybinds";
 export * from "./keymaps";
 export * from "./records";
-export * from "./selection";
 export * from "./surrealql";
 export * from "./tables";
 export * from "./theme";

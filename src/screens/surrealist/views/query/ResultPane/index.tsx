@@ -133,7 +133,6 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const activeMode = RESULT_MODES.find((r) => r.value === resultMode);
 	const activeFormat = RESULT_FORMATS.find((r) => r.value === resultFormat);
-	const hasSelection = selection?.empty === false;
 
 	const panelTitle =
 		resultMode === "combined"
@@ -265,7 +264,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 						onClick={runQuery}
 						rightSection={<Icon path={iconCursor} />}
 					>
-						Run {hasSelection ? "selection" : "query"}
+						Run {selection ? "selection" : "query"}
 					</Button>
 				</Group>
 			}

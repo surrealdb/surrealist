@@ -1,6 +1,5 @@
 import {
 	runQueryKeymap,
-	selectionChanged,
 	surqlCustomFunctionCompletion,
 	surqlLinting,
 	surqlRecordLinks,
@@ -34,7 +33,6 @@ import { ContentPane } from "~/components/Pane";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { setEditorText } from "~/editor/helpers";
 import { useConnection } from "~/hooks/connection";
-import { useDebouncedFunction } from "~/hooks/debounce";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -60,7 +58,7 @@ export interface QueryPaneProps {
 	corners?: string;
 	setShowVariables: (show: boolean) => void;
 	onSaveQuery: () => void;
-	onSelectionChange: (value: SelectionRange) => void;
+	onSelectionChange: (value: SelectionRange | undefined) => void;
 	onEditorMounted: (editor: EditorView) => void;
 }
 
@@ -103,11 +101,14 @@ export function QueryPane({
 	}, [queryStateMap, activeTab, updateQueryState]);
 
 	// Cache the editor state and schedule query writing
-	const updateState = useStable((query: string, state: StateSnapshot) => {
+	const updateState = useStable((query: string, snapshot: StateSnapshot, state: EditorState) => {
 		const id = activeTab.id;
 		const task = saveTasks.current.get(id);
+		const selection = state.selection.main;
+		const range = selection.empty ? undefined : selection;
 
-		updateQueryState(activeTab.id, state);
+		onSelectionChange(range);
+		updateQueryState(activeTab.id, snapshot);
 		clearTimeout(task);
 
 		const newTask = setTimeout(() => {
@@ -186,7 +187,6 @@ export function QueryPane({
 		setQueryValid(!status.length);
 	});
 
-	const setSelection = useDebouncedFunction(onSelectionChange, 50);
 	const hasSelection = selection?.empty === false;
 
 	const extensions = useMemo(
@@ -198,10 +198,9 @@ export function QueryPane({
 			surqlTableCompletion(),
 			surqlVariableCompletion(resolveVariables),
 			surqlCustomFunctionCompletion(),
-			selectionChanged(setSelection),
 			Prec.high(keymap.of(runQueryKeymap)),
 		],
-		[inspect, setSelection, surqlVersion],
+		[inspect, surqlVersion],
 	);
 
 	useIntent("format-query", handleFormat);
