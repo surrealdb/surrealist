@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
+import { pick } from "radash";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
@@ -29,11 +30,10 @@ import { useNamespaceSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthDB, getAuthLevel } from "~/util/connection";
+import { createBaseAuthentication } from "~/util/defaults";
 import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
-import { pick } from "radash";
-import { createBaseAuthentication } from "~/util/defaults";
 
 export interface DatabaseProps {
 	value: string;

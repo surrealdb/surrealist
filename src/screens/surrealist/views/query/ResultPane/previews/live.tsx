@@ -13,6 +13,7 @@ import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@manti
 import { showNotification } from "@mantine/notifications";
 import { surrealql } from "@surrealdb/codemirror";
 import { useContextMenu } from "mantine-contextmenu";
+import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
@@ -25,7 +26,6 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { LiveMessage } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { type PreviewProps, attemptFormat } from ".";
-import { useMemo } from "react";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],

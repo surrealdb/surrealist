@@ -13,12 +13,12 @@ import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { composeHttpConnection } from "~/screens/surrealist/connection/connection";
 import type { SchemaModel } from "~/types";
+import { createBaseAuthentication } from "~/util/defaults";
 import { connectionUri } from "~/util/helpers";
 import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
-import { createBaseAuthentication } from "~/util/defaults";
 
 const SURML_FILTERS = [
 	{

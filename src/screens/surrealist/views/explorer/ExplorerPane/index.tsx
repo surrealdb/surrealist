@@ -36,6 +36,7 @@ import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { ContentPane } from "~/components/Pane";
 import { RecordLink } from "~/components/RecordLink";
+import { useConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -46,7 +47,6 @@ import { RecordsChangedEvent } from "~/util/global-events";
 import { themeColor } from "~/util/mantine";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
-import { useConnection } from "~/hooks/connection";
 
 export interface ExplorerPaneProps {
 	activeTable: string;

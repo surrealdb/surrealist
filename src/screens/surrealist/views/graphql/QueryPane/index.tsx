@@ -28,13 +28,13 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
+import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { showError, showInfo, tryParseParams } from "~/util/helpers";
 import { formatValue } from "~/util/surrealql";
-import { useConnection } from "~/hooks/connection";
 
 export interface QueryPaneProps {
 	showVariables: boolean;

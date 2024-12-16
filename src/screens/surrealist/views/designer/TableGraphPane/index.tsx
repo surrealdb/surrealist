@@ -90,10 +90,10 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { createBaseConnection } from "~/util/defaults";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
-import { createBaseConnection } from "~/util/defaults";
 
 export interface TableGraphPaneProps {
 	active: string | null;

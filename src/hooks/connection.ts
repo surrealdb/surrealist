@@ -1,12 +1,12 @@
 import { compareVersions } from "compare-versions";
 import { unique } from "radash";
 import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { shallow } from "zustand/shallow";
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { Connection, SurrealistConfig } from "~/types";
-import { shallow } from "zustand/shallow";
-import { useShallow } from "zustand/react/shallow";
 
 /**
  * Returns whether Surrealist is connected to a database
