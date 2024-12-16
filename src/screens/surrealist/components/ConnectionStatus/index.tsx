@@ -79,152 +79,165 @@ export function ConnectionStatus() {
 
 	return (
 		<>
-			{connection && (
-				<Group gap="xs">
-					<Menu
-						opened={isDropped}
-						onChange={setIsDropped}
-						trigger="hover"
-						position="bottom-start"
-						transitionProps={{
-							transition: "scale-y",
-						}}
-					>
-						<Menu.Target>
-							<Button
-								variant="subtle"
-								color="slate"
-								onClick={openConnections}
-								leftSection={
-									isSandbox ? (
-										<Icon path={iconSandbox} />
-									) : (
-										<Icon path={USER_ICONS[connection.icon ?? 0]} />
-									)
-								}
-								rightSection={
-									<Indicator
-										processing={pulse}
-										color={color}
-										size={9}
-										ml="sm"
-									/>
-								}
-							>
-								<Text
-									truncate
-									fw={600}
-									maw={200}
-									c="bright"
-									ml={2}
-								>
-									{connection.name}
-								</Text>
-							</Button>
-						</Menu.Target>
-						<Menu.Dropdown miw={175}>
+			{connection ? (
+				<Menu
+					opened={isDropped}
+					onChange={setIsDropped}
+					trigger="hover"
+					position="bottom-start"
+					transitionProps={{
+						transition: "scale-y",
+					}}
+				>
+					<Menu.Target>
+						<Button
+							variant="subtle"
+							color="slate"
+							onClick={openConnections}
+							leftSection={
+								isSandbox ? (
+									<Icon path={iconSandbox} />
+								) : (
+									<Icon path={USER_ICONS[connection.icon ?? 0]} />
+								)
+							}
+							rightSection={
+								<Indicator
+									processing={pulse}
+									color={color}
+									size={9}
+									ml="sm"
+								/>
+							}
+						>
 							<Text
-								py={2}
-								px="sm"
-								c="slate"
+								truncate
+								fw={600}
+								maw={200}
+								c="bright"
+								ml={2}
 							>
-								{statusText}
+								{connection.name}
 							</Text>
-							<Menu.Divider />
-							<Menu.Label>Connection</Menu.Label>
-							<Menu.Item
-								leftSection={<Icon path={iconServer} />}
-								onClick={openConnections}
-							>
-								View connections
-							</Menu.Item>
-							{!isSandbox && (
-								<>
-									<Menu.Item
-										leftSection={<Icon path={iconEdit} />}
-										onClick={() => openEditor(connection)}
-									>
-										Edit connection
-									</Menu.Item>
-									<Menu.Item
-										leftSection={<Icon path={iconReset} />}
-										onClick={() => openConnection()}
-									>
-										Reconnect
-									</Menu.Item>
-									<Menu.Item
-										leftSection={<Icon path={iconClose} />}
-										disabled={currentState !== "connected"}
-										onClick={() => closeConnection()}
-									>
-										Disconnect
-									</Menu.Item>
-								</>
-							)}
-							<Menu.Label mt="sm">Database</Menu.Label>
-							{!isSandbox && (
+						</Button>
+					</Menu.Target>
+					<Menu.Dropdown miw={175}>
+						<Text
+							py={2}
+							px="sm"
+							c="slate"
+						>
+							{statusText}
+						</Text>
+						<Menu.Divider />
+						<Menu.Label>Connection</Menu.Label>
+						<Menu.Item
+							leftSection={<Icon path={iconServer} />}
+							onClick={openConnections}
+						>
+							View connections
+						</Menu.Item>
+						{!isSandbox && (
+							<>
 								<Menu.Item
-									leftSection={<Icon path={iconTable} />}
-									disabled={
-										currentState !== "connected" ||
-										!isSchemaEmpty ||
-										!connection.lastDatabase
-									}
-									onClick={openDatasets}
+									leftSection={<Icon path={iconEdit} />}
+									onClick={() => openEditor(connection)}
 								>
-									Apply dataset
+									Edit connection
 								</Menu.Item>
-							)}
+								<Menu.Item
+									leftSection={<Icon path={iconReset} />}
+									onClick={() => openConnection()}
+								>
+									Reconnect
+								</Menu.Item>
+								<Menu.Item
+									leftSection={<Icon path={iconClose} />}
+									disabled={currentState !== "connected"}
+									onClick={() => closeConnection()}
+								>
+									Disconnect
+								</Menu.Item>
+							</>
+						)}
+						<Menu.Label mt="sm">Database</Menu.Label>
+						{!isSandbox && (
 							<Menu.Item
-								leftSection={<Icon path={iconRefresh} />}
-								disabled={currentState !== "connected" || !connection.lastDatabase}
-								onClick={() => syncConnectionSchema()}
+								leftSection={<Icon path={iconTable} />}
+								disabled={
+									currentState !== "connected" ||
+									!isSchemaEmpty ||
+									!connection.lastDatabase
+								}
+								onClick={openDatasets}
 							>
-								Sync schema
+								Apply dataset
 							</Menu.Item>
-							<Menu.Item
-								leftSection={<Icon path={iconUpload} />}
-								disabled={currentState !== "connected" || !connection.lastDatabase}
-								onClick={() => dispatchIntent("export-database")}
-							>
-								Export database
-							</Menu.Item>
-							<Menu.Item
-								leftSection={<Icon path={iconDownload} />}
-								disabled={currentState !== "connected" || !connection.lastDatabase}
-								onClick={() => dispatchIntent("import-database")}
-							>
-								Import database
-							</Menu.Item>
-							<Menu.Label mt="sm">Instance</Menu.Label>
-							<Menu.Item
-								leftSection={<Icon path={iconRelation} />}
-								onClick={() => showNodeStatus()}
-							>
-								View node status
-							</Menu.Item>
-							{latestError && (
-								<>
-									<Menu.Divider />
-									<Menu.Label
-										c="red"
-										fw={700}
-									>
-										Connection error
-									</Menu.Label>
-									<Text
-										px="sm"
-										c="red"
-										maw={350}
-										style={{ overflowWrap: "break-word" }}
-									>
-										{latestError}
-									</Text>
-								</>
-							)}
-						</Menu.Dropdown>
-					</Menu>
-				</Group>
+						)}
+						<Menu.Item
+							leftSection={<Icon path={iconRefresh} />}
+							disabled={currentState !== "connected" || !connection.lastDatabase}
+							onClick={() => syncConnectionSchema()}
+						>
+							Sync schema
+						</Menu.Item>
+						<Menu.Item
+							leftSection={<Icon path={iconUpload} />}
+							disabled={currentState !== "connected" || !connection.lastDatabase}
+							onClick={() => dispatchIntent("export-database")}
+						>
+							Export database
+						</Menu.Item>
+						<Menu.Item
+							leftSection={<Icon path={iconDownload} />}
+							disabled={currentState !== "connected" || !connection.lastDatabase}
+							onClick={() => dispatchIntent("import-database")}
+						>
+							Import database
+						</Menu.Item>
+						<Menu.Label mt="sm">Instance</Menu.Label>
+						<Menu.Item
+							leftSection={<Icon path={iconRelation} />}
+							onClick={() => showNodeStatus()}
+						>
+							View node status
+						</Menu.Item>
+						{latestError && (
+							<>
+								<Menu.Divider />
+								<Menu.Label
+									c="red"
+									fw={700}
+								>
+									Connection error
+								</Menu.Label>
+								<Text
+									px="sm"
+									c="red"
+									maw={350}
+									style={{ overflowWrap: "break-word" }}
+								>
+									{latestError}
+								</Text>
+							</>
+						)}
+					</Menu.Dropdown>
+				</Menu>
+			) : (
+				<Button
+					variant="subtle"
+					color="slate"
+					onClick={openConnections}
+					leftSection={<Icon path={iconServer} />}
+				>
+					<Text
+						fw={600}
+						c="bright"
+						ml={2}
+					>
+						No connection selected
+					</Text>
+				</Button>
 			)}
 
 			<Modal
