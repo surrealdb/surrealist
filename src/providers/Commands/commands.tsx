@@ -103,8 +103,8 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 	const [activeView, setActiveView] = useActiveView();
 	const [, navigate] = useLocation();
 
-	const activeCon = useConnection();
-	const isSandbox = activeCon?.id === SANDBOX;
+	const connectionId = useConnection((c) => c?.id);
+	const isSandbox = connectionId === SANDBOX;
 	const canDisconnect = currentState !== "disconnected" && !isSandbox;
 
 	const preferences = useMemo(() => {
@@ -178,7 +178,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			},
 		);
 
-		if (activeCon) {
+		if (connectionId) {
 			const tables = connectionSchema.database.tables || [];
 			const accessMethods = [
 				...connectionSchema.root.accesses,
@@ -731,7 +731,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 
 		return categories;
 	}, [
-		activeCon,
+		connectionId,
 		activeView,
 		connections,
 		connectionSchema,

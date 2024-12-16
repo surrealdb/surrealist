@@ -8,7 +8,7 @@ import { useDatabaseStore } from "~/stores/database";
 import { iconQuery } from "~/util/icons";
 
 export function ResultPane() {
-	const connection = useConnection((c) => c.id) ?? "";
+	const connection = useConnection((c) => c?.id ?? "");
 	const response = useDatabaseStore((s) => s.graphqlResponse[connection]);
 
 	return (

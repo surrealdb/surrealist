@@ -22,7 +22,7 @@ const TableGraphPaneLazy = memo(TableGraphPane);
 export function DesignerView() {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { design, stopDesign, active, isDesigning } = useDesigner();
-	const designerTableList = useConnection((c) => c.designerTableList);
+	const designerTableList = useConnection((c) => c?.designerTableList);
 
 	const isOnline = useIsConnected();
 	const tables = useTables();

@@ -110,17 +110,23 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const isConnected = useIsConnected();
 	const [activeView] = useActiveView();
 
-	const connection = useConnection((c) =>
-		pick(c, [
-			"id",
-			"designerTableList",
-			"diagramAlgorithm",
-			"diagramDirection",
-			"diagramLineStyle",
-			"diagramLinkMode",
-			"diagramMode",
-		]),
-	);
+	const [
+		connectionId,
+		designerTableList,
+		diagramAlgorithm,
+		diagramDirection,
+		diagramLineStyle,
+		diagramLinkMode,
+		diagramMode,
+	] = useConnection((c) => [
+		c?.id ?? "",
+		c?.designerTableList,
+		c?.diagramAlgorithm,
+		c?.diagramDirection,
+		c?.diagramLineStyle,
+		c?.diagramLinkMode,
+		c?.diagramMode,
+	]);
 
 	const [isExporting, setIsExporting] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
@@ -142,11 +148,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [defaultLinkMode] = useSetting("appearance", "defaultDiagramLinkMode");
 	const [defaultNodeMode] = useSetting("appearance", "defaultDiagramMode");
 
-	const algorithm = applyDefault(connection?.diagramAlgorithm, defaultAlgorithm);
-	const direction = applyDefault(connection?.diagramDirection, defaultDirection);
-	const lineStyle = applyDefault(connection?.diagramLineStyle, defaultLineStyle);
-	const linkMode = applyDefault(connection?.diagramLinkMode, defaultLinkMode);
-	const nodeMode = applyDefault(connection?.diagramMode, defaultNodeMode);
+	const algorithm = applyDefault(diagramAlgorithm, defaultAlgorithm);
+	const direction = applyDefault(diagramDirection, defaultDirection);
+	const lineStyle = applyDefault(diagramLineStyle, defaultLineStyle);
+	const linkMode = applyDefault(diagramLinkMode, defaultLinkMode);
+	const nodeMode = applyDefault(diagramMode, defaultNodeMode);
 
 	useLayoutEffect(() => {
 		if (isLayedOut.current || !nodesInitialized) {
@@ -256,35 +262,35 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const setDiagramAlgorithm = useStable((alg: string) => {
 		updateCurrentConnection({
-			id: connection?.id,
+			id: connectionId,
 			diagramAlgorithm: alg as DiagramAlgorithm,
 		});
 	});
 
 	const setDiagramDirection = useStable((mode: string) => {
 		updateCurrentConnection({
-			id: connection?.id,
+			id: connectionId,
 			diagramDirection: mode as DiagramDirection,
 		});
 	});
 
 	const setDiagramLineStyle = useStable((style: string) => {
 		updateCurrentConnection({
-			id: connection?.id,
+			id: connectionId,
 			diagramLineStyle: style as DiagramLineStyle,
 		});
 	});
 
 	const setDiagramLinkMode = useStable((mode: string) => {
 		updateCurrentConnection({
-			id: connection?.id,
+			id: connectionId,
 			diagramLinkMode: mode as DiagramLinks,
 		});
 	});
 
 	const setDiagramMode = useStable((mode: string) => {
 		updateCurrentConnection({
-			id: connection?.id,
+			id: connectionId,
 			diagramMode: mode as DiagramMode,
 		});
 	});
@@ -335,7 +341,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			icon={iconRelation}
 			style={{ overflow: "hidden" }}
 			leftSection={
-				!connection?.designerTableList && (
+				!designerTableList && (
 					<ActionButton
 						label="Reveal tables"
 						mr="sm"
@@ -408,7 +414,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Line style</Label>
 								<Select
 									data={DESIGNER_LINE_STYLES}
-									value={connection?.diagramLineStyle}
+									value={diagramLineStyle}
 									onChange={setDiagramLineStyle as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
@@ -416,7 +422,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Algorithm</Label>
 								<Select
 									data={DESIGNER_ALGORITHMS}
-									value={connection?.diagramAlgorithm}
+									value={diagramAlgorithm}
 									onChange={setDiagramAlgorithm as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
@@ -424,7 +430,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Appearance</Label>
 								<Select
 									data={DESIGNER_NODE_MODES}
-									value={connection?.diagramMode}
+									value={diagramMode}
 									onChange={setDiagramMode as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
@@ -432,7 +438,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Direction</Label>
 								<Select
 									data={DESIGNER_DIRECTIONS}
-									value={connection?.diagramDirection}
+									value={diagramDirection}
 									onChange={setDiagramDirection as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
@@ -440,7 +446,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Record links</Label>
 								<Select
 									data={DESIGNER_LINKS}
-									value={connection?.diagramLinkMode}
+									value={diagramLinkMode}
 									onChange={setDiagramLinkMode as any}
 									comboboxProps={{ withinPortal: false }}
 								/>

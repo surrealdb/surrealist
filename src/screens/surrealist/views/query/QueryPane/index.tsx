@@ -80,7 +80,7 @@ export function QueryPane({
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
-	const queryTabList = useConnection((c) => c.queryTabList);
+	const queryTabList = useConnection((c) => c?.queryTabList);
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
 	const saveTasks = useRef<Map<string, any>>(new Map());

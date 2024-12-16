@@ -101,11 +101,12 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connected = useIsConnected();
 	const schema = useNamespaceSchema();
+
 	const [namespace, database, authentication] = useConnection((c) => [
-		c.lastNamespace,
-		c.lastDatabase,
-		c.authentication,
-	]) ?? ["", "", createBaseAuthentication()];
+		c?.lastNamespace ?? "",
+		c?.lastDatabase ?? "",
+		c?.authentication ?? createBaseAuthentication(),
+	]);
 
 	const level = getAuthLevel(authentication);
 

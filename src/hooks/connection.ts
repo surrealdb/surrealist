@@ -32,18 +32,11 @@ export function useConnectionList() {
 }
 
 /**
- * Returns the active connection, or undefined
- *
- * @deprecated Pass selector
- */
-export function useConnection(): Connection | undefined;
-/**
  * Select fields from the active connection
  *
  * @param selector A function to select fields from the connection
  */
-export function useConnection<T>(selector: (con: Connection) => T): T | undefined;
-export function useConnection<T>(selector?: (con: Connection) => T): Connection | T | undefined {
+export function useConnection<T>(selector: (con?: Connection) => T): T {
 	return useConfigStore(
 		useShallow((s) => {
 			const connection =
@@ -51,7 +44,7 @@ export function useConnection<T>(selector?: (con: Connection) => T): Connection 
 					? s.sandbox
 					: s.connections.find((c) => c.id === s.activeConnection);
 
-			return selector && connection ? selector(connection) : connection;
+			return selector(connection);
 		}),
 	);
 }

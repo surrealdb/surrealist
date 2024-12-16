@@ -53,7 +53,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 	const [, navigate] = useLocation();
 	const cloudActive = useCloudRoute();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
-	const connection = useConnection((c) => c.id);
+	const connection = useConnection((c) => c?.id ?? "");
 
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
 

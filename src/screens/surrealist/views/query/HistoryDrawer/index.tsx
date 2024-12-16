@@ -150,8 +150,7 @@ export interface HistoryDrawerProps {
 export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const [filterText, setFilterText] = useInputState("");
-
-	const history = useConnection((c) => c.queryHistory) ?? [];
+	const history = useConnection((c) => c?.queryHistory ?? []);
 
 	const clearHistory = useStable(() => {
 		updateCurrentConnection({

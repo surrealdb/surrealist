@@ -20,7 +20,7 @@ export interface VariablesPaneProps {
 
 export function VariablesPane(props: VariablesPaneProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
-	const variablesText = useConnection((c) => c.graphqlVariables) ?? "";
+	const variablesText = useConnection((c) => c?.graphqlVariables ?? "");
 
 	const setVariables = useDebouncedFunction((content: string | undefined) => {
 		try {

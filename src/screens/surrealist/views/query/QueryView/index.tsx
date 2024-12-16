@@ -60,7 +60,7 @@ const ResultPaneLazy = memo(ResultPane);
 
 export function QueryView() {
 	const { saveQuery, updateQueryTab } = useConfigStore.getState();
-	const queryTabList = useConnection((c) => c.queryTabList);
+	const queryTabList = useConnection((c) => c?.queryTabList);
 	const logoUrl = useLogoUrl();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");

@@ -69,7 +69,7 @@ export function SurrealistScreen() {
 	const isCloud = useCloudRoute();
 	const cloudEnabled = useSurrealCloud();
 	const [isCloudHome] = useRoute("/cloud");
-	const connection = useConnection();
+	const [hasConnection, database] = useConnection((c) => [!!c, c?.lastDatabase]);
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
@@ -81,7 +81,7 @@ export function SurrealistScreen() {
 		setOverlaySidebar(false);
 	});
 
-	const requestDatabase = !connection?.lastDatabase && activeView?.require === "database";
+	const requestDatabase = !database && activeView?.require === "database";
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 	const titlebarOffset = customTitlebar ? 15 : 0;
 
@@ -145,7 +145,7 @@ export function SurrealistScreen() {
 								<StartPage />
 							</Route>
 
-							{connection &&
+							{hasConnection &&
 								Object.values(VIEW_MODES).map((mode) => (
 									<Route
 										key={mode.id}
@@ -188,7 +188,7 @@ export function SurrealistScreen() {
 				</Box>
 			</Flex>
 
-			{connection &&
+			{hasConnection &&
 				Object.values(VIEW_MODES).map((mode) => {
 					const Content = VIEW_COMPONENTS[mode.id];
 

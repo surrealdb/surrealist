@@ -40,13 +40,12 @@ export function ExplorerView() {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { openTableCreator } = useInterfaceStore.getState();
 	const { design } = useDesigner();
-	const explorerTableList = useConnection((c) => c.explorerTableList);
+	const explorerTableList = useConnection((c) => c?.explorerTableList);
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [creatorTable, setCreatorTable] = useState<string>();
 
-	const connection = useConnection();
 	const isConnected = useIsConnected();
 
 	const openCreator = useStable((table?: string) => {
@@ -96,10 +95,6 @@ export function ExplorerView() {
 
 	const [minSize, ref] = usePanelMinSize(275);
 
-	// NOTE - Temporary
-	const protocol = connection?.authentication?.protocol;
-	const isExportDisabled = protocol === "indxdb" || protocol === "mem";
-
 	return (
 		<>
 			<Box
@@ -133,7 +128,6 @@ export function ExplorerView() {
 												rightSection={<Icon path={iconChevronRight} />}
 												onClick={() => dispatchIntent("export-database")}
 												style={{ flexShrink: 0 }}
-												disabled={isExportDisabled}
 												bg="transparent"
 											>
 												Export database

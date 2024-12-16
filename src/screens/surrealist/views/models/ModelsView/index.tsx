@@ -30,12 +30,13 @@ const SURML_FILTERS = [
 export function ModelsView() {
 	const models = useDatabaseSchema()?.models ?? [];
 	const isConnected = useIsConnected();
+
 	const [id, namespace, database, authentication] = useConnection((c) => [
-		c.id,
-		c.lastNamespace,
-		c.lastDatabase,
-		c.authentication,
-	]) ?? ["", "", "", createBaseAuthentication()];
+		c?.id ?? "",
+		c?.lastNamespace ?? "",
+		c?.lastDatabase ?? "",
+		c?.authentication ?? createBaseAuthentication(),
+	]);
 
 	const [details, setDetails] = useImmer<SchemaModel | null>(null);
 	const isAvailable = ML_SUPPORTED.has(authentication.protocol);

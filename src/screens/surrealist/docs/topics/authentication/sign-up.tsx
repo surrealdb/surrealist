@@ -5,8 +5,10 @@ import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 
 export function DocsAuthSignUp({ language }: TopicProps) {
-	const [namespace, database] =
-		useConnection((c) => [c.authentication.namespace, c.authentication.database]) ?? [];
+	const [namespace, database] = useConnection((c) => [
+		c?.authentication.namespace ?? "",
+		c?.authentication.database ?? "",
+	]);
 
 	const esc_namespace = JSON.stringify(namespace);
 	const esc_database = JSON.stringify(database);

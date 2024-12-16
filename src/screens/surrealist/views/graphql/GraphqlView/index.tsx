@@ -41,11 +41,12 @@ export function GraphqlView() {
 	const isLight = useIsLight();
 	const isConnected = useIsConnected();
 	const [schema, introspectSchema] = useGraphqlIntrospection();
+
 	const [id, showVariables, protocol] = useConnection((c) => [
-		c.id,
-		c.graphqlShowVariables,
-		c.authentication.protocol,
-	]) ?? ["", false, "http"];
+		c?.id ?? "",
+		c?.graphqlShowVariables ?? false,
+		c?.authentication.protocol ?? "http",
+	]);
 
 	const isAvailable = GQL_SUPPORTED.has(protocol);
 	const isSandbox = id === "sandbox";

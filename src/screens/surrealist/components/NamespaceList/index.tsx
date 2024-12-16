@@ -100,10 +100,11 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connected = useIsConnected();
 	const schema = useRootSchema();
+
 	const [namespace, authentication] = useConnection((c) => [
-		c.lastNamespace,
-		c.authentication,
-	]) ?? ["", createBaseAuthentication()];
+		c?.lastNamespace ?? "",
+		c?.authentication ?? createBaseAuthentication(),
+	]);
 
 	const level = getAuthLevel(authentication);
 

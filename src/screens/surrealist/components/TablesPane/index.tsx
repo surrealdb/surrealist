@@ -60,7 +60,7 @@ export function TablesPane({
 	const isLight = useIsLight();
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
-	const pinnedTables = useConnection((c) => c.pinnedTables) ?? [];
+	const pinnedTables = useConnection((c) => c?.pinnedTables ?? []);
 	const isConnected = useIsConnected();
 	const schema = useTables();
 

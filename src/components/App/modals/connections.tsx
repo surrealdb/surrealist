@@ -64,7 +64,7 @@ export function ConnectionsModal() {
 
 	const [search, setSearch] = useInputState("");
 	const connections = useConnectionList();
-	const connection = useConnection();
+	const connection = useConnection((c) => c?.id ?? "");
 
 	const groups = useConfigStore((s) => s.connectionGroups);
 	const sandbox = useConfigStore((s) => s.sandbox);
@@ -106,7 +106,7 @@ export function ConnectionsModal() {
 		});
 	});
 
-	const isSandbox = connection?.id === SANDBOX;
+	const isSandbox = connection === SANDBOX;
 
 	const groupsList = useMemo(() => {
 		return groups.toSorted((a, b) => a.name.localeCompare(b.name));
@@ -131,7 +131,7 @@ export function ConnectionsModal() {
 		openedHandle.close();
 	});
 
-	const [handleKeyDown, selected] = useKeyNavigation(flattened, activate, connection?.id);
+	const [handleKeyDown, selected] = useKeyNavigation(flattened, activate, connection);
 
 	// useKeymap([["mod+L", openedHandle.open]]);
 
@@ -264,7 +264,7 @@ export function ConnectionsModal() {
 							<ItemList
 								key={group.id}
 								connections={grouped[group.id] ?? []}
-								active={connection?.id ?? ""}
+								active={connection}
 								selected={selected}
 								onClose={openedHandle.close}
 								onActivate={activate}
@@ -306,7 +306,7 @@ export function ConnectionsModal() {
 					{grouped[UNGROUPED] && (
 						<ItemList
 							connections={grouped[UNGROUPED]}
-							active={connection?.id ?? ""}
+							active={connection}
 							selected={selected}
 							onClose={openedHandle.close}
 							onActivate={activate}

@@ -13,7 +13,7 @@ const NAME =
  * Synchronize the title of the window with the current view
  */
 export function useTitleSync() {
-	const connection = useConnection((c) => c.name);
+	const connection = useConnection((c) => c?.name);
 	const isCloud = useCloudRoute();
 	const [activeView] = useActiveView();
 	const [pinned] = useSetting("behavior", "windowPinned");

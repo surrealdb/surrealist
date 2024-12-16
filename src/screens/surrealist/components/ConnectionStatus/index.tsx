@@ -31,8 +31,16 @@ import { closeConnection, openConnection } from "../../connection/connection";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);
-	const connection = useConnection();
 	const schema = useDatabaseSchema();
+
+	const [hasConnection, connectionId, name, icon, namespace, database] = useConnection((c) => [
+		!!c,
+		c?.id ?? "",
+		c?.name ?? "",
+		c?.icon ?? 0,
+		c?.lastNamespace,
+		c?.lastDatabase,
+	]);
 
 	const noTables = schema.tables.length === 0;
 	const noFunctions = schema.functions.length === 0;
@@ -47,8 +55,8 @@ export function ConnectionStatus() {
 	const latestError = useDatabaseStore((s) => s.latestError);
 	const remoteVersion = useDatabaseStore((s) => s.version);
 
-	const openEditor = useStable((con: Connection) => {
-		dispatchIntent("edit-connection", { id: con.id });
+	const openEditor = useStable((connection: string) => {
+		dispatchIntent("edit-connection", { id: connection });
 	});
 
 	const openConnections = useStable(() => {
@@ -66,7 +74,7 @@ export function ConnectionStatus() {
 		showDatasetsHandle.close();
 	});
 
-	const isSandbox = connection?.id === SANDBOX;
+	const isSandbox = connectionId === SANDBOX;
 
 	const statusInfo = {
 		disconnected: ["Disconnected", "red", false],
@@ -79,7 +87,7 @@ export function ConnectionStatus() {
 
 	return (
 		<>
-			{connection ? (
+			{hasConnection ? (
 				<Menu
 					opened={isDropped}
 					onChange={setIsDropped}
@@ -98,7 +106,7 @@ export function ConnectionStatus() {
 								isSandbox ? (
 									<Icon path={iconSandbox} />
 								) : (
-									<Icon path={USER_ICONS[connection.icon ?? 0]} />
+									<Icon path={USER_ICONS[icon]} />
 								)
 							}
 							rightSection={
@@ -117,7 +125,7 @@ export function ConnectionStatus() {
 								c="bright"
 								ml={2}
 							>
-								{connection.name}
+								{name}
 							</Text>
 						</Button>
 					</Menu.Target>
@@ -141,7 +149,7 @@ export function ConnectionStatus() {
 							<>
 								<Menu.Item
 									leftSection={<Icon path={iconEdit} />}
-									onClick={() => openEditor(connection)}
+									onClick={() => openEditor(connectionId)}
 								>
 									Edit connection
 								</Menu.Item>
@@ -165,9 +173,7 @@ export function ConnectionStatus() {
 							<Menu.Item
 								leftSection={<Icon path={iconTable} />}
 								disabled={
-									currentState !== "connected" ||
-									!isSchemaEmpty ||
-									!connection.lastDatabase
+									currentState !== "connected" || !isSchemaEmpty || !database
 								}
 								onClick={openDatasets}
 							>
@@ -176,21 +182,21 @@ export function ConnectionStatus() {
 						)}
 						<Menu.Item
 							leftSection={<Icon path={iconRefresh} />}
-							disabled={currentState !== "connected" || !connection.lastDatabase}
+							disabled={currentState !== "connected" || !database}
 							onClick={() => syncConnectionSchema()}
 						>
 							Sync schema
 						</Menu.Item>
 						<Menu.Item
 							leftSection={<Icon path={iconUpload} />}
-							disabled={currentState !== "connected" || !connection.lastDatabase}
+							disabled={currentState !== "connected" || !database}
 							onClick={() => dispatchIntent("export-database")}
 						>
 							Export database
 						</Menu.Item>
 						<Menu.Item
 							leftSection={<Icon path={iconDownload} />}
-							disabled={currentState !== "connected" || !connection.lastDatabase}
+							disabled={currentState !== "connected" || !database}
 							onClick={() => dispatchIntent("import-database")}
 						>
 							Import database

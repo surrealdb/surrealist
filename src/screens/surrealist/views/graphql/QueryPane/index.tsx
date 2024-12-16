@@ -61,7 +61,7 @@ export function QueryPane({
 	onEditorMount,
 }: QueryPaneProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
-	const queryText = useConnection((c) => c.graphqlQuery) ?? "";
+	const queryText = useConnection((c) => c?.graphqlQuery ?? "");
 
 	const setQueryForced = useStable((query: string) => {
 		try {

@@ -17,10 +17,10 @@ export function AuthenticationView() {
 	const nsSchema = useNamespaceSchema();
 	const dbSchema = useDatabaseSchema();
 
-	const [namespace, database] = useConnection((c) => [c.lastNamespace, c.lastDatabase]) ?? [
-		"",
-		"",
-	];
+	const [namespace, database] = useConnection((c) => [
+		c?.lastNamespace ?? "",
+		c?.lastDatabase ?? "",
+	]);
 
 	const users = useMemo(
 		() => [...kvSchema.users, ...nsSchema.users, ...dbSchema.users],

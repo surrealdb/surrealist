@@ -247,7 +247,7 @@ export function TabsPane(props: TabsPaneProps) {
 	const { updateCurrentConnection, addQueryTab, removeQueryTab, setActiveQueryTab } =
 		useConfigStore.getState();
 
-	const [activeQuery, queries] = useConnection((c) => [c.activeQuery, c.queries]) ?? ["", []];
+	const [activeQuery, queries] = useConnection((c) => [c?.activeQuery ?? "", c?.queries ?? []]);
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isLight = useIsLight();
 

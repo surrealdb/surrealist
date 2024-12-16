@@ -7,7 +7,7 @@ import { createBaseAuthentication } from "~/util/defaults";
 import { connectionUri } from "~/util/helpers";
 
 export function DocsAuthSignIn({ language }: TopicProps) {
-	const authentication = useConnection((c) => c.authentication) ?? createBaseAuthentication();
+	const authentication = useConnection((c) => c?.authentication ?? createBaseAuthentication());
 	const endpoint = connectionUri(authentication);
 	const esc_endpoint = JSON.stringify(endpoint);
 	const esc_namespace = JSON.stringify(authentication.namespace);

@@ -9,8 +9,8 @@ import { featureFlags } from "~/util/feature-flags";
  * Watch for connection changes and open the connection
  */
 export function useConnectionSwitch() {
-	const connection = useConnection((c) => c.id);
 	const isCloud = useCloudRoute();
+	const connection = useConnection((c) => c?.id);
 	const [activeView, setActiveView] = useActiveView();
 
 	useEffect(() => {
