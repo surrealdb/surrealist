@@ -9,6 +9,10 @@
 	background-size: min(1300px, 100vw);
 	height: 650px;
 	z-index: 0;
+
+	@include light {
+		opacity: 0.5;
+	}
 }
 
 .start-box {
@@ -20,6 +24,7 @@
 
 	@include light {
 		background-color: rgba(255, 255, 255, 0.5);
+		outline-color: hsl(300, 15%, 88%);
 	}
 
 	&:hover {

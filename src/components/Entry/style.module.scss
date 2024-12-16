@@ -20,7 +20,7 @@
 		}
 	}
 
-	&:hover {
+	&:hover:not([data-disabled]) {
 		background-color: var(--mantine-color-slate-6);
 
 		:global(.mantine-Button-section),

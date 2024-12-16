@@ -686,6 +686,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						}),
 					},
 					{
+						id: "deactivate-connection",
+						name: "Deactive connection",
+						icon: iconClose,
+						action: launch(() => setActiveConnection("")),
+					},
+					{
 						id: "reset-tours",
 						name: "Reset tours",
 						icon: iconRoutes,

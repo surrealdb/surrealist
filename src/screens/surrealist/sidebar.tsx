@@ -171,6 +171,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 										onClick={() => setLocation(`/${info.id}`)}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}
+										disabled={!connection}
 										style={{
 											opacity: connection ? 1 : 0.5,
 										}}
