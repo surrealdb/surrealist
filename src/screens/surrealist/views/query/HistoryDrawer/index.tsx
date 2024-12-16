@@ -21,7 +21,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
-import { useActiveConnection, useActiveQuery } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
@@ -31,14 +31,12 @@ const MAX_PREVIEW_LENGTH = 500;
 interface HistoryRowProps {
 	entry: HistoryQuery;
 	editor: EditorView;
+	history: HistoryQuery[];
 	onClose: () => void;
 }
 
-function HistoryRow({ entry, editor, onClose }: HistoryRowProps) {
+function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 	const { updateCurrentConnection, addQueryTab } = useConfigStore.getState();
-
-	const connection = useActiveConnection();
-	const activeTab = useActiveQuery();
 
 	const handleUseQuery = useStable(() => {
 		onClose();
@@ -49,15 +47,13 @@ function HistoryRow({ entry, editor, onClose }: HistoryRowProps) {
 	});
 
 	const handleReplaceQuery = useStable(() => {
-		if (!activeTab) return;
-
 		onClose();
 		setEditorText(editor, entry.query);
 	});
 
 	const handleDeleteQuery = useStable(() => {
 		updateCurrentConnection({
-			queryHistory: connection.queryHistory.filter((item) => item !== entry),
+			queryHistory: history.filter((item) => item !== entry),
 		});
 	});
 
@@ -153,9 +149,9 @@ export interface HistoryDrawerProps {
 
 export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
-
-	const connection = useActiveConnection();
 	const [filterText, setFilterText] = useInputState("");
+
+	const history = useConnection((c) => c.queryHistory) ?? [];
 
 	const clearHistory = useStable(() => {
 		updateCurrentConnection({
@@ -164,14 +160,10 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 	});
 
 	const filtered = useMemo(() => {
-		if (!connection) return [];
-
 		const needle = filterText.toLowerCase();
 
-		return connection.queryHistory
-			.filter((entry) => entry.query.toLowerCase().includes(needle))
-			.reverse();
-	}, [connection, filterText]);
+		return history.filter((entry) => entry.query.toLowerCase().includes(needle)).reverse();
+	}, [history, filterText]);
 
 	return (
 		<Drawer
@@ -187,7 +179,6 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 				<PrimaryTitle>Query history</PrimaryTitle>
 
 				<Spacer />
-
 
 				<ActionButton
 					onClick={clearHistory}
@@ -228,6 +219,7 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 					<HistoryRowLazy
 						key={i}
 						entry={entry}
+						history={history}
 						editor={editor}
 						onClose={onClose}
 					/>

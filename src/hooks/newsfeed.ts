@@ -32,8 +32,7 @@ export function useLatestNewsQuery() {
 			return [...result.querySelectorAll("item")]
 				.filter((item) =>
 					[...item.querySelectorAll("category")].some(
-						(child) =>
-							child.textContent?.toLowerCase() === "surrealist",
+						(child) => child.textContent?.toLowerCase() === "surrealist",
 					),
 				)
 				.map((item) => ({
@@ -45,20 +44,24 @@ export function useLatestNewsQuery() {
 					content: item.querySelector("encoded")?.textContent || "",
 					published: item.querySelector("pubDate")?.textContent || "",
 				}));
-		}
-	})
+		},
+	});
 }
 
 /**
  * Returns a list of unread news post ids
  */
 export function useUnreadNewsPosts() {
-	const lastViewedAt = useConfigStore((s) => s.lastViewedNewsAt || Date.now());
+	const lastViewedAt = useConfigStore((s) => s.lastViewedNewsAt);
 	const newsQuery = useLatestNewsQuery();
 
 	return useMemo(() => {
-		return newsQuery.data
-			?.filter((item) => new Date(item.published).getTime() > lastViewedAt)
-			?.map((item) => item.id) || [];
+		const lastViewed = lastViewedAt || Date.now();
+
+		return (
+			newsQuery.data
+				?.filter((item) => new Date(item.published).getTime() > lastViewed)
+				?.map((item) => item.id) || []
+		);
 	}, [newsQuery.data, lastViewedAt]);
 }

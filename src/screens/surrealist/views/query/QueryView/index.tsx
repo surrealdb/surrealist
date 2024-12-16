@@ -35,7 +35,7 @@ import { setEditorText } from "~/editor/helpers";
 import { executeEditorQuery } from "~/editor/query";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
-import { useActiveConnection, useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
+import { useActiveQuery, useConnection, useSavedQueryTags } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useIntent } from "~/hooks/routing";
@@ -60,7 +60,7 @@ const ResultPaneLazy = memo(ResultPane);
 
 export function QueryView() {
 	const { saveQuery, updateQueryTab } = useConfigStore.getState();
-	const { queryTabList } = useActiveConnection();
+	const queryTabList = useConnection((c) => c.queryTabList);
 	const logoUrl = useLogoUrl();
 
 	const [orientation] = useSetting("appearance", "queryOrientation");

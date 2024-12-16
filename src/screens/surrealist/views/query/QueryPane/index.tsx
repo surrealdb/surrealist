@@ -33,7 +33,7 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { setEditorText } from "~/editor/helpers";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useIntent } from "~/hooks/routing";
@@ -80,7 +80,7 @@ export function QueryPane({
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
-	const connection = useActiveConnection();
+	const queryTabList = useConnection((c) => c.queryTabList);
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
 	const saveTasks = useRef<Map<string, any>>(new Map());
@@ -198,7 +198,7 @@ export function QueryPane({
 			icon={iconServer}
 			radius={corners}
 			leftSection={
-				!connection.queryTabList && (
+				!queryTabList && (
 					<ActionButton
 						label="Reveal queries"
 						mr="sm"

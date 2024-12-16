@@ -6,7 +6,7 @@ import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { ML_SUPPORTED } from "~/constants";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useViewFocus } from "~/hooks/routing";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
@@ -18,6 +18,7 @@ import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
+import { createBaseAuthentication } from "~/util/defaults";
 
 const SURML_FILTERS = [
 	{
@@ -28,10 +29,13 @@ const SURML_FILTERS = [
 
 export function ModelsView() {
 	const models = useDatabaseSchema()?.models ?? [];
-	const connection = useActiveConnection();
 	const isConnected = useIsConnected();
-
-	const { id, lastNamespace, lastDatabase, authentication } = connection;
+	const [id, namespace, database, authentication] = useConnection((c) => [
+		c.id,
+		c.lastNamespace,
+		c.lastDatabase,
+		c.authentication,
+	]) ?? ["", "", "", createBaseAuthentication()];
 
 	const [details, setDetails] = useImmer<SchemaModel | null>(null);
 	const isAvailable = ML_SUPPORTED.has(authentication.protocol);
@@ -56,9 +60,15 @@ export function ModelsView() {
 
 	const uploadModel = useStable(async () => {
 		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
-		const { endpoint, headers } = composeHttpConnection(connection, "/ml/import", {
-			Accept: "application/json",
-		});
+		const { endpoint, headers } = composeHttpConnection(
+			authentication,
+			namespace,
+			database,
+			"/ml/import",
+			{
+				Accept: "application/json",
+			},
+		);
 
 		for (const file of files) {
 			await fetch(endpoint, {
@@ -78,7 +88,9 @@ export function ModelsView() {
 		const [, name, version] = /^(\w+)<(.+)>$/.exec(model.name) || [];
 
 		const { endpoint, headers } = composeHttpConnection(
-			connection,
+			authentication,
+			namespace,
+			database,
 			`/ml/export/${name}/${version}`,
 		);
 
@@ -104,14 +116,14 @@ export function ModelsView() {
 				path="./model.surml",
 				url="${connectionUri(authentication, "ml/import")}",
 				chunk_size=36864,
-				namespace="${lastNamespace}",
-				database="${lastDatabase}",
+				namespace="${namespace}",
+				database="${database}",
 				username="...",
 				password="..."
 			)							
 		`,
 		}),
-		[authentication, lastDatabase, lastNamespace],
+		[authentication, namespace, database],
 	);
 
 	useViewFocus("models", () => {

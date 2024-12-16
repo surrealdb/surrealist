@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { type MouseEvent, type SyntheticEvent, useMemo } from "react";
+import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
@@ -24,7 +24,7 @@ import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useNamespaceSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -32,17 +32,18 @@ import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
+import { pick } from "radash";
+import { createBaseAuthentication } from "~/util/defaults";
 
 export interface DatabaseProps {
 	value: string;
-	isActive: boolean;
+	activeNamespace: string;
+	activeDatabase: string;
 	onOpen: (ns: string) => void;
 	onRemove: () => void;
 }
 
-function Database({ value, isActive, onOpen, onRemove }: DatabaseProps) {
-	const { lastNamespace, lastDatabase } = useActiveConnection();
-
+function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: DatabaseProps) {
 	const open = useStable(() => onOpen(value));
 
 	const remove = useConfirmation({
@@ -52,8 +53,8 @@ function Database({ value, isActive, onOpen, onRemove }: DatabaseProps) {
 		onConfirm() {
 			executeQuery(/* surql */ `REMOVE DATABASE ${escapeIdent(value)}`);
 
-			if (lastDatabase === value) {
-				activateDatabase(lastNamespace, "");
+			if (activeDatabase === value) {
+				activateDatabase(activeNamespace, "");
 			}
 		},
 	});
@@ -70,7 +71,7 @@ function Database({ value, isActive, onOpen, onRemove }: DatabaseProps) {
 			h="unset"
 			radius="xs"
 			onClick={open}
-			isActive={isActive}
+			isActive={value === activeDatabase}
 			className={classes.database}
 			rightSection={
 				<ActionButton
@@ -98,25 +99,28 @@ export interface DatabaseListProps {
 
 export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	const [opened, openHandle] = useBoolean();
-	const connection = useActiveConnection();
 	const connected = useIsConnected();
 	const schema = useNamespaceSchema();
+	const [namespace, database, authentication] = useConnection((c) => [
+		c.lastNamespace,
+		c.lastDatabase,
+		c.authentication,
+	]) ?? ["", "", createBaseAuthentication()];
 
-	const namespace = connection.lastNamespace;
-	const level = getAuthLevel(connection.authentication);
+	const level = getAuthLevel(authentication);
 
 	const databases = useMemo(() => {
-		const authDB = getAuthDB(connection.authentication);
+		const authDB = getAuthDB(authentication);
 
 		if (authDB) {
 			return [authDB];
 		}
 
 		return schema.databases.map((db) => parseIdent(db.name));
-	}, [schema, connection.authentication]);
+	}, [schema, authentication]);
 
 	const openDatabase = (db: string) => {
-		if (connection.lastDatabase !== db) {
+		if (database !== db) {
 			activateDatabase(namespace, db);
 		}
 
@@ -173,7 +177,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 					<Menu.Target>
 						<Button
 							px="sm"
-							variant={connection.lastDatabase ? "subtle" : "light"}
+							variant={database ? "subtle" : "light"}
 							color="slate"
 							leftSection={<Icon path={iconDatabase} />}
 							{...buttonProps}
@@ -183,7 +187,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 								fw={600}
 								maw={200}
 							>
-								{connection.lastDatabase || "Select database"}
+								{database || "Select database"}
 							</Text>
 						</Button>
 					</Menu.Target>
@@ -222,7 +226,8 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 											<Database
 												key={db}
 												value={db}
-												isActive={db === connection.lastDatabase}
+												activeNamespace={namespace}
+												activeDatabase={database}
 												onOpen={() => openDatabase(db)}
 												onRemove={openHandle.close}
 											/>

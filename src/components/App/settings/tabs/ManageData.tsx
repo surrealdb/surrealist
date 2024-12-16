@@ -15,7 +15,7 @@ import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { JSON_FILTER } from "~/constants";
-import { useConnections } from "~/hooks/connection";
+import { useConnectionList } from "~/hooks/connection";
 import { useCheckbox } from "~/hooks/events";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
@@ -25,7 +25,7 @@ import { iconCheck, iconDownload, iconUpload } from "~/util/icons";
 import { applyMigrations } from "~/util/migrator";
 
 export function ManageDataTab() {
-	const connections = useConnections();
+	const connections = useConnectionList();
 
 	const [filterConnections, setFilterConnections] = useState(false);
 	const [includeSensitive, setIncludeSensitive] = useState(false);

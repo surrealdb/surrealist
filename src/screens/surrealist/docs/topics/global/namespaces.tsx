@@ -1,13 +1,15 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 
 export function DocsGlobalNamespaces({ language }: TopicProps) {
-	const { authentication } = useActiveConnection();
-	const esc_namespace = JSON.stringify(authentication.namespace);
-	const esc_database = JSON.stringify(authentication.database);
+	const [namespace, database] =
+		useConnection((c) => [c.authentication.namespace, c.authentication.database]) ?? [];
+
+	const esc_namespace = JSON.stringify(namespace);
+	const esc_database = JSON.stringify(database);
 
 	const snippets = useMemo<Snippets>(
 		() => ({

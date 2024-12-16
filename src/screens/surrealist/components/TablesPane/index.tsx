@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	iconAPI,
 	iconChevronLeft,
@@ -21,7 +23,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -32,7 +34,6 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { fuzzyMultiMatch } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
-import classes from "./style.module.scss";
 
 export interface TablesPaneProps {
 	icon?: string;
@@ -59,7 +60,7 @@ export function TablesPane({
 	const isLight = useIsLight();
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
-	const connection = useActiveConnection();
+	const pinnedTables = useConnection((c) => c.pinnedTables) ?? [];
 	const isConnected = useIsConnected();
 	const schema = useTables();
 
@@ -73,14 +74,14 @@ export function TablesPane({
 
 		return sort(tables, (table) => {
 			const [isEdge] = extractEdgeRecords(table);
-			const pinned = connection.pinnedTables.includes(table.schema.name);
+			const pinned = pinnedTables.includes(table.schema.name);
 
 			return Number(isEdge) - (pinned ? 999 : 0);
 		});
-	}, [connection.pinnedTables, schema, search]);
+	}, [pinnedTables, schema, search]);
 
 	const togglePinned = useStable((table: string) => {
-		if (table && connection) {
+		if (table) {
 			toggleTablePin(table);
 		}
 	});
@@ -189,7 +190,7 @@ export function TablesPane({
 
 						{tablesFiltered.map((table) => {
 							const isActive = activeTable === table.schema.name;
-							const isPinned = connection.pinnedTables.includes(table.schema.name);
+							const isPinned = pinnedTables.includes(table.schema.name);
 							const [isEdge] = extractEdgeRecords(table);
 
 							return (

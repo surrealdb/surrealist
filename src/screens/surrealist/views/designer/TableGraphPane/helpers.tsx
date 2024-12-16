@@ -369,6 +369,6 @@ export async function createSnapshot(el: HTMLElement, type: "png" | "svg") {
 /**
  * Apply a default value if the given value is "default"
  */
-export function applyDefault<T extends string>(value: T, fallback: T) {
-	return value === "default" ? fallback : value;
+export function applyDefault<T extends string>(value: T | undefined, fallback: T) {
+	return !value || value === "default" ? fallback : value;
 }

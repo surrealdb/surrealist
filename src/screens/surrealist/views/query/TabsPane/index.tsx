@@ -38,9 +38,7 @@ import { Icon } from "~/components/Icon";
 import { LiveIndicator } from "~/components/LiveIndicator";
 import { ContentPane } from "~/components/Pane";
 import { Sortable } from "~/components/Sortable";
-import { useBoolean } from "~/hooks/boolean";
 import { useSetting } from "~/hooks/config";
-import { useActiveConnection } from "~/hooks/connection";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -50,6 +48,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab, QueryType } from "~/types";
 import { uniqueName } from "~/util/helpers";
+import { useConnection } from "~/hooks/connection";
 
 const TYPE_ICONS: Record<QueryType, string> = {
 	config: iconQuery,
@@ -248,7 +247,7 @@ export function TabsPane(props: TabsPaneProps) {
 	const { updateCurrentConnection, addQueryTab, removeQueryTab, setActiveQueryTab } =
 		useConfigStore.getState();
 
-	const { queries, activeQuery } = useActiveConnection();
+	const [activeQuery, queries] = useConnection((c) => [c.activeQuery, c.queries]) ?? ["", []];
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isLight = useIsLight();
 

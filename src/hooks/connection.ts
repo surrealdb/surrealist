@@ -4,6 +4,9 @@ import { useMemo } from "react";
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
+import { Connection, SurrealistConfig } from "~/types";
+import { shallow } from "zustand/shallow";
+import { useShallow } from "zustand/react/shallow";
 
 /**
  * Returns whether Surrealist is connected to a database
@@ -24,49 +27,33 @@ export function useIsConnecting() {
 /**
  * Return a list of all connections
  */
-export function useConnections() {
+export function useConnectionList() {
 	return useConfigStore((s) => s.connections);
 }
 
 /**
  * Returns the active connection, or undefined
- */
-export function useConnection() {
-	const activeId = useConfigStore((s) => s.activeConnection);
-	const list = useConfigStore((s) => s.connections);
-	const sandbox = useConfigStore((s) => s.sandbox);
-
-	if (activeId === SANDBOX) {
-		return sandbox;
-	}
-
-	return list.find((con) => con.id === activeId);
-}
-
-/**
- * Similar to useConnection except throws an error if the connection is not available
  *
- * This should only be used from views which are only available when a connection is active
+ * @deprecated Pass selector
  */
-export function useActiveConnection() {
-	const connection = useConnection();
-
-	if (!connection) {
-		throw new Error("Active connection expected");
-	}
-
-	return connection;
-}
-
+export function useConnection(): Connection | undefined;
 /**
- * Returns the active query tab
+ * Select fields from the active connection
  *
- * @returns The active query tab
+ * @param selector A function to select fields from the connection
  */
-export function useActiveQuery() {
-	const connection = useActiveConnection();
+export function useConnection<T>(selector: (con: Connection) => T): T | undefined;
+export function useConnection<T>(selector?: (con: Connection) => T): Connection | T | undefined {
+	return useConfigStore(
+		useShallow((s) => {
+			const connection =
+				s.activeConnection === SANDBOX
+					? s.sandbox
+					: s.connections.find((c) => c.id === s.activeConnection);
 
-	return connection.queries.find((q) => q.id === connection.activeQuery);
+			return selector && connection ? selector(connection) : connection;
+		}),
+	);
 }
 
 /**
@@ -88,4 +75,15 @@ export function useMinimumVersion(minimum: string) {
 	const isGreater = !version || compareVersions(version, minimum) >= 0;
 
 	return [isGreater, version] as const;
+}
+
+/**
+ * Return the selected query tab from the active connection
+ *
+ * @returns The selected query tab
+ */
+export function useActiveQuery() {
+	return useConnection((c) => {
+		return c?.queries.find((q) => q.id === c.activeQuery);
+	});
 }

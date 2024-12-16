@@ -1,12 +1,9 @@
 import { useLayoutEffect } from "react";
-import { useRoute } from "wouter";
 import { adapter } from "~/adapter";
-import { VIEW_MODES } from "~/constants";
 import { useCloudRoute } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
 import { useActiveView } from "~/hooks/routing";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 
 const NAME =
@@ -16,7 +13,7 @@ const NAME =
  * Synchronize the title of the window with the current view
  */
 export function useTitleSync() {
-	const connection = useConnection();
+	const connection = useConnection((c) => c.name);
 	const isCloud = useCloudRoute();
 	const [activeView] = useActiveView();
 	const [pinned] = useSetting("behavior", "windowPinned");
@@ -27,8 +24,8 @@ export function useTitleSync() {
 		if (isCloud) {
 			segments.push(`Surreal Cloud - ${NAME}`);
 		} else {
-			if (connection?.name) {
-				segments.push(`${connection.name} -`);
+			if (connection) {
+				segments.push(`${connection} -`);
 			}
 
 			segments.push(`${NAME} ${activeView?.name || ""}`);
@@ -42,5 +39,5 @@ export function useTitleSync() {
 
 		adapter.setWindowTitle(title);
 		useInterfaceStore.getState().setWindowTitle(title);
-	}, [activeView, connection?.name, pinned, isCloud]);
+	}, [activeView, connection, pinned, isCloud]);
 }

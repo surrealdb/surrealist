@@ -23,7 +23,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
-import { useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
+import { useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
@@ -47,7 +47,6 @@ export function SavesDrawer({
 	const { showContextMenu } = useContextMenu();
 
 	const queries = useConfigStore((s) => s.savedQueries);
-	const activeTab = useActiveQuery();
 	const tags = useSavedQueryTags();
 
 	const [filterTag, setFilterTag] = useState<string | null>(null);
@@ -79,8 +78,6 @@ export function SavesDrawer({
 	});
 
 	const handleReplaceQuery = useStable((entry: SavedQuery) => {
-		if (!activeTab) return;
-
 		onClose();
 		setEditorText(editor, entry.query);
 	});

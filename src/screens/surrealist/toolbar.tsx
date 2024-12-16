@@ -31,6 +31,8 @@ import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
 import { resetConnection } from "./connection/connection";
+import { pick } from "radash";
+import { createBaseAuthentication } from "~/util/defaults";
 
 export function SurrealistToolbar() {
 	const { readChangelog } = useInterfaceStore.getState();
@@ -41,7 +43,12 @@ export function SurrealistToolbar() {
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const authState = useCloudStore((s) => s.authState);
 	const isConnected = useIsConnected();
-	const connection = useConnection();
+
+	const [id, database, authentication] = useConnection((c) => [
+		c.id,
+		c.lastDatabase,
+		c.authentication,
+	]) ?? ["", "", createBaseAuthentication()];
 
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
@@ -79,9 +86,9 @@ export function SurrealistToolbar() {
 	});
 
 	const [isSupported, version] = useMinimumVersion(import.meta.env.SDB_VERSION);
-	const isSandbox = connection?.id === "sandbox";
-	const showNS = !isSandbox && isConnected;
-	const showDB = showNS && connection?.lastNamespace;
+	const isSandbox = id === "sandbox";
+	const showNS = !isSandbox && id && isConnected;
+	const showDB = showNS && database;
 
 	return (
 		<>
@@ -89,7 +96,7 @@ export function SurrealistToolbar() {
 
 			<ConnectionStatus />
 
-			{authState === "unauthenticated" && connection?.authentication?.mode === "cloud" && (
+			{authState === "unauthenticated" && authentication.mode === "cloud" && (
 				<Button
 					color="orange"
 					variant="light"

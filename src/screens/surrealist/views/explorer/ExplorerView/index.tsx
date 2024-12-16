@@ -18,7 +18,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { useActiveConnection, useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useIntent, useViewFocus } from "~/hooks/routing";
@@ -39,8 +39,8 @@ const ExplorerPaneLazy = memo(ExplorerPane);
 export function ExplorerView() {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { openTableCreator } = useInterfaceStore.getState();
-	const { explorerTableList } = useActiveConnection();
 	const { design } = useDesigner();
+	const explorerTableList = useConnection((c) => c.explorerTableList);
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();

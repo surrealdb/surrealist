@@ -52,7 +52,7 @@ import { useLocation } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
-import { useConnection, useConnections } from "~/hooks/connection";
+import { useConnection, useConnectionList } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useActiveView } from "~/hooks/routing";
 import { showNodeStatus } from "~/modals/node-status";
@@ -93,7 +93,7 @@ const intent = (intent: IntentType, payload?: IntentPayload) =>
 export function useInternalCommandBuilder(): CommandCategory[] {
 	const { setActiveConnection, resetOnboardings } = useConfigStore.getState();
 
-	const connections = useConnections();
+	const connections = useConnectionList();
 	const commandHistory = useConfigStore((state) => state.commandHistory);
 	const isServing = useDatabaseStore((state) => state.isServing);
 	const currentState = useDatabaseStore((state) => state.currentState);
@@ -689,7 +689,10 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						id: "deactivate-connection",
 						name: "Deactive connection",
 						icon: iconClose,
-						action: launch(() => setActiveConnection("")),
+						action: launch(() => {
+							setActiveConnection("");
+							closeConnection();
+						}),
 					},
 					{
 						id: "reset-tours",

@@ -39,7 +39,7 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { INSTANCE_GROUP, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnection, useConnections } from "~/hooks/connection";
+import { useConnection, useConnectionList } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -63,7 +63,7 @@ export function ConnectionsModal() {
 	} = useConfigStore.getState();
 
 	const [search, setSearch] = useInputState("");
-	const connections = useConnections();
+	const connections = useConnectionList();
 	const connection = useConnection();
 
 	const groups = useConfigStore((s) => s.connectionGroups);
