@@ -147,14 +147,16 @@ export function SurrealistToolbar() {
 						}}
 					>
 						<Menu.Target>
-							<ActionButton
-								color="slate"
-								variant="subtle"
-								label="Apply demo dataset"
-								loading={isDatasetLoading}
-							>
-								<Icon path={iconTable} />
-							</ActionButton>
+							<div>
+								<ActionButton
+									color="slate"
+									variant="subtle"
+									label="Apply demo dataset"
+									loading={isDatasetLoading}
+								>
+									<Icon path={iconTable} />
+								</ActionButton>
+							</div>
 						</Menu.Target>
 						<Menu.Dropdown miw={200}>
 							<Menu.Label>Select a dataset</Menu.Label>
