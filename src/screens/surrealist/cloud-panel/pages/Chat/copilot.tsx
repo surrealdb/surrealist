@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
+import { CloudProfile } from "~/types";
 import { fastParseJwt, newId, showError } from "~/util/helpers";
 
 const WORKFLOW_ID = import.meta.env.VITE_SCOUT_WORKFLOW_ID;
@@ -53,8 +54,7 @@ export function useCopilotMutation() {
 						inputs: {
 							user_message: message,
 							chat_history: history,
-							user_avatar: profile.picture,
-							user_name: profile.name,
+							user_identifier: await computeIdentifier(profile),
 						},
 					}),
 				},
@@ -258,5 +258,29 @@ async function readResponseStream(
 				}
 			}
 		}
+	}
+}
+
+/**
+ * Create a user identifier hash
+ */
+async function computeIdentifier(profile: CloudProfile) {
+	try {
+		const textAsBuffer = new TextEncoder().encode(profile.username);
+		const hashBuffer = await window.crypto.subtle.digest("SHA-256", textAsBuffer);
+		const hashArray = Array.from(new Uint8Array(hashBuffer));
+		const hash = hashArray.map((item) => item.toString(16).padStart(2, "0")).join("");
+
+		let num = 0;
+
+		for (let i = 0; i < hash.length; i++) {
+			num = (num << 5) - num + hash.charCodeAt(i);
+			num |= 0;
+		}
+
+		return num.toString().slice(0, 7);
+	} catch (error) {
+		console.error("Error computing identifier:", error);
+		return "unknown";
 	}
 }
