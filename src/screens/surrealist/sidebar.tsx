@@ -55,6 +55,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const connection = useConnection((c) => c?.id ?? "");
 
+	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
 
 	const setLocation = useStable((location: string) => {
@@ -108,7 +109,10 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 				pt={22}
 			>
 				<Space h="var(--titlebar-offset)" />
-				<UnstyledButton onClick={() => setLocation("/start")}>
+				<UnstyledButton onClick={() => {
+					setLocation("/start");
+					setOverlaySidebar(false)
+				}}>
 					<Flex
 						wrap="nowrap"
 						align="center"
