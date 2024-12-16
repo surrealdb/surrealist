@@ -187,7 +187,7 @@ export function BillingPage() {
 							}}
 							spacing="xl"
 						>
-							<Paper p="md">
+							<Paper p="xl">
 								<Group>
 									<Icon
 										path={iconAccount}
@@ -253,7 +253,7 @@ export function BillingPage() {
 									</Box>
 								</Stack>
 							</Paper>
-							<Paper p="md">
+							<Paper p="xl">
 								<Group>
 									<Icon
 										path={iconCreditCard}

@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { Box, Group, noop, SegmentedControl, Stack } from "@mantine/core";
+import { Box, Group, SegmentedControl, Stack, noop } from "@mantine/core";
 
 import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
