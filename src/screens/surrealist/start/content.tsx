@@ -62,7 +62,7 @@ export function StartAction({
 					<Text
 						c="bright"
 						fw={600}
-						fz={15}
+						fz="xl"
 					>
 						{title}
 					</Text>

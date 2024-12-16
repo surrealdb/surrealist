@@ -4,7 +4,7 @@ import { Box } from "@mantine/core";
 import { memo, useMemo } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useViewFocus } from "~/hooks/routing";
 import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/schema";
 import { syncConnectionSchema } from "~/util/schema";
@@ -17,7 +17,10 @@ export function AuthenticationView() {
 	const nsSchema = useNamespaceSchema();
 	const dbSchema = useDatabaseSchema();
 
-	const { lastNamespace, lastDatabase } = useActiveConnection();
+	const [namespace, database] = useConnection((c) => [
+		c?.lastNamespace ?? "",
+		c?.lastDatabase ?? "",
+	]);
 
 	const users = useMemo(
 		() => [...kvSchema.users, ...nsSchema.users, ...dbSchema.users],
@@ -55,7 +58,7 @@ export function AuthenticationView() {
 							users={users}
 							accesses={accesses}
 							disabled={
-								!lastNamespace && {
+								!namespace && {
 									message:
 										"You need to select a namespace before viewing namespace authentication",
 									selector: { withNamespace: true },
@@ -72,7 +75,7 @@ export function AuthenticationView() {
 							users={users}
 							accesses={accesses}
 							disabled={
-								!lastDatabase && {
+								!database && {
 									message:
 										"You need to select a database before viewing database authentication",
 									selector: { withDatabase: true },

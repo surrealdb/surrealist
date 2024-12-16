@@ -1,7 +1,7 @@
 import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -22,17 +22,15 @@ export interface GeographyDrawerProps {
 	onClose: () => void;
 }
 
-export function GeographyDrawer({
-	opened,
-	data,
-	onClose,
-}: GeographyDrawerProps) {
+export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps) {
 	const [width, setWidth] = useState(650);
 	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
 
 	useEffect(() => {
 		setGeoJSON(formatValue(data));
 	}, [data]);
+
+	const extensions = useMemo(() => [surrealql()], []);
 
 	return (
 		<Drawer
@@ -50,9 +48,16 @@ export function GeographyDrawer({
 				},
 			}}
 		>
-			<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
+			<DrawerResizer
+				minSize={500}
+				maxSize={1500}
+				onResize={setWidth}
+			/>
 
-			<Group mb="md" gap="sm">
+			<Group
+				mb="md"
+				gap="sm"
+			>
 				<PrimaryTitle
 					style={{
 						display: "flex",
@@ -60,7 +65,11 @@ export function GeographyDrawer({
 						alignItems: "center",
 					}}
 				>
-					<Icon left path={iconMarker} size="sm" />
+					<Icon
+						left
+						path={iconMarker}
+						size="sm"
+					/>
 					Geography explorer
 				</PrimaryTitle>
 
@@ -76,7 +85,11 @@ export function GeographyDrawer({
 				</Group>
 			</Group>
 
-			<Stack flex={1} gap={6} style={{ flexShrink: 1, flexBasis: 0 }}>
+			<Stack
+				flex={1}
+				gap={6}
+				style={{ flexShrink: 1, flexBasis: 0 }}
+			>
 				<Box flex={1}>
 					<Suspense fallback={<LoadingContainer visible />}>
 						<GeographyMap value={geoJSON} />
@@ -85,14 +98,17 @@ export function GeographyDrawer({
 
 				<Label style={{ marginTop: "20px" }}>Contents</Label>
 
-				<Box flex={1} pos="relative">
+				<Box
+					flex={1}
+					pos="relative"
+				>
 					<CodeEditor
 						pos="absolute"
 						inset={0}
 						autoFocus
 						value={geoJSON}
 						onChange={setGeoJSON}
-						extensions={[surrealql()]}
+						extensions={extensions}
 					/>
 				</Box>
 			</Stack>

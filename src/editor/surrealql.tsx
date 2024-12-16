@@ -62,11 +62,7 @@ export const surqlLinting = (onValidate?: (status: string) => void): Extension =
 			}
 
 			const message = validateQuery(content) || "";
-			const match = message.match(
-				/parse error: (failed to parse query at line (\d+) column (\d+).+)\n/i,
-			);
-
-			onValidate?.(message);
+			const match = message.match(/^Parse error: (.+)?\s+-->\s+\[(\d+):(\d+)\]/i);
 
 			if (match) {
 				const reason = match[1].trim();
@@ -75,6 +71,8 @@ export const surqlLinting = (onValidate?: (status: string) => void): Extension =
 
 				const position = view.state.doc.line(lineNumber).from + column - 1;
 				const word = view.state.wordAt(position);
+
+				onValidate?.(reason);
 
 				return [
 					word
@@ -95,6 +93,7 @@ export const surqlLinting = (onValidate?: (status: string) => void): Extension =
 				];
 			}
 
+			onValidate?.("");
 			return [];
 		},
 		{

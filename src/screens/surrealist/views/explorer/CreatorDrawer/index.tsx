@@ -16,7 +16,7 @@ import {
 import type { EditorView } from "@codemirror/view";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { RecordId, StringRecordId, Table } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -118,6 +118,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 		}
 	}, [opened, table]);
 
+	const extensions = useMemo(() => [surrealql(), surqlLinting()], []);
 	const isFullyValid = isValid && (!isRelation || (recordFrom && recordTo));
 	const [width, setWidth] = useState(650);
 
@@ -257,7 +258,7 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 						lineNumbers
 						value={recordBody}
 						onChange={setRecordBody}
-						extensions={[surrealql(), surqlLinting()]}
+						extensions={extensions}
 						onMount={setCursor}
 					/>
 				</Box>

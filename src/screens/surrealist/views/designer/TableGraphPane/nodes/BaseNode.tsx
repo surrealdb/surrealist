@@ -1,9 +1,8 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
-import { Handle, Position, useInternalNode } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 import { type MouseEvent, type ReactNode, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { useActiveConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";

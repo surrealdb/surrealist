@@ -4,7 +4,7 @@ import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { Icon } from "~/components/Icon";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useIntent, useViewFocus } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
@@ -22,7 +22,7 @@ const TableGraphPaneLazy = memo(TableGraphPane);
 export function DesignerView() {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { design, stopDesign, active, isDesigning } = useDesigner();
-	const { designerTableList } = useActiveConnection();
+	const designerTableList = useConnection((c) => c?.designerTableList);
 
 	const isOnline = useIsConnected();
 	const tables = useTables();

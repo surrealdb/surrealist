@@ -13,6 +13,7 @@ import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@manti
 import { showNotification } from "@mantine/notifications";
 import { surrealql } from "@surrealdb/codemirror";
 import { useContextMenu } from "mantine-contextmenu";
+import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
@@ -52,6 +53,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 
 	const { showContextMenu } = useContextMenu();
 	const [format] = useResultFormatter();
+	const extensions = useMemo(() => [surrealql(), surqlRecordLinks(inspect)], [inspect]);
 
 	useRefreshTimer(30_000);
 
@@ -143,10 +145,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 											<CodeEditor
 												value={attemptFormat(format, msg.data)}
 												readOnly
-												extensions={[
-													surrealql(),
-													surqlRecordLinks(inspect),
-												]}
+												extensions={extensions}
 											/>
 										</Accordion.Panel>
 									)}

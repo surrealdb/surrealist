@@ -16,12 +16,13 @@ export function IndividualPreview({ responses, selected }: PreviewProps) {
 
 	const textSize = Math.floor(15 * (editorScale / 100));
 	const contents = useMemo(() => attemptFormat(format, result), [result, format]);
+	const extensions = useMemo(() => [surrealql(), surqlRecordLinks(inspect)], [inspect]);
 
 	return success ? (
 		<CodeEditor
 			value={contents}
 			readOnly
-			extensions={[surrealql(), surqlRecordLinks(inspect)]}
+			extensions={extensions}
 		/>
 	) : (
 		<Text

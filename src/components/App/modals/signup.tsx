@@ -20,6 +20,7 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnection } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
+import { getActiveConnection } from "~/util/connection";
 import { iconWarning } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
@@ -29,23 +30,23 @@ export function AccessSignupModal() {
 	const [error, setError] = useState("");
 	const [loading, loadingHandle] = useDisclosure();
 	const opened = useInterfaceStore((s) => s.showAccessSignup);
-	const connection = useConnection();
 
-	const isAccess = connection?.authentication?.mode === "access";
+	const [connectionId, authMode, accessFields] = useConnection((c) => [
+		c?.id ?? "",
+		c?.authentication.mode,
+		c?.authentication.accessFields ?? [],
+	]);
 
 	const openEditor = useStable(() => {
-		if (!connection) return;
-
-		dispatchIntent("edit-connection", { id: connection.id });
+		dispatchIntent("edit-connection", { id: connectionId });
 		closeAccessSignup();
 	});
 
 	const createAccount = useStable(() => {
-		if (!connection) return;
-
 		loadingHandle.open();
 
-		const signupMode = isAccess ? "access-signup" : "scope-signup";
+		const signupMode = authMode === "access" ? "access-signup" : "scope-signup";
+		const connection = getActiveConnection();
 
 		openConnection({
 			connection: {
@@ -102,7 +103,7 @@ export function AccessSignupModal() {
 						</Table.Tr>
 					</Table.Thead>
 					<Table.Tbody>
-						{connection?.authentication?.accessFields?.map((field) => {
+						{accessFields.map((field) => {
 							const fieldName = field.subject.toLowerCase();
 							const ValueInput = SENSITIVE_ACCESS_FIELDS.has(fieldName)
 								? PasswordInput

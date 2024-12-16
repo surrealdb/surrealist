@@ -1,6 +1,6 @@
 import { Alert, Button, Divider, Group, Menu, Modal, Stack, Text } from "@mantine/core";
 
-import { iconCheck, iconChevronDown, iconDelete, iconFile, iconPlus } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconFile, iconPlus } from "~/util/icons";
 
 import { useDisclosure } from "@mantine/hooks";
 import { Fragment, useLayoutEffect, useMemo, useState } from "react";
@@ -9,12 +9,10 @@ import { ConnectionDetails } from "~/components/ConnectionDetails";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { INSTANCE_GROUP } from "~/constants";
 import { useSetting } from "~/hooks/config";
-import { useConnections } from "~/hooks/connection";
+import { useConnectionList } from "~/hooks/connection";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { isConnectionValid } from "~/util/connection";
@@ -28,9 +26,8 @@ function newConnection() {
 }
 
 export function ConnectionModal() {
-	const connections = useConnections();
-	const { addConnection, updateConnection, setActiveConnection, removeConnection } =
-		useConfigStore.getState();
+	const connections = useConnectionList();
+	const { addConnection, updateConnection, setActiveConnection } = useConfigStore.getState();
 
 	const [opened, openedHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");

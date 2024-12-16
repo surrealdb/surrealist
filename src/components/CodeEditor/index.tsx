@@ -27,7 +27,7 @@ export interface CodeEditorProps extends BoxProps {
 	lineNumbers?: boolean;
 	serialize?: Record<string, any>;
 	onMount?: (editor: EditorView) => void;
-	onChange?: (value: string, state: StateSnapshot) => void;
+	onChange?: (value: string, snapshot: StateSnapshot, state: EditorState) => void;
 }
 
 export function CodeEditor(props: CodeEditorProps) {
@@ -57,7 +57,7 @@ export function CodeEditor(props: CodeEditorProps) {
 	const internalCompartment = useRef(new Compartment());
 	const externalCompartment = useRef(new Compartment());
 	const handleChange = useStable((update: ViewUpdate) => {
-		onChange?.(update.state.doc.toString(), update.state.toJSON(serialize));
+		onChange?.(update.state.doc.toString(), update.state.toJSON(serialize), update.state);
 	});
 
 	// The internally controlled extensions

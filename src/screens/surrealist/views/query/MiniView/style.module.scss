@@ -1,0 +1,7 @@
+.switcher {
+	background-color: unset;
+
+	:global(.mantine-SegmentedControl-label) {
+		background-color: unset;
+	}
+}

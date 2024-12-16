@@ -1,6 +1,6 @@
 import { Button, Divider, Modal, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { s } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -57,6 +57,8 @@ export function HighlightToolModal() {
 		}
 	}, [isOpen]);
 
+	const extensions = useMemo(() => [surrealql()], []);
+
 	useIntent("highlight-tool", () => {
 		openedHandle.open();
 		setFeatureFlags({
@@ -79,7 +81,7 @@ export function HighlightToolModal() {
 						h="50%"
 						value={value}
 						onChange={onChange}
-						extensions={[surrealql()]}
+						extensions={extensions}
 						autoFocus
 					/>
 					<Divider />

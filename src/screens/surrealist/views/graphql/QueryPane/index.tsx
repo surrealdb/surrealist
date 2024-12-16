@@ -19,17 +19,16 @@ import {
 } from "~/util/icons";
 
 import { Prec } from "@codemirror/state";
-import { type EditorView, keymap, lineNumbers } from "@codemirror/view";
-import { Text } from "@mantine/core";
+import { type EditorView, keymap } from "@codemirror/view";
 import { graphql, updateSchema } from "cm6-graphql";
 import { type GraphQLSchema, parse, print } from "graphql";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -61,7 +60,7 @@ export function QueryPane({
 	onEditorMount,
 }: QueryPaneProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
-	const connection = useActiveConnection();
+	const queryText = useConnection((c) => c?.graphqlQuery ?? "");
 
 	const setQueryForced = useStable((query: string) => {
 		try {
@@ -88,7 +87,7 @@ export function QueryPane({
 
 	const handleFormat = useStable(() => {
 		try {
-			setQueryForced(print(parse(connection.graphqlQuery)));
+			setQueryForced(print(parse(queryText)));
 		} catch {
 			showError({
 				title: "Failed to format",
@@ -103,7 +102,7 @@ export function QueryPane({
 
 	const inferVariables = useStable(() => {
 		try {
-			const document = parse(connection.graphqlQuery);
+			const document = parse(queryText);
 
 			const variableNames = document.definitions.reduce((acc, def) => {
 				if (def.kind === "OperationDefinition") {
@@ -116,7 +115,7 @@ export function QueryPane({
 				return acc;
 			}, [] as string[]);
 
-			const currentVars = tryParseParams(connection.graphqlQuery);
+			const currentVars = tryParseParams(queryText);
 			const currentKeys = Object.keys(currentVars);
 			const variables = variableNames.filter((v) => !currentKeys.includes(v));
 
@@ -150,6 +149,18 @@ export function QueryPane({
 			updateSchema(editor, schema);
 		}
 	}, [schema, editor]);
+
+	const extensions = useMemo(
+		() => [
+			graphql(undefined, {
+				onFillAllFields: handleFillFields,
+			}),
+			graphqlParser(),
+			// graphqlFillFields(),
+			Prec.high(keymap.of([...runGraphqlQueryKeymap, ...graphqlSuggestions])),
+		],
+		[],
+	);
 
 	useIntent("format-graphql-query", handleFormat);
 	useIntent("infer-graphql-variables", inferVariables);
@@ -207,18 +218,11 @@ export function QueryPane({
 		>
 			{isEnabled ? (
 				<CodeEditor
-					value={connection.graphqlQuery}
+					value={queryText}
 					onChange={scheduleSetQuery}
 					onMount={onEditorMount}
 					lineNumbers
-					extensions={[
-						graphql(undefined, {
-							onFillAllFields: handleFillFields,
-						}),
-						graphqlParser(),
-						// graphqlFillFields(),
-						Prec.high(keymap.of([...runGraphqlQueryKeymap, ...graphqlSuggestions])),
-					]}
+					extensions={extensions}
 				/>
 			) : (
 				<Alert

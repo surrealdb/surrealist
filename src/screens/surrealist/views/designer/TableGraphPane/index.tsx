@@ -75,7 +75,7 @@ import type {
 } from "~/types";
 
 import { useContextMenu } from "mantine-contextmenu";
-import { sleep } from "radash";
+import { pick, sleep } from "radash";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -83,14 +83,14 @@ import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import { useSetting } from "~/hooks/config";
-import { useIsConnected } from "~/hooks/connection";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useActiveView, useIntent } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { createBaseConnection } from "~/util/defaults";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
@@ -108,12 +108,28 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const schema = useDatabaseSchema();
 	const isConnected = useIsConnected();
-	const connection = useActiveConnection();
 	const [activeView] = useActiveView();
+
+	const [
+		connectionId,
+		designerTableList,
+		diagramAlgorithm,
+		diagramDirection,
+		diagramLineStyle,
+		diagramLinkMode,
+		diagramMode,
+	] = useConnection((c) => [
+		c?.id ?? "",
+		c?.designerTableList,
+		c?.diagramAlgorithm,
+		c?.diagramDirection,
+		c?.diagramLineStyle,
+		c?.diagramLinkMode,
+		c?.diagramMode,
+	]);
 
 	const [isExporting, setIsExporting] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
-	const activeSession = useActiveConnection();
 	const isLight = useIsLight();
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
@@ -132,11 +148,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [defaultLinkMode] = useSetting("appearance", "defaultDiagramLinkMode");
 	const [defaultNodeMode] = useSetting("appearance", "defaultDiagramMode");
 
-	const algorithm = applyDefault(activeSession.diagramAlgorithm, defaultAlgorithm);
-	const direction = applyDefault(activeSession.diagramDirection, defaultDirection);
-	const lineStyle = applyDefault(activeSession.diagramLineStyle, defaultLineStyle);
-	const linkMode = applyDefault(activeSession.diagramLinkMode, defaultLinkMode);
-	const nodeMode = applyDefault(activeSession.diagramMode, defaultNodeMode);
+	const algorithm = applyDefault(diagramAlgorithm, defaultAlgorithm);
+	const direction = applyDefault(diagramDirection, defaultDirection);
+	const lineStyle = applyDefault(diagramLineStyle, defaultLineStyle);
+	const linkMode = applyDefault(diagramLinkMode, defaultLinkMode);
+	const nodeMode = applyDefault(diagramMode, defaultNodeMode);
 
 	useLayoutEffect(() => {
 		if (isLayedOut.current || !nodesInitialized) {
@@ -246,35 +262,35 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const setDiagramAlgorithm = useStable((alg: string) => {
 		updateCurrentConnection({
-			id: activeSession?.id,
+			id: connectionId,
 			diagramAlgorithm: alg as DiagramAlgorithm,
 		});
 	});
 
 	const setDiagramDirection = useStable((mode: string) => {
 		updateCurrentConnection({
-			id: activeSession?.id,
+			id: connectionId,
 			diagramDirection: mode as DiagramDirection,
 		});
 	});
 
 	const setDiagramLineStyle = useStable((style: string) => {
 		updateCurrentConnection({
-			id: activeSession?.id,
+			id: connectionId,
 			diagramLineStyle: style as DiagramLineStyle,
 		});
 	});
 
 	const setDiagramLinkMode = useStable((mode: string) => {
 		updateCurrentConnection({
-			id: activeSession?.id,
+			id: connectionId,
 			diagramLinkMode: mode as DiagramLinks,
 		});
 	});
 
 	const setDiagramMode = useStable((mode: string) => {
 		updateCurrentConnection({
-			id: activeSession?.id,
+			id: connectionId,
 			diagramMode: mode as DiagramMode,
 		});
 	});
@@ -325,7 +341,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			icon={iconRelation}
 			style={{ overflow: "hidden" }}
 			leftSection={
-				!connection.designerTableList && (
+				!designerTableList && (
 					<ActionButton
 						label="Reveal tables"
 						mr="sm"
@@ -398,7 +414,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Line style</Label>
 								<Select
 									data={DESIGNER_LINE_STYLES}
-									value={activeSession.diagramLineStyle}
+									value={diagramLineStyle}
 									onChange={setDiagramLineStyle as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
@@ -406,7 +422,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Algorithm</Label>
 								<Select
 									data={DESIGNER_ALGORITHMS}
-									value={activeSession.diagramAlgorithm}
+									value={diagramAlgorithm}
 									onChange={setDiagramAlgorithm as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
@@ -414,7 +430,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Appearance</Label>
 								<Select
 									data={DESIGNER_NODE_MODES}
-									value={activeSession.diagramMode}
+									value={diagramMode}
 									onChange={setDiagramMode as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
@@ -422,7 +438,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Direction</Label>
 								<Select
 									data={DESIGNER_DIRECTIONS}
-									value={activeSession.diagramDirection}
+									value={diagramDirection}
 									onChange={setDiagramDirection as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
@@ -430,7 +446,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								<Label>Record links</Label>
 								<Select
 									data={DESIGNER_LINKS}
-									value={activeSession.diagramLinkMode}
+									value={diagramLinkMode}
 									onChange={setDiagramLinkMode as any}
 									comboboxProps={{ withinPortal: false }}
 								/>

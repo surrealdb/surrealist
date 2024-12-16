@@ -20,11 +20,12 @@ import { extractVariables, showError, showInfo } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
 
 export function RegisterUserModal() {
-	const connection = useConnection();
-	const lastNamespace = connection?.lastNamespace ?? "";
-	const lastDatabase = connection?.lastDatabase ?? "";
-	const authentication = connection?.authentication;
 	const schema = useDatabaseSchema();
+	const [namespace, database, authentication] = useConnection((c) => [
+		c?.lastNamespace ?? "",
+		c?.lastDatabase ?? "",
+		c?.authentication,
+	]);
 
 	const [isOpen, openedHandle] = useBoolean();
 	const [access, setAccess] = useState<SchemaAccess | null>(null);
@@ -48,8 +49,8 @@ export function RegisterUserModal() {
 
 			await register({
 				access: access.name,
-				namespace: lastNamespace,
-				database: lastDatabase,
+				namespace,
+				database,
 				variables,
 			});
 

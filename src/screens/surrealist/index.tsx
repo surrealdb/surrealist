@@ -33,6 +33,8 @@ import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
+const StartPageLazy = memo(StartPage);
+const CloudPanelPageLazy = memo(CloudPanelPage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -52,14 +54,14 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 };
 
 const VIEW_COMPONENTS: Record<ViewMode, FC> = {
-	query: QueryView,
-	explorer: ExplorerView,
-	graphql: GraphqlView,
-	designer: DesignerView,
-	authentication: AuthenticationView,
-	functions: FunctionsView,
-	models: ModelsView,
-	documentation: DocumentationView,
+	query: memo(QueryView),
+	explorer: memo(ExplorerView),
+	graphql: memo(GraphqlView),
+	designer: memo(DesignerView),
+	authentication: memo(AuthenticationView),
+	functions: memo(FunctionsView),
+	models: memo(ModelsView),
+	documentation: memo(DocumentationView),
 };
 
 export function SurrealistScreen() {
@@ -69,7 +71,7 @@ export function SurrealistScreen() {
 	const isCloud = useCloudRoute();
 	const cloudEnabled = useSurrealCloud();
 	const [isCloudHome] = useRoute("/cloud");
-	const connection = useConnection();
+	const [hasConnection, database] = useConnection((c) => [!!c, c?.lastDatabase]);
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
@@ -81,7 +83,7 @@ export function SurrealistScreen() {
 		setOverlaySidebar(false);
 	});
 
-	const requestDatabase = !connection?.lastDatabase && activeView?.require === "database";
+	const requestDatabase = !database && activeView?.require === "database";
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 	const titlebarOffset = customTitlebar ? 15 : 0;
 
@@ -142,10 +144,10 @@ export function SurrealistScreen() {
 							<Route path="/" />
 
 							<Route path="/start">
-								<StartPage />
+								<StartPageLazy />
 							</Route>
 
-							{connection &&
+							{hasConnection &&
 								Object.values(VIEW_MODES).map((mode) => (
 									<Route
 										key={mode.id}
@@ -175,7 +177,7 @@ export function SurrealistScreen() {
 										flex={1}
 										gap={0}
 									>
-										<CloudPanelPage />
+										<CloudPanelPageLazy />
 									</Stack>
 								</Route>
 							)}
@@ -188,7 +190,7 @@ export function SurrealistScreen() {
 				</Box>
 			</Flex>
 
-			{connection &&
+			{hasConnection &&
 				Object.values(VIEW_MODES).map((mode) => {
 					const Content = VIEW_COMPONENTS[mode.id];
 

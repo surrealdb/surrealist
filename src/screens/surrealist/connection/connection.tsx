@@ -29,7 +29,7 @@ import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { AuthDetails, Connection, Protocol } from "~/types";
+import type { AuthDetails, Authentication, Connection, Protocol } from "~/types";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -647,7 +647,12 @@ export async function requestDatabaseExport(config?: ExportOptions) {
 		return new Blob([await instance.export(config)]);
 	}
 
-	const { endpoint, headers } = composeHttpConnection(connection, "/export");
+	const { endpoint, headers } = composeHttpConnection(
+		connection.authentication,
+		connection.lastNamespace,
+		connection.lastDatabase,
+		"/export",
+	);
 
 	const response = await fetch(endpoint, {
 		headers,
@@ -680,7 +685,9 @@ export function resetConnection() {
  * Compose HTTP authentication headers
  */
 export function composeHttpConnection(
-	connection: Connection,
+	authentication: Authentication,
+	namespace: string,
+	database: string,
 	path: string,
 	extraHeaders?: Record<string, string>,
 ) {
@@ -688,7 +695,7 @@ export function composeHttpConnection(
 		throw new Error("No access token available");
 	}
 
-	const { protocol, hostname } = connection.authentication;
+	const { protocol, hostname } = authentication;
 
 	const isSecure = protocol === "https" || protocol === "wss";
 	const endpoint = new URL(path, `${isSecure ? "https" : "http"}://${hostname}`).toString();
@@ -698,12 +705,12 @@ export function composeHttpConnection(
 		Authorization: `Bearer ${accessToken}`,
 	};
 
-	if (connection.lastNamespace) {
-		headers["Surreal-NS"] = connection.lastNamespace;
+	if (namespace) {
+		headers["Surreal-NS"] = namespace;
 	}
 
-	if (connection.lastDatabase) {
-		headers["Surreal-DB"] = connection.lastDatabase;
+	if (database) {
+		headers["Surreal-DB"] = database;
 	}
 
 	return { endpoint, headers };

@@ -14,10 +14,10 @@ export function SandboxModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [completed, complete] = useOnboarding("sandbox");
 	const [activeView] = useActiveView();
-	const connection = useConnection();
+	const connection = useConnection((c) => c?.id ?? "");
 
 	useEffect(() => {
-		if (connection?.id === SANDBOX && activeView && !completed) {
+		if (connection === SANDBOX && activeView && !completed) {
 			openHandle.open();
 			complete();
 		}

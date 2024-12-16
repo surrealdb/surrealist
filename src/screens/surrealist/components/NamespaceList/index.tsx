@@ -15,7 +15,8 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { type MouseEvent, type SyntheticEvent, useMemo } from "react";
+import { pick } from "radash";
+import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
@@ -24,25 +25,24 @@ import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
+import { createBaseAuthentication } from "~/util/defaults";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
 
 export interface NamespaceProps {
 	value: string;
-	isActive: boolean;
+	activeNamespace: string;
 	onOpen: (ns: string) => void;
 	onRemove: () => void;
 }
 
-function Namespace({ value, isActive, onOpen, onRemove }: NamespaceProps) {
-	const { lastNamespace } = useActiveConnection();
-
+function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps) {
 	const open = useStable(() => onOpen(value));
 
 	const remove = useConfirmation({
@@ -52,7 +52,7 @@ function Namespace({ value, isActive, onOpen, onRemove }: NamespaceProps) {
 		onConfirm() {
 			executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(value)}`);
 
-			if (value === lastNamespace) {
+			if (activeNamespace === value) {
 				activateDatabase("", "");
 			}
 		},
@@ -70,7 +70,7 @@ function Namespace({ value, isActive, onOpen, onRemove }: NamespaceProps) {
 			h="unset"
 			radius="xs"
 			onClick={open}
-			isActive={isActive}
+			isActive={value === activeNamespace}
 			className={classes.namespace}
 			rightSection={
 				<ActionButton
@@ -98,24 +98,28 @@ export interface NamespaceListProps {
 
 export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	const [opened, openHandle] = useBoolean();
-	const connection = useActiveConnection();
 	const connected = useIsConnected();
 	const schema = useRootSchema();
 
+	const [namespace, authentication] = useConnection((c) => [
+		c?.lastNamespace ?? "",
+		c?.authentication ?? createBaseAuthentication(),
+	]);
+
+	const level = getAuthLevel(authentication);
+
 	const namespaces = useMemo(() => {
-		const authNS = getAuthNS(connection.authentication);
+		const authNS = getAuthNS(authentication);
 
 		if (authNS) {
 			return [authNS];
 		}
 
 		return schema.namespaces.map((ns) => parseIdent(ns.name));
-	}, [schema, connection.authentication]);
-
-	const level = getAuthLevel(connection.authentication);
+	}, [schema, authentication]);
 
 	const openNamespace = (ns: string) => {
-		if (connection.lastNamespace !== ns) {
+		if (namespace !== ns) {
 			activateDatabase(ns, "");
 		}
 
@@ -172,7 +176,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 					<Menu.Target>
 						<Button
 							px="sm"
-							variant={connection.lastNamespace ? "subtle" : "light"}
+							variant={namespace ? "subtle" : "light"}
 							color="slate"
 							leftSection={<Icon path={iconNamespace} />}
 							{...buttonProps}
@@ -182,7 +186,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 								fw={600}
 								maw={200}
 							>
-								{connection.lastNamespace || "Select namespace"}
+								{namespace || "Select namespace"}
 							</Text>
 						</Button>
 					</Menu.Target>
@@ -222,7 +226,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 											<Namespace
 												key={ns}
 												value={ns}
-												isActive={ns === connection.lastNamespace}
+												activeNamespace={namespace}
 												onOpen={openNamespace}
 												onRemove={openHandle.close}
 											/>

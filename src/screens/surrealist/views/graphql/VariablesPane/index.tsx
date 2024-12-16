@@ -1,13 +1,14 @@
 import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
+import { useMemo } from "react";
 import { decodeCbor } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { surqlLinting } from "~/editor";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
@@ -20,8 +21,7 @@ export interface VariablesPaneProps {
 
 export function VariablesPane(props: VariablesPaneProps) {
 	const { updateCurrentConnection } = useConfigStore.getState();
-
-	const connection = useActiveConnection();
+	const variablesText = useConnection((c) => c?.graphqlVariables ?? "");
 
 	const setVariables = useDebouncedFunction((content: string | undefined) => {
 		try {
@@ -41,6 +41,8 @@ export function VariablesPane(props: VariablesPaneProps) {
 			props.setIsValid(false);
 		}
 	}, 50);
+
+	const extensions = useMemo(() => [surrealql(), surqlLinting()], []);
 
 	return (
 		<ContentPane
@@ -67,10 +69,10 @@ export function VariablesPane(props: VariablesPaneProps) {
 			}
 		>
 			<CodeEditor
-				value={connection.graphqlVariables || ""}
+				value={variablesText}
 				onChange={setVariables}
 				lineNumbers
-				extensions={[surrealql(), surqlLinting()]}
+				extensions={extensions}
 			/>
 		</ContentPane>
 	);

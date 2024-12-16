@@ -36,7 +36,7 @@ import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { ContentPane } from "~/components/Pane";
 import { RecordLink } from "~/components/RecordLink";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -56,7 +56,7 @@ export interface ExplorerPaneProps {
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
 	const { addQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
-	const connection = useActiveConnection();
+	const explorerTableList = useConnection((c) => c?.explorerTableList ?? []);
 	const pagination = usePagination();
 	const [, setActiveView] = useActiveView();
 
@@ -201,7 +201,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			title="Record Explorer"
 			icon={iconTable}
 			leftSection={
-				!connection.explorerTableList && (
+				!explorerTableList && (
 					<ActionButton
 						label="Reveal tables"
 						mr="sm"

@@ -1,5 +1,6 @@
 import { Alert, Paper, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { SaveBox } from "~/components/SaveBox";
@@ -20,6 +21,11 @@ export interface ContentTabProps {
 export function ContentTab({ value, error, onChange, saveHandle }: ContentTabProps) {
 	const { inspect } = useInspector();
 	const [hasLineNumbers] = useSetting("appearance", "inspectorLineNumbers");
+
+	const extensions = useMemo(
+		() => [surrealql(), surqlLinting(), surqlRecordLinks(inspect)],
+		[inspect],
+	);
 
 	return (
 		<>
@@ -45,7 +51,7 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 					value={value}
 					onChange={onChange}
 					lineNumbers={hasLineNumbers}
-					extensions={[surrealql(), surqlLinting(), surqlRecordLinks(inspect)]}
+					extensions={extensions}
 				/>
 			</Paper>
 

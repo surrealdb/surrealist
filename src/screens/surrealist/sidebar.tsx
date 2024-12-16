@@ -11,6 +11,7 @@ import {
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
+
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
 import { useLocation } from "wouter";
@@ -27,7 +28,7 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
-import type { SidebarMode, ViewInfo, ViewMode } from "~/types";
+import type { SidebarMode, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
 import { iconCloud, iconCog, iconSearch } from "~/util/icons";
@@ -48,11 +49,11 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 
 	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
-	const connection = useConnection();
 	const showCloud = useSurrealCloud();
 	const [, navigate] = useLocation();
 	const cloudActive = useCloudRoute();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
+	const connection = useConnection((c) => c?.id ?? "");
 
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
 
@@ -171,6 +172,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 										onClick={() => setLocation(`/${info.id}`)}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}
+										disabled={!connection}
 										style={{
 											opacity: connection ? 1 : 0.5,
 										}}

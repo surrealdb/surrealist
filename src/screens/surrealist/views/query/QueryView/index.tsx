@@ -14,20 +14,17 @@ import {
 
 import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { Image } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import posthog from "posthog-js";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { adapter, isMini } from "~/adapter";
+import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
-import surrealistIcon from "~/assets/images/icon.webp";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
-import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -35,7 +32,7 @@ import { setEditorText } from "~/editor/helpers";
 import { executeEditorQuery } from "~/editor/query";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
-import { useActiveConnection, useActiveQuery, useSavedQueryTags } from "~/hooks/connection";
+import { useActiveQuery, useConnection, useSavedQueryTags } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useIntent } from "~/hooks/routing";
@@ -60,8 +57,7 @@ const ResultPaneLazy = memo(ResultPane);
 
 export function QueryView() {
 	const { saveQuery, updateQueryTab } = useConfigStore.getState();
-	const { queryTabList } = useActiveConnection();
-	const logoUrl = useLogoUrl();
+	const queryTabList = useConnection((c) => c?.queryTabList);
 
 	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [editor, setEditor] = useState(new EditorView());
@@ -80,9 +76,6 @@ export function QueryView() {
 	const [saveName, setSaveName] = useInputState("");
 	const [saveContent, setSaveContent] = useInputState("");
 	const [saveTags, setSaveTags] = useInputState<string[]>([]);
-
-	const miniAppearance = adapter instanceof MiniAdapter ? adapter.appearance : "normal";
-	const miniCorners = adapter instanceof MiniAdapter ? adapter.corners : undefined;
 
 	const handleSaveRequest = useStable(async () => {
 		if (!active) {
@@ -173,72 +166,44 @@ export function QueryView() {
 		>
 			<PanelGroup direction={orientation}>
 				<Panel minSize={15}>
-					{isMini ? (
-						showVariables ? (
-							<VariablesPaneLazy
-								isValid={variablesValid}
-								switchPortal={switchPortal}
-								setIsValid={setVariablesValid}
-								closeVariables={closeVariables}
-								editor={editor}
-								corners={miniCorners}
-								lineNumbers={!hideLineNumbers}
-							/>
-						) : (
+					<PanelGroup direction={variablesOrientation}>
+						<Panel
+							id="query"
+							order={0}
+							minSize={35}
+						>
 							<QueryPaneLazy
-								corners={miniCorners}
-								editor={editor}
 								activeTab={active}
-								switchPortal={switchPortal}
-								selection={selection}
+								editor={editor}
 								showVariables={showVariables}
+								selection={selection}
 								lineNumbers={!hideLineNumbers}
 								onSaveQuery={handleSaveRequest}
 								setShowVariables={setShowVariables}
 								onSelectionChange={setSelection}
 								onEditorMounted={setEditor}
 							/>
-						)
-					) : (
-						<PanelGroup direction={variablesOrientation}>
-							<Panel
-								id="query"
-								order={0}
-								minSize={35}
-							>
-								<QueryPaneLazy
-									activeTab={active}
-									editor={editor}
-									showVariables={showVariables}
-									selection={selection}
-									lineNumbers={!hideLineNumbers}
-									onSaveQuery={handleSaveRequest}
-									setShowVariables={setShowVariables}
-									onSelectionChange={setSelection}
-									onEditorMounted={setEditor}
-								/>
-							</Panel>
-							{showVariables && (
-								<>
-									<PanelDragger />
-									<Panel
-										id="variables"
-										order={1}
-										defaultSize={40}
-										minSize={35}
-									>
-										<VariablesPaneLazy
-											isValid={variablesValid}
-											setIsValid={setVariablesValid}
-											closeVariables={closeVariables}
-											lineNumbers={!hideLineNumbers}
-											editor={editor}
-										/>
-									</Panel>
-								</>
-							)}
-						</PanelGroup>
-					)}
+						</Panel>
+						{showVariables && (
+							<>
+								<PanelDragger />
+								<Panel
+									id="variables"
+									order={1}
+									defaultSize={40}
+									minSize={35}
+								>
+									<VariablesPaneLazy
+										isValid={variablesValid}
+										setIsValid={setVariablesValid}
+										closeVariables={closeVariables}
+										lineNumbers={!hideLineNumbers}
+										editor={editor}
+									/>
+								</Panel>
+							</>
+						)}
+					</PanelGroup>
 				</Panel>
 				<PanelDragger />
 				<Panel
@@ -249,7 +214,6 @@ export function QueryView() {
 						activeTab={active}
 						selection={selection}
 						editor={editor}
-						corners={miniCorners}
 					/>
 				</Panel>
 			</PanelGroup>
@@ -271,62 +235,37 @@ export function QueryView() {
 				/>
 			</InPortal>
 
-			{isMini ? (
-				<>
-					{miniAppearance === "normal" && (
-						<Group>
-							<Link href="https://surrealdb.com/surrealist">
-								<Group>
-									<Image
-										h={16}
-										src={surrealistIcon}
-									/>
-									<Image
-										src={logoUrl}
-										style={{ pointerEvents: "none" }}
-										height={20}
-										width={20}
-									/>
-								</Group>
-							</Link>
-							<Spacer />
-						</Group>
+			<Box
+				flex={1}
+				ref={rootRef}
+				style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
+			>
+				<PanelGroup direction="horizontal">
+					{queryTabList && (
+						<>
+							<Panel
+								defaultSize={minSidebarSize}
+								minSize={minSidebarSize}
+								maxSize={35}
+								id="tabs"
+								order={1}
+							>
+								<TabsPane
+									openHistory={showHistoryHandle.open}
+									openSaved={showSavedHandle.open}
+								/>
+							</Panel>
+							<PanelDragger />
+						</>
 					)}
-					<Box flex={1}>{queryEditor}</Box>
-				</>
-			) : (
-				<Box
-					flex={1}
-					ref={rootRef}
-					style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
-				>
-					<PanelGroup direction="horizontal">
-						{queryTabList && (
-							<>
-								<Panel
-									defaultSize={minSidebarSize}
-									minSize={minSidebarSize}
-									maxSize={35}
-									id="tabs"
-									order={1}
-								>
-									<TabsPane
-										openHistory={showHistoryHandle.open}
-										openSaved={showSavedHandle.open}
-									/>
-								</Panel>
-								<PanelDragger />
-							</>
-						)}
-						<Panel
-							id="content"
-							order={2}
-						>
-							{queryEditor}
-						</Panel>
-					</PanelGroup>
-				</Box>
-			)}
+					<Panel
+						id="content"
+						order={2}
+					>
+						{queryEditor}
+					</Panel>
+				</PanelGroup>
+			</Box>
 
 			<HistoryDrawer
 				opened={showHistory}

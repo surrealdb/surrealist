@@ -1,12 +1,13 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { useActiveConnection } from "~/hooks/connection";
+import { useConnection } from "~/hooks/connection";
 import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
+import { createBaseAuthentication } from "~/util/defaults";
 import { connectionUri } from "~/util/helpers";
 
 export function DocsAuthSignIn({ language }: TopicProps) {
-	const { authentication } = useActiveConnection();
+	const authentication = useConnection((c) => c?.authentication ?? createBaseAuthentication());
 	const endpoint = connectionUri(authentication);
 	const esc_endpoint = JSON.stringify(endpoint);
 	const esc_namespace = JSON.stringify(authentication.namespace);

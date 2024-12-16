@@ -34,7 +34,7 @@ import {
 import type { EditorView } from "@codemirror/view";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
@@ -122,6 +122,24 @@ export function EditorPanel({
 		return details.args.flatMap(([name]) => name);
 	});
 
+	const handleChange = useStable((value: string) => {
+		onChange((draft: any) => {
+			draft.block = value;
+		});
+	});
+
+	const extensions = useMemo(
+		() => [
+			surrealql(),
+			surqlVersion,
+			surqlLinting(),
+			surqlVariableCompletion(resolveVariables),
+			surqlCustomFunctionCompletion(),
+			surqlTableCompletion(),
+		],
+		[surqlVersion],
+	);
+
 	const argColor = isLight ? "var(--mantine-color-slate-0)" : "var(--mantine-color-slate-9)";
 
 	return (
@@ -179,19 +197,8 @@ export function EditorPanel({
 							autoFocus
 							lineNumbers={hasLineNumbers}
 							onMount={setEditor}
-							onChange={(value) =>
-								onChange((draft: any) => {
-									draft.block = value;
-								})
-							}
-							extensions={[
-								surrealql(),
-								surqlVersion,
-								surqlLinting(),
-								surqlVariableCompletion(resolveVariables),
-								surqlCustomFunctionCompletion(),
-								surqlTableCompletion(),
-							]}
+							onChange={handleChange}
+							extensions={extensions}
 						/>
 					</Box>
 				</Stack>

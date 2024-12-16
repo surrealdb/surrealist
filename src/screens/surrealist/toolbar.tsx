@@ -41,7 +41,12 @@ export function SurrealistToolbar() {
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const authState = useCloudStore((s) => s.authState);
 	const isConnected = useIsConnected();
-	const connection = useConnection();
+
+	const [id, namespace, authMode] = useConnection((c) => [
+		c?.id,
+		c?.lastNamespace,
+		c?.authentication.mode,
+	]);
 
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
@@ -79,9 +84,9 @@ export function SurrealistToolbar() {
 	});
 
 	const [isSupported, version] = useMinimumVersion(import.meta.env.SDB_VERSION);
-	const isSandbox = connection?.id === "sandbox";
-	const showNS = !isSandbox && isConnected;
-	const showDB = showNS && connection?.lastNamespace;
+	const isSandbox = id === "sandbox";
+	const showNS = !isSandbox && id && isConnected;
+	const showDB = showNS && namespace;
 
 	return (
 		<>
@@ -89,7 +94,7 @@ export function SurrealistToolbar() {
 
 			<ConnectionStatus />
 
-			{authState === "unauthenticated" && connection?.authentication?.mode === "cloud" && (
+			{authState === "unauthenticated" && authMode === "cloud" && (
 				<Button
 					color="orange"
 					variant="light"

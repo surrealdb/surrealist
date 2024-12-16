@@ -86,13 +86,15 @@ export function useTableNames(mode: TableMode = "ALL") {
  * Returns whether the current connection has schema access
  */
 export function useHasSchemaAccess() {
-	const connection = useConnection();
-	const authMode = connection?.authentication?.mode || "none";
+	const [connectionId, authMode] = useConnection((c) => [
+		c?.id,
+		c?.authentication.mode ?? "none",
+	]);
 
 	// TODO Check token type
 
 	return (
-		connection?.id === SANDBOX ||
+		connectionId === SANDBOX ||
 		(authMode !== "none" && authMode !== "scope" && authMode !== "access")
 	);
 }

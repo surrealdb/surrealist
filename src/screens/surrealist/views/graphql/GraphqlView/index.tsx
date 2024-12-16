@@ -10,7 +10,7 @@ import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { GQL_SUPPORTED } from "~/constants";
 import { executeGraphqlEditorQuery } from "~/editor/query";
-import { useActiveConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useGraphqlIntrospection } from "~/hooks/graphql";
 import { useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -40,12 +40,16 @@ export function GraphqlView() {
 
 	const isLight = useIsLight();
 	const isConnected = useIsConnected();
-	const connection = useActiveConnection();
 	const [schema, introspectSchema] = useGraphqlIntrospection();
 
-	const isAvailable = GQL_SUPPORTED.has(connection.authentication.protocol);
-	const isSandbox = connection.id === "sandbox";
-	const showVariables = connection.graphqlShowVariables;
+	const [id, showVariables, protocol] = useConnection((c) => [
+		c?.id ?? "",
+		c?.graphqlShowVariables ?? false,
+		c?.authentication.protocol ?? "http",
+	]);
+
+	const isAvailable = GQL_SUPPORTED.has(protocol);
+	const isSandbox = id === "sandbox";
 
 	const runQuery = useStable(() => {
 		if (editor) {
@@ -80,7 +84,7 @@ export function GraphqlView() {
 				setEnabled(true);
 			}
 		},
-		[connection.id, isConnected],
+		[id, isConnected],
 	);
 
 	useIntent("run-graphql-query", () => {});

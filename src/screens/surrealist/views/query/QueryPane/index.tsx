@@ -1,6 +1,5 @@
 import {
 	runQueryKeymap,
-	selectionChanged,
 	surqlCustomFunctionCompletion,
 	surqlLinting,
 	surqlRecordLinks,
@@ -33,8 +32,7 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { setEditorText } from "~/editor/helpers";
-import { useActiveConnection } from "~/hooks/connection";
-import { useDebouncedFunction } from "~/hooks/debounce";
+import { useConnection } from "~/hooks/connection";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -60,7 +58,7 @@ export interface QueryPaneProps {
 	corners?: string;
 	setShowVariables: (show: boolean) => void;
 	onSaveQuery: () => void;
-	onSelectionChange: (value: SelectionRange) => void;
+	onSelectionChange: (value: SelectionRange | undefined) => void;
 	onEditorMounted: (editor: EditorView) => void;
 }
 
@@ -80,7 +78,7 @@ export function QueryPane({
 	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
-	const connection = useActiveConnection();
+	const queryTabList = useConnection((c) => c?.queryTabList);
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
 	const saveTasks = useRef<Map<string, any>>(new Map());
@@ -103,11 +101,14 @@ export function QueryPane({
 	}, [queryStateMap, activeTab, updateQueryState]);
 
 	// Cache the editor state and schedule query writing
-	const updateState = useStable((query: string, state: StateSnapshot) => {
+	const updateState = useStable((query: string, snapshot: StateSnapshot, state: EditorState) => {
 		const id = activeTab.id;
 		const task = saveTasks.current.get(id);
+		const selection = state.selection.main;
+		const range = selection.empty ? undefined : selection;
 
-		updateQueryState(activeTab.id, state);
+		onSelectionChange(range);
+		updateQueryState(activeTab.id, snapshot);
 		clearTimeout(task);
 
 		const newTask = setTimeout(() => {
@@ -186,8 +187,21 @@ export function QueryPane({
 		setQueryValid(!status.length);
 	});
 
-	const setSelection = useDebouncedFunction(onSelectionChange, 50);
 	const hasSelection = selection?.empty === false;
+
+	const extensions = useMemo(
+		() => [
+			surrealql(),
+			surqlVersion,
+			surqlLinting(updateValid),
+			surqlRecordLinks(inspect),
+			surqlTableCompletion(),
+			surqlVariableCompletion(resolveVariables),
+			surqlCustomFunctionCompletion(),
+			Prec.high(keymap.of(runQueryKeymap)),
+		],
+		[inspect, surqlVersion],
+	);
 
 	useIntent("format-query", handleFormat);
 	useIntent("infer-variables", inferVariables);
@@ -198,7 +212,7 @@ export function QueryPane({
 			icon={iconServer}
 			radius={corners}
 			leftSection={
-				!connection.queryTabList && (
+				!queryTabList && (
 					<ActionButton
 						label="Reveal queries"
 						mr="sm"
@@ -289,17 +303,7 @@ export function QueryPane({
 				onMount={onEditorMounted}
 				lineNumbers={lineNumbers}
 				serialize={SERIALIZE}
-				extensions={[
-					surrealql(),
-					surqlVersion,
-					surqlLinting(updateValid),
-					surqlRecordLinks(inspect),
-					surqlTableCompletion(),
-					surqlVariableCompletion(resolveVariables),
-					surqlCustomFunctionCompletion(),
-					selectionChanged(setSelection),
-					Prec.high(keymap.of(runQueryKeymap)),
-				]}
+				extensions={extensions}
 			/>
 		</ContentPane>
 	);

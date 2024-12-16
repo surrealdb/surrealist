@@ -33,7 +33,7 @@ const RESOURCES = [
 
 export function DataExportModal() {
 	const tables = useTableNames();
-	const connection = useConnection();
+	const name = useConnection((c) => c?.name ?? "");
 
 	const [configSupport] = useMinimumVersion("2.1.0");
 	const [isOpen, openedHandle] = useBoolean();
@@ -50,7 +50,7 @@ export function DataExportModal() {
 		tables: [],
 	});
 
-	const fileName = `${slugify(connection?.name ?? "")}-${dayjs().format("YYYY-MM-DD")}.surql`;
+	const fileName = `${slugify(name)}-${dayjs().format("YYYY-MM-DD")}.surql`;
 
 	const handleExport = useStable(async () => {
 		try {
