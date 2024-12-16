@@ -33,6 +33,8 @@ import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
+const StartPageLazy = memo(StartPage);
+const CloudPanelPageLazy = memo(CloudPanelPage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -52,14 +54,14 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 };
 
 const VIEW_COMPONENTS: Record<ViewMode, FC> = {
-	query: QueryView,
-	explorer: ExplorerView,
-	graphql: GraphqlView,
-	designer: DesignerView,
-	authentication: AuthenticationView,
-	functions: FunctionsView,
-	models: ModelsView,
-	documentation: DocumentationView,
+	query: memo(QueryView),
+	explorer: memo(ExplorerView),
+	graphql: memo(GraphqlView),
+	designer: memo(DesignerView),
+	authentication: memo(AuthenticationView),
+	functions: memo(FunctionsView),
+	models: memo(ModelsView),
+	documentation: memo(DocumentationView),
 };
 
 export function SurrealistScreen() {
@@ -142,7 +144,7 @@ export function SurrealistScreen() {
 							<Route path="/" />
 
 							<Route path="/start">
-								<StartPage />
+								<StartPageLazy />
 							</Route>
 
 							{hasConnection &&
@@ -175,7 +177,7 @@ export function SurrealistScreen() {
 										flex={1}
 										gap={0}
 									>
-										<CloudPanelPage />
+										<CloudPanelPageLazy />
 									</Stack>
 								</Route>
 							)}
