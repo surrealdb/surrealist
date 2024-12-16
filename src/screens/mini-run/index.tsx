@@ -3,11 +3,10 @@ import { adapter } from "~/adapter";
 import type { MiniAdapter } from "~/adapter/mini";
 import { Scaffold } from "~/components/Scaffold";
 import { useIsLight } from "~/hooks/theme";
-import QueryView from "~/screens/surrealist/views/query/QueryView";
+import MiniQueryView from "../surrealist/views/query/MiniView";
 
 export function MiniRunScreen() {
 	const { appearance, transparent } = adapter as MiniAdapter;
-
 	const isLight = useIsLight();
 
 	return (
@@ -21,7 +20,7 @@ export function MiniRunScreen() {
 						: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
 				}}
 			>
-				<QueryView />
+				<MiniQueryView />
 			</Box>
 		</Scaffold>
 	);
