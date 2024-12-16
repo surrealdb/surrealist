@@ -1,6 +1,5 @@
 import classes from "./style.module.scss";
 
-import sidekickImg from "~/assets/images/sidekick-glow.webp";
 import { Alert, Box, Button, Flex, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { type FC, Suspense, useLayoutEffect } from "react";
@@ -10,7 +9,9 @@ import { adapter } from "~/adapter";
 import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
 import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
+import sidekickImg from "~/assets/images/sidekick-glow.webp";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CLOUD_PAGES } from "~/constants";
 import { useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
@@ -30,7 +31,6 @@ import ProvisionPage from "./pages/Provision";
 import SettingsPage from "./pages/Settings";
 import SupportPage from "./pages/Support";
 import { CloudSidebar } from "./sidebar";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 const PORTAL_OPTIONS = {
 	attributes: {
