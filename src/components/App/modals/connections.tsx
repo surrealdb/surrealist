@@ -3,6 +3,7 @@ import classes from "../style.module.scss";
 import {
 	ActionIcon,
 	Box,
+	Collapse,
 	Divider,
 	Flex,
 	Group,
@@ -15,6 +16,8 @@ import {
 } from "@mantine/core";
 
 import {
+	iconChevronDown,
+	iconChevronRight,
 	iconCloud,
 	iconCopy,
 	iconDelete,
@@ -38,14 +41,14 @@ import { Entry, type EntryProps } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { INSTANCE_GROUP, SANDBOX } from "~/constants";
-import { useBoolean } from "~/hooks/boolean";
+import { BooleanHandle, useBoolean } from "~/hooks/boolean";
 import { useConnection, useConnectionList } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
-import type { Connection } from "~/types";
+import type { Connection, ConnectionGroup } from "~/types";
 import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch, newId } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
@@ -57,9 +60,7 @@ export function ConnectionsModal() {
 
 	const {
 		setActiveConnection,
-		addConnectionGroup,
-		updateConnectionGroup,
-		removeConnectionGroup,
+		addConnectionGroup
 	} = useConfigStore.getState();
 
 	const [search, setSearch] = useInputState("");
@@ -257,51 +258,17 @@ export function ConnectionsModal() {
 						</Text>
 					)}
 
-					{groupsList.map((group) => {
-						const isInstanceLocal = group.id === INSTANCE_GROUP;
-
-						return (
-							<ItemList
-								key={group.id}
-								connections={grouped[group.id] ?? []}
-								active={connection}
-								selected={selected}
-								onClose={openedHandle.close}
-								onActivate={activate}
-								className={classes.connectionGroup}
-								title={
-									<>
-										<EditableText
-											value={group.name}
-											activationMode={isInstanceLocal ? "none" : "click"}
-											withDecoration
-											c="bright"
-											fz="lg"
-											fw={500}
-											onChange={(name) =>
-												updateConnectionGroup({ id: group.id, name })
-											}
-										/>
-										<Spacer />
-										{!isInstanceLocal && (
-											<ActionButton
-												className={classes.connectionGroupRemove}
-												label="Remove group"
-												onClick={() => removeConnectionGroup(group.id)}
-												variant="subtle"
-												size="sm"
-											>
-												<Icon
-													path={iconDelete}
-													size="sm"
-												/>
-											</ActionButton>
-										)}
-									</>
-								}
-							/>
-						);
-					})}
+					{groupsList.map((group) => (
+						<ConnectionListGroup
+							key={group.id}
+							group={group}
+							grouped={grouped}
+							connection={connection}
+							selected={selected}
+							openedHandle={openedHandle}
+							activate={activate}
+						/>
+					))}
 
 					{grouped[UNGROUPED] && (
 						<ItemList
@@ -311,13 +278,15 @@ export function ConnectionsModal() {
 							onClose={openedHandle.close}
 							onActivate={activate}
 							title={
-								<Text
-									c="bright"
-									fz="lg"
-									fw={500}
-								>
-									Connections
-								</Text>
+								<Group wrap="nowrap" gap="xs">
+									<Text
+										c="bright"
+										fz="lg"
+										fw={500}
+									>
+										{groupsList.length ? "Ungrouped connections" : "Connections"}
+									</Text>
+								</Group>
 							}
 						/>
 					)}
@@ -327,11 +296,87 @@ export function ConnectionsModal() {
 	);
 }
 
+interface ConnectionListGroupProps {
+	group: ConnectionGroup;
+	grouped: Partial<Record<string, Connection[]>>;
+	connection: string;
+	selected: string;
+	openedHandle: BooleanHandle;
+	activate: (connection: Connection) => void;
+}
+
+function ConnectionListGroup({
+	group,
+	grouped,
+	connection,
+	selected,
+	openedHandle,
+	activate
+}: ConnectionListGroupProps) {
+	const isInstanceLocal = group.id === INSTANCE_GROUP;
+	const { updateConnectionGroup, removeConnectionGroup } = useConfigStore.getState();
+	const [editingName, setEditingName] = useState(false);
+
+	return (
+		<ItemList
+			key={group.id}
+			collapsed={group.collapsed}
+			connections={grouped[group.id] ?? []}
+			active={connection}
+			selected={selected}
+			onClose={openedHandle.close}
+			onActivate={activate}
+			className={classes.connectionGroup}
+			title={
+				<>
+					<Group wrap="nowrap" gap="xs">
+						<EditableText
+							value={group.name}
+							activationMode={isInstanceLocal ? "none" : "click"}
+							withDecoration
+							c="bright"
+							fz="lg"
+							fw={500}
+							onEditableChange={setEditingName}
+							onChange={(name) =>
+								updateConnectionGroup({ id: group.id, name })
+							}
+						/>
+						<ActionIcon
+							variant="transparent"
+							display={editingName ? "none" : undefined}
+							onClick={() => updateConnectionGroup({ id: group.id, collapsed: !group.collapsed })}
+						>
+							<Icon path={group.collapsed ? iconChevronRight : iconChevronDown} />
+						</ActionIcon>
+					</Group>
+					<Spacer />
+					{!isInstanceLocal && (
+						<ActionButton
+							className={classes.connectionGroupRemove}
+							label="Remove group"
+							onClick={() => removeConnectionGroup(group.id)}
+							variant="subtle"
+							size="sm"
+						>
+							<Icon
+								path={iconDelete}
+								size="sm"
+							/>
+						</ActionButton>
+					)}
+				</>
+			}
+		/>
+	);
+}
+
 interface ItemListProps {
 	title: ReactNode;
 	connections: Connection[];
 	active: string;
 	selected: string;
+	collapsed?: boolean;
 	className?: string;
 	onClose: () => void;
 	onActivate: (connection: Connection) => void;
@@ -343,37 +388,40 @@ function ItemList({
 	active,
 	selected,
 	className,
+	collapsed,
 	onClose,
 	onActivate,
 }: ItemListProps) {
 	return (
 		<Box className={className}>
 			<Group mb={4}>{title}</Group>
-			{connections.length === 0 ? (
-				<Text
-					c="slate"
-					ml="sm"
-					mt="sm"
-				>
-					No connections
-				</Text>
-			) : (
-				<Stack
-					gap={6}
-					mih={10}
-				>
-					{connections.map((con) => (
-						<Item
-							key={con.id}
-							connection={con}
-							active={active}
-							selected={selected}
-							onClose={onClose}
-							onActivate={onActivate}
-						/>
-					))}
-				</Stack>
-			)}
+			<Collapse in={!collapsed}>
+				{connections.length === 0 ? (
+					<Text
+						c="slate"
+						ml="sm"
+						mt="sm"
+					>
+						No connections
+					</Text>
+				) : (
+					<Stack
+						gap={6}
+						mih={10}
+					>
+						{connections.map((con) => (
+							<Item
+								key={con.id}
+								connection={con}
+								active={active}
+								selected={selected}
+								onClose={onClose}
+								onActivate={onActivate}
+							/>
+						))}
+					</Stack>
+				)}
+			</Collapse>
 		</Box>
 	);
 }

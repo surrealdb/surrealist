@@ -19,6 +19,7 @@ export const ProtocolSchema = v.union([
 
 export const InstanceConfigSchema = v.object({
 	groupName: v.optional(v.string(), "Instance"),
+	groupCollapsed: v.optional(v.boolean(), false),
 	defaultConnection: v.optional(v.string()),
 	connections: v.optional(
 		v.array(
