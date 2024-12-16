@@ -2,7 +2,6 @@ import classes from "./style.module.scss";
 
 import {
 	Accordion,
-	ActionIcon,
 	Alert,
 	Badge,
 	Box,
@@ -10,7 +9,6 @@ import {
 	Group,
 	Paper,
 	ScrollArea,
-	Tooltip,
 } from "@mantine/core";
 
 import {
@@ -25,6 +23,7 @@ import {
 import { useState } from "react";
 import { escapeIdent } from "surrealdb";
 import type { Updater } from "use-immer";
+import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -134,25 +133,24 @@ export function DesignDrawer({
 						>
 							Missing required fields
 						</Badge>
-					))}
+					))
+				}
 
-				<Tooltip label="Remove table">
-					<ActionIcon
-						onClick={removeTable}
-						color="pink.7"
-						aria-label="Remove table"
-					>
-						<Icon path={iconDelete} />
-					</ActionIcon>
-				</Tooltip>
+				<ActionButton
+					color="pink.7"
+					label="Remove table"
+					onClick={removeTable}
+				>
+					<Icon path={iconDelete} />
+				</ActionButton>
 
-				<ActionIcon
-					onClick={() => onClose(false)}
+				<ActionButton
+					label="Close drawer"
 					disabled={handle.isChanged}
-					aria-label="Close designer drawer"
+					onClick={() => onClose(false)}
 				>
 					<Icon path={iconClose} />
-				</ActionIcon>
+				</ActionButton>
 			</Group>
 			<Paper
 				bg={isLight ? "white" : "slate.9"}

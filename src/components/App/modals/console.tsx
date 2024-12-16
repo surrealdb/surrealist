@@ -1,16 +1,15 @@
 import {
-	ActionIcon,
 	Badge,
 	Center,
 	Drawer,
 	Group,
 	Paper,
 	ScrollArea,
-	Text,
-	Tooltip,
+	Text
 } from "@mantine/core";
 import AnsiToHtml from "ansi-to-html";
 import { useEffect, useMemo, useRef } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -107,21 +106,19 @@ export function ConsoleDrawer() {
 
 				<Spacer />
 
-				<Tooltip label="Clear console">
-					<ActionIcon
-						onClick={clearConsole}
-						aria-label="Clear console logs"
-					>
-						<Icon path={iconDelete} />
-					</ActionIcon>
-				</Tooltip>
+				<ActionButton
+					label="Clear console"
+					onClick={clearConsole}
+				>
+					<Icon path={iconDelete} />
+				</ActionButton>
 
-				<ActionIcon
+				<ActionButton
+					label="Close console"
 					onClick={openHandle.close}
-					aria-label="Close console drawer"
 				>
 					<Icon path={iconClose} />
-				</ActionIcon>
+				</ActionButton>
 			</Group>
 
 			{messages.length === 0 && (

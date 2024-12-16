@@ -1,7 +1,8 @@
-import { ActionIcon, Group, ScrollArea, Select, Stack, TextInput } from "@mantine/core";
+import { Group, ScrollArea, Select, Stack, TextInput } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useMemo } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { featureFlags, schema, useFeatureFlags } from "~/util/feature-flags";
@@ -73,13 +74,13 @@ export function FeatureFlagsTab() {
 							<Text c="slate">({typeof flags[flag]})</Text>
 							<Spacer />
 							{defaults[flag] !== flags[flag] && (
-								<ActionIcon
+								<ActionButton
 									variant="subtle"
+									label="Reset to default"
 									onClick={() => setFlags({ [flag]: defaults[flag] })}
-									aria-label="Reset to default value"
 								>
 									<Icon path={iconReset} />
-								</ActionIcon>
+								</ActionButton>
 							)}
 							<Select
 								data={data}

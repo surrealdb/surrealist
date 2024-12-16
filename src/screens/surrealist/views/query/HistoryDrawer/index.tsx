@@ -1,6 +1,4 @@
-import classes from "./style.module.scss";
-
-import { ActionIcon, Divider, Group, Menu, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import { ActionIcon, Divider, Group, Menu, Stack, Text, TextInput } from "@mantine/core";
 
 import {
 	iconClose,
@@ -17,6 +15,7 @@ import { useInputState } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { capitalize } from "radash";
 import { memo, useMemo } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -189,23 +188,21 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 
 				<Spacer />
 
-				<Tooltip label="Clear history">
-					<ActionIcon
-						onClick={clearHistory}
-						title="Clear history"
-						aria-label="Clear query history"
-						color="red"
-					>
-						<Icon path={iconDelete} />
-					</ActionIcon>
-				</Tooltip>
 
-				<ActionIcon
+				<ActionButton
+					onClick={clearHistory}
+					label="Clear history"
+					color="red"
+				>
+					<Icon path={iconDelete} />
+				</ActionButton>
+
+				<ActionButton
+					label="Close drawer"
 					onClick={onClose}
-					aria-label="Close history drawer"
 				>
 					<Icon path={iconClose} />
-				</ActionIcon>
+				</ActionButton>
 			</Group>
 			<Stack>
 				<TextInput

@@ -37,6 +37,7 @@ import { surrealql } from "@surrealdb/codemirror";
 import { useState } from "react";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { FieldKindInput, PermissionInput } from "~/components/Inputs";
@@ -138,14 +139,12 @@ export function EditorPanel({
 				)
 			}
 			rightSection={
-				<Tooltip label="Format function">
-					<ActionIcon
-						onClick={formatFunction}
-						aria-label="Format function"
-					>
-						<Icon path={iconText} />
-					</ActionIcon>
-				</Tooltip>
+				<ActionButton
+					label="Format function"
+					onClick={formatFunction}
+				>
+					<Icon path={iconText} />
+				</ActionButton>
 			}
 		>
 			<Group

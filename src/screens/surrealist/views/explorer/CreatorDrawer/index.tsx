@@ -18,6 +18,7 @@ import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { useLayoutEffect, useState } from "react";
 import { RecordId, StringRecordId, Table } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
@@ -165,12 +166,12 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 					</Badge>
 				)}
 
-				<ActionIcon
+				<ActionButton
+					label="Close drawer"
 					onClick={onClose}
-					aria-label="Close creator drawer"
 				>
 					<Icon path={iconClose} />
-				</ActionIcon>
+				</ActionButton>
 			</Group>
 
 			<Stack

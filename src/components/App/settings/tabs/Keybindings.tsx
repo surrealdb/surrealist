@@ -1,13 +1,10 @@
 import equal from "fast-deep-equal";
 
 import {
-	ActionIcon,
-	Alert,
 	Box,
 	Button,
 	Divider,
 	Group,
-	List,
 	Modal,
 	Paper,
 	ScrollArea,
@@ -18,6 +15,7 @@ import {
 
 import { useInputState } from "@mantine/hooks";
 import { Fragment, useMemo, useState } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { KeybindInput } from "~/components/Inputs/keybinding";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -34,7 +32,7 @@ import {
 import { displayBinding } from "~/providers/Commands/keybindings";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconEdit, iconPlus, iconSearch, iconWarning } from "~/util/icons";
+import { iconEdit, iconPlus, iconSearch } from "~/util/icons";
 
 export function KeybindingsTab() {
 	const [search, setSearch] = useInputState("");
@@ -132,16 +130,17 @@ export function KeybindingsTab() {
 												) : (
 													<Text c="slate">&mdash;</Text>
 												)}
-												<ActionIcon
+												<ActionButton
 													ml="xl"
 													variant="subtle"
+													label={active ? "Edit keybinding" : "Add keybinding"}
 													onClick={() => {
 														setRecordCommand(cmd);
 														recordingHandle.open();
 													}}
 												>
 													<Icon path={active ? iconEdit : iconPlus} />
-												</ActionIcon>
+												</ActionButton>
 											</Group>
 											{j < category.commands.length - 1 && <Divider />}
 										</Fragment>

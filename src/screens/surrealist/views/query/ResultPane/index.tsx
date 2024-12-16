@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 
 import {
-	ActionIcon,
 	Button,
 	Center,
 	Group,
@@ -25,6 +24,7 @@ import type { EditorView } from "@codemirror/view";
 import { useMemo, useState } from "react";
 import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
@@ -207,15 +207,13 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 					>
 						<Tooltip label="Change result mode">
 							{isMini ? (
-								<Tooltip label="Click to change mode">
-									<ActionIcon
-										aria-label={`Change result mode. Currently ${activeMode}`}
-										h={30}
-										w={30}
-									>
-										<Icon path={activeMode?.icon ?? iconHelp} />
-									</ActionIcon>
-								</Tooltip>
+								<ActionButton
+									label="Change result mode"
+									h={30}
+									w={30}
+								>
+									<Icon path={activeMode?.icon ?? iconHelp} />
+								</ActionButton>
 							) : (
 								<Button
 									size="xs"

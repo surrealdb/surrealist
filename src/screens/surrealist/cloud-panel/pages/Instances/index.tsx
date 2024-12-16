@@ -30,6 +30,7 @@ import {
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { Fragment, useMemo, useState } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { FloatingButton } from "~/components/FloatingButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -201,21 +202,20 @@ export function InstancesPage() {
 					<Spacer visibleFrom="xs" />
 					<Menu>
 						<Menu.Target>
-							<Tooltip label="Filter instances">
-								<Indicator
-									disabled={!filter}
-									color="blue"
-									size={7}
+							<Indicator
+								disabled={!filter}
+								color="blue"
+								size={7}
+							>
+								<ActionButton
+									variant="subtle"
+									color="slate"
+									label="Filter instances"
+									disabled={instances.length === 0}
 								>
-									<ActionIcon
-										variant="subtle"
-										color="slate"
-										disabled={instances.length === 0}
-									>
-										<Icon path={iconTune} />
-									</ActionIcon>
-								</Indicator>
-							</Tooltip>
+									<Icon path={iconTune} />
+								</ActionButton>
+							</Indicator>
 						</Menu.Target>
 						<Menu.Dropdown miw={150}>
 							{filterTypes.map((type) => (

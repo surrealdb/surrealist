@@ -17,6 +17,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Fragment, useMemo, useState } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useCloudStore } from "~/stores/cloud";
@@ -134,21 +135,20 @@ export function MembersPage() {
 						<Spacer />
 						<Menu>
 							<Menu.Target>
-								<Tooltip label="Filter members">
-									<Indicator
-										disabled={!filter}
-										color="blue"
-										size={7}
+								<Indicator
+									disabled={!filter}
+									color="blue"
+									size={7}
+								>
+									<ActionButton
+										variant="subtle"
+										color="slate"
+										label="Filter members"
+										disabled={members.length === 0}
 									>
-										<ActionIcon
-											variant="subtle"
-											color="slate"
-											disabled={members.length === 0}
-										>
-											<Icon path={iconTune} />
-										</ActionIcon>
-									</Indicator>
-								</Tooltip>
+										<Icon path={iconTune} />
+									</ActionButton>
+								</Indicator>
 							</Menu.Target>
 							<Menu.Dropdown miw={150}>
 								{filterTypes.map((type) => (
@@ -177,7 +177,7 @@ export function MembersPage() {
 						</Menu>
 						<TextInput
 							value={""}
-							onChange={() => {}}
+							onChange={() => { }}
 							placeholder="Search members"
 							leftSection={
 								<Icon

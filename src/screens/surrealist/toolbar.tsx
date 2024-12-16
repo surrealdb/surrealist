@@ -1,5 +1,4 @@
 import {
-	ActionIcon,
 	Badge,
 	Button,
 	Group,
@@ -8,11 +7,11 @@ import {
 	Modal,
 	Text,
 	TextInput,
-	Tooltip,
 } from "@mantine/core";
 
 import { useState } from "react";
 import { ActionBar } from "~/components/ActionBar";
+import { ActionButton } from "~/components/ActionButton";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { SidebarToggle } from "~/components/SidebarToggle";
@@ -129,32 +128,28 @@ export function SurrealistToolbar() {
 
 			{isConnected && isSandbox && (
 				<>
-					<Tooltip label="Reset sandbox environment">
-						<ActionIcon
-							color="slate"
-							variant="subtle"
-							onClick={resetSandbox}
-							aria-label="Reset sandbox environment"
-						>
-							<Icon path={iconReset} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						color="slate"
+						variant="subtle"
+						label="Reset sandbox environment"
+						onClick={resetSandbox}
+					>
+						<Icon path={iconReset} />
+					</ActionButton>
 					<Menu
 						transitionProps={{
 							transition: "scale-y",
 						}}
 					>
 						<Menu.Target>
-							<Tooltip label="Apply demo dataset">
-								<ActionIcon
-									color="slate"
-									variant="subtle"
-									aria-label="Apply demo dataset"
-									loading={isDatasetLoading}
-								>
-									<Icon path={iconTable} />
-								</ActionIcon>
-							</Tooltip>
+							<ActionButton
+								color="slate"
+								variant="subtle"
+								label="Apply demo dataset"
+								loading={isDatasetLoading}
+							>
+								<Icon path={iconTable} />
+							</ActionButton>
 						</Menu.Target>
 						<Menu.Dropdown miw={200}>
 							<Menu.Label>Select a dataset</Menu.Label>

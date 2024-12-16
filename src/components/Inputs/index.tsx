@@ -12,8 +12,7 @@ import {
 	Pill,
 	PillsInput,
 	type PillsInputProps,
-	TextInput,
-	Tooltip,
+	TextInput
 } from "@mantine/core";
 
 import {
@@ -38,6 +37,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight, useTheme } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { iconCancel, iconCheck } from "~/util/icons";
+import { ActionButton } from "../ActionButton";
 
 export interface CodeInputProps
 	extends InputBaseProps,
@@ -68,7 +68,6 @@ export function CodeInput({
 	onSubmit,
 	...rest
 }: CodeInputProps) {
-	const isLight = useIsLight();
 	const ref = useRef<HTMLDivElement | null>(null);
 	const editorRef = useRef<{
 		editor: EditorView;
@@ -269,26 +268,22 @@ export function PermissionInput({
 			extensions={[surrealql("permission")]}
 			rightSection={
 				<Group gap="xs">
-					<Tooltip label="Grant full access">
-						<ActionIcon
-							color="green.4"
-							onClick={() => onChange("FULL")}
-							variant={textValue.toUpperCase() === "FULL" ? "light" : "subtle"}
-							aria-label="Grant full access"
-						>
-							<Icon path={iconCheck} />
-						</ActionIcon>
-					</Tooltip>
-					<Tooltip label="Reject all access">
-						<ActionIcon
-							color="pink.6"
-							onClick={() => onChange("NONE")}
-							variant={textValue.toUpperCase() === "NONE" ? "light" : "subtle"}
-							aria-label="Reject all access"
-						>
-							<Icon path={iconCancel} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						color="green.4"
+						label="Grant full access"
+						onClick={() => onChange("FULL")}
+						variant={textValue.toUpperCase() === "FULL" ? "light" : "subtle"}
+					>
+						<Icon path={iconCheck} />
+					</ActionButton>
+					<ActionButton
+						color="pink.6"
+						label="Reject all access"
+						onClick={() => onChange("NONE")}
+						variant={textValue.toUpperCase() === "NONE" ? "light" : "subtle"}
+					>
+						<Icon path={iconCancel} />
+					</ActionButton>
 				</Group>
 			}
 			{...rest}

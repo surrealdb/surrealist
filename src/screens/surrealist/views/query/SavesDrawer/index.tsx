@@ -17,6 +17,7 @@ import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { useLayoutEffect, useMemo, useState } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -106,21 +107,19 @@ export function SavesDrawer({
 
 				<Spacer />
 
-				<Tooltip label="Save current query">
-					<ActionIcon
-						onClick={onSaveQuery}
-						aria-label="Save current query"
-					>
-						<Icon path={iconPlus} />
-					</ActionIcon>
-				</Tooltip>
+				<ActionButton
+					label="Save current query"
+					onClick={onSaveQuery}
+				>
+					<Icon path={iconPlus} />
+				</ActionButton>
 
-				<ActionIcon
+				<ActionButton
+					label="Close drawer"
 					onClick={onClose}
-					aria-label="Close saved query drawer"
 				>
 					<Icon path={iconClose} />
-				</ActionIcon>
+				</ActionButton>
 			</Group>
 			<TextInput
 				autoFocus
@@ -239,20 +238,17 @@ export function SavesDrawer({
 									{entry.name}
 								</Text>
 								<Spacer />
-								<Tooltip label="Open in new tab">
-									<ActionIcon
-										component="div"
-										variant="gradient"
-										className={classes.queryAction}
-										onClick={(e) => handleUseQuery(entry, e)}
-										aria-label="Open query in new tab"
-									>
-										<Icon
-											path={iconQuery}
-											size={0.9}
-										/>
-									</ActionIcon>
-								</Tooltip>
+								<ActionButton
+									variant="gradient"
+									className={classes.queryAction}
+									onClick={(e) => handleUseQuery(entry, e)}
+									label="Open in new tab"
+								>
+									<Icon
+										path={iconQuery}
+										size={0.9}
+									/>
+								</ActionButton>
 							</Group>
 						</Accordion.Control>
 						<Accordion.Panel

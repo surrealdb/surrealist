@@ -11,8 +11,7 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
-	TextInput,
-	Tooltip,
+	TextInput
 } from "@mantine/core";
 
 import {
@@ -33,6 +32,7 @@ import clsx from "clsx";
 import { group } from "radash";
 import { type HTMLAttributes, type MouseEvent, type ReactNode, useMemo, useState } from "react";
 import { isDesktop } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
 import { EditableText } from "~/components/EditableText";
 import { Entry, type EntryProps } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
@@ -284,20 +284,18 @@ export function ConnectionsModal() {
 										/>
 										<Spacer />
 										{!isInstanceLocal && (
-											<Tooltip label="Remove group">
-												<ActionIcon
-													className={classes.connectionGroupRemove}
-													aria-label="Remove group"
-													onClick={() => removeConnectionGroup(group.id)}
-													variant="subtle"
+											<ActionButton
+												className={classes.connectionGroupRemove}
+												label="Remove group"
+												onClick={() => removeConnectionGroup(group.id)}
+												variant="subtle"
+												size="sm"
+											>
+												<Icon
+													path={iconDelete}
 													size="sm"
-												>
-													<Icon
-														path={iconDelete}
-														size="sm"
-													/>
-												</ActionIcon>
-											</Tooltip>
+												/>
+											</ActionButton>
 										)}
 									</>
 								}

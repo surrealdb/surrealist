@@ -15,6 +15,7 @@ import {
 import { capitalize } from "radash";
 import { type ReactNode, useState } from "react";
 import { escapeIdent } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -118,14 +119,12 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 			rightSection={
 				<Menu position="bottom">
 					<Menu.Target>
-						<Tooltip label="New authentication...">
-							<ActionIcon
-								aria-label="Create new authentication"
-								disabled={!isConnected || !!disabled}
-							>
-								<Icon path={iconPlus} />
-							</ActionIcon>
-						</Tooltip>
+						<ActionButton
+							label="New authentication..."
+							disabled={!isConnected || !!disabled}
+						>
+							<Icon path={iconPlus} />
+						</ActionButton>
 					</Menu.Target>
 					<Menu.Dropdown>
 						<Menu.Item

@@ -24,6 +24,7 @@ import { Text } from "@mantine/core";
 import { graphql, updateSchema } from "cm6-graphql";
 import { type GraphQLSchema, parse, print } from "graphql";
 import { useEffect } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -169,59 +170,38 @@ export function QueryPane({
 						</Badge>
 					)}
 
-					<Tooltip label="Refetch schema">
-						<ActionIcon
-							onClick={handleIntrospect}
-							variant="light"
-							aria-label="Refetch schema"
-						>
-							<Icon path={iconRefresh} />
-						</ActionIcon>
-					</Tooltip>
-
-					<Tooltip label="Format query">
-						<ActionIcon
-							onClick={handleFormat}
-							variant="light"
-							aria-label="Format query"
-						>
-							<Icon path={iconText} />
-						</ActionIcon>
-					</Tooltip>
-
-					<Tooltip
-						maw={175}
-						multiline
-						label={
-							<Stack gap={4}>
-								<Text>Infer variables from query</Text>
-								<Text
-									c="dimmed"
-									size="sm"
-								>
-									Automatically add missing variables.
-								</Text>
-							</Stack>
-						}
+					<ActionButton
+						variant="light"
+						label="Refetch schema"
+						onClick={handleIntrospect}
 					>
-						<ActionIcon
-							onClick={inferVariables}
-							variant="light"
-							aria-label="Infer variables from query"
-						>
-							<Icon path={iconAutoFix} />
-						</ActionIcon>
-					</Tooltip>
+						<Icon path={iconRefresh} />
+					</ActionButton>
 
-					<Tooltip label={showVariables ? "Hide variables" : "Show variables"}>
-						<ActionIcon
-							onClick={toggleVariables}
-							variant="light"
-							aria-label={showVariables ? "Hide variables" : "Show variables"}
-						>
-							<Icon path={iconDollar} />
-						</ActionIcon>
-					</Tooltip>
+					<ActionButton
+						variant="light"
+						label="Format query"
+						onClick={handleFormat}
+					>
+						<Icon path={iconText} />
+					</ActionButton>
+
+					<ActionButton
+						variant="light"
+						label="Infer variables from query"
+						description="Automatically add missing variables."
+						onClick={inferVariables}
+					>
+						<Icon path={iconAutoFix} />
+					</ActionButton>
+
+					<ActionButton
+						variant="light"
+						label={showVariables ? "Hide variables" : "Show variables"}
+						onClick={toggleVariables}
+					>
+						<Icon path={iconDollar} />
+					</ActionButton>
 				</Group>
 			}
 		>

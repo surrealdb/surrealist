@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 
 import {
-	ActionIcon,
 	type BoxProps,
 	Center,
 	Drawer,
@@ -12,7 +11,6 @@ import {
 	Text,
 	ThemeIcon,
 	Title,
-	Tooltip,
 } from "@mantine/core";
 
 import {
@@ -31,6 +29,7 @@ import {
 
 import { useState } from "react";
 import { isDesktop } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -318,17 +317,13 @@ export function Settings() {
 						miw={0}
 					>
 						<Group mb={26}>
-							<Tooltip
+							<ActionButton
+								hiddenFrom="md"
 								label="Toggle sidebar"
-								position="right"
+								onClick={overlaySidebarHandle.toggle}
 							>
-								<ActionIcon
-									hiddenFrom="md"
-									onClick={overlaySidebarHandle.toggle}
-								>
-									<Icon path={iconChevronRight} />
-								</ActionIcon>
-							</Tooltip>
+								<Icon path={iconChevronRight} />
+							</ActionButton>
 							<Title
 								size={26}
 								c="bright"
@@ -336,13 +331,13 @@ export function Settings() {
 								{activeCategory?.name ?? "Unknown"}
 							</Title>
 							<Spacer />
-							<ActionIcon
-								onClick={openHandle.close}
-								aria-label="Close settings"
+							<ActionButton
 								mr="xl"
+								label="Close settings"
+								onClick={openHandle.close}
 							>
 								<Icon path={iconClose} />
-							</ActionIcon>
+							</ActionButton>
 						</Group>
 						{Component && <Component />}
 					</Stack>
