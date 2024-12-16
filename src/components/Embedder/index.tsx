@@ -69,7 +69,7 @@ function SectionTitle({
 				{children}
 			</Text>
 			{help && (
-				<Tooltip label={help}>
+				<Tooltip label={help} openDelay={300}>
 					<Box>
 						<Icon
 							path={iconHelp}

@@ -41,6 +41,7 @@ export function ActionButton({
 			maw={description ? 175 : undefined}
 			multiline={!!description}
 			label={tooltipLabel}
+			openDelay={300}
 			{...tooltipProps}
 		>
 			<ActionIcon

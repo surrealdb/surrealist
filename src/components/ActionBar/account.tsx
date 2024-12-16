@@ -108,7 +108,7 @@ export function CloudAccount() {
 
 	if (state === "unauthenticated") {
 		return (
-			<Tooltip label="Sign in to Surreal Cloud">
+			<Tooltip label="Sign in to Surreal Cloud" openDelay={300}>
 				<Avatar
 					radius="md"
 					size={36}

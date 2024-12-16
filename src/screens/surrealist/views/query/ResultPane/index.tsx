@@ -183,7 +183,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 								value={resultTab.toString()}
 								onChange={(e) => setResultTab(Number.parseInt(e ?? "1"))}
 							>
-								<Tooltip label="Change result">
+								<Tooltip label="Change result" openDelay={300}>
 									<Button
 										size="xs"
 										radius="xs"
@@ -204,7 +204,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 						value={resultMode}
 						onChange={setResultMode}
 					>
-						<Tooltip label="Change result mode">
+						<Tooltip label="Change result mode" openDelay={300}>
 							{isMini ? (
 								<ActionButton
 									label="Change result mode"
@@ -236,7 +236,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							value={resultFormat}
 							onChange={setResultFormat}
 						>
-							<Tooltip label="Change result format">
+							<Tooltip label="Change result format" openDelay={300}>
 								<Button
 									size="xs"
 									radius="xs"
