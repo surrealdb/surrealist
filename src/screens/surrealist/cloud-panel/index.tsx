@@ -170,13 +170,13 @@ export function CloudPanelPage() {
 				)}
 				<Paper
 					w="100%"
-					maw={338}
+					maw={342}
 					shadow="xl"
 					className={classes.sidekickBox}
 				>
 					<Group
 						wrap="nowrap"
-						gap={0}
+						gap="xs"
 					>
 						<Image
 							src={sidekickImg}
