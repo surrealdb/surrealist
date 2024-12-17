@@ -12,7 +12,7 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
-	TextInput
+	TextInput,
 } from "@mantine/core";
 
 import {
@@ -58,10 +58,7 @@ const UNGROUPED = "__ungrouped__";
 export function ConnectionsModal() {
 	const [isOpen, openedHandle] = useBoolean();
 
-	const {
-		setActiveConnection,
-		addConnectionGroup
-	} = useConfigStore.getState();
+	const { setActiveConnection, addConnectionGroup } = useConfigStore.getState();
 
 	const [search, setSearch] = useInputState("");
 	const connections = useConnectionList();
@@ -278,13 +275,18 @@ export function ConnectionsModal() {
 							onClose={openedHandle.close}
 							onActivate={activate}
 							title={
-								<Group wrap="nowrap" gap="xs">
+								<Group
+									wrap="nowrap"
+									gap="xs"
+								>
 									<Text
 										c="bright"
 										fz="lg"
 										fw={500}
 									>
-										{groupsList.length ? "Ungrouped connections" : "Connections"}
+										{groupsList.length
+											? "Ungrouped connections"
+											: "Connections"}
 									</Text>
 								</Group>
 							}
@@ -311,7 +313,7 @@ function ConnectionListGroup({
 	connection,
 	selected,
 	openedHandle,
-	activate
+	activate,
 }: ConnectionListGroupProps) {
 	const isInstanceLocal = group.id === INSTANCE_GROUP;
 	const { updateConnectionGroup, removeConnectionGroup } = useConfigStore.getState();
@@ -329,7 +331,10 @@ function ConnectionListGroup({
 			className={classes.connectionGroup}
 			title={
 				<>
-					<Group wrap="nowrap" gap="xs">
+					<Group
+						wrap="nowrap"
+						gap="xs"
+					>
 						<EditableText
 							value={group.name}
 							activationMode={isInstanceLocal ? "none" : "click"}
@@ -338,14 +343,14 @@ function ConnectionListGroup({
 							fz="lg"
 							fw={500}
 							onEditableChange={setEditingName}
-							onChange={(name) =>
-								updateConnectionGroup({ id: group.id, name })
-							}
+							onChange={(name) => updateConnectionGroup({ id: group.id, name })}
 						/>
 						<ActionIcon
 							variant="transparent"
 							display={editingName ? "none" : undefined}
-							onClick={() => updateConnectionGroup({ id: group.id, collapsed: !group.collapsed })}
+							onClick={() =>
+								updateConnectionGroup({ id: group.id, collapsed: !group.collapsed })
+							}
 						>
 							<Icon path={group.collapsed ? iconChevronRight : iconChevronDown} />
 						</ActionIcon>
@@ -400,7 +405,7 @@ function ItemList({
 					<Text
 						c="slate"
 						ml="sm"
-						mt="sm"
+						pt="sm"
 					>
 						No connections
 					</Text>
