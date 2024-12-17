@@ -137,6 +137,7 @@ export interface Template {
 export interface ConnectionGroup {
 	id: string;
 	name: string;
+	collapsed?: boolean;
 }
 
 export interface SurrealistBehaviorSettings {
@@ -264,13 +265,13 @@ export interface AccessJwt {
 		key: string;
 	};
 	verify:
-		| {
-				url: string;
-		  }
-		| {
-				alg: string;
-				key: string;
-		  };
+	| {
+		url: string;
+	}
+	| {
+		alg: string;
+		key: string;
+	};
 }
 
 export interface TableView {
@@ -365,16 +366,16 @@ export interface SchemaAccess {
 		token: Duration;
 	};
 	kind:
-		| {
-				kind: "JWT";
-				jwt: AccessJwt;
-		  }
-		| {
-				kind: "RECORD";
-				signin: string;
-				signup: string;
-				jwt: AccessJwt;
-		  };
+	| {
+		kind: "JWT";
+		jwt: AccessJwt;
+	}
+	| {
+		kind: "RECORD";
+		signin: string;
+		signup: string;
+		jwt: AccessJwt;
+	};
 }
 
 export interface SchemaFunction {

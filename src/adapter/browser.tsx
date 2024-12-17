@@ -247,10 +247,12 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 		if (existingConnectionGroup) {
 			existingConnectionGroup.name = instanceConfig.groupName;
+			existingConnectionGroup.collapsed = instanceConfig.groupCollapsed;
 		} else {
 			config.connectionGroups.push({
 				id: INSTANCE_GROUP,
 				name: instanceConfig.groupName,
+				collapsed: instanceConfig.groupCollapsed
 			});
 		}
 
