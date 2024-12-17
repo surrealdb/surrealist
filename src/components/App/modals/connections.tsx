@@ -346,6 +346,7 @@ function ConnectionListGroup({
 							onChange={(name) => updateConnectionGroup({ id: group.id, name })}
 						/>
 						<ActionIcon
+							size="sm"
 							variant="transparent"
 							display={editingName ? "none" : undefined}
 							onClick={() =>
