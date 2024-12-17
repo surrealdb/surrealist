@@ -1,15 +1,17 @@
 import classes from "./style.module.scss";
 
-import { Alert, Box, Button, Flex, Group, Image, Stack, Text } from "@mantine/core";
+import { Alert, Box, Button, Flex, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { type FC, Suspense, lazy, useLayoutEffect } from "react";
+import { type FC, Suspense, useLayoutEffect } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch, useLocation, useRoute } from "wouter";
 import { adapter } from "~/adapter";
 import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
 import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
+import sidekickImg from "~/assets/images/sidekick-glow.webp";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CLOUD_PAGES } from "~/constants";
 import { useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
@@ -166,6 +168,33 @@ export function CloudPanelPage() {
 						Please update your version of Surrealist to continue using Surreal Cloud.
 					</Alert>
 				)}
+				<Paper
+					w="100%"
+					maw={342}
+					shadow="xl"
+					className={classes.sidekickBox}
+				>
+					<Group
+						wrap="nowrap"
+						gap="xs"
+					>
+						<Image
+							src={sidekickImg}
+							alt="Sidekick"
+							h={125}
+						/>
+						<Box pr="xl">
+							<Text
+								c="slate"
+								tt="uppercase"
+							>
+								Including
+							</Text>
+							<PrimaryTitle>Sidekick</PrimaryTitle>
+							<Text>Your personal AI assistant for all things Surreal.</Text>
+						</Box>
+					</Group>
+				</Paper>
 			</Stack>
 			<Box className={classes.splashImageContainer}>
 				<Image

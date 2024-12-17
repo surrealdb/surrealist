@@ -31,6 +31,7 @@ import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
+import SidekickView from "./views/sidekick/SidekickView";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 const StartPageLazy = memo(StartPage);
@@ -50,6 +51,7 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	authentication: createHtmlPortalNode(PORTAL_OPTIONS),
 	functions: createHtmlPortalNode(PORTAL_OPTIONS),
 	models: createHtmlPortalNode(PORTAL_OPTIONS),
+	sidekick: createHtmlPortalNode(PORTAL_OPTIONS),
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
@@ -61,6 +63,7 @@ const VIEW_COMPONENTS: Record<ViewMode, FC> = {
 	authentication: memo(AuthenticationView),
 	functions: memo(FunctionsView),
 	models: memo(ModelsView),
+	sidekick: memo(SidekickView),
 	documentation: memo(DocumentationView),
 };
 

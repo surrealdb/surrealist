@@ -231,6 +231,13 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		require: "database",
 		disabled: (flags) => !flags.models_view,
 	},
+	sidekick: {
+		id: "sidekick",
+		name: "Sidekick",
+		icon: iconSidekick,
+		desc: "Chat with your personal Surreal assistant",
+		disabled: (flags) => !flags.sidekick_view,
+	},
 	documentation: {
 		id: "documentation",
 		name: "API Docs",

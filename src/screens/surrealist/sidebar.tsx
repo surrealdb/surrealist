@@ -37,7 +37,7 @@ import { dispatchIntent } from "~/util/intents";
 const NAVIGATION: ViewMode[][] = [
 	["query", "explorer", "graphql"],
 	["designer", "authentication", "functions", "models"],
-	["documentation"],
+	["sidekick", "documentation"],
 ];
 
 export interface SidebarProps extends BoxProps {
