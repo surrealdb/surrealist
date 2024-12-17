@@ -119,12 +119,14 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 			rightSection={
 				<Menu position="bottom">
 					<Menu.Target>
-						<ActionButton
-							label="New authentication..."
-							disabled={!isConnected || !!disabled}
-						>
-							<Icon path={iconPlus} />
-						</ActionButton>
+						<div>
+							<ActionButton
+								label={`New ${nameTitle} authentication`}
+								disabled={!isConnected || !!disabled}
+							>
+								<Icon path={iconPlus} />
+							</ActionButton>
+						</div>
 					</Menu.Target>
 					<Menu.Dropdown>
 						<Menu.Item
