@@ -30,5 +30,5 @@ export function measureStorageUsage(measurements: CloudMeasurement[]) {
 		({ metric_type, source }) => metric_type === "storage_current" && source === "ebs",
 	);
 
-	return (entry?.disk_used_bytes ?? 1024) / 1024;
+	return (entry?.disk_used_bytes ?? 0) / 1024 / 1024;
 }
