@@ -13,6 +13,7 @@ import { formatMemory } from "~/util/helpers";
 import { iconHelp } from "~/util/icons";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
+import { computeStorageSize } from "../../../util/helpers";
 
 export function ProvisionFinalizeStep({
 	step,
@@ -128,16 +129,4 @@ export function ProvisionFinalizeStep({
 			/>
 		</Stack>
 	);
-}
-
-function computeStorageSize(type: CloudInstanceType | undefined) {
-	if (!type) {
-		return 0;
-	}
-
-	if (type.price_hour === 0) {
-		return 1024;
-	}
-
-	return type.memory * 8;
 }

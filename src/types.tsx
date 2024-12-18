@@ -265,13 +265,13 @@ export interface AccessJwt {
 		key: string;
 	};
 	verify:
-	| {
-		url: string;
-	}
-	| {
-		alg: string;
-		key: string;
-	};
+		| {
+				url: string;
+		  }
+		| {
+				alg: string;
+				key: string;
+		  };
 }
 
 export interface TableView {
@@ -366,16 +366,16 @@ export interface SchemaAccess {
 		token: Duration;
 	};
 	kind:
-	| {
-		kind: "JWT";
-		jwt: AccessJwt;
-	}
-	| {
-		kind: "RECORD";
-		signin: string;
-		signup: string;
-		jwt: AccessJwt;
-	};
+		| {
+				kind: "JWT";
+				jwt: AccessJwt;
+		  }
+		| {
+				kind: "RECORD";
+				signin: string;
+				signup: string;
+				jwt: AccessJwt;
+		  };
 }
 
 export interface SchemaFunction {
@@ -605,8 +605,14 @@ export interface CloudChatMessage {
 export interface CloudMeasurement {
 	instance_id: string;
 	instance_type?: string;
-	compute_hours?: number;
-	disk_used_bytes?: number;
+	metric_type: string;
 	measured_period_start: string;
 	measured_period_end: string;
+
+	// Compute
+	compute_hours?: number;
+
+	// Storage
+	disk_used_bytes?: number;
+	source?: string;
 }

@@ -468,10 +468,10 @@ export function __throw(error: Error | string): never {
  */
 export function formatMemory(amountInMB: number) {
 	if (amountInMB < 1000) {
-		return `${amountInMB} MB`;
+		return `${amountInMB.toFixed(2)} MB`;
 	}
 
-	return `${amountInMB / 1024} GB`;
+	return `${(amountInMB / 1024).toFixed(2)} GB`;
 }
 
 /**
