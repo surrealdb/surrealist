@@ -467,11 +467,11 @@ export function __throw(error: Error | string): never {
  * Format the given memory amount in MB to a human readable string
  */
 export function formatMemory(amountInMB: number) {
-	if (amountInMB < 1000) {
-		return `${amountInMB} MB`;
+	if (amountInMB < 1024) {
+		return `${amountInMB.toFixed(2)} MB`;
 	}
 
-	return `${amountInMB / 1024} GB`;
+	return `${(amountInMB / 1024).toFixed(2)} GB`;
 }
 
 /**

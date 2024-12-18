@@ -11,6 +11,7 @@ import { EstimatedCost } from "~/screens/surrealist/cloud-panel/components/Estim
 import { CloudInstanceType } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { iconHelp } from "~/util/icons";
+import { computeStorageSize } from "../../../util/helpers";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
 
@@ -128,16 +129,4 @@ export function ProvisionFinalizeStep({
 			/>
 		</Stack>
 	);
-}
-
-function computeStorageSize(type: CloudInstanceType | undefined) {
-	if (!type) {
-		return 0;
-	}
-
-	if (type.price_hour === 0) {
-		return 1024;
-	}
-
-	return type.memory * 8;
 }

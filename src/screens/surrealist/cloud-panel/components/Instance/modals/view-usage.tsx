@@ -9,6 +9,7 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
+
 import { Stack } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { useMemo } from "react";
@@ -18,7 +19,14 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudUsageQuery } from "~/screens/surrealist/cloud-panel/hooks/usage";
 import type { CloudInstance } from "~/types";
+import { formatMemory } from "~/util/helpers";
 import { iconDatabase, iconQuery } from "~/util/icons";
+import { computeStorageSize } from "../../../util/helpers";
+import {
+	measureComputeHistory,
+	measureComputeTotal,
+	measureStorageUsage,
+} from "../../../util/measurements";
 
 export async function openUsageModal(instance: CloudInstance) {
 	openModal({
@@ -41,24 +49,22 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 	const isLight = useIsLight();
 	const { data, isPending } = useCloudUsageQuery(instance);
 
-	const totalCompute = useMemo(() => {
-		if (!data) return 0;
+	const computeHistory = measureComputeHistory(data ?? []);
+	const computeTotal = measureComputeTotal(data ?? []);
+	const storageUsage = measureStorageUsage(data ?? []);
 
-		return data.reduce((acc, { compute_hours }) => acc + (compute_hours ?? 0), 0);
-	}, [data]);
+	const storageMax = useMemo(() => {
+		return computeStorageSize(instance.type);
+	}, [instance.type]);
 
-	const computeHistory = useMemo(() => {
-		if (!data) return [];
-
-		return data.filter(
-			({ compute_hours, instance_type }) =>
-				compute_hours !== undefined && instance_type !== undefined,
-		);
-	}, [data]);
+	const storageFrac = (storageUsage / storageMax) * 100;
+	const storageUsageMB = formatMemory(storageUsage);
+	const storageMaxMB = formatMemory(storageMax);
+	const storageColor = storageFrac > 90 ? "red" : "blue";
 
 	return (
 		<Stack>
-			{/* <Paper
+			<Paper
 				bg="slate.9"
 				p="xl"
 				style={{ userSelect: "text", WebkitUserSelect: "text" }}
@@ -89,19 +95,21 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 						fw={700}
 						fz={20}
 					>
-						0 MB
+						{storageUsageMB}
 					</Text>
 				</Group>
 
 				<Progress
 					mt="xl"
-					value={30}
-					color="blue"
+					value={storageFrac}
+					color={storageColor}
 					size="sm"
 				/>
 
-				<Text mt="sm">You have used 30% of your 4 GB storage limit</Text>
-			</Paper> */}
+				<Text mt="sm">
+					You have used {storageFrac.toFixed(2)}% of your {storageMaxMB} storage limit
+				</Text>
+			</Paper>
 
 			<Paper
 				p="xl"
@@ -140,7 +148,7 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 							fw={700}
 							fz={20}
 						>
-							{totalCompute}h
+							{computeTotal}h
 						</Text>
 					)}
 				</Group>
@@ -154,22 +162,22 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 
 						<Label>Instance type breakdown</Label>
 
-						{computeHistory.map(({ compute_hours, instance_type }) => (
-							<Group key={instance_type}>
+						{computeHistory.map(([type, hours]) => (
+							<Group key={type}>
 								<Text
 									c="bright"
 									fw={500}
 									fz="lg"
 									flex={1}
 								>
-									{instance_type}
+									{type}
 								</Text>
 								<Text
 									c="bright"
 									fw={600}
 									fz="xl"
 								>
-									{compute_hours}h
+									{hours}h
 								</Text>
 							</Group>
 						))}
