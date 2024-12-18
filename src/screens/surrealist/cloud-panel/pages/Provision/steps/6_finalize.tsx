@@ -11,9 +11,9 @@ import { EstimatedCost } from "~/screens/surrealist/cloud-panel/components/Estim
 import { CloudInstanceType } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { iconHelp } from "~/util/icons";
+import { computeStorageSize } from "../../../util/helpers";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
-import { computeStorageSize } from "../../../util/helpers";
 
 export function ProvisionFinalizeStep({
 	step,

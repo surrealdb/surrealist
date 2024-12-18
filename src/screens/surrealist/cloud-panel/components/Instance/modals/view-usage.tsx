@@ -19,9 +19,9 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudUsageQuery } from "~/screens/surrealist/cloud-panel/hooks/usage";
 import type { CloudInstance } from "~/types";
+import { formatMemory } from "~/util/helpers";
 import { iconDatabase, iconQuery } from "~/util/icons";
 import { computeStorageSize } from "../../../util/helpers";
-import { formatMemory } from "~/util/helpers";
 import {
 	measureComputeHistory,
 	measureComputeTotal,
