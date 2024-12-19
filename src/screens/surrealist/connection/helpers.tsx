@@ -3,6 +3,7 @@ import type { AccessRecordAuth, QueryResult, ScopeAuth } from "surrealdb";
 import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
 import type { AuthDetails, Authentication, QueryResponse } from "~/types";
 import { getSetting } from "~/util/config";
+import { CloudError } from "~/util/errors";
 import { featureFlags } from "~/util/feature-flags";
 
 export async function composeAuthentication(connection: Authentication): Promise<AuthDetails> {
@@ -39,7 +40,7 @@ export async function composeAuthentication(connection: Authentication): Promise
 
 				return response.token;
 			} catch (err: any) {
-				throw new Error("Failed to authenticate with cloud instance", {
+				throw new CloudError("Failed to authenticate with cloud instance", {
 					cause: err,
 				});
 			}

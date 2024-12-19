@@ -40,7 +40,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Slab, SlabProps } from "~/components/Slab";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { ON_FOCUS_SELECT, showError } from "~/util/helpers";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { useCloudReferralQuery } from "../../hooks/referral";
 
@@ -82,12 +82,22 @@ export function ReferralPage() {
 	const isLight = useIsLight();
 
 	const referralLink = `https://surrealist.app/referral?code=${referralQuery.data}`;
+	const shareOptions = {
+		title: "Surreal Cloud",
+		text: "Use my referral link to get started today!",
+		url: referralLink,
+	};
+
+	const showShare = "canShare" in navigator && navigator.canShare(shareOptions);
 
 	const shareLink = useStable(() => {
-		navigator.share({
-			title: "Surreal Cloud Referral",
-			text: "Join Surreal Cloud and get rewards",
-			url: referralLink,
+		navigator.share(shareOptions).catch((err: any) => {
+			console.error(err);
+
+			showError({
+				title: "Failed to share referral link",
+				subtitle: "Please copy it manually instead",
+			});
 		});
 	});
 
@@ -189,12 +199,14 @@ export function ReferralPage() {
 													input: classes.link,
 												}}
 											/>
-											<Button
-												variant="gradient"
-												onClick={shareLink}
-											>
-												Share
-											</Button>
+											{showShare && (
+												<Button
+													variant="gradient"
+													onClick={shareLink}
+												>
+													Share
+												</Button>
+											)}
 										</Group>
 									</Skeleton>
 								</Box>
