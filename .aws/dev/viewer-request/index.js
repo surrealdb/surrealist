@@ -42,6 +42,10 @@ function handler(event) {
 			request.uri = '/cloud/callback/index.html';
 			break;
 
+		case request.uri === '/referral':
+			request.uri = '/cloud/referral/index.html';
+			break;
+
 		case request.uri.includes('.') === false:
 			request.uri = '/index.html';
 			break;
