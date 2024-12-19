@@ -30,9 +30,9 @@ import InstancesPage from "./pages/Instances";
 import MembersPage from "./pages/Members";
 import PlaceholderPage from "./pages/Placeholder";
 import ProvisionPage from "./pages/Provision";
+import ReferralPage from "./pages/Referral";
 import SettingsPage from "./pages/Settings";
 import SupportPage from "./pages/Support";
-import ReferralPage from "./pages/Referral";
 
 const PORTAL_OPTIONS = {
 	attributes: {

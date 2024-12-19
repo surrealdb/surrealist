@@ -2,16 +2,16 @@ import classes from "./style.module.scss";
 
 import glowUrl from "~/assets/images/gradient-glow.webp";
 
-import logoDarkUrl from "~/assets/images/dark/referral-logo.png";
 import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
+import logoDarkUrl from "~/assets/images/dark/referral-logo.png";
 import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
 import tier2DarkUrl from "~/assets/images/dark/referral-tier-2.png";
 import tier3DarkUrl from "~/assets/images/dark/referral-tier-3.png";
 import tier4DarkUrl from "~/assets/images/dark/referral-tier-4.png";
 import tier5DarkUrl from "~/assets/images/dark/referral-tier-5.png";
 
-import logoLightUrl from "~/assets/images/light/referral-logo.png";
 import iconLightUrl from "~/assets/images/light/referral-icon.png";
+import logoLightUrl from "~/assets/images/light/referral-logo.png";
 import tier1LightUrl from "~/assets/images/light/referral-tier-1.png";
 import tier2LightUrl from "~/assets/images/light/referral-tier-2.png";
 import tier3LightUrl from "~/assets/images/light/referral-tier-3.png";
@@ -33,16 +33,16 @@ import {
 	TextInput,
 } from "@mantine/core";
 
-import { iconCheck, iconCopy } from "~/util/icons";
 import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
-import { useCloudReferralQuery } from "../../hooks/referral";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useStable } from "~/hooks/stable";
 import { Slab, SlabProps } from "~/components/Slab";
+import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { iconCheck, iconCopy } from "~/util/icons";
+import { useCloudReferralQuery } from "../../hooks/referral";
 
 interface RewardProps extends Omit<SlabProps, "title"> {
 	title: ReactNode;

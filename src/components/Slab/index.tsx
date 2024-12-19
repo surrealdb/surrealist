@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
-import clsx from "clsx";
 import { ElementProps, Paper, PaperProps } from "@mantine/core";
+import clsx from "clsx";
 import { PropsWithChildren } from "react";
 
 export interface SlabProps extends PaperProps, ElementProps<"div"> {}
