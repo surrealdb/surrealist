@@ -22,6 +22,8 @@ import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
 import { fetchAPI } from "./api";
 import { openCloudAuthentication } from "./api/auth";
 import { StatusAlert } from "./components/StatusAlert";
+import { CloudSidebar } from "./sidebar";
+
 import BillingPage from "./pages/Billing";
 import ChatPage from "./pages/Chat";
 import InstancesPage from "./pages/Instances";
@@ -30,7 +32,7 @@ import PlaceholderPage from "./pages/Placeholder";
 import ProvisionPage from "./pages/Provision";
 import SettingsPage from "./pages/Settings";
 import SupportPage from "./pages/Support";
-import { CloudSidebar } from "./sidebar";
+import ReferralPage from "./pages/Referral";
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -45,6 +47,7 @@ const PAGE_PORTALS: Record<CloudPage, HtmlPortalNode> = {
 	data: createHtmlPortalNode(PORTAL_OPTIONS),
 	billing: createHtmlPortalNode(PORTAL_OPTIONS),
 	support: createHtmlPortalNode(PORTAL_OPTIONS),
+	referral: createHtmlPortalNode(PORTAL_OPTIONS),
 	settings: createHtmlPortalNode(PORTAL_OPTIONS),
 	provision: createHtmlPortalNode(PORTAL_OPTIONS),
 	chat: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -57,6 +60,7 @@ const PAGE_COMPONENTS: Record<CloudPage, FC> = {
 	data: PlaceholderPage,
 	billing: BillingPage,
 	support: SupportPage,
+	referral: ReferralPage,
 	settings: SettingsPage,
 	provision: ProvisionPage,
 	chat: ChatPage,

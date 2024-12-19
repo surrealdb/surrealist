@@ -64,6 +64,7 @@ export type CloudPage =
 	| "audits"
 	| "billing"
 	| "support"
+	| "referral"
 	| "settings"
 	| "provision";
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";

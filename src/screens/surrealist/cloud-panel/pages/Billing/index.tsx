@@ -84,7 +84,6 @@ export function BillingPage() {
 	const billingQuery = useCloudBillingQuery(organization?.id);
 	const paymentQuery = useCloudPaymentsQuery(organization?.id);
 	const invoiceQuery = useCloudInvoicesQuery(organization?.id);
-	const referralQuery = useCloudReferralQuery();
 	const queryClient = useQueryClient();
 
 	const [requesting, setRequesting] = useState(false);
@@ -142,7 +141,6 @@ export function BillingPage() {
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
-	const referralLink = `https://surrealist.app/cloud?referrer=${referralQuery.data}`;
 
 	return (
 		<Box
@@ -350,36 +348,6 @@ export function BillingPage() {
 								</Button>
 							</Group>
 						</Form>
-					</Section>
-
-					<Section
-						title="Referral"
-						description="The Surreal Cloud referral program allows you to invite a friend in exchange for benefits."
-					>
-						<Skeleton visible={referralQuery.isPending}>
-							<TextInput
-								flex={1}
-								maw={420}
-								value={referralLink}
-								readOnly
-								rightSection={
-									<CopyButton value={referralLink}>
-										{({ copied, copy }) => (
-											<ActionIcon
-												variant={copied ? "gradient" : undefined}
-												aria-label="Copy referral link"
-												onClick={copy}
-											>
-												<Icon path={copied ? iconCheck : iconCopy} />
-											</ActionIcon>
-										)}
-									</CopyButton>
-								}
-							/>
-						</Skeleton>
-						<LearnMore href="https://surrealdb.com/docs/cloud/billing-and-support/billing#referrals">
-							Learn more about the referral program
-						</LearnMore>
 					</Section>
 
 					<Section
