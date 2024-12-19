@@ -90,17 +90,6 @@ export function ReferralPage() {
 
 	const showShare = "canShare" in navigator && navigator.canShare(shareOptions);
 
-	const shareLink = useStable(() => {
-		navigator.share(shareOptions).catch((err: any) => {
-			console.error(err);
-
-			showError({
-				title: "Failed to share referral link",
-				subtitle: "Please copy it manually instead",
-			});
-		});
-	});
-
 	return (
 		<Box
 			flex={1}
@@ -202,7 +191,7 @@ export function ReferralPage() {
 											{showShare && (
 												<Button
 													variant="gradient"
-													onClick={shareLink}
+													onClick={() => navigator.share(shareOptions)}
 												>
 													Share
 												</Button>
