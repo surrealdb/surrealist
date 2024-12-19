@@ -120,7 +120,7 @@ export async function openConnection(options?: ConnectOptions) {
 		if (connection.authentication.mode === "cloud") {
 			const { authState } = useCloudStore.getState();
 
-			if (authState === "loading") {
+			if (authState === "loading" || authState === "unknown") {
 				scheduleReconnect(1000);
 				return;
 			}
