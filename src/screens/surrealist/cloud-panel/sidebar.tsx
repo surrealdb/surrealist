@@ -44,7 +44,7 @@ const NAVIGATION: CloudPage[][] = [
 		// "audits",
 	],
 	["chat", "support"],
-	["settings"],
+	["referral", "settings"],
 ];
 
 export function CloudSidebar(props: BoxProps) {

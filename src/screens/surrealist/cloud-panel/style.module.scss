@@ -8,7 +8,9 @@
 
 .cloud-sidebar {
 	background-color: unset;
+	position: relative;
 	padding: 0;
+	z-index: 1;
 
 	@include sm-and-up {
 		width: 275px;

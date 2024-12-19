@@ -18,12 +18,14 @@ const ENTRYPOINTS = {
 	mini_run: "/tools/mini-run.html",
 	mini_new: "/tools/mini-new.html",
 	auth_callback: "/tools/auth-callback.html",
+	cloud_referral: "/tools/cloud-referral.html",
 };
 
 const TOOLS = {
 	"tools/mini-run.html": "mini/run/index.html",
 	"tools/mini-new.html": "mini/new/index.html",
 	"tools/auth-callback.html": "cloud/callback/index.html", // TODO rename to cloud/callback
+	"tools/cloud-referral.html": "cloud/referral/index.html",
 };
 
 export default defineConfig(({ mode }) => {

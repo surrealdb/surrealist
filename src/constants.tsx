@@ -60,6 +60,7 @@ import {
 	iconPlus,
 	iconProgressClock,
 	iconQuery,
+	iconReferral,
 	iconServer,
 	iconSidekick,
 } from "./util/icons";
@@ -278,6 +279,11 @@ export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
 		id: "support",
 		name: "Support",
 		icon: iconEmail,
+	},
+	referral: {
+		id: "referral",
+		name: "Referrals",
+		icon: iconReferral,
 	},
 	settings: {
 		id: "settings",
