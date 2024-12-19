@@ -40,19 +40,23 @@ import { useCloudReferralQuery } from "../../hooks/referral";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
-import { Slab } from "~/components/Slab";
+import { Slab, SlabProps } from "~/components/Slab";
 import { useIsLight } from "~/hooks/theme";
+import { ON_FOCUS_SELECT } from "~/util/helpers";
 
-interface RewardProps {
+interface RewardProps extends Omit<SlabProps, "title"> {
 	title: ReactNode;
 	description: ReactNode;
 	icon: string;
 	active?: boolean;
 }
 
-function Reward({ title, description, icon }: RewardProps) {
+function Reward({ title, description, icon, active, ...other }: RewardProps) {
 	return (
-		<Slab style={{ aspectRatio: 1 }}>
+		<Slab
+			h={170}
+			{...other}
+		>
 			<Box p="xl">
 				<Image
 					src={icon}
@@ -77,7 +81,7 @@ export function ReferralPage() {
 	const referralQuery = useCloudReferralQuery();
 	const isLight = useIsLight();
 
-	const referralLink = `https://surrealist.app/referral/${referralQuery.data}`;
+	const referralLink = `https://surrealist.app/referral?code=${referralQuery.data}`;
 
 	const shareLink = useStable(() => {
 		navigator.share({
@@ -159,6 +163,7 @@ export function ReferralPage() {
 												flex={1}
 												value={referralLink}
 												readOnly
+												onFocus={ON_FOCUS_SELECT}
 												rightSection={
 													<CopyButton value={referralLink}>
 														{({ copied, copy }) => (
@@ -201,32 +206,33 @@ export function ReferralPage() {
 						<PrimaryTitle>Rewards</PrimaryTitle>
 						<SimpleGrid
 							mt="sm"
-							cols={{ base: 2, xs: 3, sm: 2, md: 3, lg: 5 }}
+							cols={{ base: 1, xs: 3, sm: 2, md: 3, lg: 5 }}
 						>
 							<Reward
-								title="5 referrals"
-								description="Unlock bragging rights"
+								title="1-5 referrals"
+								description="Discount codes"
 								icon={isLight ? tier1LightUrl : tier1DarkUrl}
 							/>
 							<Reward
 								title="10 referrals"
-								description="A bunch of free credits"
+								description="Exclusive store swag"
 								icon={isLight ? tier2LightUrl : tier2DarkUrl}
 							/>
 							<Reward
 								title="25 referrals"
-								description="Surreal swagg"
+								description="Exclusive Discord badge"
 								icon={isLight ? tier3LightUrl : tier3DarkUrl}
 							/>
 							<Reward
 								title="100 referrals"
-								description="Huge respect"
+								description="Exclusive store multi-pack"
 								icon={isLight ? tier4LightUrl : tier4DarkUrl}
 							/>
 							<Reward
 								title="500 referrals"
-								description="Big brain"
+								description="Coming Soon"
 								icon={isLight ? tier5LightUrl : tier5DarkUrl}
+								opacity={0.5}
 							/>
 						</SimpleGrid>
 					</Box>

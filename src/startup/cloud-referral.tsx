@@ -1,11 +1,7 @@
-const { pathname } = location;
-const pattern = /^\/referral\/(.+)$/;
+const params = new URLSearchParams(location.search);
 
-if (pattern.test(pathname)) {
-	const [, code] = pathname.match(pattern) ?? [];
-	const referralCode = code;
-
-	location.pathname = `/cloud?referrer=${referralCode}`;
+if (params.has("code")) {
+	location.pathname = `/cloud?referrer=${params.get("code")}`;
 } else {
 	location.pathname = "/cloud";
 }
