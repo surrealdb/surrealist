@@ -45,7 +45,7 @@ export function DataExportModal() {
 		functions: true,
 		params: true,
 		users: true,
-		versions: true,
+		versions: false,
 		records: true,
 		tables: [],
 	});
