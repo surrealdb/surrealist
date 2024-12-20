@@ -267,7 +267,7 @@ export function ReferralPage() {
 									fz={18}
 									c="bright"
 								>
-									Friends Sign Up
+									Friends sign up
 								</Text>
 								<Text mt="xs">
 									When someone uses your link to sign up, they'll get a special
@@ -280,7 +280,7 @@ export function ReferralPage() {
 									fz={18}
 									c="bright"
 								>
-									You Get Rewarded
+									You get rewarded
 								</Text>
 								<Text mt="xs">
 									Once your referral completes a qualifying action (like making a
