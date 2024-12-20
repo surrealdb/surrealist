@@ -636,11 +636,7 @@ export async function requestDatabaseExport(config?: ExportOptions) {
 	const useModern = compareVersions(version, "2.1.0");
 
 	if (!connection || currentState !== "connected") {
-		showError({
-			title: "Failed to export",
-			subtitle: "You must be connected to the remote instance",
-		});
-		return;
+		throw new Error("Not connected to an instance");
 	}
 
 	if (useModern) {

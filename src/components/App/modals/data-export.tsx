@@ -15,7 +15,7 @@ import { useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { requestDatabaseExport } from "~/screens/surrealist/connection/connection";
-import { showInfo, slugify } from "~/util/helpers";
+import { showError, showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -60,16 +60,21 @@ export function DataExportModal() {
 				[SURQL_FILTER],
 				async () => {
 					setIsExporting(true);
-					return (await requestDatabaseExport(config)) ?? null;
+					return requestDatabaseExport(config);
 				},
 			);
 
 			if (success) {
 				showInfo({
 					title: "Export",
-					subtitle: "Database export successfully created",
+					subtitle: "Database successfully exported",
 				});
 			}
+		} catch (err: any) {
+			showError({
+				title: "Export failed",
+				subtitle: err.message,
+			});
 		} finally {
 			setIsExporting(false);
 			openedHandle.close();
