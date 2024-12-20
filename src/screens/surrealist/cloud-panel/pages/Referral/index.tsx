@@ -31,6 +31,7 @@ import {
 	Stack,
 	Text,
 	TextInput,
+	Tooltip,
 } from "@mantine/core";
 
 import { ReactNode } from "react";
@@ -38,10 +39,9 @@ import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Slab, SlabProps } from "~/components/Slab";
-import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { ON_FOCUS_SELECT, showError } from "~/util/helpers";
-import { iconCheck, iconCopy } from "~/util/icons";
+import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
 import { useCloudReferralQuery } from "../../hooks/referral";
 
 interface RewardProps extends Omit<SlabProps, "title"> {
@@ -211,7 +211,31 @@ export function ReferralPage() {
 						>
 							<Reward
 								title="1-5 referrals"
-								description="Discount codes"
+								description={
+									<Group gap="xs">
+										Free credits
+										<Tooltip
+											position="bottom"
+											label={
+												<Text
+													w={150}
+													style={{ whiteSpace: "pre-line" }}
+												>
+													You receive $10 credits per referral, for a
+													maximum of $50. The person you invite receives
+													$25.
+												</Text>
+											}
+										>
+											<Box>
+												<Icon
+													path={iconHelp}
+													size="sm"
+												/>
+											</Box>
+										</Tooltip>
+									</Group>
+								}
 								icon={isLight ? tier1LightUrl : tier1DarkUrl}
 							/>
 							<Reward
