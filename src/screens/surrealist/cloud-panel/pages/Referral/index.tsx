@@ -31,6 +31,7 @@ import {
 	Stack,
 	Text,
 	TextInput,
+	Tooltip,
 } from "@mantine/core";
 
 import { ReactNode } from "react";
@@ -38,10 +39,9 @@ import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Slab, SlabProps } from "~/components/Slab";
-import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { ON_FOCUS_SELECT, showError } from "~/util/helpers";
-import { iconCheck, iconCopy } from "~/util/icons";
+import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
 import { useCloudReferralQuery } from "../../hooks/referral";
 
 interface RewardProps extends Omit<SlabProps, "title"> {
@@ -89,17 +89,6 @@ export function ReferralPage() {
 	};
 
 	const showShare = "canShare" in navigator && navigator.canShare(shareOptions);
-
-	const shareLink = useStable(() => {
-		navigator.share(shareOptions).catch((err: any) => {
-			console.error(err);
-
-			showError({
-				title: "Failed to share referral link",
-				subtitle: "Please copy it manually instead",
-			});
-		});
-	});
 
 	return (
 		<Box
@@ -202,7 +191,7 @@ export function ReferralPage() {
 											{showShare && (
 												<Button
 													variant="gradient"
-													onClick={shareLink}
+													onClick={() => navigator.share(shareOptions)}
 												>
 													Share
 												</Button>
@@ -222,7 +211,31 @@ export function ReferralPage() {
 						>
 							<Reward
 								title="1-5 referrals"
-								description="Discount codes"
+								description={
+									<Group gap="xs">
+										Free credits
+										<Tooltip
+											position="bottom"
+											label={
+												<Text
+													w={150}
+													style={{ whiteSpace: "pre-line" }}
+												>
+													You receive $10 credits per referral, for a
+													maximum of $50. The person you invite receives
+													$25.
+												</Text>
+											}
+										>
+											<Box>
+												<Icon
+													path={iconHelp}
+													size="sm"
+												/>
+											</Box>
+										</Tooltip>
+									</Group>
+								}
 								icon={isLight ? tier1LightUrl : tier1DarkUrl}
 							/>
 							<Reward
@@ -278,7 +291,7 @@ export function ReferralPage() {
 									fz={18}
 									c="bright"
 								>
-									Friends Sign Up
+									Friends sign up
 								</Text>
 								<Text mt="xs">
 									When someone uses your link to sign up, they'll get a special
@@ -291,7 +304,7 @@ export function ReferralPage() {
 									fz={18}
 									c="bright"
 								>
-									You Get Rewarded
+									You get rewarded
 								</Text>
 								<Text mt="xs">
 									Once your referral completes a qualifying action (like making a

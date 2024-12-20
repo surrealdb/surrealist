@@ -195,7 +195,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const result = await content();
 
 		if (!result) {
-			return false;
+			throw new Error("File is empty");
 		}
 
 		if (typeof result === "string") {

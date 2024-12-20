@@ -204,6 +204,7 @@ export function ConnectionStatus() {
 						<Menu.Label mt="sm">Instance</Menu.Label>
 						<Menu.Item
 							leftSection={<Icon path={iconRelation} />}
+							disabled={currentState !== "connected"}
 							onClick={() => showNodeStatus()}
 						>
 							View node status

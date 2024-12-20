@@ -121,12 +121,12 @@ export class BrowserAdapter implements SurrealistAdapter {
 		_title: string,
 		defaultPath: string,
 		_filters: any,
-		content: () => Result<string | Blob | null>,
+		content: () => Result<string | Blob>,
 	): Promise<boolean> {
 		const result = await content();
 
 		if (!result) {
-			return false;
+			throw new Error("File is empty");
 		}
 
 		const file =
@@ -252,7 +252,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 			config.connectionGroups.push({
 				id: INSTANCE_GROUP,
 				name: instanceConfig.groupName,
-				collapsed: instanceConfig.groupCollapsed
+				collapsed: instanceConfig.groupCollapsed,
 			});
 		}
 
