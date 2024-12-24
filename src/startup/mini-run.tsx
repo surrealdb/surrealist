@@ -14,7 +14,7 @@ import { createRoot } from "react-dom/client";
 import { MiniRunScreen } from "~/screens/mini-run";
 import { openConnection } from "~/screens/surrealist/connection/connection";
 import { startConfigSync } from "~/util/config";
-import { broadcastMessage, handleWindowMessage } from "~/util/messaging";
+import { handleWindowMessage } from "~/util/messaging";
 import { adapter } from "../adapter";
 import type { MiniAdapter } from "../adapter/mini";
 
