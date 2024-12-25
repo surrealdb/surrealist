@@ -12,33 +12,33 @@
 
 <br> 
 <p align="center">
-    <a href="https://surrealdb.com/discord"><img src="https://img.shields.io/discord/902568124350599239?label=discord&style=flat-square&color=5a66f6"></a>
+    <a href="https://surrealdb.com/discord"><img src="https://img.shields.io/discord/902568124350599239?label=discord&style=flat-square&color=5a66f6" alt="Discord"></a>
     &nbsp;
-    <a href="https://twitter.com/surrealdb"><img src="https://img.shields.io/badge/twitter-follow_us-1d9bf0.svg?style=flat-square"></a>
+    <a href="https://x.com/surrealdb"><img src="https://img.shields.io/badge/x-follow_us-000000.svg?style=flat-square" alt="X"></a>
     &nbsp;
-    <a href="https://dev.to/surrealdb"><img src="https://img.shields.io/badge/dev-join_us-86f7b7.svg?style=flat-square"></a>
+    <a href="https://dev.to/surrealdb"><img src="https://img.shields.io/badge/dev-join_us-86f7b7.svg?style=flat-square" alt="Dev"></a>
     &nbsp;
-    <a href="https://www.linkedin.com/company/surrealdb/"><img src="https://img.shields.io/badge/linkedin-connect_with_us-0a66c2.svg?style=flat-square"></a>
+    <a href="https://www.linkedin.com/company/surrealdb/"><img src="https://img.shields.io/badge/linkedin-connect_with_us-0a66c2.svg?style=flat-square" alt="LinkedIn"></a>
     &nbsp;
-    <a href="https://www.youtube.com/channel/UCjf2teVEuYVvvVC-gFZNq6w"><img src="https://img.shields.io/badge/youtube-subscribe-ff0000.svg?style=flat-square"></a>
+    <a href="https://www.youtube.com/channel/UCjf2teVEuYVvvVC-gFZNq6w"><img src="https://img.shields.io/badge/youtube-subscribe-ff0000.svg?style=flat-square" alt="YouTube"></a>
 </p>
 
 <p align="center">
-    <a href="https://surrealdb.com/blog"><img height="25" src=".github/images/social/blog.svg" alt="Blog"></a>
+    <a href="https://surrealdb.com/blog"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/blog.svg?raw=true" alt="Blog"></a>
     &nbsp;
-    <a href="https://github.com/surrealdb/surrealdb"><img height="25" src=".github/images/social/github.svg" alt="Github	"></a>
+    <a href="https://github.com/surrealdb/surrealdb"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/github.svg?raw=true" alt="Github"></a>
     &nbsp;
-    <a href="https://www.linkedin.com/company/surrealdb/"><img height="25" src=".github/images/social/linkedin.svg" alt="LinkedIn"></a>
+    <a href="https://www.linkedin.com/company/surrealdb/"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/linkedin.svg?raw=true" alt="LinkedIn"></a>
     &nbsp;
-    <a href="https://twitter.com/surrealdb"><img height="25" src=".github/images/social/twitter.svg" alt="Twitter"></a>
+    <a href="https://x.com/surrealdb"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/x.svg?raw=true" alt="X"></a>
     &nbsp;
-    <a href="https://www.youtube.com/channel/UCjf2teVEuYVvvVC-gFZNq6w"><img height="25" src=".github/images/social/youtube.svg" alt="Youtube"></a>
+    <a href="https://www.youtube.com/channel/UCjf2teVEuYVvvVC-gFZNq6w"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/youtube.svg?raw=true" alt="YouTube"></a>
     &nbsp;
-    <a href="https://dev.to/surrealdb"><img height="25" src=".github/images/social/dev.svg" alt="Dev"></a>
+    <a href="https://dev.to/surrealdb"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/dev.svg?raw=true" alt="Dev"></a>
     &nbsp;
-    <a href="https://surrealdb.com/discord"><img height="25" src=".github/images/social/discord.svg" alt="Discord"></a>
+    <a href="https://surrealdb.com/discord"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/discord.svg?raw=true" alt="Discord"></a>
     &nbsp;
-    <a href="https://stackoverflow.com/questions/tagged/surrealdb"><img height="25" src=".github/images/social/stack-overflow.svg" alt="StackOverflow"></a>
+    <a href="https://stackoverflow.com/questions/tagged/surrealdb"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/stack-overflow.svg?raw=true" alt="Stack Overflow"></a>
 </p>
 
 Surrealist is the ultimate way to visually manage your [SurrealDB](https://surrealdb.com/) database. Effortlessly connect to any SurrealDB database and execute queries, explore your tables and records, design your preferred schema, and much more. Surrealist is designed to suit a broad range of workflows, so whether you are pushing SurrealDB to its limits, or just getting started, Surrealist is the perfect tool to use.
