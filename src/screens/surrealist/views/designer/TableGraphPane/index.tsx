@@ -392,9 +392,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						shadow="sm"
 					>
 						<Popover.Target>
-							<ActionButton label="Graph options">
-								<Icon path={iconCog} />
-							</ActionButton>
+							<div>
+								<ActionButton label="Graph options">
+									<Icon path={iconCog} />
+								</ActionButton>
+							</div>
 						</Popover.Target>
 						<Popover.Dropdown maw={325}>
 							<Text
