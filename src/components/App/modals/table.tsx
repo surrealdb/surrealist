@@ -1,6 +1,6 @@
 import { Button, Group, Modal, MultiSelect, Select, Stack, Tabs, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -68,6 +68,16 @@ export function TableCreatorModal() {
 	}, [opened]);
 
 	useIntent("new-table", openTableCreator);
+
+	const isValid = useMemo(() => {
+		if (!tableName) return false;
+
+		if (createType === "relation") {
+			return tableIn.length > 0 && tableOut.length > 0;
+		}
+
+		return true;
+	}, [tableName, tableIn, tableOut, createType]);
 
 	return (
 		<>
@@ -146,10 +156,7 @@ export function TableCreatorModal() {
 								type="submit"
 								variant="gradient"
 								flex={1}
-								disabled={
-									!tableName ||
-									(createType === "relation" && (!tableIn || !tableOut))
-								}
+								disabled={!isValid}
 								rightSection={<Icon path={iconPlus} />}
 							>
 								Create
