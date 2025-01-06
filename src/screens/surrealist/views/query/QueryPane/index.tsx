@@ -132,8 +132,8 @@ export function QueryPane({
 			const document = editor.state.doc;
 			const formatted = hasSelection
 				? document.sliceString(0, selection.from) +
-				formatQuery(document.sliceString(selection.from, selection.to)) +
-				document.sliceString(selection.to)
+					formatQuery(document.sliceString(selection.from, selection.to)) +
+					document.sliceString(selection.to)
 				: formatQuery(document.toString());
 
 			setEditorText(editor, formatted);
@@ -208,7 +208,7 @@ export function QueryPane({
 
 	return (
 		<ContentPane
-			title={activeTab.name ?? "Query"}
+			title={activeTab.name || "Query"}
 			icon={iconServer}
 			radius={corners}
 			leftSection={
@@ -259,7 +259,6 @@ export function QueryPane({
 								</HoverCard.Dropdown>
 							</HoverCard>
 						)}
-
 
 						<ActionButton
 							variant="light"
