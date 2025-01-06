@@ -112,7 +112,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
-	public dumpDebug = async () => ({
+	public dumpDebug = () => ({
 		Platform: "Desktop",
 		OS: this.#system,
 		Architecture: this.#arch,
