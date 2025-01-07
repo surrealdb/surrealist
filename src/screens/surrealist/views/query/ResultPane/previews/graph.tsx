@@ -1,16 +1,12 @@
-import { Box, Center, Divider, Group, Stack } from "@mantine/core";
-import { Text } from "@mantine/core";
-import { isArray, isObject } from "radash";
+import { Box, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
 import { useLayoutEffect, useMemo } from "react";
-import { DataTable } from "~/components/DataTable";
-import { Pagination } from "~/components/Pagination";
-import { usePagination } from "~/components/Pagination/hook";
 import { useSetting } from "~/hooks/config";
-import type { PreviewProps } from ".";
-import { Icon } from "~/components/Icon";
+import { type PreviewProps } from ".";
+import { usePagination } from "@mantine/hooks";
+import { DataTable } from "~/components/DataTable";
 import { iconTable } from "~/util/icons";
 
-export function TablePreview({ responses, selected }: PreviewProps) {
+export function GraphPreview({ responses, selected }: PreviewProps) {
 	const { success, result } = responses[selected] ?? { result: null };
 	const [editorScale] = useSetting("appearance", "editorScale");
 

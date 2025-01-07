@@ -1,14 +1,6 @@
 import classes from "./style.module.scss";
 
-import {
-	Button,
-	Center,
-	Group,
-	Stack,
-	Text,
-	Tooltip,
-	UnstyledButton,
-} from "@mantine/core";
+import { Button, Center, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 
 import {
 	iconBroadcastOff,
@@ -43,6 +35,7 @@ import { CombinedPreview } from "./previews/combined";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
+import { GraphPreview } from "./previews/graph";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -59,9 +52,10 @@ function computeRowCount(response: QueryResponse) {
 
 const PREVIEW_MODES: Record<ResultMode, React.FC<PreviewProps>> = {
 	combined: CombinedPreview,
-	live: LivePreview,
 	single: IndividualPreview,
 	table: TablePreview,
+	graph: GraphPreview,
+	live: LivePreview,
 };
 
 export interface ResultPaneProps {
@@ -145,6 +139,8 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const Preview = PREVIEW_MODES[resultMode];
 
+	const showFormat = !isMini && (resultMode === "combined" || resultMode === "single");
+
 	return (
 		<ContentPane
 			title={panelTitle}
@@ -183,7 +179,10 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 								value={resultTab.toString()}
 								onChange={(e) => setResultTab(Number.parseInt(e ?? "1"))}
 							>
-								<Tooltip label="Change result" openDelay={300}>
+								<Tooltip
+									label="Change result"
+									openDelay={300}
+								>
 									<Button
 										size="xs"
 										radius="xs"
@@ -199,12 +198,41 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 						)
 					)}
 
+					{showFormat && (
+						<ListMenu
+							data={RESULT_FORMATS}
+							value={resultFormat}
+							onChange={setResultFormat}
+						>
+							<Tooltip
+								label="Change result format"
+								openDelay={300}
+							>
+								<Button
+									size="xs"
+									radius="xs"
+									aria-label="Change format mode"
+									variant="light"
+									color="slate"
+									leftSection={
+										activeFormat?.icon && <Icon path={activeFormat.icon} />
+									}
+								>
+									{activeFormat?.label ?? resultFormat}
+								</Button>
+							</Tooltip>
+						</ListMenu>
+					)}
+
 					<ListMenu
 						data={RESULT_MODES}
 						value={resultMode}
 						onChange={setResultMode}
 					>
-						<Tooltip label="Change result mode" openDelay={300}>
+						<Tooltip
+							label="Change result mode"
+							openDelay={300}
+						>
 							{isMini ? (
 								<ActionButton
 									label="Change result mode"
@@ -229,29 +257,6 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							)}
 						</Tooltip>
 					</ListMenu>
-
-					{!isMini && (
-						<ListMenu
-							data={RESULT_FORMATS}
-							value={resultFormat}
-							onChange={setResultFormat}
-						>
-							<Tooltip label="Change result format" openDelay={300}>
-								<Button
-									size="xs"
-									radius="xs"
-									aria-label="Change format mode"
-									variant="light"
-									color="slate"
-									leftSection={
-										activeFormat?.icon && <Icon path={activeFormat.icon} />
-									}
-								>
-									{activeFormat?.label ?? resultFormat}
-								</Button>
-							</Tooltip>
-						</ListMenu>
-					)}
 
 					<Button
 						size="xs"
