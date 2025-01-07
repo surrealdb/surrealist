@@ -56,7 +56,7 @@ export interface ExplorerPaneProps {
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
 	const { addQueryTab, updateCurrentConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
-	const explorerTableList = useConnection((c) => c?.explorerTableList ?? []);
+	const explorerTableList = useConnection((c) => c?.explorerTableList);
 	const pagination = usePagination();
 	const [, setActiveView] = useActiveView();
 
