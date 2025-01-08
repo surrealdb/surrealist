@@ -1,6 +1,7 @@
 import {
 	type AccessRecordAuth,
 	type ExportOptions,
+	QueryParameters,
 	type ScopeAuth,
 	type Surreal,
 	SurrealDbError,
@@ -297,9 +298,9 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
 /**
  * Execute a query against the active connection
  */
-export async function executeQuery(query: string, params?: any) {
+export async function executeQuery(...args: QueryParameters) {
 	try {
-		const responseRaw = (await instance.query_raw(query, params)) || [];
+		const responseRaw = (await instance.queryRaw(...args)) || [];
 
 		return mapResults(responseRaw);
 	} catch (err: any) {

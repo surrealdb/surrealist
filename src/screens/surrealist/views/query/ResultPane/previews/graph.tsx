@@ -1,52 +1,62 @@
-import { Box, Center, Divider, Group, Pagination, Stack, Text } from "@mantine/core";
-import { useLayoutEffect, useMemo } from "react";
+import { Center, Loader, Stack, Text } from "@mantine/core";
+import { useMemo } from "react";
 import { useSetting } from "~/hooks/config";
 import { type PreviewProps } from ".";
-import { usePagination } from "@mantine/hooks";
-import { DataTable } from "~/components/DataTable";
-import { iconTable } from "~/util/icons";
+import { iconRelation } from "~/util/icons";
+import { Icon } from "~/components/Icon";
+import { isArray, isObject } from "radash";
+import { Gap, PreparedQuery, RecordId } from "surrealdb";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { useQuery } from "@tanstack/react-query";
+
+const RECORDS = new Gap<RecordId[]>([]);
+const QUERY = new PreparedQuery(
+	"return graph::find_relations($records).map(|$r| [$r[0], $r[1].tb(), $r[2]])",
+	{ records: RECORDS },
+);
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
 	const { success, result } = responses[selected] ?? { result: null };
 	const [editorScale] = useSetting("appearance", "editorScale");
-
-	const results: any[] = isArray(result) ? result : [];
-	const pagination = usePagination();
-
 	const textSize = Math.floor(15 * (editorScale / 100));
-	const startAt = (pagination.currentPage - 1) * pagination.pageSize;
-	const pageSlice = results.slice(startAt, startAt + pagination.pageSize);
 
-	const isValid = useMemo(() => {
-		return results.length > 0 && results.every((r) => isObject(r));
-	}, [results]);
+	const flattened = useMemo(() => {
+		const ids: RecordId[] = [];
 
-	useLayoutEffect(() => {
-		pagination.setTotal(results.length);
-	}, [pagination.setTotal, results.length]);
+		function flatten(data: any) {
+			if (isArray(data)) {
+				for (const item of data) {
+					flatten(item);
+				}
+			} else if (isObject(data)) {
+				for (const item of Object.values(data)) {
+					flatten(item);
+				}
+			} else if (data instanceof RecordId) {
+				ids.push(data);
+			}
+		}
+
+		flatten(result);
+
+		return ids;
+	}, [result]);
+
+	const { data, isFetching } = useQuery({
+		queryKey: ["graph", flattened],
+		refetchOnWindowFocus: false,
+		queryFn: () => {
+			console.log("Query");
+			return executeQuery(QUERY, [RECORDS.fill(flattened)]);
+		},
+	});
 
 	return success ? (
-		isValid ? (
-			<Stack
-				flex={1}
-				gap="xs"
-				align="center"
-			>
-				<Box
-					w="100%"
-					flex={1}
-					pos="relative"
-				>
-					<DataTable data={pageSlice} />
-				</Box>
-
-				<Divider w="100%" />
-
-				<Group>
-					<Pagination store={pagination} />
-				</Group>
-			</Stack>
-		) : (
+		isFetching ? (
+			<Center flex={1}>
+				<Loader />
+			</Center>
+		) : !data?.length ? (
 			<Center
 				h="100%"
 				mih={80}
@@ -54,13 +64,15 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			>
 				<Stack>
 					<Icon
-						path={iconTable}
+						path={iconRelation}
 						mx="auto"
 						size="lg"
 					/>
-					This response cannot be displayed as a table
+					This response cannot be visualized as a graph
 				</Stack>
 			</Center>
+		) : (
+			<div>{JSON.stringify(data)}</div>
 		)
 	) : (
 		<Text
