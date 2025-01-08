@@ -196,6 +196,9 @@ importers:
       immer:
         specifier: ^10.0.2
         version: 10.1.1
+      iwanthue:
+        specifier: ^2.0.0
+        version: 2.0.0
       klona:
         specifier: ^2.0.6
         version: 2.0.6
@@ -1573,6 +1576,9 @@ packages:
   '@surrealdb/lezer@1.0.0-beta.18':
     resolution: {integrity: sha512-z4FjUGK3MwC8a4yvfFlXrbek9Szk/TH14QJl85eSEa54b0SiXW+ZOWLdNIBawA5647NpaNqyaSPkf7bFe62sPg==}
 
+  '@surrealdb/lezer@1.0.0-beta.19':
+    resolution: {integrity: sha512-cFV0WmiWWHkkfOn3vhBH9S+y/3hFSrUVjWh0trOMDC2vbFUr/Nz12YOon3XgZqF0oGVvbXX97PJr5/tIW9r2Uw==}
+
   '@surrealdb/ql-wasm@0.2.0-beta.9':
     resolution: {integrity: sha512-fcNTT17wmQLDoJfdggr21un/ABELv2FVKTzhV9YRsFvYzGjQVhvdk2b+ekJrnKFI6KeV31GwEtBleTIO0VR5QQ==}
 
@@ -2267,6 +2273,9 @@ packages:
     resolution: {integrity: sha512-lPHCayd40oW98/I0uvgaHKWCSvkzY27LjWLbtzOm64yQ+G3Q5npjjbdppU65iZXkK1Zt+kH9pfegli0AYfwYYw==}
     peerDependencies:
       ws: '*'
+
+  iwanthue@2.0.0:
+    resolution: {integrity: sha512-baARnKbEygsic78ekXFxvEfVyiWPchkeoUYy6StEhjF4ayCanBZQhEiXlzPXIUXtgVCYyvwex0dnw1Ghg8UCCg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -4187,10 +4196,16 @@ snapshots:
       '@codemirror/lint': 6.8.2
       '@lezer/common': 1.2.3
       '@lezer/javascript': 1.4.19
-      '@surrealdb/lezer': 1.0.0-beta.18
+      '@surrealdb/lezer': 1.0.0-beta.19
       compare-versions: 6.1.1
 
   '@surrealdb/lezer@1.0.0-beta.18':
+    dependencies:
+      '@lezer/common': 1.2.3
+      '@lezer/highlight': 1.2.1
+      '@lezer/lr': 1.4.2
+
+  '@surrealdb/lezer@1.0.0-beta.19':
     dependencies:
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1
@@ -4928,6 +4943,10 @@ snapshots:
   isows@1.0.6(ws@8.18.0):
     dependencies:
       ws: 8.18.0
+
+  iwanthue@2.0.0:
+    dependencies:
+      obliterator: 2.0.5
 
   js-tokens@4.0.0: {}
 
