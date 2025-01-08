@@ -1,6 +1,6 @@
 import type { DefaultMantineColor, Tuple } from "@mantine/core";
 
-type ExtendedCustomColors = "surreal" | DefaultMantineColor;
+type ExtendedCustomColors = "surreal" | "slate" | DefaultMantineColor;
 
 declare module "@mantine/core" {
 	export interface MantineThemeColorsOverride {
