@@ -49,6 +49,7 @@
 		"@mantine/notifications": "^7.13.3",
 		"@mdi/js": "^7.2.96",
 		"@replit/codemirror-indentation-markers": "^6.5.0",
+		"@sigma/edge-curve": "^3.1.0",
 		"@sigma/node-border": "^3.0.0",
 		"@surrealdb/codemirror": "1.0.0-beta.18",
 		"@surrealdb/lezer": "1.0.0-beta.18",

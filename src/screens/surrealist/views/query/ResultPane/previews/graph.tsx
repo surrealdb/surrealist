@@ -6,21 +6,23 @@ import {
 	Loader,
 	Paper,
 	ScrollArea,
+	Skeleton,
 	Stack,
 	Text,
+	Transition,
 	UnstyledButton,
 } from "@mantine/core";
 
 import { iconBraces, iconCircleFilled, iconFilter, iconRelation } from "~/util/icons";
 
-import { useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { useSetting } from "~/hooks/config";
 import { type PreviewProps } from ".";
 import { Icon } from "~/components/Icon";
 import { isArray, isObject, unique } from "radash";
 import { equals, Gap, PreparedQuery, RecordId } from "surrealdb";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { MultiDirectedGraph } from "graphology";
 import { useInspector } from "~/providers/Inspector";
 import { Label } from "~/components/Label";
@@ -28,135 +30,177 @@ import iwanthue from "iwanthue";
 import forceAtlas2, { inferSettings } from "graphology-layout-forceatlas2";
 import { circular } from "graphology-layout";
 import { RelationGraph } from "~/components/RelationGraph";
-import { ColorDistributor } from "~/util/colors";
+import { useToggleList } from "~/hooks/toggle";
+import { useIsLight } from "~/hooks/theme";
+import { __throw } from "~/util/helpers";
 
 const RECORDS = new Gap<RecordId[]>([]);
-const QUERY = new PreparedQuery("return graph::find_relations($records)", { records: RECORDS });
+const QUERY = new PreparedQuery(
+	"SELECT VALUE [in, id, out] FROM $records<->(? WHERE out IN $records AND in IN $records).flatten() WHERE __ == true",
+	{ records: RECORDS },
+);
 
-export function GraphPreview({ responses, selected }: PreviewProps) {
+export function GraphPreview({ responses, selected, query }: PreviewProps) {
+	const isLight = useIsLight();
 	const { inspect } = useInspector();
 	const { success, result } = responses[selected] ?? { result: null };
 	const [editorScale] = useSetting("appearance", "editorScale");
 	const textSize = Math.floor(15 * (editorScale / 100));
 
-	// const [showIsolated, setShowIsolated] = useInputState(true);
+	const [hiddenTables, toggleTable, setHiddenTables] = useToggleList();
+	const [hiddenEdges, toggleEdge, setHiddenEdges] = useToggleList();
 
-	const flattened = useMemo(() => {
-		const ids: RecordId[] = [];
+	const relationMutation = useMutation({
+		mutationKey: ["graph-relation", query.id],
+		throwOnError: true,
+		mutationFn: async (structure: any) => {
+			const records: RecordId[] = [];
 
-		function flatten(data: any) {
-			if (isArray(data)) {
-				for (const item of data) {
-					flatten(item);
-				}
-			} else if (isObject(data)) {
-				for (const item of Object.values(data)) {
-					flatten(item);
-				}
-			} else if (data instanceof RecordId) {
-				ids.push(data);
-			}
-		}
-
-		flatten(result);
-
-		return ids;
-	}, [result]);
-
-	const { data, isFetching } = useQuery({
-		queryKey: ["graph", flattened],
-		refetchOnWindowFocus: false,
-		queryFn: async () => {
-			try {
-				const [response] = await executeQuery(QUERY, [RECORDS.fill(flattened)]);
-				const relations = response.result as [RecordId, RecordId, RecordId][];
-
-				if (relations.length === 0) {
-					return null;
-				}
-
-				const graph = new MultiDirectedGraph();
-				const tables = unique(relations.flatMap((record) => [record[0].tb, record[2].tb]));
-				const edges = unique(relations.map((record) => record[1].tb));
-
-				const palette = iwanthue(tables.length, {
-					seed: "surrealist",
-				});
-
-				// const preferredColors = ["#fe38b4", "#FF0000"];
-
-				// const distributor = new ColorDistributor(preferredColors, 0.5);
-				// const palette = distributor.generateColors(tables.length);
-
-				// Add nodes with positions
-				for (const record of flattened) {
-					const id = record.toString();
-
-					if (graph.hasNode(id)) continue;
-
-					graph.addNode(id, {
-						x: 0,
-						y: 0,
-						size: 12,
-						label: id,
-						color: palette[tables.indexOf(record.tb)],
-					});
-				}
-
-				// Add edges
-				for (const [source, edge, target] of relations) {
-					const id = edge.toString();
-
-					if (equals(source, target) || graph.hasEdge(id)) continue;
-
-					graph.addDirectedEdgeWithKey(id, source.toString(), target.toString(), {
-						label: edge.tb,
-						type: "arrow",
-					});
-				}
-
-				// Count node size
-				const originalOrder = graph.order;
-
-				// Remove stray nodes
-				graph.forEachNode((node) => {
-					if (graph.degree(node) === 0) {
-						graph.dropNode(node);
+			function flatten(data: any) {
+				if (isArray(data)) {
+					for (const item of data) {
+						flatten(item);
 					}
-				});
+				} else if (isObject(data)) {
+					for (const item of Object.values(data)) {
+						flatten(item);
+					}
+				} else if (data instanceof RecordId) {
+					records.push(data);
+				}
+			}
 
-				const recordCount = graph.order;
-				const edgeCount = graph.size;
-				const strayCount = originalOrder - recordCount;
+			flatten(structure);
 
-				circular.assign(graph, { scale: 900 });
+			const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
+			const relations = response.result as [RecordId, RecordId, RecordId][];
 
-				forceAtlas2.assign(graph, {
-					iterations: 200,
-					settings: inferSettings(graph),
-				});
-
-				// Map tables with colors
-				const tableInfo = tables.map((table, i) => ({ name: table, color: palette[i] }));
-
-				// Compute statistics
-				const statistics = {
-					recordCount,
-					edgeCount,
-					strayCount,
-				};
-
-				console.log("bruh 1");
-
-				return [graph, tableInfo, edges, statistics] as const;
-			} catch (e) {
-				console.error(e);
+			if (relations.length === 0) {
 				return null;
 			}
+
+			const tableNames = unique(relations.flatMap((record) => [record[0].tb, record[2].tb]));
+			const edgeNames = unique(relations.map((record) => record[1].tb));
+
+			const palette = iwanthue(tableNames.length, {
+				seed: "surrealist",
+			});
+
+			const tables = tableNames.map((table, i) => ({ name: table, color: palette[i] }));
+			const edges = edgeNames.map((edge) => ({ name: edge }));
+
+			return { records, relations, tables, tableNames, edges, edgeNames, palette } as const;
 		},
 	});
 
-	const [graph, tables, edges, stats] = data ?? [];
+	const layoutQuery = useQuery({
+		queryKey: ["graph-layout", relationMutation.data, hiddenEdges, hiddenTables],
+		refetchOnWindowFocus: true,
+		throwOnError: true,
+		placeholderData: keepPreviousData,
+		queryFn: async () => {
+			if (!relationMutation.data) {
+				return null;
+			}
+
+			const graph = new MultiDirectedGraph();
+			const { records, relations, tableNames, palette } = relationMutation.data;
+
+			// Add nodes with positions
+			for (const record of records) {
+				const id = record.toString();
+
+				if (graph.hasNode(id) || hiddenTables.includes(record.tb)) continue;
+
+				graph.addNode(id, {
+					x: 0,
+					y: 0,
+					size: 12,
+					label: id,
+					color: palette[tableNames.indexOf(record.tb)],
+				});
+			}
+
+			// Add edges between nodes
+			for (const [source, edge, target] of relations) {
+				const id = edge.toString();
+				const src = source.toString();
+				const tgt = target.toString();
+
+				if (
+					equals(source, target) ||
+					graph.hasEdge(id) ||
+					!graph.hasNode(src) ||
+					!graph.hasNode(tgt) ||
+					hiddenEdges.includes(edge.tb)
+				)
+					continue;
+
+				graph.addDirectedEdgeWithKey(id, src, tgt, {
+					label: edge.tb,
+					type: "arrow",
+					weight: source.tb === target.tb ? 2 : 1,
+				});
+			}
+
+			// Count node size
+			const originalOrder = graph.order;
+
+			// Remove stray nodes
+			graph.forEachNode((node) => {
+				if (graph.degree(node) === 0) {
+					graph.dropNode(node);
+				}
+			});
+
+			// Compute statistics
+			const recordCount = graph.order;
+			const edgeCount = graph.size;
+			const strayCount = originalOrder - recordCount;
+
+			// Apply initial circular layout
+			circular.assign(graph, { scale: 10 });
+
+			// Apply force atlas 2 layout
+			forceAtlas2.assign(graph, {
+				iterations: 200,
+				settings: {
+					...inferSettings(graph),
+					edgeWeightInfluence: 1,
+					scalingRatio: 2,
+				},
+			});
+
+			return {
+				graph,
+				recordCount,
+				edgeCount,
+				strayCount,
+			} as const;
+		},
+	});
+
+	const { tables, tableNames, edges, edgeNames } = relationMutation.data ?? {
+		tableNames: [],
+		edgeNames: [],
+	};
+
+	const { graph, recordCount, edgeCount, strayCount } = layoutQuery.data ?? {
+		graph: null,
+		recordCount: 0,
+		edgeCount: 0,
+		strayCount: 0,
+	};
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset on tables/edges change
+	useEffect(() => {
+		setHiddenTables([]);
+		setHiddenEdges([]);
+	}, [tableNames, edgeNames]);
+
+	useEffect(() => {
+		relationMutation.mutate(result);
+	}, [result, relationMutation.mutate]);
 
 	return success ? (
 		<Group
@@ -164,31 +208,37 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			align="stretch"
 			gap="md"
 		>
-			{isFetching ? (
-				<Center flex={1}>
-					<Loader />
-				</Center>
-			) : graph ? (
-				<RelationGraph
-					graph={graph}
-					onClickNode={inspect}
-					flex={1}
-				/>
-			) : (
-				<Center
-					c="slate"
-					flex={1}
-				>
-					<Stack>
-						<Icon
-							path={iconRelation}
-							mx="auto"
-							size="lg"
-						/>
-						This response cannot be visualized as a graph
-					</Stack>
-				</Center>
-			)}
+			<Paper
+				bg={isLight ? undefined : "slate.9"}
+				withBorder={isLight}
+				flex={1}
+			>
+				{layoutQuery.isPending ? (
+					<Center h="100%">
+						<Loader />
+					</Center>
+				) : graph ? (
+					<RelationGraph
+						graph={graph}
+						onClickNode={inspect}
+						h="100%"
+					/>
+				) : (
+					<Center
+						c="slate"
+						h="100%"
+					>
+						<Stack>
+							<Icon
+								path={iconRelation}
+								mx="auto"
+								size="lg"
+							/>
+							This response cannot be visualized as a graph
+						</Stack>
+					</Center>
+				)}
+			</Paper>
 			<Box
 				w={225}
 				pos="relative"
@@ -197,88 +247,127 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				<ScrollArea
 					pos="absolute"
 					scrollbars="y"
+					type="scroll"
 					inset={0}
 				>
 					<Stack
 						gap="xl"
 						pr={12}
+						pb="xl"
 					>
 						<Box>
-							<Label>Statistics</Label>
-							<Group gap="xs">
-								<Icon
-									path={iconBraces}
-									color="slate.4"
-									size="sm"
-								/>
-								{stats?.recordCount || 0} records visible
-							</Group>
-							<Group gap="xs">
-								<Icon
-									path={iconRelation}
-									color="slate.4"
-									size="sm"
-								/>
-								{stats?.edgeCount || 0} edges visible
-							</Group>
-							<Group gap="xs">
-								<Icon
-									path={iconFilter}
-									color="slate.4"
-									size="sm"
-								/>
-								{stats?.strayCount || 0} stray records filtered
-							</Group>
+							<Label mb="xs">Statistics</Label>
+							<Stack gap="xs">
+								<Skeleton visible={layoutQuery.isPending}>
+									<Group gap="xs">
+										<Icon
+											path={iconBraces}
+											color="slate.4"
+											size="sm"
+										/>
+										{recordCount.toString()} records visible
+									</Group>
+								</Skeleton>
+								<Skeleton visible={layoutQuery.isPending}>
+									<Group gap="xs">
+										<Icon
+											path={iconRelation}
+											color="slate.4"
+											size="sm"
+										/>
+										{edgeCount.toString()} edges visible
+									</Group>
+								</Skeleton>
+								<Skeleton visible={layoutQuery.isPending}>
+									<Group gap="xs">
+										<Icon
+											path={iconFilter}
+											color="slate.4"
+											size="sm"
+										/>
+										{strayCount.toString()} stray records filtered
+									</Group>
+								</Skeleton>
+							</Stack>
 						</Box>
 						<Box>
-							<Label>Tables</Label>
-							{tables?.map((info) => (
-								<Group
-									key={info.name}
-									component={UnstyledButton}
-									gap="sm"
-									w="100%"
-								>
-									<Checkbox
-										checked
-										size="xs"
-									/>
-									<Text
-										flex={1}
-										truncate
-									>
-										{info.name}
-									</Text>
-									<Icon
-										path={iconCircleFilled}
-										size="xl"
-										mx={-8}
-										c={info.color}
-									/>
-								</Group>
-							))}
+							<Label mb="xs">Tables</Label>
+							<Stack gap="xs">
+								{relationMutation.isPending ? (
+									<>
+										<Skeleton h={18} />
+										<Skeleton h={18} />
+										<Skeleton h={18} />
+									</>
+								) : (
+									<>
+										{tables?.map((info) => (
+											<Group
+												key={info.name}
+												component={UnstyledButton}
+												gap="sm"
+												w="100%"
+											>
+												<Checkbox
+													size="xs"
+													label={info.name}
+													flex={1}
+													checked={!hiddenTables.includes(info.name)}
+													onChange={() => toggleTable(info.name)}
+												/>
+												<Transition
+													transition="fade"
+													duration={75}
+													mounted={!hiddenTables.includes(info.name)}
+												>
+													{(style) => (
+														<Icon
+															path={iconCircleFilled}
+															c={info.color}
+															size="sm"
+															style={{
+																transform: "scale(2)",
+																...style,
+															}}
+														/>
+													)}
+												</Transition>
+											</Group>
+										))}
+									</>
+								)}
+							</Stack>
 						</Box>
 						<Box>
-							<Label>Edges</Label>
-							{edges?.map((info) => (
-								<Group
-									key={info}
-									component={UnstyledButton}
-									gap="sm"
-									w="100%"
-								>
-									<Checkbox
-										checked
-										size="xs"
-									/>
-									<Text
-										flex={1}
-										truncate
-									>
-										{info}
-									</Text>
-								</Group>
-							))}
+							<Label mb="xs">Edges</Label>
+							<Stack gap="xs">
+								{relationMutation.isPending ? (
+									<>
+										<Skeleton h={18} />
+										<Skeleton h={18} />
+										<Skeleton h={18} />
+									</>
+								) : (
+									<>
+										{edges?.map((info) => (
+											<Group
+												key={info.name}
+												component={UnstyledButton}
+												gap="sm"
+												w="100%"
+											>
+												<Checkbox
+													size="xs"
+													label={info.name}
+													flex={1}
+													checked={!hiddenEdges.includes(info.name)}
+													onChange={() => toggleEdge(info.name)}
+												/>
+											</Group>
+										))}
+									</>
+								)}
+							</Stack>
 						</Box>
 					</Stack>
 				</ScrollArea>

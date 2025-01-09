@@ -2,7 +2,9 @@ import {
 	type AccessRecordAuth,
 	type ExportOptions,
 	QueryParameters,
+	RecordId,
 	type ScopeAuth,
+	StringRecordId,
 	type Surreal,
 	SurrealDbError,
 	UnsupportedVersion,
@@ -110,6 +112,13 @@ export async function openConnection(options?: ConnectOptions) {
 
 		if (!forceClose) {
 			scheduleReconnect();
+		}
+	});
+
+	instance.emitter.subscribe("error", (err) => {
+		if (instance === thisInstance) {
+			setLatestError(err.message);
+			console.dir(err);
 		}
 	});
 

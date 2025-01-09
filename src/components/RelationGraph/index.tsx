@@ -12,7 +12,8 @@ import Graph from "graphology";
 import { useContextMenu } from "mantine-contextmenu";
 import { useRef, useEffect } from "react";
 import Sigma from "sigma";
-import { createEdgeArrowProgram } from "sigma/rendering";
+import { NodeDisplayData } from "sigma/types";
+import { createEdgeCurveProgram } from "@sigma/edge-curve";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { ActionButton } from "../ActionButton";
@@ -30,6 +31,11 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 	const isLight = useIsLight();
 
 	const { showContextMenu } = useContextMenu();
+
+	const focusRef = useRef({
+		hoveredNode: "",
+		neighbours: new Set<string>(),
+	});
 
 	const edgeColor = isLight ? theme.colors.slate[3] : theme.colors.slate[5];
 	const nodeLabelColor = isLight ? theme.colors.slate[9] : theme.colors.slate[0];
@@ -65,10 +71,14 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 			edgeLabelColor: { color: edgeLabelColor },
 			edgeLabelSize: 10,
 			stagePadding: 50,
+			defaultNodeType: "border",
 			edgeProgramClasses: {
-				arrow: createEdgeArrowProgram({
-					widenessToThicknessRatio: 4,
-					lengthToThicknessRatio: 4,
+				arrow: createEdgeCurveProgram({
+					arrowHead: {
+						widenessToThicknessRatio: 4,
+						lengthToThicknessRatio: 4,
+						extremity: "target",
+					},
 				}),
 			},
 			nodeProgramClasses: {
@@ -80,7 +90,20 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 					],
 				}),
 			},
-			defaultNodeType: "border",
+			nodeReducer: (node, data) => {
+				const res: Partial<NodeDisplayData> = { ...data };
+				const focus = focusRef.current;
+
+				if (
+					focus.hoveredNode &&
+					!focus.neighbours.has(node) &&
+					focus.hoveredNode !== node
+				) {
+					res.hidden = true;
+				}
+
+				return res;
+			},
 		});
 
 		sigma.current = instance;
@@ -93,6 +116,24 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 			if (nodeDisplayData) {
 				instance.getCamera().animate({ ...nodeDisplayData, ratio: 0.35 });
 			}
+		});
+
+		instance.on("enterNode", ({ node }) => {
+			focusRef.current.hoveredNode = node;
+			focusRef.current.neighbours = new Set(graph.neighbors(node));
+
+			instance.refresh({
+				skipIndexation: true,
+			});
+		});
+
+		instance.on("leaveNode", () => {
+			focusRef.current.hoveredNode = "";
+			focusRef.current.neighbours = new Set();
+
+			instance.refresh({
+				skipIndexation: true,
+			});
 		});
 
 		return () => {
@@ -122,9 +163,7 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 			pos="relative"
 			{...other}
 		>
-			<Paper
-				bg={isLight ? undefined : "slate.9"}
-				withBorder={isLight}
+			<Box
 				h="100%"
 				ref={ref}
 				onContextMenu={showContextMenu([
@@ -167,11 +206,11 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 				withBorder
 				pos="absolute"
 				right={12}
-				bottom={12}
+				top={12}
 				shadow="sm"
 				p="xs"
 			>
-				<Stack>
+				<Stack gap="xs">
 					<ActionButton
 						label="Zoom in"
 						onClick={handleZoomIn}

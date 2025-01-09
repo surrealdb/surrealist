@@ -94,6 +94,9 @@ importers:
       '@replit/codemirror-indentation-markers':
         specifier: ^6.5.0
         version: 6.5.3(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)
+      '@sigma/edge-curve':
+        specifier: ^3.1.0
+        version: 3.1.0(sigma@3.0.0(graphology-types@0.24.8))
       '@sigma/node-border':
         specifier: ^3.0.0
         version: 3.0.0(sigma@3.0.0(graphology-types@0.24.8))
@@ -1574,6 +1577,11 @@ packages:
 
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
+
+  '@sigma/edge-curve@3.1.0':
+    resolution: {integrity: sha512-OFWkfAXEsm+X8l1K4K49cC0psB0gQ+gqxKA08HG5piNPdzrDZ5gG9Gza6htZ5AirOVwd/4/uq/gPpD5En+H+3Q==}
+    peerDependencies:
+      sigma: '>=3.0.0-beta.10'
 
   '@sigma/node-border@3.0.0':
     resolution: {integrity: sha512-mE3zUfjvJVuAMhSjiP/zdlkqe0OVTETxd04XHUwof01YqdzTk0OB4ACJIhWrwgsBXl7tTd9lPuKoroafLh8MtQ==}
@@ -4217,6 +4225,10 @@ snapshots:
     optional: true
 
   '@sec-ant/readable-stream@0.4.1': {}
+
+  '@sigma/edge-curve@3.1.0(sigma@3.0.0(graphology-types@0.24.8))':
+    dependencies:
+      sigma: 3.0.0(graphology-types@0.24.8)
 
   '@sigma/node-border@3.0.0(sigma@3.0.0(graphology-types@0.24.8))':
     dependencies:
