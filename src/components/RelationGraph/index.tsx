@@ -12,21 +12,31 @@ import Graph from "graphology";
 import { useContextMenu } from "mantine-contextmenu";
 import { useRef, useEffect } from "react";
 import Sigma from "sigma";
-import { NodeDisplayData } from "sigma/types";
+import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
 import { createEdgeCurveProgram } from "@sigma/edge-curve";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
+import { getIsLight, useIsLight } from "~/hooks/theme";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
+import { drawHover, drawLabel } from "./drawing";
 
 export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
 	graph: Graph;
+	controlOffsetTop?: number;
+	controlOffsetRight?: number;
 	onClickNode?: (node: string) => void;
 }
 
-export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphProps) {
+export function RelationGraph({
+	graph,
+	onClickNode,
+	controlOffsetTop,
+	controlOffsetRight,
+	...other
+}: RelationGraphProps) {
 	const ref = useRef<HTMLDivElement>(null);
-	const sigma = useRef<Sigma | null>(null);
+	const sigmaRef = useRef<Sigma | null>(null);
+	const graphRef = useRef<Graph>(graph);
 	const theme = useMantineTheme();
 	const isLight = useIsLight();
 
@@ -42,18 +52,18 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 	const edgeLabelColor = isLight ? theme.colors.slate[5] : theme.colors.slate[2];
 
 	const handleZoomIn = useStable(() => {
-		sigma.current?.refresh();
-		sigma.current?.getCamera().animatedZoom();
+		sigmaRef.current?.refresh();
+		sigmaRef.current?.getCamera().animatedZoom();
 	});
 
 	const handleZoomOut = useStable(() => {
-		sigma.current?.refresh();
-		sigma.current?.getCamera().animatedUnzoom();
+		sigmaRef.current?.refresh();
+		sigmaRef.current?.getCamera().animatedUnzoom();
 	});
 
 	const handleResetZoom = useStable(() => {
-		sigma.current?.refresh();
-		sigma.current?.getCamera().animatedReset();
+		sigmaRef.current?.refresh();
+		sigmaRef.current?.getCamera().animatedReset();
 	});
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Initial render
@@ -69,14 +79,17 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 			labelSize: 10,
 			edgeLabelFont: "JetBrains Mono",
 			edgeLabelColor: { color: edgeLabelColor },
+			labelRenderedSizeThreshold: 12,
 			edgeLabelSize: 10,
 			stagePadding: 50,
 			defaultNodeType: "border",
+			defaultDrawNodeHover: drawHover,
+			defaultDrawNodeLabel: drawLabel,
 			edgeProgramClasses: {
 				arrow: createEdgeCurveProgram({
 					arrowHead: {
 						widenessToThicknessRatio: 4,
-						lengthToThicknessRatio: 4,
+						lengthToThicknessRatio: 5,
 						extremity: "target",
 					},
 				}),
@@ -84,8 +97,8 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 			nodeProgramClasses: {
 				border: createNodeBorderProgram({
 					borders: [
-						{ color: { value: theme.colors.slate[5] }, size: { value: 0.1 } },
-						{ color: { value: theme.colors.slate[0] }, size: { value: 0.1 } },
+						{ color: { attribute: "color" }, size: { value: 0.1 } },
+						{ color: { transparent: true }, size: { value: 0.1 } },
 						{ color: { attribute: "color" }, size: { value: 1.0 } },
 					],
 				}),
@@ -93,11 +106,32 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 			nodeReducer: (node, data) => {
 				const res: Partial<NodeDisplayData> = { ...data };
 				const focus = focusRef.current;
+				const isLight = getIsLight();
 
 				if (
 					focus.hoveredNode &&
 					!focus.neighbours.has(node) &&
 					focus.hoveredNode !== node
+				) {
+					res.label = "";
+					res.color = isLight ? theme.colors.slate[2] : theme.colors.slate[6];
+				}
+
+				return res;
+			},
+			edgeReducer: (edge, data) => {
+				const res: Partial<EdgeDisplayData> = { ...data };
+				const graph = graphRef.current;
+				const focus = focusRef.current;
+
+				if (
+					focus.hoveredNode &&
+					!graph
+						.extremities(edge)
+						.every(
+							(n) =>
+								n === focus.hoveredNode || graph.areNeighbors(n, focus.hoveredNode),
+						)
 				) {
 					res.hidden = true;
 				}
@@ -106,7 +140,7 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 			},
 		});
 
-		sigma.current = instance;
+		sigmaRef.current = instance;
 
 		instance.on("clickNode", ({ node }) => {
 			onClickNode?.(node);
@@ -119,6 +153,8 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 		});
 
 		instance.on("enterNode", ({ node }) => {
+			const graph = graphRef.current;
+
 			focusRef.current.hoveredNode = node;
 			focusRef.current.neighbours = new Set(graph.neighbors(node));
 
@@ -138,23 +174,29 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 
 		return () => {
 			instance.kill();
-			sigma.current = null;
+			sigmaRef.current = null;
 		};
 	}, []);
 
 	useEffect(() => {
-		if (sigma.current) {
-			sigma.current.clear();
-			sigma.current.setGraph(graph);
-			sigma.current.refresh();
+		const sigma = sigmaRef.current;
+
+		graphRef.current = graph;
+
+		if (sigma) {
+			sigma.clear();
+			sigma.setGraph(graph);
+			sigma.refresh();
 		}
 	}, [graph]);
 
 	useEffect(() => {
-		if (sigma.current) {
-			sigma.current.setSetting("defaultEdgeColor", edgeColor);
-			sigma.current.setSetting("labelColor", { color: nodeLabelColor });
-			sigma.current.setSetting("edgeLabelColor", { color: edgeLabelColor });
+		const sigma = sigmaRef.current;
+
+		if (sigma) {
+			sigma.setSetting("defaultEdgeColor", edgeColor);
+			sigma.setSetting("labelColor", { color: nodeLabelColor });
+			sigma.setSetting("edgeLabelColor", { color: edgeLabelColor });
 		}
 	}, [edgeColor, nodeLabelColor, edgeLabelColor]);
 
@@ -205,8 +247,8 @@ export function RelationGraph({ graph, onClickNode, ...other }: RelationGraphPro
 			<Paper
 				withBorder
 				pos="absolute"
-				right={12}
-				top={12}
+				right={controlOffsetRight || 0}
+				top={controlOffsetTop || 0}
 				shadow="sm"
 				p="xs"
 			>

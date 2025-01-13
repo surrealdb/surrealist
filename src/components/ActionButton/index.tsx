@@ -2,6 +2,7 @@ import {
 	ActionIcon,
 	type ActionIconProps,
 	type ElementProps,
+	MantineComponent,
 	Stack,
 	Text,
 	Tooltip,
@@ -10,7 +11,10 @@ import {
 } from "@mantine/core";
 import { type ReactNode, forwardRef } from "react";
 
-export interface ActionButtonProps extends ActionIconProps, ElementProps<"button", "color"> {
+export interface ActionButtonProps
+	extends ActionIconProps,
+		MantineComponent<any>,
+		ElementProps<"button", "color"> {
 	label: string;
 	description?: ReactNode;
 	tooltipProps?: TooltipProps;

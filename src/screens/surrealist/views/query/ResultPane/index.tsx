@@ -146,6 +146,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 			title={panelTitle}
 			icon={iconQuery}
 			radius={corners}
+			withDivider={resultMode !== "graph"}
 			rightSection={
 				<Group
 					align="center"

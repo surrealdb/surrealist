@@ -205,6 +205,7 @@ function Query({
 						<ActionButton
 							size="sm"
 							variant="transparent"
+							component="div"
 							className={classes.queryClose}
 							onClick={handleQuickRemove}
 							color={isActive && isLight ? "white" : undefined}

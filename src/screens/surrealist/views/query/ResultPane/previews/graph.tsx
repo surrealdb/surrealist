@@ -26,14 +26,15 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { MultiDirectedGraph } from "graphology";
 import { useInspector } from "~/providers/Inspector";
 import { Label } from "~/components/Label";
-import iwanthue from "iwanthue";
-import forceAtlas2, { inferSettings } from "graphology-layout-forceatlas2";
-import { circular } from "graphology-layout";
+import iwanthue, { ColorSpaceArray } from "iwanthue";
+import { inferSettings } from "graphology-layout-forceatlas2";
+import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import { RelationGraph } from "~/components/RelationGraph";
 import { useToggleList } from "~/hooks/toggle";
 import { useIsLight } from "~/hooks/theme";
 import { __throw } from "~/util/helpers";
 
+const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
 const RECORDS = new Gap<RecordId[]>([]);
 const QUERY = new PreparedQuery(
 	"SELECT VALUE [in, id, out] FROM $records<->(? WHERE out IN $records AND in IN $records).flatten() WHERE __ == true",
@@ -49,6 +50,8 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 	const [hiddenTables, toggleTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleEdge, setHiddenEdges] = useToggleList();
+
+	const supervisorRef = useRef<FA2LayoutSupervisor | null>(null);
 
 	const relationMutation = useMutation({
 		mutationKey: ["graph-relation", query.id],
@@ -84,6 +87,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 			const palette = iwanthue(tableNames.length, {
 				seed: "surrealist",
+				colorSpace: SURREAL_SPACE,
 			});
 
 			const tables = tableNames.map((table, i) => ({ name: table, color: palette[i] }));
@@ -113,9 +117,9 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 				if (graph.hasNode(id) || hiddenTables.includes(record.tb)) continue;
 
 				graph.addNode(id, {
-					x: 0,
-					y: 0,
-					size: 12,
+					x: Math.random(),
+					y: Math.random(),
+					size: 9,
 					label: id,
 					color: palette[tableNames.indexOf(record.tb)],
 				});
@@ -159,17 +163,36 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 			const strayCount = originalOrder - recordCount;
 
 			// Apply initial circular layout
-			circular.assign(graph, { scale: 10 });
+			// circular.assign(graph, { scale: 10 });
 
 			// Apply force atlas 2 layout
-			forceAtlas2.assign(graph, {
-				iterations: 200,
+			supervisorRef.current?.kill();
+
+			// forceAtlas2.assign(graph, {
+			// 	iterations: 200,
+			// 	settings: {
+			// 		...inferSettings(graph),
+			// 		edgeWeightInfluence: 1,
+			// 		scalingRatio: 2,
+			// 	},
+			// });
+
+			const supervisor = new FA2LayoutSupervisor(graph, {
+				getEdgeWeight: "weight",
 				settings: {
 					...inferSettings(graph),
 					edgeWeightInfluence: 1,
 					scalingRatio: 2,
+					slowDown: 1000,
 				},
 			});
+
+			supervisorRef.current = supervisor;
+			supervisor.start();
+
+			setTimeout(() => {
+				supervisor.stop();
+			}, 5000);
 
 			return {
 				graph,
@@ -203,30 +226,30 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	}, [result, relationMutation.mutate]);
 
 	return success ? (
-		<Group
-			flex={1}
-			align="stretch"
-			gap="md"
+		<Paper
+			flex="1"
+			bg={isLight ? "slate.0" : "slate.7"}
 		>
-			<Paper
-				bg={isLight ? undefined : "slate.9"}
-				withBorder={isLight}
-				flex={1}
+			<Group
+				h="100%"
+				align="stretch"
+				gap={0}
 			>
 				{layoutQuery.isPending ? (
-					<Center h="100%">
+					<Center flex={1}>
 						<Loader />
 					</Center>
 				) : graph ? (
 					<RelationGraph
 						graph={graph}
 						onClickNode={inspect}
-						h="100%"
+						controlOffsetTop={12}
+						flex={1}
 					/>
 				) : (
 					<Center
 						c="slate"
-						h="100%"
+						flex={1}
 					>
 						<Stack>
 							<Icon
@@ -238,141 +261,141 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						</Stack>
 					</Center>
 				)}
-			</Paper>
-			<Box
-				w={225}
-				pos="relative"
-				mr={-12}
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
+				<Paper
+					w={225}
+					pos="relative"
+					shadow="sm"
+					m="md"
 				>
-					<Stack
-						gap="xl"
-						pr={12}
-						pb="xl"
+					<ScrollArea
+						pos="absolute"
+						scrollbars="y"
+						type="scroll"
+						inset={0}
 					>
-						<Box>
-							<Label mb="xs">Statistics</Label>
-							<Stack gap="xs">
-								<Skeleton visible={layoutQuery.isPending}>
-									<Group gap="xs">
-										<Icon
-											path={iconBraces}
-											color="slate.4"
-											size="sm"
-										/>
-										{recordCount.toString()} records visible
-									</Group>
-								</Skeleton>
-								<Skeleton visible={layoutQuery.isPending}>
-									<Group gap="xs">
-										<Icon
-											path={iconRelation}
-											color="slate.4"
-											size="sm"
-										/>
-										{edgeCount.toString()} edges visible
-									</Group>
-								</Skeleton>
-								<Skeleton visible={layoutQuery.isPending}>
-									<Group gap="xs">
-										<Icon
-											path={iconFilter}
-											color="slate.4"
-											size="sm"
-										/>
-										{strayCount.toString()} stray records filtered
-									</Group>
-								</Skeleton>
-							</Stack>
-						</Box>
-						<Box>
-							<Label mb="xs">Tables</Label>
-							<Stack gap="xs">
-								{relationMutation.isPending ? (
-									<>
-										<Skeleton h={18} />
-										<Skeleton h={18} />
-										<Skeleton h={18} />
-									</>
-								) : (
-									<>
-										{tables?.map((info) => (
-											<Group
-												key={info.name}
-												component={UnstyledButton}
-												gap="sm"
-												w="100%"
-											>
-												<Checkbox
-													size="xs"
-													label={info.name}
-													flex={1}
-													checked={!hiddenTables.includes(info.name)}
-													onChange={() => toggleTable(info.name)}
-												/>
-												<Transition
-													transition="fade"
-													duration={75}
-													mounted={!hiddenTables.includes(info.name)}
+						<Stack
+							gap="xl"
+							p="lg"
+						>
+							<Box>
+								<Label mb="xs">Statistics</Label>
+								<Stack gap="xs">
+									<Skeleton visible={layoutQuery.isPending}>
+										<Group gap="xs">
+											<Icon
+												path={iconBraces}
+												color="slate.4"
+												size="sm"
+											/>
+											{recordCount.toString()} records visible
+										</Group>
+									</Skeleton>
+									<Skeleton visible={layoutQuery.isPending}>
+										<Group gap="xs">
+											<Icon
+												path={iconRelation}
+												color="slate.4"
+												size="sm"
+											/>
+											{edgeCount.toString()} edges visible
+										</Group>
+									</Skeleton>
+									<Skeleton visible={layoutQuery.isPending}>
+										<Group gap="xs">
+											<Icon
+												path={iconFilter}
+												color="slate.4"
+												size="sm"
+											/>
+											{strayCount.toString()} stray records filtered
+										</Group>
+									</Skeleton>
+								</Stack>
+							</Box>
+							<Box>
+								<Label mb="xs">Tables</Label>
+								<Stack gap="xs">
+									{relationMutation.isPending ? (
+										<>
+											<Skeleton h={18} />
+											<Skeleton h={18} />
+											<Skeleton h={18} />
+										</>
+									) : (
+										<>
+											{tables?.map((info) => (
+												<Group
+													key={info.name}
+													component={UnstyledButton}
+													gap="sm"
+													w="100%"
 												>
-													{(style) => (
-														<Icon
-															path={iconCircleFilled}
-															c={info.color}
-															size="sm"
-															style={{
-																transform: "scale(2)",
-																...style,
-															}}
-														/>
-													)}
-												</Transition>
-											</Group>
-										))}
-									</>
-								)}
-							</Stack>
-						</Box>
-						<Box>
-							<Label mb="xs">Edges</Label>
-							<Stack gap="xs">
-								{relationMutation.isPending ? (
-									<>
-										<Skeleton h={18} />
-										<Skeleton h={18} />
-										<Skeleton h={18} />
-									</>
-								) : (
-									<>
-										{edges?.map((info) => (
-											<Group
-												key={info.name}
-												component={UnstyledButton}
-												gap="sm"
-												w="100%"
-											>
-												<Checkbox
-													size="xs"
-													label={info.name}
-													flex={1}
-													checked={!hiddenEdges.includes(info.name)}
-													onChange={() => toggleEdge(info.name)}
-												/>
-											</Group>
-										))}
-									</>
-								)}
-							</Stack>
-						</Box>
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</Group>
+													<Checkbox
+														size="xs"
+														label={info.name}
+														flex={1}
+														checked={!hiddenTables.includes(info.name)}
+														onChange={() => toggleTable(info.name)}
+													/>
+													<Transition
+														transition="fade"
+														duration={75}
+														mounted={!hiddenTables.includes(info.name)}
+													>
+														{(style) => (
+															<Icon
+																path={iconCircleFilled}
+																c={info.color}
+																size="sm"
+																style={{
+																	transform: "scale(2)",
+																	...style,
+																}}
+															/>
+														)}
+													</Transition>
+												</Group>
+											))}
+										</>
+									)}
+								</Stack>
+							</Box>
+							<Box>
+								<Label mb="xs">Edges</Label>
+								<Stack gap="xs">
+									{relationMutation.isPending ? (
+										<>
+											<Skeleton h={18} />
+											<Skeleton h={18} />
+											<Skeleton h={18} />
+										</>
+									) : (
+										<>
+											{edges?.map((info) => (
+												<Group
+													key={info.name}
+													component={UnstyledButton}
+													gap="sm"
+													w="100%"
+												>
+													<Checkbox
+														size="xs"
+														label={info.name}
+														flex={1}
+														checked={!hiddenEdges.includes(info.name)}
+														onChange={() => toggleEdge(info.name)}
+													/>
+												</Group>
+											))}
+										</>
+									)}
+								</Stack>
+							</Box>
+						</Stack>
+					</ScrollArea>
+				</Paper>
+			</Group>
+		</Paper>
 	) : (
 		<Text
 			pl="md"
