@@ -4,13 +4,19 @@ import {
 	iconFullscreen,
 	iconImage,
 	iconAPI,
+	iconSearch,
+	iconEyeOff,
+	iconRelation,
+	iconCopy,
+	iconPlay,
+	iconStop,
 } from "~/util/icons";
 
 import { Box, BoxProps, ElementProps, Paper, Stack, useMantineTheme } from "@mantine/core";
 import { createNodeBorderProgram } from "@sigma/node-border";
 import Graph from "graphology";
 import { useContextMenu } from "mantine-contextmenu";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, MouseEvent } from "react";
 import Sigma from "sigma";
 import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
 import { createEdgeCurveProgram } from "@sigma/edge-curve";
@@ -19,19 +25,24 @@ import { getIsLight, useIsLight } from "~/hooks/theme";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
 import { drawHover, drawLabel } from "./drawing";
+import { useInspector } from "~/providers/Inspector";
 
 export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
 	graph: Graph;
 	controlOffsetTop?: number;
 	controlOffsetRight?: number;
-	onClickNode?: (node: string) => void;
+	isSupervising?: boolean;
+	onChangeSupervising?: (supervisor: boolean) => void;
+	onHideNode?: (node: string) => void;
 }
 
 export function RelationGraph({
 	graph,
-	onClickNode,
 	controlOffsetTop,
 	controlOffsetRight,
+	isSupervising,
+	onChangeSupervising,
+	onHideNode,
 	...other
 }: RelationGraphProps) {
 	const ref = useRef<HTMLDivElement>(null);
@@ -41,6 +52,7 @@ export function RelationGraph({
 	const isLight = useIsLight();
 
 	const { showContextMenu } = useContextMenu();
+	const { inspect } = useInspector();
 
 	const focusRef = useRef({
 		hoveredNode: "",
@@ -77,7 +89,6 @@ export function RelationGraph({
 			labelFont: "JetBrains Mono",
 			labelColor: { color: nodeLabelColor },
 			labelSize: 10,
-			edgeLabelFont: "JetBrains Mono",
 			edgeLabelColor: { color: edgeLabelColor },
 			labelRenderedSizeThreshold: 12,
 			edgeLabelSize: 10,
@@ -142,14 +153,17 @@ export function RelationGraph({
 
 		sigmaRef.current = instance;
 
-		instance.on("clickNode", ({ node }) => {
-			onClickNode?.(node);
-
+		instance.on("doubleClickNode", ({ node, event }) => {
 			const nodeDisplayData = instance.getNodeDisplayData(node);
 
 			if (nodeDisplayData) {
-				instance.getCamera().animate({ ...nodeDisplayData, ratio: 0.35 });
+				instance.getCamera().animate({ ...nodeDisplayData, ratio: 0.15 });
 			}
+
+			inspect(node);
+			event.original.preventDefault();
+			event.original.stopPropagation();
+			event.preventSigmaDefault();
 		});
 
 		instance.on("enterNode", ({ node }) => {
@@ -170,6 +184,49 @@ export function RelationGraph({
 			instance.refresh({
 				skipIndexation: true,
 			});
+		});
+
+		instance.on("rightClickNode", ({ node, event }) => {
+			const origin = event.original as unknown as MouseEvent;
+
+			event.preventSigmaDefault();
+			origin.preventDefault();
+			origin.stopPropagation();
+
+			showContextMenu([
+				{
+					key: "inspect",
+					title: "Inspect record",
+					icon: <Icon path={iconSearch} />,
+					onClick: () => inspect(node),
+				},
+				{
+					key: "divider-1",
+				},
+				{
+					key: "hide",
+					title: "Hide record",
+					icon: <Icon path={iconEyeOff} />,
+					onClick: () => onHideNode?.(node),
+				},
+				{
+					key: "hide",
+					title: "Expand relationships...",
+					icon: <Icon path={iconRelation} />,
+					onClick: () => {
+						// TODO
+					},
+				},
+				{ key: "divider-2" },
+				{
+					key: "copy-id",
+					title: "Copy record id",
+					icon: <Icon path={iconCopy} />,
+					onClick: () => {
+						navigator.clipboard.writeText(node);
+					},
+				},
+			])(origin);
 		});
 
 		return () => {
@@ -270,6 +327,13 @@ export function RelationGraph({
 						onClick={handleResetZoom}
 					>
 						<Icon path={iconFullscreen} />
+					</ActionButton>
+					<ActionButton
+						label={isSupervising ? "Pause layout" : "Resume layout"}
+						color={isSupervising ? undefined : "orange"}
+						onClick={() => onChangeSupervising?.(!isSupervising)}
+					>
+						<Icon path={isSupervising ? iconStop : iconPlay} />
 					</ActionButton>
 				</Stack>
 			</Paper>

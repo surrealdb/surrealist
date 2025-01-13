@@ -91,7 +91,7 @@
 		"klona": "^2.0.6",
 		"leaflet": "^1.9.4",
 		"lottie-web": "^5.12.2",
-		"mantine-contextmenu": "^7.5.0",
+		"mantine-contextmenu": "^7.15.3",
 		"marked": "^15.0.0",
 		"papaparse": "^5.4.1",
 		"posthog-js": "^1.121.4",

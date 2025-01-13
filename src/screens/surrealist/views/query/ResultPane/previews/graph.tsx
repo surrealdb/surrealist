@@ -15,7 +15,7 @@ import {
 
 import { iconBraces, iconCircleFilled, iconFilter, iconRelation } from "~/util/icons";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSetting } from "~/hooks/config";
 import { type PreviewProps } from ".";
 import { Icon } from "~/components/Icon";
@@ -24,7 +24,6 @@ import { equals, Gap, PreparedQuery, RecordId } from "surrealdb";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { MultiDirectedGraph } from "graphology";
-import { useInspector } from "~/providers/Inspector";
 import { Label } from "~/components/Label";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { inferSettings } from "graphology-layout-forceatlas2";
@@ -33,6 +32,8 @@ import { RelationGraph } from "~/components/RelationGraph";
 import { useToggleList } from "~/hooks/toggle";
 import { useIsLight } from "~/hooks/theme";
 import { __throw } from "~/util/helpers";
+import { useStable } from "~/hooks/stable";
+import { useSet } from "@mantine/hooks";
 
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
 const RECORDS = new Gap<RecordId[]>([]);
@@ -43,15 +44,15 @@ const QUERY = new PreparedQuery(
 
 export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const isLight = useIsLight();
-	const { inspect } = useInspector();
 	const { success, result } = responses[selected] ?? { result: null };
 	const [editorScale] = useSetting("appearance", "editorScale");
 	const textSize = Math.floor(15 * (editorScale / 100));
+	const supervisorRef = useRef<FA2LayoutSupervisor | null>(null);
 
 	const [hiddenTables, toggleTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleEdge, setHiddenEdges] = useToggleList();
-
-	const supervisorRef = useRef<FA2LayoutSupervisor | null>(null);
+	const [supervising, setSupervising] = useState(false);
+	const hiddenNodes = useSet<string>();
 
 	const relationMutation = useMutation({
 		mutationKey: ["graph-relation", query.id],
@@ -93,13 +94,15 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 			const tables = tableNames.map((table, i) => ({ name: table, color: palette[i] }));
 			const edges = edgeNames.map((edge) => ({ name: edge }));
 
+			hiddenNodes.clear();
+
 			return { records, relations, tables, tableNames, edges, edgeNames, palette } as const;
 		},
 	});
 
 	const layoutQuery = useQuery({
 		queryKey: ["graph-layout", relationMutation.data, hiddenEdges, hiddenTables],
-		refetchOnWindowFocus: true,
+		refetchOnWindowFocus: false,
 		throwOnError: true,
 		placeholderData: keepPreviousData,
 		queryFn: async () => {
@@ -114,15 +117,17 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 			for (const record of records) {
 				const id = record.toString();
 
-				if (graph.hasNode(id) || hiddenTables.includes(record.tb)) continue;
+				if (!graph.hasNode(id)) {
+					const color = palette[tableNames.indexOf(record.tb)];
 
-				graph.addNode(id, {
-					x: Math.random(),
-					y: Math.random(),
-					size: 9,
-					label: id,
-					color: palette[tableNames.indexOf(record.tb)],
-				});
+					graph.addNode(id, {
+						x: Math.random(),
+						y: Math.random(),
+						size: 9,
+						label: id,
+						color: color,
+					});
+				}
 			}
 
 			// Add edges between nodes
@@ -132,19 +137,17 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 				const tgt = target.toString();
 
 				if (
-					equals(source, target) ||
-					graph.hasEdge(id) ||
-					!graph.hasNode(src) ||
-					!graph.hasNode(tgt) ||
-					hiddenEdges.includes(edge.tb)
-				)
-					continue;
-
-				graph.addDirectedEdgeWithKey(id, src, tgt, {
-					label: edge.tb,
-					type: "arrow",
-					weight: source.tb === target.tb ? 2 : 1,
-				});
+					!equals(source, target) &&
+					!graph.hasEdge(id) &&
+					graph.hasNode(src) &&
+					graph.hasNode(tgt)
+				) {
+					graph.addDirectedEdgeWithKey(id, src, tgt, {
+						label: edge.tb,
+						type: "arrow",
+						weight: source.tb === target.tb ? 2 : 1,
+					});
+				}
 			}
 
 			// Count node size
@@ -162,20 +165,8 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 			const edgeCount = graph.size;
 			const strayCount = originalOrder - recordCount;
 
-			// Apply initial circular layout
-			// circular.assign(graph, { scale: 10 });
-
-			// Apply force atlas 2 layout
+			// Apply layout supervisor
 			supervisorRef.current?.kill();
-
-			// forceAtlas2.assign(graph, {
-			// 	iterations: 200,
-			// 	settings: {
-			// 		...inferSettings(graph),
-			// 		edgeWeightInfluence: 1,
-			// 		scalingRatio: 2,
-			// 	},
-			// });
 
 			const supervisor = new FA2LayoutSupervisor(graph, {
 				getEdgeWeight: "weight",
@@ -189,10 +180,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 			supervisorRef.current = supervisor;
 			supervisor.start();
-
-			setTimeout(() => {
-				supervisor.stop();
-			}, 5000);
+			setSupervising(true);
 
 			return {
 				graph,
@@ -201,6 +189,15 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 				strayCount,
 			} as const;
 		},
+	});
+
+	const updateSupervising = useStable((value: boolean) => {
+		setSupervising(value);
+		supervisorRef.current?.[value ? "start" : "stop"]();
+	});
+
+	const handleHideNode = useStable((node: string) => {
+		hiddenNodes.add(node);
 	});
 
 	const { tables, tableNames, edges, edgeNames } = relationMutation.data ?? {
@@ -242,8 +239,10 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 				) : graph ? (
 					<RelationGraph
 						graph={graph}
-						onClickNode={inspect}
 						controlOffsetTop={12}
+						isSupervising={supervising}
+						onChangeSupervising={updateSupervising}
+						onHideNode={handleHideNode}
 						flex={1}
 					/>
 				) : (
@@ -287,7 +286,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 												color="slate.4"
 												size="sm"
 											/>
-											{recordCount.toString()} records visible
+											{recordCount.toString()} records
 										</Group>
 									</Skeleton>
 									<Skeleton visible={layoutQuery.isPending}>
@@ -297,7 +296,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 												color="slate.4"
 												size="sm"
 											/>
-											{edgeCount.toString()} edges visible
+											{edgeCount.toString()} edges
 										</Group>
 									</Skeleton>
 									<Skeleton visible={layoutQuery.isPending}>
@@ -307,7 +306,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 												color="slate.4"
 												size="sm"
 											/>
-											{strayCount.toString()} stray records filtered
+											{strayCount.toString()} stray records
 										</Group>
 									</Skeleton>
 								</Stack>
