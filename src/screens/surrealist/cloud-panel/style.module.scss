@@ -16,7 +16,8 @@
 		width: 275px;
 		background-color: var(--mantine-color-body);
 		padding: var(--mantine-spacing-md);
-		border-radius: var(--mantine-radius-lg);
+		border-radius: var(--mantine-radius-sm);
+		border: 1px solid var(--mantine-color-slate-6);
 	}
 }
 
