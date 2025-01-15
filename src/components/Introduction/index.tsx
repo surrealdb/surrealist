@@ -60,7 +60,7 @@ export function Introduction({
 								{snippet.title ?? "Example"}
 							</Text>
 							<CodePreview
-								withBorder={true}
+								withCopy
 								value={snippet.code}
 								language={snippet.language}
 								withDedent={snippet.dedent !== false}

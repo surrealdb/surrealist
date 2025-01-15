@@ -98,7 +98,7 @@ export function CodePreview({
 								top={9}
 								right={9}
 								onClick={copy}
-								style={{ zIndex: 1 }}
+								className={classes.copy}
 								aria-label="Copy code to clipboard"
 							>
 								<Icon path={copied ? iconCheck : iconCopy} />
