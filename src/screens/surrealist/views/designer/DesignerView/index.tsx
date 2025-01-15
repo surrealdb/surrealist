@@ -1,8 +1,11 @@
 import { Box, Button, Group } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { ReactFlowProvider } from "@xyflow/react";
 import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
+import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
+import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
@@ -12,14 +15,11 @@ import { useStable } from "~/hooks/stable";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
 import { iconDesigner, iconEye, iconOpen, iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";
-import { Introduction } from "~/components/Introduction";
-import { Text } from "@mantine/core";
-import { useInterfaceStore } from "~/stores/interface";
-import { adapter } from "~/adapter";
 
 const TableGraphPaneLazy = memo(TableGraphPane);
 

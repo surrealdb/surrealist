@@ -18,13 +18,13 @@ import { useIsLight } from "~/hooks/theme";
 import { checkGraphqlSupport } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
+import { createBaseAuthentication } from "~/util/defaults";
+import { connectionUri } from "~/util/helpers";
 import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
 import classes from "./style.module.scss";
-import { connectionUri } from "~/util/helpers";
-import { createBaseAuthentication } from "~/util/defaults";
 
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
