@@ -75,8 +75,8 @@ export function GraphqlView() {
 
 	const snippet = useMemo(
 		() => ({
-			title: "Using GraphQL",
 			language: "bash",
+			title: "Using cURL",
 			code: `
 			# Execute a curl request
 			curl -X POST -u "root:root" \\
