@@ -1,8 +1,8 @@
 import type { EditorView } from "@codemirror/view";
-import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
+import { ActionIcon, Alert, Button, Center, Group, Paper, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import clsx from "clsx";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -18,6 +18,8 @@ import { useIsLight } from "~/hooks/theme";
 import { checkGraphqlSupport } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
+import { createBaseAuthentication } from "~/util/defaults";
+import { connectionUri } from "~/util/helpers";
 import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
@@ -42,13 +44,15 @@ export function GraphqlView() {
 	const isConnected = useIsConnected();
 	const [schema, introspectSchema] = useGraphqlIntrospection();
 
-	const [id, showVariables, protocol] = useConnection((c) => [
+	const [id, showVariables, namespace, database, authentication] = useConnection((c) => [
 		c?.id ?? "",
 		c?.graphqlShowVariables ?? false,
-		c?.authentication.protocol ?? "http",
+		c?.lastNamespace ?? "",
+		c?.lastDatabase ?? "",
+		c?.authentication ?? createBaseAuthentication(),
 	]);
 
-	const isAvailable = GQL_SUPPORTED.has(protocol);
+	const isAvailable = GQL_SUPPORTED.has(authentication.protocol);
 	const isSandbox = id === "sandbox";
 
 	const runQuery = useStable(() => {
@@ -68,6 +72,23 @@ export function GraphqlView() {
 	});
 
 	const isValid = queryValid && variablesValid && isEnabled;
+
+	const snippet = useMemo(
+		() => ({
+			language: "bash",
+			title: "Using cURL",
+			code: `
+			# Execute a curl request
+			curl -X POST -u "root:root" \\
+				-H "Surreal-NS: ${namespace}" \\
+				-H "Surreal-DB: ${database}" \\
+				-H "Accept: application/json" \\
+				-d '{"query": "{ person(filter: {age: {age_gt: 18}}) { id name age } }"}' \\
+				http://surrealdb.example.com/graphql
+		`,
+		}),
+		[namespace, database],
+	);
 
 	useViewFocus(
 		"graphql",
@@ -169,6 +190,7 @@ export function GraphqlView() {
 		<Introduction
 			title="GraphQL"
 			icon={iconGraphql}
+			snippet={snippet}
 		>
 			<Text>
 				The GraphQL view provides a fully interactive environment for executing GraphQL
@@ -188,7 +210,9 @@ export function GraphqlView() {
 				color="slate"
 				variant="light"
 				rightSection={<Icon path={iconOpen} />}
-				onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
+				onClick={() =>
+					adapter.openUrl("https://surrealdb.com/docs/surrealdb/querying/graphql")
+				}
 			>
 				Learn more
 			</Button>

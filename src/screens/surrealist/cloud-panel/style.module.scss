@@ -18,6 +18,10 @@
 		padding: var(--mantine-spacing-md);
 		border-radius: var(--mantine-radius-sm);
 		border: 1px solid var(--mantine-color-slate-6);
+
+		@include light {
+			border-color: var(--mantine-color-slate-1);
+		}
 	}
 }
 

@@ -115,7 +115,7 @@ export function ModelsView() {
 			# Upload your model directly to SurrealDB
 			SurMlFile.upload(
 				path="./model.surml",
-				url="${connectionUri(authentication, "ml/import")}",
+				url="${isAvailable ? connectionUri(authentication, "ml/import") : "http://surrealdb.example.com/ml/import"}",
 				chunk_size=36864,
 				namespace="${namespace}",
 				database="${database}",
@@ -124,7 +124,7 @@ export function ModelsView() {
 			)							
 		`,
 		}),
-		[authentication, namespace, database],
+		[authentication, namespace, database, isAvailable],
 	);
 
 	useViewFocus("models", () => {
@@ -162,7 +162,7 @@ export function ModelsView() {
 				<Introduction
 					title="Models"
 					icon={iconModuleML}
-					snippet={isAvailable ? snippet : undefined}
+					snippet={snippet}
 				>
 					<Text>
 						Upload your SurrealML models directly to SurrealDB and use the power of

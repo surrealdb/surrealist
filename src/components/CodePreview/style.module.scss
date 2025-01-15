@@ -7,3 +7,12 @@
 		-webkit-user-select: text;
 	}
 }
+
+.copy {
+	z-index: 1;
+	display: none;
+}
+
+.root:hover .copy {
+	display: block;
+}
