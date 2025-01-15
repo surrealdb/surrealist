@@ -73,8 +73,9 @@ export function CodePreview({
 			)}
 			<Paper
 				pos="relative"
-				bg={isLight ? "slate.0" : "slate.9"}
 				className={clsx(classes.root, className)}
+				shadow="none"
+				bg={isLight ? "slate.0" : "slate.9"}
 				fz="lg"
 				{...rest}
 			>

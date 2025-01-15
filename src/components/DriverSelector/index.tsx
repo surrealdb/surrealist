@@ -41,7 +41,7 @@ export function DriverSelector({
 				return (
 					<Paper
 						key={lib.name}
-						radius="xl"
+						radius="md"
 						bg={isLight ? "slate.0" : "slate.9"}
 						className={clsx(
 							classes.library,

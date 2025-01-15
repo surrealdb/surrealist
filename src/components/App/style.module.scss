@@ -1,5 +1,5 @@
 .listing-modal {
-	background-color: hsla(240, 6%, 14%, 0.5);
+	background-color: hsla(253, 21%, 13%, 0.5);
 	backdrop-filter: blur(12px);
 	-webkit-backdrop-filter: blur(12px);
 	border: 1px solid var(--surrealist-divider-color);
@@ -31,6 +31,14 @@
 
 	li {
 		margin-bottom: 1px;
+	}
+}
+
+.listing-active {
+	background-color: var(--mantine-color-slate-7);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
 	}
 }
 
@@ -120,11 +128,6 @@
 	border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.provision-box {
-	border-radius: 50%;
-	box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
-}
-
 .provision-loader::after {
 	border: solid 3px transparent;
 	background-image: linear-gradient(var(--mantine-color-body), var(--mantine-color-body)), var(--surrealist-gradient);
@@ -142,12 +145,4 @@
 
 .docs-scroller :global(.mantine-ScrollArea-viewport)>div {
 	display: block !important;
-}
-
-.listing-active {
-	background-color: var(--mantine-color-slate-7);
-
-	@include light {
-		background-color: var(--mantine-color-slate-1);
-	}
 }

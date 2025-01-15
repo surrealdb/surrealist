@@ -3,9 +3,11 @@ import {
 	Alert,
 	Checkbox,
 	Drawer,
+	HoverCard,
 	Indicator,
 	Modal,
 	Overlay,
+	Paper,
 	Popover,
 	Radio,
 	Select,
@@ -118,16 +120,16 @@ export const MANTINE_THEME = createTheme({
 			"#b3006f",
 		],
 		slate: [
-			"#f5f5f7",
-			"#e7e7ed",
-			"#dcdce4",
-			"#9f9fac",
-			"#848495",
-			"#6a6a7b",
-			"#39393c",
-			"#2b2b2f",
-			"#222226",
-			"#19191D",
+			"#F5F5F7",
+			"#E8E7ED",
+			"#DDDCE4",
+			"#A19FAC",
+			"#878495",
+			"#575466",
+			"#242133",
+			"#1D1A28",
+			"#15131D",
+			"#0E0C14",
 		],
 	},
 	defaultGradient: {
@@ -136,6 +138,12 @@ export const MANTINE_THEME = createTheme({
 		deg: 135,
 	},
 	components: {
+		Paper: Paper.extend({
+			defaultProps: {
+				withBorder: true,
+				radius: "sm",
+			},
+		}),
 		Modal: Modal.extend({
 			defaultProps: {
 				centered: true,
@@ -262,6 +270,11 @@ export const MANTINE_THEME = createTheme({
 					inset: 0,
 					width: "unset",
 				},
+			},
+		}),
+		HoverCard: HoverCard.extend({
+			defaultProps: {
+				arrowOffset: 8,
 			},
 		}),
 	},

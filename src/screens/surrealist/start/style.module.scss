@@ -18,7 +18,7 @@
 .start-box {
 	position: relative;
 	overflow: hidden;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: var(--surrealist-faint-body);
 	outline: 1px solid transparent;
 	// transition: all 0.2s;
 

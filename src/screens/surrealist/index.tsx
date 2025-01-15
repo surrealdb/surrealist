@@ -1,6 +1,7 @@
 import classes from "./style.module.scss";
 
 import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { type FC, Suspense, memo } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch, useRoute } from "wouter";
@@ -16,6 +17,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewInfo, ViewMode } from "~/types";
+import { showInfo } from "~/util/helpers";
 import { iconWarning } from "~/util/icons";
 import { CloudPanelPage } from "./cloud-panel";
 import { CloudToolbar } from "./cloud-panel/toolbar";

@@ -1,10 +1,6 @@
 .root {
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: var(--surrealist-faint-body);
 	backdrop-filter: blur(4px);
 	overflow: hidden;
 	position: relative;
-
-	@include light {
-		background-color: rgba(255, 255, 255, 0.75);
-	}
 }
