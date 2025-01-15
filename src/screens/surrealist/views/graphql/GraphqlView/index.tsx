@@ -2,7 +2,7 @@ import type { EditorView } from "@codemirror/view";
 import { ActionIcon, Alert, Button, Center, Group, Paper, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import clsx from "clsx";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -72,9 +72,23 @@ export function GraphqlView() {
 	});
 
 	const isValid = queryValid && variablesValid && isEnabled;
-	const endpoint = isAvailable
-		? connectionUri(authentication, "graphql")
-		: "http://surrealdb.example.com/graphql";
+
+	const snippet = useMemo(
+		() => ({
+			title: "Using GraphQL",
+			language: "bash",
+			code: `
+			# Execute a curl request
+			curl -X POST -u "root:root" \\
+				-H "Surreal-NS: ${namespace}" \\
+				-H "Surreal-DB: ${database}" \\
+				-H "Accept: application/json" \\
+				-d '{"query": "{ person(filter: {age: {age_gt: 18}}) { id name age } }"}' \\
+				http://surrealdb.example.com/graphql
+		`,
+		}),
+		[namespace, database],
+	);
 
 	useViewFocus(
 		"graphql",
@@ -176,11 +190,7 @@ export function GraphqlView() {
 		<Introduction
 			title="GraphQL"
 			icon={iconGraphql}
-			snippet={{
-				code: `curl -X POST -u "root:root" \n\t-H "Surreal-NS: ${namespace}" \n\t-H "Surreal-DB: ${database}" \n\t-H "Accept: application/json "\n\t-d '{"query": "{ person(filter: {age: {age_gt: 18}}) { id name age } }"}' \n\t${endpoint}`,
-				language: "bash",
-				dedent: false,
-			}}
+			snippet={snippet}
 		>
 			<Text>
 				The GraphQL view provides a fully interactive environment for executing GraphQL
