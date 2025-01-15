@@ -55,7 +55,6 @@ export function ProvisioningDialog() {
 			size="lg"
 			shadow="sm"
 			withCloseButton
-			className={classes.provisionDialog}
 			position={{
 				bottom: "var(--mantine-spacing-xl)",
 				right: "var(--mantine-spacing-xl)",

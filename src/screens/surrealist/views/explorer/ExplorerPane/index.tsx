@@ -6,6 +6,7 @@ import {
 	Divider,
 	Group,
 	ScrollArea,
+	Stack,
 	Text,
 	TextInput,
 	Tooltip,
@@ -290,18 +291,31 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				</ScrollArea>
 			) : (
 				<Center h="90%">
-					<Box ta="center">
-						<Text c="slate">This table has no records yet</Text>
+					<Stack
+						inset={0}
+						pos="absolute"
+						align="center"
+						justify="center"
+						gap="xl"
+					>
+						<Box ta="center">
+							<Text
+								fz="lg"
+								fw={600}
+								c="bright"
+							>
+								No records found
+							</Text>
+							<Text>This table contains no records</Text>
+						</Box>
 						<Button
-							mt="xl"
 							variant="gradient"
-							color="surreal.5"
 							leftSection={<Icon path={iconPlus} />}
 							onClick={openCreator}
 						>
 							Create record
 						</Button>
-					</Box>
+					</Stack>
 				</Center>
 			)}
 

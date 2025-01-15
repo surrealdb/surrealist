@@ -34,7 +34,6 @@ export function ContentPane({
 
 	return (
 		<Paper
-			radius="lg"
 			className={clsx(classes.root, className)}
 			pos="relative"
 			opacity={disabled ? 0.5 : 1}

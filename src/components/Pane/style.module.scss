@@ -6,7 +6,8 @@
 	flex-wrap: nowrap;
 }
 
-.header, .divider {
+.header,
+.divider {
 	flex-shrink: 0;
 }
 
@@ -19,5 +20,5 @@
 }
 
 .dragger {
-	flex: 0 0 var(--surrealist-divider-size);
+	flex: 0 0 0.5rem;
 }

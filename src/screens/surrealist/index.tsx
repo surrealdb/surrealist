@@ -32,6 +32,8 @@ import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
+import { showInfo } from "~/util/helpers";
+import { showNotification } from "@mantine/notifications";
 
 const DatabaseSidebarLazy = memo(DatabaseSidebar);
 const StartPageLazy = memo(StartPage);

@@ -407,11 +407,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								Table graph settings
 							</Text>
 							<Text fz="sm">Local to this connection</Text>
-							<Divider my="md" />
 							<SimpleGrid
+								my="xl"
 								cols={2}
 								style={{ alignItems: "center" }}
-								verticalSpacing="sm"
+								verticalSpacing="xs"
 							>
 								<Label>Line style</Label>
 								<Select
@@ -453,7 +453,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 									comboboxProps={{ withinPortal: false }}
 								/>
 							</SimpleGrid>
-							<Divider my="md" />
 							<Text fz="sm">
 								You can customise default values in the settings menu
 							</Text>
@@ -522,7 +521,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						},
 					])}
 				>
-					<Background color={themeColor(isLight ? "slate.2" : "slate.6")} />
+					{!showBox && <Background color={themeColor(isLight ? "slate.2" : "slate.5")} />}
 				</ReactFlow>
 
 				{isExporting && (
@@ -554,8 +553,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					>
 						<Box ta="center">
 							<Text
-								fz="xl"
+								fz="lg"
 								fw={600}
+								c="bright"
 							>
 								No tables defined
 							</Text>

@@ -81,7 +81,10 @@ export function DocsGlobalIntroduction() {
 				>
 					Select a preview language
 				</Text>
-				<Paper radius="xl">
+				<Paper
+					p="md"
+					radius="lg"
+				>
 					<DriverSelector
 						value={language}
 						onChange={setLanguage}

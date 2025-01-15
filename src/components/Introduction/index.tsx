@@ -1,4 +1,4 @@
-import { Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { Box, Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import type { PropsWithChildren, ReactNode } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { CodePreview } from "../CodePreview";
@@ -49,16 +49,9 @@ export function Introduction({
 					{children}
 				</Stack>
 				{snippet?.code && (
-					<Paper
+					<Box
 						p="xl"
 						bg={isLight ? "white" : "slate.7"}
-						radius={0}
-						shadow="none"
-						style={{
-							borderTop: isLight
-								? "1px solid var(--mantine-color-slate-1)"
-								: undefined,
-						}}
 					>
 						<Text
 							c="bright"
@@ -70,12 +63,13 @@ export function Introduction({
 						</Text>
 						<CodePreview
 							bg="transparent"
+							withBorder={false}
 							padding={0}
 							value={snippet.code}
 							language={snippet.language}
 							withDedent
 						/>
-					</Paper>
+					</Box>
 				)}
 			</Paper>
 		</Center>
