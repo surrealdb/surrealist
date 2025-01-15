@@ -117,7 +117,7 @@ export function ManageDataTab() {
 							included connections.
 						</Text>
 						<Checkbox
-							label="Include sensitive information"
+							label="Include authentication credentials"
 							checked={includeSensitive}
 							onChange={updateIncludeSensitive}
 						/>
