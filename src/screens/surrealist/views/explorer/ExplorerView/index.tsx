@@ -40,13 +40,13 @@ export function ExplorerView() {
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { openTableCreator } = useInterfaceStore.getState();
 	const { design } = useDesigner();
+
+	const isConnected = useIsConnected();
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [creatorTable, setCreatorTable] = useState<string>();
-
-	const isConnected = useIsConnected();
 
 	const openCreator = useStable((table?: string) => {
 		setCreatorTable(table || activeTable);

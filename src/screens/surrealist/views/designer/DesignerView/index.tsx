@@ -1,4 +1,4 @@
-import { Box } from "@mantine/core";
+import { Box, Button, Group } from "@mantine/core";
 import { ReactFlowProvider } from "@xyflow/react";
 import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -12,19 +12,24 @@ import { useStable } from "~/hooks/stable";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
-import { iconDesigner, iconEye } from "~/util/icons";
+import { iconDesigner, iconEye, iconOpen, iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";
+import { Introduction } from "~/components/Introduction";
+import { Text } from "@mantine/core";
+import { useInterfaceStore } from "~/stores/interface";
+import { adapter } from "~/adapter";
 
 const TableGraphPaneLazy = memo(TableGraphPane);
 
 export function DesignerView() {
+	const { openTableCreator } = useInterfaceStore.getState();
 	const { updateCurrentConnection } = useConfigStore.getState();
 	const { design, stopDesign, active, isDesigning } = useDesigner();
 	const designerTableList = useConnection((c) => c?.designerTableList);
 
-	const isOnline = useIsConnected();
+	const isConnected = useIsConnected();
 	const tables = useTables();
 
 	const buildContextMenu = useStable((table: string) => [
@@ -49,10 +54,10 @@ export function DesignerView() {
 	});
 
 	useEffect(() => {
-		if (!isOnline) {
+		if (!isConnected) {
 			stopDesign();
 		}
-	}, [isOnline, stopDesign]);
+	}, [isConnected, stopDesign]);
 
 	useIntent("design-table", ({ table }) => {
 		design(table);
@@ -62,6 +67,7 @@ export function DesignerView() {
 		syncConnectionSchema();
 	});
 
+	const emptySchema = tables.length === 0;
 	const [minSize, ref] = usePanelMinSize(275);
 
 	return (
@@ -74,7 +80,7 @@ export function DesignerView() {
 					direction="horizontal"
 					style={{ opacity: minSize === 0 ? 0 : 1 }}
 				>
-					{designerTableList && (
+					{(designerTableList || emptySchema) && (
 						<>
 							<Panel
 								defaultSize={minSize}
@@ -85,6 +91,7 @@ export function DesignerView() {
 							>
 								<TablesPane
 									icon={iconDesigner}
+									closeDisabled={emptySchema}
 									onTableSelect={design}
 									onTableContextMenu={buildContextMenu}
 									onClose={closeTableList}
@@ -98,18 +105,68 @@ export function DesignerView() {
 						id="graph"
 						order={2}
 					>
-						<ReactFlowProvider>
-							<TableGraphPaneLazy
-								tables={tables}
-								active={isDesigning ? active : null}
-								setActiveTable={design}
-							/>
-						</ReactFlowProvider>
+						{tables.length > 0 ? (
+							<ReactFlowProvider>
+								<TableGraphPaneLazy
+									tables={tables}
+									active={isDesigning ? active : null}
+									setActiveTable={design}
+								/>
+							</ReactFlowProvider>
+						) : (
+							<Introduction
+								title="Designer"
+								icon={iconDesigner}
+								snippet={{
+									language: "surrealql",
+									title: "SurrealQL",
+									code: `
+										-- Declare a new table
+										DEFINE TABLE person;
+										
+										-- Define a table field
+										DEFINE FIELD name ON person TYPE string;
+
+										-- Define an index on the field
+										DEFINE INDEX unique_name ON person
+											FIELDS name UNIQUE;
+									`,
+								}}
+							>
+								<Text>
+									The designer view allows you to visually design your database
+									schema without writing queries.
+								</Text>
+								<Group>
+									<Button
+										flex={1}
+										variant="gradient"
+										leftSection={<Icon path={iconPlus} />}
+										disabled={!isConnected}
+										onClick={openTableCreator}
+									>
+										Create table
+									</Button>
+									<Button
+										flex={1}
+										color="slate"
+										variant="light"
+										rightSection={<Icon path={iconOpen} />}
+										onClick={() =>
+											adapter.openUrl(
+												"https://surrealdb.com/docs/surrealdb/surrealql/statements/define/table",
+											)
+										}
+									>
+										Learn more
+									</Button>
+								</Group>
+							</Introduction>
+						)}
 					</Panel>
 				</PanelGroup>
 			</Box>
 		</>
-		// </Splitter>
 	);
 }
 
