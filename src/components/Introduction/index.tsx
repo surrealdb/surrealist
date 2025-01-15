@@ -1,4 +1,4 @@
-import { Box, Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { Box, Center, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import type { PropsWithChildren, ReactNode } from "react";
 import { useIsLight } from "~/hooks/theme";
 import { CodePreview } from "../CodePreview";
@@ -12,6 +12,7 @@ export interface IntroductionProps {
 		title?: string;
 		code: string;
 		language: string;
+		dedent?: boolean;
 	};
 }
 
@@ -22,8 +23,6 @@ export function Introduction({
 	snippet,
 	children,
 }: PropsWithChildren<IntroductionProps>) {
-	const isLight = useIsLight();
-
 	return (
 		<Center
 			h="100%"
@@ -49,27 +48,25 @@ export function Introduction({
 					{children}
 				</Stack>
 				{snippet?.code && (
-					<Box
-						p="xl"
-						bg={isLight ? "white" : "slate.7"}
-					>
-						<Text
-							c="bright"
-							fz={18}
-							fw={600}
-							mb="md"
-						>
-							{snippet.title ?? "Example"}
-						</Text>
-						<CodePreview
-							bg="transparent"
-							withBorder={false}
-							padding={0}
-							value={snippet.code}
-							language={snippet.language}
-							withDedent
-						/>
-					</Box>
+					<>
+						<Divider />
+						<Box p="xl">
+							<Text
+								c="bright"
+								fz={18}
+								fw={600}
+								mb="md"
+							>
+								{snippet.title ?? "Example"}
+							</Text>
+							<CodePreview
+								withBorder={true}
+								value={snippet.code}
+								language={snippet.language}
+								withDedent={snippet.dedent !== false}
+							/>
+						</Box>
+					</>
 				)}
 			</Paper>
 		</Center>

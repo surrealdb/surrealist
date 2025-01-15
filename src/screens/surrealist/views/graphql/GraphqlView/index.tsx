@@ -1,5 +1,5 @@
 import type { EditorView } from "@codemirror/view";
-import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
+import { ActionIcon, Alert, Button, Center, Group, Paper, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import clsx from "clsx";
 import { memo, useState } from "react";
@@ -23,6 +23,8 @@ import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
 import classes from "./style.module.scss";
+import { connectionUri } from "~/util/helpers";
+import { createBaseAuthentication } from "~/util/defaults";
 
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
@@ -42,13 +44,15 @@ export function GraphqlView() {
 	const isConnected = useIsConnected();
 	const [schema, introspectSchema] = useGraphqlIntrospection();
 
-	const [id, showVariables, protocol] = useConnection((c) => [
+	const [id, showVariables, namespace, database, authentication] = useConnection((c) => [
 		c?.id ?? "",
 		c?.graphqlShowVariables ?? false,
-		c?.authentication.protocol ?? "http",
+		c?.lastNamespace ?? "",
+		c?.lastDatabase ?? "",
+		c?.authentication ?? createBaseAuthentication(),
 	]);
 
-	const isAvailable = GQL_SUPPORTED.has(protocol);
+	const isAvailable = GQL_SUPPORTED.has(authentication.protocol);
 	const isSandbox = id === "sandbox";
 
 	const runQuery = useStable(() => {
@@ -68,6 +72,9 @@ export function GraphqlView() {
 	});
 
 	const isValid = queryValid && variablesValid && isEnabled;
+	const endpoint = isAvailable
+		? connectionUri(authentication, "graphql")
+		: "http://surrealdb.example.com/graphql";
 
 	useViewFocus(
 		"graphql",
@@ -169,6 +176,11 @@ export function GraphqlView() {
 		<Introduction
 			title="GraphQL"
 			icon={iconGraphql}
+			snippet={{
+				code: `curl -X POST -u "root:root" \n\t-H "Surreal-NS: ${namespace}" \n\t-H "Surreal-DB: ${database}" \n\t-H "Accept: application/json "\n\t-d '{"query": "{ person(filter: {age: {age_gt: 18}}) { id name age } }"}' \n\t${endpoint}`,
+				language: "bash",
+				dedent: false,
+			}}
 		>
 			<Text>
 				The GraphQL view provides a fully interactive environment for executing GraphQL
@@ -188,7 +200,9 @@ export function GraphqlView() {
 				color="slate"
 				variant="light"
 				rightSection={<Icon path={iconOpen} />}
-				onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealist")}
+				onClick={() =>
+					adapter.openUrl("https://surrealdb.com/docs/surrealdb/querying/graphql")
+				}
 			>
 				Learn more
 			</Button>
