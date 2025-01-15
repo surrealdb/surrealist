@@ -82,7 +82,7 @@ export function RelationGraph({
 		neighbours: new Set<string>(),
 	});
 
-	const edgeColor = isLight ? theme.colors.slate[3] : theme.colors.slate[5];
+	const edgeColor = isLight ? theme.colors.slate[3] : theme.colors.slate[4];
 	const nodeLabelColor = isLight ? theme.colors.slate[9] : theme.colors.slate[0];
 	const edgeLabelColor = isLight ? theme.colors.slate[5] : theme.colors.slate[2];
 
