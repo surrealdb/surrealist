@@ -79,6 +79,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 			<InstanceType
 				type={instance.type}
 				isSelected={false}
+				withBorder={false}
 				inactive
 				onBody
 				status={

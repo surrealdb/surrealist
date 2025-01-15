@@ -1,12 +1,13 @@
+import classes from "./style.module.scss";
 import { Box, Group, Stack, Table, Text } from "@mantine/core";
 import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
 import type { CloudInstanceType } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
-import { Tile } from "../Tile";
+import { Tile, TileProps } from "../Tile";
 
-export interface InstanceTypeProps {
+export interface InstanceTypeProps extends Omit<TileProps, "children"> {
 	type: CloudInstanceType;
 	status?: ReactNode;
 	isSelected: boolean;
@@ -24,6 +25,7 @@ export function InstanceType({
 	inactive,
 	onBody,
 	onSelect,
+	...other
 }: InstanceTypeProps) {
 	return (
 		<Tile
@@ -32,6 +34,7 @@ export function InstanceType({
 			disabled={type.enabled === false || isActive}
 			inactive={inactive}
 			onBody={onBody}
+			{...other}
 		>
 			<Group
 				wrap="nowrap"
@@ -59,7 +62,7 @@ export function InstanceType({
 					</Group>
 				</Stack>
 				<Box>
-					<Table>
+					<Table className={classes.table}>
 						<Table.Tbody>
 							<Table.Tr>
 								<Table.Td

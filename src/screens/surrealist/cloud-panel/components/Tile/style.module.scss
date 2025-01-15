@@ -1,7 +1,16 @@
 .root {
 	border: 1px solid transparent;
 	border-radius: var(--mantine-radius-md);
-	background-color: var(--mantine-color-body);
+	background-color: var(--mantine-color-slate-7);
+	transition: border-color 0.2s;
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
+
+	&[data-with-border] {
+		border: 1px solid hsla(253, 21%, 40%, 0.5);
+	}
 
 	&[data-active] {
 		border-color: var(--mantine-color-surreal-6);
@@ -13,14 +22,6 @@
 
 		&[data-active] {
 			border-color: var(--mantine-color-surreal-3);
-		}
-	}
-
-	&.on-body {
-		background-color: var(--mantine-color-slate-7);
-
-		@include light {
-			background-color: var(--mantine-color-slate-1);
 		}
 	}
 }

@@ -75,6 +75,7 @@ export function CategoryPicker({
 					isActive={value === "free"}
 					onClick={() => onChange?.("free")}
 					disabled={!freeInstanceAvailable}
+					withBorder={freeInstanceAvailable}
 					onBody={onBody}
 				>
 					<Group>
