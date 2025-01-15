@@ -10,12 +10,13 @@ import {
 	iconCopy,
 	iconPlay,
 	iconStop,
+	iconReset,
 } from "~/util/icons";
 
 import { Box, BoxProps, ElementProps, Paper, Stack, useMantineTheme } from "@mantine/core";
 import { createNodeBorderProgram } from "@sigma/node-border";
 import Graph from "graphology";
-import { useContextMenu } from "mantine-contextmenu";
+import { ContextMenuDivider, ContextMenuItem, useContextMenu } from "mantine-contextmenu";
 import { useRef, useEffect, MouseEvent } from "react";
 import Sigma from "sigma";
 import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
@@ -26,14 +27,29 @@ import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
 import { drawHover, drawLabel } from "./drawing";
 import { useInspector } from "~/providers/Inspector";
+import { RecordId } from "surrealdb";
+import { NodeContextMenu } from "./context";
+
+export interface RelationGraphNode extends Partial<NodeDisplayData> {
+	record: RecordId;
+}
+
+export interface RelationGraphEdge extends Partial<EdgeDisplayData> {
+	record: RecordId;
+	weight: number;
+}
 
 export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
-	graph: Graph;
+	graph: Graph<RelationGraphNode, RelationGraphEdge>;
 	controlOffsetTop?: number;
 	controlOffsetRight?: number;
 	isSupervising?: boolean;
+	hiddenNodes?: string[];
+	hiddenEdges?: string[];
+	hiddenTables?: string[];
 	onChangeSupervising?: (supervisor: boolean) => void;
 	onHideNode?: (node: string) => void;
+	onReset?: () => void;
 }
 
 export function RelationGraph({
@@ -41,13 +57,20 @@ export function RelationGraph({
 	controlOffsetTop,
 	controlOffsetRight,
 	isSupervising,
+	hiddenNodes,
+	hiddenEdges,
+	hiddenTables,
 	onChangeSupervising,
 	onHideNode,
+	onReset,
 	...other
 }: RelationGraphProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	const sigmaRef = useRef<Sigma | null>(null);
-	const graphRef = useRef<Graph>(graph);
+	const graphRef = useRef<Graph<RelationGraphNode, RelationGraphEdge>>(graph);
+	const hiddenNodesRef = useRef<string[]>(hiddenNodes || []);
+	const hiddenEdgesRef = useRef<string[]>(hiddenEdges || []);
+	const hiddenTablesRef = useRef<string[]>(hiddenTables || []);
 	const theme = useMantineTheme();
 	const isLight = useIsLight();
 
@@ -78,11 +101,48 @@ export function RelationGraph({
 		sigmaRef.current?.getCamera().animatedReset();
 	});
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Initial render
+	// Refresh the graph on data change
+	useEffect(() => {
+		const sigma = sigmaRef.current;
+
+		graphRef.current = graph;
+
+		if (sigma) {
+			sigma.clear();
+			sigma.setGraph(graph);
+			sigma.refresh();
+		}
+	}, [graph]);
+
+	// Apply theme changes
+	useEffect(() => {
+		const sigma = sigmaRef.current;
+
+		if (sigma) {
+			sigma.setSetting("defaultEdgeColor", edgeColor);
+			sigma.setSetting("labelColor", { color: nodeLabelColor });
+			sigma.setSetting("edgeLabelColor", { color: edgeLabelColor });
+		}
+	}, [edgeColor, nodeLabelColor, edgeLabelColor]);
+
+	// Apply hidden nodes/edges/tables
+	useEffect(() => {
+		const sigma = sigmaRef.current;
+
+		hiddenNodesRef.current = hiddenNodes || [];
+		hiddenEdgesRef.current = hiddenEdges || [];
+		hiddenTablesRef.current = hiddenTables || [];
+
+		if (sigma) {
+			sigma.refresh();
+		}
+	}, [hiddenNodes, hiddenTables, hiddenEdges]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Initial setup
 	useEffect(() => {
 		if (!ref.current) return;
 
-		const instance = new Sigma(graph, ref.current, {
+		const instance = new Sigma<RelationGraphNode, RelationGraphEdge>(graph, ref.current, {
 			defaultEdgeColor: edgeColor,
 			allowInvalidContainer: true,
 			renderEdgeLabels: true,
@@ -97,7 +157,7 @@ export function RelationGraph({
 			defaultDrawNodeHover: drawHover,
 			defaultDrawNodeLabel: drawLabel,
 			edgeProgramClasses: {
-				arrow: createEdgeCurveProgram({
+				arrow: createEdgeCurveProgram<RelationGraphNode, RelationGraphEdge>({
 					arrowHead: {
 						widenessToThicknessRatio: 4,
 						lengthToThicknessRatio: 5,
@@ -106,7 +166,7 @@ export function RelationGraph({
 				}),
 			},
 			nodeProgramClasses: {
-				border: createNodeBorderProgram({
+				border: createNodeBorderProgram<RelationGraphNode, RelationGraphEdge>({
 					borders: [
 						{ color: { attribute: "color" }, size: { value: 0.1 } },
 						{ color: { transparent: true }, size: { value: 0.1 } },
@@ -116,9 +176,32 @@ export function RelationGraph({
 			},
 			nodeReducer: (node, data) => {
 				const res: Partial<NodeDisplayData> = { ...data };
+				const graph = graphRef.current;
 				const focus = focusRef.current;
+				const hiddenNodes = hiddenNodesRef.current;
+				const hiddenTables = hiddenTablesRef.current;
+				const hiddenEdges = hiddenEdgesRef.current;
 				const isLight = getIsLight();
 
+				// Hide hidden nodes and tables
+				if (hiddenNodes.includes(node) || hiddenTables.includes(data.record.tb)) {
+					res.hidden = true;
+					return res;
+				}
+
+				const isStray = graph.edges(node).every((edge) => {
+					const { record } = graph.getEdgeAttributes(edge);
+
+					return hiddenEdges.includes(record.tb);
+				});
+
+				// Hide when all edges are hidden
+				if (isStray) {
+					res.hidden = true;
+					return res;
+				}
+
+				// Focus highlighting
 				if (
 					focus.hoveredNode &&
 					!focus.neighbours.has(node) &&
@@ -134,7 +217,15 @@ export function RelationGraph({
 				const res: Partial<EdgeDisplayData> = { ...data };
 				const graph = graphRef.current;
 				const focus = focusRef.current;
+				const hiddenEdges = hiddenEdgesRef.current;
 
+				// Hide hidden edges
+				if (hiddenEdges.includes(data.record.tb)) {
+					res.hidden = true;
+					return res;
+				}
+
+				// Focus highlighting
 				if (
 					focus.hoveredNode &&
 					!graph
@@ -193,40 +284,47 @@ export function RelationGraph({
 			origin.preventDefault();
 			origin.stopPropagation();
 
-			showContextMenu([
-				{
-					key: "inspect",
-					title: "Inspect record",
-					icon: <Icon path={iconSearch} />,
-					onClick: () => inspect(node),
-				},
-				{
-					key: "divider-1",
-				},
-				{
-					key: "hide",
-					title: "Hide record",
-					icon: <Icon path={iconEyeOff} />,
-					onClick: () => onHideNode?.(node),
-				},
-				{
-					key: "hide",
-					title: "Expand relationships...",
-					icon: <Icon path={iconRelation} />,
-					onClick: () => {
-						// TODO
-					},
-				},
-				{ key: "divider-2" },
-				{
-					key: "copy-id",
-					title: "Copy record id",
-					icon: <Icon path={iconCopy} />,
-					onClick: () => {
-						navigator.clipboard.writeText(node);
-					},
-				},
-			])(origin);
+			// showContextMenu([
+			// 	{
+			// 		key: "inspect",
+			// 		title: "Inspect record",
+			// 		icon: <Icon path={iconSearch} />,
+			// 		onClick: () => inspect(node),
+			// 	},
+			// 	{
+			// 		key: "divider-1",
+			// 	},
+			// 	{
+			// 		key: "hide",
+			// 		title: "Hide record",
+			// 		icon: <Icon path={iconEyeOff} />,
+			// 		onClick: () => onHideNode?.(node),
+			// 	},
+			// 	{
+			// 		key: "expand",
+			// 		title: "Expand relationships...",
+			// 		icon: <Icon path={iconRelation} />,
+			// 		onClick: () => {
+			// 			// TODO
+			// 		},
+			// 	},
+			// 	{
+			// 		key: "copy-id",
+			// 		title: "Copy record id",
+			// 		icon: <Icon path={iconCopy} />,
+			// 		onClick: () => {
+			// 			navigator.clipboard.writeText(node);
+			// 		},
+			// 	},
+			// ])(origin);
+
+			showContextMenu((onHide) => (
+				<NodeContextMenu
+					node={node}
+					inspect={inspect}
+					onHideMenu={onHide}
+				/>
+			))(origin);
 		});
 
 		return () => {
@@ -234,28 +332,6 @@ export function RelationGraph({
 			sigmaRef.current = null;
 		};
 	}, []);
-
-	useEffect(() => {
-		const sigma = sigmaRef.current;
-
-		graphRef.current = graph;
-
-		if (sigma) {
-			sigma.clear();
-			sigma.setGraph(graph);
-			sigma.refresh();
-		}
-	}, [graph]);
-
-	useEffect(() => {
-		const sigma = sigmaRef.current;
-
-		if (sigma) {
-			sigma.setSetting("defaultEdgeColor", edgeColor);
-			sigma.setSetting("labelColor", { color: nodeLabelColor });
-			sigma.setSetting("edgeLabelColor", { color: edgeLabelColor });
-		}
-	}, [edgeColor, nodeLabelColor, edgeLabelColor]);
 
 	return (
 		<Box
@@ -327,6 +403,12 @@ export function RelationGraph({
 						onClick={handleResetZoom}
 					>
 						<Icon path={iconFullscreen} />
+					</ActionButton>
+					<ActionButton
+						label="Reset graph"
+						onClick={() => onReset?.()}
+					>
+						<Icon path={iconReset} />
 					</ActionButton>
 					<ActionButton
 						label={isSupervising ? "Pause layout" : "Resume layout"}

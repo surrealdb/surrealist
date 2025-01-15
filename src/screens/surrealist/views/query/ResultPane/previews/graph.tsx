@@ -22,18 +22,17 @@ import { Icon } from "~/components/Icon";
 import { isArray, isObject, unique } from "radash";
 import { equals, Gap, PreparedQuery, RecordId } from "surrealdb";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { MultiDirectedGraph } from "graphology";
 import { Label } from "~/components/Label";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
-import { RelationGraph } from "~/components/RelationGraph";
-import { useToggleList } from "~/hooks/toggle";
+import { RelationGraphEdge, RelationGraph, RelationGraphNode } from "~/components/RelationGraph";
 import { useIsLight } from "~/hooks/theme";
 import { __throw } from "~/util/helpers";
 import { useStable } from "~/hooks/stable";
-import { useSet } from "@mantine/hooks";
+import { useToggleList } from "~/hooks/toggle";
 
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
 const RECORDS = new Gap<RecordId[]>([]);
@@ -49,15 +48,17 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const textSize = Math.floor(15 * (editorScale / 100));
 	const supervisorRef = useRef<FA2LayoutSupervisor | null>(null);
 
+	const [hiddenNodes, toggleNode, setHiddenNodes] = useToggleList();
 	const [hiddenTables, toggleTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleEdge, setHiddenEdges] = useToggleList();
 	const [supervising, setSupervising] = useState(false);
-	const hiddenNodes = useSet<string>();
 
-	const relationMutation = useMutation({
-		mutationKey: ["graph-relation", query.id],
-		throwOnError: true,
-		mutationFn: async (structure: any) => {
+	const { isPending, data, refetch } = useQuery({
+		queryKey: ["graph-relation", query.id],
+		enabled: !!result,
+		refetchOnMount: false,
+		refetchOnWindowFocus: false,
+		queryFn: async () => {
 			const records: RecordId[] = [];
 
 			function flatten(data: any) {
@@ -74,7 +75,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 				}
 			}
 
-			flatten(structure);
+			flatten(result);
 
 			const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
 			const relations = response.result as [RecordId, RecordId, RecordId][];
@@ -93,25 +94,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 			const tables = tableNames.map((table, i) => ({ name: table, color: palette[i] }));
 			const edges = edgeNames.map((edge) => ({ name: edge }));
-
-			hiddenNodes.clear();
-
-			return { records, relations, tables, tableNames, edges, edgeNames, palette } as const;
-		},
-	});
-
-	const layoutQuery = useQuery({
-		queryKey: ["graph-layout", relationMutation.data, hiddenEdges, hiddenTables],
-		refetchOnWindowFocus: false,
-		throwOnError: true,
-		placeholderData: keepPreviousData,
-		queryFn: async () => {
-			if (!relationMutation.data) {
-				return null;
-			}
-
-			const graph = new MultiDirectedGraph();
-			const { records, relations, tableNames, palette } = relationMutation.data;
+			const graph = new MultiDirectedGraph<RelationGraphNode, RelationGraphEdge>();
 
 			// Add nodes with positions
 			for (const record of records) {
@@ -126,6 +109,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						size: 9,
 						label: id,
 						color: color,
+						record: record,
 					});
 				}
 			}
@@ -146,6 +130,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						label: edge.tb,
 						type: "arrow",
 						weight: source.tb === target.tb ? 2 : 1,
+						record: edge,
 					});
 				}
 			}
@@ -182,8 +167,15 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 			supervisor.start();
 			setSupervising(true);
 
+			// Reveal all nodes
+			setHiddenNodes([]);
+			setHiddenTables([]);
+			setHiddenEdges([]);
+
 			return {
 				graph,
+				tables,
+				edges,
 				recordCount,
 				edgeCount,
 				strayCount,
@@ -197,30 +189,22 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	});
 
 	const handleHideNode = useStable((node: string) => {
-		hiddenNodes.add(node);
+		toggleNode(node);
 	});
 
-	const { tables, tableNames, edges, edgeNames } = relationMutation.data ?? {
-		tableNames: [],
-		edgeNames: [],
-	};
-
-	const { graph, recordCount, edgeCount, strayCount } = layoutQuery.data ?? {
+	const { tables, edges, graph, recordCount, edgeCount, strayCount } = data ?? {
+		tables: [],
+		edges: [],
 		graph: null,
 		recordCount: 0,
 		edgeCount: 0,
 		strayCount: 0,
 	};
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset on tables/edges change
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		setHiddenTables([]);
-		setHiddenEdges([]);
-	}, [tableNames, edgeNames]);
-
-	useEffect(() => {
-		relationMutation.mutate(result);
-	}, [result, relationMutation.mutate]);
+		refetch();
+	}, [result, refetch]);
 
 	return success ? (
 		<Paper
@@ -232,7 +216,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 				align="stretch"
 				gap={0}
 			>
-				{layoutQuery.isPending ? (
+				{isPending ? (
 					<Center flex={1}>
 						<Loader />
 					</Center>
@@ -241,8 +225,12 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						graph={graph}
 						controlOffsetTop={12}
 						isSupervising={supervising}
+						hiddenNodes={hiddenNodes}
+						hiddenEdges={hiddenEdges}
+						hiddenTables={hiddenTables}
 						onChangeSupervising={updateSupervising}
 						onHideNode={handleHideNode}
+						onReset={() => refetch(result)}
 						flex={1}
 					/>
 				) : (
@@ -279,7 +267,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Statistics</Label>
 								<Stack gap="xs">
-									<Skeleton visible={layoutQuery.isPending}>
+									<Skeleton visible={isPending}>
 										<Group gap="xs">
 											<Icon
 												path={iconBraces}
@@ -289,7 +277,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 											{recordCount.toString()} records
 										</Group>
 									</Skeleton>
-									<Skeleton visible={layoutQuery.isPending}>
+									<Skeleton visible={isPending}>
 										<Group gap="xs">
 											<Icon
 												path={iconRelation}
@@ -299,7 +287,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 											{edgeCount.toString()} edges
 										</Group>
 									</Skeleton>
-									<Skeleton visible={layoutQuery.isPending}>
+									<Skeleton visible={isPending}>
 										<Group gap="xs">
 											<Icon
 												path={iconFilter}
@@ -314,7 +302,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Tables</Label>
 								<Stack gap="xs">
-									{relationMutation.isPending ? (
+									{isPending ? (
 										<>
 											<Skeleton h={18} />
 											<Skeleton h={18} />
@@ -322,39 +310,43 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 										</>
 									) : (
 										<>
-											{tables?.map((info) => (
-												<Group
-													key={info.name}
-													component={UnstyledButton}
-													gap="sm"
-													w="100%"
-												>
-													<Checkbox
-														size="xs"
-														label={info.name}
-														flex={1}
-														checked={!hiddenTables.includes(info.name)}
-														onChange={() => toggleTable(info.name)}
-													/>
-													<Transition
-														transition="fade"
-														duration={75}
-														mounted={!hiddenTables.includes(info.name)}
+											{tables?.map((info) => {
+												const isHidden = hiddenTables.includes(info.name);
+
+												return (
+													<Group
+														key={info.name}
+														component={UnstyledButton}
+														gap="sm"
+														w="100%"
 													>
-														{(style) => (
-															<Icon
-																path={iconCircleFilled}
-																c={info.color}
-																size="sm"
-																style={{
-																	transform: "scale(2)",
-																	...style,
-																}}
-															/>
-														)}
-													</Transition>
-												</Group>
-											))}
+														<Checkbox
+															size="xs"
+															label={info.name}
+															flex={1}
+															checked={!isHidden}
+															onChange={() => toggleTable(info.name)}
+														/>
+														<Transition
+															transition="fade"
+															duration={75}
+															mounted={!isHidden}
+														>
+															{(style) => (
+																<Icon
+																	path={iconCircleFilled}
+																	c={info.color}
+																	size="sm"
+																	style={{
+																		transform: "scale(2)",
+																		...style,
+																	}}
+																/>
+															)}
+														</Transition>
+													</Group>
+												);
+											})}
 										</>
 									)}
 								</Stack>
@@ -362,7 +354,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Edges</Label>
 								<Stack gap="xs">
-									{relationMutation.isPending ? (
+									{isPending ? (
 										<>
 											<Skeleton h={18} />
 											<Skeleton h={18} />

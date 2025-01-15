@@ -1,7 +1,12 @@
 import { NodeHoverDrawingFunction, NodeLabelDrawingFunction } from "sigma/rendering";
 import { getIsLight } from "~/hooks/theme";
+import { RelationGraphEdge, RelationGraphNode } from ".";
 
-export const drawHover: NodeHoverDrawingFunction = (context, data, settings) => {
+export const drawHover: NodeHoverDrawingFunction<RelationGraphNode, RelationGraphEdge> = (
+	context,
+	data,
+	settings,
+) => {
 	const size = data.labelSize || settings.labelSize;
 	const font = settings.labelFont;
 	const weight = settings.labelWeight;
@@ -42,7 +47,11 @@ export const drawHover: NodeHoverDrawingFunction = (context, data, settings) => 
 	drawLabel(context, display, settings);
 };
 
-export const drawLabel: NodeLabelDrawingFunction = (context, data, settings) => {
+export const drawLabel: NodeLabelDrawingFunction<RelationGraphNode, RelationGraphEdge> = (
+	context,
+	data,
+	settings,
+) => {
 	if (!data.label) return;
 
 	const size = data.labelSize || settings.labelSize;
