@@ -1,14 +1,14 @@
 import {
 	ActionIcon,
 	type ActionIconProps,
-	createPolymorphicComponent,
 	type ElementProps,
 	Stack,
 	Text,
 	Tooltip,
 	type TooltipProps,
+	createPolymorphicComponent,
 } from "@mantine/core";
-import { forwardRef, type ReactNode } from "react";
+import { type ReactNode, forwardRef } from "react";
 
 export interface ActionButtonProps extends ActionIconProps, ElementProps<"button", "color"> {
 	label: string;

@@ -1,4 +1,3 @@
-import classes from "./style.module.scss";
 import { Box, Group, Stack, Table, Text } from "@mantine/core";
 import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
@@ -6,6 +5,7 @@ import type { CloudInstanceType } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import { Tile, TileProps } from "../Tile";
+import classes from "./style.module.scss";
 
 export interface InstanceTypeProps extends Omit<TileProps, "children"> {
 	type: CloudInstanceType;
