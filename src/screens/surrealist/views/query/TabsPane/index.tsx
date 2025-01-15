@@ -208,6 +208,7 @@ function Query({
 							className={classes.queryClose}
 							onClick={handleQuickRemove}
 							color={isActive && isLight ? "white" : undefined}
+							component="div"
 							label="Close query"
 						>
 							<Icon

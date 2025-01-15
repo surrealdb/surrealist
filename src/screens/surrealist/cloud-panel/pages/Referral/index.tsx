@@ -71,7 +71,7 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 				>
 					{title}
 				</Text>
-				<Text>{description}</Text>
+				{description}
 			</Box>
 		</Slab>
 	);
