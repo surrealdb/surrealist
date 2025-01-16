@@ -29,26 +29,16 @@ import { drawHover, drawLabel } from "./drawing";
 import { RecordId } from "surrealdb";
 import { NodeContextMenu } from "./context";
 import { useInspector } from "~/providers/Inspector";
-
-export interface RelationGraphNode extends Partial<NodeDisplayData> {
-	record: RecordId;
-}
-
-export interface RelationGraphEdge extends Partial<EdgeDisplayData> {
-	record: RecordId;
-	weight: number;
-}
+import { GraphExpansion, RelationGraphEdge, RelationGraphNode } from "./types";
 
 export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
 	graph: Graph<RelationGraphNode, RelationGraphEdge>;
 	controlOffsetTop?: number;
 	controlOffsetRight?: number;
 	isSupervising?: boolean;
-	hiddenNodes?: string[];
-	hiddenEdges?: string[];
-	hiddenTables?: string[];
 	onChangeSupervising?: (supervisor: boolean) => void;
-	onHideNode?: (node: string) => void;
+	onExpandNode?: (expansion: GraphExpansion) => void;
+	onHideNode?: (node: RecordId) => void;
 	onReset?: () => void;
 }
 
@@ -57,10 +47,8 @@ export function RelationGraph({
 	controlOffsetTop,
 	controlOffsetRight,
 	isSupervising,
-	hiddenNodes,
-	hiddenEdges,
-	hiddenTables,
 	onChangeSupervising,
+	onExpandNode,
 	onHideNode,
 	onReset,
 	...other
@@ -236,6 +224,7 @@ export function RelationGraph({
 		instance.on("rightClickNode", ({ node, event }) => {
 			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
 			const origin = event.original as unknown as MouseEvent;
+			const graph = graphRef.current;
 
 			event.preventSigmaDefault();
 			origin.preventDefault();
@@ -244,9 +233,11 @@ export function RelationGraph({
 			showContextMenu((onHide) => (
 				<NodeContextMenu
 					node={display}
+					graph={graph}
 					inspect={inspect}
 					onHideMenu={onHide}
 					onHideNode={onHideNode}
+					onExpandNode={onExpandNode}
 				/>
 			))(origin);
 		});

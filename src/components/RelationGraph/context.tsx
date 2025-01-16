@@ -1,13 +1,15 @@
 import { Box, Group, Text } from "@mantine/core";
 import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
-import { iconSearch, iconEyeOff, iconCopy, iconRelation, iconChevronRight } from "~/util/icons";
+import { iconSearch, iconEyeOff, iconCopy, iconChevronRight } from "~/util/icons";
 import { Icon } from "../Icon";
 import { useQuery } from "@tanstack/react-query";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { Gap, PreparedQuery, RecordId } from "surrealdb";
-import { RelationGraphNode } from ".";
-import { useInspector } from "~/providers/Inspector";
 import { NodeCircle } from "./node";
+import Graph from "graphology";
+import { GraphExpansion, RelationGraphEdge, RelationGraphNode } from "./types";
+
+type Edges = { from: string[]; to: string[] };
 
 const RECORD = new Gap<RecordId>();
 const QUERY = new PreparedQuery(
@@ -17,23 +19,38 @@ const QUERY = new PreparedQuery(
 
 export interface NodeContextMenuProps {
 	node: RelationGraphNode;
+	graph: Graph<RelationGraphNode, RelationGraphEdge>;
 	inspect: (record: RecordId) => void;
-	onHideNode?: (node: string) => void;
+	onExpandNode?: (expansion: GraphExpansion) => void;
+	onHideNode?: (node: RecordId) => void;
 	onHideMenu: () => void;
 }
 
-export function NodeContextMenu({ node, inspect, onHideNode, onHideMenu }: NodeContextMenuProps) {
-	const id = node.record.toString();
-
+export function NodeContextMenu({
+	node,
+	graph,
+	inspect,
+	onExpandNode,
+	onHideNode,
+	onHideMenu,
+}: NodeContextMenuProps) {
 	const { data, isSuccess } = useQuery({
 		queryKey: ["graph-relation", node],
 		enabled: true,
 		queryFn: async () => {
 			const [result] = await executeQuery(QUERY, [RECORD.fill(node.record)]);
+			const edges: Edges = result.success ? result.result : { from: [], to: [] };
+			const existing = graph
+				.edges(node.record.toString())
+				.map((edge) => graph.getEdgeAttributes(edge))
+				.map((edge) => edge.record.tb);
 
-			return result.success
-				? (result.result as { from: string[]; to: string[] })
-				: { from: [], to: [] };
+			const existingSet = new Set(existing);
+
+			return {
+				from: edges.from.filter((from) => !existingSet.has(from)),
+				to: edges.to.filter((to) => !existingSet.has(to)),
+			};
 		},
 	});
 
@@ -71,15 +88,13 @@ export function NodeContextMenu({ node, inspect, onHideNode, onHideMenu }: NodeC
 				title="Hide record"
 				icon={<Icon path={iconEyeOff} />}
 				onHide={onHideMenu}
-				onClick={() => onHideNode?.(id)}
+				onClick={() => onHideNode?.(node.record)}
 			/>
 			<ContextMenuItem
 				title="Copy record id"
 				icon={<Icon path={iconCopy} />}
 				onHide={onHideMenu}
-				onClick={() => {
-					navigator.clipboard.writeText(id);
-				}}
+				onClick={() => navigator.clipboard.writeText(node.record.toString())}
 			/>
 			{isSuccess && data.from.length > 0 && (
 				<>
@@ -88,6 +103,9 @@ export function NodeContextMenu({ node, inspect, onHideNode, onHideMenu }: NodeC
 						<ContextMenuItem
 							key={from}
 							onHide={onHideMenu}
+							onClick={() =>
+								onExpandNode?.({ record: node.record, direction: "<-", edge: from })
+							}
 							title={
 								<Group gap="xs">
 									Expand incoming
@@ -105,7 +123,6 @@ export function NodeContextMenu({ node, inspect, onHideNode, onHideMenu }: NodeC
 									flip="horizontal"
 								/>
 							}
-							// onClick={() => inspect(from)}
 						/>
 					))}
 				</>
@@ -117,7 +134,11 @@ export function NodeContextMenu({ node, inspect, onHideNode, onHideMenu }: NodeC
 					{data.to.map((to) => (
 						<ContextMenuItem
 							key={to}
+							onHide={onHideMenu}
 							icon={<Icon path={iconChevronRight} />}
+							onClick={() =>
+								onExpandNode?.({ record: node.record, direction: "->", edge: to })
+							}
 							title={
 								<Group gap="xs">
 									Expand outgoing
@@ -129,20 +150,9 @@ export function NodeContextMenu({ node, inspect, onHideNode, onHideMenu }: NodeC
 									</Text>
 								</Group>
 							}
-							onHide={onHideMenu}
-							// onClick={() => inspect(from)}
 						/>
 					))}
 				</>
-			)}
-
-			{isSuccess && data.from.length === 0 && data.to.length === 0 && (
-				<ContextMenuItem
-					title="No relationships found"
-					icon={<Icon path={iconRelation} />}
-					onHide={onHideMenu}
-					disabled
-				/>
 			)}
 		</>
 	);

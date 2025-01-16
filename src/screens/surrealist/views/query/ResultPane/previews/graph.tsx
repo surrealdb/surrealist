@@ -9,11 +9,10 @@ import {
 	Skeleton,
 	Stack,
 	Text,
-	Transition,
 	UnstyledButton,
 } from "@mantine/core";
 
-import { iconBraces, iconCircleFilled, iconEyeOff, iconFilter, iconRelation } from "~/util/icons";
+import { iconBraces, iconEyeOff, iconFilter, iconRelation } from "~/util/icons";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSetting } from "~/hooks/config";
@@ -28,16 +27,21 @@ import { Label } from "~/components/Label";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
-import { RelationGraphEdge, RelationGraph, RelationGraphNode } from "~/components/RelationGraph";
+import { RelationGraph } from "~/components/RelationGraph";
 import { useIsLight } from "~/hooks/theme";
-import { __throw } from "~/util/helpers";
+import { __throw, showInfo } from "~/util/helpers";
 import { useStable } from "~/hooks/stable";
 import { useToggleList } from "~/hooks/toggle";
-import { circular, rotation } from "graphology-layout";
+import { circular } from "graphology-layout";
 import { NodeCircle } from "~/components/RelationGraph/node";
+import {
+	RelationGraphNode,
+	RelationGraphEdge,
+	GraphExpansion,
+} from "~/components/RelationGraph/types";
 
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
-const RECORDS = new Gap<RecordId[]>([]);
+const RECORDS = new Gap<RecordId[]>();
 const QUERY = new PreparedQuery(
 	"SELECT VALUE [in, id, out] FROM $records<->(? WHERE out IN $records AND in IN $records).flatten() WHERE __ == true",
 	{ records: RECORDS },
@@ -53,7 +57,12 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const [hiddenNodes, toggleNode, setHiddenNodes] = useToggleList();
 	const [hiddenTables, toggleTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleEdge, setHiddenEdges] = useToggleList();
+	const [expandedNodes, setExpandedNodes] = useState<RecordId[]>([]);
 	const [supervising, setSupervising] = useState(false);
+	const [graph, setGraph] = useState<Graph<RelationGraphNode, RelationGraphEdge> | null>(null);
+	const [strayCount, setStrayCount] = useState(0);
+	const [recordCount, setRecordCount] = useState(0);
+	const [edgeCount, setEdgeCount] = useState(0);
 
 	// Extract and fetch graph records from result
 	const { isPending, data, refetch } = useQuery({
@@ -62,7 +71,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 		refetchOnMount: false,
 		refetchOnWindowFocus: false,
 		queryFn: async () => {
-			const records: RecordId[] = [];
+			const universe = new Set<RecordId>();
 
 			function flatten(data: any) {
 				if (isArray(data)) {
@@ -74,12 +83,17 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						flatten(item);
 					}
 				} else if (data instanceof RecordId) {
-					records.push(data);
+					universe.add(data);
 				}
 			}
 
 			flatten(result);
 
+			for (const expand of expandedNodes) {
+				universe.add(expand);
+			}
+
+			const records = Array.from(universe);
 			const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
 			const relations = response.result as [RecordId, RecordId, RecordId][];
 			const tables = unique(relations.flatMap((record) => [record[0].tb, record[2].tb]));
@@ -110,14 +124,21 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 		supervisorRef.current?.[value ? "start" : "stop"]();
 	});
 
-	const handleHideNode = useStable((node: string) => {
-		toggleNode(node);
+	const handleHideNode = useStable((node: RecordId) => {
+		toggleNode(node.toString());
 	});
 
-	const [graph, setGraph] = useState<Graph<RelationGraphNode, RelationGraphEdge> | null>(null);
-	const [strayCount, setStrayCount] = useState(0);
-	const [recordCount, setRecordCount] = useState(0);
-	const [edgeCount, setEdgeCount] = useState(0);
+	const handleExpand = useStable(async ({ record, direction, edge }: GraphExpansion) => {
+		const query = `SELECT VALUE id FROM $current${direction}${edge}${direction}?`;
+
+		const [response] = await executeQuery(query, { current: record });
+		const expansion = response.result as RecordId[];
+
+		if (expansion.length > 0) {
+			setExpandedNodes((curr) => [...curr, ...expansion]);
+			refetch();
+		}
+	});
 
 	// Compute the color palette
 	const palette = useMemo(() => {
@@ -240,11 +261,9 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						graph={graph}
 						controlOffsetTop={12}
 						isSupervising={supervising}
-						hiddenNodes={hiddenNodes}
-						hiddenEdges={hiddenEdges}
-						hiddenTables={hiddenTables}
 						onChangeSupervising={updateSupervising}
 						onHideNode={handleHideNode}
+						onExpandNode={handleExpand}
 						onReset={refetch}
 						flex={1}
 					/>
