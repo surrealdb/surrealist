@@ -26,9 +26,9 @@ import { getIsLight, useIsLight } from "~/hooks/theme";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
 import { drawHover, drawLabel } from "./drawing";
-import { useInspector } from "~/providers/Inspector";
 import { RecordId } from "surrealdb";
 import { NodeContextMenu } from "./context";
+import { useInspector } from "~/providers/Inspector";
 
 export interface RelationGraphNode extends Partial<NodeDisplayData> {
 	record: RecordId;
@@ -68,9 +68,6 @@ export function RelationGraph({
 	const ref = useRef<HTMLDivElement>(null);
 	const sigmaRef = useRef<Sigma | null>(null);
 	const graphRef = useRef<Graph<RelationGraphNode, RelationGraphEdge>>(graph);
-	const hiddenNodesRef = useRef<string[]>(hiddenNodes || []);
-	const hiddenEdgesRef = useRef<string[]>(hiddenEdges || []);
-	const hiddenTablesRef = useRef<string[]>(hiddenTables || []);
 	const theme = useMantineTheme();
 	const isLight = useIsLight();
 
@@ -125,19 +122,6 @@ export function RelationGraph({
 		}
 	}, [edgeColor, nodeLabelColor, edgeLabelColor]);
 
-	// Apply hidden nodes/edges/tables
-	useEffect(() => {
-		const sigma = sigmaRef.current;
-
-		hiddenNodesRef.current = hiddenNodes || [];
-		hiddenEdgesRef.current = hiddenEdges || [];
-		hiddenTablesRef.current = hiddenTables || [];
-
-		if (sigma) {
-			sigma.refresh();
-		}
-	}, [hiddenNodes, hiddenTables, hiddenEdges]);
-
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Initial setup
 	useEffect(() => {
 		if (!ref.current) return;
@@ -176,30 +160,8 @@ export function RelationGraph({
 			},
 			nodeReducer: (node, data) => {
 				const res: Partial<NodeDisplayData> = { ...data };
-				const graph = graphRef.current;
 				const focus = focusRef.current;
-				const hiddenNodes = hiddenNodesRef.current;
-				const hiddenTables = hiddenTablesRef.current;
-				const hiddenEdges = hiddenEdgesRef.current;
 				const isLight = getIsLight();
-
-				// Hide hidden nodes and tables
-				if (hiddenNodes.includes(node) || hiddenTables.includes(data.record.tb)) {
-					res.hidden = true;
-					return res;
-				}
-
-				const isStray = graph.edges(node).every((edge) => {
-					const { record } = graph.getEdgeAttributes(edge);
-
-					return hiddenEdges.includes(record.tb);
-				});
-
-				// Hide when all edges are hidden
-				if (isStray) {
-					res.hidden = true;
-					return res;
-				}
 
 				// Focus highlighting
 				if (
@@ -217,13 +179,6 @@ export function RelationGraph({
 				const res: Partial<EdgeDisplayData> = { ...data };
 				const graph = graphRef.current;
 				const focus = focusRef.current;
-				const hiddenEdges = hiddenEdgesRef.current;
-
-				// Hide hidden edges
-				if (hiddenEdges.includes(data.record.tb)) {
-					res.hidden = true;
-					return res;
-				}
 
 				// Focus highlighting
 				if (
@@ -245,13 +200,14 @@ export function RelationGraph({
 		sigmaRef.current = instance;
 
 		instance.on("doubleClickNode", ({ node, event }) => {
-			const nodeDisplayData = instance.getNodeDisplayData(node);
+			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
 
-			if (nodeDisplayData) {
-				instance.getCamera().animate({ ...nodeDisplayData, ratio: 0.15 });
+			if (display) {
+				instance.getCamera().animate({ ...display, ratio: 0.15 });
 			}
 
-			inspect(node);
+			inspect(display.record);
+
 			event.original.preventDefault();
 			event.original.stopPropagation();
 			event.preventSigmaDefault();
@@ -278,51 +234,19 @@ export function RelationGraph({
 		});
 
 		instance.on("rightClickNode", ({ node, event }) => {
+			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
 			const origin = event.original as unknown as MouseEvent;
 
 			event.preventSigmaDefault();
 			origin.preventDefault();
 			origin.stopPropagation();
 
-			// showContextMenu([
-			// 	{
-			// 		key: "inspect",
-			// 		title: "Inspect record",
-			// 		icon: <Icon path={iconSearch} />,
-			// 		onClick: () => inspect(node),
-			// 	},
-			// 	{
-			// 		key: "divider-1",
-			// 	},
-			// 	{
-			// 		key: "hide",
-			// 		title: "Hide record",
-			// 		icon: <Icon path={iconEyeOff} />,
-			// 		onClick: () => onHideNode?.(node),
-			// 	},
-			// 	{
-			// 		key: "expand",
-			// 		title: "Expand relationships...",
-			// 		icon: <Icon path={iconRelation} />,
-			// 		onClick: () => {
-			// 			// TODO
-			// 		},
-			// 	},
-			// 	{
-			// 		key: "copy-id",
-			// 		title: "Copy record id",
-			// 		icon: <Icon path={iconCopy} />,
-			// 		onClick: () => {
-			// 			navigator.clipboard.writeText(node);
-			// 		},
-			// 	},
-			// ])(origin);
-
 			showContextMenu((onHide) => (
 				<NodeContextMenu
-					node={node}
+					node={display}
 					inspect={inspect}
 					onHideMenu={onHide}
+					onHideNode={onHideNode}
 				/>
 			))(origin);
 		});
