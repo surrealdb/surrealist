@@ -1,6 +1,6 @@
 import { Box, Group, Text } from "@mantine/core";
 import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
-import { iconSearch, iconEyeOff, iconCopy, iconChevronRight } from "~/util/icons";
+import { iconSearch, iconEyeOff, iconCopy, iconChevronRight, iconRelation } from "~/util/icons";
 import { Icon } from "../Icon";
 import { useQuery } from "@tanstack/react-query";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
@@ -8,6 +8,7 @@ import { Gap, PreparedQuery, RecordId } from "surrealdb";
 import { NodeCircle } from "./node";
 import Graph from "graphology";
 import { GraphExpansion, RelationGraphEdge, RelationGraphNode } from "./types";
+import { unique } from "radash";
 
 type Edges = { from: string[]; to: string[] };
 
@@ -40,19 +41,28 @@ export function NodeContextMenu({
 		queryFn: async () => {
 			const [result] = await executeQuery(QUERY, [RECORD.fill(node.record)]);
 			const edges: Edges = result.success ? result.result : { from: [], to: [] };
-			const existing = graph
-				.edges(node.record.toString())
+
+			const existingIn = graph
+				.inEdges(node.record.toString())
 				.map((edge) => graph.getEdgeAttributes(edge))
 				.map((edge) => edge.record.tb);
 
-			const existingSet = new Set(existing);
+			const existingOut = graph
+				.outEdges(node.record.toString())
+				.map((edge) => graph.getEdgeAttributes(edge))
+				.map((edge) => edge.record.tb);
+
+			const existingInSet = new Set(existingIn);
+			const existingOutSet = new Set(existingOut);
 
 			return {
-				from: edges.from.filter((from) => !existingSet.has(from)),
-				to: edges.to.filter((to) => !existingSet.has(to)),
+				from: edges.from.filter((from) => !existingInSet.has(from)),
+				to: edges.to.filter((to) => !existingOutSet.has(to)),
 			};
 		},
 	});
+
+	const allEdges = isSuccess ? unique([...data.from, ...data.to]) : [];
 
 	return (
 		<>
@@ -96,64 +106,82 @@ export function NodeContextMenu({
 				onHide={onHideMenu}
 				onClick={() => navigator.clipboard.writeText(node.record.toString())}
 			/>
-			{isSuccess && data.from.length > 0 && (
+
+			{isSuccess && (data.from.length > 0 || data.to.length > 0) && (
 				<>
 					<ContextMenuDivider />
-					{data.from.map((from) => (
-						<ContextMenuItem
-							key={from}
-							onHide={onHideMenu}
-							onClick={() =>
-								onExpandNode?.({ record: node.record, direction: "<-", edge: from })
-							}
-							title={
-								<Group gap="xs">
-									Expand incoming
-									<Text
-										fw={600}
-										ff="mono"
-									>
-										{from}
-									</Text>
-								</Group>
-							}
-							icon={
-								<Icon
-									path={iconChevronRight}
-									flip="horizontal"
-								/>
-							}
-						/>
-					))}
+					<ContextMenuItem
+						onHide={onHideMenu}
+						onClick={() =>
+							onExpandNode?.({
+								record: node.record,
+								direction: "<->",
+								edges: allEdges,
+							})
+						}
+						title="Expand all relationships"
+						icon={
+							<Icon
+								path={iconRelation}
+								flip="horizontal"
+							/>
+						}
+					/>
 				</>
 			)}
 
-			{isSuccess && data.to.length > 0 && (
-				<>
-					<ContextMenuDivider />
-					{data.to.map((to) => (
-						<ContextMenuItem
-							key={to}
-							onHide={onHideMenu}
-							icon={<Icon path={iconChevronRight} />}
-							onClick={() =>
-								onExpandNode?.({ record: node.record, direction: "->", edge: to })
-							}
-							title={
-								<Group gap="xs">
-									Expand outgoing
-									<Text
-										fw={600}
-										ff="mono"
-									>
-										{to}
-									</Text>
-								</Group>
-							}
-						/>
-					))}
-				</>
-			)}
+			{isSuccess &&
+				data.from.length > 0 &&
+				data.from.map((from) => (
+					<ContextMenuItem
+						key={from}
+						onHide={onHideMenu}
+						onClick={() =>
+							onExpandNode?.({ record: node.record, direction: "<-", edges: [from] })
+						}
+						title={
+							<Group gap="xs">
+								Expand incoming
+								<Text
+									fw={600}
+									ff="mono"
+								>
+									{from}
+								</Text>
+							</Group>
+						}
+						icon={
+							<Icon
+								path={iconChevronRight}
+								flip="horizontal"
+							/>
+						}
+					/>
+				))}
+
+			{isSuccess &&
+				data.to.length > 0 &&
+				data.to.map((to) => (
+					<ContextMenuItem
+						key={to}
+						onHide={onHideMenu}
+						icon={<Icon path={iconChevronRight} />}
+						onClick={() =>
+							onExpandNode?.({ record: node.record, direction: "->", edges: [to] })
+						}
+						title={
+							<Group gap="xs">
+								Expand outgoing
+								<Text
+									fw={600}
+									ff="mono"
+								>
+									{to}
+								</Text>
+							</Group>
+						}
+					/>
+				))}
 		</>
 	);
 }

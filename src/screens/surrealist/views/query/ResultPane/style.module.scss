@@ -4,6 +4,10 @@
 	width: 100%;
 }
 
+.graph-sidebar>div>div {
+	height: 100%;
+}
+
 @container (width < 325px) {
 	.results {
 		display: none;

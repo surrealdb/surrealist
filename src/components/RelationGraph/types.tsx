@@ -12,6 +12,6 @@ export interface RelationGraphEdge extends Partial<EdgeDisplayData> {
 
 export interface GraphExpansion {
 	record: RecordId;
-	direction: "<-" | "->";
-	edge: string;
+	direction: "<-" | "->" | "<->";
+	edges: string[];
 }

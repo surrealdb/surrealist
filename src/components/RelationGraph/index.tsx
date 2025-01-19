@@ -48,7 +48,7 @@ export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
 	controlOffsetRight?: number;
 	isSupervising?: boolean;
 	isUpdating?: boolean;
-	onChangeSupervising?: (supervisor: boolean) => void;
+	onToggleSupervising?: () => void;
 	onExpandNode?: (expansion: GraphExpansion) => void;
 	onHideNode?: (node: RecordId) => void;
 	onReset?: () => void;
@@ -60,7 +60,7 @@ export function RelationGraph({
 	controlOffsetRight,
 	isSupervising,
 	isUpdating,
-	onChangeSupervising,
+	onToggleSupervising,
 	onExpandNode,
 	onHideNode,
 	onReset,
@@ -184,12 +184,7 @@ export function RelationGraph({
 				// Focus highlighting
 				if (
 					focus.hoveredNode &&
-					!graph
-						.extremities(edge)
-						.every(
-							(n) =>
-								n === focus.hoveredNode || graph.areNeighbors(n, focus.hoveredNode),
-						)
+					!graph.extremities(edge).some((n) => n === focus.hoveredNode)
 				) {
 					res.hidden = true;
 				}
@@ -362,13 +357,15 @@ export function RelationGraph({
 					>
 						<Icon path={iconReset} />
 					</ActionButton>
-					<ActionButton
-						label={isSupervising ? "Pause layout" : "Resume layout"}
-						color={isSupervising ? undefined : "orange"}
-						onClick={() => onChangeSupervising?.(!isSupervising)}
-					>
-						<Icon path={isSupervising ? iconStop : iconPlay} />
-					</ActionButton>
+					{onToggleSupervising && (
+						<ActionButton
+							label={isSupervising ? "Pause layout" : "Resume layout"}
+							color={isSupervising ? undefined : "orange"}
+							onClick={onToggleSupervising}
+						>
+							<Icon path={isSupervising ? iconStop : iconPlay} />
+						</ActionButton>
+					)}
 				</Stack>
 			</Paper>
 		</Box>

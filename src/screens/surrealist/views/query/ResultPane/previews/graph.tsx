@@ -1,3 +1,5 @@
+import classes from "../style.module.scss";
+
 import {
 	Box,
 	Center,
@@ -13,12 +15,11 @@ import {
 } from "@mantine/core";
 
 import { iconBraces, iconEyeOff, iconFilter, iconRelation } from "~/util/icons";
-
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSetting } from "~/hooks/config";
 import { type PreviewProps } from ".";
 import { Icon } from "~/components/Icon";
-import { isArray, isObject, unique } from "radash";
+import { isArray, isObject, sleep, unique } from "radash";
 import { equals, Gap, PreparedQuery, RecordId } from "surrealdb";
 import { MultiDirectedGraph } from "graphology";
 import { Label } from "~/components/Label";
@@ -36,7 +37,7 @@ import {
 	RelationGraphEdge,
 	GraphExpansion,
 } from "~/components/RelationGraph/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 
 interface TableInfo {
@@ -66,7 +67,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const [hiddenTables, toggleTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleEdge, setHiddenEdges] = useToggleList();
 	const [expandedNodes, setExpandedNodes] = useState<RecordId[]>([]);
-	const [supervising, setSupervising] = useState(false);
+	const [supervising, setSupervising] = useState(true);
 	const [strayCount, setStrayCount] = useState(0);
 	const [recordCount, setRecordCount] = useState(0);
 	const [edgeCount, setEdgeCount] = useState(0);
@@ -155,8 +156,8 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const { mutateAsync, isPending } = useMutation({
 		mutationKey: ["graph-relation", query.id],
 		mutationFn: async (records: RecordId[]) => {
+			await sleep(100);
 			const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
-
 			return response.result as [RecordId, RecordId, RecordId][];
 		},
 	});
@@ -259,8 +260,18 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 		setExpandedNodes([]);
 	});
 
-	const updateSupervising = useStable((value: boolean) => {
-		setSupervising(value);
+	const toggleSupervising = useStable(() => {
+		const supervisor = supervisorRef.current;
+
+		setSupervising((value) => {
+			if (value) {
+				supervisor?.stop();
+			} else {
+				supervisor?.start();
+			}
+
+			return !value;
+		});
 	});
 
 	const handleHideNode = useStable((node: RecordId) => {
@@ -270,8 +281,8 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 		graph.dropNode(node.toString());
 	});
 
-	const handleExpand = useStable(async ({ record, direction, edge }: GraphExpansion) => {
-		const query = `SELECT VALUE id FROM $current${direction}${edge}${direction}?`;
+	const handleExpand = useStable(async ({ record, direction, edges }: GraphExpansion) => {
+		const query = `SELECT VALUE id FROM $current${direction}(${edges.join(",")})${direction}?`;
 
 		const [response] = await executeQuery(query, { current: record });
 		const expansion = response.result as RecordId[];
@@ -291,6 +302,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 		applyGraph(universe);
 	}, [universe, hiddenEdges]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Persistent supervisor
 	useEffect(() => {
 		const supervisor = new FA2LayoutSupervisor(graph, {
 			getEdgeWeight: "weight",
@@ -304,12 +316,11 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 		supervisor.start();
 		supervisorRef.current = supervisor;
-		setSupervising(true);
 
 		return () => {
 			supervisor.kill();
 		};
-	});
+	}, []);
 
 	return success ? (
 		<Paper
@@ -331,7 +342,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						controlOffsetTop={12}
 						isSupervising={supervising}
 						isUpdating={isPending}
-						onChangeSupervising={updateSupervising}
+						onToggleSupervising={toggleSupervising}
 						onHideNode={handleHideNode}
 						onExpandNode={handleExpand}
 						onReset={resetGraph}
@@ -362,11 +373,14 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						pos="absolute"
 						scrollbars="y"
 						type="scroll"
+						className={classes.graphSidebar}
 						inset={0}
 					>
 						<Stack
 							gap="xl"
 							p="lg"
+							flex={1}
+							h="100%"
 						>
 							<Box>
 								<Label mb="xs">Statistics</Label>
