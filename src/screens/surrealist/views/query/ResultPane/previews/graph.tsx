@@ -14,31 +14,39 @@ import {
 
 import { iconBraces, iconEyeOff, iconFilter, iconRelation } from "~/util/icons";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useSetting } from "~/hooks/config";
 import { type PreviewProps } from ".";
 import { Icon } from "~/components/Icon";
 import { isArray, isObject, unique } from "radash";
 import { equals, Gap, PreparedQuery, RecordId } from "surrealdb";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { useQuery } from "@tanstack/react-query";
-import Graph, { MultiDirectedGraph } from "graphology";
+import { MultiDirectedGraph } from "graphology";
 import { Label } from "~/components/Label";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import { RelationGraph } from "~/components/RelationGraph";
 import { useIsLight } from "~/hooks/theme";
-import { __throw, showInfo } from "~/util/helpers";
+import { __throw } from "~/util/helpers";
 import { useStable } from "~/hooks/stable";
 import { useToggleList } from "~/hooks/toggle";
-import { circular } from "graphology-layout";
 import { NodeCircle } from "~/components/RelationGraph/node";
 import {
 	RelationGraphNode,
 	RelationGraphEdge,
 	GraphExpansion,
 } from "~/components/RelationGraph/types";
+import { useMutation } from "@tanstack/react-query";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
+
+interface TableInfo {
+	name: string;
+	color: string;
+}
+
+interface EdgeInfo {
+	name: string;
+}
 
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
 const RECORDS = new Gap<RecordId[]>();
@@ -49,123 +57,134 @@ const QUERY = new PreparedQuery(
 
 export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const isLight = useIsLight();
-	const { success, result } = responses[selected] ?? { result: null };
+	const supervisorRef = useRef<FA2LayoutSupervisor>();
 	const [editorScale] = useSetting("appearance", "editorScale");
-	const textSize = Math.floor(15 * (editorScale / 100));
-	const supervisorRef = useRef<FA2LayoutSupervisor | null>(null);
+	const [graph] = useState(() => new MultiDirectedGraph<RelationGraphNode, RelationGraphEdge>());
+	const [initializing, setInitializing] = useState(true);
 
 	const [hiddenNodes, toggleNode, setHiddenNodes] = useToggleList();
 	const [hiddenTables, toggleTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleEdge, setHiddenEdges] = useToggleList();
 	const [expandedNodes, setExpandedNodes] = useState<RecordId[]>([]);
 	const [supervising, setSupervising] = useState(false);
-	const [graph, setGraph] = useState<Graph<RelationGraphNode, RelationGraphEdge> | null>(null);
 	const [strayCount, setStrayCount] = useState(0);
 	const [recordCount, setRecordCount] = useState(0);
 	const [edgeCount, setEdgeCount] = useState(0);
+	const [tables, setTables] = useState<TableInfo[]>([]);
+	const [edges, setEdges] = useState<EdgeInfo[]>([]);
 
-	// Extract and fetch graph records from result
-	const { isPending, data, refetch } = useQuery({
-		queryKey: ["graph-relation", query.id],
-		enabled: !!result,
-		refetchOnMount: false,
-		refetchOnWindowFocus: false,
-		queryFn: async () => {
-			const universe = new Set<RecordId>();
+	const { success, result } = responses[selected] ?? { result: null };
+	const textSize = Math.floor(15 * (editorScale / 100));
 
-			function flatten(data: any) {
-				if (isArray(data)) {
-					for (const item of data) {
-						flatten(item);
-					}
-				} else if (isObject(data)) {
-					for (const item of Object.values(data)) {
-						flatten(item);
-					}
-				} else if (data instanceof RecordId) {
-					universe.add(data);
+	// Extract records from the query response
+	const extractedNodes = useMemo(() => {
+		const records = new Set<RecordId>();
+
+		function flatten(data: any) {
+			if (isArray(data)) {
+				for (const item of data) {
+					flatten(item);
 				}
+			} else if (isObject(data)) {
+				for (const item of Object.values(data)) {
+					flatten(item);
+				}
+			} else if (data instanceof RecordId) {
+				records.add(data);
 			}
-
-			flatten(result);
-
-			for (const expand of expandedNodes) {
-				universe.add(expand);
-			}
-
-			const records = Array.from(universe);
-			const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
-			const relations = response.result as [RecordId, RecordId, RecordId][];
-			const tables = unique(relations.flatMap((record) => [record[0].tb, record[2].tb]));
-			const edges = unique(relations.map((record) => record[1].tb));
-
-			setHiddenNodes([]);
-			setHiddenTables([]);
-			setHiddenEdges([]);
-
-			return {
-				records,
-				relations,
-				tables,
-				edges,
-			} as const;
-		},
-	});
-
-	const { records, relations, tables, edges } = data ?? {
-		records: [],
-		relations: [],
-		tables: [],
-		edges: [],
-	};
-
-	const updateSupervising = useStable((value: boolean) => {
-		setSupervising(value);
-		supervisorRef.current?.[value ? "start" : "stop"]();
-	});
-
-	const handleHideNode = useStable((node: RecordId) => {
-		toggleNode(node.toString());
-	});
-
-	const handleExpand = useStable(async ({ record, direction, edge }: GraphExpansion) => {
-		const query = `SELECT VALUE id FROM $current${direction}${edge}${direction}?`;
-
-		const [response] = await executeQuery(query, { current: record });
-		const expansion = response.result as RecordId[];
-
-		if (expansion.length > 0) {
-			setExpandedNodes((curr) => [...curr, ...expansion]);
-			refetch();
 		}
-	});
 
-	// Compute the color palette
-	const palette = useMemo(() => {
-		return iwanthue(tables.length || 1, {
+		flatten(result);
+
+		return records;
+	}, [result]);
+
+	// Compute the set of tables
+	const tableSet = useMemo(() => {
+		const tables = new Set<string>();
+
+		// Append extracted tables
+		for (const record of extractedNodes) {
+			tables.add(record.tb);
+		}
+
+		// Append expanded tables
+		for (const expand of expandedNodes) {
+			tables.add(expand.tb);
+		}
+
+		return tables;
+	}, [extractedNodes, expandedNodes]);
+
+	// Compute the universe of nodes
+	const universe = useMemo(() => {
+		const universe = new Set<RecordId>();
+		const skipTables = new Set(hiddenTables);
+		const skipNodes = new Set(hiddenNodes);
+
+		function append(record: RecordId) {
+			if (universe.has(record)) {
+				return;
+			}
+
+			if (skipTables.size > 0 && skipTables.has(record.tb)) {
+				return;
+			}
+
+			if (skipNodes.size > 0 && skipNodes.has(record.toString())) {
+				return;
+			}
+
+			universe.add(record);
+		}
+
+		// Append extracted nodes
+		for (const record of extractedNodes) {
+			append(record);
+		}
+
+		// Append expanded nodes
+		for (const expand of expandedNodes) {
+			append(expand);
+		}
+
+		return Array.from(universe);
+	}, [hiddenTables, hiddenNodes, extractedNodes, expandedNodes]);
+
+	// Mutate the graph with the universe
+	const applyGraph = useStable(async (records: RecordId[]) => {
+		const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
+		const relations = response.result as [RecordId, RecordId, RecordId][];
+		const edges = unique(relations.map(([, edge]) => edge.tb));
+		const tables = Array.from(tableSet);
+		const skipEdges = new Set(hiddenEdges);
+
+		// Compute the palette
+		const paletteSize = Math.max(tables.length, 1);
+		const palette = iwanthue(paletteSize, {
 			seed: "surrealist",
 			colorSpace: SURREAL_SPACE,
 		});
-	}, [tables]);
 
-	// Compute graph layout
-	useEffect(() => {
-		const graph = new MultiDirectedGraph<RelationGraphNode, RelationGraphEdge>();
+		// Save current node positions
+		const positions = new Map<string, [number, number]>();
 
-		const skipNodes = new Set(hiddenNodes);
-		const skipTables = new Set(hiddenTables);
-		const skipEdges = new Set(hiddenEdges);
+		graph.forEachNode((node, attr) => {
+			positions.set(node, [attr.x || 0, attr.y || 0]);
+		});
+
+		// Clear the graph
+		graph.clear();
 
 		// Add nodes with positions
 		for (const record of records) {
 			const id = record.toString();
+			const color = palette[tables.indexOf(record.tb)];
 
-			if (!graph.hasNode(id) && !skipNodes.has(id) && !skipTables.has(record.tb)) {
-				const color = palette[tables.indexOf(record.tb)];
-
+			if (!graph.hasNode(id)) {
 				graph.addNode(id, {
-					x: 0,
-					y: 0,
+					x: positions.get(id)?.[0] || Math.random(),
+					y: positions.get(id)?.[1] || Math.random(),
 					size: 9,
 					label: id,
 					color: color,
@@ -196,9 +215,6 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 			}
 		}
 
-		// Apply predictible initial layout
-		circular.assign(graph);
-
 		// Count node size
 		const originalOrder = graph.order;
 
@@ -214,9 +230,56 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 		const edgeCount = graph.size;
 		const strayCount = originalOrder - recordCount;
 
-		// Apply layout supervisor
-		supervisorRef.current?.kill();
+		// Compute table and edge information
+		const tableInfo = tables.map((name, i) => ({ name, color: palette[i] }));
+		const edgeInfo = edges.map((name) => ({ name }));
 
+		setRecordCount(recordCount);
+		setEdgeCount(edgeCount);
+		setStrayCount(strayCount);
+		setTables(tableInfo);
+		setEdges(edgeInfo);
+		setInitializing(false);
+	});
+
+	const resetGraph = useStable(() => {
+		setInitializing(true);
+		setHiddenNodes([]);
+		setHiddenTables([]);
+		setHiddenEdges([]);
+		setExpandedNodes([]);
+	});
+
+	const updateSupervising = useStable((value: boolean) => {
+		setSupervising(value);
+	});
+
+	const handleHideNode = useStable((node: RecordId) => {
+		toggleNode(node.toString());
+	});
+
+	const handleExpand = useStable(async ({ record, direction, edge }: GraphExpansion) => {
+		const query = `SELECT VALUE id FROM $current${direction}${edge}${direction}?`;
+
+		const [response] = await executeQuery(query, { current: record });
+		const expansion = response.result as RecordId[];
+
+		if (expansion.length > 0) {
+			setExpandedNodes((curr) => [...curr, ...expansion]);
+		}
+	});
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Clear hidden nodes, tables, and edges on result change
+	useEffect(() => {
+		resetGraph();
+	}, [result]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Update graph on universe or edge change
+	useEffect(() => {
+		applyGraph(universe);
+	}, [universe, hiddenEdges]);
+
+	useEffect(() => {
 		const supervisor = new FA2LayoutSupervisor(graph, {
 			getEdgeWeight: "weight",
 			settings: {
@@ -227,20 +290,14 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 			},
 		});
 
-		supervisorRef.current = supervisor;
 		supervisor.start();
+		supervisorRef.current = supervisor;
 		setSupervising(true);
 
-		setGraph(graph);
-		setRecordCount(recordCount);
-		setEdgeCount(edgeCount);
-		setStrayCount(strayCount);
-	}, [records, relations, tables, palette, hiddenTables, hiddenNodes, hiddenEdges]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		refetch();
-	}, [result, refetch]);
+		return () => {
+			supervisor.kill();
+		};
+	});
 
 	return success ? (
 		<Paper
@@ -252,7 +309,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 				align="stretch"
 				gap={0}
 			>
-				{isPending ? (
+				{initializing ? (
 					<Center flex={1}>
 						<Loader />
 					</Center>
@@ -264,7 +321,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						onChangeSupervising={updateSupervising}
 						onHideNode={handleHideNode}
 						onExpandNode={handleExpand}
-						onReset={refetch}
+						onReset={resetGraph}
 						flex={1}
 					/>
 				) : (
@@ -301,7 +358,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Statistics</Label>
 								<Stack gap="xs">
-									<Skeleton visible={isPending}>
+									<Skeleton visible={initializing}>
 										<Group gap="xs">
 											<Icon
 												path={iconBraces}
@@ -311,7 +368,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 											{recordCount.toString()} records
 										</Group>
 									</Skeleton>
-									<Skeleton visible={isPending}>
+									<Skeleton visible={initializing}>
 										<Group gap="xs">
 											<Icon
 												path={iconRelation}
@@ -321,7 +378,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 											{edgeCount.toString()} edges
 										</Group>
 									</Skeleton>
-									<Skeleton visible={isPending}>
+									<Skeleton visible={initializing}>
 										<Group gap="xs">
 											<Icon
 												path={iconFilter}
@@ -346,7 +403,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Tables</Label>
 								<Stack gap="xs">
-									{isPending ? (
+									{initializing ? (
 										<>
 											<Skeleton h={18} />
 											<Skeleton h={18} />
@@ -354,26 +411,26 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 										</>
 									) : (
 										<>
-											{tables.map((table, i) => {
-												const isHidden = hiddenTables.includes(table);
+											{tables.map(({ name, color }, i) => {
+												const isHidden = hiddenTables.includes(name);
 
 												return (
 													<Group
-														key={table}
+														key={name}
 														component={UnstyledButton}
 														gap="sm"
 														w="100%"
 													>
 														<Checkbox
 															size="xs"
-															label={table}
+															label={name}
 															flex={1}
 															checked={!isHidden}
-															onChange={() => toggleTable(table)}
+															onChange={() => toggleTable(name)}
 														/>
 														{!isHidden && (
 															<NodeCircle
-																color={palette[i]}
+																color={color}
 																size={10}
 															/>
 														)}
@@ -387,7 +444,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Edges</Label>
 								<Stack gap="xs">
-									{isPending ? (
+									{initializing ? (
 										<>
 											<Skeleton h={18} />
 											<Skeleton h={18} />
@@ -395,19 +452,19 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 										</>
 									) : (
 										<>
-											{edges.map((edge) => (
+											{edges.map(({ name }) => (
 												<Group
-													key={edge}
+													key={name}
 													component={UnstyledButton}
 													gap="sm"
 													w="100%"
 												>
 													<Checkbox
 														size="xs"
-														label={edge}
+														label={name}
 														flex={1}
-														checked={!hiddenEdges.includes(edge)}
-														onChange={() => toggleEdge(edge)}
+														checked={!hiddenEdges.includes(name)}
+														onChange={() => toggleEdge(name)}
 													/>
 												</Group>
 											))}
