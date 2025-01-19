@@ -13,7 +13,18 @@ import {
 	iconReset,
 } from "~/util/icons";
 
-import { Box, BoxProps, ElementProps, Paper, Stack, useMantineTheme } from "@mantine/core";
+import {
+	Box,
+	BoxProps,
+	ElementProps,
+	Group,
+	Loader,
+	Paper,
+	Stack,
+	Text,
+	Transition,
+	useMantineTheme,
+} from "@mantine/core";
 import { createNodeBorderProgram } from "@sigma/node-border";
 import Graph from "graphology";
 import { ContextMenuDivider, ContextMenuItem, useContextMenu } from "mantine-contextmenu";
@@ -36,6 +47,7 @@ export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
 	controlOffsetTop?: number;
 	controlOffsetRight?: number;
 	isSupervising?: boolean;
+	isUpdating?: boolean;
 	onChangeSupervising?: (supervisor: boolean) => void;
 	onExpandNode?: (expansion: GraphExpansion) => void;
 	onHideNode?: (node: RecordId) => void;
@@ -47,6 +59,7 @@ export function RelationGraph({
 	controlOffsetTop,
 	controlOffsetRight,
 	isSupervising,
+	isUpdating,
 	onChangeSupervising,
 	onExpandNode,
 	onHideNode,
@@ -292,6 +305,30 @@ export function RelationGraph({
 					},
 				])}
 			/>
+			<Transition
+				transition="fade"
+				mounted={isUpdating ?? false}
+				duration={100}
+			>
+				{(style) => (
+					<Group
+						pos="absolute"
+						top={12}
+						left={12}
+						style={style}
+					>
+						<Loader size="xs" />
+						<Text
+							c="bright"
+							fw={600}
+							fz="lg"
+							tt="uppercase"
+						>
+							Updating graph...
+						</Text>
+					</Group>
+				)}
+			</Transition>
 			<Paper
 				withBorder
 				pos="absolute"

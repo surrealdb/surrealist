@@ -36,7 +36,7 @@ import {
 	RelationGraphEdge,
 	GraphExpansion,
 } from "~/components/RelationGraph/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 
 interface TableInfo {
@@ -151,10 +151,19 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 		return Array.from(universe);
 	}, [hiddenTables, hiddenNodes, extractedNodes, expandedNodes]);
 
+	// Relation discovery mutation
+	const { mutateAsync, isPending } = useMutation({
+		mutationKey: ["graph-relation", query.id],
+		mutationFn: async (records: RecordId[]) => {
+			const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
+
+			return response.result as [RecordId, RecordId, RecordId][];
+		},
+	});
+
 	// Mutate the graph with the universe
 	const applyGraph = useStable(async (records: RecordId[]) => {
-		const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
-		const relations = response.result as [RecordId, RecordId, RecordId][];
+		const relations = await mutateAsync(records);
 		const edges = unique(relations.map(([, edge]) => edge.tb));
 		const tables = Array.from(tableSet);
 		const skipEdges = new Set(hiddenEdges);
@@ -256,6 +265,9 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 	const handleHideNode = useStable((node: RecordId) => {
 		toggleNode(node.toString());
+
+		// Optimistic updating
+		graph.dropNode(node.toString());
 	});
 
 	const handleExpand = useStable(async ({ record, direction, edge }: GraphExpansion) => {
@@ -318,6 +330,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 						graph={graph}
 						controlOffsetTop={12}
 						isSupervising={supervising}
+						isUpdating={isPending}
 						onChangeSupervising={updateSupervising}
 						onHideNode={handleHideNode}
 						onExpandNode={handleExpand}
