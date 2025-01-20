@@ -57,33 +57,21 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 		<Slab
 			h={170}
 			{...other}
-			style={
-				active
-					? {
-							background: "var(--surrealist-gradient)",
-							borderColor: "rgba(255, 255, 255, 0.3)",
-							backgroundOrigin: "border-box",
-							boxShadow: "var(--surrealist-glow)",
-						}
-					: undefined
-			}
 		>
 			<Box
 				p="xl"
 				c={active ? "white" : undefined}
 			>
-				{active ? (
-					<Icon
-						path={iconCheck}
-						size={2.75}
-					/>
-				) : (
-					<Image
-						src={icon}
-						alt=""
-						w={48}
-					/>
-				)}
+				<Image
+					src={icon}
+					alt=""
+					w={48}
+					style={{
+						filter: active
+							? "drop-shadow(0 0px 14px rgba(186, 0, 171, 1))"
+							: "grayscale(100)",
+					}}
+				/>
 				<Text
 					mt="xl"
 					fw={600}
@@ -109,7 +97,7 @@ export function ReferralPage() {
 		url: referralLink,
 	};
 
-	const referrals = referralQuery.data ?? 0;
+	const referrals = 4;
 	const showShare = "canShare" in navigator && navigator.canShare(shareOptions);
 
 	const nextReward = [1, 10, 25, 100, 500].find((r) => r > referrals) ?? 500;
@@ -249,6 +237,15 @@ export function ReferralPage() {
 							mt="md"
 							value={progress}
 							bg={isLight ? "slate.2" : "slate"}
+							styles={{
+								root: {
+									overflow: "unset",
+								},
+								section: {
+									background: "var(--surrealist-gradient)",
+									boxShadow: "var(--surrealist-glow)",
+								},
+							}}
 						/>
 					</Box>
 
