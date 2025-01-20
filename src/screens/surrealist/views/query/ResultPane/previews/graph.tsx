@@ -378,7 +378,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				...inferSettings(displayGraph),
 				edgeWeightInfluence: 1,
 				scalingRatio: 2,
-				slowDown: 1000,
+				slowDown: 500,
 			},
 		});
 
