@@ -11,6 +11,7 @@ export interface RelationGraphNode extends Partial<NodeDisplayData> {
 export interface RelationGraphEdge extends Partial<EdgeDisplayData> {
 	record: RecordId;
 	weight: number;
+	curvature?: number;
 }
 
 export interface GraphEdges {

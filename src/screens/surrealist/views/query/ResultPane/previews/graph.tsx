@@ -35,6 +35,7 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { __throw } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation } from "~/util/icons";
 import { type PreviewProps } from ".";
+import { indexParallelEdgesIndex } from "@sigma/edge-curve";
 
 function jitter(value?: number) {
 	return value !== undefined ? value + Math.random() * 0.000001 : value;
@@ -47,7 +48,7 @@ const QUERY = new PreparedQuery(
 	{ records: RECORDS },
 );
 
-export function GraphPreview({ responses, selected, query }: PreviewProps) {
+export function GraphPreview({ responses, selected }: PreviewProps) {
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();
 	const [editorScale] = useSetting("appearance", "editorScale");
@@ -60,7 +61,8 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const [nodeCount, setNodeCount] = useState(0);
 	const [edgeCount, setEdgeCount] = useState(0);
 
-	const [hideStray, setHideStray] = useState(false);
+	const [showStray, setShowStray] = useState(false);
+	const [straightLines, setStraightLines] = useState(false);
 	const [hiddenTables, toggleHiddenTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleHiddenEdge, setHiddenEdges] = useToggleList();
 	const [tables, setTables] = useState<string[]>([]);
@@ -239,18 +241,22 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 					record: attr.record,
 					label: attr.record.tb,
 					type: "arrow",
+					curvature: straightLines ? 0.01 : 0.15,
 				});
 			}
 		});
 
 		// Optionally hide stray records
-		if (hideStray) {
+		if (!showStray) {
 			for (const node of displayGraph.nodes()) {
 				if (displayGraph.degree(node) === 0) {
 					displayGraph.dropNode(node);
 				}
 			}
 		}
+
+		// Compute parallel edge indices
+		indexParallelEdgesIndex(displayGraph);
 
 		// Update sidebar statistics
 		computeStatistics();
@@ -331,8 +337,13 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 		synchronizeGraph();
 	});
 
-	const updateHideStray = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		setHideStray(e.target.checked);
+	const updateShowStray = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		setShowStray(e.target.checked);
+		synchronizeGraph();
+	});
+
+	const updateStraightLines = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		setStraightLines(e.target.checked);
 		synchronizeGraph();
 	});
 
@@ -536,10 +547,17 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 								<Stack gap="xs">
 									<Checkbox
 										size="xs"
-										label="Hide stray records"
+										label="Show stray records"
 										flex={1}
-										checked={hideStray}
-										onChange={updateHideStray}
+										checked={showStray}
+										onChange={updateShowStray}
+									/>
+									<Checkbox
+										size="xs"
+										label="Straight edges"
+										flex={1}
+										checked={straightLines}
+										onChange={updateStraightLines}
 									/>
 								</Stack>
 							</Box>
