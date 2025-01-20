@@ -4,10 +4,6 @@ import {
 	iconFullscreen,
 	iconImage,
 	iconAPI,
-	iconSearch,
-	iconEyeOff,
-	iconRelation,
-	iconCopy,
 	iconPlay,
 	iconStop,
 	iconReset,
@@ -25,9 +21,10 @@ import {
 	Transition,
 	useMantineTheme,
 } from "@mantine/core";
+
 import { createNodeBorderProgram } from "@sigma/node-border";
-import Graph from "graphology";
-import { ContextMenuDivider, ContextMenuItem, useContextMenu } from "mantine-contextmenu";
+import { MultiDirectedGraph } from "graphology";
+import { useContextMenu } from "mantine-contextmenu";
 import { useRef, useEffect, MouseEvent } from "react";
 import Sigma from "sigma";
 import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
@@ -40,16 +37,31 @@ import { drawHover, drawLabel } from "./drawing";
 import { RecordId } from "surrealdb";
 import { NodeContextMenu } from "./context";
 import { useInspector } from "~/providers/Inspector";
-import { GraphExpansion, RelationGraphEdge, RelationGraphNode } from "./types";
+import {
+	GraphEdges,
+	GraphExpansion,
+	RelationalGraph,
+	RelationGraphEdge,
+	RelationGraphNode,
+} from "./types";
+
+/**
+ * Helper for creating a new relational graph.
+ */
+export function newRelationalGraph(): RelationalGraph {
+	return new MultiDirectedGraph<RelationGraphNode, RelationGraphEdge>();
+}
 
 export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
-	graph: Graph<RelationGraphNode, RelationGraphEdge>;
+	graph: RelationalGraph;
 	controlOffsetTop?: number;
 	controlOffsetRight?: number;
 	isSupervising?: boolean;
 	isUpdating?: boolean;
+	queryEdges: (record: RecordId) => GraphEdges;
 	onToggleSupervising?: () => void;
 	onExpandNode?: (expansion: GraphExpansion) => void;
+	onFetchExpansions?: (node: RecordId) => GraphExpansion[];
 	onHideNode?: (node: RecordId) => void;
 	onReset?: () => void;
 }
@@ -60,6 +72,7 @@ export function RelationGraph({
 	controlOffsetRight,
 	isSupervising,
 	isUpdating,
+	queryEdges,
 	onToggleSupervising,
 	onExpandNode,
 	onHideNode,
@@ -68,7 +81,7 @@ export function RelationGraph({
 }: RelationGraphProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	const sigmaRef = useRef<Sigma | null>(null);
-	const graphRef = useRef<Graph<RelationGraphNode, RelationGraphEdge>>(graph);
+	const graphRef = useRef<RelationalGraph>(graph);
 	const theme = useMantineTheme();
 	const isLight = useIsLight();
 
@@ -98,19 +111,6 @@ export function RelationGraph({
 		sigmaRef.current?.refresh();
 		sigmaRef.current?.getCamera().animatedReset();
 	});
-
-	// Refresh the graph on data change
-	useEffect(() => {
-		const sigma = sigmaRef.current;
-
-		graphRef.current = graph;
-
-		if (sigma) {
-			sigma.clear();
-			sigma.setGraph(graph);
-			sigma.refresh();
-		}
-	}, [graph]);
 
 	// Apply theme changes
 	useEffect(() => {
@@ -241,8 +241,8 @@ export function RelationGraph({
 			showContextMenu((onHide) => (
 				<NodeContextMenu
 					node={display}
-					graph={graph}
 					inspect={inspect}
+					queryEdges={queryEdges}
 					onHideMenu={onHide}
 					onHideNode={onHideNode}
 					onExpandNode={onExpandNode}

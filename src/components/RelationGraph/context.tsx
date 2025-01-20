@@ -6,8 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { Gap, PreparedQuery, RecordId } from "surrealdb";
 import { NodeCircle } from "./node";
-import Graph from "graphology";
-import { GraphExpansion, RelationGraphEdge, RelationGraphNode } from "./types";
+import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";
 import { unique } from "radash";
 
 type Edges = { from: string[]; to: string[] };
@@ -20,8 +19,8 @@ const QUERY = new PreparedQuery(
 
 export interface NodeContextMenuProps {
 	node: RelationGraphNode;
-	graph: Graph<RelationGraphNode, RelationGraphEdge>;
 	inspect: (record: RecordId) => void;
+	queryEdges: (record: RecordId) => GraphEdges;
 	onExpandNode?: (expansion: GraphExpansion) => void;
 	onHideNode?: (node: RecordId) => void;
 	onHideMenu: () => void;
@@ -29,8 +28,8 @@ export interface NodeContextMenuProps {
 
 export function NodeContextMenu({
 	node,
-	graph,
 	inspect,
+	queryEdges,
 	onExpandNode,
 	onHideNode,
 	onHideMenu,
@@ -39,25 +38,13 @@ export function NodeContextMenu({
 		queryKey: ["graph-relation", node],
 		enabled: true,
 		queryFn: async () => {
+			const { from: incoming, to: outgoing } = queryEdges(node.record);
 			const [result] = await executeQuery(QUERY, [RECORD.fill(node.record)]);
 			const edges: Edges = result.success ? result.result : { from: [], to: [] };
 
-			const existingIn = graph
-				.inEdges(node.record.toString())
-				.map((edge) => graph.getEdgeAttributes(edge))
-				.map((edge) => edge.record.tb);
-
-			const existingOut = graph
-				.outEdges(node.record.toString())
-				.map((edge) => graph.getEdgeAttributes(edge))
-				.map((edge) => edge.record.tb);
-
-			const existingInSet = new Set(existingIn);
-			const existingOutSet = new Set(existingOut);
-
 			return {
-				from: edges.from.filter((from) => !existingInSet.has(from)),
-				to: edges.to.filter((to) => !existingOutSet.has(to)),
+				from: edges.from.filter((from) => !incoming.has(from)),
+				to: edges.to.filter((to) => !outgoing.has(to)),
 			};
 		},
 	});
