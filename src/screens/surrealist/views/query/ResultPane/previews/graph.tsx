@@ -52,7 +52,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const [supervising, setSupervising] = useState(true);
 
 	const [strayCount, setStrayCount] = useState(0);
-	const [recordCount, setRecordCount] = useState(0);
+	const [nodeCount, setNodeCount] = useState(0);
 	const [edgeCount, setEdgeCount] = useState(0);
 
 	const [hiddenTables, toggleHiddenTable, setHiddenTables] = useToggleList();
@@ -105,6 +105,17 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 		// Fetch node relations
 		rewireNodes();
+	});
+
+	// Compute graph statistics
+	const computeStatistics = useStable(() => {
+		const nodeCount = displayGraph.nodes().length;
+		const edgeCount = displayGraph.edges().length;
+		const strayCount = displayGraph.nodes().filter((n) => displayGraph.degree(n) === 0).length;
+
+		setNodeCount(nodeCount);
+		setEdgeCount(edgeCount);
+		setStrayCount(strayCount);
 	});
 
 	// Index graph metadata
@@ -223,6 +234,9 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 				});
 			}
 		});
+
+		// Update sidebar statistics
+		computeStatistics();
 	});
 
 	const toggleSupervising = useStable(() => {
@@ -241,6 +255,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 	const handleHideNode = useStable((node: RecordId) => {
 		displayGraph.dropNode(node.toString());
+		computeStatistics();
 	});
 
 	const handleExpand = useStable(async ({ record, direction, edges }: GraphExpansion) => {
@@ -383,7 +398,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 												color="slate.4"
 												size="sm"
 											/>
-											{recordCount.toString()} records
+											{nodeCount.toString()} records
 										</Group>
 									</Skeleton>
 									<Skeleton visible={initializing}>
