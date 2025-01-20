@@ -15,6 +15,7 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
+import { indexParallelEdgesIndex } from "@sigma/edge-curve";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
@@ -35,7 +36,6 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { __throw } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation } from "~/util/icons";
 import { type PreviewProps } from ".";
-import { indexParallelEdgesIndex } from "@sigma/edge-curve";
 
 function jitter(value?: number) {
 	return value !== undefined ? value + Math.random() * 0.000001 : value;

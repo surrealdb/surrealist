@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
 import { unique } from "radash";
 import { Gap, PreparedQuery, RecordId } from "surrealdb";
+import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import {
 	iconChevronRight,
@@ -15,7 +16,6 @@ import {
 import { Icon } from "../Icon";
 import { NodeCircle } from "./node";
 import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";
-import { useIsLight } from "~/hooks/theme";
 
 type Edges = { from: string[]; to: string[] };
 
