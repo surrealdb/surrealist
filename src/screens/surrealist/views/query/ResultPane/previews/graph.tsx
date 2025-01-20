@@ -170,7 +170,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	// Relation wiring mutation
-	const rewireNodes = useStable(async () => {
+	const rewireNodes = useLater(async () => {
 		setWiring(true);
 
 		const nodes = universeGraph.nodeEntries();
