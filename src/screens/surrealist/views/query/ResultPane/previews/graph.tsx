@@ -35,6 +35,10 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { GraphExpansion } from "~/components/RelationGraph/types";
 import { useLater } from "~/hooks/later";
 
+function jitter(value?: number) {
+	return value !== undefined ? value + Math.random() * 0.000001 : value;
+}
+
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
 const RECORDS = new Gap<RecordId[]>();
 const QUERY = new PreparedQuery(
@@ -261,17 +265,26 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const handleExpand = useStable(async ({ record, direction, edges }: GraphExpansion) => {
 		const query = `SELECT VALUE id FROM $current${direction}(${edges.join(",")})${direction}?`;
 
+		const { x, y } = displayGraph.getNodeAttributes(record.toString());
 		const [response] = await executeQuery(query, { current: record });
-		const expansion = response.result as RecordId[];
+		const result = response.result as RecordId[];
+		const expandables = result.filter((r) => !universeGraph.hasNode(r.toString()));
+		const toJitter = expandables.length > 1;
 
-		for (const node of expansion) {
+		for (const node of expandables) {
 			const id = node.toString();
 
-			if (!universeGraph.hasNode(id)) {
-				universeGraph.addNode(id, {
-					record: node,
-				});
-			}
+			universeGraph.addNode(id, {
+				record: node,
+			});
+
+			const m = {
+				record: node,
+				x: toJitter ? jitter(x) : x,
+				y: toJitter ? jitter(y) : y,
+			};
+
+			displayGraph.addNode(id, m);
 		}
 
 		rewireNodes();
