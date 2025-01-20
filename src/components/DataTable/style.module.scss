@@ -20,17 +20,11 @@
 
 		&:first-child {
 			border-top-left-radius: var(--mantine-radius-xs);
-		}
-
-		&:last-child {
-			border-top-right-radius: var(--mantine-radius-xs);
-		}
-
-		&:first-child {
 			border-bottom-left-radius: var(--mantine-radius-xs);
 		}
 
 		&:last-child {
+			border-top-right-radius: var(--mantine-radius-xs);
 			border-bottom-right-radius: var(--mantine-radius-xs);
 		}
 
@@ -41,7 +35,7 @@
 
 	th>*,
 	td>* {
-		padding-inline: 8px !important;
+		padding-inline: 0.75rem !important;
 	}
 
 	th:first-child>*,
