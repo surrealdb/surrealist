@@ -197,6 +197,12 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Menu.Item>
 				<Menu.Label mt="sm">Actions</Menu.Label>
 				<Menu.Item
+					leftSection={<Icon path={iconTransfer} />}
+					onClick={() => openUsageModal(value)}
+				>
+					View instance usage
+				</Menu.Item>
+				<Menu.Item
 					leftSection={<Icon path={iconCopy} />}
 					onClick={() => {
 						navigator.clipboard.writeText(`${value.host}`).then(() => {
@@ -208,12 +214,6 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					}}
 				>
 					Copy hostname
-				</Menu.Item>
-				<Menu.Item
-					leftSection={<Icon path={iconCloudClock} />}
-					onClick={() => openUsageModal(value)}
-				>
-					View usage
 				</Menu.Item>
 				<Menu.Label mt="sm">Dangerous</Menu.Label>
 				<Menu.Item
