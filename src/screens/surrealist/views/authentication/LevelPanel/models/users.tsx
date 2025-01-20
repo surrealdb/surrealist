@@ -92,8 +92,6 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 				query += ` COMMENT "${comment}"`;
 			}
 
-			console.log(query);
-
 			await executeQuery(query);
 			await syncConnectionSchema();
 		} catch (err: any) {

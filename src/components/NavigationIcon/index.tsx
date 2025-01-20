@@ -12,7 +12,7 @@ import classes from "./style.module.scss";
 
 export interface NavigationIconProps
 	extends EntryProps,
-	Omit<HTMLProps<HTMLButtonElement>, "name" | "color" | "size" | "style" | "type" | "ref"> {
+		Omit<HTMLProps<HTMLButtonElement>, "name" | "color" | "size" | "style" | "type" | "ref"> {
 	name: ReactNode;
 	path?: string;
 	indicator?: boolean | IndicatorProps;

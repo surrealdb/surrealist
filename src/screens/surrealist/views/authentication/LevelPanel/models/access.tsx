@@ -177,8 +177,6 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 				query += ` COMMENT "${comment}"`;
 			}
 
-			console.log(query);
-
 			await executeQuery(query);
 			await syncConnectionSchema();
 		} catch (err: any) {

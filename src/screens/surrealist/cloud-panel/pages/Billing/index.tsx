@@ -5,9 +5,9 @@ import {
 	Alert,
 	Box,
 	Button,
-	CopyButton,
 	Divider,
 	Group,
+	LoadingOverlay,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
@@ -19,17 +19,17 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import { iconAccount, iconCheck, iconCopy, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
+import { iconAccount, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
 
 import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatDistance } from "date-fns";
 import { capitalize } from "radash";
 import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
-import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -41,10 +41,12 @@ import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI, updateCloudInformation } from "../../api";
 import { Section } from "../../components/Section";
 import { useCloudBillingQuery } from "../../hooks/billing";
+import { useCloudCouponsQuery } from "../../hooks/coupons";
 import { useCloudInvoicesQuery } from "../../hooks/invoices";
 import { useCloudPaymentsQuery } from "../../hooks/payments";
-import { useCloudReferralQuery } from "../../hooks/referral";
+import { useCloudOrgUsageQuery } from "../../hooks/usage";
 import { openBillingDetails } from "../../modals/billing";
+import { measureComputeCost } from "../../util/measurements";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -84,6 +86,8 @@ export function BillingPage() {
 	const billingQuery = useCloudBillingQuery(organization?.id);
 	const paymentQuery = useCloudPaymentsQuery(organization?.id);
 	const invoiceQuery = useCloudInvoicesQuery(organization?.id);
+	const couponQuery = useCloudCouponsQuery(organization?.id);
+	const usageQuery = useCloudOrgUsageQuery(organization?.id);
 	const queryClient = useQueryClient();
 
 	const [requesting, setRequesting] = useState(false);
@@ -116,6 +120,10 @@ export function BillingPage() {
 			});
 
 			setCoupon("");
+
+			queryClient.invalidateQueries({
+				queryKey: ["cloud", "coupons"],
+			});
 		} catch (err: any) {
 			showError({
 				title: "Failed to apply discount code",
@@ -138,6 +146,8 @@ export function BillingPage() {
 		});
 	});
 
+	const usageCharge = measureComputeCost(usageQuery.data ?? []);
+	const couponCount = couponQuery.data?.length ?? 0;
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
@@ -172,6 +182,77 @@ export function BillingPage() {
 								description={organization?.plan?.description ?? ""}
 							/>
 						</Skeleton>
+					</Section>
+
+					<Section
+						title="Usage charges"
+						description="The current months usage charges for this organization"
+					>
+						<Paper
+							p="xl"
+							pos="relative"
+							style={{ overflow: "hidden" }}
+						>
+							<LoadingOverlay
+								visible={usageQuery.isPending}
+								overlayProps={{
+									color: "var(--mantine-color-slate-8)",
+								}}
+							/>
+							<Label>Usage cost breakdown</Label>
+							{usageCharge.summary.length === 0 ? (
+								<Text
+									mt="xs"
+									c="slate"
+								>
+									No instance usage data available yet
+								</Text>
+							) : (
+								<Table
+									className={classes.table}
+									mt="sm"
+								>
+									<Table.Tbody>
+										{usageCharge.summary.map((charge) => (
+											<Table.Tr
+												key={charge.name}
+												h={42}
+											>
+												<Table.Td c="bright">{charge.name}</Table.Td>
+												<Table.Td
+													w={0}
+													pr="md"
+													style={{ textWrap: "nowrap" }}
+												>
+													<Text
+														span
+														c="bright"
+														fw={500}
+													>
+														${charge.cost.toFixed(2)}
+													</Text>{" "}
+													<Text span>
+														for {charge.hours.toString()} compute hours
+													</Text>
+												</Table.Td>
+											</Table.Tr>
+										))}
+									</Table.Tbody>
+								</Table>
+							)}
+							<Divider my="xl" />
+							<Label>Total charges this month to date</Label>
+							<PrimaryTitle>${usageCharge.total.toFixed(2)}</PrimaryTitle>
+
+							<Text
+								fz="sm"
+								c="slate"
+								mt="sm"
+							>
+								This amount is an indication, the final amount may vary based on
+								other factors
+							</Text>
+						</Paper>
 					</Section>
 
 					<Section
@@ -348,6 +429,87 @@ export function BillingPage() {
 								</Button>
 							</Group>
 						</Form>
+
+						{couponQuery.data?.length && (
+							<>
+								<Text
+									fz="lg"
+									mt="xs"
+								>
+									There {couponCount === 1 ? "is" : "are"} {couponCount} active
+									discount code{couponCount === 1 ? "" : "s"}:
+								</Text>
+								<Table
+									className={classes.table}
+									mt="md"
+								>
+									<Table.Tbody>
+										{couponQuery.data?.map((coupon) => (
+											<Table.Tr
+												key={coupon.id}
+												h={42}
+											>
+												<Table.Td c="bright">{coupon.name}</Table.Td>
+												<Table.Td>
+													<Text
+														c="bright"
+														span
+													>
+														$
+														{(coupon.amount_remaining / 100).toFixed(2)}
+													</Text>{" "}
+													remaining
+												</Table.Td>
+												<Table.Td
+													w={0}
+													pr="md"
+													style={{ textWrap: "nowrap" }}
+												>
+													expires{" "}
+													{formatDistance(
+														new Date(coupon.expires_at),
+														new Date(),
+														{ addSuffix: true },
+													)}
+												</Table.Td>
+											</Table.Tr>
+										))}
+									</Table.Tbody>
+								</Table>
+							</>
+							// <Stack>
+							// 	<Text
+							// 		fz="lg"
+							// 		mt="xs"
+							// 	>
+							// 		Active discount codes:
+							// 	</Text>
+							// 	{couponQuery.data.map((coupon) => (
+							// 		<Paper
+							// 			key={coupon.name}
+							// 			p="md"
+							// 		>
+							// 			<Group>
+							// 				<Text
+							// 					fw={600}
+							// 					c="bright"
+							// 				>
+							// 					{coupon.name}
+							// 				</Text>
+							// 				<Spacer />
+							// 				<Text
+							// 					c="bright"
+							// 					fw={500}
+							// 					span
+							// 				>
+							// 					${coupon.amount_remaining / 100}
+							// 				</Text>
+							// 				<Text>/${coupon.amount / 100} remaining</Text>
+							// 			</Group>
+							// 		</Paper>
+							// 	))}
+							// </Stack>
+						)}
 					</Section>
 
 					<Section
@@ -388,7 +550,11 @@ export function BillingPage() {
 												<Table.Td>
 													${(invoice.amount / 100).toFixed(2)} USD
 												</Table.Td>
-												<Table.Td>
+												<Table.Td
+													w={0}
+													pr="md"
+													style={{ textWrap: "nowrap" }}
+												>
 													<Link href={invoice.url}>
 														<ActionIcon>
 															<Icon path={iconOpen} />
