@@ -23,6 +23,7 @@ import { iconAccount, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
 
 import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatDistance } from "date-fns";
 import { capitalize } from "radash";
 import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
@@ -40,12 +41,11 @@ import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI, updateCloudInformation } from "../../api";
 import { Section } from "../../components/Section";
 import { useCloudBillingQuery } from "../../hooks/billing";
+import { useCloudCouponsQuery } from "../../hooks/coupons";
 import { useCloudInvoicesQuery } from "../../hooks/invoices";
 import { useCloudPaymentsQuery } from "../../hooks/payments";
-import { openBillingDetails } from "../../modals/billing";
-import { useCloudCouponsQuery } from "../../hooks/coupons";
-import { formatDistance } from "date-fns";
 import { useCloudOrgUsageQuery } from "../../hooks/usage";
+import { openBillingDetails } from "../../modals/billing";
 import { measureComputeCost } from "../../util/measurements";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
