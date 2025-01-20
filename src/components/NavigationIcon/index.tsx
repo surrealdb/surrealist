@@ -35,8 +35,6 @@ export function NavigationIcon({
 	const hasIcon = typeof icon === "string";
 	const isActive = active && !!path;
 
-	console.log(path);
-
 	const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
 		animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,
 		className: classes.animation,

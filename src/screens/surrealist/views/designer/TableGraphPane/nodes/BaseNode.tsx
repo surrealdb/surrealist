@@ -189,8 +189,6 @@ export function BaseNode({ icon, table, direction, mode, isSelected, isEdge }: B
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
 
-	console.log();
-
 	return (
 		<>
 			<Handle
