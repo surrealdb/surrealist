@@ -617,3 +617,11 @@ export interface CloudMeasurement {
 	disk_used_bytes?: number;
 	source?: string;
 }
+
+export interface CloudCoupon {
+	id: string;
+	name: string;
+	amount: number;
+	amount_remaining: number;
+	expires_at: number;
+}

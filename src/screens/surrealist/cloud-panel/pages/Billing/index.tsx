@@ -45,6 +45,8 @@ import { useCloudInvoicesQuery } from "../../hooks/invoices";
 import { useCloudPaymentsQuery } from "../../hooks/payments";
 import { useCloudReferralQuery } from "../../hooks/referral";
 import { openBillingDetails } from "../../modals/billing";
+import { useCloudCouponsQuery } from "../../hooks/coupons";
+import { formatDistance } from "date-fns";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -84,6 +86,7 @@ export function BillingPage() {
 	const billingQuery = useCloudBillingQuery(organization?.id);
 	const paymentQuery = useCloudPaymentsQuery(organization?.id);
 	const invoiceQuery = useCloudInvoicesQuery(organization?.id);
+	const couponQuery = useCloudCouponsQuery(organization?.id);
 	const queryClient = useQueryClient();
 
 	const [requesting, setRequesting] = useState(false);
@@ -116,6 +119,10 @@ export function BillingPage() {
 			});
 
 			setCoupon("");
+
+			queryClient.invalidateQueries({
+				queryKey: ["cloud", "coupons"],
+			});
 		} catch (err: any) {
 			showError({
 				title: "Failed to apply discount code",
@@ -138,6 +145,7 @@ export function BillingPage() {
 		});
 	});
 
+	const couponCount = couponQuery.data?.length ?? 0;
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
@@ -348,6 +356,87 @@ export function BillingPage() {
 								</Button>
 							</Group>
 						</Form>
+
+						{couponQuery.data?.length && (
+							<>
+								<Text
+									fz="lg"
+									mt="xs"
+								>
+									There {couponCount === 1 ? "is" : "are"} {couponCount} active
+									discount code{couponCount === 1 ? "" : "s"}:
+								</Text>
+								<Table
+									className={classes.table}
+									mt="md"
+								>
+									<Table.Tbody>
+										{couponQuery.data?.map((coupon) => (
+											<Table.Tr
+												key={coupon.id}
+												h={42}
+											>
+												<Table.Td c="bright">{coupon.name}</Table.Td>
+												<Table.Td>
+													<Text
+														c="bright"
+														span
+													>
+														$
+														{(coupon.amount_remaining / 100).toFixed(2)}
+													</Text>{" "}
+													remaining
+												</Table.Td>
+												<Table.Td
+													w={0}
+													pr="md"
+													style={{ textWrap: "nowrap" }}
+												>
+													expires{" "}
+													{formatDistance(
+														new Date(coupon.expires_at),
+														new Date(),
+														{ addSuffix: true },
+													)}
+												</Table.Td>
+											</Table.Tr>
+										))}
+									</Table.Tbody>
+								</Table>
+							</>
+							// <Stack>
+							// 	<Text
+							// 		fz="lg"
+							// 		mt="xs"
+							// 	>
+							// 		Active discount codes:
+							// 	</Text>
+							// 	{couponQuery.data.map((coupon) => (
+							// 		<Paper
+							// 			key={coupon.name}
+							// 			p="md"
+							// 		>
+							// 			<Group>
+							// 				<Text
+							// 					fw={600}
+							// 					c="bright"
+							// 				>
+							// 					{coupon.name}
+							// 				</Text>
+							// 				<Spacer />
+							// 				<Text
+							// 					c="bright"
+							// 					fw={500}
+							// 					span
+							// 				>
+							// 					${coupon.amount_remaining / 100}
+							// 				</Text>
+							// 				<Text>/${coupon.amount / 100} remaining</Text>
+							// 			</Group>
+							// 		</Paper>
+							// 	))}
+							// </Stack>
+						)}
 					</Section>
 
 					<Section
@@ -388,7 +477,11 @@ export function BillingPage() {
 												<Table.Td>
 													${(invoice.amount / 100).toFixed(2)} USD
 												</Table.Td>
-												<Table.Td>
+												<Table.Td
+													w={0}
+													pr="md"
+													style={{ textWrap: "nowrap" }}
+												>
 													<Link href={invoice.url}>
 														<ActionIcon>
 															<Icon path={iconOpen} />
