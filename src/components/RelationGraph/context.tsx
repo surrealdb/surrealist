@@ -1,4 +1,4 @@
-import { Box, Group, Text } from "@mantine/core";
+import { Box, Group, Kbd, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
 import { unique } from "radash";
@@ -9,6 +9,7 @@ import { Icon } from "../Icon";
 import { NodeCircle } from "./node";
 import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";
 import { useIsLight } from "~/hooks/theme";
+import { Shortcut } from "../Shortcut";
 
 type Edges = { from: string[]; to: string[] };
 

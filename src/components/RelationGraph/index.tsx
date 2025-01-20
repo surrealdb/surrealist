@@ -195,20 +195,6 @@ export function RelationGraph({
 
 		sigmaRef.current = instance;
 
-		instance.on("doubleClickNode", ({ node, event }) => {
-			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
-
-			if (display) {
-				instance.getCamera().animate({ ...display, ratio: 0.15 });
-			}
-
-			inspect(display.record);
-
-			event.original.preventDefault();
-			event.original.stopPropagation();
-			event.preventSigmaDefault();
-		});
-
 		instance.on("enterNode", ({ node }) => {
 			const graph = graphRef.current;
 
@@ -229,10 +215,21 @@ export function RelationGraph({
 			});
 		});
 
+		instance.on("clickNode", ({ node, event }) => {
+			if (!event.original.metaKey) return;
+
+			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
+
+			inspect(display.record);
+
+			event.original.preventDefault();
+			event.original.stopPropagation();
+			event.preventSigmaDefault();
+		});
+
 		instance.on("rightClickNode", ({ node, event }) => {
 			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
 			const origin = event.original as unknown as MouseEvent;
-			const graph = graphRef.current;
 
 			event.preventSigmaDefault();
 			origin.preventDefault();
