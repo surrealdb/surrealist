@@ -14,7 +14,6 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { useInputState } from "@mantine/hooks";
 import { indexParallelEdgesIndex } from "@sigma/edge-curve";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
@@ -37,24 +36,24 @@ import { __throw } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation } from "~/util/icons";
 import { type PreviewProps } from ".";
 
-function jitter(value?: number) {
-	return value !== undefined ? value + Math.random() * 0.000001 : value;
-}
-
-function getCurvature(index: number, maxIndex: number): number {
-	if (maxIndex <= 0) throw new Error("Invalid maxIndex");
-	if (index < 0) return -getCurvature(-index, maxIndex);
-	const amplitude = 3.5;
-	const maxCurvature = amplitude * (1 - Math.exp(-maxIndex / amplitude)) * 0.15;
-	return (maxCurvature * index) / maxIndex;
-}
-
+const CURVE_AMP = 3.5;
+const CURVE_SCALE = 0.15;
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
 const RECORDS = new Gap<RecordId[]>();
 const QUERY = new PreparedQuery(
 	"SELECT VALUE [in, id, out] FROM $records<->(? WHERE out IN $records AND in IN $records).flatten() WHERE __ == true",
 	{ records: RECORDS },
 );
+
+function jitter(value?: number) {
+	return value !== undefined ? value + Math.random() * 0.000001 : value;
+}
+
+function curvature(index: number, maxIndex: number): number {
+	if (index < 0) return -curvature(-index, maxIndex);
+	const maxCurvature = CURVE_AMP * (1 - Math.exp(-maxIndex / CURVE_AMP)) * CURVE_SCALE;
+	return (maxCurvature * index) / (maxIndex || 1);
+}
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
 	const isLight = useIsLight();
@@ -271,7 +270,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				if (!isNumber(parallelIndex) || !isNumber(parallelMaxIndex)) return;
 
 				displayGraph.mergeEdgeAttributes(edge, {
-					curvature: getCurvature(parallelIndex, parallelMaxIndex),
+					curvature: curvature(parallelIndex, parallelMaxIndex),
 				});
 			});
 		}
