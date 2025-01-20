@@ -11,6 +11,8 @@ import {
 	iconEyeOff,
 	iconFullscreen,
 	iconRelation,
+	iconRelationIn,
+	iconRelationOut,
 	iconSearch,
 } from "~/util/icons";
 import { Icon } from "../Icon";
@@ -145,7 +147,7 @@ export function NodeContextMenu({
 							onExpandNode?.({ record: node.record, direction: "<-", edges: [from] })
 						}
 						title={
-							<Group gap="xs">
+							<Group gap={4}>
 								Expand incoming
 								<Text
 									fw={600}
@@ -157,7 +159,7 @@ export function NodeContextMenu({
 						}
 						icon={
 							<Icon
-								path={iconChevronRight}
+								path={iconRelationIn}
 								flip="horizontal"
 							/>
 						}
@@ -170,12 +172,12 @@ export function NodeContextMenu({
 					<ContextMenuItem
 						key={to}
 						onHide={onHideMenu}
-						icon={<Icon path={iconChevronRight} />}
+						icon={<Icon path={iconRelationOut} />}
 						onClick={() =>
 							onExpandNode?.({ record: node.record, direction: "->", edges: [to] })
 						}
 						title={
-							<Group gap="xs">
+							<Group gap={4}>
 								Expand outgoing
 								<Text
 									fw={600}

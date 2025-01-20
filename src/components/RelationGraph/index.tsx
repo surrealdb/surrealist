@@ -4,9 +4,9 @@ import {
 	iconImage,
 	iconMagnifyMinus,
 	iconMagnifyPlus,
+	iconPause,
 	iconPlay,
 	iconReset,
-	iconStop,
 } from "~/util/icons";
 
 import {
@@ -373,7 +373,7 @@ export function RelationGraph({
 							color={isSupervising ? undefined : "orange"}
 							onClick={onToggleSupervising}
 						>
-							<Icon path={isSupervising ? iconStop : iconPlay} />
+							<Icon path={isSupervising ? iconPause : iconPlay} />
 						</ActionButton>
 					)}
 				</Stack>
