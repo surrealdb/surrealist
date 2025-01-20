@@ -1,11 +1,13 @@
-import { Box, Divider, Group, Stack } from "@mantine/core";
+import { Box, Center, Divider, Group, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
+import { Icon } from "~/components/Icon";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { useSetting } from "~/hooks/config";
+import { iconTable } from "~/util/icons";
 import type { PreviewProps } from ".";
 
 export function TablePreview({ responses, selected }: PreviewProps) {
@@ -49,14 +51,20 @@ export function TablePreview({ responses, selected }: PreviewProps) {
 				</Group>
 			</Stack>
 		) : (
-			<Text
-				pl="md"
-				pt="sm"
-				fz={textSize}
+			<Center
+				h="100%"
+				mih={80}
 				c="slate"
 			>
-				This response cannot be displayed as a table
-			</Text>
+				<Stack>
+					<Icon
+						path={iconTable}
+						mx="auto"
+						size="lg"
+					/>
+					This response cannot be displayed as a table
+				</Stack>
+			</Center>
 		)
 	) : (
 		<Text

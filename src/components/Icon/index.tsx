@@ -22,6 +22,7 @@ export interface IconProps
 	noStroke?: boolean;
 	spin?: boolean;
 	path: string;
+	flip?: "horizontal" | "vertical";
 }
 
 export const Icon = ({
@@ -33,6 +34,7 @@ export const Icon = ({
 	left,
 	right,
 	noStroke,
+	flip,
 	...rest
 }: IconProps): JSX.Element | null => {
 	const theme = useMantineTheme();
@@ -48,8 +50,14 @@ export const Icon = ({
 			marginRight: left ? "0.5em" : undefined,
 			marginLeft: right ? "0.5em" : undefined,
 			flexShrink: 0,
+			transform:
+				flip === "horizontal"
+					? "scaleX(-1)"
+					: flip === "vertical"
+						? "scaleY(-1)"
+						: undefined,
 		});
-	}, [color, left, right, size, style]);
+	}, [color, left, right, size, style, flip]);
 
 	return (
 		<Box

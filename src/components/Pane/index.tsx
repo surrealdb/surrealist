@@ -15,6 +15,7 @@ export interface ContentPaneProps
 	infoSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
 	withTopPadding?: boolean;
+	withDivider?: boolean;
 	disabled?: boolean;
 }
 
@@ -27,6 +28,7 @@ export function ContentPane({
 	infoSection,
 	rightSection,
 	withTopPadding,
+	withDivider,
 	disabled,
 	...rest
 }: ContentPaneProps) {
@@ -69,17 +71,19 @@ export function ContentPane({
 						<Spacer />
 						{rightSection}
 					</Group>
-					<Divider
-						mx="sm"
-						mt={2}
-						className={classes.divider}
-					/>
+					{withDivider !== false && (
+						<Divider
+							mx="sm"
+							mt={2}
+							className={classes.divider}
+						/>
+					)}
 				</>
 			)}
 			<Box
 				p="sm"
 				pt={0}
-				mt={withTopPadding === false ? undefined : "sm"}
+				mt={withTopPadding === false || withDivider === false ? undefined : "sm"}
 				pos="relative"
 				className={classes.content}
 			>

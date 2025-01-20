@@ -1,7 +1,10 @@
 import {
 	type AccessRecordAuth,
 	type ExportOptions,
+	QueryParameters,
+	RecordId,
 	type ScopeAuth,
+	StringRecordId,
 	type Surreal,
 	SurrealDbError,
 	UnsupportedVersion,
@@ -109,6 +112,13 @@ export async function openConnection(options?: ConnectOptions) {
 
 		if (!forceClose) {
 			scheduleReconnect();
+		}
+	});
+
+	instance.emitter.subscribe("error", (err) => {
+		if (instance === thisInstance) {
+			setLatestError(err.message);
+			console.dir(err);
 		}
 	});
 
@@ -297,9 +307,9 @@ export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
 /**
  * Execute a query against the active connection
  */
-export async function executeQuery(query: string, params?: any) {
+export async function executeQuery(...args: QueryParameters) {
 	try {
-		const responseRaw = (await instance.query_raw(query, params)) || [];
+		const responseRaw = (await instance.queryRaw(...args)) || [];
 
 		return mapResults(responseRaw);
 	} catch (err: any) {

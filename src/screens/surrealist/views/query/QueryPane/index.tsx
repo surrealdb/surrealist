@@ -1,3 +1,5 @@
+import classes from "./style.module.scss";
+
 import {
 	runQueryKeymap,
 	surqlCustomFunctionCompletion,
@@ -303,6 +305,8 @@ export function QueryPane({
 				lineNumbers={lineNumbers}
 				serialize={SERIALIZE}
 				extensions={extensions}
+				className={classes.editor}
+				mb={-9}
 			/>
 		</ContentPane>
 	);

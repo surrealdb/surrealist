@@ -61,6 +61,7 @@ import {
 	iconProgressClock,
 	iconQuery,
 	iconReferral,
+	iconRelation,
 	iconServer,
 	iconSidekick,
 } from "./util/icons";
@@ -124,6 +125,12 @@ export const RESULT_MODES: Listable<ResultMode>[] = [
 		value: "table",
 		icon: iconDataTable,
 		description: "Render query results in a table",
+	},
+	{
+		label: "Graph",
+		value: "graph",
+		icon: iconRelation,
+		description: "Visualize query results in a graph",
 	},
 	{
 		label: "Live",
