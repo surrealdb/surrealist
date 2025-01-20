@@ -45,6 +45,8 @@ import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "../../hooks/referral";
 
+const REWARDS = [1, 10, 25, 100, 500];
+
 interface RewardProps extends Omit<SlabProps, "title"> {
 	title: ReactNode;
 	description: ReactNode;
@@ -100,8 +102,8 @@ export function ReferralPage() {
 	const referrals = referralQuery.data ?? 0;
 	const showShare = "canShare" in navigator && navigator.canShare(shareOptions);
 
-	const nextReward = [1, 10, 25, 100, 500].find((r) => r > referrals) ?? 500;
-	const currentReward = [1, 10, 25, 100, 500].findLast((r) => r <= referrals) ?? 0;
+	const nextReward = REWARDS.find((r) => r > referrals) ?? 500;
+	const currentReward = REWARDS.findLast((r) => r <= referrals) ?? 0;
 	const toRefer = nextReward - referrals;
 	const progress = ((referrals - currentReward) / (nextReward - 1)) * 100;
 
