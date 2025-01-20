@@ -8,6 +8,7 @@ import { iconChevronRight, iconCopy, iconEyeOff, iconRelation, iconSearch } from
 import { Icon } from "../Icon";
 import { NodeCircle } from "./node";
 import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";
+import { useIsLight } from "~/hooks/theme";
 
 type Edges = { from: string[]; to: string[] };
 
@@ -34,6 +35,8 @@ export function NodeContextMenu({
 	onHideNode,
 	onHideMenu,
 }: NodeContextMenuProps) {
+	const isLight = useIsLight();
+
 	const { data, isSuccess } = useQuery({
 		queryKey: ["graph-relation", node],
 		enabled: true,
@@ -66,7 +69,7 @@ export function NodeContextMenu({
 						fz="xs"
 						truncate
 						mt={-2}
-						c="slate.2"
+						c={isLight ? "slate.6" : "slate.2"}
 						pr="md"
 					>
 						{node.record.id.toString()}
