@@ -15,7 +15,7 @@ import {
 } from "@mantine/core";
 
 import { iconBraces, iconFilter, iconRelation } from "~/util/icons";
-import { useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useSetting } from "~/hooks/config";
 import { type PreviewProps } from ".";
 import { Icon } from "~/components/Icon";
@@ -34,6 +34,7 @@ import { NodeCircle } from "~/components/RelationGraph/node";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { GraphExpansion } from "~/components/RelationGraph/types";
 import { useLater } from "~/hooks/later";
+import { useInputState } from "@mantine/hooks";
 
 function jitter(value?: number) {
 	return value !== undefined ? value + Math.random() * 0.000001 : value;
@@ -50,7 +51,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();
 	const [editorScale] = useSetting("appearance", "editorScale");
-	const [initializing, setInitializing] = useState(false);
+	const [initializing, setInitializing] = useState(true);
 	const [universeGraph] = useState(() => newRelationalGraph());
 	const [displayGraph] = useState(() => newRelationalGraph());
 	const [supervising, setSupervising] = useState(true);
@@ -59,6 +60,7 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 	const [nodeCount, setNodeCount] = useState(0);
 	const [edgeCount, setEdgeCount] = useState(0);
 
+	const [hideStray, setHideStray] = useState(false);
 	const [hiddenTables, toggleHiddenTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleHiddenEdge, setHiddenEdges] = useToggleList();
 	const [tables, setTables] = useState<string[]>([]);
@@ -70,6 +72,8 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 	// Refresh the graph based on the query result
 	const refreshGraph = useStable(async (result: any) => {
+		setInitializing(true);
+
 		const records = new Set<RecordId>();
 
 		function flatten(data: any) {
@@ -239,8 +243,20 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 			}
 		});
 
+		// Optionally hide stray records
+		if (hideStray) {
+			for (const node of displayGraph.nodes()) {
+				if (displayGraph.degree(node) === 0) {
+					displayGraph.dropNode(node);
+				}
+			}
+		}
+
 		// Update sidebar statistics
 		computeStatistics();
+
+		// Mark as ready
+		setInitializing(false);
 	});
 
 	const toggleSupervising = useStable(() => {
@@ -312,6 +328,11 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 
 	const handleToggleEdge = useStable((edge: string) => {
 		toggleHiddenEdge(edge);
+		synchronizeGraph();
+	});
+
+	const updateHideStray = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		setHideStray(e.target.checked);
 		synchronizeGraph();
 	});
 
@@ -508,6 +529,18 @@ export function GraphPreview({ responses, selected, query }: PreviewProps) {
 											))}
 										</>
 									)}
+								</Stack>
+							</Box>
+							<Box>
+								<Label mb="xs">Options</Label>
+								<Stack gap="xs">
+									<Checkbox
+										size="xs"
+										label="Hide stray records"
+										flex={1}
+										checked={hideStray}
+										onChange={updateHideStray}
+									/>
 								</Stack>
 							</Box>
 						</Stack>
