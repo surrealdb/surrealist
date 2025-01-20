@@ -97,7 +97,7 @@ export function ReferralPage() {
 		url: referralLink,
 	};
 
-	const referrals = 4;
+	const referrals = referralQuery.data ?? 0;
 	const showShare = "canShare" in navigator && navigator.canShare(shareOptions);
 
 	const nextReward = [1, 10, 25, 100, 500].find((r) => r > referrals) ?? 500;
