@@ -52,15 +52,15 @@ function jitter(value?: number) {
 function curvature(index: number, maxIndex: number): number {
 	if (index < 0) return -curvature(-index, maxIndex);
 	const maxCurvature = CURVE_AMP * (1 - Math.exp(-maxIndex / CURVE_AMP)) * CURVE_SCALE;
-	const curve = (maxCurvature * index) / (maxIndex || 1);
-	return Math.abs(curve) < 0.01 ? 0.01 : curve;
+	return (maxCurvature * index) / (maxIndex || 1);
 }
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();
 	const [editorScale] = useSetting("appearance", "editorScale");
-	const [initializing, setInitializing] = useState(true);
+	const [isInitialized, setInitializing] = useState(true);
+	const [isWiring, setWiring] = useState(true);
 	const [universeGraph] = useState(() => newRelationalGraph());
 	const [displayGraph] = useState(() => newRelationalGraph());
 	const [supervising, setSupervising] = useState(true);
@@ -170,6 +170,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 	// Relation wiring mutation
 	const rewireNodes = useStable(async () => {
+		setWiring(true);
+
 		const nodes = universeGraph.nodeEntries();
 		const records = Array.from(nodes).map((e) => e.attributes.record);
 		const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
@@ -195,11 +197,9 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			}
 		}
 
-		// Index tables and edges
 		indexMetadata();
-
-		// Synchronize the display graph
 		synchronizeGraph();
+		setWiring(false);
 	});
 
 	// Synchronize the universe graph to display graph
@@ -248,8 +248,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 					weight: attr.weight,
 					record: attr.record,
 					label: attr.record.tb,
-					type: "arrow",
-					curvature: straightLines ? 0.01 : undefined,
+					type: straightLines ? "straight" : "curved",
 				});
 			}
 		});
@@ -270,8 +269,11 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			displayGraph.forEachEdge((edge, { parallelIndex, parallelMaxIndex }) => {
 				if (!isNumber(parallelIndex) || !isNumber(parallelMaxIndex)) return;
 
+				const curve = curvature(parallelIndex, parallelMaxIndex);
+
 				displayGraph.mergeEdgeAttributes(edge, {
-					curvature: curvature(parallelIndex, parallelMaxIndex),
+					type: curve === 0 ? "straight" : "curved",
+					curvature: curve,
 				});
 			});
 		}
@@ -400,7 +402,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				align="stretch"
 				gap={0}
 			>
-				{initializing ? (
+				{isInitialized ? (
 					<Center flex={1}>
 						<Loader />
 					</Center>
@@ -409,7 +411,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 						graph={displayGraph}
 						controlOffsetTop={12}
 						isSupervising={supervising}
-						isUpdating={false}
+						isWiring={isWiring}
 						queryEdges={handleQueryEdges}
 						onToggleSupervising={toggleSupervising}
 						onHideNode={handleHideNode}
@@ -454,7 +456,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Statistics</Label>
 								<Stack gap="xs">
-									<Skeleton visible={initializing}>
+									<Skeleton visible={isInitialized}>
 										<Group gap="xs">
 											<Icon
 												path={iconBraces}
@@ -464,7 +466,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 											{nodeCount.toString()} records
 										</Group>
 									</Skeleton>
-									<Skeleton visible={initializing}>
+									<Skeleton visible={isInitialized}>
 										<Group gap="xs">
 											<Icon
 												path={iconRelation}
@@ -474,7 +476,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 											{edgeCount.toString()} edges
 										</Group>
 									</Skeleton>
-									<Skeleton visible={initializing}>
+									<Skeleton visible={isInitialized}>
 										<Group gap="xs">
 											<Icon
 												path={iconFilter}
@@ -489,7 +491,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Tables</Label>
 								<Stack gap="xs">
-									{initializing ? (
+									{isInitialized ? (
 										<>
 											<Skeleton h={18} />
 											<Skeleton h={18} />
@@ -532,7 +534,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 							<Box>
 								<Label mb="xs">Edges</Label>
 								<Stack gap="xs">
-									{initializing ? (
+									{isInitialized ? (
 										<>
 											<Skeleton h={18} />
 											<Skeleton h={18} />

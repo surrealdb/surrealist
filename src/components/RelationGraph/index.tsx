@@ -44,6 +44,7 @@ import {
 	RelationGraphNode,
 	RelationalGraph,
 } from "./types";
+import { createEdgeArrowProgram } from "sigma/rendering";
 
 /**
  * Helper for creating a new relational graph.
@@ -57,7 +58,7 @@ export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
 	controlOffsetTop?: number;
 	controlOffsetRight?: number;
 	isSupervising?: boolean;
-	isUpdating?: boolean;
+	isWiring?: boolean;
 	queryEdges: (record: RecordId) => GraphEdges;
 	onToggleSupervising?: () => void;
 	onExpandNode?: (expansion: GraphExpansion) => void;
@@ -71,7 +72,7 @@ export function RelationGraph({
 	controlOffsetTop,
 	controlOffsetRight,
 	isSupervising,
-	isUpdating,
+	isWiring,
 	queryEdges,
 	onToggleSupervising,
 	onExpandNode,
@@ -150,11 +151,15 @@ export function RelationGraph({
 			labelRenderedSizeThreshold: 12,
 			edgeLabelSize: 10,
 			stagePadding: 50,
-			defaultNodeType: "border",
+			defaultNodeType: "default",
 			defaultDrawNodeHover: drawHover,
 			defaultDrawNodeLabel: drawLabel,
 			edgeProgramClasses: {
-				arrow: createEdgeCurveProgram<RelationGraphNode, RelationGraphEdge>({
+				straight: createEdgeArrowProgram<RelationGraphNode, RelationGraphEdge>({
+					widenessToThicknessRatio: 4,
+					lengthToThicknessRatio: 5,
+				}),
+				curved: createEdgeCurveProgram<RelationGraphNode, RelationGraphEdge>({
 					arrowHead: {
 						widenessToThicknessRatio: 4,
 						lengthToThicknessRatio: 5,
@@ -163,7 +168,7 @@ export function RelationGraph({
 				}),
 			},
 			nodeProgramClasses: {
-				border: createNodeBorderProgram<RelationGraphNode, RelationGraphEdge>({
+				default: createNodeBorderProgram<RelationGraphNode, RelationGraphEdge>({
 					borders: [
 						{ color: { attribute: "color" }, size: { value: 0.1 } },
 						{ color: { transparent: true }, size: { value: 0.1 } },
@@ -312,7 +317,7 @@ export function RelationGraph({
 			/>
 			<Transition
 				transition="fade"
-				mounted={isUpdating ?? false}
+				mounted={isWiring ?? false}
 				duration={100}
 			>
 				{(style) => (
@@ -325,11 +330,11 @@ export function RelationGraph({
 						<Loader size="xs" />
 						<Text
 							c="bright"
-							fw={600}
+							fw={500}
 							fz="lg"
 							tt="uppercase"
 						>
-							Updating graph...
+							Finding relationships
 						</Text>
 					</Group>
 				)}
