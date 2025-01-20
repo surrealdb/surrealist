@@ -7,6 +7,7 @@ import {
 	Button,
 	Divider,
 	Group,
+	LoadingOverlay,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
@@ -187,39 +188,58 @@ export function BillingPage() {
 						title="Usage charges"
 						description="The current months usage charges for this organization"
 					>
-						<Paper p="xl">
+						<Paper
+							p="xl"
+							pos="relative"
+							style={{ overflow: "hidden" }}
+						>
+							<LoadingOverlay
+								visible={usageQuery.isPending}
+								overlayProps={{
+									color: "var(--mantine-color-slate-8)",
+								}}
+							/>
 							<Label>Usage cost breakdown</Label>
-							<Table
-								className={classes.table}
-								mt="sm"
-							>
-								<Table.Tbody>
-									{usageCharge.summary.map((charge) => (
-										<Table.Tr
-											key={charge.name}
-											h={42}
-										>
-											<Table.Td c="bright">{charge.name}</Table.Td>
-											<Table.Td
-												w={0}
-												pr="md"
-												style={{ textWrap: "nowrap" }}
+							{usageCharge.summary.length === 0 ? (
+								<Text
+									mt="xs"
+									c="slate"
+								>
+									No instance usage data available yet
+								</Text>
+							) : (
+								<Table
+									className={classes.table}
+									mt="sm"
+								>
+									<Table.Tbody>
+										{usageCharge.summary.map((charge) => (
+											<Table.Tr
+												key={charge.name}
+												h={42}
 											>
-												<Text
-													span
-													c="bright"
-													fw={500}
+												<Table.Td c="bright">{charge.name}</Table.Td>
+												<Table.Td
+													w={0}
+													pr="md"
+													style={{ textWrap: "nowrap" }}
 												>
-													${charge.cost.toFixed(2)}
-												</Text>{" "}
-												<Text span>
-													for {charge.hours.toString()} compute hours
-												</Text>
-											</Table.Td>
-										</Table.Tr>
-									))}
-								</Table.Tbody>
-							</Table>
+													<Text
+														span
+														c="bright"
+														fw={500}
+													>
+														${charge.cost.toFixed(2)}
+													</Text>{" "}
+													<Text span>
+														for {charge.hours.toString()} compute hours
+													</Text>
+												</Table.Td>
+											</Table.Tr>
+										))}
+									</Table.Tbody>
+								</Table>
+							)}
 							<Divider my="xl" />
 							<Label>Total charges this month to date</Label>
 							<PrimaryTitle>${usageCharge.total.toFixed(2)}</PrimaryTitle>
