@@ -12,7 +12,7 @@ import classes from "./style.module.scss";
 
 export interface NavigationIconProps
 	extends EntryProps,
-	Omit<HTMLProps<HTMLButtonElement>, "name" | "color" | "size" | "style" | "type" | "ref"> {
+		Omit<HTMLProps<HTMLButtonElement>, "name" | "color" | "size" | "style" | "type" | "ref"> {
 	name: ReactNode;
 	path?: string;
 	indicator?: boolean | IndicatorProps;
@@ -34,6 +34,8 @@ export function NavigationIcon({
 	const [active] = useRoute(path || "");
 	const hasIcon = typeof icon === "string";
 	const isActive = active && !!path;
+
+	console.log(path);
 
 	const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
 		animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,

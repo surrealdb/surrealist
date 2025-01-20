@@ -109,10 +109,12 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 				pt={22}
 			>
 				<Space h="var(--titlebar-offset)" />
-				<UnstyledButton onClick={() => {
-					setLocation("/start");
-					setOverlaySidebar(false)
-				}}>
+				<UnstyledButton
+					onClick={() => {
+						setLocation("/start");
+						setOverlaySidebar(false);
+					}}
+				>
 					<Flex
 						wrap="nowrap"
 						align="center"
@@ -151,7 +153,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 								}
 								icon={iconCloud}
 								isActive={cloudActive}
-								path="cloud"
+								path="cloud/*?"
 								withTooltip={sidebarMode === "compact"}
 								onClick={() => setLocation("/cloud")}
 								onMouseEnter={hoverSidebarHandle.open}
