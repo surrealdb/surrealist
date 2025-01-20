@@ -3,6 +3,7 @@ import type {
 	CloudBillingCountry,
 	CloudChatMessage,
 	CloudInstance,
+	CloudInstanceType,
 	CloudOrganization,
 	CloudProfile,
 	CloudRegion,
@@ -15,6 +16,7 @@ import { newId } from "~/util/helpers";
 interface CloudValues {
 	profile: CloudProfile;
 	instanceVersions: string[];
+	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
 	billingCountries: CloudBillingCountry[];
@@ -32,6 +34,7 @@ export type CloudStore = {
 	isSupported: boolean;
 	profile: CloudProfile;
 	instanceVersions: string[];
+	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
 	billingCountries: CloudBillingCountry[];

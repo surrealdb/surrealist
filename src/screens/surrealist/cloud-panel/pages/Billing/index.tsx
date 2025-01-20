@@ -5,7 +5,6 @@ import {
 	Alert,
 	Box,
 	Button,
-	CopyButton,
 	Divider,
 	Group,
 	Paper,
@@ -19,7 +18,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import { iconAccount, iconCheck, iconCopy, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
+import { iconAccount, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
 
 import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,7 +28,6 @@ import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
-import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -43,10 +41,11 @@ import { Section } from "../../components/Section";
 import { useCloudBillingQuery } from "../../hooks/billing";
 import { useCloudInvoicesQuery } from "../../hooks/invoices";
 import { useCloudPaymentsQuery } from "../../hooks/payments";
-import { useCloudReferralQuery } from "../../hooks/referral";
 import { openBillingDetails } from "../../modals/billing";
 import { useCloudCouponsQuery } from "../../hooks/coupons";
 import { formatDistance } from "date-fns";
+import { useCloudOrgUsageQuery } from "../../hooks/usage";
+import { measureComputeCost } from "../../util/measurements";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -87,6 +86,7 @@ export function BillingPage() {
 	const paymentQuery = useCloudPaymentsQuery(organization?.id);
 	const invoiceQuery = useCloudInvoicesQuery(organization?.id);
 	const couponQuery = useCloudCouponsQuery(organization?.id);
+	const usageQuery = useCloudOrgUsageQuery(organization?.id);
 	const queryClient = useQueryClient();
 
 	const [requesting, setRequesting] = useState(false);
@@ -145,6 +145,7 @@ export function BillingPage() {
 		});
 	});
 
+	const usageCharge = measureComputeCost(usageQuery.data ?? []);
 	const couponCount = couponQuery.data?.length ?? 0;
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
@@ -180,6 +181,58 @@ export function BillingPage() {
 								description={organization?.plan?.description ?? ""}
 							/>
 						</Skeleton>
+					</Section>
+
+					<Section
+						title="Usage charges"
+						description="The current months usage charges for this organization"
+					>
+						<Paper p="xl">
+							<Label>Usage cost breakdown</Label>
+							<Table
+								className={classes.table}
+								mt="sm"
+							>
+								<Table.Tbody>
+									{usageCharge.summary.map((charge) => (
+										<Table.Tr
+											key={charge.name}
+											h={42}
+										>
+											<Table.Td c="bright">{charge.name}</Table.Td>
+											<Table.Td
+												w={0}
+												pr="md"
+												style={{ textWrap: "nowrap" }}
+											>
+												<Text
+													span
+													c="bright"
+													fw={500}
+												>
+													${charge.cost.toFixed(2)}
+												</Text>{" "}
+												<Text span>
+													for {charge.hours.toString()} compute hours
+												</Text>
+											</Table.Td>
+										</Table.Tr>
+									))}
+								</Table.Tbody>
+							</Table>
+							<Divider my="xl" />
+							<Label>Total charges this month to date</Label>
+							<PrimaryTitle>${usageCharge.total.toFixed(2)}</PrimaryTitle>
+
+							<Text
+								fz="sm"
+								c="slate"
+								mt="sm"
+							>
+								This amount is an indication, the final amount may vary based on
+								other factors
+							</Text>
+						</Paper>
 					</Section>
 
 					<Section
