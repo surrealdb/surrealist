@@ -28,6 +28,7 @@ import { MultiDirectedGraph } from "graphology";
 import { useContextMenu } from "mantine-contextmenu";
 import { MouseEvent, useEffect, useRef } from "react";
 import Sigma from "sigma";
+import { createEdgeArrowProgram } from "sigma/rendering";
 import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
 import { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
@@ -44,7 +45,6 @@ import {
 	RelationGraphNode,
 	RelationalGraph,
 } from "./types";
-import { createEdgeArrowProgram } from "sigma/rendering";
 
 /**
  * Helper for creating a new relational graph.
