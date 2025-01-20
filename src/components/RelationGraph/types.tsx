@@ -1,5 +1,5 @@
 import { MultiDirectedGraph } from "graphology";
-import { NodeDisplayData, EdgeDisplayData } from "sigma/types";
+import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
 import { RecordId } from "surrealdb";
 
 export type RelationalGraph = MultiDirectedGraph<RelationGraphNode, RelationGraphEdge>;

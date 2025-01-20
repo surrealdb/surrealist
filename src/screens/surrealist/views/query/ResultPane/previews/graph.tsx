@@ -14,27 +14,27 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { iconBraces, iconFilter, iconRelation } from "~/util/icons";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useSetting } from "~/hooks/config";
-import { type PreviewProps } from ".";
-import { Icon } from "~/components/Icon";
-import { isArray, isObject } from "radash";
-import { equals, Gap, PreparedQuery, RecordId } from "surrealdb";
-import { Label } from "~/components/Label";
-import iwanthue, { ColorSpaceArray } from "iwanthue";
+import { useInputState } from "@mantine/hooks";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
-import { newRelationalGraph, RelationGraph } from "~/components/RelationGraph";
-import { useIsLight } from "~/hooks/theme";
-import { __throw } from "~/util/helpers";
-import { useStable } from "~/hooks/stable";
-import { useToggleList } from "~/hooks/toggle";
+import iwanthue, { ColorSpaceArray } from "iwanthue";
+import { isArray, isObject } from "radash";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { Gap, PreparedQuery, RecordId, equals } from "surrealdb";
+import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
+import { RelationGraph, newRelationalGraph } from "~/components/RelationGraph";
 import { NodeCircle } from "~/components/RelationGraph/node";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { GraphExpansion } from "~/components/RelationGraph/types";
+import { useSetting } from "~/hooks/config";
 import { useLater } from "~/hooks/later";
-import { useInputState } from "@mantine/hooks";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useToggleList } from "~/hooks/toggle";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { __throw } from "~/util/helpers";
+import { iconBraces, iconFilter, iconRelation } from "~/util/icons";
+import { type PreviewProps } from ".";
 
 function jitter(value?: number) {
 	return value !== undefined ? value + Math.random() * 0.000001 : value;

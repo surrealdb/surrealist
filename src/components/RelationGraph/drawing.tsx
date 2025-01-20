@@ -1,6 +1,6 @@
 import { NodeHoverDrawingFunction, NodeLabelDrawingFunction } from "sigma/rendering";
 import { getIsLight } from "~/hooks/theme";
-import { RelationGraphNode, RelationGraphEdge } from "./types";
+import { RelationGraphEdge, RelationGraphNode } from "./types";
 
 export const drawHover: NodeHoverDrawingFunction<RelationGraphNode, RelationGraphEdge> = (
 	context,

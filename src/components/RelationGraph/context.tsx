@@ -1,13 +1,13 @@
 import { Box, Group, Text } from "@mantine/core";
-import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
-import { iconSearch, iconEyeOff, iconCopy, iconChevronRight, iconRelation } from "~/util/icons";
-import { Icon } from "../Icon";
 import { useQuery } from "@tanstack/react-query";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
+import { unique } from "radash";
 import { Gap, PreparedQuery, RecordId } from "surrealdb";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { iconChevronRight, iconCopy, iconEyeOff, iconRelation, iconSearch } from "~/util/icons";
+import { Icon } from "../Icon";
 import { NodeCircle } from "./node";
 import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";
-import { unique } from "radash";
 
 type Edges = { from: string[]; to: string[] };
 

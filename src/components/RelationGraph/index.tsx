@@ -1,12 +1,12 @@
 import {
-	iconMagnifyPlus,
-	iconMagnifyMinus,
+	iconAPI,
 	iconFullscreen,
 	iconImage,
-	iconAPI,
+	iconMagnifyMinus,
+	iconMagnifyPlus,
 	iconPlay,
-	iconStop,
 	iconReset,
+	iconStop,
 } from "~/util/icons";
 
 import {
@@ -22,27 +22,27 @@ import {
 	useMantineTheme,
 } from "@mantine/core";
 
+import { createEdgeCurveProgram } from "@sigma/edge-curve";
 import { createNodeBorderProgram } from "@sigma/node-border";
 import { MultiDirectedGraph } from "graphology";
 import { useContextMenu } from "mantine-contextmenu";
-import { useRef, useEffect, MouseEvent } from "react";
+import { MouseEvent, useEffect, useRef } from "react";
 import Sigma from "sigma";
 import { EdgeDisplayData, NodeDisplayData } from "sigma/types";
-import { createEdgeCurveProgram } from "@sigma/edge-curve";
+import { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { getIsLight, useIsLight } from "~/hooks/theme";
+import { useInspector } from "~/providers/Inspector";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
-import { drawHover, drawLabel } from "./drawing";
-import { RecordId } from "surrealdb";
 import { NodeContextMenu } from "./context";
-import { useInspector } from "~/providers/Inspector";
+import { drawHover, drawLabel } from "./drawing";
 import {
 	GraphEdges,
 	GraphExpansion,
-	RelationalGraph,
 	RelationGraphEdge,
 	RelationGraphNode,
+	RelationalGraph,
 } from "./types";
 
 /**

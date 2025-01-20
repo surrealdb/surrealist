@@ -32,10 +32,10 @@ import { useQueryStore } from "~/stores/query";
 import type { Listable, QueryResponse, QueryTab, ResultFormat, ResultMode } from "~/types";
 import type { PreviewProps } from "./previews";
 import { CombinedPreview } from "./previews/combined";
+import { GraphPreview } from "./previews/graph";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
-import { GraphPreview } from "./previews/graph";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {

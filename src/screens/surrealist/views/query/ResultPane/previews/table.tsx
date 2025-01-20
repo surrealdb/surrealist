@@ -3,12 +3,12 @@ import { Text } from "@mantine/core";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
+import { Icon } from "~/components/Icon";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { useSetting } from "~/hooks/config";
-import type { PreviewProps } from ".";
-import { Icon } from "~/components/Icon";
 import { iconTable } from "~/util/icons";
+import type { PreviewProps } from ".";
 
 export function TablePreview({ responses, selected }: PreviewProps) {
 	const { success, result } = responses[selected] ?? { result: null };
