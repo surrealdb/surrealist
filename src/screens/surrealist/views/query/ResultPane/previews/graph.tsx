@@ -65,6 +65,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	const [displayGraph] = useState(() => newRelationalGraph());
 	const [supervising, setSupervising] = useState(true);
 
+	const [isEmpty, setEmpty] = useState(false);
 	const [strayCount, setStrayCount] = useState(0);
 	const [nodeCount, setNodeCount] = useState(0);
 	const [edgeCount, setEdgeCount] = useState(0);
@@ -278,10 +279,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			});
 		}
 
-		// Update sidebar statistics
 		computeStatistics();
-
-		// Mark as ready
+		setEmpty(displayGraph.order === 0);
 		setInitializing(false);
 	});
 
@@ -301,6 +300,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 	const handleHideNode = useStable((node: RecordId) => {
 		displayGraph.dropNode(node.toString());
+		setEmpty(displayGraph.order === 0);
 		computeStatistics();
 	});
 
@@ -412,6 +412,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 						controlOffsetTop={12}
 						isSupervising={supervising}
 						isWiring={isWiring}
+						isEmpty={isEmpty}
 						queryEdges={handleQueryEdges}
 						onToggleSupervising={toggleSupervising}
 						onHideNode={handleHideNode}

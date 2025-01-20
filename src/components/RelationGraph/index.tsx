@@ -6,18 +6,21 @@ import {
 	iconMagnifyPlus,
 	iconPause,
 	iconPlay,
+	iconRelation,
 	iconReset,
 } from "~/util/icons";
 
 import {
 	Box,
 	BoxProps,
+	Center,
 	ElementProps,
 	Group,
 	Loader,
 	Paper,
 	Stack,
 	Text,
+	ThemeIcon,
 	Transition,
 	useMantineTheme,
 } from "@mantine/core";
@@ -59,6 +62,7 @@ export interface RelationGraphProps extends BoxProps, ElementProps<"div"> {
 	controlOffsetRight?: number;
 	isSupervising?: boolean;
 	isWiring?: boolean;
+	isEmpty?: boolean;
 	queryEdges: (record: RecordId) => GraphEdges;
 	onToggleSupervising?: () => void;
 	onExpandNode?: (expansion: GraphExpansion) => void;
@@ -73,6 +77,7 @@ export function RelationGraph({
 	controlOffsetRight,
 	isSupervising,
 	isWiring,
+	isEmpty,
 	queryEdges,
 	onToggleSupervising,
 	onExpandNode,
@@ -339,6 +344,37 @@ export function RelationGraph({
 					</Group>
 				)}
 			</Transition>
+			{isEmpty && (
+				<Center
+					pos="absolute"
+					inset={0}
+				>
+					<Paper p="xl">
+						<Group>
+							<ThemeIcon
+								radius="xs"
+								variant="light"
+								color="slate"
+								size={40}
+							>
+								<Icon
+									path={iconRelation}
+									size="lg"
+								/>
+							</ThemeIcon>
+							<Box>
+								<Text
+									fw={600}
+									fz="lg"
+								>
+									Waiting for records to visualise
+								</Text>
+								<Text c="slate">Selected records will be shown here</Text>
+							</Box>
+						</Group>
+					</Paper>
+				</Center>
+			)}
 			<Paper
 				withBorder
 				pos="absolute"
