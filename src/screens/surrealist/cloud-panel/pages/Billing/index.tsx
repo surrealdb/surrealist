@@ -186,7 +186,7 @@ export function BillingPage() {
 
 					<Section
 						title="Usage charges"
-						description="The current month's charges for this organization"
+						description="Your organization's usage charges for the current month"
 					>
 						<Paper
 							p="xl"
