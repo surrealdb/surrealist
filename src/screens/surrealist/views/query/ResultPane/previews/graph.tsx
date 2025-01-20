@@ -52,7 +52,8 @@ function jitter(value?: number) {
 function curvature(index: number, maxIndex: number): number {
 	if (index < 0) return -curvature(-index, maxIndex);
 	const maxCurvature = CURVE_AMP * (1 - Math.exp(-maxIndex / CURVE_AMP)) * CURVE_SCALE;
-	return (maxCurvature * index) / (maxIndex || 1);
+	const curve = (maxCurvature * index) / (maxIndex || 1);
+	return Math.abs(curve) < 0.01 ? 0.01 : curve;
 }
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
@@ -280,8 +281,6 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 		// Mark as ready
 		setInitializing(false);
-
-		console.log([...displayGraph.edgeEntries()]);
 	});
 
 	const toggleSupervising = useStable(() => {
