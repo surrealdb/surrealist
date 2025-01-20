@@ -232,7 +232,17 @@ export function ReferralPage() {
 							</Text>{" "}
 							users.
 						</Text>
-						<Text>Refer {toRefer} more users to unlock the next reward.</Text>
+						<Text>
+							Refer{" "}
+							<Text
+								span
+								c="bright"
+								fw={500}
+							>
+								{toRefer} more
+							</Text>{" "}
+							users to unlock the next reward.
+						</Text>
 						<Progress
 							mt="md"
 							value={progress}
