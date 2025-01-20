@@ -7,17 +7,18 @@ import {
 	Box,
 	Button,
 	Group,
+	Indicator,
 	type MantineColor,
 	Menu,
 	Paper,
 	Stack,
 	Table,
 	Text,
+	Tooltip,
 } from "@mantine/core";
 
 import {
 	iconAPI,
-	iconBroadcastOn,
 	iconChevronDown,
 	iconCloudClock,
 	iconConsole,
@@ -69,7 +70,15 @@ interface StateBadgeProps {
 
 function StateBadge({ state, small }: StateBadgeProps) {
 	if (state === "ready") {
-		return;
+		return (
+			<Tooltip label="Instance is active and utilizing resources">
+				<Indicator
+					processing
+					color="green"
+					ml="xs"
+				/>
+			</Tooltip>
+		);
 	}
 
 	const [color, text] = BADGE_INFO[state];

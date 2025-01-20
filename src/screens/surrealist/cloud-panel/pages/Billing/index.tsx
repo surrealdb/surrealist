@@ -186,7 +186,7 @@ export function BillingPage() {
 
 					<Section
 						title="Usage charges"
-						description="The current months usage charges for this organization"
+						description="The current month's charges for this organization"
 					>
 						<Paper
 							p="xl"
@@ -249,8 +249,7 @@ export function BillingPage() {
 								c="slate"
 								mt="sm"
 							>
-								This amount is an indication, the final amount may vary based on
-								other factors
+								This amount is an estimation, final amounts may vary.
 							</Text>
 						</Paper>
 					</Section>
