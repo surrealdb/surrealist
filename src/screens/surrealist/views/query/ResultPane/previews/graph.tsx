@@ -41,7 +41,7 @@ const CURVE_SCALE = 0.15;
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
 const RECORDS = new Gap<RecordId[]>();
 const QUERY = new PreparedQuery(
-	"SELECT VALUE [in, id, out] FROM $records<->(? WHERE out IN $records AND in IN $records).flatten() WHERE __ == true",
+	"SELECT VALUE [in, id, out] FROM array::flatten($records<->(? WHERE out IN $records AND in IN $records)) WHERE __ == true",
 	{ records: RECORDS },
 );
 
