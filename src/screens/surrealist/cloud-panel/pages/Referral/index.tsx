@@ -248,6 +248,7 @@ export function ReferralPage() {
 						<Progress
 							mt="md"
 							value={progress}
+							bg={isLight ? "slate.2" : "slate"}
 						/>
 					</Box>
 
