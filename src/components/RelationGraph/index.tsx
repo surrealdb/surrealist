@@ -112,6 +112,18 @@ export function RelationGraph({
 		sigmaRef.current?.getCamera().animatedReset();
 	});
 
+	const handleFocus = useStable((node: RecordId) => {
+		const instance = sigmaRef.current;
+
+		if (instance) {
+			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
+
+			if (display) {
+				instance.getCamera().animate({ ...display, ratio: 0.15 });
+			}
+		}
+	});
+
 	// Apply theme changes
 	useEffect(() => {
 		const sigma = sigmaRef.current;
@@ -240,6 +252,7 @@ export function RelationGraph({
 					node={display}
 					inspect={inspect}
 					queryEdges={queryEdges}
+					onFocusNode={handleFocus}
 					onHideMenu={onHide}
 					onHideNode={onHideNode}
 					onExpandNode={onExpandNode}

@@ -4,12 +4,18 @@ import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
 import { unique } from "radash";
 import { Gap, PreparedQuery, RecordId } from "surrealdb";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { iconChevronRight, iconCopy, iconEyeOff, iconRelation, iconSearch } from "~/util/icons";
+import {
+	iconChevronRight,
+	iconCopy,
+	iconEyeOff,
+	iconFullscreen,
+	iconRelation,
+	iconSearch,
+} from "~/util/icons";
 import { Icon } from "../Icon";
 import { NodeCircle } from "./node";
 import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";
 import { useIsLight } from "~/hooks/theme";
-import { Shortcut } from "../Shortcut";
 
 type Edges = { from: string[]; to: string[] };
 
@@ -24,6 +30,7 @@ export interface NodeContextMenuProps {
 	inspect: (record: RecordId) => void;
 	queryEdges: (record: RecordId) => GraphEdges;
 	onExpandNode?: (expansion: GraphExpansion) => void;
+	onFocusNode?: (node: RecordId) => void;
 	onHideNode?: (node: RecordId) => void;
 	onHideMenu: () => void;
 }
@@ -33,6 +40,7 @@ export function NodeContextMenu({
 	inspect,
 	queryEdges,
 	onExpandNode,
+	onFocusNode,
 	onHideNode,
 	onHideMenu,
 }: NodeContextMenuProps) {
@@ -90,6 +98,12 @@ export function NodeContextMenu({
 				icon={<Icon path={iconEyeOff} />}
 				onHide={onHideMenu}
 				onClick={() => onHideNode?.(node.record)}
+			/>
+			<ContextMenuItem
+				title="Focus record"
+				icon={<Icon path={iconFullscreen} />}
+				onHide={onHideMenu}
+				onClick={() => onFocusNode?.(node.record)}
 			/>
 			<ContextMenuItem
 				title="Copy record id"
