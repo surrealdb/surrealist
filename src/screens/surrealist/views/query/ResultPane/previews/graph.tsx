@@ -19,7 +19,7 @@ import { indexParallelEdgesIndex } from "@sigma/edge-curve";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
-import { isArray, isObject } from "radash";
+import { isArray, isNumber, isObject } from "radash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Gap, PreparedQuery, RecordId, equals } from "surrealdb";
 import { Icon } from "~/components/Icon";
@@ -39,6 +39,14 @@ import { type PreviewProps } from ".";
 
 function jitter(value?: number) {
 	return value !== undefined ? value + Math.random() * 0.000001 : value;
+}
+
+function getCurvature(index: number, maxIndex: number): number {
+	if (maxIndex <= 0) throw new Error("Invalid maxIndex");
+	if (index < 0) return -getCurvature(-index, maxIndex);
+	const amplitude = 3.5;
+	const maxCurvature = amplitude * (1 - Math.exp(-maxIndex / amplitude)) * 0.15;
+	return (maxCurvature * index) / maxIndex;
 }
 
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
@@ -241,7 +249,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 					record: attr.record,
 					label: attr.record.tb,
 					type: "arrow",
-					curvature: straightLines ? 0.01 : 0.15,
+					curvature: straightLines ? 0.01 : undefined,
 				});
 			}
 		});
@@ -255,14 +263,26 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			}
 		}
 
-		// Compute parallel edge indices
-		indexParallelEdgesIndex(displayGraph);
+		// Compute edge curvature
+		if (!straightLines) {
+			indexParallelEdgesIndex(displayGraph);
+
+			displayGraph.forEachEdge((edge, { parallelIndex, parallelMaxIndex }) => {
+				if (!isNumber(parallelIndex) || !isNumber(parallelMaxIndex)) return;
+
+				displayGraph.mergeEdgeAttributes(edge, {
+					curvature: getCurvature(parallelIndex, parallelMaxIndex),
+				});
+			});
+		}
 
 		// Update sidebar statistics
 		computeStatistics();
 
 		// Mark as ready
 		setInitializing(false);
+
+		console.log([...displayGraph.edgeEntries()]);
 	});
 
 	const toggleSupervising = useStable(() => {
