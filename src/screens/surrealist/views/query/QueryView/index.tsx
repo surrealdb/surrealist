@@ -134,9 +134,7 @@ export function QueryView() {
 	});
 
 	const variablesOrientation = orientation === "horizontal" ? "vertical" : "horizontal";
-
 	const [hasLineNumbers] = useSetting("appearance", "queryLineNumbers");
-	const hideLineNumbers = adapter instanceof MiniAdapter ? adapter.nonumbers : !hasLineNumbers;
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
@@ -177,7 +175,7 @@ export function QueryView() {
 								editor={editor}
 								showVariables={showVariables}
 								selection={selection}
-								lineNumbers={!hideLineNumbers}
+								lineNumbers={hasLineNumbers}
 								onSaveQuery={handleSaveRequest}
 								setShowVariables={setShowVariables}
 								onSelectionChange={setSelection}
@@ -197,7 +195,7 @@ export function QueryView() {
 										isValid={variablesValid}
 										setIsValid={setVariablesValid}
 										closeVariables={closeVariables}
-										lineNumbers={!hideLineNumbers}
+										lineNumbers={hasLineNumbers}
 										editor={editor}
 									/>
 								</Panel>

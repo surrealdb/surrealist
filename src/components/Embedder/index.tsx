@@ -40,7 +40,7 @@ export const DEFAULT_STATE: EmbedState = {
 	variables: "{}",
 	orientation: "vertical",
 	transparent: false,
-	nonumbers: false,
+	linenumbers: false,
 };
 
 const DATASET_OPTIONS = [
@@ -69,7 +69,10 @@ function SectionTitle({
 				{children}
 			</Text>
 			{help && (
-				<Tooltip label={help} openDelay={300}>
+				<Tooltip
+					label={help}
+					openDelay={300}
+				>
 					<Box>
 						<Icon
 							path={iconHelp}
@@ -96,7 +99,7 @@ export interface EmbedState {
 	theme: MantineColorScheme;
 	orientation: Orientation;
 	transparent?: boolean;
-	nonumbers?: boolean;
+	linenumbers?: boolean;
 }
 
 export interface EmbedderProps {
@@ -116,7 +119,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
-		const { dataset, setup, query, variables, orientation, theme, transparent, nonumbers } =
+		const { dataset, setup, query, variables, orientation, theme, transparent, linenumbers } =
 			state;
 
 		if (setup.length > 0) {
@@ -147,8 +150,8 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 			search.append("transparent", "true");
 		}
 
-		if (nonumbers) {
-			search.append("nonumbers", "true");
+		if (linenumbers) {
+			search.append("linenumbers", "true");
 		}
 
 		const url = new URL(location.toString());
@@ -290,11 +293,11 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 						}}
 					/>
 					<Checkbox
-						label="Hide line numbers"
-						checked={state.nonumbers}
+						label="Show line numbers"
+						checked={state.linenumbers}
 						onChange={(e) => {
 							setState((draft) => {
-								draft.nonumbers = e.target.checked;
+								draft.linenumbers = e.target.checked;
 							});
 						}}
 					/>

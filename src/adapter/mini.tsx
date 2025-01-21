@@ -18,7 +18,7 @@ export class MiniAdapter extends BrowserAdapter {
 	public appearance: MiniAppearance = "normal";
 	public corners: string | undefined = undefined;
 	public transparent = false;
-	public nonumbers = false;
+	public linenumbers = false;
 	public uniqueRef = "";
 	public autorun = false;
 
@@ -41,7 +41,7 @@ export class MiniAdapter extends BrowserAdapter {
 			corners,
 			transparent,
 			orientation,
-			nonumbers,
+			linenumbers,
 			autorun,
 			// deprecated
 			compact,
@@ -149,8 +149,8 @@ export class MiniAdapter extends BrowserAdapter {
 		}
 
 		// Hide line numbers
-		if (nonumbers !== undefined) {
-			this.nonumbers = bool(nonumbers);
+		if (linenumbers !== undefined) {
+			this.linenumbers = bool(linenumbers);
 		}
 
 		return {
