@@ -2,11 +2,11 @@ import { type PropsWithChildren, type ReactNode, createContext, useContext, useS
 
 import { Button, type ButtonProps, Divider, Group, Text, TextInput } from "@mantine/core";
 import { Modal } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
-import { useInputState } from "@mantine/hooks";
 
 type DynamicNode<T> = ReactNode | ((value: T) => ReactNode);
 

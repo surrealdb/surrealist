@@ -113,7 +113,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 			<Stack>
 				<Text>
 					You are about to delete this instance. This will cause all associated resources
-					to be destroyed
+					to be destroyed.
 				</Text>
 				<Alert
 					title="Important"
@@ -124,8 +124,8 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Alert>
 			</Stack>
 		),
-		confirmText: "Delete",
-		title: "Delete instance",
+		confirmText: "Deleting",
+		title: `Delete ${value.name}`,
 		verification: "delete",
 		onConfirm: async () => {
 			try {
