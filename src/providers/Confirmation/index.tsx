@@ -107,6 +107,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 						<TextInput
 							value={confirm}
 							onChange={setConfirm}
+							placeholder={options.verification}
 							label={
 								options?.verifyText ?? (
 									<>Please type "{options.verification}" to confirm</>
