@@ -46,7 +46,7 @@ const QUERY = new PreparedQuery(
 );
 
 function jitter(value?: number) {
-	return value !== undefined ? value + Math.random() * 0.000001 : value;
+	return value !== undefined ? value + (Math.random() - 0.5) * 0.000001 : value;
 }
 
 function curvature(index: number, maxIndex: number): number {
@@ -316,17 +316,19 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		for (const node of expandables) {
 			const id = node.toString();
 
-			universeGraph.addNode(id, {
-				record: node,
-			});
+			if (!universeGraph.hasNode(id)) {
+				universeGraph.addNode(id, {
+					record: node,
+				});
 
-			const m = {
-				record: node,
-				x: toJitter ? jitter(x) : x,
-				y: toJitter ? jitter(y) : y,
-			};
+				const m = {
+					record: node,
+					x: toJitter ? jitter(x) : x,
+					y: toJitter ? jitter(y) : y,
+				};
 
-			displayGraph.addNode(id, m);
+				displayGraph.addNode(id, m);
+			}
 		}
 
 		rewireNodes();
