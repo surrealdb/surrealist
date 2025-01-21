@@ -249,6 +249,16 @@ export function RelationGraph({
 			event.preventSigmaDefault();
 		});
 
+		instance.on("doubleClickNode", ({ node, event }) => {
+			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
+
+			handleFocus(display.record);
+
+			event.original.preventDefault();
+			event.original.stopPropagation();
+			event.preventSigmaDefault();
+		});
+
 		instance.on("rightClickNode", ({ node, event }) => {
 			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
 			const origin = event.original as unknown as MouseEvent;
