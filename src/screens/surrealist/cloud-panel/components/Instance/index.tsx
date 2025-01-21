@@ -126,7 +126,8 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 		),
 		confirmText: "Deleting",
 		title: `Delete ${value.name}`,
-		verification: "delete",
+		verification: value.name,
+		verifyText: "Type the instance name to confirm",
 		onConfirm: async () => {
 			try {
 				await fetchAPI(`/instances/${value.id}`, {

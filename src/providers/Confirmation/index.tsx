@@ -7,6 +7,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
+import { isSimilar } from "~/util/helpers";
 
 type DynamicNode<T> = ReactNode | ((value: T) => ReactNode);
 
@@ -19,6 +20,7 @@ interface ConfirmOptions<T> {
 	confirmText?: DynamicNode<T>;
 	confirmProps?: ButtonProps;
 	verification?: string;
+	verifyText?: ReactNode;
 	onDismiss?: () => void;
 	onConfirm: (value: T) => void;
 }
@@ -84,6 +86,8 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 		options?.onConfirm?.(value);
 	});
 
+	const isVerified = options?.verification ? isSimilar(confirm, options.verification) : true;
+
 	return (
 		<ConfirmContext.Provider value={{ setConfirmation }}>
 			{children}
@@ -91,10 +95,10 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 			<Modal
 				opened={isConfirming}
 				onClose={onDissmiss}
+				zIndex={210}
 				title={
 					<PrimaryTitle>{applyNode(options?.title ?? DEFAULT_TITLE, value)}</PrimaryTitle>
 				}
-				zIndex={210}
 			>
 				<Text fz="lg">{applyNode(options?.message, value)}</Text>
 				{options?.verification && (
@@ -103,7 +107,11 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 						<TextInput
 							value={confirm}
 							onChange={setConfirm}
-							label={<>Please type "{options.verification}" to confirm</>}
+							label={
+								options?.verifyText ?? (
+									<>Please type "{options.verification}" to confirm</>
+								)
+							}
 							autoFocus
 							onKeyDown={(event) => {
 								if (event.key === "Enter") {
@@ -126,7 +134,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 					<Button
 						color="red"
 						onClick={onConfirm}
-						disabled={options?.verification ? confirm !== options.verification : false}
+						disabled={!isVerified}
 						{...options?.confirmProps}
 					>
 						{applyNode(options?.confirmText ?? DEFAULT_CONFIRM, value)}

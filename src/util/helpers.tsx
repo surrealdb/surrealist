@@ -484,3 +484,13 @@ export function isHostLocal(hostname: string) {
 		hostname.startsWith("::1")
 	);
 }
+
+/**
+ * Returns true when the two strings are similar, being case, whitespace, and diacritic insensitive
+ */
+export function isSimilar(a: string, b: string) {
+	const left = a.normalize("NFD").replace(/[\u0300-\u036f\s]/g, "");
+	const right = b.normalize("NFD").replace(/[\u0300-\u036f\s]/g, "");
+
+	return left.toLowerCase() === right.toLowerCase();
+}
