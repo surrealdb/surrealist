@@ -1,11 +1,12 @@
 import { type PropsWithChildren, type ReactNode, createContext, useContext, useState } from "react";
 
-import { Button, type ButtonProps, Group, Text } from "@mantine/core";
+import { Button, type ButtonProps, Divider, Group, Text, TextInput } from "@mantine/core";
 import { Modal } from "@mantine/core";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useActiveKeys } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
+import { useInputState } from "@mantine/hooks";
 
 type DynamicNode<T> = ReactNode | ((value: T) => ReactNode);
 
@@ -17,6 +18,7 @@ interface ConfirmOptions<T> {
 	dismissProps?: ButtonProps;
 	confirmText?: DynamicNode<T>;
 	confirmProps?: ButtonProps;
+	verification?: string;
 	onDismiss?: () => void;
 	onConfirm: (value: T) => void;
 }
@@ -51,6 +53,7 @@ const DEFAULT_CONFIRM = "Continue";
 export function ConfirmationProvider({ children }: PropsWithChildren) {
 	const [isConfirming, setIsConfirming] = useState(false);
 	const [options, setOptions] = useState<ConfirmOptions<any>>();
+	const [confirm, setConfirm] = useInputState("");
 	const [value, setValue] = useState<any>();
 
 	const isShifting = useActiveKeys("Shift");
@@ -62,6 +65,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 
 		setValue(value);
 		setOptions(options);
+		setConfirm("");
 
 		if (options.skippable && isShifting) {
 			options?.onConfirm?.(value);
@@ -93,6 +97,22 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 				zIndex={210}
 			>
 				<Text fz="lg">{applyNode(options?.message, value)}</Text>
+				{options?.verification && (
+					<>
+						<Divider my="lg" />
+						<TextInput
+							value={confirm}
+							onChange={setConfirm}
+							label={<>Please type "{options.verification}" to confirm</>}
+							autoFocus
+							onKeyDown={(event) => {
+								if (event.key === "Enter") {
+									onConfirm();
+								}
+							}}
+						/>
+					</>
+				)}
 				<Group mt="xl">
 					<Button
 						onClick={onDissmiss}
@@ -106,6 +126,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 					<Button
 						color="red"
 						onClick={onConfirm}
+						disabled={options?.verification ? confirm !== options.verification : false}
 						{...options?.confirmProps}
 					>
 						{applyNode(options?.confirmText ?? DEFAULT_CONFIRM, value)}
