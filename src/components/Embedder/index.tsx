@@ -22,8 +22,8 @@ import {
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useImmer } from "use-immer";
-import { DATASETS, ORIENTATIONS, THEMES } from "~/constants";
-import type { ColorScheme, Orientation } from "~/types";
+import { DATASETS, ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
+import type { ColorScheme, Orientation, ResultMode } from "~/types";
 import { dedent } from "~/util/dedent";
 import { isDevelopment, isProduction } from "~/util/environment";
 import { iconHelp } from "~/util/icons";
@@ -41,6 +41,8 @@ export const DEFAULT_STATE: EmbedState = {
 	orientation: "vertical",
 	transparent: false,
 	linenumbers: false,
+	autorun: false,
+	resultmode: "combined",
 };
 
 const DATASET_OPTIONS = [
@@ -100,6 +102,8 @@ export interface EmbedState {
 	orientation: Orientation;
 	transparent?: boolean;
 	linenumbers?: boolean;
+	autorun?: boolean;
+	resultmode?: ResultMode;
 }
 
 export interface EmbedderProps {
@@ -119,8 +123,18 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
-		const { dataset, setup, query, variables, orientation, theme, transparent, linenumbers } =
-			state;
+		const {
+			dataset,
+			setup,
+			query,
+			variables,
+			orientation,
+			theme,
+			transparent,
+			linenumbers,
+			autorun,
+			resultmode,
+		} = state;
 
 		if (setup.length > 0) {
 			search.append("setup", setup);
@@ -154,6 +168,14 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 			search.append("linenumbers", "true");
 		}
 
+		if (autorun) {
+			search.append("autorun", "true");
+		}
+
+		if (resultmode) {
+			search.append("resultmode", resultmode);
+		}
+
 		const url = new URL(location.toString());
 
 		if (isProduction) {
@@ -162,7 +184,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 			url.port = "";
 		}
 
-		url.pathname = isDevelopment ? "mini/run/index.html" : "mini";
+		url.pathname = isDevelopment ? "tools/mini-run.html" : "mini";
 		url.search = search.toString();
 
 		return url.toString();
@@ -281,6 +303,18 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 				/>
 			</Box>
 			<Box>
+				<SectionTitle help="The default selected result mode">Result mode</SectionTitle>
+				<Select
+					data={RESULT_MODES}
+					value={state.resultmode}
+					onChange={(e) => {
+						setState((draft) => {
+							draft.resultmode = e as ResultMode;
+						});
+					}}
+				/>
+			</Box>
+			<Box>
 				<SectionTitle help="Miscellaneous options for the mini">Options</SectionTitle>
 				<Stack>
 					<Checkbox
@@ -298,6 +332,15 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 						onChange={(e) => {
 							setState((draft) => {
 								draft.linenumbers = e.target.checked;
+							});
+						}}
+					/>
+					<Checkbox
+						label="Automatically run query"
+						checked={state.autorun}
+						onChange={(e) => {
+							setState((draft) => {
+								draft.autorun = e.target.checked;
 							});
 						}}
 					/>
