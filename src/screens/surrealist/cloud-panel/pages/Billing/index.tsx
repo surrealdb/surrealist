@@ -146,11 +146,11 @@ export function BillingPage() {
 		});
 	});
 
-	const usageCharge = measureComputeCost(usageQuery.data ?? []);
 	const couponCount = couponQuery.data?.length ?? 0;
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
+	const usageCharge = measureComputeCost(usageQuery.data ?? []);
 
 	return (
 		<Box
@@ -229,7 +229,7 @@ export function BillingPage() {
 														c="bright"
 														fw={500}
 													>
-														${charge.cost.toFixed(2)}
+														${charge.cost.toFixed(3)}
 													</Text>{" "}
 													<Text span>
 														for {charge.hours.toString()} compute hours
