@@ -46,7 +46,7 @@ const QUERY = new PreparedQuery(
 );
 
 function jitter(value?: number) {
-	return value !== undefined ? value + (Math.random() - 0.5) * 0.000001 : value;
+	return value !== undefined ? value + (Math.random() - 0.5) * 0.001 : value;
 }
 
 function curvature(index: number, maxIndex: number): number {
@@ -110,6 +110,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		// Reset visibility
 		setHiddenEdges([]);
 		setHiddenTables([]);
+		setColors(new Map());
 
 		// Add initial nodes
 		for (const record of records) {
@@ -152,16 +153,29 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 		const tableList = Array.from(tables).sort();
 		const edgeList = Array.from(edges).sort();
-		const paletteSize = Math.max(tableList.length, 1);
-		const palette = iwanthue(paletteSize, {
+		const colorMap = new Map<string, string>();
+		const palette = iwanthue(9, {
 			seed: "surrealist",
 			colorSpace: SURREAL_SPACE,
 		});
 
-		const colorMap = new Map<string, string>();
+		// Assign previously used colors
+		for (const table of tableList) {
+			const curr = colors.get(table);
 
-		for (const [i, table] of tableList.entries()) {
-			colorMap.set(table, palette[i]);
+			if (curr) {
+				colorMap.set(table, curr);
+				palette.splice(palette.indexOf(curr), 1);
+			}
+		}
+
+		// Assign new colors
+		let i = 0;
+
+		for (const table of tableList) {
+			if (!colorMap.has(table)) {
+				colorMap.set(table, palette[i++ % palette.length]);
+			}
 		}
 
 		setColors(colorMap);
@@ -382,7 +396,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				...inferSettings(displayGraph),
 				edgeWeightInfluence: 1,
 				scalingRatio: 2,
-				slowDown: 500,
+				slowDown: 2000,
 			},
 		});
 
