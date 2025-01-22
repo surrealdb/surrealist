@@ -313,10 +313,10 @@ export function RelationGraph({
 						onClick: handleZoomOut,
 					},
 					{
-						key: "zoom-out",
-						icon: <Icon path={iconMagnifyMinus} />,
-						title: "Reset graph",
-						onClick: handleZoomOut,
+						key: "view",
+						icon: <Icon path={iconFullscreen} />,
+						title: "Fit viewport",
+						onClick: handleResetZoom,
 					},
 					{
 						key: "reset",
