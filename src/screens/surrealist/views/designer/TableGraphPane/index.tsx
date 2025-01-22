@@ -8,6 +8,7 @@ import {
 	Group,
 	HoverCard,
 	Loader,
+	Paper,
 	Popover,
 	Select,
 	SimpleGrid,
@@ -42,9 +43,12 @@ import {
 	iconFullscreen,
 	iconHelp,
 	iconImage,
+	iconMagnifyMinus,
+	iconMagnifyPlus,
 	iconPlus,
 	iconRefresh,
 	iconRelation,
+	iconReset,
 } from "~/util/icons";
 
 import {
@@ -132,7 +136,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const ref = useRef<ElementRef<"div">>(null);
 	const isLight = useIsLight();
 
-	const { fitView, getViewport, setViewport } = useReactFlow();
+	const { fitView, zoomIn, zoomOut, getViewport, setViewport } = useReactFlow();
 	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
 	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -295,6 +299,18 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		});
 	});
 
+	const handleZoomIn = useStable(() => {
+		zoomIn({ duration: 150 });
+	});
+
+	const handleZoomOut = useStable(() => {
+		zoomOut({ duration: 150 });
+	});
+
+	const handleResetZoom = useStable(() => {
+		fitView({ duration: 150 });
+	});
+
 	const isViewActive = activeView?.id === "designer";
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema or setting change
@@ -340,6 +356,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			title="Table Graph"
 			icon={iconRelation}
 			style={{ overflow: "hidden" }}
+			withDivider={false}
 			leftSection={
 				!designerTableList && (
 					<ActionButton
@@ -466,7 +483,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				</Group>
 			}
 		>
-			<div style={{ position: "relative", width: "100%", height: "100%" }}>
+			<Paper
+				flex="1"
+				pos="relative"
+				bg={isLight ? "slate.1" : "slate.7"}
+			>
 				<ReactFlow
 					ref={ref}
 					fitView
@@ -491,14 +512,29 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						{
 							key: "create",
 							icon: <Icon path={iconPlus} />,
-							title: "Create table...",
+							title: "Create table",
 							onClick: openTableCreator,
+						},
+						{
+							key: "divider",
+						},
+						{
+							key: "zoom-in",
+							icon: <Icon path={iconMagnifyPlus} />,
+							title: "Zoom in",
+							onClick: handleZoomIn,
+						},
+						{
+							key: "zoom-out",
+							icon: <Icon path={iconMagnifyMinus} />,
+							title: "Zoom out",
+							onClick: handleZoomOut,
 						},
 						{
 							key: "view",
 							icon: <Icon path={iconFullscreen} />,
 							title: "Fit viewport",
-							onClick: () => fitView({ duration: 300 }),
+							onClick: handleResetZoom,
 						},
 						{
 							key: "refresh",
@@ -521,8 +557,44 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						},
 					])}
 				>
-					{!showBox && <Background color={themeColor(isLight ? "slate.2" : "slate.5")} />}
+					{!showBox && <Background color={themeColor(isLight ? "slate.3" : "slate.5")} />}
 				</ReactFlow>
+
+				<Paper
+					withBorder
+					pos="absolute"
+					right={12}
+					top={12}
+					shadow="sm"
+					p="xs"
+				>
+					<Stack gap="xs">
+						<ActionButton
+							label="Zoom in"
+							onClick={handleZoomIn}
+						>
+							<Icon path={iconMagnifyPlus} />
+						</ActionButton>
+						<ActionButton
+							label="Zoom out"
+							onClick={handleZoomOut}
+						>
+							<Icon path={iconMagnifyMinus} />
+						</ActionButton>
+						<ActionButton
+							label="Fit viewport"
+							onClick={handleResetZoom}
+						>
+							<Icon path={iconFullscreen} />
+						</ActionButton>
+						<ActionButton
+							label="Reset graph"
+							onClick={renderGraph}
+						>
+							<Icon path={iconReset} />
+						</ActionButton>
+					</Stack>
+				</Paper>
 
 				{isExporting && (
 					<Stack
@@ -571,7 +643,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						</Button>
 					</Stack>
 				)}
-			</div>
+			</Paper>
 		</ContentPane>
 	);
 }
