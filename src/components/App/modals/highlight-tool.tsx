@@ -1,15 +1,16 @@
-import { Button, Divider, Modal, SimpleGrid, Stack } from "@mantine/core";
+import { Button, Divider, Group, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { s } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { RadioSelect } from "~/components/RadioSelect";
+import { DRIVERS } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import type { ColorScheme, SyntaxTheme } from "~/types";
+import { CodeLang, type ColorScheme, type SyntaxTheme } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { renderHighlighting } from "~/util/highlighting";
 import { formatQuery } from "~/util/surrealql";
@@ -17,10 +18,11 @@ import { formatQuery } from "~/util/surrealql";
 function Render({
 	value,
 	theme,
+	lang,
 	syntaxTheme,
-}: { value: string; theme: ColorScheme; syntaxTheme: SyntaxTheme }) {
+}: { value: string; theme: ColorScheme; lang: CodeLang; syntaxTheme: SyntaxTheme }) {
 	const render = useStable(() => {
-		const rendered = renderHighlighting(value, "surrealql", theme, syntaxTheme);
+		const rendered = renderHighlighting(value, lang, theme, syntaxTheme);
 		const clipboardItem = new ClipboardItem({
 			"text/html": new Blob([rendered], { type: "text/html" }),
 			"text/plain": new Blob([rendered], { type: "text/plain" }),
@@ -42,10 +44,19 @@ function Render({
 
 export function HighlightToolModal() {
 	const [value, onChange] = useState("");
+	const [lang, setLang] = useState<CodeLang>("cli");
 	const [isOpen, openedHandle] = useBoolean();
 	const [_, setFeatureFlags] = useFeatureFlags();
 	const [theme, setTheme] = useState<ColorScheme>("dark");
 	const syntaxTheme = useConfigStore((state) => state.settings.appearance.syntaxTheme);
+
+	const languages = useMemo(() => {
+		return DRIVERS.map((driver) => ({
+			label: driver.name,
+			value: driver.id,
+			icon: driver.icon,
+		}));
+	}, []);
 
 	const format = useCallback(() => {
 		onChange(formatQuery(value));
@@ -57,7 +68,7 @@ export function HighlightToolModal() {
 		}
 	}, [isOpen]);
 
-	const extensions = useMemo(() => [surrealql()], []);
+	const extensions = useMemo(() => (lang === "cli" ? [surrealql()] : []), [lang]);
 
 	useIntent("highlight-tool", () => {
 		openedHandle.open();
@@ -74,7 +85,23 @@ export function HighlightToolModal() {
 				trapFocus={false}
 				withCloseButton
 				size="xl"
-				title={<PrimaryTitle>Highlight Tool</PrimaryTitle>}
+				title={
+					<>
+						<PrimaryTitle flex={1}>Highlight Tool</PrimaryTitle>
+						<Select
+							data={languages}
+							value={lang}
+							onChange={setLang as any}
+							mr="xl"
+						/>
+					</>
+				}
+				styles={{
+					title: {
+						flex: 1,
+						display: "flex",
+					},
+				}}
 			>
 				<Stack>
 					<CodeEditor
@@ -104,6 +131,7 @@ export function HighlightToolModal() {
 						<Render
 							value={value}
 							theme={theme}
+							lang={lang}
 							syntaxTheme={syntaxTheme}
 						/>
 					</SimpleGrid>
