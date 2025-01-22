@@ -312,3 +312,12 @@ body.mod .cm-record-link:hover {
 		background-color: var(--mantine-color-slate-1);
 	}
 }
+
+.mantine-ThemeIcon-root[data-variant="gradient"] {
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	background-origin: border-box;
+
+	@include light {
+		border: unset;
+	}
+}
