@@ -1,7 +1,9 @@
 import classes from "../style.module.scss";
 
 import {
+	ActionIcon,
 	Box,
+	Button,
 	Center,
 	Checkbox,
 	Group,
@@ -11,7 +13,6 @@ import {
 	Skeleton,
 	Stack,
 	Text,
-	UnstyledButton,
 } from "@mantine/core";
 
 import { indexParallelEdgesIndex } from "@sigma/edge-curve";
@@ -33,8 +34,17 @@ import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { __throw } from "~/util/helpers";
-import { iconBraces, iconFilter, iconRelation } from "~/util/icons";
+import {
+	iconBraces,
+	iconChevronDown,
+	iconDotsVertical,
+	iconFilter,
+	iconRelation,
+	iconText,
+} from "~/util/icons";
 import { type PreviewProps } from ".";
+import { themeColor } from "~/util/mantine";
+import { ActionButton } from "~/components/ActionButton";
 
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;
@@ -77,9 +87,11 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	const [tables, setTables] = useState<string[]>([]);
 	const [edges, setEdges] = useState<string[]>([]);
 	const [colors, setColors] = useState<Map<string, string>>(new Map());
+	const [aliases, setAliases] = useState<Map<string, string>>(new Map());
 
 	const { success, result } = responses[selected] ?? { result: null };
 	const textSize = Math.floor(15 * (editorScale / 100));
+	const disabled = themeColor(isLight ? "slate.2" : "slate.6");
 
 	// Refresh the graph based on the query result
 	const refreshGraph = useStable(async (result: any) => {
@@ -111,6 +123,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		setHiddenEdges([]);
 		setHiddenTables([]);
 		setColors(new Map());
+		setAliases(new Map());
 
 		// Add initial nodes
 		for (const record of records) {
@@ -507,77 +520,136 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 							</Box>
 							<Box>
 								<Label mb="xs">Tables</Label>
-								<Stack gap="xs">
-									{isInitialized ? (
-										<>
-											<Skeleton h={18} />
-											<Skeleton h={18} />
-											<Skeleton h={18} />
-										</>
-									) : (
-										<>
-											{tables.map((table) => {
-												const isHidden = hiddenTables.includes(table);
+								{tables.length === 0 ? (
+									<Skeleton visible={isInitialized}>
+										<Text c="slate">No tables found</Text>
+									</Skeleton>
+								) : (
+									<Stack
+										gap={2}
+										mt="md"
+									>
+										{tables.map((table) => {
+											const isHidden = hiddenTables.includes(table);
 
-												return (
-													<Group
-														key={table}
-														component={UnstyledButton}
-														gap="sm"
-														w="100%"
-													>
-														<Checkbox
-															size="xs"
-															label={table}
-															flex={1}
-															checked={!isHidden}
-															onChange={() =>
-																handleToggleTable(table)
+											return (
+												<Button
+													key={table}
+													p={4}
+													ta="start"
+													color="slate"
+													variant="subtle"
+													onClick={() => handleToggleTable(table)}
+													className={classes.graphTable}
+													styles={{
+														label: {
+															flex: 1,
+														},
+													}}
+													leftSection={
+														<NodeCircle
+															size={12}
+															color={
+																isHidden
+																	? disabled
+																	: colors.get(table)
 															}
 														/>
-														{!isHidden && (
-															<NodeCircle
-																color={colors.get(table)}
-																size={10}
-															/>
-														)}
+													}
+												>
+													<Group
+														gap="sm"
+														w="100%"
+														ml="xs"
+													>
+														<Box
+															flex={1}
+															opacity={isHidden ? 0.6 : 1}
+														>
+															<Text
+																truncate
+																c="bright"
+															>
+																{table}
+															</Text>
+															{/* <Text
+																fz="xs"
+																mt={-2}
+															>
+																id
+															</Text> */}
+														</Box>
+														{/* {!isHidden && (
+															<ActionButton
+																size="sm"
+																variant="transparent"
+																component="div"
+																className={classes.graphTableAlias}
+																label="Table options"
+															>
+																<Icon path={iconDotsVertical} />
+															</ActionButton>
+														)} */}
 													</Group>
-												);
-											})}
-										</>
-									)}
-								</Stack>
+												</Button>
+											);
+										})}
+									</Stack>
+								)}
 							</Box>
 							<Box>
 								<Label mb="xs">Edges</Label>
-								<Stack gap="xs">
-									{isInitialized ? (
-										<>
-											<Skeleton h={18} />
-											<Skeleton h={18} />
-											<Skeleton h={18} />
-										</>
-									) : (
-										<>
-											{edges.map((edge) => (
-												<Group
+								{edges.length === 0 ? (
+									<Skeleton visible={isInitialized}>
+										<Text c="slate">No edges found</Text>
+									</Skeleton>
+								) : (
+									<Stack
+										gap={2}
+										mt="md"
+									>
+										{edges.map((edge) => {
+											const isHidden = hiddenEdges.includes(edge);
+
+											return (
+												<Button
 													key={edge}
-													component={UnstyledButton}
-													gap="sm"
-													w="100%"
+													p={4}
+													ta="start"
+													color="slate"
+													variant="subtle"
+													onClick={() => handleToggleEdge(edge)}
+													styles={{
+														label: {
+															flex: 1,
+														},
+													}}
+													leftSection={
+														<Icon
+															path={iconRelation}
+															c={isHidden ? disabled : undefined}
+														/>
+													}
 												>
-													<Checkbox
-														size="xs"
-														label={edge}
-														flex={1}
-														checked={!hiddenEdges.includes(edge)}
-														onChange={() => handleToggleEdge(edge)}
-													/>
-												</Group>
-											))}
-										</>
-									)}
-								</Stack>
+													<Group
+														gap="sm"
+														w="100%"
+														ml="xs"
+													>
+														<Text
+															flex={1}
+															truncate
+															c="bright"
+															opacity={isHidden ? 0.6 : 1}
+														>
+															{edge}
+														</Text>
+													</Group>
+												</Button>
+											);
+										})}
+									</Stack>
+								)}
 							</Box>
 							<Box>
 								<Label mb="xs">Options</Label>

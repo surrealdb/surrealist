@@ -1,11 +1,11 @@
-import { Box } from "@mantine/core";
+import { Box, BoxProps } from "@mantine/core";
 
-export interface NodeCircleProps {
+export interface NodeCircleProps extends BoxProps {
 	color?: string;
 	size?: number;
 }
 
-export function NodeCircle({ color, size }: NodeCircleProps) {
+export function NodeCircle({ color, size, ...other }: NodeCircleProps) {
 	const colorValue = color || "var(--mantine-color-slate-5)";
 
 	return (
@@ -13,7 +13,7 @@ export function NodeCircle({ color, size }: NodeCircleProps) {
 			bd={`1.5px solid ${colorValue}`}
 			style={{ borderRadius: "50%" }}
 			p={1.5}
-			ml={5}
+			{...other}
 		>
 			<Box
 				bg={colorValue}
