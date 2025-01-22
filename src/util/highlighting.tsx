@@ -1,7 +1,7 @@
 import { highlightCode } from "@lezer/highlight";
 import { adapter } from "~/adapter";
 import { createStyleHighlighter } from "~/editor";
-import type { ColorScheme, SyntaxTheme } from "~/types";
+import type { CodeLang, ColorScheme, SyntaxTheme } from "~/types";
 
 import { StreamLanguage } from "@codemirror/language";
 import { csharp, java } from "@codemirror/legacy-modes/mode/clike";
@@ -67,9 +67,7 @@ export function renderHighlighting(
 	}
 
 	const rendered = document.createElement("pre");
-	const textColor = getComputedStyle(document.documentElement).getPropertyValue(
-		"--mantine-color-text",
-	);
+	const textColor = colorScheme === "dark" ? "#c9c9c9" : "#000000";
 
 	function emit(text: string, classes?: string) {
 		const textNode = document.createTextNode(text);
