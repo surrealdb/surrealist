@@ -196,6 +196,11 @@ export function RelationGraph({
 					res.color = isLight ? theme.colors.slate[2] : theme.colors.slate[6];
 				}
 
+				// Force highlight
+				if (focus.neighbours.has(node)) {
+					res.highlighted = true;
+				}
+
 				return res;
 			},
 			edgeReducer: (edge, data) => {
