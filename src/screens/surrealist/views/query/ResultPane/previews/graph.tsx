@@ -38,6 +38,7 @@ import { __throw, plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { type PreviewProps } from ".";
+import { useConfigStore } from "~/stores/config";
 
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;
@@ -60,9 +61,16 @@ function curvature(index: number, maxIndex: number): number {
 }
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
+	const { updateCurrentConnection } = useConfigStore.getState();
+
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();
-	const graphLabels = useConnection((c) => c?.graphLabels ?? {});
+
+	const [graphLabels, showStray, straightEdges] = useConnection((c) => [
+		c?.graphLabels ?? {},
+		c?.graphShowStray ?? false,
+		c?.graphStraightEdges ?? false,
+	]);
 
 	const [editorScale] = useSetting("appearance", "editorScale");
 	const [isInitialized, setInitializing] = useState(true);
@@ -76,8 +84,6 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	const [nodeCount, setNodeCount] = useState(0);
 	const [edgeCount, setEdgeCount] = useState(0);
 
-	const [showStray, setShowStray] = useState(false);
-	const [straightLines, setStraightLines] = useState(false);
 	const [hiddenTables, toggleHiddenTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleHiddenEdge, setHiddenEdges] = useToggleList();
 	const [tables, setTables] = useState<string[]>([]);
@@ -344,7 +350,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				weight: attr.weight,
 				record: attr.record,
 				label: attr.record.tb,
-				type: straightLines ? "straight" : "curved",
+				type: straightEdges ? "straight" : "curved",
 			};
 
 			if (displayGraph.hasEdge(edge)) {
@@ -371,7 +377,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		}
 
 		// Compute edge curvature
-		if (!straightLines) {
+		if (!straightEdges) {
 			indexParallelEdgesIndex(displayGraph);
 
 			displayGraph.forEachEdge((edge, { parallelIndex, parallelMaxIndex }) => {
@@ -466,12 +472,12 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	const updateShowStray = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		setShowStray(e.target.checked);
+		updateCurrentConnection({ graphShowStray: e.target.checked });
 		synchronizeGraph();
 	});
 
 	const updateStraightLines = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		setStraightLines(e.target.checked);
+		updateCurrentConnection({ graphStraightEdges: e.target.checked });
 		synchronizeGraph();
 	});
 
@@ -744,8 +750,9 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 									<Checkbox
 										ml={4}
 										flex={1}
+										c="bright"
 										label="Straight edges"
-										checked={straightLines}
+										checked={straightEdges}
 										onChange={updateStraightLines}
 									/>
 									<Button

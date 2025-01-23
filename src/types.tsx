@@ -126,6 +126,8 @@ export interface Connection {
 	graphqlVariables: string;
 	graphqlShowVariables: boolean;
 	graphLabels?: Record<string, string[]>;
+	graphShowStray?: boolean;
+	graphStraightEdges?: boolean;
 }
 
 export interface Template {
