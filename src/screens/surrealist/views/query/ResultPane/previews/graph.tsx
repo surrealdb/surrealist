@@ -132,8 +132,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			}
 		}
 
-		rewireNodes();
-		applyLabels();
+		// Refresh the visible nodes
+		refreshNodes();
 	});
 
 	// Compute graph statistics
@@ -193,7 +193,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	// Relation wiring mutation
-	const rewireNodes = useLater(async () => {
+	const rewireNodes = useStable(async () => {
 		setWiring(true);
 
 		const nodes = universeGraph.nodeEntries();
@@ -222,7 +222,6 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		}
 
 		indexMetadata();
-		synchronizeGraph();
 		setWiring(false);
 	});
 
@@ -275,8 +274,13 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		// Update universe nodes
 		universeGraph.forEachNode((node) => {
 			universeGraph.setNodeAttribute(node, "display", labels[node]);
+			console.log("Apply labels", node, labels[node]);
 		});
+	});
 
+	// Refresh the nodes, including rewiring, applying labels, and synchronizing changes
+	const refreshNodes = useStable(async () => {
+		await Promise.all([rewireNodes(), applyLabels()]);
 		synchronizeGraph();
 	});
 
@@ -384,34 +388,38 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	const handleExpand = useStable(async ({ record, direction, edges }: GraphExpansion) => {
-		const query = `SELECT VALUE id FROM $current${direction}(${edges.join(",")})${direction}?`;
+		try {
+			const query = `SELECT VALUE id FROM $current${direction}(${edges.join(",")})${direction}?`;
 
-		const { x, y } = displayGraph.getNodeAttributes(record.toString());
-		const [response] = await executeQuery(query, { current: record });
-		const result = response.result as RecordId[];
-		const expandables = result.filter((r) => !universeGraph.hasNode(r.toString()));
-		const toJitter = expandables.length > 1;
+			const { x, y } = displayGraph.getNodeAttributes(record.toString());
+			const [response] = await executeQuery(query, { current: record });
+			const result = response.result as RecordId[];
+			const expandables = result.filter((r) => !universeGraph.hasNode(r.toString()));
+			const toJitter = expandables.length > 1;
 
-		for (const node of expandables) {
-			const id = node.toString();
+			for (const node of expandables) {
+				const id = node.toString();
 
-			if (!universeGraph.hasNode(id)) {
-				universeGraph.addNode(id, {
-					record: node,
-				});
+				if (!universeGraph.hasNode(id)) {
+					universeGraph.addNode(id, {
+						record: node,
+					});
 
-				const m = {
-					record: node,
-					x: toJitter ? jitter(x) : x,
-					y: toJitter ? jitter(y) : y,
-				};
+					const m = {
+						record: node,
+						x: toJitter ? jitter(x) : x,
+						y: toJitter ? jitter(y) : y,
+					};
 
-				displayGraph.addNode(id, m);
+					displayGraph.addNode(id, m);
+				}
 			}
-		}
 
-		rewireNodes();
-		applyLabels();
+			// Refresh the visible nodes
+			refreshNodes();
+		} catch (error) {
+			console.error(error);
+		}
 	});
 
 	const handleQueryEdges = useStable((record: RecordId) => {
@@ -450,7 +458,10 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	const handleOpenLabels = useStable(() => {
-		openGraphLabelEditorModal(applyLabels);
+		openGraphLabelEditorModal(async () => {
+			await applyLabels();
+			synchronizeGraph();
+		});
 	});
 
 	// Construct the graph
