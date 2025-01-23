@@ -274,7 +274,6 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		// Update universe nodes
 		universeGraph.forEachNode((node) => {
 			universeGraph.setNodeAttribute(node, "display", labels[node]);
-			console.log("Apply labels", node, labels[node]);
 		});
 	});
 
@@ -286,56 +285,81 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 	// Synchronize the universe graph to display graph
 	const synchronizeGraph = useLater(() => {
-		const positions = new Map<string, [number, number]>();
-
-		// TODO in-place patching
-
-		displayGraph.forEachNode((node, attr) => {
-			positions.set(node, [attr.x || 0, attr.y || 0]);
-		});
-
-		// Clear the display graph
-		displayGraph.clear();
-
 		const skipTables = new Set(hiddenTables);
 		const skipEdges = new Set(hiddenEdges);
 
-		// Synchronize nodes
-		universeGraph.forEachNode((node, attr) => {
-			if (skipTables.has(attr.record.tb)) {
-				return;
+		// Append or update nodes
+		for (const { node, attributes } of universeGraph.nodeEntries()) {
+			if (skipTables.has(attributes.record.tb)) {
+				if (displayGraph.hasNode(node)) {
+					displayGraph.dropNode(node);
+				}
+
+				continue;
 			}
 
-			const [x, y] = positions.get(node) ?? [Math.random(), Math.random()];
+			const data = {
+				record: attributes.record,
+				label: attributes.display || node,
+				color: colors.get(attributes.record.tb),
+			};
 
-			displayGraph.addNode(node, {
-				x,
-				y,
-				record: attr.record,
-				label: attr.display || node,
-				color: colors.get(attr.record.tb),
-				size: 9,
-			});
-		});
+			if (displayGraph.hasNode(node)) {
+				displayGraph.mergeNodeAttributes(node, data);
+			} else {
+				displayGraph.addNode(node, {
+					...data,
+					x: Math.random(),
+					y: Math.random(),
+					size: 9,
+				});
+			}
+		}
 
-		// Synchronize edges
+		// Drop removed nodes
+		for (const node of displayGraph.nodes()) {
+			if (!universeGraph.hasNode(node)) {
+				displayGraph.dropNode(node);
+			}
+		}
+
+		// Append or update edges
 		universeGraph.forEachEdge((edge, attr) => {
 			if (skipEdges.has(attr.record.tb)) {
+				if (displayGraph.hasEdge(edge)) {
+					displayGraph.dropEdge(edge);
+				}
+
 				return;
 			}
 
 			const src = universeGraph.source(edge);
 			const tgt = universeGraph.target(edge);
 
-			if (displayGraph.hasNode(src) && displayGraph.hasNode(tgt)) {
-				displayGraph.addDirectedEdgeWithKey(edge, src, tgt, {
-					weight: attr.weight,
-					record: attr.record,
-					label: attr.record.tb,
-					type: straightLines ? "straight" : "curved",
-				});
+			if (!displayGraph.hasNode(src) || !displayGraph.hasNode(tgt)) {
+				return;
+			}
+
+			const data = {
+				weight: attr.weight,
+				record: attr.record,
+				label: attr.record.tb,
+				type: straightLines ? "straight" : "curved",
+			};
+
+			if (displayGraph.hasEdge(edge)) {
+				displayGraph.mergeEdgeAttributes(edge, data);
+			} else {
+				displayGraph.addDirectedEdgeWithKey(edge, src, tgt, data);
 			}
 		});
+
+		// Drop removed edges
+		for (const edge of displayGraph.edges()) {
+			if (!universeGraph.hasEdge(edge)) {
+				displayGraph.dropEdge(edge);
+			}
+		}
 
 		// Optionally hide stray records
 		if (!showStray) {
@@ -351,14 +375,13 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			indexParallelEdgesIndex(displayGraph);
 
 			displayGraph.forEachEdge((edge, { parallelIndex, parallelMaxIndex }) => {
-				if (!isNumber(parallelIndex) || !isNumber(parallelMaxIndex)) return;
-
-				const curve = curvature(parallelIndex, parallelMaxIndex);
-
-				displayGraph.mergeEdgeAttributes(edge, {
-					type: curve === 0 ? "straight" : "curved",
-					curvature: curve,
-				});
+				if (isNumber(parallelIndex) && isNumber(parallelMaxIndex)) {
+					displayGraph.setEdgeAttribute(
+						edge,
+						"curvature",
+						curvature(parallelIndex, parallelMaxIndex),
+					);
+				}
 			});
 		}
 
@@ -388,38 +411,34 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	const handleExpand = useStable(async ({ record, direction, edges }: GraphExpansion) => {
-		try {
-			const query = `SELECT VALUE id FROM $current${direction}(${edges.join(",")})${direction}?`;
+		const query = `SELECT VALUE id FROM $current${direction}(${edges.join(",")})${direction}?`;
 
-			const { x, y } = displayGraph.getNodeAttributes(record.toString());
-			const [response] = await executeQuery(query, { current: record });
-			const result = response.result as RecordId[];
-			const expandables = result.filter((r) => !universeGraph.hasNode(r.toString()));
-			const toJitter = expandables.length > 1;
+		const { x, y } = displayGraph.getNodeAttributes(record.toString());
+		const [response] = await executeQuery(query, { current: record });
+		const result = response.result as RecordId[];
+		const expandables = result.filter((r) => !universeGraph.hasNode(r.toString()));
+		const toJitter = expandables.length > 1;
 
-			for (const node of expandables) {
-				const id = node.toString();
+		for (const node of expandables) {
+			const id = node.toString();
 
-				if (!universeGraph.hasNode(id)) {
-					universeGraph.addNode(id, {
-						record: node,
-					});
+			if (!universeGraph.hasNode(id)) {
+				universeGraph.addNode(id, {
+					record: node,
+				});
 
-					const m = {
-						record: node,
-						x: toJitter ? jitter(x) : x,
-						y: toJitter ? jitter(y) : y,
-					};
+				const m = {
+					record: node,
+					x: toJitter ? jitter(x) : x,
+					y: toJitter ? jitter(y) : y,
+				};
 
-					displayGraph.addNode(id, m);
-				}
+				displayGraph.addNode(id, m);
 			}
-
-			// Refresh the visible nodes
-			refreshNodes();
-		} catch (error) {
-			console.error(error);
 		}
+
+		// Refresh the visible nodes
+		refreshNodes();
 	});
 
 	const handleQueryEdges = useStable((record: RecordId) => {
