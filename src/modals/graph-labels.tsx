@@ -41,9 +41,18 @@ function GraphLabelEditor() {
 
 	const mappedTables = useMemo(() => {
 		return Object.entries(mapping)
-			.map(([table, labels]) => ({ table, labels }))
+			.map(([table, labels]) => {
+				const schema = tables.find((t) => t.schema.name === table);
+				const fields = schema?.fields?.map((f) => f.name) ?? [];
+
+				return {
+					table,
+					labels,
+					fields,
+				};
+			})
 			.sort((a, b) => a.table.localeCompare(b.table));
-	}, [mapping]);
+	}, [mapping, tables]);
 
 	const combobox = useCombobox({
 		onDropdownClose: () => {
@@ -83,7 +92,7 @@ function GraphLabelEditor() {
 				{mappedTables.length === 0 ? (
 					<Text c="slate">No label mappings defined yet</Text>
 				) : (
-					mappedTables.map(({ table, labels }, i) => (
+					mappedTables.map(({ table, labels, fields }, i) => (
 						<Paper
 							key={i}
 							p="md"
@@ -109,10 +118,11 @@ function GraphLabelEditor() {
 							</Group>
 							<TagsInput
 								mt="md"
-								placeholder="property..."
+								placeholder="Enter property name..."
 								value={labels}
 								splitChars={[",", " ", "|"]}
 								acceptValueOnBlur
+								data={fields}
 								onRemove={(value) => {
 									updateCurrentConnection({
 										graphLabels: {

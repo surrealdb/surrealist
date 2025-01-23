@@ -190,7 +190,6 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-Input-input {
-	// transition: all .2s;
 	background-color: var(--mantine-color-body);
 
 	&:not(:focus-within):not([data-variant="unstyled"]) {
@@ -200,17 +199,9 @@ body.mod .cm-record-link:hover {
 			border-color: var(--mantine-color-slate-1);
 		}
 	}
-
-	&:hover,
-	&:focus-within {
-		background-color: var(--mantine-color-slate-7);
-
-		@include light {
-			background-color: var(--mantine-color-slate-0);
-		}
-	}
 }
 
+.mantine-TagsInput-option,
 .mantine-Select-option {
 	border-radius: var(--mantine-radius-xs);
 
@@ -324,8 +315,13 @@ body.mod .cm-record-link:hover {
 
 .mantine-TagsInput-pill {
 	background-color: var(--mantine-color-slate-6);
+	border-radius: var(--mantine-radius-xs);
 
 	@include light {
 		background-color: var(--mantine-color-slate-1);
 	}
+}
+
+.mantine-TagsInput-pillsList {
+	margin-left: -4px;
 }

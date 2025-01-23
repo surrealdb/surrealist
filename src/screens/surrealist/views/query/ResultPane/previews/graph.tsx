@@ -20,7 +20,7 @@ import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { isArray, isNumber, isObject } from "radash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Gap, PreparedQuery, RecordId, equals } from "surrealdb";
+import { Gap, PreparedQuery, RecordId, equals, escapeIdent } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { RelationGraph, newRelationalGraph } from "~/components/RelationGraph";
@@ -229,12 +229,17 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	// Fetch and apply node labels
 	const applyLabels = useStable(async () => {
 		const groups = new Map<string, RecordId[]>();
+		let labels: Record<string, string> = {};
 		let queries = "";
 
 		// Group nodes per table
 		for (const node of universeGraph.nodes()) {
 			const record = universeGraph.getNodeAttributes(node).record;
 			const table = record.tb;
+
+			if (!graphLabels[table]?.length) {
+				continue;
+			}
 
 			if (!groups.has(table)) {
 				groups.set(table, []);
@@ -243,32 +248,34 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			groups.get(table)?.push(record);
 		}
 
-		// Ordered groupings
-		const ordered = Array.from(groups.entries());
-		const params: Record<string, RecordId[]> = {};
+		// Fetch labels if tables are present
+		if (groups.size > 0) {
+			const iterator = Array.from(groups.entries()).entries();
+			const params: Record<string, RecordId[]> = {};
 
-		// Table selection
-		for (const [index, [table, records]] of ordered.entries()) {
-			const properties = graphLabels[table] ?? [];
+			for (const [index, [table, records]] of iterator) {
+				const properties = graphLabels[table] ?? [];
 
-			if (properties.length > 0) {
-				queries += `(select value [id, ${properties.join(" || ")}] from $tb_${index}),`;
-				params[`tb_${index}`] = records;
+				if (properties.length > 0) {
+					const selection = properties.map((p) => escapeIdent(p)).join(" || ");
+
+					queries += `(select value [id, ${selection}] from $tb_${index}),`;
+					params[`tb_${index}`] = records;
+				}
 			}
+
+			const [response] = await executeQuery(
+				`object::from_entries(array::flatten([${queries}]))`,
+				params,
+			);
+
+			labels = response.result;
 		}
 
-		// Fetch labels
-		const [response] = await executeQuery(
-			`object::from_entries(array::flatten([${queries}]))`,
-			params,
-		);
-
-		// Update nodes
-		const labels = response.result as Record<string, string>;
-
-		for (const [node, display] of Object.entries(labels)) {
-			universeGraph.setNodeAttribute(node, "display", display);
-		}
+		// Update universe nodes
+		universeGraph.forEachNode((node) => {
+			universeGraph.setNodeAttribute(node, "display", labels[node]);
+		});
 
 		synchronizeGraph();
 	});
@@ -276,6 +283,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	// Synchronize the universe graph to display graph
 	const synchronizeGraph = useLater(() => {
 		const positions = new Map<string, [number, number]>();
+
+		// TODO in-place patching
 
 		displayGraph.forEachNode((node, attr) => {
 			positions.set(node, [attr.x || 0, attr.y || 0]);
@@ -300,8 +309,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				y,
 				record: attr.record,
 				label: attr.display || node,
-				size: 9,
 				color: colors.get(attr.record.tb),
+				size: 9,
 			});
 		});
 
@@ -402,6 +411,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		}
 
 		rewireNodes();
+		applyLabels();
 	});
 
 	const handleQueryEdges = useStable((record: RecordId) => {
