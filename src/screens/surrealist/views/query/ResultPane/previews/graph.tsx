@@ -34,11 +34,11 @@ import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
 import { openGraphLabelEditorModal } from "~/modals/graph-labels";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { useConfigStore } from "~/stores/config";
 import { __throw, plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { type PreviewProps } from ".";
-import { useConfigStore } from "~/stores/config";
 
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;
