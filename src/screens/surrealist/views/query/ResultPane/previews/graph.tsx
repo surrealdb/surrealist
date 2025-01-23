@@ -564,10 +564,9 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 						inset={0}
 					>
 						<Stack
-							gap="xl"
 							p="lg"
+							gap="xl"
 							flex={1}
-							h="100%"
 						>
 							<Box>
 								<Label mb="xs">Statistics</Label>
@@ -728,7 +727,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 									</Stack>
 								)}
 							</Box>
-							<Box>
+							<Box pb="lg">
 								<Label mb="xs">Appearance</Label>
 								<Stack gap="xs">
 									<Checkbox
