@@ -569,7 +569,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 							flex={1}
 						>
 							<Box>
-								<Label mb="xs">Statistics</Label>
+								<Label mb="xs">Graph</Label>
 								<Stack gap="xs">
 									<Skeleton visible={isInitialized}>
 										<Group gap="xs">
@@ -604,7 +604,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								</Stack>
 							</Box>
 							<Box>
-								<Label mb="xs">Tables</Label>
+								<Label>Tables</Label>
 								{tables.length === 0 ? (
 									<Skeleton visible={isInitialized}>
 										<Text c="slate">No tables found</Text>
@@ -612,7 +612,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								) : (
 									<Stack
 										gap={2}
-										mt="md"
+										mt="xs"
 									>
 										{tables.map((table) => {
 											const isHidden = hiddenTables.includes(table);
@@ -674,7 +674,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								)}
 							</Box>
 							<Box>
-								<Label mb="xs">Edges</Label>
+								<Label>Edges</Label>
 								{edges.length === 0 ? (
 									<Skeleton visible={isInitialized}>
 										<Text c="slate">No edges found</Text>
@@ -682,7 +682,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								) : (
 									<Stack
 										gap={2}
-										mt="md"
+										mt="xs"
 									>
 										{edges.map((edge) => {
 											const isHidden = hiddenEdges.includes(edge);
@@ -728,19 +728,23 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								)}
 							</Box>
 							<Box pb="lg">
-								<Label mb="xs">Appearance</Label>
-								<Stack gap="xs">
+								<Label>Appearance</Label>
+								<Stack
+									gap="md"
+									mt="md"
+								>
 									<Checkbox
-										size="xs"
-										label="Stray records"
+										ml={4}
 										flex={1}
+										c="bright"
+										label="Stray records"
 										checked={showStray}
 										onChange={updateShowStray}
 									/>
 									<Checkbox
-										size="xs"
-										label="Straight edges"
+										ml={4}
 										flex={1}
+										label="Straight edges"
 										checked={straightLines}
 										onChange={updateStraightLines}
 									/>
