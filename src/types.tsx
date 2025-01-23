@@ -125,6 +125,7 @@ export interface Connection {
 	graphqlQuery: string;
 	graphqlVariables: string;
 	graphqlShowVariables: boolean;
+	graphLabels?: Record<string, string[]>;
 }
 
 export interface Template {

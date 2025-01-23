@@ -22,7 +22,7 @@ import {
 import { historyField } from "@codemirror/commands";
 import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
-import { ActionIcon, Group, HoverCard, Stack, ThemeIcon, Tooltip } from "@mantine/core";
+import { Group, HoverCard, ThemeIcon } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { trim } from "radash";

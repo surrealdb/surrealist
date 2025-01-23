@@ -494,3 +494,10 @@ export function isSimilar(a: string, b: string) {
 
 	return left.toLowerCase() === right.toLowerCase();
 }
+
+/**
+ * Pluralize the given word based on the count
+ */
+export function plural(count: number, singular: string, plural = `${singular}s`) {
+	return count === 1 ? singular : plural;
+}

@@ -1,7 +1,6 @@
 import classes from "../style.module.scss";
 
 import {
-	ActionIcon,
 	Box,
 	Button,
 	Center,
@@ -33,26 +32,21 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { __throw } from "~/util/helpers";
-import {
-	iconBraces,
-	iconChevronDown,
-	iconDotsVertical,
-	iconFilter,
-	iconRelation,
-	iconText,
-} from "~/util/icons";
+import { __throw, plural } from "~/util/helpers";
+import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { type PreviewProps } from ".";
 import { themeColor } from "~/util/mantine";
-import { ActionButton } from "~/components/ActionButton";
+import { openGraphLabelEditorModal } from "~/modals/graph-labels";
+import { useConnection } from "~/hooks/connection";
 
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
-const RECORDS = new Gap<RecordId[]>();
-const QUERY = new PreparedQuery(
-	"SELECT VALUE [in, id, out] FROM array::flatten($records<->(? WHERE out IN $records AND in IN $records)) WHERE __ == true",
-	{ records: RECORDS },
+
+const WIRE_RECORDS = new Gap<RecordId[]>();
+const WIRE_QUERY = new PreparedQuery(
+	"SELECT VALUE [in, id, out] FROM array::distinct(array::flatten($records<->(? WHERE out IN $records AND in IN $records))) WHERE __ == true",
+	{ records: WIRE_RECORDS },
 );
 
 function jitter(value?: number) {
@@ -68,6 +62,8 @@ function curvature(index: number, maxIndex: number): number {
 export function GraphPreview({ responses, selected }: PreviewProps) {
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();
+	const graphLabels = useConnection((c) => c?.graphLabels ?? {});
+
 	const [editorScale] = useSetting("appearance", "editorScale");
 	const [isInitialized, setInitializing] = useState(true);
 	const [isWiring, setWiring] = useState(true);
@@ -136,8 +132,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			}
 		}
 
-		// Fetch node relations
 		rewireNodes();
+		applyLabels();
 	});
 
 	// Compute graph statistics
@@ -202,7 +198,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 		const nodes = universeGraph.nodeEntries();
 		const records = Array.from(nodes).map((e) => e.attributes.record);
-		const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
+		const [response] = await executeQuery(WIRE_QUERY, [WIRE_RECORDS.fill(records)]);
 		const relations = response.result as [RecordId, RecordId, RecordId][];
 
 		universeGraph.clearEdges();
@@ -228,6 +224,53 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		indexMetadata();
 		synchronizeGraph();
 		setWiring(false);
+	});
+
+	// Fetch and apply node labels
+	const applyLabels = useStable(async () => {
+		const groups = new Map<string, RecordId[]>();
+		let queries = "";
+
+		// Group nodes per table
+		for (const node of universeGraph.nodes()) {
+			const record = universeGraph.getNodeAttributes(node).record;
+			const table = record.tb;
+
+			if (!groups.has(table)) {
+				groups.set(table, []);
+			}
+
+			groups.get(table)?.push(record);
+		}
+
+		// Ordered groupings
+		const ordered = Array.from(groups.entries());
+		const params: Record<string, RecordId[]> = {};
+
+		// Table selection
+		for (const [index, [table, records]] of ordered.entries()) {
+			const properties = graphLabels[table] ?? [];
+
+			if (properties.length > 0) {
+				queries += `(select value [id, ${properties.join(" || ")}] from $tb_${index}),`;
+				params[`tb_${index}`] = records;
+			}
+		}
+
+		// Fetch labels
+		const [response] = await executeQuery(
+			`object::from_entries(array::flatten([${queries}]))`,
+			params,
+		);
+
+		// Update nodes
+		const labels = response.result as Record<string, string>;
+
+		for (const [node, display] of Object.entries(labels)) {
+			universeGraph.setNodeAttribute(node, "display", display);
+		}
+
+		synchronizeGraph();
 	});
 
 	// Synchronize the universe graph to display graph
@@ -256,7 +299,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				x,
 				y,
 				record: attr.record,
-				label: node,
+				label: attr.display || node,
 				size: 9,
 				color: colors.get(attr.record.tb),
 			});
@@ -396,6 +439,10 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		synchronizeGraph();
 	});
 
+	const handleOpenLabels = useStable(() => {
+		openGraphLabelEditorModal(applyLabels);
+	});
+
 	// Construct the graph
 	useEffect(() => {
 		refreshGraph(result);
@@ -531,6 +578,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 									>
 										{tables.map((table) => {
 											const isHidden = hiddenTables.includes(table);
+											const labels = graphLabels[table]?.length ?? 0;
 
 											return (
 												<Button
@@ -562,34 +610,24 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 														w="100%"
 														ml="xs"
 													>
-														<Box
+														<Text
+															truncate
+															c="bright"
 															flex={1}
 															opacity={isHidden ? 0.6 : 1}
 														>
-															<Text
-																truncate
-																c="bright"
-															>
-																{table}
-															</Text>
-															{/* <Text
-																fz="xs"
-																mt={-2}
-															>
-																id
-															</Text> */}
-														</Box>
-														{/* {!isHidden && (
-															<ActionButton
-																size="sm"
-																variant="transparent"
-																component="div"
-																className={classes.graphTableAlias}
-																label="Table options"
-															>
-																<Icon path={iconDotsVertical} />
-															</ActionButton>
-														)} */}
+															{table}
+															{labels > 0 && (
+																<Text
+																	fz="xs"
+																	span
+																	c="slate"
+																	ml={4}
+																>
+																	{`(${labels} ${plural(labels, "label")})`}
+																</Text>
+															)}
+														</Text>
 													</Group>
 												</Button>
 											);
@@ -652,11 +690,11 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								)}
 							</Box>
 							<Box>
-								<Label mb="xs">Options</Label>
+								<Label mb="xs">Appearance</Label>
 								<Stack gap="xs">
 									<Checkbox
 										size="xs"
-										label="Show stray records"
+										label="Stray records"
 										flex={1}
 										checked={showStray}
 										onChange={updateShowStray}
@@ -668,6 +706,16 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 										checked={straightLines}
 										onChange={updateStraightLines}
 									/>
+									<Button
+										color="slate"
+										variant="light"
+										size="xs"
+										mt="md"
+										leftSection={<Icon path={iconTag} />}
+										onClick={handleOpenLabels}
+									>
+										Configure labels
+									</Button>
 								</Stack>
 							</Box>
 						</Stack>

@@ -6,6 +6,7 @@ export type RelationalGraph = MultiDirectedGraph<RelationGraphNode, RelationGrap
 
 export interface RelationGraphNode extends Partial<NodeDisplayData> {
 	record: RecordId;
+	display?: string;
 }
 
 export interface RelationGraphEdge extends Partial<EdgeDisplayData> {

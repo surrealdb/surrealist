@@ -321,3 +321,11 @@ body.mod .cm-record-link:hover {
 		border: unset;
 	}
 }
+
+.mantine-TagsInput-pill {
+	background-color: var(--mantine-color-slate-6);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
+}

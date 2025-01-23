@@ -219,9 +219,6 @@ export const MANTINE_THEME = createTheme({
 		}),
 		TagsInput: TagsInput.extend({
 			styles: {
-				pill: {
-					backgroundColor: "var(--mantine-color-surreal-6)",
-				},
 				input: {
 					display: "flex",
 				},
