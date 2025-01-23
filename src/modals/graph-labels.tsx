@@ -35,7 +35,10 @@ function GraphLabelEditor() {
 
 	const unmappedTables = useMemo(() => {
 		return tables.filter(
-			(table) => !(table.schema.name in mapping) && fuzzyMatch(search, table.schema.name),
+			(table) =>
+				!(table.schema.name in mapping) &&
+				table.schema.kind.kind !== "NORMAL" &&
+				fuzzyMatch(search, table.schema.name),
 		);
 	}, [tables, mapping, search]);
 
