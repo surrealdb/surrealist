@@ -427,13 +427,12 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 					record: node,
 				});
 
-				const m = {
+				displayGraph.addNode(id, {
 					record: node,
 					x: toJitter ? jitter(x) : x,
 					y: toJitter ? jitter(y) : y,
-				};
-
-				displayGraph.addNode(id, m);
+					size: 9,
+				});
 			}
 		}
 
