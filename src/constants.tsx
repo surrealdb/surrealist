@@ -121,16 +121,16 @@ export const RESULT_MODES: Listable<ResultMode>[] = [
 		description: "Inspect each result individually",
 	},
 	{
-		label: "Table",
-		value: "table",
-		icon: iconDataTable,
-		description: "Render query results in a table",
-	},
-	{
 		label: "Graph",
 		value: "graph",
 		icon: iconRelation,
 		description: "Visualize query results in a graph",
+	},
+	{
+		label: "Table",
+		value: "table",
+		icon: iconDataTable,
+		description: "Render query results in a table",
 	},
 	{
 		label: "Live",
