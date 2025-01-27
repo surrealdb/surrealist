@@ -154,7 +154,7 @@ export const MANTINE_THEME = createTheme({
 		Overlay: Overlay.extend({
 			defaultProps: {
 				blur: 5,
-				color: "#06060d",
+				color: "#0E0C14",
 			},
 		}),
 		Popover: Popover.extend({
