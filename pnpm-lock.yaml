@@ -52,6 +52,9 @@ importers:
       '@fig/lezer-bash':
         specifier: ^1.2.5
         version: 1.2.5
+      '@intercom/messenger-js-sdk':
+        specifier: ^0.0.14
+        version: 0.0.14
       '@lezer/common':
         specifier: ^1.2.1
         version: 1.2.3
@@ -1222,6 +1225,9 @@ packages:
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
     cpu: [x64]
     os: [win32]
+
+  '@intercom/messenger-js-sdk@0.0.14':
+    resolution: {integrity: sha512-2dH4BDAh9EI90K7hUkAdZ76W79LM45Sd1OBX7t6Vzy8twpNiQ5X+7sH9G5hlJlkSGnf+vFWlFcy9TOYAyEs1hA==}
 
   '@jridgewell/gen-mapping@0.3.5':
     resolution: {integrity: sha512-IzL8ZoEDIBRWEzlCcRhOaCupYyN5gdIK+Q6fbFdPDg6HqX6jpkItn7DFIpW9LQzXG6Df9sA7+OKnq0qlz/GaQg==}
@@ -3954,6 +3960,8 @@ snapshots:
 
   '@img/sharp-win32-x64@0.33.5':
     optional: true
+
+  '@intercom/messenger-js-sdk@0.0.14': {}
 
   '@jridgewell/gen-mapping@0.3.5':
     dependencies:

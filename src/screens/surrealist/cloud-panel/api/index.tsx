@@ -6,11 +6,11 @@ import type {
 	CloudRegion,
 } from "~/types";
 
-import posthog from "posthog-js";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { getCloudEndpoints } from "./endpoints";
+import { captureMetric } from "~/util/metrics";
 
 export interface APIRequestInit extends RequestInit {
 	management?: boolean;
@@ -55,7 +55,7 @@ export async function fetchAPI<T = unknown>(
 			reason = message;
 		}
 
-		posthog.capture("cloud_api_error", {
+		captureMetric("cloud_api_error", {
 			status: response.status,
 			endpoint: path,
 			message: reason,

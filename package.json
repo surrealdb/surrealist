@@ -35,6 +35,7 @@
 		"@dnd-kit/sortable": "^8.0.0",
 		"@dnd-kit/utilities": "^3.2.2",
 		"@fig/lezer-bash": "^1.2.5",
+		"@intercom/messenger-js-sdk": "^0.0.14",
 		"@lezer/common": "^1.2.1",
 		"@lezer/go": "^1.0.0",
 		"@lezer/highlight": "^1.2.1",

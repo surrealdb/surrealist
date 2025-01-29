@@ -23,7 +23,6 @@ import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import posthog from "posthog-js";
 import { Fragment, useEffect, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -32,6 +31,7 @@ import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
+import { captureMetric } from "~/util/metrics";
 
 interface NewsItem {
 	id: string;
@@ -56,7 +56,7 @@ export function NewsFeedDrawer() {
 	const readArticle = (item: NewsItem) => {
 		setReading(item);
 		readingHandle.open();
-		posthog.capture("newsfeed_read", {
+		captureMetric("newsfeed_read", {
 			article: item.id,
 		});
 	};
@@ -69,7 +69,7 @@ export function NewsFeedDrawer() {
 
 	useEffect(() => {
 		if (isOpen) {
-			posthog.capture("newsfeed_open");
+			captureMetric("newsfeed_open");
 		}
 	}, [isOpen]);
 

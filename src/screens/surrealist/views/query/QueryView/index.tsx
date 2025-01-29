@@ -16,12 +16,9 @@ import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
-import posthog from "posthog-js";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { adapter } from "~/adapter";
-import { MiniAdapter } from "~/adapter/mini";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
@@ -30,7 +27,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
 import { executeEditorQuery } from "~/editor/query";
-import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
 import { useActiveQuery, useConnection, useSavedQueryTags } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
@@ -48,6 +44,7 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
+import { captureMetric } from "~/util/metrics";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -114,8 +111,7 @@ export function QueryView() {
 		});
 
 		isSavingHandle.close();
-
-		posthog.capture("query_save");
+		captureMetric("query_save");
 	});
 
 	const showVariables = !!active?.showVariables;

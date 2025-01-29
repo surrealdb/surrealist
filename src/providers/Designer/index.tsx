@@ -1,5 +1,4 @@
 import { useDisclosure } from "@mantine/hooks";
-import posthog from "posthog-js";
 import { type PropsWithChildren, createContext, useContext, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { useMinimumVersion } from "~/hooks/connection";
@@ -13,6 +12,7 @@ import { syncConnectionSchema } from "~/util/schema";
 import { SDB_2_0_0 } from "~/util/versions";
 import { DesignDrawer } from "./drawer";
 import { buildDefinitionQueries, isSchemaValid } from "./helpers";
+import { captureMetric } from "~/util/metrics";
 
 type DesignFunction = (table: string) => void;
 type StopDesignFunction = () => void;
@@ -80,7 +80,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 		saveHandle.track();
 		designingHandle.open();
 
-		posthog.capture("open_table_designer");
+		captureMetric("open_table_designer");
 	});
 
 	const closeDrawer = useStable((force?: boolean) => {

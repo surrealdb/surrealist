@@ -7,6 +7,7 @@ import { useAppRouter } from "./hooks/routing";
 import { useTitleSync } from "./hooks/title";
 import { useViewSync } from "./hooks/view";
 import { useWindowSettings } from "./hooks/window";
+import { useIntercom } from "./hooks/intercom";
 
 export function Globals(): ReactNode {
 	useModKeyTracker();
@@ -18,6 +19,7 @@ export function Globals(): ReactNode {
 	useTitleSync();
 	useViewSync();
 	useAppRouter();
+	useIntercom();
 
 	return;
 }

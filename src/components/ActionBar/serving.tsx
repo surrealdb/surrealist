@@ -1,4 +1,3 @@
-import posthog from "posthog-js";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useIntent } from "~/hooks/routing";
@@ -11,6 +10,7 @@ import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
+import { captureMetric } from "~/util/metrics";
 
 export function DatabaseServing() {
 	const [hasStarted, setHasStarted] = useState(false);
@@ -37,7 +37,7 @@ export function DatabaseServing() {
 				stopServing();
 			});
 
-			posthog.capture("serve_start");
+			captureMetric("serve_start");
 		}
 
 		setHasStarted(true);

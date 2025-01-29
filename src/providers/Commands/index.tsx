@@ -1,7 +1,6 @@
 export * from "./types";
 
 import { noop } from "@mantine/core";
-import posthog from "posthog-js";
 import { type PropsWithChildren, createContext, useContext, useMemo } from "react";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
@@ -9,6 +8,7 @@ import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory } from "./types";
+import { captureMetric } from "~/util/metrics";
 
 const CommandsContext = createContext<{
 	categories: CommandCategory[];
@@ -94,7 +94,7 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
-		posthog.capture("execute_command", {
+		captureMetric("execute_command", {
 			command: cmd.name,
 		});
 
