@@ -602,8 +602,6 @@ export async function activateDatabase(namespace: string, database: string) {
 			lastNamespace: "",
 			lastDatabase: "",
 		});
-
-		return;
 	}
 
 	// Select a database
