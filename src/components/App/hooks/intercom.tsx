@@ -7,7 +7,7 @@ export function useIntercom() {
 
 	const isReady = authState !== "unknown" && authState !== "loading";
 
-	if (isReady /*&& !import.meta.env.DEV*/) {
+	if (isReady && !import.meta.env.DEV) {
 		Intercom({
 			app_id: import.meta.env.VITE_INTERCOM_APP_ID,
 			user_id: profile.username || undefined,
