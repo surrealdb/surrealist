@@ -574,6 +574,7 @@ export function cancelLiveQueries(tab: string) {
  */
 export async function activateDatabase(namespace: string, database: string) {
 	const { updateCurrentConnection } = useConfigStore.getState();
+	let invalidNS = false;
 
 	// Select a namespace only
 	if (namespace) {
@@ -590,12 +591,12 @@ export async function activateDatabase(namespace: string, database: string) {
 				database: null,
 			});
 		} else {
+			invalidNS = true;
+
 			updateCurrentConnection({
 				lastNamespace: "",
 				lastDatabase: "",
 			});
-
-			return;
 		}
 	} else {
 		updateCurrentConnection({
@@ -605,7 +606,7 @@ export async function activateDatabase(namespace: string, database: string) {
 	}
 
 	// Select a database
-	if (namespace && database) {
+	if (!invalidNS && namespace && database) {
 		const isValid = await isDatabaseValid(database);
 
 		if (isValid) {
