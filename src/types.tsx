@@ -489,6 +489,7 @@ export interface Driver {
 
 export interface CloudSignin {
 	token: string;
+	provider: string;
 	terms_accepted_at?: string;
 }
 
