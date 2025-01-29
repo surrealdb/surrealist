@@ -65,6 +65,10 @@ export function CommandPaletteModal() {
 					return false;
 				}
 
+				if (cmd.forward === true) {
+					return true;
+				}
+
 				return (
 					matchCategory ||
 					fuzzyMatch(search, cmd.name) ||
@@ -106,7 +110,7 @@ export function CommandPaletteModal() {
 				return;
 			}
 			default: {
-				dispatch(cmd.id);
+				dispatch(cmd.id, { search: query });
 				openHandle.close();
 				break;
 			}
@@ -206,6 +210,14 @@ export function CommandPaletteModal() {
 											)}
 										>
 											<Text>{cmd.name}</Text>
+											{cmd.forward && (
+												<Text
+													fw={600}
+													ml={4}
+												>
+													{search}
+												</Text>
+											)}
 											{cmd.action.type === "href" && (
 												<Icon
 													path={iconOpen}

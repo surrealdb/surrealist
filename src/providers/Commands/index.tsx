@@ -8,13 +8,13 @@ import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
 import { captureMetric } from "~/util/metrics";
 import { useInternalCommandBuilder } from "./commands";
-import type { Command, CommandCategory } from "./types";
+import type { Command, CommandCategory, CommandPayload } from "./types";
 
 const CommandsContext = createContext<{
 	categories: CommandCategory[];
 	registry: Map<string, Command>;
 	keybinds: Map<string, string[]>;
-	dispatchCommand: (command: string) => void;
+	dispatchCommand: (command: string, payload?: CommandPayload) => void;
 } | null>(null);
 
 /**
@@ -86,7 +86,8 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 	}, [registry, userKeybinds]);
 
 	// Dispatch a href, intent, or launch command by id
-	const dispatchCommand = useStable((command: string) => {
+	// Optionally provide an additional payload for launch and intent commands
+	const dispatchCommand = useStable((command: string, payload?: CommandPayload) => {
 		const cmd = registry.get(command);
 
 		if (!cmd) {
@@ -104,11 +105,11 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 				break;
 			}
 			case "intent": {
-				dispatchIntent(cmd.action.intent, cmd.action.payload);
+				dispatchIntent(cmd.action.intent, { ...cmd.action.payload, ...payload });
 				break;
 			}
 			case "launch": {
-				cmd.action.handler();
+				cmd.action.handler(payload);
 				break;
 			}
 			default: {
