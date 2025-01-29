@@ -151,6 +151,7 @@ export function BillingPage() {
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
 	const usageCharge = measureComputeCost(usageQuery.data ?? []);
+	const hasCoupons = couponQuery.isSuccess && couponQuery.data.length > 0;
 
 	return (
 		<Box
@@ -429,7 +430,7 @@ export function BillingPage() {
 							</Group>
 						</Form>
 
-						{couponQuery.data?.length && (
+						{hasCoupons && (
 							<>
 								<Text
 									fz="lg"
