@@ -8,11 +8,11 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { TableInfo } from "~/types";
 import { showError } from "~/util/helpers";
+import { captureMetric } from "~/util/metrics";
 import { syncConnectionSchema } from "~/util/schema";
 import { SDB_2_0_0 } from "~/util/versions";
 import { DesignDrawer } from "./drawer";
 import { buildDefinitionQueries, isSchemaValid } from "./helpers";
-import { captureMetric } from "~/util/metrics";
 
 type DesignFunction = (table: string) => void;
 type StopDesignFunction = () => void;

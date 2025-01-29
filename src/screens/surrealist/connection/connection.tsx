@@ -34,10 +34,10 @@ import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
+import { captureMetric } from "~/util/metrics";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
-import { captureMetric } from "~/util/metrics";
 
 export interface ConnectOptions {
 	connection?: Connection;

@@ -4,9 +4,9 @@ import { RecordId } from "surrealdb";
 import { type HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
 import { RecordsChangedEvent } from "~/util/global-events";
+import { captureMetric } from "~/util/metrics";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
-import { captureMetric } from "~/util/metrics";
 
 type InspectFunction = (record: RecordId | string) => void;
 type StopInspectFunction = () => void;

@@ -9,8 +9,8 @@ import type {
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
-import { getCloudEndpoints } from "./endpoints";
 import { captureMetric } from "~/util/metrics";
+import { getCloudEndpoints } from "./endpoints";
 
 export interface APIRequestInit extends RequestInit {
 	management?: boolean;

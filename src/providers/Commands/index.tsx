@@ -6,9 +6,9 @@ import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
+import { captureMetric } from "~/util/metrics";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory } from "./types";
-import { captureMetric } from "~/util/metrics";
 
 const CommandsContext = createContext<{
 	categories: CommandCategory[];

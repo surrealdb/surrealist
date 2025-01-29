@@ -38,13 +38,13 @@ import type { SavedQuery } from "~/types";
 import { SetQueryEvent } from "~/util/global-events";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
+import { captureMetric } from "~/util/metrics";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
-import { captureMetric } from "~/util/metrics";
 
 const switchPortal = createHtmlPortalNode();
 
