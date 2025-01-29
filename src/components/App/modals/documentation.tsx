@@ -26,12 +26,13 @@ import { useStable } from "~/hooks/stable";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
 import { iconBook } from "~/util/icons";
 
+const ENDPOINT = "https://surrealdb.com/api/docs/search";
+
 interface Result {
 	id: string;
 	url: string;
 	title: string;
-	content: string[];
-	highlight: string;
+	description: string;
 	score: number;
 	hostname: string;
 }
@@ -50,63 +51,15 @@ export function DocumentationModal() {
 				return [];
 			}
 
-			const escaped = JSON.stringify(searchQuery);
-			const hostname = JSON.stringify("main--surrealdb-docs.netlify.app");
+			const params = new URLSearchParams();
 
-			const query = /* surrealql */ `
-				LET $query = ${escaped};
-				LET $host = ${hostname};
+			params.append("hostname", "main--surrealdb-docs.netlify.app");
+			params.append("query", searchQuery);
 
-				SELECT
-					rand::guid() as id,
-					path as url,
-					hostname,
-					title,
-					content,
-					search::highlight('<b>', '</b>', 7) AS highlight,
-					(
-						(search::score(0) * 10)
-						+ (search::score(1) * 9)
-						+ (search::score(2) * 7)
-						+ (search::score(3) * 6)
-						+ (search::score(4) * 5)
-						+ (search::score(5) * 4)
-						+ (search::score(6) * 2)
-						+ search::score(7)
-					) AS score
-				FROM page
-					WHERE
-						hostname = $host
-						AND (
-							title @0@ $query
-							OR path @1@ $query
-							OR h1 @2@ $query
-							OR h2 @3@ $query
-							OR h3 @4@ $query
-							OR h4 @5@ $query
-							OR code @6@ $query
-							OR content @7@ $query
-						)
-				ORDER BY score DESC LIMIT 10;
-			`;
+			const response = await fetch(`${ENDPOINT}?${params.toString()}`);
+			const result: Result[] = await response.json();
 
-			const response = await fetch("https://blog-db.surrealdb.com/sql", {
-				method: "POST",
-				headers: {
-					Accept: "application/json",
-				},
-				body: `USE NS docs DB search; ${query}`,
-			});
-
-			try {
-				const results: any[] = await response.json();
-				const answers = results[results.length - 1] ?? [];
-				const links = answers.result as Result[];
-
-				return links;
-			} catch {
-				return [];
-			}
+			return result.map((doc) => ({ ...doc, id: doc.url }));
 		},
 	});
 
@@ -124,8 +77,6 @@ export function DocumentationModal() {
 			setSearch(search);
 		}
 	});
-
-	// useKeymap([["mod+j", () => dispatchIntent("open-documentation")]]);
 
 	const isEmpty = data?.length === 0;
 
@@ -206,20 +157,20 @@ export function DocumentationModal() {
 								onClick={() => openDocumentation(doc)}
 								h="unset"
 								ta="start"
-								data-navigation-item-id={doc.id}
-								className={clsx(selected === doc.id && classes.listingActive)}
+								data-navigation-item-id={doc.url}
+								className={clsx(selected === doc.url && classes.listingActive)}
 							>
-								<Box>
+								<Box p={4}>
 									<PrimaryTitle>{doc.title}</PrimaryTitle>
 									<Text c="surreal">{doc.url}</Text>
 									<Text
-										// biome-ignore lint/security/noDangerouslySetInnerHtml: temp, replace with markdown
-										dangerouslySetInnerHTML={{ __html: doc.highlight[3] }}
 										style={{
 											textWrap: "wrap",
 											overflowWrap: "break-word",
 										}}
-									/>
+									>
+										{doc.description}
+									</Text>
 								</Box>
 							</Entry>
 						))}
