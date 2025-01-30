@@ -34,12 +34,17 @@ function GraphLabelEditor() {
 	const mapping = useConnection((c) => c?.graphLabels ?? {});
 
 	const unmappedTables = useMemo(() => {
-		return tables.filter(
-			(table) =>
-				!(table.schema.name in mapping) &&
-				table.schema.kind.kind !== "NORMAL" &&
-				fuzzyMatch(search, table.schema.name),
-		);
+		return tables.filter((table) => {
+			if (table.schema.name in mapping) {
+				return false;
+			}
+
+			if (table.schema.kind.kind === "RELATION") {
+				return false;
+			}
+
+			return fuzzyMatch(search, table.schema.name);
+		});
 	}, [tables, mapping, search]);
 
 	const mappedTables = useMemo(() => {
