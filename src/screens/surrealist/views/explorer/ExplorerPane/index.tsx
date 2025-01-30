@@ -195,6 +195,11 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		pagination.setTotal(recordCount);
 	}, [pagination.setTotal, recordCount]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset to page 1 when switching tables
+	useLayoutEffect(() => {
+		pagination.setCurrentPage(1);
+	}, [pagination.setCurrentPage, activeTable]);
+
 	useEventSubscription(RecordsChangedEvent, refetch);
 
 	return (
