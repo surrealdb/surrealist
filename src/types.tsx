@@ -498,6 +498,7 @@ export interface CloudProfile {
 	default_org: string;
 	name: string;
 	picture?: string;
+	user_hmac?: string;
 }
 
 export interface CloudInstance {
