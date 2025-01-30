@@ -21,6 +21,7 @@ env:
   CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
   SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
   SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
+  INTERCOM_APP_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
 
 jobs:
   version:
@@ -173,6 +174,7 @@ jobs:
           VITE_CLOUD_CALLBACK_URL: "${{ env.CLOUD_CALLBACK_URL }}"
           VITE_SCOUT_COPILOT_ID: ${{ env.SCOUT_COPILOT_ID }}
           VITE_SCOUT_WORKFLOW_ID: ${{ env.SCOUT_WORKFLOW_ID }}
+          VITE_INTERCOM_APP_ID: ${{ env.INTERCOM_APP_ID }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
