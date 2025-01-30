@@ -1,8 +1,8 @@
 import type { MantineColorScheme } from "@mantine/core";
 import { Value } from "@surrealdb/ql-wasm";
-import { ORIENTATIONS, SANDBOX } from "~/constants";
+import { ORIENTATIONS, RESULT_MODES, SANDBOX } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/connection";
-import type { MiniAppearance, Orientation, SurrealistConfig } from "~/types";
+import type { MiniAppearance, Orientation, ResultMode, SurrealistConfig } from "~/types";
 import { dedent } from "~/util/dedent";
 import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
@@ -18,7 +18,7 @@ export class MiniAdapter extends BrowserAdapter {
 	public appearance: MiniAppearance = "normal";
 	public corners: string | undefined = undefined;
 	public transparent = false;
-	public nonumbers = false;
+	public linenumbers = false;
 	public uniqueRef = "";
 	public autorun = false;
 
@@ -41,8 +41,9 @@ export class MiniAdapter extends BrowserAdapter {
 			corners,
 			transparent,
 			orientation,
-			nonumbers,
+			linenumbers,
 			autorun,
+			resultmode,
 			// deprecated
 			compact,
 			borderless,
@@ -143,14 +144,26 @@ export class MiniAdapter extends BrowserAdapter {
 			}
 		}
 
+		// Result mode
+		if (resultmode) {
+			if (RESULT_MODES.some((m) => m.value === resultmode)) {
+				mainTab.resultMode = resultmode as ResultMode;
+			} else {
+				showError({
+					title: "Startup error",
+					subtitle: "Result mode not recognised",
+				});
+			}
+		}
+
 		// Autorun query
 		if (autorun !== undefined) {
 			this.autorun = bool(autorun);
 		}
 
 		// Hide line numbers
-		if (nonumbers !== undefined) {
-			this.nonumbers = bool(nonumbers);
+		if (linenumbers !== undefined) {
+			this.linenumbers = bool(linenumbers);
 		}
 
 		return {

@@ -154,7 +154,7 @@ export const MANTINE_THEME = createTheme({
 		Overlay: Overlay.extend({
 			defaultProps: {
 				blur: 5,
-				color: "#06060d",
+				color: "#0E0C14",
 			},
 		}),
 		Popover: Popover.extend({
@@ -219,9 +219,6 @@ export const MANTINE_THEME = createTheme({
 		}),
 		TagsInput: TagsInput.extend({
 			styles: {
-				pill: {
-					backgroundColor: "var(--mantine-color-surreal-6)",
-				},
 				input: {
 					display: "flex",
 				},

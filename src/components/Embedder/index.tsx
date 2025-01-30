@@ -22,8 +22,8 @@ import {
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useImmer } from "use-immer";
-import { DATASETS, ORIENTATIONS, THEMES } from "~/constants";
-import type { ColorScheme, Orientation } from "~/types";
+import { DATASETS, ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
+import type { ColorScheme, Orientation, ResultMode } from "~/types";
 import { dedent } from "~/util/dedent";
 import { isDevelopment, isProduction } from "~/util/environment";
 import { iconHelp } from "~/util/icons";
@@ -40,7 +40,9 @@ export const DEFAULT_STATE: EmbedState = {
 	variables: "{}",
 	orientation: "vertical",
 	transparent: false,
-	nonumbers: false,
+	linenumbers: false,
+	autorun: false,
+	resultmode: "combined",
 };
 
 const DATASET_OPTIONS = [
@@ -69,7 +71,10 @@ function SectionTitle({
 				{children}
 			</Text>
 			{help && (
-				<Tooltip label={help} openDelay={300}>
+				<Tooltip
+					label={help}
+					openDelay={300}
+				>
 					<Box>
 						<Icon
 							path={iconHelp}
@@ -96,7 +101,9 @@ export interface EmbedState {
 	theme: MantineColorScheme;
 	orientation: Orientation;
 	transparent?: boolean;
-	nonumbers?: boolean;
+	linenumbers?: boolean;
+	autorun?: boolean;
+	resultmode?: ResultMode;
 }
 
 export interface EmbedderProps {
@@ -116,8 +123,18 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 	const frameUrl = useMemo(() => {
 		const search = new URLSearchParams();
-		const { dataset, setup, query, variables, orientation, theme, transparent, nonumbers } =
-			state;
+		const {
+			dataset,
+			setup,
+			query,
+			variables,
+			orientation,
+			theme,
+			transparent,
+			linenumbers,
+			autorun,
+			resultmode,
+		} = state;
 
 		if (setup.length > 0) {
 			search.append("setup", setup);
@@ -147,8 +164,16 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 			search.append("transparent", "true");
 		}
 
-		if (nonumbers) {
-			search.append("nonumbers", "true");
+		if (linenumbers) {
+			search.append("linenumbers", "true");
+		}
+
+		if (autorun) {
+			search.append("autorun", "true");
+		}
+
+		if (resultmode) {
+			search.append("resultmode", resultmode);
 		}
 
 		const url = new URL(location.toString());
@@ -159,7 +184,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 			url.port = "";
 		}
 
-		url.pathname = isDevelopment ? "mini/run/index.html" : "mini";
+		url.pathname = isDevelopment ? "tools/mini-run.html" : "mini";
 		url.search = search.toString();
 
 		return url.toString();
@@ -278,6 +303,18 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 				/>
 			</Box>
 			<Box>
+				<SectionTitle help="The default selected result mode">Result mode</SectionTitle>
+				<Select
+					data={RESULT_MODES}
+					value={state.resultmode}
+					onChange={(e) => {
+						setState((draft) => {
+							draft.resultmode = e as ResultMode;
+						});
+					}}
+				/>
+			</Box>
+			<Box>
 				<SectionTitle help="Miscellaneous options for the mini">Options</SectionTitle>
 				<Stack>
 					<Checkbox
@@ -290,11 +327,20 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 						}}
 					/>
 					<Checkbox
-						label="Hide line numbers"
-						checked={state.nonumbers}
+						label="Show line numbers"
+						checked={state.linenumbers}
 						onChange={(e) => {
 							setState((draft) => {
-								draft.nonumbers = e.target.checked;
+								draft.linenumbers = e.target.checked;
+							});
+						}}
+					/>
+					<Checkbox
+						label="Automatically run query"
+						checked={state.autorun}
+						onChange={(e) => {
+							setState((draft) => {
+								draft.autorun = e.target.checked;
 							});
 						}}
 					/>

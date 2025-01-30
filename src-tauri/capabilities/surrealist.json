@@ -53,7 +53,8 @@
 				"https://auth.surrealdb.com/*",
 				"https://checkout.stripe.com/*",
 				"https://lago-production.s3.amazonaws.com/*",
-				"https://api-prod.scoutos.com/*"
+				"https://api-prod.scoutos.com/*",
+				"https://api-iam.intercom.io/*"
 			]
 		}
 	]

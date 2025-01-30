@@ -6,6 +6,18 @@
 
 .graph-sidebar>div>div {
 	height: 100%;
+	display: block !important;
+}
+
+.graph-table {
+	.graph-table-alias {
+		visibility: hidden;
+	}
+
+	&:hover .graph-table-alias,
+	.graph-table-alias:focus-within {
+		visibility: visible;
+	}
 }
 
 @container (width < 325px) {

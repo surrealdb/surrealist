@@ -1,4 +1,4 @@
-import { Box, Group, Kbd, Text } from "@mantine/core";
+import { Box, Group, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
 import { unique } from "radash";
@@ -6,7 +6,6 @@ import { Gap, PreparedQuery, RecordId } from "surrealdb";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import {
-	iconChevronRight,
 	iconCopy,
 	iconEyeOff,
 	iconFullscreen,
@@ -64,6 +63,7 @@ export function NodeContextMenu({
 	});
 
 	const allEdges = isSuccess ? unique([...data.from, ...data.to]) : [];
+	const recordId = node.record.toString();
 
 	return (
 		<>
@@ -74,17 +74,19 @@ export function NodeContextMenu({
 						c="bright"
 						fw={600}
 					>
-						{node.record.tb}
+						{node.label}
 					</Text>
-					<Text
-						fz="xs"
-						truncate
-						mt={-2}
-						c={isLight ? "slate.6" : "slate.2"}
-						pr="md"
-					>
-						{node.record.id.toString()}
-					</Text>
+					{recordId !== node.label && (
+						<Text
+							fz="xs"
+							truncate
+							mt={-2}
+							c={isLight ? "slate.6" : "slate.2"}
+							pr="md"
+						>
+							{recordId}
+						</Text>
+					)}
 				</Box>
 			</Group>
 			<ContextMenuDivider />

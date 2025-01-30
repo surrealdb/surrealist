@@ -2,9 +2,11 @@ import classes from "./style.module.scss";
 
 import {
 	Accordion,
+	ActionIcon,
 	Alert,
 	Badge,
 	Box,
+	CopyButton,
 	Drawer,
 	Group,
 	Paper,
@@ -12,7 +14,9 @@ import {
 } from "@mantine/core";
 
 import {
+	iconCheck,
 	iconClose,
+	iconCopy,
 	iconDelete,
 	iconDesigner,
 	iconRelation,
@@ -133,8 +137,7 @@ export function DesignDrawer({
 						>
 							Missing required fields
 						</Badge>
-					))
-				}
+					))}
 
 				<ActionButton
 					color="pink.7"
@@ -161,6 +164,18 @@ export function DesignDrawer({
 				<Group gap="sm">
 					<Icon path={isEdge ? iconRelation : iconTable} />
 					{value.schema.name}
+					<Spacer />
+					<CopyButton value={value.schema.name}>
+						{({ copied, copy }) => (
+							<ActionIcon
+								variant={copied ? "gradient" : undefined}
+								onClick={copy}
+								aria-label="Copy name to clipboard"
+							>
+								<Icon path={copied ? iconCheck : iconCopy} />
+							</ActionIcon>
+						)}
+					</CopyButton>
 				</Group>
 			</Paper>
 			<ScrollArea

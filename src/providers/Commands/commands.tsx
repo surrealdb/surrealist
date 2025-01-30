@@ -638,11 +638,11 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 					},
 					{
 						id: "open-docs",
-						name: "Search SurrealDB documentation",
-						aliases: ["Docs"],
+						name: "Search documentation for:",
 						icon: iconBook,
 						binding: ["mod", "j"],
 						action: intent("open-documentation"),
+						forward: true,
 					},
 					{
 						id: "open-changelog",

@@ -1,7 +1,9 @@
 import type { IntentPayload, IntentType } from "~/util/intents";
 import type { PreferenceController } from "~/util/preferences";
 
-type LaunchAction = { type: "launch"; handler: () => void };
+export type CommandPayload = Record<string, string>;
+
+type LaunchAction = { type: "launch"; handler: (payload?: CommandPayload) => void };
 type InsertAction = { type: "insert"; content: string };
 type HrefAction = { type: "href"; href: string };
 type PreferenceAction = { type: "preference"; controller: PreferenceController };
@@ -29,6 +31,8 @@ export interface Command {
 	aliases?: string[];
 	/** Whether the command is hidden from the palette */
 	unlisted?: boolean;
+	/** Whether this is a forwarding command */
+	forward?: boolean;
 	/** Whether activation is disabled */
 	disabled?: boolean;
 }

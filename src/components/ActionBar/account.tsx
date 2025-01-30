@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Avatar,
 	Box,
 	Button,
@@ -26,6 +27,7 @@ import { showError } from "~/util/helpers";
 import { iconAccount, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
+import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
 
 interface AccountFormProps {
@@ -36,6 +38,7 @@ function AccountForm({ onClose }: AccountFormProps) {
 	const { setAccountProfile } = useCloudStore.getState();
 
 	const profile = useCloudStore((s) => s.profile);
+	const provider = useCloudStore((s) => s.authProvider);
 	const [isLoading, setLoading] = useState(false);
 
 	const [name, setName] = useInputState(profile.name || "");
@@ -70,6 +73,12 @@ function AccountForm({ onClose }: AccountFormProps) {
 					label="Full name"
 					value={name}
 					onChange={setName}
+				/>
+				<TextInput
+					label="Authentication provider"
+					readOnly
+					disabled
+					value={provider || "Unknown"}
 				/>
 				<Group mt="lg">
 					<Button
@@ -108,7 +117,10 @@ export function CloudAccount() {
 
 	if (state === "unauthenticated") {
 		return (
-			<Tooltip label="Sign in to Surreal Cloud" openDelay={300}>
+			<Tooltip
+				label="Open Surreal Cloud"
+				openDelay={300}
+			>
 				<Avatar
 					radius="md"
 					size={36}

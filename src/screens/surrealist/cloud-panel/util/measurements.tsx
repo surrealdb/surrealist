@@ -53,11 +53,14 @@ export function measureComputeCost(measurements: CloudMeasurement[]) {
 
 	const summary = entries.reduce((acc, { instance_type, compute_hours }) => {
 		const info = instanceTypes.find((t) => t.slug === instance_type);
+		const hourlyPriceThousandth = info?.price_hour ?? 0;
+		const totalComputeHours = compute_hours ?? 0;
+		const instanceCharge = (hourlyPriceThousandth / 1000) * totalComputeHours;
 
 		acc.push({
 			name: info?.display_name ?? "",
-			hours: compute_hours ?? 0,
-			cost: (info?.price_hour ?? 0) * (compute_hours ?? 0),
+			hours: totalComputeHours,
+			cost: instanceCharge,
 		});
 
 		return acc;

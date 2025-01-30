@@ -1,10 +1,10 @@
 import { openModal } from "@mantine/modals";
-import posthog from "posthog-js";
 import { HelpCenter } from "~/components/HelpCenter";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { captureMetric } from "~/util/metrics";
 
 export async function openHelpAndSupport() {
-	posthog.capture("support_open");
+	captureMetric("support_open");
 
 	openModal({
 		title: <PrimaryTitle fz={24}>How can we help you?</PrimaryTitle>,

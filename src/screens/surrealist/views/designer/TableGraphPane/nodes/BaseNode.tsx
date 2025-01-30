@@ -211,8 +211,8 @@ export function BaseNode({ icon, table, direction, mode, isSelected, isEdge }: B
 				p="md"
 				w={250}
 				title={`Click to edit ${table.schema.name}`}
-				bg={isLight ? "slate.0" : "slate.7"}
-				shadow={`0 8px 15px rgba(30, 0, 80, ${isLight ? 0.025 : 0.05})`}
+				bg={isLight ? "white" : "slate.7"}
+				shadow={`0 8px 12px rgba(0, 0, 0, ${isLight ? 0.075 : 0.2})`}
 				style={{
 					border: `1px solid ${themeColor(isSelected ? "surreal" : isLight ? "slate.2" : "slate.5")}`,
 					userSelect: "none",

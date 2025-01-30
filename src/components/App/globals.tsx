@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useCloudAuthentication } from "~/hooks/cloud";
 import { useConnectionSwitch } from "./hooks/connection";
 import { useKeybindListener, useModKeyTracker } from "./hooks/input";
+import { useIntercom } from "./hooks/intercom";
 import { useGlobalModals } from "./hooks/modals";
 import { useAppRouter } from "./hooks/routing";
 import { useTitleSync } from "./hooks/title";
@@ -18,6 +19,7 @@ export function Globals(): ReactNode {
 	useTitleSync();
 	useViewSync();
 	useAppRouter();
+	useIntercom();
 
 	return;
 }

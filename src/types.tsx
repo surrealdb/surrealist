@@ -125,6 +125,9 @@ export interface Connection {
 	graphqlQuery: string;
 	graphqlVariables: string;
 	graphqlShowVariables: boolean;
+	graphLabels?: Record<string, string[]>;
+	graphShowStray?: boolean;
+	graphStraightEdges?: boolean;
 }
 
 export interface Template {
@@ -486,6 +489,7 @@ export interface Driver {
 
 export interface CloudSignin {
 	token: string;
+	provider: string;
 	terms_accepted_at?: string;
 }
 

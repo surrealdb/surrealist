@@ -1,4 +1,4 @@
-import { ScrollArea, Text, Tooltip } from "@mantine/core";
+import { ScrollArea, Text, ThemeIcon, Tooltip } from "@mantine/core";
 import { Menu } from "@mantine/core";
 import type { PropsWithChildren } from "react";
 import { useIsLight } from "~/hooks/theme";
@@ -36,26 +36,28 @@ export function ListMenu<T extends string>({
 							onClick={() => onChange(itemValue)}
 							leftSection={
 								icon && (
-									<Icon
-										path={icon}
+									<ThemeIcon
+										radius="xs"
+										color="slate"
+										variant={value === itemValue ? "gradient" : "light"}
 										mr="xs"
-									/>
-								)
-							}
-							rightSection={
-								value === itemValue && (
-									<Icon
-										path={iconCheck}
-										ml="xs"
-									/>
+									>
+										<Icon path={icon} />
+									</ThemeIcon>
 								)
 							}
 						>
-							<Text c="bright">{label}</Text>
+							<Text
+								c="bright"
+								fw={500}
+							>
+								{label}
+							</Text>
 							{description && (
 								<Text
 									c={isLight ? "slate.5" : "slate.3"}
 									size="sm"
+									mt={-2}
 								>
 									{description}
 								</Text>

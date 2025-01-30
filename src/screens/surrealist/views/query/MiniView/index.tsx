@@ -63,7 +63,7 @@ export function MiniQueryView() {
 	});
 
 	const [hasLineNumbers] = useSetting("appearance", "queryLineNumbers");
-	const hideLineNumbers = adapter instanceof MiniAdapter ? adapter.nonumbers : !hasLineNumbers;
+	const lineNumbers = adapter instanceof MiniAdapter ? adapter.linenumbers : hasLineNumbers;
 
 	useEventSubscription(SetQueryEvent, (query) => {
 		if (editor) {
@@ -126,7 +126,7 @@ export function MiniQueryView() {
 										closeVariables={closeVariables}
 										editor={editor}
 										corners={miniCorners}
-										lineNumbers={!hideLineNumbers}
+										lineNumbers={lineNumbers}
 									/>
 								) : (
 									<QueryPaneLazy
@@ -136,7 +136,7 @@ export function MiniQueryView() {
 										switchPortal={switchPortal}
 										selection={selection}
 										showVariables={showVariables}
-										lineNumbers={!hideLineNumbers}
+										lineNumbers={lineNumbers}
 										onSaveQuery={noop}
 										setShowVariables={setShowVariables}
 										onSelectionChange={setSelection}

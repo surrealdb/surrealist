@@ -7,7 +7,6 @@ import { EditorView } from "@codemirror/view";
  * @param text The text to set the editor to
  */
 export function setEditorText(editor: EditorView, text: string) {
-	console.trace("SET");
 	editor.dispatch({
 		changes: { from: 0, to: editor.state.doc.length, insert: text },
 	});

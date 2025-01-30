@@ -1,5 +1,4 @@
 import { Button, Group, Stack, Text } from "@mantine/core";
-import posthog from "posthog-js";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
@@ -16,6 +15,7 @@ import type { SchemaModel } from "~/types";
 import { createBaseAuthentication } from "~/util/defaults";
 import { connectionUri } from "~/util/helpers";
 import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
+import { captureMetric } from "~/util/metrics";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
@@ -80,8 +80,7 @@ export function ModelsView() {
 		}
 
 		syncConnectionSchema();
-
-		posthog.capture("model_import");
+		captureMetric("model_import");
 	});
 
 	const downloadModel = useStable(async (model: SchemaModel) => {

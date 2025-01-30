@@ -7,17 +7,18 @@ import {
 	Box,
 	Button,
 	Group,
+	Indicator,
 	type MantineColor,
 	Menu,
 	Paper,
 	Stack,
 	Table,
 	Text,
+	Tooltip,
 } from "@mantine/core";
 
 import {
 	iconAPI,
-	iconBroadcastOn,
 	iconChevronDown,
 	iconCloudClock,
 	iconConsole,
@@ -69,7 +70,15 @@ interface StateBadgeProps {
 
 function StateBadge({ state, small }: StateBadgeProps) {
 	if (state === "ready") {
-		return;
+		return (
+			<Tooltip label="Instance is active and utilizing resources">
+				<Indicator
+					processing
+					color="green"
+					ml="xs"
+				/>
+			</Tooltip>
+		);
 	}
 
 	const [color, text] = BADGE_INFO[state];
@@ -104,7 +113,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 			<Stack>
 				<Text>
 					You are about to delete this instance. This will cause all associated resources
-					to be destroyed
+					to be destroyed.
 				</Text>
 				<Alert
 					title="Important"
@@ -115,8 +124,10 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Alert>
 			</Stack>
 		),
-		confirmText: "Delete",
-		title: "Delete instance",
+		confirmText: "Deleting",
+		title: `Delete ${value.name}`,
+		verification: value.name,
+		verifyText: "Type the instance name to confirm",
 		onConfirm: async () => {
 			try {
 				await fetchAPI(`/instances/${value.id}`, {
@@ -188,6 +199,12 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Menu.Item>
 				<Menu.Label mt="sm">Actions</Menu.Label>
 				<Menu.Item
+					leftSection={<Icon path={iconTransfer} />}
+					onClick={() => openUsageModal(value)}
+				>
+					View instance usage
+				</Menu.Item>
+				<Menu.Item
 					leftSection={<Icon path={iconCopy} />}
 					onClick={() => {
 						navigator.clipboard.writeText(`${value.host}`).then(() => {
@@ -199,12 +216,6 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					}}
 				>
 					Copy hostname
-				</Menu.Item>
-				<Menu.Item
-					leftSection={<Icon path={iconCloudClock} />}
-					onClick={() => openUsageModal(value)}
-				>
-					View usage
 				</Menu.Item>
 				<Menu.Label mt="sm">Dangerous</Menu.Label>
 				<Menu.Item

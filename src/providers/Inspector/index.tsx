@@ -1,10 +1,10 @@
 import { useDisclosure } from "@mantine/hooks";
-import posthog from "posthog-js";
 import { type PropsWithChildren, createContext, useContext, useState } from "react";
 import { RecordId } from "surrealdb";
 import { type HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
 import { RecordsChangedEvent } from "~/util/global-events";
+import { captureMetric } from "~/util/metrics";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
 
@@ -57,7 +57,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 			setHistoryItems([recordId]);
 		}
 
-		posthog.capture("open_record_inspector");
+		captureMetric("open_record_inspector");
 	});
 
 	const stopInspect = useStable(() => {

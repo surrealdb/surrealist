@@ -2,6 +2,7 @@ import classes from "../style.module.scss";
 
 import {
 	Box,
+	Button,
 	Center,
 	Checkbox,
 	Group,
@@ -11,7 +12,6 @@ import {
 	Skeleton,
 	Stack,
 	Text,
-	UnstyledButton,
 } from "@mantine/core";
 
 import { indexParallelEdgesIndex } from "@sigma/edge-curve";
@@ -20,33 +20,38 @@ import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { isArray, isNumber, isObject } from "radash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Gap, PreparedQuery, RecordId, equals } from "surrealdb";
+import { Gap, PreparedQuery, RecordId, equals, escapeIdent } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { RelationGraph, newRelationalGraph } from "~/components/RelationGraph";
 import { NodeCircle } from "~/components/RelationGraph/node";
 import { GraphExpansion } from "~/components/RelationGraph/types";
 import { useSetting } from "~/hooks/config";
+import { useConnection } from "~/hooks/connection";
 import { useLater } from "~/hooks/later";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
+import { openGraphLabelEditorModal } from "~/modals/graph-labels";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { __throw } from "~/util/helpers";
-import { iconBraces, iconFilter, iconRelation } from "~/util/icons";
+import { useConfigStore } from "~/stores/config";
+import { __throw, plural } from "~/util/helpers";
+import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
+import { themeColor } from "~/util/mantine";
 import { type PreviewProps } from ".";
 
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
-const RECORDS = new Gap<RecordId[]>();
-const QUERY = new PreparedQuery(
-	"SELECT VALUE [in, id, out] FROM array::flatten($records<->(? WHERE out IN $records AND in IN $records)) WHERE __ == true",
-	{ records: RECORDS },
+
+const WIRE_RECORDS = new Gap<RecordId[]>();
+const WIRE_QUERY = new PreparedQuery(
+	"SELECT VALUE [in, id, out] FROM array::distinct(array::flatten($records<->(? WHERE out IN $records AND in IN $records))) WHERE __ == true",
+	{ records: WIRE_RECORDS },
 );
 
 function jitter(value?: number) {
-	return value !== undefined ? value + Math.random() * 0.000001 : value;
+	return value !== undefined ? value + (Math.random() - 0.5) * 0.001 : value;
 }
 
 function curvature(index: number, maxIndex: number): number {
@@ -56,8 +61,17 @@ function curvature(index: number, maxIndex: number): number {
 }
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
+	const { updateCurrentConnection } = useConfigStore.getState();
+
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();
+
+	const [graphLabels, showStray, straightEdges] = useConnection((c) => [
+		c?.graphLabels ?? {},
+		c?.graphShowStray ?? false,
+		c?.graphStraightEdges ?? false,
+	]);
+
 	const [editorScale] = useSetting("appearance", "editorScale");
 	const [isInitialized, setInitializing] = useState(true);
 	const [isWiring, setWiring] = useState(true);
@@ -70,16 +84,16 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	const [nodeCount, setNodeCount] = useState(0);
 	const [edgeCount, setEdgeCount] = useState(0);
 
-	const [showStray, setShowStray] = useState(false);
-	const [straightLines, setStraightLines] = useState(false);
 	const [hiddenTables, toggleHiddenTable, setHiddenTables] = useToggleList();
 	const [hiddenEdges, toggleHiddenEdge, setHiddenEdges] = useToggleList();
 	const [tables, setTables] = useState<string[]>([]);
 	const [edges, setEdges] = useState<string[]>([]);
 	const [colors, setColors] = useState<Map<string, string>>(new Map());
+	const [aliases, setAliases] = useState<Map<string, string>>(new Map());
 
 	const { success, result } = responses[selected] ?? { result: null };
 	const textSize = Math.floor(15 * (editorScale / 100));
+	const disabled = themeColor(isLight ? "slate.2" : "slate.6");
 
 	// Refresh the graph based on the query result
 	const refreshGraph = useStable(async (result: any) => {
@@ -110,6 +124,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		// Reset visibility
 		setHiddenEdges([]);
 		setHiddenTables([]);
+		setColors(new Map());
+		setAliases(new Map());
 
 		// Add initial nodes
 		for (const record of records) {
@@ -122,8 +138,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			}
 		}
 
-		// Fetch node relations
-		rewireNodes();
+		// Refresh the visible nodes
+		refreshNodes();
 	});
 
 	// Compute graph statistics
@@ -152,16 +168,29 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 		const tableList = Array.from(tables).sort();
 		const edgeList = Array.from(edges).sort();
-		const paletteSize = Math.max(tableList.length, 1);
-		const palette = iwanthue(paletteSize, {
+		const colorMap = new Map<string, string>();
+		const palette = iwanthue(9, {
 			seed: "surrealist",
 			colorSpace: SURREAL_SPACE,
 		});
 
-		const colorMap = new Map<string, string>();
+		// Assign previously used colors
+		for (const table of tableList) {
+			const curr = colors.get(table);
 
-		for (const [i, table] of tableList.entries()) {
-			colorMap.set(table, palette[i]);
+			if (curr) {
+				colorMap.set(table, curr);
+				palette.splice(palette.indexOf(curr), 1);
+			}
+		}
+
+		// Assign new colors
+		let i = 0;
+
+		for (const table of tableList) {
+			if (!colorMap.has(table)) {
+				colorMap.set(table, palette[i++ % palette.length]);
+			}
 		}
 
 		setColors(colorMap);
@@ -170,12 +199,12 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	// Relation wiring mutation
-	const rewireNodes = useLater(async () => {
+	const rewireNodes = useStable(async () => {
 		setWiring(true);
 
 		const nodes = universeGraph.nodeEntries();
 		const records = Array.from(nodes).map((e) => e.attributes.record);
-		const [response] = await executeQuery(QUERY, [RECORDS.fill(records)]);
+		const [response] = await executeQuery(WIRE_QUERY, [WIRE_RECORDS.fill(records)]);
 		const relations = response.result as [RecordId, RecordId, RecordId][];
 
 		universeGraph.clearEdges();
@@ -199,60 +228,144 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		}
 
 		indexMetadata();
-		synchronizeGraph();
 		setWiring(false);
+	});
+
+	// Fetch and apply node labels
+	const applyLabels = useStable(async () => {
+		const groups = new Map<string, RecordId[]>();
+		let labels: Record<string, string> = {};
+		let queries = "";
+
+		// Group nodes per table
+		for (const node of universeGraph.nodes()) {
+			const record = universeGraph.getNodeAttributes(node).record;
+			const table = record.tb;
+
+			if (!graphLabels[table]?.length) {
+				continue;
+			}
+
+			if (!groups.has(table)) {
+				groups.set(table, []);
+			}
+
+			groups.get(table)?.push(record);
+		}
+
+		// Fetch labels if tables are present
+		if (groups.size > 0) {
+			const iterator = Array.from(groups.entries()).entries();
+			const params: Record<string, RecordId[]> = {};
+
+			for (const [index, [table, records]] of iterator) {
+				const properties = graphLabels[table] ?? [];
+
+				if (properties.length > 0) {
+					const selection = properties.map((p) => escapeIdent(p)).join(" || ");
+
+					queries += `(select value [id, ${selection}] from $tb_${index}),`;
+					params[`tb_${index}`] = records;
+				}
+			}
+
+			const [response] = await executeQuery(
+				`object::from_entries(array::flatten([${queries}]))`,
+				params,
+			);
+
+			labels = response.result;
+		}
+
+		// Update universe nodes
+		universeGraph.forEachNode((node) => {
+			universeGraph.setNodeAttribute(node, "display", labels[node]);
+		});
+	});
+
+	// Refresh the nodes, including rewiring, applying labels, and synchronizing changes
+	const refreshNodes = useStable(async () => {
+		await Promise.all([rewireNodes(), applyLabels()]);
+		synchronizeGraph();
 	});
 
 	// Synchronize the universe graph to display graph
 	const synchronizeGraph = useLater(() => {
-		const positions = new Map<string, [number, number]>();
-
-		displayGraph.forEachNode((node, attr) => {
-			positions.set(node, [attr.x || 0, attr.y || 0]);
-		});
-
-		// Clear the display graph
-		displayGraph.clear();
-
 		const skipTables = new Set(hiddenTables);
 		const skipEdges = new Set(hiddenEdges);
 
-		// Synchronize nodes
-		universeGraph.forEachNode((node, attr) => {
-			if (skipTables.has(attr.record.tb)) {
-				return;
+		// Append or update nodes
+		for (const { node, attributes } of universeGraph.nodeEntries()) {
+			if (skipTables.has(attributes.record.tb)) {
+				if (displayGraph.hasNode(node)) {
+					displayGraph.dropNode(node);
+				}
+
+				continue;
 			}
 
-			const [x, y] = positions.get(node) ?? [Math.random(), Math.random()];
+			const data = {
+				record: attributes.record,
+				label: attributes.display || node,
+				color: colors.get(attributes.record.tb),
+			};
 
-			displayGraph.addNode(node, {
-				x,
-				y,
-				record: attr.record,
-				label: node,
-				size: 9,
-				color: colors.get(attr.record.tb),
-			});
-		});
+			if (displayGraph.hasNode(node)) {
+				displayGraph.mergeNodeAttributes(node, data);
+			} else {
+				displayGraph.addNode(node, {
+					...data,
+					x: Math.random(),
+					y: Math.random(),
+					size: 9,
+				});
+			}
+		}
 
-		// Synchronize edges
+		// Drop removed nodes
+		for (const node of displayGraph.nodes()) {
+			if (!universeGraph.hasNode(node)) {
+				displayGraph.dropNode(node);
+			}
+		}
+
+		// Append or update edges
 		universeGraph.forEachEdge((edge, attr) => {
 			if (skipEdges.has(attr.record.tb)) {
+				if (displayGraph.hasEdge(edge)) {
+					displayGraph.dropEdge(edge);
+				}
+
 				return;
 			}
 
 			const src = universeGraph.source(edge);
 			const tgt = universeGraph.target(edge);
 
-			if (displayGraph.hasNode(src) && displayGraph.hasNode(tgt)) {
-				displayGraph.addDirectedEdgeWithKey(edge, src, tgt, {
-					weight: attr.weight,
-					record: attr.record,
-					label: attr.record.tb,
-					type: straightLines ? "straight" : "curved",
-				});
+			if (!displayGraph.hasNode(src) || !displayGraph.hasNode(tgt)) {
+				return;
+			}
+
+			const data = {
+				weight: attr.weight,
+				record: attr.record,
+				label: attr.record.tb,
+				type: straightEdges ? "straight" : "curved",
+			};
+
+			if (displayGraph.hasEdge(edge)) {
+				displayGraph.mergeEdgeAttributes(edge, data);
+			} else {
+				displayGraph.addDirectedEdgeWithKey(edge, src, tgt, data);
 			}
 		});
+
+		// Drop removed edges
+		for (const edge of displayGraph.edges()) {
+			if (!universeGraph.hasEdge(edge)) {
+				displayGraph.dropEdge(edge);
+			}
+		}
 
 		// Optionally hide stray records
 		if (!showStray) {
@@ -264,18 +377,17 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		}
 
 		// Compute edge curvature
-		if (!straightLines) {
+		if (!straightEdges) {
 			indexParallelEdgesIndex(displayGraph);
 
 			displayGraph.forEachEdge((edge, { parallelIndex, parallelMaxIndex }) => {
-				if (!isNumber(parallelIndex) || !isNumber(parallelMaxIndex)) return;
-
-				const curve = curvature(parallelIndex, parallelMaxIndex);
-
-				displayGraph.mergeEdgeAttributes(edge, {
-					type: curve === 0 ? "straight" : "curved",
-					curvature: curve,
-				});
+				if (isNumber(parallelIndex) && isNumber(parallelMaxIndex)) {
+					displayGraph.setEdgeAttribute(
+						edge,
+						"curvature",
+						curvature(parallelIndex, parallelMaxIndex),
+					);
+				}
 			});
 		}
 
@@ -316,20 +428,22 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		for (const node of expandables) {
 			const id = node.toString();
 
-			universeGraph.addNode(id, {
-				record: node,
-			});
+			if (!universeGraph.hasNode(id)) {
+				universeGraph.addNode(id, {
+					record: node,
+				});
 
-			const m = {
-				record: node,
-				x: toJitter ? jitter(x) : x,
-				y: toJitter ? jitter(y) : y,
-			};
-
-			displayGraph.addNode(id, m);
+				displayGraph.addNode(id, {
+					record: node,
+					x: toJitter ? jitter(x) : x,
+					y: toJitter ? jitter(y) : y,
+					size: 9,
+				});
+			}
 		}
 
-		rewireNodes();
+		// Refresh the visible nodes
+		refreshNodes();
 	});
 
 	const handleQueryEdges = useStable((record: RecordId) => {
@@ -358,13 +472,20 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	const updateShowStray = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		setShowStray(e.target.checked);
+		updateCurrentConnection({ graphShowStray: e.target.checked });
 		synchronizeGraph();
 	});
 
 	const updateStraightLines = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		setStraightLines(e.target.checked);
+		updateCurrentConnection({ graphStraightEdges: e.target.checked });
 		synchronizeGraph();
+	});
+
+	const handleOpenLabels = useStable(() => {
+		openGraphLabelEditorModal(async () => {
+			await applyLabels();
+			synchronizeGraph();
+		});
 	});
 
 	// Construct the graph
@@ -380,7 +501,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				...inferSettings(displayGraph),
 				edgeWeightInfluence: 1,
 				scalingRatio: 2,
-				slowDown: 500,
+				slowDown: 2000,
 			},
 		});
 
@@ -449,13 +570,12 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 						inset={0}
 					>
 						<Stack
-							gap="xl"
 							p="lg"
+							gap="xl"
 							flex={1}
-							h="100%"
 						>
 							<Box>
-								<Label mb="xs">Statistics</Label>
+								<Label mb="xs">Graph</Label>
 								<Stack gap="xs">
 									<Skeleton visible={isInitialized}>
 										<Group gap="xs">
@@ -490,96 +610,161 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								</Stack>
 							</Box>
 							<Box>
-								<Label mb="xs">Tables</Label>
-								<Stack gap="xs">
-									{isInitialized ? (
-										<>
-											<Skeleton h={18} />
-											<Skeleton h={18} />
-											<Skeleton h={18} />
-										</>
-									) : (
-										<>
-											{tables.map((table) => {
-												const isHidden = hiddenTables.includes(table);
+								<Label>Tables</Label>
+								{tables.length === 0 ? (
+									<Skeleton visible={isInitialized}>
+										<Text c="slate">No tables found</Text>
+									</Skeleton>
+								) : (
+									<Stack
+										gap={2}
+										mt="xs"
+									>
+										{tables.map((table) => {
+											const isHidden = hiddenTables.includes(table);
+											const labels = graphLabels[table]?.length ?? 0;
 
-												return (
-													<Group
-														key={table}
-														component={UnstyledButton}
-														gap="sm"
-														w="100%"
-													>
-														<Checkbox
-															size="xs"
-															label={table}
-															flex={1}
-															checked={!isHidden}
-															onChange={() =>
-																handleToggleTable(table)
+											return (
+												<Button
+													key={table}
+													p={4}
+													ta="start"
+													color="slate"
+													variant="subtle"
+													onClick={() => handleToggleTable(table)}
+													className={classes.graphTable}
+													styles={{
+														label: {
+															flex: 1,
+														},
+													}}
+													leftSection={
+														<NodeCircle
+															size={12}
+															color={
+																isHidden
+																	? disabled
+																	: colors.get(table)
 															}
 														/>
-														{!isHidden && (
-															<NodeCircle
-																color={colors.get(table)}
-																size={10}
-															/>
-														)}
-													</Group>
-												);
-											})}
-										</>
-									)}
-								</Stack>
-							</Box>
-							<Box>
-								<Label mb="xs">Edges</Label>
-								<Stack gap="xs">
-									{isInitialized ? (
-										<>
-											<Skeleton h={18} />
-											<Skeleton h={18} />
-											<Skeleton h={18} />
-										</>
-									) : (
-										<>
-											{edges.map((edge) => (
-												<Group
-													key={edge}
-													component={UnstyledButton}
-													gap="sm"
-													w="100%"
+													}
 												>
-													<Checkbox
-														size="xs"
-														label={edge}
-														flex={1}
-														checked={!hiddenEdges.includes(edge)}
-														onChange={() => handleToggleEdge(edge)}
-													/>
-												</Group>
-											))}
-										</>
-									)}
-								</Stack>
+													<Group
+														gap="sm"
+														w="100%"
+														ml="xs"
+													>
+														<Text
+															truncate
+															c="bright"
+															flex={1}
+															opacity={isHidden ? 0.6 : 1}
+														>
+															{table}
+															{labels > 0 && (
+																<Text
+																	fz="xs"
+																	span
+																	c="slate"
+																	ml={4}
+																>
+																	{`(${labels} ${plural(labels, "label")})`}
+																</Text>
+															)}
+														</Text>
+													</Group>
+												</Button>
+											);
+										})}
+									</Stack>
+								)}
 							</Box>
 							<Box>
-								<Label mb="xs">Options</Label>
-								<Stack gap="xs">
+								<Label>Edges</Label>
+								{edges.length === 0 ? (
+									<Skeleton visible={isInitialized}>
+										<Text c="slate">No edges found</Text>
+									</Skeleton>
+								) : (
+									<Stack
+										gap={2}
+										mt="xs"
+									>
+										{edges.map((edge) => {
+											const isHidden = hiddenEdges.includes(edge);
+
+											return (
+												<Button
+													key={edge}
+													p={4}
+													ta="start"
+													color="slate"
+													variant="subtle"
+													onClick={() => handleToggleEdge(edge)}
+													styles={{
+														label: {
+															flex: 1,
+														},
+													}}
+													leftSection={
+														<Icon
+															path={iconRelation}
+															c={isHidden ? disabled : undefined}
+														/>
+													}
+												>
+													<Group
+														gap="sm"
+														w="100%"
+														ml="xs"
+													>
+														<Text
+															flex={1}
+															truncate
+															c="bright"
+															opacity={isHidden ? 0.6 : 1}
+														>
+															{edge}
+														</Text>
+													</Group>
+												</Button>
+											);
+										})}
+									</Stack>
+								)}
+							</Box>
+							<Box pb="lg">
+								<Label>Appearance</Label>
+								<Stack
+									gap="md"
+									mt="md"
+								>
 									<Checkbox
-										size="xs"
-										label="Show stray records"
+										ml={4}
 										flex={1}
+										c="bright"
+										label="Stray records"
 										checked={showStray}
 										onChange={updateShowStray}
 									/>
 									<Checkbox
-										size="xs"
-										label="Straight edges"
+										ml={4}
 										flex={1}
-										checked={straightLines}
+										c="bright"
+										label="Straight edges"
+										checked={straightEdges}
 										onChange={updateStraightLines}
 									/>
+									<Button
+										color="slate"
+										variant="light"
+										size="xs"
+										mt="md"
+										leftSection={<Icon path={iconTag} />}
+										onClick={handleOpenLabels}
+									>
+										Configure labels
+									</Button>
 								</Stack>
 							</Box>
 						</Stack>

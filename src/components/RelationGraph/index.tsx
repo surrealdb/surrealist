@@ -196,6 +196,11 @@ export function RelationGraph({
 					res.color = isLight ? theme.colors.slate[2] : theme.colors.slate[6];
 				}
 
+				// Force highlight
+				if (focus.neighbours.has(node)) {
+					res.highlighted = true;
+				}
+
 				return res;
 			},
 			edgeReducer: (edge, data) => {
@@ -243,6 +248,16 @@ export function RelationGraph({
 			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
 
 			inspect(display.record);
+
+			event.original.preventDefault();
+			event.original.stopPropagation();
+			event.preventSigmaDefault();
+		});
+
+		instance.on("doubleClickNode", ({ node, event }) => {
+			const display = instance.getNodeDisplayData(node) as RelationGraphNode;
+
+			handleFocus(display.record);
 
 			event.original.preventDefault();
 			event.original.stopPropagation();
@@ -302,6 +317,12 @@ export function RelationGraph({
 						icon: <Icon path={iconFullscreen} />,
 						title: "Fit viewport",
 						onClick: handleResetZoom,
+					},
+					{
+						key: "reset",
+						icon: <Icon path={iconReset} />,
+						title: "Reset graph",
+						onClick: () => onReset?.(),
 					},
 					{ key: "divider" },
 					{

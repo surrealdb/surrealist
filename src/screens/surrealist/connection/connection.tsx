@@ -2,9 +2,7 @@ import {
 	type AccessRecordAuth,
 	type ExportOptions,
 	QueryParameters,
-	RecordId,
 	type ScopeAuth,
-	StringRecordId,
 	type Surreal,
 	SurrealDbError,
 	UnsupportedVersion,
@@ -24,7 +22,6 @@ import {
 
 import { Value } from "@surrealdb/ql-wasm";
 import { compareVersions } from "compare-versions";
-import posthog from "posthog-js";
 import { adapter } from "~/adapter";
 import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
@@ -37,6 +34,7 @@ import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
+import { captureMetric } from "~/util/metrics";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
@@ -164,7 +162,7 @@ export async function openConnection(options?: ConnectOptions) {
 		});
 
 		if (instance === thisInstance) {
-			posthog.capture("connection_open", {
+			captureMetric("connection_open", {
 				protocol: connection.authentication.protocol,
 			});
 
@@ -445,7 +443,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		}
 
 		setQueryResponse(id, response);
-		posthog.capture("query_execute");
+		captureMetric("query_execute");
 
 		if (query.length <= MAX_HISTORY_QUERY_LENGTH) {
 			addHistoryEntry({
@@ -545,7 +543,7 @@ export async function executeGraphql(
 		const response = await sendGraphqlRequest(query, params, operation);
 
 		setGraphqlResponse(connection.id, response);
-		posthog.capture("graphql_execute");
+		captureMetric("graphql_execute");
 	} catch (err: any) {
 		console.warn("executeGraphql fail", err);
 
@@ -576,6 +574,7 @@ export function cancelLiveQueries(tab: string) {
  */
 export async function activateDatabase(namespace: string, database: string) {
 	const { updateCurrentConnection } = useConfigStore.getState();
+	let invalidNS = false;
 
 	// Select a namespace only
 	if (namespace) {
@@ -592,24 +591,22 @@ export async function activateDatabase(namespace: string, database: string) {
 				database: null,
 			});
 		} else {
+			invalidNS = true;
+
 			updateCurrentConnection({
 				lastNamespace: "",
 				lastDatabase: "",
 			});
-
-			return;
 		}
 	} else {
 		updateCurrentConnection({
 			lastNamespace: "",
 			lastDatabase: "",
 		});
-
-		return;
 	}
 
 	// Select a database
-	if (namespace && database) {
+	if (!invalidNS && namespace && database) {
 		const isValid = await isDatabaseValid(database);
 
 		if (isValid) {

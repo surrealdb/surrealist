@@ -16,12 +16,9 @@ import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
-import posthog from "posthog-js";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { adapter } from "~/adapter";
-import { MiniAdapter } from "~/adapter/mini";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
@@ -30,7 +27,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
 import { executeEditorQuery } from "~/editor/query";
-import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
 import { useActiveQuery, useConnection, useSavedQueryTags } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
@@ -42,6 +38,7 @@ import type { SavedQuery } from "~/types";
 import { SetQueryEvent } from "~/util/global-events";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
+import { captureMetric } from "~/util/metrics";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
@@ -114,8 +111,7 @@ export function QueryView() {
 		});
 
 		isSavingHandle.close();
-
-		posthog.capture("query_save");
+		captureMetric("query_save");
 	});
 
 	const showVariables = !!active?.showVariables;
@@ -134,9 +130,7 @@ export function QueryView() {
 	});
 
 	const variablesOrientation = orientation === "horizontal" ? "vertical" : "horizontal";
-
 	const [hasLineNumbers] = useSetting("appearance", "queryLineNumbers");
-	const hideLineNumbers = adapter instanceof MiniAdapter ? adapter.nonumbers : !hasLineNumbers;
 
 	useIntent("open-saved-queries", showSavedHandle.open);
 	useIntent("open-query-history", showHistoryHandle.open);
@@ -177,7 +171,7 @@ export function QueryView() {
 								editor={editor}
 								showVariables={showVariables}
 								selection={selection}
-								lineNumbers={!hideLineNumbers}
+								lineNumbers={hasLineNumbers}
 								onSaveQuery={handleSaveRequest}
 								setShowVariables={setShowVariables}
 								onSelectionChange={setSelection}
@@ -197,7 +191,7 @@ export function QueryView() {
 										isValid={variablesValid}
 										setIsValid={setVariablesValid}
 										closeVariables={closeVariables}
-										lineNumbers={!hideLineNumbers}
+										lineNumbers={hasLineNumbers}
 										editor={editor}
 									/>
 								</Panel>

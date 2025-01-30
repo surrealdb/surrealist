@@ -146,11 +146,12 @@ export function BillingPage() {
 		});
 	});
 
-	const usageCharge = measureComputeCost(usageQuery.data ?? []);
 	const couponCount = couponQuery.data?.length ?? 0;
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
+	const usageCharge = measureComputeCost(usageQuery.data ?? []);
+	const hasCoupons = couponQuery.isSuccess && couponQuery.data.length > 0;
 
 	return (
 		<Box
@@ -186,7 +187,7 @@ export function BillingPage() {
 
 					<Section
 						title="Usage charges"
-						description="The current months usage charges for this organization"
+						description="Your organization's usage charges for the current month"
 					>
 						<Paper
 							p="xl"
@@ -229,7 +230,7 @@ export function BillingPage() {
 														c="bright"
 														fw={500}
 													>
-														${charge.cost.toFixed(2)}
+														${charge.cost.toFixed(3)}
 													</Text>{" "}
 													<Text span>
 														for {charge.hours.toString()} compute hours
@@ -249,8 +250,7 @@ export function BillingPage() {
 								c="slate"
 								mt="sm"
 							>
-								This amount is an indication, the final amount may vary based on
-								other factors
+								This amount is an estimation, final amounts may vary.
 							</Text>
 						</Paper>
 					</Section>
@@ -430,7 +430,7 @@ export function BillingPage() {
 							</Group>
 						</Form>
 
-						{couponQuery.data?.length && (
+						{hasCoupons && (
 							<>
 								<Text
 									fz="lg"
