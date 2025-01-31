@@ -1,14 +1,8 @@
 <br>
 
 <div align="center">
-	<img src=".github/images/banner.png">
+	<img src=".github/images/thumbnail.jpg" alt="Surrealist">
 </div>
-
-<br>
-
-<h1 align="center">
-  <a href="https://surrealdb.com/docs/surrealist"><img src=".github/images/logo-text.png" height="34"></a>
-</h1>
 
 <br> 
 <p align="center">
@@ -41,79 +35,92 @@
     <a href="https://stackoverflow.com/questions/tagged/surrealdb"><img height="25" src="https://github.com/surrealdb/.github/blob/main/img/social/stack-overflow.svg?raw=true" alt="Stack Overflow"></a>
 </p>
 
-Surrealist is the ultimate way to visually manage your [SurrealDB](https://surrealdb.com/) database. Effortlessly connect to any SurrealDB database and execute queries, explore your tables and records, design your preferred schema, and much more. Surrealist is designed to suit a broad range of workflows, so whether you are pushing SurrealDB to its limits, or just getting started, Surrealist is the perfect tool to use.
+<h2><img height="20" src=".github/images/icon.webp">&nbsp;&nbsp;What is Surrealist?</h2>
 
-## Surrealist Documentation
-You can [read our documentation](https://surrealdb.com/docs/surrealist) for information on how to install and get started using Surrealist.
+Surrealist is a user interface for interacting with your [SurrealDB](https://surrealdb.com/) database visually. It enables you to seamlessly connect to any SurrealDB instance, allowing you to execute queries, explore your tables, design your schemas, and much more. Surrealist is designed to suit a broad range of workflows, so whether you are just getting started, or pushing SurrealDB to its limits, Surrealist is the perfect tool to use.
 
-## Learn SurrealDB
+**Key features of Surrealist include:**
+
+- **Visual querying** using the Query View, with support for query syntax highlighting, saved queries, and graph visualization.
+
+- **Data exploration** using the Explorer View, where you can browse your tables, inspect records, and follow relationships.
+
+- **Schema designing** using the Designer View, which generates a visual diagram of your database schema.
+
+- **Surreal Cloud** management panel, allowing you to effortlessly provision and connect to your Cloud instances
+
+- **Ask Sidekick** - a powerful AI assistant that helps you write queries, explore your data, and design your schema.
+
+Learn more about Surrealist by visiting [the website](https://surrealdb.com/surrealist) or reading the [documentation](https://surrealdb.com/docs/surrealist).
+
+<h2><img height="20" src=".github/images/icons/contents.svg">&nbsp;&nbsp;Contents</h2>
+
+- [Features](#features)
+- [Learn SurrealDB](#Learn-SurrealDB)
+- [Getting started](#Getting-started)
+	- [surrealist.app](#Using-the-Web-App)
+	- [Install desktop app](#Using-the-Desktop-App)
+- [Surreal Cloud](#surreal-cloud)
+- [Contributing](#contributing)
+- [Disclaimer](#disclaimer)
+- [License](#license)
+
+<h2><img height="20" src=".github/images/icons/features.svg">&nbsp;&nbsp;Features</h2>
+
+- [x] Query syntax highlighting
+- [x] Data exploration with filtering support
+- [x] GraphQL querying support with syntax highlighting
+- [x] Visual schema creation and visualization
+- [x] Write and manage your stored procedures and functions
+- [x] Manage database access rules, user accounts, and resource permissions
+- [x] Upload SurrealML models directly to your database
+- [x] Auto-generated API documentation for your database
+- [x] One-click local database serving
+- [x] Sandbox environment for testing and learning
+- [x] Command palette for quick navigation
+- [x] Integrated AI assistant for asking questions and writing queries
+- [x] Surreal Cloud management panel for provisioning instances
+
+<h2><img height="20" src=".github/images/icons/documentation.svg">&nbsp;&nbsp;Learn SurrealDB</h2>
 
 - SurrealDB University: https://surrealdb.com/learn/fundamentals
 - Aeon's Surreal Renaissance (Interative book): https://surrealdb.com/learn/book
 - Documentation: https://surrealdb.com/docs/surrealdb
 
-## Using the Web App
-The quickest way to jump into Surrealist is using the web app at https://surrealist.app/
+<h2><img height="20" src=".github/images/icons/gettingstarted.svg">&nbsp;&nbsp;Getting Started</h2>
 
-The Surrealist web app provides a fully functional database management experience with support for multiple connections and an integrated sandbox environment.
+Surrealist is easy to get started with, as we provide both a web app and a desktop app for you to use. While the web app is the quickest way to get started, the desktop app provides additional features such as local database serving and opening queries from disk.
 
-While the web app provides a full database management experience, it is recommended to download and install the desktop app for the complete Surrealist experience and gain features such as one-click database serving.
+### Using the Web App
+Visit https://surrealist.app/ to start using Surrealist in your browser.
 
-## Using the Desktop App
-You can download the latest version of Surrealist Desktop from our [Releases](https://github.com/surrealdb/surrealist/releases) page. This version is the recommended way to interact with SurrealDB, as it supports additional features over the web app.
+### Using the Desktop App
+You can download the latest version of Surrealist Desktop [here](https://surrealdb.com/surrealist?download) or find a list of releases on the [GitHub](https://github.com/surrealdb/surrealist/releases) page. This version is the recommended way to interact with SurrealDB, as it supports additional features over the web app.
 
-## Features
+<h2><img height="20" src=".github/images/icons/cloud.svg">&nbsp;&nbsp;Surreal Cloud</h2>
 
-### Query view
-Use the Query View to execute queries against your database. You can define variables in the Variables panel and use them in your queries, and browse the results in the Results panel.
+<a href="https://surrealdb.com/cloud#gh-dark-mode-only" target="_blank">
+    <img width="100%" src=".github/images/cloud-dark.png" alt="Surreal Cloud">
+</a>
+<a href="https://surrealdb.com/cloud#gh-light-mode-only" target="_blank">
+    <img width="100%" src=".github/images/cloud-light.png" alt="Surreal Cloud">
+</a>
 
-Additionally, queries can be saved and organized in your Saved queries, while you can view a list of recent queries in the History drawer.
+SurrealDB is available as a [hosted platform](https://surrealist.app/cloud). Forget about infrastructure operations, monitoring, backups or capacity planning. [Surreal Cloud](https://surrealdb.com/cloud) allows you to focus on building great products using the power and flexibility of SurrealDB in just a few clicks. Grow from prototype to enterprise-scale. The Surreal Cloud scalable architecture allows your database to evolve as your application grows, ensuring you are always ahead of demand.
 
-### Explorer view
-The Explorer View is used to browse your database and inspect individual records. When you select a table in the left panel, the table contents will be displayed in the Record Explorer. You can click on a record id to open the record inspector, in which you can edit the record contents and traverse graph relationships.
+Surrealist features an integrated Surreal Cloud management panel, allowing you to effortlessly provision and connect to your Cloud instances, manage your billing, and monitor your usage. The Surreal Cloud panel is available in both the web and desktop apps.
 
-### GraphQL view
-The GraphQL View allows you to interact with your database using GraphQL queries. Using the integrated GraphQL editor, you can write queries and mutations, and view results directly in the interface.
+<h2><img height="20" src=".github/images/icons/contributing.svg">&nbsp;&nbsp;Contributing</h2>
 
-### Designer view
-The Designer View is a powerful tool you can use to define and manage your database schemas. You can create tables & edges, modify the database schema, and visualize the database tables in a graph view.
-
-### Authentication view
-Use the Authentication View to manage access to the database by creating namespace logins, database logins, or scopes.
-
-### Functions view
-Create and manage your schema level functions using the Functions view. Easily write your functions using the builtin SurrealQL editor, define their input parameters, and configure access permissions.
-
-### Models view
-Use the Models View to upload SurML files to the database and list out available machine learning models.
-
-### API Docs view
-The API Docs help you develop against your SurrealDB database faster by providing personalized API documentation in many available languages.
-
-### Local database serving
-Using the desktop app you can effortlessly start a local SurrealDB database directly from the interface, while following logging output from the console drawer.
-
-You can choose whether the local database is stored in memory or stored on disk on the Settings screen.
-
-### Sandbox
-The Sandbox provides an easy to use playground to test, experiment, and learn SurrealDB. You can use the sandbox without having
-to start a database up, and data will be reset after you close Surrealist. Additionally, you can use the buttons in the toolbar
-to manually reset the sandbox or load an official dataset.
-
-### Command Palette
-For advanced usage Surrealist provides a command palette accessible using `cmd/ctrl + K` which allows you to easily navigate to any part of the interface and trigger any action.
-
-### And much more
-Explore the full list of features [in the docs](https://surrealdb.com/docs/surrealist).
-
-## Contributing
 We welcome any issues and PRs submitted to Surrealist. Before you open an issue or PR please read our [Contributor Guide](CONTRIBUTING.md).
 
-## Disclaimer
+<h2><img height="20" src=".github/images/icons/tick.svg">&nbsp;&nbsp;Disclaimer</h2>
+
 - Surrealist aims to stay up-to-date with the latest stable release of SurrealDB. We cannot guarantee support for latest nightly builds.
 - Connections to remote servers may require a HTTPS connection. You can easily configure SSL for your server using tools like Letsencrypt and nginx.
 
-## License
+<h2><img height="20" src=".github/images/icons/license.svg">&nbsp;&nbsp;License</h2>
+
 Source code for Surrealist is licensed under the [MIT license](LICENSE).
 
-Copyright © 2024 SurrealDB Ltd
+Copyright © 2025 SurrealDB Ltd
