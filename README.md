@@ -100,10 +100,10 @@ You can download the latest version of Surrealist Desktop [here](https://surreal
 <h2><img height="20" src=".github/images/icons/cloud.svg">&nbsp;&nbsp;Surreal Cloud</h2>
 
 <a href="https://surrealdb.com/cloud#gh-dark-mode-only" target="_blank">
-    <img width="100%" src=".github/images/cloud-dark.png" alt="Surreal Cloud">
+    <img width="100%" src=".github/images/cloud-light.png" alt="Surreal Cloud">
 </a>
 <a href="https://surrealdb.com/cloud#gh-light-mode-only" target="_blank">
-    <img width="100%" src=".github/images/cloud-light.png" alt="Surreal Cloud">
+    <img width="100%" src=".github/images/cloud-dark.png" alt="Surreal Cloud">
 </a>
 
 SurrealDB is available as a [hosted platform](https://surrealist.app/cloud). Forget about infrastructure operations, monitoring, backups or capacity planning. [Surreal Cloud](https://surrealdb.com/cloud) allows you to focus on building great products using the power and flexibility of SurrealDB in just a few clicks. Grow from prototype to enterprise-scale. The Surreal Cloud scalable architecture allows your database to evolve as your application grows, ensuring you are always ahead of demand.
