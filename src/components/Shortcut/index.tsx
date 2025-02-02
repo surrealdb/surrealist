@@ -60,23 +60,19 @@ function displayKey(key: string) {
 			);
 		}
 		case "alt": {
-			return isMac ? (
+			return (
 				<Icon
 					path={iconKeyboardOption}
 					size={0.7}
 				/>
-			) : (
-				<Text>Alt</Text>
 			);
 		}
 		case "ctrl": {
-			return isMac ? (
+			return (
 				<Icon
 					path={iconKeyboardControl}
 					size={0.7}
 				/>
-			) : (
-				<Text>Ctrl</Text>
 			);
 		}
 		case "shift": {
