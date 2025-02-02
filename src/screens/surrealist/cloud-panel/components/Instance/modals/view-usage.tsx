@@ -65,8 +65,8 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 	return (
 		<Stack>
 			<Paper
-				bg="slate.9"
 				p="xl"
+				bg={isLight ? "slate.0" : "slate.9"}
 				style={{ userSelect: "text", WebkitUserSelect: "text" }}
 			>
 				<Group>
@@ -155,10 +155,7 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 
 				{computeHistory.length > 1 && (
 					<>
-						<Divider
-							my="xl"
-							color="slate.6"
-						/>
+						<Divider my="xl" />
 
 						<Label>Instance type breakdown</Label>
 
