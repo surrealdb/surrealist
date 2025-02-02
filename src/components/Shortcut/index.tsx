@@ -48,8 +48,6 @@ export function Shortcut({ value, ...rest }: ShortcutProps) {
 }
 
 function displayKey(key: string) {
-	const isMac = adapter.platform === "darwin";
-
 	switch (key) {
 		case "command": {
 			return (

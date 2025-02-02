@@ -28,6 +28,7 @@ import {
 } from "~/util/icons";
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { RecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
@@ -48,7 +49,6 @@ import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
-import clsx from "clsx";
 
 export interface ExplorerPaneProps {
 	activeTable: string;
