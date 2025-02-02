@@ -54,11 +54,11 @@ export function ChatMessage({
 				<Group>
 					<Loader
 						size={14}
-						color="slate.5"
+						color={isLight ? "slate.5" : "slate.4"}
 					/>
 					<Text
 						size="lg"
-						c="white"
+						c={isLight ? "slate.5" : "slate.4"}
 					>
 						{message.thinking}
 					</Text>
