@@ -29,7 +29,7 @@ import {
 	useCommandKeybinds,
 	useCommandRegistry,
 } from "~/providers/Commands";
-import { displayBinding } from "~/providers/Commands/keybindings";
+import { displayBinding, formatBinding } from "~/providers/Commands/keybindings";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconEdit, iconPlus, iconSearch } from "~/util/icons";
@@ -133,7 +133,11 @@ export function KeybindingsTab() {
 												<ActionButton
 													ml="xl"
 													variant="subtle"
-													label={active ? "Edit keybinding" : "Add keybinding"}
+													label={
+														active
+															? "Edit keybinding"
+															: "Add keybinding"
+													}
 													onClick={() => {
 														setRecordCommand(cmd);
 														recordingHandle.open();
@@ -229,12 +233,13 @@ function RecordingModal({ command, commands, keybindMap, onClose }: RecordingMod
 					Enter your desired keybinding
 				</PrimaryTitle>
 				{hasOldBinding && (
-					<Text
-						fz="sm"
-						mt="xs"
+					<Group
+						gap="xs"
+						mt="sm"
 					>
-						Currently bound to <b>{displayBinding(active)}</b>
-					</Text>
+						<Text>Currently bound to</Text>
+						<Shortcut value={active ?? []} />
+					</Group>
 				)}
 			</Box>
 			<Box>

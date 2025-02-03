@@ -14,7 +14,7 @@ import {
 
 import { toggle } from "radash";
 import { isDesktop } from "~/adapter";
-import type { Selection, SurrealistConfig } from "~/types";
+import type { Listable, Selection, SurrealistConfig } from "~/types";
 import { featureFlags } from "./feature-flags";
 import { optional } from "./helpers";
 
@@ -66,6 +66,13 @@ export class TextController {
  */
 export class SelectionController<T extends string> {
 	constructor(public options: ReaderWriter<T> & { options: Selection<T> }) {}
+}
+
+/**
+ * A preference controller for a a set of boolean flags
+ */
+export class FlagSetController<K extends string, T extends Record<K, boolean>> {
+	constructor(public options: ReaderWriter<T> & { options: Listable<K> }) {}
 }
 
 /**
