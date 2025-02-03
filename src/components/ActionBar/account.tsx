@@ -160,7 +160,10 @@ export function CloudAccount() {
 					</Avatar>
 				</Menu.Target>
 				<Menu.Dropdown w={200}>
-					<Box p="sm">
+					<Box
+						p="sm"
+						style={{ userSelect: "text", WebkitUserSelect: "text" }}
+					>
 						<Text
 							fz="md"
 							fw={500}
