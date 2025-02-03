@@ -124,7 +124,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Alert>
 			</Stack>
 		),
-		confirmText: "Deleting",
+		confirmText: "Delete",
 		title: `Delete ${value.name}`,
 		verification: value.name,
 		verifyText: "Type the instance name to confirm",
