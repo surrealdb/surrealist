@@ -1,13 +1,33 @@
-import { type BoxProps, Checkbox, NumberInput, Select, TextInput } from "@mantine/core";
+import {
+	type BoxProps,
+	Button,
+	Checkbox,
+	Combobox,
+	Group,
+	Input,
+	Menu,
+	MultiSelect,
+	NumberInput,
+	Paper,
+	Select,
+	SimpleGrid,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
+import { Switch } from "@mantine/core";
 import { isNumber } from "radash";
 import { useConfigStore } from "~/stores/config";
+import { iconChevronDown } from "~/util/icons";
 import {
 	CheckboxController,
+	FlagSetController,
 	NumberController,
 	type PreferenceController,
 	SelectionController,
 	TextController,
 } from "~/util/preferences";
+import { Icon } from "../Icon";
 
 export interface PreferenceInputProps extends BoxProps {
 	controller: PreferenceController;
@@ -72,6 +92,53 @@ export function PreferenceInput({ controller, compact, ...other }: PreferenceInp
 					applyPreference(controller.options.writer, input);
 				}}
 			/>
+		);
+	}
+
+	if (controller instanceof FlagSetController) {
+		return (
+			<Paper
+				p="md"
+				{...other}
+			>
+				<SimpleGrid cols={{ base: 1, sm: 2, xl: 3 }}>
+					{controller.options.options.map((flag, i) => (
+						<Switch
+							key={i}
+							styles={{
+								labelWrapper: {
+									flex: 1,
+								},
+								body: {
+									width: "100%",
+								},
+							}}
+							label={
+								<Group
+									fz="lg"
+									miw={controller.options.minWidth}
+								>
+									{flag.icon && (
+										<Icon
+											path={flag.icon}
+											size="sm"
+										/>
+									)}
+									<Text fw={500}>{flag.label}</Text>
+								</Group>
+							}
+							variant="gradient"
+							checked={value[flag.value] ?? controller.options.default ?? false}
+							onChange={(event) => {
+								applyPreference(controller.options.writer, {
+									...value,
+									[flag.value]: event.target.checked,
+								});
+							}}
+						/>
+					))}
+				</SimpleGrid>
+			</Paper>
 		);
 	}
 }

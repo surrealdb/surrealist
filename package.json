@@ -1,12 +1,10 @@
 {
 	"name": "surrealist",
 	"private": true,
-	"version": "3.2.0",
+	"version": "3.2.1",
 	"surreal": "2.0.0",
 	"type": "module",
-	"authors": [
-		"SurrealDB"
-	],
+	"authors": ["SurrealDB"],
 	"scripts": {
 		"build": "tsc && vite build",
 		"dev": "vite",

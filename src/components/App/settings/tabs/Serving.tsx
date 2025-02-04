@@ -1,7 +1,7 @@
-import { NumberInput, ScrollArea, Select, SimpleGrid, Text, TextInput } from "@mantine/core";
+import { NumberInput, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
-import type { LogLevel, Selection } from "~/types";
+import type { LogLevel, Selectable } from "~/types";
 import { SettingsSection } from "../utilities";
 
 const CAT = "serving";
@@ -13,7 +13,7 @@ const DRIVERS = [
 	{ label: "TiKV", value: "tikv" },
 ];
 
-const LOG_LEVELS: Selection<LogLevel> = [
+const LOG_LEVELS: Selectable<LogLevel>[] = [
 	{ label: "Error", value: "error" },
 	{ label: "Warn", value: "warn" },
 	{ label: "Info", value: "info" },

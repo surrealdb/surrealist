@@ -2,7 +2,7 @@ import { TextInput, type TextInputProps } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
 import { type KeyboardEvent, useRef } from "react";
 import { useStable } from "~/hooks/stable";
-import { displayBinding, isModifierKey, sanitizeKey } from "~/providers/Commands/keybindings";
+import { formatBinding, isModifierKey, sanitizeKey } from "~/providers/Commands/keybindings";
 
 export interface KeybindInputProps extends Omit<TextInputProps, "value" | "onChange"> {
 	value?: string[];
@@ -43,7 +43,7 @@ export function KeybindInput({ value, onChange, ...rest }: KeybindInputProps) {
 	return (
 		<TextInput
 			readOnly
-			value={displayBinding(_value)}
+			value={formatBinding(_value)}
 			onKeyDown={handleKeyDown}
 			onKeyUp={handleKeyUp}
 			styles={{

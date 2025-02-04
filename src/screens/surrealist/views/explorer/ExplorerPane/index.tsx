@@ -1,5 +1,6 @@
+import classes from "./style.module.scss";
+
 import {
-	ActionIcon,
 	Box,
 	Button,
 	Center,
@@ -27,6 +28,7 @@ import {
 } from "~/util/icons";
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { RecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
@@ -45,7 +47,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { themeColor } from "~/util/mantine";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 
@@ -264,14 +265,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					value={filter}
 					spellCheck={false}
 					onChange={setFilter}
-					error={!isFilterValid}
 					autoFocus
-					styles={() => ({
-						input: {
-							fontFamily: "JetBrains Mono",
-							borderColor: `${isFilterValid ? undefined : themeColor("pink.9")} !important`,
-						},
-					})}
+					className={clsx(!isFilterValid && classes.filterInvalid)}
 				/>
 			)}
 			{recordQuery.isLoading ? null : records.length > 0 ? (
@@ -295,10 +290,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					<LoadingContainer visible={recordQuery.isFetching} />
 				</ScrollArea>
 			) : (
-				<Center h="90%">
+				<Center flex={1}>
 					<Stack
-						inset={0}
-						pos="absolute"
 						align="center"
 						justify="center"
 						gap="xl"

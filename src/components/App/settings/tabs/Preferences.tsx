@@ -1,4 +1,14 @@
-import { Box, Divider, Group, Paper, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import {
+	Box,
+	Divider,
+	Flex,
+	Group,
+	Paper,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Fragment, useMemo } from "react";
 import { Icon } from "~/components/Icon";
@@ -6,7 +16,16 @@ import { PreferenceInput } from "~/components/Inputs/preference";
 import { Spacer } from "~/components/Spacer";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconSearch } from "~/util/icons";
-import { computePreferences } from "~/util/preferences";
+import {
+	FlagSetController,
+	Preference,
+	PreferenceController,
+	computePreferences,
+} from "~/util/preferences";
+
+function isTallInput(preference: Preference) {
+	return preference.controller instanceof FlagSetController;
+}
 
 export function PreferencesTab() {
 	const [search, setSearch] = useInputState("");
@@ -80,26 +99,42 @@ export function PreferencesTab() {
 							mt="lg"
 							gap="lg"
 						>
-							{section.preferences.map((preference, j) => (
-								<Fragment key={j}>
-									<Group>
-										<Box>
-											<Text c="bright">{preference.name}</Text>
-											{preference.description && (
+							{section.preferences.map((preference, j) => {
+								const isTall = isTallInput(preference);
+
+								return (
+									<Fragment key={j}>
+										<Flex
+											align={isTall ? "strech" : "center"}
+											direction={isTall ? "column" : "row"}
+											w="100%"
+										>
+											<Box>
 												<Text
-													fz="sm"
-													c="slate"
+													c="bright"
+													fw={500}
 												>
-													{preference.description}
+													{preference.name}
 												</Text>
-											)}
-										</Box>
-										<Spacer />
-										<PreferenceInput controller={preference.controller} />
-									</Group>
-									{j < section.preferences.length - 1 && <Divider />}
-								</Fragment>
-							))}
+												{preference.description && (
+													<Text
+														fz="sm"
+														c="slate"
+													>
+														{preference.description}
+													</Text>
+												)}
+											</Box>
+											<Spacer />
+											<PreferenceInput
+												controller={preference.controller}
+												mt={isTall ? "lg" : undefined}
+											/>
+										</Flex>
+										{j < section.preferences.length - 1 && <Divider />}
+									</Fragment>
+								);
+							})}
 						</Stack>
 					</Box>
 				))}

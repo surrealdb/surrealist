@@ -31,7 +31,7 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import type { CloudInstance, Selection } from "~/types";
+import type { CloudInstance, Selectable } from "~/types";
 import { iconChevronDown, iconClose, iconPlus } from "~/util/icons";
 
 const RPCS = [
@@ -276,7 +276,7 @@ function OptionsCapability({
 	data,
 	disabled,
 	onChange,
-}: CapabilityProps<string[]> & { data: Selection }) {
+}: CapabilityProps<string[]> & { data: Selectable[] }) {
 	const [isExpanded, expandedHandle] = useBoolean();
 
 	const updateSelection = (event: React.ChangeEvent<HTMLInputElement>, item: string) => {

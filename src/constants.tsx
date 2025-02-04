@@ -32,7 +32,6 @@ import type {
 	ScaleStep,
 	SchemaMode,
 	Selectable,
-	Selection,
 	SidebarMode,
 	SyntaxTheme,
 	ViewInfo,
@@ -88,7 +87,7 @@ export const DATASETS: Record<string, Dataset> = {
 	},
 };
 
-export const SCALE_STEPS: Selection<ScaleStep> = [
+export const SCALE_STEPS: Selectable<ScaleStep>[] = [
 	{ label: "125%", value: "125" },
 	{ label: "110%", value: "110" },
 	{ label: "100%", value: "100" },
@@ -96,13 +95,13 @@ export const SCALE_STEPS: Selection<ScaleStep> = [
 	{ label: "75%", value: "75" },
 ];
 
-export const THEMES: Selection<MantineColorScheme> = [
+export const THEMES: Selectable<MantineColorScheme>[] = [
 	{ label: "Automatic", value: "auto" },
 	{ label: "Light", value: "light" },
 	{ label: "Dark", value: "dark" },
 ];
 
-export const SYNTAX_THEMES: Selection<SyntaxTheme> = [
+export const SYNTAX_THEMES: Selectable<SyntaxTheme>[] = [
 	{ label: "Default", value: "default" },
 	{ label: "Vivid", value: "vivid" },
 ];
@@ -337,20 +336,20 @@ export const GEOMETRY_TYPES = [
 	{ label: "Collection", value: "collection" },
 ];
 
-export const DESIGNER_NODE_MODES: Selection<DiagramMode> = [
+export const DESIGNER_NODE_MODES: Selectable<DiagramMode>[] = [
 	{ label: "Default", value: "default" },
 	{ label: "Fields", value: "fields" },
 	{ label: "Summary", value: "summary" },
 	{ label: "Simple", value: "simple" },
 ];
 
-export const DESIGNER_DIRECTIONS: Selection<DiagramDirection> = [
+export const DESIGNER_DIRECTIONS: Selectable<DiagramDirection>[] = [
 	{ label: "Default", value: "default" },
 	{ label: "Left to right", value: "ltr" },
 	{ label: "Right to left", value: "rtl" },
 ];
 
-export const DESIGNER_LINKS: Selection<DiagramLinks> = [
+export const DESIGNER_LINKS: Selectable<DiagramLinks>[] = [
 	{ label: "Default", value: "default" },
 	{ label: "Hide record links", value: "hidden" },
 	{ label: "Show record links", value: "visible" },

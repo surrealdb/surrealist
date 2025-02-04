@@ -6,7 +6,6 @@ import {
 	Box,
 	Center,
 	Group,
-	Menu,
 	ScrollArea,
 	Stack,
 	Text,

@@ -13,6 +13,7 @@ export function useIntercom() {
 			user_id: profile.username || undefined,
 			name: profile.name || undefined,
 			avatar: profile.picture || undefined,
+			user_hash: profile.user_hmac || undefined,
 		});
 	}
 }
