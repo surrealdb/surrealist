@@ -48,13 +48,13 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Initialising",
 			component: DocsGlobalInit,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["cli", "java", "c"],
 		},
 		{
 			id: newId(),
 			title: "Connecting",
 			component: DocsGlobalConnecting,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["java", "c"],
 		},
 		// {
 		// 	id: newId(),
@@ -66,19 +66,19 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Namespaces",
 			component: DocsGlobalNamespaces,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["java", "c"],
 		},
 		{
 			id: newId(),
 			title: "Databases",
 			component: DocsGlobalDatabases,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["java", "c"],
 		},
 		{
 			id: newId(),
 			title: "Authentication",
 			icon: iconAuth,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["java", "c"],
 			topics: [
 				// {
 				// 	id: newId(),
@@ -120,7 +120,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Schema",
 			icon: iconDesigner,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["java", "c"],
 			topics: [
 				// {
 				// 	id: newId(),
@@ -167,7 +167,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: `Tables`,
 			icon: iconTable,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["java", "c"],
 			component: DocsTablesSelector,
 			topics: [
 				{
@@ -236,7 +236,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Concepts",
 			icon: iconStar,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["java", "c"],
 			topics: [
 				{
 					id: newId(),
@@ -259,7 +259,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Learn more",
 			icon: iconBook,
-			excludeLanguages: ["c"],
+			excludeLanguages: ["java", "c"],
 			topics: [
 				{
 					id: newId(),
