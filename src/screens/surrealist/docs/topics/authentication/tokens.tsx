@@ -18,6 +18,9 @@ export function DocsAuthTokens({ language, topic }: TopicProps) {
 			let jwt = Jwt::from("...");
 			db.authenticate(jwt).await?;
 		`,
+			py: `
+		db.authenticate("jwt")
+		`,
 			go: `
 		db.Authenticate("jwt")
 		`,

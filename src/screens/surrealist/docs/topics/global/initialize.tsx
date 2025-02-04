@@ -19,7 +19,7 @@ export function DocsGlobalInit({ language }: TopicProps) {
 			surreal sql --endpoint ${esc_endpoint} --namespace ${esc_namespace} --database ${esc_database}
 		`,
 			js: `
-			import { Surreal } from 'surrealdb';
+			import Surreal from 'surrealdb';
 
 			// Create a new Surreal instance
 			const db = new Surreal();

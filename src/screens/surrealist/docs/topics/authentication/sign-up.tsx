@@ -16,14 +16,30 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `
+			// Sign up with a Scope user in version < 1.0
 			await db.signup({
 				namespace: ${esc_namespace},
 				database: ${esc_database},
 				scope: "user",
-				email: "info@surrealdb.com",
-				pass: "123456",
+				variables: {
+					email: 'info@surrealdb.com',
+					pass: '123456',
+				},
 			});
-		`,
+
+			// With Record Access
+			 await db.signup({
+				namespace: 'surrealdb',
+				database: 'docs',
+				access: 'user',
+
+				// Also pass any properties required by the scope definition
+				variables: {
+					email: 'info@surrealdb.com',
+					pass: '123456',
+				},
+			});
+					`,
 			rust: `
 			use serde::Serialize;
 			use surrealdb::opt::auth::Record;
@@ -48,17 +64,17 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 		`,
 			py: `
 		# With Record Access
-db.signup({
-	"namespace": ${esc_namespace},
-	"database": ${esc_database},
-	"access": 'account',
+		db.signup({
+			"namespace": ${esc_namespace},
+			"database": ${esc_database},
+			"access": 'account',
 
-    # Also pass any properties required by the access definition
-	"variables": {
-        "email": 'info@surrealdb.com',
-        "password": '123456'
-    }
-})
+			# Also pass any properties required by the access definition
+			"variables": {
+				"email": 'info@surrealdb.com',
+				"password": '123456'
+			}
+		})
 		`,
 			go: `
 		db.Signup(map[string]string{
