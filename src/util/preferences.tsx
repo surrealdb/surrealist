@@ -162,39 +162,6 @@ export function computePreferences(): PreferenceSection[] {
 						},
 					}),
 				},
-				{
-					name: "Sidebar appearance",
-					description: "Control the appearance of the sidebar",
-					controller: new SelectionController({
-						options: SIDEBAR_MODES,
-						reader: (config) => config.settings.appearance.sidebarMode,
-						writer: (config, value) => {
-							config.settings.appearance.sidebarMode = value;
-						},
-					}),
-				},
-				...optional<Preference>(
-					sidebar_customization && {
-						name: "Customise sidebar views",
-						description: "Show or hide individual views in the sidebar",
-						controller: new FlagSetController({
-							default: true,
-							minWidth: 175,
-							title: (n) => `${n} views enabled`,
-							options: Object.values(VIEW_MODES).map((mode) => ({
-								label: mode.name,
-								value: mode.id,
-								icon: mode.icon,
-							})),
-							reader: (config) => {
-								return config.settings.appearance.sidebarViews;
-							},
-							writer: (config, value) => {
-								config.settings.appearance.sidebarViews = value;
-							},
-						}),
-					},
-				),
 			],
 		},
 		{
@@ -280,6 +247,43 @@ export function computePreferences(): PreferenceSection[] {
 						},
 					}),
 				},
+			],
+		},
+		{
+			name: "Sidebar",
+			preferences: [
+				{
+					name: "Sidebar appearance",
+					description: "Control the appearance of the sidebar",
+					controller: new SelectionController({
+						options: SIDEBAR_MODES,
+						reader: (config) => config.settings.appearance.sidebarMode,
+						writer: (config, value) => {
+							config.settings.appearance.sidebarMode = value;
+						},
+					}),
+				},
+				...optional<Preference>(
+					sidebar_customization && {
+						name: "Customise sidebar views",
+						description: "Show or hide individual views in the sidebar",
+						controller: new FlagSetController({
+							default: true,
+							title: (n) => `${n} views enabled`,
+							options: Object.values(VIEW_MODES).map((mode) => ({
+								label: mode.name,
+								value: mode.id,
+								icon: mode.icon,
+							})),
+							reader: (config) => {
+								return config.settings.appearance.sidebarViews;
+							},
+							writer: (config, value) => {
+								config.settings.appearance.sidebarViews = value;
+							},
+						}),
+					},
+				),
 			],
 		},
 		{
