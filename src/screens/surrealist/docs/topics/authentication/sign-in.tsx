@@ -130,11 +130,54 @@ db.signin({
 })
 		`,
 			go: `
-		db.Signin(map[string]string{
-			"user": "root",
-			"pass": "root",
-		})
-		`,
+	// Sign in as a root user
+	authData := &surrealdb.Auth{
+		Username: "root", // use your setup username
+		Password: "root", // use your setup password
+	}
+	token, err := db.SignIn(authData)
+	if err != nil {
+		panic(err)
+	}
+
+	// Sign in to authentication db using the namespace user
+	authData := &surrealdb.Auth{
+		Username: "root", // use your setup username
+		Password: "root", // use your setup password
+        Namespace = "test", 
+	}
+	token, err := db.SignIn(authData)
+	if err != nil {
+		panic(err)
+	}
+
+	// Sign in to authentication db using the database user
+	authData := &surrealdb.Auth{
+		Username: "root", // use your setup username
+		Password: "root", // use your setup password
+        Namespace = "test", 
+        Database = "test",
+	}
+	token, err := db.SignIn(authData)
+	if err != nil {
+		panic(err)
+	}
+
+	// Sign in to authentication db using the record accessmethod
+	authData := &surrealdb.Auth{
+		Username: "root", // use your setup username
+		Password: "root", // use your setup password
+        Namespace = "test", 
+        Database = "test",
+		Access = "user",
+        Email = "info@surrealdb.com",
+        Password = "123456"
+		}
+		token, err := db.SignIn(authData)
+		if err != nil {
+			panic(err)
+		}
+	`,
 			csharp: `
 		// Sign in as root user
 		await db.SignIn(

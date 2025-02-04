@@ -26,7 +26,7 @@ db.delete('${table.schema.name}')
 db.delete(RecordID('${table.schema.name}', 'h5wxrf2ewk8xjxosxtyc'))
 		`,
 			go: `
-		db.Delete("${table.schema.name}", map[string]interface{}{})
+		db.Delete[models.Table](db, models.Table("${table.schema.name}"));
 		`,
 			csharp: `
 		await db.Delete("${table.schema.name}");

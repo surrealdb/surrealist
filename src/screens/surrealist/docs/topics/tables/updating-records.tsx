@@ -34,27 +34,26 @@ export function DocsTablesUpdatingRecords({ language }: TopicProps) {
 		db.update("${table.schema.name}").await?;
 		`,
 			py: `
-# Update all records in a table
-db.update('${table.schema.name}', {name: "Jaime"})
+			# Update all records in a table
+			db.update('${table.schema.name}', {name: "Jaime"})
 
-# Update a record with a specific ID
-db.update(RecordID('${table.schema.name}', 'tobie'), {
-	"name": 'Tobie',
-	"settings": {
-		"active": True,
-		"marketing": True,
-	}
-})
+			# Update a record with a specific ID
+			db.update(RecordID('${table.schema.name}', 'tobie'), {
+				"name": 'Tobie',
+				"settings": {
+					"active": True,
+					"marketing": True,
+				}
+			})
 
 		`,
 			go: `
-		db.Update("${table.schema.name}", map[string]interface{}{
-			"name": "ElecTwix",
-			"settings": map[string]bool{
-				"active": true,
-				"marketing": true,
-			},
-		});
+// Update a single record in the "persons" table
+updatedPerson, err := surrealdb.Update[${table.schema.name}](db, models.RecordID("persons", "person123"), Person{
+	Name:     "John",
+	Surname:  "Smith", // Updated surname
+	Location: models.NewGeometryPoint(-0.12, 23.00), // Updated location
+})
 		`,
 			csharp: `
 		await db.Upsert("${table.schema.name}", data);

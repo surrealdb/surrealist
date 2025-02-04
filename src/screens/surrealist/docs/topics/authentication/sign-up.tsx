@@ -77,13 +77,19 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 		})
 		`,
 			go: `
-		db.Signup(map[string]string{
-			"NS": "clear-crocodile-production",
-			"DB": "web-scraping-application",
-			"SC": "user",
-			"email": "info@surrealdb.com",
-			"pass": "123456",
-		})
+		authData := &surrealdb.Auth{
+			Username: "root",
+			Password: "root", 
+			Namespace = "test", 
+			Database = "test", 
+			Access = "user",
+			Email = "info@surrealdb.com",
+			Password = "123456"
+		}
+		token, err := db.SignUp(authData)
+		if err != nil {
+			panic(err)
+		}
 		`,
 		csharp: `
 			// With Record Access

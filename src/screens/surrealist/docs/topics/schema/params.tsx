@@ -60,11 +60,10 @@ export function DocsSchemaParams({ language }: TopicProps) {
 		await db.unset('name')
 		`,
 			go: `
-		// Assign a variable on the connection
-
-		db.Let("name", map[string]string{
-			"first": "ElecTwix",
-			"last": "Morgan Hitchcock",
+		// Assign the variable on the connection
+		db.Let("name", new Name { 
+			FirstName = "Tobie", 
+			LastName = "Morgan Hitchcock" 
 		});
 
 		// Use the variable in a subsequent query

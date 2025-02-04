@@ -7,6 +7,10 @@ import { useDocsTable } from "../../hooks/table";
 export function DocsTablesInsertingRecords({ language }: TopicProps) {
 	const table = useDocsTable();
 
+	const fieldName =
+	table.fields.find(({ name }: { name: string }) => !["id", "in", "out"].includes(name))
+		?.name ?? "id";
+
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -53,9 +57,15 @@ db.insert('${table.schema.name}', [
 ])
 		`,
 			go: `
-		db.Query("INSERT INTO ${table.schema.name} {
-			field: value
-		};")
+		// Insert an entry
+		person2, err := surrealdb.Insert[${fieldName}](db, models.Table("${table.schema.name}"), map[interface{}]interface{}{
+			"Name":     "Jane",
+			"Surname":  "Smith",
+			"Location": models.NewGeometryPoint(-0.12, 22.01),
+		})
+		if err != nil {
+			panic(err)
+		}
 		`,
 			csharp: `
 		await db.Merge("${table.schema.name}", data);

@@ -7,6 +7,9 @@ import { useDocsTable } from "../../hooks/table";
 
 export function DocsTablesSelectAllFields({ language }: TopicProps) {
 	const table = useDocsTable();
+	const fieldName =
+		table.fields.find(({ name }: { name: string }) => !["id", "in", "out"].includes(name))
+			?.name ?? "id";
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -23,7 +26,7 @@ export function DocsTablesSelectAllFields({ language }: TopicProps) {
 		db.select('${table.schema.name}');
 		`,
 			go: `
-		db.Select('${table.schema.name}');
+		db.Select[[]${(table.schema.name)}, models.Table](db, models.Table("${fieldName}"))
 		`,
 			csharp: `
 		await db.Select<${pascal(table.schema.name)}>("${table.schema.name}");
