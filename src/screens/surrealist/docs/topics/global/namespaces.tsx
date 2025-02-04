@@ -33,7 +33,7 @@ export function DocsGlobalNamespaces({ language }: TopicProps) {
 		db.Use(namespace:${esc_namespace})
 		`,
 			csharp: `
-		await db.Use(${esc_namespace}, ${esc_database});
+		await db.Use(${esc_namespace});
 		`,
 			java: `
 		driver.use(namespace:${esc_namespace});

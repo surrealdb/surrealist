@@ -53,11 +53,13 @@ export function DocsGlobalInit({ language }: TopicProps) {
 		surrealdb.New("wss://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
+			using SurrealDb.Net;
+			
 			// Connect to a local endpoint
-		var db = new SurrealDbClient("http://127.0.0.1:8000");
+			var db = new SurrealDbClient("http://127.0.0.1:8000");
 
-		// Connect to a remote endpoint
-		var db = new SurrealDbClient("wss://cloud.surrealdb.com/rpc");
+			// Connect to a remote endpoint
+			var db = new SurrealDbClient("wss://cloud.surrealdb.com/rpc");
 		`,
 			java: `
 		// Connect to a local endpoint

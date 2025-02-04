@@ -29,6 +29,9 @@ export function DocsTablesSelect({ language }: TopicProps) {
 			go: `
 
 		`,
+			csharp: `
+		await db.Select<Person>(new StringRecordId("person:h5wxrf2ewk8xjxosxtyc"));
+		`,
 			java: `
 		driver.select("${fieldName}", rowType)
 		`,

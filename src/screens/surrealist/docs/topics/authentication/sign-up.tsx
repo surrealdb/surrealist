@@ -16,7 +16,7 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `
-			// Sign up with a Scope user in version < 1.0
+			// Sign up with a Scope user in version < 2.0
 			await db.signup({
 				namespace: ${esc_namespace},
 				database: ${esc_database},
@@ -85,7 +85,27 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 			"pass": "123456",
 		})
 		`,
-			csharp: `
+		csharp: `
+			// With Record Access
+			var authParams = new AuthParams
+			{
+				Namespace = "test",
+				Database = "test",
+				Access = "user",
+				Email = "info@surrealdb.com",
+				Password = "123456"
+			};
+
+			Jwt jwt = await db.SignUp(authParams);
+
+			public class AuthParams : ScopeAuth
+			{
+				public string? Username { get; set; }
+				public string? Email { get; set; }
+				public string? Password { get; set; }
+			}
+
+		// Sign up with a Scope user in version < 2.0
 		var authParams = new AuthParams
 		{
 			Namespace = "test",

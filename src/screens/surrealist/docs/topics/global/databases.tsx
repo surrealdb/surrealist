@@ -33,7 +33,7 @@ export function DocsGlobalDatabases({ language }: TopicProps) {
 		db.Use(database:${esc_database})
 		`,
 			csharp: `
-		await db.Use(${esc_namespace}, ${esc_database});
+		await db.Use( ${esc_database});
 		`,
 			java: `
 		// Connect to a local endpoint
