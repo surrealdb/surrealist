@@ -66,7 +66,11 @@ import { useDatabaseStore } from "~/stores/database";
 import { featureFlags } from "~/util/feature-flags";
 import { optional } from "~/util/helpers";
 import type { IntentPayload, IntentType } from "~/util/intents";
-import { type PreferenceController, computePreferences } from "~/util/preferences";
+import {
+	FlagSetController,
+	type PreferenceController,
+	computePreferences,
+} from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
 
@@ -581,6 +585,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 					id: `pref-${dash(pref.name.toLowerCase())}`,
 					name: pref.name,
 					icon: iconWrench,
+					unlisted: pref.controller instanceof FlagSetController,
 					action: preference(pref.controller),
 				})),
 			},

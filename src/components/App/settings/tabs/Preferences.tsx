@@ -104,12 +104,18 @@ export function PreferencesTab() {
 
 								return (
 									<Fragment key={j}>
-										<Group
-											align={isTall ? "start" : "center"}
-											// direction={isTall ? "column" : "row"}
+										<Flex
+											align={isTall ? "strech" : "center"}
+											direction={isTall ? "column" : "row"}
+											w="100%"
 										>
 											<Box>
-												<Text c="bright">{preference.name}</Text>
+												<Text
+													c="bright"
+													fw={500}
+												>
+													{preference.name}
+												</Text>
 												{preference.description && (
 													<Text
 														fz="sm"
@@ -122,9 +128,9 @@ export function PreferencesTab() {
 											<Spacer />
 											<PreferenceInput
 												controller={preference.controller}
-												mt={isTall ? "xl" : undefined}
+												mt={isTall ? "lg" : undefined}
 											/>
-										</Group>
+										</Flex>
 										{j < section.preferences.length - 1 && <Divider />}
 									</Fragment>
 								);
