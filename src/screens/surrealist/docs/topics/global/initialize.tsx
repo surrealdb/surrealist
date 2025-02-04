@@ -40,12 +40,11 @@ export function DocsGlobalInit({ language }: TopicProps) {
 			db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
 		`,
 			py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
+			# Connect to a local endpoint with http protocol
+			db = Surreal('http://127.0.0.1:8000')
+
+			# Connect to a remote endpoint with ws protocol
+			db = AsyncSurreal('wss://cloud.surrealdb.com')
 		`,
 			go: `
 		// Connect to a local endpoint

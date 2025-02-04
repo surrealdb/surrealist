@@ -34,13 +34,17 @@ export function DocsTablesUpdatingRecords({ language }: TopicProps) {
 		db.update("${table.schema.name}").await?;
 		`,
 			py: `
-		# Update all records in a table
-		db.update("${table.schema.name}");
+# Update all records in a table
+db.update('${table.schema.name}', {name: "Jaime"})
 
-		# Update a record with a specific ID
-		person = await db.update('${table.schema.name}:${fieldName}', {
-			'name': 'Jill'
-		})
+# Update a record with a specific ID
+db.update(RecordID('${table.schema.name}', 'tobie'), {
+	"name": 'Tobie',
+	"settings": {
+		"active": True,
+		"marketing": True,
+	}
+})
 
 		`,
 			go: `

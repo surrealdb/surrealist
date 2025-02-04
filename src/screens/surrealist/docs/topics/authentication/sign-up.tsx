@@ -47,13 +47,18 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 			let token = jwt.as_insecure_token();
 		`,
 			py: `
-		token = await db.signup({
-			'NS': 'test',
-			'DB': 'test',
-			'SC': 'user',
-			'email': 'info@surrealdb.com',
-			'pass': '123456',
-		})
+		# With Record Access
+db.signup({
+	"namespace": ${esc_namespace},
+	"database": ${esc_database},
+	"access": 'account',
+
+    # Also pass any properties required by the access definition
+	"variables": {
+        "email": 'info@surrealdb.com',
+        "password": '123456'
+    }
+})
 		`,
 			go: `
 		db.Signup(map[string]string{

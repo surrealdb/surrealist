@@ -96,17 +96,38 @@ export function DocsAuthSignIn({ language }: TopicProps) {
 		}).await?;
 		`,
 			py: `
-		token = await db.signin({
-			'user': 'root',
-			'pass': 'root',
-		})
-		token = await db.signin({
-			'user': 'root',
-			'pass': 'root',
-			'namespace': 'test',
-			'database': 'test',
-			'scope': 'user',
-		})
+		# Authenticate with a root user
+db.signin({
+	"database": 'root',
+	"password": 'surrealdb',
+})
+
+# Authenticate with a Namespace user
+db.signin({
+	"namespace": 'surrealdb',
+	"username": 'tobie',
+	"password": 'surrealdb',
+})
+
+# Authenticate with a Database user
+db.signin({
+	"namespace": 'surrealdb',
+	"database": 'docs',
+	"username": 'tobie',
+	"password": 'surrealdb',
+})
+
+# Authenticate with a Access method 
+db.signin({
+	"namespace": 'surrealdb',
+	"database": 'docs',
+	"access": 'user',
+   # Also pass any properties required by the access definition
+	"variables": {
+        "email": 'info@surrealdb.com',
+        "password": '123456'
+    }
+})
 		`,
 			go: `
 		db.Signin(map[string]string{

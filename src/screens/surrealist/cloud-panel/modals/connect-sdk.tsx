@@ -83,6 +83,8 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 
 					# Authenticate
 					await db.sign_in(username="${username}", password="${password}")
+
+					
 			`,
 			php: `
 				$db = new \\Surreal\\Surreal();

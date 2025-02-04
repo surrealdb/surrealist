@@ -27,7 +27,7 @@ export function DocsGlobalDatabases({ language }: TopicProps) {
 			db.use_db(${esc_database}).await?;
 		`,
 			py: `
-		await db.use(database:${esc_database})
+		await db.use(database=${esc_database})
 		`,
 			go: `
 		db.Use(database:${esc_database})

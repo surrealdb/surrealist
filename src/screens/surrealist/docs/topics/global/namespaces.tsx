@@ -27,7 +27,7 @@ export function DocsGlobalNamespaces({ language }: TopicProps) {
 			db.use_ns(${esc_namespace}).await?;
 		`,
 			py: `
-		await db.use(namespace:${esc_namespace})
+		await db.use(namespace=${esc_namespace})
 		`,
 			go: `
 		db.Use(namespace:${esc_namespace})

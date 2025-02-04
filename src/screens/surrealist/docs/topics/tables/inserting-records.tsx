@@ -25,10 +25,32 @@ export function DocsTablesInsertingRecords({ language }: TopicProps) {
 	}).await?;
 		`,
 			py: `
-		await db.query("""
-        insert into ${table.schema.name} {
-        	field:value
-        };
+		# Insert a single record
+db.insert('${table.schema.name}', {
+	"name": 'Tobie',
+	"settings": {
+		"active": True,
+		"marketing": True,
+	},
+})
+
+# Insert multiple records
+db.insert('${table.schema.name}', [
+	{
+		"name": 'Tobie',
+		"settings": {
+			"active": True,
+			"marketing": True,
+		},
+	},
+	{
+		"name": 'Jaime',
+		"settings": {
+			"active": True,
+			"marketing": True,
+		},
+	},
+])
 		`,
 			go: `
 		db.Query("INSERT INTO ${table.schema.name} {

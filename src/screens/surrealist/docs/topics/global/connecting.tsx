@@ -29,10 +29,18 @@ export function DocsGlobalConnecting({ language }: TopicProps) {
 			db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
 		`,
 			py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
+			# update Surreal to AsyncSurreal if using async code
+		from surrealdb import Surreal
+# Without using a context manager
+		db = Surreal('ws://localhost:8000')
+        db.use('${esc_namespace}', '${esc_database}')
+# Sign in and your code...
+        db.close()	
+
+# Using a context manager
+with Surreal('ws://localhost:8000') as db:
+    db.use('namespace', 'database')
+	# Sign in and your code...
 		db = Surreal()
 		await db.connect('https://cloud.surrealdb.com/rpc')
 		`,

@@ -48,14 +48,12 @@ export function DocsSchemaParams({ language }: TopicProps) {
 		`,
 			py: `
 		# Assign a variable on the connection
-		await db.let("name", {
-			"first": "Tobie",
-			"last": "Morgan Hitchcock",
+		await db.let('name', {
+		 "first": 'Tobie',
+		 "last": 'Morgan Hitchcock',
 		})
-
 		# Use the variable in a subsequent query
 		await db.query('CREATE person SET name = $name')
-
 		# Use the variable in a subsequent query
 		await db.query('SELECT * FROM person WHERE name.first = $name.first')
 		`,

@@ -18,14 +18,6 @@ export function DocsAuthTokens({ language, topic }: TopicProps) {
 			let jwt = Jwt::from("...");
 			db.authenticate(jwt).await?;
 		`,
-			py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
-		`,
 			go: `
 		db.Authenticate("jwt")
 		`,
