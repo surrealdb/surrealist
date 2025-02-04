@@ -79,7 +79,7 @@ db.insert('${table.schema.name}', [
 		]);
 		`,
 		}),
-		[table.schema.name],
+		[table.schema.name, fieldName],
 	);
 
 	return (

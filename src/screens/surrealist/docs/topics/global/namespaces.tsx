@@ -5,13 +5,11 @@ import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 
 export function DocsGlobalNamespaces({ language }: TopicProps) {
-	const [namespace, database] = useConnection((c) => [
+	const [namespace] = useConnection((c) => [
 		c?.authentication.namespace ?? "",
-		c?.authentication.database ?? "",
 	]);
 
 	const esc_namespace = JSON.stringify(namespace);
-	const esc_database = JSON.stringify(database);
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -44,7 +42,7 @@ export function DocsGlobalNamespaces({ language }: TopicProps) {
 		]);
 		`,
 		}),
-		[esc_namespace, esc_database],
+		[esc_namespace],
 	);
 
 	return (
