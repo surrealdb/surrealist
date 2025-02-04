@@ -54,6 +54,8 @@ export function useCopilotMutation() {
 						inputs: {
 							user_message: message,
 							chat_history: history,
+							user_avatar: profile.picture,
+							user_name: profile.name,
 							user_identifier: await computeIdentifier(profile),
 						},
 					}),
