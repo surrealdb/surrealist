@@ -19,10 +19,14 @@ export function DocsTablesDeletingRecords({ language }: TopicProps) {
 		db.delete("${table.schema.name}").await?;
 		`,
 			py: `
-		db.delete('${table.schema.name}')
+		# Delete all records in a table
+db.delete('${table.schema.name}')
+
+# Delete a record with a specific ID
+db.delete(RecordID('${table.schema.name}', 'h5wxrf2ewk8xjxosxtyc'))
 		`,
 			go: `
-		db.Delete("${table.schema.name}", map[string]interface{}{})
+		db.Delete[models.Table](db, models.Table("${table.schema.name}"));
 		`,
 			csharp: `
 		await db.Delete("${table.schema.name}");

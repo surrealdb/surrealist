@@ -27,7 +27,10 @@ export function DocsTablesSelect({ language }: TopicProps) {
 		db.select('${fieldName}')
 		`,
 			go: `
-
+		db.Select[[]${(table.schema.name)}, models.Table](db, models.Table("${fieldName}"))
+		`,
+			csharp: `
+		await db.Select<Person>(new StringRecordId("person:h5wxrf2ewk8xjxosxtyc"));
 		`,
 			java: `
 		driver.select("${fieldName}", rowType)

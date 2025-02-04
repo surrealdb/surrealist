@@ -41,10 +41,14 @@ export function DocsConceptsFullTextSearch({ language }: TopicProps) {
 		DEFINE INDEX page_date_indexed ON page FIELDS date;');
 		`,
 			go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc");
+		await db.RawQuery(
+			" 
+			DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+			DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
+			DEFINE INDEX page_hostname ON page FIELDS hostname;
+			DEFINE INDEX page_date_indexed ON page FIELDS date;
+			"
+		);
 		`,
 			csharp: `
 		await db.RawQuery(

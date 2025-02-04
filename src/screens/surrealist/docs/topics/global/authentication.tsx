@@ -1,9 +1,18 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
+import { useConnection } from "~/hooks/connection";
 import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
+import { createBaseAuthentication } from "~/util/defaults";
+import { connectionUri } from "~/util/helpers";
 
 export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
+	const authentication = useConnection((c) => c?.authentication ?? createBaseAuthentication());
+	const endpoint = connectionUri(authentication);
+	const esc_endpoint = JSON.stringify(endpoint);
+	const esc_namespace = JSON.stringify(authentication.namespace);
+	const esc_database = JSON.stringify(authentication.database);
+
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -29,10 +38,18 @@ export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
 		DB.connect::<Wss>("cloud.surrealdb.com").await?;
 		`,
 			py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
+			# update Surreal to AsyncSurreal if using async code
+		from surrealdb import Surreal
+# Without using a context manager
+		db = Surreal('ws://localhost:8000')
+        db.use('${esc_namespace}', '${esc_database}')
+# Sign in and your code...
+        db.close()	
+
+# Using a context manager
+with Surreal('ws://localhost:8000') as db:
+    db.use('namespace', 'database')
+	# Sign in and your code...
 		db = Surreal()
 		await db.connect('https://cloud.surrealdb.com/rpc')
 		`,
@@ -54,7 +71,7 @@ export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
 		$db = new SurrealDB();
 		`,
 		}),
-		[topic.extra],
+		[topic.extra, esc_namespace, esc_database],
 	);
 
 	return (

@@ -19,7 +19,7 @@ export function DocsGlobalInit({ language }: TopicProps) {
 			surreal sql --endpoint ${esc_endpoint} --namespace ${esc_namespace} --database ${esc_database}
 		`,
 			js: `
-			import { Surreal } from 'surrealdb';
+			import Surreal from 'surrealdb';
 
 			// Create a new Surreal instance
 			const db = new Surreal();
@@ -40,12 +40,11 @@ export function DocsGlobalInit({ language }: TopicProps) {
 			db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
 		`,
 			py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
+			# Connect to a local endpoint with http protocol
+			db = Surreal('http://127.0.0.1:8000')
+
+			# Connect to a remote endpoint with ws protocol
+			db = AsyncSurreal('wss://cloud.surrealdb.com')
 		`,
 			go: `
 		// Connect to a local endpoint
@@ -54,11 +53,13 @@ export function DocsGlobalInit({ language }: TopicProps) {
 		surrealdb.New("wss://cloud.surrealdb.com/rpc");
 		`,
 			csharp: `
+			using SurrealDb.Net;
+			
 			// Connect to a local endpoint
-		var db = new SurrealDbClient("http://127.0.0.1:8000");
+			var db = new SurrealDbClient("http://127.0.0.1:8000");
 
-		// Connect to a remote endpoint
-		var db = new SurrealDbClient("wss://cloud.surrealdb.com/rpc");
+			// Connect to a remote endpoint
+			var db = new SurrealDbClient("wss://cloud.surrealdb.com/rpc");
 		`,
 			java: `
 		// Connect to a local endpoint

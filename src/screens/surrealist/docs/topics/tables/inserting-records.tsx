@@ -7,6 +7,10 @@ import { useDocsTable } from "../../hooks/table";
 export function DocsTablesInsertingRecords({ language }: TopicProps) {
 	const table = useDocsTable();
 
+	const fieldName =
+	table.fields.find(({ name }: { name: string }) => !["id", "in", "out"].includes(name))
+		?.name ?? "id";
+
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
@@ -25,15 +29,43 @@ export function DocsTablesInsertingRecords({ language }: TopicProps) {
 	}).await?;
 		`,
 			py: `
-		await db.query("""
-        insert into ${table.schema.name} {
-        	field:value
-        };
+		# Insert a single record
+db.insert('${table.schema.name}', {
+	"name": 'Tobie',
+	"settings": {
+		"active": True,
+		"marketing": True,
+	},
+})
+
+# Insert multiple records
+db.insert('${table.schema.name}', [
+	{
+		"name": 'Tobie',
+		"settings": {
+			"active": True,
+			"marketing": True,
+		},
+	},
+	{
+		"name": 'Jaime',
+		"settings": {
+			"active": True,
+			"marketing": True,
+		},
+	},
+])
 		`,
 			go: `
-		db.Query("INSERT INTO ${table.schema.name} {
-			field: value
-		};")
+		// Insert an entry
+		person2, err := surrealdb.Insert[${fieldName}](db, models.Table("${table.schema.name}"), map[interface{}]interface{}{
+			"Name":     "Jane",
+			"Surname":  "Smith",
+			"Location": models.NewGeometryPoint(-0.12, 22.01),
+		})
+		if err != nil {
+			panic(err)
+		}
 		`,
 			csharp: `
 		await db.Merge("${table.schema.name}", data);
@@ -47,7 +79,7 @@ export function DocsTablesInsertingRecords({ language }: TopicProps) {
 		]);
 		`,
 		}),
-		[table.schema.name],
+		[table.schema.name, fieldName],
 	);
 
 	return (

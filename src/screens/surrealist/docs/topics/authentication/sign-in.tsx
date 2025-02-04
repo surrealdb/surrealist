@@ -96,24 +96,88 @@ export function DocsAuthSignIn({ language }: TopicProps) {
 		}).await?;
 		`,
 			py: `
-		token = await db.signin({
-			'user': 'root',
-			'pass': 'root',
-		})
-		token = await db.signin({
-			'user': 'root',
-			'pass': 'root',
-			'namespace': 'test',
-			'database': 'test',
-			'scope': 'user',
-		})
+		# Authenticate with a root user
+db.signin({
+	"database": 'root',
+	"password": 'surrealdb',
+})
+
+# Authenticate with a Namespace user
+db.signin({
+	"namespace": 'surrealdb',
+	"username": 'tobie',
+	"password": 'surrealdb',
+})
+
+# Authenticate with a Database user
+db.signin({
+	"namespace": 'surrealdb',
+	"database": 'docs',
+	"username": 'tobie',
+	"password": 'surrealdb',
+})
+
+# Authenticate with a Access method 
+db.signin({
+	"namespace": 'surrealdb',
+	"database": 'docs',
+	"access": 'user',
+   # Also pass any properties required by the access definition
+	"variables": {
+        "email": 'info@surrealdb.com',
+        "password": '123456'
+    }
+})
 		`,
 			go: `
-		db.Signin(map[string]string{
-			"user": "root",
-			"pass": "root",
-		})
-		`,
+	// Sign in as a root user
+	authData := &surrealdb.Auth{
+		Username: "root", // use your setup username
+		Password: "root", // use your setup password
+	}
+	token, err := db.SignIn(authData)
+	if err != nil {
+		panic(err)
+	}
+
+	// Sign in to authentication db using the namespace user
+	authData := &surrealdb.Auth{
+		Username: "root", // use your setup username
+		Password: "root", // use your setup password
+        Namespace = "test", 
+	}
+	token, err := db.SignIn(authData)
+	if err != nil {
+		panic(err)
+	}
+
+	// Sign in to authentication db using the database user
+	authData := &surrealdb.Auth{
+		Username: "root", // use your setup username
+		Password: "root", // use your setup password
+        Namespace = "test", 
+        Database = "test",
+	}
+	token, err := db.SignIn(authData)
+	if err != nil {
+		panic(err)
+	}
+
+	// Sign in to authentication db using the record accessmethod
+	authData := &surrealdb.Auth{
+		Username: "root", // use your setup username
+		Password: "root", // use your setup password
+        Namespace = "test", 
+        Database = "test",
+		Access = "user",
+        Email = "info@surrealdb.com",
+        Password = "123456"
+		}
+		token, err := db.SignIn(authData)
+		if err != nil {
+			panic(err)
+		}
+	`,
 			csharp: `
 		// Sign in as root user
 		await db.SignIn(

@@ -19,7 +19,16 @@ export function DocsTablesCreatingRecords({ language }: TopicProps) {
 		db.create("${table.schema.name}").await?;
 		`,
 			py: `
-		db.create('${table.schema.name}')
+		# Create a record with a random ID
+person = db.create('${table.schema.name}')
+# Create a record with a specific ID
+person = db.create(RecordID('${table.schema.name}', 'tobie'), {
+	"name": 'Tobie',
+	"settings": {
+		"active": True,
+		"marketing": True,
+	}
+})
 		`,
 			go: `
 		db.Create("${table.schema.name}", map[string]interface{}{})

@@ -16,14 +16,30 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `
+			// Sign up with a Scope user in version < 2.0
 			await db.signup({
 				namespace: ${esc_namespace},
 				database: ${esc_database},
 				scope: "user",
-				email: "info@surrealdb.com",
-				pass: "123456",
+				variables: {
+					email: 'info@surrealdb.com',
+					pass: '123456',
+				},
 			});
-		`,
+
+			// With Record Access
+			 await db.signup({
+				namespace: 'surrealdb',
+				database: 'docs',
+				access: 'user',
+
+				// Also pass any properties required by the scope definition
+				variables: {
+					email: 'info@surrealdb.com',
+					pass: '123456',
+				},
+			});
+					`,
 			rust: `
 			use serde::Serialize;
 			use surrealdb::opt::auth::Record;
@@ -47,24 +63,55 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 			let token = jwt.as_insecure_token();
 		`,
 			py: `
-		token = await db.signup({
-			'NS': 'test',
-			'DB': 'test',
-			'SC': 'user',
-			'email': 'info@surrealdb.com',
-			'pass': '123456',
+		# With Record Access
+		db.signup({
+			"namespace": ${esc_namespace},
+			"database": ${esc_database},
+			"access": 'account',
+
+			# Also pass any properties required by the access definition
+			"variables": {
+				"email": 'info@surrealdb.com',
+				"password": '123456'
+			}
 		})
 		`,
 			go: `
-		db.Signup(map[string]string{
-			"NS": "clear-crocodile-production",
-			"DB": "web-scraping-application",
-			"SC": "user",
-			"email": "info@surrealdb.com",
-			"pass": "123456",
-		})
+		authData := &surrealdb.Auth{
+			Username: "root",
+			Password: "root", 
+			Namespace = "test", 
+			Database = "test", 
+			Access = "user",
+			Email = "info@surrealdb.com",
+			Password = "123456"
+		}
+		token, err := db.SignUp(authData)
+		if err != nil {
+			panic(err)
+		}
 		`,
-			csharp: `
+		csharp: `
+			// With Record Access
+			var authParams = new AuthParams
+			{
+				Namespace = "test",
+				Database = "test",
+				Access = "user",
+				Email = "info@surrealdb.com",
+				Password = "123456"
+			};
+
+			Jwt jwt = await db.SignUp(authParams);
+
+			public class AuthParams : ScopeAuth
+			{
+				public string? Username { get; set; }
+				public string? Email { get; set; }
+				public string? Password { get; set; }
+			}
+
+		// Sign up with a Scope user in version < 2.0
 		var authParams = new AuthParams
 		{
 			Namespace = "test",
