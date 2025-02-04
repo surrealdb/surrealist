@@ -13,8 +13,10 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+import { Switch } from "@mantine/core";
 import { isNumber } from "radash";
 import { useConfigStore } from "~/stores/config";
+import { iconChevronDown } from "~/util/icons";
 import {
 	CheckboxController,
 	FlagSetController,
@@ -24,8 +26,6 @@ import {
 	TextController,
 } from "~/util/preferences";
 import { Icon } from "../Icon";
-import { Switch } from "@mantine/core";
-import { iconChevronDown } from "~/util/icons";
 
 export interface PreferenceInputProps extends BoxProps {
 	controller: PreferenceController;

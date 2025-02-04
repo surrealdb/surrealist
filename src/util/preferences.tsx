@@ -13,11 +13,11 @@ import {
 	VIEW_MODES,
 } from "~/constants";
 
+import { objectify } from "radash";
 import { isDesktop } from "~/adapter";
-import { Flags, Selectable, type Listable, type SurrealistConfig } from "~/types";
+import { Flags, type Listable, Selectable, type SurrealistConfig } from "~/types";
 import { featureFlags } from "./feature-flags";
 import { optional } from "./helpers";
-import { objectify } from "radash";
 
 interface ReaderWriter<T> {
 	reader: (config: SurrealistConfig) => T;

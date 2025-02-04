@@ -17,10 +17,10 @@ import { Spacer } from "~/components/Spacer";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconSearch } from "~/util/icons";
 import {
-	computePreferences,
 	FlagSetController,
 	Preference,
 	PreferenceController,
+	computePreferences,
 } from "~/util/preferences";
 
 function isTallInput(preference: Preference) {

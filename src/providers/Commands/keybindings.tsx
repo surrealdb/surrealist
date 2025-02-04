@@ -5,8 +5,8 @@ import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import {
 	iconCommand,
-	iconKeyboardOption,
 	iconKeyboardControl,
+	iconKeyboardOption,
 	iconKeyboardShift,
 } from "~/util/icons";
 
