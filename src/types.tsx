@@ -75,7 +75,6 @@ export type KeyBindings = Record<string, string[]>;
 export type Open<T> = T & { [key: string]: any };
 export type FeatureCondition<R = boolean> = (flags: FeatureFlagMap) => R;
 export type Selectable<T extends string = string> = { label: string; value: T };
-export type Selection<T extends string = string> = Selectable<T>[];
 export type Listable<T extends string = string> = Selectable<T> & {
 	description?: string;
 	icon?: string;
@@ -86,6 +85,7 @@ export type Identified<T = object, I = string> = T & { id: I };
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type Assign<T, O extends object> = Omit<T, keyof O> & O;
 export type AuthTarget = [AuthType, string];
+export type Flags<T extends string> = Partial<Record<T, boolean>>;
 
 export interface Authentication {
 	mode: AuthMode;
@@ -174,6 +174,7 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramMode: DiagramMode;
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
+	sidebarViews: Flags<ViewMode>;
 }
 
 export interface SurrealistTemplateSettings {

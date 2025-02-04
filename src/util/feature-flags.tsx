@@ -73,6 +73,9 @@ export const schema = {
 	changelog: {
 		options: ["auto", "hidden", "read", "unread"],
 	},
+	sidebar_customization: {
+		options: [false, true],
+	},
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
@@ -96,6 +99,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_access: true,
 			themes: true,
 			syntax_themes: true,
+			sidebar_customization: true,
 		},
 		preview: {
 			query_view: true,
@@ -113,6 +117,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_access: true,
 			newsfeed: true,
 			themes: true,
+			sidebar_customization: true,
 		},
 		production: {
 			query_view: true,

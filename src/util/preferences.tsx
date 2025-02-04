@@ -10,13 +10,14 @@ import {
 	SIDEBAR_MODES,
 	SYNTAX_THEMES,
 	THEMES,
+	VIEW_MODES,
 } from "~/constants";
 
-import { toggle } from "radash";
 import { isDesktop } from "~/adapter";
-import type { Listable, Selection, SurrealistConfig } from "~/types";
+import { Flags, Selectable, type Listable, type SurrealistConfig } from "~/types";
 import { featureFlags } from "./feature-flags";
 import { optional } from "./helpers";
+import { objectify } from "radash";
 
 interface ReaderWriter<T> {
 	reader: (config: SurrealistConfig) => T;
@@ -27,7 +28,8 @@ export type PreferenceController =
 	| CheckboxController
 	| NumberController
 	| TextController
-	| SelectionController<any>;
+	| SelectionController<any>
+	| FlagSetController<any, any>;
 
 export interface Preference {
 	name: string;
@@ -65,21 +67,28 @@ export class TextController {
  * A preference controller for a selection dropdown
  */
 export class SelectionController<T extends string> {
-	constructor(public options: ReaderWriter<T> & { options: Selection<T> }) {}
+	constructor(public options: ReaderWriter<T> & { options: Selectable<T>[] }) {}
 }
 
 /**
  * A preference controller for a a set of boolean flags
  */
-export class FlagSetController<K extends string, T extends Record<K, boolean>> {
-	constructor(public options: ReaderWriter<T> & { options: Listable<K> }) {}
+export class FlagSetController<K extends string, T extends Flags<K>> {
+	constructor(
+		public options: ReaderWriter<T> & {
+			title: (amount: number) => string;
+			options: Listable<K>[];
+			default?: boolean;
+			minWidth?: string | number;
+		},
+	) {}
 }
 
 /**
  * Compute available preferences based on the current state
  */
 export function computePreferences(): PreferenceSection[] {
-	const { themes, syntax_themes, cloud_endpoints } = featureFlags.store;
+	const { themes, syntax_themes, cloud_endpoints, sidebar_customization } = featureFlags.store;
 
 	const sections: PreferenceSection[] = [];
 
@@ -142,17 +151,6 @@ export function computePreferences(): PreferenceSection[] {
 						}),
 					},
 				),
-				{
-					name: "Sidebar",
-					description: "Control the appearance of the sidebar",
-					controller: new SelectionController({
-						options: SIDEBAR_MODES,
-						reader: (config) => config.settings.appearance.sidebarMode,
-						writer: (config, value) => {
-							config.settings.appearance.sidebarMode = value;
-						},
-					}),
-				},
 				{
 					name: "Editor scale",
 					description: "The zoom level of all code editors",
@@ -249,6 +247,44 @@ export function computePreferences(): PreferenceSection[] {
 						},
 					}),
 				},
+			],
+		},
+		{
+			name: "Sidebar",
+			preferences: [
+				{
+					name: "Appearance",
+					description: "Control the appearance of the sidebar",
+					controller: new SelectionController({
+						options: SIDEBAR_MODES,
+						reader: (config) => config.settings.appearance.sidebarMode,
+						writer: (config, value) => {
+							config.settings.appearance.sidebarMode = value;
+						},
+					}),
+				},
+				...optional<Preference>(
+					sidebar_customization && {
+						name: "Enabled views",
+						description: "Select which views to show in the sidebar",
+						controller: new FlagSetController({
+							default: true,
+							minWidth: 125,
+							title: (n) => `${n} views enabled`,
+							options: Object.values(VIEW_MODES).map((mode) => ({
+								label: mode.name,
+								value: mode.id,
+								icon: mode.icon,
+							})),
+							reader: (config) => {
+								return config.settings.appearance.sidebarViews;
+							},
+							writer: (config, value) => {
+								config.settings.appearance.sidebarViews = value;
+							},
+						}),
+					},
+				),
 			],
 		},
 		{
@@ -394,6 +430,6 @@ export function computePreferences(): PreferenceSection[] {
 	return sections;
 }
 
-function nodef<T extends string>(items: Selection<T>) {
+function nodef<T extends string>(items: Selectable<T>[]) {
 	return items.filter(({ value }) => value !== "default");
 }

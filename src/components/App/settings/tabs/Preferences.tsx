@@ -1,4 +1,14 @@
-import { Box, Divider, Group, Paper, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import {
+	Box,
+	Divider,
+	Flex,
+	Group,
+	Paper,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Fragment, useMemo } from "react";
 import { Icon } from "~/components/Icon";
@@ -6,7 +16,16 @@ import { PreferenceInput } from "~/components/Inputs/preference";
 import { Spacer } from "~/components/Spacer";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconSearch } from "~/util/icons";
-import { computePreferences } from "~/util/preferences";
+import {
+	computePreferences,
+	FlagSetController,
+	Preference,
+	PreferenceController,
+} from "~/util/preferences";
+
+function isTallInput(preference: Preference) {
+	return preference.controller instanceof FlagSetController;
+}
 
 export function PreferencesTab() {
 	const [search, setSearch] = useInputState("");
@@ -80,26 +99,36 @@ export function PreferencesTab() {
 							mt="lg"
 							gap="lg"
 						>
-							{section.preferences.map((preference, j) => (
-								<Fragment key={j}>
-									<Group>
-										<Box>
-											<Text c="bright">{preference.name}</Text>
-											{preference.description && (
-												<Text
-													fz="sm"
-													c="slate"
-												>
-													{preference.description}
-												</Text>
-											)}
-										</Box>
-										<Spacer />
-										<PreferenceInput controller={preference.controller} />
-									</Group>
-									{j < section.preferences.length - 1 && <Divider />}
-								</Fragment>
-							))}
+							{section.preferences.map((preference, j) => {
+								const isTall = isTallInput(preference);
+
+								return (
+									<Fragment key={j}>
+										<Group
+											align={isTall ? "start" : "center"}
+											// direction={isTall ? "column" : "row"}
+										>
+											<Box>
+												<Text c="bright">{preference.name}</Text>
+												{preference.description && (
+													<Text
+														fz="sm"
+														c="slate"
+													>
+														{preference.description}
+													</Text>
+												)}
+											</Box>
+											<Spacer />
+											<PreferenceInput
+												controller={preference.controller}
+												mt={isTall ? "xl" : undefined}
+											/>
+										</Group>
+										{j < section.preferences.length - 1 && <Divider />}
+									</Fragment>
+								);
+							})}
 						</Stack>
 					</Box>
 				))}

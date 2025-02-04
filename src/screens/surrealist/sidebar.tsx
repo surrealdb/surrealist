@@ -27,6 +27,7 @@ import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SidebarMode, ViewMode } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -53,6 +54,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 	const [, navigate] = useLocation();
 	const cloudActive = useCloudRoute();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
+	const enabledViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
 	const connection = useConnection((c) => c?.id ?? "");
 
 	const { setOverlaySidebar } = useInterfaceStore.getState();
@@ -68,12 +70,14 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 			const items = row.flatMap((id) => {
 				const info = VIEW_MODES[id];
 
-				return !info || !info.disabled?.(flags) !== true ? [] : [info];
+				return !info || !info.disabled?.(flags) !== true || enabledViews[id] === false
+					? []
+					: [info];
 			});
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, [flags]);
+	}, [flags, enabledViews]);
 
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));

@@ -67,6 +67,7 @@ export function createBaseSettings(): SurrealistSettings {
 			defaultDiagramMode: "fields",
 			sidebarMode: "expandable",
 			queryOrientation: "vertical",
+			sidebarViews: {},
 		},
 		templates: {
 			list: [],
