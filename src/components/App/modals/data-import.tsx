@@ -3,7 +3,7 @@ import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import papaparse from "papaparse";
 import { sleep } from "radash";
-import { useMemo, useRef, useState } from "react";
+import { MutableRefObject, useMemo, useRef, useState } from "react";
 import { RecordId, Table } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
@@ -23,22 +23,82 @@ import { parseValue } from "~/util/surrealql";
 
 type ImportType = "sql" | "csv";
 
-export function DataImportModal() {
+type ExecuteTransformAndImportFn = (content: string) => Promise<void>;
+
+type SqlImportFormProps = {
+	isImporting: boolean;
+	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
+};
+
+const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 	const isLight = useIsLight();
+
+	const submit = () => {
+		const execute = async (content: string) => {
+			await executeQuery(content);
+
+			showInfo({
+				title: "Importer",
+				subtitle: "Database was successfully imported",
+			});
+
+			await syncConnectionSchema();
+		};
+
+		confirmImport(execute);
+	};
+
+	return (
+		<Stack>
+			<Text c={isLight ? "slate.7" : "slate.2"}>
+				Are you sure you want to import the selected file?
+			</Text>
+
+			<Text
+				mb="xl"
+				c={isLight ? "slate.7" : "slate.2"}
+			>
+				While existing data will be preserved, it may be overwritten by the imported data.
+			</Text>
+
+			<Button
+				mt="xl"
+				fullWidth
+				onClick={submit}
+				loading={isImporting}
+				variant="gradient"
+			>
+				Start import
+				<Icon
+					path={iconDownload}
+					right
+				/>
+			</Button>
+		</Stack>
+	);
+};
+
+type CsvImportFormProps = {
+	defaultTableName: string;
+	isImporting: boolean;
+	importFile: MutableRefObject<OpenedTextFile | null>;
+	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
+};
+
+const CsvImportForm = ({
+	defaultTableName,
+	isImporting,
+	importFile,
+	confirmImport,
+}: CsvImportFormProps) => {
 	const tables = useTableNames();
 
-	const [isOpen, openedHandle] = useBoolean();
-
-	const [importType, setImportType] = useState<ImportType>("sql");
-	const [isImporting, setImporting] = useState(false);
-	const [table, setTable] = useInputState("");
+	const [table, setTable] = useInputState(defaultTableName);
 	const [header, setHeader] = useInputState(true);
 	const [delimiter, setDelimiter] = useInputState(papaparse.DefaultDelimiter);
 
-	const importFile = useRef<OpenedTextFile | null>(null);
-
 	const importedRows = useMemo(() => {
-		if (importType === "csv" && importFile.current) {
+		if (importFile.current) {
 			const content = importFile.current.content.trim();
 
 			return papaparse.parse(content, {
@@ -56,7 +116,128 @@ export function DataImportModal() {
 		}
 
 		return null;
-	}, [importType, delimiter, header]);
+	}, [importFile.current, delimiter, header]);
+
+	const submit = () => {
+		const execute = async (content: string) => {
+			papaparse.parse(content, {
+				delimiter,
+				header,
+				dynamicTyping: true,
+				transform(value) {
+					try {
+						return parseValue(value);
+					} catch {
+						return value;
+					}
+				},
+				step: async (row, parser) => {
+					if (row.errors.length > 0) {
+						const err = row.errors[0].message;
+
+						showError({
+							title: "Import failed",
+							subtitle: `There was an error importing the CSV file: ${err}`,
+						});
+
+						parser.abort();
+						return;
+					}
+
+					const content = row.data as any;
+					const what =
+						"id" in content ? new RecordId(table, content.id) : new Table(table);
+
+					await executeQuery(/* surql */ `CREATE $what CONTENT $content`, {
+						what,
+						content,
+					});
+				},
+				complete: async () => {
+					await syncConnectionSchema();
+				},
+			});
+		};
+
+		confirmImport(execute);
+	};
+
+	return (
+		<Stack>
+			<Text>This importer allows you to parse CSV data into a table.</Text>
+
+			<Text>
+				While existing data will be preserved, it may be overwritten by the imported data.
+			</Text>
+
+			<Divider />
+
+			<Autocomplete
+				data={tables}
+				value={table}
+				onChange={setTable}
+				label="Table name"
+				size="sm"
+				required
+				placeholder="table_name"
+			/>
+
+			<Divider />
+
+			<Switch
+				checked={header}
+				onChange={setHeader}
+				label="With headers"
+				size="sm"
+				required
+			/>
+
+			<TextInput
+				value={delimiter}
+				onChange={setDelimiter}
+				label="Column delimiter"
+				size="sm"
+				required
+				maxLength={1}
+			/>
+
+			<Button
+				mt="md"
+				fullWidth
+				onClick={submit}
+				loading={isImporting}
+				variant="gradient"
+				disabled={!table}
+			>
+				Start import
+				<Icon
+					path={iconDownload}
+					right
+				/>
+			</Button>
+
+			{importedRows ? (
+				<Text
+					fz="sm"
+					c="slate"
+					mt={-3}
+				>
+					Importing this file will create or update {importedRows.length} records in
+					total.
+				</Text>
+			) : null}
+		</Stack>
+	);
+};
+
+export function DataImportModal() {
+	const [isOpen, openedHandle] = useBoolean();
+
+	const [importType, setImportType] = useState<ImportType>("sql");
+	const [isImporting, setImporting] = useState(false);
+	const [defaultTableName, setDefaultTableName] = useState("");
+
+	const importFile = useRef<OpenedTextFile | null>(null);
 
 	const startImport = useStable(async () => {
 		try {
@@ -84,7 +265,7 @@ export function DataImportModal() {
 				const isValidTableName = !!possibleTableName.match(/^[a-zA-Z][a-zA-Z0-9_]*$/);
 
 				setImportType("csv");
-				setTable(isValidTableName ? possibleTableName : "");
+				setDefaultTableName(isValidTableName ? possibleTableName : "");
 			} else {
 				setImportType("sql");
 			}
@@ -93,76 +274,31 @@ export function DataImportModal() {
 		}
 	});
 
-	const confirmImport = useStable(async () => {
-		if (!importFile.current) return;
+	const confirmImport = useStable(
+		async (executeTransformAndImport: ExecuteTransformAndImportFn) => {
+			if (!importFile.current) return;
 
-		try {
-			setImporting(true);
+			try {
+				setImporting(true);
 
-			await sleep(50);
+				await sleep(50);
 
-			const content = importFile.current.content.trim();
+				const content = importFile.current.content.trim();
 
-			if (importType === "csv") {
-				papaparse.parse(content, {
-					delimiter,
-					header,
-					dynamicTyping: true,
-					transform(value) {
-						try {
-							return parseValue(value);
-						} catch {
-							return value;
-						}
-					},
-					step(row, parser) {
-						if (row.errors.length > 0) {
-							const err = row.errors[0].message;
+				await executeTransformAndImport(content);
+			} catch (err: any) {
+				console.error(err);
 
-							showError({
-								title: "Import failed",
-								subtitle: `There was an error importing the CSV file: ${err}`,
-							});
-
-							parser.abort();
-							return;
-						}
-
-						const content = row.data as any;
-						const what =
-							"id" in content ? new RecordId(table, content.id) : new Table(table);
-
-						executeQuery(/* surql */ `CREATE $what CONTENT $content`, {
-							what,
-							content,
-						});
-					},
-					complete() {
-						syncConnectionSchema();
-					},
+				showError({
+					title: "Import failed",
+					subtitle: "There was an error importing the database",
 				});
-			} else {
-				await executeQuery(content);
-
-				showInfo({
-					title: "Importer",
-					subtitle: "Database was successfully imported",
-				});
-
-				await syncConnectionSchema();
+			} finally {
+				setImporting(false);
+				openedHandle.close();
 			}
-		} catch (err: any) {
-			console.error(err);
-
-			showError({
-				title: "Import failed",
-				subtitle: "There was an error importing the database",
-			});
-		} finally {
-			setImporting(false);
-			openedHandle.close();
-		}
-	});
+		},
+	);
 
 	useIntent("import-database", startImport);
 
@@ -175,100 +311,19 @@ export function DataImportModal() {
 			}
 		>
 			{importType === "sql" ? (
-				<Stack>
-					<Text c={isLight ? "slate.7" : "slate.2"}>
-						Are you sure you want to import the selected file?
-					</Text>
-
-					<Text
-						mb="xl"
-						c={isLight ? "slate.7" : "slate.2"}
-					>
-						While existing data will be preserved, it may be overwritten by the imported
-						data.
-					</Text>
-
-					<Button
-						mt="xl"
-						fullWidth
-						onClick={confirmImport}
-						loading={isImporting}
-						variant="gradient"
-					>
-						Start import
-						<Icon
-							path={iconDownload}
-							right
-						/>
-					</Button>
-				</Stack>
-			) : (
-				<Stack>
-					<Text>This importer allows you to parse CSV data into a table.</Text>
-
-					<Text>
-						While existing data will be preserved, it may be overwritten by the imported
-						data.
-					</Text>
-
-					<Divider />
-
-					<Autocomplete
-						data={tables}
-						value={table}
-						onChange={setTable}
-						label="Table name"
-						size="sm"
-						required
-						placeholder="table_name"
-					/>
-
-					<Divider />
-
-					<Switch
-						checked={header}
-						onChange={setHeader}
-						label="With headers"
-						size="sm"
-						required
-					/>
-
-					<TextInput
-						value={delimiter}
-						onChange={setDelimiter}
-						label="Column delimiter"
-						size="sm"
-						required
-						maxLength={1}
-					/>
-
-					<Button
-						mt="md"
-						fullWidth
-						onClick={confirmImport}
-						loading={isImporting}
-						variant="gradient"
-						disabled={!table}
-					>
-						Start import
-						<Icon
-							path={iconDownload}
-							right
-						/>
-					</Button>
-
-					{importedRows ? (
-						<Text
-							fz="sm"
-							c="slate"
-							mt={-3}
-						>
-							Importing this file will create or update {importedRows.length} records
-							in total.
-						</Text>
-					) : null}
-				</Stack>
-			)}
+				<SqlImportForm
+					isImporting={isImporting}
+					confirmImport={confirmImport}
+				/>
+			) : null}
+			{importType === "csv" ? (
+				<CsvImportForm
+					defaultTableName={defaultTableName}
+					isImporting={isImporting}
+					importFile={importFile}
+					confirmImport={confirmImport}
+				/>
+			) : null}
 		</Modal>
 	);
 }
