@@ -32,6 +32,7 @@ export type CloudStore = {
 	authState: AuthState;
 	sessionToken: string;
 	authProvider: string;
+	userId: string;
 	isSupported: boolean;
 	profile: CloudProfile;
 	instanceVersions: string[];
@@ -48,6 +49,7 @@ export type CloudStore = {
 
 	setLoading: () => void;
 	setSessionToken: (token: string) => void;
+	setUserId: (id: string) => void;
 	setAuthProvider: (provider: string) => void;
 	setAccountProfile: (profile: CloudProfile) => void;
 	setIsSupported: (supported: boolean) => void;
@@ -67,6 +69,7 @@ export const useCloudStore = create<CloudStore>()(
 	immer((set) => ({
 		authState: "unknown",
 		sessionToken: "",
+		userId: "",
 		authProvider: "",
 		isSupported: true,
 		profile: EMPTY_PROFILE,
@@ -87,6 +90,11 @@ export const useCloudStore = create<CloudStore>()(
 		setSessionToken: (token) =>
 			set({
 				sessionToken: token,
+			}),
+
+		setUserId: (id) =>
+			set({
+				userId: id,
 			}),
 
 		setAuthProvider: (provider) =>

@@ -190,6 +190,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							variant="light"
 							size="xs"
 							radius="sm"
+							color="slate"
 							leftSection={<Icon path={iconUpload} />}
 							disabled={!canExport}
 						>
