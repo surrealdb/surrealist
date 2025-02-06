@@ -1,3 +1,4 @@
+import { shutdown } from "@intercom/messenger-js-sdk";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
@@ -275,6 +276,8 @@ export function destroySession() {
 		client_id: CLIENT_ID,
 		returnTo: `${CALLBACK_ENDPOINT}?action=logout&target=${adapter.id}`,
 	});
+
+	shutdown();
 
 	adapter.openUrl(`${authBase}/v2/logout?${params.toString()}`, "internal");
 }
