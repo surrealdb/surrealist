@@ -1,13 +1,31 @@
-import { Autocomplete, Button, Divider, Modal, Stack, Switch, TextInput } from "@mantine/core";
-import { Text } from "@mantine/core";
+import {
+	Autocomplete,
+	Button,
+	Divider,
+	Group,
+	Modal,
+	Stack,
+	Switch,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import papaparse from "papaparse";
-import { sleep } from "radash";
-import { MutableRefObject, useMemo, useRef, useState } from "react";
+import { sleep, unique } from "radash";
+import {
+	ChangeEvent,
+	MutableRefObject,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { RecordId, Table } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
 import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
@@ -118,7 +136,25 @@ const CsvImportForm = ({
 		return null;
 	}, [importFile.current, delimiter, header]);
 
+	const extractColumnNames = useStable(() => {
+		return header
+			? Object.keys(importedRows?.[0] ?? {})
+			: Array(((importedRows?.[0] as unknown[]) ?? []).length).fill("");
+	});
+
+	const [columnNames, setColumnNames] = useState<string[]>(extractColumnNames());
+
 	const submit = () => {
+		const createObjectWithoutHeader = (data: unknown[]) => {
+			const o: any = {};
+
+			for (let i = 0; i < data.length; i++) {
+				o[columnNames[i]] = data[i];
+			}
+
+			return o;
+		};
+
 		const execute = async (content: string) => {
 			papaparse.parse(content, {
 				delimiter,
@@ -144,7 +180,9 @@ const CsvImportForm = ({
 						return;
 					}
 
-					const content = row.data as any;
+					const content = header
+						? (row.data as any)
+						: createObjectWithoutHeader(row.data as unknown[]);
 					const what =
 						"id" in content ? new RecordId(table, content.id) : new Table(table);
 
@@ -161,6 +199,31 @@ const CsvImportForm = ({
 
 		confirmImport(execute);
 	};
+
+	const canExport = useMemo(() => {
+		return (
+			!!table &&
+			columnNames.length > 0 &&
+			columnNames.every((c) => !!c) &&
+			unique(columnNames).length === columnNames.length
+		);
+	}, [table, columnNames]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		setColumnNames(extractColumnNames());
+	}, [delimiter, header]);
+
+	const handleColumnNameChange = useCallback(
+		(e: ChangeEvent<HTMLInputElement>, index: number) => {
+			setColumnNames((prev) => {
+				const newColumnNames = [...prev];
+				newColumnNames[index] = e.target.value;
+				return newColumnNames;
+			});
+		},
+		[],
+	);
 
 	return (
 		<Stack>
@@ -184,22 +247,48 @@ const CsvImportForm = ({
 
 			<Divider />
 
-			<Switch
-				checked={header}
-				onChange={setHeader}
-				label="With headers"
-				size="sm"
-				required
-			/>
+			<Group
+				justify="space-between"
+				grow
+			>
+				<Stack>
+					<Label>With headers</Label>
+					<Switch
+						checked={header}
+						onChange={setHeader}
+						aria-label="With headers"
+						size="sm"
+						required
+					/>
+				</Stack>
 
-			<TextInput
-				value={delimiter}
-				onChange={setDelimiter}
-				label="Column delimiter"
-				size="sm"
-				required
-				maxLength={1}
-			/>
+				<TextInput
+					value={delimiter}
+					onChange={setDelimiter}
+					label="Column delimiter"
+					size="sm"
+					required
+					maxLength={1}
+				/>
+			</Group>
+
+			<Divider />
+
+			<Label>Columns</Label>
+
+			<Stack>
+				{columnNames.map((c, index) => {
+					return (
+						<TextInput
+							key={index}
+							value={c}
+							onChange={(e) => handleColumnNameChange(e, index)}
+							disabled={header}
+							leftSection={<Text>{index + 1}</Text>}
+						/>
+					);
+				})}
+			</Stack>
 
 			<Button
 				mt="md"
@@ -207,7 +296,7 @@ const CsvImportForm = ({
 				onClick={submit}
 				loading={isImporting}
 				variant="gradient"
-				disabled={!table}
+				disabled={!canExport}
 			>
 				Start import
 				<Icon
