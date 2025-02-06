@@ -6,6 +6,7 @@ import type { CloudSignin } from "~/types";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
+import { shutdown } from "@intercom/messenger-js-sdk";
 import { REFERRER_KEY, REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
@@ -275,6 +276,8 @@ export function destroySession() {
 		client_id: CLIENT_ID,
 		returnTo: `${CALLBACK_ENDPOINT}?action=logout&target=${adapter.id}`,
 	});
+
+	shutdown();
 
 	adapter.openUrl(`${authBase}/v2/logout?${params.toString()}`, "internal");
 }
