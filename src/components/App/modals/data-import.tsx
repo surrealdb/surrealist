@@ -57,8 +57,11 @@ export function DataImportModal() {
 			openedHandle.open();
 
 			if (file.name.endsWith(".csv")) {
+				const possibleTableName = file.name.replace(".csv", "");
+				const isValidTableName = !!possibleTableName.match(/^[a-zA-Z][a-zA-Z0-9_]*$/);
+
 				setImportType("csv");
-				setTable("");
+				setTable(isValidTableName ? possibleTableName : "");
 			} else {
 				setImportType("sql");
 			}
