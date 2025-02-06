@@ -1,12 +1,12 @@
 import { ActionIcon, Box, Center, CopyButton, Loader, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect } from "react";
+import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { useOrganization } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
-import { Section } from "../../components/Section";
-import { Icon } from "~/components/Icon";
 import { iconCheck, iconCopy } from "~/util/icons";
+import { Section } from "../../components/Section";
 
 export function SettingsPage() {
 	const organization = useOrganization();
