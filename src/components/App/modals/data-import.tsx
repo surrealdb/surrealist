@@ -21,7 +21,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { RecordId, Table } from "surrealdb";
+import { RecordId, StringRecordId, Table } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
 import { Icon } from "~/components/Icon";
@@ -155,6 +155,20 @@ const CsvImportForm = ({
 			return o;
 		};
 
+		const getWhat = (content: any) => {
+			if ("id" in content) {
+				if (
+					typeof content.id === "string" &&
+					(content.id as string).startsWith(`${table}:`)
+				) {
+					return new StringRecordId(content.id);
+				}
+				return new RecordId(table, content.id);
+			}
+
+			return new Table(table);
+		};
+
 		const execute = async (content: string) => {
 			papaparse.parse(content, {
 				delimiter,
@@ -183,8 +197,7 @@ const CsvImportForm = ({
 					const content = header
 						? (row.data as any)
 						: createObjectWithoutHeader(row.data as unknown[]);
-					const what =
-						"id" in content ? new RecordId(table, content.id) : new Table(table);
+					const what = getWhat(content);
 
 					await executeQuery(/* surql */ `CREATE $what CONTENT $content`, {
 						what,
