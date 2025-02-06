@@ -9,10 +9,13 @@ import {
 	iconList,
 	iconLive,
 	iconQuery,
+	iconUpload,
 } from "~/util/icons";
 
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
+import { unparse } from "papaparse";
+import { isArray, isObject } from "radash";
 import { useMemo, useState } from "react";
 import { useLayoutEffect } from "react";
 import { isMini } from "~/adapter";
@@ -75,6 +78,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const isLight = useIsLight();
 	const [resultTab, setResultTab] = useState<number>(1);
+	const selectedTab = resultTab - 1;
 	const resultMode = activeTab.resultMode;
 	const resultFormat = activeTab.resultFormat;
 	const responses = responseMap[activeTab.id] || [];
@@ -141,6 +145,33 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const showFormat = !isMini && (resultMode === "combined" || resultMode === "single");
 
+	const selectedResponse = responses[selectedTab] ?? { result: null };
+	const isExportVisible = resultMode === "table";
+	const canExport = useMemo(() => {
+		return (
+			isExportVisible &&
+			isArray(selectedResponse.result) &&
+			selectedResponse.result.length > 0 &&
+			selectedResponse.result.every((r) => isObject(r))
+		);
+	}, [isExportVisible, selectedResponse.result]);
+
+	const exportAsCsv = useStable(() => {
+		const csvContent = unparse(selectedResponse.result);
+
+		const blob = new Blob([csvContent], { type: "text/csv" });
+
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = "export.csv";
+
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+	});
+
 	return (
 		<ContentPane
 			title={panelTitle}
@@ -153,6 +184,19 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 					wrap="nowrap"
 					className={classes.controls}
 				>
+					{isExportVisible ? (
+						<Button
+							onClick={exportAsCsv}
+							variant="light"
+							size="xs"
+							radius="sm"
+							leftSection={<Icon path={iconUpload} />}
+							disabled={!canExport}
+						>
+							Export as CSV
+						</Button>
+					) : null}
+
 					{resultMode === "live" ? (
 						isLive && (
 							<Button
@@ -319,7 +363,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 			) : (
 				<Preview
 					responses={responses}
-					selected={resultTab - 1}
+					selected={selectedTab}
 					query={activeTab}
 					isLive={isLive}
 				/>
