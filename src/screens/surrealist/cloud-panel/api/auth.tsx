@@ -1,3 +1,4 @@
+import { shutdown } from "@intercom/messenger-js-sdk";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
@@ -6,7 +7,6 @@ import type { CloudSignin } from "~/types";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
-import { shutdown } from "@intercom/messenger-js-sdk";
 import { REFERRER_KEY, REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
