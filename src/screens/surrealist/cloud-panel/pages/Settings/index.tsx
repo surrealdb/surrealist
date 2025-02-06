@@ -1,9 +1,11 @@
-import { Box, Center, Loader, Stack, Text, TextInput } from "@mantine/core";
+import { ActionIcon, Box, Center, CopyButton, Loader, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect } from "react";
+import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { useOrganization } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
+import { iconCheck, iconCopy } from "~/util/icons";
 import { Section } from "../../components/Section";
 
 export function SettingsPage() {
@@ -34,6 +36,33 @@ export function SettingsPage() {
 				withMaxWidth
 			>
 				<Box>
+					<Label>Organization id</Label>
+					<Text>The unique id of your organization</Text>
+					<TextInput
+						mt="xs"
+						value={organization?.id ?? ""}
+						readOnly
+						rightSection={
+							<CopyButton value={organization?.id ?? ""}>
+								{({ copied, copy }) => (
+									<ActionIcon
+										variant={copied ? "gradient" : undefined}
+										pos="absolute"
+										top={3}
+										right={3}
+										radius="xs"
+										onClick={copy}
+										aria-label="Copy code to clipboard"
+									>
+										<Icon path={copied ? iconCheck : iconCopy} />
+									</ActionIcon>
+								)}
+							</CopyButton>
+						}
+					/>
+				</Box>
+
+				<Box mt="md">
 					<Label>Organization name</Label>
 					<Text>The display name of your organization</Text>
 					<TextInput

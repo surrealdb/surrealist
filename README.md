@@ -42,13 +42,9 @@ Surrealist is a user interface for interacting with your [SurrealDB](https://sur
 **Key features of Surrealist include:**
 
 - **Visual querying** using the Query View, with support for query syntax highlighting, saved queries, and graph visualization.
-
 - **Data exploration** using the Explorer View, where you can browse your tables, inspect records, and follow relationships.
-
 - **Schema designing** using the Designer View, which generates a visual diagram of your database schema.
-
 - **Surreal Cloud** management panel, allowing you to effortlessly provision and connect to your Cloud instances
-
 - **Ask Sidekick** - a powerful AI assistant that helps you write queries, explore your data, and design your schema.
 
 Learn more about Surrealist by visiting [the website](https://surrealdb.com/surrealist) or reading the [documentation](https://surrealdb.com/docs/surrealist).
