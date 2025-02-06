@@ -17,6 +17,7 @@ export function useIntercom() {
 		() => ({
 			user_id: userId || undefined,
 			name: profile.name || undefined,
+			email: profile.username || undefined,
 			avatar: profile.picture || undefined,
 			user_hash: profile.user_hmac || undefined,
 		}),
