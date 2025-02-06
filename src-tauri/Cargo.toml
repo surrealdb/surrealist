@@ -31,7 +31,7 @@ url = "2"
 showfile = "0.1.1"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-openssl = { version = "0.10.66", features = ["vendored"] }
+openssl = { version = "0.10.70", features = ["vendored"] }
 
 [build-dependencies]
 tauri-build = { version = "2.0.0-rc.8" }
