@@ -115,7 +115,7 @@ const CsvImportForm = ({
 	const [header, setHeader] = useInputState(true);
 	const [delimiter, setDelimiter] = useInputState(papaparse.DefaultDelimiter);
 
-	const importedRows = useMemo(() => {
+	const { data: importedRows, errors } = useMemo(() => {
 		if (importFile.current) {
 			const content = importFile.current.content.trim();
 
@@ -130,10 +130,10 @@ const CsvImportForm = ({
 						return value;
 					}
 				},
-			}).data;
+			});
 		}
 
-		return null;
+		return { data: [], errors: [] } as Omit<papaparse.ParseResult<unknown>, "meta">;
 	}, [importFile.current, delimiter, header]);
 
 	const extractColumnNames = useStable(() => {
@@ -225,6 +225,8 @@ const CsvImportForm = ({
 		[],
 	);
 
+	const errorMessage = errors.length > 0 ? errors[0].message : null;
+
 	return (
 		<Stack>
 			<Text>This importer allows you to parse CSV data into a table.</Text>
@@ -290,6 +292,8 @@ const CsvImportForm = ({
 				})}
 			</Stack>
 
+			{errorMessage ? <Text c="red">Error: {errorMessage}</Text> : null}
+
 			<Button
 				mt="md"
 				fullWidth
@@ -305,7 +309,7 @@ const CsvImportForm = ({
 				/>
 			</Button>
 
-			{importedRows ? (
+			{importedRows.length > 0 ? (
 				<Text
 					fz="sm"
 					c="slate"
