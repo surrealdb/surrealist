@@ -1,9 +1,9 @@
-import { Autocomplete, Button, Divider, Modal, Stack } from "@mantine/core";
+import { Autocomplete, Button, Divider, Modal, Stack, Switch, TextInput } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import papaparse from "papaparse";
 import { sleep } from "radash";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { RecordId, Table } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
@@ -32,8 +32,31 @@ export function DataImportModal() {
 	const [importType, setImportType] = useState<ImportType>("sql");
 	const [isImporting, setImporting] = useState(false);
 	const [table, setTable] = useInputState("");
+	const [header, setHeader] = useInputState(true);
+	const [delimiter, setDelimiter] = useInputState(papaparse.DefaultDelimiter);
 
 	const importFile = useRef<OpenedTextFile | null>(null);
+
+	const importedRows = useMemo(() => {
+		if (importType === "csv" && importFile.current) {
+			const content = importFile.current.content.trim();
+
+			return papaparse.parse(content, {
+				delimiter,
+				header,
+				dynamicTyping: true,
+				transform(value) {
+					try {
+						return parseValue(value);
+					} catch {
+						return value;
+					}
+				},
+			}).data;
+		}
+
+		return null;
+	}, [importType, delimiter, header]);
 
 	const startImport = useStable(async () => {
 		try {
@@ -82,7 +105,8 @@ export function DataImportModal() {
 
 			if (importType === "csv") {
 				papaparse.parse(content, {
-					header: true,
+					delimiter,
+					header,
 					dynamicTyping: true,
 					transform(value) {
 						try {
@@ -181,11 +205,6 @@ export function DataImportModal() {
 			) : (
 				<Stack>
 					<Text>This importer allows you to parse CSV data into a table.</Text>
-					<Text>
-						The first row of the CSV file will be interpreted as column names. Before
-						importing, make sure these match the columns in the table you are importing
-						to.
-					</Text>
 
 					<Text>
 						While existing data will be preserved, it may be overwritten by the imported
@@ -204,6 +223,25 @@ export function DataImportModal() {
 						placeholder="table_name"
 					/>
 
+					<Divider />
+
+					<Switch
+						checked={header}
+						onChange={setHeader}
+						label="With headers"
+						size="sm"
+						required
+					/>
+
+					<TextInput
+						value={delimiter}
+						onChange={setDelimiter}
+						label="Column delimiter"
+						size="sm"
+						required
+						maxLength={1}
+					/>
+
 					<Button
 						mt="md"
 						fullWidth
@@ -218,6 +256,17 @@ export function DataImportModal() {
 							right
 						/>
 					</Button>
+
+					{importedRows ? (
+						<Text
+							fz="sm"
+							c="slate"
+							mt={-3}
+						>
+							Importing this file will create or update {importedRows.length} records
+							in total.
+						</Text>
+					) : null}
 				</Stack>
 			)}
 		</Modal>
