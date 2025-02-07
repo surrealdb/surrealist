@@ -11,7 +11,7 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import papaparse from "papaparse";
-import { isArray, sleep, unique } from "radash";
+import { cluster, isArray, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
@@ -27,7 +27,7 @@ import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { showError, showInfo } from "~/util/helpers";
+import { showError, showInfo, showWarning } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
@@ -302,6 +302,9 @@ const CsvImportForm = ({
 		};
 
 		const execute = async (content: string) => {
+			const items: any[] = [];
+			let isParserSuccess = true;
+
 			papaparse.parse(content, {
 				delimiter,
 				header,
@@ -314,6 +317,7 @@ const CsvImportForm = ({
 							subtitle: `There was an error importing the CSV file: ${err}`,
 						});
 
+						isParserSuccess = false;
 						parser.abort();
 						return;
 					}
@@ -322,36 +326,59 @@ const CsvImportForm = ({
 						? createEntityWithHeader(row.data as any)
 						: createEntityWithoutHeader(row.data as unknown[]);
 
-					try {
-						const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
-
-						const [response] = await executeQuery(
-							/* surql */ `${queryAction} INTO $table $content`,
-							{
-								table: new Table(table),
-								content,
-							},
-						);
-
-						if (!response.success) {
-							showError({
-								title: "Import failed",
-								subtitle: `There was an error importing the CSV file: ${response.result}`,
-							});
-							parser.abort();
-						}
-					} catch (err: any) {
-						showError({
-							title: "Import failed",
-							subtitle: `There was an error importing the CSV file: ${err}`,
-						});
-						parser.abort();
-					}
-				},
-				complete: async () => {
-					await syncConnectionSchema();
+					items.push(content);
 				},
 			});
+
+			if (!isParserSuccess) {
+				return;
+			}
+
+			const BATCH_CHUNK_SIZE = 1000;
+			const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
+
+			let successImportCount = 0;
+			let errorImportCount = 0;
+			let errorMessage = undefined;
+
+			for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
+				const [response] = await executeQuery(
+					/* surql */ `${queryAction} INTO $table $content`,
+					{
+						table: new Table(table),
+						content: batchedItems,
+					},
+				);
+
+				if (response.success) {
+					successImportCount += batchedItems.length;
+				} else {
+					errorImportCount += batchedItems.length;
+					errorMessage = response.result;
+					break;
+				}
+			}
+
+			if (errorImportCount > 0) {
+				if (successImportCount > 0) {
+					showWarning({
+						title: "Import partially failed",
+						subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
+					});
+				} else {
+					showError({
+						title: "Import failed",
+						subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
+					});
+				}
+			} else {
+				showInfo({
+					title: "Import successful",
+					subtitle: `${successImportCount} records were successfully inserted`,
+				});
+			}
+
+			await syncConnectionSchema();
 		};
 
 		confirmImport(execute);
