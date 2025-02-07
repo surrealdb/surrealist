@@ -198,6 +198,7 @@ const CsvImportForm = ({
 	const [table, setTable] = useInputState(defaultTableName);
 	const [header, setHeader] = useInputState(true);
 	const [delimiter, setDelimiter] = useInputState(papaparse.DefaultDelimiter);
+	const [insertRelation, setInsertRelation] = useInputState(false);
 
 	const { data: importedRows, errors } = useMemo(() => {
 		if (importFile.current) {
@@ -321,15 +322,13 @@ const CsvImportForm = ({
 						? createEntityWithHeader(row.data as any)
 						: createEntityWithoutHeader(row.data as unknown[]);
 
-					const what = content.id ?? new Table(table);
-
-					content.id = undefined;
-
 					try {
+						const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
+
 						const [response] = await executeQuery(
-							/* surql */ `CREATE $what CONTENT $content`,
+							/* surql */ `${queryAction} INTO $table $content`,
 							{
-								what,
+								table: new Table(table),
 								content,
 							},
 						);
@@ -391,6 +390,30 @@ const CsvImportForm = ({
 	});
 
 	const errorMessage = errors.length > 0 ? errors[0].message : null;
+
+	const canInsertRelation = useMemo(() => {
+		if (!columnNames.includes("in")) {
+			return false;
+		}
+		if (!columnNames.includes("out")) {
+			return false;
+		}
+
+		if (columnTypes[columnNames.indexOf("in")] !== "record") {
+			return false;
+		}
+		if (columnTypes[columnNames.indexOf("out")] !== "record") {
+			return false;
+		}
+
+		return true;
+	}, [columnNames, columnTypes]);
+
+	useEffect(() => {
+		if (!canInsertRelation) {
+			setInsertRelation(false);
+		}
+	}, [canInsertRelation]);
 
 	return (
 		<Stack>
@@ -467,6 +490,17 @@ const CsvImportForm = ({
 				})}
 			</Stack>
 
+			<Divider />
+
+			<Switch
+				checked={insertRelation}
+				onChange={setInsertRelation}
+				disabled={!canInsertRelation}
+				label="Insert as a relationship"
+				description={`requires "in", "out" to be valid record ids`}
+				size="sm"
+			/>
+
 			{errorMessage ? <Text c="red">Error: {errorMessage}</Text> : null}
 
 			<Button
@@ -490,8 +524,8 @@ const CsvImportForm = ({
 					c="slate"
 					mt={-3}
 				>
-					Importing this file will create or update {importedRows.length} records in
-					total.
+					Importing this file will create{insertRelation ? "" : " or update"}{" "}
+					{importedRows.length} records in total.
 				</Text>
 			) : null}
 		</Stack>
