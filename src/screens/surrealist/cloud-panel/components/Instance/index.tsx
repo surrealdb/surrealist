@@ -210,6 +210,7 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				<Menu.Item
 					leftSection={<Icon path={iconArrowUpRight} />}
 					onClick={() => openVersionUpgradeModal(value)}
+					disabled={!value.available_versions?.length}
 				>
 					Update SurrealDB
 				</Menu.Item>

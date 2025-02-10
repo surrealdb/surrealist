@@ -2,9 +2,14 @@ import { Box, Button, Group, Paper, Select, Text } from "@mantine/core";
 
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance } from "~/types";
+import { fetchAPI } from "../../../api";
+import { useStable } from "~/hooks/stable";
+import { useInputState } from "@mantine/hooks";
 
 export async function openVersionUpgradeModal(instance: CloudInstance) {
 	openModal({
@@ -26,6 +31,24 @@ interface VersionUpgradeProps {
 function VersionUpgrade({ instance }: VersionUpgradeProps) {
 	const isLight = useIsLight();
 
+	const [version, setVersion] = useInputState("");
+
+	const { mutateAsync, isPending } = useMutation({
+		mutationFn: (version: string) =>
+			fetchAPI(`/instances/${instance.id}/version`, {
+				method: "PATCH",
+				body: JSON.stringify({
+					version,
+				}),
+			}),
+	});
+
+	const requestUpdate = useStable(() => {
+		mutateAsync(version).then(() => {
+			closeAllModals();
+		});
+	});
+
 	return (
 		<Stack>
 			<Paper
@@ -35,7 +58,12 @@ function VersionUpgrade({ instance }: VersionUpgradeProps) {
 				<Stack gap="xl">
 					<Text>Select which version of SurrealDB you want this instance to run</Text>
 
-					<Select placeholder="SurrealDB 2.0" />
+					<Select
+						data={instance.available_versions}
+						placeholder={instance.version}
+						value={version}
+						onChange={setVersion}
+					/>
 				</Stack>
 			</Paper>
 
@@ -51,10 +79,12 @@ function VersionUpgrade({ instance }: VersionUpgradeProps) {
 				<Button
 					type="submit"
 					variant="gradient"
-					disabled
+					disabled={!version}
+					onClick={requestUpdate}
+					loading={isPending}
 					flex={1}
 				>
-					Save changes
+					Update
 				</Button>
 			</Group>
 		</Stack>
