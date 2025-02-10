@@ -19,6 +19,7 @@ import {
 
 import {
 	iconAPI,
+	iconArrowUpRight,
 	iconChevronDown,
 	iconCloudClock,
 	iconConsole,
@@ -33,6 +34,7 @@ import {
 	iconTag,
 	iconTransfer,
 	iconTune,
+	iconUpload,
 } from "~/util/icons";
 
 import { useQueryClient } from "@tanstack/react-query";
@@ -47,6 +49,7 @@ import { openCapabilitiesModal } from "./modals/capabilities";
 import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
 import { openUsageModal } from "./modals/view-usage";
+import { openVersionUpgradeModal } from "./modals/upgrade-version";
 
 export type ConnectMethod = "sdk" | "cli" | "curl" | "surrealist";
 
@@ -203,6 +206,12 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 					onClick={() => openUsageModal(value)}
 				>
 					View instance usage
+				</Menu.Item>
+				<Menu.Item
+					leftSection={<Icon path={iconArrowUpRight} />}
+					onClick={() => openVersionUpgradeModal(value)}
+				>
+					Update SurrealDB
 				</Menu.Item>
 				<Menu.Item
 					leftSection={<Icon path={iconCopy} />}
