@@ -12,15 +12,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import papaparse from "papaparse";
 import { cluster, isArray, isObject, sleep, unique } from "radash";
-import {
-	ChangeEvent,
-	MutableRefObject,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
@@ -40,7 +32,8 @@ import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
 
-type ImportType = "sql" | "csv" | "json" | "ndjson";
+type DataFileFormat = "csv" | "json" | "ndjson";
+type ImportType = "sql" | DataFileFormat;
 
 type ExecuteTransformAndImportFn = (content: string) => Promise<void>;
 
@@ -142,6 +135,39 @@ const extractSurrealType = (value: any): SurrealKind => {
 	return type as "string" | "number" | "object";
 };
 
+const extractColumnNames = (importedRows: any[], withHeader: boolean) => {
+	return withHeader
+		? Object.keys(importedRows?.[0] ?? {})
+		: Array(((importedRows?.[0] as unknown[]) ?? []).length).fill("");
+};
+
+const extractColumnType = (importedRows: any[], index: number, withHeader: boolean) => {
+	const values = withHeader
+		? importedRows.map((row: any) => {
+				const key = Object.keys(importedRows?.[0] ?? {})[index];
+				return row?.[key];
+			})
+		: (importedRows as unknown[][]).map((row) => row[index]);
+
+	const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
+
+	if (uniqueTypes.length === 1) {
+		return uniqueTypes[0];
+	}
+
+	return "string";
+};
+
+const extractColumnTypes = (importedRows: any[], withHeader: boolean) => {
+	const length = withHeader
+		? Object.keys(importedRows?.[0] ?? {}).length
+		: ((importedRows?.[0] as unknown[]) ?? []).length;
+
+	return Array(length)
+		.fill("")
+		.map((_, index) => extractColumnType(importedRows, index, withHeader));
+};
+
 const isValidColumnType = (type: string) => {
 	return (SURREAL_KINDS as readonly string[]).includes(type);
 };
@@ -188,25 +214,323 @@ const convertValueToType = (value: any, type: SurrealKind): any => {
 	}
 };
 
-type CsvImportFormProps = {
+const createEntityId = (value: any, type: SurrealKind, table: string) => {
+	if (type === "record") {
+		return convertValueToType(value, type);
+	}
+
+	return new RecordId(table, convertValueToType(value, type));
+};
+
+const createEntity = (data: any, table: string, columnNames: string[], columnTypes: string[]) => {
+	const o: any = {};
+
+	for (const key of Object.keys(data)) {
+		const value = data[key];
+		const type = columnTypes[columnNames.indexOf(key)] as SurrealKind;
+
+		if (key === "id") {
+			o[key] = createEntityId(value, type, table);
+		} else {
+			o[key] = convertValueToType(value, type);
+		}
+	}
+
+	return o;
+};
+
+const applyBatchImport = async (items: any[], table: string, insertRelation: boolean) => {
+	const BATCH_CHUNK_SIZE = 1000;
+	const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
+
+	let successImportCount = 0;
+	let errorImportCount = 0;
+	let errorMessage = undefined;
+
+	for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
+		const [response] = await executeQuery(/* surql */ `${queryAction} INTO $table $content`, {
+			table: new Table(table),
+			content: batchedItems,
+		});
+
+		if (response.success) {
+			successImportCount += batchedItems.length;
+		} else {
+			errorImportCount += batchedItems.length;
+			errorMessage = response.result;
+			break;
+		}
+	}
+
+	if (errorImportCount > 0) {
+		if (successImportCount > 0) {
+			showWarning({
+				title: "Import partially failed",
+				subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
+			});
+		} else {
+			showError({
+				title: "Import failed",
+				subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
+			});
+		}
+	} else {
+		showInfo({
+			title: "Import successful",
+			subtitle: `${successImportCount} records were successfully inserted`,
+		});
+	}
+
+	await syncConnectionSchema();
+};
+
+type DataFileImportFormProps = {
+	fileFormat: DataFileFormat;
 	defaultTableName: string;
 	isImporting: boolean;
 	importFile: MutableRefObject<OpenedTextFile | null>;
 	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
 };
 
+const FileFormatFormHeader = ({ fileFormat }: Pick<DataFileImportFormProps, "fileFormat">) => {
+	return (
+		<>
+			<Text>
+				This importer allows you to parse {fileFormat.toUpperCase()} data into a table.
+			</Text>
+
+			<Text>
+				While existing data will be preserved, it may be overwritten by the imported data.
+			</Text>
+		</>
+	);
+};
+
+type TableAutocompleteProps = {
+	value: string;
+	onChange: (value: string) => void;
+};
+
+const TableAutocomplete = ({ value, onChange }: TableAutocompleteProps) => {
+	const tables = useTableNames();
+
+	return (
+		<Autocomplete
+			data={tables}
+			value={value}
+			onChange={onChange}
+			label="Table name"
+			size="sm"
+			required
+			placeholder="table_name"
+		/>
+	);
+};
+
+type EditColumnsFormProps = {
+	columnNames: string[];
+	columnTypes: string[];
+	nameChangeDisabled?: boolean;
+	onColumnNameChange: (e: ChangeEvent<HTMLInputElement>, index: number) => void;
+	onColumnTypeChange: (type: string, index: number) => void;
+};
+
+const EditColumnsForm = (props: EditColumnsFormProps) => {
+	const { columnNames, columnTypes, nameChangeDisabled, onColumnNameChange, onColumnTypeChange } =
+		props;
+
+	return (
+		<>
+			<Label>Columns</Label>
+
+			<Stack>
+				{columnNames.map((c, index) => {
+					const type = columnTypes[index];
+
+					return (
+						<Group key={index}>
+							<TextInput
+								value={c}
+								onChange={(e) => onColumnNameChange(e, index)}
+								disabled={nameChangeDisabled}
+								leftSection={<Text>{index + 1}</Text>}
+								placeholder="name"
+							/>
+							<FieldKindInputCore
+								value={type}
+								onChange={(t) => onColumnTypeChange(t, index)}
+								data={SURREAL_KINDS}
+								placeholder="type"
+							/>
+						</Group>
+					);
+				})}
+			</Stack>
+		</>
+	);
+};
+
+type FileFormatFormFooterProps = {
+	insertRelation: boolean;
+	setInsertRelation: (value: boolean | ChangeEvent<any> | null | undefined) => void;
+	canInsertRelation: boolean;
+	errorMessage: string | null;
+	isImporting: boolean;
+	importedRows: any[];
+	canExport: boolean;
+	submit: () => void;
+};
+
+const FileFormatFormFooter = (props: FileFormatFormFooterProps) => {
+	const {
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		errorMessage,
+		isImporting,
+		importedRows,
+		canExport,
+		submit,
+	} = props;
+
+	return (
+		<>
+			<Switch
+				checked={insertRelation}
+				onChange={setInsertRelation}
+				disabled={!canInsertRelation}
+				label="Insert as a relationship"
+				description={`requires "in", "out" to be valid record ids`}
+				size="sm"
+			/>
+
+			{errorMessage ? <Text c="red">Error: {errorMessage}</Text> : null}
+
+			<Button
+				mt="md"
+				fullWidth
+				onClick={submit}
+				loading={isImporting}
+				variant="gradient"
+				disabled={!canExport}
+			>
+				Start import
+				<Icon
+					path={iconDownload}
+					right
+				/>
+			</Button>
+
+			{importedRows.length > 0 ? (
+				<Text
+					fz="sm"
+					c="slate"
+					mt={-3}
+				>
+					Importing this file will create{insertRelation ? "" : " or update"}{" "}
+					{importedRows.length} records in total.
+				</Text>
+			) : null}
+		</>
+	);
+};
+
+type UseFileFormatFormProps = {
+	defaultTableName: string;
+	importedRows: any[];
+	withHeader?: boolean;
+};
+
+const useFileFormatForm = (props: UseFileFormatFormProps) => {
+	const { defaultTableName, importedRows, withHeader } = props;
+
+	const [table, setTable] = useInputState(defaultTableName);
+	const [insertRelation, setInsertRelation] = useInputState(false);
+
+	const [columnNames, setColumnNames] = useState<string[]>(
+		extractColumnNames(importedRows, withHeader ?? true),
+	);
+	const [columnTypes, setColumnTypes] = useState<string[]>(
+		extractColumnTypes(importedRows, withHeader ?? true),
+	);
+
+	const canInsertRelation = useMemo(() => {
+		if (!columnNames.includes("in")) {
+			return false;
+		}
+		if (!columnNames.includes("out")) {
+			return false;
+		}
+
+		if (columnTypes[columnNames.indexOf("in")] !== "record") {
+			return false;
+		}
+		if (columnTypes[columnNames.indexOf("out")] !== "record") {
+			return false;
+		}
+
+		return true;
+	}, [columnNames, columnTypes]);
+
+	useEffect(() => {
+		if (!canInsertRelation) {
+			setInsertRelation(false);
+		}
+	}, [canInsertRelation]);
+
+	const canExport = useMemo(() => {
+		return (
+			!!table &&
+			columnNames.length > 0 &&
+			columnNames.every((c) => !!c) &&
+			unique(columnNames).length === columnNames.length &&
+			columnTypes.every(isValidColumnType)
+		);
+	}, [table, columnNames, columnTypes]);
+
+	const handleColumnNameChange = useStable((e: ChangeEvent<HTMLInputElement>, index: number) => {
+		setColumnNames((prev) => {
+			const newColumnNames = [...prev];
+			newColumnNames[index] = e.target.value;
+			return newColumnNames;
+		});
+	});
+
+	const handleColumnTypeChange = useStable((type: string, index: number) => {
+		setColumnTypes((prev) => {
+			const newColumnTypes = [...prev];
+			newColumnTypes[index] = type;
+			return newColumnTypes;
+		});
+	});
+
+	return {
+		table,
+		setTable,
+		columnNames,
+		handleColumnNameChange,
+		setColumnNames,
+		columnTypes,
+		handleColumnTypeChange,
+		setColumnTypes,
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		canExport,
+	};
+};
+
+type CsvImportFormProps = DataFileImportFormProps;
+
 const CsvImportForm = ({
+	fileFormat,
 	defaultTableName,
 	isImporting,
 	importFile,
 	confirmImport,
 }: CsvImportFormProps) => {
-	const tables = useTableNames();
-
-	const [table, setTable] = useInputState(defaultTableName);
 	const [header, setHeader] = useInputState(true);
 	const [delimiter, setDelimiter] = useInputState(papaparse.DefaultDelimiter);
-	const [insertRelation, setInsertRelation] = useInputState(false);
 
 	const { data: importedRows, errors } = useMemo(() => {
 		if (importFile.current) {
@@ -229,68 +553,26 @@ const CsvImportForm = ({
 		return { data: [], errors: [] } as Omit<papaparse.ParseResult<unknown>, "meta">;
 	}, [importFile.current, delimiter, header]);
 
-	const extractColumnNames = useStable(() => {
-		return header
-			? Object.keys(importedRows?.[0] ?? {})
-			: Array(((importedRows?.[0] as unknown[]) ?? []).length).fill("");
+	const {
+		table,
+		setTable,
+		columnNames,
+		handleColumnNameChange,
+		setColumnNames,
+		columnTypes,
+		handleColumnTypeChange,
+		setColumnTypes,
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		canExport,
+	} = useFileFormatForm({
+		defaultTableName,
+		importedRows,
+		withHeader: header,
 	});
-
-	const extractColumnType = useStable((index: number) => {
-		const values = header
-			? importedRows.map((row: any) => {
-					const key = Object.keys(importedRows?.[0] ?? {})[index];
-					return row?.[key];
-				})
-			: (importedRows as unknown[][]).map((row) => row[index]);
-
-		const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
-
-		if (uniqueTypes.length === 1) {
-			return uniqueTypes[0];
-		}
-
-		return "string";
-	});
-
-	const extractColumnTypes = useStable(() => {
-		const length = header
-			? Object.keys(importedRows?.[0] ?? {}).length
-			: ((importedRows?.[0] as unknown[]) ?? []).length;
-
-		return Array(length)
-			.fill("")
-			.map((_, index) => extractColumnType(index));
-	});
-
-	const [columnNames, setColumnNames] = useState<string[]>(extractColumnNames());
-	const [columnTypes, setColumnTypes] = useState<string[]>(extractColumnTypes());
 
 	const submit = () => {
-		const createEntityId = (value: any, type: SurrealKind) => {
-			if (type === "record") {
-				return convertValueToType(value, type);
-			}
-
-			return new RecordId(table, convertValueToType(value, type));
-		};
-
-		const createEntityWithHeader = (data: any) => {
-			const o: any = {};
-
-			for (const key of Object.keys(data)) {
-				const value = data[key];
-				const type = columnTypes[columnNames.indexOf(key)] as SurrealKind;
-
-				if (key === "id") {
-					o[key] = createEntityId(value, type);
-				} else {
-					o[key] = convertValueToType(value, type);
-				}
-			}
-
-			return o;
-		};
-
 		const createEntityWithoutHeader = (data: unknown[]) => {
 			const o: any = {};
 
@@ -300,7 +582,7 @@ const CsvImportForm = ({
 				const type = columnTypes[i] as SurrealKind;
 
 				if (key === "id") {
-					o[key] = createEntityId(value, type);
+					o[key] = createEntityId(value, type, table);
 				} else {
 					o[key] = convertValueToType(value, type);
 				}
@@ -331,7 +613,7 @@ const CsvImportForm = ({
 					}
 
 					const content = header
-						? createEntityWithHeader(row.data as any)
+						? createEntity(row.data as any, table, columnNames, columnTypes)
 						: createEntityWithoutHeader(row.data as unknown[]);
 
 					items.push(content);
@@ -342,132 +624,29 @@ const CsvImportForm = ({
 				return;
 			}
 
-			const BATCH_CHUNK_SIZE = 1000;
-			const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
-
-			let successImportCount = 0;
-			let errorImportCount = 0;
-			let errorMessage = undefined;
-
-			for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
-				const [response] = await executeQuery(
-					/* surql */ `${queryAction} INTO $table $content`,
-					{
-						table: new Table(table),
-						content: batchedItems,
-					},
-				);
-
-				if (response.success) {
-					successImportCount += batchedItems.length;
-				} else {
-					errorImportCount += batchedItems.length;
-					errorMessage = response.result;
-					break;
-				}
-			}
-
-			if (errorImportCount > 0) {
-				if (successImportCount > 0) {
-					showWarning({
-						title: "Import partially failed",
-						subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
-					});
-				} else {
-					showError({
-						title: "Import failed",
-						subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
-					});
-				}
-			} else {
-				showInfo({
-					title: "Import successful",
-					subtitle: `${successImportCount} records were successfully inserted`,
-				});
-			}
-
-			await syncConnectionSchema();
+			await applyBatchImport(items, table, insertRelation);
 		};
 
 		confirmImport(execute);
 	};
 
-	const canExport = useMemo(() => {
-		return (
-			!!table &&
-			columnNames.length > 0 &&
-			columnNames.every((c) => !!c) &&
-			unique(columnNames).length === columnNames.length &&
-			columnTypes.every(isValidColumnType)
-		);
-	}, [table, columnNames, columnTypes]);
-
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		setColumnNames(extractColumnNames());
-		setColumnTypes(extractColumnTypes());
+		setColumnNames(extractColumnNames(importedRows, header));
+		setColumnTypes(extractColumnTypes(importedRows, header));
 	}, [delimiter, header]);
-
-	const handleColumnNameChange = useStable((e: ChangeEvent<HTMLInputElement>, index: number) => {
-		setColumnNames((prev) => {
-			const newColumnNames = [...prev];
-			newColumnNames[index] = e.target.value;
-			return newColumnNames;
-		});
-	});
-
-	const handleColumnTypeChange = useStable((type: string, index: number) => {
-		setColumnTypes((prev) => {
-			const newColumnTypes = [...prev];
-			newColumnTypes[index] = type;
-			return newColumnTypes;
-		});
-	});
 
 	const errorMessage = errors.length > 0 ? errors[0].message : null;
 
-	const canInsertRelation = useMemo(() => {
-		if (!columnNames.includes("in")) {
-			return false;
-		}
-		if (!columnNames.includes("out")) {
-			return false;
-		}
-
-		if (columnTypes[columnNames.indexOf("in")] !== "record") {
-			return false;
-		}
-		if (columnTypes[columnNames.indexOf("out")] !== "record") {
-			return false;
-		}
-
-		return true;
-	}, [columnNames, columnTypes]);
-
-	useEffect(() => {
-		if (!canInsertRelation) {
-			setInsertRelation(false);
-		}
-	}, [canInsertRelation]);
-
 	return (
 		<Stack>
-			<Text>This importer allows you to parse CSV data into a table.</Text>
-
-			<Text>
-				While existing data will be preserved, it may be overwritten by the imported data.
-			</Text>
+			<FileFormatFormHeader fileFormat={fileFormat} />
 
 			<Divider />
 
-			<Autocomplete
-				data={tables}
+			<TableAutocomplete
 				value={table}
 				onChange={setTable}
-				label="Table name"
-				size="sm"
-				required
-				placeholder="table_name"
 			/>
 
 			<Divider />
@@ -499,92 +678,39 @@ const CsvImportForm = ({
 
 			<Divider />
 
-			<Label>Columns</Label>
-
-			<Stack>
-				{columnNames.map((c, index) => {
-					const type = columnTypes[index];
-
-					return (
-						<Group key={index}>
-							<TextInput
-								value={c}
-								onChange={(e) => handleColumnNameChange(e, index)}
-								disabled={header}
-								leftSection={<Text>{index + 1}</Text>}
-								placeholder="name"
-							/>
-							<FieldKindInputCore
-								value={type}
-								onChange={(t) => handleColumnTypeChange(t, index)}
-								data={SURREAL_KINDS}
-								placeholder="type"
-							/>
-						</Group>
-					);
-				})}
-			</Stack>
+			<EditColumnsForm
+				columnNames={columnNames}
+				columnTypes={columnTypes}
+				nameChangeDisabled={header}
+				onColumnNameChange={handleColumnNameChange}
+				onColumnTypeChange={handleColumnTypeChange}
+			/>
 
 			<Divider />
 
-			<Switch
-				checked={insertRelation}
-				onChange={setInsertRelation}
-				disabled={!canInsertRelation}
-				label="Insert as a relationship"
-				description={`requires "in", "out" to be valid record ids`}
-				size="sm"
+			<FileFormatFormFooter
+				insertRelation={insertRelation}
+				setInsertRelation={setInsertRelation}
+				canInsertRelation={canInsertRelation}
+				errorMessage={errorMessage}
+				isImporting={isImporting}
+				importedRows={importedRows}
+				canExport={canExport}
+				submit={submit}
 			/>
-
-			{errorMessage ? <Text c="red">Error: {errorMessage}</Text> : null}
-
-			<Button
-				mt="md"
-				fullWidth
-				onClick={submit}
-				loading={isImporting}
-				variant="gradient"
-				disabled={!canExport}
-			>
-				Start import
-				<Icon
-					path={iconDownload}
-					right
-				/>
-			</Button>
-
-			{importedRows.length > 0 ? (
-				<Text
-					fz="sm"
-					c="slate"
-					mt={-3}
-				>
-					Importing this file will create{insertRelation ? "" : " or update"}{" "}
-					{importedRows.length} records in total.
-				</Text>
-			) : null}
 		</Stack>
 	);
 };
 
-type JsonImportFormProps = {
-	defaultTableName: string;
-	isImporting: boolean;
-	importFile: MutableRefObject<OpenedTextFile | null>;
-	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
-};
+type JsonImportFormProps = DataFileImportFormProps;
 
 const JsonImportForm = ({
+	fileFormat,
 	defaultTableName,
 	isImporting,
 	importFile,
 	confirmImport,
 }: JsonImportFormProps) => {
-	const tables = useTableNames();
-
-	const [table, setTable] = useInputState(defaultTableName);
-	const [insertRelation, setInsertRelation] = useInputState(false);
-
 	const { data: importedRows, errors } = useMemo(() => {
 		if (importFile.current) {
 			const content = importFile.current.content.trim();
@@ -602,289 +728,90 @@ const JsonImportForm = ({
 		return { data: [], errors: [] } as { data: any[]; errors: Error[] };
 	}, [importFile.current]);
 
-	const extractColumnNames = useStable(() => {
-		return Object.keys(importedRows?.[0] ?? {});
+	const {
+		table,
+		setTable,
+		columnNames,
+		handleColumnNameChange,
+		columnTypes,
+		handleColumnTypeChange,
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		canExport,
+	} = useFileFormatForm({
+		defaultTableName,
+		importedRows,
 	});
-
-	const extractColumnType = useStable((index: number) => {
-		const values = importedRows.map((row: any) => {
-			const key = Object.keys(importedRows?.[0] ?? {})[index];
-			return row?.[key];
-		});
-
-		const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
-
-		if (uniqueTypes.length === 1) {
-			return uniqueTypes[0];
-		}
-
-		return "string";
-	});
-
-	const extractColumnTypes = useStable(() => {
-		const length = Object.keys(importedRows?.[0] ?? {}).length;
-
-		return Array(length)
-			.fill("")
-			.map((_, index) => extractColumnType(index));
-	});
-
-	const [columnNames, setColumnNames] = useState<string[]>(extractColumnNames());
-	const [columnTypes, setColumnTypes] = useState<string[]>(extractColumnTypes());
 
 	const submit = () => {
-		const createEntityId = (value: any, type: SurrealKind) => {
-			if (type === "record") {
-				return convertValueToType(value, type);
-			}
-
-			return new RecordId(table, convertValueToType(value, type));
-		};
-
-		const createEntity = (data: any) => {
-			const o: any = {};
-
-			for (const key of Object.keys(data)) {
-				const value = data[key];
-				const type = columnTypes[columnNames.indexOf(key)] as SurrealKind;
-
-				if (key === "id") {
-					o[key] = createEntityId(value, type);
-				} else {
-					o[key] = convertValueToType(value, type);
-				}
-			}
-
-			return o;
-		};
-
 		const execute = async (content: string) => {
 			const value = JSON.parse(content);
-			const items = (isArray(value) ? value : [value]).map(createEntity);
+			const items = (isArray(value) ? value : [value]).map((data) =>
+				createEntity(data, table, columnNames, columnTypes),
+			);
 
-			const BATCH_CHUNK_SIZE = 1000;
-			const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
-
-			let successImportCount = 0;
-			let errorImportCount = 0;
-			let errorMessage = undefined;
-
-			for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
-				const [response] = await executeQuery(
-					/* surql */ `${queryAction} INTO $table $content`,
-					{
-						table: new Table(table),
-						content: batchedItems,
-					},
-				);
-
-				if (response.success) {
-					successImportCount += batchedItems.length;
-				} else {
-					errorImportCount += batchedItems.length;
-					errorMessage = response.result;
-					break;
-				}
-			}
-
-			if (errorImportCount > 0) {
-				if (successImportCount > 0) {
-					showWarning({
-						title: "Import partially failed",
-						subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
-					});
-				} else {
-					showError({
-						title: "Import failed",
-						subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
-					});
-				}
-			} else {
-				showInfo({
-					title: "Import successful",
-					subtitle: `${successImportCount} records were successfully inserted`,
-				});
-			}
-
-			await syncConnectionSchema();
+			await applyBatchImport(items, table, insertRelation);
 		};
 
 		confirmImport(execute);
 	};
 
-	const canExport = useMemo(() => {
-		return (
-			!!table &&
-			columnNames.length > 0 &&
-			columnNames.every((c) => !!c) &&
-			unique(columnNames).length === columnNames.length &&
-			columnTypes.every(isValidColumnType)
-		);
-	}, [table, columnNames, columnTypes]);
-
-	useEffect(() => {
-		setColumnNames(extractColumnNames());
-		setColumnTypes(extractColumnTypes());
-	}, []);
-
-	const handleColumnNameChange = useStable((e: ChangeEvent<HTMLInputElement>, index: number) => {
-		setColumnNames((prev) => {
-			const newColumnNames = [...prev];
-			newColumnNames[index] = e.target.value;
-			return newColumnNames;
-		});
-	});
-
-	const handleColumnTypeChange = useStable((type: string, index: number) => {
-		setColumnTypes((prev) => {
-			const newColumnTypes = [...prev];
-			newColumnTypes[index] = type;
-			return newColumnTypes;
-		});
-	});
-
 	const errorMessage = errors.length > 0 ? errors[0].message : null;
-
-	const canInsertRelation = useMemo(() => {
-		if (!columnNames.includes("in")) {
-			return false;
-		}
-		if (!columnNames.includes("out")) {
-			return false;
-		}
-
-		if (columnTypes[columnNames.indexOf("in")] !== "record") {
-			return false;
-		}
-		if (columnTypes[columnNames.indexOf("out")] !== "record") {
-			return false;
-		}
-
-		return true;
-	}, [columnNames, columnTypes]);
-
-	useEffect(() => {
-		if (!canInsertRelation) {
-			setInsertRelation(false);
-		}
-	}, [canInsertRelation]);
 
 	return (
 		<Stack>
-			<Text>This importer allows you to parse JSON data into a table.</Text>
-
-			<Text>
-				While existing data will be preserved, it may be overwritten by the imported data.
-			</Text>
+			<FileFormatFormHeader fileFormat={fileFormat} />
 
 			<Divider />
 
-			<Autocomplete
-				data={tables}
+			<TableAutocomplete
 				value={table}
 				onChange={setTable}
-				label="Table name"
-				size="sm"
-				required
-				placeholder="table_name"
 			/>
 
 			<Divider />
 
-			<Label>Columns</Label>
-
-			<Stack>
-				{columnNames.map((c, index) => {
-					const type = columnTypes[index];
-
-					return (
-						<Group key={index}>
-							<TextInput
-								value={c}
-								onChange={(e) => handleColumnNameChange(e, index)}
-								disabled
-								leftSection={<Text>{index + 1}</Text>}
-								placeholder="name"
-							/>
-							<FieldKindInputCore
-								value={type}
-								onChange={(t) => handleColumnTypeChange(t, index)}
-								data={SURREAL_KINDS}
-								placeholder="type"
-							/>
-						</Group>
-					);
-				})}
-			</Stack>
+			<EditColumnsForm
+				columnNames={columnNames}
+				columnTypes={columnTypes}
+				onColumnNameChange={handleColumnNameChange}
+				onColumnTypeChange={handleColumnTypeChange}
+			/>
 
 			<Divider />
 
-			<Switch
-				checked={insertRelation}
-				onChange={setInsertRelation}
-				disabled={!canInsertRelation}
-				label="Insert as a relationship"
-				description={`requires "in", "out" to be valid record ids`}
-				size="sm"
+			<FileFormatFormFooter
+				insertRelation={insertRelation}
+				setInsertRelation={setInsertRelation}
+				canInsertRelation={canInsertRelation}
+				errorMessage={errorMessage}
+				isImporting={isImporting}
+				importedRows={importedRows}
+				canExport={canExport}
+				submit={submit}
 			/>
-
-			{errorMessage ? <Text c="red">Error: {errorMessage}</Text> : null}
-
-			<Button
-				mt="md"
-				fullWidth
-				onClick={submit}
-				loading={isImporting}
-				variant="gradient"
-				disabled={!canExport}
-			>
-				Start import
-				<Icon
-					path={iconDownload}
-					right
-				/>
-			</Button>
-
-			{importedRows.length > 0 ? (
-				<Text
-					fz="sm"
-					c="slate"
-					mt={-3}
-				>
-					Importing this file will create{insertRelation ? "" : " or update"}{" "}
-					{importedRows.length} records in total.
-				</Text>
-			) : null}
 		</Stack>
 	);
 };
 
-type NdJsonImportFormProps = {
-	defaultTableName: string;
-	isImporting: boolean;
-	importFile: MutableRefObject<OpenedTextFile | null>;
-	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
-};
+type NdJsonImportFormProps = DataFileImportFormProps;
 
 const NdJsonImportForm = ({
+	fileFormat,
 	defaultTableName,
 	isImporting,
 	importFile,
 	confirmImport,
 }: NdJsonImportFormProps) => {
-	const tables = useTableNames();
-
-	const [table, setTable] = useInputState(defaultTableName);
-	const [insertRelation, setInsertRelation] = useInputState(false);
-
-	const extractItems = useCallback((content: string) => {
+	const extractItems = useStable((content: string) => {
 		const newlineRegex = /\r?\n/;
 
 		return content
 			.split(newlineRegex)
 			.map((s) => s.trim())
 			.map((s) => JSON.parse(s));
-	}, []);
+	});
 
 	const { data: importedRows, errors } = useMemo(() => {
 		if (importFile.current) {
@@ -906,260 +833,70 @@ const NdJsonImportForm = ({
 		}
 
 		return { data: [], errors: [] } as { data: any[]; errors: Error[] };
-	}, [importFile.current, extractItems]);
+	}, [importFile.current]);
 
-	const extractColumnNames = useStable(() => {
-		return Object.keys(importedRows?.[0] ?? {});
+	const {
+		table,
+		setTable,
+		columnNames,
+		handleColumnNameChange,
+		columnTypes,
+		handleColumnTypeChange,
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		canExport,
+	} = useFileFormatForm({
+		defaultTableName,
+		importedRows,
 	});
-
-	const extractColumnType = useStable((index: number) => {
-		const values = importedRows.map((row: any) => {
-			const key = Object.keys(importedRows?.[0] ?? {})[index];
-			return row?.[key];
-		});
-
-		const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
-
-		if (uniqueTypes.length === 1) {
-			return uniqueTypes[0];
-		}
-
-		return "string";
-	});
-
-	const extractColumnTypes = useStable(() => {
-		const length = Object.keys(importedRows?.[0] ?? {}).length;
-
-		return Array(length)
-			.fill("")
-			.map((_, index) => extractColumnType(index));
-	});
-
-	const [columnNames, setColumnNames] = useState<string[]>(extractColumnNames());
-	const [columnTypes, setColumnTypes] = useState<string[]>(extractColumnTypes());
 
 	const submit = () => {
-		const createEntityId = (value: any, type: SurrealKind) => {
-			if (type === "record") {
-				return convertValueToType(value, type);
-			}
-
-			return new RecordId(table, convertValueToType(value, type));
-		};
-
-		const createEntity = (data: any) => {
-			const o: any = {};
-
-			for (const key of Object.keys(data)) {
-				const value = data[key];
-				const type = columnTypes[columnNames.indexOf(key)] as SurrealKind;
-
-				if (key === "id") {
-					o[key] = createEntityId(value, type);
-				} else {
-					o[key] = convertValueToType(value, type);
-				}
-			}
-
-			return o;
-		};
-
 		const execute = async (content: string) => {
-			const items = extractItems(content).map(createEntity);
+			const items = extractItems(content).map((data) =>
+				createEntity(data, table, columnNames, columnTypes),
+			);
 
-			const BATCH_CHUNK_SIZE = 1000;
-			const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
-
-			let successImportCount = 0;
-			let errorImportCount = 0;
-			let errorMessage = undefined;
-
-			for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
-				const [response] = await executeQuery(
-					/* surql */ `${queryAction} INTO $table $content`,
-					{
-						table: new Table(table),
-						content: batchedItems,
-					},
-				);
-
-				if (response.success) {
-					successImportCount += batchedItems.length;
-				} else {
-					errorImportCount += batchedItems.length;
-					errorMessage = response.result;
-					break;
-				}
-			}
-
-			if (errorImportCount > 0) {
-				if (successImportCount > 0) {
-					showWarning({
-						title: "Import partially failed",
-						subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
-					});
-				} else {
-					showError({
-						title: "Import failed",
-						subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
-					});
-				}
-			} else {
-				showInfo({
-					title: "Import successful",
-					subtitle: `${successImportCount} records were successfully inserted`,
-				});
-			}
-
-			await syncConnectionSchema();
+			await applyBatchImport(items, table, insertRelation);
 		};
 
 		confirmImport(execute);
 	};
 
-	const canExport = useMemo(() => {
-		return (
-			!!table &&
-			columnNames.length > 0 &&
-			columnNames.every((c) => !!c) &&
-			unique(columnNames).length === columnNames.length &&
-			columnTypes.every(isValidColumnType)
-		);
-	}, [table, columnNames, columnTypes]);
-
-	useEffect(() => {
-		setColumnNames(extractColumnNames());
-		setColumnTypes(extractColumnTypes());
-	}, []);
-
-	const handleColumnNameChange = useStable((e: ChangeEvent<HTMLInputElement>, index: number) => {
-		setColumnNames((prev) => {
-			const newColumnNames = [...prev];
-			newColumnNames[index] = e.target.value;
-			return newColumnNames;
-		});
-	});
-
-	const handleColumnTypeChange = useStable((type: string, index: number) => {
-		setColumnTypes((prev) => {
-			const newColumnTypes = [...prev];
-			newColumnTypes[index] = type;
-			return newColumnTypes;
-		});
-	});
-
 	const errorMessage = errors.length > 0 ? errors[0].message : null;
-
-	const canInsertRelation = useMemo(() => {
-		if (!columnNames.includes("in")) {
-			return false;
-		}
-		if (!columnNames.includes("out")) {
-			return false;
-		}
-
-		if (columnTypes[columnNames.indexOf("in")] !== "record") {
-			return false;
-		}
-		if (columnTypes[columnNames.indexOf("out")] !== "record") {
-			return false;
-		}
-
-		return true;
-	}, [columnNames, columnTypes]);
-
-	useEffect(() => {
-		if (!canInsertRelation) {
-			setInsertRelation(false);
-		}
-	}, [canInsertRelation]);
 
 	return (
 		<Stack>
-			<Text>This importer allows you to parse NDJSON data into a table.</Text>
-
-			<Text>
-				While existing data will be preserved, it may be overwritten by the imported data.
-			</Text>
+			<FileFormatFormHeader fileFormat={fileFormat} />
 
 			<Divider />
 
-			<Autocomplete
-				data={tables}
+			<TableAutocomplete
 				value={table}
 				onChange={setTable}
-				label="Table name"
-				size="sm"
-				required
-				placeholder="table_name"
 			/>
 
 			<Divider />
 
-			<Label>Columns</Label>
-
-			<Stack>
-				{columnNames.map((c, index) => {
-					const type = columnTypes[index];
-
-					return (
-						<Group key={index}>
-							<TextInput
-								value={c}
-								onChange={(e) => handleColumnNameChange(e, index)}
-								disabled
-								leftSection={<Text>{index + 1}</Text>}
-								placeholder="name"
-							/>
-							<FieldKindInputCore
-								value={type}
-								onChange={(t) => handleColumnTypeChange(t, index)}
-								data={SURREAL_KINDS}
-								placeholder="type"
-							/>
-						</Group>
-					);
-				})}
-			</Stack>
+			<EditColumnsForm
+				columnNames={columnNames}
+				columnTypes={columnTypes}
+				onColumnNameChange={handleColumnNameChange}
+				onColumnTypeChange={handleColumnTypeChange}
+			/>
 
 			<Divider />
 
-			<Switch
-				checked={insertRelation}
-				onChange={setInsertRelation}
-				disabled={!canInsertRelation}
-				label="Insert as a relationship"
-				description={`requires "in", "out" to be valid record ids`}
-				size="sm"
+			<FileFormatFormFooter
+				insertRelation={insertRelation}
+				setInsertRelation={setInsertRelation}
+				canInsertRelation={canInsertRelation}
+				errorMessage={errorMessage}
+				isImporting={isImporting}
+				importedRows={importedRows}
+				canExport={canExport}
+				submit={submit}
 			/>
-
-			{errorMessage ? <Text c="red">Error: {errorMessage}</Text> : null}
-
-			<Button
-				mt="md"
-				fullWidth
-				onClick={submit}
-				loading={isImporting}
-				variant="gradient"
-				disabled={!canExport}
-			>
-				Start import
-				<Icon
-					path={iconDownload}
-					right
-				/>
-			</Button>
-
-			{importedRows.length > 0 ? (
-				<Text
-					fz="sm"
-					c="slate"
-					mt={-3}
-				>
-					Importing this file will create{insertRelation ? "" : " or update"}{" "}
-					{importedRows.length} records in total.
-				</Text>
-			) : null}
 		</Stack>
 	);
 };
@@ -1183,6 +920,14 @@ export function DataImportModal() {
 						name: "Table data (csv)",
 						extensions: ["csv"],
 					},
+					{
+						name: "JavaScript Object Notation data (json)",
+						extensions: ["json"],
+					},
+					{
+						name: "Newline Delimited JSON data (ndjson)",
+						extensions: ["ndjson"],
+					},
 				],
 				false,
 			);
@@ -1194,12 +939,12 @@ export function DataImportModal() {
 			importFile.current = file;
 			openedHandle.open();
 
-			const extractFromFileType = (type: Exclude<ImportType, "sql">) => {
-				const possibleTableName = file.name.replace(`.${type}`, "");
+			const extractFromFileType = (fileFormat: DataFileFormat) => {
+				const possibleTableName = file.name.replace(`.${fileFormat}`, "");
 				const possibleTableNameRegex = /^[a-zA-Z][a-zA-Z0-9_]*$/;
 				const isValidTableName = !!possibleTableName.match(possibleTableNameRegex);
 
-				setImportType(type);
+				setImportType(fileFormat);
 				setDefaultTableName(isValidTableName ? possibleTableName : "");
 			};
 
@@ -1261,6 +1006,7 @@ export function DataImportModal() {
 			) : null}
 			{importType === "csv" ? (
 				<CsvImportForm
+					fileFormat={importType}
 					defaultTableName={defaultTableName}
 					isImporting={isImporting}
 					importFile={importFile}
@@ -1269,6 +1015,7 @@ export function DataImportModal() {
 			) : null}
 			{importType === "json" ? (
 				<JsonImportForm
+					fileFormat={importType}
 					defaultTableName={defaultTableName}
 					isImporting={isImporting}
 					importFile={importFile}
@@ -1277,6 +1024,7 @@ export function DataImportModal() {
 			) : null}
 			{importType === "ndjson" ? (
 				<NdJsonImportForm
+					fileFormat={importType}
 					defaultTableName={defaultTableName}
 					isImporting={isImporting}
 					importFile={importFile}
