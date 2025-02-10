@@ -226,6 +226,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const tasks = files.map(async (path) => ({
 			name: await basename(path),
 			content: await readTextFile(path),
+			self: undefined,
 		}));
 
 		return Promise.all(tasks);

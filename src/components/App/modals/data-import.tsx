@@ -10,7 +10,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import papaparse from "papaparse";
+import papaparse, { LocalFile } from "papaparse";
 import { cluster, isArray, isObject, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
@@ -239,29 +239,55 @@ const createEntity = (data: any, table: string, columnNames: string[], columnTyp
 	return o;
 };
 
-const applyBatchImport = async (items: any[], table: string, insertRelation: boolean) => {
-	const BATCH_CHUNK_SIZE = 1000;
+const applySingleBatchImport = async (items: any[], table: string, insertRelation: boolean) => {
 	const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
 
 	let successImportCount = 0;
 	let errorImportCount = 0;
 	let errorMessage = undefined;
 
-	for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
-		const [response] = await executeQuery(/* surql */ `${queryAction} INTO $table $content`, {
-			table: new Table(table),
-			content: batchedItems,
-		});
+	const [response] = await executeQuery(/* surql */ `${queryAction} INTO $table $content`, {
+		table: new Table(table),
+		content: items,
+	});
 
-		if (response.success) {
-			successImportCount += batchedItems.length;
+	if (response.success) {
+		successImportCount += items.length;
+	} else {
+		errorImportCount += items.length;
+		errorMessage = response.result;
+	}
+
+	return { success: response.success, successImportCount, errorImportCount, errorMessage };
+};
+
+const applyBatchImport = async (items: any[], table: string, insertRelation: boolean) => {
+	const BATCH_CHUNK_SIZE = 1000;
+
+	let successImportCount = 0;
+	let errorImportCount = 0;
+	let errorMessage = undefined;
+
+	for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
+		const batchedResponse = await applySingleBatchImport(batchedItems, table, insertRelation);
+
+		if (batchedResponse.success) {
+			successImportCount += batchedResponse.successImportCount;
 		} else {
-			errorImportCount += batchedItems.length;
-			errorMessage = response.result;
+			errorImportCount += batchedResponse.errorImportCount;
+			errorMessage = batchedResponse.errorMessage;
 			break;
 		}
 	}
 
+	return { successImportCount, errorImportCount, errorMessage };
+};
+
+const completeBatchImport = async (
+	successImportCount: number,
+	errorImportCount: number,
+	errorMessage: string | undefined,
+) => {
 	if (errorImportCount > 0) {
 		if (successImportCount > 0) {
 			showWarning({
@@ -428,7 +454,8 @@ const FileFormatFormFooter = (props: FileFormatFormFooterProps) => {
 					mt={-3}
 				>
 					Importing this file will create{insertRelation ? "" : " or update"}{" "}
-					{importedRows.length} records in total.
+					{Math.min(importedRows.length, 1_000)}
+					{importedRows.length >= 1_000 ? "+" : ""} records in total.
 				</Text>
 			) : null}
 		</>
@@ -547,6 +574,7 @@ const CsvImportForm = ({
 						return value;
 					}
 				},
+				preview: 1_000,
 			});
 		}
 
@@ -592,39 +620,98 @@ const CsvImportForm = ({
 		};
 
 		const execute = async (content: string) => {
-			const items: any[] = [];
-			let isParserSuccess = true;
+			if (!importFile.current?.self) {
+				const items: any[] = [];
 
-			papaparse.parse(content, {
-				delimiter,
-				header,
-				step: async (row, parser) => {
-					if (row.errors.length > 0) {
-						const err = row.errors[0].message;
+				let isParserSuccess = true;
 
-						showError({
-							title: "Import failed",
-							subtitle: `There was an error importing the CSV file: ${err}`,
-						});
+				papaparse.parse(content, {
+					delimiter,
+					header,
+					skipEmptyLines: true,
+					step: async (row, parser) => {
+						if (row.errors.length > 0) {
+							const err = row.errors[0].message;
 
-						isParserSuccess = false;
-						parser.abort();
-						return;
-					}
+							showError({
+								title: "Import failed",
+								subtitle: `There was an error importing the CSV file: ${err}`,
+							});
 
-					const content = header
-						? createEntity(row.data as any, table, columnNames, columnTypes)
-						: createEntityWithoutHeader(row.data as unknown[]);
+							isParserSuccess = false;
+							parser.abort();
+							return;
+						}
 
-					items.push(content);
-				},
-			});
+						const content = header
+							? createEntity(row.data as any, table, columnNames, columnTypes)
+							: createEntityWithoutHeader(row.data as unknown[]);
 
-			if (!isParserSuccess) {
-				return;
+						items.push(content);
+					},
+				});
+
+				if (!isParserSuccess) {
+					return;
+				}
+
+				const { errorImportCount, successImportCount, errorMessage } =
+					await applyBatchImport(items, table, insertRelation);
+				await completeBatchImport(successImportCount, errorImportCount, errorMessage);
+			} else {
+				let successImportCount = 0;
+				let errorImportCount = 0;
+				let errorMessage: string | undefined = undefined;
+
+				await new Promise((resolve, reject) => {
+					// biome-ignore lint/style/noNonNullAssertion: <explanation>
+					papaparse.parse(importFile.current!.self as LocalFile, {
+						delimiter,
+						header,
+						skipEmptyLines: true,
+						chunkSize: 100 * 1_024,
+						chunk: async (results, parser) => {
+							if (results.errors.length > 0) {
+								const err = results.errors[0].message;
+
+								showError({
+									title: "Import failed",
+									subtitle: `There was an error importing the CSV file: ${err}`,
+								});
+
+								parser.abort();
+								reject();
+							}
+
+							const items = results.data.map((row) => {
+								return header
+									? createEntity(row as any, table, columnNames, columnTypes)
+									: createEntityWithoutHeader(row as unknown[]);
+							});
+
+							parser.pause();
+
+							const batchedResponse = await applySingleBatchImport(
+								items,
+								table,
+								insertRelation,
+							);
+
+							successImportCount += batchedResponse.successImportCount;
+							errorImportCount += batchedResponse.errorImportCount;
+							if (!errorMessage) {
+								errorMessage = batchedResponse.errorMessage;
+							}
+
+							parser.resume();
+						},
+						complete: () => {
+							resolve("completed");
+						},
+					});
+				});
+				await completeBatchImport(successImportCount, errorImportCount, errorMessage);
 			}
-
-			await applyBatchImport(items, table, insertRelation);
 		};
 
 		confirmImport(execute);
@@ -751,7 +838,12 @@ const JsonImportForm = ({
 				createEntity(data, table, columnNames, columnTypes),
 			);
 
-			await applyBatchImport(items, table, insertRelation);
+			const { errorImportCount, successImportCount, errorMessage } = await applyBatchImport(
+				items,
+				table,
+				insertRelation,
+			);
+			await completeBatchImport(successImportCount, errorImportCount, errorMessage);
 		};
 
 		confirmImport(execute);
@@ -857,7 +949,12 @@ const NdJsonImportForm = ({
 				createEntity(data, table, columnNames, columnTypes),
 			);
 
-			await applyBatchImport(items, table, insertRelation);
+			const { errorImportCount, successImportCount, errorMessage } = await applyBatchImport(
+				items,
+				table,
+				insertRelation,
+			);
+			await completeBatchImport(successImportCount, errorImportCount, errorMessage);
 		};
 
 		confirmImport(execute);

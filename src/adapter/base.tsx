@@ -1,9 +1,9 @@
-import type { InstanceConfig } from "~/schemas";
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
 
 export interface OpenedTextFile {
 	name: string;
 	content: string;
+	self: File | undefined;
 }
 
 export interface OpenedBinaryFile {
