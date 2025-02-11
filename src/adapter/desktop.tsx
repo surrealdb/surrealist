@@ -421,9 +421,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 				);
 
 				if (existing) {
-					setActiveQueryTab(existing.id);
+					setActiveQueryTab(connection.id, existing.id);
 				} else {
-					addQueryTab({ type: "file", name: name, query: path });
+					addQueryTab(connection.id, { type: "file", name: name, query: path });
 				}
 
 				NavigateViewEvent.dispatch("query");

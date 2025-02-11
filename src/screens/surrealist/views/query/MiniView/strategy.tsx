@@ -2,6 +2,7 @@ import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
 import { useConfigStore } from "~/stores/config";
 import type { QueryTab } from "~/types";
+import { getActiveConnection } from "~/util/connection";
 import { showError } from "~/util/helpers";
 
 export interface SaveStrategy {
@@ -14,11 +15,14 @@ const CONFIG_STRATEGY: SaveStrategy = {
 	read: (tab) => tab.query,
 	write: (tab, query) => {
 		const { updateQueryTab } = useConfigStore.getState();
+		const connection = getActiveConnection();
 
-		updateQueryTab({
-			id: tab.id,
-			query,
-		});
+		if (connection) {
+			updateQueryTab(connection, {
+				id: tab.id,
+				query,
+			});
+		}
 	},
 };
 

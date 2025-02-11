@@ -40,7 +40,7 @@ import { ContentPane } from "~/components/Pane";
 import { Sortable } from "~/components/Sortable";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
-import { useIntent } from "~/hooks/routing";
+import { useActiveConnection, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
@@ -79,6 +79,7 @@ function Query({
 	const { showContextMenu } = useContextMenu();
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [queryQuickClose] = useSetting("behavior", "queryQuickClose");
+	const [connection] = useActiveConnection();
 	const isLight = useIsLight();
 
 	const explorerName = adapter.platform === "darwin" ? "Finder" : "Explorer";
@@ -101,10 +102,12 @@ function Query({
 	});
 
 	const renameQuery = useStable((id: string, newName: string) => {
+		if (!connection) return;
+
 		const existing = queries.filter((q) => q.id !== id).map((q) => q.name ?? "");
 		const name = uniqueName(newName || "New query", existing);
 
-		updateQueryTab({
+		updateQueryTab(connection, {
 			id,
 			name,
 		});
@@ -127,7 +130,9 @@ function Query({
 			title: "Duplicate",
 			icon: <Icon path={iconCopy} />,
 			onClick: () => {
-				addQueryTab({
+				if (!connection) return;
+
+				addQueryTab(connection, {
 					type: "config",
 					name: query.name?.replace(/ \d+$/, ""),
 					query: query.query,
@@ -245,19 +250,24 @@ export interface TabsPaneProps {
 
 export function TabsPane(props: TabsPaneProps) {
 	const { removeQueryState } = useQueryStore.getState();
-	const { updateCurrentConnection, addQueryTab, removeQueryTab, setActiveQueryTab } =
+	const { updateConnection, addQueryTab, removeQueryTab, setActiveQueryTab } =
 		useConfigStore.getState();
 
+	const [connection] = useActiveConnection();
 	const [activeQuery, queries] = useConnection((c) => [c?.activeQuery ?? "", c?.queries ?? []]);
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isLight = useIsLight();
 
 	const newTab = useStable(() => {
-		addQueryTab({ type: "config" });
+		if (!connection) return;
+
+		addQueryTab(connection, { type: "config" });
 	});
 
 	const removeTab = useStable((id: string) => {
-		removeQueryTab(id);
+		if (!connection) return;
+
+		removeQueryTab(connection, id);
 		cancelLiveQueries(id);
 		removeQueryState(id);
 
@@ -267,15 +277,27 @@ export function TabsPane(props: TabsPaneProps) {
 	});
 
 	const saveQueryOrder = useStable((queries: QueryTab[]) => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			queries,
 		});
 	});
 
 	const closeQueryList = useStable(() => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			queryTabList: false,
 		});
+	});
+
+	const handleActivate = useStable((id: string) => {
+		if (!connection) return;
+
+		setActiveQueryTab(connection, id);
 	});
 
 	useIntent("new-query", newTab);
@@ -353,7 +375,7 @@ export function TabsPane(props: TabsPaneProps) {
 										isActive={isActive}
 										isLive={isLive}
 										isDragging={isDragging}
-										onActivate={setActiveQueryTab}
+										onActivate={handleActivate}
 										onRemoveQuery={removeTab}
 										{...handleProps}
 									/>

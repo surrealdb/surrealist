@@ -168,7 +168,6 @@ export class MiniAdapter extends BrowserAdapter {
 
 		return {
 			settings,
-			activeConnection: SANDBOX,
 			sandbox: {
 				...createSandboxConnection(settings),
 				activeQuery: mainTab.id,

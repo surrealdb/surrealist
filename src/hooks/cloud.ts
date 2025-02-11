@@ -26,7 +26,10 @@ export function useSurrealCloud() {
  */
 export function useOrganization() {
 	const orgs = useCloudStore((s) => s.organizations);
-	const active = useConfigStore((s) => s.activeCloudOrg);
+	// const active = useConfigStore((s) => s.activeCloudOrg);
+
+	// FIXME track active in config or store
+	const active = "";
 
 	return orgs.find((org) => org.id === active);
 }

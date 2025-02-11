@@ -14,6 +14,7 @@ import { runQueryKeymap, surqlLinting } from "~/editor";
 import { queryEditorField, setQueryEditor } from "~/editor/query";
 import { useActiveQuery } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
+import { useActiveConnection } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
 
@@ -37,12 +38,13 @@ export function VariablesPane({
 	closeVariables,
 }: VariablesPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
+	const [connection] = useActiveConnection();
 	const activeTab = useActiveQuery();
 
 	const [variableEditor, setVariableEditor] = useState<EditorView | null>(null);
 
 	const setVariables = useDebouncedFunction((content: string | undefined) => {
-		if (!activeTab) return;
+		if (!activeTab || !connection) return;
 
 		try {
 			const json = content || "";
@@ -52,7 +54,7 @@ export function VariablesPane({
 				throw new TypeError("Must be object");
 			}
 
-			updateQueryTab({
+			updateQueryTab(connection, {
 				id: activeTab.id,
 				variables: json,
 			});

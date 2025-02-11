@@ -27,6 +27,7 @@ import { useSavedQueryTags } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
+import { useActiveConnection } from "~/hooks/routing";
 
 export interface SavesDrawerProps {
 	opened: boolean;
@@ -45,6 +46,7 @@ export function SavesDrawer({
 }: SavesDrawerProps) {
 	const { addQueryTab, removeSavedQuery } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
+	const [connection] = useActiveConnection();
 
 	const queries = useConfigStore((s) => s.savedQueries);
 	const tags = useSavedQueryTags();
@@ -69,8 +71,10 @@ export function SavesDrawer({
 	const handleUseQuery = useStable((entry: SavedQuery, e?: React.MouseEvent) => {
 		e?.stopPropagation();
 
+		if (!connection) return;
+
 		onClose();
-		addQueryTab({
+		addQueryTab(connection, {
 			type: "config",
 			query: entry.query,
 			name: entry.name,

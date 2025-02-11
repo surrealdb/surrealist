@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useActiveCloudPage } from "~/hooks/routing";
+// import { useActiveCloudPage } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
 import { useCloudInstancesQuery } from "~/screens/surrealist/cloud-panel/hooks/instances";
@@ -39,7 +39,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const instanceTypes = useAvailableInstanceTypes();
 	const organization = useOrganization();
 	const client = useQueryClient();
-	const [, setActivePage] = useActiveCloudPage();
+	// const [, setActivePage] = useActiveCloudPage();
 
 	const [category, setCategory] = useState("");
 	const [instanceType, setInstanceType] = useState("");
@@ -123,7 +123,8 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 								size="xs"
 								mt="md"
 								onClick={() => {
-									setActivePage("billing");
+									// FIXME repair
+									// setActivePage("billing");
 									closeAllModals();
 								}}
 							>

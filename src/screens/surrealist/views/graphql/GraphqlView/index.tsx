@@ -12,7 +12,7 @@ import { GQL_SUPPORTED } from "~/constants";
 import { executeGraphqlEditorQuery } from "~/editor/query";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useGraphqlIntrospection } from "~/hooks/graphql";
-import { useIntent, useViewFocus } from "~/hooks/routing";
+import { useActiveConnection, useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { checkGraphqlSupport } from "~/screens/surrealist/connection/connection";
@@ -31,10 +31,11 @@ const VariablesPaneLazy = memo(VariablesPane);
 const ResultPaneLazy = memo(ResultPane);
 
 export function GraphqlView() {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
 
 	const isActive = useDatabaseStore((s) => s.isGraphqlQueryActive);
 
+	const [connection] = useActiveConnection();
 	const [isEnabled, setEnabled] = useState(false);
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
@@ -62,7 +63,10 @@ export function GraphqlView() {
 	});
 
 	const setShowVariables = useStable((graphqlShowVariables: boolean) => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			graphqlShowVariables,
 		});
 	});

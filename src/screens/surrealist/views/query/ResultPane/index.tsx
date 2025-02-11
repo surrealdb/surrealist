@@ -39,6 +39,7 @@ import { GraphPreview } from "./previews/graph";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
+import { useActiveConnection } from "~/hooks/routing";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -70,6 +71,7 @@ export interface ResultPaneProps {
 
 export function ResultPane({ activeTab, selection, editor, corners }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
+	const [connection] = useActiveConnection();
 
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isQuerying = useDatabaseStore((s) => s.isQueryActive);
@@ -111,14 +113,18 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	});
 
 	const setResultMode = (mode: ResultMode) => {
-		updateQueryTab({
+		if (!connection) return;
+
+		updateQueryTab(connection, {
 			id: activeTab.id,
 			resultMode: mode,
 		});
 	};
 
 	const setResultFormat = (format: ResultFormat) => {
-		updateQueryTab({
+		if (!connection) return;
+
+		updateQueryTab(connection, {
 			id: activeTab.id,
 			resultFormat: format,
 		});

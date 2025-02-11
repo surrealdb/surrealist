@@ -26,6 +26,7 @@ import { SetQueryEvent } from "~/util/global-events";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
+import { useActiveConnection } from "~/hooks/routing";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -40,6 +41,7 @@ export function MiniQueryView() {
 	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [editor, setEditor] = useState(new EditorView());
 	const [variablesValid, setVariablesValid] = useState(true);
+	const [connection] = useActiveConnection();
 
 	const [selection, setSelection] = useState<SelectionRange>();
 	const active = useActiveQuery();
@@ -50,9 +52,9 @@ export function MiniQueryView() {
 	const showVariables = !!active?.showVariables;
 
 	const setShowVariables = useStable((showVariables: boolean) => {
-		if (!active) return;
+		if (!active || !connection) return;
 
-		updateQueryTab({
+		updateQueryTab(connection, {
 			id: active?.id,
 			showVariables,
 		});

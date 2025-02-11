@@ -2,9 +2,8 @@ import { RESULT_MODES } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
-import { useQueryStore } from "~/stores/query";
 import type { ResultMode } from "~/types";
-import { getActiveQuery } from "./connection";
+import { getActiveConnection, getActiveQuery } from "./connection";
 import { SetQueryEvent } from "./global-events";
 
 /**
@@ -18,9 +17,10 @@ export function handleWindowMessage(event: MessageEvent) {
 	}
 
 	const options = typeof data.options === "object" ? data.options : {};
+	const connection = getActiveConnection();
 	const active = getActiveQuery();
 
-	if (!active) {
+	if (!active || !connection) {
 		return;
 	}
 
@@ -36,7 +36,7 @@ export function handleWindowMessage(event: MessageEvent) {
 			}
 
 			if (variables) {
-				updateQueryTab({
+				updateQueryTab(connection, {
 					id: active.id,
 					variables: active.variables,
 				});
@@ -55,7 +55,7 @@ export function handleWindowMessage(event: MessageEvent) {
 				return;
 			}
 
-			updateQueryTab({
+			updateQueryTab(connection, {
 				id: active.id,
 				showVariables: mode === "variables",
 			});
@@ -69,7 +69,7 @@ export function handleWindowMessage(event: MessageEvent) {
 				return;
 			}
 
-			updateQueryTab({
+			updateQueryTab(connection, {
 				id: active.id,
 				resultMode: mode as ResultMode,
 			});

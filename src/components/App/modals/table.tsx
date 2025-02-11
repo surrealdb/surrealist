@@ -52,7 +52,7 @@ export function TableCreatorModal() {
 			tables: [tableName],
 		});
 
-		if (activeView?.id === "explorer") {
+		if (activeView === "explorer") {
 			dispatchIntent("explore-table", {
 				table: tableName,
 			});

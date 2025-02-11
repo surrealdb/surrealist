@@ -10,6 +10,7 @@ import { ContentPane } from "~/components/Pane";
 import { surqlLinting } from "~/editor";
 import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
+import { useActiveConnection } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
 
@@ -20,10 +21,13 @@ export interface VariablesPaneProps {
 }
 
 export function VariablesPane(props: VariablesPaneProps) {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
+	const [connection] = useActiveConnection();
 	const variablesText = useConnection((c) => c?.graphqlVariables ?? "");
 
 	const setVariables = useDebouncedFunction((content: string | undefined) => {
+		if (!connection) return;
+
 		try {
 			const json = content || "";
 			const parsed = decodeCbor(Value.from_string(json).to_cbor().buffer);
@@ -32,7 +36,8 @@ export function VariablesPane(props: VariablesPaneProps) {
 				throw new TypeError("Must be object");
 			}
 
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				graphqlVariables: content,
 			});
 

@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { type FC, useState } from "react";
 import { useImmer } from "use-immer";
 import { useOrganization } from "~/hooks/cloud";
-import { useActiveCloudPage, useCloudPageFocus } from "~/hooks/routing";
+// import { useActiveCloudPage, useCloudPageFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -40,7 +40,7 @@ const PROVISION_STEPS = [
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
-	const [, setActivePage] = useActiveCloudPage();
+	// const [, setActivePage] = useActiveCloudPage();
 
 	const organization = useOrganization();
 	const [step, setStep] = useState(0);
@@ -78,13 +78,15 @@ export function ProvisionPage() {
 				subtitle: "Please try again later",
 			});
 		} finally {
-			setActivePage("instances");
+			// setActivePage("instances");
+			// FIXME repair
 		}
 	});
 
 	const previousStep = useStable((to?: number) => {
 		if (step === 0) {
-			setActivePage("instances");
+			// setActivePage("instances");
+			// FIXME repair
 		} else {
 			setStep(to ?? step - 1);
 		}
@@ -99,10 +101,11 @@ export function ProvisionPage() {
 		setStep(to ?? step + 1);
 	});
 
-	useCloudPageFocus("provision", () => {
-		setDetails(DEFAULT);
-		setStep(0);
-	});
+	// FIXME repair
+	// useCloudPageFocus("provision", () => {
+	// 	setDetails(DEFAULT);
+	// 	setStep(0);
+	// });
 
 	const ProvisionStep = PROVISION_STEPS[step];
 

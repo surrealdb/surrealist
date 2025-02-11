@@ -36,7 +36,7 @@ import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { setEditorText } from "~/editor/helpers";
 import { useConnection } from "~/hooks/connection";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
-import { useIntent } from "~/hooks/routing";
+import { useActiveConnection, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
@@ -77,9 +77,10 @@ export function QueryPane({
 	onSelectionChange,
 	onEditorMounted,
 }: QueryPaneProps) {
-	const { updateQueryTab, updateCurrentConnection } = useConfigStore.getState();
+	const { updateQueryTab, updateConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
+	const [connection] = useActiveConnection();
 	const queryTabList = useConnection((c) => c?.queryTabList);
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
@@ -122,7 +123,10 @@ export function QueryPane({
 	});
 
 	const openQueryList = useStable(() => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			queryTabList: true,
 		});
 	});
@@ -152,7 +156,7 @@ export function QueryPane({
 	});
 
 	const inferVariables = useStable(() => {
-		if (!activeTab) return;
+		if (!activeTab || !connection) return;
 
 		const document = editor.state.doc;
 		const currentVars = tryParseParams(activeTab.variables);
@@ -175,7 +179,7 @@ export function QueryPane({
 		};
 
 		setShowVariables(true);
-		updateQueryTab({
+		updateQueryTab(connection, {
 			id: activeTab.id,
 			variables: formatValue(mergedVars, false, true),
 		});

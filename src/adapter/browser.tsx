@@ -294,9 +294,10 @@ export class BrowserAdapter implements SurrealistAdapter {
 		);
 
 		// Change activeConnection if instance config is valid
-		if (isValidActiveConnection) {
-			config.activeConnection = instanceConfig.defaultConnection ?? "";
-		}
+		// FIXME navigate to connection
+		// if (isValidActiveConnection) {
+		// 	config.activeConnection = instanceConfig.defaultConnection ?? "";
+		// }
 
 		return config;
 	}
