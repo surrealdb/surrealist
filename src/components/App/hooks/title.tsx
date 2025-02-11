@@ -1,6 +1,5 @@
 import { useLayoutEffect } from "react";
 import { adapter } from "~/adapter";
-import { useCloudRoute } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
 import { useActiveView } from "~/hooks/routing";
@@ -14,22 +13,18 @@ const NAME =
  */
 export function useTitleSync() {
 	const connection = useConnection((c) => c?.name);
-	const isCloud = useCloudRoute();
 	const [activeView] = useActiveView();
 	const [pinned] = useSetting("behavior", "windowPinned");
 
 	useLayoutEffect(() => {
 		const segments: string[] = [];
 
-		if (isCloud) {
-			segments.push(`Surreal Cloud - ${NAME}`);
-		} else {
-			if (connection) {
-				segments.push(`${connection} -`);
-			}
-
-			segments.push(`${NAME} ${activeView?.name || ""}`);
+		if (connection) {
+			segments.push(`${connection} -`);
 		}
+
+		segments.push(`${NAME} ${activeView?.name || ""}`);
+		// }
 
 		if (pinned) {
 			segments.push("(Pinned)");
@@ -39,5 +34,5 @@ export function useTitleSync() {
 
 		adapter.setWindowTitle(title);
 		useInterfaceStore.getState().setWindowTitle(title);
-	}, [activeView, connection, pinned, isCloud]);
+	}, [activeView, connection, pinned]);
 }

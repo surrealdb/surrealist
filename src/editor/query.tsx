@@ -1,7 +1,7 @@
 import { EditorSelection, StateEffect, StateField } from "@codemirror/state";
 import type { Command, EditorView } from "@codemirror/view";
 import { executeGraphql, executeUserQuery } from "~/screens/surrealist/connection/connection";
-import { getActiveConnection } from "~/util/connection";
+import { getConnection } from "~/util/connection";
 import { tryParseParams } from "~/util/helpers";
 import { getQueryRange } from "./surrealql";
 
@@ -79,7 +79,12 @@ export const selectCursorQuery: Command = (view: EditorView) => {
  * Execute the contents of the editor as a GraphQL query
  */
 export const executeGraphqlEditorQuery: Command = () => {
-	const connection = getActiveConnection();
+	const connection = getConnection();
+
+	if (!connection) {
+		return false;
+	}
+
 	const params = tryParseParams(connection.graphqlVariables);
 
 	executeGraphql(connection.graphqlQuery, params);

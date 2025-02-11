@@ -2,9 +2,9 @@ import classes from "./style.module.scss";
 
 import { Alert, Box, Button, Flex, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { type FC, Suspense, useLayoutEffect } from "react";
-import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { Redirect, Route, Switch, useLocation, useRoute } from "wouter";
+import { type FC, useLayoutEffect } from "react";
+import { HtmlPortalNode, createHtmlPortalNode } from "react-reverse-portal";
+import { useLocation, useRoute } from "wouter";
 import { adapter } from "~/adapter";
 import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
@@ -12,17 +12,15 @@ import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
 import sidekickImg from "~/assets/images/sidekick-glow.webp";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { CLOUD_PAGES } from "~/constants";
 import { useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudAlert, CloudPage } from "~/types";
+import type { CloudAlert } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
 import { fetchAPI } from "./api";
 import { openCloudAuthentication } from "./api/auth";
 import { StatusAlert } from "./components/StatusAlert";
-import { CloudSidebar } from "./sidebar";
 
 import BillingPage from "./pages/Billing";
 import ChatPage from "./pages/Chat";
@@ -40,7 +38,7 @@ const PORTAL_OPTIONS = {
 	},
 };
 
-const PAGE_PORTALS: Record<CloudPage, HtmlPortalNode> = {
+const PAGE_PORTALS: Record<any, HtmlPortalNode> = {
 	instances: createHtmlPortalNode(PORTAL_OPTIONS),
 	members: createHtmlPortalNode(PORTAL_OPTIONS),
 	audits: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -53,7 +51,7 @@ const PAGE_PORTALS: Record<CloudPage, HtmlPortalNode> = {
 	chat: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
-const PAGE_COMPONENTS: Record<CloudPage, FC> = {
+const PAGE_COMPONENTS: Record<any, FC> = {
 	instances: InstancesPage,
 	members: MembersPage,
 	audits: PlaceholderPage,
@@ -216,11 +214,11 @@ export function CloudPanelPage() {
 			align="stretch"
 			gap="xl"
 		>
-			<CloudSidebar />
+			{/* <CloudSidebar /> */}
 			<Stack flex={1}>
 				{hasAlert && <StatusAlert alert={alertQuery.data} />}
 
-				<Switch>
+				{/* <Switch>
 					{Object.values(CLOUD_PAGES).map((page) => (
 						<Route
 							key={page.id}
@@ -237,10 +235,10 @@ export function CloudPanelPage() {
 							<Redirect to="/cloud/instances" />
 						</Route>
 					)}
-				</Switch>
+				</Switch> */}
 			</Stack>
 
-			{Object.values(CLOUD_PAGES).map((page) => {
+			{/* {Object.values(CLOUD_PAGES).map((page) => {
 				const Content = PAGE_COMPONENTS[page.id];
 
 				return (
@@ -253,7 +251,7 @@ export function CloudPanelPage() {
 						</Suspense>
 					</InPortal>
 				);
-			})}
+			})} */}
 		</Flex>
 	);
 }

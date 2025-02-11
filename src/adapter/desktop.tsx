@@ -12,13 +12,13 @@ import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
-import { VIEW_MODES } from "~/constants";
+import { VIEW_PAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { Platform, QueryTab, SurrealistConfig, ViewMode } from "~/types";
+import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
 import { getSetting, watchStore } from "~/util/config";
-import { getActiveConnection } from "~/util/connection";
+import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
 import { showError, showInfo } from "~/util/helpers";
@@ -397,9 +397,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 	private async queryOpenRequest() {
 		const { addQueryTab, setActiveQueryTab } = useConfigStore.getState();
 		const resources = await invoke<Resource[]>("get_opened_resources");
-		const connection = getActiveConnection();
+		const connection = getConnection();
 
-		if (resources.length === 0) {
+		if (!connection || resources.length === 0) {
 			return;
 		}
 
@@ -431,7 +431,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				const { host, params } = Link;
 
 				if (host) {
-					const views = Object.keys(VIEW_MODES) as ViewMode[];
+					const views = Object.keys(VIEW_PAGES) as ViewPage[];
 					const target = views.find((v) => host === v);
 
 					if (target) {

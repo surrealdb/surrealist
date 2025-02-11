@@ -1,12 +1,13 @@
 import { compareVersions } from "compare-versions";
 import { unique } from "radash";
 import { useMemo } from "react";
+import { useParams, useRoute } from "wouter";
 import { useShallow } from "zustand/react/shallow";
-import { shallow } from "zustand/shallow";
-import { SANDBOX } from "~/constants";
+import { SANDBOX, VIEW_PAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
-import { Connection, SurrealistConfig } from "~/types";
+import { Connection, ViewPage } from "~/types";
+import { useActiveConnection, useActiveView } from "./routing";
 
 /**
  * Returns whether Surrealist is connected to a database
@@ -37,16 +38,26 @@ export function useConnectionList() {
  * @param selector A function to select fields from the connection
  */
 export function useConnection<T>(selector: (con?: Connection) => T): T {
+	const [active] = useActiveConnection();
+
 	return useConfigStore(
 		useShallow((s) => {
-			const connection =
-				s.activeConnection === SANDBOX
-					? s.sandbox
-					: s.connections.find((c) => c.id === s.activeConnection);
+			if (active === SANDBOX) {
+				return selector(s.sandbox);
+			}
 
-			return selector(connection);
+			return selector(s.connections.find((c) => c.id === active));
 		}),
 	);
+}
+
+/**
+ * Returns information about the active connection view
+ */
+export function useView() {
+	const [active] = useActiveView();
+
+	return active ? VIEW_PAGES[active as ViewPage] : null;
 }
 
 /**

@@ -1,13 +1,4 @@
-import {
-	Badge,
-	Button,
-	Group,
-	HoverCard,
-	Menu,
-	Modal,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { Badge, Button, Group, HoverCard, Menu, Modal, Text, TextInput } from "@mantine/core";
 
 import { useState } from "react";
 import { ActionBar } from "~/components/ActionBar";

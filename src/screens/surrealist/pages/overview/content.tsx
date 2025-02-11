@@ -4,8 +4,10 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 
 import {
+	ActionIcon,
 	Box,
 	BoxProps,
+	Button,
 	Flex,
 	Group,
 	Paper,
@@ -15,7 +17,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { iconChevronRight } from "~/util/icons";
+import { iconChevronRight, iconDotsVertical } from "~/util/icons";
 
 import { PropsWithChildren, ReactNode, useRef } from "react";
 import { Faint } from "~/components/Faint";
@@ -24,6 +26,73 @@ import { Spacer } from "~/components/Spacer";
 import { type NewsPost } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/util/intents";
+import { ActionButton } from "~/components/ActionButton";
+
+export interface StartConnectionProps extends BoxProps {
+	title: ReactNode;
+	icon: string;
+	withOptions?: boolean;
+	onConnect: () => void;
+}
+
+export function StartConnection({
+	title,
+	icon,
+	withOptions,
+	onConnect,
+	children,
+	...other
+}: PropsWithChildren<StartConnectionProps>) {
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	return (
+		<Paper
+			p="lg"
+			className={clsx(classes.startBox, classes.startConnection)}
+			ref={containerRef}
+			{...other}
+		>
+			<Group wrap="nowrap">
+				<Group flex={1}>
+					<Icon
+						path={icon}
+						size="lg"
+					/>
+					<Box>
+						<Text
+							c="bright"
+							fw={600}
+							fz="lg"
+						>
+							{title}
+						</Text>
+						<Text>Sandbox</Text>
+					</Box>
+				</Group>
+				{withOptions && (
+					<ActionButton label="Options">
+						<div>
+							<Icon path={iconDotsVertical} />
+						</div>
+					</ActionButton>
+				)}
+			</Group>
+			<Group>
+				<Spacer />
+				<Button
+					mt="xl"
+					color="slate"
+					size="xs"
+					onClick={onConnect}
+					rightSection={<Icon path={iconChevronRight} />}
+				>
+					Connect
+				</Button>
+			</Group>
+			<Faint containerRef={containerRef} />
+		</Paper>
+	);
+}
 
 export interface StartActionProps extends BoxProps {
 	title: ReactNode;

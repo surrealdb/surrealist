@@ -51,7 +51,7 @@ import { useMemo } from "react";
 import { useLocation } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
-import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
+import { DRIVERS, SANDBOX, VIEW_PAGES } from "~/constants";
 import { useConnection, useConnectionList } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useActiveView } from "~/hooks/routing";
@@ -193,7 +193,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			categories.push(
 				{
 					name: "Views",
-					commands: Object.values(VIEW_MODES).flatMap((view) =>
+					commands: Object.values(VIEW_PAGES).flatMap((view) =>
 						optional(
 							!view.disabled?.(featureFlags.store) && {
 								id: `open-view-${view.id}`,

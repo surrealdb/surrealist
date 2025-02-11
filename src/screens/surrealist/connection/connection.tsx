@@ -30,7 +30,7 @@ import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { AuthDetails, Authentication, Connection, Protocol } from "~/types";
-import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
+import { getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
@@ -732,10 +732,11 @@ function scheduleReconnect(timeout?: number) {
 
 	retryTask = setTimeout(() => {
 		const { currentState } = useDatabaseStore.getState();
+		const connection = getConnection();
 
-		if (currentState !== "connected") {
+		if (currentState !== "connected" && connection) {
 			openConnection({
-				connection: getActiveConnection(),
+				connection,
 				isRetry: true,
 			});
 		}

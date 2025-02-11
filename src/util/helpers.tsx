@@ -5,9 +5,9 @@ import { Value } from "@surrealdb/ql-wasm";
 import escapeRegex from "escape-string-regexp";
 import { uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
-import { decodeCbor, escape_ident } from "surrealdb";
+import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
-import type { Authentication, QueryTab } from "~/types";
+import type { Authentication } from "~/types";
 
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -212,6 +212,10 @@ export function connectionUri(options: Authentication, path?: string) {
 
 	if (options.protocol === "indxdb") {
 		return `indxdb://${options.hostname}`;
+	}
+
+	if (options.hostname === "") {
+		return "";
 	}
 
 	const url = new URL(`${options.protocol}://${options.hostname}`);

@@ -1,6 +1,5 @@
 import classes from "./style.module.scss";
 
-import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import glowUrl from "~/assets/images/gradient-glow.webp";
 import iconUrl from "~/assets/images/icon.webp";
@@ -23,54 +22,36 @@ import {
 import {
 	iconBook,
 	iconChevronRight,
-	iconCloud,
-	iconCog,
 	iconCommunity,
 	iconPlus,
 	iconSandbox,
-	iconServer,
 	iconSidekick,
 	iconUniversity,
 } from "~/util/icons";
 
 import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
-import { BetaBadge } from "~/components/BetaBadge";
 import { Icon } from "~/components/Icon";
-import { SANDBOX } from "~/constants";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
-import { useStable } from "~/hooks/stable";
 import { useThemeImage } from "~/hooks/theme";
-import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
-import { StartAction, StartNews, StartResource } from "./content";
+import { StartConnection, StartNews, StartResource } from "./content";
+import { Spacer } from "~/components/Spacer";
+import { useActiveConnection } from "~/hooks/routing";
+import { useConnectionList } from "~/hooks/connection";
+import { USER_ICONS } from "~/util/user-icons";
+import { useStable } from "~/hooks/stable";
 
-export function StartPage() {
-	const { setActiveConnection } = useConfigStore.getState();
+export function OverviewPage() {
 	const newsQuery = useLatestNewsQuery();
 	const [, navigate] = useLocation();
+	const [, setActiveConnection] = useActiveConnection();
 
+	const connections = useConnectionList();
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 
-	const openSandbox = useStable(() => {
-		setActiveConnection(SANDBOX);
-		navigate("/query");
-	});
-
-	const openConnectionCreator = useStable(() => {
+	const createConnection = useStable(() => {
 		dispatchIntent("new-connection");
-	});
-
-	const openCloud = useStable(() => {
-		navigate("/cloud");
-	});
-
-	const openConnectionList = useStable(() => {
-		dispatchIntent("open-connections");
-	});
-
-	const openSettings = useStable(() => {
-		dispatchIntent("open-settings");
 	});
 
 	const logoUrl = useThemeImage({
@@ -126,57 +107,49 @@ export function StartPage() {
 						</Text>
 					</Stack>
 
-					<Stack
-						mt={50}
-						gap="lg"
-					>
-						<StartAction
-							title={<Group gap="xs">Explore Surreal Cloud</Group>}
-							subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
-							icon={iconCloud}
-							onClick={openCloud}
-							className={classes.cloudAction}
+					<Group>
+						<Title
+							mt="xl"
+							c="bright"
 						>
-							<Image
-								src={splashUrl}
-								className={classes.cloudImage}
-							/>
-						</StartAction>
+							Connections
+						</Title>
+						<Spacer />
+						<Button
+							size="xs"
+							variant="gradient"
+							rightSection={<Icon path={iconPlus} />}
+							onClick={createConnection}
+						>
+							Create connection
+						</Button>
+					</Group>
 
-						<SimpleGrid
-							spacing="lg"
-							cols={{
-								xs: 1,
-								sm: 2,
-								md: 4,
+					<SimpleGrid
+						cols={{
+							xs: 1,
+							sm: 2,
+						}}
+					>
+						<StartConnection
+							title="Sandbox"
+							icon={iconSandbox}
+							onConnect={() => {
+								setActiveConnection("sandbox");
 							}}
-						>
-							<StartAction
-								title="Create Connection"
-								subtitle="Connect to a remote or local database"
-								icon={iconPlus}
-								onClick={openConnectionCreator}
+						/>
+						{connections.map((connection) => (
+							<StartConnection
+								key={connection.id}
+								title={connection.name}
+								icon={USER_ICONS[connection.icon]}
+								withOptions
+								onConnect={() => {
+									setActiveConnection(connection.id);
+								}}
 							/>
-							<StartAction
-								title="Open the Sandbox"
-								subtitle="Explore SurrealDB right inside Surrealist"
-								icon={iconSandbox}
-								onClick={openSandbox}
-							/>
-							<StartAction
-								title="Manage Connections"
-								subtitle="List and manage your existing connections"
-								icon={iconServer}
-								onClick={openConnectionList}
-							/>
-							<StartAction
-								title="Customize Settings"
-								subtitle="Configure Surrealist to your liking"
-								icon={iconCog}
-								onClick={openSettings}
-							/>
-						</SimpleGrid>
-					</Stack>
+						))}
+					</SimpleGrid>
 
 					<Title
 						mt="xl"

@@ -15,8 +15,6 @@ import {
 
 import type {
 	AuthMode,
-	CloudPage,
-	CloudPageInfo,
 	Dataset,
 	DiagramAlgorithm,
 	DiagramDirection,
@@ -34,8 +32,10 @@ import type {
 	Selectable,
 	SidebarMode,
 	SyntaxTheme,
-	ViewInfo,
-	ViewMode,
+	ViewPageInfo,
+	ViewPage,
+	GlobalPage,
+	GlobalPageInfo,
 } from "./types";
 
 import {
@@ -46,6 +46,7 @@ import {
 	iconCog,
 	iconCombined,
 	iconCreditCard,
+	iconCursor,
 	iconDataTable,
 	iconDatabase,
 	iconDesigner,
@@ -53,6 +54,7 @@ import {
 	iconExplorer,
 	iconFunction,
 	iconGraphql,
+	iconHomePlus,
 	iconLive,
 	iconModuleML,
 	iconPackageClosed,
@@ -63,6 +65,7 @@ import {
 	iconRelation,
 	iconServer,
 	iconSidekick,
+	iconUniversity,
 } from "./util/icons";
 
 import type { MantineColorScheme } from "@mantine/core";
@@ -179,13 +182,45 @@ export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
 	{ label: "Wide", value: "wide" },
 ];
 
-export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
+export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
+	overview: {
+		id: "overview",
+		name: "Overview",
+		icon: iconExplorer,
+	},
+	billing: {
+		id: "billing",
+		name: "Billing",
+		icon: iconCreditCard,
+	},
+	referral: {
+		id: "referral",
+		name: "Referrals",
+		icon: iconReferral,
+	},
+	support: {
+		id: "support",
+		name: "Support",
+		icon: iconEmail,
+	},
+	share: {
+		id: "share",
+		name: "Query Sharing",
+		icon: iconCursor,
+	},
+	university: {
+		id: "university",
+		name: "University",
+		icon: iconUniversity,
+	},
+};
+
+export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 	query: {
 		id: "query",
 		name: "Query",
 		icon: iconQuery,
 		anim: import("~/assets/animation/query.json").then((x) => x.default),
-		desc: "Execute queries against the database and inspect the results",
 		disabled: (flags) => !flags.query_view,
 	},
 	explorer: {
@@ -193,7 +228,6 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Explorer",
 		icon: iconExplorer,
 		anim: import("~/assets/animation/explorer.json").then((x) => x.default),
-		desc: "Explore the database tables, records, and relations",
 		require: "database",
 		disabled: (flags) => !flags.explorer_view,
 	},
@@ -201,7 +235,6 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "graphql",
 		name: "GraphQL",
 		icon: iconGraphql,
-		desc: "Execute GraphQL queries against the database",
 		require: "database",
 		disabled: (flags) => !flags.graphql_view,
 	},
@@ -210,7 +243,6 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Designer",
 		icon: iconDesigner,
 		anim: import("~/assets/animation/designer.json").then((x) => x.default),
-		desc: "Define database tables and relations",
 		require: "database",
 		disabled: (flags) => !flags.designer_view,
 	},
@@ -219,14 +251,12 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		name: "Authentication",
 		icon: iconAuth,
 		anim: import("~/assets/animation/auth.json").then((x) => x.default),
-		desc: "Manage system users and access methods",
 		disabled: (flags) => !flags.auth_view,
 	},
 	functions: {
 		id: "functions",
 		name: "Functions",
 		icon: iconFunction,
-		desc: "Create and update schema level functions",
 		require: "database",
 		disabled: (flags) => !flags.functions_view,
 	},
@@ -234,7 +264,6 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "models",
 		name: "Models",
 		icon: iconModuleML,
-		desc: "Upload and manage machine learning models",
 		require: "database",
 		disabled: (flags) => !flags.models_view,
 	},
@@ -242,69 +271,14 @@ export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
 		id: "sidekick",
 		name: "Sidekick",
 		icon: iconSidekick,
-		desc: "Chat with your personal Surreal assistant",
 		disabled: (flags) => !flags.sidekick_view,
 	},
 	documentation: {
 		id: "documentation",
 		name: "API Docs",
 		icon: iconAPI,
-		desc: "View the database schema and documentation",
 		require: "database",
 		disabled: (flags) => !flags.apidocs_view,
-	},
-};
-
-export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
-	instances: {
-		id: "instances",
-		name: "Instances",
-		icon: iconServer,
-	},
-	members: {
-		id: "members",
-		name: "Members",
-		icon: iconAccount,
-	},
-	data: {
-		id: "data",
-		name: "Data Containers",
-		icon: iconPackageClosed,
-	},
-	audits: {
-		id: "audits",
-		name: "Audit Log",
-		icon: iconProgressClock,
-	},
-	billing: {
-		id: "billing",
-		name: "Billing",
-		icon: iconCreditCard,
-	},
-	support: {
-		id: "support",
-		name: "Support",
-		icon: iconEmail,
-	},
-	referral: {
-		id: "referral",
-		name: "Referrals",
-		icon: iconReferral,
-	},
-	settings: {
-		id: "settings",
-		name: "Settings",
-		icon: iconCog,
-	},
-	provision: {
-		id: "provision",
-		name: "Provision instance",
-		icon: iconPlus,
-	},
-	chat: {
-		id: "chat",
-		name: "Sidekick",
-		icon: iconSidekick,
 	},
 };
 

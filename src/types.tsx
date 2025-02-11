@@ -46,7 +46,8 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type ViewMode =
+export type GlobalPage = "overview" | "billing" | "support" | "referral" | "share" | "university";
+export type ViewPage =
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -56,17 +57,6 @@ export type ViewMode =
 	| "models"
 	| "sidekick"
 	| "documentation";
-export type CloudPage =
-	| "instances"
-	| "members"
-	| "chat"
-	| "data"
-	| "audits"
-	| "billing"
-	| "support"
-	| "referral"
-	| "settings"
-	| "provision";
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";
 
 export type OpenFn = (id: string | null) => void;
@@ -174,7 +164,7 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramMode: DiagramMode;
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
-	sidebarViews: Flags<ViewMode>;
+	sidebarViews: Flags<ViewPage>;
 }
 
 export interface SurrealistTemplateSettings {
@@ -246,8 +236,6 @@ export interface SurrealistConfig {
 	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
 	activeResource: string;
-	activeConnection: string;
-	activeCloudOrg: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
@@ -459,20 +447,19 @@ export interface LiveMessage {
 	data: any;
 }
 
-export interface ViewInfo {
-	id: ViewMode;
+export interface GlobalPageInfo {
+	id: GlobalPage;
 	name: string;
 	icon: string;
 	anim?: any;
-	desc: string;
-	require?: ViewRequirement;
-	disabled?: FeatureCondition;
 }
 
-export interface CloudPageInfo {
-	id: CloudPage;
+export interface ViewPageInfo {
+	id: ViewPage;
 	name: string;
 	icon: string;
+	anim?: any;
+	require?: ViewRequirement;
 	disabled?: FeatureCondition;
 }
 

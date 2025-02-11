@@ -5,9 +5,27 @@ import { connectionUri, fastParseJwt } from "./helpers";
 
 /**
  * Returns the currently active connection
+ *
+ * FIXME: Completely repulsive hack, please lord forgive me for I have sinned
+ */
+export function getActiveConnection() {
+	const parts = location.pathname.split("/");
+
+	parts.shift();
+
+	if (parts[0] === "c") {
+		return parts[1];
+	}
+
+	return null;
+}
+
+/**
+ * Returns the currently active connection
  */
 export function getConnection() {
-	const { connections, activeConnection, sandbox } = useConfigStore.getState();
+	const { connections, sandbox } = useConfigStore.getState();
+	const activeConnection = getActiveConnection();
 
 	if (activeConnection === SANDBOX) {
 		return sandbox;
@@ -17,25 +35,12 @@ export function getConnection() {
 }
 
 /**
- * Returns the currently active connection
- */
-export function getActiveConnection() {
-	const connection = getConnection();
-
-	if (!connection) {
-		throw new Error("Active connection expected");
-	}
-
-	return connection;
-}
-
-/**
  * Returns the active query tab
  */
 export function getActiveQuery() {
-	const connection = getActiveConnection();
+	const connection = getConnection();
 
-	return connection.queries.find((q) => q.id === connection.activeQuery);
+	return connection?.queries.find((q) => q.id === connection.activeQuery);
 }
 
 /**

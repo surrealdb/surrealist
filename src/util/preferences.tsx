@@ -10,7 +10,7 @@ import {
 	SIDEBAR_MODES,
 	SYNTAX_THEMES,
 	THEMES,
-	VIEW_MODES,
+	VIEW_PAGES,
 } from "~/constants";
 
 import { objectify } from "radash";
@@ -270,7 +270,7 @@ export function computePreferences(): PreferenceSection[] {
 						controller: new FlagSetController({
 							default: true,
 							title: (n) => `${n} views enabled`,
-							options: Object.values(VIEW_MODES).map((mode) => ({
+							options: Object.values(VIEW_PAGES).map((mode) => ({
 								label: mode.name,
 								value: mode.id,
 								icon: mode.icon,

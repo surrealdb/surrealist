@@ -1,4 +1,4 @@
-import type { ViewMode } from "~/types";
+import type { ViewPage } from "~/types";
 import { IntentEvent, NavigateViewEvent } from "./global-events";
 
 const INTENT_REGISTRY = {
@@ -54,7 +54,7 @@ const INTENT_REGISTRY = {
 
 export type IntentType = keyof typeof INTENT_REGISTRY;
 export type IntentPayload = Record<string, string>;
-export type IntentMap = Record<string, ViewMode | null>;
+export type IntentMap = Record<string, ViewPage | null>;
 
 export interface Intent<T extends IntentType> {
 	type: T;
