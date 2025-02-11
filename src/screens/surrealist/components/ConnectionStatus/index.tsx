@@ -22,23 +22,22 @@ import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
-import type { Connection } from "~/types";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
+import { useActiveConnection } from "~/hooks/routing";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);
 	const schema = useDatabaseSchema();
 
-	const [hasConnection, connectionId, name, icon, namespace, database] = useConnection((c) => [
-		!!c,
+	const [connection] = useActiveConnection();
+	const [connectionId, name, icon, database] = useConnection((c) => [
 		c?.id ?? "",
 		c?.name ?? "",
 		c?.icon ?? 0,
-		c?.lastNamespace,
 		c?.lastDatabase,
 	]);
 
@@ -87,7 +86,7 @@ export function ConnectionStatus() {
 
 	return (
 		<>
-			{hasConnection ? (
+			{connection && (
 				<Menu
 					opened={isDropped}
 					onChange={setIsDropped}
@@ -230,21 +229,6 @@ export function ConnectionStatus() {
 						)}
 					</Menu.Dropdown>
 				</Menu>
-			) : (
-				<Button
-					variant="subtle"
-					color="slate"
-					onClick={openConnections}
-					leftSection={<Icon path={iconServer} />}
-				>
-					<Text
-						fw={600}
-						c="bright"
-						ml={2}
-					>
-						No connection selected
-					</Text>
-				</Button>
 			)}
 
 			<Modal

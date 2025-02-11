@@ -20,7 +20,7 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnection } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
-import { getActiveConnection } from "~/util/connection";
+import { getConnection } from "~/util/connection";
 import { iconWarning } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
@@ -46,7 +46,11 @@ export function AccessSignupModal() {
 		loadingHandle.open();
 
 		const signupMode = authMode === "access" ? "access-signup" : "scope-signup";
-		const connection = getActiveConnection();
+		const connection = getConnection();
+
+		if (!connection) {
+			return;
+		}
 
 		openConnection({
 			connection: {

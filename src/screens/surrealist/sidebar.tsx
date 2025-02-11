@@ -16,46 +16,57 @@ import clsx from "clsx";
 import { Fragment, useMemo } from "react";
 import { useLocation } from "wouter";
 import iconUrl from "~/assets/images/icon.webp";
-import { BetaBadge } from "~/components/BetaBadge";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
-import { VIEW_MODES } from "~/constants";
+import { GLOBAL_PAGES, VIEW_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
-import { useConnection } from "~/hooks/connection";
+import { useActiveConnection, useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import type { SidebarMode, ViewMode } from "~/types";
+import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
-import { iconCloud, iconCog, iconSearch } from "~/util/icons";
+import { iconChevronLeft, iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
-const NAVIGATION: ViewMode[][] = [
+const GLOBAL_NAVIGATION: GlobalPage[][] = [
+	["overview"],
+	["share", "university"],
+	["billing", "referral", "support"],
+];
+
+const VIEW_NAVIGATION: ViewPage[][] = [
 	["query", "explorer", "graphql"],
 	["designer", "authentication", "functions", "models"],
 	["sidekick", "documentation"],
 ];
 
-export interface SidebarProps extends BoxProps {
+interface NavigationItem {
+	id: string;
+	name: string;
+	icon: string;
+	disabled: boolean;
+	navigate: () => void;
+}
+
+export interface SurrealistSidebarProps extends BoxProps {
 	sidebarMode: SidebarMode;
 }
 
-export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarProps) {
+export function SurrealistSidebar({ sidebarMode, className, ...other }: SurrealistSidebarProps) {
 	const [flags] = useFeatureFlags();
 
 	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
-	const showCloud = useSurrealCloud();
 	const [, navigate] = useLocation();
-	const cloudActive = useCloudRoute();
+	const [, setActiveView] = useActiveView();
+	const [connection] = useActiveConnection();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const enabledViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
-	const connection = useConnection((c) => c?.id ?? "");
 
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
@@ -65,19 +76,47 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 		navigate(location);
 	});
 
-	const navigation = useMemo(() => {
-		return NAVIGATION.flatMap((row) => {
+	const globalNavigation: NavigationItem[][] = useMemo(() => {
+		return GLOBAL_NAVIGATION.flatMap((row) => {
 			const items = row.flatMap((id) => {
-				const info = VIEW_MODES[id];
+				const info = GLOBAL_PAGES[id];
 
-				return !info || !info.disabled?.(flags) !== true || enabledViews[id] === false
-					? []
-					: [info];
+				return {
+					id: info.id,
+					name: info.name,
+					icon: info.icon,
+					disabled: false,
+					navigate: () => setLocation(info.id),
+				};
 			});
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, [flags, enabledViews]);
+	}, []);
+
+	const viewNavigation: NavigationItem[][] = useMemo(() => {
+		return VIEW_NAVIGATION.flatMap((row) => {
+			const items = row.flatMap((id) => {
+				const info = VIEW_PAGES[id];
+
+				if (!info || !info.disabled?.(flags) !== true || enabledViews[id] === false) {
+					return [];
+				}
+
+				return {
+					id: info.id,
+					name: info.name,
+					icon: info.icon,
+					disabled: !connection,
+					navigate: () => setActiveView(info.id),
+				};
+			});
+
+			return items.length > 0 ? [items] : [];
+		});
+	}, [flags, enabledViews, connection]);
+
+	const navigation = connection ? viewNavigation : globalNavigation;
 
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
@@ -127,6 +166,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 						<Image
 							src={iconUrl}
 							w={42}
+							className={classes.hat}
 						/>
 						<Image
 							src={logoUrl}
@@ -143,27 +183,16 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 					component="nav"
 					flex={1}
 				>
-					{showCloud && (
+					{connection && (
 						<>
 							<NavigationIcon
-								name={
-									<Group
-										wrap="nowrap"
-										gap="xs"
-									>
-										Surreal Cloud
-										<BetaBadge />
-									</Group>
-								}
-								icon={iconCloud}
-								isActive={cloudActive}
-								path="cloud/*?"
-								withTooltip={sidebarMode === "compact"}
-								onClick={() => setLocation("/cloud")}
+								name="Back to overview"
+								icon={iconChevronLeft}
+								onClick={() => setLocation("/overview")}
 								onMouseEnter={hoverSidebarHandle.open}
+								withTooltip={sidebarMode === "compact"}
 							/>
-
-							<Divider color={isLight ? "slate.2" : "slate.7"} />
+							<Divider />
 						</>
 					)}
 
@@ -178,13 +207,13 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 									<NavigationIcon
 										name={info.name}
 										path={info.id}
-										icon={info.anim || info.icon}
-										onClick={() => setLocation(`/${info.id}`)}
+										icon={info.icon}
+										onClick={info.navigate}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}
-										disabled={!connection}
+										disabled={info.disabled}
 										style={{
-											opacity: connection ? 1 : 0.5,
+											opacity: info.disabled ? 0.5 : 1,
 										}}
 									/>
 								</Group>

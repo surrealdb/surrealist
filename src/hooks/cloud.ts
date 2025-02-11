@@ -22,13 +22,6 @@ export function useSurrealCloud() {
 }
 
 /**
- * Matches the current route to the cloud panel
- */
-export function useCloudRoute() {
-	return useRoute(/^\/cloud\/?.*$/)[0];
-}
-
-/**
  * Returns the actively selected organization
  */
 export function useOrganization() {

@@ -1,41 +1,42 @@
-import { useEffect, useLayoutEffect, useMemo } from "react";
-import { useLocation, useSearch } from "wouter";
-import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
-import type { CloudPage, ViewMode } from "~/types";
+import { useEffect, useMemo } from "react";
+import { useLocation, useRoute, useSearch } from "wouter";
+import { VIEW_PAGES } from "~/constants";
+import type { ViewPage } from "~/types";
 import { IntentEvent } from "~/util/global-events";
-import { type Intent, type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
+import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
+
+/**
+ * Returns the active connection ID
+ */
+export function useActiveConnection() {
+	const [, navigate] = useLocation();
+	const [match, params] = useRoute("/c/:connection/:view");
+	const activeView = params?.view ?? "query";
+
+	const activeConnection = match ? params.connection : null;
+	const setActiveConnection = useStable((connection: string) => {
+		navigate(`/c/${connection}/${activeView}`);
+	});
+
+	return [activeConnection, setActiveConnection] as const;
+}
 
 /**
  * Returns the active view mode and a function to set it
  */
 export function useActiveView() {
-	const [location, navigate] = useLocation();
+	const [, navigate] = useLocation();
+	const [match, params] = useRoute("/c/:connection/:view");
+	const activeConnection = params?.connection ?? "";
 
-	const activeView = Object.values(VIEW_MODES).find((info) => location.startsWith(`/${info.id}`));
-	const setActiveView = useStable((view: ViewMode) => {
-		navigate(`/${view}`);
+	const activeView = match ? params.view : null;
+	const setActiveView = useStable((view: ViewPage) => {
+		navigate(`/c/${activeConnection}/${view}`);
 	});
 
 	return [activeView, setActiveView] as const;
-}
-
-/**
- * Returns the active cloud page and a function to set it
- */
-export function useActiveCloudPage() {
-	const [location, navigate] = useLocation();
-
-	const activePage = Object.values(CLOUD_PAGES).find((info) =>
-		location.startsWith(`/cloud/${info.id}`),
-	);
-
-	const setActivePage = useStable((view: CloudPage) => {
-		navigate(`/cloud/${view}`);
-	});
-
-	return [activePage, setActivePage] as const;
 }
 
 /**
@@ -71,7 +72,7 @@ export function useSearchParams() {
  * @param view The view to listen for
  * @param callback The function to invoke
  */
-export function useViewFocus(view: ViewMode, callback: () => void, deps: any[] = []) {
+export function useViewFocus(view: ViewPage, callback: () => void, deps: any[] = []) {
 	const [activeView] = useActiveView();
 	const stable = useStable(callback);
 
@@ -81,22 +82,4 @@ export function useViewFocus(view: ViewMode, callback: () => void, deps: any[] =
 			stable();
 		}
 	}, [activeView, view, ...deps]);
-}
-
-/**
- * Accepts a function to invoke when the specified cloud page
- * is activated.
- *
- * @param page The cloud page to listen for
- * @param callback The function to invoke
- */
-export function useCloudPageFocus(page: CloudPage, callback: () => void, deps: any[] = []) {
-	const [activePage] = useActiveCloudPage();
-	const stable = useStable(callback);
-
-	useLayoutEffect(() => {
-		if (activePage?.id === page) {
-			stable();
-		}
-	}, [activePage, page, ...deps]);
 }
