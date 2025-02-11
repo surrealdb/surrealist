@@ -1,7 +1,6 @@
 import { compareVersions } from "compare-versions";
 import { unique } from "radash";
 import { useMemo } from "react";
-import { useParams, useRoute } from "wouter";
 import { useShallow } from "zustand/react/shallow";
 import { SANDBOX, VIEW_PAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";

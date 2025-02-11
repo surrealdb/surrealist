@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useLocation, useRoute, useSearch } from "wouter";
-import { VIEW_PAGES } from "~/constants";
+import { matchRoute, PathPattern, useRouter, useSearch } from "wouter";
 import type { ViewPage } from "~/types";
 import { IntentEvent } from "~/util/global-events";
 import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
@@ -8,11 +7,27 @@ import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
 
 /**
+ * Returns the current location and a function to navigate
+ */
+export function useAbsoluteLocation() {
+	const router = useRouter();
+
+	return router.hook(router);
+}
+
+/**
+ * Returns the current location and a function to navigate
+ */
+export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pattern: RoutePath) {
+	return matchRoute(useRouter().parser, pattern, useAbsoluteLocation()[0]);
+}
+
+/**
  * Returns the active connection ID
  */
 export function useActiveConnection() {
-	const [, navigate] = useLocation();
-	const [match, params] = useRoute("/c/:connection/:view");
+	const [, navigate] = useAbsoluteLocation();
+	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
 	const activeView = params?.view ?? "query";
 
 	const activeConnection = match ? params.connection : null;
@@ -27,8 +42,8 @@ export function useActiveConnection() {
  * Returns the active view mode and a function to set it
  */
 export function useActiveView() {
-	const [, navigate] = useLocation();
-	const [match, params] = useRoute("/c/:connection/:view");
+	const [, navigate] = useAbsoluteLocation();
+	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
 	const activeConnection = params?.connection ?? "";
 
 	const activeView = match ? params.view : null;
@@ -78,7 +93,7 @@ export function useViewFocus(view: ViewPage, callback: () => void, deps: any[] =
 
 	// NOTE - should this be useLayoutEffect?
 	useEffect(() => {
-		if (activeView?.id === view) {
+		if (activeView === view) {
 			stable();
 		}
 	}, [activeView, view, ...deps]);

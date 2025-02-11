@@ -22,7 +22,7 @@ import { Spacer } from "~/components/Spacer";
 import { GLOBAL_PAGES, VIEW_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useActiveConnection, useActiveView } from "~/hooks/routing";
+import { useAbsoluteLocation, useActiveConnection, useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
@@ -46,9 +46,9 @@ const VIEW_NAVIGATION: ViewPage[][] = [
 ];
 
 interface NavigationItem {
-	id: string;
 	name: string;
 	icon: string;
+	match: string;
 	disabled: boolean;
 	navigate: () => void;
 }
@@ -62,7 +62,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 
 	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
-	const [, navigate] = useLocation();
+	const [, navigate] = useAbsoluteLocation();
 	const [, setActiveView] = useActiveView();
 	const [connection] = useActiveConnection();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
@@ -85,6 +85,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
+					match: `/${info.id}`,
 					disabled: false,
 					navigate: () => setLocation(info.id),
 				};
@@ -107,8 +108,12 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
+					match: `/c/*/${info.id}`,
 					disabled: !connection,
-					navigate: () => setActiveView(info.id),
+					navigate: () => {
+						hoverSidebarHandle.close();
+						setActiveView(info.id);
+					},
 				};
 			});
 
@@ -154,7 +159,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 				<Space h="var(--titlebar-offset)" />
 				<UnstyledButton
 					onClick={() => {
-						setLocation("/start");
+						setLocation("/overview");
 						setOverlaySidebar(false);
 					}}
 				>
@@ -183,7 +188,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					component="nav"
 					flex={1}
 				>
-					{connection && (
+					{/* {connection && (
 						<>
 							<NavigationIcon
 								name="Back to overview"
@@ -194,19 +199,19 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 							/>
 							<Divider />
 						</>
-					)}
+					)} */}
 
 					{navigation.map((items, i) => (
 						<Fragment key={i}>
 							{items.map((info) => (
 								<Group
-									key={info.id}
+									key={info.name}
 									gap="lg"
 									wrap="nowrap"
 								>
 									<NavigationIcon
 										name={info.name}
-										path={info.id}
+										path={info.match}
 										icon={info.icon}
 										onClick={info.navigate}
 										onMouseEnter={hoverSidebarHandle.open}
