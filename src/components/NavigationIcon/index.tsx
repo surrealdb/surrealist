@@ -9,6 +9,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { Entry, type EntryProps } from "../Entry";
 import { Icon } from "../Icon";
 import classes from "./style.module.scss";
+import { useAbsoluteRoute } from "~/hooks/routing";
 
 export interface NavigationIconProps
 	extends EntryProps,
@@ -31,7 +32,7 @@ export function NavigationIcon({
 	...rest
 }: NavigationIconProps) {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
-	const [active] = useRoute(path || "");
+	const [active] = useAbsoluteRoute(path || "");
 	const hasIcon = typeof icon === "string";
 	const isActive = active && !!path;
 

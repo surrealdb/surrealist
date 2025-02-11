@@ -26,7 +26,7 @@ export function useAppRouter() {
 	useLayoutEffect(() => {
 		if (path === "/") {
 			if (!resource || resource === "/") {
-				setPath("/query");
+				setPath("/overview");
 			} else {
 				setPath(resource);
 			}

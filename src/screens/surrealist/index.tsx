@@ -156,46 +156,43 @@ export function SurrealistScreen() {
 								<PlaceholderPage />
 							</Route>
 
-							<Route
-								path="/c/:connection"
-								nest
-							>
-								{Object.values(VIEW_PAGES).map((mode) => {
-									const Content = VIEW_COMPONENTS[mode.id];
+							<Route path="/c/:connection/:view">
+								{({ connection, view }) => {
+									const portal = VIEW_PORTALS[view as ViewPage];
+
+									console.log("portal", connection, view);
 
 									return (
-										<InPortal
-											key={mode.id}
-											node={VIEW_PORTALS[mode.id]}
-										>
-											<Suspense fallback={null}>
-												<Content />
-											</Suspense>
-										</InPortal>
-									);
-								})}
+										<>
+											{Object.values(VIEW_PAGES).map((mode) => {
+												const Content = VIEW_COMPONENTS[mode.id];
 
-								{Object.values(VIEW_PAGES).map((mode) => (
-									<Route
-										key={mode.id}
-										path={`/${mode.id}`}
-									>
-										{/* {requestDatabase ? (
-											<DatabaseSelection
-												key={mode.id}
-												info={mode}
-											/>
-										) : ( */}
-										{/* )} */}
-										<Stack
-											className={classes.inner}
-											flex={1}
-											gap={0}
-										>
-											<OutPortal node={VIEW_PORTALS[mode.id]} />
-										</Stack>
-									</Route>
-								))}
+												return (
+													<InPortal
+														key={mode.id}
+														node={VIEW_PORTALS[mode.id]}
+													>
+														<Suspense fallback={null}>
+															<Content />
+														</Suspense>
+													</InPortal>
+												);
+											})}
+
+											{portal ? (
+												<Stack
+													className={classes.inner}
+													flex={1}
+													gap={0}
+												>
+													<OutPortal node={portal} />
+												</Stack>
+											) : (
+												<Redirect to="/overview" />
+											)}
+										</>
+									);
+								}}
 							</Route>
 
 							<Route>
