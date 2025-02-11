@@ -10,7 +10,7 @@ import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 // import { useActiveCloudPage } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
-import { useCloudInstancesQuery } from "~/screens/surrealist/cloud-panel/hooks/instances";
+import { useCloudOrganizationInstancesQuery } from "~/screens/surrealist/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/surrealist/cloud-panel/hooks/limits";
 import type { CloudInstance } from "~/types";
 import { iconChevronLeft, iconChevronRight, iconWarning } from "~/util/icons";
@@ -44,7 +44,7 @@ function InstanceTypeModal({ instance }: InstanceTypeModalProps) {
 	const [category, setCategory] = useState("");
 	const [instanceType, setInstanceType] = useState("");
 
-	const { data: instances } = useCloudInstancesQuery(organization?.id);
+	const { data: instances } = useCloudOrganizationInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instances ?? []);
 
 	const instanceInfo = instanceTypes.find((type) => type.slug === instanceType);

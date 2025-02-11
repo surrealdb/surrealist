@@ -13,6 +13,7 @@ import { useConfigStore } from "~/stores/config";
 import { featureFlags, useFeatureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./routing";
+import { useQueries } from "@tanstack/react-query";
 
 /**
  * Returns whether cloud functionality is enabled

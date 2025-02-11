@@ -24,12 +24,8 @@ interface PKCE {
 	challenge: string;
 }
 
-// FIXME Repair
 (window as any).resetCloudState = () => {
-	// const { setActiveCloudOrg } = useConfigStore.getState();
-
 	invalidateSession();
-	// setActiveCloudOrg("");
 };
 
 function getState() {

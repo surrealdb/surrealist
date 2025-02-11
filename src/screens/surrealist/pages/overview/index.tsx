@@ -8,47 +8,41 @@ import logoLightUrl from "~/assets/images/light/logo.webp";
 import {
 	Box,
 	Button,
-	Center,
 	Group,
 	Image,
 	ScrollArea,
 	SimpleGrid,
-	Skeleton,
 	Stack,
 	Text,
 	Title,
 } from "@mantine/core";
 
-import {
-	iconBook,
-	iconChevronRight,
-	iconCommunity,
-	iconPlus,
-	iconSandbox,
-	iconSidekick,
-	iconUniversity,
-} from "~/util/icons";
+import { iconChevronRight, iconCloud, iconPlus, iconSandbox } from "~/util/icons";
 
-import { useLocation } from "wouter";
-import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/util/intents";
-import { StartConnection, StartNews, StartResource } from "./content";
+import { StartConnection } from "./content";
 import { Spacer } from "~/components/Spacer";
 import { useActiveConnection } from "~/hooks/routing";
 import { useConnectionList } from "~/hooks/connection";
 import { USER_ICONS } from "~/util/user-icons";
 import { useStable } from "~/hooks/stable";
+import { openCloudAuthentication } from "../../cloud-panel/api/auth";
+import { useCloudStore } from "~/stores/cloud";
+import { Fragment } from "react/jsx-runtime";
+import { useCloudInstanceList } from "../../cloud-panel/hooks/instances";
 
 export function OverviewPage() {
-	const newsQuery = useLatestNewsQuery();
-	const [, navigate] = useLocation();
+	// const newsQuery = useLatestNewsQuery();
+	// const [, navigate] = useLocation();
 	const [, setActiveConnection] = useActiveConnection();
+	const { entries: cloudSections } = useCloudInstanceList();
 
+	const authState = useCloudStore((s) => s.authState);
 	const connections = useConnectionList();
-	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
+	// const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 
 	const createConnection = useStable(() => {
 		dispatchIntent("new-connection");
@@ -78,7 +72,7 @@ export function OverviewPage() {
 				<Stack
 					className={classes.content}
 					justify="center"
-					maw={952}
+					maw={1200}
 					px="xl"
 					mx="auto"
 					py={96}
@@ -129,10 +123,12 @@ export function OverviewPage() {
 						cols={{
 							xs: 1,
 							sm: 2,
+							lg: 3,
 						}}
 					>
 						<StartConnection
 							title="Sandbox"
+							protocol="mem"
 							icon={iconSandbox}
 							onConnect={() => {
 								setActiveConnection("sandbox");
@@ -142,6 +138,7 @@ export function OverviewPage() {
 							<StartConnection
 								key={connection.id}
 								title={connection.name}
+								protocol={connection.authentication.protocol}
 								icon={USER_ICONS[connection.icon]}
 								withOptions
 								onConnect={() => {
@@ -151,7 +148,58 @@ export function OverviewPage() {
 						))}
 					</SimpleGrid>
 
-					<Title
+					<Group mt={64}>
+						<Title c="bright">Cloud Instances</Title>
+						<Spacer />
+						{authState === "authenticated" ? (
+							<Button
+								size="xs"
+								variant="gradient"
+								rightSection={<Icon path={iconPlus} />}
+								onClick={createConnection}
+							>
+								Create instance
+							</Button>
+						) : (
+							<Button
+								size="xs"
+								variant="gradient"
+								rightSection={<Icon path={iconChevronRight} />}
+								loading={authState === "loading"}
+								onClick={openCloudAuthentication}
+							>
+								Sign in
+							</Button>
+						)}
+					</Group>
+
+					{cloudSections.map(({ organization, instances }) => (
+						<Fragment key={organization.id}>
+							<Title mt="lg">{organization.name}</Title>
+							<SimpleGrid
+								cols={{
+									xs: 1,
+									sm: 2,
+									lg: 3,
+								}}
+							>
+								{instances.map((instance) => (
+									<StartConnection
+										key={instance.id}
+										title={instance.name}
+										protocol={"wss"}
+										icon={iconCloud}
+										withOptions
+										onConnect={() => {
+											// setActiveConnection(connection.id);
+										}}
+									/>
+								))}
+							</SimpleGrid>
+						</Fragment>
+					))}
+
+					{/* <Title
 						mt="xl"
 						c="bright"
 					>
@@ -225,7 +273,7 @@ export function OverviewPage() {
 								</Button>
 							</Center>
 						</>
-					)}
+					)} */}
 				</Stack>
 			</ScrollArea>
 		</Box>

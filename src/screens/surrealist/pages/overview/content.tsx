@@ -17,7 +17,14 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { iconChevronRight, iconDotsVertical } from "~/util/icons";
+import {
+	iconAPI,
+	iconBalance,
+	iconChevronRight,
+	iconDotsVertical,
+	iconMemory,
+	iconTransfer,
+} from "~/util/icons";
 
 import { PropsWithChildren, ReactNode, useRef } from "react";
 import { Faint } from "~/components/Faint";
@@ -27,9 +34,20 @@ import { type NewsPost } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "~/components/ActionButton";
+import { Protocol } from "~/types";
+
+const PROTO_ICONS: Record<Protocol, string> = {
+	http: iconAPI,
+	https: iconAPI,
+	ws: iconTransfer,
+	wss: iconTransfer,
+	mem: iconMemory,
+	indxdb: iconBalance,
+};
 
 export interface StartConnectionProps extends BoxProps {
 	title: ReactNode;
+	protocol: Protocol;
 	icon: string;
 	withOptions?: boolean;
 	onConnect: () => void;
@@ -37,6 +55,7 @@ export interface StartConnectionProps extends BoxProps {
 
 export function StartConnection({
 	title,
+	protocol,
 	icon,
 	withOptions,
 	onConnect,
@@ -66,7 +85,7 @@ export function StartConnection({
 						>
 							{title}
 						</Text>
-						<Text>Sandbox</Text>
+						{/* <Text>Sandbox</Text> */}
 					</Box>
 				</Group>
 				{withOptions && (
@@ -77,10 +96,13 @@ export function StartConnection({
 					</ActionButton>
 				)}
 			</Group>
-			<Group>
+			<Group mt="xl">
+				{/* <Icon
+					path={PROTO_ICONS[protocol]}
+					opacity={0.6}
+				/> */}
 				<Spacer />
 				<Button
-					mt="xl"
 					color="slate"
 					size="xs"
 					onClick={onConnect}
