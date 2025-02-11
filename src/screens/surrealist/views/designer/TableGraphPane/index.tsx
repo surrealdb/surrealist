@@ -106,7 +106,7 @@ export interface TableGraphPaneProps {
 
 export function TableGraphPane(props: TableGraphPaneProps) {
 	const { openTableCreator } = useInterfaceStore.getState();
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
 	const schema = useDatabaseSchema();
@@ -256,7 +256,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const openTableList = useStable(() => {
-		updateCurrentConnection({
+		updateConnection({
+			id: connectionId,
 			designerTableList: true,
 		});
 	});
@@ -264,35 +265,35 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const showBox = !isConnected || props.tables.length === 0;
 
 	const setDiagramAlgorithm = useStable((alg: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramAlgorithm: alg as DiagramAlgorithm,
 		});
 	});
 
 	const setDiagramDirection = useStable((mode: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramDirection: mode as DiagramDirection,
 		});
 	});
 
 	const setDiagramLineStyle = useStable((style: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramLineStyle: style as DiagramLineStyle,
 		});
 	});
 
 	const setDiagramLinkMode = useStable((mode: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramLinkMode: mode as DiagramLinks,
 		});
 	});
 
 	const setDiagramMode = useStable((mode: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramMode: mode as DiagramMode,
 		});
@@ -310,7 +311,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		fitView({ duration: 150 });
 	});
 
-	const isViewActive = activeView?.id === "designer";
+	const isViewActive = activeView === "designer";
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema or setting change
 	useLayoutEffect(() => {

@@ -54,7 +54,7 @@ import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX, VIEW_PAGES } from "~/constants";
 import { useConnection, useConnectionList } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
-import { useActiveView } from "~/hooks/routing";
+import { useAbsoluteLocation, useActiveConnection, useActiveView } from "~/hooks/routing";
 import { showNodeStatus } from "~/modals/node-status";
 import {
 	closeConnection,
@@ -95,7 +95,7 @@ const intent = (intent: IntentType, payload?: IntentPayload) =>
  * Compute available commands based on the current state
  */
 export function useInternalCommandBuilder(): CommandCategory[] {
-	const { setActiveConnection, resetOnboardings } = useConfigStore.getState();
+	const { resetOnboardings } = useConfigStore.getState();
 
 	const connections = useConnectionList();
 	const commandHistory = useConfigStore((state) => state.commandHistory);
@@ -105,7 +105,8 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 
 	const [datasets, applyDataset] = useDatasets();
 	const [activeView, setActiveView] = useActiveView();
-	const [, navigate] = useLocation();
+	const [, setActiveConnection] = useActiveConnection();
+	const [, navigate] = useAbsoluteLocation();
 
 	const connectionId = useConnection((c) => c?.id);
 	const isSandbox = connectionId === SANDBOX;
@@ -120,8 +121,8 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 	return useMemo(() => {
 		const categories: CommandCategory[] = [];
 
-		const isQuery = activeView?.id === "query";
-		const isGraphql = activeView?.id === "graphql";
+		const isQuery = activeView === "query";
+		const isGraphql = activeView === "graphql";
 
 		categories.push(
 			{
@@ -593,10 +594,10 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 				name: "Navigation",
 				commands: [
 					{
-						id: "open-start-screen",
-						name: "Open start screen",
+						id: "open-overview",
+						name: "Go to overview",
 						icon: iconSurrealist,
-						action: launch(() => navigate("/start")),
+						action: launch(() => navigate("/overview")),
 					},
 					{
 						id: "open-search",
@@ -746,7 +747,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		isSandbox,
 		isServing,
 		preferences,
-		setActiveConnection,
 		resetOnboardings,
 	]);
 }

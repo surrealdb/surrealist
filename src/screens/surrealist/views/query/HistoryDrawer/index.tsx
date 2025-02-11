@@ -25,6 +25,7 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
+import { useActiveConnection } from "~/hooks/routing";
 
 const MAX_PREVIEW_LENGTH = 500;
 
@@ -36,11 +37,14 @@ interface HistoryRowProps {
 }
 
 function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
-	const { updateCurrentConnection, addQueryTab } = useConfigStore.getState();
+	const { updateConnection, addQueryTab } = useConfigStore.getState();
+	const [connection] = useActiveConnection();
 
 	const handleUseQuery = useStable(() => {
+		if (!connection) return;
+
 		onClose();
-		addQueryTab({
+		addQueryTab(connection, {
 			type: "config",
 			query: entry.query,
 		});
@@ -52,7 +56,10 @@ function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 	});
 
 	const handleDeleteQuery = useStable(() => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			queryHistory: history.filter((item) => item !== entry),
 		});
 	});
@@ -148,12 +155,16 @@ export interface HistoryDrawerProps {
 }
 
 export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
+	const [connection] = useActiveConnection();
 	const [filterText, setFilterText] = useInputState("");
 	const history = useConnection((c) => c?.queryHistory ?? []);
 
 	const clearHistory = useStable(() => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			queryHistory: [],
 		});
 	});

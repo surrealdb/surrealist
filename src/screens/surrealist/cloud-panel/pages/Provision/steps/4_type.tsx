@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useActiveCloudPage } from "~/hooks/routing";
+// import { useActiveCloudPage } from "~/hooks/routing";
 import { EstimatedCost } from "~/screens/surrealist/cloud-panel/components/EstimatedCost";
 import { InstanceType } from "~/screens/surrealist/cloud-panel/components/InstanceType";
 import { useCloudInstancesQuery } from "~/screens/surrealist/cloud-panel/hooks/instances";
@@ -24,7 +24,7 @@ export function ProvisionInstanceTypesStep({
 	const instanceTypes = useAvailableInstanceTypes();
 	const instancesQuery = useCloudInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instancesQuery.data ?? []);
-	const [, setActivePage] = useActiveCloudPage();
+	// const [, setActivePage] = useActiveCloudPage();
 
 	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
 
@@ -67,7 +67,8 @@ export function ProvisionInstanceTypesStep({
 						size="xs"
 						mt="md"
 						onClick={() => {
-							setActivePage("billing");
+							// setActivePage("billing");
+							// FIXME repair
 						}}
 					>
 						Enter billing & payment details

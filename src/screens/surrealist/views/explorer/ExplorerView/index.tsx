@@ -21,7 +21,7 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useIntent, useViewFocus } from "~/hooks/routing";
+import { useActiveConnection, useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
@@ -37,12 +37,13 @@ const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);
 
 export function ExplorerView() {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
 	const { openTableCreator } = useInterfaceStore.getState();
 	const { design } = useDesigner();
 
 	const isConnected = useIsConnected();
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
+	const [connection] = useActiveConnection();
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
@@ -75,7 +76,10 @@ export function ExplorerView() {
 	]);
 
 	const closeTableList = useStable(() => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			explorerTableList: false,
 		});
 	});

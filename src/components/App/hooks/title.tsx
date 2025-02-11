@@ -1,8 +1,7 @@
 import { useLayoutEffect } from "react";
 import { adapter } from "~/adapter";
 import { useSetting } from "~/hooks/config";
-import { useConnection } from "~/hooks/connection";
-import { useActiveView } from "~/hooks/routing";
+import { useConnection, useView } from "~/hooks/connection";
 import { useInterfaceStore } from "~/stores/interface";
 
 const NAME =
@@ -13,7 +12,7 @@ const NAME =
  */
 export function useTitleSync() {
 	const connection = useConnection((c) => c?.name);
-	const [activeView] = useActiveView();
+	const viewName = useView()?.name;
 	const [pinned] = useSetting("behavior", "windowPinned");
 
 	useLayoutEffect(() => {
@@ -23,8 +22,7 @@ export function useTitleSync() {
 			segments.push(`${connection} -`);
 		}
 
-		segments.push(`${NAME} ${activeView?.name || ""}`);
-		// }
+		segments.push(`${NAME} ${viewName || ""}`);
 
 		if (pinned) {
 			segments.push("(Pinned)");
@@ -34,5 +32,5 @@ export function useTitleSync() {
 
 		adapter.setWindowTitle(title);
 		useInterfaceStore.getState().setWindowTitle(title);
-	}, [activeView, connection, pinned]);
+	}, [viewName, connection, pinned]);
 }

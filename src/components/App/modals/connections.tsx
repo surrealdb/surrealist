@@ -44,7 +44,7 @@ import { INSTANCE_GROUP, SANDBOX } from "~/constants";
 import { BooleanHandle, useBoolean } from "~/hooks/boolean";
 import { useConnection, useConnectionList } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
-import { useIntent } from "~/hooks/routing";
+import { useActiveConnection, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
@@ -58,7 +58,8 @@ const UNGROUPED = "__ungrouped__";
 export function ConnectionsModal() {
 	const [isOpen, openedHandle] = useBoolean();
 
-	const { setActiveConnection, addConnectionGroup } = useConfigStore.getState();
+	const { addConnectionGroup } = useConfigStore.getState();
+	const [, setActiveConnection] = useActiveConnection();
 
 	const [search, setSearch] = useInputState("");
 	const connections = useConnectionList();

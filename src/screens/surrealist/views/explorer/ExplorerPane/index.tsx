@@ -41,7 +41,7 @@ import { ContentPane } from "~/components/Pane";
 import { RecordLink } from "~/components/RecordLink";
 import { useConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
-import { useActiveView } from "~/hooks/routing";
+import { useActiveConnection, useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
@@ -56,10 +56,11 @@ export interface ExplorerPaneProps {
 }
 
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
-	const { addQueryTab, updateCurrentConnection } = useConfigStore.getState();
+	const { addQueryTab, updateConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
 	const pagination = usePagination();
+	const [connection] = useActiveConnection();
 	const [, setActiveView] = useActiveView();
 
 	const [filtering, setFiltering] = useState(false);
@@ -101,7 +102,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	});
 
 	const openTableList = useStable(() => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			explorerTableList: true,
 		});
 	});
@@ -130,11 +134,11 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	});
 
 	const onRecordContextMenu = useStable((e: MouseEvent, record: any) => {
-		if (!(record.id instanceof RecordId)) return;
+		if (!(record.id instanceof RecordId) || !connection) return;
 
 		const openQuery = (id: RecordId, prefix: string) => {
 			setActiveView("query");
-			addQueryTab({
+			addQueryTab(connection, {
 				type: "config",
 				query: `${prefix} ${formatValue(id)}`,
 			});

@@ -39,6 +39,7 @@ import { __throw, plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { type PreviewProps } from ".";
+import { useActiveConnection } from "~/hooks/routing";
 
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;
@@ -61,7 +62,8 @@ function curvature(index: number, maxIndex: number): number {
 }
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
+	const [connection] = useActiveConnection();
 
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();
@@ -472,12 +474,16 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	const updateShowStray = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		updateCurrentConnection({ graphShowStray: e.target.checked });
+		if (!connection) return;
+
+		updateConnection({ id: connection, graphShowStray: e.target.checked });
 		synchronizeGraph();
 	});
 
 	const updateStraightLines = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		updateCurrentConnection({ graphStraightEdges: e.target.checked });
+		if (!connection) return;
+
+		updateConnection({ id: connection, graphStraightEdges: e.target.checked });
 		synchronizeGraph();
 	});
 
