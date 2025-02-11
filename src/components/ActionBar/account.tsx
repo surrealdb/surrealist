@@ -19,7 +19,7 @@ import { useLocation } from "wouter";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
-import { destroySession } from "~/screens/surrealist/cloud-panel/api/auth";
+import { destroySession, openCloudAuthentication } from "~/screens/surrealist/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import type { CloudProfile } from "~/types";
@@ -106,25 +106,20 @@ function AccountForm({ onClose }: AccountFormProps) {
 
 export function CloudAccount() {
 	const [showSettings, settingsModal] = useBoolean();
-	const [, navigate] = useLocation();
 
 	const profile = useCloudStore((s) => s.profile);
 	const state = useCloudStore((s) => s.authState);
 
-	const openCloud = useStable(() => {
-		navigate("/cloud");
-	});
-
 	if (state === "unauthenticated") {
 		return (
 			<Tooltip
-				label="Open Surreal Cloud"
+				label="Sign in to Surreal Cloud"
 				openDelay={300}
 			>
 				<Avatar
 					radius="md"
 					size={36}
-					onClick={openCloud}
+					onClick={openCloudAuthentication}
 					renderRoot={(props) => <UnstyledButton {...props} />}
 				/>
 			</Tooltip>

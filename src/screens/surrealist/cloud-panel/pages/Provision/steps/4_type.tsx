@@ -7,7 +7,7 @@ import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 // import { useActiveCloudPage } from "~/hooks/routing";
 import { EstimatedCost } from "~/screens/surrealist/cloud-panel/components/EstimatedCost";
 import { InstanceType } from "~/screens/surrealist/cloud-panel/components/InstanceType";
-import { useCloudInstancesQuery } from "~/screens/surrealist/cloud-panel/hooks/instances";
+import { useCloudOrganizationInstancesQuery } from "~/screens/surrealist/cloud-panel/hooks/instances";
 import { useCloudTypeLimits } from "~/screens/surrealist/cloud-panel/hooks/limits";
 import { iconChevronRight, iconWarning } from "~/util/icons";
 import { StepActions } from "../actions";
@@ -22,7 +22,7 @@ export function ProvisionInstanceTypesStep({
 }: ProvisionStepProps) {
 	const organization = useOrganization();
 	const instanceTypes = useAvailableInstanceTypes();
-	const instancesQuery = useCloudInstancesQuery(organization?.id);
+	const instancesQuery = useCloudOrganizationInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instancesQuery.data ?? []);
 	// const [, setActivePage] = useActiveCloudPage();
 

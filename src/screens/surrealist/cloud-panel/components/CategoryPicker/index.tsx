@@ -5,7 +5,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
 import { CloudOrganization } from "~/types";
 import { iconHammer, iconQuery, iconStar, iconWarning } from "~/util/icons";
-import { useCloudInstancesQuery } from "../../hooks/instances";
+import { useCloudOrganizationInstancesQuery } from "../../hooks/instances";
 import { useCloudTypeLimits } from "../../hooks/limits";
 import { Tile } from "../Tile";
 
@@ -27,7 +27,7 @@ export function CategoryPicker({
 }: CategoryPickerProps) {
 	const instanceTypes = useAvailableInstanceTypes();
 	const freeInstance = instanceTypes.find((t) => t.slug === "free");
-	const instancesQuery = useCloudInstancesQuery(organization?.id);
+	const instancesQuery = useCloudOrganizationInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instancesQuery.data ?? []);
 	const freeInstanceAvailable = freeInstance && isAvailable(freeInstance);
 

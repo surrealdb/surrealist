@@ -45,7 +45,7 @@ import type { CloudInstance } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
 import { type ConnectMethod, Instance } from "../../components/Instance";
-import { useCloudInstancesQuery } from "../../hooks/instances";
+import { useCloudOrganizationInstancesQuery } from "../../hooks/instances";
 import { openConnectCli } from "../../modals/connect-cli";
 import { openConnectCurl } from "../../modals/connect-curl";
 import { openConnectSdk } from "../../modals/connect-sdk";
@@ -69,7 +69,7 @@ export function InstancesPage() {
 	const organization = useOrganization();
 	const instanceTypes = useAvailableInstanceTypes();
 
-	const { data, isPending, refetch } = useCloudInstancesQuery(organization?.id);
+	const { data, isPending, refetch } = useCloudOrganizationInstancesQuery(organization?.id);
 
 	const instances = useMemo(() => data || [], [data]);
 
