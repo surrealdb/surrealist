@@ -41,7 +41,13 @@ export async function createSurreal() {
 
 	return new CustomSurreal({
 		engines: surrealdbWasmEngines({
-			capabilities: true,
+			capabilities: {
+				experimental: true,
+				functions: true,
+				guest_access: true,
+				live_query_notifications: true,
+				network_targets: true,
+			},
 		}),
 	});
 }
