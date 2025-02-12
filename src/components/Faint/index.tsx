@@ -7,7 +7,7 @@ export interface FaintProps {
 }
 
 export function Faint({ containerRef }: FaintProps) {
-	const disable = adapter.platform === "darwin" && isDesktop; // NOTE Extremely bad performance on Mac WebView
+	const disable = adapter.platform !== "windows" && isDesktop; // NOTE Extremely bad performance on Mac WebView
 	const faintRef = useRef<HTMLDivElement>(null);
 	const isLight = useIsLight();
 
