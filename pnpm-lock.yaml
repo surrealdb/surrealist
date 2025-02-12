@@ -114,7 +114,7 @@ importers:
         version: 0.2.0-beta.10
       '@surrealdb/wasm':
         specifier: 1.2.0
-        version: 1.2.0(surrealdb@1.1.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0))
+        version: 1.2.0(surrealdb@1.2.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0))
       '@tanstack/react-query':
         specifier: ^5.37.1
         version: 5.59.16(react@18.3.1)
@@ -263,8 +263,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(graphology-types@0.24.8)
       surrealdb:
-        specifier: ^1.1.0
-        version: 1.1.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0)
+        specifier: ^1.2.0
+        version: 1.2.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0)
       use-immer:
         specifier: ^0.9.0
         version: 0.9.0(immer@10.1.1)(react@18.3.1)
@@ -2733,8 +2733,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  surrealdb@1.1.0:
-    resolution: {integrity: sha512-EAopFKeIo1lVCR+XEE/oMuh8LCPAIa2xC9MyVs5nw+BJyHc0Fr6F/UWVF9399LRtTBCoqe5G1W0hgxqLqkWaYA==}
+  surrealdb@1.2.0:
+    resolution: {integrity: sha512-3r/045+l6dfRY3RhshuJoI/vF+rvDnoxaggTqKbeb397Ws0IVlfTI+mVG+Lo3lMOP0G3r7ild/Z7RtQlXlkIew==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       tslib: ^2.6.3
@@ -4291,9 +4291,9 @@ snapshots:
 
   '@surrealdb/ql-wasm@0.2.0-beta.10': {}
 
-  '@surrealdb/wasm@1.2.0(surrealdb@1.1.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0))':
+  '@surrealdb/wasm@1.2.0(surrealdb@1.2.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0))':
     dependencies:
-      surrealdb: 1.1.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0)
+      surrealdb: 1.2.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0)
 
   '@szmarczak/http-timer@5.0.1':
     dependencies:
@@ -5480,7 +5480,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  surrealdb@1.1.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0):
+  surrealdb@1.2.0(tslib@2.8.1)(typescript@5.6.3)(ws@8.18.0):
     dependencies:
       isows: 1.0.6(ws@8.18.0)
       tslib: 2.8.1
