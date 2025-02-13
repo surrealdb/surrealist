@@ -134,8 +134,7 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 				}
 			`,
 			py: `
-				from surrealdb import Surreal
-				from surrealdb.classes import RecordID
+from surrealdb import Surreal, RecordID
 
 				# Open a connection
 				with Surreal(url="wss://${instance.host}") as db:
