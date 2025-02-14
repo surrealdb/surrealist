@@ -7,16 +7,15 @@ import { useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-// import { useActiveCloudPage } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
-import { useCloudOrganizationInstancesQuery } from "~/screens/surrealist/cloud-panel/hooks/instances";
-import { useCloudTypeLimits } from "~/screens/surrealist/cloud-panel/hooks/limits";
+import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import type { CloudInstance } from "~/types";
 import { iconChevronLeft, iconChevronRight, iconWarning } from "~/util/icons";
 import { CategoryPicker } from "../../CategoryPicker";
 import { EstimatedCost } from "../../EstimatedCost";
 import { InstanceType } from "../../InstanceType";
+import { fetchAPI } from "~/cloud/api";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 export async function openInstanceTypeModal(instance: CloudInstance) {
 	openModal({

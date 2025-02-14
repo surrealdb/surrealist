@@ -1,0 +1,16 @@
+.input {
+	flex-grow: 1;
+
+	textarea {
+		padding-top: 12px;
+	}
+}
+
+.message {
+	user-select: text;
+	-webkit-user-select: text;
+
+	li {
+		margin-bottom: var(--mantine-spacing-lg);
+	}
+}

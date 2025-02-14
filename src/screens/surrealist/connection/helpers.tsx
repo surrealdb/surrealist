@@ -1,6 +1,6 @@
 import { objectify } from "radash";
 import type { AccessRecordAuth, QueryResult, ScopeAuth } from "surrealdb";
-import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
+import { fetchAPI } from "~/cloud/api";
 import type { AuthDetails, Authentication, QueryResponse } from "~/types";
 import { getSetting } from "~/util/config";
 import { CloudError } from "~/util/errors";

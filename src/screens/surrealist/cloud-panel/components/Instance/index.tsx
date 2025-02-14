@@ -44,12 +44,12 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance, InstanceState } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
-import { fetchAPI } from "../../api";
 import { openCapabilitiesModal } from "./modals/capabilities";
 import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
 import { openVersionUpgradeModal } from "./modals/upgrade-version";
 import { openUsageModal } from "./modals/view-usage";
+import { fetchAPI } from "~/cloud/api";
 
 export type ConnectMethod = "sdk" | "cli" | "curl" | "surrealist";
 

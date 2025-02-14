@@ -2,16 +2,15 @@ import { shutdown } from "@intercom/messenger-js-sdk";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import type { CloudSignin } from "~/types";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
 import { REFERRER_KEY, REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
 import { fetchAPI, updateCloudInformation } from ".";
-import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
+import { openTermsModal } from "../onboarding/terms-and-conditions";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";

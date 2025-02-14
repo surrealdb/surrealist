@@ -46,7 +46,14 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage = "overview" | "billing" | "support" | "referral" | "share" | "university";
+export type GlobalPage =
+	| "overview"
+	| "billing"
+	| "chat"
+	| "support"
+	| "referral"
+	| "share"
+	| "university";
 export type ViewPage =
 	| "query"
 	| "explorer"

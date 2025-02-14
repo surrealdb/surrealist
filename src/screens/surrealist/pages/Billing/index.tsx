@@ -38,15 +38,15 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudCoupon, InvoiceStatus } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
-import { fetchAPI, updateCloudInformation } from "../../api";
-import { Section } from "../../components/Section";
-import { useCloudBillingQuery } from "../../hooks/billing";
-import { useCloudCouponsQuery } from "../../hooks/coupons";
-import { useCloudInvoicesQuery } from "../../hooks/invoices";
-import { useCloudPaymentsQuery } from "../../hooks/payments";
-import { useCloudOrgUsageQuery } from "../../hooks/usage";
-import { openBillingDetails } from "../../modals/billing";
-import { measureComputeCost } from "../../util/measurements";
+import { fetchAPI, updateCloudInformation } from "~/cloud/api";
+import { useCloudBillingQuery } from "~/cloud/queries/billing";
+import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
+import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
+import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
+import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
+import { measureComputeCost } from "~/util/cloud";
+import { openBillingDetails } from "../../cloud-panel/modals/billing";
+import { Section } from "../../cloud-panel/components/Section";
 
 function isCouponIndefinite(coupon: CloudCoupon) {
 	return new Date(coupon.expires_at).getFullYear() === 1;
@@ -606,5 +606,3 @@ export function BillingPage() {
 		</Box>
 	);
 }
-
-export default BillingPage;

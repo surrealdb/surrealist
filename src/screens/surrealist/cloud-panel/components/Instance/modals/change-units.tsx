@@ -1,16 +1,15 @@
-import { Alert, Box, Button, Group, Paper, Text } from "@mantine/core";
+import { Alert, Box, Button, Group, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { CounterInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
 import type { CloudInstance } from "~/types";
 import { EstimatedCost } from "../../EstimatedCost";
 import { InstanceType } from "../../InstanceType";
+import { fetchAPI } from "~/cloud/api";
 
 export async function openComputeUnitsModal(instance: CloudInstance) {
 	openModal({

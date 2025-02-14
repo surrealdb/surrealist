@@ -13,8 +13,8 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
-import { ApiError, fetchAPI, updateCloudInformation } from "../api";
-import { useCloudBillingQuery } from "../hooks/billing";
+import { useCloudBillingQuery } from "../../../../cloud/queries/billing";
+import { ApiError, fetchAPI, updateCloudInformation } from "~/cloud/api";
 
 export async function openBillingDetails() {
 	return new Promise<void>((resolve) => {

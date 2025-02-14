@@ -3,10 +3,10 @@ import type { MouseEvent } from "react";
 import cloudLogo from "~/assets/images/cloud-icon.webp";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { openCloudAuthentication } from "~/screens/surrealist/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { iconClose } from "~/util/icons";
 import classes from "../style.module.scss";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 
 export function CloudExpiredDialog() {
 	const { setSessionExpired } = useCloudStore.getState();

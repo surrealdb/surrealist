@@ -4,14 +4,13 @@ import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-// import { useActiveCloudPage } from "~/hooks/routing";
 import { EstimatedCost } from "~/screens/surrealist/cloud-panel/components/EstimatedCost";
 import { InstanceType } from "~/screens/surrealist/cloud-panel/components/InstanceType";
-import { useCloudOrganizationInstancesQuery } from "~/screens/surrealist/cloud-panel/hooks/instances";
-import { useCloudTypeLimits } from "~/screens/surrealist/cloud-panel/hooks/limits";
+import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { iconChevronRight, iconWarning } from "~/util/icons";
 import { StepActions } from "../actions";
 import type { ProvisionStepProps } from "../types";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 export function ProvisionInstanceTypesStep({
 	step,
