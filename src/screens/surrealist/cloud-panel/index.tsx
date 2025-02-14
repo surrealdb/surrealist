@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 
 import { Alert, Box, Button, Flex, Group, Image, Paper, Stack, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { type FC, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { HtmlPortalNode, createHtmlPortalNode } from "react-reverse-portal";
 import { useLocation, useRoute } from "wouter";
 import { adapter } from "~/adapter";
@@ -18,19 +18,9 @@ import { useCloudStore } from "~/stores/cloud";
 import type { CloudAlert } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
-import { fetchAPI } from "./api";
-import { openCloudAuthentication } from "./api/auth";
 import { StatusAlert } from "./components/StatusAlert";
-
-import BillingPage from "./pages/Billing";
-import ChatPage from "./pages/Chat";
-import InstancesPage from "./pages/Instances";
-import MembersPage from "./pages/Members";
-import PlaceholderPage from "./pages/Placeholder";
-import ProvisionPage from "./pages/Provision";
-import ReferralPage from "./pages/Referral";
-import SettingsPage from "./pages/Settings";
-import SupportPage from "./pages/Support";
+import { fetchAPI } from "~/cloud/api";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -49,19 +39,6 @@ const PAGE_PORTALS: Record<any, HtmlPortalNode> = {
 	settings: createHtmlPortalNode(PORTAL_OPTIONS),
 	provision: createHtmlPortalNode(PORTAL_OPTIONS),
 	chat: createHtmlPortalNode(PORTAL_OPTIONS),
-};
-
-const PAGE_COMPONENTS: Record<any, FC> = {
-	instances: InstancesPage,
-	members: MembersPage,
-	audits: PlaceholderPage,
-	data: PlaceholderPage,
-	billing: BillingPage,
-	support: SupportPage,
-	referral: ReferralPage,
-	settings: SettingsPage,
-	provision: ProvisionPage,
-	chat: ChatPage,
 };
 
 export function CloudPanelPage() {

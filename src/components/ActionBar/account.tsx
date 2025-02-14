@@ -1,5 +1,4 @@
 import {
-	Alert,
 	Avatar,
 	Box,
 	Button,
@@ -15,20 +14,17 @@ import {
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
-import { useLocation } from "wouter";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
-import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
-import { destroySession, openCloudAuthentication } from "~/screens/surrealist/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import type { CloudProfile } from "~/types";
 import { showError } from "~/util/helpers";
 import { iconAccount, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
-import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
+import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
+import { fetchAPI } from "~/cloud/api";
 
 interface AccountFormProps {
 	onClose(): void;

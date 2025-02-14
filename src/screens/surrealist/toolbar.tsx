@@ -17,11 +17,11 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconReset, iconStar, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { openCloudAuthentication } from "./cloud-panel/api/auth";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
 import { resetConnection } from "./connection/connection";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 
 export function SurrealistToolbar() {
 	const { readChangelog } = useInterfaceStore.getState();

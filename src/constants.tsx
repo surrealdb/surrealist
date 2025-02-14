@@ -193,6 +193,11 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Billing",
 		icon: iconCreditCard,
 	},
+	chat: {
+		id: "chat",
+		name: "Sidekick",
+		icon: iconSidekick,
+	},
 	referral: {
 		id: "referral",
 		name: "Referrals",

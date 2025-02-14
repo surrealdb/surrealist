@@ -1,23 +1,20 @@
 import classes from "./style.module.scss";
 
-import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
+import { Box, Drawer, Flex, Group, Stack } from "@mantine/core";
 import { type FC, Suspense, memo } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
-import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { VIEW_PAGES } from "~/constants";
 import { useSetting } from "~/hooks/config";
-import { useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
-import type { ViewPageInfo, ViewPage } from "~/types";
-import { iconWarning } from "~/util/icons";
-import { SelectDatabase } from "./components/SelectDatabase";
+import type { ViewPage } from "~/types";
 import { SurrealistSidebar } from "./sidebar";
-import { OverviewPage } from "./pages/overview";
+import { OverviewPage } from "./pages/Overview";
+import { BillingPage } from "./pages/Billing";
+import { ChatPage } from "./pages/Chat";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DesignerView from "./views/designer/DesignerView";
@@ -31,7 +28,9 @@ import SidekickView from "./views/sidekick/SidekickView";
 import PlaceholderPage from "./cloud-panel/pages/Placeholder";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
-const StartPageLazy = memo(OverviewPage);
+const OverviewPageLazy = memo(OverviewPage);
+const BillingPageLazy = memo(BillingPage);
+const ChatPageLazy = memo(ChatPage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -133,7 +132,7 @@ export function SurrealistScreen() {
 							<Route path="/" />
 
 							<Route path="/overview">
-								<StartPageLazy />
+								<OverviewPageLazy />
 							</Route>
 
 							<Route path="/share">
@@ -144,8 +143,12 @@ export function SurrealistScreen() {
 								<PlaceholderPage />
 							</Route>
 
+							<Route path="/chat">
+								<ChatPageLazy />
+							</Route>
+
 							<Route path="/billing">
-								<PlaceholderPage />
+								<BillingPageLazy />
 							</Route>
 
 							<Route path="/referrals">

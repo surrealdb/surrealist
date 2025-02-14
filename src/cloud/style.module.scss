@@ -1,0 +1,24 @@
+.onboarding-dialog {
+	position: relative;
+
+	:global(.mantine-Modal-header) {
+		padding-bottom: 0;
+		background: none;
+	}
+
+	:global(.mantine-Modal-body) {
+		position: relative;
+	}
+
+	&::before {
+		content: "";
+		inset: 0;
+		z-index: 0;
+		position: absolute;
+		background-image: var(--image);
+		background-repeat: no-repeat;
+		background-position: center top;
+		background-size: 900px;
+		opacity: 0.25;
+	}
+}

@@ -5,9 +5,9 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
 import { CloudOrganization } from "~/types";
 import { iconHammer, iconQuery, iconStar, iconWarning } from "~/util/icons";
-import { useCloudOrganizationInstancesQuery } from "../../hooks/instances";
-import { useCloudTypeLimits } from "../../hooks/limits";
+import { useCloudTypeLimits } from "../../../../../cloud/hooks/limits";
 import { Tile } from "../Tile";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 export interface CategoryPickerProps extends BoxProps {
 	organization: CloudOrganization;

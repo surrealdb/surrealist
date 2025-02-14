@@ -45,10 +45,10 @@ import type { CloudInstance } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
 import { type ConnectMethod, Instance } from "../../components/Instance";
-import { useCloudOrganizationInstancesQuery } from "../../hooks/instances";
 import { openConnectCli } from "../../modals/connect-cli";
 import { openConnectCurl } from "../../modals/connect-curl";
 import { openConnectSdk } from "../../modals/connect-sdk";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 interface Filter {
 	type: string;

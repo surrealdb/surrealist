@@ -1,6 +1,7 @@
 import { Group, Skeleton, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { useQuery } from "@tanstack/react-query";
+import { fetchAPI } from "~/cloud/api";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
@@ -8,7 +9,6 @@ import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import type { CloudInstance } from "~/types";
 import { iconConsole } from "~/util/icons";
-import { fetchAPI } from "../api";
 
 export function openConnectCli(instance: CloudInstance) {
 	openModal({

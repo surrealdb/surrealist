@@ -5,13 +5,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { type FC, useState } from "react";
 import { useImmer } from "use-immer";
 import { useOrganization } from "~/hooks/cloud";
-// import { useActiveCloudPage, useCloudPageFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
 import { __throw, showError } from "~/util/helpers";
-import { fetchAPI } from "../../api";
 import { ProvisionDetailsStep } from "./steps/1_details";
 import { ProvisionRegionsStep } from "./steps/2_regions";
 import { ProvisionCategoryStep } from "./steps/3_category";
@@ -19,6 +16,7 @@ import { ProvisionInstanceTypesStep } from "./steps/4_type";
 import { ProvisionComputeUnitsStep } from "./steps/5_units";
 import { ProvisionFinalizeStep } from "./steps/6_finalize";
 import type { ProvisionConfig, ProvisionStepProps } from "./types";
+import { fetchAPI } from "~/cloud/api";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",

@@ -17,16 +17,16 @@ import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
-import { useCloudUsageQuery } from "~/screens/surrealist/cloud-panel/hooks/usage";
+import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import type { CloudInstance } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { iconDatabase, iconQuery } from "~/util/icons";
-import { computeStorageSize } from "../../../util/helpers";
 import {
 	measureComputeHistory,
 	measureComputeTotal,
 	measureStorageUsage,
-} from "../../../util/measurements";
+	computeStorageSize,
+} from "~/util/cloud";
 
 export async function openUsageModal(instance: CloudInstance) {
 	openModal({

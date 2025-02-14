@@ -30,12 +30,12 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
-import { iconChevronLeft, iconCog, iconSearch } from "~/util/icons";
+import { iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
 	["overview"],
-	["share", "university"],
+	["share", "university", "chat"],
 	["billing", "referral", "support"],
 ];
 

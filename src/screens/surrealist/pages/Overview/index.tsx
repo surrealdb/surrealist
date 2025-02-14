@@ -41,23 +41,13 @@ import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { Fragment } from "react/jsx-runtime";
-import { useCloudInstanceList } from "../../cloud-panel/hooks/instances";
+import { useCloudInstanceList } from "../../../../cloud/hooks/instances";
 import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Protocol } from "~/types";
 import { adapter } from "~/adapter";
 import { useLocation } from "wouter";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConfigStore } from "~/stores/config";
-
-const PROTO_NAMES: Record<Protocol, string> = {
-	http: "HTTP",
-	https: "HTTPS",
-	ws: "WebSocket",
-	wss: "WebSocket",
-	mem: "In-Memory",
-	indxdb: "IndexDB",
-};
 
 export function OverviewPage() {
 	const newsQuery = useLatestNewsQuery();
