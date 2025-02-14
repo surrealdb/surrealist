@@ -4,10 +4,10 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 
 import {
-	ActionIcon,
 	Box,
 	BoxProps,
 	Button,
+	Center,
 	Flex,
 	Group,
 	Paper,
@@ -17,14 +17,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import {
-	iconAPI,
-	iconBalance,
-	iconChevronRight,
-	iconDotsVertical,
-	iconMemory,
-	iconTransfer,
-} from "~/util/icons";
+import { iconChevronRight, iconDotsVertical, iconPlay, iconPlus } from "~/util/icons";
 
 import { PropsWithChildren, ReactNode, useRef } from "react";
 import { Faint } from "~/components/Faint";
@@ -36,18 +29,9 @@ import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "~/components/ActionButton";
 import { Protocol } from "~/types";
 
-const PROTO_ICONS: Record<Protocol, string> = {
-	http: iconAPI,
-	https: iconAPI,
-	ws: iconTransfer,
-	wss: iconTransfer,
-	mem: iconMemory,
-	indxdb: iconBalance,
-};
-
 export interface StartConnectionProps extends BoxProps {
 	title: ReactNode;
-	protocol: Protocol;
+	subtitle: ReactNode;
 	icon: string;
 	withOptions?: boolean;
 	onConnect: () => void;
@@ -55,7 +39,7 @@ export interface StartConnectionProps extends BoxProps {
 
 export function StartConnection({
 	title,
-	protocol,
+	subtitle,
 	icon,
 	withOptions,
 	onConnect,
@@ -65,54 +49,108 @@ export function StartConnection({
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	return (
-		<Paper
-			p="lg"
-			className={clsx(classes.startBox, classes.startConnection)}
-			ref={containerRef}
+		<UnstyledButton
+			onClick={onConnect}
 			{...other}
 		>
-			<Group wrap="nowrap">
-				<Group flex={1}>
-					<Icon
-						path={icon}
-						size="lg"
-					/>
-					<Box>
+			<Paper
+				p="lg"
+				className={clsx(classes.startBox, classes.startConnection)}
+				ref={containerRef}
+			>
+				<Group
+					wrap="nowrap"
+					align="start"
+					h="100%"
+				>
+					<Group flex={1}>
+						<Box>
+							<Group gap="sm">
+								<Icon
+									path={icon}
+									c="bright"
+								/>
+								<Text
+									c="bright"
+									fw={600}
+									fz="lg"
+								>
+									{title}
+								</Text>
+							</Group>
+							<Text>{subtitle}</Text>
+						</Box>
+					</Group>
+					<Stack
+						align="center"
+						style={{ alignSelf: "stretch" }}
+					>
+						{withOptions && (
+							<ActionButton
+								label="Options"
+								variant="subtle"
+								className={classes.connectionOptions}
+							>
+								<div>
+									<Icon path={iconDotsVertical} />
+								</div>
+							</ActionButton>
+						)}
+						<Spacer />
+						<Icon path={iconChevronRight} />
+					</Stack>
+				</Group>
+				<Faint containerRef={containerRef} />
+			</Paper>
+		</UnstyledButton>
+	);
+}
+
+export interface StartCreatorProps extends BoxProps {
+	title: ReactNode;
+	subtitle: ReactNode;
+	onCreate: () => void;
+}
+
+export function StartCreator({
+	title,
+	subtitle,
+	onCreate,
+	children,
+	...other
+}: PropsWithChildren<StartCreatorProps>) {
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	return (
+		<UnstyledButton
+			onClick={onCreate}
+			{...other}
+		>
+			<Paper
+				p="lg"
+				className={clsx(classes.startBox, classes.startCreator)}
+				bg="transparent"
+				ref={containerRef}
+			>
+				<Center h="100%">
+					<Stack
+						align="center"
+						gap={0}
+					>
+						<Icon path={iconPlus} />
 						<Text
 							c="bright"
 							fw={600}
 							fz="lg"
+							mt="md"
 						>
 							{title}
 						</Text>
-						{/* <Text>Sandbox</Text> */}
-					</Box>
-				</Group>
-				{withOptions && (
-					<ActionButton label="Options">
-						<div>
-							<Icon path={iconDotsVertical} />
-						</div>
-					</ActionButton>
-				)}
-			</Group>
-			<Group mt="xl">
-				{/* <Icon
-					path={PROTO_ICONS[protocol]}
-					opacity={0.6}
-				/> */}
-				<Spacer />
-				<Button
-					color="slate"
-					size="xs"
-					onClick={onConnect}
-					rightSection={<Icon path={iconChevronRight} />}
-				>
-					Connect
-				</Button>
-			</Group>
-			<Faint containerRef={containerRef} />
-		</Paper>
+						<Text>{subtitle}</Text>
+					</Stack>
+				</Center>
+			</Paper>
+		</UnstyledButton>
 	);
 }
 

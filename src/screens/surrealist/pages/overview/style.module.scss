@@ -37,7 +37,20 @@
 }
 
 .start-connection {
-	// height: 115px;
+	height: 112px;
+
+	.connection-options {
+		transition: opacity .15s;
+		opacity: 0;
+	}
+
+	&:hover .connection-options {
+		opacity: 1;
+	}
+}
+
+.start-creator {
+	height: 112px;
 }
 
 .start-action {
