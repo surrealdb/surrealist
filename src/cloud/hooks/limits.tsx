@@ -12,16 +12,22 @@ export function useCloudTypeLimits(
 	const current = useOrganization();
 	const types = useAvailableInstanceTypes();
 
-	const available = useMemo(() => types.filter((type) => {
-		if (!current) return false;
+	console.log("list", instances);
 
-		const [free, paid] = fork(instances ?? [], (i) => i.type.price_hour === 0);
-		const isFree = type.price_hour === 0;
+	const available = useMemo(
+		() =>
+			types.filter((type) => {
+				if (!current) return false;
 
-		return isFree
-			? free.length < (current.max_free_instances)
-			: paid.length < (current.max_paid_instances);
-	}), [types, current, instances]);
+				const [free, paid] = fork(instances ?? [], (i) => i.type.price_hour === 0);
+				const isFree = type.price_hour === 0;
+
+				return isFree
+					? free.length < current.max_free_instances
+					: paid.length < current.max_paid_instances;
+			}),
+		[types, current, instances],
+	);
 
 	return (type) => available.includes(type);
 }

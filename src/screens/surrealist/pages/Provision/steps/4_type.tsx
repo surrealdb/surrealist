@@ -8,9 +8,10 @@ import { EstimatedCost } from "~/screens/surrealist/cloud-panel/components/Estim
 import { InstanceType } from "~/screens/surrealist/cloud-panel/components/InstanceType";
 import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { iconChevronRight, iconWarning } from "~/util/icons";
-import { StepActions } from "../actions";
+import { StepActions, StepTitle } from "../actions";
 import type { ProvisionStepProps } from "../types";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import { useAbsoluteLocation } from "~/hooks/routing";
 
 export function ProvisionInstanceTypesStep({
 	step,
@@ -23,7 +24,7 @@ export function ProvisionInstanceTypesStep({
 	const instanceTypes = useAvailableInstanceTypes();
 	const instancesQuery = useCloudOrganizationInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instancesQuery.data ?? []);
-	// const [, setActivePage] = useActiveCloudPage();
+	const [, navigate] = useAbsoluteLocation();
 
 	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
 
@@ -43,12 +44,10 @@ export function ProvisionInstanceTypesStep({
 
 	return (
 		<Stack>
-			<PrimaryTitle>Select an instance type</PrimaryTitle>
-
-			<Text mb="lg">
-				Instance types define the resources allocated to your cloud instance. Choose a
-				configuration that best fits your needs.
-			</Text>
+			<StepTitle
+				title="Instance Type"
+				description="Choose how many resources you need for your instance"
+			/>
 
 			{!hasBilling && details.category !== "free" && (
 				<Alert
@@ -65,10 +64,7 @@ export function ProvisionInstanceTypesStep({
 						color="blue"
 						size="xs"
 						mt="md"
-						onClick={() => {
-							// setActivePage("billing");
-							// FIXME repair
-						}}
+						onClick={() => navigate("/billing")}
 					>
 						Enter billing & payment details
 					</Button>

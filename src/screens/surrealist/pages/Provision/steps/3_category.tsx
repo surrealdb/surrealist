@@ -1,9 +1,8 @@
 import { Stack, Text } from "@mantine/core";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CategoryPicker } from "~/screens/surrealist/cloud-panel/components/CategoryPicker";
-import { StepActions } from "../actions";
+import { StepActions, StepTitle } from "../actions";
 import type { ProvisionStepProps } from "../types";
 
 export function ProvisionCategoryStep({
@@ -34,12 +33,10 @@ export function ProvisionCategoryStep({
 
 	return (
 		<Stack>
-			<PrimaryTitle>Select instance category</PrimaryTitle>
-
-			<Text mb="lg">
-				Optimise your experience by selecting the instance category that best aligns with
-				your project's goals.
-			</Text>
+			<StepTitle
+				title="Category"
+				description="Select a category that best aligns with your project's goals"
+			/>
 
 			{organization && (
 				<CategoryPicker

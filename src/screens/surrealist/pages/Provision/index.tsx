@@ -17,6 +17,9 @@ import { ProvisionComputeUnitsStep } from "./steps/5_units";
 import { ProvisionFinalizeStep } from "./steps/6_finalize";
 import type { ProvisionConfig, ProvisionStepProps } from "./types";
 import { fetchAPI } from "~/cloud/api";
+import { useAbsoluteLocation, useSearchParams } from "~/hooks/routing";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Text } from "@mantine/core";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
@@ -38,7 +41,7 @@ const PROVISION_STEPS = [
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
-	// const [, setActivePage] = useActiveCloudPage();
+	const [, navigate] = useAbsoluteLocation();
 
 	const organization = useOrganization();
 	const [step, setStep] = useState(0);
@@ -76,15 +79,13 @@ export function ProvisionPage() {
 				subtitle: "Please try again later",
 			});
 		} finally {
-			// setActivePage("instances");
-			// FIXME repair
+			navigate("/overview");
 		}
 	});
 
 	const previousStep = useStable((to?: number) => {
 		if (step === 0) {
-			// setActivePage("instances");
-			// FIXME repair
+			navigate("/overview");
 		} else {
 			setStep(to ?? step - 1);
 		}
@@ -98,12 +99,6 @@ export function ProvisionPage() {
 
 		setStep(to ?? step + 1);
 	});
-
-	// FIXME repair
-	// useCloudPageFocus("provision", () => {
-	// 	setDetails(DEFAULT);
-	// 	setStep(0);
-	// });
 
 	const ProvisionStep = PROVISION_STEPS[step];
 
@@ -123,8 +118,10 @@ export function ProvisionPage() {
 				}}
 			>
 				<Box
-					maw={650}
 					mx="auto"
+					maw={600}
+					pb={96}
+					mt={72}
 				>
 					<ProvisionStep
 						step={step}

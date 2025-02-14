@@ -10,7 +10,7 @@ import { useStable } from "~/hooks/stable";
 import { EstimatedCost } from "~/screens/surrealist/cloud-panel/components/EstimatedCost";
 import { formatMemory } from "~/util/helpers";
 import { iconHelp } from "~/util/icons";
-import { StepActions } from "../actions";
+import { StepActions, StepTitle } from "../actions";
 import type { ProvisionStepProps } from "../types";
 import { computeStorageSize } from "~/util/cloud";
 
@@ -32,7 +32,10 @@ export function ProvisionFinalizeStep({
 
 	return (
 		<Stack>
-			<PrimaryTitle>Confirm configuration</PrimaryTitle>
+			<StepTitle
+				title="Confirm"
+				description="Please confirm the configuration of your new instance"
+			/>
 
 			<Paper
 				p="lg"

@@ -1,4 +1,4 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { fetchAPI } from "../api";
@@ -12,7 +12,7 @@ export function useCloudInstanceList() {
 
 	return useQueries({
 		queries: organizations.map((org) => ({
-			queryKey: ["cloud", "instances", org.id],
+			queryKey: ["cloud", "org-instances", org.id],
 			refetchInterval: 15_000,
 			enabled: authState === "authenticated",
 			queryFn: async () => ({

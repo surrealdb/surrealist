@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
 import { EstimatedCost } from "~/screens/surrealist/cloud-panel/components/EstimatedCost";
-import { StepActions } from "../actions";
+import { StepActions, StepTitle } from "../actions";
 import type { ProvisionStepProps } from "../types";
 
 export function ProvisionComputeUnitsStep({
@@ -23,12 +23,10 @@ export function ProvisionComputeUnitsStep({
 
 	return (
 		<Stack>
-			<PrimaryTitle>Customise compute nodes</PrimaryTitle>
-
-			<Text mb="lg">
-				Select the number of compute nodes you would like to use for your instance. Each
-				compute node provides additional processing power to your instance.
-			</Text>
+			<StepTitle
+				title="Compute Nodes"
+				description="Customise the number of compute nodes for your instance"
+			/>
 
 			<Alert
 				color="blue"
