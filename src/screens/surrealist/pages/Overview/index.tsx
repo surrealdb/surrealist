@@ -1,5 +1,6 @@
 import classes from "./style.module.scss";
 
+import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import glowUrl from "~/assets/images/gradient-glow.webp";
 import iconUrl from "~/assets/images/icon.webp";
@@ -24,7 +25,10 @@ import {
 import {
 	iconBook,
 	iconChevronRight,
+	iconCloud,
 	iconCommunity,
+	iconCreditCard,
+	iconReferral,
 	iconSearch,
 	iconSidekick,
 	iconUniversity,
@@ -35,7 +39,14 @@ import {
 import { Icon } from "~/components/Icon";
 import { useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/util/intents";
-import { StartConnection, StartCreator, StartInstance, StartNews, StartResource } from "./content";
+import {
+	StartAction,
+	StartConnection,
+	StartCreator,
+	StartInstance,
+	StartNews,
+	StartResource,
+} from "./content";
 import { Spacer } from "~/components/Spacer";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -48,10 +59,12 @@ import { adapter } from "~/adapter";
 import { useLocation } from "wouter";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConfigStore } from "~/stores/config";
+import { openCloudAuthentication } from "~/cloud/api/auth";
+import { useAbsoluteLocation } from "~/hooks/routing";
 
 export function OverviewPage() {
 	const newsQuery = useLatestNewsQuery();
-	const [, navigate] = useLocation();
+	const [, navigate] = useAbsoluteLocation();
 	const { entries: cloudSections } = useCloudInstanceList();
 
 	const authState = useCloudStore((s) => s.authState);
@@ -236,6 +249,45 @@ export function OverviewPage() {
 						</Fragment>
 					))}
 
+					<PrimaryTitle mt={52}>Surreal Cloud</PrimaryTitle>
+
+					{authState === "authenticated" ? (
+						<SimpleGrid
+							cols={{
+								xs: 1,
+								sm: 2,
+							}}
+						>
+							<StartResource
+								title="Manage Billing"
+								subtitle="View and manage your billing information"
+								icon={iconCreditCard}
+								onClick={() => navigate("/billing")}
+							/>
+							<StartResource
+								title="Referral Program"
+								subtitle="Earn rewards for referring friends to Surreal Cloud"
+								icon={iconReferral}
+								onClick={() => navigate("/referrals")}
+							/>
+						</SimpleGrid>
+					) : (
+						authState === "unauthenticated" && (
+							<StartAction
+								title="Explore Surreal Cloud"
+								subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
+								icon={iconCloud}
+								onClick={openCloudAuthentication}
+								className={classes.cloudAction}
+							>
+								<Image
+									src={splashUrl}
+									className={classes.cloudImage}
+								/>
+							</StartAction>
+						)
+					)}
+
 					<PrimaryTitle mt={52}>Resources</PrimaryTitle>
 
 					<SimpleGrid
@@ -266,7 +318,7 @@ export function OverviewPage() {
 							title="Sidekick"
 							subtitle="Get support from your personal Surreal AI assistant"
 							icon={iconSidekick}
-							onClick={() => navigate("/cloud/chat")}
+							onClick={() => navigate("/chat")}
 						/>
 					</SimpleGrid>
 

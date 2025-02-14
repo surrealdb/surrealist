@@ -282,9 +282,67 @@ export function StartCreator({
 	);
 }
 
+export interface StartActionProps extends BoxProps {
+	title: ReactNode;
+	subtitle: ReactNode;
+	icon?: string;
+	onClick: () => void;
+}
+
+export function StartAction({
+	title,
+	subtitle,
+	icon,
+	onClick,
+	children,
+	...other
+}: PropsWithChildren<StartActionProps>) {
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	return (
+		<UnstyledButton
+			onClick={onClick}
+			{...other}
+		>
+			<Paper
+				p="xl"
+				pos="relative"
+				ref={containerRef}
+				className={clsx(classes.startBox, classes.startAction)}
+				renderRoot={(props) => <Stack {...props} />}
+			>
+				<Group
+					wrap="nowrap"
+					align="start"
+					h="100%"
+				>
+					<Text
+						c="bright"
+						fw={600}
+						fz="xl"
+					>
+						{title}
+					</Text>
+					<Spacer />
+					{icon && (
+						<Icon
+							className={classes.startActionIcon}
+							path={icon}
+							size="xl"
+						/>
+					)}
+				</Group>
+				<Text maw={450}>{subtitle}</Text>
+				{children}
+				<Faint containerRef={containerRef} />
+			</Paper>
+		</UnstyledButton>
+	);
+}
+
 export interface StartResourceProps extends BoxProps {
 	title: string;
-	subtitle: string;
+	subtitle?: string;
 	icon: string;
 	onClick: () => void;
 }

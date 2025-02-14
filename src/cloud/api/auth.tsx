@@ -201,9 +201,9 @@ export async function refreshAccess() {
  */
 export async function acquireSession(accessToken: string) {
 	try {
+		const referralCode = sessionStorage.getItem(REFERRER_KEY);
 		const { setSessionToken, setAuthProvider, setUserId, setSessionExpired } =
 			useCloudStore.getState();
-		const referralCode = sessionStorage.getItem(REFERRER_KEY);
 
 		adapter.log("Cloud", "Acquiring cloud session");
 

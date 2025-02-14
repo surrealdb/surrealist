@@ -43,10 +43,7 @@ import { Slab, SlabProps } from "~/components/Slab";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
-import {
-	useCloudReferralCodeQuery,
-	useCloudReferralQuery,
-} from "../../../../../cloud/queries/referral";
+import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 
 const REWARDS = [1, 10, 25, 100, 500];
 
@@ -128,7 +125,7 @@ export function ReferralPage() {
 				inset={0}
 				className={classes.scrollArea}
 				viewportProps={{
-					style: { paddingBottom: 75 },
+					style: { paddingBlock: 75 },
 				}}
 			>
 				<Stack
@@ -385,5 +382,3 @@ export function ReferralPage() {
 		</Box>
 	);
 }
-
-export default ReferralPage;
