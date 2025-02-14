@@ -6,6 +6,7 @@ import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 
 import {
+	ActionIcon,
 	Box,
 	Button,
 	Group,
@@ -14,16 +15,24 @@ import {
 	SimpleGrid,
 	Stack,
 	Text,
+	TextInput,
 	Title,
 } from "@mantine/core";
 
-import { iconChevronRight, iconCloud, iconPlus, iconSandbox } from "~/util/icons";
+import {
+	iconChevronRight,
+	iconCloud,
+	iconPlus,
+	iconSandbox,
+	iconSearch,
+	iconViewGrid,
+	iconViewList,
+} from "~/util/icons";
 
 import { Icon } from "~/components/Icon";
-import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/util/intents";
-import { StartConnection } from "./content";
+import { StartConnection, StartCreator } from "./content";
 import { Spacer } from "~/components/Spacer";
 import { useActiveConnection } from "~/hooks/routing";
 import { useConnectionList } from "~/hooks/connection";
@@ -33,6 +42,18 @@ import { openCloudAuthentication } from "../../cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { Fragment } from "react/jsx-runtime";
 import { useCloudInstanceList } from "../../cloud-panel/hooks/instances";
+import { useState } from "react";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Protocol } from "~/types";
+
+const PROTO_NAMES: Record<Protocol, string> = {
+	http: "HTTP",
+	https: "HTTPS",
+	ws: "WebSocket",
+	wss: "WebSocket",
+	mem: "In-Memory",
+	indxdb: "IndexDB",
+};
 
 export function OverviewPage() {
 	// const newsQuery = useLatestNewsQuery();
@@ -52,6 +73,8 @@ export function OverviewPage() {
 		light: logoLightUrl,
 		dark: logoDarkUrl,
 	});
+
+	const [mode, setMode] = useState<"grid" | "list">("grid");
 
 	return (
 		<Box
@@ -101,22 +124,45 @@ export function OverviewPage() {
 						</Text>
 					</Stack>
 
-					<Group>
-						<Title
-							mt="xl"
-							c="bright"
-						>
-							Connections
-						</Title>
+					<Group mt="xl">
+						<PrimaryTitle>Connections</PrimaryTitle>
 						<Spacer />
-						<Button
+						<TextInput
+							// value={search}
+							// onChange={setSearch}
+							placeholder="Search connections"
+							leftSection={
+								<Icon
+									path={iconSearch}
+									size="sm"
+								/>
+							}
+							radius="sm"
+							size="xs"
+							className={classes.search}
+						/>
+						<ActionIcon.Group>
+							<ActionIcon
+								c={mode === "grid" ? "bright" : "slate.3"}
+								onClick={() => setMode("grid")}
+							>
+								<Icon path={iconViewGrid} />
+							</ActionIcon>
+							<ActionIcon
+								c={mode === "list" ? "bright" : "slate.3"}
+								onClick={() => setMode("list")}
+							>
+								<Icon path={iconViewList} />
+							</ActionIcon>
+						</ActionIcon.Group>
+						{/* <Button
 							size="xs"
 							variant="gradient"
 							rightSection={<Icon path={iconPlus} />}
 							onClick={createConnection}
 						>
 							Create connection
-						</Button>
+						</Button> */}
 					</Group>
 
 					<SimpleGrid
@@ -128,6 +174,7 @@ export function OverviewPage() {
 					>
 						<StartConnection
 							title="Sandbox"
+							subtitle="Explore SurrealDB directly inside Surrealist"
 							protocol="mem"
 							icon={iconSandbox}
 							onConnect={() => {
@@ -138,7 +185,7 @@ export function OverviewPage() {
 							<StartConnection
 								key={connection.id}
 								title={connection.name}
-								protocol={connection.authentication.protocol}
+								subtitle={`${PROTO_NAMES[connection.authentication.protocol]}: ${connection.authentication.hostname}`}
 								icon={USER_ICONS[connection.icon]}
 								withOptions
 								onConnect={() => {
@@ -146,10 +193,15 @@ export function OverviewPage() {
 								}}
 							/>
 						))}
+						<StartCreator
+							title="New connection"
+							subtitle="Connect to a local or remote instance"
+							onCreate={createConnection}
+						/>
 					</SimpleGrid>
 
 					<Group mt={64}>
-						<Title c="bright">Cloud Instances</Title>
+						<PrimaryTitle>Cloud Instances</PrimaryTitle>
 						<Spacer />
 						{authState === "authenticated" ? (
 							<Button
@@ -175,7 +227,13 @@ export function OverviewPage() {
 
 					{cloudSections.map(({ organization, instances }) => (
 						<Fragment key={organization.id}>
-							<Title mt="lg">{organization.name}</Title>
+							<Text
+								mt="lg"
+								fz="lg"
+								fw={500}
+							>
+								{organization.name}
+							</Text>
 							<SimpleGrid
 								cols={{
 									xs: 1,
@@ -187,6 +245,7 @@ export function OverviewPage() {
 									<StartConnection
 										key={instance.id}
 										title={instance.name}
+										subtitle={instance.name}
 										protocol={"wss"}
 										icon={iconCloud}
 										withOptions
