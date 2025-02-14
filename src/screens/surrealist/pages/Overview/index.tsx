@@ -63,6 +63,8 @@ import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useAbsoluteLocation } from "~/hooks/routing";
 
 export function OverviewPage() {
+	const { setSelectedOrganization } = useCloudStore.getState();
+
 	const newsQuery = useLatestNewsQuery();
 	const [, navigate] = useAbsoluteLocation();
 	const { entries: cloudSections } = useCloudInstanceList();
@@ -243,7 +245,10 @@ export function OverviewPage() {
 								<StartCreator
 									title="New instance"
 									subtitle="Provision a new Surreal Cloud instance"
-									onCreate={createConnection}
+									onCreate={() => {
+										setSelectedOrganization(organization.id);
+										navigate("/provision");
+									}}
 								/>
 							</SimpleGrid>
 						</Fragment>

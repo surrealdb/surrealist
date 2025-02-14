@@ -17,6 +17,7 @@ import { BillingPage } from "./pages/Billing";
 import { ChatPage } from "./pages/Chat";
 import { ReferralPage } from "./pages/Referral";
 import { SupportPage } from "./pages/Support";
+import { ProvisionPage } from "./pages/Provision";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DesignerView from "./views/designer/DesignerView";
@@ -35,6 +36,7 @@ const BillingPageLazy = memo(BillingPage);
 const ChatPageLazy = memo(ChatPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
+const ProvisionPageLazy = memo(ProvisionPage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -157,6 +159,10 @@ export function SurrealistScreen() {
 
 							<Route path="/referral">
 								<ReferralPageLazy />
+							</Route>
+
+							<Route path="/provision">
+								<ProvisionPageLazy />
 							</Route>
 
 							<Route path="/support">

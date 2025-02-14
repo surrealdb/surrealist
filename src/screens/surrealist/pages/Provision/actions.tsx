@@ -1,8 +1,26 @@
-import { Button, Group } from "@mantine/core";
+import { Box, Button, Group, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { iconCheck, iconChevronLeft, iconChevronRight } from "~/util/icons";
+
+export function StepTitle({ title, description }: { title: string; description: string }) {
+	return (
+		<Box mb="xl">
+			<Group gap={2}>
+				<PrimaryTitle>New Instance</PrimaryTitle>
+				<Icon
+					path={iconChevronRight}
+					size="lg"
+					c="bright"
+				/>
+				<PrimaryTitle>{title}</PrimaryTitle>
+			</Group>
+			<Text fz="xl">{description}</Text>
+		</Box>
+	);
+}
 
 export interface StepActionsProps {
 	step: number;

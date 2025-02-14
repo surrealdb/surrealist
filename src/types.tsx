@@ -53,7 +53,8 @@ export type GlobalPage =
 	| "support"
 	| "referral"
 	| "share"
-	| "university";
+	| "university"
+	| "provision";
 export type ViewPage =
 	| "query"
 	| "explorer"
