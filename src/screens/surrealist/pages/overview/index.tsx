@@ -4,10 +4,10 @@ import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import glowUrl from "~/assets/images/gradient-glow.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
+import cloudIconUrl from "~/assets/images/cloud-icon.webp";
 
 import {
 	ActionIcon,
-	Badge,
 	Box,
 	Button,
 	Center,
@@ -19,16 +19,12 @@ import {
 	Stack,
 	Text,
 	TextInput,
-	Title,
 } from "@mantine/core";
 
 import {
 	iconBook,
 	iconChevronRight,
-	iconCloud,
 	iconCommunity,
-	iconPlus,
-	iconSandbox,
 	iconSearch,
 	iconSidekick,
 	iconUniversity,
@@ -39,23 +35,20 @@ import {
 import { Icon } from "~/components/Icon";
 import { useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/util/intents";
-import { StartConnection, StartCreator, StartNews, StartResource } from "./content";
+import { StartConnection, StartCreator, StartInstance, StartNews, StartResource } from "./content";
 import { Spacer } from "~/components/Spacer";
-import { useActiveConnection } from "~/hooks/routing";
 import { useConnectionList } from "~/hooks/connection";
-import { USER_ICONS } from "~/util/user-icons";
 import { useStable } from "~/hooks/stable";
-import { openCloudAuthentication } from "../../cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { Fragment } from "react/jsx-runtime";
 import { useCloudInstanceList } from "../../cloud-panel/hooks/instances";
 import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Protocol } from "~/types";
-import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { useLocation } from "wouter";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
+import { useConfigStore } from "~/stores/config";
 
 const PROTO_NAMES: Record<Protocol, string> = {
 	http: "HTTP",
@@ -69,12 +62,14 @@ const PROTO_NAMES: Record<Protocol, string> = {
 export function OverviewPage() {
 	const newsQuery = useLatestNewsQuery();
 	const [, navigate] = useLocation();
-	const [, setActiveConnection] = useActiveConnection();
 	const { entries: cloudSections } = useCloudInstanceList();
 
 	const authState = useCloudStore((s) => s.authState);
 	const connections = useConnectionList();
+	const sandbox = useConfigStore((s) => s.sandbox);
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
+
+	const userConnections = connections.filter((c) => !c.authentication.cloudInstance);
 
 	const createConnection = useStable(() => {
 		dispatchIntent("new-connection");
@@ -166,14 +161,6 @@ export function OverviewPage() {
 								<Icon path={iconViewList} />
 							</ActionIcon>
 						</ActionIcon.Group>
-						{/* <Button
-							size="xs"
-							variant="gradient"
-							rightSection={<Icon path={iconPlus} />}
-							onClick={createConnection}
-						>
-							Create connection
-						</Button> */}
 					</Group>
 
 					<SimpleGrid
@@ -183,37 +170,11 @@ export function OverviewPage() {
 							lg: 3,
 						}}
 					>
-						<StartConnection
-							title="Sandbox"
-							bottomText={
-								<>
-									Explore and experiment with SurrealDB
-									<br />
-									directly inside Surrealist
-								</>
-							}
-							icon={iconSandbox}
-							onConnect={() => {
-								setActiveConnection("sandbox");
-							}}
-						/>
-						{connections.map((connection) => (
+						<StartConnection connection={sandbox} />
+						{userConnections.map((connection) => (
 							<StartConnection
 								key={connection.id}
-								title={connection.name}
-								bottomText={
-									<Badge
-										color="slate"
-										variant="light"
-									>
-										{PROTO_NAMES[connection.authentication.protocol]}
-									</Badge>
-								}
-								icon={USER_ICONS[connection.icon]}
-								withOptions
-								onConnect={() => {
-									setActiveConnection(connection.id);
-								}}
+								connection={connection}
 							/>
 						))}
 						<StartCreator
@@ -250,14 +211,19 @@ export function OverviewPage() {
 
 					{cloudSections.map(({ organization, instances }) => (
 						<Fragment key={organization.id}>
-							<Text
-								mt="lg"
-								fz="xl"
-								fw={500}
-								c="slate.0"
-							>
-								{organization.name} Instances
-							</Text>
+							<Group mt="lg">
+								<Image
+									src={cloudIconUrl}
+									w={24}
+								/>
+								<Text
+									fz="xl"
+									fw={600}
+									c="slate.0"
+								>
+									{organization.name} Cloud Instances
+								</Text>
+							</Group>
 							<SimpleGrid
 								cols={{
 									xs: 1,
@@ -266,15 +232,9 @@ export function OverviewPage() {
 								}}
 							>
 								{instances.map((instance) => (
-									<StartConnection
+									<StartInstance
 										key={instance.id}
-										title={instance.name}
-										bottomText={instance.name}
-										icon={iconCloud}
-										withOptions
-										onConnect={() => {
-											// setActiveConnection(connection.id);
-										}}
+										instance={instance}
 									/>
 								))}
 								<StartCreator

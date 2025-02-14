@@ -37,8 +37,6 @@
 }
 
 .start-connection {
-	height: 112px;
-
 	.connection-options {
 		transition: opacity .15s;
 		opacity: 0;
@@ -50,6 +48,15 @@
 }
 
 .start-creator {
+	background-color: hsla(255, 25%, 6%, 0.6);
+
+	@include light {
+		background-color: hsla(240, 11%, 96%, 0.6);
+	}
+}
+
+.start-creator,
+.start-connection {
 	height: 112px;
 }
 
