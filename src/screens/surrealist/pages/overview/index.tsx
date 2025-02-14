@@ -7,12 +7,15 @@ import logoLightUrl from "~/assets/images/light/logo.webp";
 
 import {
 	ActionIcon,
+	Badge,
 	Box,
 	Button,
+	Center,
 	Group,
 	Image,
 	ScrollArea,
 	SimpleGrid,
+	Skeleton,
 	Stack,
 	Text,
 	TextInput,
@@ -20,11 +23,15 @@ import {
 } from "@mantine/core";
 
 import {
+	iconBook,
 	iconChevronRight,
 	iconCloud,
+	iconCommunity,
 	iconPlus,
 	iconSandbox,
 	iconSearch,
+	iconSidekick,
+	iconUniversity,
 	iconViewGrid,
 	iconViewList,
 } from "~/util/icons";
@@ -32,7 +39,7 @@ import {
 import { Icon } from "~/components/Icon";
 import { useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/util/intents";
-import { StartConnection, StartCreator } from "./content";
+import { StartConnection, StartCreator, StartNews, StartResource } from "./content";
 import { Spacer } from "~/components/Spacer";
 import { useActiveConnection } from "~/hooks/routing";
 import { useConnectionList } from "~/hooks/connection";
@@ -45,6 +52,10 @@ import { useCloudInstanceList } from "../../cloud-panel/hooks/instances";
 import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Protocol } from "~/types";
+import { navigate } from "wouter/use-browser-location";
+import { adapter } from "~/adapter";
+import { useLocation } from "wouter";
+import { useLatestNewsQuery } from "~/hooks/newsfeed";
 
 const PROTO_NAMES: Record<Protocol, string> = {
 	http: "HTTP",
@@ -56,14 +67,14 @@ const PROTO_NAMES: Record<Protocol, string> = {
 };
 
 export function OverviewPage() {
-	// const newsQuery = useLatestNewsQuery();
-	// const [, navigate] = useLocation();
+	const newsQuery = useLatestNewsQuery();
+	const [, navigate] = useLocation();
 	const [, setActiveConnection] = useActiveConnection();
 	const { entries: cloudSections } = useCloudInstanceList();
 
 	const authState = useCloudStore((s) => s.authState);
 	const connections = useConnectionList();
-	// const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
+	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 
 	const createConnection = useStable(() => {
 		dispatchIntent("new-connection");
@@ -125,7 +136,7 @@ export function OverviewPage() {
 					</Stack>
 
 					<Group mt="xl">
-						<PrimaryTitle>Connections</PrimaryTitle>
+						<PrimaryTitle>Connect to SurrealDB</PrimaryTitle>
 						<Spacer />
 						<TextInput
 							// value={search}
@@ -174,8 +185,13 @@ export function OverviewPage() {
 					>
 						<StartConnection
 							title="Sandbox"
-							subtitle="Explore SurrealDB directly inside Surrealist"
-							protocol="mem"
+							bottomText={
+								<>
+									Explore and experiment with SurrealDB
+									<br />
+									directly inside Surrealist
+								</>
+							}
 							icon={iconSandbox}
 							onConnect={() => {
 								setActiveConnection("sandbox");
@@ -185,7 +201,14 @@ export function OverviewPage() {
 							<StartConnection
 								key={connection.id}
 								title={connection.name}
-								subtitle={`${PROTO_NAMES[connection.authentication.protocol]}: ${connection.authentication.hostname}`}
+								bottomText={
+									<Badge
+										color="slate"
+										variant="light"
+									>
+										{PROTO_NAMES[connection.authentication.protocol]}
+									</Badge>
+								}
 								icon={USER_ICONS[connection.icon]}
 								withOptions
 								onConnect={() => {
@@ -200,7 +223,7 @@ export function OverviewPage() {
 						/>
 					</SimpleGrid>
 
-					<Group mt={64}>
+					{/* <Group mt={64}>
 						<PrimaryTitle>Cloud Instances</PrimaryTitle>
 						<Spacer />
 						{authState === "authenticated" ? (
@@ -223,16 +246,17 @@ export function OverviewPage() {
 								Sign in
 							</Button>
 						)}
-					</Group>
+					</Group> */}
 
 					{cloudSections.map(({ organization, instances }) => (
 						<Fragment key={organization.id}>
 							<Text
 								mt="lg"
-								fz="lg"
+								fz="xl"
 								fw={500}
+								c="slate.0"
 							>
-								{organization.name}
+								{organization.name} Instances
 							</Text>
 							<SimpleGrid
 								cols={{
@@ -245,8 +269,7 @@ export function OverviewPage() {
 									<StartConnection
 										key={instance.id}
 										title={instance.name}
-										subtitle={instance.name}
-										protocol={"wss"}
+										bottomText={instance.name}
 										icon={iconCloud}
 										withOptions
 										onConnect={() => {
@@ -254,16 +277,16 @@ export function OverviewPage() {
 										}}
 									/>
 								))}
+								<StartCreator
+									title="New instance"
+									subtitle="Provision a new Surreal Cloud instance"
+									onCreate={createConnection}
+								/>
 							</SimpleGrid>
 						</Fragment>
 					))}
 
-					{/* <Title
-						mt="xl"
-						c="bright"
-					>
-						Resources
-					</Title>
+					<PrimaryTitle mt={52}>Resources</PrimaryTitle>
 
 					<SimpleGrid
 						cols={{
@@ -297,12 +320,7 @@ export function OverviewPage() {
 						/>
 					</SimpleGrid>
 
-					<Title
-						mt="xl"
-						c="bright"
-					>
-						Latest news
-					</Title>
+					<PrimaryTitle mt={52}>Latest news</PrimaryTitle>
 
 					{newsQuery.isPending ? (
 						<>
@@ -332,7 +350,7 @@ export function OverviewPage() {
 								</Button>
 							</Center>
 						</>
-					)} */}
+					)}
 				</Stack>
 			</ScrollArea>
 		</Box>

@@ -27,11 +27,11 @@ import { type NewsPost } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "~/components/ActionButton";
-import { Protocol } from "~/types";
 
 export interface StartConnectionProps extends BoxProps {
 	title: ReactNode;
-	subtitle: ReactNode;
+	topText?: ReactNode;
+	bottomText?: ReactNode;
 	icon: string;
 	withOptions?: boolean;
 	onConnect: () => void;
@@ -39,7 +39,8 @@ export interface StartConnectionProps extends BoxProps {
 
 export function StartConnection({
 	title,
-	subtitle,
+	topText,
+	bottomText,
 	icon,
 	withOptions,
 	onConnect,
@@ -60,31 +61,28 @@ export function StartConnection({
 			>
 				<Group
 					wrap="nowrap"
-					align="start"
+					align="strech"
 					h="100%"
 				>
-					<Group flex={1}>
-						<Box>
-							<Group gap="sm">
-								<Icon
-									path={icon}
-									c="bright"
-								/>
-								<Text
-									c="bright"
-									fw={600}
-									fz="lg"
-								>
-									{title}
-								</Text>
-							</Group>
-							<Text>{subtitle}</Text>
-						</Box>
-					</Group>
-					<Stack
-						align="center"
-						style={{ alignSelf: "stretch" }}
-					>
+					<Stack flex={1}>
+						<Group gap="sm">
+							<Icon
+								path={icon}
+								c="bright"
+							/>
+							<Text
+								c="bright"
+								fw={600}
+								fz="lg"
+							>
+								{title}
+							</Text>
+						</Group>
+						{topText}
+						<Spacer />
+						{bottomText}
+					</Stack>
+					<Stack align="center">
 						{withOptions && (
 							<ActionButton
 								label="Options"
