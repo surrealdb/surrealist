@@ -75,8 +75,9 @@ export async function fetchAPI<T = unknown>(
  * Fetch essential information from the API
  */
 export async function updateCloudInformation() {
-	const { setCloudValues } = useCloudStore.getState();
-	// const { activeCloudOrg, setActiveCloudOrg } = useConfigStore.getState();
+	const { selectedOrganization, setCloudValues, setSelectedOrganization } =
+		useCloudStore.getState();
+
 	const [profile, instanceVersions, instanceTypes, regions, billingCountries] = await Promise.all(
 		[
 			fetchAPI<CloudProfile>("/user/profile"),
@@ -88,10 +89,10 @@ export async function updateCloudInformation() {
 	);
 
 	const organizations = await fetchAPI<CloudOrganization[]>(`/organizations`);
-	// const active = organizations.find((org) => org.id === activeCloudOrg);
-	// if (!active) {
-	// 	setActiveCloudOrg(profile.default_org);
-	// }
+
+	if (!selectedOrganization) {
+		setSelectedOrganization(profile.default_org);
+	}
 
 	setCloudValues({
 		profile,

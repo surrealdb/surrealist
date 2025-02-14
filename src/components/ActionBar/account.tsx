@@ -19,7 +19,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
 import { showError } from "~/util/helpers";
-import { iconAccount, iconExitToAp } from "~/util/icons";
+import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
@@ -108,17 +108,14 @@ export function CloudAccount() {
 
 	if (state === "unauthenticated") {
 		return (
-			<Tooltip
-				label="Sign in to Surreal Cloud"
-				openDelay={300}
+			<Button
+				variant="gradient"
+				size="xs"
+				onClick={openCloudAuthentication}
+				rightSection={<Icon path={iconChevronRight} />}
 			>
-				<Avatar
-					radius="md"
-					size={36}
-					onClick={openCloudAuthentication}
-					renderRoot={(props) => <UnstyledButton {...props} />}
-				/>
-			</Tooltip>
+				Sign in
+			</Button>
 		);
 	}
 

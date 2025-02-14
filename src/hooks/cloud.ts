@@ -24,13 +24,10 @@ export function useSurrealCloud() {
  * Returns the actively selected organization
  */
 export function useOrganization() {
-	const orgs = useCloudStore((s) => s.organizations);
-	// const active = useConfigStore((s) => s.activeCloudOrg);
+	const list = useCloudStore((s) => s.organizations);
+	const selected = useCloudStore((s) => s.selectedOrganization);
 
-	// FIXME track active in config or store
-	const active = "";
-
-	return orgs.find((org) => org.id === active);
+	return list.find((org) => org.id === selected);
 }
 
 /**

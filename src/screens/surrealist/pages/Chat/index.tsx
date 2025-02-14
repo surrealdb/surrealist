@@ -1,29 +1,65 @@
 import classes from "./style.module.scss";
 
+import sidekickImg from "~/assets/images/sidekick-glow.webp";
+
 import {
 	ActionIcon,
-	Badge,
 	Box,
 	Center,
 	Group,
+	Image,
 	ScrollArea,
+	SimpleGrid,
 	Stack,
 	Text,
 	Textarea,
 } from "@mantine/core";
 
+import {
+	iconAccount,
+	iconCreditCard,
+	iconCursor,
+	iconDownload,
+	iconHistory,
+	iconLive,
+	iconPlus,
+	iconQuery,
+	iconRelation,
+	iconReset,
+	iconStar,
+	iconTable,
+	iconTransfer,
+} from "~/util/icons";
+
 import { useInputState } from "@mantine/hooks";
 import { memo, useEffect, useMemo, useRef } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { newId } from "~/util/helpers";
-import { iconCursor, iconReset, iconSidekick } from "~/util/icons";
 import { useCopilotMutation } from "./copilot";
 import { ChatMessage } from "./message";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { StartResource } from "../Overview/content";
+import { shuffle } from "radash";
+import { Spacer } from "~/components/Spacer";
+
+const QUESTIONS = [
+	{ icon: iconCreditCard, title: "How do I manage Cloud billing?" },
+	{ icon: iconPlus, title: "How do I create records?" },
+	{ icon: iconAccount, title: "How can I authenticate users?" },
+	{ icon: iconTransfer, title: "How do I execute transactions?" },
+	{ icon: iconTable, title: "How do I design a schema?" },
+	{ icon: iconQuery, title: "How do I optimise my database?" },
+	{ icon: iconHistory, title: "How do I view my query history?" },
+	{ icon: iconStar, title: "How do I save queries?" },
+	{ icon: iconDownload, title: "How do I export my database?" },
+	{ icon: iconReset, title: "How do I recurse graphs?" },
+	{ icon: iconRelation, title: "How do I visualize graphs?" },
+	{ icon: iconLive, title: "How do I listen to changes?" },
+];
 
 const ChatMessageLazy = memo(ChatMessage);
 
@@ -72,7 +108,7 @@ export function ChatPage() {
 		if (scrollRef.current) {
 			const { scrollHeight, clientHeight, scrollTop } = scrollRef.current;
 
-			if (scrollHeight - clientHeight - scrollTop < 50) {
+			if (scrollHeight - clientHeight - scrollTop < 150) {
 				scrollRef.current?.scrollTo({
 					top: scrollHeight,
 					behavior: "smooth",
@@ -80,6 +116,8 @@ export function ChatPage() {
 			}
 		}
 	}, [conversation]);
+
+	const questions = useMemo(() => shuffle(QUESTIONS).slice(0, 4), []);
 
 	return (
 		<Stack
@@ -93,84 +131,98 @@ export function ChatPage() {
 				w="100%"
 				pos="relative"
 			>
-				{conversation.length === 0 && (
-					<Center
+				{conversation.length > 0 ? (
+					<ScrollArea
 						pos="absolute"
+						viewportRef={scrollRef}
 						inset={0}
 					>
-						<Icon
-							path={iconSidekick}
-							size={10}
-							noStroke
-							color="slate.8"
-						/>
+						<Box
+							mx="auto"
+							maw={900}
+							pb={96}
+							mt={72}
+						>
+							<Group
+								wrap="nowrap"
+								align="start"
+							>
+								<Box>
+									<PrimaryTitle>Surreal Sidekick</PrimaryTitle>
+									<Text fz="xl">
+										Your personal Surreal assistant designed to answer your
+										database questions.
+									</Text>
+								</Box>
+								<Spacer />
+								{!isResponding && conversation.length > 1 && (
+									<ActionButton
+										label="Reset chat"
+										variant="subtle"
+										size="lg"
+										onClick={clearChatSession}
+									>
+										<Icon
+											path={iconReset}
+											size="lg"
+										/>
+									</ActionButton>
+								)}
+							</Group>
+							<Stack
+								mt={42}
+								gap={42}
+							>
+								{conversation.map((message, i) => (
+									<ChatMessageLazy
+										message={message}
+										profile={profile}
+										lastResponse={lastResponse}
+										isResponding={isResponding}
+										isLight={isLight}
+										key={i}
+									/>
+								))}
+							</Stack>
+						</Box>
+					</ScrollArea>
+				) : (
+					<Center h="90%">
+						<Stack align="center">
+							<Image
+								src={sidekickImg}
+								alt="Sidekick"
+								w={196}
+							/>
+							<PrimaryTitle fz={42}>Welcome to Sidekick</PrimaryTitle>
+							<Text fz="xl">
+								Your personal Surreal assistant designed to answer your database
+								questions.
+							</Text>
+							<SimpleGrid
+								mt="xl"
+								cols={{
+									xs: 1,
+									sm: 2,
+								}}
+							>
+								{questions.map((question) => (
+									<StartResource
+										key={question.title}
+										title={question.title}
+										icon={question.icon}
+										onClick={() => {
+											setInput(question.title);
+											inputRef.current?.focus();
+										}}
+									/>
+								))}
+							</SimpleGrid>
+						</Stack>
 					</Center>
 				)}
-				<ScrollArea
-					pos="absolute"
-					viewportRef={scrollRef}
-					inset={0}
-				>
-					<Box
-						mx="auto"
-						maw={900}
-						pb={96}
-					>
-						<Group
-							wrap="nowrap"
-							align="start"
-						>
-							<Box flex={1}>
-								<PrimaryTitle>Sidekick</PrimaryTitle>
-								<Text fz="lg">
-									Chat with Sidekick, your personal Surreal assistant designed to
-									answer your database questions.
-								</Text>
-
-								<Badge
-									mt="sm"
-									color="orange"
-									variant="light"
-									tt="unset"
-									fw="unset"
-									lts="unset"
-								>
-									Sidekick is still in beta, responses may be inaccurate.
-								</Badge>
-							</Box>
-							{!isResponding && conversation.length > 1 && (
-								<ActionButton
-									label="Reset chat"
-									variant="subtle"
-									size="lg"
-									onClick={clearChatSession}
-								>
-									<Icon
-										path={iconReset}
-										size="lg"
-									/>
-								</ActionButton>
-							)}
-						</Group>
-						<Stack
-							mt={42}
-							gap={42}
-						>
-							{conversation.map((message, i) => (
-								<ChatMessageLazy
-									message={message}
-									profile={profile}
-									lastResponse={lastResponse}
-									isResponding={isResponding}
-									isLight={isLight}
-									key={i}
-								/>
-							))}
-						</Stack>
-					</Box>
-				</ScrollArea>
 			</Box>
-			<Group
+			<Box
 				maw={900}
 				w="100%"
 				style={{
@@ -212,8 +264,14 @@ export function ChatPage() {
 						</ActionIcon>
 					}
 				/>
-			</Group>
-			<Text mb="md">You are chatting with an AI assistant, responses may be inaccurate.</Text>
+				<Text
+					mt="sm"
+					ta="center"
+					c="slate"
+				>
+					You are chatting with an AI assistant, responses may be inaccurate.
+				</Text>
+			</Box>
 		</Stack>
 	);
 }

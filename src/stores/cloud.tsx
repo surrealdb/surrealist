@@ -39,6 +39,7 @@ export type CloudStore = {
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
+	selectedOrganization: string;
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
 	isProvisioning: boolean;
@@ -54,6 +55,7 @@ export type CloudStore = {
 	setAccountProfile: (profile: CloudProfile) => void;
 	setIsSupported: (supported: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
+	setSelectedOrganization: (id: string) => void;
 	setSessionExpired: (expired: boolean) => void;
 	setProvisioning: (instance: CloudInstance) => void;
 	finishProvisioning: () => void;
@@ -77,12 +79,13 @@ export const useCloudStore = create<CloudStore>()(
 		instanceVersions: [],
 		regions: [],
 		organizations: [],
+		selectedOrganization: "",
 		billingCountries: [],
 		sessionExpired: false,
 		isProvisioning: false,
 		isProvisionDone: false,
 		provisioning: null,
-		chatConversation: newConversation(),
+		chatConversation: [],
 		chatLastResponse: "",
 
 		setLoading: () => set({ authState: "loading" }),
@@ -116,6 +119,11 @@ export const useCloudStore = create<CloudStore>()(
 			set({
 				authState: "authenticated",
 				...values,
+			}),
+
+		setSelectedOrganization: (id) =>
+			set({
+				selectedOrganization: id,
 			}),
 
 		clearSession: () =>
@@ -168,20 +176,8 @@ export const useCloudStore = create<CloudStore>()(
 
 		clearChatSession: () =>
 			set({
-				chatConversation: newConversation(),
+				chatConversation: [],
 				chatLastResponse: "",
 			}),
 	})),
 );
-
-function newConversation(): CloudChatMessage[] {
-	return [
-		{
-			id: newId(),
-			sender: "assistant",
-			content: "Hello! How can I help you today?",
-			loading: false,
-			thinking: "",
-		},
-	];
-}

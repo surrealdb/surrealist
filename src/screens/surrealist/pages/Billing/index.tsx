@@ -10,6 +10,7 @@ import {
 	LoadingOverlay,
 	Paper,
 	ScrollArea,
+	Select,
 	SimpleGrid,
 	Skeleton,
 	Stack,
@@ -47,6 +48,7 @@ import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
 import { measureComputeCost } from "~/util/cloud";
 import { openBillingDetails } from "../../cloud-panel/modals/billing";
 import { Section } from "../../cloud-panel/components/Section";
+import { useCloudStore } from "~/stores/cloud";
 
 function isCouponIndefinite(coupon: CloudCoupon) {
 	return new Date(coupon.expires_at).getFullYear() === 1;
@@ -94,7 +96,10 @@ function BillingPlan({ name, description }: BillingPlanProps) {
 }
 
 export function BillingPage() {
+	const { setSelectedOrganization } = useCloudStore.getState();
+
 	const organization = useOrganization();
+	const organizations = useCloudStore((state) => state.organizations);
 	const billingQuery = useCloudBillingQuery(organization?.id);
 	const paymentQuery = useCloudPaymentsQuery(organization?.id);
 	const invoiceQuery = useCloudInvoicesQuery(organization?.id);
@@ -197,7 +202,23 @@ export function BillingPage() {
 					gap={42}
 					mx="auto"
 					maw={900}
+					mt={72}
 				>
+					<Group>
+						<Box>
+							<PrimaryTitle>Cloud Billing</PrimaryTitle>
+							<Text fz="xl">View and manage your billing information</Text>
+						</Box>
+						<Spacer />
+						<Select
+							value={organization?.id ?? ""}
+							onChange={setSelectedOrganization as any}
+							data={organizations.map((org) => ({
+								value: org.id,
+								label: org.name,
+							}))}
+						/>
+					</Group>
 					<Section
 						title="Your plan"
 						description="The plan active for this organization"
