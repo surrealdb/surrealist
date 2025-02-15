@@ -10,16 +10,13 @@ import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { __throw, showError } from "~/util/helpers";
 import { ProvisionDetailsStep } from "./steps/1_details";
-import { ProvisionRegionsStep } from "./steps/2_regions";
-import { ProvisionCategoryStep } from "./steps/3_category";
-import { ProvisionInstanceTypesStep } from "./steps/4_type";
-import { ProvisionComputeUnitsStep } from "./steps/5_units";
-import { ProvisionFinalizeStep } from "./steps/6_finalize";
+import { ProvisionCategoryStep } from "./steps/2_category";
+import { ProvisionInstanceTypesStep } from "./steps/3_type";
+import { ProvisionComputeUnitsStep } from "./steps/4_units";
+import { ProvisionFinalizeStep } from "./steps/5_finalize";
 import type { ProvisionConfig, ProvisionStepProps } from "./types";
 import { fetchAPI } from "~/cloud/api";
-import { useAbsoluteLocation, useSearchParams } from "~/hooks/routing";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Text } from "@mantine/core";
+import { useAbsoluteLocation } from "~/hooks/routing";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
@@ -32,7 +29,6 @@ const DEFAULT: ProvisionConfig = {
 
 const PROVISION_STEPS = [
 	ProvisionDetailsStep,
-	ProvisionRegionsStep,
 	ProvisionCategoryStep,
 	ProvisionInstanceTypesStep,
 	ProvisionComputeUnitsStep,
@@ -92,7 +88,7 @@ export function ProvisionPage() {
 	});
 
 	const nextStep = useStable((to?: number) => {
-		if (step === 5) {
+		if (step === 4) {
 			provisionInstance();
 			return;
 		}

@@ -44,10 +44,7 @@ export function ProvisionInstanceTypesStep({
 
 	return (
 		<Stack>
-			<StepTitle
-				title="Instance Type"
-				description="Choose how many resources you need for your instance"
-			/>
+			<StepTitle description="Choose how many resources you need for your instance" />
 
 			{!hasBilling && details.category !== "free" && (
 				<Alert

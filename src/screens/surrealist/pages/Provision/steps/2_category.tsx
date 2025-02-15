@@ -33,10 +33,7 @@ export function ProvisionCategoryStep({
 
 	return (
 		<Stack>
-			<StepTitle
-				title="Category"
-				description="Select a category that best aligns with your project's goals"
-			/>
+			<StepTitle description="Select a use case that best aligns with your instance" />
 
 			{organization && (
 				<CategoryPicker

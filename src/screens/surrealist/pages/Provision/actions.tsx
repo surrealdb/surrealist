@@ -1,22 +1,14 @@
-import { Box, Button, Group, Text } from "@mantine/core";
+import { Badge, Box, Button, Group, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { iconCheck, iconChevronLeft, iconChevronRight } from "~/util/icons";
 
-export function StepTitle({ title, description }: { title: string; description: string }) {
+export function StepTitle({ description }: { description: string }) {
 	return (
 		<Box mb="xl">
-			<Group gap={2}>
-				<PrimaryTitle>New Instance</PrimaryTitle>
-				<Icon
-					path={iconChevronRight}
-					size="lg"
-					c="bright"
-				/>
-				<PrimaryTitle>{title}</PrimaryTitle>
-			</Group>
+			<PrimaryTitle>Provision Instance</PrimaryTitle>
 			<Text fz="xl">{description}</Text>
 		</Box>
 	);
@@ -46,7 +38,7 @@ export function StepActions({ step, onPrevious, onContinue, disabled }: StepActi
 				onClick={handlePrevious}
 				leftSection={<Icon path={iconChevronLeft} />}
 			>
-				{willExit ? "Close" : "Previous"}
+				{willExit ? "Close" : "Previous step"}
 			</Button>
 			<Spacer />
 			<Button
@@ -57,7 +49,7 @@ export function StepActions({ step, onPrevious, onContinue, disabled }: StepActi
 				onClick={handleContinue}
 				rightSection={<Icon path={willCreate ? iconCheck : iconChevronRight} />}
 			>
-				{willCreate ? "Create" : "Continue"}
+				{willCreate ? "Create" : "Next step"}
 			</Button>
 		</Group>
 	);

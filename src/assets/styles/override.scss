@@ -254,7 +254,8 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-InputWrapper-description {
-	font-size: var(--mantine-font-size-xs);
+	font-size: var(--mantine-font-size-sm);
+	color: var(--mantine-color-text);
 }
 
 .mantine-InputWrapper-label {
