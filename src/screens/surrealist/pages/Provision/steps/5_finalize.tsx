@@ -32,10 +32,7 @@ export function ProvisionFinalizeStep({
 
 	return (
 		<Stack>
-			<StepTitle
-				title="Confirm"
-				description="Please confirm the configuration of your new instance"
-			/>
+			<StepTitle description="Please confirm the configuration of your new instance" />
 
 			<Paper
 				p="lg"

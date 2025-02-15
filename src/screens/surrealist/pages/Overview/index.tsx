@@ -12,6 +12,7 @@ import {
 	Box,
 	Button,
 	Center,
+	Divider,
 	Group,
 	Image,
 	ScrollArea,
@@ -189,31 +190,6 @@ export function OverviewPage() {
 						/>
 					</SimpleGrid>
 
-					{/* <Group mt={64}>
-						<PrimaryTitle>Cloud Instances</PrimaryTitle>
-						<Spacer />
-						{authState === "authenticated" ? (
-							<Button
-								size="xs"
-								variant="gradient"
-								rightSection={<Icon path={iconPlus} />}
-								onClick={createConnection}
-							>
-								Create instance
-							</Button>
-						) : (
-							<Button
-								size="xs"
-								variant="gradient"
-								rightSection={<Icon path={iconChevronRight} />}
-								loading={authState === "loading"}
-								onClick={openCloudAuthentication}
-							>
-								Sign in
-							</Button>
-						)}
-					</Group> */}
-
 					{cloudSections.map(({ organization, instances }) => (
 						<Fragment key={organization.id}>
 							<Group mt="lg">
@@ -254,43 +230,48 @@ export function OverviewPage() {
 						</Fragment>
 					))}
 
-					<PrimaryTitle mt={52}>Surreal Cloud</PrimaryTitle>
+					<Divider my={24} />
 
-					{authState === "authenticated" ? (
-						<SimpleGrid
-							cols={{
-								xs: 1,
-								sm: 2,
-							}}
+					<PrimaryTitle>Surreal Cloud</PrimaryTitle>
+
+					{authState !== "unauthenticated" ? (
+						<Skeleton
+							visible={authState !== "authenticated"}
+							width="100%"
 						>
-							<StartResource
-								title="Manage Billing"
-								subtitle="View and manage your billing information"
-								icon={iconCreditCard}
-								onClick={() => navigate("/billing")}
-							/>
-							<StartResource
-								title="Referral Program"
-								subtitle="Earn rewards for referring friends to Surreal Cloud"
-								icon={iconReferral}
-								onClick={() => navigate("/referrals")}
-							/>
-						</SimpleGrid>
-					) : (
-						authState === "unauthenticated" && (
-							<StartAction
-								title="Explore Surreal Cloud"
-								subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
-								icon={iconCloud}
-								onClick={openCloudAuthentication}
-								className={classes.cloudAction}
+							<SimpleGrid
+								cols={{
+									xs: 1,
+									sm: 2,
+								}}
 							>
-								<Image
-									src={splashUrl}
-									className={classes.cloudImage}
+								<StartResource
+									title="Manage Billing"
+									subtitle="View and manage your billing information"
+									icon={iconCreditCard}
+									onClick={() => navigate("/billing")}
 								/>
-							</StartAction>
-						)
+								<StartResource
+									title="Referral Program"
+									subtitle="Earn rewards for referring friends to Surreal Cloud"
+									icon={iconReferral}
+									onClick={() => navigate("/referrals")}
+								/>
+							</SimpleGrid>
+						</Skeleton>
+					) : (
+						<StartAction
+							title="Explore Surreal Cloud"
+							subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
+							icon={iconCloud}
+							onClick={openCloudAuthentication}
+							className={classes.cloudAction}
+						>
+							<Image
+								src={splashUrl}
+								className={classes.cloudImage}
+							/>
+						</StartAction>
 					)}
 
 					<PrimaryTitle mt={52}>Resources</PrimaryTitle>

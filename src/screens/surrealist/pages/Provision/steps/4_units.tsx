@@ -23,10 +23,7 @@ export function ProvisionComputeUnitsStep({
 
 	return (
 		<Stack>
-			<StepTitle
-				title="Compute Nodes"
-				description="Customise the number of compute nodes for your instance"
-			/>
+			<StepTitle description="Customise the number of compute nodes for your instance" />
 
 			<Alert
 				color="blue"

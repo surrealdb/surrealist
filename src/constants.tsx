@@ -54,6 +54,7 @@ import {
 	iconExplorer,
 	iconFunction,
 	iconGraphql,
+	iconHelp,
 	iconHomePlus,
 	iconLive,
 	iconModuleML,
@@ -206,7 +207,7 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 	support: {
 		id: "support",
 		name: "Support",
-		icon: iconEmail,
+		icon: iconHelp,
 	},
 	share: {
 		id: "share",
@@ -217,6 +218,11 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "university",
 		name: "University",
 		icon: iconUniversity,
+	},
+	provision: {
+		id: "provision",
+		name: "Provision Instance",
+		icon: iconPlus,
 	},
 };
 
