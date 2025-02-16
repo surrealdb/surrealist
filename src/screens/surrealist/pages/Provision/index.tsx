@@ -1,48 +1,71 @@
 import classes from "./style.module.scss";
+import cloudIconUrl from "~/assets/images/cloud-icon.webp";
 
-import { Box, ScrollArea } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Collapse,
+	Divider,
+	Group,
+	Image,
+	Paper,
+	ScrollArea,
+	Stack,
+} from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
-import { type FC, useState } from "react";
+import { useMemo } from "react";
 import { useImmer } from "use-immer";
-import { useOrganization } from "~/hooks/cloud";
+import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { __throw, showError } from "~/util/helpers";
-import { ProvisionDetailsStep } from "./steps/1_details";
-import { ProvisionCategoryStep } from "./steps/2_category";
-import { ProvisionInstanceTypesStep } from "./steps/3_type";
-import { ProvisionComputeUnitsStep } from "./steps/4_units";
-import { ProvisionFinalizeStep } from "./steps/5_finalize";
-import type { ProvisionConfig, ProvisionStepProps } from "./types";
+import { ProvisionDetailsStep } from "./steps/details";
+import { ProvisionCategoryStep } from "./steps/type";
+import { ProvisionComputeUnitsStep } from "./steps/compute";
+import type { ProvisionConfig } from "./types";
 import { fetchAPI } from "~/cloud/api";
 import { useAbsoluteLocation } from "~/hooks/routing";
+import { TopGlow } from "~/components/TopGlow";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { EstimatedCost } from "../../cloud-panel/components/EstimatedCost";
+import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
+import { iconChevronLeft } from "~/util/icons";
+import { Text } from "@mantine/core";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
 	region: "",
-	category: "",
+	category: "free",
 	type: "",
 	units: 1,
 	version: "",
 };
-
-const PROVISION_STEPS = [
-	ProvisionDetailsStep,
-	ProvisionCategoryStep,
-	ProvisionInstanceTypesStep,
-	ProvisionComputeUnitsStep,
-	ProvisionFinalizeStep,
-] satisfies FC<ProvisionStepProps>[];
 
 export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
 	const [, navigate] = useAbsoluteLocation();
 
 	const organization = useOrganization();
-	const [step, setStep] = useState(0);
 	const [details, setDetails] = useImmer(DEFAULT);
+	const instanceTypes = useAvailableInstanceTypes();
 	const client = useQueryClient();
+
+	const instanceType = useMemo(() => {
+		return instanceTypes.find((t) => t.slug === details.type);
+	}, [details.type, instanceTypes]);
+
+	const disabled = useMemo(() => {
+		if (!details.name) return true;
+		if (!details.region) return true;
+		if (!details.type) return true;
+		if (!details.version) return true;
+
+		if (details.type !== "free" && !details.units) return true;
+
+		return false;
+	}, [details]);
 
 	const provisionInstance = useStable(async () => {
 		try {
@@ -79,30 +102,13 @@ export function ProvisionPage() {
 		}
 	});
 
-	const previousStep = useStable((to?: number) => {
-		if (step === 0) {
-			navigate("/overview");
-		} else {
-			setStep(to ?? step - 1);
-		}
-	});
-
-	const nextStep = useStable((to?: number) => {
-		if (step === 4) {
-			provisionInstance();
-			return;
-		}
-
-		setStep(to ?? step + 1);
-	});
-
-	const ProvisionStep = PROVISION_STEPS[step];
-
 	return (
 		<Box
 			flex={1}
 			pos="relative"
 		>
+			<TopGlow offset={200} />
+
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
@@ -110,23 +116,88 @@ export function ProvisionPage() {
 				inset={0}
 				className={classes.scrollArea}
 				viewportProps={{
-					style: { paddingBottom: 75 },
+					style: { paddingBlock: 75 },
 				}}
 			>
-				<Box
+				<Stack
 					mx="auto"
-					maw={600}
-					pb={96}
-					mt={72}
+					maw={650}
+					gap="xl"
 				>
-					<ProvisionStep
-						step={step}
+					<Box>
+						<PrimaryTitle>New instance</PrimaryTitle>
+						<Text fz="xl">Provision a new managed Surreal Cloud instance</Text>
+					</Box>
+
+					<ProvisionDetailsStep
 						details={details}
 						setDetails={setDetails}
-						onPrevious={previousStep}
-						onContinue={nextStep}
 					/>
-				</Box>
+
+					<Box mt="xl">
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Instance type
+						</Text>
+						<Text>Configure system configuration</Text>
+					</Box>
+
+					<ProvisionCategoryStep
+						details={details}
+						setDetails={setDetails}
+					/>
+
+					<Box mt="xl">
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Compute nodes
+						</Text>
+						<Text>Allocate additional compute nodes to your instance</Text>
+					</Box>
+
+					<ProvisionComputeUnitsStep
+						details={details}
+						setDetails={setDetails}
+					/>
+
+					{instanceType && (
+						<Collapse in={!!instanceType}>
+							<Divider my="md" />
+							<EstimatedCost
+								type={instanceType}
+								units={details.units}
+							/>
+						</Collapse>
+					)}
+
+					<Group mt="xl">
+						<Button
+							w={150}
+							color="slate"
+							variant="light"
+							onClick={() => navigate("/overview")}
+							leftSection={<Icon path={iconChevronLeft} />}
+						>
+							Back
+						</Button>
+						<Spacer />
+						<Button
+							w={150}
+							type="submit"
+							variant="gradient"
+							disabled={disabled}
+							onClick={provisionInstance}
+						>
+							Create instance
+						</Button>
+					</Group>
+				</Stack>
 			</ScrollArea>
 		</Box>
 	);

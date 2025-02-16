@@ -45,6 +45,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { StartResource } from "../Overview/content";
 import { shuffle } from "radash";
 import { Spacer } from "~/components/Spacer";
+import { TopGlow } from "~/components/TopGlow";
 
 const QUESTIONS = [
 	{ icon: iconCreditCard, title: "How do I manage Cloud billing?" },
@@ -126,6 +127,8 @@ export function ChatPage() {
 			w="100%"
 			align="center"
 		>
+			<TopGlow offset={200} />
+
 			<Box
 				flex={1}
 				w="100%"

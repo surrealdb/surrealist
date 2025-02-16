@@ -2,7 +2,6 @@ import classes from "./style.module.scss";
 
 import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import glowUrl from "~/assets/images/gradient-glow.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 import cloudIconUrl from "~/assets/images/cloud-icon.webp";
@@ -57,11 +56,11 @@ import { useCloudInstanceList } from "../../../../cloud/hooks/instances";
 import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { adapter } from "~/adapter";
-import { useLocation } from "wouter";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConfigStore } from "~/stores/config";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useAbsoluteLocation } from "~/hooks/routing";
+import { TopGlow } from "~/components/TopGlow";
 
 export function OverviewPage() {
 	const { setSelectedOrganization } = useCloudStore.getState();
@@ -93,12 +92,7 @@ export function OverviewPage() {
 			flex={1}
 			pos="relative"
 		>
-			<div
-				className={classes.glow}
-				style={{
-					backgroundImage: `url(${glowUrl})`,
-				}}
-			/>
+			<TopGlow />
 
 			<ScrollArea
 				pos="absolute"
@@ -107,7 +101,7 @@ export function OverviewPage() {
 				<Stack
 					className={classes.content}
 					justify="center"
-					maw={1200}
+					maw={1100}
 					px="xl"
 					mx="auto"
 					py={96}

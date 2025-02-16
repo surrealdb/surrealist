@@ -1,22 +1,16 @@
-import { Divider, Grid, Group, Image, Paper, Select, Stack, Text, TextInput } from "@mantine/core";
+import { Divider, Group, Image, Paper, Select, Stack, TextInput } from "@mantine/core";
 import { type ChangeEvent, useLayoutEffect } from "react";
 import { useAvailableInstanceVersions, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { StepActions, StepTitle } from "../actions";
 import type { ProvisionStepProps } from "../types";
 import { useCloudStore } from "~/stores/cloud";
 import { useOrganizationSelection } from "~/cloud/hooks/organizations";
 import { REGION_FLAGS } from "~/constants";
 import { Icon } from "~/components/Icon";
 import { iconCheck } from "~/util/icons";
+import { Text } from "@mantine/core";
 
-export function ProvisionDetailsStep({
-	step,
-	details,
-	setDetails,
-	onPrevious,
-	onContinue,
-}: ProvisionStepProps) {
+export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps) {
 	const { setSelectedOrganization } = useCloudStore.getState();
 
 	const organization = useOrganization();
@@ -69,76 +63,66 @@ export function ProvisionDetailsStep({
 	}, [details.region, regions, setDetails]);
 
 	return (
-		<Stack>
-			<StepTitle description="Please configure your new Cloud instance" />
-
-			<Paper>
-				<Stack
-					p="xl"
-					gap="xl"
-				>
-					<TextInput
-						label="Instance name"
-						placeholder="Instance name"
-						value={details.name}
-						onChange={updateName}
-						autoFocus
-					/>
-					<Select
-						label="Organization"
-						data={organizations}
-						value={organization?.id ?? ""}
-						onChange={setSelectedOrganization as any}
-					/>
-				</Stack>
-				<Divider my="xs" />
-				<Stack
-					p="xl"
-					gap="xl"
-				>
-					<Select
-						label="Version"
-						description="Select the version of SurrealDB you would like to use"
-						data={versionList}
-						value={details.version}
-						onChange={updateVersion}
-					/>
-					<Select
-						label="Region"
-						description="Choose a physical location for your instance"
-						data={regionList}
-						value={details.region}
-						onChange={updateRegion}
-						leftSection={
+		<Paper>
+			<Stack
+				p="xl"
+				gap="xl"
+			>
+				<TextInput
+					label="Instance name"
+					placeholder="Instance name"
+					value={details.name}
+					onChange={updateName}
+					autoFocus
+				/>
+				<Select
+					label="Organization"
+					data={organizations}
+					value={organization?.id ?? ""}
+					onChange={setSelectedOrganization as any}
+				/>
+			</Stack>
+			<Divider my="xs" />
+			<Stack
+				p="xl"
+				gap="xl"
+			>
+				<Select
+					label="Version"
+					description="Select the version of SurrealDB you would like to use"
+					data={versionList}
+					value={details.version}
+					onChange={updateVersion}
+				/>
+				<Select
+					label="Region"
+					description="Choose a physical location for your instance"
+					data={regionList}
+					value={details.region}
+					onChange={updateRegion}
+					leftSection={
+						<Image
+							src={REGION_FLAGS[details.region]}
+							w={18}
+						/>
+					}
+					renderOption={(org) => (
+						<Group>
 							<Image
-								src={REGION_FLAGS[details.region]}
-								w={18}
+								src={REGION_FLAGS[org.option.value]}
+								w={24}
 							/>
-						}
-						renderOption={(org) => (
-							<Group>
-								<Image
-									src={REGION_FLAGS[org.option.value]}
-									w={24}
+							{org.option.label}
+							{org.checked && (
+								<Icon
+									path={iconCheck}
+									c="bright"
 								/>
-								{org.option.label}
-								{org.checked && (
-									<Icon
-										path={iconCheck}
-										c="bright"
-									/>
-								)}
-							</Group>
-						)}
-					/>
-				</Stack>
-			</Paper>
-			<StepActions
-				step={step}
-				onPrevious={onPrevious}
-				onContinue={onContinue}
-				disabled={!details.name || !details.version}
-			/>
-		</Stack>
+							)}
+						</Group>
+					)}
+				/>
+			</Stack>
+		</Paper>
 	);
 }
