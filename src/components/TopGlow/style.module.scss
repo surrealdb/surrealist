@@ -1,0 +1,15 @@
+.glow {
+	background-position: top center;
+	background-repeat: no-repeat;
+	background-size: min(1300px, 100vw);
+	height: 650px;
+	z-index: 0;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: var(--offset);
+
+	@include light {
+		opacity: 0.5;
+	}
+}

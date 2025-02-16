@@ -3,6 +3,7 @@ import { HelpCenter } from "~/components/HelpCenter";
 import classes from "./style.module.scss";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Text } from "@mantine/core";
+import { TopGlow } from "~/components/TopGlow";
 
 export function SupportPage() {
 	return (
@@ -10,18 +11,21 @@ export function SupportPage() {
 			flex={1}
 			pos="relative"
 		>
+			<TopGlow offset={250} />
+
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
+				viewportProps={{
+					style: { paddingBlock: 75 },
+				}}
 			>
 				<Stack
 					mx="auto"
-					maw={900}
-					pb={96}
-					mt={72}
+					maw={1100}
 					h="100%"
 				>
 					<Box>
@@ -30,8 +34,6 @@ export function SupportPage() {
 					</Box>
 					<Center
 						flex={1}
-						maw={900}
-						mx="auto"
 						pb={75}
 						pt="xl"
 					>

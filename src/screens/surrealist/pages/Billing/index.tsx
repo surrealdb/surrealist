@@ -49,6 +49,7 @@ import { measureComputeCost } from "~/util/cloud";
 import { openBillingDetails } from "../../cloud-panel/modals/billing";
 import { Section } from "../../cloud-panel/components/Section";
 import { useCloudStore } from "~/stores/cloud";
+import { TopGlow } from "~/components/TopGlow";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -163,6 +164,8 @@ export function BillingPage() {
 			flex={1}
 			pos="relative"
 		>
+			<TopGlow offset={200} />
+
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
@@ -176,8 +179,8 @@ export function BillingPage() {
 				<Stack
 					gap={42}
 					mx="auto"
-					maw={900}
-					mt={72}
+					maw={1100}
+					mt={75}
 				>
 					<Group>
 						<Box>

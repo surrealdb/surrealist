@@ -3,18 +3,6 @@
 	z-index: 0;
 }
 
-.glow {
-	background-position: top center;
-	background-repeat: no-repeat;
-	background-size: min(1300px, 100vw);
-	height: 650px;
-	z-index: 0;
-
-	@include light {
-		opacity: 0.5;
-	}
-}
-
 .start-box {
 	position: relative;
 	overflow: hidden;

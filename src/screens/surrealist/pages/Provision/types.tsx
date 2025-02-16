@@ -10,9 +10,6 @@ export interface ProvisionConfig {
 }
 
 export interface ProvisionStepProps {
-	step: number;
-	onPrevious: (to?: number) => void;
-	onContinue: (to?: number) => void;
 	details: ProvisionConfig;
 	setDetails: Updater<ProvisionConfig>;
 }

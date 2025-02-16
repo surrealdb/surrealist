@@ -1,7 +1,5 @@
 import classes from "./style.module.scss";
 
-import glowUrl from "~/assets/images/gradient-glow.webp";
-
 import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
 import logoDarkUrl from "~/assets/images/dark/referral-logo.png";
 import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
@@ -44,6 +42,7 @@ import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
+import { TopGlow } from "~/components/TopGlow";
 
 const REWARDS = [1, 10, 25, 100, 500];
 
@@ -56,10 +55,7 @@ interface RewardProps extends Omit<SlabProps, "title"> {
 
 function Reward({ title, description, icon, active, ...other }: RewardProps) {
 	return (
-		<Slab
-			h={170}
-			{...other}
-		>
+		<Slab {...other}>
 			<Box
 				p="xl"
 				c={active ? "white" : undefined}
@@ -112,12 +108,8 @@ export function ReferralPage() {
 			flex={1}
 			pos="relative"
 		>
-			<div
-				className={classes.glow}
-				style={{
-					backgroundImage: `url(${glowUrl})`,
-				}}
-			/>
+			<TopGlow offset={200} />
+
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
@@ -130,17 +122,21 @@ export function ReferralPage() {
 			>
 				<Stack
 					w="100%"
-					maw={900}
+					maw={1100}
 					mx="auto"
 					gap={38}
 					pos="relative"
 				>
-					<Image
+					<Box>
+						<PrimaryTitle>Referral Program</PrimaryTitle>
+						<Text fz="xl">Earn rewards for referring your friends and contacts</Text>
+					</Box>
+					{/* <Image
 						src={isLight ? logoLightUrl : logoDarkUrl}
 						alt="Surreal Cloud"
 						mx="auto"
 						w={450}
-					/>
+					/> */}
 
 					<Slab
 						p="xl"
@@ -174,9 +170,10 @@ export function ReferralPage() {
 								<Box>
 									<Label>Your referral link</Label>
 									<Skeleton visible={referralCodeQuery.isPending}>
-										<Group>
+										<Group wrap="nowrap">
 											<TextInput
-												flex={1}
+												w="100%"
+												maw={400}
 												value={referralLink}
 												readOnly
 												onFocus={ON_FOCUS_SELECT}
@@ -209,6 +206,7 @@ export function ReferralPage() {
 												<Button
 													variant="gradient"
 													onClick={() => navigator.share(shareOptions)}
+													style={{ flexShrink: 0 }}
 												>
 													Share
 												</Button>

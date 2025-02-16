@@ -158,7 +158,12 @@ body.mod .cm-record-link:hover {
 	&[data-active] {
 		background: var(--surrealist-gradient);
 		background-origin: border-box;
-		color: var(--mantine-color-white);
+		border: 1px solid rgba(255, 255, 255, 0.3);
+		border-radius: var(--mantine-radius-xs);
+
+		@include light {
+			border: none;
+		}
 	}
 }
 
