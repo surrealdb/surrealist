@@ -200,8 +200,8 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Sidekick",
 		icon: iconSidekick,
 	},
-	referral: {
-		id: "referral",
+	referrals: {
+		id: "referrals",
 		name: "Referrals",
 		icon: iconReferral,
 	},

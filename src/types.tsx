@@ -51,7 +51,7 @@ export type GlobalPage =
 	| "billing"
 	| "chat"
 	| "support"
-	| "referral"
+	| "referrals"
 	| "share"
 	| "university"
 	| "provision";
