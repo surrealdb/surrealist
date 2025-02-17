@@ -113,8 +113,31 @@ export function DashboardView() {
 						spacing="xl"
 					>
 						<ConfigurationBlock instance={details} />
-						<ComputeUsageBlock />
-						<DiskUsageBlock />
+						<ComputeUsageBlock
+							usage={usage}
+							loading={usagePending}
+						/>
+						{/* <DiskUsageBlock
+							usage={usage}
+							instance={details}
+							loading={usagePending}
+						/>
+						<BackupsBlock /> */}
+					</SimpleGrid>
+
+					<SimpleGrid
+						cols={3}
+						spacing="xl"
+					>
+						<ComputeUsageBlock
+							usage={usage}
+							loading={usagePending}
+						/>
+						<DiskUsageBlock
+							usage={usage}
+							instance={details}
+							loading={usagePending}
+						/>
 						<BackupsBlock />
 					</SimpleGrid>
 				</Stack>
