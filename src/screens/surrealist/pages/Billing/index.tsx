@@ -334,7 +334,7 @@ export function BillingPage() {
 										variant="light"
 										onClick={openBillingDetails}
 									>
-										Update
+										Edit
 									</Button>
 								</Group>
 								<Divider my="md" />
@@ -406,7 +406,7 @@ export function BillingPage() {
 											onClick={requestPaymentUrl}
 											disabled={!organization?.billing_info}
 										>
-											Update
+											Edit
 										</Button>
 									</Tooltip>
 								</Group>

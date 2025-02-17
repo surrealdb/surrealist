@@ -1,4 +1,15 @@
-import { Paper, Group, Divider, Text, Box, Progress, ThemeIcon, Stack } from "@mantine/core";
+import { DonutChart } from "@mantine/charts";
+import {
+	Paper,
+	Group,
+	Divider,
+	Text,
+	Box,
+	Progress,
+	ThemeIcon,
+	Stack,
+	Center,
+} from "@mantine/core";
 import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -45,7 +56,37 @@ export function DiskUsageBlock({ usage, instance, loading }: DiskUsageBlockProps
 				</Text>
 			</Group>
 			<Divider my="md" />
-			<Group my="md">
+			<Box pos="relative">
+				<DonutChart
+					mt="sm"
+					size={180}
+					mx="auto"
+					thickness={8}
+					paddingAngle={8}
+					startAngle={90}
+					endAngle={-270}
+					data={[
+						{ name: "Used", value: 200, color: "blue" },
+						{ name: "Total", value: 300, color: "slate" },
+					]}
+				/>
+				<Center
+					pos="absolute"
+					inset={0}
+				>
+					<Box ta="center">
+						<Text
+							c="bright"
+							fw={600}
+							fz={20}
+						>
+							{storageUsageMB}
+						</Text>
+						<Text fz="sm">3.6 GB remaining</Text>
+					</Box>
+				</Center>
+			</Box>
+			{/* <Group my="md">
 				<Box flex={1}>
 					<Text
 						c="bright"
@@ -73,7 +114,7 @@ export function DiskUsageBlock({ usage, instance, loading }: DiskUsageBlockProps
 
 			<Text mt="sm">
 				You have used {storageFrac.toFixed(2)}% of your {storageMaxMB} storage limit
-			</Text>
+			</Text> */}
 		</Paper>
 	);
 }

@@ -1,12 +1,21 @@
-import { Image, ThemeIcon } from "@mantine/core";
+import { Button, Image, ThemeIcon, Tooltip } from "@mantine/core";
 import { Paper, Group, Divider, Text, Stack } from "@mantine/core";
 import { capitalize } from "radash";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { REGION_FLAGS } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
-import { iconDatabase, iconEdit, iconMarker, iconMemory, iconTag, iconTune } from "~/util/icons";
+import {
+	iconCog,
+	iconDatabase,
+	iconEdit,
+	iconMarker,
+	iconMemory,
+	iconTag,
+	iconTune,
+} from "~/util/icons";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -36,6 +45,14 @@ export function ConfigurationBlock({ instance }: ConfigurationBlockProps) {
 				>
 					Configuration
 				</Text>
+				<Spacer />
+				<Button
+					color="slate"
+					variant="light"
+					loading={false}
+				>
+					Edit
+				</Button>
 			</Group>
 			<Divider my="md" />
 			<Stack gap="xs">
@@ -81,16 +98,6 @@ export function ConfigurationBlock({ instance }: ConfigurationBlockProps) {
 						<Text c="bright">
 							{instance?.type.display_name} {`(${categoryName})`}
 						</Text>
-						<ActionButton
-							label="Edit"
-							size="sm"
-							variant="subtle"
-						>
-							<Icon
-								path={iconEdit}
-								size="sm"
-							/>
-						</ActionButton>
 					</Group>
 				</Group>
 				<Group>
@@ -111,16 +118,6 @@ export function ConfigurationBlock({ instance }: ConfigurationBlockProps) {
 						</ThemeIcon>
 						<Text fw={600}>Version: </Text>
 						<Text c="bright">SurrealDB {instance?.version}</Text>
-						<ActionButton
-							label="Edit"
-							size="sm"
-							variant="subtle"
-						>
-							<Icon
-								path={iconEdit}
-								size="sm"
-							/>
-						</ActionButton>
 					</Group>
 				</Group>
 				<Group>
@@ -141,16 +138,6 @@ export function ConfigurationBlock({ instance }: ConfigurationBlockProps) {
 						</ThemeIcon>
 						<Text fw={600}>Disk size: </Text>
 						<Text c="bright">8.0 GB</Text>
-						<ActionButton
-							label="Edit"
-							size="sm"
-							variant="subtle"
-						>
-							<Icon
-								path={iconEdit}
-								size="sm"
-							/>
-						</ActionButton>
 					</Group>
 				</Group>
 			</Stack>

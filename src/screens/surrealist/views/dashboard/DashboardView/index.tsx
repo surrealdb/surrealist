@@ -1,5 +1,15 @@
 import classes from "./style.module.scss";
-import { ActionIcon, CopyButton, Group, SimpleGrid, Text, ThemeIcon } from "@mantine/core";
+import {
+	ActionIcon,
+	Alert,
+	Button,
+	CopyButton,
+	Group,
+	Paper,
+	SimpleGrid,
+	Text,
+	ThemeIcon,
+} from "@mantine/core";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { Redirect } from "wouter";
@@ -9,13 +19,14 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useConnection } from "~/hooks/connection";
-import { iconCheck, iconCloud, iconCopy } from "~/util/icons";
+import { iconCheck, iconChevronRight, iconCloud, iconCopy, iconDownload } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { BackupsBlock } from "../BackupsBlock";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { ConfigurationBlock } from "../ConfigurationBlock";
+import { ConnectBlock } from "../ConnectBlock";
 
 export function DashboardView() {
 	const [isCloud, instance, name, icon] = useConnection((c) => [
@@ -57,36 +68,28 @@ export function DashboardView() {
 					h="100%"
 					gap="xl"
 				>
-					<Group gap="lg">
-						<ThemeIcon
-							radius="sm"
-							size={52}
-							color="slate"
-							variant="light"
-						>
-							<Icon
-								path={icon ? USER_ICONS[icon] : iconCloud}
-								size="xl"
-							/>
-						</ThemeIcon>
+					<Group
+						gap="lg"
+						mb={38}
+					>
 						<Box>
 							<Group gap="xs">
 								<Group>
-									<PrimaryTitle>{name}</PrimaryTitle>
+									<PrimaryTitle fz={38}>{name}</PrimaryTitle>
+									{isRenamed && (
+										<Text
+											fw={400}
+											fz={38}
+											c="slate"
+										>
+											({details?.name})
+										</Text>
+									)}
 									{details?.state && <StateBadge state={details?.state} />}
 								</Group>
-								{isRenamed && (
-									<Text
-										fw={500}
-										fz="xl"
-										c="slate"
-									>
-										({details?.name})
-									</Text>
-								)}
 							</Group>
 							<Group gap="sm">
-								<Text fz="xl">ID: {instance}</Text>
+								<Text fz="md">{details?.host}</Text>
 								<CopyButton value={instance ?? ""}>
 									{({ copied, copy }) => (
 										<ActionIcon
@@ -107,22 +110,36 @@ export function DashboardView() {
 						</Box>
 					</Group>
 
+					<Alert
+						color="blue"
+						title="Update available"
+						icon={<Icon path={iconDownload} />}
+					>
+						<Box>
+							Your instance can be updated to{" "}
+							<Text
+								span
+								fw={800}
+							>
+								SurrealDB 2.2
+							</Text>
+						</Box>
+						<Button
+							rightSection={<Icon path={iconChevronRight} />}
+							color="blue"
+							size="xs"
+							mt="md"
+						>
+							Update instance
+						</Button>
+					</Alert>
+
 					<SimpleGrid
-						mt={38}
 						cols={2}
 						spacing="xl"
 					>
 						<ConfigurationBlock instance={details} />
-						<ComputeUsageBlock
-							usage={usage}
-							loading={usagePending}
-						/>
-						{/* <DiskUsageBlock
-							usage={usage}
-							instance={details}
-							loading={usagePending}
-						/>
-						<BackupsBlock /> */}
+						<ConnectBlock />
 					</SimpleGrid>
 
 					<SimpleGrid

@@ -1,4 +1,4 @@
-import { Paper, Group, Divider, Text, Stack } from "@mantine/core";
+import { Paper, Group, Divider, Text, Stack, Box, Center } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { CloudMeasurement } from "~/types";
 import { measureComputeHistory, measureComputeTotal } from "~/util/cloud";
@@ -34,14 +34,36 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 				</Text>
 			</Group>
 			<Divider my="md" />
-			<DonutChart
-				h={200}
-				strokeWidth={8}
-				data={[
-					{ name: "Used", value: 200, color: "blue" },
-					{ name: "Total", value: 30, color: "slate" },
-				]}
-			/>
+			<Box pos="relative">
+				<DonutChart
+					mt="sm"
+					size={180}
+					mx="auto"
+					thickness={8}
+					paddingAngle={8}
+					startAngle={90}
+					endAngle={-270}
+					data={[
+						{ name: "Used", value: 200, color: "surreal" },
+						{ name: "Total", value: 300, color: "slate" },
+					]}
+				/>
+				<Center
+					pos="absolute"
+					inset={0}
+				>
+					<Box ta="center">
+						<Text
+							c="bright"
+							fw={600}
+							fz={20}
+						>
+							{computeTotal} hours
+						</Text>
+						<Text fz="sm">Current billing period</Text>
+					</Box>
+				</Center>
+			</Box>
 			{/* <Group my="md">
 				<Box flex={1}>
 					<Text
