@@ -4,10 +4,7 @@ import { iconHistory } from "~/util/icons";
 
 export function BackupsBlock() {
 	return (
-		<Paper
-			p="xl"
-			h={250}
-		>
+		<Paper p="xl">
 			<Group>
 				<Icon
 					path={iconHistory}

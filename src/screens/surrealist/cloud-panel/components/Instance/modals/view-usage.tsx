@@ -153,7 +153,7 @@ function InstanceUsageModal({ instance }: InstanceUsageModalProps) {
 					)}
 				</Group>
 
-				{computeHistory.length > 1 && (
+				{computeHistory.length >= 0 && (
 					<>
 						<Divider my="xl" />
 
