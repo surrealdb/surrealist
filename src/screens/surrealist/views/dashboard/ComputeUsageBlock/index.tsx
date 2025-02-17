@@ -1,8 +1,9 @@
-import { Paper, Group, Divider, Text, Box, Loader, ScrollArea, Stack } from "@mantine/core";
+import { Paper, Group, Divider, Text, Stack } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { CloudMeasurement } from "~/types";
 import { measureComputeHistory, measureComputeTotal } from "~/util/cloud";
 import { iconQuery } from "~/util/icons";
+import { DonutChart } from "@mantine/charts";
 
 export interface ComputeUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
@@ -33,7 +34,15 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 				</Text>
 			</Group>
 			<Divider my="md" />
-			<Group my="md">
+			<DonutChart
+				h={200}
+				strokeWidth={8}
+				data={[
+					{ name: "Used", value: 200, color: "blue" },
+					{ name: "Total", value: 30, color: "slate" },
+				]}
+			/>
+			{/* <Group my="md">
 				<Box flex={1}>
 					<Text
 						c="bright"
@@ -58,8 +67,9 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 						{computeTotal} hours
 					</Text>
 				)}
-			</Group>
-			<Box
+			</Group> */}
+			{/* <Progress */}
+			{/* <Box
 				flex={1}
 				pos="relative"
 			>
@@ -89,7 +99,7 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 						</Group>
 					</Paper>
 				))}
-			</Box>
+			</Box> */}
 		</Paper>
 	);
 }
