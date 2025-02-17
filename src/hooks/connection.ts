@@ -5,8 +5,9 @@ import { useShallow } from "zustand/react/shallow";
 import { SANDBOX, VIEW_PAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
-import { Connection, ViewPage } from "~/types";
+import { Connection, ViewCondition, ViewPage, ViewPageInfo } from "~/types";
 import { useActiveConnection, useActiveView } from "./routing";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 /**
  * Returns whether Surrealist is connected to a database
@@ -57,6 +58,35 @@ export function useView() {
 	const [active] = useActiveView();
 
 	return active ? VIEW_PAGES[active as ViewPage] : null;
+}
+
+/**
+ * Returns a mapping of available views based on the current connection
+ */
+export function useAvailableViews(): Partial<Record<ViewPage, ViewPageInfo>> {
+	const [flags] = useFeatureFlags();
+
+	const [connection, isCloud] = useConnection((c) => [
+		c?.id ?? "",
+		c?.authentication.mode === "cloud",
+	]);
+
+	return useMemo(() => {
+		const draft = { ...VIEW_PAGES } as const;
+		const condition: ViewCondition = {
+			connection,
+			flags,
+			isCloud,
+		}
+
+		for (const { id, disabled } of Object.values(draft)) {
+			if (disabled?.(condition)) {
+				delete draft[id];
+			}
+		}
+
+		return draft;
+	}, [flags, connection, isCloud]);
 }
 
 /**
