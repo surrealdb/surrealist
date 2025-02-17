@@ -4,6 +4,22 @@ import { CloudInstance } from "~/types";
 import { fetchAPI } from "../api";
 
 /**
+ * Fetch instance details
+ */
+export function useCloudInstanceQuery(instance?: string) {
+	const authState = useCloudStore((state) => state.authState);
+
+	return useQuery({
+		queryKey: ["cloud", "instance", instance],
+		refetchInterval: 15_000,
+		enabled: !!instance && authState === "authenticated",
+		queryFn: async () => {
+			return fetchAPI<CloudInstance>(`/instances/${instance}`);
+		},
+	});
+}
+
+/**
  * Fetch organization instances
  */
 export function useCloudOrganizationInstancesQuery(organization?: string) {
