@@ -6,7 +6,7 @@ import { SANDBOX, VIEW_PAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { Connection, ViewCondition, ViewPage, ViewPageInfo } from "~/types";
-import { useActiveConnection, useActiveView } from "./routing";
+import { useConnectionAndView } from "./routing";
 import { useFeatureFlags } from "~/util/feature-flags";
 
 /**
@@ -38,15 +38,15 @@ export function useConnectionList() {
  * @param selector A function to select fields from the connection
  */
 export function useConnection<T>(selector: (con?: Connection) => T): T {
-	const [active] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 
 	return useConfigStore(
 		useShallow((s) => {
-			if (active === SANDBOX) {
+			if (connection === SANDBOX) {
 				return selector(s.sandbox);
 			}
 
-			return selector(s.connections.find((c) => c.id === active));
+			return selector(s.connections.find((c) => c.id === connection));
 		}),
 	);
 }
@@ -55,9 +55,9 @@ export function useConnection<T>(selector: (con?: Connection) => T): T {
  * Returns information about the active connection view
  */
 export function useView() {
-	const [active] = useActiveView();
+	const [, view] = useConnectionAndView();
 
-	return active ? VIEW_PAGES[active as ViewPage] : null;
+	return view ? VIEW_PAGES[view] : null;
 }
 
 /**
@@ -77,7 +77,7 @@ export function useAvailableViews(): Partial<Record<ViewPage, ViewPageInfo>> {
 			connection,
 			flags,
 			isCloud,
-		}
+		};
 
 		for (const { id, disabled } of Object.values(draft)) {
 			if (disabled?.(condition)) {

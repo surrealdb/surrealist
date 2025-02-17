@@ -44,7 +44,7 @@ import { INSTANCE_GROUP, SANDBOX } from "~/constants";
 import { BooleanHandle, useBoolean } from "~/hooks/boolean";
 import { useConnection, useConnectionList } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
-import { useActiveConnection, useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useConnectionNavigator, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
@@ -59,11 +59,11 @@ export function ConnectionsModal() {
 	const [isOpen, openedHandle] = useBoolean();
 
 	const { addConnectionGroup } = useConfigStore.getState();
-	const [, setActiveConnection] = useActiveConnection();
 
 	const [search, setSearch] = useInputState("");
+	const [connection] = useConnectionAndView();
 	const connections = useConnectionList();
-	const connection = useConnection((c) => c?.id ?? "");
+	const navigateConnection = useConnectionNavigator();
 
 	const groups = useConfigStore((s) => s.connectionGroups);
 	const sandbox = useConfigStore((s) => s.sandbox);
@@ -126,11 +126,15 @@ export function ConnectionsModal() {
 	}, [connectionsList, search, sandbox]);
 
 	const activate = useStable((con: Connection) => {
-		setActiveConnection(con.id);
+		navigateConnection(con.id);
 		openedHandle.close();
 	});
 
-	const [handleKeyDown, selected] = useKeyNavigation(flattened, activate, connection);
+	const [handleKeyDown, selected] = useKeyNavigation(
+		flattened,
+		activate,
+		connection || undefined,
+	);
 
 	// useKeymap([["mod+L", openedHandle.open]]);
 
@@ -256,19 +260,20 @@ export function ConnectionsModal() {
 						</Text>
 					)}
 
-					{groupsList.map((group) => (
-						<ConnectionListGroup
-							key={group.id}
-							group={group}
-							grouped={grouped}
-							connection={connection}
-							selected={selected}
-							openedHandle={openedHandle}
-							activate={activate}
-						/>
-					))}
+					{connection &&
+						groupsList.map((group) => (
+							<ConnectionListGroup
+								key={group.id}
+								group={group}
+								grouped={grouped}
+								connection={connection}
+								selected={selected}
+								openedHandle={openedHandle}
+								activate={activate}
+							/>
+						))}
 
-					{grouped[UNGROUPED] && (
+					{connection && grouped[UNGROUPED] && (
 						<ItemList
 							connections={grouped[UNGROUPED]}
 							active={connection}

@@ -14,7 +14,7 @@ import { runQueryKeymap, surqlLinting } from "~/editor";
 import { queryEditorField, setQueryEditor } from "~/editor/query";
 import { useActiveQuery } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
-import { useActiveConnection } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
 
@@ -38,7 +38,7 @@ export function VariablesPane({
 	closeVariables,
 }: VariablesPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const activeTab = useActiveQuery();
 
 	const [variableEditor, setVariableEditor] = useState<EditorView | null>(null);

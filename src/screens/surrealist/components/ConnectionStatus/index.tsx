@@ -27,13 +27,13 @@ import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
-import { useActiveConnection } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);
 	const schema = useDatabaseSchema();
 
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const [connectionId, name, icon, database] = useConnection((c) => [
 		c?.id ?? "",
 		c?.name ?? "",

@@ -10,7 +10,7 @@ import { ContentPane } from "~/components/Pane";
 import { surqlLinting } from "~/editor";
 import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
-import { useActiveConnection } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
 
@@ -22,7 +22,7 @@ export interface VariablesPaneProps {
 
 export function VariablesPane(props: VariablesPaneProps) {
 	const { updateConnection } = useConfigStore.getState();
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const variablesText = useConnection((c) => c?.graphqlVariables ?? "");
 
 	const setVariables = useDebouncedFunction((content: string | undefined) => {

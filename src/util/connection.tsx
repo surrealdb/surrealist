@@ -35,6 +35,19 @@ export function getConnection() {
 }
 
 /**
+ * Returns a connection by its ID
+ */
+export function getConnectionById(connection: string) {
+	const { connections, sandbox } = useConfigStore.getState();
+
+	if (connection === SANDBOX) {
+		return sandbox;
+	}
+
+	return connections.find((con) => con.id === connection);
+}
+
+/**
  * Returns the active query tab
  */
 export function getActiveQuery() {

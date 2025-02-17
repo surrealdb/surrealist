@@ -10,7 +10,6 @@ import {
 	Stack,
 	Text,
 	TextInput,
-	Tooltip,
 } from "@mantine/core";
 
 import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
@@ -41,7 +40,7 @@ import { ContentPane } from "~/components/Pane";
 import { RecordLink } from "~/components/RecordLink";
 import { useConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
-import { useActiveConnection, useActiveView } from "~/hooks/routing";
+import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
@@ -60,8 +59,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const { showContextMenu } = useContextMenu();
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
 	const pagination = usePagination();
-	const [connection] = useActiveConnection();
-	const [, setActiveView] = useActiveView();
+	const [connection] = useConnectionAndView();
+	const navigateConnection = useConnectionNavigator();
 
 	const [filtering, setFiltering] = useState(false);
 	const [filter, setFilter] = useInputState("");
@@ -137,7 +136,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		if (!(record.id instanceof RecordId) || !connection) return;
 
 		const openQuery = (id: RecordId, prefix: string) => {
-			setActiveView("query");
+			navigateConnection(connection, "query");
 			addQueryTab(connection, {
 				type: "config",
 				query: `${prefix} ${formatValue(id)}`,

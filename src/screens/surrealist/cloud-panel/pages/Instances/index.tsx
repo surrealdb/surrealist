@@ -38,7 +38,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useAvailableInstanceTypes, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
-import { useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
@@ -62,7 +61,7 @@ export function InstancesPage() {
 	const [search, setSearch] = useInputState("");
 	const [filter, setFilter] = useState<Filter | null>(null);
 	const [searchQuery] = useDebouncedValue(search, 150);
-	const [, setActiveView] = useActiveView();
+	// const [, setActiveView] = useConnectionNavigator();
 	// const [, setActivePage] = useActiveCloudPage();
 
 	const regions = useAvailableRegions();
@@ -85,7 +84,7 @@ export function InstancesPage() {
 				(conn) => conn.authentication.cloudInstance === db.id,
 			);
 
-			setActiveView("query");
+			// setActiveView("query");
 
 			if (existing) {
 				// setActiveConnection(existing.id);

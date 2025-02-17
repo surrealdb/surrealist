@@ -11,7 +11,7 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useSetting } from "~/hooks/config";
 import { useConnectionList } from "~/hooks/connection";
-import { useActiveConnection, useIntent } from "~/hooks/routing";
+import { useConnectionNavigator, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
@@ -27,8 +27,8 @@ function newConnection() {
 
 export function ConnectionModal() {
 	const connections = useConnectionList();
+	const navigateConnection = useConnectionNavigator();
 	const { addConnection, updateConnection } = useConfigStore.getState();
-	const [, setActiveConnection] = useActiveConnection();
 
 	const [opened, openedHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
@@ -58,7 +58,7 @@ export function ConnectionModal() {
 		}
 
 		if (select) {
-			setActiveConnection(details.id);
+			navigateConnection(details.id);
 		}
 	});
 

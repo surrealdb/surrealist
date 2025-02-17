@@ -34,7 +34,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { fuzzyMultiMatch } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
-import { useActiveConnection } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 
 export interface TablesPaneProps {
 	icon?: string;
@@ -57,7 +57,7 @@ export function TablesPane({
 }: TablesPaneProps) {
 	const { openTableCreator } = useInterfaceStore.getState();
 
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
 	const isLight = useIsLight();
 	const [search, setSearch] = useInputState("");

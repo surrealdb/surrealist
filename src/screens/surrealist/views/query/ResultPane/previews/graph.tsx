@@ -39,7 +39,7 @@ import { __throw, plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { type PreviewProps } from ".";
-import { useActiveConnection } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;
@@ -63,7 +63,7 @@ function curvature(index: number, maxIndex: number): number {
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
 	const { updateConnection } = useConfigStore.getState();
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();

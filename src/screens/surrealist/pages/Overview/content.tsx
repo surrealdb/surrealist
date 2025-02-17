@@ -28,13 +28,13 @@ import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "~/components/ActionButton";
 import { CloudInstance, Connection } from "~/types";
-import { useActiveConnection } from "~/hooks/routing";
 import { SANDBOX } from "~/constants";
 import { useConnectionList } from "~/hooks/connection";
 import { StateBadge } from "./badge";
 import { USER_ICONS } from "~/util/user-icons";
 import { createBaseConnection } from "~/util/defaults";
 import { useConfigStore } from "~/stores/config";
+import { useConnectionNavigator } from "~/hooks/routing";
 
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;
@@ -46,11 +46,11 @@ export function StartConnection({
 	...other
 }: PropsWithChildren<StartConnectionProps>) {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [, setActiveConnection] = useActiveConnection();
+	const navigateConnection = useConnectionNavigator();
 	const isSandbox = connection.id === SANDBOX;
 
 	const handleConnect = useStable(() => {
-		setActiveConnection(connection.id);
+		navigateConnection(connection.id);
 	});
 
 	const { protocol, hostname } = connection.authentication;
@@ -140,7 +140,7 @@ export function StartInstance({
 	...other
 }: PropsWithChildren<StartInstanceProps>) {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const [, setActiveConnection] = useActiveConnection();
+	const navigateConnection = useConnectionNavigator();
 	const connections = useConnectionList();
 
 	const connection = useMemo(() => {
@@ -151,7 +151,7 @@ export function StartInstance({
 		const { settings, addConnection } = useConfigStore.getState();
 
 		if (connection) {
-			setActiveConnection(connection.id);
+			navigateConnection(connection.id);
 		} else {
 			const base = createBaseConnection(settings);
 
@@ -168,7 +168,7 @@ export function StartInstance({
 				},
 			});
 
-			setActiveConnection(base.id);
+			navigateConnection(base.id);
 		}
 	});
 

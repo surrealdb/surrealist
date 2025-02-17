@@ -21,7 +21,7 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useActiveConnection, useIntent, useViewFocus } from "~/hooks/routing";
+import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
@@ -43,7 +43,7 @@ export function ExplorerView() {
 
 	const isConnected = useIsConnected();
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
