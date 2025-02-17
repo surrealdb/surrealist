@@ -52,7 +52,7 @@ import { useLocation } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX, VIEW_PAGES } from "~/constants";
-import { useConnection, useConnectionList } from "~/hooks/connection";
+import { useAvailableViews, useConnection, useConnectionList } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useAbsoluteLocation, useActiveConnection, useActiveView } from "~/hooks/routing";
 import { showNodeStatus } from "~/modals/node-status";
@@ -102,6 +102,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 	const isServing = useDatabaseStore((state) => state.isServing);
 	const currentState = useDatabaseStore((state) => state.currentState);
 	const connectionSchema = useDatabaseStore((state) => state.connectionSchema);
+	const views = useAvailableViews();
 
 	const [datasets, applyDataset] = useDatasets();
 	const [activeView, setActiveView] = useActiveView();
@@ -194,19 +195,15 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			categories.push(
 				{
 					name: "Views",
-					commands: Object.values(VIEW_PAGES).flatMap((view) =>
-						optional(
-							!view.disabled?.(featureFlags.store) && {
-								id: `open-view-${view.id}`,
-								name: `Open ${view.name} View`,
-								icon: view.icon,
-								binding: true,
-								action: launch(() => {
-									setActiveView(view.id);
-								}),
-							},
-						),
-					),
+					commands: Object.values(views).map((view) => ({
+						id: `open-view-${view.id}`,
+						name: `Open ${view.name} View`,
+						icon: view.icon,
+						binding: true,
+						action: launch(() => {
+							setActiveView(view.id);
+						}),
+					})),
 				},
 				{
 					name: "Tables",
@@ -748,5 +745,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		isServing,
 		preferences,
 		resetOnboardings,
+		views,
 	]);
 }

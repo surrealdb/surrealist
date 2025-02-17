@@ -29,6 +29,7 @@ import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
 import PlaceholderPage from "./cloud-panel/pages/Placeholder";
+import { useAvailableViews } from "~/hooks/connection";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
@@ -45,6 +46,7 @@ const PORTAL_OPTIONS = {
 };
 
 const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
+	dashboard: createHtmlPortalNode(PORTAL_OPTIONS),
 	query: createHtmlPortalNode(PORTAL_OPTIONS),
 	explorer: createHtmlPortalNode(PORTAL_OPTIONS),
 	graphql: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -57,6 +59,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 };
 
 const VIEW_COMPONENTS: Record<ViewPage, FC> = {
+	dashboard: memo(PlaceholderPage),
 	query: memo(QueryView),
 	explorer: memo(ExplorerView),
 	graphql: memo(GraphqlView),
@@ -74,6 +77,7 @@ export function SurrealistScreen() {
 	const isLight = useIsLight();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
+	const views = useAvailableViews();
 
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const customTitlebar = adapter.platform === "darwin" && isDesktop;
@@ -170,14 +174,13 @@ export function SurrealistScreen() {
 							</Route>
 
 							<Route path="/c/:connection/:view">
-								{({ connection, view }) => {
-									const portal = VIEW_PORTALS[view as ViewPage];
-
-									console.log("portal", connection, view);
+								{({ view }) => {
+									const _view = view as ViewPage;
+									const portal = views[_view] ? VIEW_PORTALS[_view] : undefined;
 
 									return (
 										<>
-											{Object.values(VIEW_PAGES).map((mode) => {
+											{Object.values(views).map((mode) => {
 												const Content = VIEW_COMPONENTS[mode.id];
 
 												return (

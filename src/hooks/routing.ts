@@ -5,6 +5,7 @@ import { IntentEvent } from "~/util/global-events";
 import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
+import { useAvailableViews } from "./connection";
 
 /**
  * Returns the current location and a function to navigate
@@ -24,15 +25,19 @@ export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pa
 
 /**
  * Returns the active connection ID
+ * 
+ * @deprecated remove setter, replace with useConnectionAndView
  */
 export function useActiveConnection() {
 	const [, navigate] = useAbsoluteLocation();
 	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
-	const activeView = params?.view ?? "query";
+	const views = useAvailableViews();
 
 	const activeConnection = match ? params.connection : null;
 	const setActiveConnection = useStable((connection: string) => {
-		navigate(`/c/${connection}/${activeView}`);
+		const view = params?.view ?? "query";
+
+		navigate(`/c/${connection}/${view}`);
 	});
 
 	return [activeConnection, setActiveConnection] as const;
@@ -40,18 +45,36 @@ export function useActiveConnection() {
 
 /**
  * Returns the active view mode and a function to set it
+ * 
+ * @deprecated remove setter, replace with useConnectionAndView
  */
 export function useActiveView() {
 	const [, navigate] = useAbsoluteLocation();
 	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
-	const activeConnection = params?.connection ?? "";
 
 	const activeView = match ? params.view : null;
 	const setActiveView = useStable((view: ViewPage) => {
-		navigate(`/c/${activeConnection}/${view}`);
+		const connection = params?.connection;
+
+		if (connection) {
+			navigate(`/c/${connection}/${view}`);
+		}
 	});
 
 	return [activeView, setActiveView] as const;
+}
+
+/**
+ * Returns the active connection and view
+ */
+export function useConnectionAndView() {
+	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
+
+	if (!match) {
+		return [null, null] as const;
+	}
+
+	return [params.connection, params.view as ViewPage] as const;
 }
 
 /**

@@ -14,7 +14,6 @@ import {
 
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
-import { useLocation } from "wouter";
 import iconUrl from "~/assets/images/icon.webp";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
@@ -22,12 +21,13 @@ import { Spacer } from "~/components/Spacer";
 import { GLOBAL_PAGES, VIEW_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
+import { useAvailableViews, useConnection } from "~/hooks/connection";
 import { useAbsoluteLocation, useActiveConnection, useActiveView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
+import type { GlobalPage, SidebarMode, ViewCondition, ViewPage } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
 import { iconCog, iconSearch } from "~/util/icons";
@@ -40,6 +40,7 @@ const GLOBAL_NAVIGATION: GlobalPage[][] = [
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
+	["dashboard"],
 	["query", "explorer", "graphql"],
 	["designer", "authentication", "functions", "models"],
 	["sidekick", "documentation"],
@@ -66,7 +67,8 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const [, setActiveView] = useActiveView();
 	const [connection] = useActiveConnection();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
-	const enabledViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
+	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
+	const views = useAvailableViews();
 
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
@@ -98,9 +100,9 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const viewNavigation: NavigationItem[][] = useMemo(() => {
 		return VIEW_NAVIGATION.flatMap((row) => {
 			const items = row.flatMap((id) => {
-				const info = VIEW_PAGES[id];
+				const info = views[id];
 
-				if (!info || !info.disabled?.(flags) !== true || enabledViews[id] === false) {
+				if (!info || sidebarViews[id] === false) {
 					return [];
 				}
 
@@ -119,7 +121,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, [flags, enabledViews, connection]);
+	}, [views, sidebarViews, connection]);
 
 	const navigation = connection ? viewNavigation : globalNavigation;
 

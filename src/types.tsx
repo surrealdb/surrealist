@@ -56,6 +56,7 @@ export type GlobalPage =
 	| "university"
 	| "provision";
 export type ViewPage =
+	| "dashboard"
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -467,8 +468,13 @@ export interface ViewPageInfo {
 	name: string;
 	icon: string;
 	anim?: any;
-	require?: ViewRequirement;
-	disabled?: FeatureCondition;
+	disabled?: (condition: ViewCondition) => boolean;
+}
+
+export interface ViewCondition {
+	flags: FeatureFlagMap;
+	connection: string;
+	isCloud: boolean;
 }
 
 export interface Dataset {
