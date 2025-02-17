@@ -9,7 +9,7 @@ import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useActiveConnection, useIntent, useViewFocus } from "~/hooks/routing";
+import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useDesigner } from "~/providers/Designer";
@@ -29,7 +29,7 @@ export function DesignerView() {
 	const { design, stopDesign, active, isDesigning } = useDesigner();
 	const designerTableList = useConnection((c) => c?.designerTableList);
 
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const isConnected = useIsConnected();
 	const tables = useTables();
 

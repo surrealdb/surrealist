@@ -25,7 +25,7 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
-import { useActiveConnection } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 
 const MAX_PREVIEW_LENGTH = 500;
 
@@ -38,7 +38,7 @@ interface HistoryRowProps {
 
 function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 	const { updateConnection, addQueryTab } = useConfigStore.getState();
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 
 	const handleUseQuery = useStable(() => {
 		if (!connection) return;
@@ -156,7 +156,7 @@ export interface HistoryDrawerProps {
 
 export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 	const { updateConnection } = useConfigStore.getState();
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const [filterText, setFilterText] = useInputState("");
 	const history = useConnection((c) => c?.queryHistory ?? []);
 

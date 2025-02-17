@@ -7,7 +7,7 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useConnection } from "~/hooks/connection";
-import { useActiveConnection } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -32,7 +32,7 @@ function GraphLabelEditor() {
 	const { updateConnection } = useConfigStore.getState();
 	const { tables } = useDatabaseSchema();
 	const [search, setSearch] = useInputState("");
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const mapping = useConnection((c) => c?.graphLabels ?? {});
 	const id = connection ?? "";
 

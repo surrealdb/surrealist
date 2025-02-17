@@ -4,7 +4,6 @@ import {
 	Badge,
 	Box,
 	Button,
-	Divider,
 	Group,
 	HoverCard,
 	Loader,
@@ -79,7 +78,7 @@ import type {
 } from "~/types";
 
 import { useContextMenu } from "mantine-contextmenu";
-import { pick, sleep } from "radash";
+import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -88,7 +87,7 @@ import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import { useSetting } from "~/hooks/config";
 import { useConnection, useIsConnected } from "~/hooks/connection";
-import { useActiveView, useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -111,7 +110,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const schema = useDatabaseSchema();
 	const isConnected = useIsConnected();
-	const [activeView] = useActiveView();
+	const [, view] = useConnectionAndView();
 
 	const [
 		connectionId,
@@ -311,7 +310,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		fitView({ duration: 150 });
 	});
 
-	const isViewActive = activeView === "designer";
+	const isViewActive = view === "designer";
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema or setting change
 	useLayoutEffect(() => {

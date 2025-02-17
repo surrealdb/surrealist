@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { ActionIcon, Alert, Badge, Button, Group, Stack, Tooltip } from "@mantine/core";
+import { Alert, Badge, Button, Group, Stack } from "@mantine/core";
 
 import {
 	graphqlParser,
@@ -30,7 +30,7 @@ import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
-import { useActiveConnection, useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { showError, showInfo, tryParseParams } from "~/util/helpers";
@@ -59,7 +59,7 @@ export function QueryPane({
 	onIntrospectSchema,
 	onEditorMount,
 }: QueryPaneProps) {
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const { updateConnection } = useConfigStore.getState();
 	const queryText = useConnection((c) => c?.graphqlQuery ?? "");
 

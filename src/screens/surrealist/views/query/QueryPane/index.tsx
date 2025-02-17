@@ -36,7 +36,7 @@ import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { setEditorText } from "~/editor/helpers";
 import { useConnection } from "~/hooks/connection";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
-import { useActiveConnection, useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
@@ -80,7 +80,7 @@ export function QueryPane({
 	const { updateQueryTab, updateConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const queryTabList = useConnection((c) => c?.queryTabList);
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);

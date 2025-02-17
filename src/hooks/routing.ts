@@ -5,7 +5,10 @@ import { IntentEvent } from "~/util/global-events";
 import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
-import { useAvailableViews } from "./connection";
+import { useConnectionList } from "./connection";
+import { getActiveConnection, getConnection, getConnectionById } from "~/util/connection";
+import { useConfigStore } from "~/stores/config";
+import { SANDBOX } from "~/constants";
 
 /**
  * Returns the current location and a function to navigate
@@ -24,47 +27,6 @@ export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pa
 }
 
 /**
- * Returns the active connection ID
- * 
- * @deprecated remove setter, replace with useConnectionAndView
- */
-export function useActiveConnection() {
-	const [, navigate] = useAbsoluteLocation();
-	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
-	const views = useAvailableViews();
-
-	const activeConnection = match ? params.connection : null;
-	const setActiveConnection = useStable((connection: string) => {
-		const view = params?.view ?? "query";
-
-		navigate(`/c/${connection}/${view}`);
-	});
-
-	return [activeConnection, setActiveConnection] as const;
-}
-
-/**
- * Returns the active view mode and a function to set it
- * 
- * @deprecated remove setter, replace with useConnectionAndView
- */
-export function useActiveView() {
-	const [, navigate] = useAbsoluteLocation();
-	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
-
-	const activeView = match ? params.view : null;
-	const setActiveView = useStable((view: ViewPage) => {
-		const connection = params?.connection;
-
-		if (connection) {
-			navigate(`/c/${connection}/${view}`);
-		}
-	});
-
-	return [activeView, setActiveView] as const;
-}
-
-/**
  * Returns the active connection and view
  */
 export function useConnectionAndView() {
@@ -75,6 +37,23 @@ export function useConnectionAndView() {
 	}
 
 	return [params.connection, params.view as ViewPage] as const;
+}
+
+/**
+ * Returns a function used to navigate to a specific connection and optional view
+ */
+export function useConnectionNavigator() {
+	const [, navigate] = useAbsoluteLocation();
+
+	return useStable((connection: string, view?: ViewPage) => {
+		const info = getConnectionById(connection);
+
+		if (info) {
+			const fallback = info.authentication.mode === "cloud" ? "dashboard" : "query";
+
+			navigate(`/c/${info.id}/${view ?? fallback}`);
+		}
+	});
 }
 
 /**
@@ -111,7 +90,7 @@ export function useSearchParams() {
  * @param callback The function to invoke
  */
 export function useViewFocus(view: ViewPage, callback: () => void, deps: any[] = []) {
-	const [activeView] = useActiveView();
+	const [, activeView] = useConnectionAndView();
 	const stable = useStable(callback);
 
 	// NOTE - should this be useLayoutEffect?

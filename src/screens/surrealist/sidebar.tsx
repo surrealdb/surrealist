@@ -18,16 +18,16 @@ import iconUrl from "~/assets/images/icon.webp";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
-import { GLOBAL_PAGES, VIEW_PAGES } from "~/constants";
+import { GLOBAL_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useAvailableViews, useConnection } from "~/hooks/connection";
-import { useAbsoluteLocation, useActiveConnection, useActiveView } from "~/hooks/routing";
+import { useAvailableViews } from "~/hooks/connection";
+import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import type { GlobalPage, SidebarMode, ViewCondition, ViewPage } from "~/types";
+import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
 import { iconCog, iconSearch } from "~/util/icons";
@@ -59,13 +59,11 @@ export interface SurrealistSidebarProps extends BoxProps {
 }
 
 export function SurrealistSidebar({ sidebarMode, className, ...other }: SurrealistSidebarProps) {
-	const [flags] = useFeatureFlags();
-
 	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
 	const [, navigate] = useAbsoluteLocation();
-	const [, setActiveView] = useActiveView();
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
+	const navigateConnection = useConnectionNavigator();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
 	const views = useAvailableViews();
@@ -98,6 +96,10 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	}, []);
 
 	const viewNavigation: NavigationItem[][] = useMemo(() => {
+		if (!connection) {
+			return [];
+		}
+
 		return VIEW_NAVIGATION.flatMap((row) => {
 			const items = row.flatMap((id) => {
 				const info = views[id];
@@ -114,7 +116,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					disabled: !connection,
 					navigate: () => {
 						hoverSidebarHandle.close();
-						setActiveView(info.id);
+						navigateConnection(connection, info.id);
 					},
 				};
 			});

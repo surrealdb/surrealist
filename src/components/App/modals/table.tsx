@@ -6,11 +6,10 @@ import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SCHEMA_MODES } from "~/constants";
-import { useActiveView, useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SchemaMode } from "~/types";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
@@ -22,7 +21,7 @@ export function TableCreatorModal() {
 
 	const opened = useInterfaceStore((s) => s.showTableCreator);
 	const tables = useTableNames();
-	const [activeView] = useActiveView();
+	const [, view] = useConnectionAndView();
 
 	const [createType, setCreateType] = useState("table");
 	const [tableName, setTableName] = useInputState("");
@@ -52,7 +51,7 @@ export function TableCreatorModal() {
 			tables: [tableName],
 		});
 
-		if (activeView === "explorer") {
+		if (view === "explorer") {
 			dispatchIntent("explore-table", {
 				table: tableName,
 			});

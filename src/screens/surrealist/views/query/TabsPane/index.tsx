@@ -40,7 +40,7 @@ import { ContentPane } from "~/components/Pane";
 import { Sortable } from "~/components/Sortable";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
-import { useActiveConnection, useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
@@ -79,7 +79,7 @@ function Query({
 	const { showContextMenu } = useContextMenu();
 	const [isRenaming, setIsRenaming] = useState(false);
 	const [queryQuickClose] = useSetting("behavior", "queryQuickClose");
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const isLight = useIsLight();
 
 	const explorerName = adapter.platform === "darwin" ? "Finder" : "Explorer";
@@ -253,7 +253,7 @@ export function TabsPane(props: TabsPaneProps) {
 	const { updateConnection, addQueryTab, removeQueryTab, setActiveQueryTab } =
 		useConfigStore.getState();
 
-	const [connection] = useActiveConnection();
+	const [connection] = useConnectionAndView();
 	const [activeQuery, queries] = useConnection((c) => [c?.activeQuery ?? "", c?.queries ?? []]);
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isLight = useIsLight();

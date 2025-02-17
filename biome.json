@@ -36,11 +36,10 @@
 							{ "name": "useAbsoluteRoute", "stableResult": [1] },
 							{ "name": "useLocation", "stableResult": [1] },
 							{ "name": "useAbsoluteLocation", "stableResult": [1] },
-							{ "name": "useActiveConnection", "stableResult": [1] },
-							{ "name": "useActiveView", "stableResult": [1] },
 							{ "name": "useStable", "stableResult": true },
 							{ "name": "useReactFlow", "stableResult": true },
-							{ "name": "useQueryClient", "stableResult": true }
+							{ "name": "useQueryClient", "stableResult": true },
+							{ "name": "useConnectionNavigator", "stableResult": true }
 						]
 					}
 				}
