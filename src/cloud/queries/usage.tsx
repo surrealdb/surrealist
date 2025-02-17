@@ -21,14 +21,14 @@ export function useCloudOrgUsageQuery(organization?: string) {
 /**
  * Fetch instance usage metrics
  */
-export function useCloudUsageQuery(instance: CloudInstance) {
+export function useCloudUsageQuery(instance?: string) {
 	const authState = useCloudStore((state) => state.authState);
 
 	return useQuery({
-		queryKey: ["cloud", "usage", instance.id],
-		enabled: authState === "authenticated",
+		queryKey: ["cloud", "usage", instance],
+		enabled: !!instance && authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudMeasurement[]>(`/instances/${instance.id}/usage`);
+			return fetchAPI<CloudMeasurement[]>(`/instances/${instance}/usage`);
 		},
 	});
 }

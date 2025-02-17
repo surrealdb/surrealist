@@ -5,7 +5,6 @@ import { type FC, Suspense, memo } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
-import { VIEW_PAGES } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -19,6 +18,7 @@ import { ReferralPage } from "./pages/Referral";
 import { SupportPage } from "./pages/Support";
 import { ProvisionPage } from "./pages/Provision";
 import { SurrealistToolbar } from "./toolbar";
+import DashboardView from "./views/dashboard/DashboardView";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DesignerView from "./views/designer/DesignerView";
 import DocumentationView from "./views/documentation/DocumentationView";
@@ -59,7 +59,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 };
 
 const VIEW_COMPONENTS: Record<ViewPage, FC> = {
-	dashboard: memo(PlaceholderPage),
+	dashboard: memo(DashboardView),
 	query: memo(QueryView),
 	explorer: memo(ExplorerView),
 	graphql: memo(GraphqlView),
