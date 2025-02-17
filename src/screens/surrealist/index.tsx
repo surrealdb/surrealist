@@ -161,7 +161,7 @@ export function SurrealistScreen() {
 								<BillingPageLazy />
 							</Route>
 
-							<Route path="/referral">
+							<Route path="/referrals">
 								<ReferralPageLazy />
 							</Route>
 

@@ -28,7 +28,6 @@ import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { isMobile } from "~/util/helpers";
 import { iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
@@ -36,7 +35,7 @@ import { dispatchIntent } from "~/util/intents";
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
 	["overview"],
 	["share", "university", "chat"],
-	["billing", "referral", "support"],
+	["billing", "referrals", "support"],
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
