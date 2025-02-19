@@ -196,6 +196,7 @@ export function OverviewPage() {
 								<StartCreator
 									title="New connection"
 									subtitle="Connect to a local or remote instance"
+									presentation={presentation}
 									onCreate={createConnection}
 								/>
 							</SimpleGrid>
@@ -217,13 +218,7 @@ export function OverviewPage() {
 											{organization.name}
 										</Text>
 									</Group>
-									<SimpleGrid
-										cols={{
-											xs: 1,
-											sm: 2,
-											lg: 3,
-										}}
-									>
+									<SimpleGrid cols={gridColumns}>
 										{instances.map((instance) => (
 											<StartInstance
 												key={instance.id}
@@ -234,6 +229,7 @@ export function OverviewPage() {
 										<StartCreator
 											title="New instance"
 											subtitle="Provision a new Surreal Cloud instance"
+											presentation={presentation}
 											onCreate={() => {
 												setSelectedOrganization(organization.id);
 												navigate("/provision");
