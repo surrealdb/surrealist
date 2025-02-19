@@ -21,7 +21,7 @@ import { useConnectionList } from "~/hooks/connection";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { CloudInstance } from "~/types";
+import { CloudInstance, ConnectionListMode } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { iconCloud, iconDotsVertical, iconCopy, iconDelete, iconEdit } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
@@ -34,7 +34,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
-	presentation: "card" | "row";
+	presentation: ConnectionListMode;
 }
 
 export function StartInstance({

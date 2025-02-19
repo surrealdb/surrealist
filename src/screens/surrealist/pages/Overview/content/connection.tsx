@@ -11,7 +11,7 @@ import { Icon } from "~/components/Icon";
 import { INSTANCE_GROUP, SANDBOX } from "~/constants";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { Connection } from "~/types";
+import { Connection, ConnectionListMode } from "~/types";
 import { USER_ICONS } from "~/util/user-icons";
 import { newId, ON_STOP_PROPAGATION } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
@@ -20,7 +20,7 @@ import { useConfigStore } from "~/stores/config";
 
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;
-	presentation: "card" | "row";
+	presentation: ConnectionListMode;
 }
 
 export function StartConnection({

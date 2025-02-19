@@ -58,6 +58,7 @@ import { StartCloud } from "./content/cloud";
 import { StartConnection } from "./content/connection";
 import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
+import { useSetting } from "~/hooks/config";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -67,7 +68,7 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const { setSelectedOrganization } = useCloudStore.getState();
-	const [presentation, setPresentation] = useState<"card" | "row">("card"); // TODO config
+	const [presentation, setPresentation] = useSetting("appearance", "connectionListMode");
 
 	const newsQuery = useLatestNewsQuery();
 	const [, navigate] = useAbsoluteLocation();

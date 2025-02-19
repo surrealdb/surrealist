@@ -66,6 +66,7 @@ export function createBaseSettings(): SurrealistSettings {
 			sidebarMode: "expandable",
 			queryOrientation: "vertical",
 			sidebarViews: {},
+			connectionListMode: "card",
 		},
 		templates: {
 			list: [],

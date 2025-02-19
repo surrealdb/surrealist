@@ -4,12 +4,13 @@ import { BoxProps, UnstyledButton, Paper, Center, Stack, Text, Flex, Box } from 
 import clsx from "clsx";
 import { ReactNode, PropsWithChildren, useRef } from "react";
 import { Icon } from "~/components/Icon";
+import { ConnectionListMode } from "~/types";
 import { iconPlus } from "~/util/icons";
 
 export interface StartCreatorProps extends BoxProps {
 	title: ReactNode;
 	subtitle: ReactNode;
-	presentation: "card" | "row";
+	presentation: ConnectionListMode;
 	onCreate: () => void;
 }
 
