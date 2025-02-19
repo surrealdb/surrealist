@@ -1,14 +1,5 @@
 import classes from "./style.module.scss";
-import {
-	ActionIcon,
-	Alert,
-	Button,
-	CopyButton,
-	Group,
-	SimpleGrid,
-	Skeleton,
-	Text,
-} from "@mantine/core";
+import { ActionIcon, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { Redirect } from "wouter";
@@ -18,13 +9,14 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useConnection } from "~/hooks/connection";
-import { iconCheck, iconChevronRight, iconCopy, iconDownload } from "~/util/icons";
+import { iconCheck, iconCopy } from "~/util/icons";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { BackupsBlock } from "../BackupsBlock";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConnectBlock } from "../ConnectBlock";
+import { UpdateBlock } from "../UpdateBlock";
 
 export function DashboardView() {
 	const [isCloud, instance, name, icon] = useConnection((c) => [
@@ -38,7 +30,6 @@ export function DashboardView() {
 	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
 
 	const isRenamed = !detailsPending && name !== details?.name;
-	const versions = details?.available_versions ?? [];
 
 	if (!isCloud) {
 		return <Redirect to="/query" />;
@@ -112,31 +103,7 @@ export function DashboardView() {
 						)}
 					</Box>
 
-					{versions && (
-						<Alert
-							color="blue"
-							title="Update available"
-							icon={<Icon path={iconDownload} />}
-						>
-							<Box>
-								Your instance can be updated to{" "}
-								<Text
-									span
-									fw={800}
-								>
-									SurrealDB {versions[0]}
-								</Text>
-							</Box>
-							<Button
-								rightSection={<Icon path={iconChevronRight} />}
-								color="blue"
-								size="xs"
-								mt="md"
-							>
-								Update instance
-							</Button>
-						</Alert>
-					)}
+					<UpdateBlock instance={details} />
 
 					<SimpleGrid
 						cols={2}
