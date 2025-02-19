@@ -67,6 +67,7 @@ import {
 	iconRelation,
 	iconServer,
 	iconSidekick,
+	iconTune,
 	iconUniversity,
 } from "./util/icons";
 
@@ -230,8 +231,8 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 	dashboard: {
 		id: "dashboard",
-		name: "Instance Dashboard",
-		icon: iconCloud,
+		name: "Dashboard",
+		icon: iconTune,
 		disabled: ({ flags, isCloud }) => !flags.query_view || !isCloud,
 	},
 	query: {

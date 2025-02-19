@@ -106,11 +106,12 @@ export function CloudAccount() {
 	const profile = useCloudStore((s) => s.profile);
 	const state = useCloudStore((s) => s.authState);
 
-	if (state === "unauthenticated") {
+	if (state === "unauthenticated" || state === "unknown") {
 		return (
 			<Button
 				variant="gradient"
 				size="xs"
+				disabled={state === "unknown"}
 				onClick={openCloudAuthentication}
 				rightSection={<Icon path={iconChevronRight} />}
 			>

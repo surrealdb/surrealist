@@ -176,7 +176,7 @@ function HelpTile({ title, description, icon, noIconStroke, onClick }: HelpTileP
 	return (
 		<UnstyledButton
 			p="lg"
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "slate.0" : "slate.7"}
 			className={classes.helpTile}
 			onClick={() => {
 				closeAllModals();

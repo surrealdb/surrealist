@@ -42,7 +42,7 @@ import { newId } from "~/util/helpers";
 import { useCopilotMutation } from "./copilot";
 import { ChatMessage } from "./message";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { StartResource } from "../Overview/content";
+import { StartResource } from "../Overview/content/resource";
 import { shuffle } from "radash";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";

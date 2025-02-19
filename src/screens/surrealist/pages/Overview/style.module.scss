@@ -24,17 +24,6 @@
 	}
 }
 
-.start-connection {
-	.connection-options {
-		transition: opacity .15s;
-		opacity: 0;
-	}
-
-	&:hover .connection-options {
-		opacity: 1;
-	}
-}
-
 .start-creator {
 	background-color: hsla(255, 25%, 6%, 0.6);
 
@@ -44,21 +33,29 @@
 }
 
 .start-creator,
-.start-connection {
+.start-connection,
+.start-instance {
 	height: 112px;
 }
 
-.start-action {
+.start-row {
+	height: unset;
+}
+
+.start-cloud {
 	position: relative;
 	overflow: hidden;
 	height: 115px;
 
-	.start-action-icon {
-		// transition: all 0.2s;
+	.start-cloud-icon {
 		color: var(--mantine-color-slate-5);
+
+		@include md-and-up {
+			display: none;
+		}
 	}
 
-	&:hover .start-action-icon {
+	&:hover .start-cloud-icon {
 		color: var(--mantine-color-bright) !important;
 	}
 
@@ -98,11 +95,5 @@
 
 	@include md-and-up {
 		display: block;
-	}
-}
-
-.cloud-action .start-action-icon {
-	@include md-and-up {
-		display: none;
 	}
 }
