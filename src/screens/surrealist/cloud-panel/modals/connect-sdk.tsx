@@ -1,4 +1,4 @@
-import { Group, Modal, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
+import { Group, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
 import { useMemo, useState } from "react";
@@ -10,9 +10,9 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DRIVERS } from "~/constants";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance, CodeLang, Snippets } from "~/types";
-import { iconAPI, iconAccount, iconDatabase } from "~/util/icons";
+import { iconAPI } from "~/util/icons";
 
-export function openConnectSdk(instance: CloudInstance) {
+export function openConnectSdk(instance: CloudInstance, namespace: string, database: string) {
 	openModal({
 		size: "lg",
 		title: (
@@ -25,22 +25,53 @@ export function openConnectSdk(instance: CloudInstance) {
 			</Group>
 		),
 		withCloseButton: true,
-		children: <ConnectSdkModal instance={instance} />,
+		children: (
+			<ConnectSdkModal
+				instance={instance}
+				namespace={namespace}
+				database={database}
+			/>
+		),
 	});
 }
 
 interface ConnectSdkModalProps {
 	instance: CloudInstance;
+	namespace: string;
+	database: string;
 }
 
-function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
+function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps) {
 	const isLight = useIsLight();
 	const [lang, setLang] = useState<CodeLang>("rust");
 
-	const [namespace, setNamespace] = useInputState("");
-	const [database, setDatabase] = useInputState("");
-	const [username, setUsername] = useInputState("");
-	const [password, setPassword] = useInputState("");
+	const installation = useMemo<Snippets>(
+		() => ({
+			js: `npm install --save surrealdb`,
+			csharp: `dotnet add package SurrealDb.Net`,
+			py: `pip install surrealdb`,
+			php: `composer require surrealdb/surrealdb.php`,
+			rust: `
+				cargo add surrealdb;
+				cargo add tokio --features macros,rt-multi-thread
+				cargo add serde --features derive
+			`,
+			java: `
+				// Maven
+				<dependency>
+					<groupId>com.surrealdb</groupId>
+					<artifactId>surrealdb</artifactId>
+					<version>0.2.1</version>
+				</dependency>
+
+				// Gradle
+				dependencies {
+					implementation "com.surrealdb:surrealdb:0.2.1"
+				}
+			`,
+		}),
+		[],
+	);
 
 	const snippets = useMemo<Snippets>(
 		() => ({
@@ -53,8 +84,8 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 					namespace: "${namespace}",
 					database: "${database}",
 					auth: {
-						username: "${username}",
-						password: "${password}",
+						username: "",
+						password: "",
 					}
 				});
 				// Create record
@@ -80,58 +111,15 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 				const string TABLE = "person";
 				
 				using var db = new SurrealDbClient("wss://${instance.host}/rpc");
-				
-				await db.SignIn(new RootAuth { Username = "${username}", Password = "${password}" });
+
+				// Select namespace and database
 				await db.Use("${namespace}", "${database}");
 				
 				var person = new Person
 				{
-					Title = "Founder & CEO",
-					Name = new() { FirstName = "Tobie", LastName = "Morgan Hitchcock" },
-					Marketing = true
-				};
-				var created = await db.Create(TABLE, person);
-				Console.WriteLine(ToJsonString(created));
-				
-				var updated = await db.Merge<ResponsibilityMerge, Person>(
-					new() { Id = (TABLE, "jaime"), Marketing = true }
-				);
-				Console.WriteLine(ToJsonString(updated));
-				
-				var people = await db.Select<Person>(TABLE);
-				Console.WriteLine(ToJsonString(people));
-				
-				var queryResponse = await db.Query(
-					$"SELECT Marketing, count() AS Count FROM type::table({TABLE}) GROUP BY Marketing"
-				);
-				var groups = queryResponse.GetValue<List<Group>>(0);
-				Console.WriteLine(ToJsonString(groups));
-				
-				static string ToJsonString(object? o)
-				{
-					return JsonSerializer.Serialize(o, new JsonSerializerOptions { WriteIndented = true, });
-				}
-				
-				public class Person : Record
-				{
-					public string? Title { get; set; }
-					public Name? Name { get; set; }
-					public bool Marketing { get; set; }
-				}
-				public class Name
-				{
-					public string? FirstName { get; set; }
-					public string? LastName { get; set; }
-				}
-				public class ResponsibilityMerge : Record
-				{
-					public bool Marketing { get; set; }
-				}
-				public class Group
-				{
-					public bool Marketing { get; set; }
-					public int Count { get; set; }
-				}
+					Username = "",
+					Password = "",
+				});
 			`,
 			py: `
 from surrealdb import Surreal, RecordID
@@ -139,11 +127,11 @@ from surrealdb import Surreal, RecordID
 				# Open a connection
 				with Surreal(url="wss://${instance.host}") as db:
 
-					# Select a namespace and database
-					db.use("${namespace}", "${database}")
+					# Select namespace and database
+					await db.use("${namespace}", "${database}")
 
 					# Authenticate
-					db.signin(username="${username}", password="${password}")
+					await db.sign_in(username="", password="")
 
 					# Create a record
 					db.create(RecordID("grocery", "1"), {
@@ -165,8 +153,8 @@ from surrealdb import Surreal, RecordID
 
 				// Authenticate
 				$db->signin([
-					"username" => "${username}",
-					"password" => "${password}",
+					"username" => "",
+					"password" => "",
 				]);
 			`,
 			rust: `
@@ -175,33 +163,14 @@ from surrealdb import Surreal, RecordID
 				use surrealdb::opt::auth::Root;
 				use tokio;
 
-				#[derive(Debug, Serialize, Deserialize)]
-				struct Person {
-					name: String,
-				}
+				// Select namespace and database
+				db.use_ns("${namespace}").use_db("${database}").await?;
 
-				#[tokio::main]
-				async fn main() -> Result<(), Box<dyn std::error::Error>> {
-					// Open a connection
-					let db = any::connect("wss://${instance.host}").await?;
-
-					// Select a namespace and database
-					db.use_ns("${namespace}").use_db("${database}").await?;
-
-					// Authenticate
-					db.signin(Root {
-						username: "${username}",
-						password: "${password}",
-					}).await?;
-
-					db.query("CREATE person:john SET name = 'John Doe', age = 25").await?.check()?;
-
-					// Query that person
-					let john: Option<Person> = db.select(("person", "john")).await?;
-					dbg!(john);
-
-				Ok(())
-				}
+				// Authenticate
+				db.signin(Root {
+					username: "",
+					password: "",
+				}).await?;
 			`,
 			java: `
 				try (final Surreal db = new Surreal()) {
@@ -209,16 +178,16 @@ from surrealdb import Surreal, RecordID
 					// Open a connection
 					db.connect("wss://${instance.host}");
 
-					// Select a namespace and database
+					// Select namespace and database
 					db.useNs("${namespace}").useDb("${database}");
 
 					// Authenticate
-					db.signin(new Root("${username}", "${password}"));
+					db.signin(new Root("", ""));
 
 				}
 			`,
 		}),
-		[instance, namespace, database, username, password],
+		[instance, namespace, database],
 	);
 
 	const driver = DRIVERS.find((d) => d.id === lang);
@@ -239,7 +208,7 @@ from surrealdb import Surreal, RecordID
 					fw={600}
 					c="bright"
 				>
-					1. Select your desired language
+					Select your desired language
 				</Text>
 
 				<DriverSelector
@@ -260,36 +229,14 @@ from surrealdb import Surreal, RecordID
 					fw={600}
 					c="bright"
 				>
-					2. Specify namespace and database
+					Install the SDK
 				</Text>
 
-				<Paper
-					bg={isLight ? "slate.0" : "slate.9"}
-					p="md"
-				>
-					<SimpleGrid
-						cols={2}
-						mb="md"
-					>
-						<TextInput
-							placeholder="Namespace"
-							size="xs"
-							value={namespace}
-							onChange={setNamespace}
-						/>
-
-						<TextInput
-							placeholder="Database"
-							size="xs"
-							value={database}
-							onChange={setDatabase}
-						/>
-					</SimpleGrid>
-
-					<LearnMore href="https://surrealdb.com/docs/surrealdb/introduction/concepts/namespace">
-						Learn more about namespaces and databases
-					</LearnMore>
-				</Paper>
+				<CodeSnippet
+					language={lang}
+					values={installation}
+					editorLanguage="sh"
+				/>
 
 				<Text
 					mt="xl"
@@ -299,46 +246,7 @@ from surrealdb import Surreal, RecordID
 					fw={600}
 					c="bright"
 				>
-					3. Authentication
-				</Text>
-
-				<Paper
-					bg={isLight ? "slate.0" : "slate.9"}
-					p="md"
-				>
-					<SimpleGrid
-						cols={2}
-						mb="md"
-					>
-						<TextInput
-							placeholder="Username"
-							size="xs"
-							value={username}
-							onChange={setUsername}
-						/>
-
-						<TextInput
-							placeholder="Password"
-							size="xs"
-							value={password}
-							onChange={setPassword}
-						/>
-					</SimpleGrid>
-
-					<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication">
-						Learn more about authentication
-					</LearnMore>
-				</Paper>
-
-				<Text
-					mt="xl"
-					fz="xl"
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					c="bright"
-				>
-					4. Use the following code snippet
+					Connect to your instance
 				</Text>
 
 				<CodeSnippet

@@ -1,0 +1,11 @@
+.action {
+	outline: 1px solid transparent;
+
+	&:hover {
+		outline-color: rgba(255, 221, 251, 0.15);
+
+		@include light {
+			outline-color: rgba(139, 89, 139, 0.25);
+		}
+	}
+}

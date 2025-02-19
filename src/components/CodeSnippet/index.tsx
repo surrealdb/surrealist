@@ -7,9 +7,16 @@ export interface CodeSnippetProps extends Omit<CodePreviewProps, "value"> {
 	title?: string;
 	values: Snippets;
 	language: CodeLang;
+	editorLanguage?: string;
 }
 
-export function CodeSnippet({ title, values, language, ...other }: CodeSnippetProps) {
+export function CodeSnippet({
+	title,
+	values,
+	language,
+	editorLanguage,
+	...other
+}: CodeSnippetProps) {
 	const snippet = useMemo(() => {
 		const value = values[language];
 		return value ? dedent(value) : undefined;
@@ -19,7 +26,7 @@ export function CodeSnippet({ title, values, language, ...other }: CodeSnippetPr
 		<CodePreview
 			label={title}
 			value={snippet || "No example available for this language"}
-			language={language}
+			language={editorLanguage || language}
 			withCopy
 			{...other}
 		/>

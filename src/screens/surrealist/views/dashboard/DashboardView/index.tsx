@@ -5,10 +5,9 @@ import {
 	Button,
 	CopyButton,
 	Group,
-	Paper,
 	SimpleGrid,
+	Skeleton,
 	Text,
-	ThemeIcon,
 } from "@mantine/core";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -19,8 +18,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useConnection } from "~/hooks/connection";
-import { iconCheck, iconChevronRight, iconCloud, iconCopy, iconDownload } from "~/util/icons";
-import { USER_ICONS } from "~/util/user-icons";
+import { iconCheck, iconChevronRight, iconCopy, iconDownload } from "~/util/icons";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { BackupsBlock } from "../BackupsBlock";
@@ -39,7 +37,8 @@ export function DashboardView() {
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
 	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
 
-	const isRenamed = name !== details?.name;
+	const isRenamed = !detailsPending && name !== details?.name;
+	const versions = details?.available_versions ?? [];
 
 	if (!isCloud) {
 		return <Redirect to="/query" />;
@@ -68,26 +67,30 @@ export function DashboardView() {
 					h="100%"
 					gap="xl"
 				>
-					<Group
-						gap="lg"
-						mb={38}
-					>
-						<Box>
-							<Group gap="xs">
-								<Group>
-									<PrimaryTitle fz={38}>{name}</PrimaryTitle>
-									{isRenamed && (
-										<Text
-											fw={400}
-											fz={38}
-											c="slate"
-										>
-											({details?.name})
-										</Text>
-									)}
-									{details?.state && <StateBadge state={details?.state} />}
-								</Group>
+					<Box mb={38}>
+						<Group gap="xs">
+							<Group>
+								<PrimaryTitle fz={38}>{name}</PrimaryTitle>
+								{isRenamed && (
+									<Text
+										fw={400}
+										fz={38}
+										c="slate"
+									>
+										({details?.name})
+									</Text>
+								)}
+								{details?.state && <StateBadge state={details?.state} />}
 							</Group>
+						</Group>
+						{detailsPending ? (
+							<Skeleton
+								w="100%"
+								maw={500}
+								height={18}
+								my={2}
+							/>
+						) : (
 							<Group gap="sm">
 								<Text fz="md">{details?.host}</Text>
 								<CopyButton value={instance ?? ""}>
@@ -96,7 +99,6 @@ export function DashboardView() {
 											variant={copied ? "gradient" : undefined}
 											size="sm"
 											onClick={copy}
-											className={classes.copy}
 											aria-label="Copy id to clipboard"
 										>
 											<Icon
@@ -107,39 +109,41 @@ export function DashboardView() {
 									)}
 								</CopyButton>
 							</Group>
-						</Box>
-					</Group>
+						)}
+					</Box>
 
-					<Alert
-						color="blue"
-						title="Update available"
-						icon={<Icon path={iconDownload} />}
-					>
-						<Box>
-							Your instance can be updated to{" "}
-							<Text
-								span
-								fw={800}
-							>
-								SurrealDB 2.2
-							</Text>
-						</Box>
-						<Button
-							rightSection={<Icon path={iconChevronRight} />}
+					{versions && (
+						<Alert
 							color="blue"
-							size="xs"
-							mt="md"
+							title="Update available"
+							icon={<Icon path={iconDownload} />}
 						>
-							Update instance
-						</Button>
-					</Alert>
+							<Box>
+								Your instance can be updated to{" "}
+								<Text
+									span
+									fw={800}
+								>
+									SurrealDB {versions[0]}
+								</Text>
+							</Box>
+							<Button
+								rightSection={<Icon path={iconChevronRight} />}
+								color="blue"
+								size="xs"
+								mt="md"
+							>
+								Update instance
+							</Button>
+						</Alert>
+					)}
 
 					<SimpleGrid
 						cols={2}
 						spacing="xl"
 					>
 						<ConfigurationBlock instance={details} />
-						<ConnectBlock />
+						<ConnectBlock instance={details} />
 					</SimpleGrid>
 
 					<SimpleGrid
