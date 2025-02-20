@@ -1,146 +1,117 @@
-import { Button, Image, ThemeIcon, Tooltip } from "@mantine/core";
-import { Paper, Group, Divider, Text, Stack } from "@mantine/core";
-import { capitalize } from "radash";
-import { ActionButton } from "~/components/ActionButton";
+import { BoxProps, Button, ThemeIcon } from "@mantine/core";
+import { Paper, Group, Text, Stack } from "@mantine/core";
+import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
-import { REGION_FLAGS } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import {
-	iconCog,
+	iconChevronRight,
 	iconDatabase,
-	iconEdit,
 	iconMarker,
 	iconMemory,
+	iconQuery,
 	iconTag,
-	iconTune,
 } from "~/util/icons";
+import { ConfigurationDrawer } from "./drawer";
+import { useBoolean } from "~/hooks/boolean";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
 }
 
 export function ConfigurationBlock({ instance }: ConfigurationBlockProps) {
-	const categoryName = instance ? capitalize(instance.type.category) : "";
+	const [editing, editingHandle] = useBoolean();
 
 	const regions = useCloudStore((s) => s.regions);
 	const region = instance?.region;
 	const regionName = regions.find((r) => r.slug === region)?.description ?? region;
 
 	return (
-		<Paper
-			p="xl"
-			// h={232}
-		>
-			<Group>
-				<Icon
-					path={iconTune}
-					size="xl"
-				/>
-				<Text
-					fz="xl"
-					fw={600}
-					c="bright"
-				>
-					Configuration
-				</Text>
-				<Spacer />
-				<Button
-					color="slate"
-					variant="light"
-					loading={false}
-				>
-					Edit
-				</Button>
-			</Group>
-			<Divider my="md" />
-			<Stack gap="xs">
-				<Group
+		<Paper p="xl">
+			<Stack gap="sm">
+				<ConfigValue
 					title="Region"
-					gap="sm"
-					h={32}
-				>
-					<ThemeIcon
-						color="slate"
-						radius="xs"
-					>
-						<Icon
-							path={iconMarker}
-							size="lg"
-							c="slate"
-						/>
-					</ThemeIcon>
-					<Text fw={600}>Region: </Text>
-					<Text c="bright">{regionName}</Text>
-					<Image
-						src={REGION_FLAGS[instance?.region ?? ""]}
-						w={18}
-					/>
-				</Group>
-				<Group
+					icon={iconMarker}
+					value={regionName}
+				/>
+
+				<ConfigValue
 					title="Instance Preset"
-					gap="sm"
-					h={32}
-				>
-					<ThemeIcon
-						color="slate"
-						radius="xs"
-					>
-						<Icon
-							path={iconMemory}
-							size="lg"
-							c="slate"
-						/>
-					</ThemeIcon>
-					<Group gap="xs">
-						<Text fw={600}>Instance type: </Text>
-						<Text c="bright">
-							{instance?.type.display_name} {`(${categoryName})`}
-						</Text>
-					</Group>
-				</Group>
+					icon={iconMemory}
+					value={instance?.type.display_name}
+				/>
+
+				<ConfigValue
+					title="Compute nodes"
+					icon={iconQuery}
+					value={instance?.compute_units}
+				/>
+
+				<ConfigValue
+					title="Version"
+					icon={iconTag}
+					value={`SurrealDB ${instance?.version}`}
+				/>
+
 				<Group>
-					<Group
-						title="Version"
-						gap="sm"
-						h={32}
-					>
-						<ThemeIcon
-							color="slate"
-							radius="xs"
-						>
-							<Icon
-								path={iconTag}
-								size="lg"
-								c="slate"
-							/>
-						</ThemeIcon>
-						<Text fw={600}>Version: </Text>
-						<Text c="bright">SurrealDB {instance?.version}</Text>
-					</Group>
-				</Group>
-				<Group>
-					<Group
+					<ConfigValue
 						title="Storage"
-						gap="sm"
-						h={32}
+						icon={iconDatabase}
+						value="8.0 GB"
+						flex={1}
+					/>
+
+					<Button
+						variant="light"
+						color="slate"
+						rightSection={<Icon path={iconChevronRight} />}
+						onClick={editingHandle.open}
+						disabled={!instance}
+						my={-2}
 					>
-						<ThemeIcon
-							color="slate"
-							radius="xs"
-						>
-							<Icon
-								path={iconDatabase}
-								size="lg"
-								c="slate"
-							/>
-						</ThemeIcon>
-						<Text fw={600}>Disk size: </Text>
-						<Text c="bright">8.0 GB</Text>
-					</Group>
+						Configure
+					</Button>
 				</Group>
 			</Stack>
+
+			{instance && (
+				<ConfigurationDrawer
+					opened={editing}
+					instance={instance}
+					onClose={editingHandle.close}
+				/>
+			)}
 		</Paper>
+	);
+}
+
+interface ConfigValueProps extends BoxProps {
+	title: string;
+	icon: string;
+	value: ReactNode;
+}
+
+function ConfigValue({ title, icon, value, ...other }: ConfigValueProps) {
+	return (
+		<Group
+			gap="sm"
+			h={32}
+			{...other}
+		>
+			<ThemeIcon
+				color="slate"
+				radius="xs"
+			>
+				<Icon
+					path={icon}
+					size="lg"
+					c="slate"
+				/>
+			</ThemeIcon>
+			<Group gap="xs">
+				<Text fw={600}>{title}: </Text>
+				<Text c="bright">{value}</Text>
+			</Group>
+		</Group>
 	);
 }

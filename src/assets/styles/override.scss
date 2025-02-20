@@ -145,6 +145,7 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-Tabs-tab {
+	border: 1px solid transparent;
 
 	&:hover {
 		background-color: var(--mantine-color-slate-7);
@@ -158,11 +159,11 @@ body.mod .cm-record-link:hover {
 	&[data-active] {
 		background: var(--surrealist-gradient);
 		background-origin: border-box;
-		border: 1px solid rgba(255, 255, 255, 0.3);
+		border-color: rgba(255, 255, 255, 0.3);
 		border-radius: var(--mantine-radius-xs);
 
 		@include light {
-			border: none;
+			border-color: none;
 		}
 	}
 }

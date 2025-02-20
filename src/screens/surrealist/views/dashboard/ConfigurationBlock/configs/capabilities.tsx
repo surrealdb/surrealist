@@ -1,38 +1,45 @@
 import classes from "../style.module.scss";
 
 import {
-	ActionIcon,
-	Alert,
-	Box,
-	Button,
-	Checkbox,
-	Collapse,
-	Group,
-	List,
+	Stack,
 	Paper,
-	SegmentedControl,
-	SimpleGrid,
-	Switch,
-	Text,
-	TextInput,
+	Group,
+	Button,
+	Box,
+	Checkbox,
 	UnstyledButton,
+	Collapse,
+	SimpleGrid,
+	TextInput,
+	List,
+	ActionIcon,
+	Text,
+	ScrollArea,
+	Divider,
+	Tooltip,
+	Alert,
 } from "@mantine/core";
 
-import { Stack } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { closeAllModals, openModal } from "@mantine/modals";
 import { ReactNode, useMemo, useState } from "react";
 import { BetaBadge } from "~/components/BetaBadge";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import type { CloudInstance, Selectable } from "~/types";
-import { iconChevronDown, iconClose, iconPlus } from "~/util/icons";
+import { CloudInstance, Selectable } from "~/types";
+import {
+	iconChevronDown,
+	iconPlus,
+	iconClose,
+	iconHelp,
+	iconCheck,
+	iconCancel,
+	iconChevronUp,
+} from "~/util/icons";
 
 const RPCS = [
 	"use",
@@ -75,26 +82,12 @@ const ENDPOINTS = [
 	"ml",
 ];
 
-export async function openCapabilitiesModal(instance: CloudInstance) {
-	openModal({
-		size: "lg",
-		title: (
-			<Box>
-				<PrimaryTitle>Instance capabilities</PrimaryTitle>
-				<Text fz="lg">{instance.name}</Text>
-			</Box>
-		),
-		children: <CapabilitiesModal instance={instance} />,
-	});
-}
-
-interface CapabilitiesModalProps {
+export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;
+	onClose: () => void;
 }
 
-function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
-	const isLight = useIsLight();
-
+export function ConfigurationCapabilities({ onClose }: ConfigurationCapabilitiesProps) {
 	const [scripting, setScripting] = useState(false);
 	const [guestAccess, setGuestAccess] = useState(false);
 	const [graphQL, setGraphQL] = useState(false);
@@ -118,94 +111,136 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 	}, []);
 
 	return (
-		<Stack h="100%">
-			<Text mb="lg">
-				You can configure the capabilities of this instance to control fine-grained access
-				to individual features, functions, and endpoints.
-			</Text>
+		<Stack
+			h="100%"
+			gap={0}
+		>
+			<Divider />
 
-			<Alert
-				title="Note"
-				color="blue"
+			<Box
+				pos="relative"
+				flex={1}
 			>
-				The ability to configure instance capabilities is not currently available.
-			</Alert>
+				<ScrollArea
+					pos="absolute"
+					inset={0}
+					className={classes.scrollArea}
+				>
+					<Stack
+						gap="sm"
+						p="xl"
+						mih="100%"
+					>
+						<Box mb="xl">
+							<Text
+								fz="xl"
+								c="bright"
+								fw={600}
+							>
+								Manage capabilities
+							</Text>
 
-			<Paper
-				bg={isLight ? "slate.0" : "slate.9"}
-				p="xl"
-			>
-				<Stack gap="xl">
-					<BinaryCapability
-						name="Scripting"
-						description="Allow execution of embedded scripting functions"
-						value={scripting}
-						onChange={setScripting}
-						disabled
-					/>
+							<Text
+								mt="sm"
+								fz="lg"
+							>
+								Configure instance capabilities to control the functionality
+								available to users, opt-in to beta features, and restrict access to
+								specific resources.
+							</Text>
+						</Box>
 
-					<BinaryCapability
-						name="Guest Access"
-						description="Allow non-authenticated users to execute queries when authentication is enabled"
-						value={guestAccess}
-						onChange={setGuestAccess}
-						disabled
-					/>
+						<Alert
+							mb="xl"
+							color="blue"
+							title="Coming soon"
+						>
+							Customized capabilities will be available in a future update
+						</Alert>
 
-					<BinaryCapability
-						name={
-							<Group gap="xs">
-								GraphQL
-								<BetaBadge />
-							</Group>
-						}
-						description="Allow execution queries using the GraphQL API"
-						value={graphQL}
-						onChange={setGraphQL}
-						disabled
-					/>
+						<BinaryCapability
+							name="Scripting"
+							description="Allow execution of embedded scripting functions"
+							value={scripting}
+							onChange={setScripting}
+							disabled
+						/>
 
-					<OptionsCapability
-						data={rpcs}
-						name="Enabled RPC methods"
-						description="Select which RPC methods are available for use"
-						value={enabledRpcs}
-						onChange={setEnabledRpcs}
-						disabled
-					/>
+						<Divider />
 
-					<OptionsCapability
-						data={endpoints}
-						name="Enabled HTTP endpoints"
-						description="Select which HTTP endpoints are available for use"
-						value={enabledEndpoints}
-						onChange={setEnabledEndpoints}
-						disabled
-					/>
+						<BinaryCapability
+							name="Guest Access"
+							description="Allow non-authenticated users to execute queries when authentication is enabled"
+							value={guestAccess}
+							onChange={setGuestAccess}
+							disabled
+						/>
 
-					<GranularCapability
-						name="Network access"
-						description="Configure outbound network access to specific targets"
-						what="network targets"
-						value={networkAccess}
-						onChange={setNetworkAccess}
-						disabled
-					/>
+						<Divider />
 
-					<GranularCapability
-						name="Functions"
-						description="Configure enabled functions for use in queries"
-						what="functions"
-						value={functions}
-						onChange={setFunctions}
-						disabled
-					/>
-				</Stack>
-			</Paper>
+						<BinaryCapability
+							name={
+								<Group gap="xs">
+									GraphQL
+									<BetaBadge />
+								</Group>
+							}
+							description="Allow execution queries using the GraphQL API"
+							value={graphQL}
+							onChange={setGraphQL}
+							disabled
+						/>
 
-			<Group mt="md">
+						<Divider />
+
+						<OptionsCapability
+							data={rpcs}
+							name="Enabled RPC methods"
+							description="Select which RPC methods are available for use"
+							value={enabledRpcs}
+							onChange={setEnabledRpcs}
+							disabled
+						/>
+
+						<Divider />
+
+						<OptionsCapability
+							data={endpoints}
+							name="Enabled HTTP endpoints"
+							description="Select which HTTP endpoints are available for use"
+							value={enabledEndpoints}
+							onChange={setEnabledEndpoints}
+							disabled
+						/>
+
+						<Divider />
+
+						<GranularCapability
+							name="Network access"
+							description="Configure outbound network access to specific targets"
+							what="network targets"
+							value={networkAccess}
+							onChange={setNetworkAccess}
+							disabled
+						/>
+
+						<Divider />
+
+						<GranularCapability
+							name="Functions"
+							description="Configure enabled functions for use in queries"
+							what="functions"
+							value={functions}
+							onChange={setFunctions}
+							disabled
+						/>
+					</Stack>
+				</ScrollArea>
+			</Box>
+
+			<Group p="xl">
 				<Button
-					onClick={() => closeAllModals()}
+					onClick={onClose}
 					color="slate"
 					variant="light"
 					flex={1}
@@ -218,14 +253,14 @@ function CapabilitiesModal({ instance }: CapabilitiesModalProps) {
 					disabled
 					flex={1}
 				>
-					Save changes
+					Apply capabilities
 				</Button>
 			</Group>
 		</Stack>
 	);
 }
 
-export interface CapabilityProps<V> {
+interface CapabilityProps<V> {
 	name: ReactNode;
 	description?: ReactNode;
 	value: V;
@@ -241,24 +276,27 @@ function BinaryCapability({
 	onChange,
 }: CapabilityProps<boolean>) {
 	return (
-		<Group>
-			<Box>
-				<Text
-					fz="lg"
-					fw={500}
-					c="bright"
-				>
-					{name}
-				</Text>
-				{description && (
-					<Text
-						fz="sm"
-						c="slate"
-					>
-						{description}
-					</Text>
-				)}
-			</Box>
+		<Group
+			gap="xs"
+			mih={36}
+		>
+			<Text
+				fz="lg"
+				fw={500}
+				c="bright"
+			>
+				{name}
+			</Text>
+			{description && (
+				<Tooltip label={description}>
+					<div>
+						<Icon
+							path={iconHelp}
+							size="sm"
+						/>
+					</div>
+				</Tooltip>
+			)}
 			<Spacer />
 			<Checkbox
 				checked={value}
@@ -277,6 +315,7 @@ function OptionsCapability({
 	disabled,
 	onChange,
 }: CapabilityProps<string[]> & { data: Selectable[] }) {
+	const isLight = useIsLight();
 	const [isExpanded, expandedHandle] = useBoolean();
 
 	const updateSelection = (event: React.ChangeEvent<HTMLInputElement>, item: string) => {
@@ -295,25 +334,28 @@ function OptionsCapability({
 				: `${value.length} Enabled`;
 
 	return (
-		<>
-			<Group>
-				<Box>
-					<Text
-						fz="lg"
-						fw={500}
-						c="bright"
-					>
-						{name}
-					</Text>
-					{description && (
-						<Text
-							fz="sm"
-							c="slate"
-						>
-							{description}
-						</Text>
-					)}
-				</Box>
+		<Box>
+			<Group
+				gap="xs"
+				mih={36}
+			>
+				<Text
+					fz="lg"
+					fw={500}
+					c="bright"
+				>
+					{name}
+				</Text>
+				{description && (
+					<Tooltip label={description}>
+						<div>
+							<Icon
+								path={iconHelp}
+								size="sm"
+							/>
+						</div>
+					</Tooltip>
+				)}
 				<Spacer />
 				<UnstyledButton onClick={expandedHandle.toggle}>
 					<Group
@@ -321,14 +363,13 @@ function OptionsCapability({
 						gap="sm"
 					>
 						<Text>{text}</Text>
-						<Icon path={iconChevronDown} />
+						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />
 					</Group>
 				</UnstyledButton>
 			</Group>
 			<Collapse in={isExpanded}>
 				<Paper
-					bd="1px solid var(--surrealist-divider-color)"
-					bg="transparent"
+					bg={isLight ? "slate.0" : "slate.7"}
 					p="md"
 				>
 					<SimpleGrid cols={3}>
@@ -344,7 +385,7 @@ function OptionsCapability({
 					</SimpleGrid>
 				</Paper>
 			</Collapse>
-		</>
+		</Box>
 	);
 }
 
@@ -356,14 +397,12 @@ function GranularCapability({
 	disabled,
 	onChange,
 }: CapabilityProps<{ base: boolean; overrides: string[] }> & { what: string }) {
+	const isLight = useIsLight();
 	const [isExpanded, expandedHandle] = useBoolean();
 	const [override, setOverride] = useInputState("");
 
-	const setBase = useStable((base: string) => {
-		onChange({
-			...value,
-			base: base === "allow",
-		});
+	const setBase = useStable((base: boolean) => {
+		onChange({ ...value, base });
 	});
 
 	const addOverride = useStable(() => {
@@ -378,25 +417,28 @@ function GranularCapability({
 	});
 
 	return (
-		<>
-			<Group>
-				<Box>
-					<Text
-						fz="lg"
-						fw={500}
-						c="bright"
-					>
-						{name}
-					</Text>
-					{description && (
-						<Text
-							fz="sm"
-							c="slate"
-						>
-							{description}
-						</Text>
-					)}
-				</Box>
+		<Box>
+			<Group
+				gap="xs"
+				mih={36}
+			>
+				<Text
+					fz="lg"
+					fw={500}
+					c="bright"
+				>
+					{name}
+				</Text>
+				{description && (
+					<Tooltip label={description}>
+						<div>
+							<Icon
+								path={iconHelp}
+								size="sm"
+							/>
+						</div>
+					</Tooltip>
+				)}
 				<Spacer />
 				<UnstyledButton onClick={expandedHandle.toggle}>
 					<Group
@@ -408,36 +450,38 @@ function GranularCapability({
 							{value.overrides.length > 0 && `, ${value.overrides.length} exceptions`}
 						</Text>
 
-						<Icon path={iconChevronDown} />
+						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />
 					</Group>
 				</UnstyledButton>
 			</Group>
 			<Collapse in={isExpanded}>
 				<Paper
-					bd="1px solid var(--surrealist-divider-color)"
-					bg="transparent"
+					bg={isLight ? "slate.0" : "slate.7"}
 					p="md"
 				>
-					<SegmentedControl
-						fullWidth
-						className={classes.whitelistSwitch}
-						value={value.base ? "allow" : "deny"}
-						onChange={setBase}
-						disabled={disabled}
-						data={[
-							{
-								label: `Allow all ${what}`,
-								value: "allow",
-							},
-							{
-								label: `Deny all ${what}`,
-								value: "deny",
-							},
-						]}
-					/>
-					<Label mt="xl">
-						Override and {value.base ? "deny" : "allow"} specific {what}
-					</Label>
+					<SimpleGrid cols={2}>
+						<Button
+							color="red"
+							disabled={disabled}
+							variant={value.base ? "transparent" : "light"}
+							leftSection={<Icon path={iconCancel} />}
+							onClick={() => setBase(false)}
+							c={disabled ? undefined : isLight ? "red.8" : "red.4"}
+						>
+							Deny all {what}
+						</Button>
+						<Button
+							color="green"
+							disabled={disabled}
+							variant={value.base ? "light" : "transparent"}
+							leftSection={<Icon path={iconCheck} />}
+							onClick={() => setBase(true)}
+							c={disabled ? undefined : isLight ? "green.8" : "green.4"}
+						>
+							Allow all {what}
+						</Button>
+					</SimpleGrid>
+					<Label mt="xl">{value.base ? "Denied" : "Allowed"} exceptions</Label>
 					<Form onSubmit={addOverride}>
 						<Group mt="md">
 							<TextInput
@@ -491,6 +535,6 @@ function GranularCapability({
 					)}
 				</Paper>
 			</Collapse>
-		</>
+		</Box>
 	);
 }

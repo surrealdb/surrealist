@@ -113,7 +113,7 @@ export function DashboardView() {
 						<ConnectBlock instance={details} />
 					</SimpleGrid>
 
-					<SimpleGrid
+					{/* <SimpleGrid
 						cols={3}
 						spacing="xl"
 					>
@@ -127,7 +127,7 @@ export function DashboardView() {
 							loading={usagePending}
 						/>
 						<BackupsBlock />
-					</SimpleGrid>
+					</SimpleGrid> */}
 				</Stack>
 			</ScrollArea>
 		</Box>

@@ -7,7 +7,7 @@ import { openConnectCli } from "~/screens/surrealist/cloud-panel/modals/connect-
 import { openConnectCurl } from "~/screens/surrealist/cloud-panel/modals/connect-curl";
 import { openConnectSdk } from "~/screens/surrealist/cloud-panel/modals/connect-sdk";
 import { CloudInstance } from "~/types";
-import { iconAPI, iconChevronRight, iconConsole } from "~/util/icons";
+import { iconAPI, iconChevronRight, iconConsole, iconTransfer } from "~/util/icons";
 
 interface ConnectActionProps {
 	title: string;
@@ -89,7 +89,7 @@ export function ConnectBlock({ instance }: ConnectBlockProps) {
 			<ConnectAction
 				title="Connect with HTTP cURL"
 				subtitle="For HTTP only environments"
-				icon={iconConsole}
+				icon={iconTransfer}
 				onClick={() => instance && openConnectCurl(instance)}
 			/>
 		</Box>

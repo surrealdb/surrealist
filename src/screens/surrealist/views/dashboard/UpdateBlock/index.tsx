@@ -17,6 +17,7 @@ export function UpdateBlock({ instance }: UpdateBlockProps) {
 
 	const versions = instance?.available_versions ?? [];
 	const release = versions[0] ?? "";
+	const visible = release && instance?.state === "ready";
 
 	const handleChangelog = useStable(() => {
 		adapter.openUrl(`https://surrealdb.com/releases#v${release.replaceAll(".", "-")}`);
@@ -44,7 +45,7 @@ export function UpdateBlock({ instance }: UpdateBlockProps) {
 	});
 
 	return (
-		release && (
+		visible && (
 			<Alert
 				color="surreal"
 				title="Update available"
@@ -56,7 +57,6 @@ export function UpdateBlock({ instance }: UpdateBlockProps) {
 						size="xs"
 						variant="gradient"
 						onClick={handleUpdate}
-						disabled={instance?.state !== "ready"}
 					>
 						Update instance
 					</Button>

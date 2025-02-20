@@ -1,8 +1,10 @@
+import classes from "./style.module.scss";
+
 import { Box } from "@mantine/core";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { clamp } from "~/util/helpers";
-import classes from "./style.module.scss";
+import { update } from "@intercom/messenger-js-sdk";
 
 export interface DrawerResizerProps {
 	minSize: number;
@@ -10,21 +12,27 @@ export interface DrawerResizerProps {
 	onResize: (width: number) => void;
 }
 
-export function DrawerResizer({
-	minSize,
-	maxSize,
-	onResize,
-}: DrawerResizerProps) {
+export function DrawerResizer({ minSize, maxSize, onResize }: DrawerResizerProps) {
 	const [isResizing, setIsResizing] = useState(false);
 	const resizer = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		update({
+			hide_default_launcher: true,
+		});
+
+		return () => {
+			update({
+				hide_default_launcher: false,
+			});
+		};
+	}, []);
 
 	useEffect(() => {
 		const onMouseMove = (event: MouseEvent) => {
 			if (resizer.current) {
 				event.preventDefault();
-				onResize(
-					clamp(window.innerWidth - event.clientX, minSize, maxSize),
-				);
+				onResize(clamp(window.innerWidth - event.clientX, minSize, maxSize));
 			}
 		};
 
@@ -62,7 +70,11 @@ export function DrawerResizer({
 			pr={7}
 			className={clsx(classes.root, isResizing && classes.active)}
 		>
-			<Box w={3} h="100%" className={classes.resizer} />
+			<Box
+				w={3}
+				h="100%"
+				className={classes.resizer}
+			/>
 		</Box>
 	);
 }
