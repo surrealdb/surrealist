@@ -45,6 +45,7 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `
+				import { Surreal, RecordID } from "surrealdb";
 				const db = new Surreal();
 
 				// Open a connection and authenticate
@@ -56,35 +57,102 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 						password: "${password}",
 					}
 				});
+				// Create record
+				await db.create(new RecordID("person"), {
+					first: "John",
+					last: "Doe",
+					marketing: true,
+					tags: ["python", "documentation"],
+				});
+
+				// Select all records in person table
+				console.log(await db.select("person"));
+
+				await db.close();
 			`,
 			csharp: `
+
 				using SurrealDb.Net;
+				using SurrealDb.Net.Models;
 				using SurrealDb.Net.Models.Auth;
-
-				// Open a connection
+				using System.Text.Json;
+				
+				const string TABLE = "person";
+				
 				using var db = new SurrealDbClient("wss://${instance.host}/rpc");
-
-				// Select a namespace and database
+				
+				await db.SignIn(new RootAuth { Username = "${username}", Password = "${password}" });
 				await db.Use("${namespace}", "${database}");
-
-				// Authenticate
-				await db.SignIn(new RootAuth
+				
+				var person = new Person
 				{
-					Username = "${username}",
-					Password = "${password}",
-				});
+					Title = "Founder & CEO",
+					Name = new() { FirstName = "Tobie", LastName = "Morgan Hitchcock" },
+					Marketing = true
+				};
+				var created = await db.Create(TABLE, person);
+				Console.WriteLine(ToJsonString(created));
+				
+				var updated = await db.Merge<ResponsibilityMerge, Person>(
+					new() { Id = (TABLE, "jaime"), Marketing = true }
+				);
+				Console.WriteLine(ToJsonString(updated));
+				
+				var people = await db.Select<Person>(TABLE);
+				Console.WriteLine(ToJsonString(people));
+				
+				var queryResponse = await db.Query(
+					$"SELECT Marketing, count() AS Count FROM type::table({TABLE}) GROUP BY Marketing"
+				);
+				var groups = queryResponse.GetValue<List<Group>>(0);
+				Console.WriteLine(ToJsonString(groups));
+				
+				static string ToJsonString(object? o)
+				{
+					return JsonSerializer.Serialize(o, new JsonSerializerOptions { WriteIndented = true, });
+				}
+				
+				public class Person : Record
+				{
+					public string? Title { get; set; }
+					public Name? Name { get; set; }
+					public bool Marketing { get; set; }
+				}
+				public class Name
+				{
+					public string? FirstName { get; set; }
+					public string? LastName { get; set; }
+				}
+				public class ResponsibilityMerge : Record
+				{
+					public bool Marketing { get; set; }
+				}
+				public class Group
+				{
+					public bool Marketing { get; set; }
+					public int Count { get; set; }
+				}
 			`,
 			py: `
+from surrealdb import Surreal, RecordID
+
 				# Open a connection
-				async with Surreal(url="wss://${instance.host}") as db:
+				with Surreal(url="wss://${instance.host}") as db:
 
 					# Select a namespace and database
-					await db.use("${namespace}", "${database}")
+					db.use("${namespace}", "${database}")
 
 					# Authenticate
-					await db.sign_in(username="${username}", password="${password}")
+					db.signin(username="${username}", password="${password}")
 
-					
+					# Create a record
+					db.create(RecordID("grocery", "1"), {
+						"name": "Banana",
+						"quantity": 10,
+					})
+
+					# Select a specific record
+					print(db.select(RecordID("grocery", "1")))
 			`,
 			php: `
 				$db = new \\Surreal\\Surreal();
@@ -102,17 +170,38 @@ function ConnectSdkModal({ instance }: ConnectSdkModalProps) {
 				]);
 			`,
 			rust: `
-				// Open a connection
-				let db = any::connect("wss://${instance.host}").await?;
+				use serde::{Deserialize, Serialize};
+				use surrealdb::engine::any;
+				use surrealdb::opt::auth::Root;
+				use tokio;
 
-				// Select a namespace and database
-				db.use_ns("${namespace}").use_db("${database}").await?;
+				#[derive(Debug, Serialize, Deserialize)]
+				struct Person {
+					name: String,
+				}
 
-				// Authenticate
-				db.signin(Root {
-					username: "${username}",
-					password: "${password}",
-				}).await?;
+				#[tokio::main]
+				async fn main() -> Result<(), Box<dyn std::error::Error>> {
+					// Open a connection
+					let db = any::connect("wss://${instance.host}").await?;
+
+					// Select a namespace and database
+					db.use_ns("${namespace}").use_db("${database}").await?;
+
+					// Authenticate
+					db.signin(Root {
+						username: "${username}",
+						password: "${password}",
+					}).await?;
+
+					db.query("CREATE person:john SET name = 'John Doe', age = 25").await?.check()?;
+
+					// Query that person
+					let john: Option<Person> = db.select(("person", "john")).await?;
+					dbg!(john);
+
+				Ok(())
+				}
 			`,
 			java: `
 				try (final Surreal db = new Surreal()) {
