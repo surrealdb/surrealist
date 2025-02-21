@@ -1,4 +1,9 @@
-import { EditorSelection, StateEffect, StateField } from "@codemirror/state";
+import {
+	EditorSelection,
+	SelectionRange,
+	StateEffect,
+	StateField,
+} from "@codemirror/state";
 import type { Command, EditorView } from "@codemirror/view";
 import {
 	executeGraphql,
@@ -61,9 +66,9 @@ export const executeEditorQuery: Command = (view: EditorView) => {
 				if (!query) continue;
 
 				const [from, to] = query;
-				override += editor.state.sliceDoc(from, to) + ";\n";
+				override += `${editor.state.sliceDoc(from, to)};\n`;
 			} else {
-				override += editor.state.sliceDoc(range.from, range.to) + ";\n";
+				override += `${editor.state.sliceDoc(range.from, range.to)};\n`;
 			}
 		}
 	}
@@ -79,20 +84,27 @@ export const executeEditorQuery: Command = (view: EditorView) => {
  * Select the query the cursor is currently in
  */
 export const selectCursorQuery: Command = (view: EditorView) => {
-	const range = getQueryRange(view);
+	const ranges = [] as SelectionRange[];
 
-	if (range) {
+	for (const selection of view.state.selection.ranges) {
+		const range = getQueryRange(view, selection.head);
+		if (!range) {
+			continue;
+		}
+
 		const [from, to] = range;
-		const selection = EditorSelection.single(from, to);
+		ranges.push(EditorSelection.range(from, to));
+	}
 
-		view.dispatch({
-			selection,
-		});
-
+	if (!ranges.length) {
 		return true;
 	}
 
-	return false;
+	view.dispatch({
+		selection: EditorSelection.create(ranges),
+	});
+
+	return true;
 };
 
 /**
