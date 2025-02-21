@@ -1,6 +1,6 @@
 import { redo, redoSelection, undo, undoSelection } from "@codemirror/commands";
 import type { KeyBinding } from "@codemirror/view";
-import { suggestCompletions } from "./commands";
+import { addCursorAbove, addCursorBelow, suggestCompletions } from "./commands";
 import { executeGraphqlEditorQuery, selectCursorQuery } from "./query";
 
 /**
@@ -42,4 +42,12 @@ export const runGraphqlQueryKeymap: readonly KeyBinding[] = [
 export const graphqlSuggestions: readonly KeyBinding[] = [
 	{ key: "Enter", run: suggestCompletions },
 	{ key: "Shift-(", run: suggestCompletions },
+];
+
+/**
+ * A keymap used to add a cursor below and above the current position
+ */
+export const addCursorVerticallyKeymap: readonly KeyBinding[] = [
+	{ key: "Mod-Alt-ArrowUp", run: addCursorAbove },
+	{ key: "Mod-Alt-ArrowDown", run: addCursorBelow },
 ];

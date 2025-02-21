@@ -27,7 +27,7 @@ import {
 } from "@codemirror/view";
 import { indentationMarkers } from "@replit/codemirror-indentation-markers";
 import { acceptWithTab } from "./keybinds";
-import { customHistoryKeymap } from "./keymaps";
+import { addCursorVerticallyKeymap, customHistoryKeymap } from "./keymaps";
 
 /**
  * Shared base configuration for all full editors
@@ -58,6 +58,7 @@ export const editorBase = (): Extension => [
 		wholeWords: true,
 	}),
 	keymap.of([
+		...addCursorVerticallyKeymap,
 		acceptWithTab,
 		indentWithTab,
 		...closeBracketsKeymap,
