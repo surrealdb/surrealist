@@ -510,6 +510,7 @@ export interface CloudInstance {
 	region: string;
 	version: string;
 	compute_units: number;
+	available_versions: string[];
 	state: InstanceState;
 	type: CloudInstanceType;
 }
