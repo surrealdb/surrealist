@@ -444,36 +444,58 @@ export function BillingPage() {
 									mt="md"
 								>
 									<Table.Tbody>
-										{couponQuery.data?.map((coupon) => (
-											<Table.Tr
-												key={coupon.id}
-												h={42}
-											>
-												<Table.Td c="bright">{coupon.name}</Table.Td>
-												<Table.Td>
-													<Text
-														c="bright"
-														span
-													>
-														$
-														{(coupon.amount_remaining / 100).toFixed(2)}
-													</Text>{" "}
-													remaining
-												</Table.Td>
-												<Table.Td
-													w={0}
-													pr="md"
-													style={{ textWrap: "nowrap" }}
+										{couponQuery.data?.map((coupon) => {
+											const expiry = new Date(coupon.expires_at);
+											const hasExpiry = coupon.expires_at !== 0;
+											const hasExpired = hasExpiry && expiry < new Date();
+
+											return (
+												<Table.Tr
+													key={coupon.id}
+													h={42}
 												>
-													expires{" "}
-													{formatDistance(
-														new Date(coupon.expires_at),
-														new Date(),
-														{ addSuffix: true },
+													<Table.Td
+														c="bright"
+														td={hasExpired ? "line-through" : "initial"}
+													>
+														{coupon.name}
+													</Table.Td>
+													<Table.Td>
+														<Text
+															c="bright"
+															span
+														>
+															$
+															{(
+																coupon.amount_remaining / 100
+															).toFixed(2)}
+														</Text>{" "}
+														remaining
+													</Table.Td>
+													{!hasExpiry ? (
+														<Table.Td
+															w={0}
+															pr="md"
+															style={{ textWrap: "nowrap" }}
+														>
+															No expiry
+														</Table.Td>
+													) : (
+														<Table.Td
+															w={0}
+															pr="md"
+															style={{ textWrap: "nowrap" }}
+															c={hasExpired ? "red" : undefined}
+														>
+															{hasExpired ? "expired " : "expires "}
+															{formatDistance(expiry, new Date(), {
+																addSuffix: true,
+															})}
+														</Table.Td>
 													)}
-												</Table.Td>
-											</Table.Tr>
-										))}
+												</Table.Tr>
+											);
+										})}
 									</Table.Tbody>
 								</Table>
 							</>
