@@ -24,7 +24,7 @@ import { iconAccount, iconCreditCard, iconHelp, iconOpen } from "~/util/icons";
 import { useInputState, useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
-import { capitalize } from "radash";
+import { capitalize, fork } from "radash";
 import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
@@ -36,7 +36,7 @@ import { Spacer } from "~/components/Spacer";
 import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import type { InvoiceStatus } from "~/types";
+import type { CloudCoupon, InvoiceStatus } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
 import { fetchAPI, updateCloudInformation } from "../../api";
 import { Section } from "../../components/Section";
@@ -47,6 +47,18 @@ import { useCloudPaymentsQuery } from "../../hooks/payments";
 import { useCloudOrgUsageQuery } from "../../hooks/usage";
 import { openBillingDetails } from "../../modals/billing";
 import { measureComputeCost } from "../../util/measurements";
+
+function isCouponIndefinite(coupon: CloudCoupon) {
+	return new Date(coupon.expires_at).getFullYear() === 1;
+}
+
+function isCouponActive(coupon: CloudCoupon) {
+	if (coupon.amount_remaining <= 0) {
+		return false;
+	}
+
+	return new Date(coupon.expires_at) > new Date() || isCouponIndefinite(coupon);
+}
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },
@@ -146,12 +158,25 @@ export function BillingPage() {
 		});
 	});
 
-	const couponCount = couponQuery.data?.length ?? 0;
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
 	const usageCharge = measureComputeCost(usageQuery.data ?? []);
-	const hasCoupons = couponQuery.isSuccess && couponQuery.data.length > 0;
+
+	const coupons = (couponQuery.data ?? []).sort((a, b) => {
+		const aActive = isCouponActive(a);
+		const bActive = isCouponActive(b);
+
+		if (aActive && !bActive) {
+			return -1;
+		}
+
+		if (!aActive && bActive) {
+			return 1;
+		}
+
+		return 0;
+	});
 
 	return (
 		<Box
@@ -430,107 +455,84 @@ export function BillingPage() {
 							</Group>
 						</Form>
 
-						{hasCoupons && (
-							<>
-								<Text
-									fz="lg"
-									mt="xs"
-								>
-									There {couponCount === 1 ? "is" : "are"} {couponCount} active
-									discount code{couponCount === 1 ? "" : "s"}:
-								</Text>
-								<Table
-									className={classes.table}
-									mt="md"
-								>
-									<Table.Tbody>
-										{couponQuery.data?.map((coupon) => {
-											const expiry = new Date(coupon.expires_at);
-											const hasExpiry = coupon.expires_at !== 0;
-											const hasExpired = hasExpiry && expiry < new Date();
+						{coupons.length > 0 && (
+							<Table
+								className={classes.table}
+								mt="md"
+							>
+								<Table.Tbody>
+									{coupons.map((coupon) => {
+										const expiresAt = new Date(coupon.expires_at);
+										const isIndefinite = isCouponIndefinite(coupon);
+										const isExpired = !isIndefinite && expiresAt < new Date();
 
-											return (
-												<Table.Tr
-													key={coupon.id}
-													h={42}
+										return (
+											<Table.Tr
+												key={coupon.id}
+												h={42}
+											>
+												<Table.Td
+													c="bright"
+													td={isExpired ? "line-through" : undefined}
 												>
+													{coupon.name}
+												</Table.Td>
+												{isExpired ? (
 													<Table.Td
-														c="bright"
-														td={hasExpired ? "line-through" : "initial"}
+														w={0}
+														ta="right"
+														opacity={0.6}
 													>
-														{coupon.name}
+														&mdash;
 													</Table.Td>
-													<Table.Td>
-														<Text
-															c="bright"
-															span
+												) : (
+													<Table.Td
+														w={0}
+														ta="right"
+													>
+														<Group
+															wrap="nowrap"
+															gap="xs"
 														>
-															$
-															{(
-																coupon.amount_remaining / 100
-															).toFixed(2)}
-														</Text>{" "}
-														remaining
+															<Text c="bright">
+																$
+																{(
+																	coupon.amount_remaining / 100
+																).toFixed(2)}
+															</Text>
+															remaining
+														</Group>
 													</Table.Td>
-													{!hasExpiry ? (
-														<Table.Td
-															w={0}
-															pr="md"
-															style={{ textWrap: "nowrap" }}
-														>
-															No expiry
-														</Table.Td>
-													) : (
-														<Table.Td
-															w={0}
-															pr="md"
-															style={{ textWrap: "nowrap" }}
-															c={hasExpired ? "red" : undefined}
-														>
-															{hasExpired ? "expired " : "expires "}
-															{formatDistance(expiry, new Date(), {
-																addSuffix: true,
-															})}
-														</Table.Td>
-													)}
-												</Table.Tr>
-											);
-										})}
-									</Table.Tbody>
-								</Table>
-							</>
-							// <Stack>
-							// 	<Text
-							// 		fz="lg"
-							// 		mt="xs"
-							// 	>
-							// 		Active discount codes:
-							// 	</Text>
-							// 	{couponQuery.data.map((coupon) => (
-							// 		<Paper
-							// 			key={coupon.name}
-							// 			p="md"
-							// 		>
-							// 			<Group>
-							// 				<Text
-							// 					fw={600}
-							// 					c="bright"
-							// 				>
-							// 					{coupon.name}
-							// 				</Text>
-							// 				<Spacer />
-							// 				<Text
-							// 					c="bright"
-							// 					fw={500}
-							// 					span
-							// 				>
-							// 					${coupon.amount_remaining / 100}
-							// 				</Text>
-							// 				<Text>/${coupon.amount / 100} remaining</Text>
-							// 			</Group>
-							// 		</Paper>
-							// 	))}
-							// </Stack>
+												)}
+												{isIndefinite ? (
+													<Table.Td
+														w={200}
+														ta="end"
+														pr="md"
+														style={{ textWrap: "nowrap" }}
+													>
+														Does not expire
+													</Table.Td>
+												) : (
+													<Table.Td
+														w={200}
+														ta="end"
+														pr="md"
+														style={{ textWrap: "nowrap" }}
+														c={isExpired ? "red" : undefined}
+													>
+														{`${isExpired ? "Expired" : "Expires in"} ${formatDistance(
+															new Date(coupon.expires_at),
+															new Date(),
+															{ addSuffix: true },
+														)}`}
+													</Table.Td>
+												)}
+											</Table.Tr>
+										);
+									})}
+								</Table.Tbody>
+							</Table>
 						)}
 					</Section>
 

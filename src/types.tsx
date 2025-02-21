@@ -631,5 +631,5 @@ export interface CloudCoupon {
 	name: string;
 	amount: number;
 	amount_remaining: number;
-	expires_at: number;
+	expires_at: string;
 }
