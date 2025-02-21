@@ -202,17 +202,17 @@ export function Instance({ type, value, onDelete, onConnect }: Instance) {
 				</Menu.Item>
 				<Menu.Label mt="sm">Actions</Menu.Label>
 				<Menu.Item
+					leftSection={<Icon path={iconArrowUpRight} />}
+					onClick={() => openVersionUpgradeModal(value)}
+					disabled={value.available_versions.length === 0}
+				>
+					Update SurrealDB
+				</Menu.Item>
+				<Menu.Item
 					leftSection={<Icon path={iconTransfer} />}
 					onClick={() => openUsageModal(value)}
 				>
 					View instance usage
-				</Menu.Item>
-				<Menu.Item
-					leftSection={<Icon path={iconArrowUpRight} />}
-					onClick={() => openVersionUpgradeModal(value)}
-					disabled={!value.available_versions?.length}
-				>
-					Update SurrealDB
 				</Menu.Item>
 				<Menu.Item
 					leftSection={<Icon path={iconCopy} />}

@@ -2,7 +2,7 @@ import { Box, Button, Group, Paper, Select, Text } from "@mantine/core";
 
 import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
@@ -30,17 +30,23 @@ interface VersionUpgradeProps {
 
 function VersionUpgrade({ instance }: VersionUpgradeProps) {
 	const isLight = useIsLight();
+	const client = useQueryClient();
 
-	const [version, setVersion] = useInputState("");
+	const [version, setVersion] = useInputState(instance.available_versions[0] ?? "");
 
 	const { mutateAsync, isPending } = useMutation({
-		mutationFn: (version: string) =>
-			fetchAPI(`/instances/${instance.id}/version`, {
+		mutationFn: async (version: string) => {
+			await fetchAPI(`/instances/${instance.id}/version`, {
 				method: "PATCH",
 				body: JSON.stringify({
 					version,
 				}),
-			}),
+			});
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "instances"],
+			});
+		},
 	});
 
 	const requestUpdate = useStable(() => {
@@ -56,11 +62,14 @@ function VersionUpgrade({ instance }: VersionUpgradeProps) {
 				p="xl"
 			>
 				<Stack gap="xl">
-					<Text>Select which version of SurrealDB you want this instance to run</Text>
+					<Text>
+						Update the version of SurrealDB used by this instance to use the latest
+						features and improvements.
+					</Text>
 
 					<Select
 						data={instance.available_versions}
-						placeholder={instance.version}
+						label="Select a version"
 						value={version}
 						onChange={setVersion}
 					/>
@@ -84,7 +93,7 @@ function VersionUpgrade({ instance }: VersionUpgradeProps) {
 					loading={isPending}
 					flex={1}
 				>
-					Update
+					Apply update
 				</Button>
 			</Group>
 		</Stack>
