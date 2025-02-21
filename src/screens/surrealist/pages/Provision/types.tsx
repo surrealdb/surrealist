@@ -4,7 +4,6 @@ export interface ProvisionConfig {
 	name: string;
 	version: string;
 	region: string;
-	category: string;
 	type: string;
 	units: number;
 }

@@ -1,6 +1,8 @@
 import classes from "../style.module.scss";
 
 import { Stack, Box, Divider, ScrollArea, Group, Button, Text } from "@mantine/core";
+import { useState } from "react";
+import { InstanceTypes } from "~/components/InstanceTypes";
 import { CloudInstance } from "~/types";
 
 export interface ConfigurationInstanceTypeProps {
@@ -9,6 +11,9 @@ export interface ConfigurationInstanceTypeProps {
 }
 
 export function ConfigurationInstanceType({ instance, onClose }: ConfigurationInstanceTypeProps) {
+	const [selected, setSelected] = useState(instance.type.slug);
+	const defaultCategory = instance.type.category;
+
 	return (
 		<Stack
 			h="100%"
@@ -47,7 +52,11 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 								your instance, including memory and CPU.
 							</Text>
 						</Box>
-						TODO
+						<InstanceTypes
+							value={selected}
+							defaultCategory={defaultCategory}
+							onChange={setSelected}
+						/>
 					</Stack>
 				</ScrollArea>
 			</Box>
