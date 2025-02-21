@@ -1,15 +1,15 @@
 import { Box, Button, Group, Paper, Select, Text } from "@mantine/core";
 
 import { Stack } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance } from "~/types";
 import { fetchAPI } from "../../../api";
-import { useStable } from "~/hooks/stable";
-import { useInputState } from "@mantine/hooks";
 
 export async function openVersionUpgradeModal(instance: CloudInstance) {
 	openModal({

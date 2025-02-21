@@ -48,8 +48,8 @@ import { fetchAPI } from "../../api";
 import { openCapabilitiesModal } from "./modals/capabilities";
 import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
-import { openUsageModal } from "./modals/view-usage";
 import { openVersionUpgradeModal } from "./modals/upgrade-version";
+import { openUsageModal } from "./modals/view-usage";
 
 export type ConnectMethod = "sdk" | "cli" | "curl" | "surrealist";
 
