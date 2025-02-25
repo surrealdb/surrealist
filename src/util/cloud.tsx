@@ -2,6 +2,7 @@ import { CloudInstanceType } from "~/types";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { CloudMeasurement } from "~/types";
+import { adapter } from "~/adapter";
 
 /**
  * Measure the compute history
@@ -87,4 +88,11 @@ export function computeStorageSize(type: CloudInstanceType | undefined) {
 	}
 
 	return type.memory * 8;
+}
+
+/**
+ * Open the changelog for the given version
+ */
+export function openSurrealChangelog(version: string) {
+	adapter.openUrl(`https://surrealdb.com/releases#v${version.replaceAll(".", "-")}`);
 }

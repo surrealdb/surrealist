@@ -1,16 +1,28 @@
 import classes from "../style.module.scss";
 
-import { Stack, Box, Divider, ScrollArea, Group, Button, Text, Paper, Center } from "@mantine/core";
+import { Stack, Box, Divider, ScrollArea, Group, Button, Text } from "@mantine/core";
+import { useState } from "react";
 import { Icon } from "~/components/Icon";
+import { useStable } from "~/hooks/stable";
+import { Tile } from "~/screens/surrealist/cloud-panel/components/Tile";
 import { CloudInstance } from "~/types";
-import { iconCheck } from "~/util/icons";
+import { openSurrealChangelog } from "~/util/cloud";
+import { iconOpen } from "~/util/icons";
 
 export interface ConfigurationVersionProps {
 	instance: CloudInstance;
+	onUpdate: (version: string) => void;
 	onClose: () => void;
 }
 
-export function ConfigurationVersion({ instance, onClose }: ConfigurationVersionProps) {
+export function ConfigurationVersion({ instance, onUpdate, onClose }: ConfigurationVersionProps) {
+	const [selected, setSelected] = useState("");
+
+	const handleUpdate = useStable(() => {
+		onUpdate(selected);
+		onClose();
+	});
+
 	return (
 		<Stack
 			h="100%"
@@ -52,7 +64,40 @@ export function ConfigurationVersion({ instance, onClose }: ConfigurationVersion
 						</Box>
 
 						{instance.available_versions.length > 0 ? (
-							<Text>Test</Text>
+							<>
+								{instance.available_versions.map((version) => (
+									<Tile
+										key={version}
+										p="lg"
+										withBorder={false}
+										isActive={selected === version}
+										onClick={() => setSelected(version)}
+									>
+										<Group>
+											<Text
+												c="bright"
+												fw={500}
+												fz="xl"
+												flex={1}
+											>
+												SurrealDB {version}
+											</Text>
+											<Button
+												size="xs"
+												color="slate"
+												variant="light"
+												rightSection={<Icon path={iconOpen} />}
+												onClick={(e) => {
+													openSurrealChangelog(version);
+													e.stopPropagation();
+												}}
+											>
+												View changelog
+											</Button>
+										</Group>
+									</Tile>
+								))}
+							</>
 						) : (
 							<Stack
 								flex={1}
@@ -84,12 +129,13 @@ export function ConfigurationVersion({ instance, onClose }: ConfigurationVersion
 					Close
 				</Button>
 				<Button
+					flex={1}
 					type="submit"
 					variant="gradient"
-					disabled
-					flex={1}
+					disabled={!selected}
+					onClick={handleUpdate}
 				>
-					Apply update
+					Update instance
 				</Button>
 			</Group>
 		</Stack>

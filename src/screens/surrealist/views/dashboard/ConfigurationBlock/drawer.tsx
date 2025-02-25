@@ -18,10 +18,16 @@ import { ConfigurationCapabilities } from "./configs/capabilities";
 export interface ConfigurationDrawerProps {
 	opened: boolean;
 	instance: CloudInstance;
+	onUpdate: (version: string) => void;
 	onClose: () => void;
 }
 
-export function ConfigurationDrawer({ opened, instance, onClose }: ConfigurationDrawerProps) {
+export function ConfigurationDrawer({
+	opened,
+	instance,
+	onUpdate,
+	onClose,
+}: ConfigurationDrawerProps) {
 	const [width, setWidth] = useState(650);
 
 	return (
@@ -96,6 +102,7 @@ export function ConfigurationDrawer({ opened, instance, onClose }: Configuration
 				<Tabs.Panel value="version">
 					<ConfigurationVersion
 						instance={instance}
+						onUpdate={onUpdate}
 						onClose={onClose}
 					/>
 				</Tabs.Panel>

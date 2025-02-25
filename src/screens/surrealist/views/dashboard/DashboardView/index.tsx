@@ -4,30 +4,42 @@ import { ActionIcon, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mant
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { Redirect } from "wouter";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
-import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useConnection } from "~/hooks/connection";
 import { iconCheck, iconCopy } from "~/util/icons";
-import { ComputeUsageBlock } from "../ComputeUsageBlock";
-import { DiskUsageBlock } from "../DiskUsageBlock";
-import { BackupsBlock } from "../BackupsBlock";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConnectBlock } from "../ConnectBlock";
 import { UpdateBlock } from "../UpdateBlock";
+import { useUpdateInstanceMutation } from "~/cloud/mutations/update";
+import { useConfirmation } from "~/providers/Confirmation";
 
 export function DashboardView() {
-	const [isCloud, instance, name, icon] = useConnection((c) => [
+	const [isCloud, instance, name] = useConnection((c) => [
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
 		c?.name ?? "",
-		c?.icon,
 	]);
 
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
-	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
+	// const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
+	const { mutateAsync: update } = useUpdateInstanceMutation(instance);
+
+	const handleUpdate = useConfirmation({
+		title: "Start update?",
+		message:
+			"Your instance will experience temporary downtime during the update process. Do you wish to proceed?",
+		dismissText: "Cancel",
+		confirmText: "Update now",
+		confirmProps: {
+			variant: "gradient",
+		},
+		onConfirm: async (version: string) => {
+			update(version);
+		},
+	});
 
 	const isRenamed = !detailsPending && name !== details?.name;
 
@@ -103,13 +115,19 @@ export function DashboardView() {
 						)}
 					</Box>
 
-					<UpdateBlock instance={details} />
+					<UpdateBlock
+						instance={details}
+						onUpdate={handleUpdate}
+					/>
 
 					<SimpleGrid
 						cols={2}
 						spacing="xl"
 					>
-						<ConfigurationBlock instance={details} />
+						<ConfigurationBlock
+							instance={details}
+							onUpdate={handleUpdate}
+						/>
 						<ConnectBlock instance={details} />
 					</SimpleGrid>
 

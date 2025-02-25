@@ -1,47 +1,23 @@
 import { Alert, Box, Group, Button } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
-import { adapter } from "~/adapter";
-import { fetchAPI } from "~/cloud/api";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance } from "~/types";
+import { openSurrealChangelog } from "~/util/cloud";
 import { iconOpen, iconReset } from "~/util/icons";
 
 export interface UpdateBlockProps {
 	instance: CloudInstance | undefined;
+	onUpdate: (version: string) => void;
 }
 
-export function UpdateBlock({ instance }: UpdateBlockProps) {
-	const client = useQueryClient();
-
+export function UpdateBlock({ instance, onUpdate }: UpdateBlockProps) {
 	const versions = instance?.available_versions ?? [];
-	const release = versions[0] ?? "";
-	const visible = release && instance?.state === "ready";
+	const latest = versions[0] ?? "";
+	const visible = latest && instance?.state === "ready";
 
-	const handleChangelog = useStable(() => {
-		adapter.openUrl(`https://surrealdb.com/releases#v${release.replaceAll(".", "-")}`);
-	});
-
-	const handleUpdate = useConfirmation({
-		title: "Update instance",
-		message: "Your instance will experience temporary downtime during the update process.",
-		dismissText: "Cancel",
-		confirmText: "Update",
-		confirmProps: {
-			variant: "gradient",
-			rightSection: <Icon path={iconReset} />,
-		},
-		onConfirm: async () => {
-			await fetchAPI(`/instances/${instance?.id}/version`, {
-				method: "PATCH",
-				body: JSON.stringify({ version: release }),
-			});
-
-			client.invalidateQueries({
-				queryKey: ["cloud", "instances"],
-			});
-		},
+	const handleUpdate = useStable(() => {
+		onUpdate(latest);
 	});
 
 	return (
@@ -51,7 +27,7 @@ export function UpdateBlock({ instance }: UpdateBlockProps) {
 				title="Update available"
 				icon={<Icon path={iconReset} />}
 			>
-				<Box>Your instance can be updated to version {release}</Box>
+				<Box>Your instance can be updated to SurrealDB {latest}</Box>
 				<Group mt="md">
 					<Button
 						size="xs"
@@ -65,7 +41,7 @@ export function UpdateBlock({ instance }: UpdateBlockProps) {
 						color="slate"
 						variant="light"
 						rightSection={<Icon path={iconOpen} />}
-						onClick={handleChangelog}
+						onClick={() => openSurrealChangelog(latest)}
 					>
 						View changelog
 					</Button>

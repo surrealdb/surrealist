@@ -17,9 +17,10 @@ import { useBoolean } from "~/hooks/boolean";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
+	onUpdate: (version: string) => void;
 }
 
-export function ConfigurationBlock({ instance }: ConfigurationBlockProps) {
+export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockProps) {
 	const [editing, editingHandle] = useBoolean();
 
 	const regions = useCloudStore((s) => s.regions);
@@ -79,6 +80,7 @@ export function ConfigurationBlock({ instance }: ConfigurationBlockProps) {
 					opened={editing}
 					instance={instance}
 					onClose={editingHandle.close}
+					onUpdate={onUpdate}
 				/>
 			)}
 		</Paper>
