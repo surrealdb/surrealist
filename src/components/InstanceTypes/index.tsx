@@ -76,7 +76,8 @@ export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
 						selectedType={value}
 						activeType={active}
 						category="free"
-						title="Free instance"
+						title="Free"
+						description="A free instance to get started with SurrealDB"
 						instanceTypes={freeTypes}
 						isAvailable={isAvailable}
 						onSelect={handleUpdate}
@@ -88,7 +89,8 @@ export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
 						selectedType={value}
 						activeType={active}
 						category="development"
-						title="Development optimized"
+						title="Development"
+						description="Configurations optimized for development workloads"
 						instanceTypes={developmentTypes}
 						withBillingRequired
 						isAvailable={isAvailable}
@@ -101,7 +103,8 @@ export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
 						selectedType={value}
 						activeType={active}
 						category="production"
-						title="Production optimized"
+						title="Production"
+						description="Configurations optimized for production workloads"
 						instanceTypes={productionTypes}
 						withBillingRequired
 						isAvailable={isAvailable}
@@ -120,6 +123,7 @@ interface InstanceTypeCategoryProps {
 	activeType?: string;
 	category: string;
 	title: string;
+	description: string;
 	instanceTypes: CloudInstanceType[];
 	withBillingRequired?: boolean;
 	isAvailable: (type: CloudInstanceType) => boolean;
@@ -133,6 +137,7 @@ function InstanceTypeCategory({
 	activeType,
 	category,
 	title,
+	description,
 	instanceTypes,
 	withBillingRequired,
 	isAvailable,
@@ -143,21 +148,14 @@ function InstanceTypeCategory({
 	return (
 		<Accordion.Item value={category}>
 			<Accordion.Control>
-				<Group>
-					<Text
-						c={category === activeCategory ? "bright" : undefined}
-						fw={500}
-						fz="lg"
-					>
-						{title}
-					</Text>
-					<Badge
-						color="slate"
-						variant="light"
-					>
-						{instanceTypes.length}
-					</Badge>
-				</Group>
+				<Text
+					c={category === activeCategory ? "bright" : undefined}
+					fw={500}
+					fz="lg"
+				>
+					{title}
+				</Text>
+				<Text opacity={0.6}>{description}</Text>
 			</Accordion.Control>
 			<Accordion.Panel>
 				<Stack

@@ -13,8 +13,8 @@ import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConnectBlock } from "../ConnectBlock";
 import { UpdateBlock } from "../UpdateBlock";
-import { useUpdateInstanceMutation } from "~/cloud/mutations/update";
-import { useConfirmation } from "~/providers/Confirmation";
+import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
+import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 
 export function DashboardView() {
 	const [isCloud, instance, name] = useConnection((c) => [
@@ -25,21 +25,9 @@ export function DashboardView() {
 
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
 	// const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
-	const { mutateAsync: update } = useUpdateInstanceMutation(instance);
 
-	const handleUpdate = useConfirmation({
-		title: "Start update?",
-		message:
-			"Your instance will experience temporary downtime during the update process. Do you wish to proceed?",
-		dismissText: "Cancel",
-		confirmText: "Update now",
-		confirmProps: {
-			variant: "gradient",
-		},
-		onConfirm: async (version: string) => {
-			update(version);
-		},
-	});
+	const { mutateAsync } = useUpdateInstanceVersionMutation(instance);
+	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
 	const isRenamed = !detailsPending && name !== details?.name;
 

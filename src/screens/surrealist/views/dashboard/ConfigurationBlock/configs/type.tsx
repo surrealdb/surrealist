@@ -2,7 +2,10 @@ import classes from "../style.module.scss";
 
 import { Stack, Box, Divider, ScrollArea, Group, Button, Text } from "@mantine/core";
 import { useState } from "react";
+import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
+import { useUpdateInstanceTypeMutation } from "~/cloud/mutations/type";
 import { InstanceTypes } from "~/components/InstanceTypes";
+import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 
 export interface ConfigurationInstanceTypeProps {
@@ -12,6 +15,14 @@ export interface ConfigurationInstanceTypeProps {
 
 export function ConfigurationInstanceType({ instance, onClose }: ConfigurationInstanceTypeProps) {
 	const [selected, setSelected] = useState("");
+
+	const { mutateAsync } = useUpdateInstanceTypeMutation(instance.id);
+	const confirmUpdate = useUpdateConfirmation(mutateAsync);
+
+	const handleUpdate = useStable(() => {
+		onClose();
+		confirmUpdate(selected);
+	});
 
 	return (
 		<Stack
@@ -70,10 +81,11 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 					Close
 				</Button>
 				<Button
+					flex={1}
 					type="submit"
 					variant="gradient"
-					disabled
-					flex={1}
+					disabled={!selected}
+					onClick={handleUpdate}
 				>
 					Apply instance type
 				</Button>

@@ -1,11 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "../api";
-import { CloudInstance } from "~/types";
 
 /**
  * Instance version updating mutation
  */
-export function useUpdateInstanceMutation(instance: string | undefined) {
+export function useUpdateInstanceVersionMutation(instance: string | undefined) {
 	const client = useQueryClient();
 
 	return useMutation({
