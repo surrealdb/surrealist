@@ -14,7 +14,7 @@ import {
 } from "~/util/icons";
 import { ConfigurationDrawer } from "./drawer";
 import { useBoolean } from "~/hooks/boolean";
-import { plural } from "~/util/helpers";
+import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -29,8 +29,13 @@ export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockPro
 	const regionName = regions.find((r) => r.slug === region)?.description ?? region;
 
 	const computeUnits = instance?.compute_units ?? 0;
+	const storageSize = instance?.storage_size ?? 0;
+	const typeName = instance?.type.display_name ?? "";
+	const typeCategory = instance?.type.category ?? "";
+
 	const computeText = `${computeUnits} ${plural(computeUnits, "unit")}`;
-	const typeText = `${instance?.type.display_name} (${instance?.type.category})`;
+	const typeText = `${typeName} (${typeCategory})`;
+	const storageText = formatMemory(storageSize * 1024);
 
 	return (
 		<Paper p="xl">
@@ -63,7 +68,7 @@ export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockPro
 					<ConfigValue
 						title="Storage"
 						icon={iconDatabase}
-						value="8.0 GB"
+						value={storageText}
 						flex={1}
 					/>
 

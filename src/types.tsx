@@ -514,7 +514,10 @@ export interface CloudInstance {
 	version: string;
 	available_versions: string[];
 	compute_units: number;
-	available_versions: string[];
+	storage_size: number;
+	storage_size_updated_at: string;
+	can_update_storage_size: boolean;
+	storage_size_update_cooloff_hours: number;
 	state: InstanceState;
 	type: CloudInstanceType;
 }
