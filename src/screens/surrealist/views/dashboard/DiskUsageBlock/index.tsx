@@ -1,20 +1,7 @@
-import { DonutChart } from "@mantine/charts";
-import {
-	Paper,
-	Group,
-	Divider,
-	Text,
-	Box,
-	Progress,
-	ThemeIcon,
-	Stack,
-	Center,
-} from "@mantine/core";
-import { useMemo } from "react";
+import { Text, Box, Stack, Paper, Group, ThemeIcon, Progress, Divider } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CloudInstance, CloudMeasurement } from "~/types";
-import { measureStorageUsage, computeStorageSize } from "~/util/cloud";
 import { formatMemory } from "~/util/helpers";
 import { iconDatabase } from "~/util/icons";
 
@@ -25,96 +12,59 @@ export interface DiskUsageBlockProps {
 }
 
 export function DiskUsageBlock({ usage, instance, loading }: DiskUsageBlockProps) {
-	const storageUsage = measureStorageUsage(usage ?? []);
-
-	const storageMax = useMemo(() => {
-		return computeStorageSize(instance?.type);
-	}, [instance?.type]);
+	const storageUsage = 324;
+	const storageMaxGB = instance?.storage_size ?? 0;
+	const storageMax = storageMaxGB * 1024;
 
 	const storageFrac = (storageUsage / storageMax) * 100;
 	const storageUsageMB = formatMemory(storageUsage);
 	const storageMaxMB = formatMemory(storageMax);
-	const storageColor = storageFrac > 90 ? "red" : "blue";
+	const storageColor = storageFrac > 80 ? "red" : "blue";
 
 	return (
-		<Paper
-			p="xl"
-			component={Stack}
-			gap={0}
-		>
-			<Group>
-				<Icon
-					path={iconDatabase}
-					size="xl"
-				/>
-				<Text
-					fz="xl"
-					fw={600}
-					c="bright"
-				>
-					Disk Usage
-				</Text>
-			</Group>
-			<Divider my="md" />
-			<Box pos="relative">
-				<DonutChart
-					mt="sm"
-					size={180}
-					mx="auto"
-					thickness={8}
-					paddingAngle={8}
-					startAngle={90}
-					endAngle={-270}
-					data={[
-						{ name: "Used", value: 200, color: "blue" },
-						{ name: "Total", value: 300, color: "slate" },
-					]}
-				/>
-				<Center
-					pos="absolute"
-					inset={0}
-				>
-					<Box ta="center">
-						<Text
-							c="bright"
-							fw={600}
-							fz={20}
+		<Box>
+			<Paper
+				p="xl"
+				gap={0}
+				component={Stack}
+				pos="relative"
+			>
+				<Stack gap="xl">
+					<Group>
+						<ThemeIcon
+							color="slate"
+							radius="xs"
+							size="xl"
 						>
-							{storageUsageMB}
+							<Icon
+								path={iconDatabase}
+								size="xl"
+								c="slate"
+							/>
+						</ThemeIcon>
+						<Box>
+							<PrimaryTitle mt={-4}>Storage usage</PrimaryTitle>
+							<Text>Current disk utilization</Text>
+						</Box>
+					</Group>
+
+					<Divider />
+
+					<PrimaryTitle>{storageUsageMB}</PrimaryTitle>
+
+					<Box>
+						<Progress
+							value={storageFrac}
+							color={storageColor}
+							size={6}
+						/>
+
+						<Text mt="md">
+							You have used {storageFrac.toFixed(2)}% of your {storageMaxMB} limit
 						</Text>
-						<Text fz="sm">3.6 GB remaining</Text>
 					</Box>
-				</Center>
-			</Box>
-			{/* <Group my="md">
-				<Box flex={1}>
-					<Text
-						c="bright"
-						fw={500}
-						fz="lg"
-					>
-						Total disk usage
-					</Text>
-					<Text fz="sm">Current disk utilization</Text>
-				</Box>
-				<Text
-					c="bright"
-					fw={600}
-					fz={20}
-				>
-					{storageUsageMB}
-				</Text>
-			</Group>
-
-			<Progress
-				value={storageFrac}
-				color={storageColor}
-				size="sm"
-			/>
-
-			<Text mt="sm">
-				You have used {storageFrac.toFixed(2)}% of your {storageMaxMB} storage limit
-			</Text> */}
-		</Paper>
+				</Stack>
+			</Paper>
+		</Box>
 	);
 }

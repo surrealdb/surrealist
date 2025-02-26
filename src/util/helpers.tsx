@@ -37,6 +37,8 @@ export const Y_SLIDE_TRANSITION = {
 	transitionProperty: "transform, opacity",
 };
 
+export const DATE_TIME_FORMAT = "E MMM dd yyyy HH:mm";
+
 export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
 	e.stopPropagation();
 };

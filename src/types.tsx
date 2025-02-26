@@ -640,3 +640,8 @@ export interface CloudCoupon {
 	amount_remaining: number;
 	expires_at: string;
 }
+
+export interface CloudBackup {
+	snapshot_started_at: string;
+	snapshot_id: string;
+}

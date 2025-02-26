@@ -1,6 +1,4 @@
-import { CloudInstanceType } from "~/types";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import { CloudMeasurement } from "~/types";
 import { adapter } from "~/adapter";
 
@@ -73,21 +71,6 @@ export function measureComputeCost(measurements: CloudMeasurement[]) {
 	}, 0);
 
 	return { summary, total };
-}
-
-/**
- * Compute storage size for the given instance type
- */
-export function computeStorageSize(type: CloudInstanceType | undefined) {
-	if (!type) {
-		return 0;
-	}
-
-	if (type.price_hour === 0) {
-		return 1024;
-	}
-
-	return type.memory * 8;
 }
 
 /**

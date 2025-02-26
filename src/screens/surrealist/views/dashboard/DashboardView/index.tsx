@@ -15,6 +15,10 @@ import { ConnectBlock } from "../ConnectBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
+import { useCloudUsageQuery } from "~/cloud/queries/usage";
+import { ComputeUsageBlock } from "../ComputeUsageBlock";
+import { DiskUsageBlock } from "../DiskUsageBlock";
+import { BackupsBlock } from "../BackupsBlock";
 
 export function DashboardView() {
 	const [isCloud, instance, name] = useConnection((c) => [
@@ -24,7 +28,7 @@ export function DashboardView() {
 	]);
 
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
-	// const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
+	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
 
 	const { mutateAsync } = useUpdateInstanceVersionMutation(instance);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
@@ -119,7 +123,7 @@ export function DashboardView() {
 						<ConnectBlock instance={details} />
 					</SimpleGrid>
 
-					{/* <SimpleGrid
+					<SimpleGrid
 						cols={3}
 						spacing="xl"
 					>
@@ -132,8 +136,8 @@ export function DashboardView() {
 							instance={details}
 							loading={usagePending}
 						/>
-						<BackupsBlock />
-					</SimpleGrid> */}
+						<BackupsBlock instance={details} />
+					</SimpleGrid>
 				</Stack>
 			</ScrollArea>
 		</Box>

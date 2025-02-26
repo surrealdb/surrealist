@@ -1,9 +1,10 @@
-import { Paper, Group, Divider, Text, Stack, Box, Center } from "@mantine/core";
+import { Paper, Group, Divider, Text, Stack, Box, ThemeIcon, Progress } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { CloudMeasurement } from "~/types";
 import { measureComputeHistory, measureComputeTotal } from "~/util/cloud";
 import { iconQuery } from "~/util/icons";
-import { DonutChart } from "@mantine/charts";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
 
 export interface ComputeUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
@@ -15,113 +16,76 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 	const computeTotal = measureComputeTotal(usage ?? []);
 
 	return (
-		<Paper
-			p="xl"
-			component={Stack}
-			gap={0}
-		>
-			<Group>
-				<Icon
-					path={iconQuery}
-					size="xl"
-				/>
-				<Text
-					fz="xl"
-					fw={600}
-					c="bright"
-				>
-					Compute Usage
-				</Text>
-			</Group>
-			<Divider my="md" />
-			<Box pos="relative">
-				<DonutChart
-					mt="sm"
-					size={180}
-					mx="auto"
-					thickness={8}
-					paddingAngle={8}
-					startAngle={90}
-					endAngle={-270}
-					data={[
-						{ name: "Used", value: 200, color: "surreal" },
-						{ name: "Total", value: 300, color: "slate" },
-					]}
-				/>
-				<Center
-					pos="absolute"
-					inset={0}
-				>
-					<Box ta="center">
-						<Text
-							c="bright"
-							fw={600}
-							fz={20}
-						>
-							{computeTotal} hours
-						</Text>
-						<Text fz="sm">Current billing period</Text>
-					</Box>
-				</Center>
-			</Box>
-			{/* <Group my="md">
-				<Box flex={1}>
-					<Text
-						c="bright"
-						fw={500}
-						fz="lg"
-					>
-						Total compute hours
-					</Text>
-					<Text fz="sm">Since the current billing period</Text>
-				</Box>
-				{loading ? (
-					<Loader
-						size="sm"
-						mr="xs"
-					/>
-				) : (
-					<Text
-						c="bright"
-						fw={600}
-						fz={20}
-					>
-						{computeTotal} hours
-					</Text>
-				)}
-			</Group> */}
-			{/* <Progress */}
-			{/* <Box
-				flex={1}
+		<Box>
+			<Paper
+				p="xl"
+				gap={0}
+				component={Stack}
 				pos="relative"
 			>
-				{computeHistory.map(([type, hours]) => (
-					<Paper
-						key={type}
-						withBorder={false}
-						bg="slate.7"
-						py="xs"
-						px="lg"
-						mt="xs"
-					>
-						<Group>
-							<Text
-								c="bright"
-								fz="lg"
-								flex={1}
-							>
-								{type}
-							</Text>
-							<Text
-								c="bright"
-								fz="xl"
-							>
-								{hours} hours
-							</Text>
-						</Group>
-					</Paper>
-				))}
-			</Box> */}
-		</Paper>
+				<Stack gap="xl">
+					<Group>
+						<ThemeIcon
+							color="slate"
+							radius="xs"
+							size="xl"
+						>
+							<Icon
+								path={iconQuery}
+								size="xl"
+								c="slate"
+							/>
+						</ThemeIcon>
+						<Box>
+							<PrimaryTitle mt={-4}>Compute usage</PrimaryTitle>
+							<Text>Compute hours this billing cycle</Text>
+						</Box>
+					</Group>
+
+					<Divider />
+
+					{computeHistory.map(([type, hours], index) => (
+						<Box key={index}>
+							<Group>
+								<Text
+									c="bright"
+									fz="xl"
+									fw={500}
+								>
+									{type}
+								</Text>
+								<Spacer />
+								<Text fz="lg">{hours} hours</Text>
+							</Group>
+
+							<Progress
+								value={(hours / computeTotal) * 100}
+								color="surreal"
+								size={6}
+								mt="xs"
+							/>
+						</Box>
+					))}
+
+					{computeHistory.length > 1 && (
+						<>
+							<Divider />
+
+							<Group>
+								<Text
+									c="bright"
+									fz="xl"
+									fw={500}
+								>
+									Total hours
+								</Text>
+								<Spacer />
+								<Text fz="lg">{computeTotal} hours</Text>
+							</Group>
+						</>
+					)}
+				</Stack>
+			</Paper>
+		</Box>
 	);
 }
