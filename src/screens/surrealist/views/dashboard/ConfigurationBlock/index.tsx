@@ -30,6 +30,7 @@ export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockPro
 
 	const computeUnits = instance?.compute_units ?? 0;
 	const computeText = `${computeUnits} ${plural(computeUnits, "unit")}`;
+	const typeText = `${instance?.type.display_name} (${instance?.type.category})`;
 
 	return (
 		<Paper p="xl">
@@ -43,7 +44,7 @@ export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockPro
 				<ConfigValue
 					title="Type"
 					icon={iconMemory}
-					value={instance?.type.display_name}
+					value={typeText}
 				/>
 
 				<ConfigValue
