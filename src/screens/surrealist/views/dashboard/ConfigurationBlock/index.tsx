@@ -14,6 +14,7 @@ import {
 } from "~/util/icons";
 import { ConfigurationDrawer } from "./drawer";
 import { useBoolean } from "~/hooks/boolean";
+import { plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -27,6 +28,9 @@ export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockPro
 	const region = instance?.region;
 	const regionName = regions.find((r) => r.slug === region)?.description ?? region;
 
+	const computeUnits = instance?.compute_units ?? 0;
+	const computeText = `${computeUnits} ${plural(computeUnits, "unit")}`;
+
 	return (
 		<Paper p="xl">
 			<Stack gap="sm">
@@ -37,15 +41,15 @@ export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockPro
 				/>
 
 				<ConfigValue
-					title="Instance Preset"
+					title="Type"
 					icon={iconMemory}
 					value={instance?.type.display_name}
 				/>
 
 				<ConfigValue
-					title="Compute nodes"
+					title="Compute"
 					icon={iconQuery}
-					value={instance?.compute_units}
+					value={computeText}
 				/>
 
 				<ConfigValue
@@ -106,7 +110,7 @@ function ConfigValue({ title, icon, value, ...other }: ConfigValueProps) {
 			>
 				<Icon
 					path={icon}
-					size="lg"
+					size={1.1}
 					c="slate"
 				/>
 			</ThemeIcon>

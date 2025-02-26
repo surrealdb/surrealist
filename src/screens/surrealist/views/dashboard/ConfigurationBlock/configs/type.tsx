@@ -51,7 +51,7 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 								c="bright"
 								fw={600}
 							>
-								Select instance type
+								Change instance type
 							</Text>
 
 							<Text
