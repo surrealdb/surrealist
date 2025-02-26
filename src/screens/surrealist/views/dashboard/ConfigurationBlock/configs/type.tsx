@@ -11,8 +11,7 @@ export interface ConfigurationInstanceTypeProps {
 }
 
 export function ConfigurationInstanceType({ instance, onClose }: ConfigurationInstanceTypeProps) {
-	const [selected, setSelected] = useState(instance.type.slug);
-	const defaultCategory = instance.type.category;
+	const [selected, setSelected] = useState("");
 
 	return (
 		<Stack
@@ -54,7 +53,7 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 						</Box>
 						<InstanceTypes
 							value={selected}
-							defaultCategory={defaultCategory}
+							active={instance.type.slug}
 							onChange={setSelected}
 						/>
 					</Stack>

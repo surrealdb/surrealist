@@ -12,8 +12,6 @@ export function useCloudTypeLimits(
 	const current = useOrganization();
 	const types = useAvailableInstanceTypes();
 
-	console.log("list", instances);
-
 	const available = useMemo(
 		() =>
 			types.filter((type) => {
@@ -21,6 +19,8 @@ export function useCloudTypeLimits(
 
 				const [free, paid] = fork(instances ?? [], (i) => i.type.price_hour === 0);
 				const isFree = type.price_hour === 0;
+
+				console.log(current);
 
 				return isFree
 					? free.length < current.max_free_instances

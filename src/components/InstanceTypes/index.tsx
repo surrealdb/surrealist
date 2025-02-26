@@ -1,66 +1,263 @@
-import { Accordion, Alert, Badge, Box, Button, Group, Paper, Stack, Text } from "@mantine/core";
+import {
+	Accordion,
+	Alert,
+	Badge,
+	Box,
+	Button,
+	Group,
+	Paper,
+	Stack,
+	Text,
+	Tooltip,
+} from "@mantine/core";
 
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { CloudInstanceType } from "~/types";
+import { CloudInstanceType, CloudOrganization } from "~/types";
 import { useMemo, useState } from "react";
 import { Tile } from "~/screens/surrealist/cloud-panel/components/Tile";
 import { formatMemory, plural } from "~/util/helpers";
-import { capitalize } from "radash";
-import { iconChevronRight, iconWarning } from "~/util/icons";
+import { capitalize, group } from "radash";
+import { iconAccount, iconAuth, iconChevronRight, iconClock } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { navigate } from "wouter/use-browser-location";
 import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
-function BillingAlert({ category }: { category: string }) {
+export interface InstanceTypesProps {
+	value: string;
+	active?: string;
+	onChange: (value: string) => void;
+}
+
+export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
+	const organization = useOrganization();
+	const instanceTypes = useAvailableInstanceTypes();
+	const instances = useCloudOrganizationInstancesQuery(organization?.id);
+	const isAvailable = useCloudTypeLimits(instances.data ?? []);
+
+	const groupedTypes = useMemo(() => {
+		return group(instanceTypes, (type) => type.category);
+	}, [instanceTypes]);
+
+	const handleUpdate = useStable((type: CloudInstanceType) => {
+		onChange(type.slug);
+	});
+
+	const freeType = instanceTypes.find((type) => type.category === "free");
+	const isFreeAvailable = freeType && isAvailable(freeType);
+
+	const [category, setCategory] = useState(isFreeAvailable ? "free" : "development");
+
+	const freeTypes = groupedTypes.free ?? [];
+	const developmentTypes = groupedTypes.development ?? [];
+	const productionTypes = groupedTypes.production ?? [];
+
 	return (
-		<Alert
-			color="blue"
-			title={`Upgrade to use ${category} instances`}
-		>
-			<Box>{capitalize(category)} instances require a billing plan to be enabled.</Box>
-			<Button
-				rightSection={<Icon path={iconChevronRight} />}
-				color="blue"
-				size="xs"
-				mt="md"
-				onClick={() => navigate("/billing")}
-			>
-				Enter billing & payment details
-			</Button>
-		</Alert>
+		organization && (
+			<>
+				<Accordion
+					value={category}
+					variant="separated"
+					onChange={setCategory as any}
+					styles={{
+						item: {
+							backgroundColor: "var(--mantine-color-body)",
+							overflow: "hidden",
+						},
+						control: {
+							borderRadius: 0,
+						},
+					}}
+				>
+					<InstanceTypeCategory
+						organization={organization}
+						activeCategory={category}
+						selectedType={value}
+						activeType={active}
+						category="free"
+						title="Free instance"
+						instanceTypes={freeTypes}
+						isAvailable={isAvailable}
+						onSelect={handleUpdate}
+					/>
+
+					<InstanceTypeCategory
+						organization={organization}
+						activeCategory={category}
+						selectedType={value}
+						activeType={active}
+						category="development"
+						title="Development optimized"
+						instanceTypes={developmentTypes}
+						withBillingRequired
+						isAvailable={isAvailable}
+						onSelect={handleUpdate}
+					/>
+
+					<InstanceTypeCategory
+						organization={organization}
+						activeCategory={category}
+						selectedType={value}
+						activeType={active}
+						category="production"
+						title="Production optimized"
+						instanceTypes={productionTypes}
+						withBillingRequired
+						isAvailable={isAvailable}
+						onSelect={handleUpdate}
+					/>
+				</Accordion>
+			</>
+		)
+	);
+}
+
+interface InstanceTypeCategoryProps {
+	organization: CloudOrganization;
+	activeCategory: string;
+	selectedType: string;
+	activeType?: string;
+	category: string;
+	title: string;
+	instanceTypes: CloudInstanceType[];
+	withBillingRequired?: boolean;
+	isAvailable: (type: CloudInstanceType) => boolean;
+	onSelect: (type: CloudInstanceType) => void;
+}
+
+function InstanceTypeCategory({
+	organization,
+	activeCategory,
+	selectedType,
+	activeType,
+	category,
+	title,
+	instanceTypes,
+	withBillingRequired,
+	isAvailable,
+	onSelect,
+}: InstanceTypeCategoryProps) {
+	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
+
+	return (
+		<Accordion.Item value={category}>
+			<Accordion.Control>
+				<Group>
+					<Text
+						c={category === activeCategory ? "bright" : undefined}
+						fw={500}
+						fz="lg"
+					>
+						{title}
+					</Text>
+					<Badge
+						color="slate"
+						variant="light"
+					>
+						{instanceTypes.length}
+					</Badge>
+				</Group>
+			</Accordion.Control>
+			<Accordion.Panel>
+				<Stack
+					gap="sm"
+					mt="md"
+				>
+					{withBillingRequired && !hasBilling && (
+						<Alert
+							color="blue"
+							title={`Upgrade to use ${category} instances`}
+						>
+							<Box>
+								{capitalize(category)} instances require a billing plan to be
+								enabled.
+							</Box>
+							<Button
+								rightSection={<Icon path={iconChevronRight} />}
+								color="blue"
+								size="xs"
+								mt="md"
+								onClick={() => navigate("/billing")}
+							>
+								Enter billing & payment details
+							</Button>
+						</Alert>
+					)}
+
+					{instanceTypes.map((type) => (
+						<InstanceTypeRow
+							key={type.slug}
+							selected={selectedType}
+							active={activeType === type.slug}
+							limited={!isAvailable(type)}
+							restricted={!!withBillingRequired && !hasBilling}
+							instanceType={type}
+							onSelect={onSelect}
+						/>
+					))}
+				</Stack>
+			</Accordion.Panel>
+		</Accordion.Item>
 	);
 }
 
 interface InstanceTypeRowProps {
-	active: string;
-	disabled?: boolean;
+	selected: string;
+	active: boolean;
+	limited: boolean;
+	restricted: boolean;
 	instanceType: CloudInstanceType;
 	onSelect: (slug: CloudInstanceType) => void;
 }
 
-function InstanceTypeRow({ active, disabled, instanceType, onSelect }: InstanceTypeRowProps) {
+function InstanceTypeRow({
+	selected,
+	active,
+	limited,
+	restricted,
+	instanceType,
+	onSelect,
+}: InstanceTypeRowProps) {
 	const hourlyPriceThousandth = instanceType?.price_hour ?? 0;
 	const estimatedCost = hourlyPriceThousandth / 1000;
+	const kind = instanceType.category === "free" ? "free" : "paid";
 
 	return (
 		<Tile
 			p="lg"
 			withBorder={false}
-			disabled={disabled}
-			isActive={active === instanceType.slug}
+			disabled={active || restricted || limited}
+			isActive={selected === instanceType.slug}
 			onClick={() => onSelect(instanceType)}
 		>
 			<Group>
 				<Box flex={1}>
-					<Text
-						c="bright"
-						fw={500}
-						fz="xl"
-					>
-						{instanceType.display_name}
-					</Text>
+					<Group gap="sm">
+						<Text
+							c="bright"
+							fw={500}
+							fz="xl"
+						>
+							{instanceType.display_name}
+						</Text>
+						{active ? (
+							<Badge
+								size="sm"
+								variant="light"
+							>
+								Active
+							</Badge>
+						) : restricted ? (
+							<LockAlert label="You need to upgrade to use paid instances" />
+						) : (
+							limited && (
+								<LockAlert
+									label={`You have reached the limit of ${kind} instances`}
+								/>
+							)
+						)}
+					</Group>
 					{estimatedCost > 0 ? (
 						<Text
 							fz="sm"
@@ -122,182 +319,15 @@ function InstanceTypeRow({ active, disabled, instanceType, onSelect }: InstanceT
 	);
 }
 
-export interface InstanceTypesProps {
-	value: string;
-	defaultCategory?: string;
-	onChange: (value: string) => void;
-}
-
-export function InstanceTypes({ value, defaultCategory, onChange }: InstanceTypesProps) {
-	const organization = useOrganization();
-	const instanceTypes = useAvailableInstanceTypes();
-	const instances = useCloudOrganizationInstancesQuery(organization?.id);
-	const isAvailable = useCloudTypeLimits(instances.data ?? []);
-
-	const freeType = useMemo(() => {
-		return instanceTypes.find((type) => type.category === "free");
-	}, [instanceTypes]);
-
-	const developmentTypes = useMemo(() => {
-		return instanceTypes.filter((type) => type.category === "development");
-	}, [instanceTypes]);
-
-	const productionTypes = useMemo(() => {
-		return instanceTypes.filter((type) => type.category === "production");
-	}, [instanceTypes]);
-
-	const instanceType = useMemo(() => {
-		return instanceTypes.find((t) => t.slug === value);
-	}, [value, instanceTypes]);
-
-	const handleUpdate = useStable((type: CloudInstanceType) => {
-		onChange(type.slug);
-	});
-
-	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
-	const isUnavailable = instanceType && !isAvailable(instanceType);
-	const isFreeAvailable = freeType && isAvailable(freeType);
-
-	const [category, setCategory] = useState(defaultCategory ?? "");
-
+function LockAlert({ label }: { label: string }) {
 	return (
-		<>
-			<Accordion
-				value={category}
-				defaultValue={isFreeAvailable ? "free" : "development"}
-				variant="separated"
-				onChange={setCategory as any}
-				styles={{
-					item: {
-						backgroundColor: "var(--mantine-color-body)",
-						overflow: "hidden",
-					},
-					control: {
-						borderRadius: 0,
-					},
-				}}
-			>
-				<Accordion.Item value="free">
-					<Accordion.Control>
-						<Group>
-							<Text
-								c={value === "free" ? "bright" : undefined}
-								fw={500}
-								fz="lg"
-							>
-								Free instance
-							</Text>
-							<Badge
-								color="slate"
-								variant="light"
-							>
-								1
-							</Badge>
-						</Group>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Stack
-							gap="sm"
-							mt="xl"
-						>
-							{freeType && (
-								<InstanceTypeRow
-									active={value}
-									instanceType={freeType}
-									onSelect={handleUpdate}
-								/>
-							)}
-						</Stack>
-					</Accordion.Panel>
-				</Accordion.Item>
-
-				<Accordion.Item value="development">
-					<Accordion.Control>
-						<Group>
-							<Text
-								c={category === "development" ? "bright" : undefined}
-								fw={500}
-								fz="lg"
-							>
-								Development optimized
-							</Text>
-							<Badge
-								color="slate"
-								variant="light"
-							>
-								{developmentTypes.length}
-							</Badge>
-						</Group>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Stack
-							gap="sm"
-							mt="xl"
-						>
-							{!hasBilling && <BillingAlert category="development" />}
-
-							{developmentTypes.map((type) => (
-								<InstanceTypeRow
-									key={type.slug}
-									active={value}
-									disabled={!hasBilling}
-									instanceType={type}
-									onSelect={handleUpdate}
-								/>
-							))}
-						</Stack>
-					</Accordion.Panel>
-				</Accordion.Item>
-
-				<Accordion.Item value="production">
-					<Accordion.Control>
-						<Group>
-							<Text
-								c={category === "production" ? "bright" : undefined}
-								fw={500}
-								fz="lg"
-							>
-								Production optimized
-							</Text>
-							<Badge
-								color="slate"
-								variant="light"
-							>
-								{productionTypes.length}
-							</Badge>
-						</Group>
-					</Accordion.Control>
-					<Accordion.Panel>
-						<Stack
-							gap="sm"
-							mt="xl"
-						>
-							{!hasBilling && <BillingAlert category="production" />}
-
-							{productionTypes.map((type) => (
-								<InstanceTypeRow
-									key={type.slug}
-									active={value}
-									disabled={!hasBilling}
-									instanceType={type}
-									onSelect={handleUpdate}
-								/>
-							))}
-						</Stack>
-					</Accordion.Panel>
-				</Accordion.Item>
-			</Accordion>
-
-			{isUnavailable && (
-				<Alert
-					mt="md"
-					color="orange"
-					icon={<Icon path={iconWarning} />}
-					title="Limit reached"
-				>
-					Maximum instance limit reached for the selected instance type
-				</Alert>
-			)}
-		</>
+		<Tooltip label={label}>
+			<div>
+				<Icon
+					path={iconAuth}
+					mt={-2}
+				/>
+			</div>
+		</Tooltip>
 	);
 }
