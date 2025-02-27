@@ -58,7 +58,7 @@ export function DashboardView() {
 			>
 				<Stack
 					mx="auto"
-					maw={1100}
+					maw={1150}
 					h="100%"
 					gap="xl"
 				>

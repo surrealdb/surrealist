@@ -18,32 +18,30 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 	return (
 		<Box>
 			<Paper
-				p="xl"
 				gap={0}
 				component={Stack}
 				pos="relative"
 			>
-				<Stack gap="xl">
-					<Group>
-						<ThemeIcon
-							color="slate"
-							radius="xs"
-							size="xl"
-						>
-							<Icon
-								path={iconQuery}
-								size="xl"
-								c="slate"
-							/>
-						</ThemeIcon>
-						<Box>
-							<PrimaryTitle mt={-4}>Compute usage</PrimaryTitle>
-							<Text>Compute hours this billing cycle</Text>
-						</Box>
-					</Group>
+				<Group p="xl">
+					<Icon
+						path={iconQuery}
+						size="lg"
+					/>
+					<Text
+						c="bright"
+						fw={700}
+						fz="xl"
+					>
+						Compute usage
+					</Text>
+				</Group>
 
-					<Divider />
+				<Divider />
 
+				<Stack
+					p="xl"
+					gap="xl"
+				>
 					{computeHistory.map(([type, hours], index) => (
 						<Box key={index}>
 							<Group>

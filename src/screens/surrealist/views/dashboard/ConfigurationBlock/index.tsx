@@ -73,14 +73,14 @@ export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockPro
 					/>
 
 					<Button
-						variant="light"
+						size="xs"
 						color="slate"
 						rightSection={<Icon path={iconChevronRight} />}
 						onClick={editingHandle.open}
 						disabled={!instance}
 						my={-2}
 					>
-						Configure
+						Configure instance
 					</Button>
 				</Group>
 			</Stack>
