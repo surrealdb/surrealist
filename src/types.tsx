@@ -500,7 +500,6 @@ export interface CloudSignin {
 
 export interface CloudProfile {
 	username: string;
-	default_org: string;
 	name: string;
 	picture?: string;
 	user_hmac?: string;

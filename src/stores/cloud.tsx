@@ -14,7 +14,6 @@ import { immer } from "zustand/middleware/immer";
 import { newId } from "~/util/helpers";
 
 interface CloudValues {
-	profile: CloudProfile;
 	instanceVersions: string[];
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
@@ -24,7 +23,6 @@ interface CloudValues {
 
 export const EMPTY_PROFILE: CloudProfile = {
 	username: "",
-	default_org: "",
 	name: "",
 };
 
@@ -55,6 +53,7 @@ export type CloudStore = {
 	setAccountProfile: (profile: CloudProfile) => void;
 	setIsSupported: (supported: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
+	setProfile: (profile: CloudProfile) => void;
 	setSelectedOrganization: (id: string) => void;
 	setSessionExpired: (expired: boolean) => void;
 	setProvisioning: (instance: CloudInstance) => void;
@@ -119,6 +118,11 @@ export const useCloudStore = create<CloudStore>()(
 			set({
 				authState: "authenticated",
 				...values,
+			}),
+
+		setProfile: (profile) =>
+			set({
+				profile,
 			}),
 
 		setSelectedOrganization: (id) =>

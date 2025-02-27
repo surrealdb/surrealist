@@ -75,33 +75,35 @@ export async function fetchAPI<T = unknown>(
  * Fetch essential information from the API
  */
 export async function updateCloudInformation() {
-	const { selectedOrganization, setCloudValues, setSelectedOrganization } =
+	const { selectedOrganization, setCloudValues, setProfile, setSelectedOrganization } =
 		useCloudStore.getState();
 
-	const [profile, instanceVersions, instanceTypes, regions, billingCountries] = await Promise.all(
-		[
-			fetchAPI<CloudProfile>("/user/profile"),
-			fetchAPI<string[]>("/instanceversions"),
-			fetchAPI<CloudInstanceType[]>("/instancetypes"),
-			fetchAPI<CloudRegion[]>("/regions"),
-			fetchAPI<CloudBillingCountry[]>("/billingcountries"),
-		],
-	);
+	// Load essential information
+	const [instanceVersions, instanceTypes, regions, billingCountries] = await Promise.all([
+		fetchAPI<string[]>("/instanceversions"),
+		fetchAPI<CloudInstanceType[]>("/instancetypes"),
+		fetchAPI<CloudRegion[]>("/regions"),
+		fetchAPI<CloudBillingCountry[]>("/billingcountries"),
+	]);
 
 	const organizations = await fetchAPI<CloudOrganization[]>(`/organizations`);
 
-	if (!selectedOrganization) {
-		setSelectedOrganization(profile.default_org);
+	if (!selectedOrganization && organizations.length > 0) {
+		setSelectedOrganization(organizations[0].id);
 	}
 
 	setCloudValues({
-		profile,
 		instanceVersions,
 		instanceTypes,
 		regions,
 		organizations,
 		billingCountries,
 	});
+
+	// Load optional information
+	const [profile] = await Promise.all([fetchAPI<CloudProfile>("/user/profile")]);
+
+	setProfile(profile);
 }
 
 /**
