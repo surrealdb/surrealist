@@ -15,19 +15,23 @@ import { ConfigurationVersion } from "./configs/version";
 import { ConfigurationStorage } from "./configs/storage";
 import { ConfigurationCapabilities } from "./configs/capabilities";
 
-export interface ConfigurationDrawerProps {
+export interface ConfiguratorDrawerProps {
 	opened: boolean;
+	tab: string;
 	instance: CloudInstance;
+	onChangeTab: (tab: string) => void;
 	onUpdate: (version: string) => void;
 	onClose: () => void;
 }
 
-export function ConfigurationDrawer({
+export function ConfiguratorDrawer({
 	opened,
+	tab,
 	instance,
+	onChangeTab,
 	onUpdate,
 	onClose,
-}: ConfigurationDrawerProps) {
+}: ConfiguratorDrawerProps) {
 	const [width, setWidth] = useState(650);
 
 	return (
@@ -76,8 +80,9 @@ export function ConfigurationDrawer({
 			</Group>
 
 			<Tabs
-				defaultValue="capabilities"
+				value={tab}
 				className={classes.drawerTabs}
+				onChange={onChangeTab as any}
 				flex={1}
 			>
 				<Tabs.List

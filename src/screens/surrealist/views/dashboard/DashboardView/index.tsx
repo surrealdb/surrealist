@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
-import { ActionIcon, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
 
+import { ActionIcon, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { Redirect } from "wouter";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
@@ -19,6 +19,19 @@ import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { BackupsBlock } from "../BackupsBlock";
+import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
+import { useBoolean } from "~/hooks/boolean";
+import { memo, useState } from "react";
+import { useStable } from "~/hooks/stable";
+import { useCloudBackupsQuery } from "~/cloud/queries/backups";
+
+const UpdateBlockLazy = memo(UpdateBlock);
+const ConfigurationBlockLazy = memo(ConfigurationBlock);
+const ConnectBlockLazy = memo(ConnectBlock);
+const ComputeUsageBlockLazy = memo(ComputeUsageBlock);
+const DiskUsageBlockLazy = memo(DiskUsageBlock);
+const BackupsBlockLazy = memo(BackupsBlock);
+const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
 
 export function DashboardView() {
 	const [isCloud, instance, name] = useConnection((c) => [
@@ -28,11 +41,21 @@ export function DashboardView() {
 	]);
 
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
+	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instance);
 	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
 
 	const { mutateAsync } = useUpdateInstanceVersionMutation(instance);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
+	const [configuring, configureHandle] = useBoolean();
+	const [activeTab, setActiveTab] = useState("capabilities");
+
+	const handleUpgrade = useStable(() => {
+		setActiveTab("type");
+		configureHandle.open();
+	});
+
+	const isLoading = detailsPending || backupsPending || usagePending;
 	const isRenamed = !detailsPending && name !== details?.name;
 
 	if (!isCloud) {
@@ -78,7 +101,7 @@ export function DashboardView() {
 								{details?.state && <StateBadge state={details?.state} />}
 							</Group>
 						</Group>
-						{detailsPending ? (
+						{isLoading ? (
 							<Skeleton
 								w="100%"
 								maw={500}
@@ -107,7 +130,7 @@ export function DashboardView() {
 						)}
 					</Box>
 
-					<UpdateBlock
+					<UpdateBlockLazy
 						instance={details}
 						onUpdate={handleUpdate}
 					/>
@@ -116,30 +139,50 @@ export function DashboardView() {
 						cols={2}
 						spacing="xl"
 					>
-						<ConfigurationBlock
+						<ConfigurationBlockLazy
 							instance={details}
-							onUpdate={handleUpdate}
+							isLoading={isLoading}
+							onConfigure={configureHandle.open}
 						/>
-						<ConnectBlock instance={details} />
+						<ConnectBlockLazy
+							instance={details}
+							isLoading={isLoading}
+						/>
 					</SimpleGrid>
 
 					<SimpleGrid
 						cols={3}
 						spacing="xl"
 					>
-						<ComputeUsageBlock
+						<ComputeUsageBlockLazy
 							usage={usage}
-							loading={usagePending}
+							isLoading={isLoading}
 						/>
-						<DiskUsageBlock
+						<DiskUsageBlockLazy
 							usage={usage}
 							instance={details}
-							loading={usagePending}
+							isLoading={isLoading}
 						/>
-						<BackupsBlock instance={details} />
+						<BackupsBlockLazy
+							instance={details}
+							backups={backups}
+							isLoading={isLoading}
+							onUpgrade={handleUpgrade}
+						/>
 					</SimpleGrid>
 				</Stack>
 			</ScrollArea>
+
+			{details && (
+				<ConfiguratorDrawerLazy
+					opened={configuring}
+					tab={activeTab}
+					instance={details}
+					onChangeTab={setActiveTab}
+					onClose={configureHandle.close}
+					onUpdate={handleUpdate}
+				/>
+			)}
 		</Box>
 	);
 }

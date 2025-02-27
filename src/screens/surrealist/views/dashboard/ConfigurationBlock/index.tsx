@@ -1,4 +1,4 @@
-import { BoxProps, Button, ThemeIcon } from "@mantine/core";
+import { BoxProps, Button, Skeleton, ThemeIcon } from "@mantine/core";
 import { Paper, Group, Text, Stack } from "@mantine/core";
 import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
@@ -12,18 +12,15 @@ import {
 	iconQuery,
 	iconTag,
 } from "~/util/icons";
-import { ConfigurationDrawer } from "./drawer";
-import { useBoolean } from "~/hooks/boolean";
 import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
-	onUpdate: (version: string) => void;
+	isLoading: boolean;
+	onConfigure: () => void;
 }
 
-export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockProps) {
-	const [editing, editingHandle] = useBoolean();
-
+export function ConfigurationBlock({ instance, isLoading, onConfigure }: ConfigurationBlockProps) {
 	const regions = useCloudStore((s) => s.regions);
 	const region = instance?.region;
 	const regionName = regions.find((r) => r.slug === region)?.description ?? region;
@@ -38,62 +35,58 @@ export function ConfigurationBlock({ instance, onUpdate }: ConfigurationBlockPro
 	const storageText = formatMemory(storageSize * 1024);
 
 	return (
-		<Paper p="xl">
-			<Stack gap="sm">
-				<ConfigValue
-					title="Region"
-					icon={iconMarker}
-					value={regionName}
-				/>
-
-				<ConfigValue
-					title="Type"
-					icon={iconMemory}
-					value={typeText}
-				/>
-
-				<ConfigValue
-					title="Compute"
-					icon={iconQuery}
-					value={computeText}
-				/>
-
-				<ConfigValue
-					title="Version"
-					icon={iconTag}
-					value={`SurrealDB ${instance?.version}`}
-				/>
-
-				<Group>
+		<Skeleton
+			visible={isLoading}
+			display="grid"
+		>
+			<Paper p="xl">
+				<Stack gap="sm">
 					<ConfigValue
-						title="Storage"
-						icon={iconDatabase}
-						value={storageText}
-						flex={1}
+						title="Region"
+						icon={iconMarker}
+						value={regionName}
 					/>
 
-					<Button
-						size="xs"
-						color="slate"
-						rightSection={<Icon path={iconChevronRight} />}
-						onClick={editingHandle.open}
-						disabled={!instance}
-						my={-2}
-					>
-						Configure instance
-					</Button>
-				</Group>
-			</Stack>
+					<ConfigValue
+						title="Type"
+						icon={iconMemory}
+						value={typeText}
+					/>
 
-			{instance && (
-				<ConfigurationDrawer
-					opened={editing}
-					instance={instance}
-					onClose={editingHandle.close}
-					onUpdate={onUpdate}
-				/>
-			)}
-		</Paper>
+					<ConfigValue
+						title="Compute"
+						icon={iconQuery}
+						value={computeText}
+					/>
+
+					<ConfigValue
+						title="Version"
+						icon={iconTag}
+						value={`SurrealDB ${instance?.version}`}
+					/>
+
+					<Group>
+						<ConfigValue
+							title="Storage"
+							icon={iconDatabase}
+							value={storageText}
+							flex={1}
+						/>
+
+						<Button
+							size="xs"
+							color="slate"
+							rightSection={<Icon path={iconChevronRight} />}
+							onClick={onConfigure}
+							disabled={!instance}
+							my={-2}
+						>
+							Configure instance
+						</Button>
+					</Group>
+				</Stack>
+			</Paper>
+		</Skeleton>
 	);
 }
 

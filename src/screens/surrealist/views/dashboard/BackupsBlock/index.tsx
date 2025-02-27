@@ -1,24 +1,24 @@
-import { Paper, Group, Text, Box, Stack, Divider, Button, Tooltip } from "@mantine/core";
+import { Paper, Group, Text, Box, Stack, Divider, Button, Tooltip, Skeleton } from "@mantine/core";
 import { formatDistance } from "date-fns";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
-import { CloudInstance } from "~/types";
+import { CloudBackup, CloudInstance } from "~/types";
 import { iconChevronRight, iconHistory } from "~/util/icons";
 
 export interface BackupsBlockProps {
 	instance: CloudInstance | undefined;
+	backups: CloudBackup[] | undefined;
+	isLoading: boolean;
+	onUpgrade: () => void;
 }
 
-export function BackupsBlock({ instance }: BackupsBlockProps) {
-	const { data } = useCloudBackupsQuery(instance?.id);
-
-	const backups = data ?? [];
-	const latest = backups[0];
+export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: BackupsBlockProps) {
+	const latest = backups?.[0];
 	const unavailable = instance?.type.category === "free";
 
 	return (
-		<Box>
+		<Skeleton visible={isLoading}>
 			<Paper
 				gap={0}
 				component={Stack}
@@ -55,7 +55,7 @@ export function BackupsBlock({ instance }: BackupsBlockProps) {
 								size="xs"
 								rightSection={<Icon path={iconChevronRight} />}
 								variant="gradient"
-								onClick={() => {}}
+								onClick={onUpgrade}
 							>
 								Upgrade instance
 							</Button>
@@ -90,6 +90,6 @@ export function BackupsBlock({ instance }: BackupsBlockProps) {
 					)}
 				</Stack>
 			</Paper>
-		</Box>
+		</Skeleton>
 	);
 }

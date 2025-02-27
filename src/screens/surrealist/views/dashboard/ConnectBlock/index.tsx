@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { Paper, Box, Group, Text, ThemeIcon, UnstyledButton } from "@mantine/core";
+import { Paper, Box, Group, Text, ThemeIcon, UnstyledButton, Skeleton } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { useConnection } from "~/hooks/connection";
 import { openConnectCli } from "~/screens/surrealist/cloud-panel/modals/connect-cli";
@@ -13,15 +13,21 @@ interface ConnectActionProps {
 	title: string;
 	subtitle: string;
 	icon: string;
+	isLoading: boolean;
 	onClick?: () => void;
 }
 
-function ConnectAction({ title, subtitle, icon, onClick }: ConnectActionProps) {
+function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectActionProps) {
 	return (
-		<UnstyledButton onClick={onClick}>
+		<Skeleton
+			visible={isLoading}
+			display="grid"
+		>
 			<Paper
-				h="100%"
 				className={classes.action}
+				onClick={onClick}
+				component="button"
+				type="button"
 			>
 				<Group
 					wrap="nowrap"
@@ -53,15 +59,16 @@ function ConnectAction({ title, subtitle, icon, onClick }: ConnectActionProps) {
 					/>
 				</Group>
 			</Paper>
-		</UnstyledButton>
+		</Skeleton>
 	);
 }
 
 export interface ConnectBlockProps {
 	instance: CloudInstance | undefined;
+	isLoading: boolean;
 }
 
-export function ConnectBlock({ instance }: ConnectBlockProps) {
+export function ConnectBlock({ instance, isLoading }: ConnectBlockProps) {
 	const [namespace, database] = useConnection((c) => [
 		c?.lastNamespace ?? "",
 		c?.lastDatabase ?? "",
@@ -78,18 +85,21 @@ export function ConnectBlock({ instance }: ConnectBlockProps) {
 				title="Connect with Surreal CLI"
 				subtitle="For commandline environments"
 				icon={iconConsole}
+				isLoading={isLoading}
 				onClick={() => instance && openConnectCli(instance)}
 			/>
 			<ConnectAction
 				title="Connect with an SDK"
 				subtitle="For integrating SurrealDB"
 				icon={iconAPI}
+				isLoading={isLoading}
 				onClick={() => instance && openConnectSdk(instance, namespace, database)}
 			/>
 			<ConnectAction
 				title="Connect with HTTP cURL"
 				subtitle="For HTTP only environments"
 				icon={iconTransfer}
+				isLoading={isLoading}
 				onClick={() => instance && openConnectCurl(instance)}
 			/>
 		</Box>

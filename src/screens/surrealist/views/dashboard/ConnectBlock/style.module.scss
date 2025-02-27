@@ -1,5 +1,7 @@
 .action {
 	outline: 1px solid transparent;
+	cursor: pointer;
+	text-align: start;
 
 	&:hover {
 		outline-color: rgba(255, 221, 251, 0.15);

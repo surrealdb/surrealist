@@ -1,22 +1,31 @@
-import { Paper, Group, Divider, Text, Stack, Box, ThemeIcon, Progress } from "@mantine/core";
+import {
+	Paper,
+	Group,
+	Divider,
+	Text,
+	Stack,
+	Box,
+	ThemeIcon,
+	Progress,
+	Skeleton,
+} from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { CloudMeasurement } from "~/types";
 import { measureComputeHistory, measureComputeTotal } from "~/util/cloud";
 import { iconQuery } from "~/util/icons";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 
 export interface ComputeUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
-	loading: boolean;
+	isLoading: boolean;
 }
 
-export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
+export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) {
 	const computeHistory = measureComputeHistory(usage ?? []);
 	const computeTotal = measureComputeTotal(usage ?? []);
 
 	return (
-		<Box>
+		<Skeleton visible={isLoading}>
 			<Paper
 				gap={0}
 				component={Stack}
@@ -84,6 +93,6 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 					)}
 				</Stack>
 			</Paper>
-		</Box>
+		</Skeleton>
 	);
 }

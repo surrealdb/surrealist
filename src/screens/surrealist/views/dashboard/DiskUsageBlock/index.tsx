@@ -1,4 +1,4 @@
-import { Text, Box, Stack, Paper, Progress, Divider, Group } from "@mantine/core";
+import { Text, Box, Stack, Paper, Progress, Divider, Group, Skeleton } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance, CloudMeasurement } from "~/types";
@@ -9,10 +9,10 @@ import { iconDatabase } from "~/util/icons";
 export interface DiskUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
 	instance: CloudInstance | undefined;
-	loading: boolean;
+	isLoading: boolean;
 }
 
-export function DiskUsageBlock({ usage, instance, loading }: DiskUsageBlockProps) {
+export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockProps) {
 	const storageUsage = measureStorageUsage(usage ?? []);
 	const storageMaxGB = instance?.storage_size ?? 0;
 	const storageMax = storageMaxGB * 1024;
@@ -23,7 +23,7 @@ export function DiskUsageBlock({ usage, instance, loading }: DiskUsageBlockProps
 	const storageColor = storageFrac > 80 ? "red" : "surreal";
 
 	return (
-		<Box>
+		<Skeleton visible={isLoading}>
 			<Paper
 				gap={0}
 				component={Stack}
@@ -80,6 +80,6 @@ export function DiskUsageBlock({ usage, instance, loading }: DiskUsageBlockProps
 					</Box>
 				</Stack>
 			</Paper>
-		</Box>
+		</Skeleton>
 	);
 }
