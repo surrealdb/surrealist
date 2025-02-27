@@ -114,11 +114,7 @@ function ConfigValue({ title, icon, value, ...other }: ConfigValueProps) {
 				color="slate"
 				radius="xs"
 			>
-				<Icon
-					path={icon}
-					size={1.1}
-					c="slate"
-				/>
+				<Icon path={icon} />
 			</ThemeIcon>
 			<Group gap="xs">
 				<Text fw={600}>{title}: </Text>
