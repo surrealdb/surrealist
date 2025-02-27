@@ -48,7 +48,7 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 								<Text
 									c="bright"
 									fz="xl"
-									fw={500}
+									fw={600}
 								>
 									{type}
 								</Text>
@@ -73,7 +73,7 @@ export function ComputeUsageBlock({ usage, loading }: ComputeUsageBlockProps) {
 								<Text
 									c="bright"
 									fz="xl"
-									fw={500}
+									fw={600}
 								>
 									Total hours
 								</Text>
