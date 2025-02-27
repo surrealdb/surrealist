@@ -1,7 +1,8 @@
-import { Text, Box, Stack, Paper, Progress, Divider, Group, ThemeIcon } from "@mantine/core";
+import { Text, Box, Stack, Paper, Progress, Divider, Group } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance, CloudMeasurement } from "~/types";
+import { measureStorageUsage } from "~/util/cloud";
 import { formatMemory } from "~/util/helpers";
 import { iconDatabase } from "~/util/icons";
 
@@ -12,7 +13,7 @@ export interface DiskUsageBlockProps {
 }
 
 export function DiskUsageBlock({ usage, instance, loading }: DiskUsageBlockProps) {
-	const storageUsage = 325;
+	const storageUsage = measureStorageUsage(usage ?? []);
 	const storageMaxGB = instance?.storage_size ?? 0;
 	const storageMax = storageMaxGB * 1024;
 
