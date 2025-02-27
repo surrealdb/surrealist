@@ -12,6 +12,7 @@ import {
 	ActionIcon,
 	Menu,
 	Alert,
+	Divider,
 } from "@mantine/core";
 import clsx from "clsx";
 import { PropsWithChildren, useRef, useMemo } from "react";
@@ -23,7 +24,15 @@ import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { CloudInstance, ConnectionListMode } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
-import { iconCloud, iconDotsVertical, iconCopy, iconDelete, iconEdit } from "~/util/icons";
+import {
+	iconCloud,
+	iconDotsVertical,
+	iconCopy,
+	iconDelete,
+	iconEdit,
+	iconTransfer,
+	iconBug,
+} from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
 import { ON_STOP_PROPAGATION, showError, showInfo } from "~/util/helpers";
@@ -85,11 +94,20 @@ export function StartInstance({
 		});
 	});
 
-	const handleCopy = useStable(() => {
+	const handleCopyHost = useStable(() => {
 		navigator.clipboard.writeText(instance.host).then(() => {
 			showInfo({
 				title: "Copied",
 				subtitle: "Successfully copied hostname to clipboard",
+			});
+		});
+	});
+
+	const handleCopyID = useStable(() => {
+		navigator.clipboard.writeText(instance.id).then(() => {
+			showInfo({
+				title: "Copied",
+				subtitle: "Successfully copied instance id to clipboard",
 			});
 		});
 	});
@@ -219,12 +237,9 @@ export function StartInstance({
 								>
 									Edit details
 								</Menu.Item>
-								<Menu.Item
-									leftSection={<Icon path={iconCopy} />}
-									onClick={handleCopy}
-								>
-									Copy hostname
-								</Menu.Item>
+								<Menu.Divider />
+								<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
+								<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
 								<Menu.Divider />
 								<Menu.Item
 									leftSection={

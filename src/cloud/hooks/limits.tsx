@@ -20,8 +20,6 @@ export function useCloudTypeLimits(
 				const [free, paid] = fork(instances ?? [], (i) => i.type.price_hour === 0);
 				const isFree = type.price_hour === 0;
 
-				console.log(current);
-
 				return isFree
 					? free.length < current.max_free_instances
 					: paid.length < current.max_paid_instances;

@@ -32,7 +32,7 @@ function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectAct
 				<Group
 					wrap="nowrap"
 					h="100%"
-					px="md"
+					px="xs"
 				>
 					<ThemeIcon
 						color="slate"
