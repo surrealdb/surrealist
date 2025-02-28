@@ -12,27 +12,15 @@ import {
 	ActionIcon,
 	Menu,
 	Alert,
-	Divider,
 } from "@mantine/core";
 import clsx from "clsx";
 import { PropsWithChildren, useRef, useMemo } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { useConnectionList } from "~/hooks/connection";
-import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useConfigStore } from "~/stores/config";
 import { CloudInstance, ConnectionListMode } from "~/types";
-import { createBaseConnection } from "~/util/defaults";
-import {
-	iconCloud,
-	iconDotsVertical,
-	iconCopy,
-	iconDelete,
-	iconEdit,
-	iconTransfer,
-	iconBug,
-} from "~/util/icons";
+import { iconCloud, iconDotsVertical, iconDelete, iconEdit } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
 import { ON_STOP_PROPAGATION, showError, showInfo } from "~/util/helpers";
@@ -44,16 +32,17 @@ import { useQueryClient } from "@tanstack/react-query";
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
 	presentation: ConnectionListMode;
+	onConnect: (instance: CloudInstance) => void;
 }
 
 export function StartInstance({
 	instance,
 	presentation,
+	onConnect,
 	children,
 	...other
 }: PropsWithChildren<StartInstanceProps>) {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const navigateConnection = useConnectionNavigator();
 	const connections = useConnectionList();
 	const client = useQueryClient();
 
@@ -62,28 +51,7 @@ export function StartInstance({
 	}, [connections, instance.id]);
 
 	const handleConnect = useStable(() => {
-		const { settings, addConnection } = useConfigStore.getState();
-
-		if (connection) {
-			navigateConnection(connection.id);
-		} else {
-			const base = createBaseConnection(settings);
-
-			addConnection({
-				...base,
-				name: instance.name,
-				authentication: {
-					...base.authentication,
-					protocol: "wss",
-					mode: "cloud",
-					token: "",
-					hostname: instance.host,
-					cloudInstance: instance.id,
-				},
-			});
-
-			navigateConnection(base.id);
-		}
+		onConnect(instance);
 	});
 
 	const handleEdit = useStable(() => {
@@ -225,6 +193,7 @@ export function StartInstance({
 								<ActionIcon
 									color="slate"
 									variant="subtle"
+									component="div"
 									disabled={instance.state !== "ready"}
 								>
 									<Icon path={iconDotsVertical} />

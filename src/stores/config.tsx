@@ -52,9 +52,6 @@ function updateConnection(state: ConfigStore, connection: string, modifier: Conn
 
 export type ConfigStore = SurrealistConfig & {
 	applyPreference: <T>(updater: (state: ConfigStore, value: T) => void, value: T) => void;
-	addConnectionGroup: (group: ConnectionGroup) => void;
-	removeConnectionGroup: (groupId: string) => void;
-	updateConnectionGroup: (group: PartialId<ConnectionGroup>) => void;
 	addConnection: (connection: Connection) => void;
 	removeConnection: (connectionId: string) => void;
 	updateConnection: (connection: PartialId<Connection>) => void;
@@ -97,32 +94,6 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) => {
 				updater(state, value);
 			}),
-
-		addConnectionGroup: (group) =>
-			set((state) => ({
-				connectionGroups: [...state.connectionGroups, group],
-			})),
-
-		removeConnectionGroup: (groupId) =>
-			set((state) => {
-				return {
-					connectionGroups: state.connectionGroups.filter(
-						(group) => group.id !== groupId,
-					),
-					connections: state.connections.map((connection) => {
-						return connection.group === groupId
-							? { ...connection, group: undefined }
-							: connection;
-					}),
-				};
-			}),
-
-		updateConnectionGroup: (group) =>
-			set((state) => ({
-				connectionGroups: state.connectionGroups.map((g) =>
-					g.id === group.id ? { ...g, ...group } : g,
-				),
-			})),
 
 		addConnection: (connection) =>
 			set((state) => ({

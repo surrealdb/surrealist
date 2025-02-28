@@ -38,7 +38,7 @@ import { Icon } from "~/components/Icon";
 import { useThemeImage } from "~/hooks/theme";
 import { dispatchIntent } from "~/util/intents";
 import { Spacer } from "~/components/Spacer";
-import { useConnectionList } from "~/hooks/connection";
+import { useConnectionList, useConnectionOverview } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { Fragment } from "react/jsx-runtime";
@@ -49,7 +49,7 @@ import { adapter } from "~/adapter";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConfigStore } from "~/stores/config";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { useAbsoluteLocation } from "~/hooks/routing";
+import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { TopGlow } from "~/components/TopGlow";
 import { Tooltip } from "@mantine/core";
 import { StartNews } from "./content/news";
@@ -59,6 +59,8 @@ import { StartConnection } from "./content/connection";
 import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { useSetting } from "~/hooks/config";
+import { CloudInstance, Connection } from "~/types";
+import { resolveInstanceConnection } from "~/util/connection";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -72,15 +74,27 @@ export function OverviewPage() {
 
 	const newsQuery = useLatestNewsQuery();
 	const [, navigate] = useAbsoluteLocation();
-	const { entries, isPending } = useCloudInstanceList();
+	const navigateConnection = useConnectionNavigator();
+
+	const [search, setSearch] = useState("");
+	const [label, setLabel] = useState("");
+
+	const { isPending, sandbox, userConnections, organizations } = useConnectionOverview({
+		search,
+		label,
+	});
+
+	const activateConnection = useStable((con: Connection) => {
+		navigateConnection(con.id);
+	});
+
+	const activateInstance = useStable((instance: CloudInstance) => {
+		activateConnection(resolveInstanceConnection(instance));
+	});
 
 	const authState = useCloudStore((s) => s.authState);
-	const connections = useConnectionList();
-	const sandbox = useConfigStore((s) => s.sandbox);
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 	const gridColumns = presentation === "card" ? GRID_COLUMNS : 1;
-
-	const userConnections = connections.filter((c) => !c.authentication.cloudInstance);
 
 	const createConnection = useStable(() => {
 		dispatchIntent("new-connection");
@@ -183,15 +197,19 @@ export function OverviewPage() {
 							</Group>
 
 							<SimpleGrid cols={gridColumns}>
-								<StartConnection
-									connection={sandbox}
-									presentation={presentation}
-								/>
+								{sandbox && (
+									<StartConnection
+										connection={sandbox}
+										presentation={presentation}
+										onConnect={activateConnection}
+									/>
+								)}
 								{userConnections.map((connection) => (
 									<StartConnection
 										key={connection.id}
 										connection={connection}
 										presentation={presentation}
+										onConnect={activateConnection}
 									/>
 								))}
 								<StartCreator
@@ -202,8 +220,8 @@ export function OverviewPage() {
 								/>
 							</SimpleGrid>
 
-							{entries.map(({ organization, instances }) => (
-								<Fragment key={organization.id}>
+							{organizations.map(({ info, instances }) => (
+								<Fragment key={info.id}>
 									<Group mt="lg">
 										<ThemeIcon
 											radius="xs"
@@ -216,7 +234,7 @@ export function OverviewPage() {
 											fz="xl"
 											fw={500}
 										>
-											{organization.name}
+											{info.name}
 										</Text>
 									</Group>
 									<SimpleGrid cols={gridColumns}>
@@ -225,6 +243,7 @@ export function OverviewPage() {
 												key={instance.id}
 												instance={instance}
 												presentation={presentation}
+												onConnect={activateInstance}
 											/>
 										))}
 										<StartCreator
@@ -232,7 +251,7 @@ export function OverviewPage() {
 											subtitle="Provision a new Surreal Cloud instance"
 											presentation={presentation}
 											onCreate={() => {
-												setSelectedOrganization(organization.id);
+												setSelectedOrganization(info.id);
 												navigate("/provision");
 											}}
 										/>

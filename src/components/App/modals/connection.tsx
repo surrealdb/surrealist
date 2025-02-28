@@ -53,7 +53,7 @@ export function ConnectionModal() {
 				name: details.name,
 				icon: details.icon,
 				authentication: details.authentication,
-				group: details.group,
+				labels: details.labels,
 			});
 		}
 
@@ -66,7 +66,7 @@ export function ConnectionModal() {
 		setDetails((draft) => {
 			draft.name = template.name;
 			draft.icon = template.icon;
-			draft.group = template.group;
+			draft.labels = template.labels;
 			draft.authentication = template.values;
 		});
 	});

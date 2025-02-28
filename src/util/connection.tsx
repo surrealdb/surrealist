@@ -1,7 +1,8 @@
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
-import type { AuthLevel, Authentication } from "~/types";
+import type { AuthLevel, Authentication, CloudInstance } from "~/types";
 import { connectionUri, fastParseJwt } from "./helpers";
+import { createBaseConnection } from "./defaults";
 
 /**
  * Returns the currently active connection
@@ -181,4 +182,34 @@ export function isConnectionValid(auth: Authentication | undefined) {
 	}
 
 	return true;
+}
+
+/**
+ * Resolve the connection for a CloudInstance, creating one
+ * if it does not exist
+ */
+export function resolveInstanceConnection(instance: CloudInstance) {
+	const { settings, addConnection, connections } = useConfigStore.getState();
+	const connection = connections.find((c) => c.authentication.cloudInstance === instance.id);
+
+	if (connection) {
+		return connection;
+	}
+
+	const base = createBaseConnection(settings);
+
+	addConnection({
+		...base,
+		name: instance.name,
+		authentication: {
+			...base.authentication,
+			protocol: "wss",
+			mode: "cloud",
+			token: "",
+			hostname: instance.host,
+			cloudInstance: instance.id,
+		},
+	});
+
+	return base;
 }

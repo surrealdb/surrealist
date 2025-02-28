@@ -66,8 +66,8 @@ export function formatBinding(binding: string[]) {
  * Display a binding as ReactNode
  */
 export function displayBinding(binding: string[]) {
-	return binding.map((part) => {
-		return displayKey(expandMetaKey(expandModKey(part)));
+	return binding.map((part, i) => {
+		return <Fragment key={i}>{displayKey(expandMetaKey(expandModKey(part)))}</Fragment>;
 	});
 }
 

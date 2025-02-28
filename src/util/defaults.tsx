@@ -19,7 +19,6 @@ export function createBaseConfig(): SurrealistConfig {
 		configVersion: CONFIG_VERSION,
 		previousVersion: import.meta.env.VERSION,
 		connections: [],
-		connectionGroups: [],
 		sandbox: createSandboxConnection(settings),
 		activeResource: "/overview",
 		savedQueries: [],

@@ -106,7 +106,7 @@ export interface Connection {
 	id: string;
 	name: string;
 	icon: number;
-	group?: string;
+	labels?: string[];
 	lastNamespace: string;
 	lastDatabase: string;
 	queries: QueryTab[];
@@ -135,7 +135,7 @@ export interface Template {
 	name: string;
 	icon: number;
 	values: Authentication;
-	group?: string;
+	labels?: string[];
 }
 
 export interface ConnectionGroup {
@@ -244,7 +244,6 @@ export interface SurrealistConfig {
 	configVersion: number;
 	previousVersion: string;
 	connections: Connection[];
-	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
 	activeResource: string;
 	savedQueries: SavedQuery[];

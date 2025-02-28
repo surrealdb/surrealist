@@ -16,15 +16,11 @@ import {
 	Select,
 	SimpleGrid,
 	Stack,
-	TextInput
+	TagsInput,
+	TextInput,
 } from "@mantine/core";
 
-import {
-	AUTH_MODES,
-	CONNECTION_PROTOCOLS,
-	INSTANCE_GROUP,
-	SENSITIVE_ACCESS_FIELDS,
-} from "~/constants";
+import { AUTH_MODES, CONNECTION_PROTOCOLS, SENSITIVE_ACCESS_FIELDS } from "~/constants";
 
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -34,7 +30,6 @@ import { useMemo } from "react";
 import type { Updater } from "use-immer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { useConfigStore } from "~/stores/config";
 import type { AuthMode, Connection, Protocol } from "~/types";
 import { fastParseJwt, isHostLocal } from "~/util/helpers";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
@@ -43,6 +38,7 @@ import { ActionButton } from "../ActionButton";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
+import { useConnectionLabels } from "~/hooks/connection";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -82,6 +78,7 @@ export interface ConnectionDetailsProps {
 export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const [editingAccess, editingAccessHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();
+	const labels = useConnectionLabels();
 	const isLight = useIsLight();
 
 	const { hostname, protocol, mode, token } = value.authentication;
@@ -160,22 +157,6 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const isSecure = protocol === "https" || protocol === "wss";
 	const showSslNotice = isLocalhost && isSecure;
 	const insecureVariant = protocol === "wss" ? "ws" : "http";
-
-	const groups = useConfigStore((s) => s.connectionGroups);
-	const groupItems = useMemo(() => {
-		return [
-			{
-				value: "",
-				label: "No group",
-			},
-			...groups
-				.filter((group) => group.id !== INSTANCE_GROUP)
-				.map((group) => ({
-					value: group.id,
-					label: group.name,
-				})),
-		];
-	}, [groups]);
 
 	return (
 		<>
@@ -512,25 +493,21 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 					</>
 				)}
 
-				{value.group !== INSTANCE_GROUP && (
-					<>
-						<Subheader
-							title="Configuration"
-							subtitle="Further configuration options"
-						/>
+				<Subheader
+					title="Configuration"
+					subtitle="Further connection options"
+				/>
 
-						<Select
-							label="Group"
-							data={groupItems}
-							value={value.group || ""}
-							onChange={(group) =>
-								onChange((draft) => {
-									draft.group = group || undefined;
-								})
-							}
-						/>
-					</>
-				)}
+				<TagsInput
+					data={labels}
+					value={value.labels ?? []}
+					onChange={(value) =>
+						onChange((draft) => {
+							draft.labels = value;
+						})
+					}
+					label="Labels"
+				/>
 			</Stack>
 
 			<Modal
@@ -586,10 +563,7 @@ export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 											label="Remove field"
 											onClick={() =>
 												onChange((draft) => {
-													draft.authentication.accessFields.splice(
-														i,
-														1,
-													);
+													draft.authentication.accessFields.splice(i, 1);
 												})
 											}
 										>

@@ -1,14 +1,13 @@
 import classes from "../style.module.scss";
 
 import { iconSandbox, iconDotsVertical, iconCopy, iconDelete, iconEdit } from "~/util/icons";
-
 import { ActionIcon, Menu, Text } from "@mantine/core";
 import { BoxProps, UnstyledButton, Paper, Group, Stack, ThemeIcon, Box } from "@mantine/core";
 import clsx from "clsx";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
-import { INSTANCE_GROUP, SANDBOX } from "~/constants";
+import { SANDBOX } from "~/constants";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { Connection, ConnectionListMode } from "~/types";
@@ -21,11 +20,13 @@ import { useConfigStore } from "~/stores/config";
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;
 	presentation: ConnectionListMode;
+	onConnect: (connection: Connection) => void;
 }
 
 export function StartConnection({
 	connection,
 	presentation,
+	onConnect,
 	children,
 	...other
 }: PropsWithChildren<StartConnectionProps>) {
@@ -33,13 +34,11 @@ export function StartConnection({
 	const { protocol, hostname } = connection.authentication;
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const navigateConnection = useConnectionNavigator();
-	const isInstanceLocal = connection.group === INSTANCE_GROUP;
 	const isSandbox = connection.id === SANDBOX;
 	const target = protocol === "mem" ? "In-Memory" : protocol === "indxdb" ? "IndexDB" : hostname;
 
 	const handleConnect = useStable(() => {
-		navigateConnection(connection.id);
+		onConnect(connection);
 	});
 
 	const handleEdit = useStable(() => {
@@ -53,7 +52,6 @@ export function StartConnection({
 			...connection,
 			lastNamespace: "",
 			lastDatabase: "",
-			group: isInstanceLocal ? undefined : connection.group,
 			id: newId(),
 		});
 	});
@@ -139,6 +137,7 @@ export function StartConnection({
 									<ActionIcon
 										color="slate"
 										variant="subtle"
+										component="div"
 									>
 										<Icon path={iconDotsVertical} />
 									</ActionIcon>
@@ -165,7 +164,6 @@ export function StartConnection({
 											/>
 										}
 										onClick={handleDelete}
-										disabled={isInstanceLocal}
 										c="red"
 									>
 										Delete
