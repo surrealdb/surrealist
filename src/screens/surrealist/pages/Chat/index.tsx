@@ -1,10 +1,10 @@
 import classes from "./style.module.scss";
-
 import sidekickImg from "~/assets/images/sidekick-glow.webp";
 
 import {
 	ActionIcon,
 	Box,
+	Button,
 	Center,
 	Group,
 	Image,
@@ -17,11 +17,13 @@ import {
 
 import {
 	iconAccount,
+	iconChevronRight,
 	iconCreditCard,
 	iconCursor,
 	iconDownload,
 	iconHistory,
 	iconLive,
+	iconOpen,
 	iconPlus,
 	iconQuery,
 	iconRelation,
@@ -46,6 +48,9 @@ import { StartResource } from "../Overview/content/resource";
 import { shuffle } from "radash";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
+import { useIsAuthenticated } from "~/hooks/cloud";
+import { openCloudAuthentication } from "~/cloud/api/auth";
+import { adapter } from "~/adapter";
 
 const QUESTIONS = [
 	{ icon: iconCreditCard, title: "How do I manage Cloud billing?" },
@@ -72,6 +77,7 @@ export function ChatPage() {
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [input, setInput] = useInputState("");
 
+	const isAuthed = useIsAuthenticated();
 	const profile = useCloudStore((s) => s.profile);
 	const conversation = useCloudStore((s) => s.chatConversation);
 	const lastResponse = useCloudStore((s) => s.chatLastResponse);
@@ -134,7 +140,7 @@ export function ChatPage() {
 				w="100%"
 				pos="relative"
 			>
-				{conversation.length > 0 ? (
+				{conversation.length > 0 && isAuthed ? (
 					<ScrollArea
 						pos="absolute"
 						viewportRef={scrollRef}
@@ -198,83 +204,114 @@ export function ChatPage() {
 								w={196}
 							/>
 							<PrimaryTitle fz={42}>Welcome to Sidekick</PrimaryTitle>
-							<Text fz="xl">
+							<Text fz="lg">
 								Your personal Surreal assistant designed to answer your database
 								questions.
 							</Text>
-							<SimpleGrid
-								mt="xl"
-								cols={{
-									xs: 1,
-									sm: 2,
-								}}
-							>
-								{questions.map((question) => (
-									<StartResource
-										key={question.title}
-										title={question.title}
-										icon={question.icon}
-										onClick={() => {
-											setInput(question.title);
-											inputRef.current?.focus();
-										}}
-									/>
-								))}
-							</SimpleGrid>
+							{isAuthed ? (
+								<SimpleGrid
+									mt="xl"
+									cols={{
+										xs: 1,
+										sm: 2,
+									}}
+								>
+									{questions.map((question) => (
+										<StartResource
+											key={question.title}
+											title={question.title}
+											icon={question.icon}
+											onClick={() => {
+												setInput(question.title);
+												inputRef.current?.focus();
+											}}
+										/>
+									))}
+								</SimpleGrid>
+							) : (
+								<Group
+									mt="xl"
+									w="100%"
+									maw={400}
+								>
+									<Button
+										flex={1}
+										variant="gradient"
+										onClick={openCloudAuthentication}
+										rightSection={<Icon path={iconChevronRight} />}
+									>
+										Sign in
+									</Button>
+									<Button
+										flex={1}
+										color="slate"
+										variant="light"
+										rightSection={<Icon path={iconOpen} />}
+										onClick={() =>
+											adapter.openUrl("https://surrealdb.com/sidekick")
+										}
+									>
+										Learn more
+									</Button>
+								</Group>
+							)}
 						</Stack>
 					</Center>
 				)}
 			</Box>
-			<Box
-				maw={900}
-				w="100%"
-				style={{
-					transform: "translateY(-24px)",
-				}}
-			>
-				<Textarea
-					ref={inputRef}
-					size="lg"
-					rows={1}
-					maxRows={12}
-					autosize
-					className={classes.input}
-					placeholder="Send a message..."
-					onKeyDown={handleKeyDown}
-					value={input}
-					autoFocus
-					onChange={setInput}
-					rightSection={
-						<ActionIcon
-							size="lg"
-							type="submit"
-							variant="gradient"
-							disabled={!canSend}
-							onClick={submitMessage}
-							loading={isResponding}
-							style={{
-								opacity: canSend ? 1 : 0.5,
-								border: "1px solid rgba(255, 255, 255, 0.3)",
-								backgroundOrigin: "border-box",
-								filter: canSend ? undefined : "saturate(0%)",
-								transition: "all 0.1s",
-							}}
-						>
-							<Icon
-								path={iconCursor}
-								c="white"
-							/>
-						</ActionIcon>
-					}
-				/>
-				<Text
-					mt="sm"
-					ta="center"
-					c="slate"
+
+			{isAuthed && (
+				<Box
+					maw={900}
+					w="100%"
+					style={{
+						transform: "translateY(-24px)",
+					}}
 				>
-					You are chatting with an AI assistant, responses may be inaccurate.
-				</Text>
-			</Box>
+					<Textarea
+						ref={inputRef}
+						size="lg"
+						rows={1}
+						maxRows={12}
+						autosize
+						className={classes.input}
+						placeholder="Send a message..."
+						onKeyDown={handleKeyDown}
+						value={input}
+						autoFocus
+						onChange={setInput}
+						rightSection={
+							<ActionIcon
+								size="lg"
+								type="submit"
+								variant="gradient"
+								disabled={!canSend}
+								onClick={submitMessage}
+								loading={isResponding}
+								style={{
+									opacity: canSend ? 1 : 0.5,
+									border: "1px solid rgba(255, 255, 255, 0.3)",
+									backgroundOrigin: "border-box",
+									filter: canSend ? undefined : "saturate(0%)",
+									transition: "all 0.1s",
+								}}
+							>
+								<Icon
+									path={iconCursor}
+									c="white"
+								/>
+							</ActionIcon>
+						}
+					/>
+					<Text
+						mt="sm"
+						ta="center"
+						c="slate"
+					>
+						You are chatting with an AI assistant, responses may be inaccurate.
+					</Text>
+				</Box>
+			)}
 		</Stack>
 	);
 }

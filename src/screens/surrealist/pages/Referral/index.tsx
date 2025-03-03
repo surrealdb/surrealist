@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
+import cloudImg from "~/assets/images/cloud-icon.webp";
 
 import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
-import logoDarkUrl from "~/assets/images/dark/referral-logo.png";
 import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
 import tier2DarkUrl from "~/assets/images/dark/referral-tier-2.png";
 import tier3DarkUrl from "~/assets/images/dark/referral-tier-3.png";
@@ -20,6 +20,7 @@ import {
 	ActionIcon,
 	Box,
 	Button,
+	Center,
 	CopyButton,
 	Group,
 	Image,
@@ -40,9 +41,12 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Slab, SlabProps } from "~/components/Slab";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
+import { iconCheck, iconChevronRight, iconCopy, iconHelp, iconOpen } from "~/util/icons";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { TopGlow } from "~/components/TopGlow";
+import { useIsAuthenticated } from "~/hooks/cloud";
+import { adapter } from "~/adapter";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 
 const REWARDS = [1, 10, 25, 100, 500];
 
@@ -86,6 +90,7 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 export function ReferralPage() {
 	const referralQuery = useCloudReferralQuery();
 	const referralCodeQuery = useCloudReferralCodeQuery();
+	const isAuthed = useIsAuthenticated();
 	const isLight = useIsLight();
 
 	const referralLink = `https://surrealist.app/referral?code=${referralCodeQuery.data}`;
@@ -110,273 +115,327 @@ export function ReferralPage() {
 		>
 			<TopGlow offset={200} />
 
-			<ScrollArea
-				pos="absolute"
-				scrollbars="y"
-				type="scroll"
-				inset={0}
-				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBlock: 75 },
-				}}
-			>
-				<Stack
-					w="100%"
-					maw={1100}
-					mx="auto"
-					gap={38}
-					pos="relative"
+			{isAuthed ? (
+				<ScrollArea
+					pos="absolute"
+					scrollbars="y"
+					type="scroll"
+					inset={0}
+					className={classes.scrollArea}
+					viewportProps={{
+						style: { paddingBlock: 75 },
+					}}
 				>
-					<Box>
-						<PrimaryTitle>Referral Program</PrimaryTitle>
-						<Text fz="xl">Earn rewards for referring your friends and contacts</Text>
-					</Box>
-					{/* <Image
+					<Stack
+						w="100%"
+						maw={1100}
+						mx="auto"
+						gap={38}
+						pos="relative"
+					>
+						<Box>
+							<PrimaryTitle>Referral Program</PrimaryTitle>
+							<Text fz="xl">
+								Earn rewards for referring your friends and contacts
+							</Text>
+						</Box>
+						{/* <Image
 						src={isLight ? logoLightUrl : logoDarkUrl}
 						alt="Surreal Cloud"
 						mx="auto"
 						w={450}
 					/> */}
 
-					<Slab
-						p="xl"
-						shadow="md"
-						radius={28}
-					>
-						<Group gap={0}>
-							<Box style={{ alignSelf: "start" }}>
-								<Image
-									src={isLight ? iconLightUrl : iconDarkUrl}
-									w={250}
-									ml={-46}
-									mr={-12}
-									my={-32}
-								/>
-							</Box>
-							<Stack
-								gap={28}
-								flex={1}
-							>
-								<Box>
-									<PrimaryTitle>
-										Share Surreal Cloud and earn rewards
-									</PrimaryTitle>
-									<Text mt={2}>
-										The Surreal Cloud referral program allows you to invite a
-										friend in exchange for benefits.
-									</Text>
+						<Slab
+							p="xl"
+							shadow="md"
+							radius={28}
+						>
+							<Group gap={0}>
+								<Box style={{ alignSelf: "start" }}>
+									<Image
+										src={isLight ? iconLightUrl : iconDarkUrl}
+										w={250}
+										ml={-46}
+										mr={-12}
+										my={-32}
+									/>
 								</Box>
+								<Stack
+									gap={28}
+									flex={1}
+								>
+									<Box>
+										<PrimaryTitle>
+											Share Surreal Cloud and earn rewards
+										</PrimaryTitle>
+										<Text mt={2}>
+											The Surreal Cloud referral program allows you to invite
+											a friend in exchange for benefits.
+										</Text>
+									</Box>
 
-								<Box>
-									<Label>Your referral link</Label>
-									<Skeleton visible={referralCodeQuery.isPending}>
-										<Group wrap="nowrap">
-											<TextInput
-												w="100%"
-												maw={400}
-												value={referralLink}
-												readOnly
-												onFocus={ON_FOCUS_SELECT}
-												rightSection={
-													<CopyButton value={referralLink}>
-														{({ copied, copy }) => (
-															<ActionIcon
-																variant={
-																	copied ? "gradient" : undefined
-																}
-																aria-label="Copy referral link"
-																onClick={copy}
-															>
-																<Icon
-																	path={
+									<Box>
+										<Label>Your referral link</Label>
+										<Skeleton visible={referralCodeQuery.isPending}>
+											<Group wrap="nowrap">
+												<TextInput
+													w="100%"
+													maw={400}
+													value={referralLink}
+													readOnly
+													onFocus={ON_FOCUS_SELECT}
+													rightSection={
+														<CopyButton value={referralLink}>
+															{({ copied, copy }) => (
+																<ActionIcon
+																	variant={
 																		copied
-																			? iconCheck
-																			: iconCopy
+																			? "gradient"
+																			: undefined
 																	}
-																/>
-															</ActionIcon>
-														)}
-													</CopyButton>
-												}
-												classNames={{
-													input: classes.link,
-												}}
-											/>
-											{showShare && (
-												<Button
-													variant="gradient"
-													onClick={() => navigator.share(shareOptions)}
-													style={{ flexShrink: 0 }}
-												>
-													Share
-												</Button>
-											)}
-										</Group>
-									</Skeleton>
-								</Box>
-							</Stack>
-						</Group>
-					</Slab>
-
-					<Box>
-						<PrimaryTitle>Progress</PrimaryTitle>
-						<Text>
-							You have referred{" "}
-							<Text
-								span
-								c="bright"
-								fz="xl"
-								fw={500}
-							>
-								{referrals}
-							</Text>{" "}
-							users.
-						</Text>
-						<Text>
-							Refer{" "}
-							<Text
-								span
-								c="bright"
-								fw={500}
-							>
-								{toRefer} more
-							</Text>{" "}
-							users to unlock the next reward.
-						</Text>
-						<Progress
-							mt="md"
-							value={progress}
-							bg={isLight ? "slate.2" : "slate"}
-							styles={{
-								root: {
-									overflow: "unset",
-								},
-								section: {
-									background: "var(--surrealist-gradient)",
-									boxShadow: "var(--surrealist-glow)",
-								},
-							}}
-						/>
-					</Box>
-
-					<Box>
-						<PrimaryTitle>Rewards</PrimaryTitle>
-						<SimpleGrid
-							mt="sm"
-							cols={{ base: 1, xs: 3, sm: 2, md: 3, lg: 5 }}
-						>
-							<Reward
-								title="1-5 referrals"
-								active={referrals >= 1}
-								description={
-									<Group gap="xs">
-										Free credits
-										<Tooltip
-											position="bottom"
-											label={
-												<Text
-													w={150}
-													style={{ whiteSpace: "pre-line" }}
-												>
-													You receive $10 credits per referral, for a
-													maximum of $50. The person you invite receives
-													$25.
-												</Text>
-											}
-										>
-											<Box>
-												<Icon
-													path={iconHelp}
-													size="sm"
+																	aria-label="Copy referral link"
+																	onClick={copy}
+																>
+																	<Icon
+																		path={
+																			copied
+																				? iconCheck
+																				: iconCopy
+																		}
+																	/>
+																</ActionIcon>
+															)}
+														</CopyButton>
+													}
+													classNames={{
+														input: classes.link,
+													}}
 												/>
-											</Box>
-										</Tooltip>
-									</Group>
-								}
-								icon={isLight ? tier1LightUrl : tier1DarkUrl}
-							/>
-							<Reward
-								title="10 referrals"
-								description="Exclusive store swag"
-								icon={isLight ? tier2LightUrl : tier2DarkUrl}
-								active={referrals >= 10}
-							/>
-							<Reward
-								title="25 referrals"
-								description="Exclusive Discord badge"
-								icon={isLight ? tier3LightUrl : tier3DarkUrl}
-								active={referrals >= 25}
-							/>
-							<Reward
-								title="100 referrals"
-								description="Exclusive store multi-pack"
-								icon={isLight ? tier4LightUrl : tier4DarkUrl}
-								active={referrals >= 100}
-							/>
-							<Reward
-								title="500 referrals"
-								description="Coming Soon"
-								icon={isLight ? tier5LightUrl : tier5DarkUrl}
-								active={referrals >= 500}
-								opacity={0.5}
-							/>
-						</SimpleGrid>
-					</Box>
+												{showShare && (
+													<Button
+														variant="gradient"
+														onClick={() =>
+															navigator.share(shareOptions)
+														}
+														style={{ flexShrink: 0 }}
+													>
+														Share
+													</Button>
+												)}
+											</Group>
+										</Skeleton>
+									</Box>
+								</Stack>
+							</Group>
+						</Slab>
 
-					<Box>
-						<PrimaryTitle>How does this work?</PrimaryTitle>
-						<SimpleGrid
-							mt="sm"
-							cols={{
-								base: 1,
-								md: 3,
-							}}
+						<Box>
+							<PrimaryTitle>Progress</PrimaryTitle>
+							<Text>
+								You have referred{" "}
+								<Text
+									span
+									c="bright"
+									fz="xl"
+									fw={500}
+								>
+									{referrals}
+								</Text>{" "}
+								users.
+							</Text>
+							<Text>
+								Refer{" "}
+								<Text
+									span
+									c="bright"
+									fw={500}
+								>
+									{toRefer} more
+								</Text>{" "}
+								users to unlock the next reward.
+							</Text>
+							<Progress
+								mt="md"
+								value={progress}
+								bg={isLight ? "slate.2" : "slate"}
+								styles={{
+									root: {
+										overflow: "unset",
+									},
+									section: {
+										background: "var(--surrealist-gradient)",
+										boxShadow: "var(--surrealist-glow)",
+									},
+								}}
+							/>
+						</Box>
+
+						<Box>
+							<PrimaryTitle>Rewards</PrimaryTitle>
+							<SimpleGrid
+								mt="sm"
+								cols={{ base: 1, xs: 3, sm: 2, md: 3, lg: 5 }}
+							>
+								<Reward
+									title="1-5 referrals"
+									active={referrals >= 1}
+									description={
+										<Group gap="xs">
+											Free credits
+											<Tooltip
+												position="bottom"
+												label={
+													<Text
+														w={150}
+														style={{ whiteSpace: "pre-line" }}
+													>
+														You receive $10 credits per referral, for a
+														maximum of $50. The person you invite
+														receives $25.
+													</Text>
+												}
+											>
+												<Box>
+													<Icon
+														path={iconHelp}
+														size="sm"
+													/>
+												</Box>
+											</Tooltip>
+										</Group>
+									}
+									icon={isLight ? tier1LightUrl : tier1DarkUrl}
+								/>
+								<Reward
+									title="10 referrals"
+									description="Exclusive store swag"
+									icon={isLight ? tier2LightUrl : tier2DarkUrl}
+									active={referrals >= 10}
+								/>
+								<Reward
+									title="25 referrals"
+									description="Exclusive Discord badge"
+									icon={isLight ? tier3LightUrl : tier3DarkUrl}
+									active={referrals >= 25}
+								/>
+								<Reward
+									title="100 referrals"
+									description="Exclusive store multi-pack"
+									icon={isLight ? tier4LightUrl : tier4DarkUrl}
+									active={referrals >= 100}
+								/>
+								<Reward
+									title="500 referrals"
+									description="Coming Soon"
+									icon={isLight ? tier5LightUrl : tier5DarkUrl}
+									active={referrals >= 500}
+									opacity={0.5}
+								/>
+							</SimpleGrid>
+						</Box>
+
+						<Box>
+							<PrimaryTitle>How does this work?</PrimaryTitle>
+							<SimpleGrid
+								mt="sm"
+								cols={{
+									base: 1,
+									md: 3,
+								}}
+							>
+								<Slab p="xl">
+									<Text
+										fw={600}
+										fz={18}
+										c="bright"
+									>
+										Share your link
+									</Text>
+									<Text mt="xs">
+										Copy your unique referral link from your account dashboard
+										and share it with friends, family, or anyone you think would
+										benefit from our services.
+									</Text>
+								</Slab>
+								<Slab p="xl">
+									<Text
+										fw={600}
+										fz={18}
+										c="bright"
+									>
+										Friends sign up
+									</Text>
+									<Text mt="xs">
+										When someone uses your link to sign up, they'll get a
+										special reward or discount as a welcome gift.
+									</Text>
+								</Slab>
+								<Slab p="xl">
+									<Text
+										fw={600}
+										fz={18}
+										c="bright"
+									>
+										You get rewarded
+									</Text>
+									<Text mt="xs">
+										Once your referral completes a qualifying action (like
+										making a purchase or reaching a milestone), you'll receive
+										your reward too!
+									</Text>
+								</Slab>
+							</SimpleGrid>
+						</Box>
+					</Stack>
+				</ScrollArea>
+			) : (
+				<Center h="90%">
+					<Stack align="center">
+						<Image
+							src={cloudImg}
+							alt="Sidekick"
+							w={142}
+						/>
+						<PrimaryTitle
+							fz={42}
+							mt="xl"
 						>
-							<Slab p="xl">
-								<Text
-									fw={600}
-									fz={18}
-									c="bright"
-								>
-									Share your link
-								</Text>
-								<Text mt="xs">
-									Copy your unique referral link from your account dashboard and
-									share it with friends, family, or anyone you think would benefit
-									from our services.
-								</Text>
-							</Slab>
-							<Slab p="xl">
-								<Text
-									fw={600}
-									fz={18}
-									c="bright"
-								>
-									Friends sign up
-								</Text>
-								<Text mt="xs">
-									When someone uses your link to sign up, they'll get a special
-									reward or discount as a welcome gift.
-								</Text>
-							</Slab>
-							<Slab p="xl">
-								<Text
-									fw={600}
-									fz={18}
-									c="bright"
-								>
-									You get rewarded
-								</Text>
-								<Text mt="xs">
-									Once your referral completes a qualifying action (like making a
-									purchase or reaching a milestone), you'll receive your reward
-									too!
-								</Text>
-							</Slab>
-						</SimpleGrid>
-					</Box>
-				</Stack>
-			</ScrollArea>
+							Welcome to Surreal Cloud
+						</PrimaryTitle>
+						<Text
+							fz="lg"
+							maw={500}
+						>
+							Surreal Cloud redefines the database experience, offering the power and
+							flexibility of SurrealDB without the pain of managing infrastructure.
+						</Text>
+						<Group
+							mt="xl"
+							w="100%"
+							maw={400}
+						>
+							<Button
+								flex={1}
+								variant="gradient"
+								onClick={openCloudAuthentication}
+								rightSection={<Icon path={iconChevronRight} />}
+							>
+								Sign in
+							</Button>
+							<Button
+								flex={1}
+								color="slate"
+								variant="light"
+								rightSection={<Icon path={iconOpen} />}
+								onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
+							>
+								Learn more
+							</Button>
+						</Group>
+					</Stack>
+				</Center>
+			)}
 		</Box>
 	);
 }

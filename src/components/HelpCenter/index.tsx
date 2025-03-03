@@ -8,7 +8,6 @@ import {
 	iconCommand,
 	iconDiscord,
 	iconEmail,
-	iconQuery,
 	iconSidekick,
 	iconSurreal,
 	iconSurrealist,
@@ -23,7 +22,7 @@ import clsx from "clsx";
 import type { PropsWithChildren } from "react";
 import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
-import { useIsAuthenticated, useSurrealCloud } from "~/hooks/cloud";
+import { useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { openAccountSupport } from "~/cloud/modals/account-support";
 import { dispatchIntent } from "~/util/intents";
@@ -35,9 +34,7 @@ export interface HelpCenterProps {
 }
 
 export function HelpCenter({ onBody }: HelpCenterProps) {
-	const isAuthed = useIsAuthenticated();
 	const showCloud = useSurrealCloud();
-
 	const [, navigate] = useLocation();
 
 	return (
@@ -127,13 +124,7 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 						title="Account"
 						description="Account or billing related issue? Raise a support ticket"
 						icon={iconEmail}
-						onClick={() => {
-							if (isAuthed) {
-								openAccountSupport();
-							} else {
-								navigate("cloud");
-							}
-						}}
+						onClick={openAccountSupport}
 					/>
 				</HelpSection>
 			)}

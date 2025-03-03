@@ -13,7 +13,7 @@ import {
 	Stack,
 } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
@@ -37,7 +37,6 @@ import { Text } from "@mantine/core";
 const DEFAULT: ProvisionConfig = {
 	name: "",
 	region: "",
-	category: "free",
 	type: "",
 	units: 1,
 	version: "",
@@ -47,6 +46,7 @@ export function ProvisionPage() {
 	const { setProvisioning } = useCloudStore.getState();
 	const [, navigate] = useAbsoluteLocation();
 
+	const authState = useCloudStore((s) => s.authState);
 	const organization = useOrganization();
 	const [details, setDetails] = useImmer(DEFAULT);
 	const instanceTypes = useAvailableInstanceTypes();
@@ -101,6 +101,12 @@ export function ProvisionPage() {
 			navigate("/overview");
 		}
 	});
+
+	useEffect(() => {
+		if (authState === "unauthenticated") {
+			navigate("/overview");
+		}
+	}, [authState]);
 
 	return (
 		<Box
