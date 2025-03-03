@@ -25,7 +25,7 @@ import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
 import { useIsAuthenticated, useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
-import { openAccountSupport } from "~/screens/surrealist/cloud-panel/modals/account-support";
+import { openAccountSupport } from "~/cloud/modals/account-support";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";

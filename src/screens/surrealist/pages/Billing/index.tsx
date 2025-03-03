@@ -46,7 +46,7 @@ import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
 import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
 import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
 import { measureComputeCost } from "~/util/cloud";
-import { openBillingDetails } from "../../cloud-panel/modals/billing";
+import { openBillingDetails } from "../../../../cloud/modals/billing";
 import { Section } from "../../cloud-panel/components/Section";
 import { useCloudStore } from "~/stores/cloud";
 import { TopGlow } from "~/components/TopGlow";

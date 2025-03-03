@@ -44,9 +44,9 @@ import type { CloudInstance } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
 import { type ConnectMethod, Instance } from "../../components/Instance";
-import { openConnectCli } from "../../modals/connect-cli";
-import { openConnectCurl } from "../../modals/connect-curl";
-import { openConnectSdk } from "../../modals/connect-sdk";
+import { openConnectCli } from "../../../../../cloud/modals/connect-cli";
+import { openConnectCurl } from "../../../../../cloud/modals/connect-curl";
+import { openConnectSdk } from "../../../../../cloud/modals/connect-sdk";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 interface Filter {

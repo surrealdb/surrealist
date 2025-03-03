@@ -3,9 +3,9 @@ import classes from "./style.module.scss";
 import { Paper, Box, Group, Text, ThemeIcon, UnstyledButton, Skeleton } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { useConnection } from "~/hooks/connection";
-import { openConnectCli } from "~/screens/surrealist/cloud-panel/modals/connect-cli";
-import { openConnectCurl } from "~/screens/surrealist/cloud-panel/modals/connect-curl";
-import { openConnectSdk } from "~/screens/surrealist/cloud-panel/modals/connect-sdk";
+import { openConnectCli } from "~/cloud/modals/connect-cli";
+import { openConnectCurl } from "~/cloud/modals/connect-curl";
+import { openConnectSdk } from "~/cloud/modals/connect-sdk";
 import { CloudInstance } from "~/types";
 import { iconAPI, iconChevronRight, iconConsole, iconTransfer, iconXml } from "~/util/icons";
 
