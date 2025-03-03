@@ -7,7 +7,7 @@ import { openConnectCli } from "~/screens/surrealist/cloud-panel/modals/connect-
 import { openConnectCurl } from "~/screens/surrealist/cloud-panel/modals/connect-curl";
 import { openConnectSdk } from "~/screens/surrealist/cloud-panel/modals/connect-sdk";
 import { CloudInstance } from "~/types";
-import { iconAPI, iconChevronRight, iconConsole, iconTransfer } from "~/util/icons";
+import { iconAPI, iconChevronRight, iconConsole, iconTransfer, iconXml } from "~/util/icons";
 
 interface ConnectActionProps {
 	title: string;
@@ -36,11 +36,11 @@ function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectAct
 				>
 					<ThemeIcon
 						color="slate"
-						size="xl"
+						size={40}
 					>
 						<Icon
 							path={icon}
-							size="xl"
+							size="lg"
 						/>
 					</ThemeIcon>
 					<Box flex={1}>
@@ -91,7 +91,7 @@ export function ConnectBlock({ instance, isLoading }: ConnectBlockProps) {
 			<ConnectAction
 				title="Connect with an SDK"
 				subtitle="For integrating SurrealDB"
-				icon={iconAPI}
+				icon={iconXml}
 				isLoading={isLoading}
 				onClick={() => instance && openConnectSdk(instance, namespace, database)}
 			/>

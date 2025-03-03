@@ -23,6 +23,7 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 				gap={0}
 				component={Stack}
 				pos="relative"
+				mih={202}
 			>
 				<Group p="xl">
 					<Icon
@@ -43,13 +44,13 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 				<Stack
 					p="xl"
 					gap="xl"
+					flex={1}
 				>
 					{unavailable ? (
 						<>
-							<Text>
-								Automated backups are not available for free instances. Please
-								upgrade your instance type to enable automated backups and support
-								for backup restoration.
+							<Text flex={1}>
+								Automated backups are not available for free instances. Upgrade this
+								instance to enable automatic backups.
 							</Text>
 							<Button
 								size="xs"
@@ -63,8 +64,8 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 					) : (
 						latest && (
 							<>
-								<Box>
-									<Label>Latest backup</Label>
+								<Box flex={1}>
+									<Text>Latest backup</Text>
 									<Text
 										c="bright"
 										fz="xl"

@@ -28,6 +28,7 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 				gap={0}
 				component={Stack}
 				pos="relative"
+				mih={202}
 			>
 				<Group p="xl">
 					<Icon
@@ -42,42 +43,41 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 						Storage usage
 					</Text>
 				</Group>
-
 				<Divider />
-
 				<Stack
 					p="xl"
-					gap="xl"
+					gap={0}
+					flex={1}
 				>
-					<Box>
-						<Group>
-							<Text
-								c="bright"
-								fz="xl"
-								fw={600}
-							>
-								{storageUsageMB}
-							</Text>
-							<Spacer />
-							<Text
-								fz="xl"
-								fw={600}
-							>
-								{storageMaxMB}
-							</Text>
-						</Group>
-
-						<Progress
-							value={storageFrac}
-							color={storageColor}
-							size={6}
-							mt="md"
-						/>
-
-						<Text mt="sm">
-							You have used {storageFrac.toFixed(2)}% of your storage limit
+					<Group>
+						<Text
+							c="bright"
+							fz="xl"
+							fw={600}
+						>
+							{storageUsageMB}
 						</Text>
-					</Box>
+						<Spacer />
+						<Text
+							fz="xl"
+							fw={600}
+						>
+							{storageMaxMB}
+						</Text>
+					</Group>
+
+					<Progress
+						value={storageFrac}
+						color={storageColor}
+						size={6}
+						mt="md"
+					/>
+
+					<Spacer />
+
+					<Text ta="center">
+						You have used {storageFrac.toFixed(2)}% of your storage limit
+					</Text>
 				</Stack>
 			</Paper>
 		</Skeleton>

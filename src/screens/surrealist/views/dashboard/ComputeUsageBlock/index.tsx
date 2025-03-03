@@ -30,6 +30,7 @@ export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) 
 				gap={0}
 				component={Stack}
 				pos="relative"
+				mih={202}
 			>
 				<Group p="xl">
 					<Icon
@@ -49,7 +50,8 @@ export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) 
 
 				<Stack
 					p="xl"
-					gap="xl"
+					gap="lg"
+					flex={1}
 				>
 					{computeHistory.map(([type, hours], index) => (
 						<Box key={index}>
@@ -69,28 +71,24 @@ export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) 
 								value={(hours / computeTotal) * 100}
 								color="surreal"
 								size={6}
-								mt="xs"
+								mt="md"
 							/>
 						</Box>
 					))}
 
-					{computeHistory.length > 1 && (
-						<>
-							<Divider />
+					<Divider />
 
-							<Group>
-								<Text
-									c="bright"
-									fz="xl"
-									fw={600}
-								>
-									Total hours
-								</Text>
-								<Spacer />
-								<Text fz="lg">{computeTotal} hours</Text>
-							</Group>
-						</>
-					)}
+					<Group my={-3}>
+						<Text
+							c="bright"
+							fz="xl"
+							fw={600}
+						>
+							Total hours
+						</Text>
+						<Spacer />
+						<Text fz="lg">{computeTotal} hours</Text>
+					</Group>
 				</Stack>
 			</Paper>
 		</Skeleton>
