@@ -1,5 +1,4 @@
-import { Group, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
+import { Group, Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { useMemo, useState } from "react";
 import { CodeSnippet } from "~/components/CodeSnippet";
@@ -10,7 +9,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DRIVERS } from "~/constants";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance, CodeLang, Snippets } from "~/types";
-import { iconAPI } from "~/util/icons";
+import { iconXml } from "~/util/icons";
 
 export function openConnectSdk(instance: CloudInstance, namespace: string, database: string) {
 	openModal({
@@ -18,7 +17,7 @@ export function openConnectSdk(instance: CloudInstance, namespace: string, datab
 		title: (
 			<Group>
 				<Icon
-					path={iconAPI}
+					path={iconXml}
 					size="xl"
 				/>
 				<PrimaryTitle>Connect with an SDK</PrimaryTitle>
