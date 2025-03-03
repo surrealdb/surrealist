@@ -23,7 +23,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -63,6 +63,7 @@ export function TablesPane({
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
 	const pinnedTables = useConnection((c) => c?.pinnedTables ?? []);
+	const openCreator = useRequireDatabase(openTableCreator);
 	const isConnected = useIsConnected();
 	const schema = useTables();
 
@@ -133,7 +134,7 @@ export function TablesPane({
 					)}
 					<ActionButton
 						label="New table"
-						onClick={openTableCreator}
+						onClick={openCreator}
 						disabled={!isConnected}
 					>
 						<Icon path={iconPlus} />

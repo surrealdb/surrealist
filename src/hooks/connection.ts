@@ -12,6 +12,7 @@ import { useCloudInstanceList } from "~/cloud/hooks/instances";
 import { fuzzyMatch } from "~/util/helpers";
 import { useStable } from "./stable";
 import { createBaseConnection } from "~/util/defaults";
+import { openRequiredDatabaseModal } from "~/modals/require-database";
 
 /**
  * Returns whether Surrealist is connected to a database
@@ -144,6 +145,21 @@ export function useMinimumVersion(minimum: string) {
 export function useActiveQuery() {
 	return useConnection((c) => {
 		return c?.queries.find((q) => q.id === c.activeQuery);
+	});
+}
+
+/**
+ * Requires a selected database before executing a callback
+ */
+export function useRequireDatabase(callback: () => void) {
+	const hasDatabase = useConnection((c) => !!c?.lastDatabase);
+
+	return useStable(() => {
+		if (hasDatabase) {
+			callback();
+		} else {
+			openRequiredDatabaseModal(callback);
+		}
 	});
 }
 
