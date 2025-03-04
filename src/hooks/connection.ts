@@ -186,14 +186,10 @@ export function useConnectionOverview({ search, label }: ConnectionFilter) {
 		];
 
 		for (const entry of entries) {
-			const instances = filterConnections(entry.instances, search, label);
-
-			if (instances.length > 0) {
-				organizations.push({
-					info: entry.organization,
-					instances,
-				});
-			}
+			organizations.push({
+				info: entry.organization,
+				instances: filterConnections(entry.instances, search, label),
+			});
 		}
 
 		const isEmpty = !sandbox && userConnections.length === 0 && organizations.length === 0;
