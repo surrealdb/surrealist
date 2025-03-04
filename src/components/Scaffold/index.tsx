@@ -32,17 +32,17 @@ export function Scaffold({ children }: PropsWithChildren) {
 						FallbackComponent={ScaffoldErrorHandler}
 						onReset={() => location.reload()}
 					>
-						<ModalsProvider>
-							<ContextMenuProvider
-								borderRadius="md"
-								shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
-								submenuDelay={250}
-							>
-								<ConfirmationProvider>
+						<ContextMenuProvider
+							borderRadius="md"
+							shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
+							submenuDelay={250}
+						>
+							<ConfirmationProvider>
+								<ModalsProvider>
 									<CommandsProvider>{children}</CommandsProvider>
-								</ConfirmationProvider>
-							</ContextMenuProvider>
-						</ModalsProvider>
+								</ModalsProvider>
+							</ConfirmationProvider>
+						</ContextMenuProvider>
 					</ErrorBoundary>
 				</MantineProvider>
 			</QueryClientProvider>

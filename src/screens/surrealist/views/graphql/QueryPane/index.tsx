@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { ActionIcon, Alert, Badge, Button, Group, Stack, Tooltip } from "@mantine/core";
+import { Alert, Badge, Button, Group, Stack } from "@mantine/core";
 
 import {
 	graphqlParser,
@@ -30,7 +30,7 @@ import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
-import { useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { showError, showInfo, tryParseParams } from "~/util/helpers";
@@ -59,14 +59,18 @@ export function QueryPane({
 	onIntrospectSchema,
 	onEditorMount,
 }: QueryPaneProps) {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const [connection] = useConnectionAndView();
+	const { updateConnection } = useConfigStore.getState();
 	const queryText = useConnection((c) => c?.graphqlQuery ?? "");
 
 	const setQueryForced = useStable((query: string) => {
+		if (!connection) return;
+
 		try {
 			parse(query);
 			setIsValid(true);
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				graphqlQuery: query,
 			});
 		} catch {
@@ -101,6 +105,8 @@ export function QueryPane({
 	});
 
 	const inferVariables = useStable(() => {
+		if (!connection) return;
+
 		try {
 			const document = parse(queryText);
 
@@ -133,7 +139,8 @@ export function QueryPane({
 			};
 
 			setShowVariables(true);
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				graphqlVariables: formatValue(mergedVars, false, true),
 			});
 		} catch {

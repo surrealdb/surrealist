@@ -1,0 +1,99 @@
+.content {
+	position: relative;
+	z-index: 0;
+}
+
+.start-box {
+	position: relative;
+	overflow: hidden;
+	background-color: var(--surrealist-faint-body);
+	outline: 1px solid transparent;
+	// transition: all 0.2s;
+
+	@include light {
+		background-color: rgba(255, 255, 255, 0.5);
+		outline-color: hsl(300, 15%, 88%);
+	}
+
+	&:hover {
+		outline-color: rgba(255, 221, 251, 0.15);
+
+		@include light {
+			outline-color: rgba(139, 89, 139, 0.25);
+		}
+	}
+}
+
+.start-creator {
+	background-color: hsla(255, 25%, 6%, 0.6);
+
+	@include light {
+		background-color: hsla(240, 11%, 96%, 0.6);
+	}
+}
+
+.start-creator,
+.start-connection,
+.start-instance {
+	height: 112px;
+}
+
+.start-row {
+	height: unset;
+}
+
+.start-cloud {
+	position: relative;
+	overflow: hidden;
+	height: 115px;
+
+	.start-cloud-icon {
+		color: var(--mantine-color-slate-5);
+
+		@include md-and-up {
+			display: none;
+		}
+	}
+
+	&:hover .start-cloud-icon {
+		color: var(--mantine-color-bright) !important;
+	}
+
+	@include md-and-up {
+		height: 135px;
+	}
+}
+
+.start-resource {
+	height: 82px;
+}
+
+.start-news-inner {
+	flex-direction: column;
+
+	@include xs-and-up {
+		flex-direction: row;
+	}
+}
+
+.start-news-thumbnail {
+	flex-shrink: 0;
+	background-size: cover;
+	aspect-ratio: 200 / 110;
+
+	@include xs-and-up {
+		height: 110px;
+	}
+}
+
+.cloud-image {
+	width: 500px;
+	position: absolute;
+	right: -64px;
+	bottom: 0;
+	display: none;
+
+	@include md-and-up {
+		display: block;
+	}
+}

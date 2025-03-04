@@ -1,5 +1,5 @@
 import type { EditorView } from "@codemirror/view";
-import { ActionIcon, Alert, Button, Center, Group, Paper, Stack } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import clsx from "clsx";
 import { memo, useMemo, useState } from "react";
@@ -12,14 +12,13 @@ import { GQL_SUPPORTED } from "~/constants";
 import { executeGraphqlEditorQuery } from "~/editor/query";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useGraphqlIntrospection } from "~/hooks/graphql";
-import { useIntent, useViewFocus } from "~/hooks/routing";
+import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { checkGraphqlSupport } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { createBaseAuthentication } from "~/util/defaults";
-import { connectionUri } from "~/util/helpers";
 import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
@@ -31,10 +30,11 @@ const VariablesPaneLazy = memo(VariablesPane);
 const ResultPaneLazy = memo(ResultPane);
 
 export function GraphqlView() {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
 
 	const isActive = useDatabaseStore((s) => s.isGraphqlQueryActive);
 
+	const [connection] = useConnectionAndView();
 	const [isEnabled, setEnabled] = useState(false);
 	const [variablesValid, setVariablesValid] = useState(true);
 	const [queryValid, setQueryValid] = useState(true);
@@ -62,7 +62,10 @@ export function GraphqlView() {
 	});
 
 	const setShowVariables = useStable((graphqlShowVariables: boolean) => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			graphqlShowVariables,
 		});
 	});

@@ -7,9 +7,9 @@ import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useIntent, useViewFocus } from "~/hooks/routing";
+import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useDesigner } from "~/providers/Designer";
@@ -24,11 +24,13 @@ import { TableGraphPane } from "../TableGraphPane";
 const TableGraphPaneLazy = memo(TableGraphPane);
 
 export function DesignerView() {
-	const { openTableCreator } = useInterfaceStore.getState();
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
+	const { updateConnection } = useConfigStore.getState();
 	const { design, stopDesign, active, isDesigning } = useDesigner();
 	const designerTableList = useConnection((c) => c?.designerTableList);
+	const openTableCreator = useRequireDatabase(_openTableCreator);
 
+	const [connection] = useConnectionAndView();
 	const isConnected = useIsConnected();
 	const tables = useTables();
 
@@ -48,7 +50,10 @@ export function DesignerView() {
 	]);
 
 	const closeTableList = useStable(() => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			designerTableList: false,
 		});
 	});

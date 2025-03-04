@@ -25,6 +25,7 @@ import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
 import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/query";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
@@ -70,6 +71,7 @@ export interface ResultPaneProps {
 
 export function ResultPane({ activeTab, selection, editor, corners }: ResultPaneProps) {
 	const { updateQueryTab } = useConfigStore.getState();
+	const [connection] = useConnectionAndView();
 
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isQuerying = useDatabaseStore((s) => s.isQueryActive);
@@ -111,14 +113,18 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	});
 
 	const setResultMode = (mode: ResultMode) => {
-		updateQueryTab({
+		if (!connection) return;
+
+		updateQueryTab(connection, {
 			id: activeTab.id,
 			resultMode: mode,
 		});
 	};
 
 	const setResultFormat = (format: ResultFormat) => {
-		updateQueryTab({
+		if (!connection) return;
+
+		updateQueryTab(connection, {
 			id: activeTab.id,
 			resultFormat: format,
 		});

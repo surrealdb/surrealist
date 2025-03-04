@@ -29,6 +29,7 @@ import { GraphExpansion } from "~/components/RelationGraph/types";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
 import { useLater } from "~/hooks/later";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
@@ -61,7 +62,8 @@ function curvature(index: number, maxIndex: number): number {
 }
 
 export function GraphPreview({ responses, selected }: PreviewProps) {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
+	const [connection] = useConnectionAndView();
 
 	const isLight = useIsLight();
 	const supervisorRef = useRef<FA2LayoutSupervisor>();
@@ -472,12 +474,16 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	});
 
 	const updateShowStray = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		updateCurrentConnection({ graphShowStray: e.target.checked });
+		if (!connection) return;
+
+		updateConnection({ id: connection, graphShowStray: e.target.checked });
 		synchronizeGraph();
 	});
 
 	const updateStraightLines = useStable((e: ChangeEvent<HTMLInputElement>) => {
-		updateCurrentConnection({ graphStraightEdges: e.target.checked });
+		if (!connection) return;
+
+		updateConnection({ id: connection, graphStraightEdges: e.target.checked });
 		synchronizeGraph();
 	});
 

@@ -258,7 +258,7 @@ export const MANTINE_THEME = createTheme({
 		Drawer: Drawer.extend({
 			defaultProps: {
 				withCloseButton: false,
-				padding: "lg",
+				padding: "xl",
 				offset: 14,
 				radius: "md",
 			},

@@ -48,13 +48,12 @@ import {
 
 import { dash } from "radash";
 import { useMemo } from "react";
-import { useLocation } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
-import { DRIVERS, SANDBOX, VIEW_MODES } from "~/constants";
-import { useConnection, useConnectionList } from "~/hooks/connection";
+import { DRIVERS, SANDBOX } from "~/constants";
+import { useAvailableViews, useConnectionList } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
-import { useActiveView } from "~/hooks/routing";
+import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { showNodeStatus } from "~/modals/node-status";
 import {
 	closeConnection,
@@ -95,20 +94,21 @@ const intent = (intent: IntentType, payload?: IntentPayload) =>
  * Compute available commands based on the current state
  */
 export function useInternalCommandBuilder(): CommandCategory[] {
-	const { setActiveConnection, resetOnboardings } = useConfigStore.getState();
+	const { resetOnboardings } = useConfigStore.getState();
 
 	const connections = useConnectionList();
 	const commandHistory = useConfigStore((state) => state.commandHistory);
 	const isServing = useDatabaseStore((state) => state.isServing);
 	const currentState = useDatabaseStore((state) => state.currentState);
 	const connectionSchema = useDatabaseStore((state) => state.connectionSchema);
+	const navigateConnection = useConnectionNavigator();
+	const views = useAvailableViews();
 
 	const [datasets, applyDataset] = useDatasets();
-	const [activeView, setActiveView] = useActiveView();
-	const [, navigate] = useLocation();
+	const [connection, view] = useConnectionAndView();
+	const [, navigate] = useAbsoluteLocation();
 
-	const connectionId = useConnection((c) => c?.id);
-	const isSandbox = connectionId === SANDBOX;
+	const isSandbox = connection === SANDBOX;
 	const canDisconnect = currentState !== "disconnected" && !isSandbox;
 
 	const preferences = useMemo(() => {
@@ -120,8 +120,8 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 	return useMemo(() => {
 		const categories: CommandCategory[] = [];
 
-		const isQuery = activeView?.id === "query";
-		const isGraphql = activeView?.id === "graphql";
+		const isQuery = view === "query";
+		const isGraphql = view === "graphql";
 
 		categories.push(
 			{
@@ -143,7 +143,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						icon: iconSandbox,
 						binding: true,
 						action: launch(() => {
-							setActiveConnection(SANDBOX);
+							navigateConnection(SANDBOX);
 						}),
 					},
 					...connections.map((connection) => ({
@@ -152,7 +152,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						icon: iconServer,
 						binding: true,
 						action: launch(() => {
-							setActiveConnection(connection.id); // TODO Use open-connection intent
+							navigateConnection(connection.id); // TODO Use open-connection intent
 						}),
 					})),
 					{
@@ -182,7 +182,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			},
 		);
 
-		if (connectionId) {
+		if (connection !== null) {
 			const tables = connectionSchema.database.tables || [];
 			const accessMethods = [
 				...connectionSchema.root.accesses,
@@ -193,19 +193,15 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			categories.push(
 				{
 					name: "Views",
-					commands: Object.values(VIEW_MODES).flatMap((view) =>
-						optional(
-							!view.disabled?.(featureFlags.store) && {
-								id: `open-view-${view.id}`,
-								name: `Open ${view.name} View`,
-								icon: view.icon,
-								binding: true,
-								action: launch(() => {
-									setActiveView(view.id);
-								}),
-							},
-						),
-					),
+					commands: Object.values(views).map((view) => ({
+						id: `open-view-${view.id}`,
+						name: `Open ${view.name} View`,
+						icon: view.icon,
+						binding: true,
+						action: launch(() => {
+							navigateConnection(connection, view.id);
+						}),
+					})),
 				},
 				{
 					name: "Tables",
@@ -593,10 +589,10 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 				name: "Navigation",
 				commands: [
 					{
-						id: "open-start-screen",
-						name: "Open start screen",
+						id: "open-overview",
+						name: "Go to overview",
 						icon: iconSurrealist,
-						action: launch(() => navigate("/start")),
+						action: launch(() => navigate("/overview")),
 					},
 					{
 						id: "open-search",
@@ -691,15 +687,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						}),
 					},
 					{
-						id: "deactivate-connection",
-						name: "Deactive connection",
-						icon: iconClose,
-						action: launch(() => {
-							setActiveConnection("");
-							closeConnection();
-						}),
-					},
-					{
 						id: "reset-tours",
 						name: "Reset tours",
 						icon: iconRoutes,
@@ -736,8 +723,8 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 
 		return categories;
 	}, [
-		connectionId,
-		activeView,
+		connection,
+		view,
 		connections,
 		connectionSchema,
 		datasets,
@@ -746,7 +733,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		isSandbox,
 		isServing,
 		preferences,
-		setActiveConnection,
 		resetOnboardings,
+		views,
 	]);
 }

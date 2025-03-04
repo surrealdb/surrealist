@@ -4,7 +4,6 @@ import {
 	Badge,
 	Box,
 	Button,
-	Divider,
 	Group,
 	HoverCard,
 	Loader,
@@ -79,7 +78,7 @@ import type {
 } from "~/types";
 
 import { useContextMenu } from "mantine-contextmenu";
-import { pick, sleep } from "radash";
+import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -88,13 +87,12 @@ import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import { useSetting } from "~/hooks/config";
 import { useConnection, useIsConnected } from "~/hooks/connection";
-import { useActiveView, useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { createBaseConnection } from "~/util/defaults";
 import { showInfo } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
@@ -107,12 +105,12 @@ export interface TableGraphPaneProps {
 
 export function TableGraphPane(props: TableGraphPaneProps) {
 	const { openTableCreator } = useInterfaceStore.getState();
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 
 	const schema = useDatabaseSchema();
 	const isConnected = useIsConnected();
-	const [activeView] = useActiveView();
+	const [, view] = useConnectionAndView();
 
 	const [
 		connectionId,
@@ -257,7 +255,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const openTableList = useStable(() => {
-		updateCurrentConnection({
+		updateConnection({
+			id: connectionId,
 			designerTableList: true,
 		});
 	});
@@ -265,35 +264,35 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const showBox = !isConnected || props.tables.length === 0;
 
 	const setDiagramAlgorithm = useStable((alg: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramAlgorithm: alg as DiagramAlgorithm,
 		});
 	});
 
 	const setDiagramDirection = useStable((mode: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramDirection: mode as DiagramDirection,
 		});
 	});
 
 	const setDiagramLineStyle = useStable((style: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramLineStyle: style as DiagramLineStyle,
 		});
 	});
 
 	const setDiagramLinkMode = useStable((mode: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramLinkMode: mode as DiagramLinks,
 		});
 	});
 
 	const setDiagramMode = useStable((mode: string) => {
-		updateCurrentConnection({
+		updateConnection({
 			id: connectionId,
 			diagramMode: mode as DiagramMode,
 		});
@@ -311,7 +310,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		fitView({ duration: 150 });
 	});
 
-	const isViewActive = activeView?.id === "designer";
+	const isViewActive = view === "designer";
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema or setting change
 	useLayoutEffect(() => {

@@ -31,7 +31,7 @@ import { useSetting } from "~/hooks/config";
 import { useActiveQuery, useConnection, useSavedQueryTags } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useIntent } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
@@ -56,6 +56,7 @@ export function QueryView() {
 	const { saveQuery, updateQueryTab } = useConfigStore.getState();
 	const queryTabList = useConnection((c) => c?.queryTabList);
 
+	const [connection] = useConnectionAndView();
 	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [editor, setEditor] = useState(new EditorView());
 	const [variablesValid, setVariablesValid] = useState(true);
@@ -117,9 +118,9 @@ export function QueryView() {
 	const showVariables = !!active?.showVariables;
 
 	const setShowVariables = useStable((showVariables: boolean) => {
-		if (!active) return;
+		if (!active || !connection) return;
 
-		updateQueryTab({
+		updateQueryTab(connection, {
 			id: active?.id,
 			showVariables,
 		});

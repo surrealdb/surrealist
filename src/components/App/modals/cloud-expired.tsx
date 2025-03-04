@@ -1,9 +1,9 @@
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
 import type { MouseEvent } from "react";
 import cloudLogo from "~/assets/images/cloud-icon.webp";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { openCloudAuthentication } from "~/screens/surrealist/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
 import { iconClose } from "~/util/icons";
 import classes from "../style.module.scss";

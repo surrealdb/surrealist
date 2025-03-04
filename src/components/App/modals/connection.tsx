@@ -11,7 +11,7 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useSetting } from "~/hooks/config";
 import { useConnectionList } from "~/hooks/connection";
-import { useIntent } from "~/hooks/routing";
+import { useConnectionNavigator, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
@@ -27,7 +27,8 @@ function newConnection() {
 
 export function ConnectionModal() {
 	const connections = useConnectionList();
-	const { addConnection, updateConnection, setActiveConnection } = useConfigStore.getState();
+	const navigateConnection = useConnectionNavigator();
+	const { addConnection, updateConnection } = useConfigStore.getState();
 
 	const [opened, openedHandle] = useDisclosure();
 	const [editingId, setEditingId] = useState("");
@@ -52,12 +53,12 @@ export function ConnectionModal() {
 				name: details.name,
 				icon: details.icon,
 				authentication: details.authentication,
-				group: details.group,
+				labels: details.labels,
 			});
 		}
 
 		if (select) {
-			setActiveConnection(details.id);
+			navigateConnection(details.id);
 		}
 	});
 
@@ -65,7 +66,7 @@ export function ConnectionModal() {
 		setDetails((draft) => {
 			draft.name = template.name;
 			draft.icon = template.icon;
-			draft.group = template.group;
+			draft.labels = template.labels;
 			draft.authentication = template.values;
 		});
 	});

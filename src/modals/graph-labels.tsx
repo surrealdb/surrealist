@@ -7,6 +7,7 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useConnection } from "~/hooks/connection";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -28,10 +29,12 @@ export async function openGraphLabelEditorModal(callback: () => void) {
 
 function GraphLabelEditor() {
 	const isLight = useIsLight();
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
 	const { tables } = useDatabaseSchema();
 	const [search, setSearch] = useInputState("");
+	const [connection] = useConnectionAndView();
 	const mapping = useConnection((c) => c?.graphLabels ?? {});
+	const id = connection ?? "";
 
 	const unmappedTables = useMemo(() => {
 		return tables.filter((table) => {
@@ -74,7 +77,8 @@ function GraphLabelEditor() {
 	});
 
 	const addLabelMapping = useStable((table: string) => {
-		updateCurrentConnection({
+		updateConnection({
+			id,
 			graphLabels: {
 				...mapping,
 				[table]: [],
@@ -85,7 +89,8 @@ function GraphLabelEditor() {
 	const removeLabelMapping = useStable((table: string) => {
 		const { [table]: _, ...rest } = mapping;
 
-		updateCurrentConnection({
+		updateConnection({
+			id,
 			graphLabels: rest,
 		});
 	});
@@ -132,7 +137,8 @@ function GraphLabelEditor() {
 								acceptValueOnBlur
 								data={fields}
 								onRemove={(value) => {
-									updateCurrentConnection({
+									updateConnection({
+										id,
 										graphLabels: {
 											...mapping,
 											[table]: labels.toSpliced(labels.indexOf(value), 1),
@@ -140,7 +146,8 @@ function GraphLabelEditor() {
 									});
 								}}
 								onChange={(value) => {
-									updateCurrentConnection({
+									updateConnection({
+										id,
 										graphLabels: {
 											...mapping,
 											[table]: value,

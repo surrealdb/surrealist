@@ -1,5 +1,5 @@
 import { createEventBus } from "~/hooks/event";
-import type { ViewMode } from "~/types";
+import type { ViewPage } from "~/types";
 
 /**
  * Invoked after a connection has been established
@@ -24,7 +24,7 @@ export const IntentEvent = createEventBus();
 /**
  * Invoked when the interface should navigate to a new view
  */
-export const NavigateViewEvent = createEventBus<ViewMode>();
+export const NavigateViewEvent = createEventBus<ViewPage>();
 
 /**
  * Invoked when the cloud account has been authenticated

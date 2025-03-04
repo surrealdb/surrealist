@@ -145,6 +145,7 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-Tabs-tab {
+	border: 1px solid transparent;
 
 	&:hover {
 		background-color: var(--mantine-color-slate-7);
@@ -158,7 +159,12 @@ body.mod .cm-record-link:hover {
 	&[data-active] {
 		background: var(--surrealist-gradient);
 		background-origin: border-box;
-		color: var(--mantine-color-white);
+		border-color: rgba(255, 255, 255, 0.3);
+		border-radius: var(--mantine-radius-xs);
+
+		@include light {
+			border-color: none;
+		}
 	}
 }
 
@@ -254,7 +260,8 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-InputWrapper-description {
-	font-size: var(--mantine-font-size-xs);
+	font-size: var(--mantine-font-size-sm);
+	color: var(--mantine-color-text);
 }
 
 .mantine-InputWrapper-label {
@@ -331,6 +338,10 @@ body.mod .cm-record-link:hover {
 	background-color: var(--mantine-color-slate-6);
 	border-width: 1px;
 	border: none;
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
 }
 
 .mantine-Switch-root[data-variant="gradient"] {
@@ -352,5 +363,13 @@ body.mod .cm-record-link:hover {
 		@include light {
 			border-color: unset;
 		}
+	}
+}
+
+.mantine-Progress-root {
+	background-color: var(--mantine-color-slate-6);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
 	}
 }

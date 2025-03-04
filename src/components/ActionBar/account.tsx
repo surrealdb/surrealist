@@ -1,5 +1,4 @@
 import {
-	Alert,
 	Avatar,
 	Box,
 	Button,
@@ -15,19 +14,16 @@ import {
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { fetchAPI } from "~/cloud/api";
+import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
-import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
-import { destroySession } from "~/screens/surrealist/cloud-panel/api/auth";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import type { CloudProfile } from "~/types";
 import { showError } from "~/util/helpers";
-import { iconAccount, iconExitToAp } from "~/util/icons";
+import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
-import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
 
 interface AccountFormProps {
@@ -106,28 +102,21 @@ function AccountForm({ onClose }: AccountFormProps) {
 
 export function CloudAccount() {
 	const [showSettings, settingsModal] = useBoolean();
-	const [, navigate] = useLocation();
 
 	const profile = useCloudStore((s) => s.profile);
 	const state = useCloudStore((s) => s.authState);
 
-	const openCloud = useStable(() => {
-		navigate("/cloud");
-	});
-
-	if (state === "unauthenticated") {
+	if (state === "unauthenticated" || state === "unknown") {
 		return (
-			<Tooltip
-				label="Open Surreal Cloud"
-				openDelay={300}
+			<Button
+				variant="gradient"
+				size="xs"
+				disabled={state === "unknown"}
+				onClick={openCloudAuthentication}
+				rightSection={<Icon path={iconChevronRight} />}
 			>
-				<Avatar
-					radius="md"
-					size={36}
-					onClick={openCloud}
-					renderRoot={(props) => <UnstyledButton {...props} />}
-				/>
-			</Tooltip>
+				Sign in
+			</Button>
 		);
 	}
 

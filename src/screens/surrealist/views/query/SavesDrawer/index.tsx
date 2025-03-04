@@ -11,8 +11,8 @@ import {
 } from "~/util/icons";
 
 import { EditorView } from "@codemirror/view";
-import { Accordion, Badge, Button, ScrollArea, Text, TextInput, Tooltip } from "@mantine/core";
-import { ActionIcon, Drawer, Group } from "@mantine/core";
+import { Accordion, Badge, Button, ScrollArea, Text, TextInput } from "@mantine/core";
+import { Drawer, Group } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
@@ -24,6 +24,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
 import { useSavedQueryTags } from "~/hooks/connection";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
@@ -45,6 +46,7 @@ export function SavesDrawer({
 }: SavesDrawerProps) {
 	const { addQueryTab, removeSavedQuery } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
+	const [connection] = useConnectionAndView();
 
 	const queries = useConfigStore((s) => s.savedQueries);
 	const tags = useSavedQueryTags();
@@ -69,8 +71,10 @@ export function SavesDrawer({
 	const handleUseQuery = useStable((entry: SavedQuery, e?: React.MouseEvent) => {
 		e?.stopPropagation();
 
+		if (!connection) return;
+
 		onClose();
-		addQueryTab({
+		addQueryTab(connection, {
 			type: "config",
 			query: entry.query,
 			name: entry.name,

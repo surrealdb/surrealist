@@ -5,7 +5,7 @@ import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { ML_SUPPORTED } from "~/constants";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useViewFocus } from "~/hooks/routing";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
@@ -59,7 +59,7 @@ export function ModelsView() {
 		// handle.track();
 	});
 
-	const uploadModel = useStable(async () => {
+	const uploadModel = useRequireDatabase(async () => {
 		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
 		const { endpoint, headers } = composeHttpConnection(
 			authentication,

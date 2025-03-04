@@ -8,6 +8,7 @@ export type AuthLevel = "root" | "namespace" | "database";
 export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
 export type ColorScheme = "light" | "dark";
+export type ConnectionListMode = "card" | "row";
 export type DatabaseListMode = "list" | "grid";
 export type DiagramAlgorithm = "default" | "aligned" | "spaced";
 export type DiagramDirection = "default" | "ltr" | "rtl";
@@ -46,7 +47,17 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type ViewMode =
+export type GlobalPage =
+	| "overview"
+	| "billing"
+	| "chat"
+	| "support"
+	| "referrals"
+	| "share"
+	| "university"
+	| "provision";
+export type ViewPage =
+	| "dashboard"
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -56,17 +67,6 @@ export type ViewMode =
 	| "models"
 	| "sidekick"
 	| "documentation";
-export type CloudPage =
-	| "instances"
-	| "members"
-	| "chat"
-	| "data"
-	| "audits"
-	| "billing"
-	| "support"
-	| "referral"
-	| "settings"
-	| "provision";
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";
 
 export type OpenFn = (id: string | null) => void;
@@ -106,7 +106,7 @@ export interface Connection {
 	id: string;
 	name: string;
 	icon: number;
-	group?: string;
+	labels?: string[];
 	lastNamespace: string;
 	lastDatabase: string;
 	queries: QueryTab[];
@@ -135,7 +135,7 @@ export interface Template {
 	name: string;
 	icon: number;
 	values: Authentication;
-	group?: string;
+	labels?: string[];
 }
 
 export interface ConnectionGroup {
@@ -174,7 +174,8 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramMode: DiagramMode;
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
-	sidebarViews: Flags<ViewMode>;
+	sidebarViews: Flags<ViewPage>;
+	connectionListMode: ConnectionListMode;
 }
 
 export interface SurrealistTemplateSettings {
@@ -243,11 +244,8 @@ export interface SurrealistConfig {
 	configVersion: number;
 	previousVersion: string;
 	connections: Connection[];
-	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
 	activeResource: string;
-	activeConnection: string;
-	activeCloudOrg: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
@@ -459,21 +457,25 @@ export interface LiveMessage {
 	data: any;
 }
 
-export interface ViewInfo {
-	id: ViewMode;
+export interface GlobalPageInfo {
+	id: GlobalPage;
 	name: string;
 	icon: string;
 	anim?: any;
-	desc: string;
-	require?: ViewRequirement;
-	disabled?: FeatureCondition;
 }
 
-export interface CloudPageInfo {
-	id: CloudPage;
+export interface ViewPageInfo {
+	id: ViewPage;
 	name: string;
 	icon: string;
-	disabled?: FeatureCondition;
+	anim?: any;
+	disabled?: (condition: ViewCondition) => boolean;
+}
+
+export interface ViewCondition {
+	flags: FeatureFlagMap;
+	connection: string;
+	isCloud: boolean;
 }
 
 export interface Dataset {
@@ -497,7 +499,6 @@ export interface CloudSignin {
 
 export interface CloudProfile {
 	username: string;
-	default_org: string;
 	name: string;
 	picture?: string;
 	user_hmac?: string;
@@ -509,8 +510,12 @@ export interface CloudInstance {
 	host: string;
 	region: string;
 	version: string;
-	compute_units: number;
 	available_versions: string[];
+	compute_units: number;
+	storage_size: number;
+	storage_size_updated_at: string;
+	can_update_storage_size: boolean;
+	storage_size_update_cooloff_hours: number;
 	state: InstanceState;
 	type: CloudInstanceType;
 }
@@ -632,4 +637,9 @@ export interface CloudCoupon {
 	amount: number;
 	amount_remaining: number;
 	expires_at: string;
+}
+
+export interface CloudBackup {
+	snapshot_started_at: string;
+	snapshot_id: string;
 }

@@ -5,9 +5,9 @@ import { Value } from "@surrealdb/ql-wasm";
 import escapeRegex from "escape-string-regexp";
 import { uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
-import { decodeCbor, escape_ident } from "surrealdb";
+import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
-import type { Authentication, QueryTab } from "~/types";
+import type { Authentication } from "~/types";
 
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -36,6 +36,8 @@ export const Y_SLIDE_TRANSITION = {
 	common: { transformOrigin: "top" },
 	transitionProperty: "transform, opacity",
 };
+
+export const DATE_TIME_FORMAT = "E MMM dd yyyy HH:mm";
 
 export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
 	e.stopPropagation();
@@ -212,6 +214,10 @@ export function connectionUri(options: Authentication, path?: string) {
 
 	if (options.protocol === "indxdb") {
 		return `indxdb://${options.hostname}`;
+	}
+
+	if (options.hostname === "") {
+		return "";
 	}
 
 	const url = new URL(`${options.protocol}://${options.hostname}`);

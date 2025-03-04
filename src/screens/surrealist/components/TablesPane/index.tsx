@@ -23,7 +23,8 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -54,13 +55,15 @@ export function TablesPane({
 	onTableSelect,
 	onTableContextMenu,
 }: TablesPaneProps) {
-	const { openTableCreator } = useInterfaceStore.getState();
+	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
 
+	const [connection] = useConnectionAndView();
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
 	const isLight = useIsLight();
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
 	const pinnedTables = useConnection((c) => c?.pinnedTables ?? []);
+	const openTableCreator = useRequireDatabase(_openTableCreator);
 	const isConnected = useIsConnected();
 	const schema = useTables();
 
@@ -81,8 +84,8 @@ export function TablesPane({
 	}, [pinnedTables, schema, search]);
 
 	const togglePinned = useStable((table: string) => {
-		if (table) {
-			toggleTablePin(table);
+		if (connection && table) {
+			toggleTablePin(connection, table);
 		}
 	});
 

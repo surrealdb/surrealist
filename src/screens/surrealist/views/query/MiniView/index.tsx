@@ -20,6 +20,7 @@ import { useSetting } from "~/hooks/config";
 import { useActiveQuery } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { SetQueryEvent } from "~/util/global-events";
@@ -40,6 +41,7 @@ export function MiniQueryView() {
 	const [orientation] = useSetting("appearance", "queryOrientation");
 	const [editor, setEditor] = useState(new EditorView());
 	const [variablesValid, setVariablesValid] = useState(true);
+	const [connection] = useConnectionAndView();
 
 	const [selection, setSelection] = useState<SelectionRange>();
 	const active = useActiveQuery();
@@ -50,9 +52,9 @@ export function MiniQueryView() {
 	const showVariables = !!active?.showVariables;
 
 	const setShowVariables = useStable((showVariables: boolean) => {
-		if (!active) return;
+		if (!active || !connection) return;
 
-		updateQueryTab({
+		updateQueryTab(connection, {
 			id: active?.id,
 			showVariables,
 		});

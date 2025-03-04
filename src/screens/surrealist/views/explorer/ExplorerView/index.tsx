@@ -18,10 +18,10 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useIntent, useViewFocus } from "~/hooks/routing";
+import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
@@ -37,12 +37,14 @@ const TablesPaneLazy = memo(TablesPane);
 const ExplorerPaneLazy = memo(ExplorerPane);
 
 export function ExplorerView() {
-	const { updateCurrentConnection } = useConfigStore.getState();
-	const { openTableCreator } = useInterfaceStore.getState();
+	const { updateConnection } = useConfigStore.getState();
+	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
 	const { design } = useDesigner();
 
 	const isConnected = useIsConnected();
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
+	const [connection] = useConnectionAndView();
+	const openTableCreator = useRequireDatabase(_openTableCreator);
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
@@ -75,7 +77,10 @@ export function ExplorerView() {
 	]);
 
 	const closeTableList = useStable(() => {
-		updateCurrentConnection({
+		if (!connection) return;
+
+		updateConnection({
+			id: connection,
 			explorerTableList: false,
 		});
 	});

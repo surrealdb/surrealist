@@ -1,15 +1,7 @@
-import {
-	Badge,
-	Button,
-	Group,
-	HoverCard,
-	Menu,
-	Modal,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { Badge, Button, Group, HoverCard, Menu, Modal, Text, TextInput } from "@mantine/core";
 
 import { useState } from "react";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 import { ActionBar } from "~/components/ActionBar";
 import { ActionButton } from "~/components/ActionButton";
 import { Form } from "~/components/Form";
@@ -26,7 +18,6 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconReset, iconStar, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { openCloudAuthentication } from "./cloud-panel/api/auth";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";

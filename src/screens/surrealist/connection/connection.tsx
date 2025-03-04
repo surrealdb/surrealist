@@ -446,7 +446,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		captureMetric("query_execute");
 
 		if (query.length <= MAX_HISTORY_QUERY_LENGTH) {
-			addHistoryEntry({
+			addHistoryEntry(connection.id, {
 				id: newId(),
 				query: query,
 				timestamp: Date.now(),
@@ -573,15 +573,21 @@ export function cancelLiveQueries(tab: string) {
  * Activate the given database within the specified namespace
  */
 export async function activateDatabase(namespace: string, database: string) {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
+	const connection = getActiveConnection();
 	let invalidNS = false;
+
+	if (!connection) {
+		return;
+	}
 
 	// Select a namespace only
 	if (namespace) {
 		const isValid = await isNamespaceValid(namespace);
 
 		if (isValid) {
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				lastNamespace: namespace,
 				lastDatabase: database,
 			});
@@ -593,13 +599,15 @@ export async function activateDatabase(namespace: string, database: string) {
 		} else {
 			invalidNS = true;
 
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				lastNamespace: "",
 				lastDatabase: "",
 			});
 		}
 	} else {
-		updateCurrentConnection({
+		updateConnection({
+			id: connection,
 			lastNamespace: "",
 			lastDatabase: "",
 		});
@@ -610,13 +618,15 @@ export async function activateDatabase(namespace: string, database: string) {
 		const isValid = await isDatabaseValid(database);
 
 		if (isValid) {
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				lastDatabase: database,
 			});
 
 			await instance.use({ database });
 		} else {
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				lastDatabase: "",
 			});
 		}
@@ -732,10 +742,11 @@ function scheduleReconnect(timeout?: number) {
 
 	retryTask = setTimeout(() => {
 		const { currentState } = useDatabaseStore.getState();
+		const connection = getConnection();
 
-		if (currentState !== "connected") {
+		if (currentState !== "connected" && connection) {
 			openConnection({
-				connection: getActiveConnection(),
+				connection,
 				isRetry: true,
 			});
 		}
