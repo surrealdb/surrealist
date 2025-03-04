@@ -38,6 +38,7 @@ import {
 } from "~/util/icons";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { fetchAPI } from "~/cloud/api";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -49,7 +50,6 @@ import { openInstanceTypeModal } from "./modals/change-type";
 import { openComputeUnitsModal } from "./modals/change-units";
 import { openVersionUpgradeModal } from "./modals/upgrade-version";
 import { openUsageModal } from "./modals/view-usage";
-import { fetchAPI } from "~/cloud/api";
 
 export type ConnectMethod = "sdk" | "cli" | "curl" | "surrealist";
 

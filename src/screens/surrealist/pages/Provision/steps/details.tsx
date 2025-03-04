@@ -1,14 +1,14 @@
 import { Divider, Group, Image, Paper, Select, Stack, TextInput } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { type ChangeEvent, useLayoutEffect } from "react";
+import { useOrganizationSelection } from "~/cloud/hooks/organizations";
+import { Icon } from "~/components/Icon";
+import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceVersions, useAvailableRegions, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import type { ProvisionStepProps } from "../types";
 import { useCloudStore } from "~/stores/cloud";
-import { useOrganizationSelection } from "~/cloud/hooks/organizations";
-import { REGION_FLAGS } from "~/constants";
-import { Icon } from "~/components/Icon";
 import { iconCheck } from "~/util/icons";
-import { Text } from "@mantine/core";
+import type { ProvisionStepProps } from "../types";
 
 export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps) {
 	const { setSelectedOrganization } = useCloudStore.getState();

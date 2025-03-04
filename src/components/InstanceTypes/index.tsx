@@ -11,18 +11,18 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
-import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useStable } from "~/hooks/stable";
-import { CloudInstanceType, CloudOrganization } from "~/types";
-import { useMemo, useState } from "react";
-import { Tile } from "~/screens/surrealist/cloud-panel/components/Tile";
-import { formatMemory, plural } from "~/util/helpers";
 import { capitalize, group } from "radash";
-import { iconAccount, iconAuth, iconChevronRight, iconClock } from "~/util/icons";
-import { Icon } from "~/components/Icon";
+import { useMemo, useState } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import { Icon } from "~/components/Icon";
+import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
+import { useStable } from "~/hooks/stable";
+import { Tile } from "~/screens/surrealist/cloud-panel/components/Tile";
+import { CloudInstanceType, CloudOrganization } from "~/types";
+import { formatMemory, plural } from "~/util/helpers";
+import { iconAccount, iconAuth, iconChevronRight, iconClock } from "~/util/icons";
 
 export interface InstanceTypesProps {
 	value: string;

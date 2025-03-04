@@ -24,10 +24,10 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
 import { useSavedQueryTags } from "~/hooks/connection";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
-import { useConnectionAndView } from "~/hooks/routing";
 
 export interface SavesDrawerProps {
 	opened: boolean;

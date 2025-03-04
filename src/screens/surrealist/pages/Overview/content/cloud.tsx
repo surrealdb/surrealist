@@ -1,8 +1,8 @@
-import classes from "../style.module.scss";
 import cloudSplashUrl from "~/assets/images/cloud-splash.webp";
+import classes from "../style.module.scss";
 
 import { Image, Text } from "@mantine/core";
-import { BoxProps, UnstyledButton, Paper, Stack, Group } from "@mantine/core";
+import { BoxProps, Group, Paper, Stack, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
 import { ReactNode, useRef } from "react";
 import { Faint } from "~/components/Faint";

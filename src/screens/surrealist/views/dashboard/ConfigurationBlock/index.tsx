@@ -1,9 +1,10 @@
 import { BoxProps, Button, Skeleton, ThemeIcon } from "@mantine/core";
-import { Paper, Group, Text, Stack } from "@mantine/core";
+import { Group, Paper, Stack, Text } from "@mantine/core";
 import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
+import { formatMemory, plural } from "~/util/helpers";
 import {
 	iconChevronRight,
 	iconDatabase,
@@ -12,7 +13,6 @@ import {
 	iconQuery,
 	iconTag,
 } from "~/util/icons";
-import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;

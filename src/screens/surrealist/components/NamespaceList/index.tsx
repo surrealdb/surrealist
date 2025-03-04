@@ -20,13 +20,13 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
+import { openCreateNamespaceModal } from "~/modals/create-namespace";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
-import { openCreateNamespaceModal } from "~/modals/create-namespace";
 
 export interface NamespaceProps {
 	value: string;

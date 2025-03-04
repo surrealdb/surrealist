@@ -10,6 +10,8 @@ import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/cloud-logo.svg";
 import logoLightUrl from "~/assets/images/light/cloud-logo.svg";
 import sidekickImg from "~/assets/images/sidekick-glow.webp";
+import { fetchAPI } from "~/cloud/api";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useSurrealCloud } from "~/hooks/cloud";
@@ -19,8 +21,6 @@ import type { CloudAlert } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconErrorCircle, iconOpen } from "~/util/icons";
 import { StatusAlert } from "./components/StatusAlert";
-import { fetchAPI } from "~/cloud/api";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 
 const PORTAL_OPTIONS = {
 	attributes: {

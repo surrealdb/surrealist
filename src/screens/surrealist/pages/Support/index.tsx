@@ -1,9 +1,9 @@
 import { Box, Center, ScrollArea, Stack } from "@mantine/core";
-import { HelpCenter } from "~/components/HelpCenter";
-import classes from "./style.module.scss";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Text } from "@mantine/core";
+import { HelpCenter } from "~/components/HelpCenter";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
+import classes from "./style.module.scss";
 
 export function SupportPage() {
 	return (

@@ -1,5 +1,5 @@
-import classes from "./style.module.scss";
 import sidekickImg from "~/assets/images/sidekick-glow.webp";
+import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
@@ -34,23 +34,23 @@ import {
 } from "~/util/icons";
 
 import { useInputState } from "@mantine/hooks";
+import { shuffle } from "radash";
 import { memo, useEffect, useMemo, useRef } from "react";
+import { adapter } from "~/adapter";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { TopGlow } from "~/components/TopGlow";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { newId } from "~/util/helpers";
+import { StartResource } from "../Overview/content/resource";
 import { useCopilotMutation } from "./copilot";
 import { ChatMessage } from "./message";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { StartResource } from "../Overview/content/resource";
-import { shuffle } from "radash";
-import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
-import { useIsAuthenticated } from "~/hooks/cloud";
-import { openCloudAuthentication } from "~/cloud/api/auth";
-import { adapter } from "~/adapter";
 
 const QUESTIONS = [
 	{ icon: iconCreditCard, title: "How do I manage Cloud billing?" },

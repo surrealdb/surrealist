@@ -1,6 +1,7 @@
 import { Badge, Button, Group, HoverCard, Menu, Modal, Text, TextInput } from "@mantine/core";
 
 import { useState } from "react";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 import { ActionBar } from "~/components/ActionBar";
 import { ActionButton } from "~/components/ActionButton";
 import { Form } from "~/components/Form";
@@ -21,7 +22,6 @@ import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
 import { resetConnection } from "./connection/connection";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 
 export function SurrealistToolbar() {
 	const { readChangelog } = useInterfaceStore.getState();

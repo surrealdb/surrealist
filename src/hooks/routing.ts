@@ -1,14 +1,14 @@
 import { useEffect, useMemo } from "react";
-import { matchRoute, PathPattern, useRouter, useSearch } from "wouter";
+import { PathPattern, matchRoute, useRouter, useSearch } from "wouter";
+import { SANDBOX } from "~/constants";
+import { useConfigStore } from "~/stores/config";
 import type { ViewPage } from "~/types";
+import { getActiveConnection, getConnection, getConnectionById } from "~/util/connection";
 import { IntentEvent } from "~/util/global-events";
 import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
+import { useConnectionList } from "./connection";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
-import { useConnectionList } from "./connection";
-import { getActiveConnection, getConnection, getConnectionById } from "~/util/connection";
-import { useConfigStore } from "~/stores/config";
-import { SANDBOX } from "~/constants";
 
 /**
  * Returns the current location and a function to navigate

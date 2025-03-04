@@ -3,13 +3,13 @@ import { Stack } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { fetchAPI } from "~/cloud/api";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance } from "~/types";
 import { EstimatedCost } from "../../EstimatedCost";
 import { InstanceType } from "../../InstanceType";
-import { fetchAPI } from "~/cloud/api";
 
 export async function openComputeUnitsModal(instance: CloudInstance) {
 	openModal({

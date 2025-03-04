@@ -9,11 +9,11 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance } from "~/types";
 import { iconClose, iconTune } from "~/util/icons";
-import { ConfigurationInstanceType } from "./configs/type";
-import { ConfigurationComputeNodes } from "./configs/compute";
-import { ConfigurationVersion } from "./configs/version";
-import { ConfigurationStorage } from "./configs/storage";
 import { ConfigurationCapabilities } from "./configs/capabilities";
+import { ConfigurationComputeNodes } from "./configs/compute";
+import { ConfigurationStorage } from "./configs/storage";
+import { ConfigurationInstanceType } from "./configs/type";
+import { ConfigurationVersion } from "./configs/version";
 
 export interface ConfiguratorDrawerProps {
 	opened: boolean;

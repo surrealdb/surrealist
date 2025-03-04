@@ -18,6 +18,7 @@ import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { showNodeStatus } from "~/modals/node-status";
@@ -27,7 +28,6 @@ import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
-import { useConnectionAndView } from "~/hooks/routing";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);

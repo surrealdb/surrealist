@@ -25,6 +25,7 @@ import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
 import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/query";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
@@ -39,7 +40,6 @@ import { GraphPreview } from "./previews/graph";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
-import { useConnectionAndView } from "~/hooks/routing";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {

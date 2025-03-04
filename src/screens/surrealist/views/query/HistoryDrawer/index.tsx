@@ -22,10 +22,10 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
 import { useConnection } from "~/hooks/connection";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
-import { useConnectionAndView } from "~/hooks/routing";
 
 const MAX_PREVIEW_LENGTH = 500;
 

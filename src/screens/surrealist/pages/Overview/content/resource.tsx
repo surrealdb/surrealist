@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 
-import { BoxProps, UnstyledButton, Paper, Group, Box, Text } from "@mantine/core";
+import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
 import { useRef } from "react";
 import { Faint } from "~/components/Faint";

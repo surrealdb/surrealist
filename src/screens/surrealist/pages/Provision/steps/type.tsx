@@ -1,10 +1,10 @@
-import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useStable } from "~/hooks/stable";
-import type { ProvisionStepProps } from "../types";
 import { useMemo } from "react";
 import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { InstanceTypes } from "~/components/InstanceTypes";
+import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
+import { useStable } from "~/hooks/stable";
+import type { ProvisionStepProps } from "../types";
 
 export function ProvisionCategoryStep({ details, setDetails }: ProvisionStepProps) {
 	const organization = useOrganization();

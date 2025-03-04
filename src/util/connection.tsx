@@ -1,8 +1,8 @@
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import type { AuthLevel, Authentication, CloudInstance } from "~/types";
-import { connectionUri, fastParseJwt } from "./helpers";
 import { createBaseConnection } from "./defaults";
+import { connectionUri, fastParseJwt } from "./helpers";
 
 /**
  * Returns the currently active connection

@@ -2,17 +2,17 @@ import { compareVersions } from "compare-versions";
 import { pick, unique } from "radash";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { useCloudInstanceList } from "~/cloud/hooks/instances";
 import { SANDBOX, VIEW_PAGES } from "~/constants";
+import { openRequiredDatabaseModal } from "~/modals/require-database";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { CloudInstance, Connection, ViewCondition, ViewPage, ViewPageInfo } from "~/types";
-import { useConnectionAndView, useConnectionNavigator } from "./routing";
-import { useFeatureFlags } from "~/util/feature-flags";
-import { useCloudInstanceList } from "~/cloud/hooks/instances";
-import { fuzzyMatch } from "~/util/helpers";
-import { useStable } from "./stable";
 import { createBaseConnection } from "~/util/defaults";
-import { openRequiredDatabaseModal } from "~/modals/require-database";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { fuzzyMatch } from "~/util/helpers";
+import { useConnectionAndView, useConnectionNavigator } from "./routing";
+import { useStable } from "./stable";
 
 /**
  * Returns whether Surrealist is connected to a database

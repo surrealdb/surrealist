@@ -1,8 +1,8 @@
 import classes from "../style.module.scss";
 
-import { BoxProps, UnstyledButton, Paper, Center, Stack, Text, Flex, Box } from "@mantine/core";
+import { Box, BoxProps, Center, Flex, Paper, Stack, Text, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
-import { ReactNode, PropsWithChildren, useRef } from "react";
+import { PropsWithChildren, ReactNode, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { ConnectionListMode } from "~/types";
 import { iconPlus } from "~/util/icons";

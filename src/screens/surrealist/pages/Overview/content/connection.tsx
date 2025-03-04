@@ -1,8 +1,7 @@
 import classes from "../style.module.scss";
 
-import { iconSandbox, iconDotsVertical, iconCopy, iconDelete, iconEdit } from "~/util/icons";
 import { ActionIcon, Menu, Text } from "@mantine/core";
-import { BoxProps, UnstyledButton, Paper, Group, Stack, ThemeIcon, Box } from "@mantine/core";
+import { Box, BoxProps, Group, Paper, Stack, ThemeIcon, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
@@ -10,12 +9,13 @@ import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { Connection, ConnectionListMode } from "~/types";
-import { USER_ICONS } from "~/util/user-icons";
-import { newId, ON_STOP_PROPAGATION } from "~/util/helpers";
-import { dispatchIntent } from "~/util/intents";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
+import { Connection, ConnectionListMode } from "~/types";
+import { ON_STOP_PROPAGATION, newId } from "~/util/helpers";
+import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
+import { USER_ICONS } from "~/util/user-icons";
 
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;

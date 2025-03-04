@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 
-import { Stack, Box, Divider, ScrollArea, Group, Button, Text } from "@mantine/core";
+import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";

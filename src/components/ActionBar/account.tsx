@@ -14,6 +14,8 @@ import {
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
+import { fetchAPI } from "~/cloud/api";
+import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -23,8 +25,6 @@ import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
-import { fetchAPI } from "~/cloud/api";
 
 interface AccountFormProps {
 	onClose(): void;

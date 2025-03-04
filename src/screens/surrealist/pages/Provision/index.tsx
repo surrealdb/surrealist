@@ -1,5 +1,5 @@
-import classes from "./style.module.scss";
 import cloudIconUrl from "~/assets/images/cloud-icon.webp";
+import classes from "./style.module.scss";
 
 import {
 	Box,
@@ -12,27 +12,27 @@ import {
 	ScrollArea,
 	Stack,
 } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
+import { fetchAPI } from "~/cloud/api";
+import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { TopGlow } from "~/components/TopGlow";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
+import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { __throw, showError } from "~/util/helpers";
+import { iconChevronLeft } from "~/util/icons";
+import { EstimatedCost } from "../../cloud-panel/components/EstimatedCost";
+import { ProvisionComputeUnitsStep } from "./steps/compute";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionCategoryStep } from "./steps/type";
-import { ProvisionComputeUnitsStep } from "./steps/compute";
 import type { ProvisionConfig } from "./types";
-import { fetchAPI } from "~/cloud/api";
-import { useAbsoluteLocation } from "~/hooks/routing";
-import { TopGlow } from "~/components/TopGlow";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { EstimatedCost } from "../../cloud-panel/components/EstimatedCost";
-import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
-import { iconChevronLeft } from "~/util/icons";
-import { Text } from "@mantine/core";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",

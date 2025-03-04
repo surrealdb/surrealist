@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { shake } from "radash";
 import { useState } from "react";
 import { useImmer } from "use-immer";
+import { ApiError, fetchAPI, updateCloudInformation } from "~/cloud/api";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -14,7 +15,6 @@ import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
 import { useCloudBillingQuery } from "../queries/billing";
-import { ApiError, fetchAPI, updateCloudInformation } from "~/cloud/api";
 
 export async function openBillingDetails() {
 	return new Promise<void>((resolve) => {

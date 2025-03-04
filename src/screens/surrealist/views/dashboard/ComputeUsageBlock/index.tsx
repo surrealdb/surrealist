@@ -1,19 +1,19 @@
 import {
-	Paper,
-	Group,
-	Divider,
-	Text,
-	Stack,
 	Box,
-	ThemeIcon,
+	Divider,
+	Group,
+	Paper,
 	Progress,
 	Skeleton,
+	Stack,
+	Text,
+	ThemeIcon,
 } from "@mantine/core";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { CloudMeasurement } from "~/types";
 import { measureComputeHistory, measureComputeTotal } from "~/util/cloud";
 import { iconQuery } from "~/util/icons";
-import { Spacer } from "~/components/Spacer";
 
 export interface ComputeUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;

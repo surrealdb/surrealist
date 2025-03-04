@@ -1,16 +1,16 @@
 import classes from "../style.module.scss";
 
-import { BoxProps, UnstyledButton, Paper, Flex, Box, Title } from "@mantine/core";
+import { Box, BoxProps, Flex, Paper, Title, UnstyledButton } from "@mantine/core";
+import { Text } from "@mantine/core";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { useRef } from "react";
 import { Faint } from "~/components/Faint";
+import { Icon } from "~/components/Icon";
 import { NewsPost } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { iconChevronRight } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { Text } from "@mantine/core";
-import { Icon } from "~/components/Icon";
 
 export interface StartNewsProps extends BoxProps {
 	post: NewsPost;

@@ -1,5 +1,5 @@
-import classes from "../style.module.scss";
 import cloudImg from "~/assets/images/cloud-icon.webp";
+import classes from "../style.module.scss";
 
 import {
 	ActionIcon,
@@ -40,10 +40,10 @@ import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import type { CloudInstance, Connection } from "~/types";
+import { resolveInstanceConnection } from "~/util/connection";
 import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
-import { resolveInstanceConnection } from "~/util/connection";
 
 export function ConnectionsModal() {
 	const [isOpen, openedHandle] = useBoolean();

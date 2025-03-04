@@ -1,5 +1,6 @@
 import { BoxProps, Group, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAvailableInstanceTypes } from "~/hooks/cloud";
@@ -7,7 +8,6 @@ import { CloudOrganization } from "~/types";
 import { iconHammer, iconQuery, iconStar, iconWarning } from "~/util/icons";
 import { useCloudTypeLimits } from "../../../../../cloud/hooks/limits";
 import { Tile } from "../Tile";
-import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 export interface CategoryPickerProps extends BoxProps {
 	organization: CloudOrganization;

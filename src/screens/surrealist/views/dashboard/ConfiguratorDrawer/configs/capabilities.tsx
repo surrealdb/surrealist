@@ -1,23 +1,23 @@
 import classes from "../style.module.scss";
 
 import {
-	Stack,
-	Paper,
-	Group,
-	Button,
-	Box,
-	Checkbox,
-	UnstyledButton,
-	Collapse,
-	SimpleGrid,
-	TextInput,
-	List,
 	ActionIcon,
-	Text,
-	ScrollArea,
-	Divider,
-	Tooltip,
 	Alert,
+	Box,
+	Button,
+	Checkbox,
+	Collapse,
+	Divider,
+	Group,
+	List,
+	Paper,
+	ScrollArea,
+	SimpleGrid,
+	Stack,
+	Text,
+	TextInput,
+	Tooltip,
+	UnstyledButton,
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
@@ -32,13 +32,13 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { CloudInstance, Selectable } from "~/types";
 import {
+	iconCancel,
+	iconCheck,
 	iconChevronDown,
-	iconPlus,
+	iconChevronUp,
 	iconClose,
 	iconHelp,
-	iconCheck,
-	iconCancel,
-	iconChevronUp,
+	iconPlus,
 } from "~/util/icons";
 
 const RPCS = [

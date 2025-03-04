@@ -29,6 +29,7 @@ import { GraphExpansion } from "~/components/RelationGraph/types";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
 import { useLater } from "~/hooks/later";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
@@ -39,7 +40,6 @@ import { __throw, plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { type PreviewProps } from ".";
-import { useConnectionAndView } from "~/hooks/routing";
 
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;

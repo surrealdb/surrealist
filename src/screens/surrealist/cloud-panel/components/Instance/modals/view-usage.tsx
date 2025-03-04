@@ -13,20 +13,20 @@ import {
 import { Stack } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { useMemo } from "react";
+import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
-import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import type { CloudInstance } from "~/types";
-import { formatMemory } from "~/util/helpers";
-import { iconDatabase, iconQuery } from "~/util/icons";
 import {
+	computeStorageSize,
 	measureComputeHistory,
 	measureComputeTotal,
 	measureStorageUsage,
-	computeStorageSize,
 } from "~/util/cloud";
+import { formatMemory } from "~/util/helpers";
+import { iconDatabase, iconQuery } from "~/util/icons";
 
 export async function openUsageModal(instance: CloudInstance) {
 	openModal({

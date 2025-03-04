@@ -22,6 +22,8 @@ import type {
 	DiagramLinks,
 	DiagramMode,
 	Driver,
+	GlobalPage,
+	GlobalPageInfo,
 	Listable,
 	Orientation,
 	Protocol,
@@ -32,10 +34,8 @@ import type {
 	Selectable,
 	SidebarMode,
 	SyntaxTheme,
-	ViewPageInfo,
 	ViewPage,
-	GlobalPage,
-	GlobalPageInfo,
+	ViewPageInfo,
 } from "./types";
 
 import {

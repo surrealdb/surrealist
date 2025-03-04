@@ -30,6 +30,7 @@ import {
 
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { Fragment, useMemo, useState } from "react";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { ActionButton } from "~/components/ActionButton";
 import { FloatingButton } from "~/components/FloatingButton";
 import { Icon } from "~/components/Icon";
@@ -43,11 +44,10 @@ import { useConfigStore } from "~/stores/config";
 import type { CloudInstance } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
-import { type ConnectMethod, Instance } from "../../components/Instance";
 import { openConnectCli } from "../../../../../cloud/modals/connect-cli";
 import { openConnectCurl } from "../../../../../cloud/modals/connect-curl";
 import { openConnectSdk } from "../../../../../cloud/modals/connect-sdk";
-import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import { type ConnectMethod, Instance } from "../../components/Instance";
 
 interface Filter {
 	type: string;

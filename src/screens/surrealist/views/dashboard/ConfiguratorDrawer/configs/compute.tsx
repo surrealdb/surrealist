@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 
-import { Stack, Divider, Box, ScrollArea, Group, Button, Text, Alert } from "@mantine/core";
+import { Alert, Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { CloudInstance } from "~/types";
 
 export interface ConfigurationComputeNodesProps {

@@ -1,6 +1,6 @@
 import { Box, rem } from "@mantine/core";
-import classes from "./style.module.scss";
 import glowUrl from "~/assets/images/gradient-glow.webp";
+import classes from "./style.module.scss";
 
 export interface TopGlowProps {
 	offset?: number;

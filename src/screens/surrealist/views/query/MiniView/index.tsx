@@ -20,13 +20,13 @@ import { useSetting } from "~/hooks/config";
 import { useActiveQuery } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { SetQueryEvent } from "~/util/global-events";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
-import { useConnectionAndView } from "~/hooks/routing";
 
 const switchPortal = createHtmlPortalNode();
 

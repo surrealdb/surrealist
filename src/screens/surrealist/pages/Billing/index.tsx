@@ -1,5 +1,5 @@
-import classes from "./style.module.scss";
 import cloudImg from "~/assets/images/cloud-icon.webp";
+import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
@@ -31,29 +31,29 @@ import { formatDistance } from "date-fns";
 import { capitalize } from "radash";
 import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
+import { fetchAPI, updateCloudInformation } from "~/cloud/api";
+import { openCloudAuthentication } from "~/cloud/api/auth";
+import { useCloudBillingQuery } from "~/cloud/queries/billing";
+import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
+import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
+import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
+import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { useCloudStore } from "~/stores/cloud";
 import type { CloudCoupon, InvoiceStatus } from "~/types";
-import { showError, showInfo } from "~/util/helpers";
-import { fetchAPI, updateCloudInformation } from "~/cloud/api";
-import { useCloudBillingQuery } from "~/cloud/queries/billing";
-import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
-import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
-import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
-import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
 import { measureComputeCost } from "~/util/cloud";
+import { showError, showInfo } from "~/util/helpers";
 import { openBillingDetails } from "../../../../cloud/modals/billing";
 import { Section } from "../../cloud-panel/components/Section";
-import { useCloudStore } from "~/stores/cloud";
-import { TopGlow } from "~/components/TopGlow";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 
 function isCouponIndefinite(coupon: CloudCoupon) {
 	return new Date(coupon.expires_at).getFullYear() === 1;

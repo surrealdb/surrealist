@@ -1,4 +1,4 @@
-import { Alert, Box, Group, Button } from "@mantine/core";
+import { Alert, Box, Button, Group } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";

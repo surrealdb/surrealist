@@ -24,6 +24,7 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -34,7 +35,6 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { fuzzyMultiMatch } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
-import { useConnectionAndView } from "~/hooks/routing";
 
 export interface TablesPaneProps {
 	icon?: string;

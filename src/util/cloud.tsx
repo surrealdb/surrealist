@@ -1,6 +1,6 @@
+import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudMeasurement } from "~/types";
-import { adapter } from "~/adapter";
 
 /**
  * Measure the compute history

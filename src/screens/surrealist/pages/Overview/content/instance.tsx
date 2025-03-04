@@ -1,33 +1,33 @@
 import classes from "../style.module.scss";
 
 import {
-	BoxProps,
-	UnstyledButton,
-	Paper,
-	Group,
-	Stack,
-	ThemeIcon,
-	Box,
-	Text,
 	ActionIcon,
-	Menu,
 	Alert,
+	Box,
+	BoxProps,
+	Group,
+	Menu,
+	Paper,
+	Stack,
+	Text,
+	ThemeIcon,
+	UnstyledButton,
 } from "@mantine/core";
+import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
-import { PropsWithChildren, useRef, useMemo } from "react";
+import { PropsWithChildren, useMemo, useRef } from "react";
+import { fetchAPI } from "~/cloud/api";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance, ConnectionListMode } from "~/types";
-import { iconCloud, iconDotsVertical, iconDelete, iconEdit } from "~/util/icons";
+import { ON_STOP_PROPAGATION, showError, showInfo } from "~/util/helpers";
+import { iconCloud, iconDelete, iconDotsVertical, iconEdit } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
-import { ON_STOP_PROPAGATION, showError, showInfo } from "~/util/helpers";
-import { dispatchIntent } from "~/util/intents";
-import { useConfirmation } from "~/providers/Confirmation";
-import { fetchAPI } from "~/cloud/api";
-import { useQueryClient } from "@tanstack/react-query";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;

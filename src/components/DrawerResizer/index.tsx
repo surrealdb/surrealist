@@ -1,10 +1,10 @@
 import classes from "./style.module.scss";
 
+import { update } from "@intercom/messenger-js-sdk";
 import { Box } from "@mantine/core";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { clamp } from "~/util/helpers";
-import { update } from "@intercom/messenger-js-sdk";
 
 export interface DrawerResizerProps {
 	minSize: number;

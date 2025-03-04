@@ -28,6 +28,7 @@ import dayjs from "dayjs";
 import { fork } from "radash";
 import { useMemo } from "react";
 import type { Updater } from "use-immer";
+import { useConnectionLabels } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { AuthMode, Connection, Protocol } from "~/types";
@@ -38,7 +39,6 @@ import { ActionButton } from "../ActionButton";
 import { EditableText } from "../EditableText";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { useConnectionLabels } from "~/hooks/connection";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);

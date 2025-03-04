@@ -1,5 +1,5 @@
-import classes from "./style.module.scss";
 import cloudImg from "~/assets/images/cloud-icon.webp";
+import classes from "./style.module.scss";
 
 import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
 import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
@@ -35,18 +35,18 @@ import {
 } from "@mantine/core";
 
 import { ReactNode } from "react";
+import { adapter } from "~/adapter";
+import { openCloudAuthentication } from "~/cloud/api/auth";
+import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Slab, SlabProps } from "~/components/Slab";
+import { TopGlow } from "~/components/TopGlow";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconChevronRight, iconCopy, iconHelp, iconOpen } from "~/util/icons";
-import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
-import { TopGlow } from "~/components/TopGlow";
-import { useIsAuthenticated } from "~/hooks/cloud";
-import { adapter } from "~/adapter";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 
 const REWARDS = [1, 10, 25, 100, 500];
 
