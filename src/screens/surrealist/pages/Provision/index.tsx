@@ -28,7 +28,7 @@ import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { __throw, showError } from "~/util/helpers";
 import { iconChevronLeft } from "~/util/icons";
-import { EstimatedCost } from "../../cloud-panel/components/EstimatedCost";
+import { EstimatedCost } from "../../../../components/EstimatedCost";
 import { ProvisionComputeUnitsStep } from "./steps/compute";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionCategoryStep } from "./steps/type";

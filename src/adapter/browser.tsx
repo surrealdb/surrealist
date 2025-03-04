@@ -227,77 +227,77 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	private applyInstanceConfig(config: SurrealistConfig, instanceConfig: InstanceConfig) {
-		// nothing configured in the instance file
-		// clean instance connections
-		if (instanceConfig.connections.length <= 0) {
-			config.connectionGroups = config.connectionGroups.filter(
-				(group) => group.id !== INSTANCE_GROUP,
-			);
-			config.connections = config.connections.filter(
-				(connection) => connection.group !== INSTANCE_GROUP,
-			);
+		// // nothing configured in the instance file
+		// // clean instance connections
+		// if (instanceConfig.connections.length <= 0) {
+		// 	config.connectionGroups = config.connectionGroups.filter(
+		// 		(group) => group.id !== INSTANCE_GROUP,
+		// 	);
+		// 	config.connections = config.connections.filter(
+		// 		(connection) => connection.group !== INSTANCE_GROUP,
+		// 	);
 
-			return config;
-		}
-
-		// sync connection groups
-		const existingConnectionGroup = config.connectionGroups.find(
-			(group) => group.id === INSTANCE_GROUP,
-		);
-
-		if (existingConnectionGroup) {
-			existingConnectionGroup.name = instanceConfig.groupName;
-			existingConnectionGroup.collapsed = instanceConfig.groupCollapsed;
-		} else {
-			config.connectionGroups.push({
-				id: INSTANCE_GROUP,
-				name: instanceConfig.groupName,
-				collapsed: instanceConfig.groupCollapsed,
-			});
-		}
-
-		// Add missing connections
-		for (const con of instanceConfig.connections) {
-			const existingConnection = config.connections.find((c) => c.id === con.id);
-
-			if (existingConnection) {
-				continue;
-			}
-
-			const newConnection = createBaseConnection(config.settings);
-
-			newConnection.id = con.id;
-			newConnection.name = con.name;
-			newConnection.group = INSTANCE_GROUP;
-			newConnection.authentication = con.authentication as Authentication;
-
-			if (con.defaultNamespace) {
-				newConnection.lastNamespace = con.defaultNamespace;
-
-				if (con.defaultDatabase) {
-					newConnection.lastDatabase = con.defaultDatabase;
-				}
-			}
-
-			config.connections.push(newConnection);
-		}
-
-		// Remove connections that are not in the instance config
-		config.connections = config.connections.filter(
-			(c) =>
-				c.group !== INSTANCE_GROUP ||
-				instanceConfig.connections.some((ic) => ic.id === c.id),
-		);
-
-		const isValidActiveConnection = config.connections.some(
-			(c) => c.id === instanceConfig.defaultConnection,
-		);
-
-		// Change activeConnection if instance config is valid
-		// FIXME navigate to connection
-		// if (isValidActiveConnection) {
-		// 	config.activeConnection = instanceConfig.defaultConnection ?? "";
+		// 	return config;
 		// }
+
+		// // sync connection groups
+		// const existingConnectionGroup = config.connectionGroups.find(
+		// 	(group) => group.id === INSTANCE_GROUP,
+		// );
+
+		// if (existingConnectionGroup) {
+		// 	existingConnectionGroup.name = instanceConfig.groupName;
+		// 	existingConnectionGroup.collapsed = instanceConfig.groupCollapsed;
+		// } else {
+		// 	config.connectionGroups.push({
+		// 		id: INSTANCE_GROUP,
+		// 		name: instanceConfig.groupName,
+		// 		collapsed: instanceConfig.groupCollapsed,
+		// 	});
+		// }
+
+		// // Add missing connections
+		// for (const con of instanceConfig.connections) {
+		// 	const existingConnection = config.connections.find((c) => c.id === con.id);
+
+		// 	if (existingConnection) {
+		// 		continue;
+		// 	}
+
+		// 	const newConnection = createBaseConnection(config.settings);
+
+		// 	newConnection.id = con.id;
+		// 	newConnection.name = con.name;
+		// 	newConnection.group = INSTANCE_GROUP;
+		// 	newConnection.authentication = con.authentication as Authentication;
+
+		// 	if (con.defaultNamespace) {
+		// 		newConnection.lastNamespace = con.defaultNamespace;
+
+		// 		if (con.defaultDatabase) {
+		// 			newConnection.lastDatabase = con.defaultDatabase;
+		// 		}
+		// 	}
+
+		// 	config.connections.push(newConnection);
+		// }
+
+		// // Remove connections that are not in the instance config
+		// config.connections = config.connections.filter(
+		// 	(c) =>
+		// 		c.group !== INSTANCE_GROUP ||
+		// 		instanceConfig.connections.some((ic) => ic.id === c.id),
+		// );
+
+		// const isValidActiveConnection = config.connections.some(
+		// 	(c) => c.id === instanceConfig.defaultConnection,
+		// );
+
+		// // Change activeConnection if instance config is valid
+		// // FIXME navigate to connection
+		// // if (isValidActiveConnection) {
+		// // 	config.activeConnection = instanceConfig.defaultConnection ?? "";
+		// // }
 
 		return config;
 	}

@@ -53,7 +53,7 @@ import type { CloudCoupon, InvoiceStatus } from "~/types";
 import { measureComputeCost } from "~/util/cloud";
 import { showError, showInfo } from "~/util/helpers";
 import { openBillingDetails } from "../../../../cloud/modals/billing";
-import { Section } from "../../cloud-panel/components/Section";
+import { Section } from "../../../../components/Section";
 
 function isCouponIndefinite(coupon: CloudCoupon) {
 	return new Date(coupon.expires_at).getFullYear() === 1;
