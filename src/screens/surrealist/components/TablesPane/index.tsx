@@ -55,7 +55,7 @@ export function TablesPane({
 	onTableSelect,
 	onTableContextMenu,
 }: TablesPaneProps) {
-	const { openTableCreator } = useInterfaceStore.getState();
+	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
 
 	const [connection] = useConnectionAndView();
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
@@ -63,7 +63,7 @@ export function TablesPane({
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
 	const pinnedTables = useConnection((c) => c?.pinnedTables ?? []);
-	const openCreator = useRequireDatabase(openTableCreator);
+	const openTableCreator = useRequireDatabase(_openTableCreator);
 	const isConnected = useIsConnected();
 	const schema = useTables();
 
@@ -134,7 +134,7 @@ export function TablesPane({
 					)}
 					<ActionButton
 						label="New table"
-						onClick={openCreator}
+						onClick={openTableCreator}
 						disabled={!isConnected}
 					>
 						<Icon path={iconPlus} />

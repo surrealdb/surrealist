@@ -1,14 +1,16 @@
-import { Stack, Text } from "@mantine/core";
+import { Button, Group, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
 import { useEffect } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
 import { useConnection } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { SelectDatabase } from "~/screens/surrealist/components/SelectDatabase";
 
 export function openRequiredDatabaseModal(callback: () => void) {
 	openModal({
 		modalId: "require-database",
-		title: <PrimaryTitle>Before you continue...</PrimaryTitle>,
+		title: <PrimaryTitle>Namespace & database</PrimaryTitle>,
 		withCloseButton: true,
 		children: <NamespaceDatabaseSelector onSelect={callback} />,
 	});
@@ -21,12 +23,12 @@ interface NamespaceDatabaseSelectorProps {
 function NamespaceDatabaseSelector({ onSelect }: NamespaceDatabaseSelectorProps) {
 	const hasDatabase = useConnection((c) => !!c?.lastDatabase);
 
-	useEffect(() => {
-		if (hasDatabase) {
-			closeModal("require-database");
-			onSelect();
-		}
-	}, [hasDatabase, onSelect]);
+	const closeSelector = useStable(() => closeModal("require-database"));
+
+	const proceed = useStable(() => {
+		closeSelector();
+		onSelect();
+	});
 
 	return (
 		<Stack>
@@ -39,6 +41,24 @@ function NamespaceDatabaseSelector({ onSelect }: NamespaceDatabaseSelectorProps)
 				withNamespace
 				withDatabase
 			/>
+			<Group mt="xl">
+				<Button
+					color="slate"
+					variant="light"
+					onClick={closeSelector}
+				>
+					Close
+				</Button>
+				<Spacer />
+				<Button
+					type="submit"
+					disabled={!hasDatabase}
+					variant="gradient"
+					onClick={proceed}
+				>
+					Continue
+				</Button>
+			</Group>
 		</Stack>
 	);
 }

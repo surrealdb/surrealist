@@ -7,7 +7,7 @@ import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
@@ -24,10 +24,11 @@ import { TableGraphPane } from "../TableGraphPane";
 const TableGraphPaneLazy = memo(TableGraphPane);
 
 export function DesignerView() {
-	const { openTableCreator } = useInterfaceStore.getState();
+	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
 	const { updateConnection } = useConfigStore.getState();
 	const { design, stopDesign, active, isDesigning } = useDesigner();
 	const designerTableList = useConnection((c) => c?.designerTableList);
+	const openTableCreator = useRequireDatabase(_openTableCreator);
 
 	const [connection] = useConnectionAndView();
 	const isConnected = useIsConnected();

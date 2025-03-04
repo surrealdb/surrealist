@@ -61,7 +61,6 @@ export function TemplatesTab() {
 			name: template.name,
 			icon: template.icon,
 			authentication: template.values,
-			group: template.group,
 		});
 	});
 
@@ -72,7 +71,6 @@ export function TemplatesTab() {
 			id: details.id,
 			name: details.name,
 			icon: details.icon,
-			group: details.group || undefined,
 			values: details.authentication,
 		};
 

@@ -1,12 +1,4 @@
-import {
-	ActionIcon,
-	Badge,
-	ScrollArea,
-	Stack,
-	Text,
-	TextInput,
-	Tooltip,
-} from "@mantine/core";
+import { ActionIcon, Badge, ScrollArea, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
@@ -17,13 +9,7 @@ import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import type { SchemaFunction } from "~/types";
-import {
-	iconCopy,
-	iconDelete,
-	iconFunction,
-	iconPlus,
-	iconSearch,
-} from "~/util/icons";
+import { iconCopy, iconDelete, iconFunction, iconPlus, iconSearch } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface FunctionsPanelProps {
@@ -89,7 +75,10 @@ export function FunctionsPanel({
 					viewport: classes.scroller,
 				}}
 			>
-				<Stack gap="xs" pb="md">
+				<Stack
+					gap="xs"
+					pb="md"
+				>
 					{functions.length > 0 ? (
 						<TextInput
 							placeholder="Search functions..."
@@ -101,13 +90,21 @@ export function FunctionsPanel({
 							autoFocus
 						/>
 					) : (
-						<Text c="slate" ta="center" mt="lg">
+						<Text
+							c="slate"
+							ta="center"
+							mt="lg"
+						>
 							No functions found
 						</Text>
 					)}
 
 					{search && filtered.length === 0 && (
-						<Text c="slate" ta="center" mt="lg">
+						<Text
+							c="slate"
+							ta="center"
+							mt="lg"
+						>
 							No functions matched
 						</Text>
 					)}
