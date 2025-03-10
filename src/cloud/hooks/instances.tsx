@@ -12,7 +12,7 @@ export function useCloudInstanceList() {
 
 	return useQueries({
 		queries: organizations.map((org) => ({
-			queryKey: ["cloud", "instances", { org: org.id }],
+			queryKey: ["cloud", "instances", { org: org.id, instances: true }],
 			refetchInterval: 15_000,
 			enabled: authState === "authenticated",
 			queryFn: async () => ({

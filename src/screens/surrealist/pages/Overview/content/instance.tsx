@@ -252,9 +252,6 @@ export function StartInstance({
 									color="slate"
 									variant="subtle"
 									component="div"
-									disabled={
-										instance.state !== "ready" && instance.state !== "paused"
-									}
 								>
 									<Icon path={iconDotsVertical} />
 								</ActionIcon>
@@ -269,36 +266,41 @@ export function StartInstance({
 								<Menu.Divider />
 								<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
 								<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
-								<Menu.Divider />
 								{instance.state === "ready" ? (
-									<Menu.Item
-										leftSection={<Icon path={iconPause} />}
-										onClick={handlePause}
-									>
-										Pause instance
-									</Menu.Item>
+									<>
+										<Menu.Divider />
+										<Menu.Item
+											leftSection={<Icon path={iconPause} />}
+											onClick={handlePause}
+										>
+											Pause instance
+										</Menu.Item>
+										<Menu.Item
+											leftSection={
+												<Icon
+													path={iconDelete}
+													c="red"
+												/>
+											}
+											onClick={handleDelete}
+											c="red"
+										>
+											Delete instance
+										</Menu.Item>
+									</>
 								) : (
 									instance.state === "paused" && (
-										<Menu.Item
-											leftSection={<Icon path={iconPlay} />}
-											onClick={handleResume}
-										>
-											Resume instance
-										</Menu.Item>
+										<>
+											<Menu.Divider />
+											<Menu.Item
+												leftSection={<Icon path={iconPlay} />}
+												onClick={handleResume}
+											>
+												Resume instance
+											</Menu.Item>
+										</>
 									)
 								)}
-								<Menu.Item
-									leftSection={
-										<Icon
-											path={iconDelete}
-											c="red"
-										/>
-									}
-									onClick={handleDelete}
-									c="red"
-								>
-									Delete instance
-								</Menu.Item>
 							</Menu.Dropdown>
 						</Menu>
 					</div>
