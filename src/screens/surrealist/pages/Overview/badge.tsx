@@ -1,28 +1,34 @@
-import { Badge, Indicator, MantineColor, Tooltip } from "@mantine/core";
+import { Indicator, Loader, MantineColor, Tooltip } from "@mantine/core";
 import { InstanceState } from "~/types";
 
 const BADGE_INFO = {
 	ready: ["green", "Instance is active and utilizing resources"],
-	updating: ["yellow", "Instance is currently updating"],
-	creating: ["yellow", "Provisioning instance..."],
-	deleting: ["red", "Deleting instance..."],
-	inactive: ["slate", "Instance is inactive"],
-} satisfies Record<InstanceState, [MantineColor, string]>;
+	deleting: ["red", "Instance is being deleted"],
+	paused: ["slate.5", "Instance is paused and not utilizing resources"],
+	updating: ["loader", "Updating instance..."],
+	creating: ["loader", "Provisioning instance..."],
+	pausing: ["loader", "Pausing instance..."],
+	resuming: ["loader", "Resuming instance..."],
+} satisfies Record<InstanceState, [MantineColor | "loader", string]>;
 
 export interface StateBadgeProps {
 	state: InstanceState;
 }
 
 export function StateBadge({ state }: StateBadgeProps) {
-	const [color, text] = BADGE_INFO[state];
+	const [display, text] = BADGE_INFO[state];
 
 	return (
 		<Tooltip label={text}>
-			<Indicator
-				processing={state === "ready"}
-				color={color}
-				ml="xs"
-			/>
+			{display === "loader" ? (
+				<Loader size="xs" />
+			) : (
+				<Indicator
+					processing={state === "ready"}
+					color={display}
+					ml="xs"
+				/>
+			)}
 		</Tooltip>
 	);
 }
