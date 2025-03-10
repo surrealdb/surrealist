@@ -143,7 +143,8 @@ export async function openConnection(options?: ConnectOptions) {
 			);
 
 			if (!instance || instance.state !== "ready") {
-				throw new CloudError("Cloud Instance is unavailable");
+				scheduleReconnect(1000);
+				return;
 			}
 		}
 

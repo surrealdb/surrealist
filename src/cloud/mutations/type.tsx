@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "../api";
+import { closeConnection } from "~/screens/surrealist/connection/connection";
 
 /**
  * Instance type updating mutation
@@ -17,6 +18,8 @@ export function useUpdateInstanceTypeMutation(instance: string | undefined) {
 			client.invalidateQueries({
 				queryKey: ["cloud", "instances"],
 			});
+
+			closeConnection(true);
 		},
 	});
 }
