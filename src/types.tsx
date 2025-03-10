@@ -53,8 +53,7 @@ export type GlobalPage =
 	| "chat"
 	| "support"
 	| "referrals"
-	| "share"
-	| "university"
+	| "embed"
 	| "provision";
 export type ViewPage =
 	| "dashboard"

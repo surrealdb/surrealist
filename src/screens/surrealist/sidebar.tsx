@@ -34,7 +34,7 @@ import { dispatchIntent } from "~/util/intents";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
 	["overview"],
-	["share", "university", "chat"],
+	["chat", "embed"],
 	["billing", "referrals", "support"],
 ];
 

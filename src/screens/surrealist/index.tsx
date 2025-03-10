@@ -30,11 +30,13 @@ import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
+import { EmbedPage } from "./pages/Embed";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
-const BillingPageLazy = memo(BillingPage);
 const ChatPageLazy = memo(ChatPage);
+const EmbedPageLazy = memo(EmbedPage);
+const BillingPageLazy = memo(BillingPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const ProvisionPageLazy = memo(ProvisionPage);
@@ -145,12 +147,8 @@ export function SurrealistScreen() {
 								<OverviewPageLazy />
 							</Route>
 
-							<Route path="/share">
-								<PlaceholderPage />
-							</Route>
-
-							<Route path="/university">
-								<PlaceholderPage />
+							<Route path="/embed">
+								<EmbedPageLazy />
 							</Route>
 
 							<Route path="/chat">

@@ -69,6 +69,7 @@ import {
 	iconSidekick,
 	iconTune,
 	iconUniversity,
+	iconXml,
 } from "./util/icons";
 
 import type { MantineColorScheme } from "@mantine/core";
@@ -211,15 +212,10 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Support",
 		icon: iconHelp,
 	},
-	share: {
-		id: "share",
-		name: "Query Sharing",
-		icon: iconCursor,
-	},
-	university: {
-		id: "university",
-		name: "University",
-		icon: iconUniversity,
+	embed: {
+		id: "embed",
+		name: "Embed Surrealist",
+		icon: iconXml,
 	},
 	provision: {
 		id: "provision",
