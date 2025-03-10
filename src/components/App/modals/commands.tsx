@@ -218,13 +218,6 @@ export function CommandPaletteModal() {
 													{search}
 												</Text>
 											)}
-											{cmd.action.type === "href" && (
-												<Icon
-													path={iconOpen}
-													size="sm"
-													ml={-8}
-												/>
-											)}
 											{keybinds.has(cmd.id) && (
 												<>
 													<Spacer />

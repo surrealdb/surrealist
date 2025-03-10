@@ -13,6 +13,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { BillingPage } from "./pages/Billing";
 import { ChatPage } from "./pages/Chat";
+import { EmbedPage } from "./pages/Embed";
 import { OverviewPage } from "./pages/Overview";
 import PlaceholderPage from "./pages/Placeholder";
 import { ProvisionPage } from "./pages/Provision";
@@ -30,7 +31,6 @@ import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
-import { EmbedPage } from "./pages/Embed";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);

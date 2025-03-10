@@ -4,27 +4,33 @@ import {
 	ActionIcon,
 	Box,
 	Button,
-	Divider,
+	CopyButton,
+	Grid,
 	Group,
 	Modal,
+	Paper,
 	ScrollArea,
+	SegmentedControl,
 	SimpleGrid,
 	Stack,
 	Text,
 	TextInput,
 } from "@mantine/core";
 
-import { DEFAULT_STATE, Embedder, EmbedState } from "~/components/Embedder";
+import { useDebouncedState, useDisclosure } from "@mantine/hooks";
+import { useMemo, useRef, useState } from "react";
+import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
-import { iconClose } from "~/util/icons";
-import { useDebouncedState, useDisclosure } from "@mantine/hooks";
-import { useState, useRef } from "react";
 import { useStable } from "~/hooks/stable";
+import { dedent } from "~/util/dedent";
+import { iconCheck, iconClose, iconTransfer, iconXml } from "~/util/icons";
+import { DEFAULT_STATE, EmbedState, Embedder } from "./embedder";
 
 export function EmbedPage() {
-	const [url, setUrl] = useDebouncedState("", 750);
+	const [mode, setMode] = useState<"iframe" | "url">("iframe");
+	const [url, setUrl] = useDebouncedState("", 250);
 	const [parsedState, setParsedState] = useState<EmbedState>();
 	const [showParse, showParseHandle] = useDisclosure();
 
@@ -47,6 +53,20 @@ export function EmbedPage() {
 		showParseHandle.close();
 	});
 
+	const snippet = useMemo(() => {
+		return dedent(`
+			<iframe
+				width="750"
+				height="500"
+				src="${url}"
+				title="Surrealist Mini"
+				frameborder="0"
+				allowTransparency="true"
+				referrerpolicy="strict-origin-when-cross-origin">
+			</iframe>
+		`);
+	}, [url]);
+
 	return (
 		<Box
 			flex={1}
@@ -68,7 +88,7 @@ export function EmbedPage() {
 					w="100%"
 					maw={1100}
 					mx="auto"
-					gap={38}
+					gap="xl"
 					pos="relative"
 				>
 					<Box>
@@ -78,85 +98,137 @@ export function EmbedPage() {
 							snippets
 						</Text>
 					</Box>
-					<SimpleGrid
-						cols={2}
-						spacing={52}
+
+					<Grid
+						gutter="xl"
+						mt="xl"
 					>
-						<Embedder
-							value={parsedState}
-							onChangeURL={setUrl}
-						/>
-						<Stack gap="lg">
-							<Box>
-								<Text
-									fw={600}
-									fz="lg"
-									mb={2}
-									c="bright"
-								>
-									Mini Preview
-								</Text>
-								<Text
-									c="slate.2"
-									mb="lg"
-								>
-									The preview will automatically reload after making changes
-								</Text>
-								<iframe
-									ref={frame}
-									width="100%"
-									height="500"
-									src={url}
-									title="Surrealist Mini"
-									referrerPolicy="strict-origin-when-cross-origin"
-									style={{
-										border: "none",
-										borderRadius: 24,
-									}}
+						<Grid.Col span={5}>
+							<Paper p="md">
+								<Embedder
+									value={parsedState}
+									onChangeURL={setUrl}
 								/>
-							</Box>
-							<Divider />
-							<Box>
-								<Text
-									fw={600}
-									fz="lg"
-									mb={2}
-									c="bright"
-								>
-									Restore editor
-								</Text>
-								<Text
-									c="slate.2"
-									mb="sm"
-								>
-									Optionally paste in an existing mini URL to restore the editor
-								</Text>
-								<Button
-									size="sm"
-									color="slate"
-									onClick={showParseHandle.open}
-								>
-									Restore from URL
-								</Button>
-								<Modal
-									opened={showParse}
-									onClose={showParseHandle.close}
-								>
-									<Group>
-										<TextInput
-											onChange={parseUrl}
-											spellCheck={false}
-											placeholder="Paste your mini URL here"
-											flex={1}
-										/>
-										<ActionIcon onClick={showParseHandle.close}>
-											<Icon path={iconClose} />
-										</ActionIcon>
-									</Group>
-								</Modal>
-							</Box>
-						</Stack>
-					</SimpleGrid>
+							</Paper>
+						</Grid.Col>
+						<Grid.Col span={7}>
+							<Stack gap="xl">
+								<Paper p="md">
+									<Text
+										fw={600}
+										fz="lg"
+										mb={2}
+										c="bright"
+									>
+										Copy Surrealist Mini
+									</Text>
+									<Text
+										c="slate.2"
+										mb="sm"
+									>
+										Copy your Surrealist Mini as a direct URL or embeddable
+										iframe snippet
+									</Text>
+									<SimpleGrid cols={2}>
+										<CopyButton value={snippet}>
+											{({ copied, copy }) => (
+												<Button
+													size="xs"
+													color="slate"
+													variant={copied ? "gradient" : undefined}
+													leftSection={
+														copied ? undefined : <Icon path={iconXml} />
+													}
+													onClick={copy}
+												>
+													{copied ? (
+														<Icon path={iconCheck} />
+													) : (
+														"Copy iframe"
+													)}
+												</Button>
+											)}
+										</CopyButton>
+										<CopyButton value={url}>
+											{({ copied, copy }) => (
+												<Button
+													size="xs"
+													color="slate"
+													variant={copied ? "gradient" : undefined}
+													leftSection={
+														copied ? undefined : (
+															<Icon path={iconTransfer} />
+														)
+													}
+													onClick={copy}
+												>
+													{copied ? (
+														<Icon path={iconCheck} />
+													) : (
+														"Copy URL"
+													)}
+												</Button>
+											)}
+										</CopyButton>
+									</SimpleGrid>
+								</Paper>
+								<Paper style={{ overflow: "hidden" }}>
+									<iframe
+										ref={frame}
+										width="100%"
+										height="500"
+										src={url}
+										title="Surrealist Mini"
+										referrerPolicy="strict-origin-when-cross-origin"
+										style={{
+											border: "none",
+											display: "block",
+										}}
+									/>
+								</Paper>
+								<Paper p="md">
+									<Text
+										fw={600}
+										fz="lg"
+										mb={2}
+										c="bright"
+									>
+										Restore configuration
+									</Text>
+									<Text
+										c="slate.2"
+										mb="sm"
+									>
+										Optionally paste in an existing mini URL to restore the
+										configuration
+									</Text>
+									<Button
+										size="sm"
+										color="slate"
+										onClick={showParseHandle.open}
+									>
+										Restore from URL
+									</Button>
+									<Modal
+										opened={showParse}
+										onClose={showParseHandle.close}
+									>
+										<Group>
+											<TextInput
+												onChange={parseUrl}
+												spellCheck={false}
+												placeholder="Paste your mini URL here"
+												flex={1}
+											/>
+											<ActionIcon onClick={showParseHandle.close}>
+												<Icon path={iconClose} />
+											</ActionIcon>
+										</Group>
+									</Modal>
+								</Paper>
+							</Stack>
+						</Grid.Col>
+					</Grid>
 				</Stack>
 			</ScrollArea>
 		</Box>

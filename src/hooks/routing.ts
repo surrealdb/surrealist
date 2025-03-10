@@ -1,5 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { PathPattern, matchRoute, useRouter, useSearch } from "wouter";
+import { adapter } from "~/adapter";
+import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import type { ViewPage } from "~/types";
@@ -9,8 +11,6 @@ import { type IntentPayload, type IntentType, consumeIntent } from "~/util/inten
 import { useConnectionList } from "./connection";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
-import { adapter } from "~/adapter";
-import { MiniAdapter } from "~/adapter/mini";
 
 /**
  * Returns the current location and a function to navigate
