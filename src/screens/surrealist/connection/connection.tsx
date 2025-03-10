@@ -23,6 +23,7 @@ import {
 import { Value } from "@surrealdb/ql-wasm";
 import { compareVersions } from "compare-versions";
 import { adapter } from "~/adapter";
+import { fetchAPI } from "~/cloud/api";
 import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -38,7 +39,6 @@ import { captureMetric } from "~/util/metrics";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
-import { fetchAPI } from "~/cloud/api";
 
 export interface ConnectOptions {
 	connection?: Connection;
