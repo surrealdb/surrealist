@@ -24,16 +24,15 @@ function handler(event) {
 
 		// Redirects
 		case request.uri === '/embed/new':
-			return redirect('/mini/new');
+			return redirect('/embed');
+
+		case request.uri === '/mini/new':
+			return redirect('/embed');
 
 		case request.uri === '/embed':
 			return redirect('/mini');
 
 		// Rewrites
-		case request.uri === '/mini/new':
-			request.uri = '/mini/new/index.html';
-			break;
-
 		case request.uri === '/mini':
 			request.uri = '/mini/run/index.html';
 			break;
