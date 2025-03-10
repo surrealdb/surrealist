@@ -26,6 +26,7 @@ import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
+import { resolveInstanceConnection } from "~/util/connection";
 import { __throw, showError } from "~/util/helpers";
 import { iconChevronLeft } from "~/util/icons";
 import { EstimatedCost } from "../../../../components/EstimatedCost";
@@ -33,7 +34,6 @@ import { ProvisionComputeUnitsStep } from "./steps/compute";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionCategoryStep } from "./steps/type";
 import type { ProvisionConfig } from "./types";
-import { resolveInstanceConnection } from "~/util/connection";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
