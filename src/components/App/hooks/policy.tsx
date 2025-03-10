@@ -1,5 +1,5 @@
 import { Box, Button } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import { hideNotification, showNotification } from "@mantine/notifications";
 import { useEffect } from "react";
 import { Link } from "~/components/Link";
 import { useOnboarding } from "~/hooks/onboarding";
@@ -29,7 +29,10 @@ export function usePolicyAlert() {
 							variant="gradient"
 							size="xs"
 							mt="md"
-							onClick={complete}
+							onClick={() => {
+								complete();
+								hideNotification("policy");
+							}}
 							fullWidth
 						>
 							I agree
