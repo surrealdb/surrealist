@@ -9,6 +9,8 @@ import { type IntentPayload, type IntentType, consumeIntent } from "~/util/inten
 import { useConnectionList } from "./connection";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
+import { adapter } from "~/adapter";
+import { MiniAdapter } from "~/adapter/mini";
 
 /**
  * Returns the current location and a function to navigate
@@ -30,6 +32,10 @@ export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pa
  * Returns the active connection and view
  */
 export function useConnectionAndView() {
+	if (adapter instanceof MiniAdapter) {
+		return [SANDBOX, "query"] as const;
+	}
+
 	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
 
 	if (!match) {
