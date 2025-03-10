@@ -179,8 +179,8 @@ export function StartInstance({
 					),
 				});
 
-				client.setQueryData(["cloud", "instances"], (data: CloudInstance[]) => {
-					return data.filter((i) => i.id !== instance.id);
+				client.invalidateQueries({
+					queryKey: ["cloud", "instances"],
 				});
 			} catch (err: any) {
 				showError({
