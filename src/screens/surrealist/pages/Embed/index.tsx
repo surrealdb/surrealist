@@ -120,14 +120,14 @@ export function EmbedPage() {
 										mb={2}
 										c="bright"
 									>
-										Copy Surrealist Mini
+										Integrate your Surrealist Mini
 									</Text>
 									<Text
 										c="slate.2"
-										mb="sm"
+										mb="md"
 									>
-										Copy your Surrealist Mini as a direct URL or embeddable
-										iframe snippet
+										Copy your Surrealist Mini as an embeddable iframe snippet or
+										as direct URL
 									</Text>
 									<SimpleGrid cols={2}>
 										<CopyButton value={snippet}>
@@ -197,7 +197,7 @@ export function EmbedPage() {
 									</Text>
 									<Text
 										c="slate.2"
-										mb="sm"
+										mb="md"
 									>
 										Optionally paste in an existing mini URL to restore the
 										configuration
