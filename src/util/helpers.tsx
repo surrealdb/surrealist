@@ -64,18 +64,9 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
  */
 export function showError(info: { title: ReactNode; subtitle: ReactNode }) {
 	showNotification({
-		color: "pink.9",
-		message: (
-			<Stack gap={0}>
-				<Text
-					fw={600}
-					c="bright"
-				>
-					{info.title}
-				</Text>
-				<Text>{info.subtitle}</Text>
-			</Stack>
-		),
+		color: "red",
+		title: info.title,
+		message: info.subtitle,
 	});
 }
 
