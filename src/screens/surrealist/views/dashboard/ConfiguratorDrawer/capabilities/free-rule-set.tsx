@@ -53,26 +53,30 @@ export function FreeRuleSetCapability({
 	const isLight = useIsLight();
 	const [isExpanded, expandedHandle] = useBoolean();
 
-	const [base, setBase] = useState<BaseValue>("allowed");
-	const [allowlist, setAllowlist] = useState<string[]>([]);
-	const [denylist, setDenylist] = useState<string[]>([]);
-
 	const allowed = value[allowedField] as string[];
 	const denied = value[deniedField] as string[];
 
-	useLayoutEffect(() => {
-		if (isWildcard(allowed) && !isWildcard(denied)) {
-			setBase("allowed");
-			setDenylist(denied);
-		} else if (!isWildcard(allowed) && isWildcard(denied)) {
-			setBase("denied");
-			setAllowlist(allowed);
-		} else {
-			setBase("granular");
-			setAllowlist(allowed);
-			setDenylist(denied);
-		}
-	}, [allowed, denied]);
+	let defaultBase: BaseValue;
+	let defaulAllowList: string[];
+	let defaultDenyList: string[];
+
+	if (isWildcard(allowed) && !isWildcard(denied)) {
+		defaultBase = "allowed";
+		defaulAllowList = [];
+		defaultDenyList = denied;
+	} else if (!isWildcard(allowed) && isWildcard(denied)) {
+		defaultBase = "denied";
+		defaulAllowList = allowed;
+		defaultDenyList = [];
+	} else {
+		defaultBase = "granular";
+		defaulAllowList = allowed;
+		defaultDenyList = denied;
+	}
+
+	const [base, setBase] = useState<BaseValue>(defaultBase);
+	const [allowlist, setAllowlist] = useState<string[]>(defaulAllowList);
+	const [denylist, setDenylist] = useState<string[]>(defaultDenyList);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Do not question it
 	useEffect(() => {

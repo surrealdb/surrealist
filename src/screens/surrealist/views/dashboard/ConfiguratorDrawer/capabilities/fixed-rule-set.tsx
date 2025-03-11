@@ -37,6 +37,7 @@ import {
 	SwitchGrid,
 } from "./shared";
 import { set } from "date-fns";
+import { fork } from "radash";
 
 export interface FixedRuleSetCapabilityProps extends CapabilityBaseProps {
 	allowedField: CapabilityField;
@@ -58,35 +59,39 @@ export function FixedRuleSetCapability({
 	const isLight = useIsLight();
 	const [isExpanded, expandedHandle] = useBoolean();
 
-	const [base, setBase] = useState<BaseValue>("allowed");
-	const [list, setList] = useState<string[]>([]);
-
 	const allowed = value[allowedField] as string[];
 	const denied = value[deniedField] as string[];
 
-	useLayoutEffect(() => {
-		if (denied.length === 0 && allowed.length > 0) {
-			setBase("denied");
-			setList(allowed);
-		} else if (allowed.length === 0 && denied.length > 0) {
-			setBase("allowed");
-			setList(denied);
-		}
-	}, [allowed, denied]);
+	let defaultBase: BaseValue;
+	let defaulList: string[];
+
+	if (denied.length === 0 && allowed.length > 0) {
+		defaultBase = "denied";
+		defaulList = allowed;
+	} else {
+		defaultBase = "allowed";
+		defaulList = denied;
+	}
+
+	const [base, setBase] = useState<BaseValue>(defaultBase);
+	const [list, setList] = useState<string[]>(defaulList);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Do not question it
 	useEffect(() => {
+		const dataValues = data.map((item) => item.value);
+		const [checked, unchecked] = fork(dataValues, (item) => list.includes(item));
+
 		if (base === "allowed") {
 			onChange({
 				...value,
-				[allowedField]: [],
-				[deniedField]: list,
+				[allowedField]: unchecked,
+				[deniedField]: checked,
 			});
 		} else if (base === "denied") {
 			onChange({
 				...value,
-				[allowedField]: list,
-				[deniedField]: [],
+				[allowedField]: checked,
+				[deniedField]: unchecked,
 			});
 		}
 	}, [base, list, allowedField, deniedField]);

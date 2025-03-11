@@ -7,6 +7,7 @@ import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
+import equal from "fast-deep-equal";
 
 const RPCS = [
 	"use",
@@ -57,6 +58,8 @@ export interface ConfigurationCapabilitiesProps {
 export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCapabilitiesProps) {
 	const [value, setValue] = useState<CloudInstanceCapabilities>(instance.capabilities);
 
+	console.log(value);
+
 	const rpcs = useMemo(() => {
 		return RPCS.map((rpc) => ({
 			label: rpc,
@@ -70,6 +73,10 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 			value: endpoint,
 		}));
 	}, []);
+
+	const isUnchanged = useMemo(() => {
+		return equal(value, instance.capabilities);
+	}, [value, instance.capabilities]);
 
 	return (
 		<Stack
@@ -218,7 +225,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 				<Button
 					type="submit"
 					variant="gradient"
-					disabled
+					disabled={isUnchanged}
 					flex={1}
 				>
 					Apply capabilities
@@ -227,85 +234,3 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 		</Stack>
 	);
 }
-
-// function OptionsCapability({
-// 	name,
-// 	description,
-// 	value,
-// 	data,
-// 	disabled,
-// 	onChange,
-// }: CapabilityProps<string[]> & { data: Selectable[] }) {
-// 	const isLight = useIsLight();
-// 	const [isExpanded, expandedHandle] = useBoolean();
-
-// 	const updateSelection = (event: React.ChangeEvent<HTMLInputElement>, item: string) => {
-// 		const newValue = event.currentTarget.checked
-// 			? [...value, item]
-// 			: value.filter((selected) => selected !== item);
-
-// 		onChange(newValue);
-// 	};
-
-// 	const text =
-// 		value.length === data.length
-// 			? "All enabled"
-// 			: value.length === 0
-// 				? "None enabled"
-// 				: `${value.length} Enabled`;
-
-// 	return (
-// 		<Box>
-// 			<Group
-// 				gap="xs"
-// 				mih={36}
-// 			>
-// 				<Text
-// 					fz="lg"
-// 					fw={500}
-// 					c="bright"
-// 				>
-// 					{name}
-// 				</Text>
-// 				{description && (
-// 					<Tooltip label={description}>
-// 						<div>
-// 							<Icon
-// 								path={iconHelp}
-// 								size="sm"
-// 							/>
-// 						</div>
-// 					</Tooltip>
-// 				)}
-// 				<Spacer />
-// 				<UnstyledButton onClick={expandedHandle.toggle}>
-// 					<Group
-// 						py="sm"
-// 						gap="sm"
-// 					>
-// 						<Text>{text}</Text>
-// 						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />
-// 					</Group>
-// 				</UnstyledButton>
-// 			</Group>
-// 			<Collapse in={isExpanded}>
-// 				<Paper
-// 					bg={isLight ? "slate.0" : "slate.7"}
-// 					p="md"
-// 				>
-// 					<SimpleGrid cols={3}>
-// 						{data.map((item) => (
-// 							<Checkbox
-// 								key={item.value}
-// 								label={item.label}
-// 								checked={value.includes(item.value)}
-// 								disabled={disabled}
-// 								onChange={(e) => updateSelection(e, item.value)}
-// 							/>
-// 						))}
-// 					</SimpleGrid>
-// 				</Paper>
-// 			</Collapse>
-// 		</Box>
-// 	);
-// }
