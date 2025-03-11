@@ -1,13 +1,15 @@
 import classes from "../style.module.scss";
+import equal from "fast-deep-equal";
 
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
-
 import { useMemo, useState } from "react";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
-import equal from "fast-deep-equal";
+import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
+import { useStable } from "~/hooks/stable";
+import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
 
 const RPCS = [
 	"use",
@@ -38,7 +40,6 @@ const RPCS = [
 
 const ENDPOINTS = [
 	"status",
-	"health",
 	"version",
 	"import",
 	"export",
@@ -56,9 +57,17 @@ export interface ConfigurationCapabilitiesProps {
 }
 
 export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCapabilitiesProps) {
-	const [value, setValue] = useState<CloudInstanceCapabilities>(instance.capabilities);
+	const [value, setValue] = useState<CloudInstanceCapabilities>(
+		parseCapabilities(instance.capabilities),
+	);
 
-	console.log(value);
+	const { mutateAsync } = useUpdateInstanceCapabilitiesMutation(instance.id);
+	const confirmUpdate = useUpdateConfirmation(mutateAsync);
+
+	const handleUpdate = useStable(() => {
+		confirmUpdate(transformCapabilities(value));
+		onClose();
+	});
 
 	const rpcs = useMemo(() => {
 		return RPCS.map((rpc) => ({
@@ -226,6 +235,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 					type="submit"
 					variant="gradient"
 					disabled={isUnchanged}
+					onClick={handleUpdate}
 					flex={1}
 				>
 					Apply capabilities
@@ -233,4 +243,38 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 			</Group>
 		</Stack>
 	);
+}
+
+function transformCapabilities(capabilities: CloudInstanceCapabilities): CloudInstanceCapabilities {
+	const endpoints = new Set(capabilities.allowed_http_endpoints);
+	const functions = new Set(capabilities.allowed_functions);
+
+	endpoints.add("health");
+	endpoints.add("rpc");
+
+	// TODO remove
+	functions.add("type::is::array");
+
+	return {
+		...capabilities,
+		allowed_http_endpoints: [...endpoints],
+		allowed_functions: [...functions],
+	};
+}
+
+function parseCapabilities(capabilities: CloudInstanceCapabilities): CloudInstanceCapabilities {
+	const endpoints = new Set(capabilities.allowed_http_endpoints);
+	const functions = new Set(capabilities.allowed_functions);
+
+	endpoints.delete("health");
+	endpoints.delete("rpc");
+
+	// TODO remove
+	functions.delete("type::is::array");
+
+	return {
+		...capabilities,
+		allowed_http_endpoints: [...endpoints],
+		allowed_functions: [...functions],
+	};
 }
