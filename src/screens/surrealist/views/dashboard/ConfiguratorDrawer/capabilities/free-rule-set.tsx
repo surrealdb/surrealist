@@ -1,13 +1,13 @@
 import {
 	Box,
-	Group,
-	UnstyledButton,
 	Collapse,
+	Group,
 	Paper,
 	SimpleGrid,
+	Stack,
 	Text,
 	Tooltip,
-	Stack,
+	UnstyledButton,
 } from "@mantine/core";
 
 import { Icon } from "~/components/Icon";
@@ -20,16 +20,16 @@ import {
 	CapabilityBaseProps,
 	CapabilityField,
 	DynamicInputList,
-	isWildcard,
 	RuleSetBase,
+	isWildcard,
 } from "./shared";
 
 import {
-	iconHelp,
-	iconChevronUp,
-	iconChevronDown,
 	iconCancel,
 	iconCheck,
+	iconChevronDown,
+	iconChevronUp,
+	iconHelp,
 	iconWrench,
 } from "~/util/icons";
 

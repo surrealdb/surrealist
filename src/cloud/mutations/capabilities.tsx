@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchAPI } from "../api";
 import { CloudInstanceCapabilities } from "~/types";
+import { fetchAPI } from "../api";
 
 /**
  * Instance capabilities updating mutation

@@ -1,43 +1,43 @@
 import {
 	Box,
-	Group,
-	UnstyledButton,
 	Collapse,
+	Group,
 	Paper,
 	SimpleGrid,
+	Stack,
 	Text,
 	Tooltip,
-	Stack,
+	UnstyledButton,
 } from "@mantine/core";
 
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
+import { Selectable } from "~/types";
+import { plural } from "~/util/helpers";
 import {
-	iconHelp,
-	iconChevronUp,
-	iconChevronDown,
 	iconCancel,
 	iconCheck,
+	iconChevronDown,
+	iconChevronUp,
+	iconHelp,
 	iconWrench,
 } from "~/util/icons";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { Label } from "~/components/Label";
-import { plural } from "~/util/helpers";
-import { Selectable } from "~/types";
 
+import { set } from "date-fns";
+import { fork } from "radash";
 import {
 	BASE_STATUS,
 	BaseValue,
 	CapabilityBaseProps,
 	CapabilityField,
-	isWildcard,
 	RuleSetBase,
 	SwitchGrid,
+	isWildcard,
 } from "./shared";
-import { set } from "date-fns";
-import { fork } from "radash";
 
 export interface FixedRuleSetCapabilityProps extends CapabilityBaseProps {
 	allowedField: CapabilityField;

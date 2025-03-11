@@ -1,4 +1,4 @@
-import { Group, Checkbox, Text, Tooltip, Switch } from "@mantine/core";
+import { Checkbox, Group, Switch, Text, Tooltip } from "@mantine/core";
 import { ChangeEvent } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";

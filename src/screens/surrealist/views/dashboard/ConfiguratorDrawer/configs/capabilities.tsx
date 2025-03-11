@@ -1,15 +1,15 @@
-import classes from "../style.module.scss";
 import equal from "fast-deep-equal";
+import classes from "../style.module.scss";
 
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { useMemo, useState } from "react";
+import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
+import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
+import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
-import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
-import { useStable } from "~/hooks/stable";
-import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
 
 const RPCS = [
 	"use",
