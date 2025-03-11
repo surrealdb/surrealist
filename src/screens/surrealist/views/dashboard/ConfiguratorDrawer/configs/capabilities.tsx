@@ -1,48 +1,9 @@
 import classes from "../style.module.scss";
 
-import {
-	ActionIcon,
-	Alert,
-	Box,
-	Button,
-	Checkbox,
-	Collapse,
-	Divider,
-	Group,
-	List,
-	Paper,
-	ScrollArea,
-	SimpleGrid,
-	Stack,
-	Text,
-	TextInput,
-	Tooltip,
-	UnstyledButton,
-} from "@mantine/core";
+import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 
-import {
-	iconCancel,
-	iconCheck,
-	iconChevronDown,
-	iconChevronUp,
-	iconClose,
-	iconHelp,
-	iconPlus,
-	iconWrench,
-} from "~/util/icons";
-
-import { useInputState } from "@mantine/hooks";
-import { ChangeEvent, ReactNode, useMemo, useState } from "react";
-import { BetaBadge } from "~/components/BetaBadge";
-import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
-import { Spacer } from "~/components/Spacer";
-import { useBoolean } from "~/hooks/boolean";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
-import { useImmer } from "use-immer";
+import { useMemo, useState } from "react";
+import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
@@ -95,8 +56,6 @@ export interface ConfigurationCapabilitiesProps {
 
 export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCapabilitiesProps) {
 	const [value, setValue] = useState<CloudInstanceCapabilities>(instance.capabilities);
-
-	console.log("capabilities", value);
 
 	const rpcs = useMemo(() => {
 		return RPCS.map((rpc) => ({
@@ -180,6 +139,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							onChange={setValue}
 							allowedField="allowed_rpc_methods"
 							deniedField="denied_rpc_methods"
+							topic="rpcs"
 						/>
 
 						<Divider />
@@ -192,6 +152,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							onChange={setValue}
 							allowedField="allowed_http_endpoints"
 							deniedField="denied_http_endpoints"
+							topic="endpoints"
 						/>
 
 						<Divider />
@@ -199,7 +160,6 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 						<FreeRuleSetCapability
 							name="Network access"
 							description="Configure outbound network access to specific targets"
-							what="network targets"
 							value={value}
 							onChange={setValue}
 							allowedField="allowed_networks"
@@ -211,7 +171,6 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 						<FreeRuleSetCapability
 							name="Functions"
 							description="Configure enabled functions for use in queries"
-							what="functions"
 							value={value}
 							onChange={setValue}
 							allowedField="allowed_functions"
@@ -220,7 +179,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 
 						<Divider />
 
-						<FixedRuleSetCapability
+						{/* <FixedRuleSetCapability
 							data={rpcs}
 							name="Arbitrary queries"
 							description="Enable experimental SurrealDB functionality"
@@ -242,7 +201,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							allowedField="allowed_preview"
 							deniedField="denied_preview"
 							disabled
-						/>
+						/> */}
 					</Stack>
 				</ScrollArea>
 			</Box>

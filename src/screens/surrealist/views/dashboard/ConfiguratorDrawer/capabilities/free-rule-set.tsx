@@ -5,21 +5,24 @@ import {
 	Collapse,
 	Paper,
 	SimpleGrid,
-	Button,
-	TextInput,
 	Text,
 	Tooltip,
 	Stack,
 } from "@mantine/core";
 
-import { useInputState } from "@mantine/hooks";
-import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { BaseValue, CapabilityBaseProps, CapabilityField, RuleSetBase } from "./shared";
+import {
+	BASE_STATUS,
+	BaseValue,
+	CapabilityBaseProps,
+	CapabilityField,
+	DynamicInputList,
+	isWildcard,
+	RuleSetBase,
+} from "./shared";
 
 import {
 	iconHelp,
@@ -28,23 +31,21 @@ import {
 	iconCancel,
 	iconCheck,
 	iconWrench,
-	iconPlus,
 } from "~/util/icons";
-import { useLayoutEffect, useState } from "react";
+
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Label } from "~/components/Label";
+import { plural } from "~/util/helpers";
 
 export interface FreeRuleSetCapabilityProps extends CapabilityBaseProps {
 	allowedField: CapabilityField;
 	deniedField: CapabilityField;
-	what: string;
 }
 
 export function FreeRuleSetCapability({
 	name,
 	description,
 	value,
-	what,
-	disabled,
 	onChange,
 	allowedField,
 	deniedField,
@@ -53,8 +54,8 @@ export function FreeRuleSetCapability({
 	const [isExpanded, expandedHandle] = useBoolean();
 
 	const [base, setBase] = useState<BaseValue>("allowed");
-	const [allowlist, setAllowlist] = useState<string[]>([""]);
-	const [denylist, setDenylist] = useState<string[]>([""]);
+	const [allowlist, setAllowlist] = useState<string[]>([]);
+	const [denylist, setDenylist] = useState<string[]>([]);
 
 	const allowed = value[allowedField] as string[];
 	const denied = value[deniedField] as string[];
@@ -73,8 +74,37 @@ export function FreeRuleSetCapability({
 		}
 	}, [allowed, denied]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Do not question it
+	useEffect(() => {
+		if (base === "allowed") {
+			onChange({
+				...value,
+				[allowedField]: ["*"],
+				[deniedField]: denylist,
+			});
+		} else if (base === "denied") {
+			onChange({
+				...value,
+				[allowedField]: allowlist,
+				[deniedField]: ["*"],
+			});
+		} else {
+			onChange({
+				...value,
+				[allowedField]: allowlist,
+				[deniedField]: denylist,
+			});
+		}
+	}, [base, allowlist, denylist, allowedField, deniedField]);
+
 	const showAllowed = base === "denied" || base === "granular";
 	const showDenied = base === "allowed" || base === "granular";
+
+	const allowCount = allowlist.length;
+	const denyCount = denylist.length;
+
+	const exceptions = base === "allowed" ? denyCount : base === "denied" ? allowCount : 0;
+	const statuSuffix = exceptions > 0 && ` (${exceptions} ${plural(exceptions, "exception")})`;
 
 	return (
 		<Box>
@@ -106,8 +136,8 @@ export function FreeRuleSetCapability({
 						gap="sm"
 					>
 						<Text>
-							{/* {value.base ? "Enabled" : "Disabled"}
-							{value.overrides.length > 0 && `, ${value.overrides.length} exceptions`} */}
+							{BASE_STATUS[base]}
+							{statuSuffix}
 						</Text>
 
 						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />
@@ -121,19 +151,19 @@ export function FreeRuleSetCapability({
 				>
 					<SimpleGrid cols={3}>
 						<RuleSetBase
-							color="red"
-							icon={iconCancel}
-							active={base}
-							value="denied"
-							title="Deny all by default"
-							onChange={setBase}
-						/>
-						<RuleSetBase
 							color="green"
 							icon={iconCheck}
 							active={base}
 							value="allowed"
-							title="Allow all by default"
+							title="Allow by default"
+							onChange={setBase}
+						/>
+						<RuleSetBase
+							color="red"
+							icon={iconCancel}
+							active={base}
+							value="denied"
+							title="Deny by default"
 							onChange={setBase}
 						/>
 						<RuleSetBase
@@ -150,9 +180,13 @@ export function FreeRuleSetCapability({
 						<>
 							<Label mt="xl">Allowed rules</Label>
 							<Stack>
-								{allowlist.map((rule, i) => (
-									<TextInput key={i} />
-								))}
+								<DynamicInputList
+									value={allowlist}
+									onChange={setAllowlist}
+									ghostProps={{
+										placeholder: "Add allowed rule",
+									}}
+								/>
 							</Stack>
 						</>
 					)}
@@ -161,68 +195,18 @@ export function FreeRuleSetCapability({
 						<>
 							<Label mt="xl">Denied rules</Label>
 							<Stack>
-								<TextInput />
+								<DynamicInputList
+									value={denylist}
+									onChange={setDenylist}
+									ghostProps={{
+										placeholder: "Add denied rule",
+									}}
+								/>
 							</Stack>
 						</>
 					)}
-
-					{/* <Form onSubmit={addOverride}>
-						<Group mt="md">
-							<TextInput
-								flex={1}
-								size="xs"
-								value={override}
-								onChange={setOverride}
-								disabled={disabled}
-							/>
-							<Button
-								type="submit"
-								size="xs"
-								variant="gradient"
-								disabled={disabled || !override}
-								rightSection={<Icon path={iconPlus} />}
-							>
-								Add exception
-							</Button>
-						</Group>
-					</Form>
-					{/* {value.overrides.length > 0 && (
-						<List mt="md">
-							{value.overrides.map((override) => (
-								<List.Item
-									key={override}
-									icon={
-										<ActionIcon
-											color="slate"
-											size="xs"
-											variant="transparent"
-											onClick={() =>
-												onChange({
-													...value,
-													overrides: value.overrides.filter(
-														(item) => item !== override,
-													),
-												})
-											}
-										>
-											<Icon
-												path={iconClose}
-												size="sm"
-											/>
-										</ActionIcon>
-									}
-								>
-									{override}
-								</List.Item>
-							))}
-						</List>
-					)} */}
 				</Paper>
 			</Collapse>
 		</Box>
 	);
-}
-
-function isWildcard(value: string[]) {
-	return value.length === 1 && value[0] === "*";
 }

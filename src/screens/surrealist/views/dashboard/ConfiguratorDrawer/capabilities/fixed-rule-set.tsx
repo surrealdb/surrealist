@@ -5,21 +5,15 @@ import {
 	Collapse,
 	Paper,
 	SimpleGrid,
-	Button,
-	TextInput,
 	Text,
 	Tooltip,
+	Stack,
 } from "@mantine/core";
 
-import { useInputState } from "@mantine/hooks";
-import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { CapabilityBaseProps, CapabilityField } from "./shared";
-
 import {
 	iconHelp,
 	iconChevronUp,
@@ -27,42 +21,78 @@ import {
 	iconCancel,
 	iconCheck,
 	iconWrench,
-	iconPlus,
 } from "~/util/icons";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { Label } from "~/components/Label";
+import { plural } from "~/util/helpers";
 import { Selectable } from "~/types";
+
+import {
+	BASE_STATUS,
+	BaseValue,
+	CapabilityBaseProps,
+	CapabilityField,
+	isWildcard,
+	RuleSetBase,
+	SwitchGrid,
+} from "./shared";
+import { set } from "date-fns";
 
 export interface FixedRuleSetCapabilityProps extends CapabilityBaseProps {
 	allowedField: CapabilityField;
 	deniedField: CapabilityField;
 	data: Selectable[];
+	topic: string;
 }
 
 export function FixedRuleSetCapability({
 	name,
 	description,
 	value,
-	disabled,
 	onChange,
 	allowedField,
 	deniedField,
+	data,
+	topic,
 }: FixedRuleSetCapabilityProps) {
 	const isLight = useIsLight();
 	const [isExpanded, expandedHandle] = useBoolean();
-	const [override, setOverride] = useInputState("");
 
-	const setBase = useStable((base: boolean) => {
-		// onChange({ ...value, base });
-	});
+	const [base, setBase] = useState<BaseValue>("allowed");
+	const [list, setList] = useState<string[]>([]);
 
-	const addOverride = useStable(() => {
-		// if (override && !value.overrides.includes(override)) {
-		// 	onChange({
-		// 		...value,
-		// 		overrides: [...value.overrides, override],
-		// 	});
-		// }
-		// setOverride("");
-	});
+	const allowed = value[allowedField] as string[];
+	const denied = value[deniedField] as string[];
+
+	useLayoutEffect(() => {
+		if (denied.length === 0 && allowed.length > 0) {
+			setBase("denied");
+			setList(allowed);
+		} else if (allowed.length === 0 && denied.length > 0) {
+			setBase("allowed");
+			setList(denied);
+		}
+	}, [allowed, denied]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Do not question it
+	useEffect(() => {
+		if (base === "allowed") {
+			onChange({
+				...value,
+				[allowedField]: [],
+				[deniedField]: list,
+			});
+		} else if (base === "denied") {
+			onChange({
+				...value,
+				[allowedField]: list,
+				[deniedField]: [],
+			});
+		}
+	}, [base, list, allowedField, deniedField]);
+
+	const listCount = list.length;
+	const statuSuffix = listCount > 0 && ` (${listCount} ${plural(listCount, "exception")})`;
 
 	return (
 		<Box>
@@ -94,8 +124,8 @@ export function FixedRuleSetCapability({
 						gap="sm"
 					>
 						<Text>
-							{/* {value.base ? "Enabled" : "Disabled"}
-							{value.overrides.length > 0 && `, ${value.overrides.length} exceptions`} */}
+							{BASE_STATUS[base]}
+							{statuSuffix}
 						</Text>
 
 						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />
@@ -107,90 +137,36 @@ export function FixedRuleSetCapability({
 					bg={isLight ? "slate.0" : "slate.7"}
 					p="md"
 				>
-					<SimpleGrid cols={3}>
-						<Button
-							color="red"
-							disabled={disabled}
-							// variant={value.base ? "transparent" : "light"}
-							leftSection={<Icon path={iconCancel} />}
-							onClick={() => setBase(false)}
-							c={disabled ? undefined : isLight ? "red.8" : "red.4"}
-						>
-							{/* Deny all {what} */}
-						</Button>
-						<Button
+					<SimpleGrid cols={2}>
+						<RuleSetBase
 							color="green"
-							disabled={disabled}
-							// variant={value.base ? "light" : "transparent"}
-							leftSection={<Icon path={iconCheck} />}
-							onClick={() => setBase(true)}
-							c={disabled ? undefined : isLight ? "green.8" : "green.4"}
-						>
-							{/* Allow all {what} */}
-						</Button>
-						<Button
-							color="slate"
-							disabled={disabled}
-							// variant={value.base ? "light" : "transparent"}
-							leftSection={<Icon path={iconWrench} />}
-							onClick={() => setBase(true)}
-							c={disabled ? undefined : isLight ? "slate.7" : "slate.3"}
-						>
-							Granular control
-						</Button>
+							icon={iconCheck}
+							active={base}
+							value="allowed"
+							title="Allow all by default"
+							onChange={setBase}
+						/>
+						<RuleSetBase
+							color="red"
+							icon={iconCancel}
+							active={base}
+							value="denied"
+							title="Deny all by default"
+							onChange={setBase}
+						/>
 					</SimpleGrid>
-					{/* <Label mt="xl">{value.base ? "Denied" : "Allowed"} exceptions</Label> */}
-					<Form onSubmit={addOverride}>
-						<Group mt="md">
-							<TextInput
-								flex={1}
-								size="xs"
-								value={override}
-								onChange={setOverride}
-								disabled={disabled}
-							/>
-							<Button
-								type="submit"
-								size="xs"
-								variant="gradient"
-								disabled={disabled || !override}
-								rightSection={<Icon path={iconPlus} />}
-							>
-								Add exception
-							</Button>
-						</Group>
-					</Form>
-					{/* {value.overrides.length > 0 && (
-						<List mt="md">
-							{value.overrides.map((override) => (
-								<List.Item
-									key={override}
-									icon={
-										<ActionIcon
-											color="slate"
-											size="xs"
-											variant="transparent"
-											onClick={() =>
-												onChange({
-													...value,
-													overrides: value.overrides.filter(
-														(item) => item !== override,
-													),
-												})
-											}
-										>
-											<Icon
-												path={iconClose}
-												size="sm"
-											/>
-										</ActionIcon>
-									}
-								>
-									{override}
-								</List.Item>
-							))}
-						</List>
-					)} */}
+
+					<Label mt="xl">
+						{base === "allowed" ? `Denied ${topic}` : `Allowed ${topic}`}
+					</Label>
+					<Stack>
+						<SwitchGrid
+							data={data}
+							columns={3}
+							value={list}
+							onChange={setList}
+						/>
+					</Stack>
 				</Paper>
 			</Collapse>
 		</Box>

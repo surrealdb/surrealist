@@ -1,4 +1,4 @@
-import { Group, Checkbox, Text, Tooltip } from "@mantine/core";
+import { Group, Checkbox, Text, Tooltip, Switch } from "@mantine/core";
 import { ChangeEvent } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -47,9 +47,10 @@ export function BooleanCapability({
 				</Tooltip>
 			)}
 			<Spacer />
-			<Checkbox
+			<Switch
 				checked={checked}
 				disabled={disabled}
+				variant="gradient"
 				onChange={handleChange}
 			/>
 		</Group>
