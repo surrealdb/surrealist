@@ -40,6 +40,7 @@ import { plural } from "~/util/helpers";
 export interface FreeRuleSetCapabilityProps extends CapabilityBaseProps {
 	allowedField: CapabilityField;
 	deniedField: CapabilityField;
+	topic: string;
 }
 
 export function FreeRuleSetCapability({
@@ -49,6 +50,7 @@ export function FreeRuleSetCapability({
 	onChange,
 	allowedField,
 	deniedField,
+	topic,
 }: FreeRuleSetCapabilityProps) {
 	const isLight = useIsLight();
 	const [isExpanded, expandedHandle] = useBoolean();
@@ -152,10 +154,7 @@ export function FreeRuleSetCapability({
 				</Group>
 			</UnstyledButton>
 			<Collapse in={isExpanded}>
-				<Paper
-					bg={isLight ? "slate.0" : "slate.7"}
-					p="md"
-				>
+				<Box>
 					<SimpleGrid cols={3}>
 						<RuleSetBase
 							color="blue"
@@ -183,36 +182,44 @@ export function FreeRuleSetCapability({
 						/>
 					</SimpleGrid>
 
-					{showAllowed && (
-						<>
-							<Label mt="xl">Allowed rules</Label>
-							<Stack mt="xs">
-								<DynamicInputList
-									value={allowlist}
-									onChange={setAllowlist}
-									ghostProps={{
-										placeholder: "Add allowed rule",
-									}}
-								/>
-							</Stack>
-						</>
-					)}
+					<Paper
+						my="xl"
+						bg={isLight ? "slate.0" : "slate.7"}
+						p="md"
+					>
+						<Stack>
+							{showAllowed && (
+								<Box>
+									<Label>Allowed {topic} patterns</Label>
+									<Stack>
+										<DynamicInputList
+											value={allowlist}
+											onChange={setAllowlist}
+											ghostProps={{
+												placeholder: "Add allowed rule",
+											}}
+										/>
+									</Stack>
+								</Box>
+							)}
 
-					{showDenied && (
-						<>
-							<Label mt="xl">Denied rules</Label>
-							<Stack mt="xs">
-								<DynamicInputList
-									value={denylist}
-									onChange={setDenylist}
-									ghostProps={{
-										placeholder: "Add denied rule",
-									}}
-								/>
-							</Stack>
-						</>
-					)}
-				</Paper>
+							{showDenied && (
+								<Box>
+									<Label>Denied {topic} patterns</Label>
+									<Stack>
+										<DynamicInputList
+											value={denylist}
+											onChange={setDenylist}
+											ghostProps={{
+												placeholder: "Add denied rule",
+											}}
+										/>
+									</Stack>
+								</Box>
+							)}
+						</Stack>
+					</Paper>
+				</Box>
 			</Collapse>
 		</Box>
 	);

@@ -1,9 +1,10 @@
-import { Button, MantineColor, SimpleGrid, Switch } from "@mantine/core";
+import { Button, Checkbox, MantineColor, SimpleGrid } from "@mantine/core";
 import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
 import { CodeInput, CodeInputProps } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceCapabilities, Selectable } from "~/types";
+import { iconCheck, iconCloud } from "~/util/icons";
 
 export type CapabilityField = keyof CloudInstanceCapabilities;
 export type BaseValue = "default" | "allowed" | "denied" | "granular";
@@ -36,14 +37,13 @@ export interface RuleSetBaseProps {
 	onChange: (value: BaseValue) => void;
 }
 
-export function RuleSetBase({ color, icon, active, value, title, onChange }: RuleSetBaseProps) {
+export function RuleSetBase({ icon, active, value, title, onChange }: RuleSetBaseProps) {
 	return (
 		<Button
-			color={color}
-			variant={active === value ? "light" : "transparent"}
+			color="slate"
+			variant={active === value ? "gradient" : "light"}
 			leftSection={<Icon path={icon} />}
 			onClick={() => onChange(value)}
-			c={color}
 		>
 			{title}
 		</Button>
@@ -88,7 +88,7 @@ export function DynamicInputList({
 	));
 }
 
-export interface SwitchGridProps {
+export interface CheckboxGridProps {
 	data: Selectable[];
 	value: string[];
 	columns: number;
@@ -96,11 +96,14 @@ export interface SwitchGridProps {
 	onChange: (value: string[]) => void;
 }
 
-export function SwitchGrid({ data, value, columns, disabled, onChange }: SwitchGridProps) {
+export function CheckboxGrid({ data, value, columns, disabled, onChange }: CheckboxGridProps) {
 	return (
-		<SimpleGrid cols={columns}>
+		<SimpleGrid
+			cols={columns}
+			spacing="sm"
+		>
 			{data.map((option) => (
-				<Switch
+				<Checkbox
 					key={option.value}
 					checked={value.includes(option.value)}
 					disabled={disabled}

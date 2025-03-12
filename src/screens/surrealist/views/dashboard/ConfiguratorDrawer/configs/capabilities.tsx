@@ -137,6 +137,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							onChange={setValue}
 							allowedField="allowed_networks"
 							deniedField="denied_networks"
+							topic="network"
 						/>
 
 						<Divider />
@@ -148,6 +149,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							onChange={setValue}
 							allowedField="allowed_functions"
 							deniedField="denied_functions"
+							topic="function"
 						/>
 
 						{hasArbitraryQuery && (

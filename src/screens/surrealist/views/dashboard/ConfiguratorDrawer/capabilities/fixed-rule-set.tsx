@@ -1,19 +1,17 @@
 import {
 	Box,
 	Collapse,
-	Divider,
 	Group,
 	Paper,
 	SimpleGrid,
-	Stack,
 	Text,
+	ThemeIcon,
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
 
 import { useEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
@@ -24,6 +22,7 @@ import {
 	iconCheck,
 	iconChevronDown,
 	iconChevronUp,
+	iconCloud,
 	iconHelp,
 	iconReset,
 } from "~/util/icons";
@@ -35,7 +34,7 @@ import {
 	CapabilityField,
 	isWildcard,
 	RuleSetBase,
-	SwitchGrid,
+	CheckboxGrid,
 } from "./shared";
 
 export interface FixedRuleSetCapabilityProps extends CapabilityBaseProps {
@@ -107,6 +106,9 @@ export function FixedRuleSetCapability({
 	const listCount = base === "default" ? 0 : list.length;
 	const statuSuffix = listCount > 0 && ` (${listCount} ${plural(listCount, "exception")})`;
 
+	const noteColor = base === "default" ? "slate" : base === "allowed" ? "red" : "green";
+	const noteIcon = base === "default" ? iconCloud : base === "allowed" ? iconCancel : iconCheck;
+
 	return (
 		<Box>
 			<UnstyledButton
@@ -149,10 +151,7 @@ export function FixedRuleSetCapability({
 				</Group>
 			</UnstyledButton>
 			<Collapse in={isExpanded}>
-				<Paper
-					bg={isLight ? "slate.0" : "slate.7"}
-					p="md"
-				>
+				<Box>
 					<SimpleGrid cols={3}>
 						<RuleSetBase
 							color="orange"
@@ -180,25 +179,62 @@ export function FixedRuleSetCapability({
 						/>
 					</SimpleGrid>
 
-					{base !== "default" && (
-						<>
-							<Divider mt="md" />
-							<Label mt="xl">
-								{base === "allowed"
-									? `Deny these ${topic}`
-									: `Allow these ${topic}`}
-							</Label>
-							<Stack mt="sm">
-								<SwitchGrid
+					<Paper
+						my="xl"
+						bg={isLight ? "slate.0" : "slate.7"}
+						p="md"
+					>
+						<Group>
+							<ThemeIcon
+								radius="xs"
+								size="lg"
+								color={noteColor}
+								variant="light"
+							>
+								<Icon path={noteIcon} />
+							</ThemeIcon>
+							<Box>
+								{base === "default" ? (
+									<>
+										<Text
+											fw={600}
+											c="bright"
+										>
+											Configuration managed by Surreal Cloud
+										</Text>
+										<Text>
+											Select another option to customize configuration
+										</Text>
+									</>
+								) : (
+									<>
+										<Text
+											fw={600}
+											c="bright"
+										>
+											Configure {base === "allowed" ? "denied" : "allowed"}{" "}
+											{topic}
+										</Text>
+										<Text>
+											Select individual {topic} to{" "}
+											{base === "allowed" ? "deny" : "allow"}
+										</Text>
+									</>
+								)}
+							</Box>
+						</Group>
+						{base !== "default" && (
+							<Box mt="md">
+								<CheckboxGrid
 									data={data}
-									columns={3}
+									columns={4}
 									value={list}
 									onChange={setList}
 								/>
-							</Stack>
-						</>
-					)}
-				</Paper>
+							</Box>
+						)}
+					</Paper>
+				</Box>
 			</Collapse>
 		</Box>
 	);
