@@ -2,6 +2,7 @@ import equal from "fast-deep-equal";
 import classes from "../style.module.scss";
 
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { compareVersions } from "compare-versions";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
@@ -16,7 +17,6 @@ import {
 	EXPERIMENT_TARGETS,
 	RPC_TARGETS,
 } from "../capabilities/registry";
-import { compareVersions } from "compare-versions";
 
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;

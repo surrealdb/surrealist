@@ -20,8 +20,8 @@ import {
 	CapabilityBaseProps,
 	CapabilityField,
 	DynamicInputList,
-	isWildcard,
 	RuleSetBase,
+	isWildcard,
 } from "./shared";
 
 import {
