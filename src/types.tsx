@@ -533,8 +533,8 @@ export interface CloudInstanceCapabilities {
 	denied_networks: string[];
 	allowed_functions: string[];
 	denied_functions: string[];
-	allowed_preview: string[];
-	denied_preview: string[];
+	allowed_experimental: string[];
+	denied_experimental: string[];
 	allowed_arbitrary_query: string[];
 	denied_arbitrary_query: string[];
 }

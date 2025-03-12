@@ -51,6 +51,10 @@ const ENDPOINTS = [
 	"ml",
 ];
 
+const ARBITRARY_TARGETS = ["guest", "record", "system"];
+
+const EXPERIMENTS = ["record_references", "graphql", "bearer_access", "define_api"];
+
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;
 	onClose: () => void;
@@ -60,6 +64,8 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 	const [value, setValue] = useState<CloudInstanceCapabilities>(
 		parseCapabilities(instance.capabilities),
 	);
+
+	console.log(value);
 
 	const { mutateAsync } = useUpdateInstanceCapabilitiesMutation(instance.id);
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
@@ -80,6 +86,20 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 		return ENDPOINTS.map((endpoint) => ({
 			label: endpoint,
 			value: endpoint,
+		}));
+	}, []);
+
+	const arbitraryTargets = useMemo(() => {
+		return ARBITRARY_TARGETS.map((target) => ({
+			label: target,
+			value: target,
+		}));
+	}, []);
+
+	const experiments = useMemo(() => {
+		return EXPERIMENTS.map((experiment) => ({
+			label: experiment,
+			value: experiment,
 		}));
 	}, []);
 
@@ -195,29 +215,29 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 
 						<Divider />
 
-						{/* <FixedRuleSetCapability
-							data={rpcs}
+						<FixedRuleSetCapability
+							data={arbitraryTargets}
 							name="Arbitrary queries"
 							description="Enable experimental SurrealDB functionality"
 							value={value}
 							onChange={setValue}
 							allowedField="allowed_arbitrary_query"
 							deniedField="denied_arbitrary_query"
-							disabled
+							topic="targets"
 						/>
 
 						<Divider />
 
 						<FixedRuleSetCapability
-							data={rpcs}
+							data={experiments}
 							name="Preview features"
 							description="Enable experimental SurrealDB functionality"
 							value={value}
 							onChange={setValue}
-							allowedField="allowed_preview"
-							deniedField="denied_preview"
-							disabled
-						/> */}
+							allowedField="allowed_experimental"
+							deniedField="denied_experimental"
+							topic="experiments"
+						/>
 					</Stack>
 				</ScrollArea>
 			</Box>
