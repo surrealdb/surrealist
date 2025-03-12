@@ -10,50 +10,13 @@ import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
-
-const RPCS = [
-	"use",
-	"info",
-	"version",
-	"signup",
-	"signin",
-	"authenticate",
-	"invalidate",
-	"let",
-	"unset",
-	"live",
-	"kill",
-	"query",
-	"graphql",
-	"run",
-	"select",
-	"create",
-	"insert",
-	"insert_relation",
-	"update",
-	"upsert",
-	"relate",
-	"merge",
-	"patch",
-	"delete",
-];
-
-const ENDPOINTS = [
-	"status",
-	"version",
-	"import",
-	"export",
-	"signup",
-	"signin",
-	"key",
-	"sql",
-	"graphql",
-	"ml",
-];
-
-const ARBITRARY_TARGETS = ["guest", "record", "system"];
-
-const EXPERIMENTS = ["record_references", "graphql", "bearer_access", "define_api"];
+import {
+	ARBITRARY_QUERY_TARGETS,
+	ENDPOINT_TARGETS,
+	EXPERIMENT_TARGETS,
+	RPC_TARGETS,
+} from "../capabilities/registry";
+import { compareVersions } from "compare-versions";
 
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;
@@ -67,6 +30,8 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 
 	console.log(value);
 
+	const hasArbitraryQuery = compareVersions(instance.version, "2.2.0") >= 0;
+
 	const { mutateAsync } = useUpdateInstanceCapabilitiesMutation(instance.id);
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 
@@ -74,34 +39,6 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 		confirmUpdate(transformCapabilities(value));
 		onClose();
 	});
-
-	const rpcs = useMemo(() => {
-		return RPCS.map((rpc) => ({
-			label: rpc,
-			value: rpc,
-		}));
-	}, []);
-
-	const endpoints = useMemo(() => {
-		return ENDPOINTS.map((endpoint) => ({
-			label: endpoint,
-			value: endpoint,
-		}));
-	}, []);
-
-	const arbitraryTargets = useMemo(() => {
-		return ARBITRARY_TARGETS.map((target) => ({
-			label: target,
-			value: target,
-		}));
-	}, []);
-
-	const experiments = useMemo(() => {
-		return EXPERIMENTS.map((experiment) => ({
-			label: experiment,
-			value: experiment,
-		}));
-	}, []);
 
 	const isUnchanged = useMemo(() => {
 		return equal(value, instance.capabilities);
@@ -168,7 +105,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 						<Divider />
 
 						<FixedRuleSetCapability
-							data={rpcs}
+							data={RPC_TARGETS}
 							name="RPC methods"
 							description="Select which RPC methods are available for use"
 							value={value}
@@ -181,7 +118,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 						<Divider />
 
 						<FixedRuleSetCapability
-							data={endpoints}
+							data={ENDPOINT_TARGETS}
 							name="HTTP endpoints"
 							description="Select which HTTP endpoints are available for use"
 							value={value}
@@ -213,23 +150,27 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							deniedField="denied_functions"
 						/>
 
+						{hasArbitraryQuery && (
+							<>
+								<Divider />
+
+								<FixedRuleSetCapability
+									data={ARBITRARY_QUERY_TARGETS}
+									name="Arbitrary queries"
+									description="Enable experimental SurrealDB functionality"
+									value={value}
+									onChange={setValue}
+									allowedField="allowed_arbitrary_query"
+									deniedField="denied_arbitrary_query"
+									topic="targets"
+								/>
+							</>
+						)}
+
 						<Divider />
 
 						<FixedRuleSetCapability
-							data={arbitraryTargets}
-							name="Arbitrary queries"
-							description="Enable experimental SurrealDB functionality"
-							value={value}
-							onChange={setValue}
-							allowedField="allowed_arbitrary_query"
-							deniedField="denied_arbitrary_query"
-							topic="targets"
-						/>
-
-						<Divider />
-
-						<FixedRuleSetCapability
-							data={experiments}
+							data={EXPERIMENT_TARGETS}
 							name="Preview features"
 							description="Enable experimental SurrealDB functionality"
 							value={value}
@@ -269,11 +210,14 @@ function transformCapabilities(capabilities: CloudInstanceCapabilities): CloudIn
 	const endpoints = new Set(capabilities.allowed_http_endpoints);
 	const functions = new Set(capabilities.allowed_functions);
 
-	endpoints.add("health");
-	endpoints.add("rpc");
+	if (!endpoints.has("*")) {
+		endpoints.add("health");
+		endpoints.add("rpc");
+	}
 
-	// TODO remove
-	functions.add("type::is::array");
+	if (!functions.has("*")) {
+		functions.add("type::is::array");
+	}
 
 	return {
 		...capabilities,
@@ -289,7 +233,6 @@ function parseCapabilities(capabilities: CloudInstanceCapabilities): CloudInstan
 	endpoints.delete("health");
 	endpoints.delete("rpc");
 
-	// TODO remove
 	functions.delete("type::is::array");
 
 	return {

@@ -20,8 +20,8 @@ import {
 	CapabilityBaseProps,
 	CapabilityField,
 	DynamicInputList,
-	RuleSetBase,
 	isWildcard,
+	RuleSetBase,
 } from "./shared";
 
 import {
@@ -33,7 +33,7 @@ import {
 	iconWrench,
 } from "~/util/icons";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "~/components/Label";
 import { plural } from "~/util/helpers";
 
@@ -57,25 +57,25 @@ export function FreeRuleSetCapability({
 	const denied = value[deniedField] as string[];
 
 	let defaultBase: BaseValue;
-	let defaulAllowList: string[];
+	let defaultAllowList: string[];
 	let defaultDenyList: string[];
 
 	if (isWildcard(allowed) && !isWildcard(denied)) {
 		defaultBase = "allowed";
-		defaulAllowList = [];
+		defaultAllowList = [];
 		defaultDenyList = denied;
 	} else if (!isWildcard(allowed) && isWildcard(denied)) {
 		defaultBase = "denied";
-		defaulAllowList = allowed;
+		defaultAllowList = allowed;
 		defaultDenyList = [];
 	} else {
 		defaultBase = "granular";
-		defaulAllowList = allowed;
+		defaultAllowList = allowed;
 		defaultDenyList = denied;
 	}
 
 	const [base, setBase] = useState<BaseValue>(defaultBase);
-	const [allowlist, setAllowlist] = useState<string[]>(defaulAllowList);
+	const [allowlist, setAllowlist] = useState<string[]>(defaultAllowList);
 	const [denylist, setDenylist] = useState<string[]>(defaultDenyList);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Do not question it
@@ -112,29 +112,32 @@ export function FreeRuleSetCapability({
 
 	return (
 		<Box>
-			<Group
-				gap="xs"
-				mih={36}
+			<UnstyledButton
+				onClick={expandedHandle.toggle}
+				w="100%"
 			>
-				<Text
-					fz="lg"
-					fw={500}
-					c="bright"
+				<Group
+					gap="xs"
+					mih={36}
 				>
-					{name}
-				</Text>
-				{description && (
-					<Tooltip label={description}>
-						<div>
-							<Icon
-								path={iconHelp}
-								size="sm"
-							/>
-						</div>
-					</Tooltip>
-				)}
-				<Spacer />
-				<UnstyledButton onClick={expandedHandle.toggle}>
+					<Text
+						fz="lg"
+						fw={500}
+						c="bright"
+					>
+						{name}
+					</Text>
+					{description && (
+						<Tooltip label={description}>
+							<div>
+								<Icon
+									path={iconHelp}
+									size="sm"
+								/>
+							</div>
+						</Tooltip>
+					)}
+					<Spacer />
 					<Group
 						py="sm"
 						gap="sm"
@@ -146,14 +149,22 @@ export function FreeRuleSetCapability({
 
 						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />
 					</Group>
-				</UnstyledButton>
-			</Group>
+				</Group>
+			</UnstyledButton>
 			<Collapse in={isExpanded}>
 				<Paper
 					bg={isLight ? "slate.0" : "slate.7"}
 					p="md"
 				>
 					<SimpleGrid cols={3}>
+						<RuleSetBase
+							color="blue"
+							icon={iconWrench}
+							active={base}
+							value="granular"
+							title="Granular control"
+							onChange={setBase}
+						/>
 						<RuleSetBase
 							color="green"
 							icon={iconCheck}
@@ -170,20 +181,12 @@ export function FreeRuleSetCapability({
 							title="Deny by default"
 							onChange={setBase}
 						/>
-						<RuleSetBase
-							color="blue"
-							icon={iconWrench}
-							active={base}
-							value="granular"
-							title="Granular control"
-							onChange={setBase}
-						/>
 					</SimpleGrid>
 
 					{showAllowed && (
 						<>
 							<Label mt="xl">Allowed rules</Label>
-							<Stack>
+							<Stack mt="xs">
 								<DynamicInputList
 									value={allowlist}
 									onChange={setAllowlist}
@@ -198,7 +201,7 @@ export function FreeRuleSetCapability({
 					{showDenied && (
 						<>
 							<Label mt="xl">Denied rules</Label>
-							<Stack>
+							<Stack mt="xs">
 								<DynamicInputList
 									value={denylist}
 									onChange={setDenylist}

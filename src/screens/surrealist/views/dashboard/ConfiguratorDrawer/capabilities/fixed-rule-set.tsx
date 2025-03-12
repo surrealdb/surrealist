@@ -1,6 +1,7 @@
 import {
 	Box,
 	Collapse,
+	Divider,
 	Group,
 	Paper,
 	SimpleGrid,
@@ -10,7 +11,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { Spacer } from "~/components/Spacer";
@@ -24,19 +25,17 @@ import {
 	iconChevronDown,
 	iconChevronUp,
 	iconHelp,
-	iconWrench,
+	iconReset,
 } from "~/util/icons";
 
-import { set } from "date-fns";
-import { fork } from "radash";
 import {
 	BASE_STATUS,
 	BaseValue,
 	CapabilityBaseProps,
 	CapabilityField,
+	isWildcard,
 	RuleSetBase,
 	SwitchGrid,
-	isWildcard,
 } from "./shared";
 
 export interface FixedRuleSetCapabilityProps extends CapabilityBaseProps {
@@ -63,67 +62,79 @@ export function FixedRuleSetCapability({
 	const denied = value[deniedField] as string[];
 
 	let defaultBase: BaseValue;
-	let defaulList: string[];
+	let defaultList: string[];
 
-	if (denied.length === 0 && allowed.length > 0) {
-		defaultBase = "denied";
-		defaulList = allowed;
-	} else {
+	if (isWildcard(allowed) && !isWildcard(denied)) {
 		defaultBase = "allowed";
-		defaulList = denied;
+		defaultList = denied;
+	} else if (!isWildcard(allowed) && isWildcard(denied)) {
+		defaultBase = "denied";
+		defaultList = allowed;
+	} else {
+		defaultBase = "default";
+		defaultList = [];
 	}
 
 	const [base, setBase] = useState<BaseValue>(defaultBase);
-	const [list, setList] = useState<string[]>(defaulList);
+	const [list, setList] = useState<string[]>(defaultList);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Do not question it
 	useEffect(() => {
 		const dataValues = data.map((item) => item.value);
-		const [checked, unchecked] = fork(dataValues, (item) => list.includes(item));
+		const enabled = dataValues.filter((item) => list.includes(item));
 
-		if (base === "allowed") {
+		if (base === "default") {
 			onChange({
 				...value,
-				[allowedField]: unchecked,
-				[deniedField]: checked,
+				[allowedField]: [],
+				[deniedField]: [],
+			});
+		} else if (base === "allowed") {
+			onChange({
+				...value,
+				[allowedField]: ["*"],
+				[deniedField]: enabled,
 			});
 		} else if (base === "denied") {
 			onChange({
 				...value,
-				[allowedField]: checked,
-				[deniedField]: unchecked,
+				[allowedField]: enabled,
+				[deniedField]: ["*"],
 			});
 		}
 	}, [base, list, allowedField, deniedField]);
 
-	const listCount = list.length;
+	const listCount = base === "default" ? 0 : list.length;
 	const statuSuffix = listCount > 0 && ` (${listCount} ${plural(listCount, "exception")})`;
 
 	return (
 		<Box>
-			<Group
-				gap="xs"
-				mih={36}
+			<UnstyledButton
+				onClick={expandedHandle.toggle}
+				w="100%"
 			>
-				<Text
-					fz="lg"
-					fw={500}
-					c="bright"
+				<Group
+					gap="xs"
+					mih={36}
 				>
-					{name}
-				</Text>
-				{description && (
-					<Tooltip label={description}>
-						<div>
-							<Icon
-								path={iconHelp}
-								size="sm"
-							/>
-						</div>
-					</Tooltip>
-				)}
-				<Spacer />
-				<UnstyledButton onClick={expandedHandle.toggle}>
+					<Text
+						fz="lg"
+						fw={500}
+						c="bright"
+					>
+						{name}
+					</Text>
+					{description && (
+						<Tooltip label={description}>
+							<div>
+								<Icon
+									path={iconHelp}
+									size="sm"
+								/>
+							</div>
+						</Tooltip>
+					)}
+					<Spacer />
 					<Group
 						py="sm"
 						gap="sm"
@@ -135,14 +146,22 @@ export function FixedRuleSetCapability({
 
 						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />
 					</Group>
-				</UnstyledButton>
-			</Group>
+				</Group>
+			</UnstyledButton>
 			<Collapse in={isExpanded}>
 				<Paper
 					bg={isLight ? "slate.0" : "slate.7"}
 					p="md"
 				>
-					<SimpleGrid cols={2}>
+					<SimpleGrid cols={3}>
+						<RuleSetBase
+							color="orange"
+							icon={iconReset}
+							active={base}
+							value="default"
+							title="Managed defaults"
+							onChange={setBase}
+						/>
 						<RuleSetBase
 							color="green"
 							icon={iconCheck}
@@ -161,17 +180,24 @@ export function FixedRuleSetCapability({
 						/>
 					</SimpleGrid>
 
-					<Label mt="xl">
-						{base === "allowed" ? `Denied ${topic}` : `Allowed ${topic}`}
-					</Label>
-					<Stack>
-						<SwitchGrid
-							data={data}
-							columns={3}
-							value={list}
-							onChange={setList}
-						/>
-					</Stack>
+					{base !== "default" && (
+						<>
+							<Divider mt="md" />
+							<Label mt="xl">
+								{base === "allowed"
+									? `Deny these ${topic}`
+									: `Allow these ${topic}`}
+							</Label>
+							<Stack mt="sm">
+								<SwitchGrid
+									data={data}
+									columns={3}
+									value={list}
+									onChange={setList}
+								/>
+							</Stack>
+						</>
+					)}
 				</Paper>
 			</Collapse>
 		</Box>

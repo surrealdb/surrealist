@@ -6,13 +6,18 @@ import { useStable } from "~/hooks/stable";
 import { CloudInstanceCapabilities, Selectable } from "~/types";
 
 export type CapabilityField = keyof CloudInstanceCapabilities;
-export type BaseValue = "allowed" | "denied" | "granular";
+export type BaseValue = "default" | "allowed" | "denied" | "granular";
 
 export const BASE_STATUS: Record<BaseValue, string> = {
+	default: "Default",
 	allowed: "Allowed",
 	denied: "Denied",
 	granular: "Granular",
 };
+
+export function isWildcard(value: string[]) {
+	return value.length === 1 && value[0] === "*";
+}
 
 export interface CapabilityBaseProps {
 	name: ReactNode;
@@ -112,8 +117,4 @@ export function SwitchGrid({ data, value, columns, disabled, onChange }: SwitchG
 			))}
 		</SimpleGrid>
 	);
-}
-
-export function isWildcard(value: string[]) {
-	return value.length === 1 && value[0] === "*";
 }
