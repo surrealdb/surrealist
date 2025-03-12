@@ -4,7 +4,6 @@ import { Icon } from "~/components/Icon";
 import { CodeInput, CodeInputProps } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceCapabilities, Selectable } from "~/types";
-import { iconCheck, iconCloud } from "~/util/icons";
 
 export type CapabilityField = keyof CloudInstanceCapabilities;
 export type BaseValue = "default" | "allowed" | "denied" | "granular";
