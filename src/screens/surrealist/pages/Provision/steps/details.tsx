@@ -73,6 +73,11 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 					placeholder="Instance name"
 					value={details.name}
 					onChange={updateName}
+					error={
+						details.name.length > 30
+							? "Instance name cannot exceed than 30 characters"
+							: null
+					}
 					autoFocus
 				/>
 				<Select

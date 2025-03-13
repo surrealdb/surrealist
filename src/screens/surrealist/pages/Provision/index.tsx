@@ -57,7 +57,7 @@ export function ProvisionPage() {
 	}, [details.type, instanceTypes]);
 
 	const disabled = useMemo(() => {
-		if (!details.name) return true;
+		if (!details.name || details.name.length > 30) return true;
 		if (!details.region) return true;
 		if (!details.type) return true;
 		if (!details.version) return true;
