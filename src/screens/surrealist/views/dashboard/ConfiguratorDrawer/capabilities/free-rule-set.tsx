@@ -110,7 +110,7 @@ export function FreeRuleSetCapability({
 	const denyCount = denylist.length;
 
 	const exceptions = base === "allowed" ? denyCount : base === "denied" ? allowCount : 0;
-	const statuSuffix = exceptions > 0 && ` (${exceptions} ${plural(exceptions, "exception")})`;
+	const statusSuffix = exceptions > 0 && ` (${exceptions} ${plural(exceptions, "exception")})`;
 
 	return (
 		<Box>
@@ -146,7 +146,7 @@ export function FreeRuleSetCapability({
 					>
 						<Text>
 							{BASE_STATUS[base]}
-							{statuSuffix}
+							{statusSuffix}
 						</Text>
 
 						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />

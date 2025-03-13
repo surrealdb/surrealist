@@ -105,7 +105,7 @@ export function FixedRuleSetCapability({
 	}, [base, list, allowedField, deniedField]);
 
 	const listCount = base === "default" ? 0 : list.length;
-	const statuSuffix = listCount > 0 && ` (${listCount} ${plural(listCount, "exception")})`;
+	const statusSuffix = listCount > 0 && ` (${listCount} ${plural(listCount, "exception")})`;
 
 	const noteIcon = base === "default" ? iconCloud : base === "allowed" ? iconCancel : iconCheck;
 
@@ -143,7 +143,7 @@ export function FixedRuleSetCapability({
 					>
 						<Text>
 							{BASE_STATUS[base]}
-							{statuSuffix}
+							{statusSuffix}
 						</Text>
 
 						<Icon path={isExpanded ? iconChevronUp : iconChevronDown} />
