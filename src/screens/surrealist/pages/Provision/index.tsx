@@ -155,17 +155,6 @@ export function ProvisionPage() {
 						setDetails={setDetails}
 					/>
 
-					<Box mt="xl">
-						<Text
-							fz="xl"
-							fw={600}
-							c="bright"
-						>
-							Compute nodes
-						</Text>
-						<Text>Allocate additional compute nodes to your instance</Text>
-					</Box>
-
 					{instanceType && (
 						<Collapse in={!!instanceType}>
 							<Divider my="md" />
