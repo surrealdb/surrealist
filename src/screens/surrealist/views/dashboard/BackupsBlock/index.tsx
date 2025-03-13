@@ -1,4 +1,15 @@
-import { Box, Button, Divider, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Center,
+	Divider,
+	Group,
+	Paper,
+	Skeleton,
+	Stack,
+	Text,
+	Tooltip,
+} from "@mantine/core";
 import { formatDistance } from "date-fns";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { Icon } from "~/components/Icon";
@@ -61,33 +72,35 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 								Upgrade instance
 							</Button>
 						</>
-					) : (
-						latest && (
-							<>
-								<Box flex={1}>
-									<Text>Latest backup</Text>
-									<Text
-										c="bright"
-										fz="xl"
-										fw={600}
-									>
-										{formatDistance(latest.snapshot_started_at, new Date(), {
-											addSuffix: true,
-										})}
-									</Text>
-								</Box>
+					) : latest ? (
+						<>
+							<Box flex={1}>
+								<Text>Latest backup</Text>
+								<Text
+									c="bright"
+									fz="xl"
+									fw={600}
+								>
+									{formatDistance(latest.snapshot_started_at, new Date(), {
+										addSuffix: true,
+									})}
+								</Text>
+							</Box>
 
-								<Tooltip label="This functionality will be available soon">
-									<Button
-										size="xs"
-										rightSection={<Icon path={iconChevronRight} />}
-										variant="gradient"
-									>
-										View available backups
-									</Button>
-								</Tooltip>
-							</>
-						)
+							<Tooltip label="This functionality will be available soon">
+								<Button
+									size="xs"
+									rightSection={<Icon path={iconChevronRight} />}
+									variant="gradient"
+								>
+									View available backups
+								</Button>
+							</Tooltip>
+						</>
+					) : (
+						<Center flex={1}>
+							<Text>Waiting for backup...</Text>
+						</Center>
 					)}
 				</Stack>
 			</Paper>
