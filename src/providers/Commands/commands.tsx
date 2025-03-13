@@ -634,7 +634,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						icon: iconWrench,
 						aliases: ["mini", "embed"],
 						binding: true,
-						action: navigate("/embed"),
+						action: navigate("/mini/new"),
 					},
 					{
 						id: "open-docs",

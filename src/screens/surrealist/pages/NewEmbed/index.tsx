@@ -10,7 +10,6 @@ import {
 	Modal,
 	Paper,
 	ScrollArea,
-	SegmentedControl,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -19,7 +18,6 @@ import {
 
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useMemo, useRef, useState } from "react";
-import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
@@ -28,8 +26,7 @@ import { dedent } from "~/util/dedent";
 import { iconCheck, iconClose, iconTransfer, iconXml } from "~/util/icons";
 import { DEFAULT_STATE, EmbedState, Embedder } from "./embedder";
 
-export function EmbedPage() {
-	const [mode, setMode] = useState<"iframe" | "url">("iframe");
+export function NewEmbedPage() {
 	const [url, setUrl] = useDebouncedState("", 250);
 	const [parsedState, setParsedState] = useState<EmbedState>();
 	const [showParse, showParseHandle] = useDisclosure();

@@ -48,13 +48,13 @@ export type AuthMode =
 	| "access-signup"
 	| "cloud";
 export type GlobalPage =
-	| "overview"
-	| "billing"
-	| "chat"
-	| "support"
-	| "referrals"
-	| "embed"
-	| "provision";
+	| "/overview"
+	| "/billing"
+	| "/chat"
+	| "/support"
+	| "/referrals"
+	| "/mini/new"
+	| "/provision";
 export type ViewPage =
 	| "dashboard"
 	| "query"
