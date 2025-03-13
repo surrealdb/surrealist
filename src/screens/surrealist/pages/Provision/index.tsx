@@ -29,7 +29,6 @@ import type { CloudInstance } from "~/types";
 import { __throw, showError } from "~/util/helpers";
 import { iconChevronLeft } from "~/util/icons";
 import { EstimatedCost } from "../../../../components/EstimatedCost";
-import { ProvisionComputeUnitsStep } from "./steps/compute";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionCategoryStep } from "./steps/type";
 import type { ProvisionConfig } from "./types";
@@ -166,11 +165,6 @@ export function ProvisionPage() {
 						</Text>
 						<Text>Allocate additional compute nodes to your instance</Text>
 					</Box>
-
-					<ProvisionComputeUnitsStep
-						details={details}
-						setDetails={setDetails}
-					/>
 
 					{instanceType && (
 						<Collapse in={!!instanceType}>
