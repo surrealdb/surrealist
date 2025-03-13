@@ -1,9 +1,10 @@
-import { Button, Checkbox, MantineColor, SimpleGrid } from "@mantine/core";
+import { Button, Checkbox, CheckboxProps, MantineColor, SimpleGrid } from "@mantine/core";
 import { ReactNode } from "react";
 import { Icon } from "~/components/Icon";
 import { CodeInput, CodeInputProps } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceCapabilities, Selectable } from "~/types";
+import { iconCancel, iconCheck } from "~/util/icons";
 
 export type CapabilityField = keyof CloudInstanceCapabilities;
 export type BaseValue = "default" | "allowed" | "denied" | "granular";
@@ -92,31 +93,68 @@ export interface CheckboxGridProps {
 	value: string[];
 	columns: number;
 	disabled?: boolean;
+	base: BaseValue;
 	onChange: (value: string[]) => void;
 }
 
-export function CheckboxGrid({ data, value, columns, disabled, onChange }: CheckboxGridProps) {
+const DenyIcon: CheckboxProps["icon"] = ({ indeterminate, ...others }) => (
+	<Icon
+		path={iconCancel}
+		size={0.85}
+		{...others}
+	/>
+);
+
+const AllowIcon: CheckboxProps["icon"] = ({ indeterminate, ...others }) => (
+	<Icon
+		path={iconCheck}
+		size={0.85}
+		{...others}
+	/>
+);
+
+const DENY_BG =
+	"linear-gradient(135deg, var(--mantine-color-red-6) 0%, var(--mantine-color-red-8) 100%)";
+
+export function CheckboxGrid({
+	data,
+	value,
+	columns,
+	disabled,
+	base,
+	onChange,
+}: CheckboxGridProps) {
 	return (
 		<SimpleGrid
 			cols={columns}
 			spacing="sm"
 		>
-			{data.map((option) => (
-				<Checkbox
-					key={option.value}
-					checked={value.includes(option.value)}
-					disabled={disabled}
-					label={option.label}
-					variant="gradient"
-					onChange={(e) =>
-						onChange(
-							e.target.checked
-								? value.concat(option.value)
-								: value.toSpliced(value.indexOf(option.value), 1),
-						)
-					}
-				/>
-			))}
+			{data.map((option) => {
+				const checked = value.includes(option.value);
+
+				return (
+					<Checkbox
+						key={option.value}
+						checked={checked}
+						disabled={disabled}
+						label={option.label}
+						color="red"
+						icon={base === "allowed" ? DenyIcon : AllowIcon}
+						onChange={(e) =>
+							onChange(
+								e.target.checked
+									? value.concat(option.value)
+									: value.toSpliced(value.indexOf(option.value), 1),
+							)
+						}
+						styles={{
+							input: {
+								background: checked && base === "allowed" ? DENY_BG : undefined,
+							},
+						}}
+					/>
+				);
+			})}
 		</SimpleGrid>
 	);
 }

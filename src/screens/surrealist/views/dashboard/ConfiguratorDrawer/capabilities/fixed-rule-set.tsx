@@ -1,6 +1,7 @@
 import {
 	Box,
 	Collapse,
+	Divider,
 	Group,
 	Paper,
 	SimpleGrid,
@@ -106,7 +107,6 @@ export function FixedRuleSetCapability({
 	const listCount = base === "default" ? 0 : list.length;
 	const statuSuffix = listCount > 0 && ` (${listCount} ${plural(listCount, "exception")})`;
 
-	const noteColor = base === "default" ? "slate" : base === "allowed" ? "red" : "green";
 	const noteIcon = base === "default" ? iconCloud : base === "allowed" ? iconCancel : iconCheck;
 
 	return (
@@ -188,7 +188,7 @@ export function FixedRuleSetCapability({
 							<ThemeIcon
 								radius="xs"
 								size="lg"
-								color={noteColor}
+								color="slate"
 								variant="light"
 							>
 								<Icon path={noteIcon} />
@@ -224,14 +224,18 @@ export function FixedRuleSetCapability({
 							</Box>
 						</Group>
 						{base !== "default" && (
-							<Box mt="md">
-								<CheckboxGrid
-									data={data}
-									columns={4}
-									value={list}
-									onChange={setList}
-								/>
-							</Box>
+							<>
+								<Divider my="md" />
+								<Box p={4}>
+									<CheckboxGrid
+										data={data}
+										columns={4}
+										value={list}
+										base={base}
+										onChange={setList}
+									/>
+								</Box>
+							</>
 						)}
 					</Paper>
 				</Box>
