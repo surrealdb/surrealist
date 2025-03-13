@@ -29,9 +29,6 @@ function handler(event) {
 		case request.uri === '/mini/new':
 			return redirect('/embed');
 
-		case request.uri === '/embed':
-			return redirect('/mini');
-
 		// Rewrites
 		case request.uri === '/mini':
 			request.uri = '/mini/run/index.html';
