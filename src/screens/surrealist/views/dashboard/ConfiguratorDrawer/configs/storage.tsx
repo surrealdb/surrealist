@@ -17,9 +17,10 @@ import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceStorageMutation } from "~/cloud/mutations/storage";
 import { Icon } from "~/components/Icon";
+import { Link } from "~/components/Link";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
-import { iconCancel, iconChevronRight, iconClock, iconHelp, iconWarning } from "~/util/icons";
+import { iconChevronRight, iconClock, iconHelp, iconWarning } from "~/util/icons";
 
 export interface ConfigurationStorageProps {
 	instance: CloudInstance;
@@ -37,6 +38,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 	const midpoint = maximum / 2;
 	const isMaximized = storage_size >= maximum;
 	const isTooLow = value < storage_size;
+	const isFree = instance.type.category === "free";
 
 	const [isCoolingDown, timeLeft] = useMemo(() => {
 		if (!storage_size_updated_at) {
@@ -57,6 +59,8 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 
 		return [false, ""] as const;
 	}, [storage_size_updated_at, storage_size_update_cooloff_hours]);
+
+	const isDisabled = isMaximized || isCoolingDown;
 
 	const marks = [minimum, midpoint, maximum].map((value) => ({
 		value,
@@ -110,12 +114,14 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 							</Text>
 						</Box>
 
-						{isMaximized ? (
-							<Alert title="Maximum disk size reached">
+						{isFree ? (
+							<Alert
+								title="Upgrade your instance"
+								color="red"
+							>
 								<Box>
-									You are already using the maximum disk size available for your
-									instance. Upgrade your instance type to increase the maximum
-									disk size.
+									Disk size expansion is unavailable for free instances. Upgrade
+									your instance to unlock the ability to increase your disk size.
 								</Box>
 								<Button
 									mt="md"
@@ -129,16 +135,30 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 							</Alert>
 						) : (
 							<>
-								{isCoolingDown && (
+								{isMaximized ? (
 									<Alert
 										mb="md"
-										color="orange"
-										title="Please wait"
-										icon={<Icon path={iconClock} />}
+										color="slate"
+										title="Disk size limit reached"
+										icon={<Icon path={iconHelp} />}
 									>
-										You have recently updated your disk size. You can update it
-										again in {timeLeft}.
+										If you require more storage space, please contact support at{" "}
+										<Link href="mailto:support@surrealdb.com">
+											support@surrealdb.com
+										</Link>
 									</Alert>
+								) : (
+									isCoolingDown && (
+										<Alert
+											mb="md"
+											color="orange"
+											title="Please wait"
+											icon={<Icon path={iconClock} />}
+										>
+											You have recently updated your disk size. You can update
+											it again in {timeLeft}.
+										</Alert>
+									)
 								)}
 
 								<Paper p={42}>
@@ -149,15 +169,17 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 										value={value}
 										onChange={setValue}
 										marks={marks}
-										label={(value) => `${value} GB Disk`}
+										label={(value) => `${value} GB`}
+										disabled={isDisabled}
 										color="slate"
-										disabled={isCoolingDown}
 										styles={{
 											label: {
-												paddingInline: 8,
+												paddingInline: 10,
+												fontSize: "var(--mantine-font-size-lg)",
+												fontWeight: 600,
 											},
 											bar: {
-												background: isCoolingDown
+												background: isDisabled
 													? "var(--mantine-color-slate-4)"
 													: undefined,
 											},
