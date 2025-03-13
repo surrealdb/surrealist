@@ -100,7 +100,7 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 						</>
 					) : (
 						<Center flex={1}>
-							<Text>Waiting for backup...</Text>
+							<Text c="slate">Waiting for next backup...</Text>
 						</Center>
 					)}
 				</Stack>

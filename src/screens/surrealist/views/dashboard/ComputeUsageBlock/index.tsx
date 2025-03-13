@@ -51,7 +51,7 @@ export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) 
 
 				{computeHistory.length === 0 ? (
 					<Center flex={1}>
-						<Text>Waiting for usage...</Text>
+						<Text c="slate">Recording compute usage...</Text>
 					</Center>
 				) : (
 					<Stack
