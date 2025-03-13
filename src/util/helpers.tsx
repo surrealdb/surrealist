@@ -512,5 +512,5 @@ export function plural(count: number, singular: string, plural = `${singular}s`)
  * Compile a static list of strings into a selectable list
  */
 export function selectable(values: string[]): Selectable[] {
-	return values.map((value) => ({ value, label: title(value) }));
+	return values.map((value) => ({ value, label: value }));
 }
