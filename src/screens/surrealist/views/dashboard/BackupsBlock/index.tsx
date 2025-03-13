@@ -92,6 +92,7 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 									size="xs"
 									rightSection={<Icon path={iconChevronRight} />}
 									variant="gradient"
+									disabled
 								>
 									View available backups
 								</Button>
