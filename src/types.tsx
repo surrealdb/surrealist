@@ -529,6 +529,8 @@ export interface CloudInstanceType {
 	price_hour: number;
 	enabled?: boolean;
 	category: string;
+	default_storage_size: number;
+	max_storage_size: number;
 	compute_units: {
 		min?: number;
 		max?: number;

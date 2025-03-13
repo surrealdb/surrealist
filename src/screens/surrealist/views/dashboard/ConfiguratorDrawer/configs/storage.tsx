@@ -1,7 +1,10 @@
 import classes from "../style.module.scss";
 
-import { Alert, Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Alert, Box, Button, Divider, Group, ScrollArea, Slider, Stack, Text } from "@mantine/core";
+import { useState } from "react";
+import { Icon } from "~/components/Icon";
 import { CloudInstance } from "~/types";
+import { iconCancel, iconWarning } from "~/util/icons";
 
 export interface ConfigurationStorageProps {
 	instance: CloudInstance;
@@ -9,6 +12,19 @@ export interface ConfigurationStorageProps {
 }
 
 export function ConfigurationStorage({ instance, onClose }: ConfigurationStorageProps) {
+	const [value, setValue] = useState(instance.storage_size);
+
+	const minimum = 1;
+	const maximum = instance.type.max_storage_size;
+	const halfMaximum = maximum / 2;
+	const isMaximized = instance.storage_size >= maximum;
+	const isTooLow = value < instance.storage_size;
+
+	const marks = [minimum, halfMaximum, maximum].map((value) => ({
+		value,
+		label: `${value} GB`,
+	}));
+
 	return (
 		<Stack
 			h="100%"
@@ -47,12 +63,35 @@ export function ConfigurationStorage({ instance, onClose }: ConfigurationStorage
 								database.
 							</Text>
 						</Box>
-						<Alert
-							color="blue"
-							title="Coming soon"
-						>
-							Increasing disk size will be available in a future update
-						</Alert>
+
+						{isMaximized ? (
+							<Alert
+								title="Limit reached"
+								icon={<Icon path={iconCancel} />}
+							>
+								You have reached the maximum storage size for this instance type
+							</Alert>
+						) : (
+							<Slider
+								min={minimum}
+								max={maximum}
+								step={1}
+								value={value}
+								onChange={setValue}
+								marks={marks}
+							/>
+						)}
+
+						{isTooLow && (
+							<Alert
+								mt="xl"
+								color="red"
+								title="Warning"
+								icon={<Icon path={iconWarning} />}
+							>
+								You cannot decrease the storage size below your current size
+							</Alert>
+						)}
 					</Stack>
 				</ScrollArea>
 			</Box>
@@ -69,10 +108,10 @@ export function ConfigurationStorage({ instance, onClose }: ConfigurationStorage
 				<Button
 					type="submit"
 					variant="gradient"
-					disabled
+					disabled={isMaximized || isTooLow || value === instance.storage_size}
 					flex={1}
 				>
-					Apply instance type
+					Increase storage size
 				</Button>
 			</Group>
 		</Stack>
