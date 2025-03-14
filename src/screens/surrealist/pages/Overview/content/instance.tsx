@@ -24,7 +24,14 @@ import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance, ConnectionListMode } from "~/types";
 import { ON_STOP_PROPAGATION, showError, showInfo } from "~/util/helpers";
-import { iconCloud, iconDelete, iconDotsVertical, iconEdit } from "~/util/icons";
+import {
+	iconCloud,
+	iconDelete,
+	iconDotsVertical,
+	iconEdit,
+	iconPause,
+	iconPlay,
+} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
@@ -80,6 +87,57 @@ export function StartInstance({
 		});
 	});
 
+	const handlePause = useConfirmation({
+		title: `Pause ${instance.name}`,
+		message:
+			"You can pause this instance to temporarily stop all resources and save costs, while data contained in this instance will be preserved.",
+		confirmText: "Pause",
+		confirmProps: {
+			variant: "gradient",
+		},
+		onConfirm: async () => {
+			try {
+				await fetchAPI(`/instances/${instance.id}/pause`, {
+					method: "POST",
+				});
+
+				client.invalidateQueries({
+					queryKey: ["cloud", "instances"],
+				});
+			} catch (err: any) {
+				showError({
+					title: "Failed to pause instance",
+					subtitle: err.message,
+				});
+			}
+		},
+	});
+
+	const handleResume = useConfirmation({
+		title: `Resume ${instance.name}`,
+		message: "Resume your instance to restore all resources and allow access to your data",
+		confirmText: "Resume",
+		confirmProps: {
+			variant: "gradient",
+		},
+		onConfirm: async () => {
+			try {
+				await fetchAPI(`/instances/${instance.id}/resume`, {
+					method: "POST",
+				});
+
+				client.invalidateQueries({
+					queryKey: ["cloud", "instances"],
+				});
+			} catch (err: any) {
+				showError({
+					title: "Failed to resume instance",
+					subtitle: err.message,
+				});
+			}
+		},
+	});
+
 	const handleDelete = useConfirmation({
 		message: (
 			<Stack>
@@ -121,8 +179,8 @@ export function StartInstance({
 					),
 				});
 
-				client.setQueryData(["cloud", "instances"], (data: CloudInstance[]) => {
-					return data.filter((i) => i.id !== instance.id);
+				client.invalidateQueries({
+					queryKey: ["cloud", "instances"],
 				});
 			} catch (err: any) {
 				showError({
@@ -194,7 +252,6 @@ export function StartInstance({
 									color="slate"
 									variant="subtle"
 									component="div"
-									disabled={instance.state !== "ready"}
 								>
 									<Icon path={iconDotsVertical} />
 								</ActionIcon>
@@ -209,19 +266,41 @@ export function StartInstance({
 								<Menu.Divider />
 								<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
 								<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
-								<Menu.Divider />
-								<Menu.Item
-									leftSection={
-										<Icon
-											path={iconDelete}
+								{instance.state === "ready" ? (
+									<>
+										<Menu.Divider />
+										<Menu.Item
+											leftSection={<Icon path={iconPause} />}
+											onClick={handlePause}
+										>
+											Pause instance
+										</Menu.Item>
+										<Menu.Item
+											leftSection={
+												<Icon
+													path={iconDelete}
+													c="red"
+												/>
+											}
+											onClick={handleDelete}
 											c="red"
-										/>
-									}
-									onClick={handleDelete}
-									c="red"
-								>
-									Delete instance
-								</Menu.Item>
+										>
+											Delete instance
+										</Menu.Item>
+									</>
+								) : (
+									instance.state === "paused" && (
+										<>
+											<Menu.Divider />
+											<Menu.Item
+												leftSection={<Icon path={iconPlay} />}
+												onClick={handleResume}
+											>
+												Resume instance
+											</Menu.Item>
+										</>
+									)
+								)}
 							</Menu.Dropdown>
 						</Menu>
 					</div>

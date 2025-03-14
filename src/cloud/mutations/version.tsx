@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { closeConnection } from "~/screens/surrealist/connection/connection";
 import { fetchAPI } from "../api";
 
 /**
@@ -17,6 +18,8 @@ export function useUpdateInstanceVersionMutation(instance: string | undefined) {
 			client.invalidateQueries({
 				queryKey: ["cloud", "instances"],
 			});
+
+			closeConnection(true);
 		},
 	});
 }

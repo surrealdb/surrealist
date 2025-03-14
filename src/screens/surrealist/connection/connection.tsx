@@ -23,13 +23,14 @@ import {
 import { Value } from "@surrealdb/ql-wasm";
 import { compareVersions } from "compare-versions";
 import { adapter } from "~/adapter";
+import { fetchAPI } from "~/cloud/api";
 import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { AuthDetails, Authentication, Connection, Protocol } from "~/types";
+import type { AuthDetails, Authentication, CloudInstance, Connection, Protocol } from "~/types";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -80,7 +81,7 @@ export async function openConnection(options?: ConnectOptions) {
 	const newState = isRetry ? "retrying" : "connecting";
 	const surreal = await createSurreal();
 
-	await closeConnection(newState);
+	await _closeConnection(newState, false);
 
 	instance = surreal;
 	openedConnection = connection;
@@ -135,6 +136,15 @@ export async function openConnection(options?: ConnectOptions) {
 
 			if (authState === "unauthenticated") {
 				throw new CloudError("Not authenticated with Surreal Cloud");
+			}
+
+			const instance = await fetchAPI<CloudInstance>(
+				`/instances/${connection.authentication.cloudInstance}`,
+			);
+
+			if (!instance || instance.state !== "ready") {
+				scheduleReconnect(1000);
+				return;
 			}
 		}
 
@@ -223,29 +233,31 @@ export async function openConnection(options?: ConnectOptions) {
 	}
 }
 
+async function _closeConnection(state: State, reconnect: boolean) {
+	const { setCurrentState, setVersion } = useDatabaseStore.getState();
+	const status = instance.status;
+
+	if (status === "connected" || status === "connecting") {
+		forceClose = !reconnect;
+		instance.close();
+	}
+
+	setCurrentState(state);
+	setVersion("");
+}
+
+/**
+ * Close the active surreal connection
+ */
+export async function closeConnection(reconnect?: boolean) {
+	_closeConnection(reconnect ? "retrying" : "disconnected", reconnect ?? false);
+}
+
 /**
  * Returns whether the connection is considered active
  */
 export function isConnected() {
 	return instance.status === "connected" || instance.status === "connecting";
-}
-
-/**
- * Close the active surreal connection
- *
- * @param state The state to set after closing
- */
-export async function closeConnection(state?: State) {
-	const { setCurrentState, setVersion } = useDatabaseStore.getState();
-	const status = instance.status;
-
-	if (status === "connected" || status === "connecting") {
-		forceClose = true;
-		instance.close();
-	}
-
-	setCurrentState(state ?? "disconnected");
-	setVersion("");
 }
 
 /**

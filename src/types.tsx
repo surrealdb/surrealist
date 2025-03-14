@@ -34,8 +34,15 @@ export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
 
-export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type InstanceState =
+	| "creating"
+	| "updating"
+	| "deleting"
+	| "ready"
+	| "pausing"
+	| "paused"
+	| "resuming";
 export type AuthMode =
 	| "none"
 	| "root"
