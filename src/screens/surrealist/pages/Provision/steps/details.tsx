@@ -49,7 +49,7 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 	useLayoutEffect(() => {
 		if (!details.version) {
 			setDetails((draft) => {
-				draft.version = versions.at(-1) ?? "";
+				draft.version = versions[0];
 			});
 		}
 	}, [details.version, versions, setDetails]);
