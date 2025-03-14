@@ -14,7 +14,7 @@ export function EstimatedCost({ type, units }: EstimatedCostProps) {
 	const estimatedCost = (hourlyPriceThousandth / 1000) * (units ?? 0);
 
 	return (
-		<Box>
+		<Box style={{ WebkitUserSelect: "text", userSelect: "text" }}>
 			<Label>Estimated costs</Label>
 
 			<Text c={isLight ? "slate.6" : "slate.2"}>

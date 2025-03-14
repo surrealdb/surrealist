@@ -16,7 +16,6 @@ import { DocumentationModal } from "./modals/documentation";
 import { DownloadModal } from "./modals/download";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
-import { ProvisioningDialog } from "./modals/provisioning";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
 import { AccessSignupModal } from "./modals/signup";
@@ -59,7 +58,6 @@ export function App() {
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
 			<CloudExpiredDialog />
-			<ProvisioningDialog />
 
 			{isDesktop && <UpdaterDialog />}
 		</Scaffold>

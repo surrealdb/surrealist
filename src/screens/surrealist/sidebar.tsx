@@ -29,7 +29,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
-import { iconCog, iconSearch } from "~/util/icons";
+import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
@@ -49,7 +49,6 @@ interface NavigationItem {
 	name: string;
 	icon: string;
 	match: string;
-	disabled: boolean;
 	navigate: () => void;
 }
 
@@ -85,7 +84,6 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					name: info.name,
 					icon: info.icon,
 					match: info.id,
-					disabled: false,
 					navigate: () => setLocation(info.id),
 				};
 			});
@@ -191,18 +189,18 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					component="nav"
 					flex={1}
 				>
-					{/* {connection && (
+					{connection && (
 						<>
 							<NavigationIcon
 								name="Back to overview"
-								icon={iconChevronLeft}
+								icon={iconArrowLeft}
 								onClick={() => setLocation("/overview")}
 								onMouseEnter={hoverSidebarHandle.open}
 								withTooltip={sidebarMode === "compact"}
 							/>
-							<Divider />
+							<Divider color={isLight ? "slate.2" : "slate.7"} />
 						</>
-					)} */}
+					)}
 
 					{navigation.map((items, i) => (
 						<Fragment key={i}>
@@ -219,10 +217,6 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 										onClick={info.navigate}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}
-										disabled={info.disabled}
-										style={{
-											opacity: info.disabled ? 0.5 : 1,
-										}}
 									/>
 								</Group>
 							))}

@@ -8,9 +8,9 @@ import { formatMemory, plural } from "~/util/helpers";
 import {
 	iconChevronRight,
 	iconDatabase,
+	iconHistory,
 	iconMarker,
 	iconMemory,
-	iconQuery,
 	iconTag,
 } from "~/util/icons";
 
@@ -25,12 +25,11 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 	const region = instance?.region;
 	const regionName = regions.find((r) => r.slug === region)?.description ?? region;
 
-	const computeUnits = instance?.compute_units ?? 0;
 	const storageSize = instance?.storage_size ?? 0;
 	const typeName = instance?.type.display_name ?? "";
 	const typeCategory = instance?.type.category ?? "";
 
-	const computeText = `${computeUnits} ${plural(computeUnits, "unit")}`;
+	const backupText = instance?.type.category === "free" ? "Disabled" : "Enabled";
 	const typeText = `${typeName} (${typeCategory})`;
 	const storageText = formatMemory(storageSize * 1024);
 
@@ -54,9 +53,9 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 					/>
 
 					<ConfigValue
-						title="Compute"
-						icon={iconQuery}
-						value={computeText}
+						title="Backups"
+						icon={iconHistory}
+						value={backupText}
 					/>
 
 					<ConfigValue

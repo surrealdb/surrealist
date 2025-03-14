@@ -1,5 +1,6 @@
 import {
 	Box,
+	Center,
 	Divider,
 	Group,
 	Paper,
@@ -48,48 +49,54 @@ export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) 
 
 				<Divider />
 
-				<Stack
-					p="xl"
-					gap="lg"
-					flex={1}
-				>
-					{computeHistory.map(([type, hours], index) => (
-						<Box key={index}>
-							<Group>
-								<Text
-									c="bright"
-									fz="xl"
-									fw={600}
-								>
-									{type}
-								</Text>
-								<Spacer />
-								<Text fz="lg">{hours} hours</Text>
-							</Group>
+				{computeHistory.length === 0 ? (
+					<Center flex={1}>
+						<Text c="slate">Recording compute usage...</Text>
+					</Center>
+				) : (
+					<Stack
+						p="xl"
+						gap="lg"
+						flex={1}
+					>
+						{computeHistory.map(([type, hours], index) => (
+							<Box key={index}>
+								<Group>
+									<Text
+										c="bright"
+										fz="xl"
+										fw={600}
+									>
+										{type}
+									</Text>
+									<Spacer />
+									<Text fz="lg">{hours} hours</Text>
+								</Group>
 
-							<Progress
-								value={(hours / computeTotal) * 100}
-								color="surreal"
-								size={6}
-								mt="md"
-							/>
-						</Box>
-					))}
+								<Progress
+									value={(hours / computeTotal) * 100}
+									color="surreal"
+									size={6}
+									mt="md"
+								/>
+							</Box>
+						))}
 
-					<Divider />
+						<Divider />
 
-					<Group my={-3}>
-						<Text
-							c="bright"
-							fz="xl"
-							fw={600}
-						>
-							Total hours
-						</Text>
-						<Spacer />
-						<Text fz="lg">{computeTotal} hours</Text>
-					</Group>
-				</Stack>
+						<Group my={-3}>
+							<Text
+								c="bright"
+								fz="xl"
+								fw={600}
+							>
+								Total hours
+							</Text>
+							<Spacer />
+							<Text fz="lg">{computeTotal} hours</Text>
+						</Group>
+					</Stack>
+				)}
 			</Paper>
 		</Skeleton>
 	);

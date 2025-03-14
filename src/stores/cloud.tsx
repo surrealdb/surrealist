@@ -40,9 +40,6 @@ export type CloudStore = {
 	selectedOrganization: string;
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
-	isProvisioning: boolean;
-	isProvisionDone: boolean;
-	provisioning: CloudInstance | null;
 	chatConversation: CloudChatMessage[];
 	chatLastResponse: string;
 
@@ -56,9 +53,6 @@ export type CloudStore = {
 	setProfile: (profile: CloudProfile) => void;
 	setSelectedOrganization: (id: string) => void;
 	setSessionExpired: (expired: boolean) => void;
-	setProvisioning: (instance: CloudInstance) => void;
-	finishProvisioning: () => void;
-	hideProvisioning: () => void;
 	clearSession: () => void;
 	pushChatMessage: (message: CloudChatMessage) => void;
 	completeChatResponse: (id: string) => void;
@@ -140,23 +134,6 @@ export const useCloudStore = create<CloudStore>()(
 		setSessionExpired: (expired) =>
 			set({
 				sessionExpired: expired,
-			}),
-
-		setProvisioning: (instance) =>
-			set({
-				isProvisioning: true,
-				isProvisionDone: false,
-				provisioning: instance,
-			}),
-
-		finishProvisioning: () =>
-			set({
-				isProvisionDone: true,
-			}),
-
-		hideProvisioning: () =>
-			set({
-				isProvisioning: false,
 			}),
 
 		pushChatMessage: (message) =>

@@ -5,6 +5,7 @@
 
 :root[data-mantine-color-scheme="light"] {
 	--mantine-color-body: var(--mantine-color-white);
+	--mantine-color-error: var(--mantine-color-red-7);
 
 	--surrealist-glow: 0 3px 15px rgba(186, 0, 171, 0.5);
 	--surrealist-indent-color: var(--mantine-color-slate-1);
@@ -16,6 +17,7 @@
 
 :root[data-mantine-color-scheme="dark"] {
 	--mantine-color-body: var(--mantine-color-slate-8);
+	--mantine-color-error: var(--mantine-color-red-5);
 
 	--surrealist-glow: 0 3px 20px -4px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.5);
 	--surrealist-indent-color: var(--mantine-color-slate-7);

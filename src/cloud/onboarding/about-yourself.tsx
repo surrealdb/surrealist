@@ -11,7 +11,6 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { iconChevronRight, iconErrorCircle } from "~/util/icons";
 import { fetchAPI } from "../api";
-import { openStartingModal } from "./getting-started";
 
 const REQUIRED = [1, 2];
 
@@ -61,7 +60,6 @@ function AboutModal({ questions }: AboutModalProps) {
 		});
 
 		closeAllModals();
-		openStartingModal();
 	});
 
 	const isValid = REQUIRED.every((id) => values[id]);

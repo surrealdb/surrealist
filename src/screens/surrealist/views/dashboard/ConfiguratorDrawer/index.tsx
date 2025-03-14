@@ -11,7 +11,6 @@ import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { iconClose, iconTune } from "~/util/icons";
 import { ConfigurationCapabilities } from "./configs/capabilities";
-import { ConfigurationComputeNodes } from "./configs/compute";
 import { ConfigurationStorage } from "./configs/storage";
 import { ConfigurationInstanceType } from "./configs/type";
 import { ConfigurationVersion } from "./configs/version";
@@ -98,7 +97,6 @@ export function ConfiguratorDrawer({
 					<Tabs.Tab value="capabilities">Capabilities</Tabs.Tab>
 					<Tabs.Tab value="version">Version</Tabs.Tab>
 					<Tabs.Tab value="type">Instance type</Tabs.Tab>
-					<Tabs.Tab value="nodes">Compute nodes</Tabs.Tab>
 					<Tabs.Tab value="disk">Disk size</Tabs.Tab>
 				</Tabs.List>
 
@@ -119,13 +117,6 @@ export function ConfiguratorDrawer({
 
 				<Tabs.Panel value="type">
 					<ConfigurationInstanceType
-						instance={instance}
-						onClose={onClose}
-					/>
-				</Tabs.Panel>
-
-				<Tabs.Panel value="nodes">
-					<ConfigurationComputeNodes
 						instance={instance}
 						onClose={onClose}
 					/>

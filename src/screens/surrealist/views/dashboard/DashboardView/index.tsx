@@ -86,47 +86,55 @@ export function DashboardView() {
 					gap="xl"
 				>
 					<Box mb={38}>
-						<Group gap="xs">
-							<Group>
-								<PrimaryTitle fz={38}>{name}</PrimaryTitle>
-								{isRenamed && (
-									<Text
-										fw={400}
-										fz={38}
-										c="slate"
-									>
-										({details?.name})
-									</Text>
-								)}
-								{details?.state && <StateBadge state={details?.state} />}
-							</Group>
-						</Group>
 						{isLoading ? (
-							<Skeleton
-								w="100%"
-								maw={500}
-								height={18}
-								my={2}
-							/>
+							<>
+								<Skeleton
+									w="100%"
+									maw={250}
+									height={41}
+									my={10}
+								/>
+								<Skeleton
+									w="100%"
+									maw={500}
+									height={18}
+									my={2}
+								/>
+							</>
 						) : (
-							<Group gap="sm">
-								<Text fz="md">{details?.host}</Text>
-								<CopyButton value={instance ?? ""}>
-									{({ copied, copy }) => (
-										<ActionIcon
-											variant={copied ? "gradient" : undefined}
-											size="sm"
-											onClick={copy}
-											aria-label="Copy id to clipboard"
+							<>
+								<Group>
+									<PrimaryTitle fz={38}>{name}</PrimaryTitle>
+									{isRenamed && (
+										<Text
+											fw={400}
+											fz={38}
+											c="slate"
 										>
-											<Icon
-												path={copied ? iconCheck : iconCopy}
-												size="sm"
-											/>
-										</ActionIcon>
+											({details?.name})
+										</Text>
 									)}
-								</CopyButton>
-							</Group>
+									{details?.state && <StateBadge state={details?.state} />}
+								</Group>
+								<Group gap="sm">
+									<Text fz="md">{details?.host}</Text>
+									<CopyButton value={instance ?? ""}>
+										{({ copied, copy }) => (
+											<ActionIcon
+												variant={copied ? "gradient" : undefined}
+												size="sm"
+												onClick={copy}
+												aria-label="Copy id to clipboard"
+											>
+												<Icon
+													path={copied ? iconCheck : iconCopy}
+													size="sm"
+												/>
+											</ActionIcon>
+										)}
+									</CopyButton>
+								</Group>
+							</>
 						)}
 					</Box>
 
