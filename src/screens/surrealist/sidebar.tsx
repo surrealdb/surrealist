@@ -29,7 +29,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
-import { iconCog, iconSearch } from "~/util/icons";
+import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
@@ -191,18 +191,18 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					component="nav"
 					flex={1}
 				>
-					{/* {connection && (
+					{connection && (
 						<>
 							<NavigationIcon
 								name="Back to overview"
-								icon={iconChevronLeft}
+								icon={iconArrowLeft}
 								onClick={() => setLocation("/overview")}
 								onMouseEnter={hoverSidebarHandle.open}
 								withTooltip={sidebarMode === "compact"}
 							/>
 							<Divider />
 						</>
-					)} */}
+					)}
 
 					{navigation.map((items, i) => (
 						<Fragment key={i}>
