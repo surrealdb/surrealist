@@ -57,7 +57,7 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 	useLayoutEffect(() => {
 		if (!details.region) {
 			setDetails((draft) => {
-				draft.region = regions.at(0)?.slug ?? "";
+				draft.region = regions[0]?.slug ?? "";
 			});
 		}
 	}, [details.region, regions, setDetails]);
