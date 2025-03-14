@@ -1,10 +1,10 @@
 import { Alert } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
-import type { AlertLevel, CloudAlert } from "~/types";
+import type { BannerType, CloudBanner } from "~/types";
 import { iconErrorCircle, iconHelp, iconWarning } from "~/util/icons";
 
-type LevelInfoMap = Record<AlertLevel, [string, string, string, string]>;
+type LevelInfoMap = Record<BannerType, [string, string, string, string]>;
 
 const INFO_MAP = {
 	info: [iconHelp, "blue.3", "blue.5", "Info"],
@@ -13,7 +13,7 @@ const INFO_MAP = {
 } satisfies LevelInfoMap;
 
 export interface StatusAlertProps {
-	alert: CloudAlert;
+	alert: CloudBanner;
 }
 
 export function StatusAlert({ alert }: StatusAlertProps) {
