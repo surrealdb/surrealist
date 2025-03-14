@@ -1,11 +1,11 @@
 import classes from "./style.module.scss";
 
-import { useState } from "react";
-import type { CloudInstance } from "~/types";
-import { ProvisionPoller } from "./poller";
-import { ProvisionForm } from "./form";
 import { Box, ScrollArea } from "@mantine/core";
+import { useState } from "react";
 import { TopGlow } from "~/components/TopGlow";
+import type { CloudInstance } from "~/types";
+import { ProvisionForm } from "./form";
+import { ProvisionPoller } from "./poller";
 
 export function ProvisionPage() {
 	const [created, setCreated] = useState<CloudInstance | null>(null);

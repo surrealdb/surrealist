@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
-import { Box, ScrollArea, Stack, Collapse, Divider, Group, Button, Text } from "@mantine/core";
-import { useMemo, useEffect } from "react";
+import { Box, Button, Collapse, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { useEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { fetchAPI } from "~/cloud/api";
 import { EstimatedCost } from "~/components/EstimatedCost";
@@ -9,7 +9,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
-import { useOrganization, useAvailableInstanceTypes } from "~/hooks/cloud";
+import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";

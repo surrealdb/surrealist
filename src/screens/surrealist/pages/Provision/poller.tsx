@@ -9,15 +9,15 @@ import tutorialLightUrl from "~/assets/images/light/picto-tutorial.svg";
 
 import { Box, Center, Image, Loader, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 
-import { useIsLight, useThemeImage } from "~/hooks/theme";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { iconSurreal } from "~/util/icons";
-import { Link } from "~/components/Link";
 import { useEffect } from "react";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
+import { Link } from "~/components/Link";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useConnectionNavigator } from "~/hooks/routing";
-import { resolveInstanceConnection } from "~/util/connection";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { CloudInstance } from "~/types";
+import { resolveInstanceConnection } from "~/util/connection";
+import { iconSurreal } from "~/util/icons";
 
 export interface ProvisionPollerProps {
 	instance: CloudInstance;
