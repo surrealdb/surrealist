@@ -63,71 +63,67 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 	}, [details.region, regions, setDetails]);
 
 	return (
-		<Paper>
-			<Stack
-				p="xl"
-				gap="xl"
-			>
-				<TextInput
-					label="Instance name"
-					placeholder="Instance name"
-					value={details.name}
-					onChange={updateName}
-					error={
-						details.name.length > 30
-							? "Instance name cannot exceed than 30 characters"
-							: null
-					}
-					autoFocus
-				/>
-				<Select
-					label="Organization"
-					data={organizations}
-					value={organization?.id ?? ""}
-					onChange={setSelectedOrganization as any}
-				/>
-			</Stack>
-			<Divider my="xs" />
-			<Stack
-				p="xl"
-				gap="xl"
-			>
-				<Select
-					label="Version"
-					description="Select the version of SurrealDB you would like to use"
-					data={versionList}
-					value={details.version}
-					onChange={updateVersion}
-				/>
-				<Select
-					label="Region"
-					description="Choose a physical location for your instance"
-					data={regionList}
-					value={details.region}
-					onChange={updateRegion}
-					leftSection={
-						<Image
-							src={REGION_FLAGS[details.region]}
-							w={18}
-						/>
-					}
-					renderOption={(org) => (
-						<Group>
+		<>
+			<Paper>
+				<Stack
+					p="xl"
+					gap="xl"
+				>
+					<TextInput
+						label="Instance name"
+						placeholder="Instance name"
+						value={details.name}
+						onChange={updateName}
+						error={
+							details.name.length > 30
+								? "Instance name cannot exceed than 30 characters"
+								: null
+						}
+						autoFocus
+					/>
+					<Select
+						label="Organization"
+						data={organizations}
+						value={organization?.id ?? ""}
+						onChange={setSelectedOrganization as any}
+					/>
+					<Select
+						label="Version"
+						description="Select the version of SurrealDB you would like to use"
+						data={versionList}
+						value={details.version}
+						onChange={updateVersion}
+					/>
+					<Select
+						label="Region"
+						description="Choose a physical location for your instance"
+						data={regionList}
+						value={details.region}
+						onChange={updateRegion}
+						leftSection={
 							<Image
-								src={REGION_FLAGS[org.option.value]}
-								w={24}
+								src={REGION_FLAGS[details.region]}
+								w={18}
 							/>
-							{org.option.label}
-							{org.checked && (
-								<Icon
-									path={iconCheck}
-									c="bright"
+						}
+						renderOption={(org) => (
+							<Group>
+								<Image
+									src={REGION_FLAGS[org.option.value]}
+									w={24}
 								/>
-							)}
-						</Group>
-					)}
-				/>
-			</Stack>
-		</Paper>
+								{org.option.label}
+								{org.checked && (
+									<Icon
+										path={iconCheck}
+										c="bright"
+									/>
+								)}
+							</Group>
+						)}
+					/>
+				</Stack>
+			</Paper>
+		</>
 	);
 }

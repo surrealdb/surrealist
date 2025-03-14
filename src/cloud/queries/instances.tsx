@@ -6,12 +6,12 @@ import { fetchAPI } from "../api";
 /**
  * Fetch instance details
  */
-export function useCloudInstanceQuery(instance?: string) {
+export function useCloudInstanceQuery(instance?: string, interval?: number) {
 	const authState = useCloudStore((state) => state.authState);
 
 	return useQuery({
 		queryKey: ["cloud", "instances", { id: instance }],
-		refetchInterval: 15_000,
+		refetchInterval: interval ?? 15_000,
 		enabled: !!instance && authState === "authenticated",
 		queryFn: async () => {
 			return fetchAPI<CloudInstance>(`/instances/${instance}`);

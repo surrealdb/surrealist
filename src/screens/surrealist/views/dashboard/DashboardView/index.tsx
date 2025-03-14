@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { ActionIcon, CopyButton, Group, Paper, SimpleGrid, Skeleton, Text } from "@mantine/core";
+import { ActionIcon, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { memo, useState } from "react";
 import { Redirect } from "wouter";
