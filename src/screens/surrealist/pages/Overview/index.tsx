@@ -220,44 +220,45 @@ export function OverviewPage() {
 								/>
 							</SimpleGrid>
 
-							{organizations.map(({ info, instances }) => (
-								<Fragment key={info.id}>
-									<Group mt="lg">
-										<ThemeIcon
-											radius="xs"
-											color="slate"
-											variant="light"
-										>
-											<Icon path={iconCloud} />
-										</ThemeIcon>
-										<Text
-											fz="xl"
-											fw={500}
-										>
-											{info.name}
-										</Text>
-									</Group>
-									<SimpleGrid cols={gridColumns}>
-										{instances.map((instance) => (
-											<StartInstance
-												key={instance.id}
-												instance={instance}
+							{authState === "authenticated" &&
+								organizations.map(({ info, instances }) => (
+									<Fragment key={info.id}>
+										<Group mt="lg">
+											<ThemeIcon
+												radius="xs"
+												color="slate"
+												variant="light"
+											>
+												<Icon path={iconCloud} />
+											</ThemeIcon>
+											<Text
+												fz="xl"
+												fw={500}
+											>
+												{info.name}
+											</Text>
+										</Group>
+										<SimpleGrid cols={gridColumns}>
+											{instances.map((instance) => (
+												<StartInstance
+													key={instance.id}
+													instance={instance}
+													presentation={presentation}
+													onConnect={activateInstance}
+												/>
+											))}
+											<StartCreator
+												title="New instance"
+												subtitle="Provision a new Surreal Cloud instance"
 												presentation={presentation}
-												onConnect={activateInstance}
+												onCreate={() => {
+													setSelectedOrganization(info.id);
+													navigate("/provision");
+												}}
 											/>
-										))}
-										<StartCreator
-											title="New instance"
-											subtitle="Provision a new Surreal Cloud instance"
-											presentation={presentation}
-											onCreate={() => {
-												setSelectedOrganization(info.id);
-												navigate("/provision");
-											}}
-										/>
-									</SimpleGrid>
-								</Fragment>
-							))}
+										</SimpleGrid>
+									</Fragment>
+								))}
 
 							{(authState === "loading" || isPending) && (
 								<Center mt={52}>
