@@ -3,7 +3,7 @@ import type { AnyAuth, Duration, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
-export type AlertLevel = "info" | "warning" | "important";
+export type BannerType = "info" | "warning" | "important";
 export type AuthLevel = "root" | "namespace" | "database";
 export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
@@ -586,9 +586,9 @@ export interface CloudOrganization {
 	available_plans: CloudPlan[];
 }
 
-export interface CloudAlert {
+export interface CloudBanner {
 	message: string;
-	message_type: AlertLevel;
+	message_type: BannerType;
 	timestamp: string;
 }
 
