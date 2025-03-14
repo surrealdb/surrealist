@@ -519,7 +519,7 @@ export interface CloudInstance {
 	available_versions: string[];
 	compute_units: number;
 	storage_size: number;
-	storage_size_updated_at: string;
+	storage_size_updated_at?: string;
 	can_update_storage_size: boolean;
 	storage_size_update_cooloff_hours: number;
 	capabilities: CloudInstanceCapabilities;
@@ -554,6 +554,8 @@ export interface CloudInstanceType {
 	price_hour: number;
 	enabled?: boolean;
 	category: string;
+	default_storage_size: number;
+	max_storage_size: number;
 	compute_units: {
 		min?: number;
 		max?: number;
@@ -661,7 +663,7 @@ export interface CloudCoupon {
 	name: string;
 	amount: number;
 	amount_remaining: number;
-	expires_at: string;
+	expires_at?: string;
 }
 
 export interface CloudBackup {

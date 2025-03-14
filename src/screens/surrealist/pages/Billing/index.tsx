@@ -55,16 +55,27 @@ import { showError, showInfo } from "~/util/helpers";
 import { openBillingDetails } from "../../../../cloud/modals/billing";
 import { Section } from "../../../../components/Section";
 
-function isCouponIndefinite(coupon: CloudCoupon) {
-	return new Date(coupon.expires_at).getFullYear() === 1;
-}
-
 function isCouponActive(coupon: CloudCoupon) {
 	if (coupon.amount_remaining <= 0) {
 		return false;
 	}
 
-	return new Date(coupon.expires_at) > new Date() || isCouponIndefinite(coupon);
+	if (coupon.expires_at === undefined) {
+		return true;
+	}
+
+	return new Date(coupon.expires_at) > new Date();
+}
+
+function getExpiry(coupon: CloudCoupon) {
+	if (coupon.expires_at === undefined) {
+		return [false, null] as const;
+	}
+
+	const expiresAt = new Date(coupon.expires_at);
+	const isExpired = expiresAt < new Date();
+
+	return [isExpired, expiresAt] as const;
 }
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
@@ -493,10 +504,7 @@ export function BillingPage() {
 								>
 									<Table.Tbody>
 										{coupons.map((coupon) => {
-											const expiresAt = new Date(coupon.expires_at);
-											const isIndefinite = isCouponIndefinite(coupon);
-											const isExpired =
-												!isIndefinite && expiresAt < new Date();
+											const [isExpired, expiresAt] = getExpiry(coupon);
 
 											return (
 												<Table.Tr
@@ -537,7 +545,7 @@ export function BillingPage() {
 															</Group>
 														</Table.Td>
 													)}
-													{isIndefinite ? (
+													{expiresAt === null ? (
 														<Table.Td
 															w={200}
 															ta="end"
@@ -555,7 +563,7 @@ export function BillingPage() {
 															c={isExpired ? "red" : undefined}
 														>
 															{`${isExpired ? "Expired" : "Expires in"} ${formatDistance(
-																new Date(coupon.expires_at),
+																expiresAt,
 																new Date(),
 																{ addSuffix: true },
 															)}`}

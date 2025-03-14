@@ -390,3 +390,12 @@ body.mod .cm-record-link:hover {
 		background-color: var(--mantine-color-slate-1);
 	}
 }
+
+.mantine-Slider-label {
+	background-color: var(--mantine-color-slate-5);
+	color: var(--mantine-color-bright);
+
+	@include light {
+		background-color: var(--mantine-color-slate-2);
+	}
+}
