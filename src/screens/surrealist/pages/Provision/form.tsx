@@ -72,10 +72,6 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			});
 
 			onCreated(result);
-			// const connection = resolveInstanceConnection(result);
-
-			// setProvisioning(result);
-			// navigateConnection(connection.id);
 		} catch (err: any) {
 			console.log("Failed to provision database:", [...err.response.headers.entries()]);
 
