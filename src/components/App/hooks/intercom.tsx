@@ -32,6 +32,7 @@ export function useIntercom() {
 		if (initialize.current) {
 			Intercom({
 				app_id: import.meta.env.VITE_INTERCOM_APP_ID,
+				z_index: 200,
 				...metadata,
 			});
 

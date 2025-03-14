@@ -18,6 +18,8 @@ export function UpdaterDialog() {
 		hideAvailableUpdate();
 	});
 
+	// TODO Use notification
+
 	return (
 		<Dialog
 			opened={showUpdate}
