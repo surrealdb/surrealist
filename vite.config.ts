@@ -15,15 +15,13 @@ const isInstance = process.env.VITE_SURREALIST_INSTANCE === "true";
 
 const ENTRYPOINTS = {
 	surrealist: "/index.html",
-	mini_run: "/tools/mini-run.html",
-	mini_new: "/tools/mini-new.html",
+	mini_embed: "/tools/mini-embed.html",
 	auth_callback: "/tools/auth-callback.html",
 	cloud_referral: "/tools/cloud-referral.html",
 };
 
 const TOOLS = {
-	"tools/mini-run.html": "mini/run/index.html",
-	"tools/mini-new.html": "mini/new/index.html",
+	"tools/mini-embed.html": "mini/run/index.html",
 	"tools/auth-callback.html": "cloud/callback/index.html", // TODO rename to cloud/callback
 	"tools/cloud-referral.html": "cloud/referral/index.html",
 };

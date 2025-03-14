@@ -33,9 +33,9 @@ import { iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
-	["overview"],
-	["share", "university", "chat"],
-	["billing", "referrals", "support"],
+	["/overview"],
+	["/chat", "/mini/new"],
+	["/billing", "/referrals", "/support"],
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
@@ -84,7 +84,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
-					match: `/${info.id}`,
+					match: info.id,
 					disabled: false,
 					navigate: () => setLocation(info.id),
 				};

@@ -26,7 +26,7 @@ export function Scaffold({ children }: PropsWithChildren) {
 					theme={MANTINE_THEME}
 					forceColorScheme={colorScheme}
 				>
-					<Notifications />
+					<Notifications containerWidth={400} />
 
 					<ErrorBoundary
 						FallbackComponent={ScaffoldErrorHandler}

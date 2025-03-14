@@ -1,5 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { PathPattern, matchRoute, useRouter, useSearch } from "wouter";
+import { adapter } from "~/adapter";
+import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import type { ViewPage } from "~/types";
@@ -30,6 +32,10 @@ export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pa
  * Returns the active connection and view
  */
 export function useConnectionAndView() {
+	if (adapter instanceof MiniAdapter) {
+		return [SANDBOX, "query"] as const;
+	}
+
 	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
 
 	if (!match) {

@@ -79,8 +79,8 @@ const launch = (handler: () => void) => ({ type: "launch", handler }) as const;
 /** Create an insertion command */
 const insert = (content: string) => ({ type: "insert", content }) as const;
 
-/** Create an href command */
-const href = (href: string) => ({ type: "href", href }) as const;
+/** Create a navigation command */
+const navigate = (path: string) => ({ type: "navigate", path }) as const;
 
 /** Create a new preference command */
 const preference = (controller: PreferenceController) =>
@@ -106,7 +106,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 
 	const [datasets, applyDataset] = useDatasets();
 	const [connection, view] = useConnectionAndView();
-	const [, navigate] = useAbsoluteLocation();
 
 	const isSandbox = connection === SANDBOX;
 	const canDisconnect = currentState !== "disconnected" && !isSandbox;
@@ -592,7 +591,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						id: "open-overview",
 						name: "Go to overview",
 						icon: iconSurrealist,
-						action: launch(() => navigate("/overview")),
+						action: navigate("/overview"),
 					},
 					{
 						id: "open-search",
@@ -633,9 +632,9 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						id: "open-embedder",
 						name: "Open mini generator",
 						icon: iconWrench,
-						aliases: ["mini"],
+						aliases: ["mini", "embed"],
 						binding: true,
-						action: intent("open-embedder"),
+						action: navigate("/mini/new"),
 					},
 					{
 						id: "open-docs",

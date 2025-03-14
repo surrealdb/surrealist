@@ -14,7 +14,6 @@ import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
 import { DocumentationModal } from "./modals/documentation";
 import { DownloadModal } from "./modals/download";
-import { EmbedderModal } from "./modals/embedder";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { ProvisioningDialog } from "./modals/provisioning";
@@ -50,7 +49,6 @@ export function App() {
 			<ChangelogModal />
 			<ConnectionModal />
 			<DownloadModal />
-			<EmbedderModal />
 			<SandboxModal />
 			<AccessSignupModal />
 			<TableCreatorModal />

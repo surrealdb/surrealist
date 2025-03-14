@@ -89,13 +89,30 @@ body.mod .cm-record-link:hover {
 .mantine-Notification-root {
 	border-width: 1px;
 	border-style: solid;
+
+	&::before {
+		left: 9px;
+		width: 4px;
+		top: var(--mantine-spacing-xs);
+		bottom: var(--mantine-spacing-xs);
+	}
 }
 
-.mantine-Notification-root::before {
-	left: 9px;
-	width: 4px;
-	top: var(--mantine-spacing-xs);
-	bottom: var(--mantine-spacing-xs);
+.mantine-Notification-root[data-variant="spaced"] {
+	padding: var(--mantine-spacing-md);
+
+	&::before {
+		display: none;
+	}
+}
+
+.mantine-Notification-title {
+	font-size: var(--mantine-font-size-md);
+	font-weight: 600;
+}
+
+.mantine-Notification-description {
+	color: var(--mantine-color-text);
 }
 
 .mantine-Button-root:where(:disabled:not([data-loading]), [data-disabled]:not([data-loading])),
@@ -373,5 +390,14 @@ body.mod .cm-record-link:hover {
 
 	@include light {
 		background-color: var(--mantine-color-slate-1);
+	}
+}
+
+.mantine-Slider-label {
+	background-color: var(--mantine-color-slate-5);
+	color: var(--mantine-color-bright);
+
+	@include light {
+		background-color: var(--mantine-color-slate-2);
 	}
 }

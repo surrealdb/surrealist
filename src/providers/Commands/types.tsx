@@ -5,7 +5,7 @@ export type CommandPayload = Record<string, string>;
 
 type LaunchAction = { type: "launch"; handler: (payload?: CommandPayload) => void };
 type InsertAction = { type: "insert"; content: string };
-type HrefAction = { type: "href"; href: string };
+type NavigateAction = { type: "navigate"; path: string };
 type PreferenceAction = { type: "preference"; controller: PreferenceController };
 type IntentAction = {
 	type: "intent";
@@ -13,7 +13,7 @@ type IntentAction = {
 	payload?: IntentPayload;
 };
 
-type Action = LaunchAction | InsertAction | HrefAction | IntentAction | PreferenceAction;
+type Action = LaunchAction | InsertAction | NavigateAction | IntentAction | PreferenceAction;
 type CategoryVisibility = "always" | "searched" | "unsearched";
 
 export interface Command {

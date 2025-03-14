@@ -69,6 +69,7 @@ import {
 	iconSidekick,
 	iconTune,
 	iconUniversity,
+	iconXml,
 } from "./util/icons";
 
 import type { MantineColorScheme } from "@mantine/core";
@@ -186,43 +187,38 @@ export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
 ];
 
 export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
-	overview: {
-		id: "overview",
+	"/overview": {
+		id: "/overview",
 		name: "Overview",
 		icon: iconExplorer,
 	},
-	billing: {
-		id: "billing",
+	"/billing": {
+		id: "/billing",
 		name: "Billing",
 		icon: iconCreditCard,
 	},
-	chat: {
-		id: "chat",
+	"/chat": {
+		id: "/chat",
 		name: "Sidekick",
 		icon: iconSidekick,
 	},
-	referrals: {
-		id: "referrals",
+	"/referrals": {
+		id: "/referrals",
 		name: "Referrals",
 		icon: iconReferral,
 	},
-	support: {
-		id: "support",
+	"/support": {
+		id: "/support",
 		name: "Support",
 		icon: iconHelp,
 	},
-	share: {
-		id: "share",
-		name: "Query Sharing",
-		icon: iconCursor,
+	"/mini/new": {
+		id: "/mini/new",
+		name: "Embed Surrealist",
+		icon: iconXml,
 	},
-	university: {
-		id: "university",
-		name: "University",
-		icon: iconUniversity,
-	},
-	provision: {
-		id: "provision",
+	"/provision": {
+		id: "/provision",
 		name: "Provision Instance",
 		icon: iconPlus,
 	},

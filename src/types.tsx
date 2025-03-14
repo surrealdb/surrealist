@@ -34,8 +34,15 @@ export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
 
-export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type InstanceState =
+	| "creating"
+	| "updating"
+	| "deleting"
+	| "ready"
+	| "pausing"
+	| "paused"
+	| "resuming";
 export type AuthMode =
 	| "none"
 	| "root"
@@ -48,14 +55,13 @@ export type AuthMode =
 	| "access-signup"
 	| "cloud";
 export type GlobalPage =
-	| "overview"
-	| "billing"
-	| "chat"
-	| "support"
-	| "referrals"
-	| "share"
-	| "university"
-	| "provision";
+	| "/overview"
+	| "/billing"
+	| "/chat"
+	| "/support"
+	| "/referrals"
+	| "/mini/new"
+	| "/provision";
 export type ViewPage =
 	| "dashboard"
 	| "query"
@@ -513,11 +519,30 @@ export interface CloudInstance {
 	available_versions: string[];
 	compute_units: number;
 	storage_size: number;
-	storage_size_updated_at: string;
+	storage_size_updated_at?: string;
 	can_update_storage_size: boolean;
 	storage_size_update_cooloff_hours: number;
+	capabilities: CloudInstanceCapabilities;
 	state: InstanceState;
 	type: CloudInstanceType;
+}
+
+export interface CloudInstanceCapabilities {
+	allow_scripting: boolean;
+	allow_guests: boolean;
+	allow_graphql: boolean;
+	allowed_rpc_methods: string[];
+	denied_rpc_methods: string[];
+	allowed_http_endpoints: string[];
+	denied_http_endpoints: string[];
+	allowed_networks: string[];
+	denied_networks: string[];
+	allowed_functions: string[];
+	denied_functions: string[];
+	allowed_experimental: string[];
+	denied_experimental: string[];
+	allowed_arbitrary_query: string[];
+	denied_arbitrary_query: string[];
 }
 
 export interface CloudInstanceType {
@@ -529,6 +554,8 @@ export interface CloudInstanceType {
 	price_hour: number;
 	enabled?: boolean;
 	category: string;
+	default_storage_size: number;
+	max_storage_size: number;
 	compute_units: {
 		min?: number;
 		max?: number;
@@ -636,7 +663,7 @@ export interface CloudCoupon {
 	name: string;
 	amount: number;
 	amount_remaining: number;
-	expires_at: string;
+	expires_at?: string;
 }
 
 export interface CloudBackup {

@@ -22,15 +22,15 @@ import {
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useImmer } from "use-immer";
+import { CodePreview } from "~/components/CodePreview";
+import { Icon } from "~/components/Icon";
+import { CodeInput } from "~/components/Inputs";
+import { Spacer } from "~/components/Spacer";
 import { DATASETS, ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
 import type { ColorScheme, Orientation, ResultMode } from "~/types";
 import { dedent } from "~/util/dedent";
 import { isDevelopment, isProduction } from "~/util/environment";
 import { iconHelp } from "~/util/icons";
-import { CodePreview } from "../CodePreview";
-import { Icon } from "../Icon";
-import { CodeInput } from "../Inputs";
-import { Spacer } from "../Spacer";
 
 export const DEFAULT_STATE: EmbedState = {
 	dataset: "none",
@@ -113,7 +113,6 @@ export interface EmbedderProps {
 
 export function Embedder({ value, onChangeURL }: EmbedderProps) {
 	const [state, setState] = useImmer({ ...DEFAULT_STATE, ...value });
-	const [mode, setMode] = useState("Embed");
 
 	useEffect(() => {
 		if (value) {
@@ -184,25 +183,11 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 			url.port = "";
 		}
 
-		url.pathname = isDevelopment ? "tools/mini-run.html" : "mini";
+		url.pathname = isDevelopment ? "tools/mini-embed.html" : "mini";
 		url.search = search.toString();
 
 		return url.toString();
 	}, [state]);
-
-	const snippetCode = useMemo(() => {
-		return dedent(`
-			<iframe
-				width="750"
-				height="500"
-				src="${frameUrl}"
-				title="Surrealist Mini"
-				frameborder="0"
-				allowTransparency="true"
-				referrerpolicy="strict-origin-when-cross-origin">
-			</iframe>
-		`);
-	}, [frameUrl]);
 
 	useLayoutEffect(() => {
 		onChangeURL?.(frameUrl);
@@ -210,12 +195,6 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 	return (
 		<Stack gap="lg">
-			<Text>
-				This form allows you to build a sharable mini version of Surrealist pre-loaded with
-				configured values, such as queries, variables, and other settings. You can use these
-				embedded mini's in your blog posts, documentation, or other places where you want to
-				share interactive SurrealDB queries.
-			</Text>
 			<Box>
 				<SectionTitle help="The query placed into the query editor">
 					Editor query
@@ -345,26 +324,6 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 						}}
 					/>
 				</Stack>
-			</Box>
-			<Divider />
-			<Box>
-				<SectionTitle
-					extra={
-						<SegmentedControl
-							data={["Iframe", "URL"]}
-							value={mode}
-							onChange={setMode}
-							radius="xs"
-						/>
-					}
-				>
-					Mini {mode === "Iframe" ? "snippet" : "url"}
-				</SectionTitle>
-				<CodePreview
-					value={mode === "Iframe" ? snippetCode : frameUrl}
-					withCopy
-					language={mode === "Iframe" ? "html" : undefined}
-				/>
 			</Box>
 		</Stack>
 	);

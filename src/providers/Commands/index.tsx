@@ -3,6 +3,7 @@ export * from "./types";
 import { noop } from "@mantine/core";
 import { type PropsWithChildren, createContext, useContext, useMemo } from "react";
 import { adapter } from "~/adapter";
+import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
@@ -48,6 +49,7 @@ export function useCommandDispatcher() {
 export function CommandsProvider({ children }: PropsWithChildren) {
 	const categories = useInternalCommandBuilder();
 	const userKeybinds = useConfigStore((state) => state.keybindings);
+	const [, navigate] = useAbsoluteLocation();
 
 	// Compute unique command registry
 	const registry = useMemo(() => {
@@ -100,8 +102,8 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 		});
 
 		switch (cmd.action.type) {
-			case "href": {
-				adapter.openUrl(cmd.action.href);
+			case "navigate": {
+				navigate(cmd.action.path);
 				break;
 			}
 			case "intent": {

@@ -7,6 +7,7 @@ import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { iconClose, iconTune } from "~/util/icons";
 import { ConfigurationCapabilities } from "./configs/capabilities";
@@ -32,6 +33,10 @@ export function ConfiguratorDrawer({
 	onClose,
 }: ConfiguratorDrawerProps) {
 	const [width, setWidth] = useState(650);
+
+	const openTypes = useStable(() => {
+		onChangeTab("type");
+	});
 
 	return (
 		<Drawer
@@ -92,7 +97,7 @@ export function ConfiguratorDrawer({
 					<Tabs.Tab value="capabilities">Capabilities</Tabs.Tab>
 					<Tabs.Tab value="version">Version</Tabs.Tab>
 					<Tabs.Tab value="type">Instance type</Tabs.Tab>
-					<Tabs.Tab value="storage">Storage</Tabs.Tab>
+					<Tabs.Tab value="disk">Disk size</Tabs.Tab>
 				</Tabs.List>
 
 				<Tabs.Panel value="capabilities">
@@ -117,10 +122,11 @@ export function ConfiguratorDrawer({
 					/>
 				</Tabs.Panel>
 
-				<Tabs.Panel value="storage">
+				<Tabs.Panel value="disk">
 					<ConfigurationStorage
 						instance={instance}
 						onClose={onClose}
+						onUpgrade={openTypes}
 					/>
 				</Tabs.Panel>
 			</Tabs>

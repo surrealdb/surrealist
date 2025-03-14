@@ -22,10 +22,11 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useAbsoluteLocation } from "~/hooks/routing";
+import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
+import { resolveInstanceConnection } from "~/util/connection";
 import { __throw, showError } from "~/util/helpers";
 import { iconChevronLeft } from "~/util/icons";
 import { EstimatedCost } from "../../../../components/EstimatedCost";
@@ -49,6 +50,7 @@ export function ProvisionPage() {
 	const organization = useOrganization();
 	const [details, setDetails] = useImmer(DEFAULT);
 	const instanceTypes = useAvailableInstanceTypes();
+	const navigateConnection = useConnectionNavigator();
 	const client = useQueryClient();
 
 	const instanceType = useMemo(() => {
@@ -82,13 +84,14 @@ export function ProvisionPage() {
 				}),
 			});
 
-			console.log("Provisioned instance:", result);
-
-			setProvisioning(result);
-
 			client.invalidateQueries({
 				queryKey: ["cloud", "instances"],
 			});
+
+			const connection = resolveInstanceConnection(result);
+
+			setProvisioning(result);
+			navigateConnection(connection.id);
 		} catch (err: any) {
 			console.log("Failed to provision database:", [...err.response.headers.entries()]);
 
@@ -96,8 +99,6 @@ export function ProvisionPage() {
 				title: "Failed to provision database",
 				subtitle: "Please try again later",
 			});
-		} finally {
-			navigate("/overview");
 		}
 	});
 
