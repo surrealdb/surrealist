@@ -87,7 +87,7 @@ export function ProvisionPoller({ instance }: ProvisionPollerProps) {
 				ta="center"
 				my={38}
 			>
-				<PrimaryTitle>Provisioning your Cloud Instance...</PrimaryTitle>
+				<PrimaryTitle>Provisioning your Surreal Cloud instance...</PrimaryTitle>
 
 				<Text
 					fz="xl"
