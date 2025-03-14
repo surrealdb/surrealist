@@ -3,11 +3,11 @@ import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
 import escapeRegex from "escape-string-regexp";
-import { uid } from "radash";
+import { title, uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
-import type { Authentication } from "~/types";
+import type { Authentication, Selectable } from "~/types";
 
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -497,4 +497,11 @@ export function isSimilar(a: string, b: string) {
  */
 export function plural(count: number, singular: string, plural = `${singular}s`) {
 	return count === 1 ? singular : plural;
+}
+
+/**
+ * Compile a static list of strings into a selectable list
+ */
+export function selectable(values: string[]): Selectable[] {
+	return values.map((value) => ({ value, label: value }));
 }

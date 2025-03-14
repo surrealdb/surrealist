@@ -522,8 +522,27 @@ export interface CloudInstance {
 	storage_size_updated_at: string;
 	can_update_storage_size: boolean;
 	storage_size_update_cooloff_hours: number;
+	capabilities: CloudInstanceCapabilities;
 	state: InstanceState;
 	type: CloudInstanceType;
+}
+
+export interface CloudInstanceCapabilities {
+	allow_scripting: boolean;
+	allow_guests: boolean;
+	allow_graphql: boolean;
+	allowed_rpc_methods: string[];
+	denied_rpc_methods: string[];
+	allowed_http_endpoints: string[];
+	denied_http_endpoints: string[];
+	allowed_networks: string[];
+	denied_networks: string[];
+	allowed_functions: string[];
+	denied_functions: string[];
+	allowed_experimental: string[];
+	denied_experimental: string[];
+	allowed_arbitrary_query: string[];
+	denied_arbitrary_query: string[];
 }
 
 export interface CloudInstanceType {
