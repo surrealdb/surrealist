@@ -49,7 +49,6 @@ interface NavigationItem {
 	name: string;
 	icon: string;
 	match: string;
-	disabled: boolean;
 	navigate: () => void;
 }
 
@@ -85,7 +84,6 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					name: info.name,
 					icon: info.icon,
 					match: info.id,
-					disabled: false,
 					navigate: () => setLocation(info.id),
 				};
 			});
@@ -200,7 +198,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 								onMouseEnter={hoverSidebarHandle.open}
 								withTooltip={sidebarMode === "compact"}
 							/>
-							<Divider />
+							<Divider color={isLight ? "slate.2" : "slate.7"} />
 						</>
 					)}
 
@@ -219,10 +217,6 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 										onClick={info.navigate}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}
-										disabled={info.disabled}
-										style={{
-											opacity: info.disabled ? 0.5 : 1,
-										}}
 									/>
 								</Group>
 							))}
