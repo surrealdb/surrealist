@@ -3,6 +3,7 @@ import classes from "../style.module.scss";
 import {
 	ActionIcon,
 	Alert,
+	Badge,
 	Box,
 	BoxProps,
 	Group,
@@ -209,7 +210,7 @@ export function StartInstance({
 				<Group
 					wrap="nowrap"
 					align="strech"
-					h="100%"
+					flex={1}
 				>
 					<Stack flex={1}>
 						<Group
@@ -308,6 +309,16 @@ export function StartInstance({
 							</Menu.Dropdown>
 						</Menu>
 					</div>
+				</Group>
+				<Group gap="xs">
+					{connection?.labels?.map((label, i) => (
+						<Badge
+							key={i}
+							color="slate"
+						>
+							{label}
+						</Badge>
+					))}
 				</Group>
 				<Faint containerRef={containerRef} />
 			</Paper>

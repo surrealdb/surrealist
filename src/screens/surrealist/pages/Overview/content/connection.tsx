@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 
-import { ActionIcon, Menu, Text } from "@mantine/core";
+import { ActionIcon, Badge, Menu, Text } from "@mantine/core";
 import { Box, BoxProps, Group, Paper, Stack, ThemeIcon, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
 import { PropsWithChildren, useRef } from "react";
@@ -82,7 +82,7 @@ export function StartConnection({
 				<Group
 					wrap="nowrap"
 					align="strech"
-					h="100%"
+					flex={1}
 				>
 					<Stack
 						flex={1}
@@ -172,6 +172,16 @@ export function StartConnection({
 							</Menu>
 						</div>
 					)}
+				</Group>
+				<Group gap="xs">
+					{connection.labels?.map((label, i) => (
+						<Badge
+							key={i}
+							color="slate"
+						>
+							{label}
+						</Badge>
+					))}
 				</Group>
 				<Faint containerRef={containerRef} />
 			</Paper>
