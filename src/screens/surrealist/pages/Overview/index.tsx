@@ -1,6 +1,5 @@
 import classes from "./style.module.scss";
 
-import splashUrl from "~/assets/images/cloud-splash.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
@@ -39,22 +38,22 @@ import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
+import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useSetting } from "~/hooks/config";
-import { useConnectionList, useConnectionOverview } from "~/hooks/connection";
+import { useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
 import { dispatchIntent } from "~/util/intents";
-import { useCloudInstanceList } from "../../../../cloud/hooks/instances";
+import { CloudAlert } from "./banner";
 import { StartCloud } from "./content/cloud";
 import { StartConnection } from "./content/connection";
 import { StartCreator } from "./content/creator";
@@ -73,6 +72,7 @@ export function OverviewPage() {
 	const [presentation, setPresentation] = useSetting("appearance", "connectionListMode");
 
 	const newsQuery = useLatestNewsQuery();
+	const bannerQuery = useCloudBannerQuery();
 	const [, navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 
@@ -154,6 +154,13 @@ export function OverviewPage() {
 									Version {import.meta.env.VERSION}
 								</Text>
 							</Stack>
+
+							{bannerQuery.data?.map((banner, i) => (
+								<CloudAlert
+									key={i}
+									banner={banner}
+								/>
+							))}
 
 							<Group mt="xl">
 								<PrimaryTitle>Connect to SurrealDB</PrimaryTitle>
