@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { isEmpty } from "radash";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBanner } from "~/types";
 import { fetchAPI } from "../api";
-import { isEmpty } from "radash";
 
 /**
  * Fetch the active alert banner
