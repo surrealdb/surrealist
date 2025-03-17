@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { isEmpty } from "radash";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBanner } from "~/types";
 import { fetchAPI } from "../api";
@@ -14,8 +15,9 @@ export function useCloudBannerQuery() {
 		enabled: authState === "authenticated",
 		queryFn: async () => {
 			const response = await fetchAPI<CloudBanner | CloudBanner[]>(`/message`);
+			const banners = Array.isArray(response) ? response : [response];
 
-			return Array.isArray(response) ? response : [response];
+			return banners.filter((banner) => !isEmpty(banner));
 		},
 	});
 }
