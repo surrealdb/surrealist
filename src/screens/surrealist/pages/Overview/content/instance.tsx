@@ -13,6 +13,7 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
+
 import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { PropsWithChildren, useMemo, useRef } from "react";
@@ -232,7 +233,10 @@ export function StartInstance({
 									>
 										{connection?.name ?? instance.name}
 									</Text>
-									<StateBadge state={instance.state} />
+									<StateBadge
+										size={10}
+										state={instance.state}
+									/>
 								</Group>
 								<Text>ID: {instance.id}</Text>
 							</Box>

@@ -114,7 +114,14 @@ export function DashboardView() {
 											({details?.name})
 										</Text>
 									)}
-									{details?.state && <StateBadge state={details?.state} />}
+									{details?.state && (
+										<StateBadge
+											mt="xs"
+											ml="xs"
+											size={14}
+											state={details.state}
+										/>
+									)}
 								</Group>
 								<Group gap="sm">
 									<Text fz="md">{details?.host}</Text>
