@@ -45,10 +45,22 @@ export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
 		onChange(type.slug);
 	});
 
-	const freeType = instanceTypes.find((type) => type.category === "free");
-	const isFreeAvailable = freeType && isAvailable(freeType);
+	const initialCategory = useMemo(() => {
+		if (active) {
+			const category = instanceTypes.find((type) => type.slug === active)?.category;
 
-	const [category, setCategory] = useState(isFreeAvailable ? "free" : "development");
+			if (category) {
+				return category;
+			}
+		}
+
+		const freeType = instanceTypes.find((type) => type.category === "free");
+		const isFreeAvailable = freeType && isAvailable(freeType);
+
+		return isFreeAvailable ? "free" : "development";
+	}, [active, instanceTypes, isAvailable]);
+
+	const [category, setCategory] = useState(initialCategory);
 
 	const freeTypes = groupedTypes.free ?? [];
 	const developmentTypes = groupedTypes.development ?? [];
