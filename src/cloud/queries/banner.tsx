@@ -13,7 +13,9 @@ export function useCloudBannerQuery() {
 		queryKey: ["cloud", "banner"],
 		enabled: authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudBanner>(`/message`);
+			const response = await fetchAPI<CloudBanner | CloudBanner[]>(`/message`);
+
+			return Array.isArray(response) ? response : [response];
 		},
 	});
 }

@@ -155,7 +155,12 @@ export function OverviewPage() {
 								</Text>
 							</Stack>
 
-							{bannerQuery.data?.message && <CloudAlert banner={bannerQuery.data} />}
+							{bannerQuery.data?.map((banner, i) => (
+								<CloudAlert
+									key={i}
+									banner={banner}
+								/>
+							))}
 
 							<Group mt="xl">
 								<PrimaryTitle>Connect to SurrealDB</PrimaryTitle>
