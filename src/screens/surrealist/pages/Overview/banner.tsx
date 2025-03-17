@@ -1,12 +1,12 @@
 import { Alert, MantineColor } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { BannerType, CloudBanner } from "~/types";
-import { iconHelp, iconWarning } from "~/util/icons";
+import { iconBullhorn, iconWarning } from "~/util/icons";
 
 const BANNER_INFO: Record<BannerType, [MantineColor, string, string]> = {
-	info: ["blue", "Notice", iconHelp],
-	warning: ["orange", "Warning", iconWarning],
-	important: ["red", "Important", iconWarning],
+	info: ["blue", "Service Update", iconBullhorn],
+	warning: ["orange", "Service Update", iconWarning],
+	important: ["red", "Important Service Update", iconWarning],
 };
 
 export interface CloudAlertProps {
