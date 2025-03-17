@@ -22,7 +22,7 @@ import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
 import { formatMemory } from "~/util/helpers";
-import { iconAuth, iconChevronRight } from "~/util/icons";
+import { iconAuth, iconChevronDown, iconChevronRight } from "~/util/icons";
 import { Label } from "../Label";
 
 export interface InstanceTypesProps {
@@ -61,6 +61,8 @@ export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
 					value={category}
 					variant="separated"
 					onChange={setCategory as any}
+					chevronPosition="left"
+					chevron={<Icon path={iconChevronDown} />}
 					styles={{
 						item: {
 							backgroundColor: "var(--mantine-color-body)",
@@ -149,14 +151,20 @@ function InstanceTypeCategory({
 	return (
 		<Accordion.Item value={category}>
 			<Accordion.Control>
-				<Text
-					c={category === activeCategory ? "bright" : undefined}
+				<Group c={category === activeCategory ? "bright" : undefined}>
+					<Text
+						fw={600}
+						fz="xl"
+					>
+						{title}
+					</Text>
+				</Group>
+				{/* <Text
+					c="slate.4"
 					fw={500}
-					fz="lg"
 				>
-					{title}
-				</Text>
-				<Text opacity={0.6}>{description}</Text>
+					{description}
+				</Text> */}
 			</Accordion.Control>
 			<Accordion.Panel>
 				<Stack
