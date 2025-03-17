@@ -4,8 +4,8 @@ import {
 	Badge,
 	Box,
 	Button,
+	Divider,
 	Group,
-	Paper,
 	Stack,
 	Text,
 	Tooltip,
@@ -21,8 +21,9 @@ import { Tile } from "~/components/Tile";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
-import { formatMemory, plural } from "~/util/helpers";
-import { iconAccount, iconAuth, iconChevronRight, iconClock } from "~/util/icons";
+import { formatMemory } from "~/util/helpers";
+import { iconAuth, iconChevronRight } from "~/util/icons";
+import { Label } from "../Label";
 
 export interface InstanceTypesProps {
 	value: string;
@@ -257,12 +258,7 @@ function InstanceTypeRow({
 						)}
 					</Group>
 					{estimatedCost > 0 ? (
-						<Text
-							fz="sm"
-							mt={2}
-						>
-							${estimatedCost.toFixed(3)}/hour
-						</Text>
+						<Text mt={2}>${estimatedCost.toFixed(3)} per hour</Text>
 					) : (
 						<Text
 							fz="sm"
@@ -272,46 +268,43 @@ function InstanceTypeRow({
 						</Text>
 					)}
 				</Box>
-				<Paper
-					bg="slate.6"
+				<Box
 					w={96}
 					ta="center"
-					p="xs"
 				>
 					<Text
+						fz="lg"
+						fw={500}
 						c="bright"
-						fw={800}
-						fz="sm"
+					>
+						{instanceType.cpu} Core
+					</Text>
+					<Label
+						mt={2}
+						c="slate.3"
 					>
 						vCPU
-					</Text>
-					<Text
-						fz="lg"
-						fw={500}
-					>
-						{instanceType.cpu} {plural(instanceType.cpu, "Core")}
-					</Text>
-				</Paper>
-				<Paper
-					bg="slate.6"
+					</Label>
+				</Box>
+				<Divider orientation="vertical" />
+				<Box
 					w={96}
 					ta="center"
-					py="xs"
 				>
-					<Text
-						c="bright"
-						fw={600}
-						fz="sm"
-					>
-						Memory
-					</Text>
 					<Text
 						fz="lg"
 						fw={500}
+						c="bright"
 					>
 						{formatMemory(instanceType.memory)}
 					</Text>
-				</Paper>
+					<Label
+						mt={2}
+						c="slate.3"
+					>
+						Memory
+					</Label>
+				</Box>
 			</Group>
 		</Tile>
 	);
