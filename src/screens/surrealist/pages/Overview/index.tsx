@@ -163,7 +163,7 @@ export function OverviewPage() {
 							))}
 
 							<Group mt="xl">
-								<PrimaryTitle>Connect to SurrealDB</PrimaryTitle>
+								<PrimaryTitle>Your connections</PrimaryTitle>
 								<Spacer />
 								<ActionIcon.Group>
 									<ActionIcon
@@ -179,7 +179,7 @@ export function OverviewPage() {
 										<Icon path={iconViewList} />
 									</ActionIcon>
 								</ActionIcon.Group>
-								{authState === "unauthenticated" ? (
+								{authState === "unauthenticated" && (
 									<Button
 										size="xs"
 										variant="gradient"
@@ -188,18 +188,6 @@ export function OverviewPage() {
 									>
 										Sign in
 									</Button>
-								) : (
-									<Tooltip label="The ability to create organizations is not currently available">
-										<Button
-											color="slate"
-											size="xs"
-											variant="light"
-											loading={authState !== "authenticated"}
-											rightSection={<Icon path={iconPlus} />}
-										>
-											New organization
-										</Button>
-									</Tooltip>
 								)}
 							</Group>
 
@@ -230,21 +218,12 @@ export function OverviewPage() {
 							{authState === "authenticated" &&
 								organizations.map(({ info, instances }) => (
 									<Fragment key={info.id}>
-										<Group mt="lg">
-											<ThemeIcon
-												radius="xs"
-												color="slate"
-												variant="light"
-											>
-												<Icon path={iconCloud} />
-											</ThemeIcon>
-											<Text
-												fz="xl"
-												fw={500}
-											>
-												{info.name}
-											</Text>
-										</Group>
+										<PrimaryTitle
+											fz="xl"
+											mt="xl"
+										>
+											{info.name} instances
+										</PrimaryTitle>
 										<SimpleGrid cols={gridColumns}>
 											{instances.map((instance) => (
 												<StartInstance
@@ -268,14 +247,14 @@ export function OverviewPage() {
 								))}
 
 							{(authState === "loading" || isPending) && (
-								<Center mt={52}>
+								<Center mt="xl">
 									<Loader />
 								</Center>
 							)}
 
 							{authState === "unauthenticated" && (
 								<>
-									<PrimaryTitle mt={52}>Surreal Cloud</PrimaryTitle>
+									<PrimaryTitle mt="xl">Surreal Cloud</PrimaryTitle>
 									<StartCloud
 										title="Explore Surreal Cloud"
 										subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
@@ -285,7 +264,7 @@ export function OverviewPage() {
 								</>
 							)}
 
-							<PrimaryTitle mt={52}>Resources</PrimaryTitle>
+							<PrimaryTitle mt="xl">Resources</PrimaryTitle>
 
 							<SimpleGrid
 								cols={{
@@ -323,7 +302,7 @@ export function OverviewPage() {
 								/>
 							</SimpleGrid>
 
-							<PrimaryTitle mt={52}>Latest news</PrimaryTitle>
+							<PrimaryTitle mt="xl">Latest news</PrimaryTitle>
 
 							{newsQuery.isPending ? (
 								<>

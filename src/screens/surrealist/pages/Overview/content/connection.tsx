@@ -65,6 +65,15 @@ export function StartConnection({
 		},
 	});
 
+	const labels = connection?.labels?.map((label, i) => (
+		<Badge
+			key={i}
+			color="slate"
+		>
+			{label}
+		</Badge>
+	));
+
 	return (
 		<UnstyledButton
 			onClick={handleConnect}
@@ -123,66 +132,55 @@ export function StartConnection({
 							</Box>
 						</Group>
 					</Stack>
+					{presentation === "row" && <Group gap="xs">{labels}</Group>}
 					{!isSandbox && (
-						<div
-							onClick={ON_STOP_PROPAGATION}
-							onKeyDown={ON_STOP_PROPAGATION}
+						<Menu
+							transitionProps={{
+								transition: "scale-y",
+							}}
 						>
-							<Menu
-								transitionProps={{
-									transition: "scale-y",
-								}}
-							>
-								<Menu.Target>
-									<ActionIcon
-										color="slate"
-										variant="subtle"
-										component="div"
-									>
-										<Icon path={iconDotsVertical} />
-									</ActionIcon>
-								</Menu.Target>
-								<Menu.Dropdown>
-									<Menu.Item
-										leftSection={<Icon path={iconEdit} />}
-										onClick={handleEdit}
-									>
-										Edit details
-									</Menu.Item>
-									<Menu.Item
-										leftSection={<Icon path={iconCopy} />}
-										onClick={handleDuplicate}
-									>
-										Duplicate
-									</Menu.Item>
-									<Menu.Divider />
-									<Menu.Item
-										leftSection={
-											<Icon
-												path={iconDelete}
-												c="red"
-											/>
-										}
-										onClick={handleDelete}
-										c="red"
-									>
-										Delete
-									</Menu.Item>
-								</Menu.Dropdown>
-							</Menu>
-						</div>
+							<Menu.Target>
+								<ActionIcon
+									color="slate"
+									variant="subtle"
+									component="div"
+									onClick={ON_STOP_PROPAGATION}
+									onKeyDown={ON_STOP_PROPAGATION}
+								>
+									<Icon path={iconDotsVertical} />
+								</ActionIcon>
+							</Menu.Target>
+							<Menu.Dropdown>
+								<Menu.Item
+									leftSection={<Icon path={iconEdit} />}
+									onClick={handleEdit}
+								>
+									Edit details
+								</Menu.Item>
+								<Menu.Item
+									leftSection={<Icon path={iconCopy} />}
+									onClick={handleDuplicate}
+								>
+									Duplicate
+								</Menu.Item>
+								<Menu.Divider />
+								<Menu.Item
+									leftSection={
+										<Icon
+											path={iconDelete}
+											c="red"
+										/>
+									}
+									onClick={handleDelete}
+									c="red"
+								>
+									Delete
+								</Menu.Item>
+							</Menu.Dropdown>
+						</Menu>
 					)}
 				</Group>
-				<Group gap="xs">
-					{connection.labels?.map((label, i) => (
-						<Badge
-							key={i}
-							color="slate"
-						>
-							{label}
-						</Badge>
-					))}
-				</Group>
+				{presentation === "card" && <Group gap="xs">{labels}</Group>}
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>

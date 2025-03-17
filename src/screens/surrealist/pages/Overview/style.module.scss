@@ -42,6 +42,10 @@
 
 .start-row {
 	height: unset;
+
+	>div {
+		align-items: center;
+	}
 }
 
 .start-cloud {

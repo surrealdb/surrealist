@@ -6,6 +6,7 @@ import {
 	Badge,
 	Box,
 	BoxProps,
+	Center,
 	Group,
 	Menu,
 	Paper,
@@ -193,6 +194,15 @@ export function StartInstance({
 		},
 	});
 
+	const labels = connection?.labels?.map((label, i) => (
+		<Badge
+			key={i}
+			color="slate"
+		>
+			{label}
+		</Badge>
+	));
+
 	return (
 		<UnstyledButton
 			onClick={handleConnect}
@@ -243,83 +253,72 @@ export function StartInstance({
 							</Box>
 						</Group>
 					</Stack>
-					<div
-						onClick={ON_STOP_PROPAGATION}
-						onKeyDown={ON_STOP_PROPAGATION}
+					{presentation === "row" && <Group gap="xs">{labels}</Group>}
+					<Menu
+						transitionProps={{
+							transition: "scale-y",
+						}}
 					>
-						<Menu
-							transitionProps={{
-								transition: "scale-y",
-							}}
-						>
-							<Menu.Target>
-								<ActionIcon
-									color="slate"
-									variant="subtle"
-									component="div"
-								>
-									<Icon path={iconDotsVertical} />
-								</ActionIcon>
-							</Menu.Target>
-							<Menu.Dropdown>
-								<Menu.Item
-									leftSection={<Icon path={iconEdit} />}
-									onClick={handleEdit}
-								>
-									Edit details
-								</Menu.Item>
-								<Menu.Divider />
-								<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
-								<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
-								{instance.state === "ready" ? (
+						<Menu.Target>
+							<ActionIcon
+								color="slate"
+								variant="subtle"
+								component="div"
+								onClick={ON_STOP_PROPAGATION}
+								onKeyDown={ON_STOP_PROPAGATION}
+							>
+								<Icon path={iconDotsVertical} />
+							</ActionIcon>
+						</Menu.Target>
+						<Menu.Dropdown>
+							<Menu.Item
+								leftSection={<Icon path={iconEdit} />}
+								onClick={handleEdit}
+							>
+								Edit details
+							</Menu.Item>
+							<Menu.Divider />
+							<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
+							<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
+							{instance.state === "ready" ? (
+								<>
+									<Menu.Divider />
+									<Menu.Item
+										leftSection={<Icon path={iconPause} />}
+										onClick={handlePause}
+									>
+										Pause instance
+									</Menu.Item>
+									<Menu.Item
+										leftSection={
+											<Icon
+												path={iconDelete}
+												c="red"
+											/>
+										}
+										onClick={handleDelete}
+										c="red"
+									>
+										Delete instance
+									</Menu.Item>
+								</>
+							) : (
+								instance.state === "paused" && (
 									<>
 										<Menu.Divider />
 										<Menu.Item
-											leftSection={<Icon path={iconPause} />}
-											onClick={handlePause}
+											leftSection={<Icon path={iconPlay} />}
+											onClick={handleResume}
 										>
-											Pause instance
-										</Menu.Item>
-										<Menu.Item
-											leftSection={
-												<Icon
-													path={iconDelete}
-													c="red"
-												/>
-											}
-											onClick={handleDelete}
-											c="red"
-										>
-											Delete instance
+											Resume instance
 										</Menu.Item>
 									</>
-								) : (
-									instance.state === "paused" && (
-										<>
-											<Menu.Divider />
-											<Menu.Item
-												leftSection={<Icon path={iconPlay} />}
-												onClick={handleResume}
-											>
-												Resume instance
-											</Menu.Item>
-										</>
-									)
-								)}
-							</Menu.Dropdown>
-						</Menu>
-					</div>
+								)
+							)}
+						</Menu.Dropdown>
+					</Menu>
 				</Group>
-				<Group gap="xs">
-					{connection?.labels?.map((label, i) => (
-						<Badge
-							key={i}
-							color="slate"
-						>
-							{label}
-						</Badge>
-					))}
-				</Group>
+				{presentation === "card" && <Group gap="xs">{labels}</Group>}
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>
