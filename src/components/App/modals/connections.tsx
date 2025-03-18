@@ -58,35 +58,30 @@ export function ConnectionsModal() {
 		label,
 	});
 
-	const newConnection = useStable(() => {
-		openedHandle.close();
-		dispatchIntent("new-connection");
-	});
+	// const newLocalhost = useStable(() => {
+	// 	const { username, password, port } = useConfigStore.getState().settings.serving;
 
-	const newLocalhost = useStable(() => {
-		const { username, password, port } = useConfigStore.getState().settings.serving;
+	// 	const template = JSON.stringify({
+	// 		name: "Local database",
+	// 		icon: 0,
+	// 		values: {
+	// 			mode: "root",
+	// 			database: "",
+	// 			namespace: "",
+	// 			protocol: "ws",
+	// 			hostname: `localhost:${port}`,
+	// 			scope: "",
+	// 			scopeFields: [],
+	// 			access: "",
+	// 			token: "",
+	// 			username,
+	// 			password,
+	// 		},
+	// 	});
 
-		const template = JSON.stringify({
-			name: "Local database",
-			icon: 0,
-			values: {
-				mode: "root",
-				database: "",
-				namespace: "",
-				protocol: "ws",
-				hostname: `localhost:${port}`,
-				scope: "",
-				scopeFields: [],
-				access: "",
-				token: "",
-				username,
-				password,
-			},
-		});
-
-		dispatchIntent("new-connection", { template });
-		openedHandle.close();
-	});
+	// 	dispatchIntent("new-connection", { template });
+	// 	openedHandle.close();
+	// });
 
 	const activateConnection = useStable((con: Connection) => {
 		navigateConnection(con.id);
@@ -132,55 +127,16 @@ export function ConnectionsModal() {
 					/>
 					<Text>Connections</Text>
 				</Group>
-				<Group>
-					<TextInput
-						flex={1}
-						placeholder="Search for connections..."
-						variant="unstyled"
-						className={classes.listingSearch}
-						autoFocus
-						value={search}
-						spellCheck={false}
-						onChange={(e) => setSearch(e.target.value)}
-					/>
-					<Menu position="right-start">
-						<Menu.Target>
-							<ActionIcon
-								aria-label="Add..."
-								variant="gradient"
-								style={{
-									backgroundOrigin: "border-box",
-									border: "1px solid rgba(255, 255, 255, 0.3)",
-								}}
-								size={36}
-								radius="md"
-							>
-								<Icon path={iconPlus} />
-							</ActionIcon>
-						</Menu.Target>
-						<Menu.Dropdown>
-							<Menu.Item
-								leftSection={<Icon path={iconPlus} />}
-								onClick={newConnection}
-							>
-								New connection
-							</Menu.Item>
-							{isDesktop && (
-								<Menu.Item
-									leftSection={
-										<Icon
-											path={iconHomePlus}
-											noStroke
-										/>
-									}
-									onClick={newLocalhost}
-								>
-									New local connection
-								</Menu.Item>
-							)}
-						</Menu.Dropdown>
-					</Menu>
-				</Group>
+				<TextInput
+					flex={1}
+					placeholder="Search for connections..."
+					variant="unstyled"
+					className={classes.listingSearch}
+					autoFocus
+					value={search}
+					spellCheck={false}
+					onChange={(e) => setSearch(e.target.value)}
+				/>
 			</Box>
 
 			<Divider mx="lg" />
