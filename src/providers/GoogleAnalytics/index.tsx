@@ -5,7 +5,7 @@ interface GoogleAnalyticsContext {
 	/**
 	 * Track a custom event
 	 */
-	trackEvent: (id: string, data: object) => void;
+	trackEvent: (id: GAIdentifier, data: object) => Promise<void>;
 }
 
 interface GoogleAnalyticsProviderProps {
@@ -13,6 +13,9 @@ interface GoogleAnalyticsProviderProps {
 	children: ReactNode;
 	platform: "surrealist" | "surrealist-mini";
 }
+
+// The type of the event that is being tracked
+export type GAIdentifier = "event" | "pageview";
 
 const GoogleAnalyticsContext = createContext<GoogleAnalyticsContext | null>(null);
 
@@ -28,8 +31,14 @@ function useGoogleAnalytics() {
 
 function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 
-	const trackEvent = (id: string, data: object) => {
+	// Create a promise that resolves when Google Analytics is loaded
+	// This is needed to ensure that the trackEvent function is only called after Google Analytics is loaded.
+	const { promise, reject, resolve } = Promise.withResolvers<null>();
 
+	const trackEvent = async (id: GAIdentifier, data: object) => {
+		await promise;
+		window.dataLayer.push({ event: id, eventProps: data });
+		console.log("Pushed GA Event: ", id, data);
 	};
 
 	// Initialize Google Analytics
@@ -42,10 +51,21 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 
 		script.addEventListener("load", () => {
 			console.info("Google Analytics loaded");
+			window.dataLayer = window.dataLayer || [];
+			resolve(null);
 		});
 
+		const onError = () => {
+			console.error("Failed to load Google Analytics");
+			reject();
+		};
+
+		script.addEventListener("error", onError);
+		script.addEventListener("abort", onError);
+
 		document.head.appendChild(script);
-	}, []);
+
+	}, [resolve, reject]);
 
 	return (
 		<GoogleAnalyticsContext.Provider value={{ trackEvent }}>
