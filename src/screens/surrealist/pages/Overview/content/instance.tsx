@@ -254,69 +254,72 @@ export function StartInstance({
 						</Group>
 					</Stack>
 					{presentation === "row" && <Group gap="xs">{labels}</Group>}
-					<Menu
-						transitionProps={{
-							transition: "scale-y",
-						}}
+					<div
+						onClick={ON_STOP_PROPAGATION}
+						onKeyDown={ON_STOP_PROPAGATION}
 					>
-						<Menu.Target>
-							<ActionIcon
-								color="slate"
-								variant="subtle"
-								component="div"
-								onClick={ON_STOP_PROPAGATION}
-								onKeyDown={ON_STOP_PROPAGATION}
-							>
-								<Icon path={iconDotsVertical} />
-							</ActionIcon>
-						</Menu.Target>
-						<Menu.Dropdown>
-							<Menu.Item
-								leftSection={<Icon path={iconEdit} />}
-								onClick={handleEdit}
-							>
-								Edit details
-							</Menu.Item>
-							<Menu.Divider />
-							<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
-							<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
-							{instance.state === "ready" ? (
-								<>
-									<Menu.Divider />
-									<Menu.Item
-										leftSection={<Icon path={iconPause} />}
-										onClick={handlePause}
-									>
-										Pause instance
-									</Menu.Item>
-									<Menu.Item
-										leftSection={
-											<Icon
-												path={iconDelete}
-												c="red"
-											/>
-										}
-										onClick={handleDelete}
-										c="red"
-									>
-										Delete instance
-									</Menu.Item>
-								</>
-							) : (
-								instance.state === "paused" && (
+						<Menu
+							transitionProps={{
+								transition: "scale-y",
+							}}
+						>
+							<Menu.Target>
+								<ActionIcon
+									color="slate"
+									variant="subtle"
+									component="div"
+								>
+									<Icon path={iconDotsVertical} />
+								</ActionIcon>
+							</Menu.Target>
+							<Menu.Dropdown>
+								<Menu.Item
+									leftSection={<Icon path={iconEdit} />}
+									onClick={handleEdit}
+								>
+									Edit details
+								</Menu.Item>
+								<Menu.Divider />
+								<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
+								<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
+								{instance.state === "ready" ? (
 									<>
 										<Menu.Divider />
 										<Menu.Item
-											leftSection={<Icon path={iconPlay} />}
-											onClick={handleResume}
+											leftSection={<Icon path={iconPause} />}
+											onClick={handlePause}
 										>
-											Resume instance
+											Pause instance
+										</Menu.Item>
+										<Menu.Item
+											leftSection={
+												<Icon
+													path={iconDelete}
+													c="red"
+												/>
+											}
+											onClick={handleDelete}
+											c="red"
+										>
+											Delete instance
 										</Menu.Item>
 									</>
-								)
-							)}
-						</Menu.Dropdown>
-					</Menu>
+								) : (
+									instance.state === "paused" && (
+										<>
+											<Menu.Divider />
+											<Menu.Item
+												leftSection={<Icon path={iconPlay} />}
+												onClick={handleResume}
+											>
+												Resume instance
+											</Menu.Item>
+										</>
+									)
+								)}
+							</Menu.Dropdown>
+						</Menu>
+					</div>
 				</Group>
 				{presentation === "card" && <Group gap="xs">{labels}</Group>}
 				<Faint containerRef={containerRef} />
