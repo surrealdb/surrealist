@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 
-import { Box, BoxProps, Center, Flex, Paper, Stack, Text, UnstyledButton } from "@mantine/core";
+import { Box, BoxProps, Flex, Paper, Text, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
 import { PropsWithChildren, ReactNode, useRef } from "react";
 import { Icon } from "~/components/Icon";
@@ -44,19 +44,14 @@ export function StartCreator({
 					justify={isCard ? "center" : "start"}
 					align="center"
 					gap={0}
+					h="100%"
 				>
-					<Icon
-						path={iconPlus}
-						size={isCard ? "xl" : "lg"}
-						ml={isCard ? 0 : "xs"}
-						mr={isCard ? 0 : "xl"}
-					/>
 					<Box ta={isCard ? "center" : "start"}>
 						<Text
 							c="bright"
 							fw={600}
 							fz="lg"
-							mt={isCard ? "xs" : 0}
+							// mt={isCard ? "xs" : 0}
 						>
 							{title}
 						</Text>
