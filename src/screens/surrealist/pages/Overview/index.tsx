@@ -11,23 +11,29 @@ import {
 	Center,
 	Group,
 	Image,
+	Indicator,
 	Loader,
+	Menu,
 	ScrollArea,
 	SimpleGrid,
 	Skeleton,
 	Stack,
 	Text,
+	TextInput,
 	ThemeIcon,
 	Transition,
 } from "@mantine/core";
 
 import {
 	iconBook,
+	iconCheck,
 	iconChevronRight,
 	iconCloud,
 	iconCommunity,
 	iconPlus,
+	iconSearch,
 	iconSidekick,
+	iconTune,
 	iconUniversity,
 	iconViewGrid,
 	iconViewList,
@@ -44,7 +50,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useSetting } from "~/hooks/config";
-import { useConnectionOverview } from "~/hooks/connection";
+import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -60,6 +66,8 @@ import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartResource } from "./content/resource";
+import { ActionButton } from "~/components/ActionButton";
+import { useInputState } from "@mantine/hooks";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -70,13 +78,14 @@ const GRID_COLUMNS = {
 export function OverviewPage() {
 	const { setSelectedOrganization } = useCloudStore.getState();
 	const [presentation, setPresentation] = useSetting("appearance", "connectionListMode");
+	const knownLabels = useConnectionLabels();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
 	const [, navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 
-	const [search, setSearch] = useState("");
+	const [search, setSearch] = useInputState("");
 	const [label, setLabel] = useState("");
 
 	const { isPending, sandbox, userConnections, organizations } = useConnectionOverview({
@@ -104,6 +113,8 @@ export function OverviewPage() {
 		light: logoLightUrl,
 		dark: logoDarkUrl,
 	});
+
+	const showCreator = !label && !search;
 
 	return (
 		<Box
@@ -165,6 +176,54 @@ export function OverviewPage() {
 							<Group mt="xl">
 								<PrimaryTitle>Your connections</PrimaryTitle>
 								<Spacer />
+								<Menu>
+									<Menu.Target>
+										<Indicator
+											disabled={!label}
+											color="blue"
+											size={7}
+										>
+											<ActionButton
+												variant="subtle"
+												color="slate"
+												label="Filter connections"
+											>
+												<Icon path={iconTune} />
+											</ActionButton>
+										</Indicator>
+									</Menu.Target>
+									<Menu.Dropdown miw={150}>
+										{knownLabels.map((option) => {
+											const isActive = label === option;
+
+											return (
+												<Menu.Item
+													key={option}
+													onClick={() => setLabel(isActive ? "" : option)}
+													rightSection={
+														isActive && <Icon path={iconCheck} />
+													}
+												>
+													{option}
+												</Menu.Item>
+											);
+										})}
+									</Menu.Dropdown>
+								</Menu>
+								<TextInput
+									value={search}
+									onChange={setSearch}
+									placeholder="Search instances"
+									leftSection={
+										<Icon
+											path={iconSearch}
+											size="sm"
+										/>
+									}
+									radius="sm"
+									size="xs"
+									className={classes.search}
+								/>
 								<ActionIcon.Group>
 									<ActionIcon
 										c={presentation === "card" ? "bright" : "slate.3"}
@@ -207,12 +266,14 @@ export function OverviewPage() {
 										onConnect={activateConnection}
 									/>
 								))}
-								<StartCreator
-									title="New connection"
-									subtitle="Connect to a local or remote instance"
-									presentation={presentation}
-									onCreate={createConnection}
-								/>
+								{showCreator && (
+									<StartCreator
+										title="New connection"
+										subtitle="Connect to a local or remote instance"
+										presentation={presentation}
+										onCreate={createConnection}
+									/>
+								)}
 							</SimpleGrid>
 
 							{authState === "authenticated" &&
@@ -233,15 +294,17 @@ export function OverviewPage() {
 													onConnect={activateInstance}
 												/>
 											))}
-											<StartCreator
-												title="New instance"
-												subtitle="Provision a new Surreal Cloud instance"
-												presentation={presentation}
-												onCreate={() => {
-													setSelectedOrganization(info.id);
-													navigate("/provision");
-												}}
-											/>
+											{showCreator && (
+												<StartCreator
+													title="New instance"
+													subtitle="Provision a new Surreal Cloud instance"
+													presentation={presentation}
+													onCreate={() => {
+														setSelectedOrganization(info.id);
+														navigate("/provision");
+													}}
+												/>
+											)}
 										</SimpleGrid>
 									</Fragment>
 								))}

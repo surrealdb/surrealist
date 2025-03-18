@@ -186,10 +186,14 @@ export function useConnectionOverview({ search, label }: ConnectionFilter) {
 		];
 
 		for (const entry of entries) {
-			organizations.push({
-				info: entry.organization,
-				instances: filterConnections(entry.instances, search, label),
-			});
+			const instances = filterConnections(entry.instances, search, label);
+
+			if (instances.length > 0 || (!search && !label)) {
+				organizations.push({
+					info: entry.organization,
+					instances,
+				});
+			}
 		}
 
 		const isEmpty = !sandbox && userConnections.length === 0 && organizations.length === 0;
@@ -216,25 +220,24 @@ function filterConnections<T extends Connection | CloudInstance>(
 	}
 
 	return list.filter((target) => {
+		const hasLabel = "labels" in target;
+		const hasAuthentication = "authentication" in target;
+
+		// Label filtering
+		if (label && (!hasLabel || !target.labels?.includes(label))) {
+			return false;
+		}
+
+		// Search filtering
 		if (search) {
 			const needle = search.toLowerCase();
 			const name = target.name.toLowerCase();
+			const hostname = hasAuthentication ? target.authentication.hostname.toLowerCase() : "";
 
-			if (!fuzzyMatch(needle, name)) {
-				return false;
-			}
-
-			if ("authentication" in target) {
-				const hostname = target.authentication.hostname.toLowerCase();
-
-				if (!fuzzyMatch(search, hostname)) {
-					return false;
-				}
-			}
-		}
-
-		if (label && "labels" in target) {
-			if (!target.labels?.includes(label)) {
+			if (
+				!fuzzyMatch(needle, name) &&
+				(!hasAuthentication || !fuzzyMatch(needle, hostname))
+			) {
 				return false;
 			}
 		}
