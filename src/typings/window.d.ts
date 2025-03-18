@@ -1,0 +1,9 @@
+declare global {
+	interface Window {
+		dataLayer: object[];
+	}
+}
+
+// This has the be exported so that TypeScript knows that this file is a module with global declarations.
+// Without the export, TypeScript will treat this file as a script and will not allow you to declare global variables.
+export default {};
