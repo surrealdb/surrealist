@@ -137,21 +137,10 @@ export function ConnectionStatus() {
 							{statusText}
 						</Text>
 						<Menu.Divider />
-						<Menu.Label>Connection</Menu.Label>
-						<Menu.Item
-							leftSection={<Icon path={iconServer} />}
-							onClick={openConnections}
-						>
-							View connections
-						</Menu.Item>
+
 						{!isSandbox && (
 							<>
-								<Menu.Item
-									leftSection={<Icon path={iconEdit} />}
-									onClick={() => openEditor(connectionId)}
-								>
-									Edit connection
-								</Menu.Item>
+								<Menu.Label mt="sm">Connection</Menu.Label>
 								<Menu.Item
 									leftSection={<Icon path={iconReset} />}
 									onClick={() => openConnection()}
