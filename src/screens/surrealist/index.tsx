@@ -15,8 +15,7 @@ import { BillingPage } from "./pages/Billing";
 import { ChatPage } from "./pages/Chat";
 import { NewEmbedPage } from "./pages/NewEmbed";
 import { OverviewPage } from "./pages/Overview";
-import PlaceholderPage from "./pages/Placeholder";
-import { ProvisionPage } from "./pages/Provision";
+import { CreateInstancePage } from "./pages/CreateInstance";
 import { ReferralPage } from "./pages/Referral";
 import { SupportPage } from "./pages/Support";
 import { SurrealistSidebar } from "./sidebar";
@@ -39,7 +38,7 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const BillingPageLazy = memo(BillingPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
-const ProvisionPageLazy = memo(ProvisionPage);
+const CreateInstancePageLazy = memo(CreateInstancePage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -163,8 +162,16 @@ export function SurrealistScreen() {
 								<ReferralPageLazy />
 							</Route>
 
-							<Route path="/provision">
-								<ProvisionPageLazy />
+							<Route path="/create/connection">
+								<CreateInstancePageLazy />
+							</Route>
+
+							<Route path="/create/organization">
+								<CreateInstancePageLazy />
+							</Route>
+
+							<Route path="/create/instance">
+								<CreateInstancePageLazy />
 							</Route>
 
 							<Route path="/support">

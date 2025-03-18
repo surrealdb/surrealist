@@ -60,7 +60,9 @@ export type GlobalPage =
 	| "/support"
 	| "/referrals"
 	| "/mini/new"
-	| "/provision";
+	| "/create/connection"
+	| "/create/organization"
+	| "/create/instance";
 export type ViewPage =
 	| "dashboard"
 	| "query"

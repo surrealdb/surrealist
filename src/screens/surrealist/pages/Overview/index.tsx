@@ -296,8 +296,7 @@ export function OverviewPage() {
 													</ThemeIcon>
 												}
 												onClick={() => {
-													// setSelectedOrganization(info.id);
-													navigate("/provision");
+													navigate("/create/instance");
 												}}
 											>
 												<Box>
@@ -388,7 +387,7 @@ export function OverviewPage() {
 													subtitle="Provision a new Surreal Cloud instance"
 													onCreate={() => {
 														setSelectedOrganization(info.id);
-														navigate("/provision");
+														navigate("/create/instance");
 													}}
 												/>
 											)}

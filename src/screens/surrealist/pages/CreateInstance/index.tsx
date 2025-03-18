@@ -7,7 +7,7 @@ import type { CloudInstance } from "~/types";
 import { ProvisionForm } from "./form";
 import { ProvisionPoller } from "./poller";
 
-export function ProvisionPage() {
+export function CreateInstancePage() {
 	const [created, setCreated] = useState<CloudInstance | null>(null);
 
 	return (

@@ -217,8 +217,18 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Embed Surrealist",
 		icon: iconXml,
 	},
-	"/provision": {
-		id: "/provision",
+	"/create/connection": {
+		id: "/create/connection",
+		name: "Connect to SurrealDB",
+		icon: iconPlus,
+	},
+	"/create/organization": {
+		id: "/create/organization",
+		name: "New organization",
+		icon: iconPlus,
+	},
+	"/create/instance": {
+		id: "/create/instance",
 		name: "Provision Instance",
 		icon: iconPlus,
 	},
