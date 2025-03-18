@@ -34,6 +34,31 @@ export function CreateConnectionPage() {
 		navigateConnection(connection.id);
 	});
 
+	// const newLocalhost = useStable(() => {
+	// 	const { username, password, port } = useConfigStore.getState().settings.serving;
+
+	// 	const template = JSON.stringify({
+	// 		name: "Local database",
+	// 		icon: 0,
+	// 		values: {
+	// 			mode: "root",
+	// 			database: "",
+	// 			namespace: "",
+	// 			protocol: "ws",
+	// 			hostname: `localhost:${port}`,
+	// 			scope: "",
+	// 			scopeFields: [],
+	// 			access: "",
+	// 			token: "",
+	// 			username,
+	// 			password,
+	// 		},
+	// 	});
+
+	// 	dispatchIntent("new-connection", { template });
+	// 	openedHandle.close();
+	// });
+
 	return (
 		<Box
 			flex={1}
