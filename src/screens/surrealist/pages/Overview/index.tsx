@@ -25,21 +25,24 @@ import {
 } from "@mantine/core";
 
 import {
+	iconAccount,
 	iconBook,
 	iconCheck,
+	iconChevronDown,
 	iconChevronRight,
 	iconCloud,
 	iconCommunity,
-	iconPlus,
+	iconSandbox,
 	iconSearch,
+	iconServer,
 	iconSidekick,
+	iconSurreal,
 	iconTune,
 	iconUniversity,
 	iconViewGrid,
 	iconViewList,
 } from "~/util/icons";
 
-import { Tooltip } from "@mantine/core";
 import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { adapter } from "~/adapter";
@@ -238,7 +241,7 @@ export function OverviewPage() {
 										<Icon path={iconViewList} />
 									</ActionIcon>
 								</ActionIcon.Group>
-								{authState === "unauthenticated" && (
+								{authState === "unauthenticated" ? (
 									<Button
 										size="xs"
 										variant="gradient"
@@ -247,6 +250,119 @@ export function OverviewPage() {
 									>
 										Sign in
 									</Button>
+								) : (
+									// <Button
+									// 	size="xs"
+									// 	color="slate"
+									// 	variant="gradient"
+									// 	onClick={openCloudAuthentication}
+									// 	rightSection={<Icon path={iconChevronDown} />}
+									// >
+									// 	Create new
+									// </Button>
+									<Menu
+										transitionProps={{ transition: "scale-y" }}
+										position="bottom-end"
+									>
+										<Menu.Target>
+											<Button
+												size="xs"
+												color="slate"
+												variant="gradient"
+												onClick={openCloudAuthentication}
+												rightSection={<Icon path={iconChevronDown} />}
+											>
+												Create new
+											</Button>
+										</Menu.Target>
+										<Menu.Dropdown>
+											<Menu.Item
+												onClick={createConnection}
+												leftSection={
+													<ThemeIcon
+														color="slate"
+														mr="xs"
+														radius="xs"
+														size="lg"
+														variant="light"
+													>
+														<Icon
+															path={iconSandbox}
+															noStroke
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Connection
+													</Text>
+													<Text>Connect to any SurrealDB instance</Text>
+												</Box>
+											</Menu.Item>
+											<Menu.Divider />
+											<Menu.Item
+												leftSection={
+													<ThemeIcon
+														color="surreal"
+														mr="xs"
+														radius="xs"
+														size="lg"
+														variant="light"
+													>
+														<Icon
+															path={iconCloud}
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+												onClick={() => {
+													// setSelectedOrganization(info.id);
+													navigate("/provision");
+												}}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Instance
+													</Text>
+													<Text>Create a managed cloud instance</Text>
+												</Box>
+											</Menu.Item>
+											<Menu.Item
+												leftSection={
+													<ThemeIcon
+														color="indigo"
+														mr="xs"
+														radius="xs"
+														size="lg"
+														variant="light"
+													>
+														<Icon
+															path={iconAccount}
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Organization
+													</Text>
+													<Text>Create a space to manage your team</Text>
+												</Box>
+											</Menu.Item>
+										</Menu.Dropdown>
+									</Menu>
 								)}
 							</Group>
 
@@ -266,14 +382,14 @@ export function OverviewPage() {
 										onConnect={activateConnection}
 									/>
 								))}
-								{showCreator && (
+								{/* {showCreator && (
 									<StartCreator
 										title="New connection"
 										subtitle="Connect to a local or remote instance"
 										presentation={presentation}
 										onCreate={createConnection}
 									/>
-								)}
+								)} */}
 							</SimpleGrid>
 
 							{authState === "authenticated" &&
@@ -294,9 +410,9 @@ export function OverviewPage() {
 													onConnect={activateInstance}
 												/>
 											))}
-											{showCreator && (
+											{instances.length === 0 && (
 												<StartCreator
-													title="New instance"
+													title="No instances"
 													subtitle="Provision a new Surreal Cloud instance"
 													presentation={presentation}
 													onCreate={() => {
@@ -310,8 +426,8 @@ export function OverviewPage() {
 								))}
 
 							{(authState === "loading" || isPending) && (
-								<Center mt="xl">
-									<Loader />
+								<Center mt={52}>
+									<Loader type="dots" />
 								</Center>
 							)}
 
