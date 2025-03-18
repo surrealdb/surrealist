@@ -227,7 +227,9 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 				opened={editingAccess}
 				onClose={editingAccessHandle.close}
 				withCloseButton
+				size="lg"
 				title={<PrimaryTitle>Access fields</PrimaryTitle>}
+				zIndex={250}
 			>
 				{value.authentication.accessFields?.length === 0 ? (
 					<Text
@@ -245,48 +247,46 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 								: TextInput;
 
 							return (
-								<Paper key={i}>
-									<Group>
-										<TextInput
-											placeholder="Field name"
-											style={{ flex: 1 }}
-											value={field.subject}
-											spellCheck={false}
-											onChange={(e) =>
-												onChange((draft) => {
-													draft.authentication.accessFields[i].subject =
-														e.target.value;
-												})
-											}
+								<Group key={i}>
+									<TextInput
+										placeholder="Field name"
+										style={{ flex: 1 }}
+										value={field.subject}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.accessFields[i].subject =
+													e.target.value;
+											})
+										}
+									/>
+									<ValueInput
+										placeholder="Value"
+										style={{ flex: 1 }}
+										value={field.value}
+										spellCheck={false}
+										onChange={(e) =>
+											onChange((draft) => {
+												draft.authentication.accessFields[i].value =
+													e.target.value;
+											})
+										}
+									/>
+									<ActionButton
+										color="pink.9"
+										label="Remove field"
+										onClick={() =>
+											onChange((draft) => {
+												draft.authentication.accessFields.splice(i, 1);
+											})
+										}
+									>
+										<Icon
+											path={iconClose}
+											color="red"
 										/>
-										<ValueInput
-											placeholder="Value"
-											style={{ flex: 1 }}
-											value={field.value}
-											spellCheck={false}
-											onChange={(e) =>
-												onChange((draft) => {
-													draft.authentication.accessFields[i].value =
-														e.target.value;
-												})
-											}
-										/>
-										<ActionButton
-											color="pink.9"
-											label="Remove field"
-											onClick={() =>
-												onChange((draft) => {
-													draft.authentication.accessFields.splice(i, 1);
-												})
-											}
-										>
-											<Icon
-												path={iconClose}
-												color="red"
-											/>
-										</ActionButton>
-									</Group>
-								</Paper>
+									</ActionButton>
+								</Group>
 							);
 						})}
 					</Stack>

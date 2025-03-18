@@ -13,10 +13,17 @@ const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 
 export interface ConnectionAddressDetailsProps {
 	value: Connection;
+	withProtocol?: boolean;
+	withHostname?: boolean;
 	onChange: Updater<Connection>;
 }
 
-export function ConnectionAddressDetails({ value, onChange }: ConnectionAddressDetailsProps) {
+export function ConnectionAddressDetails({
+	value,
+	withProtocol,
+	withHostname,
+	onChange,
+}: ConnectionAddressDetailsProps) {
 	const isLight = useIsLight();
 
 	const { protocol, hostname } = value.authentication;
@@ -64,6 +71,8 @@ export function ConnectionAddressDetails({ value, onChange }: ConnectionAddressD
 	const isLocalhost = isHostLocal(hostname);
 	const isSecure = protocol === "https" || protocol === "wss";
 
+	const showProtocol = withProtocol ?? true;
+	const showHostname = withHostname ?? true;
 	const showSslNotice = isLocalhost && isSecure;
 	const insecureVariant = protocol === "wss" ? "ws" : "http";
 
@@ -72,31 +81,35 @@ export function ConnectionAddressDetails({ value, onChange }: ConnectionAddressD
 	return (
 		<Box>
 			<Group>
-				<Select
-					data={protocols}
-					maw={125}
-					value={protocol}
-					onChange={(value) =>
-						onChange((draft) => {
-							const proto = value as Protocol;
+				{showProtocol && (
+					<Select
+						data={protocols}
+						maw={showHostname ? 112 : undefined}
+						flex={1}
+						value={protocol}
+						onChange={(value) =>
+							onChange((draft) => {
+								const proto = value as Protocol;
 
-							draft.authentication.protocol = proto;
+								draft.authentication.protocol = proto;
 
-							if (value === "mem" || value === "indxdb") {
-								draft.authentication.mode = "none";
-							}
-						})
-					}
-				/>
-				<Box flex={1}>
+								if (value === "mem" || value === "indxdb") {
+									draft.authentication.mode = "none";
+								}
+							})
+						}
+					/>
+				)}
+				{showHostname && (
 					<TextInput
+						flex={1}
 						name="hostname"
 						value={hostname}
 						disabled={isMemory}
 						placeholder={placeholder}
 						onChange={handleEndpointChange}
 					/>
-				</Box>
+				)}
 			</Group>
 
 			<Collapse in={showSslNotice}>

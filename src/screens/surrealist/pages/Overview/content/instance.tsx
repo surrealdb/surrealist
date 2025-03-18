@@ -34,9 +34,9 @@ import {
 	iconPause,
 	iconPlay,
 } from "~/util/icons";
-import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
+import { openConnectionEditModal } from "~/modals/edit-connection";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
@@ -64,9 +64,7 @@ export function StartInstance({
 	const handleEdit = useStable(() => {
 		if (!connection) return;
 
-		dispatchIntent("edit-connection", {
-			id: connection.id,
-		});
+		openConnectionEditModal(connection);
 	});
 
 	const handleCopyHost = useStable(() => {

@@ -8,12 +8,12 @@ import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useStable } from "~/hooks/stable";
+import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
 import { ON_STOP_PROPAGATION, newId } from "~/util/helpers";
 import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
-import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 
 export interface StartConnectionProps extends BoxProps {
@@ -39,9 +39,7 @@ export function StartConnection({
 	});
 
 	const handleEdit = useStable(() => {
-		dispatchIntent("edit-connection", {
-			id: connection.id,
-		});
+		openConnectionEditModal(connection);
 	});
 
 	const handleDuplicate = useStable(() => {
