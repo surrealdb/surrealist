@@ -30,6 +30,8 @@ import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
+import { CreateConnectionPage } from "./pages/CreateConnection";
+import { CreateOrganizationPage } from "./pages/CreateOrganization";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
@@ -38,6 +40,8 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const BillingPageLazy = memo(BillingPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
+const CreateConnectionPageLazy = memo(CreateConnectionPage);
+const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
 const CreateInstancePageLazy = memo(CreateInstancePage);
 
 const PORTAL_OPTIONS = {
@@ -163,11 +167,11 @@ export function SurrealistScreen() {
 							</Route>
 
 							<Route path="/create/connection">
-								<CreateInstancePageLazy />
+								<CreateConnectionPageLazy />
 							</Route>
 
 							<Route path="/create/organization">
-								<CreateInstancePageLazy />
+								<CreateOrganizationsPageLazy />
 							</Route>
 
 							<Route path="/create/instance">

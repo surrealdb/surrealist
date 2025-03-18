@@ -5,7 +5,6 @@ import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 
 import {
-	ActionIcon,
 	Box,
 	Button,
 	Center,
@@ -32,15 +31,12 @@ import {
 	iconChevronRight,
 	iconCloud,
 	iconCommunity,
-	iconSandbox,
+	iconPlus,
 	iconSearch,
 	iconServer,
 	iconSidekick,
-	iconSurreal,
 	iconTune,
 	iconUniversity,
-	iconViewGrid,
-	iconViewList,
 } from "~/util/icons";
 
 import { useState } from "react";
@@ -52,7 +48,6 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
-import { useSetting } from "~/hooks/config";
 import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
@@ -106,16 +101,10 @@ export function OverviewPage() {
 	const authState = useCloudStore((s) => s.authState);
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
 
-	const createConnection = useStable(() => {
-		dispatchIntent("new-connection");
-	});
-
 	const logoUrl = useThemeImage({
 		light: logoLightUrl,
 		dark: logoDarkUrl,
 	});
-
-	const showCreator = !label && !search;
 
 	return (
 		<Box
@@ -252,22 +241,23 @@ export function OverviewPage() {
 										</Menu.Target>
 										<Menu.Dropdown>
 											<Menu.Item
-												onClick={createConnection}
 												leftSection={
 													<ThemeIcon
-														color="slate"
+														color="slate.0"
 														mr="xs"
 														radius="xs"
 														size="lg"
 														variant="light"
 													>
 														<Icon
-															path={iconSandbox}
-															noStroke
+															path={iconPlus}
 															size="lg"
 														/>
 													</ThemeIcon>
 												}
+												onClick={() => {
+													navigate("/create/connection");
+												}}
 											>
 												<Box>
 													<Text
@@ -279,7 +269,8 @@ export function OverviewPage() {
 													<Text>Connect to any SurrealDB instance</Text>
 												</Box>
 											</Menu.Item>
-											<Menu.Divider />
+											{/* <Menu.Divider /> */}
+											<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
 											<Menu.Item
 												leftSection={
 													<ThemeIcon
@@ -304,7 +295,7 @@ export function OverviewPage() {
 														c="bright"
 														fw={600}
 													>
-														Instance
+														Cloud Instance
 													</Text>
 													<Text>Create a managed cloud instance</Text>
 												</Box>
@@ -324,6 +315,9 @@ export function OverviewPage() {
 														/>
 													</ThemeIcon>
 												}
+												onClick={() => {
+													navigate("/create/organization");
+												}}
 											>
 												<Box>
 													<Text

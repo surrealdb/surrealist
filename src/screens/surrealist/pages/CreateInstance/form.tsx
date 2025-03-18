@@ -95,8 +95,8 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			gap="xl"
 		>
 			<Box>
-				<PrimaryTitle>New instance</PrimaryTitle>
-				<Text fz="xl">Provision a new managed Surreal Cloud instance</Text>
+				<PrimaryTitle>New Cloud instance</PrimaryTitle>
+				<Text fz="xl">Create a managed cloud instance</Text>
 			</Box>
 
 			<ProvisionDetailsStep
