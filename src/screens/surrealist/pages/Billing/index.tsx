@@ -226,7 +226,7 @@ export function BillingPage() {
 					>
 						<Group>
 							<Box>
-								<PrimaryTitle>Cloud Billing</PrimaryTitle>
+								<PrimaryTitle fz={26}>Cloud Billing</PrimaryTitle>
 								<Text fz="xl">View and manage your billing information</Text>
 							</Box>
 							<Spacer />

@@ -89,7 +89,7 @@ export function NewEmbedPage() {
 					pos="relative"
 				>
 					<Box>
-						<PrimaryTitle>Embed Surrealist</PrimaryTitle>
+						<PrimaryTitle fz={26}>Embed Surrealist</PrimaryTitle>
 						<Text fz="xl">
 							Integrate Surrealist Mini into to your content for interactive SurrealQL
 							snippets

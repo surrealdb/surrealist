@@ -1,21 +1,14 @@
-import { Divider, Group, Image, Paper, Select, Stack, TextInput } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Group, Image, Paper, Select, Stack, TextInput } from "@mantine/core";
 import { type ChangeEvent, useLayoutEffect } from "react";
-import { useOrganizationSelection } from "~/cloud/hooks/organizations";
 import { Icon } from "~/components/Icon";
 import { REGION_FLAGS } from "~/constants";
-import { useAvailableInstanceVersions, useAvailableRegions, useOrganization } from "~/hooks/cloud";
+import { useAvailableInstanceVersions, useAvailableRegions } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { iconCheck } from "~/util/icons";
 import type { ProvisionStepProps } from "../types";
 
 export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps) {
-	const { setSelectedOrganization } = useCloudStore.getState();
-
-	const organization = useOrganization();
 	const versions = useAvailableInstanceVersions();
-	const organizations = useOrganizationSelection();
 	const regions = useAvailableRegions();
 
 	const versionList = versions.map((ver) => ({
@@ -82,13 +75,8 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 						autoFocus
 					/>
 					<Select
-						label="Organization"
-						data={organizations}
-						value={organization?.id ?? ""}
-						onChange={setSelectedOrganization as any}
-					/>
-					<Select
 						label="Version"
+						placeholder="Loading versions..."
 						description="Select the version of SurrealDB you would like to use"
 						data={versionList}
 						value={details.version}
@@ -96,6 +84,7 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 					/>
 					<Select
 						label="Region"
+						placeholder="Loading regions..."
 						description="Choose a physical location for your instance"
 						data={regionList}
 						value={details.region}

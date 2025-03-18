@@ -6,6 +6,7 @@ import {
 	Button,
 	Divider,
 	Group,
+	Skeleton,
 	Stack,
 	Text,
 	Tooltip,
@@ -66,68 +67,68 @@ export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
 	const developmentTypes = groupedTypes.development ?? [];
 	const productionTypes = groupedTypes.production ?? [];
 
-	return (
-		organization && (
-			<>
-				<Accordion
-					value={category}
-					variant="separated"
-					onChange={setCategory as any}
-					chevronPosition="left"
-					chevron={<Icon path={iconChevronDown} />}
-					styles={{
-						item: {
-							backgroundColor: "var(--mantine-color-body)",
-							overflow: "hidden",
-						},
-						control: {
-							borderRadius: 0,
-						},
-					}}
-				>
-					<InstanceTypeCategory
-						organization={organization}
-						activeCategory={category}
-						selectedType={value}
-						activeType={active}
-						category="free"
-						title="Free"
-						description="A free instance to get started with SurrealDB"
-						instanceTypes={freeTypes}
-						isAvailable={isAvailable}
-						onSelect={handleUpdate}
-					/>
+	return organization ? (
+		<>
+			<Accordion
+				value={category}
+				variant="separated"
+				onChange={setCategory as any}
+				chevronPosition="left"
+				chevron={<Icon path={iconChevronDown} />}
+				styles={{
+					item: {
+						backgroundColor: "var(--mantine-color-body)",
+						overflow: "hidden",
+					},
+					control: {
+						borderRadius: 0,
+					},
+				}}
+			>
+				<InstanceTypeCategory
+					organization={organization}
+					activeCategory={category}
+					selectedType={value}
+					activeType={active}
+					category="free"
+					title="Free"
+					description="A free instance to get started with SurrealDB"
+					instanceTypes={freeTypes}
+					isAvailable={isAvailable}
+					onSelect={handleUpdate}
+				/>
 
-					<InstanceTypeCategory
-						organization={organization}
-						activeCategory={category}
-						selectedType={value}
-						activeType={active}
-						category="development"
-						title="Development"
-						description="Configurations optimized for development workloads"
-						instanceTypes={developmentTypes}
-						withBillingRequired
-						isAvailable={isAvailable}
-						onSelect={handleUpdate}
-					/>
+				<InstanceTypeCategory
+					organization={organization}
+					activeCategory={category}
+					selectedType={value}
+					activeType={active}
+					category="development"
+					title="Development"
+					description="Configurations optimized for development workloads"
+					instanceTypes={developmentTypes}
+					withBillingRequired
+					isAvailable={isAvailable}
+					onSelect={handleUpdate}
+				/>
 
-					<InstanceTypeCategory
-						organization={organization}
-						activeCategory={category}
-						selectedType={value}
-						activeType={active}
-						category="production"
-						title="Production"
-						description="Configurations optimized for production workloads"
-						instanceTypes={productionTypes}
-						withBillingRequired
-						isAvailable={isAvailable}
-						onSelect={handleUpdate}
-					/>
-				</Accordion>
-			</>
-		)
+				<InstanceTypeCategory
+					organization={organization}
+					activeCategory={category}
+					selectedType={value}
+					activeType={active}
+					category="production"
+					title="Production"
+					description="Configurations optimized for production workloads"
+					instanceTypes={productionTypes}
+					withBillingRequired
+					isAvailable={isAvailable}
+					onSelect={handleUpdate}
+				/>
+			</Accordion>
+		</>
+	) : (
+		<Skeleton h={52} />
 	);
 }
 

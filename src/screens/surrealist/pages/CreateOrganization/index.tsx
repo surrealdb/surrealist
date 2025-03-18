@@ -1,8 +1,11 @@
 import classes from "./style.module.scss";
 
-import { Box, ScrollArea, Stack, Text } from "@mantine/core";
+import { Alert, Box, Button, ScrollArea, Stack, Text } from "@mantine/core";
+import { Link } from "wouter";
+import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
+import { iconArrowLeft } from "~/util/icons";
 
 export function CreateOrganizationPage() {
 	return (
@@ -28,9 +31,22 @@ export function CreateOrganizationPage() {
 					gap="xl"
 				>
 					<Box>
-						<PrimaryTitle>New organization</PrimaryTitle>
+						<PrimaryTitle fz={26}>New organization</PrimaryTitle>
 						<Text fz="xl">Create a space to manage your team</Text>
 					</Box>
+
+					<Link to="/overview">
+						<Button
+							variant="light"
+							color="slate"
+							size="xs"
+							leftSection={<Icon path={iconArrowLeft} />}
+						>
+							Back to overview
+						</Button>
+					</Link>
+
+					<Alert title="Coming soon">This functionality is not yet available</Alert>
 				</Stack>
 			</ScrollArea>
 		</Box>

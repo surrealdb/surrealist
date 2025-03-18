@@ -75,6 +75,9 @@ export interface ConnectionDetailsProps {
 	onChange: Updater<Connection>;
 }
 
+/**
+ * @deprecated
+ */
 export function ConnectionDetails({ value, onChange }: ConnectionDetailsProps) {
 	const [editingAccess, editingAccessHandle] = useDisclosure();
 	const [showIcons, showIconsHandle] = useDisclosure();

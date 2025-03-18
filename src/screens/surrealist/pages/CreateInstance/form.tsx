@@ -1,6 +1,4 @@
-import classes from "./style.module.scss";
-
-import { Box, Button, Collapse, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, Button, Collapse, Divider, Group, Stack, Text } from "@mantine/core";
 import { useEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { fetchAPI } from "~/cloud/api";
@@ -8,17 +6,18 @@ import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { showError } from "~/util/helpers";
-import { iconChevronLeft } from "~/util/icons";
+import { iconArrowLeft } from "~/util/icons";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
+import { Link } from "wouter";
+import { ProvisionOrganizationStep } from "./steps/organization";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
@@ -95,8 +94,35 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			gap="xl"
 		>
 			<Box>
-				<PrimaryTitle>New Cloud instance</PrimaryTitle>
+				<PrimaryTitle fz={26}>New Cloud instance</PrimaryTitle>
 				<Text fz="xl">Create a managed cloud instance</Text>
+			</Box>
+
+			<Box mt="xl">
+				<Text
+					fz="xl"
+					fw={600}
+					c="bright"
+				>
+					Organization
+				</Text>
+				<Text>Choose an available organization</Text>
+			</Box>
+
+			<ProvisionOrganizationStep
+				details={details}
+				setDetails={setDetails}
+			/>
+
+			<Box mt="xl">
+				<Text
+					fz="xl"
+					fw={600}
+					c="bright"
+				>
+					Configuration
+				</Text>
+				<Text>Provide configuration details for your instance</Text>
 			</Box>
 
 			<ProvisionDetailsStep
@@ -131,15 +157,16 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			)}
 
 			<Group mt="xl">
-				<Button
-					w={150}
-					color="slate"
-					variant="light"
-					onClick={() => navigate("/overview")}
-					leftSection={<Icon path={iconChevronLeft} />}
-				>
-					Back
-				</Button>
+				<Link to="/overview">
+					<Button
+						w={150}
+						color="slate"
+						variant="light"
+						leftSection={<Icon path={iconArrowLeft} />}
+					>
+						Back to overview
+					</Button>
+				</Link>
 				<Spacer />
 				<Button
 					w={150}
