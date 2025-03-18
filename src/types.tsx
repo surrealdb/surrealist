@@ -8,7 +8,6 @@ export type AuthLevel = "root" | "namespace" | "database";
 export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
 export type ColorScheme = "light" | "dark";
-export type ConnectionListMode = "card" | "row";
 export type DatabaseListMode = "list" | "grid";
 export type DiagramAlgorithm = "default" | "aligned" | "spaced";
 export type DiagramDirection = "default" | "ltr" | "rtl";
@@ -181,7 +180,6 @@ export interface SurrealistAppearanceSettings {
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
 	sidebarViews: Flags<ViewPage>;
-	connectionListMode: ConnectionListMode;
 }
 
 export interface SurrealistTemplateSettings {

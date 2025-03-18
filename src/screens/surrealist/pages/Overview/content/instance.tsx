@@ -6,7 +6,6 @@ import {
 	Badge,
 	Box,
 	BoxProps,
-	Center,
 	Group,
 	Menu,
 	Paper,
@@ -25,7 +24,7 @@ import { Icon } from "~/components/Icon";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { CloudInstance, ConnectionListMode } from "~/types";
+import { CloudInstance } from "~/types";
 import { ON_STOP_PROPAGATION, showError, showInfo } from "~/util/helpers";
 import {
 	iconCloud,
@@ -41,13 +40,11 @@ import { StateBadge } from "../badge";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
-	presentation: ConnectionListMode;
 	onConnect: (instance: CloudInstance) => void;
 }
 
 export function StartInstance({
 	instance,
-	presentation,
 	onConnect,
 	children,
 	...other
@@ -210,11 +207,7 @@ export function StartInstance({
 		>
 			<Paper
 				p="lg"
-				className={clsx(
-					classes.startBox,
-					classes.startInstance,
-					presentation === "row" && classes.startRow,
-				)}
+				className={clsx(classes.startBox, classes.startInstance)}
 				ref={containerRef}
 			>
 				<Group
@@ -253,7 +246,6 @@ export function StartInstance({
 							</Box>
 						</Group>
 					</Stack>
-					{presentation === "row" && <Group gap="xs">{labels}</Group>}
 					<div
 						onClick={ON_STOP_PROPAGATION}
 						onKeyDown={ON_STOP_PROPAGATION}
@@ -321,7 +313,7 @@ export function StartInstance({
 						</Menu>
 					</div>
 				</Group>
-				{presentation === "card" && <Group gap="xs">{labels}</Group>}
+				<Group gap="xs">{labels}</Group>
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>

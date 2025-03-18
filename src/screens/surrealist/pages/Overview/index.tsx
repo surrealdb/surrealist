@@ -80,7 +80,6 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const { setSelectedOrganization } = useCloudStore.getState();
-	const [presentation, setPresentation] = useSetting("appearance", "connectionListMode");
 	const knownLabels = useConnectionLabels();
 
 	const newsQuery = useLatestNewsQuery();
@@ -106,7 +105,6 @@ export function OverviewPage() {
 
 	const authState = useCloudStore((s) => s.authState);
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
-	const gridColumns = presentation === "card" ? GRID_COLUMNS : 1;
 
 	const createConnection = useStable(() => {
 		dispatchIntent("new-connection");
@@ -227,20 +225,6 @@ export function OverviewPage() {
 									size="xs"
 									className={classes.search}
 								/>
-								<ActionIcon.Group>
-									<ActionIcon
-										c={presentation === "card" ? "bright" : "slate.3"}
-										onClick={() => setPresentation("card")}
-									>
-										<Icon path={iconViewGrid} />
-									</ActionIcon>
-									<ActionIcon
-										c={presentation === "row" ? "bright" : "slate.3"}
-										onClick={() => setPresentation("row")}
-									>
-										<Icon path={iconViewList} />
-									</ActionIcon>
-								</ActionIcon.Group>
 								{authState === "unauthenticated" ? (
 									<Button
 										size="xs"
@@ -251,15 +235,6 @@ export function OverviewPage() {
 										Sign in
 									</Button>
 								) : (
-									// <Button
-									// 	size="xs"
-									// 	color="slate"
-									// 	variant="gradient"
-									// 	onClick={openCloudAuthentication}
-									// 	rightSection={<Icon path={iconChevronDown} />}
-									// >
-									// 	Create new
-									// </Button>
 									<Menu
 										transitionProps={{ transition: "scale-y" }}
 										position="bottom-end"
@@ -366,11 +341,10 @@ export function OverviewPage() {
 								)}
 							</Group>
 
-							<SimpleGrid cols={gridColumns}>
+							<SimpleGrid cols={GRID_COLUMNS}>
 								{sandbox && (
 									<StartConnection
 										connection={sandbox}
-										presentation={presentation}
 										onConnect={activateConnection}
 									/>
 								)}
@@ -378,7 +352,6 @@ export function OverviewPage() {
 									<StartConnection
 										key={connection.id}
 										connection={connection}
-										presentation={presentation}
 										onConnect={activateConnection}
 									/>
 								))}
@@ -401,12 +374,11 @@ export function OverviewPage() {
 										>
 											{info.name} instances
 										</PrimaryTitle>
-										<SimpleGrid cols={gridColumns}>
+										<SimpleGrid cols={GRID_COLUMNS}>
 											{instances.map((instance) => (
 												<StartInstance
 													key={instance.id}
 													instance={instance}
-													presentation={presentation}
 													onConnect={activateInstance}
 												/>
 											))}
@@ -414,7 +386,6 @@ export function OverviewPage() {
 												<StartCreator
 													title="No instances"
 													subtitle="Provision a new Surreal Cloud instance"
-													presentation={presentation}
 													onCreate={() => {
 														setSelectedOrganization(info.id);
 														navigate("/provision");

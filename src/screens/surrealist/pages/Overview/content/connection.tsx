@@ -7,11 +7,10 @@ import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
-import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
-import { Connection, ConnectionListMode } from "~/types";
+import { Connection } from "~/types";
 import { ON_STOP_PROPAGATION, newId } from "~/util/helpers";
 import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
@@ -19,13 +18,11 @@ import { USER_ICONS } from "~/util/user-icons";
 
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;
-	presentation: ConnectionListMode;
 	onConnect: (connection: Connection) => void;
 }
 
 export function StartConnection({
 	connection,
-	presentation,
 	onConnect,
 	children,
 	...other
@@ -81,11 +78,7 @@ export function StartConnection({
 		>
 			<Paper
 				p="lg"
-				className={clsx(
-					classes.startBox,
-					classes.startConnection,
-					presentation === "row" && classes.startRow,
-				)}
+				className={clsx(classes.startBox, classes.startConnection)}
 				ref={containerRef}
 			>
 				<Group
@@ -132,7 +125,6 @@ export function StartConnection({
 							</Box>
 						</Group>
 					</Stack>
-					{presentation === "row" && <Group gap="xs">{labels}</Group>}
 					{!isSandbox && (
 						<div
 							onClick={ON_STOP_PROPAGATION}
@@ -183,7 +175,7 @@ export function StartConnection({
 						</div>
 					)}
 				</Group>
-				{presentation === "card" && <Group gap="xs">{labels}</Group>}
+				<Group gap="xs">{labels}</Group>
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>

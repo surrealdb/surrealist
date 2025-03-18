@@ -1,29 +1,23 @@
 import classes from "../style.module.scss";
+import clsx from "clsx";
 
 import { Box, BoxProps, Flex, Paper, Text, UnstyledButton } from "@mantine/core";
-import clsx from "clsx";
 import { PropsWithChildren, ReactNode, useRef } from "react";
-import { Icon } from "~/components/Icon";
-import { ConnectionListMode } from "~/types";
-import { iconPlus } from "~/util/icons";
 
 export interface StartCreatorProps extends BoxProps {
 	title: ReactNode;
 	subtitle: ReactNode;
-	presentation: ConnectionListMode;
 	onCreate: () => void;
 }
 
 export function StartCreator({
 	title,
 	subtitle,
-	presentation,
 	onCreate,
 	children,
 	...other
 }: PropsWithChildren<StartCreatorProps>) {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const isCard = presentation === "card";
 
 	return (
 		<UnstyledButton
@@ -33,20 +27,16 @@ export function StartCreator({
 			<Paper
 				p="lg"
 				ref={containerRef}
-				className={clsx(
-					classes.startBox,
-					classes.startCreator,
-					presentation === "row" && classes.startRow,
-				)}
+				className={clsx(classes.startBox, classes.startCreator)}
 			>
 				<Flex
-					direction={isCard ? "column" : "row"}
-					justify={isCard ? "center" : "start"}
+					direction="column"
+					justify="center"
 					align="center"
 					gap={0}
 					h="100%"
 				>
-					<Box ta={isCard ? "center" : "start"}>
+					<Box ta="center">
 						<Text
 							c="bright"
 							fw={600}
