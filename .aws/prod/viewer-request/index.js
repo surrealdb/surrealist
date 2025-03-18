@@ -17,7 +17,7 @@ function handler(event) {
 	let path = request.uri.toLowerCase();
 
 	if (host !== 'surrealist.app') {
-		return redirect(path)
+		return redirect(path);
 	}
 
 	switch (true) {
@@ -44,6 +44,21 @@ function handler(event) {
 
 		case request.uri.includes('.') === false:
 			request.uri = '/index.html';
+			break;
+
+		// GTM Rewrites
+		case request.uri === '/data/script.js':
+			request.uri = '/data/gtag/js';
+			request.querystring = 'id=G-PVD8NEJ3Z2';
+			break;
+
+		case request.uri === '/data/event':
+			request.uri = '/data/g/collect';
+			break;
+
+		case request.uri.startsWith('/data/event/'):
+			request.querystring = atob(request.uri.substring(12));
+			request.uri = '/data/g/collect';
 			break;
 	}
 
