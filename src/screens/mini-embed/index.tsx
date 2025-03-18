@@ -4,24 +4,27 @@ import type { MiniAdapter } from "~/adapter/mini";
 import { Scaffold } from "~/components/Scaffold";
 import { useIsLight } from "~/hooks/theme";
 import MiniQueryView from "../surrealist/views/query/MiniView";
+import { GoogleAnalyticsProvider } from "~/providers/GoogleAnalytics";
 
 export function MiniRunScreen() {
 	const { appearance, transparent } = adapter as MiniAdapter;
 	const isLight = useIsLight();
 
 	return (
-		<Scaffold>
-			<Box
-				h="100vh"
-				p={appearance === "plain" ? 0 : "md"}
-				style={{
-					backgroundColor: transparent
-						? undefined
-						: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
-				}}
-			>
-				<MiniQueryView />
-			</Box>
-		</Scaffold>
+		<GoogleAnalyticsProvider gtmId="" platform="surrealist-mini">
+			<Scaffold>
+				<Box
+					h="100vh"
+					p={appearance === "plain" ? 0 : "md"}
+					style={{
+						backgroundColor: transparent
+							? undefined
+							: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
+					}}
+				>
+					<MiniQueryView />
+				</Box>
+			</Scaffold>
+		</GoogleAnalyticsProvider>
 	);
 }
