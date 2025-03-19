@@ -49,7 +49,6 @@ export function AccessSignupModal() {
 	const createAccount = useStable(() => {
 		loadingHandle.open();
 
-		const signupMode = authMode === "access" ? "access-signup" : "scope-signup";
 		const connection = getConnection();
 
 		if (!connection) {
@@ -61,7 +60,7 @@ export function AccessSignupModal() {
 				...connection,
 				authentication: {
 					...connection.authentication,
-					mode: signupMode,
+					mode: "access-signup",
 				},
 			},
 		})

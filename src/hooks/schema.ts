@@ -93,10 +93,7 @@ export function useHasSchemaAccess() {
 
 	// TODO Check token type
 
-	return (
-		connectionId === SANDBOX ||
-		(authMode !== "none" && authMode !== "scope" && authMode !== "access")
-	);
+	return connectionId === SANDBOX || (authMode !== "none" && authMode !== "access");
 }
 
 /**

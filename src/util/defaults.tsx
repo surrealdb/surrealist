@@ -98,7 +98,6 @@ export function createBaseAuthentication(): Authentication {
 		database: "",
 		namespace: "",
 		token: "",
-		scope: "",
 		access: "",
 		accessFields: [],
 	};
