@@ -1,4 +1,6 @@
 import { createContext, type ReactNode, useContext, useEffect } from "react";
+import { adapter } from "~/adapter";
+import { useStable } from "~/hooks/stable";
 
 interface GoogleAnalyticsContext {
 
@@ -9,9 +11,7 @@ interface GoogleAnalyticsContext {
 }
 
 interface GoogleAnalyticsProviderProps {
-	gtmId: string;
 	children: ReactNode;
-	platform: "surrealist" | "surrealist-mini";
 }
 
 // The type of the event that is being tracked
@@ -29,43 +29,62 @@ function useGoogleAnalytics() {
 	return context;
 }
 
+// Create a promise that resolves when Google Analytics is loaded
+// This is needed to ensure that the trackEvent function is only called after Google Analytics is loaded.
+const initializer = Promise.withResolvers<null>();
+
 function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 
-	// Create a promise that resolves when Google Analytics is loaded
-	// This is needed to ensure that the trackEvent function is only called after Google Analytics is loaded.
-	const { promise, reject, resolve } = Promise.withResolvers<null>();
+	const trackEvent = useStable(async (event: GAIdentifier, data: object) => {
+		await initializer.promise;
 
-	const trackEvent = async (id: GAIdentifier, data: object) => {
-		await promise;
-		window.dataLayer.push({ event: id, eventProps: data });
-		console.log("Pushed GA Event: ", id, data);
-	};
+		window.gtag(event, {
+			...data,
+			event: "surreal-event",
+			adapter: adapter.id,
+			platform: adapter.platform
+		});
+
+		console.log("Pushed GA Event: ", event, data);
+	});
 
 	// Initialize Google Analytics
 	useEffect(() => {
+
+		window.dataLayer = window.dataLayer ?? [];
+
+		// assign global gtag function
+		window.gtag = (...args: any[]) => {
+			window.dataLayer.push(...args);
+		};
+
+		window.gtag('js', new Date());
+		window.gtag('config', 'G-PVD8NEJ3Z2', {
+			server_container_url: 'https://surrealdb.com/data',
+		});
+
 		const script = document.createElement("script");
 
 		script.id = 'surreal-gtm';
 		script.src = 'https://surrealdb.com/data/script.js'; // <---- TODO: Change this to the correct URL?
 		script.async = true;
 
-		script.addEventListener("load", () => {
+		script.addEventListener("load", async () => {
 			console.info("Google Analytics loaded");
-			window.dataLayer = window.dataLayer || [];
-			resolve(null);
+			initializer.resolve(null);
 		});
 
 		const onError = () => {
 			console.error("Failed to load Google Analytics");
-			reject();
+			initializer.reject();
 		};
 
 		script.addEventListener("error", onError);
 		script.addEventListener("abort", onError);
 
-		document.head.appendChild(script);
+		setTimeout(() => document.head.appendChild(script), 250);
 
-	}, [resolve, reject]);
+	}, []);
 
 	return (
 		<GoogleAnalyticsContext.Provider value={{ trackEvent }}>
