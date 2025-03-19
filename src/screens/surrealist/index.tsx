@@ -1,31 +1,29 @@
 import classes from "./style.module.scss";
 
-import { Alert, Box, Center, Drawer, Flex, Group, Paper, Stack, Text } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import { Box, Drawer, Flex, Group, Stack } from "@mantine/core";
 import { type FC, Suspense, memo } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
-import { Redirect, Route, Switch, useRoute } from "wouter";
+import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
-import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { VIEW_MODES } from "~/constants";
-import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
-import { useConnection, useIsConnected } from "~/hooks/connection";
-import { useActiveView } from "~/hooks/routing";
+import { useAvailableViews } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
-import type { ViewInfo, ViewMode } from "~/types";
-import { showInfo } from "~/util/helpers";
-import { iconWarning } from "~/util/icons";
-import { CloudPanelPage } from "./cloud-panel";
-import { CloudToolbar } from "./cloud-panel/toolbar";
-import { SelectDatabase } from "./components/SelectDatabase";
-import { DatabaseSidebar } from "./sidebar";
-import { StartPage } from "./start";
+import type { ViewPage } from "~/types";
+import { BillingPage } from "./pages/Billing";
+import { ChatPage } from "./pages/Chat";
+import { CreateConnectionPage } from "./pages/CreateConnection";
+import { CreateInstancePage } from "./pages/CreateInstance";
+import { CreateOrganizationPage } from "./pages/CreateOrganization";
+import { NewEmbedPage } from "./pages/NewEmbed";
+import { OverviewPage } from "./pages/Overview";
+import { ReferralPage } from "./pages/Referral";
+import { SupportPage } from "./pages/Support";
+import { SurrealistSidebar } from "./sidebar";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
+import DashboardView from "./views/dashboard/DashboardView";
 import DesignerView from "./views/designer/DesignerView";
 import DocumentationView from "./views/documentation/DocumentationView";
 import ExplorerView from "./views/explorer/ExplorerView";
@@ -35,9 +33,16 @@ import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
 
-const DatabaseSidebarLazy = memo(DatabaseSidebar);
-const StartPageLazy = memo(StartPage);
-const CloudPanelPageLazy = memo(CloudPanelPage);
+const DatabaseSidebarLazy = memo(SurrealistSidebar);
+const OverviewPageLazy = memo(OverviewPage);
+const ChatPageLazy = memo(ChatPage);
+const NewEmbedPageLazy = memo(NewEmbedPage);
+const BillingPageLazy = memo(BillingPage);
+const ReferralPageLazy = memo(ReferralPage);
+const SupportPageLazy = memo(SupportPage);
+const CreateConnectionPageLazy = memo(CreateConnectionPage);
+const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
+const CreateInstancePageLazy = memo(CreateInstancePage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -45,7 +50,8 @@ const PORTAL_OPTIONS = {
 	},
 };
 
-const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
+const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
+	dashboard: createHtmlPortalNode(PORTAL_OPTIONS),
 	query: createHtmlPortalNode(PORTAL_OPTIONS),
 	explorer: createHtmlPortalNode(PORTAL_OPTIONS),
 	graphql: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -57,7 +63,8 @@ const VIEW_PORTALS: Record<ViewMode, HtmlPortalNode> = {
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
-const VIEW_COMPONENTS: Record<ViewMode, FC> = {
+const VIEW_COMPONENTS: Record<ViewPage, FC> = {
+	dashboard: memo(DashboardView),
 	query: memo(QueryView),
 	explorer: memo(ExplorerView),
 	graphql: memo(GraphqlView),
@@ -73,14 +80,10 @@ export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
-	const isCloud = useCloudRoute();
-	const cloudEnabled = useSurrealCloud();
-	const [isCloudHome] = useRoute("/cloud");
-	const [hasConnection, database] = useConnection((c) => [!!c, c?.lastDatabase]);
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
+	const views = useAvailableViews();
 
-	const [activeView] = useActiveView();
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const customTitlebar = adapter.platform === "darwin" && isDesktop;
 
@@ -88,7 +91,6 @@ export function SurrealistScreen() {
 		setOverlaySidebar(false);
 	});
 
-	const requestDatabase = !database && activeView?.require === "database";
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 	const titlebarOffset = customTitlebar ? 15 : 0;
 
@@ -138,78 +140,93 @@ export function SurrealistScreen() {
 							wrap="nowrap"
 							className={classes.toolbar}
 						>
-							{isCloud ? (
-								<CloudToolbar showBreadcrumb={!isCloudHome} />
-							) : (
-								<SurrealistToolbar />
-							)}
+							<SurrealistToolbar />
 						</Group>
 
 						<Switch>
 							<Route path="/" />
 
-							<Route path="/start">
-								<StartPageLazy />
+							<Route path="/overview">
+								<OverviewPageLazy />
 							</Route>
 
-							{hasConnection &&
-								Object.values(VIEW_MODES).map((mode) => (
-									<Route
-										key={mode.id}
-										path={`/${mode.id}`}
-									>
-										{requestDatabase ? (
-											<DatabaseSelection
-												key={mode.id}
-												info={mode}
-											/>
-										) : (
-											<Stack
-												className={classes.inner}
-												flex={1}
-												gap={0}
-											>
-												<OutPortal node={VIEW_PORTALS[mode.id]} />
-											</Stack>
-										)}
-									</Route>
-								))}
+							<Route path="/mini/new">
+								<NewEmbedPageLazy />
+							</Route>
 
-							{cloudEnabled && (
-								<Route path="/cloud/*?">
-									<Stack
-										className={classes.inner}
-										flex={1}
-										gap={0}
-									>
-										<CloudPanelPageLazy />
-									</Stack>
-								</Route>
-							)}
+							<Route path="/chat">
+								<ChatPageLazy />
+							</Route>
+
+							<Route path="/billing">
+								<BillingPageLazy />
+							</Route>
+
+							<Route path="/referrals">
+								<ReferralPageLazy />
+							</Route>
+
+							<Route path="/create/connection">
+								<CreateConnectionPageLazy />
+							</Route>
+
+							<Route path="/create/organization">
+								<CreateOrganizationsPageLazy />
+							</Route>
+
+							<Route path="/create/instance">
+								<CreateInstancePageLazy />
+							</Route>
+
+							<Route path="/support">
+								<SupportPageLazy />
+							</Route>
+
+							<Route path="/c/:connection/:view">
+								{({ view }) => {
+									const _view = view as ViewPage;
+									const portal = views[_view] ? VIEW_PORTALS[_view] : undefined;
+
+									return (
+										<>
+											{Object.values(views).map((mode) => {
+												const Content = VIEW_COMPONENTS[mode.id];
+
+												return (
+													<InPortal
+														key={mode.id}
+														node={VIEW_PORTALS[mode.id]}
+													>
+														<Suspense fallback={null}>
+															<Content />
+														</Suspense>
+													</InPortal>
+												);
+											})}
+
+											{portal ? (
+												<Stack
+													className={classes.inner}
+													flex={1}
+													gap={0}
+												>
+													<OutPortal node={portal} />
+												</Stack>
+											) : (
+												<Redirect to="/overview" />
+											)}
+										</>
+									);
+								}}
+							</Route>
 
 							<Route>
-								<Redirect to="/start" />
+								<Redirect to="/overview" />
 							</Route>
 						</Switch>
 					</Stack>
 				</Box>
 			</Flex>
-
-			{hasConnection &&
-				Object.values(VIEW_MODES).map((mode) => {
-					const Content = VIEW_COMPONENTS[mode.id];
-
-					return (
-						<InPortal
-							key={mode.id}
-							node={VIEW_PORTALS[mode.id]}
-						>
-							<Suspense fallback={null}>
-								<Content />
-							</Suspense>
-						</InPortal>
-					);
-				})}
 
 			<Drawer
 				opened={overlaySidebar}
@@ -222,41 +239,41 @@ export function SurrealistScreen() {
 	);
 }
 
-interface DatabaseSelectionProps {
-	info: ViewInfo;
-}
+// interface DatabaseSelectionProps {
+// 	info: ViewPageInfo;
+// }
 
-function DatabaseSelection({ info }: DatabaseSelectionProps) {
-	const isConnected = useIsConnected();
+// function DatabaseSelection({ info }: DatabaseSelectionProps) {
+// 	const isConnected = useIsConnected();
 
-	return (
-		<Center flex={1}>
-			<Paper
-				radius="md"
-				p="xl"
-				w={500}
-			>
-				<PrimaryTitle>Before you continue...</PrimaryTitle>
-				<Text mt="md">
-					Please select a namespace and database before accessing the {info?.name} view.
-					You can use the buttons below to choose an existing namespace and database, or
-					create new ones.
-				</Text>
-				<SelectDatabase
-					withNamespace
-					withDatabase
-					mt="xl"
-				/>
-				{!isConnected && (
-					<Alert
-						mt="xl"
-						color="orange"
-						icon={<Icon path={iconWarning} />}
-					>
-						You must be connected before selecting a namespace and database
-					</Alert>
-				)}
-			</Paper>
-		</Center>
-	);
-}
+// 	return (
+// 		<Center flex={1}>
+// 			<Paper
+// 				radius="md"
+// 				p="xl"
+// 				w={500}
+// 			>
+// 				<PrimaryTitle>Before you continue...</PrimaryTitle>
+// 				<Text mt="md">
+// 					Please select a namespace and database before accessing the {info?.name} view.
+// 					You can use the buttons below to choose an existing namespace and database, or
+// 					create new ones.
+// 				</Text>
+// 				<SelectDatabase
+// 					withNamespace
+// 					withDatabase
+// 					mt="xl"
+// 				/>
+// 				{!isConnected && (
+// 					<Alert
+// 						mt="xl"
+// 						color="orange"
+// 						icon={<Icon path={iconWarning} />}
+// 					>
+// 						You must be connected before selecting a namespace and database
+// 					</Alert>
+// 				)}
+// 			</Paper>
+// 		</Center>
+// 	);
+// }

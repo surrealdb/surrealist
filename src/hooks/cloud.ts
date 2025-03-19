@@ -1,15 +1,14 @@
-import { useLayoutEffect } from "react";
-import { useRoute } from "wouter";
-import { adapter } from "~/adapter";
 import {
 	checkSessionExpiry,
 	invalidateSession,
 	openCloudAuthentication,
 	refreshAccess,
 	verifyAuthentication,
-} from "~/screens/surrealist/cloud-panel/api/auth";
+} from "~/cloud/api/auth";
+
+import { useLayoutEffect } from "react";
+import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import { featureFlags, useFeatureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./routing";
@@ -22,20 +21,13 @@ export function useSurrealCloud() {
 }
 
 /**
- * Matches the current route to the cloud panel
- */
-export function useCloudRoute() {
-	return useRoute(/^\/cloud\/?.*$/)[0];
-}
-
-/**
  * Returns the actively selected organization
  */
 export function useOrganization() {
-	const orgs = useCloudStore((s) => s.organizations);
-	const active = useConfigStore((s) => s.activeCloudOrg);
+	const list = useCloudStore((s) => s.organizations);
+	const selected = useCloudStore((s) => s.selectedOrganization);
 
-	return orgs.find((org) => org.id === active);
+	return list.find((org) => org.id === selected);
 }
 
 /**

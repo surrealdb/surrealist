@@ -4,6 +4,7 @@ import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
 import { useRoute } from "wouter";
 import { useHoverIcon } from "~/hooks/hover-icon";
+import { useAbsoluteRoute } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { Entry, type EntryProps } from "../Entry";
@@ -31,7 +32,7 @@ export function NavigationIcon({
 	...rest
 }: NavigationIconProps) {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
-	const [active] = useRoute(path || "");
+	const [active] = useAbsoluteRoute(path || "");
 	const hasIcon = typeof icon === "string";
 	const isActive = active && !!path;
 

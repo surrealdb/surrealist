@@ -16,7 +16,8 @@ export interface SelectDatabaseProps extends BoxProps {
 }
 
 export function SelectDatabase({ withNamespace, withDatabase, ...other }: SelectDatabaseProps) {
-	const namespace = useConnection((c) => c?.lastNamespace);
+	const [namespace, database] = useConnection((c) => [c?.lastNamespace, c?.lastDatabase]);
+
 	const isConnected = useIsConnected();
 
 	const showNS = !!withNamespace;
@@ -52,8 +53,8 @@ export function SelectDatabase({ withNamespace, withDatabase, ...other }: Select
 					buttonProps={{
 						flex: 1,
 						disabled: dbDisabled,
-						variant: namespace ? "gradient" : "light",
-						style: dbDisabled ? undefined : STYLE,
+						variant: database ? "light" : "gradient",
+						style: dbDisabled || database ? undefined : STYLE,
 					}}
 				/>
 			)}

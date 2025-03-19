@@ -7,17 +7,14 @@ import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
 import { CloudExpiredDialog } from "./modals/cloud-expired";
 import { CommandPaletteModal } from "./modals/commands";
-import { ConnectionModal } from "./modals/connection";
 import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
 import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
 import { DocumentationModal } from "./modals/documentation";
 import { DownloadModal } from "./modals/download";
-import { EmbedderModal } from "./modals/embedder";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
-import { ProvisioningDialog } from "./modals/provisioning";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
 import { AccessSignupModal } from "./modals/signup";
@@ -48,9 +45,7 @@ export function App() {
 			<CommandPaletteModal />
 			<DocumentationModal />
 			<ChangelogModal />
-			<ConnectionModal />
 			<DownloadModal />
-			<EmbedderModal />
 			<SandboxModal />
 			<AccessSignupModal />
 			<TableCreatorModal />
@@ -61,7 +56,6 @@ export function App() {
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
 			<CloudExpiredDialog />
-			<ProvisioningDialog />
 
 			{isDesktop && <UpdaterDialog />}
 		</Scaffold>

@@ -3,7 +3,7 @@ import type { AnyAuth, Duration, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
-export type AlertLevel = "info" | "warning" | "important";
+export type BannerType = "info" | "warning" | "important";
 export type AuthLevel = "root" | "namespace" | "database";
 export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
@@ -33,20 +33,36 @@ export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
 
-export type InstanceState = "creating" | "updating" | "deleting" | "ready" | "inactive";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type InstanceState =
+	| "creating"
+	| "updating"
+	| "deleting"
+	| "ready"
+	| "pausing"
+	| "paused"
+	| "resuming";
 export type AuthMode =
 	| "none"
 	| "root"
 	| "namespace"
 	| "database"
 	| "token"
-	| "scope"
-	| "scope-signup"
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type ViewMode =
+export type GlobalPage =
+	| "/overview"
+	| "/billing"
+	| "/chat"
+	| "/support"
+	| "/referrals"
+	| "/mini/new"
+	| "/create/connection"
+	| "/create/organization"
+	| "/create/instance";
+export type ViewPage =
+	| "dashboard"
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -56,17 +72,6 @@ export type ViewMode =
 	| "models"
 	| "sidekick"
 	| "documentation";
-export type CloudPage =
-	| "instances"
-	| "members"
-	| "chat"
-	| "data"
-	| "audits"
-	| "billing"
-	| "support"
-	| "referral"
-	| "settings"
-	| "provision";
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";
 
 export type OpenFn = (id: string | null) => void;
@@ -96,7 +101,6 @@ export interface Authentication {
 	namespace: string;
 	database: string;
 	token: string;
-	scope: string;
 	access: string;
 	accessFields: AccessField[];
 	cloudInstance?: string;
@@ -106,7 +110,7 @@ export interface Connection {
 	id: string;
 	name: string;
 	icon: number;
-	group?: string;
+	labels?: string[];
 	lastNamespace: string;
 	lastDatabase: string;
 	queries: QueryTab[];
@@ -135,7 +139,7 @@ export interface Template {
 	name: string;
 	icon: number;
 	values: Authentication;
-	group?: string;
+	labels?: string[];
 }
 
 export interface ConnectionGroup {
@@ -174,7 +178,7 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramMode: DiagramMode;
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
-	sidebarViews: Flags<ViewMode>;
+	sidebarViews: Flags<ViewPage>;
 }
 
 export interface SurrealistTemplateSettings {
@@ -243,11 +247,8 @@ export interface SurrealistConfig {
 	configVersion: number;
 	previousVersion: string;
 	connections: Connection[];
-	connectionGroups: ConnectionGroup[];
 	sandbox: Connection;
 	activeResource: string;
-	activeConnection: string;
-	activeCloudOrg: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
@@ -459,21 +460,25 @@ export interface LiveMessage {
 	data: any;
 }
 
-export interface ViewInfo {
-	id: ViewMode;
+export interface GlobalPageInfo {
+	id: GlobalPage;
 	name: string;
 	icon: string;
 	anim?: any;
-	desc: string;
-	require?: ViewRequirement;
-	disabled?: FeatureCondition;
 }
 
-export interface CloudPageInfo {
-	id: CloudPage;
+export interface ViewPageInfo {
+	id: ViewPage;
 	name: string;
 	icon: string;
-	disabled?: FeatureCondition;
+	anim?: any;
+	disabled?: (condition: ViewCondition) => boolean;
+}
+
+export interface ViewCondition {
+	flags: FeatureFlagMap;
+	connection: string;
+	isCloud: boolean;
 }
 
 export interface Dataset {
@@ -497,7 +502,6 @@ export interface CloudSignin {
 
 export interface CloudProfile {
 	username: string;
-	default_org: string;
 	name: string;
 	picture?: string;
 	user_hmac?: string;
@@ -509,10 +513,33 @@ export interface CloudInstance {
 	host: string;
 	region: string;
 	version: string;
-	compute_units: number;
 	available_versions: string[];
+	compute_units: number;
+	storage_size: number;
+	storage_size_updated_at?: string;
+	can_update_storage_size: boolean;
+	storage_size_update_cooloff_hours: number;
+	capabilities: CloudInstanceCapabilities;
 	state: InstanceState;
 	type: CloudInstanceType;
+}
+
+export interface CloudInstanceCapabilities {
+	allow_scripting: boolean;
+	allow_guests: boolean;
+	allow_graphql: boolean;
+	allowed_rpc_methods: string[];
+	denied_rpc_methods: string[];
+	allowed_http_endpoints: string[];
+	denied_http_endpoints: string[];
+	allowed_networks: string[];
+	denied_networks: string[];
+	allowed_functions: string[];
+	denied_functions: string[];
+	allowed_experimental: string[];
+	denied_experimental: string[];
+	allowed_arbitrary_query: string[];
+	denied_arbitrary_query: string[];
 }
 
 export interface CloudInstanceType {
@@ -524,6 +551,8 @@ export interface CloudInstanceType {
 	price_hour: number;
 	enabled?: boolean;
 	category: string;
+	default_storage_size: number;
+	max_storage_size: number;
 	compute_units: {
 		min?: number;
 		max?: number;
@@ -554,9 +583,9 @@ export interface CloudOrganization {
 	available_plans: CloudPlan[];
 }
 
-export interface CloudAlert {
+export interface CloudBanner {
 	message: string;
-	message_type: AlertLevel;
+	message_type: BannerType;
 	timestamp: string;
 }
 
@@ -631,5 +660,10 @@ export interface CloudCoupon {
 	name: string;
 	amount: number;
 	amount_remaining: number;
-	expires_at: string;
+	expires_at?: string;
+}
+
+export interface CloudBackup {
+	snapshot_started_at: string;
+	snapshot_id: string;
 }

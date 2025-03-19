@@ -66,8 +66,8 @@ export function formatBinding(binding: string[]) {
  * Display a binding as ReactNode
  */
 export function displayBinding(binding: string[]) {
-	return binding.map((part) => {
-		return displayKey(expandMetaKey(expandModKey(part)));
+	return binding.map((part, i) => {
+		return <Fragment key={i}>{displayKey(expandMetaKey(expandModKey(part)))}</Fragment>;
 	});
 }
 
@@ -79,6 +79,7 @@ export function displayKey(key: string) {
 		case "command": {
 			return (
 				<Icon
+					key={key}
 					path={iconCommand}
 					size={0.7}
 				/>
@@ -87,6 +88,7 @@ export function displayKey(key: string) {
 		case "alt": {
 			return (
 				<Icon
+					key={key}
 					path={iconKeyboardOption}
 					size={0.7}
 				/>
@@ -95,6 +97,7 @@ export function displayKey(key: string) {
 		case "ctrl": {
 			return (
 				<Icon
+					key={key}
 					path={iconKeyboardControl}
 					size={0.7}
 				/>
@@ -103,13 +106,21 @@ export function displayKey(key: string) {
 		case "shift": {
 			return (
 				<Icon
+					key={key}
 					path={iconKeyboardShift}
 					size={0.7}
 				/>
 			);
 		}
 		default: {
-			return <Text fz="lg">{capitalize(beautifyKey(key))}</Text>;
+			return (
+				<Text
+					key={key}
+					fz="lg"
+				>
+					{capitalize(beautifyKey(key))}
+				</Text>
+			);
 		}
 	}
 }

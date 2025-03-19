@@ -4,13 +4,13 @@ import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { useConnection } from "~/hooks/connection";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseStore } from "~/stores/database";
 import { iconQuery } from "~/util/icons";
 
 export function ResultPane() {
-	const connection = useConnection((c) => c?.id ?? "");
-	const response = useDatabaseStore((s) => s.graphqlResponse[connection]);
+	const [connection] = useConnectionAndView();
+	const response = useDatabaseStore((s) => s.graphqlResponse[connection ?? ""]);
 
 	const extensions = useMemo(() => [surrealql()], []);
 

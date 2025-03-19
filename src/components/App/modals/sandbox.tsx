@@ -5,23 +5,21 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnection } from "~/hooks/connection";
 import { useOnboarding } from "~/hooks/onboarding";
-import { useActiveView } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 import { iconChevronRight, iconClose } from "~/util/icons";
 
 export function SandboxModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [completed, complete] = useOnboarding("sandbox");
-	const [activeView] = useActiveView();
-	const connection = useConnection((c) => c?.id ?? "");
+	const [connection] = useConnectionAndView();
 
 	useEffect(() => {
-		if (connection === SANDBOX && activeView && !completed) {
+		if (connection === SANDBOX && !completed) {
 			openHandle.open();
 			complete();
 		}
-	}, [connection, activeView, completed]);
+	}, [connection, completed]);
 
 	return (
 		<Modal

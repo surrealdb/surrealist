@@ -15,8 +15,6 @@ import {
 
 import type {
 	AuthMode,
-	CloudPage,
-	CloudPageInfo,
 	Dataset,
 	DiagramAlgorithm,
 	DiagramDirection,
@@ -24,6 +22,8 @@ import type {
 	DiagramLinks,
 	DiagramMode,
 	Driver,
+	GlobalPage,
+	GlobalPageInfo,
 	Listable,
 	Orientation,
 	Protocol,
@@ -34,8 +34,8 @@ import type {
 	Selectable,
 	SidebarMode,
 	SyntaxTheme,
-	ViewInfo,
-	ViewMode,
+	ViewPage,
+	ViewPageInfo,
 } from "./types";
 
 import {
@@ -43,9 +43,11 @@ import {
 	iconAccount,
 	iconAuth,
 	iconBraces,
+	iconCloud,
 	iconCog,
 	iconCombined,
 	iconCreditCard,
+	iconCursor,
 	iconDataTable,
 	iconDatabase,
 	iconDesigner,
@@ -53,6 +55,8 @@ import {
 	iconExplorer,
 	iconFunction,
 	iconGraphql,
+	iconHelp,
+	iconHomePlus,
 	iconLive,
 	iconModuleML,
 	iconPackageClosed,
@@ -63,6 +67,9 @@ import {
 	iconRelation,
 	iconServer,
 	iconSidekick,
+	iconTune,
+	iconUniversity,
+	iconXml,
 } from "./util/icons";
 
 import type { MantineColorScheme } from "@mantine/core";
@@ -170,7 +177,6 @@ export const AUTH_MODES: Selectable<AuthMode>[] = [
 	{ label: "Record Access", value: "access" },
 	{ label: "Token", value: "token" },
 	{ label: "Anonymous", value: "none" },
-	{ label: "Scope (Legacy)", value: "scope" },
 ];
 
 export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
@@ -179,132 +185,118 @@ export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
 	{ label: "Wide", value: "wide" },
 ];
 
-export const VIEW_MODES: Record<ViewMode, ViewInfo> = {
+export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
+	"/overview": {
+		id: "/overview",
+		name: "Overview",
+		icon: iconExplorer,
+	},
+	"/billing": {
+		id: "/billing",
+		name: "Billing",
+		icon: iconCreditCard,
+	},
+	"/chat": {
+		id: "/chat",
+		name: "Sidekick",
+		icon: iconSidekick,
+	},
+	"/referrals": {
+		id: "/referrals",
+		name: "Referrals",
+		icon: iconReferral,
+	},
+	"/support": {
+		id: "/support",
+		name: "Support",
+		icon: iconHelp,
+	},
+	"/mini/new": {
+		id: "/mini/new",
+		name: "Embed Surrealist",
+		icon: iconXml,
+	},
+	"/create/connection": {
+		id: "/create/connection",
+		name: "Connect to SurrealDB",
+		icon: iconPlus,
+	},
+	"/create/organization": {
+		id: "/create/organization",
+		name: "New organization",
+		icon: iconPlus,
+	},
+	"/create/instance": {
+		id: "/create/instance",
+		name: "Provision Instance",
+		icon: iconPlus,
+	},
+};
+
+export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
+	dashboard: {
+		id: "dashboard",
+		name: "Dashboard",
+		icon: iconTune,
+		disabled: ({ flags, isCloud }) => !flags.query_view || !isCloud,
+	},
 	query: {
 		id: "query",
 		name: "Query",
 		icon: iconQuery,
 		anim: import("~/assets/animation/query.json").then((x) => x.default),
-		desc: "Execute queries against the database and inspect the results",
-		disabled: (flags) => !flags.query_view,
+		disabled: ({ flags }) => !flags.query_view,
 	},
 	explorer: {
 		id: "explorer",
 		name: "Explorer",
 		icon: iconExplorer,
 		anim: import("~/assets/animation/explorer.json").then((x) => x.default),
-		desc: "Explore the database tables, records, and relations",
-		require: "database",
-		disabled: (flags) => !flags.explorer_view,
+		disabled: ({ flags }) => !flags.explorer_view,
 	},
 	graphql: {
 		id: "graphql",
 		name: "GraphQL",
 		icon: iconGraphql,
-		desc: "Execute GraphQL queries against the database",
-		require: "database",
-		disabled: (flags) => !flags.graphql_view,
+		disabled: ({ flags }) => !flags.graphql_view,
 	},
 	designer: {
 		id: "designer",
 		name: "Designer",
 		icon: iconDesigner,
 		anim: import("~/assets/animation/designer.json").then((x) => x.default),
-		desc: "Define database tables and relations",
-		require: "database",
-		disabled: (flags) => !flags.designer_view,
+		disabled: ({ flags }) => !flags.designer_view,
 	},
 	authentication: {
 		id: "authentication",
 		name: "Authentication",
 		icon: iconAuth,
 		anim: import("~/assets/animation/auth.json").then((x) => x.default),
-		desc: "Manage system users and access methods",
-		disabled: (flags) => !flags.auth_view,
+		disabled: ({ flags }) => !flags.auth_view,
 	},
 	functions: {
 		id: "functions",
 		name: "Functions",
 		icon: iconFunction,
-		desc: "Create and update schema level functions",
-		require: "database",
-		disabled: (flags) => !flags.functions_view,
+		disabled: ({ flags }) => !flags.functions_view,
 	},
 	models: {
 		id: "models",
 		name: "Models",
 		icon: iconModuleML,
-		desc: "Upload and manage machine learning models",
-		require: "database",
-		disabled: (flags) => !flags.models_view,
+		disabled: ({ flags }) => !flags.models_view,
 	},
 	sidekick: {
 		id: "sidekick",
 		name: "Sidekick",
 		icon: iconSidekick,
-		desc: "Chat with your personal Surreal assistant",
-		disabled: (flags) => !flags.sidekick_view,
+		disabled: ({ flags }) => !flags.sidekick_view,
 	},
 	documentation: {
 		id: "documentation",
 		name: "API Docs",
 		icon: iconAPI,
-		desc: "View the database schema and documentation",
-		require: "database",
-		disabled: (flags) => !flags.apidocs_view,
-	},
-};
-
-export const CLOUD_PAGES: Record<CloudPage, CloudPageInfo> = {
-	instances: {
-		id: "instances",
-		name: "Instances",
-		icon: iconServer,
-	},
-	members: {
-		id: "members",
-		name: "Members",
-		icon: iconAccount,
-	},
-	data: {
-		id: "data",
-		name: "Data Containers",
-		icon: iconPackageClosed,
-	},
-	audits: {
-		id: "audits",
-		name: "Audit Log",
-		icon: iconProgressClock,
-	},
-	billing: {
-		id: "billing",
-		name: "Billing",
-		icon: iconCreditCard,
-	},
-	support: {
-		id: "support",
-		name: "Support",
-		icon: iconEmail,
-	},
-	referral: {
-		id: "referral",
-		name: "Referrals",
-		icon: iconReferral,
-	},
-	settings: {
-		id: "settings",
-		name: "Settings",
-		icon: iconCog,
-	},
-	provision: {
-		id: "provision",
-		name: "Provision instance",
-		icon: iconPlus,
-	},
-	chat: {
-		id: "chat",
-		name: "Sidekick",
-		icon: iconSidekick,
+		disabled: ({ flags }) => !flags.apidocs_view,
 	},
 };
 

@@ -151,7 +151,6 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 					mx="auto"
 				>
 					<Text
-						c="slate"
 						ta="center"
 						mt="lg"
 					>

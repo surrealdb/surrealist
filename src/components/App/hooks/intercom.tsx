@@ -13,16 +13,17 @@ export function useIntercom() {
 
 	const isReady = authState !== "unknown" && authState !== "loading";
 
-	const metadata = useMemo(
-		() => ({
-			user_id: userId || undefined,
-			name: profile.name || undefined,
-			email: profile.username || undefined,
-			avatar: profile.picture || undefined,
-			user_hash: profile.user_hmac || undefined,
-		}),
-		[profile, userId],
-	);
+	const metadata = useMemo(() => {
+		if (!profile.user_hmac) return {};
+
+		return {
+			user_id: userId,
+			name: profile.name,
+			email: profile.username,
+			avatar: profile.picture,
+			user_hash: profile.user_hmac,
+		};
+	}, [profile, userId]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Track location change
 	useEffect(() => {
@@ -31,6 +32,7 @@ export function useIntercom() {
 		if (initialize.current) {
 			Intercom({
 				app_id: import.meta.env.VITE_INTERCOM_APP_ID,
+				z_index: 200,
 				...metadata,
 			});
 

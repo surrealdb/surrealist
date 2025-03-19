@@ -13,7 +13,6 @@ import {
 
 import {
 	buildAccessAuth,
-	buildScopeAuth,
 	composeAuthentication,
 	getReconnectInterval,
 	getVersionTimeout,
@@ -23,13 +22,14 @@ import {
 import { Value } from "@surrealdb/ql-wasm";
 import { compareVersions } from "compare-versions";
 import { adapter } from "~/adapter";
+import { fetchAPI } from "~/cloud/api";
 import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { AuthDetails, Authentication, Connection, Protocol } from "~/types";
+import type { AuthDetails, Authentication, CloudInstance, Connection, Protocol } from "~/types";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -80,7 +80,7 @@ export async function openConnection(options?: ConnectOptions) {
 	const newState = isRetry ? "retrying" : "connecting";
 	const surreal = await createSurreal();
 
-	await closeConnection(newState);
+	await _closeConnection(newState, false);
 
 	instance = surreal;
 	openedConnection = connection;
@@ -121,7 +121,6 @@ export async function openConnection(options?: ConnectOptions) {
 	});
 
 	try {
-		const isScopeSignup = connection.authentication.mode === "scope-signup";
 		const isAccessSignup = connection.authentication.mode === "access-signup";
 		const [versionCheck, versionCheckTimeout] = getVersionTimeout();
 
@@ -135,6 +134,15 @@ export async function openConnection(options?: ConnectOptions) {
 
 			if (authState === "unauthenticated") {
 				throw new CloudError("Not authenticated with Surreal Cloud");
+			}
+
+			const instance = await fetchAPI<CloudInstance>(
+				`/instances/${connection.authentication.cloudInstance}`,
+			);
+
+			if (!instance || instance.state !== "ready") {
+				scheduleReconnect(1000);
+				return;
 			}
 		}
 
@@ -150,8 +158,6 @@ export async function openConnection(options?: ConnectOptions) {
 
 					if (isAccessSignup) {
 						await register(buildAccessAuth(connection.authentication), surreal);
-					} else if (isScopeSignup) {
-						await register(buildScopeAuth(connection.authentication), surreal);
 					} else {
 						await authenticate(auth, surreal);
 					}
@@ -223,29 +229,31 @@ export async function openConnection(options?: ConnectOptions) {
 	}
 }
 
+async function _closeConnection(state: State, reconnect: boolean) {
+	const { setCurrentState, setVersion } = useDatabaseStore.getState();
+	const status = instance.status;
+
+	if (status === "connected" || status === "connecting") {
+		forceClose = !reconnect;
+		instance.close();
+	}
+
+	setCurrentState(state);
+	setVersion("");
+}
+
+/**
+ * Close the active surreal connection
+ */
+export async function closeConnection(reconnect?: boolean) {
+	_closeConnection(reconnect ? "retrying" : "disconnected", reconnect ?? false);
+}
+
 /**
  * Returns whether the connection is considered active
  */
 export function isConnected() {
 	return instance.status === "connected" || instance.status === "connecting";
-}
-
-/**
- * Close the active surreal connection
- *
- * @param state The state to set after closing
- */
-export async function closeConnection(state?: State) {
-	const { setCurrentState, setVersion } = useDatabaseStore.getState();
-	const status = instance.status;
-
-	if (status === "connected" || status === "connecting") {
-		forceClose = true;
-		instance.close();
-	}
-
-	setCurrentState(state ?? "disconnected");
-	setVersion("");
 }
 
 /**
@@ -446,7 +454,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		captureMetric("query_execute");
 
 		if (query.length <= MAX_HISTORY_QUERY_LENGTH) {
-			addHistoryEntry({
+			addHistoryEntry(connection.id, {
 				id: newId(),
 				query: query,
 				timestamp: Date.now(),
@@ -573,15 +581,21 @@ export function cancelLiveQueries(tab: string) {
  * Activate the given database within the specified namespace
  */
 export async function activateDatabase(namespace: string, database: string) {
-	const { updateCurrentConnection } = useConfigStore.getState();
+	const { updateConnection } = useConfigStore.getState();
+	const connection = getActiveConnection();
 	let invalidNS = false;
+
+	if (!connection) {
+		return;
+	}
 
 	// Select a namespace only
 	if (namespace) {
 		const isValid = await isNamespaceValid(namespace);
 
 		if (isValid) {
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				lastNamespace: namespace,
 				lastDatabase: database,
 			});
@@ -593,13 +607,15 @@ export async function activateDatabase(namespace: string, database: string) {
 		} else {
 			invalidNS = true;
 
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				lastNamespace: "",
 				lastDatabase: "",
 			});
 		}
 	} else {
-		updateCurrentConnection({
+		updateConnection({
+			id: connection,
 			lastNamespace: "",
 			lastDatabase: "",
 		});
@@ -610,13 +626,15 @@ export async function activateDatabase(namespace: string, database: string) {
 		const isValid = await isDatabaseValid(database);
 
 		if (isValid) {
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				lastDatabase: database,
 			});
 
 			await instance.use({ database });
 		} else {
-			updateCurrentConnection({
+			updateConnection({
+				id: connection,
 				lastDatabase: "",
 			});
 		}
@@ -732,10 +750,11 @@ function scheduleReconnect(timeout?: number) {
 
 	retryTask = setTimeout(() => {
 		const { currentState } = useDatabaseStore.getState();
+		const connection = getConnection();
 
-		if (currentState !== "connected") {
+		if (currentState !== "connected" && connection) {
 			openConnection({
-				connection: getActiveConnection(),
+				connection,
 				isRetry: true,
 			});
 		}

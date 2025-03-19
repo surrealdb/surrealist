@@ -1,41 +1,65 @@
-import { useEffect, useLayoutEffect, useMemo } from "react";
-import { useLocation, useSearch } from "wouter";
-import { CLOUD_PAGES, VIEW_MODES } from "~/constants";
-import type { CloudPage, ViewMode } from "~/types";
+import { useEffect, useMemo } from "react";
+import { PathPattern, matchRoute, useRouter, useSearch } from "wouter";
+import { adapter } from "~/adapter";
+import { MiniAdapter } from "~/adapter/mini";
+import { SANDBOX } from "~/constants";
+import { useConfigStore } from "~/stores/config";
+import type { ViewPage } from "~/types";
+import { getActiveConnection, getConnection, getConnectionById } from "~/util/connection";
 import { IntentEvent } from "~/util/global-events";
-import { type Intent, type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
+import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
+import { useConnectionList } from "./connection";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
 
 /**
- * Returns the active view mode and a function to set it
+ * Returns the current location and a function to navigate
  */
-export function useActiveView() {
-	const [location, navigate] = useLocation();
+export function useAbsoluteLocation() {
+	const router = useRouter();
 
-	const activeView = Object.values(VIEW_MODES).find((info) => location.startsWith(`/${info.id}`));
-	const setActiveView = useStable((view: ViewMode) => {
-		navigate(`/${view}`);
-	});
-
-	return [activeView, setActiveView] as const;
+	return router.hook(router);
 }
 
 /**
- * Returns the active cloud page and a function to set it
+ * Returns the current location and a function to navigate
  */
-export function useActiveCloudPage() {
-	const [location, navigate] = useLocation();
+export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pattern: RoutePath) {
+	return matchRoute(useRouter().parser, pattern, useAbsoluteLocation()[0]);
+}
 
-	const activePage = Object.values(CLOUD_PAGES).find((info) =>
-		location.startsWith(`/cloud/${info.id}`),
-	);
+/**
+ * Returns the active connection and view
+ */
+export function useConnectionAndView() {
+	if (adapter instanceof MiniAdapter) {
+		return [SANDBOX, "query"] as const;
+	}
 
-	const setActivePage = useStable((view: CloudPage) => {
-		navigate(`/cloud/${view}`);
+	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
+
+	if (!match) {
+		return [null, null] as const;
+	}
+
+	return [params.connection, params.view as ViewPage] as const;
+}
+
+/**
+ * Returns a function used to navigate to a specific connection and optional view
+ */
+export function useConnectionNavigator() {
+	const [, navigate] = useAbsoluteLocation();
+
+	return useStable((connection: string, view?: ViewPage) => {
+		const info = getConnectionById(connection);
+
+		if (info) {
+			const fallback = info.authentication.mode === "cloud" ? "dashboard" : "query";
+
+			navigate(`/c/${info.id}/${view ?? fallback}`);
+		}
 	});
-
-	return [activePage, setActivePage] as const;
 }
 
 /**
@@ -71,32 +95,14 @@ export function useSearchParams() {
  * @param view The view to listen for
  * @param callback The function to invoke
  */
-export function useViewFocus(view: ViewMode, callback: () => void, deps: any[] = []) {
-	const [activeView] = useActiveView();
+export function useViewFocus(view: ViewPage, callback: () => void, deps: any[] = []) {
+	const [, activeView] = useConnectionAndView();
 	const stable = useStable(callback);
 
 	// NOTE - should this be useLayoutEffect?
 	useEffect(() => {
-		if (activeView?.id === view) {
+		if (activeView === view) {
 			stable();
 		}
 	}, [activeView, view, ...deps]);
-}
-
-/**
- * Accepts a function to invoke when the specified cloud page
- * is activated.
- *
- * @param page The cloud page to listen for
- * @param callback The function to invoke
- */
-export function useCloudPageFocus(page: CloudPage, callback: () => void, deps: any[] = []) {
-	const [activePage] = useActiveCloudPage();
-	const stable = useStable(callback);
-
-	useLayoutEffect(() => {
-		if (activePage?.id === page) {
-			stable();
-		}
-	}, [activePage, page, ...deps]);
 }

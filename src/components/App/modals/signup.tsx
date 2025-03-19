@@ -18,11 +18,11 @@ import { Spacer } from "~/components/Spacer";
 import { SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { openConnectionEditModal } from "~/modals/edit-connection";
 import { openConnection } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
-import { getActiveConnection } from "~/util/connection";
+import { getConnection, getConnectionById } from "~/util/connection";
 import { iconWarning } from "~/util/icons";
-import { dispatchIntent } from "~/util/intents";
 
 export function AccessSignupModal() {
 	const { closeAccessSignup } = useInterfaceStore.getState();
@@ -38,22 +38,29 @@ export function AccessSignupModal() {
 	]);
 
 	const openEditor = useStable(() => {
-		dispatchIntent("edit-connection", { id: connectionId });
-		closeAccessSignup();
+		const connection = getConnectionById(connectionId);
+
+		if (connection) {
+			openConnectionEditModal(connection);
+			closeAccessSignup();
+		}
 	});
 
 	const createAccount = useStable(() => {
 		loadingHandle.open();
 
-		const signupMode = authMode === "access" ? "access-signup" : "scope-signup";
-		const connection = getActiveConnection();
+		const connection = getConnection();
+
+		if (!connection) {
+			return;
+		}
 
 		openConnection({
 			connection: {
 				...connection,
 				authentication: {
 					...connection.authentication,
-					mode: signupMode,
+					mode: "access-signup",
 				},
 			},
 		})

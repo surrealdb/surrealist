@@ -4,7 +4,9 @@
 	"version": "3.2.4",
 	"surreal": "2.0.0",
 	"type": "module",
-	"authors": ["SurrealDB"],
+	"authors": [
+		"SurrealDB"
+	],
 	"scripts": {
 		"build": "tsc && vite build",
 		"dev": "vite",
@@ -42,6 +44,7 @@
 		"@lezer/php": "^1.0.2",
 		"@lezer/python": "^1.1.14",
 		"@lezer/rust": "^1.0.2",
+		"@mantine/charts": "^7.16.3",
 		"@mantine/core": "^7.16.1",
 		"@mantine/hooks": "^7.16.1",
 		"@mantine/modals": "^7.16.1",

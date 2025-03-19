@@ -5,6 +5,7 @@
 
 :root[data-mantine-color-scheme="light"] {
 	--mantine-color-body: var(--mantine-color-white);
+	--mantine-color-error: var(--mantine-color-red-7);
 
 	--surrealist-glow: 0 3px 15px rgba(186, 0, 171, 0.5);
 	--surrealist-indent-color: var(--mantine-color-slate-1);
@@ -16,6 +17,7 @@
 
 :root[data-mantine-color-scheme="dark"] {
 	--mantine-color-body: var(--mantine-color-slate-8);
+	--mantine-color-error: var(--mantine-color-red-5);
 
 	--surrealist-glow: 0 3px 20px -4px rgba(186, 0, 171, 1), 0 3px 15px rgba(186, 0, 171, 0.5);
 	--surrealist-indent-color: var(--mantine-color-slate-7);
@@ -87,13 +89,30 @@ body.mod .cm-record-link:hover {
 .mantine-Notification-root {
 	border-width: 1px;
 	border-style: solid;
+
+	&::before {
+		left: 9px;
+		width: 4px;
+		top: var(--mantine-spacing-xs);
+		bottom: var(--mantine-spacing-xs);
+	}
 }
 
-.mantine-Notification-root::before {
-	left: 9px;
-	width: 4px;
-	top: var(--mantine-spacing-xs);
-	bottom: var(--mantine-spacing-xs);
+.mantine-Notification-root[data-variant="spaced"] {
+	padding: var(--mantine-spacing-md);
+
+	&::before {
+		display: none;
+	}
+}
+
+.mantine-Notification-title {
+	font-size: var(--mantine-font-size-md);
+	font-weight: 600;
+}
+
+.mantine-Notification-description {
+	color: var(--mantine-color-text);
 }
 
 .mantine-Button-root:where(:disabled:not([data-loading]), [data-disabled]:not([data-loading])),
@@ -145,6 +164,7 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-Tabs-tab {
+	border: 1px solid transparent;
 
 	&:hover {
 		background-color: var(--mantine-color-slate-7);
@@ -158,7 +178,16 @@ body.mod .cm-record-link:hover {
 	&[data-active] {
 		background: var(--surrealist-gradient);
 		background-origin: border-box;
-		color: var(--mantine-color-white);
+		border-color: rgba(255, 255, 255, 0.3);
+		border-radius: var(--mantine-radius-xs);
+
+		&:hover {
+			color: white;
+		}
+
+		@include light {
+			border-color: none;
+		}
 	}
 }
 
@@ -254,7 +283,8 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-InputWrapper-description {
-	font-size: var(--mantine-font-size-xs);
+	font-size: var(--mantine-font-size-sm);
+	color: var(--mantine-color-text);
 }
 
 .mantine-InputWrapper-label {
@@ -331,6 +361,10 @@ body.mod .cm-record-link:hover {
 	background-color: var(--mantine-color-slate-6);
 	border-width: 1px;
 	border: none;
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
 }
 
 .mantine-Switch-root[data-variant="gradient"] {
@@ -340,7 +374,7 @@ body.mod .cm-record-link:hover {
 
 		@include light {
 			background-color: var(--mantine-color-slate-2);
-			border-color: unset;
+			border-color: transparent !important;
 		}
 	}
 
@@ -351,6 +385,70 @@ body.mod .cm-record-link:hover {
 
 		@include light {
 			border-color: unset;
+		}
+	}
+}
+
+.mantine-Progress-root {
+	background-color: var(--mantine-color-slate-6);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
+}
+
+.mantine-Slider-label {
+	background-color: var(--mantine-color-slate-5);
+	color: var(--mantine-color-bright);
+
+	@include light {
+		background-color: var(--mantine-color-slate-2);
+	}
+}
+
+.mantine-SegmentedControl-root {
+	background-color: unset;
+	border: 1px solid var(--mantine-color-slate-6);
+
+	@include light {
+		border-color: var(--mantine-color-slate-2);
+	}
+
+	.mantine-SegmentedControl-indicator {
+		background-color: var(--mantine-color-slate-5);
+		border-radius: var(--mantine-radius-xs);
+		box-shadow: none;
+
+		@include light {
+			background-color: var(--mantine-color-slate-2);
+		}
+	}
+
+	.mantine-SegmentedControl-innerLabel {
+		transition: color .15s;
+	}
+
+	.mantine-SegmentedControl-control[data-active] .mantine-SegmentedControl-innerLabel {
+		color: var(--mantine-color-bright);
+	}
+
+	.mantine-SegmentedControl-control {
+		--separator-color: var(--mantine-color-slate-6);
+
+		@include light {
+			--separator-color: var(--mantine-color-slate-2);
+		}
+	}
+
+	&[data-variant="gradient"] {
+		.mantine-SegmentedControl-indicator {
+			background: var(--surrealist-gradient);
+			background-origin: border-box;
+			border: 1px solid rgba(255, 255, 255, 0.3);
+		}
+
+		.mantine-SegmentedControl-control[data-active] .mantine-SegmentedControl-innerLabel {
+			color: white;
 		}
 	}
 }

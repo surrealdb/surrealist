@@ -14,48 +14,57 @@ import {
 
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
-import { useLocation } from "wouter";
 import iconUrl from "~/assets/images/icon.webp";
-import { BetaBadge } from "~/components/BetaBadge";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
-import { VIEW_MODES } from "~/constants";
+import { GLOBAL_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useCloudRoute, useSurrealCloud } from "~/hooks/cloud";
-import { useConnection } from "~/hooks/connection";
+import { useAvailableViews } from "~/hooks/connection";
+import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import type { SidebarMode, ViewMode } from "~/types";
-import { useFeatureFlags } from "~/util/feature-flags";
+import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
-import { iconCloud, iconCog, iconSearch } from "~/util/icons";
+import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
-const NAVIGATION: ViewMode[][] = [
+const GLOBAL_NAVIGATION: GlobalPage[][] = [
+	["/overview"],
+	["/chat", "/mini/new"],
+	["/billing", "/referrals", "/support"],
+];
+
+const VIEW_NAVIGATION: ViewPage[][] = [
+	["dashboard"],
 	["query", "explorer", "graphql"],
 	["designer", "authentication", "functions", "models"],
 	["sidekick", "documentation"],
 ];
 
-export interface SidebarProps extends BoxProps {
+interface NavigationItem {
+	name: string;
+	icon: string;
+	match: string;
+	navigate: () => void;
+}
+
+export interface SurrealistSidebarProps extends BoxProps {
 	sidebarMode: SidebarMode;
 }
 
-export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarProps) {
-	const [flags] = useFeatureFlags();
-
+export function SurrealistSidebar({ sidebarMode, className, ...other }: SurrealistSidebarProps) {
 	const logoUrl = useLogoUrl();
 	const isLight = useIsLight();
-	const showCloud = useSurrealCloud();
-	const [, navigate] = useLocation();
-	const cloudActive = useCloudRoute();
+	const [, navigate] = useAbsoluteLocation();
+	const [connection] = useConnectionAndView();
+	const navigateConnection = useConnectionNavigator();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
-	const enabledViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
-	const connection = useConnection((c) => c?.id ?? "");
+	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
+	const views = useAvailableViews();
 
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
@@ -65,19 +74,55 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 		navigate(location);
 	});
 
-	const navigation = useMemo(() => {
-		return NAVIGATION.flatMap((row) => {
+	const globalNavigation: NavigationItem[][] = useMemo(() => {
+		return GLOBAL_NAVIGATION.flatMap((row) => {
 			const items = row.flatMap((id) => {
-				const info = VIEW_MODES[id];
+				const info = GLOBAL_PAGES[id];
 
-				return !info || !info.disabled?.(flags) !== true || enabledViews[id] === false
-					? []
-					: [info];
+				return {
+					id: info.id,
+					name: info.name,
+					icon: info.icon,
+					match: info.id,
+					navigate: () => setLocation(info.id),
+				};
 			});
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, [flags, enabledViews]);
+	}, []);
+
+	const viewNavigation: NavigationItem[][] = useMemo(() => {
+		if (!connection) {
+			return [];
+		}
+
+		return VIEW_NAVIGATION.flatMap((row) => {
+			const items = row.flatMap((id) => {
+				const info = views[id];
+
+				if (!info || sidebarViews[id] === false) {
+					return [];
+				}
+
+				return {
+					id: info.id,
+					name: info.name,
+					icon: info.icon,
+					match: `/c/*/${info.id}`,
+					disabled: !connection,
+					navigate: () => {
+						hoverSidebarHandle.close();
+						navigateConnection(connection, info.id);
+					},
+				};
+			});
+
+			return items.length > 0 ? [items] : [];
+		});
+	}, [views, sidebarViews, connection]);
+
+	const navigation = connection ? viewNavigation : globalNavigation;
 
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
@@ -115,7 +160,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 				<Space h="var(--titlebar-offset)" />
 				<UnstyledButton
 					onClick={() => {
-						setLocation("/start");
+						setLocation("/overview");
 						setOverlaySidebar(false);
 					}}
 				>
@@ -127,6 +172,7 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 						<Image
 							src={iconUrl}
 							w={42}
+							className={classes.hat}
 						/>
 						<Image
 							src={logoUrl}
@@ -143,26 +189,15 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 					component="nav"
 					flex={1}
 				>
-					{showCloud && (
+					{connection && (
 						<>
 							<NavigationIcon
-								name={
-									<Group
-										wrap="nowrap"
-										gap="xs"
-									>
-										Surreal Cloud
-										<BetaBadge />
-									</Group>
-								}
-								icon={iconCloud}
-								isActive={cloudActive}
-								path="cloud/*?"
-								withTooltip={sidebarMode === "compact"}
-								onClick={() => setLocation("/cloud")}
+								name="Back to overview"
+								icon={iconArrowLeft}
+								onClick={() => setLocation("/overview")}
 								onMouseEnter={hoverSidebarHandle.open}
+								withTooltip={sidebarMode === "compact"}
 							/>
-
 							<Divider color={isLight ? "slate.2" : "slate.7"} />
 						</>
 					)}
@@ -171,21 +206,17 @@ export function DatabaseSidebar({ sidebarMode, className, ...other }: SidebarPro
 						<Fragment key={i}>
 							{items.map((info) => (
 								<Group
-									key={info.id}
+									key={info.name}
 									gap="lg"
 									wrap="nowrap"
 								>
 									<NavigationIcon
 										name={info.name}
-										path={info.id}
-										icon={info.anim || info.icon}
-										onClick={() => setLocation(`/${info.id}`)}
+										path={info.match}
+										icon={info.icon}
+										onClick={info.navigate}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}
-										disabled={!connection}
-										style={{
-											opacity: connection ? 1 : 0.5,
-										}}
 									/>
 								</Group>
 							))}

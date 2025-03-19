@@ -7,11 +7,14 @@ import {
 	iconPlus,
 } from "~/util/icons";
 
-import { ActionIcon, Button, Group, Menu, Modal, Text } from "@mantine/core";
+import { ActionIcon, Box, Button, Group, Menu, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { type HTMLAttributes, type MouseEvent, useState } from "react";
 import { useImmer } from "use-immer";
-import { ConnectionDetails } from "~/components/ConnectionDetails";
+import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
+import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
+import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
+import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { Entry, type EntryProps } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -23,6 +26,7 @@ import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { ON_STOP_PROPAGATION, newId, uniqueName } from "~/util/helpers";
+import { USER_ICONS } from "~/util/user-icons";
 import { SettingsSection } from "../utilities";
 
 const CAT = "templates";
@@ -61,7 +65,6 @@ export function TemplatesTab() {
 			name: template.name,
 			icon: template.icon,
 			authentication: template.values,
-			group: template.group,
 		});
 	});
 
@@ -72,7 +75,6 @@ export function TemplatesTab() {
 			id: details.id,
 			name: details.name,
 			icon: details.icon,
-			group: details.group || undefined,
 			values: details.authentication,
 		};
 
@@ -145,28 +147,90 @@ export function TemplatesTab() {
 				size="lg"
 			>
 				<Form onSubmit={saveTemplate}>
-					<ConnectionDetails
-						value={details}
-						onChange={setDetails}
-					/>
+					<Stack gap="xl">
+						<Box>
+							<Text
+								fz="xl"
+								fw={600}
+								c="bright"
+							>
+								Connection
+							</Text>
+							<Text>Specify an icon and name for this template</Text>
+						</Box>
 
-					<Group mt="lg">
-						<Button
-							color="slate"
-							variant="light"
-							onClick={showEditorHandle.close}
-						>
-							Close
-						</Button>
-						<Spacer />
-						<Button
-							type="submit"
-							variant="gradient"
-							rightSection={<Icon path={details.id ? iconCheck : iconPlus} />}
-						>
-							{details.id ? "Save" : "Create"}
-						</Button>
-					</Group>
+						<ConnectionNameDetails
+							value={details}
+							onChange={setDetails}
+						/>
+
+						<Box mt="xl">
+							<Text
+								fz="xl"
+								fw={600}
+								c="bright"
+							>
+								Remote address
+							</Text>
+							<Text>
+								Select a communication protocol and specify instance address
+							</Text>
+						</Box>
+
+						<ConnectionAddressDetails
+							value={details}
+							onChange={setDetails}
+						/>
+
+						<Box mt="xl">
+							<Text
+								fz="xl"
+								fw={600}
+								c="bright"
+							>
+								Authentication
+							</Text>
+							<Text>Specify default authentication details</Text>
+						</Box>
+
+						<ConnectionAuthDetails
+							value={details}
+							onChange={setDetails}
+						/>
+
+						<Box mt="xl">
+							<Text
+								fz="xl"
+								fw={600}
+								c="bright"
+							>
+								Labels
+							</Text>
+							<Text>Add default labels to this template</Text>
+						</Box>
+
+						<ConnectionLabelsDetails
+							value={details}
+							onChange={setDetails}
+						/>
+
+						<Group mt="xl">
+							<Button
+								color="slate"
+								variant="light"
+								onClick={showEditorHandle.close}
+							>
+								Close
+							</Button>
+							<Spacer />
+							<Button
+								type="submit"
+								variant="gradient"
+							>
+								{details.id ? "Save changes" : "Create"}
+							</Button>
+						</Group>
+					</Stack>
 				</Form>
 			</Modal>
 		</>
@@ -209,7 +273,7 @@ function Item({ template, onOpen, onRemove, onDuplicate, ...other }: ItemProps) 
 		<Entry
 			key={template.id}
 			onClick={activate}
-			leftSection={<Icon path={iconFile} />}
+			leftSection={<Icon path={USER_ICONS[template.icon]} />}
 			rightSection={
 				<Menu
 					opened={showOptions}

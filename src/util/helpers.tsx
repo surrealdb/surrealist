@@ -3,11 +3,11 @@ import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
 import escapeRegex from "escape-string-regexp";
-import { uid } from "radash";
+import { title, uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
-import { decodeCbor, escape_ident } from "surrealdb";
+import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
-import type { Authentication, QueryTab } from "~/types";
+import type { Authentication, Selectable } from "~/types";
 
 const VARIABLE_PATTERN = /\$\w+/gi;
 const RESERVED_VARIABLES = new Set([
@@ -37,6 +37,8 @@ export const Y_SLIDE_TRANSITION = {
 	transitionProperty: "transform, opacity",
 };
 
+export const DATE_TIME_FORMAT = "E MMM dd yyyy HH:mm";
+
 export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
 	e.stopPropagation();
 };
@@ -62,18 +64,9 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
  */
 export function showError(info: { title: ReactNode; subtitle: ReactNode }) {
 	showNotification({
-		color: "pink.9",
-		message: (
-			<Stack gap={0}>
-				<Text
-					fw={600}
-					c="bright"
-				>
-					{info.title}
-				</Text>
-				<Text>{info.subtitle}</Text>
-			</Stack>
-		),
+		color: "red",
+		title: info.title,
+		message: info.subtitle,
 	});
 }
 
@@ -212,6 +205,10 @@ export function connectionUri(options: Authentication, path?: string) {
 
 	if (options.protocol === "indxdb") {
 		return `indxdb://${options.hostname}`;
+	}
+
+	if (options.hostname === "") {
+		return "";
 	}
 
 	const url = new URL(`${options.protocol}://${options.hostname}`);
@@ -468,10 +465,10 @@ export function __throw(error: Error | string): never {
  */
 export function formatMemory(amountInMB: number) {
 	if (amountInMB < 1024) {
-		return `${amountInMB.toFixed(2)} MB`;
+		return `${Number.parseFloat(amountInMB.toFixed(2))} MB`;
 	}
 
-	return `${(amountInMB / 1024).toFixed(2)} GB`;
+	return `${Number.parseFloat((amountInMB / 1024).toFixed(2))} GB`;
 }
 
 /**
@@ -500,4 +497,11 @@ export function isSimilar(a: string, b: string) {
  */
 export function plural(count: number, singular: string, plural = `${singular}s`) {
 	return count === 1 ? singular : plural;
+}
+
+/**
+ * Compile a static list of strings into a selectable list
+ */
+export function selectable(values: string[]): Selectable[] {
+	return values.map((value) => ({ value, label: value }));
 }

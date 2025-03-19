@@ -30,10 +30,6 @@ function handler(event) {
 			return redirect('/mini');
 
 		// Rewrites
-		case request.uri === '/mini/new':
-			request.uri = '/mini/new/index.html';
-			break;
-
 		case request.uri === '/mini':
 			request.uri = '/mini/run/index.html';
 			break;

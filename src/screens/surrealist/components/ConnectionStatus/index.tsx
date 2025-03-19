@@ -1,12 +1,10 @@
 import {
 	iconClose,
 	iconDownload,
-	iconEdit,
 	iconRefresh,
 	iconRelation,
 	iconReset,
 	iconSandbox,
-	iconServer,
 	iconTable,
 	iconUpload,
 } from "~/util/icons";
@@ -18,11 +16,11 @@ import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
-import type { Connection } from "~/types";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
@@ -33,12 +31,11 @@ export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);
 	const schema = useDatabaseSchema();
 
-	const [hasConnection, connectionId, name, icon, namespace, database] = useConnection((c) => [
-		!!c,
+	const [connection] = useConnectionAndView();
+	const [connectionId, name, icon, database] = useConnection((c) => [
 		c?.id ?? "",
 		c?.name ?? "",
 		c?.icon ?? 0,
-		c?.lastNamespace,
 		c?.lastDatabase,
 	]);
 
@@ -54,10 +51,6 @@ export function ConnectionStatus() {
 	const currentState = useDatabaseStore((s) => s.currentState);
 	const latestError = useDatabaseStore((s) => s.latestError);
 	const remoteVersion = useDatabaseStore((s) => s.version);
-
-	const openEditor = useStable((connection: string) => {
-		dispatchIntent("edit-connection", { id: connection });
-	});
 
 	const openConnections = useStable(() => {
 		dispatchIntent("open-connections");
@@ -87,7 +80,7 @@ export function ConnectionStatus() {
 
 	return (
 		<>
-			{hasConnection ? (
+			{connection && (
 				<Menu
 					opened={isDropped}
 					onChange={setIsDropped}
@@ -138,21 +131,10 @@ export function ConnectionStatus() {
 							{statusText}
 						</Text>
 						<Menu.Divider />
-						<Menu.Label>Connection</Menu.Label>
-						<Menu.Item
-							leftSection={<Icon path={iconServer} />}
-							onClick={openConnections}
-						>
-							View connections
-						</Menu.Item>
+
 						{!isSandbox && (
 							<>
-								<Menu.Item
-									leftSection={<Icon path={iconEdit} />}
-									onClick={() => openEditor(connectionId)}
-								>
-									Edit connection
-								</Menu.Item>
+								<Menu.Label mt="sm">Connection</Menu.Label>
 								<Menu.Item
 									leftSection={<Icon path={iconReset} />}
 									onClick={() => openConnection()}
@@ -230,21 +212,6 @@ export function ConnectionStatus() {
 						)}
 					</Menu.Dropdown>
 				</Menu>
-			) : (
-				<Button
-					variant="subtle"
-					color="slate"
-					onClick={openConnections}
-					leftSection={<Icon path={iconServer} />}
-				>
-					<Text
-						fw={600}
-						c="bright"
-						ml={2}
-					>
-						No connection selected
-					</Text>
-				</Button>
 			)}
 
 			<Modal

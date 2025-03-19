@@ -1,6 +1,6 @@
 import { objectify } from "radash";
 import type { AccessRecordAuth, QueryResult, ScopeAuth } from "surrealdb";
-import { fetchAPI } from "~/screens/surrealist/cloud-panel/api";
+import { fetchAPI } from "~/cloud/api";
 import type { AuthDetails, Authentication, QueryResponse } from "~/types";
 import { getSetting } from "~/util/config";
 import { CloudError } from "~/util/errors";
@@ -21,9 +21,6 @@ export async function composeAuthentication(connection: Authentication): Promise
 		}
 		case "access": {
 			return buildAccessAuth(connection);
-		}
-		case "scope": {
-			return buildScopeAuth(connection);
 		}
 		case "token": {
 			return token;
@@ -57,17 +54,6 @@ export function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
 		result: res.result,
 		execution_time: res.time,
 	}));
-}
-
-export function buildScopeAuth(connection: Authentication): ScopeAuth {
-	const { namespace, database, scope, accessFields } = connection;
-	const fields = objectify(
-		accessFields,
-		(f) => f.subject,
-		(f) => f.value,
-	);
-
-	return { namespace, database, scope, ...fields };
 }
 
 export function buildAccessAuth(connection: Authentication): AccessRecordAuth {

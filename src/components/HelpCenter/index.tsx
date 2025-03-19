@@ -8,7 +8,6 @@ import {
 	iconCommand,
 	iconDiscord,
 	iconEmail,
-	iconQuery,
 	iconSidekick,
 	iconSurreal,
 	iconSurrealist,
@@ -23,9 +22,9 @@ import clsx from "clsx";
 import type { PropsWithChildren } from "react";
 import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
-import { useIsAuthenticated, useSurrealCloud } from "~/hooks/cloud";
+import { openAccountSupport } from "~/cloud/modals/account-support";
+import { useSurrealCloud } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
-import { openAccountSupport } from "~/screens/surrealist/cloud-panel/modals/account-support";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
@@ -35,9 +34,7 @@ export interface HelpCenterProps {
 }
 
 export function HelpCenter({ onBody }: HelpCenterProps) {
-	const isAuthed = useIsAuthenticated();
 	const showCloud = useSurrealCloud();
-
 	const [, navigate] = useLocation();
 
 	return (
@@ -54,13 +51,13 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 				/>
 				<HelpTile
 					title="GitHub"
-					description="Star the SurrealDB project and keep up-to-date with development"
+					description="Star the SurrealDB project and keep up to date with development"
 					icon={iconAPI}
 					onClick={() => adapter.openUrl("https://github.com/surrealdb")}
 				/>
 				<HelpTile
 					title="YouTube"
-					description="Stay up-to-date with live streams & video tutorials"
+					description="Stay up to date with live streams & video tutorials"
 					icon={iconVideo}
 					onClick={() => adapter.openUrl("https://www.youtube.com/@SurrealDB")}
 				/>
@@ -97,13 +94,13 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 					onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
 				/>
 				<HelpTile
-					title="University"
+					title="University: Fundamentals"
 					description="Learn the fundamentals of SurrealDB in as little as 3 hours"
 					icon={iconUniversity}
 					onClick={() => adapter.openUrl("https://surrealdb.com/learn/fundamentals")}
 				/>
 				<HelpTile
-					title="Book"
+					title="University: Book"
 					description="Become an expert in SurrealQL through Aeon's Surreal Renaissance"
 					icon={iconBook}
 					onClick={() => adapter.openUrl("https://surrealdb.com/learn/book")}
@@ -113,7 +110,7 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 				<HelpSection title="Cloud">
 					<HelpTile
 						title="Cloud docs"
-						description="Learn how to set-up, configure, and manage your instances and teams"
+						description="Learn how to set up, configure, and manage your instances and teams"
 						icon={iconCloud}
 						onClick={() => adapter.openUrl("https://surrealdb.com/docs/cloud")}
 					/>
@@ -127,13 +124,7 @@ export function HelpCenter({ onBody }: HelpCenterProps) {
 						title="Account"
 						description="Account or billing related issue? Raise a support ticket"
 						icon={iconEmail}
-						onClick={() => {
-							if (isAuthed) {
-								openAccountSupport();
-							} else {
-								navigate("cloud");
-							}
-						}}
+						onClick={openAccountSupport}
 					/>
 				</HelpSection>
 			)}
@@ -176,7 +167,7 @@ function HelpTile({ title, description, icon, noIconStroke, onClick }: HelpTileP
 	return (
 		<UnstyledButton
 			p="lg"
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "slate.0" : "slate.7"}
 			className={classes.helpTile}
 			onClick={() => {
 				closeAllModals();
