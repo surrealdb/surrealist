@@ -221,114 +221,114 @@ export function OverviewPage() {
 									size="xs"
 									className={classes.search}
 								/>
-								{authState === "authenticated" && (
-									<Menu
-										transitionProps={{ transition: "scale-y" }}
-										position="bottom-end"
-									>
-										<Menu.Target>
-											<Button
-												size="xs"
-												color="slate"
-												variant="gradient"
-												onClick={openCloudAuthentication}
-												rightSection={<Icon path={iconChevronDown} />}
-											>
-												Create new
-											</Button>
-										</Menu.Target>
-										<Menu.Dropdown>
-											<Menu.Item
-												leftSection={
-													<ThemeIcon
-														color={isLight ? "slate" : "slate.0"}
-														mr="xs"
-														radius="xs"
+
+								<Menu
+									transitionProps={{ transition: "scale-y" }}
+									position="bottom-end"
+								>
+									<Menu.Target>
+										<Button
+											size="xs"
+											color="slate"
+											variant="gradient"
+											rightSection={<Icon path={iconChevronDown} />}
+										>
+											Create new
+										</Button>
+									</Menu.Target>
+									<Menu.Dropdown>
+										<Menu.Item
+											leftSection={
+												<ThemeIcon
+													color={isLight ? "slate" : "slate.0"}
+													mr="xs"
+													radius="xs"
+													size="lg"
+													variant="light"
+												>
+													<Icon
+														path={iconPlus}
 														size="lg"
-														variant="light"
-													>
-														<Icon
-															path={iconPlus}
-															size="lg"
-														/>
-													</ThemeIcon>
-												}
-												onClick={() => {
-													navigate("/create/connection");
-												}}
-											>
-												<Box>
-													<Text
-														c="bright"
-														fw={600}
-													>
-														Connection
-													</Text>
-													<Text>Connect to any SurrealDB instance</Text>
-												</Box>
-											</Menu.Item>
-											<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
-											<Menu.Item
-												leftSection={
-													<ThemeIcon
-														color="surreal"
-														mr="xs"
-														radius="xs"
+													/>
+												</ThemeIcon>
+											}
+											onClick={() => {
+												navigate("/create/connection");
+											}}
+										>
+											<Box>
+												<Text
+													c="bright"
+													fw={600}
+												>
+													Connection
+												</Text>
+												<Text>Connect to any SurrealDB instance</Text>
+											</Box>
+										</Menu.Item>
+										<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
+										<Menu.Item
+											disabled={authState !== "authenticated"}
+											leftSection={
+												<ThemeIcon
+													color="surreal"
+													mr="xs"
+													radius="xs"
+													size="lg"
+													variant="light"
+												>
+													<Icon
+														path={iconCloud}
 														size="lg"
-														variant="light"
-													>
-														<Icon
-															path={iconCloud}
-															size="lg"
-														/>
-													</ThemeIcon>
-												}
-												onClick={() => {
-													navigate("/create/instance");
-												}}
-											>
-												<Box>
-													<Text
-														c="bright"
-														fw={600}
-													>
-														Cloud Instance
-													</Text>
-													<Text>Create a managed cloud instance</Text>
-												</Box>
-											</Menu.Item>
-											<Menu.Item
-												leftSection={
-													<ThemeIcon
-														color="violet"
-														mr="xs"
-														radius="xs"
+													/>
+												</ThemeIcon>
+											}
+											onClick={() => {
+												navigate("/create/instance");
+											}}
+										>
+											<Box>
+												<Text
+													c="bright"
+													fw={600}
+												>
+													Cloud Instance
+												</Text>
+												<Text>Create a managed cloud instance</Text>
+											</Box>
+										</Menu.Item>
+										<Menu.Item
+											disabled
+											leftSection={
+												<ThemeIcon
+													color="violet"
+													mr="xs"
+													radius="xs"
+													size="lg"
+													variant="light"
+												>
+													<Icon
+														path={iconAccount}
 														size="lg"
-														variant="light"
-													>
-														<Icon
-															path={iconAccount}
-															size="lg"
-														/>
-													</ThemeIcon>
-												}
-												onClick={() => {
-													navigate("/create/organization");
-												}}
-											>
-												<Box>
-													<Text
-														c="bright"
-														fw={600}
-													>
-														Organization
-													</Text>
-													<Text>Create a space to manage your team</Text>
-												</Box>
-											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
-								)}
+													/>
+												</ThemeIcon>
+											}
+											onClick={() => {
+												navigate("/create/organization");
+											}}
+										>
+											<Box>
+												<Text
+													c="bright"
+													fw={600}
+												>
+													Organization
+												</Text>
+												<Text>Create a space to manage your team</Text>
+											</Box>
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
 							</Group>
 
 							<SimpleGrid cols={GRID_COLUMNS}>
