@@ -394,8 +394,8 @@ export function OverviewPage() {
 								<>
 									<PrimaryTitle mt="xl">Surreal Cloud</PrimaryTitle>
 									<StartCloud
-										title="Explore Surreal Cloud"
-										subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
+										title="Try Surreal Cloud"
+										subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure. Get your own free instance today."
 										icon={iconCloud}
 										onClick={openCloudAuthentication}
 									/>
