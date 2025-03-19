@@ -3,6 +3,7 @@ import classes from "../style.module.scss";
 
 import {
 	Box,
+	Button,
 	Divider,
 	Group,
 	Image,
@@ -20,7 +21,7 @@ import { useMemo, useState } from "react";
 import { Entry, type EntryProps } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnectionList, useConnectionOverview } from "~/hooks/connection";
+import { useConnectionLabels, useConnectionList, useConnectionOverview } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useConnectionAndView, useConnectionNavigator, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -36,6 +37,10 @@ export function ConnectionsModal() {
 	const [label, setLabel] = useState("");
 	const [connection] = useConnectionAndView();
 	const navigateConnection = useConnectionNavigator();
+	const labels = useConnectionLabels();
+
+	const showLabels = labels.length > 0;
+	const showAll = label === "";
 
 	const { sandbox, isEmpty, userConnections, organizations } = useConnectionOverview({
 		search,
@@ -109,6 +114,59 @@ export function ConnectionsModal() {
 					gap="xl"
 					p="lg"
 				>
+					{showLabels && (
+						<Box
+							pos="relative"
+							h={42}
+							mb={-12}
+						>
+							<ScrollArea
+								pos="absolute"
+								inset={0}
+								scrollbars="x"
+								type="scroll"
+							>
+								<Group
+									gap={6}
+									pb="sm"
+									wrap="nowrap"
+								>
+									<Button
+										size="xs"
+										color="slate"
+										className={clsx(
+											classes.label,
+											showAll && classes.labelActive,
+										)}
+										variant={showAll ? "filled" : "subtle"}
+										onClick={() => setLabel("")}
+									>
+										All connections
+									</Button>
+									{labels.map((option, i) => {
+										const isActive = option === label;
+
+										return (
+											<Button
+												key={i}
+												size="xs"
+												color="slate"
+												className={clsx(
+													classes.label,
+													isActive && classes.labelActive,
+												)}
+												variant={isActive ? "filled" : "subtle"}
+												onClick={() => setLabel(option)}
+											>
+												{option}
+											</Button>
+										);
+									})}
+								</Group>
+							</ScrollArea>
+						</Box>
+					)}
+
 					{isEmpty && (
 						<Text
 							c="slate"

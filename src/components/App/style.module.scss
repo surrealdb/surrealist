@@ -146,3 +146,16 @@
 .docs-scroller :global(.mantine-ScrollArea-viewport)>div {
 	display: block !important;
 }
+
+.label {
+	transition: all .1s;
+}
+
+.label-active {
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	box-shadow: 0 7px 11px -6px rgba(0, 0, 0, 0.5);
+
+	@include light {
+		box-shadow: unset;
+	}
+}
