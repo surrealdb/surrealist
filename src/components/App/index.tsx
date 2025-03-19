@@ -22,17 +22,14 @@ import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
-import { GoogleAnalyticsProvider } from "~/providers/GoogleAnalytics";
 
 function Surrealist() {
 	return (
-		<GoogleAnalyticsProvider gtmId="" platform="surrealist">
-			<InspectorProvider>
-				<DesignerProvider>
-					<SurrealistScreen />
-				</DesignerProvider>
-			</InspectorProvider>
-		</GoogleAnalyticsProvider>
+		<InspectorProvider>
+			<DesignerProvider>
+				<SurrealistScreen />
+			</DesignerProvider>
+		</InspectorProvider>
 	);
 }
 

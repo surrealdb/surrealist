@@ -11,20 +11,18 @@ export function MiniRunScreen() {
 	const isLight = useIsLight();
 
 	return (
-		<GoogleAnalyticsProvider gtmId="" platform="surrealist-mini">
-			<Scaffold>
-				<Box
-					h="100vh"
-					p={appearance === "plain" ? 0 : "md"}
-					style={{
-						backgroundColor: transparent
-							? undefined
-							: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
-					}}
-				>
-					<MiniQueryView />
-				</Box>
-			</Scaffold>
-		</GoogleAnalyticsProvider>
+		<Scaffold>
+			<Box
+				h="100vh"
+				p={appearance === "plain" ? 0 : "md"}
+				style={{
+					backgroundColor: transparent
+						? undefined
+						: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
+				}}
+			>
+				<MiniQueryView />
+			</Box>
+		</Scaffold>
 	);
 }
