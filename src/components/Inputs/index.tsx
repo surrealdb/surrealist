@@ -12,7 +12,7 @@ import {
 	Pill,
 	PillsInput,
 	type PillsInputProps,
-	TextInput
+	TextInput,
 } from "@mantine/core";
 
 import {
@@ -41,7 +41,7 @@ import { ActionButton } from "../ActionButton";
 
 export interface CodeInputProps
 	extends InputBaseProps,
-	Omit<HTMLAttributes<HTMLDivElement>, "style" | "value" | "onChange"> {
+		Omit<HTMLAttributes<HTMLDivElement>, "style" | "value" | "onChange"> {
 	value: string;
 	height?: number;
 	autoFocus?: boolean;
@@ -187,14 +187,14 @@ export function CodeInput({
 				multiline
 					? [acceptWithTab]
 					: [
-						{
-							key: "Enter",
-							run: () => {
-								onSubmit?.();
-								return true;
+							{
+								key: "Enter",
+								run: () => {
+									onSubmit?.();
+									return true;
+								},
 							},
-						},
-					],
+						],
 			),
 		);
 
@@ -300,8 +300,23 @@ export function FieldKindInput({ className, ...rest }: FieldKindInputProps) {
 	const kinds = useKindList();
 
 	return (
-		<Autocomplete
+		<FieldKindInputCore
 			data={kinds}
+			{...rest}
+		/>
+	);
+}
+
+export interface FieldKindInputCoreProps extends AutocompleteProps {
+	data: string[];
+	value: string;
+	onChange: (value: string) => void;
+}
+
+export function FieldKindInputCore({ className, data, ...rest }: FieldKindInputProps) {
+	return (
+		<Autocomplete
+			data={data}
 			spellCheck={false}
 			className={clsx(classes.input, classes.kindInput, className)}
 			{...rest}
