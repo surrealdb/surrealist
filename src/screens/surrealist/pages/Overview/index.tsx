@@ -303,7 +303,7 @@ export function OverviewPage() {
 											<Menu.Item
 												leftSection={
 													<ThemeIcon
-														color="indigo"
+														color="violet"
 														mr="xs"
 														radius="xs"
 														size="lg"
