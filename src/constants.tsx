@@ -177,7 +177,6 @@ export const AUTH_MODES: Selectable<AuthMode>[] = [
 	{ label: "Record Access", value: "access" },
 	{ label: "Token", value: "token" },
 	{ label: "Anonymous", value: "none" },
-	{ label: "Scope (Legacy)", value: "scope" },
 ];
 
 export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [

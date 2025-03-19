@@ -401,3 +401,42 @@ body.mod .cm-record-link:hover {
 		background-color: var(--mantine-color-slate-2);
 	}
 }
+
+.mantine-SegmentedControl-root {
+	background-color: unset;
+	border: 1px solid var(--mantine-color-slate-6);
+
+	>.mantine-SegmentedControl-indicator {
+		background-color: var(--mantine-color-slate-5);
+		border-radius: var(--mantine-radius-xs);
+		box-shadow: none;
+
+		@include light {
+			background-color: var(--mantine-color-slate-2);
+		}
+	}
+
+	.mantine-SegmentedControl-innerLabel {
+		transition: color .15s;
+	}
+
+	.mantine-SegmentedControl-control {
+		--separator-color: var(--mantine-color-slate-6);
+
+		@include light {
+			--separator-color: var(--mantine-color-slate-2);
+		}
+	}
+
+	&[data-variant="gradient"] {
+		>.mantine-SegmentedControl-indicator {
+			background: var(--surrealist-gradient);
+			background-origin: border-box;
+			border: 1px solid rgba(255, 255, 255, 0.3);
+		}
+
+		.mantine-SegmentedControl-control[data-active] .mantine-SegmentedControl-innerLabel {
+			color: white;
+		}
+	}
+}

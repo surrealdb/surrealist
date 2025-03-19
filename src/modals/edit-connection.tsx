@@ -18,6 +18,7 @@ export function openConnectionEditModal(connection: Connection) {
 	openModal({
 		modalId: "connection-edit",
 		title: <PrimaryTitle>Edit connection</PrimaryTitle>,
+		size: "lg",
 		withCloseButton: true,
 		children: <ConnectionEditor value={connection} />,
 	});

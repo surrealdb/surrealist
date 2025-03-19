@@ -1,34 +1,23 @@
 import {
 	Box,
 	Checkbox,
-	Divider,
 	Group,
 	type MantineColorScheme,
-	SegmentedControl,
 	Select,
 	Stack,
 	Tooltip,
 } from "@mantine/core";
 
-import {
-	type PropsWithChildren,
-	type ReactNode,
-	useEffect,
-	useLayoutEffect,
-	useMemo,
-	useState,
-} from "react";
+import { type PropsWithChildren, type ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
 
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useImmer } from "use-immer";
-import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { Spacer } from "~/components/Spacer";
 import { DATASETS, ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
 import type { ColorScheme, Orientation, ResultMode } from "~/types";
-import { dedent } from "~/util/dedent";
 import { isDevelopment, isProduction } from "~/util/environment";
 import { iconHelp } from "~/util/icons";
 

@@ -129,12 +129,10 @@ export function CreateConnectionPage() {
 						<Text>Specify how you want to access your instance</Text>
 					</Box>
 
-					<Paper p="lg">
-						<ConnectionAuthDetails
-							value={connection}
-							onChange={setConnection}
-						/>
-					</Paper>
+					<ConnectionAuthDetails
+						value={connection}
+						onChange={setConnection}
+					/>
 
 					<Box mt="xl">
 						<Text

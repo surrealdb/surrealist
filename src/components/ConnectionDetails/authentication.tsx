@@ -3,9 +3,8 @@ import {
 	Button,
 	Group,
 	Modal,
-	Paper,
 	PasswordInput,
-	Select,
+	SegmentedControl,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -39,7 +38,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 	const { mode, token } = value.authentication;
 
 	const isSystemMethod = SYSTEM_METHODS.has(mode);
-	const showDatabase = mode === "database" || mode === "scope" || mode === "access";
+	const showDatabase = mode === "database" || mode === "access";
 	const showNamespace = showDatabase || mode === "namespace";
 	const tokenPayload = useMemo(() => fastParseJwt(token), [token]);
 	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
@@ -56,9 +55,10 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 
 	return (
 		<Stack>
-			<Select
-				label="Method"
+			<SegmentedControl
+				mb="sm"
 				value={value.authentication.mode}
+				variant="gradient"
 				data={AUTH_MODES}
 				onChange={(value) =>
 					onChange((draft) => {
@@ -120,30 +120,6 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 						/>
 					)}
 				</SimpleGrid>
-			)}
-
-			{value.authentication.mode === "scope" && (
-				<Group wrap="nowrap">
-					<TextInput
-						flex={1}
-						label="Scope (Legacy)"
-						value={value.authentication.scope}
-						spellCheck={false}
-						onChange={(e) =>
-							onChange((draft) => {
-								draft.authentication.scope = e.target.value;
-							})
-						}
-					/>
-					<Button
-						mt={19}
-						color="blue"
-						variant="light"
-						onClick={editingAccessHandle.open}
-					>
-						Edit scope data
-					</Button>
-				</Group>
 			)}
 
 			{value.authentication.mode === "access" && (

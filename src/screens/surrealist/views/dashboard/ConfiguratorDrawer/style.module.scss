@@ -9,23 +9,6 @@
 	}
 }
 
-.whitelist-switch {
-	background-color: unset;
-	padding: 0;
-
-	:global(.mantine-SegmentedControl-label) {
-		background-color: unset;
-		font-size: var(--mantine-font-size-md);
-		transition-duration: .15s !important;
-		font-weight: 600;
-		color: var(--mantine-color-bright) !important;
-	}
-
-	&:not([data-disabled]) :global(.mantine-SegmentedControl-indicator) {
-		opacity: 0.3;
-	}
-}
-
 .scroll-area :global(.mantine-ScrollArea-viewport)>div {
 	display: block !important;
 	height: 100%;

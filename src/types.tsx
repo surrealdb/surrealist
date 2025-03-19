@@ -48,8 +48,6 @@ export type AuthMode =
 	| "namespace"
 	| "database"
 	| "token"
-	| "scope"
-	| "scope-signup"
 	| "access"
 	| "access-signup"
 	| "cloud";
