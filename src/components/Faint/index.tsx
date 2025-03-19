@@ -4,10 +4,9 @@ import { useIsLight } from "~/hooks/theme";
 
 export interface FaintProps {
 	containerRef: RefObject<HTMLDivElement>;
-	debug?: boolean
 }
 
-export function Faint({ containerRef, debug }: FaintProps) {
+export function Faint({ containerRef }: FaintProps) {
 	const disable = adapter.platform !== "windows" && isDesktop; // NOTE Extremely bad performance on Mac WebView
 	const faintRef = useRef<HTMLDivElement>(null);
 	const isLight = useIsLight();
