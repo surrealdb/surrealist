@@ -181,6 +181,10 @@ body.mod .cm-record-link:hover {
 		border-color: rgba(255, 255, 255, 0.3);
 		border-radius: var(--mantine-radius-xs);
 
+		&:hover {
+			color: white;
+		}
+
 		@include light {
 			border-color: none;
 		}
@@ -370,7 +374,7 @@ body.mod .cm-record-link:hover {
 
 		@include light {
 			background-color: var(--mantine-color-slate-2);
-			border-color: unset;
+			border-color: transparent !important;
 		}
 	}
 
@@ -406,7 +410,11 @@ body.mod .cm-record-link:hover {
 	background-color: unset;
 	border: 1px solid var(--mantine-color-slate-6);
 
-	>.mantine-SegmentedControl-indicator {
+	@include light {
+		border-color: var(--mantine-color-slate-2);
+	}
+
+	.mantine-SegmentedControl-indicator {
 		background-color: var(--mantine-color-slate-5);
 		border-radius: var(--mantine-radius-xs);
 		box-shadow: none;
@@ -420,6 +428,10 @@ body.mod .cm-record-link:hover {
 		transition: color .15s;
 	}
 
+	.mantine-SegmentedControl-control[data-active] .mantine-SegmentedControl-innerLabel {
+		color: var(--mantine-color-bright);
+	}
+
 	.mantine-SegmentedControl-control {
 		--separator-color: var(--mantine-color-slate-6);
 
@@ -429,7 +441,7 @@ body.mod .cm-record-link:hover {
 	}
 
 	&[data-variant="gradient"] {
-		>.mantine-SegmentedControl-indicator {
+		.mantine-SegmentedControl-indicator {
 			background: var(--surrealist-gradient);
 			background-origin: border-box;
 			border: 1px solid rgba(255, 255, 255, 0.3);

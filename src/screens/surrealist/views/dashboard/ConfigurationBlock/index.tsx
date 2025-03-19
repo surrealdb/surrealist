@@ -78,6 +78,7 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 							rightSection={<Icon path={iconChevronRight} />}
 							onClick={onConfigure}
 							disabled={!instance}
+							variant="light"
 							my={-2}
 						>
 							Configure instance
@@ -105,6 +106,7 @@ function ConfigValue({ title, icon, value, ...other }: ConfigValueProps) {
 			<ThemeIcon
 				color="slate"
 				radius="xs"
+				variant="light"
 			>
 				<Icon path={icon} />
 			</ThemeIcon>

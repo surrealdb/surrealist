@@ -64,6 +64,7 @@ export function StartConnection({
 		<Badge
 			key={i}
 			color="slate"
+			variant="light"
 		>
 			{label}
 		</Badge>

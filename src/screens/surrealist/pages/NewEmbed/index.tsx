@@ -119,10 +119,7 @@ export function NewEmbedPage() {
 									>
 										Integrate your Surrealist Mini
 									</Text>
-									<Text
-										c="slate.2"
-										mb="md"
-									>
+									<Text mb="md">
 										Copy your Surrealist Mini as an embeddable iframe snippet or
 										as direct URL
 									</Text>
@@ -192,10 +189,7 @@ export function NewEmbedPage() {
 									>
 										Restore configuration
 									</Text>
-									<Text
-										c="slate.2"
-										mb="md"
-									>
+									<Text mb="md">
 										Optionally paste in an existing mini URL to restore the
 										configuration
 									</Text>

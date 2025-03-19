@@ -54,7 +54,7 @@ import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useThemeImage } from "~/hooks/theme";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
@@ -76,6 +76,7 @@ const GRID_COLUMNS = {
 export function OverviewPage() {
 	const { setSelectedOrganization } = useCloudStore.getState();
 	const knownLabels = useConnectionLabels();
+	const isLight = useIsLight();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
@@ -220,16 +221,7 @@ export function OverviewPage() {
 									size="xs"
 									className={classes.search}
 								/>
-								{authState === "unauthenticated" ? (
-									<Button
-										size="xs"
-										variant="gradient"
-										onClick={openCloudAuthentication}
-										rightSection={<Icon path={iconChevronRight} />}
-									>
-										Sign in
-									</Button>
-								) : (
+								{authState === "authenticated" && (
 									<Menu
 										transitionProps={{ transition: "scale-y" }}
 										position="bottom-end"
@@ -249,7 +241,7 @@ export function OverviewPage() {
 											<Menu.Item
 												leftSection={
 													<ThemeIcon
-														color="slate.0"
+														color={isLight ? "slate" : "slate.0"}
 														mr="xs"
 														radius="xs"
 														size="lg"

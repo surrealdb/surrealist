@@ -193,6 +193,7 @@ export function StartInstance({
 		<Badge
 			key={i}
 			color="slate"
+			variant="light"
 		>
 			{label}
 		</Badge>

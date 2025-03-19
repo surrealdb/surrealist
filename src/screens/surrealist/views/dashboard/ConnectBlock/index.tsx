@@ -36,6 +36,7 @@ function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectAct
 				>
 					<ThemeIcon
 						color="slate"
+						variant="light"
 						size={40}
 					>
 						<Icon

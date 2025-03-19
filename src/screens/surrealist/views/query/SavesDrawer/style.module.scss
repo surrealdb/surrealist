@@ -23,5 +23,7 @@
 
 	@include light {
 		box-shadow: unset;
+		background-color: var(--mantine-color-slate-2);
+		color: var(--mantine-color-bright);
 	}
 }

@@ -159,6 +159,7 @@ export function CreateConnectionPage() {
 										<Button
 											rightSection={<Icon path={iconChevronDown} />}
 											color="slate"
+											variant="light"
 										>
 											Apply
 										</Button>
