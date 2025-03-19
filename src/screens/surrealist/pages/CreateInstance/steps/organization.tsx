@@ -11,13 +11,11 @@ export function ProvisionOrganizationStep({ details, setDetails }: ProvisionStep
 	const organizations = useOrganizationSelection();
 
 	return (
-		<>
-			<Select
-				data={organizations}
-				value={organization?.id ?? ""}
-				onChange={setSelectedOrganization as any}
-				placeholder="Loading organizations..."
-			/>
-		</>
+		<Select
+			data={organizations}
+			value={organization?.id ?? ""}
+			onChange={setSelectedOrganization as any}
+			placeholder="Loading organizations..."
+		/>
 	);
 }

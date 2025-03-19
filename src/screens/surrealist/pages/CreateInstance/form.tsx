@@ -106,7 +106,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				>
 					Organization
 				</Text>
-				<Text>Choose an available organization</Text>
+				<Text>Choose which organization should own this instance</Text>
 			</Box>
 
 			<ProvisionOrganizationStep
@@ -122,7 +122,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				>
 					Configuration
 				</Text>
-				<Text>Provide configuration details for your instance</Text>
+				<Text>Specify the instance name, region, and version</Text>
 			</Box>
 
 			<ProvisionDetailsStep

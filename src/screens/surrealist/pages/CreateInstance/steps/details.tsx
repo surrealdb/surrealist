@@ -1,4 +1,4 @@
-import { Group, Image, Paper, Select, Stack, TextInput } from "@mantine/core";
+import { Badge, Group, Image, Paper, Select, Stack, TextInput } from "@mantine/core";
 import { type ChangeEvent, useLayoutEffect } from "react";
 import { Icon } from "~/components/Icon";
 import { REGION_FLAGS } from "~/constants";
@@ -59,7 +59,7 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 		<>
 			<Paper>
 				<Stack
-					p="xl"
+					p="lg"
 					gap="xl"
 				>
 					<TextInput
@@ -75,17 +75,8 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 						autoFocus
 					/>
 					<Select
-						label="Version"
-						placeholder="Loading versions..."
-						description="Select the version of SurrealDB you would like to use"
-						data={versionList}
-						value={details.version}
-						onChange={updateVersion}
-					/>
-					<Select
 						label="Region"
 						placeholder="Loading regions..."
-						description="Choose a physical location for your instance"
 						data={regionList}
 						value={details.region}
 						onChange={updateRegion}
@@ -102,6 +93,33 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 									w={24}
 								/>
 								{org.option.label}
+								{org.checked && (
+									<Icon
+										path={iconCheck}
+										c="bright"
+									/>
+								)}
+							</Group>
+						)}
+					/>
+					<Select
+						label="SurrealDB Version"
+						placeholder="Loading versions..."
+						data={versionList}
+						value={details.version}
+						onChange={updateVersion}
+						renderOption={(org) => (
+							<Group gap="sm">
+								{org.option.label}
+								{versionList[0].value === org.option.value && (
+									<Badge
+										variant="light"
+										color="violet"
+										size="xs"
+									>
+										Latest
+									</Badge>
+								)}
 								{org.checked && (
 									<Icon
 										path={iconCheck}
