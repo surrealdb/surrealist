@@ -122,6 +122,11 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 		openHandle.close();
 	});
 
+	const openCreator = useStable(() => {
+		openCreateDatabaseModal();
+		openHandle.close();
+	});
+
 	const willCreate = (level === "root" || level === "namespace") && databases.length === 0;
 
 	return willCreate ? (
@@ -186,7 +191,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 							variant="light"
 							disabled={!connected || (level !== "root" && level !== "namespace")}
 							label="Create database"
-							onClick={openCreateDatabaseModal}
+							onClick={openCreator}
 						>
 							<Icon path={iconPlus} />
 						</ActionButton>

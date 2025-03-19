@@ -157,7 +157,7 @@ export function ChatPage() {
 								align="start"
 							>
 								<Box>
-									<PrimaryTitle>Surreal Sidekick</PrimaryTitle>
+									<PrimaryTitle fz={26}>Surreal Sidekick</PrimaryTitle>
 									<Text fz="xl">
 										Your personal Surreal assistant designed to answer your
 										database questions.

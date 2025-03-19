@@ -21,7 +21,9 @@
 	border: 1px solid rgba(255, 255, 255, 0.15);
 	box-shadow: 0 7px 11px -6px rgba(0, 0, 0, 0.5);
 
-	:root[data-mantine-color-scheme="light"] & {
+	@include light {
 		box-shadow: unset;
+		background-color: var(--mantine-color-slate-2);
+		color: var(--mantine-color-bright);
 	}
 }

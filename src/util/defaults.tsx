@@ -65,7 +65,6 @@ export function createBaseSettings(): SurrealistSettings {
 			sidebarMode: "expandable",
 			queryOrientation: "vertical",
 			sidebarViews: {},
-			connectionListMode: "card",
 		},
 		templates: {
 			list: [],
@@ -99,7 +98,6 @@ export function createBaseAuthentication(): Authentication {
 		database: "",
 		namespace: "",
 		token: "",
-		scope: "",
 		access: "",
 		accessFields: [],
 	};

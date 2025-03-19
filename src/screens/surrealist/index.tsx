@@ -13,10 +13,11 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { BillingPage } from "./pages/Billing";
 import { ChatPage } from "./pages/Chat";
+import { CreateConnectionPage } from "./pages/CreateConnection";
+import { CreateInstancePage } from "./pages/CreateInstance";
+import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
 import { OverviewPage } from "./pages/Overview";
-import PlaceholderPage from "./pages/Placeholder";
-import { ProvisionPage } from "./pages/Provision";
 import { ReferralPage } from "./pages/Referral";
 import { SupportPage } from "./pages/Support";
 import { SurrealistSidebar } from "./sidebar";
@@ -39,7 +40,9 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const BillingPageLazy = memo(BillingPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
-const ProvisionPageLazy = memo(ProvisionPage);
+const CreateConnectionPageLazy = memo(CreateConnectionPage);
+const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
+const CreateInstancePageLazy = memo(CreateInstancePage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -163,8 +166,16 @@ export function SurrealistScreen() {
 								<ReferralPageLazy />
 							</Route>
 
-							<Route path="/provision">
-								<ProvisionPageLazy />
+							<Route path="/create/connection">
+								<CreateConnectionPageLazy />
+							</Route>
+
+							<Route path="/create/organization">
+								<CreateOrganizationsPageLazy />
+							</Route>
+
+							<Route path="/create/instance">
+								<CreateInstancePageLazy />
 							</Route>
 
 							<Route path="/support">

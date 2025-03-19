@@ -29,7 +29,7 @@ export function SupportPage() {
 					h="100%"
 				>
 					<Box>
-						<PrimaryTitle>Help & Support</PrimaryTitle>
+						<PrimaryTitle fz={26}>Help & Support</PrimaryTitle>
 						<Text fz="xl">Explore the resources below to get help with SurrealDB.</Text>
 					</Box>
 					<Center

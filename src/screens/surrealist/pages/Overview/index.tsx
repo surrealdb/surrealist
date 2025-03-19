@@ -5,50 +5,56 @@ import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 
 import {
-	ActionIcon,
 	Box,
 	Button,
 	Center,
 	Group,
 	Image,
+	Indicator,
 	Loader,
+	Menu,
 	ScrollArea,
 	SimpleGrid,
 	Skeleton,
 	Stack,
 	Text,
+	TextInput,
 	ThemeIcon,
 	Transition,
 } from "@mantine/core";
 
 import {
+	iconAccount,
 	iconBook,
+	iconCheck,
+	iconChevronDown,
 	iconChevronRight,
 	iconCloud,
 	iconCommunity,
 	iconPlus,
+	iconSearch,
+	iconServer,
 	iconSidekick,
+	iconTune,
 	iconUniversity,
-	iconViewGrid,
-	iconViewList,
 } from "~/util/icons";
 
-import { Tooltip } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
-import { useSetting } from "~/hooks/config";
-import { useConnectionOverview } from "~/hooks/connection";
+import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useThemeImage } from "~/hooks/theme";
+import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
@@ -69,14 +75,15 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const { setSelectedOrganization } = useCloudStore.getState();
-	const [presentation, setPresentation] = useSetting("appearance", "connectionListMode");
+	const knownLabels = useConnectionLabels();
+	const isLight = useIsLight();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
 	const [, navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 
-	const [search, setSearch] = useState("");
+	const [search, setSearch] = useInputState("");
 	const [label, setLabel] = useState("");
 
 	const { isPending, sandbox, userConnections, organizations } = useConnectionOverview({
@@ -94,11 +101,7 @@ export function OverviewPage() {
 
 	const authState = useCloudStore((s) => s.authState);
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
-	const gridColumns = presentation === "card" ? GRID_COLUMNS : 1;
-
-	const createConnection = useStable(() => {
-		dispatchIntent("new-connection");
-	});
+	const hasLabels = knownLabels.length > 0;
 
 	const logoUrl = useThemeImage({
 		light: logoLightUrl,
@@ -163,51 +166,175 @@ export function OverviewPage() {
 							))}
 
 							<Group mt="xl">
-								<PrimaryTitle>Connect to SurrealDB</PrimaryTitle>
+								<PrimaryTitle>Your connections</PrimaryTitle>
 								<Spacer />
-								<ActionIcon.Group>
-									<ActionIcon
-										c={presentation === "card" ? "bright" : "slate.3"}
-										onClick={() => setPresentation("card")}
-									>
-										<Icon path={iconViewGrid} />
-									</ActionIcon>
-									<ActionIcon
-										c={presentation === "row" ? "bright" : "slate.3"}
-										onClick={() => setPresentation("row")}
-									>
-										<Icon path={iconViewList} />
-									</ActionIcon>
-								</ActionIcon.Group>
-								{authState === "unauthenticated" ? (
-									<Button
-										size="xs"
-										variant="gradient"
-										onClick={openCloudAuthentication}
-										rightSection={<Icon path={iconChevronRight} />}
-									>
-										Sign in
-									</Button>
-								) : (
-									<Tooltip label="The ability to create organizations is not currently available">
-										<Button
-											color="slate"
-											size="xs"
-											variant="light"
-											loading={authState !== "authenticated"}
-											rightSection={<Icon path={iconPlus} />}
-										>
-											New organization
-										</Button>
-									</Tooltip>
+								{hasLabels && (
+									<Menu>
+										<Menu.Target>
+											<Indicator
+												disabled={!label}
+												color="blue"
+												size={7}
+											>
+												<ActionButton
+													variant="subtle"
+													color="slate"
+													label="Filter connections"
+													disabled={!hasLabels}
+												>
+													<Icon path={iconTune} />
+												</ActionButton>
+											</Indicator>
+										</Menu.Target>
+										<Menu.Dropdown miw={150}>
+											{knownLabels.map((option) => {
+												const isActive = label === option;
+
+												return (
+													<Menu.Item
+														key={option}
+														onClick={() =>
+															setLabel(isActive ? "" : option)
+														}
+														rightSection={
+															isActive && <Icon path={iconCheck} />
+														}
+													>
+														{option}
+													</Menu.Item>
+												);
+											})}
+										</Menu.Dropdown>
+									</Menu>
 								)}
+								<TextInput
+									value={search}
+									onChange={setSearch}
+									placeholder="Search instances"
+									leftSection={
+										<Icon
+											path={iconSearch}
+											size="sm"
+										/>
+									}
+									radius="sm"
+									size="xs"
+									className={classes.search}
+								/>
+
+								<Menu
+									transitionProps={{ transition: "scale-y" }}
+									position="bottom-end"
+								>
+									<Menu.Target>
+										<Button
+											size="xs"
+											color="slate"
+											variant="gradient"
+											rightSection={<Icon path={iconChevronDown} />}
+										>
+											Create new
+										</Button>
+									</Menu.Target>
+									<Menu.Dropdown>
+										<Menu.Item
+											leftSection={
+												<ThemeIcon
+													color={isLight ? "slate" : "slate.0"}
+													mr="xs"
+													radius="xs"
+													size="lg"
+													variant="light"
+												>
+													<Icon
+														path={iconPlus}
+														size="lg"
+													/>
+												</ThemeIcon>
+											}
+											onClick={() => {
+												navigate("/create/connection");
+											}}
+										>
+											<Box>
+												<Text
+													c="bright"
+													fw={600}
+												>
+													Connection
+												</Text>
+												<Text>Connect to any SurrealDB instance</Text>
+											</Box>
+										</Menu.Item>
+										<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
+										<Menu.Item
+											disabled={authState !== "authenticated"}
+											leftSection={
+												<ThemeIcon
+													color="surreal"
+													mr="xs"
+													radius="xs"
+													size="lg"
+													variant="light"
+												>
+													<Icon
+														path={iconCloud}
+														size="lg"
+													/>
+												</ThemeIcon>
+											}
+											onClick={() => {
+												navigate("/create/instance");
+											}}
+										>
+											<Box>
+												<Text
+													c="bright"
+													fw={600}
+												>
+													Cloud Instance
+												</Text>
+												<Text>Create a managed cloud instance</Text>
+											</Box>
+										</Menu.Item>
+										<Menu.Item
+											disabled
+											leftSection={
+												<ThemeIcon
+													color="violet"
+													mr="xs"
+													radius="xs"
+													size="lg"
+													variant="light"
+												>
+													<Icon
+														path={iconAccount}
+														size="lg"
+													/>
+												</ThemeIcon>
+											}
+											onClick={() => {
+												navigate("/create/organization");
+											}}
+										>
+											<Box>
+												<Text
+													c="bright"
+													fw={600}
+												>
+													Organization
+												</Text>
+												<Text>Create a space to manage your team</Text>
+											</Box>
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
 							</Group>
 
-							<SimpleGrid cols={gridColumns}>
+							<SimpleGrid cols={GRID_COLUMNS}>
 								{sandbox && (
 									<StartConnection
 										connection={sandbox}
-										presentation={presentation}
 										onConnect={activateConnection}
 									/>
 								)}
@@ -215,77 +342,67 @@ export function OverviewPage() {
 									<StartConnection
 										key={connection.id}
 										connection={connection}
-										presentation={presentation}
 										onConnect={activateConnection}
 									/>
 								))}
-								<StartCreator
-									title="New connection"
-									subtitle="Connect to a local or remote instance"
-									presentation={presentation}
-									onCreate={createConnection}
-								/>
 							</SimpleGrid>
 
 							{authState === "authenticated" &&
 								organizations.map(({ info, instances }) => (
 									<Fragment key={info.id}>
-										<Group mt="lg">
-											<ThemeIcon
-												radius="xs"
-												color="slate"
-												variant="light"
-											>
-												<Icon path={iconCloud} />
-											</ThemeIcon>
-											<Text
-												fz="xl"
-												fw={500}
-											>
-												{info.name}
-											</Text>
+										<Group
+											gap="xs"
+											mt="xl"
+										>
+											<PrimaryTitle fz="xl">Surreal Cloud</PrimaryTitle>
+											<Icon
+												path={iconChevronRight}
+												c="slate"
+												size="lg"
+											/>
+											<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
 										</Group>
-										<SimpleGrid cols={gridColumns}>
+										<SimpleGrid cols={GRID_COLUMNS}>
 											{instances.map((instance) => (
 												<StartInstance
 													key={instance.id}
 													instance={instance}
-													presentation={presentation}
 													onConnect={activateInstance}
 												/>
 											))}
-											<StartCreator
-												title="New instance"
-												subtitle="Provision a new Surreal Cloud instance"
-												presentation={presentation}
-												onCreate={() => {
-													setSelectedOrganization(info.id);
-													navigate("/provision");
-												}}
-											/>
+											{instances.length === 0 && (
+												<StartCreator
+													title="No instances"
+													subtitle="Provision a new Surreal Cloud instance"
+													onCreate={() => {
+														setSelectedOrganization(info.id);
+														navigate("/create/instance");
+													}}
+												/>
+											)}
 										</SimpleGrid>
 									</Fragment>
 								))}
 
 							{(authState === "loading" || isPending) && (
 								<Center mt={52}>
-									<Loader />
+									<Loader type="dots" />
 								</Center>
 							)}
 
 							{authState === "unauthenticated" && (
 								<>
-									<PrimaryTitle mt={52}>Surreal Cloud</PrimaryTitle>
+									<PrimaryTitle mt="xl">Surreal Cloud</PrimaryTitle>
 									<StartCloud
-										title="Explore Surreal Cloud"
-										subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure."
+										title="Try Surreal Cloud"
+										subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure. Get your own free instance today."
 										icon={iconCloud}
 										onClick={openCloudAuthentication}
 									/>
 								</>
 							)}
 
-							<PrimaryTitle mt={52}>Resources</PrimaryTitle>
+							<PrimaryTitle mt="xl">Resources</PrimaryTitle>
 
 							<SimpleGrid
 								cols={{
@@ -323,7 +440,7 @@ export function OverviewPage() {
 								/>
 							</SimpleGrid>
 
-							<PrimaryTitle mt={52}>Latest news</PrimaryTitle>
+							<PrimaryTitle mt="xl">Latest news</PrimaryTitle>
 
 							{newsQuery.isPending ? (
 								<>

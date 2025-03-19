@@ -119,6 +119,11 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 		openHandle.close();
 	});
 
+	const openCreator = useStable(() => {
+		openCreateNamespaceModal();
+		openHandle.close();
+	});
+
 	const willCreate = level === "root" && namespaces.length === 0;
 
 	return willCreate ? (
@@ -184,7 +189,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 							variant="light"
 							disabled={!connected || (level !== "root" && level !== "namespace")}
 							label="Create namespace"
-							onClick={openCreateNamespaceModal}
+							onClick={openCreator}
 						>
 							<Icon path={iconPlus} />
 						</ActionButton>

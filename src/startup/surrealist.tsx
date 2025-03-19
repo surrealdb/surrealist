@@ -16,6 +16,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
+import { invalidateSession } from "~/cloud/api/auth";
+import { clearCachedConnections } from "~/cloud/helpers";
 import { startConfigSync } from "~/util/config";
 import { adapter } from "../adapter";
 import { App } from "../components/App";
@@ -55,4 +57,10 @@ import { isProduction } from "../util/environment";
 
 	// Check for new release
 	promptChangelog();
+
+	// Expose debugging tools
+	(window as any).Surrealist = {
+		invalidateSession,
+		clearCachedConnections,
+	};
 })();

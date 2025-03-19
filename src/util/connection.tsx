@@ -96,13 +96,7 @@ export function getAuthDB(auth: Authentication) {
 		return payload.DB;
 	}
 
-	if (
-		auth.mode === "database" ||
-		auth.mode === "scope" ||
-		auth.mode === "scope-signup" ||
-		auth.mode === "access" ||
-		auth.mode === "access-signup"
-	) {
+	if (auth.mode === "database" || auth.mode === "access" || auth.mode === "access-signup") {
 		return auth.database;
 	}
 

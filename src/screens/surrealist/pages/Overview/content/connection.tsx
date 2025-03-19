@@ -1,31 +1,28 @@
 import classes from "../style.module.scss";
 
-import { ActionIcon, Menu, Text } from "@mantine/core";
+import { ActionIcon, Badge, Menu, Text } from "@mantine/core";
 import { Box, BoxProps, Group, Paper, Stack, ThemeIcon, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
-import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
-import { Connection, ConnectionListMode } from "~/types";
+import { Connection } from "~/types";
 import { ON_STOP_PROPAGATION, newId } from "~/util/helpers";
 import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
-import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;
-	presentation: ConnectionListMode;
 	onConnect: (connection: Connection) => void;
 }
 
 export function StartConnection({
 	connection,
-	presentation,
 	onConnect,
 	children,
 	...other
@@ -42,9 +39,7 @@ export function StartConnection({
 	});
 
 	const handleEdit = useStable(() => {
-		dispatchIntent("edit-connection", {
-			id: connection.id,
-		});
+		openConnectionEditModal(connection);
 	});
 
 	const handleDuplicate = useStable(() => {
@@ -65,6 +60,16 @@ export function StartConnection({
 		},
 	});
 
+	const labels = connection?.labels?.map((label, i) => (
+		<Badge
+			key={i}
+			color="slate"
+			variant="light"
+		>
+			{label}
+		</Badge>
+	));
+
 	return (
 		<UnstyledButton
 			onClick={handleConnect}
@@ -72,17 +77,13 @@ export function StartConnection({
 		>
 			<Paper
 				p="lg"
-				className={clsx(
-					classes.startBox,
-					classes.startConnection,
-					presentation === "row" && classes.startRow,
-				)}
+				className={clsx(classes.startBox, classes.startConnection)}
 				ref={containerRef}
 			>
 				<Group
 					wrap="nowrap"
 					align="strech"
-					h="100%"
+					flex={1}
 				>
 					<Stack
 						flex={1}
@@ -173,6 +174,7 @@ export function StartConnection({
 						</div>
 					)}
 				</Group>
+				<Group gap="xs">{labels}</Group>
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>

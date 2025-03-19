@@ -17,6 +17,7 @@ export function openCreateDatabaseModal() {
 		modalId: "create-database",
 		title: <PrimaryTitle>Create new database</PrimaryTitle>,
 		withCloseButton: true,
+		trapFocus: false,
 		children: <CreateDatabase />,
 	});
 }

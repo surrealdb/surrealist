@@ -134,7 +134,7 @@ export function ReferralPage() {
 						pos="relative"
 					>
 						<Box>
-							<PrimaryTitle>Referral Program</PrimaryTitle>
+							<PrimaryTitle fz={26}>Referral Program</PrimaryTitle>
 							<Text fz="xl">
 								Earn rewards for referring your friends and contacts
 							</Text>

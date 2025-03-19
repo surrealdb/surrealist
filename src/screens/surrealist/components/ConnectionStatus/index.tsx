@@ -1,12 +1,10 @@
 import {
 	iconClose,
 	iconDownload,
-	iconEdit,
 	iconRefresh,
 	iconRelation,
 	iconReset,
 	iconSandbox,
-	iconServer,
 	iconTable,
 	iconUpload,
 } from "~/util/icons";
@@ -53,10 +51,6 @@ export function ConnectionStatus() {
 	const currentState = useDatabaseStore((s) => s.currentState);
 	const latestError = useDatabaseStore((s) => s.latestError);
 	const remoteVersion = useDatabaseStore((s) => s.version);
-
-	const openEditor = useStable((connection: string) => {
-		dispatchIntent("edit-connection", { id: connection });
-	});
 
 	const openConnections = useStable(() => {
 		dispatchIntent("open-connections");
@@ -137,21 +131,10 @@ export function ConnectionStatus() {
 							{statusText}
 						</Text>
 						<Menu.Divider />
-						<Menu.Label>Connection</Menu.Label>
-						<Menu.Item
-							leftSection={<Icon path={iconServer} />}
-							onClick={openConnections}
-						>
-							View connections
-						</Menu.Item>
+
 						{!isSandbox && (
 							<>
-								<Menu.Item
-									leftSection={<Icon path={iconEdit} />}
-									onClick={() => openEditor(connectionId)}
-								>
-									Edit connection
-								</Menu.Item>
+								<Menu.Label mt="sm">Connection</Menu.Label>
 								<Menu.Item
 									leftSection={<Icon path={iconReset} />}
 									onClick={() => openConnection()}

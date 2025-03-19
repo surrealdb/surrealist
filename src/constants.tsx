@@ -177,7 +177,6 @@ export const AUTH_MODES: Selectable<AuthMode>[] = [
 	{ label: "Record Access", value: "access" },
 	{ label: "Token", value: "token" },
 	{ label: "Anonymous", value: "none" },
-	{ label: "Scope (Legacy)", value: "scope" },
 ];
 
 export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
@@ -217,8 +216,18 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Embed Surrealist",
 		icon: iconXml,
 	},
-	"/provision": {
-		id: "/provision",
+	"/create/connection": {
+		id: "/create/connection",
+		name: "Connect to SurrealDB",
+		icon: iconPlus,
+	},
+	"/create/organization": {
+		id: "/create/organization",
+		name: "New organization",
+		icon: iconPlus,
+	},
+	"/create/instance": {
+		id: "/create/instance",
 		name: "Provision Instance",
 		icon: iconPlus,
 	},
