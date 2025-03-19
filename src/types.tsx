@@ -101,7 +101,6 @@ export interface Authentication {
 	namespace: string;
 	database: string;
 	token: string;
-	scope: string;
 	access: string;
 	accessFields: AccessField[];
 	cloudInstance?: string;

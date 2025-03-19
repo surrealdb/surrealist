@@ -144,6 +144,7 @@ export function TemplatesTab() {
 				opened={showEditor}
 				onClose={showEditorHandle.close}
 				trapFocus={false}
+				size="lg"
 			>
 				<Form onSubmit={saveTemplate}>
 					<Stack gap="xl">
