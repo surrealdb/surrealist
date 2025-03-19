@@ -36,16 +36,20 @@ const initializer = Promise.withResolvers<null>();
 function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 
 	const trackEvent = useStable(async (event: GAIdentifier, data: object) => {
+
+		// We do not want to track events in development
+		if (import.meta.env.DEV) {
+			return;
+		}
+
 		await initializer.promise;
 
-		window.gtag(event, {
+		window.gtag({
 			...data,
-			event: "surreal-event",
+			event_name: event,
 			adapter: adapter.id,
 			platform: adapter.platform
 		});
-
-		console.log("Pushed GA Event: ", event, data);
 	});
 
 	// Initialize Google Analytics
@@ -60,14 +64,14 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 
 		window.gtag('js', new Date());
 		window.gtag('config', 'G-PVD8NEJ3Z2', {
-			server_container_url: 'https://surrealdb.com/data',
+			server_container_url: 'https://surrealist.app/data',
 		});
 
 		const script = document.createElement("script");
 
 		script.id = 'surreal-gtm';
-		script.src = 'https://surrealdb.com/data/script.js'; // <---- TODO: Change this to the correct URL?
-		script.async = true;
+		script.src = 'https://surrealist.app/data/script.js'; // <---- TODO: Change this to the correct URL?
+		script.defer = true;
 
 		script.addEventListener("load", async () => {
 			console.info("Google Analytics loaded");
