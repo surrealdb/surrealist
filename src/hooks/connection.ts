@@ -181,12 +181,11 @@ export function useConnectionOverview({ search, label }: ConnectionFilter) {
 		const organizations = [];
 		const normalConnections = connections.filter((c) => !c.authentication.cloudInstance);
 		const userConnections = filterConnections(normalConnections, search, label);
-		const [sandbox] = filterConnections([sandboxInfo], search, label) as [
-			Connection | undefined,
-		];
+
+		const [sandbox] = filterConnections([sandboxInfo], search, label);
 
 		for (const entry of entries) {
-			const instances = filterConnections(entry.instances, search, label);
+			const instances = filterInstances(entry.instances, search, label);
 
 			if (instances.length > 0 || (!search && !label)) {
 				organizations.push({
@@ -210,21 +209,14 @@ export function useConnectionOverview({ search, label }: ConnectionFilter) {
 	};
 }
 
-function filterConnections<T extends Connection | CloudInstance>(
-	list: T[],
-	search?: string,
-	label?: string,
-) {
+function filterConnections(list: Connection[], search?: string, label?: string) {
 	if (!search && !label) {
 		return list;
 	}
 
 	return list.filter((target) => {
-		const hasLabel = "labels" in target;
-		const hasAuthentication = "authentication" in target;
-
 		// Label filtering
-		if (label && (!hasLabel || !target.labels?.includes(label))) {
+		if (label && !target.labels?.includes(label)) {
 			return false;
 		}
 
@@ -232,12 +224,39 @@ function filterConnections<T extends Connection | CloudInstance>(
 		if (search) {
 			const needle = search.toLowerCase();
 			const name = target.name.toLowerCase();
-			const hostname = hasAuthentication ? target.authentication.hostname.toLowerCase() : "";
+			const hostname = target.authentication.hostname.toLowerCase();
 
-			if (
-				!fuzzyMatch(needle, name) &&
-				(!hasAuthentication || !fuzzyMatch(needle, hostname))
-			) {
+			if (!fuzzyMatch(needle, name) && !fuzzyMatch(needle, hostname)) {
+				return false;
+			}
+		}
+
+		return true;
+	});
+}
+
+function filterInstances(list: CloudInstance[], search?: string, label?: string) {
+	if (!search && !label) {
+		return list;
+	}
+
+	const { connections } = useConfigStore.getState();
+
+	return list.filter((target) => {
+		const connection = connections.find((c) => c.authentication.cloudInstance === target.id);
+
+		// Label filtering
+		if (label && !connection?.labels?.includes(label)) {
+			return false;
+		}
+
+		// Search filtering
+		if (search) {
+			const needle = search.toLowerCase();
+			const name = target.name.toLowerCase();
+			const hostname = target.host.toLowerCase();
+
+			if (!fuzzyMatch(needle, name) && !fuzzyMatch(needle, hostname)) {
 				return false;
 			}
 		}
