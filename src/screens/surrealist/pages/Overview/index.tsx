@@ -100,6 +100,7 @@ export function OverviewPage() {
 
 	const authState = useCloudStore((s) => s.authState);
 	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
+	const hasLabels = knownLabels.length > 0;
 
 	const logoUrl = useThemeImage({
 		light: logoLightUrl,
@@ -166,40 +167,45 @@ export function OverviewPage() {
 							<Group mt="xl">
 								<PrimaryTitle>Your connections</PrimaryTitle>
 								<Spacer />
-								<Menu>
-									<Menu.Target>
-										<Indicator
-											disabled={!label}
-											color="blue"
-											size={7}
-										>
-											<ActionButton
-												variant="subtle"
-												color="slate"
-												label="Filter connections"
+								{hasLabels && (
+									<Menu>
+										<Menu.Target>
+											<Indicator
+												disabled={!label}
+												color="blue"
+												size={7}
 											>
-												<Icon path={iconTune} />
-											</ActionButton>
-										</Indicator>
-									</Menu.Target>
-									<Menu.Dropdown miw={150}>
-										{knownLabels.map((option) => {
-											const isActive = label === option;
-
-											return (
-												<Menu.Item
-													key={option}
-													onClick={() => setLabel(isActive ? "" : option)}
-													rightSection={
-														isActive && <Icon path={iconCheck} />
-													}
+												<ActionButton
+													variant="subtle"
+													color="slate"
+													label="Filter connections"
+													disabled={!hasLabels}
 												>
-													{option}
-												</Menu.Item>
-											);
-										})}
-									</Menu.Dropdown>
-								</Menu>
+													<Icon path={iconTune} />
+												</ActionButton>
+											</Indicator>
+										</Menu.Target>
+										<Menu.Dropdown miw={150}>
+											{knownLabels.map((option) => {
+												const isActive = label === option;
+
+												return (
+													<Menu.Item
+														key={option}
+														onClick={() =>
+															setLabel(isActive ? "" : option)
+														}
+														rightSection={
+															isActive && <Icon path={iconCheck} />
+														}
+													>
+														{option}
+													</Menu.Item>
+												);
+											})}
+										</Menu.Dropdown>
+									</Menu>
+								)}
 								<TextInput
 									value={search}
 									onChange={setSearch}

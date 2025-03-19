@@ -22,6 +22,8 @@ import { App } from "../components/App";
 import { generateEditorIcons } from "../editor/icons";
 import { promptChangelog } from "../util/changelogs";
 import { isProduction } from "../util/environment";
+import { invalidateSession } from "~/cloud/api/auth";
+import { clearCachedConnections } from "~/cloud/helpers";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -55,4 +57,10 @@ import { isProduction } from "../util/environment";
 
 	// Check for new release
 	promptChangelog();
+
+	// Expose debugging tools
+	(window as any).Surrealist = {
+		invalidateSession,
+		clearCachedConnections,
+	};
 })();
