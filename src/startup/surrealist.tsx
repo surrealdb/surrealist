@@ -16,14 +16,14 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
+import { invalidateSession } from "~/cloud/api/auth";
+import { clearCachedConnections } from "~/cloud/helpers";
 import { startConfigSync } from "~/util/config";
 import { adapter } from "../adapter";
 import { App } from "../components/App";
 import { generateEditorIcons } from "../editor/icons";
 import { promptChangelog } from "../util/changelogs";
 import { isProduction } from "../util/environment";
-import { invalidateSession } from "~/cloud/api/auth";
-import { clearCachedConnections } from "~/cloud/helpers";
 
 (async () => {
 	dayjs.extend(relativeTime);
