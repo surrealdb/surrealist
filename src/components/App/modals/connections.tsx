@@ -2,6 +2,7 @@ import cloudImg from "~/assets/images/cloud-icon.webp";
 import classes from "../style.module.scss";
 
 import {
+	Badge,
 	Box,
 	Button,
 	Divider,
@@ -12,9 +13,10 @@ import {
 	Stack,
 	Text,
 	TextInput,
+	ThemeIcon,
 } from "@mantine/core";
 
-import { iconCloud, iconServer } from "~/util/icons";
+import { iconChevronRight, iconCloud, iconServer } from "~/util/icons";
 
 import clsx from "clsx";
 import { useMemo, useState } from "react";
@@ -214,7 +216,18 @@ export function ConnectionsModal() {
 							key={org.info.id}
 							gap="xs"
 						>
-							<Group>
+							<Group gap="xs">
+								<Text
+									fz="xl"
+									fw={500}
+									c="bright"
+								>
+									Surreal Cloud
+								</Text>
+								<Icon
+									path={iconChevronRight}
+									c="slate"
+								/>
 								<Text
 									fz="xl"
 									fw={500}
@@ -222,10 +235,6 @@ export function ConnectionsModal() {
 								>
 									{org.info.name}
 								</Text>
-								<Image
-									src={cloudImg}
-									height={16}
-								/>
 							</Group>
 							{org.instances.map((instance) => (
 								<InstanceEntry

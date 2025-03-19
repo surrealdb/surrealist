@@ -269,7 +269,6 @@ export function OverviewPage() {
 													<Text>Connect to any SurrealDB instance</Text>
 												</Box>
 											</Menu.Item>
-											{/* <Menu.Divider /> */}
 											<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
 											<Menu.Item
 												leftSection={
@@ -348,25 +347,23 @@ export function OverviewPage() {
 										onConnect={activateConnection}
 									/>
 								))}
-								{/* {showCreator && (
-									<StartCreator
-										title="New connection"
-										subtitle="Connect to a local or remote instance"
-										presentation={presentation}
-										onCreate={createConnection}
-									/>
-								)} */}
 							</SimpleGrid>
 
 							{authState === "authenticated" &&
 								organizations.map(({ info, instances }) => (
 									<Fragment key={info.id}>
-										<PrimaryTitle
-											fz="xl"
+										<Group
+											gap="xs"
 											mt="xl"
 										>
-											{info.name} instances
-										</PrimaryTitle>
+											<PrimaryTitle fz="xl">Surreal Cloud</PrimaryTitle>
+											<Icon
+												path={iconChevronRight}
+												c="slate"
+												size="lg"
+											/>
+											<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
+										</Group>
 										<SimpleGrid cols={GRID_COLUMNS}>
 											{instances.map((instance) => (
 												<StartInstance
