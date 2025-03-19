@@ -22,21 +22,6 @@ function handler(event) {
 
 	switch (true) {
 
-		// GTM Rewrites
-		case request.uri === '/data/script.js':
-			request.uri = '/data/gtag/js';
-			request.querystring = 'id=G-PVD8NEJ3Z2';
-			break;
-
-		case request.uri === '/data/event':
-			request.uri = '/data/g/collect';
-			break;
-
-		case request.uri.startsWith('/data/event/'):
-			request.querystring = atob(request.uri.substring(12));
-			request.uri = '/data/g/collect';
-			break;
-
 		// Redirects
 		case request.uri === '/embed/new':
 			return redirect('/mini/new');
