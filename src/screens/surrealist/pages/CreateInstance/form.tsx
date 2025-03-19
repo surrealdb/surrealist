@@ -1,6 +1,7 @@
 import { Box, Button, Collapse, Divider, Group, Stack, Text } from "@mantine/core";
 import { useEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
+import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
 import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
@@ -14,10 +15,9 @@ import { CloudInstance } from "~/types";
 import { showError } from "~/util/helpers";
 import { iconArrowLeft } from "~/util/icons";
 import { ProvisionDetailsStep } from "./steps/details";
+import { ProvisionOrganizationStep } from "./steps/organization";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
-import { Link } from "wouter";
-import { ProvisionOrganizationStep } from "./steps/organization";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",

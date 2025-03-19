@@ -23,6 +23,7 @@ import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance } from "~/types";
 import { ON_STOP_PROPAGATION, showError, showInfo } from "~/util/helpers";
@@ -36,7 +37,6 @@ import {
 } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
-import { openConnectionEditModal } from "~/modals/edit-connection";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;

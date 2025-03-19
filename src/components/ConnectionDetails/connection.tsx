@@ -1,10 +1,10 @@
 import { ActionIcon, Box, Group, Popover, SimpleGrid, TextInput, Tooltip } from "@mantine/core";
-import { iconServer } from "~/util/icons";
-import { Icon } from "../Icon";
-import { Connection } from "~/types";
 import { useDisclosure } from "@mantine/hooks";
-import { USER_ICONS } from "~/util/user-icons";
 import { Updater } from "use-immer";
+import { Connection } from "~/types";
+import { iconServer } from "~/util/icons";
+import { USER_ICONS } from "~/util/user-icons";
+import { Icon } from "../Icon";
 
 export interface ConnectionNameDetailsProps {
 	value: Connection;

@@ -11,18 +11,18 @@ import {
 	TextInput,
 } from "@mantine/core";
 
-import { iconClose, iconPlus, iconWarning } from "~/util/icons";
-import { Icon } from "../Icon";
-import { AuthMode, Connection } from "~/types";
-import { Updater } from "use-immer";
-import dayjs from "dayjs";
-import { AUTH_MODES, SENSITIVE_ACCESS_FIELDS } from "~/constants";
-import { useMemo } from "react";
-import { fastParseJwt } from "~/util/helpers";
 import { useDisclosure } from "@mantine/hooks";
-import { ActionButton } from "../ActionButton";
-import { PrimaryTitle } from "../PrimaryTitle";
+import dayjs from "dayjs";
+import { useMemo } from "react";
+import { Updater } from "use-immer";
+import { AUTH_MODES, SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useStable } from "~/hooks/stable";
+import { AuthMode, Connection } from "~/types";
+import { fastParseJwt } from "~/util/helpers";
+import { iconClose, iconPlus, iconWarning } from "~/util/icons";
+import { ActionButton } from "../ActionButton";
+import { Icon } from "../Icon";
+import { PrimaryTitle } from "../PrimaryTitle";
 
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
 const EXPIRE_WARNING = 1000 * 60 * 60 * 3;

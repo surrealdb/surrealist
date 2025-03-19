@@ -11,6 +11,10 @@ import { ActionIcon, Box, Button, Group, Menu, Modal, Stack, Text } from "@manti
 import { useDisclosure } from "@mantine/hooks";
 import { type HTMLAttributes, type MouseEvent, useState } from "react";
 import { useImmer } from "use-immer";
+import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
+import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
+import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
+import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { Entry, type EntryProps } from "~/components/Entry";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
@@ -22,12 +26,8 @@ import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { ON_STOP_PROPAGATION, newId, uniqueName } from "~/util/helpers";
-import { SettingsSection } from "../utilities";
-import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
-import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
-import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
-import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { USER_ICONS } from "~/util/user-icons";
+import { SettingsSection } from "../utilities";
 
 const CAT = "templates";
 

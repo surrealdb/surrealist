@@ -1,13 +1,13 @@
 import { Alert, Box, Button, Collapse, Group, Select, TextInput } from "@mantine/core";
-import { Connection, Protocol } from "~/types";
-import { Updater } from "use-immer";
-import { useMemo } from "react";
-import { fork } from "radash";
-import { CONNECTION_PROTOCOLS } from "~/constants";
 import { Text } from "@mantine/core";
-import { useIsLight } from "~/hooks/theme";
-import { isHostLocal } from "~/util/helpers";
+import { fork } from "radash";
+import { useMemo } from "react";
+import { Updater } from "use-immer";
+import { CONNECTION_PROTOCOLS } from "~/constants";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { Connection, Protocol } from "~/types";
+import { isHostLocal } from "~/util/helpers";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 

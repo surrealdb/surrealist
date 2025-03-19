@@ -1,23 +1,23 @@
 import classes from "./style.module.scss";
 
 import { Box, Button, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { useMemo } from "react";
+import { useImmer } from "use-immer";
 import { Link } from "wouter";
+import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
+import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
+import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
+import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
-import { iconArrowLeft } from "~/util/icons";
-import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
-import { useImmer } from "use-immer";
-import { createBaseConnection } from "~/util/defaults";
-import { useConfigStore } from "~/stores/config";
-import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
-import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
-import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
-import { useMemo } from "react";
-import { isConnectionValid } from "~/util/connection";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useConfigStore } from "~/stores/config";
+import { isConnectionValid } from "~/util/connection";
+import { createBaseConnection } from "~/util/defaults";
+import { iconArrowLeft } from "~/util/icons";
 
 export function CreateConnectionPage() {
 	const { settings, addConnection } = useConfigStore.getState();

@@ -39,11 +39,13 @@ import {
 	iconUniversity,
 } from "~/util/icons";
 
+import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -64,8 +66,6 @@ import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartResource } from "./content/resource";
-import { ActionButton } from "~/components/ActionButton";
-import { useInputState } from "@mantine/hooks";
 
 const GRID_COLUMNS = {
 	xs: 1,
