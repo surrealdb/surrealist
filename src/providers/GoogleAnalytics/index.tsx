@@ -70,6 +70,13 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		script.addEventListener("abort", onError);
 
 		document.head.appendChild(script);
+
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('/sw.js');
+			navigator.serviceWorker.addEventListener('controllerchange', () => {
+				window.location.reload();
+			});
+		}
 	}, []);
 
 	return (
