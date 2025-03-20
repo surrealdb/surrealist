@@ -129,7 +129,7 @@ export function StartConnection({
 									mt={-4}
 									truncate
 								>
-									{target}
+									{isSandbox ? "Your personal playground" : target}
 								</Text>
 							</Box>
 						</Group>
@@ -184,7 +184,17 @@ export function StartConnection({
 						</div>
 					)}
 				</Group>
-				<Group gap="xs">{labels}</Group>
+				{isSandbox ? (
+					<Badge
+						color="slate"
+						variant="subtle"
+						px={0}
+					>
+						Built-in
+					</Badge>
+				) : (
+					<Group gap="xs">{labels}</Group>
+				)}
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>
