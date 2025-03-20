@@ -9,9 +9,9 @@ import { useIsLight, useThemePreference } from "~/hooks/theme";
 import { CommandsProvider } from "~/providers/Commands";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
+import { GoogleAnalyticsProvider } from "~/providers/GoogleAnalytics";
 import { MANTINE_THEME } from "~/util/mantine";
 import { ScaffoldErrorHandler } from "./error";
-import { GoogleAnalyticsProvider } from "~/providers/GoogleAnalytics";
 
 const QUERY_CLIENT = new QueryClient();
 

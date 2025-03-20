@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useEffect } from "react";
+import { type ReactNode, createContext, useEffect } from "react";
 import { adapter } from "~/adapter";
 
 interface GoogleAnalyticsProviderProps {
