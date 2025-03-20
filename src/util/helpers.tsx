@@ -465,10 +465,10 @@ export function __throw(error: Error | string): never {
  */
 export function formatMemory(amountInMB: number) {
 	if (amountInMB < 1024) {
-		return `${amountInMB.toFixed(2)} MB`;
+		return `${Number.parseFloat(amountInMB.toFixed(2))} MB`;
 	}
 
-	return `${(amountInMB / 1024).toFixed(2)} GB`;
+	return `${Number.parseFloat((amountInMB / 1024).toFixed(2))} GB`;
 }
 
 /**

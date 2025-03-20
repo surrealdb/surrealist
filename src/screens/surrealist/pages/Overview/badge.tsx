@@ -1,4 +1,13 @@
-import { Indicator, Loader, MantineColor, Tooltip } from "@mantine/core";
+import {
+	Box,
+	BoxProps,
+	Center,
+	Indicator,
+	Loader,
+	MantineColor,
+	MantineSize,
+	Tooltip,
+} from "@mantine/core";
 import { InstanceState } from "~/types";
 
 const BADGE_INFO = {
@@ -11,24 +20,34 @@ const BADGE_INFO = {
 	resuming: ["loader", "Resuming instance..."],
 } satisfies Record<InstanceState, [MantineColor | "loader", string]>;
 
-export interface StateBadgeProps {
+export interface StateBadgeProps extends BoxProps {
 	state: InstanceState;
+	size: number;
 }
 
-export function StateBadge({ state }: StateBadgeProps) {
+export function StateBadge({ state, size, ...other }: StateBadgeProps) {
 	const [display, text] = BADGE_INFO[state];
 
 	return (
-		<Tooltip label={text}>
-			{display === "loader" ? (
-				<Loader size="xs" />
-			) : (
-				<Indicator
-					processing={state === "ready"}
-					color={display}
-					ml="xs"
-				/>
-			)}
-		</Tooltip>
+		<Center
+			{...other}
+			w={size}
+			h={size}
+		>
+			<Tooltip label={text}>
+				{display !== "loader" ? (
+					<Indicator
+						processing={state === "ready"}
+						color={display}
+						size={size}
+					/>
+				) : (
+					<Loader
+						size={size}
+						style={{ transform: "scale(1.5)" }}
+					/>
+				)}
+			</Tooltip>
+		</Center>
 	);
 }

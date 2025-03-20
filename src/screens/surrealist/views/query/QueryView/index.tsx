@@ -46,8 +46,6 @@ import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
 
-const switchPortal = createHtmlPortalNode();
-
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
 const ResultPaneLazy = memo(ResultPane);
@@ -220,16 +218,6 @@ export function QueryView() {
 			gap="md"
 			h="100%"
 		>
-			<InPortal node={switchPortal}>
-				<SegmentedControl
-					data={["Query", "Variables"]}
-					value={showVariables ? "Variables" : "Query"}
-					onChange={() => setShowVariables(!showVariables)}
-					className={classes.switcher}
-					radius="xs"
-				/>
-			</InPortal>
-
 			<Box
 				flex={1}
 				ref={rootRef}

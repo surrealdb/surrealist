@@ -13,7 +13,6 @@ import {
 
 import {
 	buildAccessAuth,
-	buildScopeAuth,
 	composeAuthentication,
 	getReconnectInterval,
 	getVersionTimeout,
@@ -122,7 +121,6 @@ export async function openConnection(options?: ConnectOptions) {
 	});
 
 	try {
-		const isScopeSignup = connection.authentication.mode === "scope-signup";
 		const isAccessSignup = connection.authentication.mode === "access-signup";
 		const [versionCheck, versionCheckTimeout] = getVersionTimeout();
 
@@ -160,8 +158,6 @@ export async function openConnection(options?: ConnectOptions) {
 
 					if (isAccessSignup) {
 						await register(buildAccessAuth(connection.authentication), surreal);
-					} else if (isScopeSignup) {
-						await register(buildScopeAuth(connection.authentication), surreal);
 					} else {
 						await authenticate(auth, surreal);
 					}

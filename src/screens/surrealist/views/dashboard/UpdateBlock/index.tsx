@@ -1,5 +1,4 @@
 import { Alert, Box, Button, Group } from "@mantine/core";
-import { useQueryClient } from "@tanstack/react-query";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
@@ -23,7 +22,7 @@ export function UpdateBlock({ instance, onUpdate }: UpdateBlockProps) {
 	return (
 		visible && (
 			<Alert
-				color="surreal"
+				color="violet"
 				title="Update available"
 				icon={<Icon path={iconReset} />}
 			>

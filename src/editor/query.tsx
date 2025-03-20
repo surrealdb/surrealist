@@ -1,4 +1,4 @@
-import { EditorSelection, StateEffect, StateField } from "@codemirror/state";
+import { EditorSelection, SelectionRange, StateEffect, StateField } from "@codemirror/state";
 import type { Command, EditorView } from "@codemirror/view";
 import { executeGraphql, executeUserQuery } from "~/screens/surrealist/connection/connection";
 import { getConnection } from "~/util/connection";
@@ -43,10 +43,24 @@ export function setQueryEditor(currentView: EditorView, queryView?: EditorView) 
  */
 export const executeEditorQuery: Command = (view: EditorView) => {
 	const editor = view.state.field(queryEditorField, false) ?? view;
-	const selection = editor.state.selection.main;
-	const override = selection.empty
-		? undefined
-		: editor.state.sliceDoc(selection.from, selection.to);
+	const ranges = editor.state.selection.ranges;
+
+	let override = "" as string | undefined;
+	if (ranges.length === 1 && !ranges[0].empty) {
+		override = editor.state.sliceDoc(ranges[0].from, ranges[0].to);
+	} else if (ranges.length > 1) {
+		for (const range of ranges) {
+			if (range.empty) {
+				const query = getQueryRange(view, range.head);
+				if (!query) continue;
+
+				const [from, to] = query;
+				override += `${editor.state.sliceDoc(from, to)};\n`;
+			} else {
+				override += `${editor.state.sliceDoc(range.from, range.to)};\n`;
+			}
+		}
+	}
 
 	executeUserQuery({
 		override,
@@ -59,20 +73,27 @@ export const executeEditorQuery: Command = (view: EditorView) => {
  * Select the query the cursor is currently in
  */
 export const selectCursorQuery: Command = (view: EditorView) => {
-	const range = getQueryRange(view);
+	const ranges = [] as SelectionRange[];
 
-	if (range) {
+	for (const selection of view.state.selection.ranges) {
+		const range = getQueryRange(view, selection.head);
+		if (!range) {
+			continue;
+		}
+
 		const [from, to] = range;
-		const selection = EditorSelection.single(from, to);
+		ranges.push(EditorSelection.range(from, to));
+	}
 
-		view.dispatch({
-			selection,
-		});
-
+	if (!ranges.length) {
 		return true;
 	}
 
-	return false;
+	view.dispatch({
+		selection: EditorSelection.create(ranges),
+	});
+
+	return true;
 };
 
 /**

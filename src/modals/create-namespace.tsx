@@ -16,6 +16,7 @@ export function openCreateNamespaceModal() {
 		modalId: "create-namespace",
 		title: <PrimaryTitle>Create new namespace</PrimaryTitle>,
 		withCloseButton: true,
+		trapFocus: false,
 		children: <CreateNamespace />,
 	});
 }

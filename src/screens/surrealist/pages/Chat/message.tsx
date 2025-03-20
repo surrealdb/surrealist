@@ -71,7 +71,7 @@ export function ChatMessage({
 					bg={
 						message.sender === "user"
 							? isLight
-								? "slate.1"
+								? "white"
 								: "slate.6"
 							: isLight
 								? "white"

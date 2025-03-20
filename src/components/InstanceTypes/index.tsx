@@ -4,8 +4,9 @@ import {
 	Badge,
 	Box,
 	Button,
+	Divider,
 	Group,
-	Paper,
+	Skeleton,
 	Stack,
 	Text,
 	Tooltip,
@@ -21,8 +22,9 @@ import { Tile } from "~/components/Tile";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
-import { formatMemory, plural } from "~/util/helpers";
-import { iconAccount, iconAuth, iconChevronRight, iconClock } from "~/util/icons";
+import { formatMemory } from "~/util/helpers";
+import { iconAuth, iconChevronDown, iconChevronRight } from "~/util/icons";
+import { Label } from "../Label";
 
 export interface InstanceTypesProps {
 	value: string;
@@ -44,75 +46,89 @@ export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
 		onChange(type.slug);
 	});
 
-	const freeType = instanceTypes.find((type) => type.category === "free");
-	const isFreeAvailable = freeType && isAvailable(freeType);
+	const initialCategory = useMemo(() => {
+		if (active) {
+			const category = instanceTypes.find((type) => type.slug === active)?.category;
 
-	const [category, setCategory] = useState(isFreeAvailable ? "free" : "development");
+			if (category) {
+				return category;
+			}
+		}
+
+		const freeType = instanceTypes.find((type) => type.category === "free");
+		const isFreeAvailable = freeType && isAvailable(freeType);
+
+		return isFreeAvailable ? "free" : "development";
+	}, [active, instanceTypes, isAvailable]);
+
+	const [category, setCategory] = useState(initialCategory);
 
 	const freeTypes = groupedTypes.free ?? [];
 	const developmentTypes = groupedTypes.development ?? [];
 	const productionTypes = groupedTypes.production ?? [];
 
-	return (
-		organization && (
-			<>
-				<Accordion
-					value={category}
-					variant="separated"
-					onChange={setCategory as any}
-					styles={{
-						item: {
-							backgroundColor: "var(--mantine-color-body)",
-							overflow: "hidden",
-						},
-						control: {
-							borderRadius: 0,
-						},
-					}}
-				>
-					<InstanceTypeCategory
-						organization={organization}
-						activeCategory={category}
-						selectedType={value}
-						activeType={active}
-						category="free"
-						title="Free"
-						description="A free instance to get started with SurrealDB"
-						instanceTypes={freeTypes}
-						isAvailable={isAvailable}
-						onSelect={handleUpdate}
-					/>
+	return organization ? (
+		<>
+			<Accordion
+				value={category}
+				variant="separated"
+				onChange={setCategory as any}
+				chevronPosition="left"
+				chevron={<Icon path={iconChevronDown} />}
+				styles={{
+					item: {
+						backgroundColor: "var(--mantine-color-body)",
+						overflow: "hidden",
+					},
+					control: {
+						borderRadius: 0,
+					},
+				}}
+			>
+				<InstanceTypeCategory
+					organization={organization}
+					activeCategory={category}
+					selectedType={value}
+					activeType={active}
+					category="free"
+					title="Free"
+					description="A free instance to get started with SurrealDB"
+					instanceTypes={freeTypes}
+					isAvailable={isAvailable}
+					onSelect={handleUpdate}
+				/>
 
-					<InstanceTypeCategory
-						organization={organization}
-						activeCategory={category}
-						selectedType={value}
-						activeType={active}
-						category="development"
-						title="Development"
-						description="Configurations optimized for development workloads"
-						instanceTypes={developmentTypes}
-						withBillingRequired
-						isAvailable={isAvailable}
-						onSelect={handleUpdate}
-					/>
+				<InstanceTypeCategory
+					organization={organization}
+					activeCategory={category}
+					selectedType={value}
+					activeType={active}
+					category="development"
+					title="Development"
+					description="Configurations optimized for development workloads"
+					instanceTypes={developmentTypes}
+					withBillingRequired
+					isAvailable={isAvailable}
+					onSelect={handleUpdate}
+				/>
 
-					<InstanceTypeCategory
-						organization={organization}
-						activeCategory={category}
-						selectedType={value}
-						activeType={active}
-						category="production"
-						title="Production"
-						description="Configurations optimized for production workloads"
-						instanceTypes={productionTypes}
-						withBillingRequired
-						isAvailable={isAvailable}
-						onSelect={handleUpdate}
-					/>
-				</Accordion>
-			</>
-		)
+				<InstanceTypeCategory
+					organization={organization}
+					activeCategory={category}
+					selectedType={value}
+					activeType={active}
+					category="production"
+					title="Production"
+					description="Configurations optimized for production workloads"
+					instanceTypes={productionTypes}
+					withBillingRequired
+					isAvailable={isAvailable}
+					onSelect={handleUpdate}
+				/>
+			</Accordion>
+		</>
+	) : (
+		<Skeleton h={52} />
 	);
 }
 
@@ -148,14 +164,20 @@ function InstanceTypeCategory({
 	return (
 		<Accordion.Item value={category}>
 			<Accordion.Control>
-				<Text
-					c={category === activeCategory ? "bright" : undefined}
+				<Group c={category === activeCategory ? "bright" : undefined}>
+					<Text
+						fw={600}
+						fz="xl"
+					>
+						{title}
+					</Text>
+				</Group>
+				{/* <Text
+					c="slate.4"
 					fw={500}
-					fz="lg"
 				>
-					{title}
-				</Text>
-				<Text opacity={0.6}>{description}</Text>
+					{description}
+				</Text> */}
 			</Accordion.Control>
 			<Accordion.Panel>
 				<Stack
@@ -257,12 +279,7 @@ function InstanceTypeRow({
 						)}
 					</Group>
 					{estimatedCost > 0 ? (
-						<Text
-							fz="sm"
-							mt={2}
-						>
-							${estimatedCost.toFixed(3)}/hour
-						</Text>
+						<Text mt={2}>${estimatedCost.toFixed(3)} per hour</Text>
 					) : (
 						<Text
 							fz="sm"
@@ -272,46 +289,43 @@ function InstanceTypeRow({
 						</Text>
 					)}
 				</Box>
-				<Paper
-					bg="slate.6"
+				<Box
 					w={96}
 					ta="center"
-					p="xs"
 				>
 					<Text
+						fz="lg"
+						fw={500}
 						c="bright"
-						fw={800}
-						fz="sm"
+					>
+						{instanceType.cpu} Core
+					</Text>
+					<Label
+						mt={2}
+						c="slate.3"
 					>
 						vCPU
-					</Text>
-					<Text
-						fz="lg"
-						fw={500}
-					>
-						{instanceType.cpu} {plural(instanceType.cpu, "Core")}
-					</Text>
-				</Paper>
-				<Paper
-					bg="slate.6"
+					</Label>
+				</Box>
+				<Divider orientation="vertical" />
+				<Box
 					w={96}
 					ta="center"
-					py="xs"
 				>
-					<Text
-						c="bright"
-						fw={600}
-						fz="sm"
-					>
-						Memory
-					</Text>
 					<Text
 						fz="lg"
 						fw={500}
+						c="bright"
 					>
 						{formatMemory(instanceType.memory)}
 					</Text>
-				</Paper>
+					<Label
+						mt={2}
+						c="slate.3"
+					>
+						Memory
+					</Label>
+				</Box>
 			</Group>
 		</Tile>
 	);

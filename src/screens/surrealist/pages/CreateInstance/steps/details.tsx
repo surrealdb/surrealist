@@ -1,21 +1,14 @@
-import { Divider, Group, Image, Paper, Select, Stack, TextInput } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Badge, Group, Image, Paper, Select, Stack, TextInput } from "@mantine/core";
 import { type ChangeEvent, useLayoutEffect } from "react";
-import { useOrganizationSelection } from "~/cloud/hooks/organizations";
 import { Icon } from "~/components/Icon";
 import { REGION_FLAGS } from "~/constants";
-import { useAvailableInstanceVersions, useAvailableRegions, useOrganization } from "~/hooks/cloud";
+import { useAvailableInstanceVersions, useAvailableRegions } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { iconCheck } from "~/util/icons";
 import type { ProvisionStepProps } from "../types";
 
 export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps) {
-	const { setSelectedOrganization } = useCloudStore.getState();
-
-	const organization = useOrganization();
 	const versions = useAvailableInstanceVersions();
-	const organizations = useOrganizationSelection();
 	const regions = useAvailableRegions();
 
 	const versionList = versions.map((ver) => ({
@@ -66,7 +59,7 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 		<>
 			<Paper>
 				<Stack
-					p="xl"
+					p="lg"
 					gap="xl"
 				>
 					<TextInput
@@ -82,21 +75,8 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 						autoFocus
 					/>
 					<Select
-						label="Organization"
-						data={organizations}
-						value={organization?.id ?? ""}
-						onChange={setSelectedOrganization as any}
-					/>
-					<Select
-						label="Version"
-						description="Select the version of SurrealDB you would like to use"
-						data={versionList}
-						value={details.version}
-						onChange={updateVersion}
-					/>
-					<Select
 						label="Region"
-						description="Choose a physical location for your instance"
+						placeholder="Loading regions..."
 						data={regionList}
 						value={details.region}
 						onChange={updateRegion}
@@ -113,6 +93,33 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 									w={24}
 								/>
 								{org.option.label}
+								{org.checked && (
+									<Icon
+										path={iconCheck}
+										c="bright"
+									/>
+								)}
+							</Group>
+						)}
+					/>
+					<Select
+						label="SurrealDB Version"
+						placeholder="Loading versions..."
+						data={versionList}
+						value={details.version}
+						onChange={updateVersion}
+						renderOption={(org) => (
+							<Group gap="sm">
+								{org.option.label}
+								{versionList[0].value === org.option.value && (
+									<Badge
+										variant="light"
+										color="violet"
+										size="xs"
+									>
+										Latest
+									</Badge>
+								)}
 								{org.checked && (
 									<Icon
 										path={iconCheck}

@@ -8,7 +8,6 @@ export type AuthLevel = "root" | "namespace" | "database";
 export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
 export type ColorScheme = "light" | "dark";
-export type ConnectionListMode = "card" | "row";
 export type DatabaseListMode = "list" | "grid";
 export type DiagramAlgorithm = "default" | "aligned" | "spaced";
 export type DiagramDirection = "default" | "ltr" | "rtl";
@@ -49,8 +48,6 @@ export type AuthMode =
 	| "namespace"
 	| "database"
 	| "token"
-	| "scope"
-	| "scope-signup"
 	| "access"
 	| "access-signup"
 	| "cloud";
@@ -61,7 +58,9 @@ export type GlobalPage =
 	| "/support"
 	| "/referrals"
 	| "/mini/new"
-	| "/provision";
+	| "/create/connection"
+	| "/create/organization"
+	| "/create/instance";
 export type ViewPage =
 	| "dashboard"
 	| "query"
@@ -102,7 +101,6 @@ export interface Authentication {
 	namespace: string;
 	database: string;
 	token: string;
-	scope: string;
 	access: string;
 	accessFields: AccessField[];
 	cloudInstance?: string;
@@ -181,7 +179,6 @@ export interface SurrealistAppearanceSettings {
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
 	sidebarViews: Flags<ViewPage>;
-	connectionListMode: ConnectionListMode;
 }
 
 export interface SurrealistTemplateSettings {

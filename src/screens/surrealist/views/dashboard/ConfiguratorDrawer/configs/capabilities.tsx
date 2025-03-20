@@ -1,22 +1,23 @@
 import equal from "fast-deep-equal";
 import classes from "../style.module.scss";
 
-import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { compareVersions } from "compare-versions";
-import { useMemo, useState } from "react";
-import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
-import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
-import { useStable } from "~/hooks/stable";
-import { CloudInstance, CloudInstanceCapabilities } from "~/types";
-import { BooleanCapability } from "../capabilities/boolean";
-import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
-import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
 import {
 	ARBITRARY_QUERY_TARGETS,
 	ENDPOINT_TARGETS,
 	EXPERIMENT_TARGETS,
 	RPC_TARGETS,
 } from "../capabilities/registry";
+
+import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { compareVersions } from "compare-versions";
+import { useMemo, useState } from "react";
+import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
+import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
+import { useStable } from "~/hooks/stable";
+import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
+import { BooleanCapability } from "../capabilities/boolean";
+import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
+import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
 
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;
@@ -27,8 +28,6 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 	const [value, setValue] = useState<CloudInstanceCapabilities>(
 		parseCapabilities(instance.capabilities),
 	);
-
-	console.log(value);
 
 	const hasArbitraryQuery = compareVersions(instance.version, "2.2.0") >= 0;
 
@@ -43,6 +42,11 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 	const isUnchanged = useMemo(() => {
 		return equal(value, instance.capabilities);
 	}, [value, instance.capabilities]);
+
+	const experimentTargets = useMemo(
+		() => filterOptions(EXPERIMENT_TARGETS, instance.version),
+		[instance.version],
+	);
 
 	return (
 		<Stack
@@ -172,14 +176,14 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 						<Divider />
 
 						<FixedRuleSetCapability
-							data={EXPERIMENT_TARGETS}
+							data={experimentTargets}
 							name="Preview features"
 							description="Enable experimental SurrealDB functionality"
 							value={value}
 							onChange={setValue}
 							allowedField="allowed_experimental"
 							deniedField="denied_experimental"
-							topic="experiments"
+							topic="previews"
 						/>
 					</Stack>
 				</ScrollArea>
@@ -242,4 +246,16 @@ function parseCapabilities(capabilities: CloudInstanceCapabilities): CloudInstan
 		allowed_http_endpoints: [...endpoints],
 		allowed_functions: [...functions],
 	};
+}
+
+type Option = Selectable & { since?: string };
+
+function filterOptions(options: Option[], version: string) {
+	return options.filter((option) => {
+		if (!option.since) {
+			return true;
+		}
+
+		return compareVersions(version, option.since) >= 0;
+	});
 }

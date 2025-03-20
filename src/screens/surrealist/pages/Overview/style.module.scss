@@ -36,10 +36,8 @@
 .start-connection,
 .start-instance {
 	height: 112px;
-}
-
-.start-row {
-	height: unset;
+	display: flex;
+	flex-direction: column;
 }
 
 .start-cloud {

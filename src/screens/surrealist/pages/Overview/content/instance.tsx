@@ -3,6 +3,7 @@ import classes from "../style.module.scss";
 import {
 	ActionIcon,
 	Alert,
+	Badge,
 	Box,
 	BoxProps,
 	Group,
@@ -13,6 +14,7 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
+
 import { useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { PropsWithChildren, useMemo, useRef } from "react";
@@ -21,8 +23,9 @@ import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
-import { CloudInstance, ConnectionListMode } from "~/types";
+import { CloudInstance } from "~/types";
 import { ON_STOP_PROPAGATION, showError, showInfo } from "~/util/helpers";
 import {
 	iconCloud,
@@ -32,19 +35,16 @@ import {
 	iconPause,
 	iconPlay,
 } from "~/util/icons";
-import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
-	presentation: ConnectionListMode;
 	onConnect: (instance: CloudInstance) => void;
 }
 
 export function StartInstance({
 	instance,
-	presentation,
 	onConnect,
 	children,
 	...other
@@ -64,9 +64,7 @@ export function StartInstance({
 	const handleEdit = useStable(() => {
 		if (!connection) return;
 
-		dispatchIntent("edit-connection", {
-			id: connection.id,
-		});
+		openConnectionEditModal(connection);
 	});
 
 	const handleCopyHost = useStable(() => {
@@ -209,6 +207,16 @@ export function StartInstance({
 		},
 	});
 
+	const labels = connection?.labels?.map((label, i) => (
+		<Badge
+			key={i}
+			color="slate"
+			variant="light"
+		>
+			{label}
+		</Badge>
+	));
+
 	return (
 		<UnstyledButton
 			onClick={handleConnect}
@@ -216,17 +224,13 @@ export function StartInstance({
 		>
 			<Paper
 				p="lg"
-				className={clsx(
-					classes.startBox,
-					classes.startInstance,
-					presentation === "row" && classes.startRow,
-				)}
+				className={clsx(classes.startBox, classes.startInstance)}
 				ref={containerRef}
 			>
 				<Group
 					wrap="nowrap"
 					align="strech"
-					h="100%"
+					flex={1}
 				>
 					<Stack flex={1}>
 						<Group
@@ -250,7 +254,10 @@ export function StartInstance({
 									>
 										{connection?.name ?? instance.name}
 									</Text>
-									<StateBadge state={instance.state} />
+									<StateBadge
+										size={10}
+										state={instance.state}
+									/>
 								</Group>
 								<Text>ID: {instance.id}</Text>
 							</Box>
@@ -323,6 +330,7 @@ export function StartInstance({
 						</Menu>
 					</div>
 				</Group>
+				<Group gap="xs">{labels}</Group>
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>

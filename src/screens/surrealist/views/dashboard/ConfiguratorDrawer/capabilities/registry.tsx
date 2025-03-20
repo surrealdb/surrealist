@@ -50,10 +50,10 @@ export const ENDPOINT_TARGETS = [
  * SurrealDB experiments
  */
 export const EXPERIMENT_TARGETS = [
-	{ label: "Record references", value: "record_references" },
 	{ label: "GraphQL", value: "graphql" },
-	{ label: "Bearer access", value: "bearer_access" },
-	{ label: "Define API", value: "define_api" },
+	{ label: "Record references", value: "record_references", since: "2.2.0" },
+	{ label: "Bearer access", value: "bearer_access", since: "2.2.0" },
+	{ label: "Define API", value: "define_api", since: "2.2.0" },
 ];
 
 /**

@@ -1,48 +1,31 @@
-import cloudImg from "~/assets/images/cloud-icon.webp";
 import classes from "../style.module.scss";
 
 import {
-	ActionIcon,
 	Box,
+	Button,
 	Divider,
 	Group,
-	Image,
-	Menu,
 	Modal,
 	ScrollArea,
 	Stack,
 	Text,
 	TextInput,
-	ThemeIcon,
 } from "@mantine/core";
 
-import {
-	iconCloud,
-	iconCopy,
-	iconDelete,
-	iconDotsVertical,
-	iconEdit,
-	iconHomePlus,
-	iconPlus,
-	iconServer,
-} from "~/util/icons";
+import { iconChevronRight, iconCloud, iconServer } from "~/util/icons";
 
 import clsx from "clsx";
-import { type MouseEvent, useMemo, useState } from "react";
-import { isDesktop } from "~/adapter";
+import { useMemo, useState } from "react";
 import { Entry, type EntryProps } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnectionList, useConnectionOverview } from "~/hooks/connection";
+import { useConnectionLabels, useConnectionList, useConnectionOverview } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useConnectionAndView, useConnectionNavigator, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useConfirmation } from "~/providers/Confirmation";
-import { useConfigStore } from "~/stores/config";
 import type { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
-import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, newId } from "~/util/helpers";
-import { dispatchIntent } from "~/util/intents";
+import { Y_SLIDE_TRANSITION } from "~/util/helpers";
 import { USER_ICONS } from "~/util/user-icons";
 
 export function ConnectionsModal() {
@@ -52,40 +35,14 @@ export function ConnectionsModal() {
 	const [label, setLabel] = useState("");
 	const [connection] = useConnectionAndView();
 	const navigateConnection = useConnectionNavigator();
+	const labels = useConnectionLabels();
+
+	const showLabels = labels.length > 0;
+	const showAll = label === "";
 
 	const { sandbox, isEmpty, userConnections, organizations } = useConnectionOverview({
 		search,
 		label,
-	});
-
-	const newConnection = useStable(() => {
-		openedHandle.close();
-		dispatchIntent("new-connection");
-	});
-
-	const newLocalhost = useStable(() => {
-		const { username, password, port } = useConfigStore.getState().settings.serving;
-
-		const template = JSON.stringify({
-			name: "Local database",
-			icon: 0,
-			values: {
-				mode: "root",
-				database: "",
-				namespace: "",
-				protocol: "ws",
-				hostname: `localhost:${port}`,
-				scope: "",
-				scopeFields: [],
-				access: "",
-				token: "",
-				username,
-				password,
-			},
-		});
-
-		dispatchIntent("new-connection", { template });
-		openedHandle.close();
 	});
 
 	const activateConnection = useStable((con: Connection) => {
@@ -97,7 +54,7 @@ export function ConnectionsModal() {
 		activateConnection(resolveInstanceConnection(instance));
 	});
 
-	const [handleKeyDown, selected] = useKeyNavigation([], () => { }, connection || undefined);
+	const [handleKeyDown, selected] = useKeyNavigation([], () => {}, connection || undefined);
 
 	useIntent("open-connections", ({ search }) => {
 		if (search) {
@@ -132,55 +89,16 @@ export function ConnectionsModal() {
 					/>
 					<Text>Connections</Text>
 				</Group>
-				<Group>
-					<TextInput
-						flex={1}
-						placeholder="Search for connections..."
-						variant="unstyled"
-						className={classes.listingSearch}
-						autoFocus
-						value={search}
-						spellCheck={false}
-						onChange={(e) => setSearch(e.target.value)}
-					/>
-					<Menu position="right-start">
-						<Menu.Target>
-							<ActionIcon
-								aria-label="Add..."
-								variant="gradient"
-								style={{
-									backgroundOrigin: "border-box",
-									border: "1px solid rgba(255, 255, 255, 0.3)",
-								}}
-								size={36}
-								radius="md"
-							>
-								<Icon path={iconPlus} />
-							</ActionIcon>
-						</Menu.Target>
-						<Menu.Dropdown>
-							<Menu.Item
-								leftSection={<Icon path={iconPlus} />}
-								onClick={newConnection}
-							>
-								New connection
-							</Menu.Item>
-							{isDesktop && (
-								<Menu.Item
-									leftSection={
-										<Icon
-											path={iconHomePlus}
-											noStroke
-										/>
-									}
-									onClick={newLocalhost}
-								>
-									New local connection
-								</Menu.Item>
-							)}
-						</Menu.Dropdown>
-					</Menu>
-				</Group>
+				<TextInput
+					flex={1}
+					placeholder="Search for connections..."
+					variant="unstyled"
+					className={classes.listingSearch}
+					autoFocus
+					value={search}
+					spellCheck={false}
+					onChange={(e) => setSearch(e.target.value)}
+				/>
 			</Box>
 
 			<Divider mx="lg" />
@@ -194,6 +112,59 @@ export function ConnectionsModal() {
 					gap="xl"
 					p="lg"
 				>
+					{showLabels && (
+						<Box
+							pos="relative"
+							h={42}
+							mb={-12}
+						>
+							<ScrollArea
+								pos="absolute"
+								inset={0}
+								scrollbars="x"
+								type="scroll"
+							>
+								<Group
+									gap={6}
+									pb="sm"
+									wrap="nowrap"
+								>
+									<Button
+										size="xs"
+										color="slate"
+										className={clsx(
+											classes.label,
+											showAll && classes.labelActive,
+										)}
+										variant={showAll ? "filled" : "subtle"}
+										onClick={() => setLabel("")}
+									>
+										All connections
+									</Button>
+									{labels.map((option, i) => {
+										const isActive = option === label;
+
+										return (
+											<Button
+												key={i}
+												size="xs"
+												color="slate"
+												className={clsx(
+													classes.label,
+													isActive && classes.labelActive,
+												)}
+												variant={isActive ? "filled" : "subtle"}
+												onClick={() => setLabel(option)}
+											>
+												{option}
+											</Button>
+										);
+									})}
+								</Group>
+							</ScrollArea>
+						</Box>
+					)}
+
 					{isEmpty && (
 						<Text
 							c="slate"
@@ -241,7 +212,18 @@ export function ConnectionsModal() {
 							key={org.info.id}
 							gap="xs"
 						>
-							<Group>
+							<Group gap="xs">
+								<Text
+									fz="xl"
+									fw={500}
+									c="bright"
+								>
+									Surreal Cloud
+								</Text>
+								<Icon
+									path={iconChevronRight}
+									c="slate"
+								/>
 								<Text
 									fz="xl"
 									fw={500}
@@ -249,10 +231,6 @@ export function ConnectionsModal() {
 								>
 									{org.info.name}
 								</Text>
-								<Image
-									src={cloudImg}
-									height={16}
-								/>
 							</Group>
 							{org.instances.map((instance) => (
 								<InstanceEntry
@@ -284,57 +262,14 @@ function ConnectionEntry({
 	connection,
 	active,
 	selected,
-	onConnect: onActivate,
+	onConnect,
 	onClose,
 	...other
 }: ConnectionEntryProps) {
-	const { addConnection, removeConnection } = useConfigStore.getState();
-	const [showOptions, setShowOptions] = useState(false);
-
 	const isActive = connection.id === active;
 
 	const activate = useStable(() => {
-		onActivate(connection);
-	});
-
-	const modify = useStable((e: MouseEvent) => {
-		e.stopPropagation();
-		onClose();
-		dispatchIntent("edit-connection", {
-			id: connection.id,
-		});
-	});
-
-	const handleOptions = useStable((e: MouseEvent) => {
-		e.stopPropagation();
-		setShowOptions(true);
-	});
-
-	const handleDelete = useConfirmation({
-		title: "Remove connection",
-		message: "Are you sure you want to remove this connection?",
-		skippable: true,
-		onConfirm() {
-			removeConnection(connection.id);
-			window.tagEvent("connection_deleted", {
-				protocol: connection.authentication.protocol.toString(),
-				is_local: connection.authentication.hostname.includes("localhost"),
-			});
-		},
-	});
-
-	const duplicateConnection = useStable(() => {
-		addConnection({
-			...connection,
-			lastNamespace: "",
-			lastDatabase: "",
-			id: newId(),
-		});
-
-		window.tagEvent("connection_duplicated", {
-			protocol: connection.authentication.protocol.toString(),
-			is_local: connection.authentication.hostname.includes("localhost"),
-		});
+		onConnect(connection);
 	});
 
 	return (
@@ -348,53 +283,6 @@ function ConnectionEntry({
 			)}
 			onClick={activate}
 			leftSection={<Icon path={USER_ICONS[connection.icon ?? 0]} />}
-			rightSection={
-				<Menu
-					opened={showOptions}
-					onChange={setShowOptions}
-					transitionProps={{
-						transition: "scale-y",
-					}}
-				>
-					<Menu.Target>
-						<ActionIcon
-							component="div"
-							variant="transparent"
-							onClick={handleOptions}
-							aria-label="Connection options"
-						>
-							<Icon path={iconDotsVertical} />
-						</ActionIcon>
-					</Menu.Target>
-					<Menu.Dropdown onClick={ON_STOP_PROPAGATION}>
-						<Menu.Item
-							leftSection={<Icon path={iconEdit} />}
-							onClick={modify}
-						>
-							Edit details
-						</Menu.Item>
-						<Menu.Item
-							leftSection={<Icon path={iconCopy} />}
-							onClick={duplicateConnection}
-						>
-							Duplicate
-						</Menu.Item>
-						<Menu.Divider />
-						<Menu.Item
-							leftSection={
-								<Icon
-									path={iconDelete}
-									c="red"
-								/>
-							}
-							onClick={handleDelete}
-							c="red"
-						>
-							Delete
-						</Menu.Item>
-					</Menu.Dropdown>
-				</Menu>
-			}
 			{...other}
 		>
 			<Text truncate>{connection.name}</Text>
@@ -414,11 +302,10 @@ function InstanceEntry({
 	instance,
 	active,
 	selected,
-	onConnect: onActivate,
+	onConnect,
 	onClose,
 	...other
 }: InstanceEntryProps) {
-	const [showOptions, setShowOptions] = useState(false);
 	const connections = useConnectionList();
 
 	const connection = useMemo(() => {
@@ -428,29 +315,7 @@ function InstanceEntry({
 	const isActive = connection?.id === active;
 
 	const activate = useStable(() => {
-		onActivate(instance);
-	});
-
-	const modify = useStable((e: MouseEvent) => {
-		e.stopPropagation();
-		onClose();
-		// dispatchIntent("edit-connection", {
-		// 	id: connection.id,
-		// });
-	});
-
-	const handleOptions = useStable((e: MouseEvent) => {
-		e.stopPropagation();
-		setShowOptions(true);
-	});
-
-	const handleDelete = useConfirmation({
-		title: "Remove connection",
-		message: "Are you sure you want to remove this connection?",
-		skippable: true,
-		onConfirm() {
-			// removeConnection(connection.id);
-		},
+		onConnect(instance);
 	});
 
 	return (
@@ -461,47 +326,6 @@ function InstanceEntry({
 			className={clsx(classes.connection, selected === null && classes.listingActive)}
 			onClick={activate}
 			leftSection={<Icon path={connection ? USER_ICONS[connection.icon] : iconCloud} />}
-			rightSection={
-				<Menu
-					opened={showOptions}
-					onChange={setShowOptions}
-					transitionProps={{
-						transition: "scale-y",
-					}}
-				>
-					<Menu.Target>
-						<ActionIcon
-							component="div"
-							variant="transparent"
-							onClick={handleOptions}
-							aria-label="Connection options"
-						>
-							<Icon path={iconDotsVertical} />
-						</ActionIcon>
-					</Menu.Target>
-					<Menu.Dropdown onClick={ON_STOP_PROPAGATION}>
-						<Menu.Item
-							leftSection={<Icon path={iconEdit} />}
-							onClick={modify}
-						>
-							Edit details
-						</Menu.Item>
-						<Menu.Divider />
-						<Menu.Item
-							leftSection={
-								<Icon
-									path={iconDelete}
-									c="red"
-								/>
-							}
-							onClick={handleDelete}
-							c="red"
-						>
-							Delete
-						</Menu.Item>
-					</Menu.Dropdown>
-				</Menu>
-			}
 			{...other}
 		>
 			<Text truncate>{instance.name}</Text>

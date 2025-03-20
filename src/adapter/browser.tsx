@@ -162,6 +162,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 				const tasks = files.map(async (file) => ({
 					name: file.name,
 					content: await file.text(),
+					self: file,
 				}));
 
 				const results = await Promise.all(tasks);

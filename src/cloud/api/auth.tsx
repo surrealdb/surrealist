@@ -23,10 +23,6 @@ interface PKCE {
 	challenge: string;
 }
 
-(window as any).resetCloudState = () => {
-	invalidateSession();
-};
-
 function getState() {
 	return useCloudStore.getState().authState;
 }

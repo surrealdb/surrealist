@@ -151,7 +151,7 @@ export function FixedRuleSetCapability({
 				</Group>
 			</UnstyledButton>
 			<Collapse in={isExpanded}>
-				<Box>
+				<Box pt="xs">
 					<SimpleGrid cols={3}>
 						<RuleSetBase
 							color="orange"

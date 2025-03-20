@@ -7,7 +7,6 @@ import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
 import { CloudExpiredDialog } from "./modals/cloud-expired";
 import { CommandPaletteModal } from "./modals/commands";
-import { ConnectionModal } from "./modals/connection";
 import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
 import { DataExportModal } from "./modals/data-export";
@@ -46,7 +45,6 @@ export function App() {
 			<CommandPaletteModal />
 			<DocumentationModal />
 			<ChangelogModal />
-			<ConnectionModal />
 			<DownloadModal />
 			<SandboxModal />
 			<AccessSignupModal />
