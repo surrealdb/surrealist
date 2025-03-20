@@ -47,6 +47,7 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconChevronRight, iconCopy, iconHelp, iconOpen } from "~/util/icons";
+import { CloudSplash } from "~/components/CloudSplash";
 
 const REWARDS = [1, 10, 25, 100, 500];
 
@@ -139,12 +140,6 @@ export function ReferralPage() {
 								Earn rewards for referring your friends and contacts
 							</Text>
 						</Box>
-						{/* <Image
-						src={isLight ? logoLightUrl : logoDarkUrl}
-						alt="Surreal Cloud"
-						mx="auto"
-						w={450}
-					/> */}
 
 						<Slab
 							p="xl"
@@ -390,51 +385,7 @@ export function ReferralPage() {
 					</Stack>
 				</ScrollArea>
 			) : (
-				<Center h="90%">
-					<Stack align="center">
-						<Image
-							src={cloudImg}
-							alt="Sidekick"
-							w={142}
-						/>
-						<PrimaryTitle
-							fz={42}
-							mt="xl"
-						>
-							Welcome to Surreal Cloud
-						</PrimaryTitle>
-						<Text
-							fz="lg"
-							maw={500}
-						>
-							Surreal Cloud redefines the database experience, offering the power and
-							flexibility of SurrealDB without the pain of managing infrastructure.
-						</Text>
-						<Group
-							mt="xl"
-							w="100%"
-							maw={400}
-						>
-							<Button
-								flex={1}
-								variant="gradient"
-								onClick={openCloudAuthentication}
-								rightSection={<Icon path={iconChevronRight} />}
-							>
-								Sign in
-							</Button>
-							<Button
-								flex={1}
-								color="slate"
-								variant="light"
-								rightSection={<Icon path={iconOpen} />}
-								onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}
-							>
-								Learn more
-							</Button>
-						</Group>
-					</Stack>
-				</Center>
+				<CloudSplash />
 			)}
 		</Box>
 	);
