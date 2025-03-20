@@ -133,6 +133,7 @@ export default defineConfig(({ mode }) => {
 			"import.meta.env.POSTHOG_KEY": JSON.stringify(
 				"phc_BWVuHaJuhnFi3HthLhb9l8opktRrNeFHVnisZdQ5404",
 			),
+			"import.meta.env.GTM_ID": JSON.stringify("G-PVD8NEJ3Z2"),
 		},
 		optimizeDeps: {
 			exclude: ["@surrealdb/wasm", "@surrealdb/ql-wasm"],
