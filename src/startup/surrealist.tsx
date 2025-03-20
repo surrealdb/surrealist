@@ -22,6 +22,7 @@ import { adapter } from "../adapter";
 import { App } from "../components/App";
 import { generateEditorIcons } from "../editor/icons";
 import { promptChangelog } from "../util/changelogs";
+import { preloadImages } from "~/util/preloader";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -46,6 +47,9 @@ import { promptChangelog } from "../util/changelogs";
 
 	// Check for new release
 	promptChangelog();
+
+	// Preload images
+	preloadImages();
 
 	// Expose debugging tools
 	(window as any).Surrealist = {
