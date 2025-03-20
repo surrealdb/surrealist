@@ -124,7 +124,7 @@ export async function verifyAuthentication(code: string, state: string) {
 
 		localStorage.setItem(REFRESH_TOKEN_KEY, result.refresh_token);
 
-		acquireSession(result.access_token);
+		acquireSession(result.access_token, true);
 	} catch (err: any) {
 		console.error("Failed to verify authentication", err);
 
@@ -183,7 +183,7 @@ export async function refreshAccess() {
 
 		localStorage.setItem(REFRESH_TOKEN_KEY, result.refresh_token);
 
-		acquireSession(result.access_token);
+		acquireSession(result.access_token, false);
 	} catch (err: any) {
 		console.error("Failed to refresh access token", err);
 
@@ -195,7 +195,7 @@ export async function refreshAccess() {
 /**
  * Attempt to start a new session using the given access token
  */
-export async function acquireSession(accessToken: string) {
+export async function acquireSession(accessToken: string, initial: boolean) {
 	try {
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
 		const { setSessionToken, setAuthProvider, setUserId, setSessionExpired } =
@@ -226,8 +226,19 @@ export async function acquireSession(accessToken: string) {
 
 		setSessionExpired(false);
 
-		if (!result.terms_accepted_at) {
+		const promptTerms = !result.terms_accepted_at;
+
+		if (promptTerms) {
 			openTermsModal();
+		}
+
+		if (initial) {
+			window.tagEvent("cloud_signin", {
+				auth_provider: result.provider,
+				referred: !!referralCode,
+				open_terms: promptTerms,
+				first_signin: promptTerms,
+			});
 		}
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);
@@ -272,6 +283,7 @@ export function destroySession() {
 	shutdown();
 
 	adapter.openUrl(`${authBase}/v2/logout?${params.toString()}`, "internal");
+	window.tagEvent("cloud_signout");
 }
 
 /**
