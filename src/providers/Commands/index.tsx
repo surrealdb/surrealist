@@ -7,7 +7,6 @@ import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
-import { captureMetric } from "~/util/metrics";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory, CommandPayload } from "./types";
 
@@ -97,7 +96,7 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
-		captureMetric("execute_command", {
+		window.tagEvent("execute_command", {
 			command: cmd.name,
 		});
 

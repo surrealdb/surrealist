@@ -8,7 +8,6 @@ import { getConnection } from "~/util/connection";
 import { isHostLocal } from "~/util/helpers";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { captureMetric } from "~/util/metrics";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
 
@@ -33,11 +32,10 @@ export function DatabaseServing() {
 		} else {
 			prepareServe();
 
-			adapter.startDatabase()
+			adapter
+				.startDatabase()
 				.then(() => window.tagEvent("database_serve"))
 				.catch(() => stopServing());
-
-			captureMetric("serve_start");
 		}
 
 		setHasStarted(true);

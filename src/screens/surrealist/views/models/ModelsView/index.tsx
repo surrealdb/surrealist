@@ -15,7 +15,6 @@ import type { SchemaModel } from "~/types";
 import { createBaseAuthentication } from "~/util/defaults";
 import { connectionUri } from "~/util/helpers";
 import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
-import { captureMetric } from "~/util/metrics";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
@@ -78,11 +77,10 @@ export function ModelsView() {
 				body: file.content,
 			});
 
-			window.tagEvent("data_import", { extension: "surml" });
+			window.tagEvent("import", { extension: "surml" });
 		}
 
 		syncConnectionSchema();
-		captureMetric("model_import");
 	});
 
 	const downloadModel = useStable(async (model: SchemaModel) => {
@@ -106,6 +104,8 @@ export function ModelsView() {
 					headers,
 				}).then((res) => res.blob()),
 		);
+
+		window.tagEvent("export", { extension: "surml" });
 	});
 
 	const snippet = useMemo(

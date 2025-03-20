@@ -34,7 +34,6 @@ import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
-import { captureMetric } from "~/util/metrics";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
@@ -168,10 +167,6 @@ export async function openConnection(options?: ConnectOptions) {
 		});
 
 		if (instance === thisInstance) {
-			captureMetric("connection_open", {
-				protocol: connection.authentication.protocol,
-			});
-
 			adapter.log("DB", "Connection established");
 
 			instance.version().then((v) => {
@@ -196,6 +191,10 @@ export async function openConnection(options?: ConnectOptions) {
 			}
 
 			ConnectedEvent.dispatch(null);
+
+			window.tagEvent("connection_connected", {
+				protocol: connection.authentication.protocol.toString(),
+			});
 		}
 	} catch (err: any) {
 		if (instance === thisInstance) {
@@ -432,13 +431,6 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			return [res.result];
 		});
 
-		for (const res of response) {
-			window.tagEvent("query_execute", {
-				execution_time: res.execution_time,
-				type: 'surql'
-			});
-		}
-
 		cancelLiveQueries(id);
 		clearLiveQueryMessages(id);
 		setIsLive(id, liveIds.length > 0);
@@ -458,7 +450,11 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		}
 
 		setQueryResponse(id, response);
-		captureMetric("query_execute");
+
+		window.tagEvent("query_execute", {
+			protocol: connection.authentication.protocol.toString(),
+			type: "surql",
+		});
 
 		if (query.length <= MAX_HISTORY_QUERY_LENGTH) {
 			addHistoryEntry(connection.id, {
@@ -468,7 +464,6 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 				origin: name,
 			});
 		}
-
 	} catch (err: any) {
 		if (err instanceof SurrealDbError) {
 			console.warn("executeUserQuery fail", err);
@@ -559,7 +554,11 @@ export async function executeGraphql(
 		const response = await sendGraphqlRequest(query, params, operation);
 
 		setGraphqlResponse(connection.id, response);
-		captureMetric("graphql_execute");
+
+		window.tagEvent("query_execute", {
+			protocol: connection.authentication.protocol.toString(),
+			type: "graphql",
+		});
 	} catch (err: any) {
 		console.warn("executeGraphql fail", err);
 

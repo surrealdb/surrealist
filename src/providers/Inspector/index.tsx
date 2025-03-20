@@ -4,7 +4,6 @@ import { RecordId } from "surrealdb";
 import { type HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { captureMetric } from "~/util/metrics";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
 
@@ -57,7 +56,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 			setHistoryItems([recordId]);
 		}
 
-		captureMetric("open_record_inspector");
+		window.tagEvent("record_inspector_open");
 	});
 
 	const stopInspect = useStable(() => {

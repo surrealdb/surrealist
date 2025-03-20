@@ -10,7 +10,6 @@ import { SANDBOX } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
-import { useGoogleAnalytics } from "~/providers/GoogleAnalytics";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
 import { ON_STOP_PROPAGATION, newId } from "~/util/helpers";
@@ -30,7 +29,6 @@ export function StartConnection({
 }: PropsWithChildren<StartConnectionProps>) {
 	const { addConnection, removeConnection } = useConfigStore.getState();
 	const { protocol, hostname } = connection.authentication;
-	const { trackEvent } = useGoogleAnalytics();
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isSandbox = connection.id === SANDBOX;
@@ -52,7 +50,10 @@ export function StartConnection({
 			id: newId(),
 		});
 
-		trackEvent("event", { action: "duplicate_connection", debug: true });
+		window.tagEvent("connection_duplicated", {
+			protocol: connection.authentication.protocol.toString(),
+			is_local: connection.authentication.hostname.includes("localhost"),
+		});
 	});
 
 	const handleDelete = useConfirmation({
@@ -61,6 +62,11 @@ export function StartConnection({
 		skippable: true,
 		onConfirm() {
 			removeConnection(connection.id);
+
+			window.tagEvent("connection_deleted", {
+				protocol: connection.authentication.protocol.toString(),
+				is_local: connection.authentication.hostname.includes("localhost"),
+			});
 		},
 	});
 
