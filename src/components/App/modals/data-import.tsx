@@ -1038,7 +1038,7 @@ export function DataImportModal() {
 
 			const configureImportType = (type: ImportType) => {
 				setImportType(type);
-				window.tagEvent("data_import", { extension: type });
+				window.tagEvent("import", { extension: type });
 			};
 
 			const extractFromFileType = (fileFormat: DataFileFormat) => {
