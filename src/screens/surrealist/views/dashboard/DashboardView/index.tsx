@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { ActionIcon, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
+import { ActionIcon, Button, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { memo, useState } from "react";
 import { Redirect } from "wouter";
@@ -16,7 +16,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
-import { iconCheck, iconCopy } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconCopy, iconDotsVertical } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
@@ -24,6 +24,9 @@ import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { UpdateBlock } from "../UpdateBlock";
+import { Spacer } from "~/components/Spacer";
+import { ActionButton } from "~/components/ActionButton";
+import { InstanceActions } from "~/components/InstanceActions";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ConfigurationBlockLazy = memo(ConfigurationBlock);
@@ -121,6 +124,18 @@ export function DashboardView() {
 											size={14}
 											state={details.state}
 										/>
+									)}
+									<Spacer />
+									{details && (
+										<InstanceActions instance={details}>
+											<Button
+												color="slate"
+												variant="light"
+												rightSection={<Icon path={iconChevronDown} />}
+											>
+												Actions
+											</Button>
+										</InstanceActions>
 									)}
 								</Group>
 								<Group gap="sm">
