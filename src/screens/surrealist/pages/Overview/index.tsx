@@ -86,9 +86,12 @@ export function OverviewPage() {
 	const [search, setSearch] = useInputState("");
 	const [label, setLabel] = useState("");
 
+	const noFilter = !search && !label;
+
 	const { isPending, sandbox, userConnections, organizations } = useConnectionOverview({
 		search,
 		label,
+		includeEmpty: noFilter,
 	});
 
 	const activateConnection = useStable((con: Connection) => {
@@ -345,7 +348,7 @@ export function OverviewPage() {
 										onConnect={activateConnection}
 									/>
 								))}
-								{userConnections.length === 0 && (
+								{userConnections.length === 0 && noFilter && (
 									<StartCreator
 										title="No connections"
 										subtitle="Click to create your first connection"
