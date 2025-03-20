@@ -21,7 +21,7 @@ export function DatabaseServing() {
 	const isServing = useDatabaseStore((s) => s.isServing);
 	const isPending = useDatabaseStore((s) => s.servePending);
 
-	const handleToggle = useStable(() => {
+	const handleToggle = useStable(async () => {
 		if (isPending) {
 			return;
 		}
@@ -33,9 +33,9 @@ export function DatabaseServing() {
 		} else {
 			prepareServe();
 
-			adapter.startDatabase().catch(() => {
-				stopServing();
-			});
+			adapter.startDatabase()
+				.then(() => window.tagEvent("database_serve"))
+				.catch(() => stopServing());
 
 			captureMetric("serve_start");
 		}

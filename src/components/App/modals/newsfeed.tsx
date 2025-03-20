@@ -52,6 +52,7 @@ export function NewsFeedDrawer() {
 
 	const [isReading, readingHandle] = useDisclosure();
 	const [reading, setReading] = useState<NewsItem | null>(null);
+	const [pendingEvent, setPendingEvent] = useState<object>();
 
 	const readArticle = (item: NewsItem) => {
 		setReading(item);
@@ -59,12 +60,22 @@ export function NewsFeedDrawer() {
 		captureMetric("newsfeed_read", {
 			article: item.id,
 		});
+
+		setPendingEvent({
+			blog_name: item.title,
+			open_time: new Date().toISOString(),
+		});
 	};
 
 	const handleClose = useStable(() => {
 		openHandle.close();
 		readingHandle.close();
 		updateViewedNews();
+
+		window.tagEvent("blog_opened", {
+			...pendingEvent,
+			close_time: new Date().toISOString(),
+		});
 	});
 
 	useEffect(() => {

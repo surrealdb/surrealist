@@ -76,6 +76,8 @@ export function DocumentationModal() {
 		if (search) {
 			setSearch(search);
 		}
+
+		window.tagEvent("modal_opened", { modal: "documentation-search" });
 	});
 
 	const isEmpty = data?.length === 0;

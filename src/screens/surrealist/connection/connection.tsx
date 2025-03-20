@@ -436,6 +436,13 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			return [res.result];
 		});
 
+		for (const res of response) {
+			window.tagEvent("query_execute", {
+				execution_time: res.execution_time,
+				type: 'surql'
+			});
+		}
+
 		cancelLiveQueries(id);
 		clearLiveQueryMessages(id);
 		setIsLive(id, liveIds.length > 0);
@@ -465,6 +472,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 				origin: name,
 			});
 		}
+
 	} catch (err: any) {
 		if (err instanceof SurrealDbError) {
 			console.warn("executeUserQuery fail", err);

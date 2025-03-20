@@ -56,12 +56,18 @@ export function DataImportModal() {
 			importFile.current = file;
 			openedHandle.open();
 
-			if (file.name.endsWith(".csv")) {
+			const isCSV = file.name.endsWith(".csv");
+
+			if (isCSV) {
 				setImportType("csv");
 				setTable("");
 			} else {
 				setImportType("sql");
 			}
+
+			const type = isCSV ? "csv" : "sql";
+			window.tagEvent("data_import", { extension: type });
+
 		} finally {
 			setImporting(false);
 		}

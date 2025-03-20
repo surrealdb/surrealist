@@ -19,7 +19,7 @@ import { showError, showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
-export type ExportOptions = BaseExportOptions & { tables: string[] };
+export type ExportOptions = BaseExportOptions & { tables: string[]; };
 export type ExportType = keyof ExportOptions;
 
 const RESOURCES = [
@@ -69,6 +69,8 @@ export function DataExportModal() {
 					title: "Export",
 					subtitle: "Database successfully exported",
 				});
+
+				window.tagEvent("data_export", { extension: "surql" });
 			}
 		} catch (err: any) {
 			showError({

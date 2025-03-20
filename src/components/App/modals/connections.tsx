@@ -97,7 +97,7 @@ export function ConnectionsModal() {
 		activateConnection(resolveInstanceConnection(instance));
 	});
 
-	const [handleKeyDown, selected] = useKeyNavigation([], () => {}, connection || undefined);
+	const [handleKeyDown, selected] = useKeyNavigation([], () => { }, connection || undefined);
 
 	useIntent("open-connections", ({ search }) => {
 		if (search) {
@@ -316,7 +316,25 @@ function ConnectionEntry({
 		skippable: true,
 		onConfirm() {
 			removeConnection(connection.id);
+			window.tagEvent("connection_deleted", {
+				protocol: connection.authentication.protocol.toString(),
+				is_local: connection.authentication.hostname.includes("localhost"),
+			});
 		},
+	});
+
+	const duplicateConnection = useStable(() => {
+		addConnection({
+			...connection,
+			lastNamespace: "",
+			lastDatabase: "",
+			id: newId(),
+		});
+
+		window.tagEvent("connection_duplicated", {
+			protocol: connection.authentication.protocol.toString(),
+			is_local: connection.authentication.hostname.includes("localhost"),
+		});
 	});
 
 	return (
@@ -357,14 +375,7 @@ function ConnectionEntry({
 						</Menu.Item>
 						<Menu.Item
 							leftSection={<Icon path={iconCopy} />}
-							onClick={() => {
-								addConnection({
-									...connection,
-									lastNamespace: "",
-									lastDatabase: "",
-									id: newId(),
-								});
-							}}
+							onClick={duplicateConnection}
 						>
 							Duplicate
 						</Menu.Item>

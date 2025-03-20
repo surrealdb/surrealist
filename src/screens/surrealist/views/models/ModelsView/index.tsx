@@ -77,6 +77,8 @@ export function ModelsView() {
 				headers,
 				body: file.content,
 			});
+
+			window.tagEvent("data_import", { extension: "surml" });
 		}
 
 		syncConnectionSchema();

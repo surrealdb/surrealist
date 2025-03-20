@@ -91,6 +91,10 @@ export function ConnectionModal() {
 
 		if (template) {
 			applyTemplate(JSON.parse(template) as Template);
+			window.tagEvent("connection_created", {
+				protocol: details.authentication.protocol.toString(),
+				is_local: details.authentication.hostname.includes("localhost")
+			});
 		}
 	});
 

@@ -55,6 +55,11 @@ export function useDesktopUpdater() {
 				}
 			});
 
+			await window.tagEvent("version_updated", {
+				from_version: import.meta.env.VERSION,
+				to_version: update.version,
+			});
+
 			await relaunch();
 		} catch (err: any) {
 			console.error("Failed to update desktop app", err);
