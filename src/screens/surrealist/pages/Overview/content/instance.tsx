@@ -195,7 +195,7 @@ export function StartInstance({
 					queryKey: ["cloud", "instances"],
 				});
 
-				window.tagEvent("cloud_instance_paused", {
+				window.tagEvent("cloud_instance_deleted", {
 					version: instance.version,
 					region: instance.region,
 					compute_type: instance.type.category
