@@ -345,6 +345,13 @@ export function OverviewPage() {
 										onConnect={activateConnection}
 									/>
 								))}
+								{userConnections.length === 0 && (
+									<StartCreator
+										title="No connections"
+										subtitle="Click to create your first connection"
+										onCreate={() => navigate("/create/connection")}
+									/>
+								)}
 							</SimpleGrid>
 
 							{authState === "authenticated" &&
@@ -373,7 +380,7 @@ export function OverviewPage() {
 											{instances.length === 0 && (
 												<StartCreator
 													title="No instances"
-													subtitle="Provision a new Surreal Cloud instance"
+													subtitle="Click to provision a new instance"
 													onCreate={() => {
 														setSelectedOrganization(info.id);
 														navigate("/create/instance");
