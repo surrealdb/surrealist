@@ -17,6 +17,7 @@ import clsx from "clsx";
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
+import { InstanceActions } from "~/components/InstanceActions";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
@@ -24,7 +25,6 @@ import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconCloud, iconDotsVertical } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
-import { InstanceActions } from "~/components/InstanceActions";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;

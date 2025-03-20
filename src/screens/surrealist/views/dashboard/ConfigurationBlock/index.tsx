@@ -1,10 +1,3 @@
-import { BoxProps, Button, Skeleton, ThemeIcon } from "@mantine/core";
-import { Group, Paper, Stack, Text } from "@mantine/core";
-import { ReactNode } from "react";
-import { Icon } from "~/components/Icon";
-import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance } from "~/types";
-import { formatMemory, plural } from "~/util/helpers";
 import {
 	iconChevronRight,
 	iconDatabase,
@@ -13,6 +6,14 @@ import {
 	iconMemory,
 	iconTag,
 } from "~/util/icons";
+
+import { BoxProps, Button, Skeleton, ThemeIcon } from "@mantine/core";
+import { Group, Paper, Stack, Text } from "@mantine/core";
+import { ReactNode } from "react";
+import { Icon } from "~/components/Icon";
+import { useCloudStore } from "~/stores/cloud";
+import { CloudInstance } from "~/types";
+import { formatMemory } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -32,6 +33,8 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 	const backupText = instance?.type.category === "free" ? "Disabled" : "Enabled";
 	const typeText = `${typeName} (${typeCategory})`;
 	const storageText = formatMemory(storageSize * 1024);
+
+	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 
 	return (
 		<Skeleton
@@ -77,7 +80,7 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 							color="slate"
 							rightSection={<Icon path={iconChevronRight} />}
 							onClick={onConfigure}
-							disabled={!instance || instance.state !== "ready"}
+							disabled={!instance || isIdle}
 							variant="light"
 							my={-2}
 						>

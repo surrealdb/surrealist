@@ -1,4 +1,5 @@
 import { Alert, Menu, Stack } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useMemo } from "react";
 import { fetchAPI } from "~/cloud/api";
@@ -6,11 +7,10 @@ import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
-import { showInfo, showError } from "~/util/helpers";
-import { iconEdit, iconPause, iconDelete, iconPlay } from "~/util/icons";
-import { Icon } from "../Icon";
 import { CloudInstance } from "~/types";
-import { Text } from "@mantine/core";
+import { showError, showInfo } from "~/util/helpers";
+import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
+import { Icon } from "../Icon";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
