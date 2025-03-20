@@ -2,6 +2,7 @@ declare global {
 	interface Window {
 		dataLayer: object[];
 		gtag: (...args: any[]) => void;
+		tagEvent: (event: string, data?: object) => Promise<void>;
 	}
 }
 
