@@ -17,11 +17,11 @@ export function DocsConceptsSurrealML({ language, topic }: TopicProps) {
 					their model in a chosen framework in Python, save the model, and load and
 					execute it in either Python or Rust. You can use SurrealML within your database
 					connection to store and execute trained ML models using{" "}
-					<Link href="https://surrealdb.com/docs/surrealdb/surrealql/functions/ml">
+					<Link href="https://surrealdb.com/docs/surrealql/functions/ml/functions">
 						Machine learning functions
 					</Link>
 					. Learn more about{" "}
-					<Link href="https://surrealdb.com/docs/surrealdb/surrealml">
+					<Link href="https://surrealdb.com/docs/surrealml">
 						SurrealML in the documentation
 					</Link>
 				</p>

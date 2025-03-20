@@ -99,7 +99,7 @@ fn main() {
 
             let builder = tauri::WebviewWindowBuilder::new(app, "main", Default::default())
                 .title("Surrealist")
-                .inner_size(1235.0, 675.0)
+                .inner_size(1435.0, 775.0)
                 .center()
                 .min_inner_size(825.0, 675.0);
 
