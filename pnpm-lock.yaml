@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   graphql@16.9.0:
-    hash: ld77r6ldo77drpc37fyutqbsa4
+    hash: 3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f
     path: patches/graphql@16.9.0.patch
 
 importers:
@@ -165,7 +165,7 @@ importers:
         version: 2.1.1
       cm6-graphql:
         specifier: ^0.1.1
-        version: 0.1.1(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.3))(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/highlight@1.2.1)(graphql@16.9.0(patch_hash=ld77r6ldo77drpc37fyutqbsa4))
+        version: 0.1.1(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.3))(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/highlight@1.2.1)(graphql@16.9.0(patch_hash=3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f))
       codemirror:
         specifier: ^6.0.1
         version: 6.0.1(@lezer/common@1.2.3)
@@ -204,7 +204,7 @@ importers:
         version: 0.10.1(graphology-types@0.24.8)
       graphql:
         specifier: ^16.9.0
-        version: 16.9.0(patch_hash=ld77r6ldo77drpc37fyutqbsa4)
+        version: 16.9.0(patch_hash=3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f)
       html-to-image:
         specifier: ^1.11.11
         version: 1.11.11
@@ -4742,7 +4742,7 @@ snapshots:
 
   clsx@2.1.1: {}
 
-  cm6-graphql@0.1.1(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.3))(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/highlight@1.2.1)(graphql@16.9.0(patch_hash=ld77r6ldo77drpc37fyutqbsa4)):
+  cm6-graphql@0.1.1(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.3))(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/highlight@1.2.1)(graphql@16.9.0(patch_hash=3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f)):
     dependencies:
       '@codemirror/autocomplete': 6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.1)(@lezer/common@1.2.3)
       '@codemirror/language': 6.10.3
@@ -4750,8 +4750,8 @@ snapshots:
       '@codemirror/state': 6.4.1
       '@codemirror/view': 6.34.1
       '@lezer/highlight': 1.2.1
-      graphql: 16.9.0(patch_hash=ld77r6ldo77drpc37fyutqbsa4)
-      graphql-language-service: 5.3.0(graphql@16.9.0(patch_hash=ld77r6ldo77drpc37fyutqbsa4))
+      graphql: 16.9.0(patch_hash=3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f)
+      graphql-language-service: 5.3.0(graphql@16.9.0(patch_hash=3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f))
 
   codemirror@6.0.1(@lezer/common@1.2.3):
     dependencies:
@@ -5079,14 +5079,14 @@ snapshots:
       graphology-types: 0.24.8
       obliterator: 2.0.5
 
-  graphql-language-service@5.3.0(graphql@16.9.0(patch_hash=ld77r6ldo77drpc37fyutqbsa4)):
+  graphql-language-service@5.3.0(graphql@16.9.0(patch_hash=3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f)):
     dependencies:
       debounce-promise: 3.1.2
-      graphql: 16.9.0(patch_hash=ld77r6ldo77drpc37fyutqbsa4)
+      graphql: 16.9.0(patch_hash=3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f)
       nullthrows: 1.1.1
       vscode-languageserver-types: 3.17.5
 
-  graphql@16.9.0(patch_hash=ld77r6ldo77drpc37fyutqbsa4): {}
+  graphql@16.9.0(patch_hash=3b74bd909126df5e6dffa0ab30b33f256f428be486959e8032128d648c08139f): {}
 
   hasown@2.0.2:
     dependencies:
