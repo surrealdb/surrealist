@@ -1,4 +1,4 @@
-import { type RefObject, useRef, useEffect } from "react";
+import { type RefObject, useRef, useEffect, useState } from "react";
 import { useMouse } from "@mantine/hooks";
 import { adapter, isDesktop } from "~/adapter";
 import { useIsLight } from "~/hooks/theme";
@@ -13,8 +13,18 @@ export function Faint({ containerRef }: FaintProps) {
   const isLight = useIsLight();
   const { x: mouseX, y: mouseY } = useMouse();
   
+  // Track whether we've received a mouse position
+  const [hasMouseMoved, setHasMouseMoved] = useState(false);
+  
   // Animation frame ID reference for cleanup
   const animationFrameRef = useRef<number | null>(null);
+
+  // Handle first mouse movement detection
+  useEffect(() => {
+    if (mouseX > 0 || mouseY > 0) {
+      setHasMouseMoved(true);
+    }
+  }, [mouseX, mouseY]);
 
   useEffect(() => {
     if (disable) return;
@@ -99,7 +109,8 @@ export function Faint({ containerRef }: FaintProps) {
           borderRadius: "100.153px",
           background: "linear-gradient(276deg, #8200E3 42.56%, #FF01A8 78.41%)",
           filter: "blur(40px)",
-          opacity: isLight ? 0.5 : 1,
+          opacity: hasMouseMoved ? (isLight ? 0.5 : 1) : 0,
+          transition: "opacity 0.3s ease-in-out",
           zIndex: -1,
         }}
       />
