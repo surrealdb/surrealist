@@ -20,7 +20,7 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		window.dataLayer = window.dataLayer ?? [];
 
 		// assign global gtag function
-		window.gtag = function(...args: unknown[]) {
+		window.gtag = function() {
 			// biome-ignore lint/complexity/useArrowFunction lint/style/noArguments: Doesn't work here
 			window.dataLayer.push(arguments);
 		};
@@ -41,6 +41,12 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		const server_container_url = `https://${host}/data`;
 		const scriptSource = `https://${host}/data/script.js`;
 
+		window.gtag('set', 'linker', {
+			accept_incoming: true,
+			decorate_forms: true,
+			url_position: 'query',
+			domains: ['surrealdb.com', 'surrealist.app']
+		});
 		window.gtag("js", new Date());
 		window.gtag("config", import.meta.env.GTM_ID, { server_container_url });
 
