@@ -1,6 +1,8 @@
+import { Image } from "@mantine/core";
 import { useMouse } from "@mantine/hooks";
 import { type RefObject, useEffect, useRef, useState } from "react";
 import { adapter, isDesktop } from "~/adapter";
+import faintUrl from "~/assets/images/faint.png";
 import { useIsLight } from "~/hooks/theme";
 
 export interface FaintProps {
@@ -8,8 +10,7 @@ export interface FaintProps {
 }
 
 export function Faint({ containerRef }: FaintProps) {
-	const disable = adapter.platform !== "windows" && isDesktop; // NOTE Extremely bad performance on Mac WebView
-	const faintRef = useRef<HTMLDivElement>(null);
+	const faintRef = useRef<HTMLImageElement>(null);
 	const isLight = useIsLight();
 	const { x: mouseX, y: mouseY } = useMouse();
 
@@ -27,8 +28,6 @@ export function Faint({ containerRef }: FaintProps) {
 	}, [mouseX, mouseY]);
 
 	useEffect(() => {
-		if (disable) return;
-
 		function updateFaintPosition() {
 			const containerEl = containerRef.current;
 			const faintEl = faintRef.current;
@@ -80,12 +79,12 @@ export function Faint({ containerRef }: FaintProps) {
 
 				if (outsideMax === 0) {
 					style.transform = "scale(1)";
-					style.filter = "blur(50px)";
+					style.opacity = "1";
 				} else {
-					const scale = 1 - outsideMax / 250;
-					const blur = 50 + outsideMax * 0.8;
+					const scale = 1 - outsideMax / 175;
+					const opacity = 1 - outsideMax / 150;
 					style.transform = `scale(${scale})`;
-					style.filter = `blur(${blur}px)`;
+					style.opacity = `${opacity}`;
 				}
 			}
 
@@ -102,26 +101,23 @@ export function Faint({ containerRef }: FaintProps) {
 				cancelAnimationFrame(animationFrameRef.current);
 			}
 		};
-	}, [disable, containerRef, mouseX, mouseY]);
+	}, [containerRef, mouseX, mouseY]);
 
 	return (
-		!disable && (
-			<div
-				ref={faintRef}
-				style={{
-					width: "200px",
-					height: "200px",
-					position: "absolute",
-					top: "-200px",
-					left: "-200px",
-					borderRadius: "100.153px",
-					background: "linear-gradient(276deg, #8200E3 42.56%, #FF01A8 78.41%)",
-					filter: "blur(40px)",
-					opacity: hasMouseMoved ? (isLight ? 0.5 : 1) : 0,
-					transition: "opacity 0.3s ease-in-out",
-					zIndex: -1,
-				}}
-			/>
-		)
+		<img
+			ref={faintRef}
+			src={faintUrl}
+			alt=""
+			style={{
+				width: 500,
+				height: 500,
+				position: "absolute",
+				top: -500,
+				left: -500,
+				opacity: hasMouseMoved ? (isLight ? 0.5 : 1) : 0,
+				outline: "none",
+				zIndex: -1,
+			}}
+		/>
 	);
 }
