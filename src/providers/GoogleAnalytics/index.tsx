@@ -65,15 +65,17 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 			});
 		};
 
+		const host = window.location.host;
+		const server_container_url = `https://${host}/data`;
+		const scriptSource = `https://${host}/data/script.js`;
+
 		window.gtag('js', new Date());
-		window.gtag('config', import.meta.env.GTM_ID, {
-			server_container_url: 'https://surrealist.app/data',
-		});
+		window.gtag('config', import.meta.env.GTM_ID, { server_container_url });
 
 		const script = document.createElement("script");
 
 		script.id = 'surreal-gtm';
-		script.src = 'https://surrealist.app/data/script.js'; // <---- TODO: Change this to the correct URL?
+		script.src = scriptSource; // <---- TODO: Change this to the correct URL?
 		script.defer = true;
 
 		script.addEventListener("load", async () => {
