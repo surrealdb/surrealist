@@ -42,14 +42,7 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 			return;
 		}
 
-		await initializer.promise;
-
-		window.gtag({
-			...data,
-			event_name: event,
-			adapter: adapter.id,
-			platform: adapter.platform
-		});
+		await window.tagEvent(event, data);
 	});
 
 	// Initialize Google Analytics
@@ -62,8 +55,18 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 			window.dataLayer.push(...args);
 		};
 
+		window.tagEvent = async (event: string, data?: object) => {
+			await initializer.promise;
+			window.gtag({
+				...(data ?? {}),
+				event_name: event,
+				adapter: adapter.id,
+				platform: adapter.platform
+			});
+		};
+
 		window.gtag('js', new Date());
-		window.gtag('config', 'G-PVD8NEJ3Z2', {
+		window.gtag('config', import.meta.env.GTM_ID, {
 			server_container_url: 'https://surrealist.app/data',
 		});
 
