@@ -77,6 +77,11 @@ export function useCopilotMutation() {
 				thinking: "Thinking...",
 			});
 
+			window.tagEvent("sidekick_question_asked", {
+				response_time: res.headers.get("X-Response-Time"),
+				prompt_length: message.length,
+			});
+
 			await readResponseStream(reader, (event, value) => {
 				console.debug(`Copilot message (${event}):`, value);
 

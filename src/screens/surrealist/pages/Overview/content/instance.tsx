@@ -104,6 +104,12 @@ export function StartInstance({
 				client.invalidateQueries({
 					queryKey: ["cloud", "instances"],
 				});
+
+				window.tagEvent("cloud_instance_paused", {
+					version: instance.version,
+					region: instance.region,
+					compute_type: instance.type.category
+				});
 			} catch (err: any) {
 				showError({
 					title: "Failed to pause instance",
@@ -128,6 +134,12 @@ export function StartInstance({
 
 				client.invalidateQueries({
 					queryKey: ["cloud", "instances"],
+				});
+
+				window.tagEvent("cloud_instance_resumed", {
+					version: instance.version,
+					region: instance.region,
+					compute_type: instance.type.category
 				});
 			} catch (err: any) {
 				showError({
@@ -181,6 +193,12 @@ export function StartInstance({
 
 				client.invalidateQueries({
 					queryKey: ["cloud", "instances"],
+				});
+
+				window.tagEvent("cloud_instance_paused", {
+					version: instance.version,
+					region: instance.region,
+					compute_type: instance.type.category
 				});
 			} catch (err: any) {
 				showError({

@@ -71,6 +71,12 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				}),
 			});
 
+			window.tagEvent("cloud_instance_created", {
+				region: details.region,
+				version: details.version,
+				compute_type: details.type,
+			});
+
 			onCreated(result);
 		} catch (err: any) {
 			console.log("Failed to provision database:", [...err.response.headers.entries()]);
