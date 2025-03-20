@@ -1,4 +1,3 @@
-import posthog from "posthog-js";
 import { useLayoutEffect } from "react";
 import { useLocation } from "wouter";
 import { useSearchParams } from "~/hooks/routing";
@@ -12,15 +11,6 @@ export function useAppRouter() {
 	const [path, setPath] = useLocation();
 	const { intent, referrer } = useSearchParams();
 	const resource = useConfigStore((s) => s.activeResource);
-
-	// Pageviews
-	useLayoutEffect(() => {
-		if (path !== "/") {
-			posthog.capture("$pageview", {
-				$current_url: path,
-			});
-		}
-	}, [path]);
 
 	// Restore active resource
 	useLayoutEffect(() => {
