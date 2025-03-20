@@ -3,15 +3,15 @@ import classes from "./style.module.scss";
 
 import { Box, Button, Center, Group, Image, ScrollArea, Stack, Text } from "@mantine/core";
 
+import { useEffect } from "react";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
-import { iconChevronRight, iconOpen } from "~/util/icons";
-import { useCloudStore } from "~/stores/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
-import { useEffect } from "react";
+import { useCloudStore } from "~/stores/cloud";
+import { iconChevronRight, iconOpen } from "~/util/icons";
 
 export function CloudPage() {
 	const authState = useCloudStore((s) => s.authState);

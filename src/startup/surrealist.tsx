@@ -18,11 +18,11 @@ import { createRoot } from "react-dom/client";
 import { invalidateSession } from "~/cloud/api/auth";
 import { clearCachedConnections } from "~/cloud/helpers";
 import { startConfigSync } from "~/util/config";
+import { preloadImages } from "~/util/preloader";
 import { adapter } from "../adapter";
 import { App } from "../components/App";
 import { generateEditorIcons } from "../editor/icons";
 import { promptChangelog } from "../util/changelogs";
-import { preloadImages } from "~/util/preloader";
 
 (async () => {
 	dayjs.extend(relativeTime);
