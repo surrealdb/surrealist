@@ -21,18 +21,38 @@ export function EditorPanel({ handle, details, onChange }: EditorPanelProps) {
 	const fullName = `ml::${details.name}()`;
 
 	return (
-		<ContentPane title="Function Editor" icon={iconFunction}>
-			<Group h="100%" align="stretch" gap="xl">
-				<Stack gap="lg" mt="xs" w={400} style={{ flexShrink: 0 }}>
+		<ContentPane
+			title="Function Editor"
+			icon={iconFunction}
+		>
+			<Group
+				h="100%"
+				align="stretch"
+				gap="xl"
+			>
+				<Stack
+					gap="lg"
+					mt="xs"
+					w={400}
+					style={{ flexShrink: 0 }}
+				>
 					<Paper
 						style={{ alignItems: "center" }}
 						display="flex"
 						p="lg"
 					>
-						<Text fz={15} c="surreal" ff="mono">
+						<Text
+							fz={15}
+							c="surreal"
+							ff="mono"
+						>
 							ml::
 						</Text>
-						<Text fz={15} c="bright" ff="mono">
+						<Text
+							fz={15}
+							c="bright"
+							ff="mono"
+						>
 							{details.name}()
 						</Text>
 						<Spacer />
@@ -43,9 +63,7 @@ export function EditorPanel({ handle, details, onChange }: EditorPanelProps) {
 									aria-label="Copy function name"
 									onClick={copy}
 								>
-									<Icon
-										path={copied ? iconCheck : iconCopy}
-									/>
+									<Icon path={copied ? iconCheck : iconCopy} />
 								</ActionIcon>
 							)}
 						</CopyButton>

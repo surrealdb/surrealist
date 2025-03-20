@@ -1,1 +1,744 @@
-[{"name":"@codemirror/autocomplete","licenseType":"MIT","link":"git+https://github.com/codemirror/autocomplete.git","installedVersion":"6.18.1","author":"Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"},{"name":"@codemirror/commands","licenseType":"MIT","link":"git+https://github.com/codemirror/commands.git","installedVersion":"6.7.1","author":"Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"},{"name":"@codemirror/language","licenseType":"MIT","link":"git+https://github.com/codemirror/language.git","installedVersion":"6.10.3","author":"Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"},{"name":"@codemirror/legacy-modes","licenseType":"MIT","link":"git+https://github.com/codemirror/legacy-modes.git","installedVersion":"6.4.2","author":"Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"},{"name":"@codemirror/lint","licenseType":"MIT","link":"git+https://github.com/codemirror/lint.git","installedVersion":"6.8.2","author":"Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"},{"name":"@codemirror/search","licenseType":"MIT","link":"git+https://github.com/codemirror/search.git","installedVersion":"6.5.6","author":"Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"},{"name":"@codemirror/state","licenseType":"MIT","link":"git+https://github.com/codemirror/state.git","installedVersion":"6.4.1","author":"Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"},{"name":"@codemirror/view","licenseType":"MIT","link":"git+https://github.com/codemirror/view.git","installedVersion":"6.34.1","author":"Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"},{"name":"@dnd-kit/core","licenseType":"MIT","link":"git+https://github.com/clauderic/dnd-kit.git","installedVersion":"6.1.0","author":"Claudéric Demers"},{"name":"@dnd-kit/modifiers","licenseType":"MIT","link":"git+https://github.com/clauderic/dnd-kit.git","installedVersion":"7.0.0","author":"Claudéric Demers"},{"name":"@dnd-kit/sortable","licenseType":"MIT","link":"git+https://github.com/clauderic/dnd-kit.git","installedVersion":"8.0.0","author":"Claudéric Demers"},{"name":"@dnd-kit/utilities","licenseType":"MIT","link":"git+https://github.com/clauderic/dnd-kit.git","installedVersion":"3.2.2","author":"Claudéric Demers"},{"name":"@fig/lezer-bash","licenseType":"MIT","link":"https://github.com/withfig/lezer-bash.git","installedVersion":"1.2.5","author":"Sean Sullivan <sean@fig.io>"},{"name":"@intercom/messenger-js-sdk","licenseType":"MIT","link":"https://registry.npmjs.org/@intercom/messenger-js-sdk/-/messenger-js-sdk-0.0.14.tgz","installedVersion":"0.0.14","author":"intercom"},{"name":"@lezer/common","licenseType":"MIT","link":"git+https://github.com/lezer-parser/common.git","installedVersion":"1.2.3","author":"Marijn Haverbeke <marijn@haverbeke.berlin>"},{"name":"@lezer/go","licenseType":"MIT","link":"git+https://github.com/lezer-parser/go.git","installedVersion":"1.0.0","author":"Marijn Haverbeke <marijn@haverbeke.berlin>"},{"name":"@lezer/highlight","licenseType":"MIT","link":"git+https://github.com/lezer-parser/highlight.git","installedVersion":"1.2.1","author":"Marijn Haverbeke <marijn@haverbeke.berlin>"},{"name":"@lezer/html","licenseType":"MIT","link":"git+https://github.com/lezer-parser/html.git","installedVersion":"1.3.10","author":"Marijn Haverbeke <marijn@haverbeke.berlin>"},{"name":"@lezer/javascript","licenseType":"MIT","link":"git+https://github.com/lezer-parser/javascript.git","installedVersion":"1.4.19","author":"Marijn Haverbeke <marijn@haverbeke.berlin>"},{"name":"@lezer/php","licenseType":"MIT","link":"git+https://github.com/lezer-parser/php.git","installedVersion":"1.0.2","author":"Marijn Haverbeke <marijn@haverbeke.berlin>"},{"name":"@lezer/python","licenseType":"MIT","link":"git+https://github.com/lezer-parser/python.git","installedVersion":"1.1.14","author":"Marijn Haverbeke <marijn@haverbeke.berlin>"},{"name":"@lezer/rust","licenseType":"MIT","link":"git+https://github.com/lezer-parser/rust.git","installedVersion":"1.0.2","author":"Marijn Haverbeke <marijn@haverbeke.berlin>"},{"name":"@mantine/charts","licenseType":"MIT","link":"git+https://github.com/mantinedev/mantine.git","installedVersion":"7.16.3","author":"Vitaly Rtishchev <rtivital@gmail.com>"},{"name":"@mantine/core","licenseType":"MIT","link":"git+https://github.com/mantinedev/mantine.git","installedVersion":"7.16.1","author":"Vitaly Rtishchev <rtivital@gmail.com>"},{"name":"@mantine/hooks","licenseType":"MIT","link":"git+https://github.com/mantinedev/mantine.git","installedVersion":"7.16.1","author":"Vitaly Rtishchev <rtivital@gmail.com>"},{"name":"@mantine/modals","licenseType":"MIT","link":"git+https://github.com/mantinedev/mantine.git","installedVersion":"7.16.1","author":"Vitaly Rtishchev <rtivital@gmail.com>"},{"name":"@mantine/notifications","licenseType":"MIT","link":"git+https://github.com/mantinedev/mantine.git","installedVersion":"7.16.1","author":"Vitaly Rtishchev <rtivital@gmail.com>"},{"name":"@mdi/js","licenseType":"Apache-2.0","link":"git+https://github.com/Templarian/MaterialDesign-JS.git","installedVersion":"7.4.47","author":"Austin Andrews"},{"name":"@replit/codemirror-indentation-markers","licenseType":"MIT","link":"git+https://github.com/replit/codemirror-indentation-markers.git","installedVersion":"6.5.3","author":"Sergei Chestakov me@sergei.com"},{"name":"@sigma/edge-curve","licenseType":"MIT","link":"http://github.com/jacomyal/sigma.js.git","installedVersion":"3.1.0","author":"n/a"},{"name":"@sigma/node-border","licenseType":"MIT","link":"http://github.com/jacomyal/sigma.js.git","installedVersion":"3.0.0","author":"n/a"},{"name":"@surrealdb/codemirror","licenseType":"n/a","link":"https://registry.npmjs.org/@surrealdb/codemirror/-/codemirror-1.0.0-beta.20.tgz","installedVersion":"1.0.0-beta.20","author":"SurrealDB"},{"name":"@surrealdb/lezer","licenseType":"n/a","link":"https://registry.npmjs.org/@surrealdb/lezer/-/lezer-1.0.0-beta.20.tgz","installedVersion":"1.0.0-beta.20","author":"SurrealDB"},{"name":"@surrealdb/ql-wasm","licenseType":"n/a","link":"git+https://github.com/surrealdb/surrealql.wasm.git","installedVersion":"0.2.0-beta.10","author":"Tobie Morgan Hitchcock https://surrealdb.com"},{"name":"@surrealdb/wasm","licenseType":"n/a","link":"git+https://github.com/surrealdb/surrealdb.wasm.git","installedVersion":"1.2.0","author":"Tobie Morgan Hitchcock https://surrealdb.com"},{"name":"@tanstack/react-query","licenseType":"MIT","link":"git+https://github.com/TanStack/query.git","installedVersion":"5.59.16","author":"tannerlinsley"},{"name":"@tauri-apps/api","licenseType":"Apache-2.0 OR MIT","link":"git+https://github.com/tauri-apps/tauri.git","installedVersion":"2.0.0-rc.4","author":"n/a"},{"name":"@tauri-apps/plugin-deep-link","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.1","author":"n/a"},{"name":"@tauri-apps/plugin-dialog","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.1","author":"n/a"},{"name":"@tauri-apps/plugin-fs","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.2","author":"n/a"},{"name":"@tauri-apps/plugin-http","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.2","author":"n/a"},{"name":"@tauri-apps/plugin-log","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.1","author":"n/a"},{"name":"@tauri-apps/plugin-os","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.1","author":"n/a"},{"name":"@tauri-apps/plugin-process","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.1","author":"n/a"},{"name":"@tauri-apps/plugin-shell","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.1","author":"n/a"},{"name":"@tauri-apps/plugin-updater","licenseType":"MIT or APACHE-2.0","link":"git+https://github.com/tauri-apps/plugins-workspace.git","installedVersion":"2.0.0-rc.2","author":"n/a"},{"name":"@theopensource-company/feature-flags","licenseType":"Apache Licence 2.0","link":"git+https://github.com/theopensource-company/feature-flags.git","installedVersion":"0.4.6","author":"n/a"},{"name":"@xyflow/react","licenseType":"MIT","link":"git+https://github.com/xyflow/xyflow.git","installedVersion":"12.3.2","author":"n/a"},{"name":"ansi-to-html","licenseType":"MIT","link":"git+https://github.com/rburns/ansi-to-html.git","installedVersion":"0.7.2","author":"Rob Burns rburns@paiges.net http://rburns.paiges.net/"},{"name":"clsx","licenseType":"MIT","link":"git+https://github.com/lukeed/clsx.git","installedVersion":"2.1.1","author":"Luke Edwards luke.edwards05@gmail.com https://lukeed.com"},{"name":"cm6-graphql","licenseType":"MIT","link":"https://registry.npmjs.org/cm6-graphql/-/cm6-graphql-0.1.1.tgz","installedVersion":"0.1.1","author":"n/a"},{"name":"codemirror","licenseType":"MIT","link":"git+https://github.com/codemirror/CodeMirror.git","installedVersion":"6.0.1","author":"Marijn Haverbeke marijnh@gmail.com http://marijnhaverbeke.nl"},{"name":"compare-versions","licenseType":"MIT","link":"git+https://github.com/omichelsen/compare-versions.git","installedVersion":"6.1.1","author":"Ole Michelsen"},{"name":"date-fns","licenseType":"MIT","link":"git+https://github.com/date-fns/date-fns.git","installedVersion":"4.1.0","author":"n/a"},{"name":"dayjs","licenseType":"MIT","link":"git+https://github.com/iamkun/dayjs.git","installedVersion":"1.11.13","author":"iamkun"},{"name":"elkjs","licenseType":"EPL-2.0","link":"git+https://github.com/kieler/elkjs.git","installedVersion":"0.9.3","author":"Ulf Rüegg uruurumail@gmail.com"},{"name":"escape-string-regexp","licenseType":"MIT","link":"git+https://github.com/sindresorhus/escape-string-regexp.git","installedVersion":"5.0.0","author":"Sindre Sorhus sindresorhus@gmail.com https://sindresorhus.com"},{"name":"fast-deep-equal","licenseType":"MIT","link":"git+https://github.com/epoberezkin/fast-deep-equal.git","installedVersion":"3.1.3","author":"Evgeny Poberezkin"},{"name":"flag-icons","licenseType":"MIT","link":"git+https://github.com/lipis/flag-icons.git","installedVersion":"7.2.3","author":"Panayiotis Lipiridis <lipiridis@gmail.com>"},{"name":"geo-coordinates-parser","licenseType":"MIT","link":"git+https://github.com/ianengelbrecht/geo-coordinates-parser.git","installedVersion":"1.7.4","author":"Ian Engelbrecht"},{"name":"graphology","licenseType":"MIT","link":"git+https://github.com/graphology/graphology.git","installedVersion":"0.25.4","author":"n/a"},{"name":"graphology-layout","licenseType":"MIT","link":"git+https://github.com/graphology/graphology.git","installedVersion":"0.6.1","author":"Guillaume Plique http://github.com/Yomguithereal"},{"name":"graphology-layout-forceatlas2","licenseType":"MIT","link":"git+https://github.com/graphology/graphology.git","installedVersion":"0.10.1","author":"Guillaume Plique http://github.com/Yomguithereal"},{"name":"graphql","licenseType":"MIT","link":"git+https://github.com/graphql/graphql-js.git","installedVersion":"16.9.0","author":"n/a"},{"name":"html-to-image","licenseType":"MIT","link":"git+https://github.com/bubkoo/html-to-image.git","installedVersion":"1.11.11","author":"bubkooo bubkoo.wy@gmail.com"},{"name":"idb","licenseType":"ISC","link":"git://github.com/jakearchibald/idb.git","installedVersion":"8.0.0","author":"Jake Archibald"},{"name":"immer","licenseType":"MIT","link":"git+https://github.com/immerjs/immer.git","installedVersion":"10.1.1","author":"Michel Weststrate <info@michel.codes>"},{"name":"iwanthue","licenseType":"MIT","link":"git+https://github.com/medialab/iwanthue.git","installedVersion":"2.0.0","author":"n/a"},{"name":"klona","licenseType":"MIT","link":"git+https://github.com/lukeed/klona.git","installedVersion":"2.0.6","author":"Luke Edwards luke.edwards05@gmail.com https://lukeed.com"},{"name":"leaflet","licenseType":"BSD-2-Clause","link":"git://github.com/Leaflet/Leaflet.git","installedVersion":"1.9.4","author":"n/a"},{"name":"lottie-web","licenseType":"MIT","link":"git+https://github.com/airbnb/lottie-web.git","installedVersion":"5.12.2","author":"n/a"},{"name":"mantine-contextmenu","licenseType":"MIT","link":"git+https://github.com/icflorescu/mantine-contextmenu.git","installedVersion":"7.15.3","author":"Ionut-Cristian Florescu ionut.florescu@gmail.com https://github.com/icflorescu"},{"name":"marked","licenseType":"MIT","link":"git://github.com/markedjs/marked.git","installedVersion":"15.0.0","author":"Christopher Jeffrey"},{"name":"papaparse","licenseType":"MIT","link":"git+https://github.com/mholt/PapaParse.git","installedVersion":"5.4.1","author":"Matthew Holt https://twitter.com/mholt6"},{"name":"radash","licenseType":"MIT","link":"git+https://github.com/rayepps/radash.git","installedVersion":"11.0.0","author":"rayepps"},{"name":"react","licenseType":"MIT","link":"git+https://github.com/facebook/react.git","installedVersion":"18.3.1","author":"n/a"},{"name":"react-dom","licenseType":"MIT","link":"git+https://github.com/facebook/react.git","installedVersion":"18.3.1","author":"n/a"},{"name":"react-error-boundary","licenseType":"MIT","link":"git+https://github.com/bvaughn/react-error-boundary.git","installedVersion":"4.1.2","author":"Brian Vaughn <brian.david.vaughn@gmail.com>"},{"name":"react-leaflet","licenseType":"Hippocratic-2.1","link":"git+https://github.com/PaulLeCam/react-leaflet.git","installedVersion":"4.2.1","author":"Paul Le Cam <paul@ulem.net>"},{"name":"react-resizable-panels","licenseType":"MIT","link":"git+https://github.com/bvaughn/react-resizable-panels.git","installedVersion":"2.1.4","author":"Brian Vaughn <brian.david.vaughn@gmail.com>"},{"name":"react-reverse-portal","licenseType":"Apache-2.0","link":"git+https://github.com/httptoolkit/react-reverse-portal.git","installedVersion":"2.1.2","author":"Tim Perry <tim@httptoolkit.tech>"},{"name":"rss-parser","licenseType":"MIT","link":"git+https://github.com/bobby-brennan/rss-parser.git","installedVersion":"3.13.0","author":"Bobby Brennan"},{"name":"sigma","licenseType":"MIT","link":"http://github.com/jacomyal/sigma.js.git","installedVersion":"3.0.0","author":"n/a"},{"name":"surrealdb","licenseType":"Apache-2.0","link":"git+https://github.com/surrealdb/surrealdb.js.git","installedVersion":"1.2.0","author":"n/a"},{"name":"use-immer","licenseType":"MIT","link":"git+https://github.com/mweststrate/use-immer.git","installedVersion":"0.9.0","author":"Michel Weststrate"},{"name":"valibot","licenseType":"MIT","link":"git+https://github.com/fabian-hiller/valibot.git","installedVersion":"0.42.1","author":"Fabian Hiller"},{"name":"wouter","licenseType":"Unlicense","link":"git+https://github.com/molefrog/wouter.git","installedVersion":"3.3.5","author":"Alexey Taktarov <molefrog@gmail.com>"},{"name":"zustand","licenseType":"MIT","link":"git+https://github.com/pmndrs/zustand.git","installedVersion":"4.5.5","author":"Paul Henschel"},{"name":"@biomejs/biome","licenseType":"MIT OR Apache-2.0","link":"git+https://github.com/biomejs/biome.git","installedVersion":"1.8.3","author":"Emanuele Stoppa"},{"name":"@tauri-apps/cli","licenseType":"Apache-2.0 OR MIT","link":"git+https://github.com/tauri-apps/tauri.git","installedVersion":"2.0.0-rc.11","author":"n/a"},{"name":"@types/leaflet","licenseType":"MIT","link":"https://github.com/DefinitelyTyped/DefinitelyTyped.git","installedVersion":"1.9.14","author":"n/a"},{"name":"@types/node","licenseType":"MIT","link":"https://github.com/DefinitelyTyped/DefinitelyTyped.git","installedVersion":"20.17.0","author":"n/a"},{"name":"@types/papaparse","licenseType":"MIT","link":"https://github.com/DefinitelyTyped/DefinitelyTyped.git","installedVersion":"5.3.15","author":"n/a"},{"name":"@types/react","licenseType":"MIT","link":"https://github.com/DefinitelyTyped/DefinitelyTyped.git","installedVersion":"18.3.12","author":"n/a"},{"name":"@types/react-dom","licenseType":"MIT","link":"https://github.com/DefinitelyTyped/DefinitelyTyped.git","installedVersion":"18.3.1","author":"n/a"},{"name":"@vitejs/plugin-legacy","licenseType":"MIT","link":"git+https://github.com/vitejs/vite.git","installedVersion":"5.4.2","author":"Evan You"},{"name":"@vitejs/plugin-react","licenseType":"MIT","link":"git+https://github.com/vitejs/vite-plugin-react.git","installedVersion":"4.3.3","author":"Evan You"},{"name":"license-report","licenseType":"MIT","link":"git+https://github.com/kessler/license-report.git","installedVersion":"6.7.0","author":"Yaniv Kessler"},{"name":"sass","licenseType":"MIT","link":"git+https://github.com/sass/dart-sass.git","installedVersion":"1.80.3","author":"Natalie Weizenbaum nweiz@google.com https://github.com/nex3"},{"name":"sharp","licenseType":"Apache-2.0","link":"git://github.com/lovell/sharp.git","installedVersion":"0.33.5","author":"Lovell Fuller <npm@lovell.info>"},{"name":"svgo","licenseType":"MIT","link":"git://github.com/svg/svgo.git","installedVersion":"3.3.2","author":"Kir Belevich kir@belevi.ch https://github.com/deepsweet"},{"name":"typescript","licenseType":"Apache-2.0","link":"git+https://github.com/microsoft/TypeScript.git","installedVersion":"5.6.3","author":"Microsoft Corp."},{"name":"vite","licenseType":"MIT","link":"git+https://github.com/vitejs/vite.git","installedVersion":"5.4.12","author":"Evan You"},{"name":"vite-plugin-compression2","licenseType":"MIT","link":"git+https://github.com/nonzzz/vite-plugin-compression.git","installedVersion":"1.3.0","author":"Kanno"},{"name":"vite-plugin-image-optimizer","licenseType":"MIT","link":"git+https://github.com/FatehAK/vite-plugin-image-optimizer.git","installedVersion":"1.1.8","author":"fatehak"},{"name":"vite-plugin-markdown","licenseType":"MIT","link":"git+https://github.com/hmsk/vite-plugin-markdown.git","installedVersion":"2.2.0","author":"Kengo Hamasaki <k.hamasaki@gmail.com>"}]
+[
+	{
+		"name": "@codemirror/autocomplete",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/autocomplete.git",
+		"installedVersion": "6.18.1",
+		"author": "Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "@codemirror/commands",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/commands.git",
+		"installedVersion": "6.7.1",
+		"author": "Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "@codemirror/language",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/language.git",
+		"installedVersion": "6.10.3",
+		"author": "Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "@codemirror/legacy-modes",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/legacy-modes.git",
+		"installedVersion": "6.4.2",
+		"author": "Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "@codemirror/lint",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/lint.git",
+		"installedVersion": "6.8.2",
+		"author": "Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "@codemirror/search",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/search.git",
+		"installedVersion": "6.5.6",
+		"author": "Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "@codemirror/state",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/state.git",
+		"installedVersion": "6.4.1",
+		"author": "Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "@codemirror/view",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/view.git",
+		"installedVersion": "6.34.1",
+		"author": "Marijn Haverbeke marijn@haverbeke.berlin http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "@dnd-kit/core",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/clauderic/dnd-kit.git",
+		"installedVersion": "6.1.0",
+		"author": "Claudéric Demers"
+	},
+	{
+		"name": "@dnd-kit/modifiers",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/clauderic/dnd-kit.git",
+		"installedVersion": "7.0.0",
+		"author": "Claudéric Demers"
+	},
+	{
+		"name": "@dnd-kit/sortable",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/clauderic/dnd-kit.git",
+		"installedVersion": "8.0.0",
+		"author": "Claudéric Demers"
+	},
+	{
+		"name": "@dnd-kit/utilities",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/clauderic/dnd-kit.git",
+		"installedVersion": "3.2.2",
+		"author": "Claudéric Demers"
+	},
+	{
+		"name": "@fig/lezer-bash",
+		"licenseType": "MIT",
+		"link": "https://github.com/withfig/lezer-bash.git",
+		"installedVersion": "1.2.5",
+		"author": "Sean Sullivan <sean@fig.io>"
+	},
+	{
+		"name": "@intercom/messenger-js-sdk",
+		"licenseType": "MIT",
+		"link": "https://registry.npmjs.org/@intercom/messenger-js-sdk/-/messenger-js-sdk-0.0.14.tgz",
+		"installedVersion": "0.0.14",
+		"author": "intercom"
+	},
+	{
+		"name": "@lezer/common",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lezer-parser/common.git",
+		"installedVersion": "1.2.3",
+		"author": "Marijn Haverbeke <marijn@haverbeke.berlin>"
+	},
+	{
+		"name": "@lezer/go",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lezer-parser/go.git",
+		"installedVersion": "1.0.0",
+		"author": "Marijn Haverbeke <marijn@haverbeke.berlin>"
+	},
+	{
+		"name": "@lezer/highlight",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lezer-parser/highlight.git",
+		"installedVersion": "1.2.1",
+		"author": "Marijn Haverbeke <marijn@haverbeke.berlin>"
+	},
+	{
+		"name": "@lezer/html",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lezer-parser/html.git",
+		"installedVersion": "1.3.10",
+		"author": "Marijn Haverbeke <marijn@haverbeke.berlin>"
+	},
+	{
+		"name": "@lezer/javascript",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lezer-parser/javascript.git",
+		"installedVersion": "1.4.19",
+		"author": "Marijn Haverbeke <marijn@haverbeke.berlin>"
+	},
+	{
+		"name": "@lezer/php",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lezer-parser/php.git",
+		"installedVersion": "1.0.2",
+		"author": "Marijn Haverbeke <marijn@haverbeke.berlin>"
+	},
+	{
+		"name": "@lezer/python",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lezer-parser/python.git",
+		"installedVersion": "1.1.14",
+		"author": "Marijn Haverbeke <marijn@haverbeke.berlin>"
+	},
+	{
+		"name": "@lezer/rust",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lezer-parser/rust.git",
+		"installedVersion": "1.0.2",
+		"author": "Marijn Haverbeke <marijn@haverbeke.berlin>"
+	},
+	{
+		"name": "@mantine/charts",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/mantinedev/mantine.git",
+		"installedVersion": "7.16.3",
+		"author": "Vitaly Rtishchev <rtivital@gmail.com>"
+	},
+	{
+		"name": "@mantine/core",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/mantinedev/mantine.git",
+		"installedVersion": "7.16.1",
+		"author": "Vitaly Rtishchev <rtivital@gmail.com>"
+	},
+	{
+		"name": "@mantine/hooks",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/mantinedev/mantine.git",
+		"installedVersion": "7.16.1",
+		"author": "Vitaly Rtishchev <rtivital@gmail.com>"
+	},
+	{
+		"name": "@mantine/modals",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/mantinedev/mantine.git",
+		"installedVersion": "7.16.1",
+		"author": "Vitaly Rtishchev <rtivital@gmail.com>"
+	},
+	{
+		"name": "@mantine/notifications",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/mantinedev/mantine.git",
+		"installedVersion": "7.16.1",
+		"author": "Vitaly Rtishchev <rtivital@gmail.com>"
+	},
+	{
+		"name": "@mdi/js",
+		"licenseType": "Apache-2.0",
+		"link": "git+https://github.com/Templarian/MaterialDesign-JS.git",
+		"installedVersion": "7.4.47",
+		"author": "Austin Andrews"
+	},
+	{
+		"name": "@replit/codemirror-indentation-markers",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/replit/codemirror-indentation-markers.git",
+		"installedVersion": "6.5.3",
+		"author": "Sergei Chestakov me@sergei.com"
+	},
+	{
+		"name": "@sigma/edge-curve",
+		"licenseType": "MIT",
+		"link": "http://github.com/jacomyal/sigma.js.git",
+		"installedVersion": "3.1.0",
+		"author": "n/a"
+	},
+	{
+		"name": "@sigma/node-border",
+		"licenseType": "MIT",
+		"link": "http://github.com/jacomyal/sigma.js.git",
+		"installedVersion": "3.0.0",
+		"author": "n/a"
+	},
+	{
+		"name": "@surrealdb/codemirror",
+		"licenseType": "n/a",
+		"link": "https://registry.npmjs.org/@surrealdb/codemirror/-/codemirror-1.0.0-beta.20.tgz",
+		"installedVersion": "1.0.0-beta.20",
+		"author": "SurrealDB"
+	},
+	{
+		"name": "@surrealdb/lezer",
+		"licenseType": "n/a",
+		"link": "https://registry.npmjs.org/@surrealdb/lezer/-/lezer-1.0.0-beta.20.tgz",
+		"installedVersion": "1.0.0-beta.20",
+		"author": "SurrealDB"
+	},
+	{
+		"name": "@surrealdb/ql-wasm",
+		"licenseType": "n/a",
+		"link": "git+https://github.com/surrealdb/surrealql.wasm.git",
+		"installedVersion": "0.2.0-beta.10",
+		"author": "Tobie Morgan Hitchcock https://surrealdb.com"
+	},
+	{
+		"name": "@surrealdb/wasm",
+		"licenseType": "n/a",
+		"link": "git+https://github.com/surrealdb/surrealdb.wasm.git",
+		"installedVersion": "1.2.0",
+		"author": "Tobie Morgan Hitchcock https://surrealdb.com"
+	},
+	{
+		"name": "@tanstack/react-query",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/TanStack/query.git",
+		"installedVersion": "5.59.16",
+		"author": "tannerlinsley"
+	},
+	{
+		"name": "@tauri-apps/api",
+		"licenseType": "Apache-2.0 OR MIT",
+		"link": "git+https://github.com/tauri-apps/tauri.git",
+		"installedVersion": "2.0.0-rc.4",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-deep-link",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.1",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-dialog",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.1",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-fs",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.2",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-http",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.2",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-log",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.1",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-os",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.1",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-process",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.1",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-shell",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.1",
+		"author": "n/a"
+	},
+	{
+		"name": "@tauri-apps/plugin-updater",
+		"licenseType": "MIT or APACHE-2.0",
+		"link": "git+https://github.com/tauri-apps/plugins-workspace.git",
+		"installedVersion": "2.0.0-rc.2",
+		"author": "n/a"
+	},
+	{
+		"name": "@theopensource-company/feature-flags",
+		"licenseType": "Apache Licence 2.0",
+		"link": "git+https://github.com/theopensource-company/feature-flags.git",
+		"installedVersion": "0.4.6",
+		"author": "n/a"
+	},
+	{
+		"name": "@xyflow/react",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/xyflow/xyflow.git",
+		"installedVersion": "12.3.2",
+		"author": "n/a"
+	},
+	{
+		"name": "ansi-to-html",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/rburns/ansi-to-html.git",
+		"installedVersion": "0.7.2",
+		"author": "Rob Burns rburns@paiges.net http://rburns.paiges.net/"
+	},
+	{
+		"name": "clsx",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lukeed/clsx.git",
+		"installedVersion": "2.1.1",
+		"author": "Luke Edwards luke.edwards05@gmail.com https://lukeed.com"
+	},
+	{
+		"name": "cm6-graphql",
+		"licenseType": "MIT",
+		"link": "https://registry.npmjs.org/cm6-graphql/-/cm6-graphql-0.1.1.tgz",
+		"installedVersion": "0.1.1",
+		"author": "n/a"
+	},
+	{
+		"name": "codemirror",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/codemirror/CodeMirror.git",
+		"installedVersion": "6.0.1",
+		"author": "Marijn Haverbeke marijnh@gmail.com http://marijnhaverbeke.nl"
+	},
+	{
+		"name": "compare-versions",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/omichelsen/compare-versions.git",
+		"installedVersion": "6.1.1",
+		"author": "Ole Michelsen"
+	},
+	{
+		"name": "date-fns",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/date-fns/date-fns.git",
+		"installedVersion": "4.1.0",
+		"author": "n/a"
+	},
+	{
+		"name": "dayjs",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/iamkun/dayjs.git",
+		"installedVersion": "1.11.13",
+		"author": "iamkun"
+	},
+	{
+		"name": "elkjs",
+		"licenseType": "EPL-2.0",
+		"link": "git+https://github.com/kieler/elkjs.git",
+		"installedVersion": "0.9.3",
+		"author": "Ulf Rüegg uruurumail@gmail.com"
+	},
+	{
+		"name": "escape-string-regexp",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/sindresorhus/escape-string-regexp.git",
+		"installedVersion": "5.0.0",
+		"author": "Sindre Sorhus sindresorhus@gmail.com https://sindresorhus.com"
+	},
+	{
+		"name": "fast-deep-equal",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/epoberezkin/fast-deep-equal.git",
+		"installedVersion": "3.1.3",
+		"author": "Evgeny Poberezkin"
+	},
+	{
+		"name": "flag-icons",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lipis/flag-icons.git",
+		"installedVersion": "7.2.3",
+		"author": "Panayiotis Lipiridis <lipiridis@gmail.com>"
+	},
+	{
+		"name": "geo-coordinates-parser",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/ianengelbrecht/geo-coordinates-parser.git",
+		"installedVersion": "1.7.4",
+		"author": "Ian Engelbrecht"
+	},
+	{
+		"name": "graphology",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/graphology/graphology.git",
+		"installedVersion": "0.25.4",
+		"author": "n/a"
+	},
+	{
+		"name": "graphology-layout",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/graphology/graphology.git",
+		"installedVersion": "0.6.1",
+		"author": "Guillaume Plique http://github.com/Yomguithereal"
+	},
+	{
+		"name": "graphology-layout-forceatlas2",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/graphology/graphology.git",
+		"installedVersion": "0.10.1",
+		"author": "Guillaume Plique http://github.com/Yomguithereal"
+	},
+	{
+		"name": "graphql",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/graphql/graphql-js.git",
+		"installedVersion": "16.9.0",
+		"author": "n/a"
+	},
+	{
+		"name": "html-to-image",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/bubkoo/html-to-image.git",
+		"installedVersion": "1.11.11",
+		"author": "bubkooo bubkoo.wy@gmail.com"
+	},
+	{
+		"name": "idb",
+		"licenseType": "ISC",
+		"link": "git://github.com/jakearchibald/idb.git",
+		"installedVersion": "8.0.0",
+		"author": "Jake Archibald"
+	},
+	{
+		"name": "immer",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/immerjs/immer.git",
+		"installedVersion": "10.1.1",
+		"author": "Michel Weststrate <info@michel.codes>"
+	},
+	{
+		"name": "iwanthue",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/medialab/iwanthue.git",
+		"installedVersion": "2.0.0",
+		"author": "n/a"
+	},
+	{
+		"name": "klona",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/lukeed/klona.git",
+		"installedVersion": "2.0.6",
+		"author": "Luke Edwards luke.edwards05@gmail.com https://lukeed.com"
+	},
+	{
+		"name": "leaflet",
+		"licenseType": "BSD-2-Clause",
+		"link": "git://github.com/Leaflet/Leaflet.git",
+		"installedVersion": "1.9.4",
+		"author": "n/a"
+	},
+	{
+		"name": "lottie-web",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/airbnb/lottie-web.git",
+		"installedVersion": "5.12.2",
+		"author": "n/a"
+	},
+	{
+		"name": "mantine-contextmenu",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/icflorescu/mantine-contextmenu.git",
+		"installedVersion": "7.15.3",
+		"author": "Ionut-Cristian Florescu ionut.florescu@gmail.com https://github.com/icflorescu"
+	},
+	{
+		"name": "marked",
+		"licenseType": "MIT",
+		"link": "git://github.com/markedjs/marked.git",
+		"installedVersion": "15.0.0",
+		"author": "Christopher Jeffrey"
+	},
+	{
+		"name": "papaparse",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/mholt/PapaParse.git",
+		"installedVersion": "5.4.1",
+		"author": "Matthew Holt https://twitter.com/mholt6"
+	},
+	{
+		"name": "radash",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/rayepps/radash.git",
+		"installedVersion": "11.0.0",
+		"author": "rayepps"
+	},
+	{
+		"name": "react",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/facebook/react.git",
+		"installedVersion": "18.3.1",
+		"author": "n/a"
+	},
+	{
+		"name": "react-dom",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/facebook/react.git",
+		"installedVersion": "18.3.1",
+		"author": "n/a"
+	},
+	{
+		"name": "react-error-boundary",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/bvaughn/react-error-boundary.git",
+		"installedVersion": "4.1.2",
+		"author": "Brian Vaughn <brian.david.vaughn@gmail.com>"
+	},
+	{
+		"name": "react-leaflet",
+		"licenseType": "Hippocratic-2.1",
+		"link": "git+https://github.com/PaulLeCam/react-leaflet.git",
+		"installedVersion": "4.2.1",
+		"author": "Paul Le Cam <paul@ulem.net>"
+	},
+	{
+		"name": "react-resizable-panels",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/bvaughn/react-resizable-panels.git",
+		"installedVersion": "2.1.4",
+		"author": "Brian Vaughn <brian.david.vaughn@gmail.com>"
+	},
+	{
+		"name": "react-reverse-portal",
+		"licenseType": "Apache-2.0",
+		"link": "git+https://github.com/httptoolkit/react-reverse-portal.git",
+		"installedVersion": "2.1.2",
+		"author": "Tim Perry <tim@httptoolkit.tech>"
+	},
+	{
+		"name": "rss-parser",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/bobby-brennan/rss-parser.git",
+		"installedVersion": "3.13.0",
+		"author": "Bobby Brennan"
+	},
+	{
+		"name": "sigma",
+		"licenseType": "MIT",
+		"link": "http://github.com/jacomyal/sigma.js.git",
+		"installedVersion": "3.0.0",
+		"author": "n/a"
+	},
+	{
+		"name": "surrealdb",
+		"licenseType": "Apache-2.0",
+		"link": "git+https://github.com/surrealdb/surrealdb.js.git",
+		"installedVersion": "1.2.0",
+		"author": "n/a"
+	},
+	{
+		"name": "use-immer",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/mweststrate/use-immer.git",
+		"installedVersion": "0.9.0",
+		"author": "Michel Weststrate"
+	},
+	{
+		"name": "valibot",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/fabian-hiller/valibot.git",
+		"installedVersion": "0.42.1",
+		"author": "Fabian Hiller"
+	},
+	{
+		"name": "wouter",
+		"licenseType": "Unlicense",
+		"link": "git+https://github.com/molefrog/wouter.git",
+		"installedVersion": "3.3.5",
+		"author": "Alexey Taktarov <molefrog@gmail.com>"
+	},
+	{
+		"name": "zustand",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/pmndrs/zustand.git",
+		"installedVersion": "4.5.5",
+		"author": "Paul Henschel"
+	},
+	{
+		"name": "@biomejs/biome",
+		"licenseType": "MIT OR Apache-2.0",
+		"link": "git+https://github.com/biomejs/biome.git",
+		"installedVersion": "1.8.3",
+		"author": "Emanuele Stoppa"
+	},
+	{
+		"name": "@tauri-apps/cli",
+		"licenseType": "Apache-2.0 OR MIT",
+		"link": "git+https://github.com/tauri-apps/tauri.git",
+		"installedVersion": "2.0.0-rc.11",
+		"author": "n/a"
+	},
+	{
+		"name": "@types/leaflet",
+		"licenseType": "MIT",
+		"link": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+		"installedVersion": "1.9.14",
+		"author": "n/a"
+	},
+	{
+		"name": "@types/node",
+		"licenseType": "MIT",
+		"link": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+		"installedVersion": "20.17.0",
+		"author": "n/a"
+	},
+	{
+		"name": "@types/papaparse",
+		"licenseType": "MIT",
+		"link": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+		"installedVersion": "5.3.15",
+		"author": "n/a"
+	},
+	{
+		"name": "@types/react",
+		"licenseType": "MIT",
+		"link": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+		"installedVersion": "18.3.12",
+		"author": "n/a"
+	},
+	{
+		"name": "@types/react-dom",
+		"licenseType": "MIT",
+		"link": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+		"installedVersion": "18.3.1",
+		"author": "n/a"
+	},
+	{
+		"name": "@vitejs/plugin-legacy",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/vitejs/vite.git",
+		"installedVersion": "5.4.2",
+		"author": "Evan You"
+	},
+	{
+		"name": "@vitejs/plugin-react",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/vitejs/vite-plugin-react.git",
+		"installedVersion": "4.3.3",
+		"author": "Evan You"
+	},
+	{
+		"name": "license-report",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/kessler/license-report.git",
+		"installedVersion": "6.7.0",
+		"author": "Yaniv Kessler"
+	},
+	{
+		"name": "sass",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/sass/dart-sass.git",
+		"installedVersion": "1.80.3",
+		"author": "Natalie Weizenbaum nweiz@google.com https://github.com/nex3"
+	},
+	{
+		"name": "sharp",
+		"licenseType": "Apache-2.0",
+		"link": "git://github.com/lovell/sharp.git",
+		"installedVersion": "0.33.5",
+		"author": "Lovell Fuller <npm@lovell.info>"
+	},
+	{
+		"name": "svgo",
+		"licenseType": "MIT",
+		"link": "git://github.com/svg/svgo.git",
+		"installedVersion": "3.3.2",
+		"author": "Kir Belevich kir@belevi.ch https://github.com/deepsweet"
+	},
+	{
+		"name": "typescript",
+		"licenseType": "Apache-2.0",
+		"link": "git+https://github.com/microsoft/TypeScript.git",
+		"installedVersion": "5.6.3",
+		"author": "Microsoft Corp."
+	},
+	{
+		"name": "vite",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/vitejs/vite.git",
+		"installedVersion": "5.4.12",
+		"author": "Evan You"
+	},
+	{
+		"name": "vite-plugin-compression2",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/nonzzz/vite-plugin-compression.git",
+		"installedVersion": "1.3.0",
+		"author": "Kanno"
+	},
+	{
+		"name": "vite-plugin-image-optimizer",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/FatehAK/vite-plugin-image-optimizer.git",
+		"installedVersion": "1.1.8",
+		"author": "fatehak"
+	},
+	{
+		"name": "vite-plugin-markdown",
+		"licenseType": "MIT",
+		"link": "git+https://github.com/hmsk/vite-plugin-markdown.git",
+		"installedVersion": "2.2.0",
+		"author": "Kengo Hamasaki <k.hamasaki@gmail.com>"
+	}
+]

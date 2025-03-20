@@ -11,11 +11,7 @@ const findStatement = (stack: any): [number, number] | null => {
 	for (let cur = stack; cur; cur = cur.next) {
 		const { node } = cur;
 
-		if (
-			node.type.is("Statement") ||
-			node.type.is("BinaryExpression") ||
-			node.type.is("Path")
-		) {
+		if (node.type.is("Statement") || node.type.is("BinaryExpression") || node.type.is("Path")) {
 			last = cur;
 		}
 	}
@@ -26,10 +22,7 @@ const findStatement = (stack: any): [number, number] | null => {
 /**
  * Returns the range of the query the cursor is currently in
  */
-export const getQueryRange = (
-	view: EditorView,
-	head?: number,
-): [number, number] | null => {
+export const getQueryRange = (view: EditorView, head?: number): [number, number] | null => {
 	const tree = syntaxTree(view.state);
 	const cursor = head ?? view.state.selection.main.head;
 	const isTerm = view.state.sliceDoc(cursor - 1, cursor) === ";";
@@ -58,9 +51,7 @@ export const getQueryRange = (
  *
  * @param onValidate Callback to run when the query is validated
  */
-export const surqlLinting = (
-	onValidate?: (status: string) => void,
-): Extension =>
+export const surqlLinting = (onValidate?: (status: string) => void): Extension =>
 	linter(
 		(view) => {
 			const isEnabled = getSetting("behavior", "queryErrorChecker");
@@ -71,17 +62,14 @@ export const surqlLinting = (
 			}
 
 			const message = validateQuery(content) || "";
-			const match = message.match(
-				/^Parse error: (.+)?\s+-->\s+\[(\d+):(\d+)\]/i,
-			);
+			const match = message.match(/^Parse error: (.+)?\s+-->\s+\[(\d+):(\d+)\]/i);
 
 			if (match) {
 				const reason = match[1].trim();
 				const lineNumber = Number.parseInt(match[2]);
 				const column = Number.parseInt(match[3]);
 
-				const position =
-					view.state.doc.line(lineNumber).from + column - 1;
+				const position = view.state.doc.line(lineNumber).from + column - 1;
 				const word = view.state.wordAt(position);
 
 				onValidate?.(reason);

@@ -83,11 +83,7 @@ export const inputBase = (): Extension => [
 	indentOnInput(),
 	bracketMatching(),
 	closeBrackets(),
-	keymap.of([
-		...closeBracketsKeymap,
-		...customHistoryKeymap,
-		...defaultKeymap,
-	]),
+	keymap.of([...closeBracketsKeymap, ...customHistoryKeymap, ...defaultKeymap]),
 	indentUnit.of("    "),
 	EditorView.lineWrapping,
 ];

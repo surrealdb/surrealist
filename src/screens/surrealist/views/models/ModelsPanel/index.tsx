@@ -1,10 +1,4 @@
-import {
-	Badge,
-	Group,
-	ScrollArea,
-	Stack,
-	TextInput,
-} from "@mantine/core";
+import { Badge, Group, ScrollArea, Stack, TextInput } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
@@ -15,12 +9,7 @@ import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import type { SchemaModel } from "~/types";
-import {
-	iconDownload,
-	iconModuleML,
-	iconSearch,
-	iconUpload,
-} from "~/util/icons";
+import { iconDownload, iconModuleML, iconSearch, iconUpload } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface ModelsPanelProps {
@@ -31,13 +20,7 @@ export interface ModelsPanelProps {
 	onUpload: () => void;
 }
 
-export function ModelsPanel({
-	active,
-	models,
-	onSelect,
-	onDownload,
-	onUpload,
-}: ModelsPanelProps) {
+export function ModelsPanel({ active, models, onSelect, onDownload, onUpload }: ModelsPanelProps) {
 	const isLight = useIsLight();
 	const isConnected = useIsConnected();
 	const { showContextMenu } = useContextMenu();
@@ -83,7 +66,10 @@ export function ModelsPanel({
 					viewport: classes.scroller,
 				}}
 			>
-				<Stack gap="xs" pb="md">
+				<Stack
+					gap="xs"
+					pb="md"
+				>
 					{models.length > 0 ? (
 						<TextInput
 							placeholder="Search models..."
@@ -95,7 +81,11 @@ export function ModelsPanel({
 							autoFocus
 						/>
 					) : (
-						<Text c="slate" ta="center" mt="lg">
+						<Text
+							c="slate"
+							ta="center"
+							mt="lg"
+						>
 							No models found
 						</Text>
 					)}
@@ -115,7 +105,10 @@ export function ModelsPanel({
 								},
 							])}
 						>
-							<Stack gap={0} align="start">
+							<Stack
+								gap={0}
+								align="start"
+							>
 								<Text
 									style={{
 										textOverflow: "ellipsis",
@@ -124,7 +117,10 @@ export function ModelsPanel({
 								>
 									{m.name}
 								</Text>
-								<Text opacity={0.6} size="sm">
+								<Text
+									opacity={0.6}
+									size="sm"
+								>
 									{m.version}
 								</Text>
 							</Stack>

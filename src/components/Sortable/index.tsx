@@ -50,7 +50,10 @@ export function Sortable<T extends SortableItem>(props: SortableProps<T>) {
 			onDragEnd={handleDragEnd}
 			modifiers={[restrictToWindowEdges, ...(modifier ? [modifier] : [])]}
 		>
-			<SortableContext items={props.items} strategy={strategy}>
+			<SortableContext
+				items={props.items}
+				strategy={strategy}
+			>
 				{props.items.map((item) => (
 					<SortableChild
 						key={item.id}

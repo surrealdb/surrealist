@@ -37,14 +37,18 @@ function getNavigationElement<T extends Identified>(cmd: T) {
 
 /**
  * Allow keyboard navigation between items in a list.
- * 
+ *
  * @param items The items to navigate between
  * @param onSubmit Optional callback to call when an item is activated
  * @returns onKeyDown handler and a ref to the search input
  */
-export function useKeyNavigation<T extends Identified>(items: T[], onSubmit?: (item: T) => void, initial?: string) {
+export function useKeyNavigation<T extends Identified>(
+	items: T[],
+	onSubmit?: (item: T) => void,
+	initial?: string,
+) {
 	const [active, setActive] = useState<string>(initial ?? "");
-	
+
 	const handleKeyDown = useStable((e: React.KeyboardEvent) => {
 		if (!active) return;
 
@@ -80,10 +84,12 @@ export function useKeyNavigation<T extends Identified>(items: T[], onSubmit?: (i
 
 		setActive(nextItem);
 
-		const selected = document.querySelector<HTMLElement>(`[data-navigation-item-id="${nextItem}"]`) as HTMLElement | null;
+		const selected = document.querySelector<HTMLElement>(
+			`[data-navigation-item-id="${nextItem}"]`,
+		) as HTMLElement | null;
 
 		selected?.scrollIntoView({
-			block: "nearest"
+			block: "nearest",
 		});
 	});
 

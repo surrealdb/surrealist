@@ -17,10 +17,7 @@ const ACTIONS = {
  * @param category The category of the setting.
  * @param key The key of the setting.
  */
-export function useSetting<C extends Category, K extends keyof Settings<C>>(
-	category: C,
-	key: K,
-) {
+export function useSetting<C extends Category, K extends keyof Settings<C>>(category: C, key: K) {
 	return [
 		useConfigStore((state) => state.settings[category][key]),
 		useStable((value: Settings<C>[typeof key]) => {

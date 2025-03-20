@@ -106,7 +106,7 @@ export function StartInstance({
 				window.tagEvent("cloud_instance_paused", {
 					version: instance.version,
 					region: instance.region,
-					compute_type: instance.type.category
+					compute_type: instance.type.category,
 				});
 			} catch (err: any) {
 				showError({
@@ -137,7 +137,7 @@ export function StartInstance({
 				window.tagEvent("cloud_instance_resumed", {
 					version: instance.version,
 					region: instance.region,
-					compute_type: instance.type.category
+					compute_type: instance.type.category,
 				});
 			} catch (err: any) {
 				showError({
@@ -196,7 +196,7 @@ export function StartInstance({
 				window.tagEvent("cloud_instance_deleted", {
 					version: instance.version,
 					region: instance.region,
-					compute_type: instance.type.category
+					compute_type: instance.type.category,
 				});
 			} catch (err: any) {
 				showError({

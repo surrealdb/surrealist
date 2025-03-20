@@ -26,7 +26,7 @@ export function DocsTablesSelectAllFields({ language }: TopicProps) {
 		db.select('${table.schema.name}');
 		`,
 			go: `
-		db.Select[[]${(table.schema.name)}, models.Table](db, models.Table("${fieldName}"))
+		db.Select[[]${table.schema.name}, models.Table](db, models.Table("${fieldName}"))
 		`,
 			csharp: `
 		await db.Select<${pascal(table.schema.name)}>("${table.schema.name}");

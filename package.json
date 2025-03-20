@@ -4,9 +4,7 @@
 	"version": "3.2.4",
 	"surreal": "2.0.0",
 	"type": "module",
-	"authors": [
-		"SurrealDB"
-	],
+	"authors": ["SurrealDB"],
 	"scripts": {
 		"build": "tsc && vite build",
 		"dev": "vite",
@@ -135,11 +133,6 @@
 		"patchedDependencies": {
 			"graphql@16.9.0": "patches/graphql@16.9.0.patch"
 		},
-		"onlyBuiltDependencies": [
-			"@biomejs/biome",
-			"core-js",
-			"esbuild",
-			"sharp"
-		]
+		"onlyBuiltDependencies": ["@biomejs/biome", "core-js", "esbuild", "sharp"]
 	}
 }

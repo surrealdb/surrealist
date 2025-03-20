@@ -13,8 +13,5 @@ export function useOnboarding(onboarding: string) {
 		completeOnboarding(onboarding);
 	});
 
-	return [
-		useConfigStore((s) => s.onboarding.includes(onboarding)),
-		complete,
-	] as const;
+	return [useConfigStore((s) => s.onboarding.includes(onboarding)), complete] as const;
 }

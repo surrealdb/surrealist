@@ -255,7 +255,9 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 							mr={-6}
 						/>
 						<Text lineClamp={1}>
-							{recordQuery.isLoading ? "loading..." : `${recordCount.toLocaleString() || "no"} rows`}
+							{recordQuery.isLoading
+								? "loading..."
+								: `${recordCount.toLocaleString() || "no"} rows`}
 						</Text>
 					</Group>
 				)

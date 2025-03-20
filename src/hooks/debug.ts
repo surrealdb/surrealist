@@ -16,12 +16,9 @@ export function useVersionCopy() {
 				.join(", "),
 		};
 
-		const debugText = Object.entries(debugData).reduce(
-			(acc, [key, value]) => {
-				return `${acc}${key}: ${value}\n`;
-			},
-			"",
-		);
+		const debugText = Object.entries(debugData).reduce((acc, [key, value]) => {
+			return `${acc}${key}: ${value}\n`;
+		}, "");
 
 		clipboard.copy(debugText);
 	});

@@ -91,7 +91,7 @@ export function DocsAuthSignUp({ language }: TopicProps) {
 			panic(err)
 		}
 		`,
-		csharp: `
+			csharp: `
 			// With Record Access
 			var authParams = new AuthParams
 			{

@@ -17,9 +17,7 @@ export function ChangefeedElement({ data, setData }: ElementProps) {
 							setData((draft) => {
 								draft.schema.changefeed = {
 									expiry: value.currentTarget.value,
-									store_original:
-										data.schema.changefeed
-											?.store_original || false,
+									store_original: data.schema.changefeed?.store_original || false,
 								};
 							})
 						}

@@ -17,19 +17,12 @@ export function SortableChild<T extends SortableItem>({
 	disabled,
 	options,
 }: SortableChildProps<T>) {
-	const {
-		index,
-		isDragging,
-		attributes,
-		listeners,
-		setNodeRef,
-		transform,
-		transition,
-	} = useSortable({
-		id: item.id,
-		disabled,
-		...options,
-	});
+	const { index, isDragging, attributes, listeners, setNodeRef, transform, transition } =
+		useSortable({
+			id: item.id,
+			disabled,
+			...options,
+		});
 
 	const style: React.CSSProperties = {
 		cursor: "grab",
@@ -49,7 +42,10 @@ export function SortableChild<T extends SortableItem>({
 	};
 
 	return (
-		<div ref={setNodeRef} style={childStyle}>
+		<div
+			ref={setNodeRef}
+			style={childStyle}
+		>
 			{children(drag)}
 		</div>
 	);
