@@ -41,8 +41,7 @@ export function useThemePreference(): ColorScheme {
 
 	useLayoutEffect(() => {
 		const query = window.matchMedia("(prefers-color-scheme: light)");
-		const compute = ({ matches }: Matchable) =>
-			setSystemScheme(matches ? "light" : "dark");
+		const compute = ({ matches }: Matchable) => setSystemScheme(matches ? "light" : "dark");
 
 		compute(query);
 
@@ -51,9 +50,7 @@ export function useThemePreference(): ColorScheme {
 
 	// Compute the final color scheme
 	useLayoutEffect(() => {
-		setColorScheme(
-			preferredScheme === "auto" ? systemScheme : preferredScheme,
-		);
+		setColorScheme(preferredScheme === "auto" ? systemScheme : preferredScheme);
 	}, [preferredScheme, setColorScheme, systemScheme]);
 
 	return actualScheme;

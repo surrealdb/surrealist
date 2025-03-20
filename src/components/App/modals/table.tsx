@@ -56,6 +56,8 @@ export function TableCreatorModal() {
 				table: tableName,
 			});
 		}
+
+		window.tagEvent("table_created");
 	});
 
 	useLayoutEffect(() => {

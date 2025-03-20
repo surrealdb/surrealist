@@ -14,9 +14,7 @@ export interface HistoryHandle<T> {
 	clear: () => void;
 }
 
-export function useHistory<T = string>(
-	options: HistoryOptions<T>,
-): HistoryHandle<T> {
+export function useHistory<T = string>(options: HistoryOptions<T>): HistoryHandle<T> {
 	const { history, setHistory } = options;
 
 	const current = history.at(-1);

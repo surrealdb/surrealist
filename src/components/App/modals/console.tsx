@@ -1,12 +1,4 @@
-import {
-	Badge,
-	Center,
-	Drawer,
-	Group,
-	Paper,
-	ScrollArea,
-	Text
-} from "@mantine/core";
+import { Badge, Center, Drawer, Group, Paper, ScrollArea, Text } from "@mantine/core";
 import AnsiToHtml from "ansi-to-html";
 import { useEffect, useMemo, useRef } from "react";
 import { ActionButton } from "~/components/ActionButton";

@@ -5,10 +5,7 @@ import {
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
-import {
-	restrictToHorizontalAxis,
-	restrictToVerticalAxis,
-} from "@dnd-kit/modifiers";
+import { restrictToHorizontalAxis, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
 	horizontalListSortingStrategy,
 	rectSortingStrategy,
@@ -33,8 +30,6 @@ export function useSortableSensors(constraint?: PointerActivationConstraint) {
 	);
 }
 
-export function useSortableDirection(
-	direction?: "vertical" | "horizontal" | "grid",
-) {
+export function useSortableDirection(direction?: "vertical" | "horizontal" | "grid") {
 	return DIRECTIONS[direction || "vertical"];
 }

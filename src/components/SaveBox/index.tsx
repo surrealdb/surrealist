@@ -1,10 +1,4 @@
-import {
-	Button,
-	Group,
-	type GroupProps,
-	Notification,
-	Portal,
-} from "@mantine/core";
+import { Button, Group, type GroupProps, Notification, Portal } from "@mantine/core";
 import { clsx } from "clsx";
 import { capitalize } from "radash";
 import type { ReactNode } from "react";
@@ -60,7 +54,12 @@ export function SaveBox({
 
 	if (inline) {
 		return (
-			<Group gap={10} align="center" justify="apart" {...inlineProps}>
+			<Group
+				gap={10}
+				align="center"
+				justify="apart"
+				{...inlineProps}
+			>
 				{revertButton}
 				{saveButton}
 			</Group>
@@ -76,7 +75,13 @@ export function SaveBox({
 					classes[`savebox${capitalize(position ?? "center")}`],
 					!handle.isChanged && classes.saveboxHidden,
 				)}
-				icon={<Icon path={iconHelp} size="lg" mr={-8} />}
+				icon={
+					<Icon
+						path={iconHelp}
+						size="lg"
+						mr={-8}
+					/>
+				}
 				styles={{
 					icon: {
 						backgroundColor: "transparent !important",
@@ -87,7 +92,10 @@ export function SaveBox({
 					},
 				}}
 			>
-				<Group gap={10} align="center">
+				<Group
+					gap={10}
+					align="center"
+				>
 					There are unsaved changes
 					<Spacer />
 					{revertButton}

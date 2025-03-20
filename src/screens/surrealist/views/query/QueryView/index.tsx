@@ -38,7 +38,6 @@ import type { SavedQuery } from "~/types";
 import { SetQueryEvent } from "~/util/global-events";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
-import { captureMetric } from "~/util/metrics";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
@@ -110,7 +109,7 @@ export function QueryView() {
 		});
 
 		isSavingHandle.close();
-		captureMetric("query_save");
+		window.tagEvent("query_save");
 	});
 
 	const showVariables = !!active?.showVariables;

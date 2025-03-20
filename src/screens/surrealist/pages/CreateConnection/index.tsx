@@ -49,6 +49,11 @@ export function CreateConnectionPage() {
 	const handleCreate = useStable(() => {
 		addConnection(connection);
 		navigateConnection(connection.id);
+
+		window.tagEvent("connection_created", {
+			protocol: connection.authentication.protocol.toString(),
+			is_local: connection.authentication.hostname.includes("localhost"),
+		});
 	});
 
 	const applyTemplate = (template: Template) => {

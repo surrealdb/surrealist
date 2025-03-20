@@ -17,7 +17,7 @@ function handler(event) {
 	let path = request.uri.toLowerCase();
 
 	if (host !== 'surrealist.app') {
-		return redirect(path)
+		return redirect(path);
 	}
 
 	switch (true) {

@@ -3,6 +3,7 @@ import { adapter } from "~/adapter";
 import type { MiniAdapter } from "~/adapter/mini";
 import { Scaffold } from "~/components/Scaffold";
 import { useIsLight } from "~/hooks/theme";
+import { GoogleAnalyticsProvider } from "~/providers/GoogleAnalytics";
 import MiniQueryView from "../surrealist/views/query/MiniView";
 
 export function MiniRunScreen() {

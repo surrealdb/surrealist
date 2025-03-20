@@ -17,26 +17,41 @@ export function GraphWarningLine({ warning }: GraphWarningProps) {
 		warning.type === "edge" ? (
 			<>
 				Edge{" "}
-				<Text c="bright" span>
+				<Text
+					c="bright"
+					span
+				>
 					{warning.table}
 				</Text>{" "}
 				references invalid {warning.direction} table{" "}
-				<Text c="bright" span>
+				<Text
+					c="bright"
+					span
+				>
 					{warning.foreign}
 				</Text>
 			</>
 		) : (
 			<>
 				Field "
-				<Text c="bright" span>
+				<Text
+					c="bright"
+					span
+				>
 					{warning.field}
 				</Text>
 				" on{" "}
-				<Text c="bright" span>
+				<Text
+					c="bright"
+					span
+				>
 					{warning.table}
 				</Text>{" "}
 				references invalid table{" "}
-				<Text c="bright" span>
+				<Text
+					c="bright"
+					span
+				>
 					{warning.foreign}
 				</Text>
 			</>

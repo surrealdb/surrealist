@@ -9,6 +9,7 @@ import { useIsLight, useThemePreference } from "~/hooks/theme";
 import { CommandsProvider } from "~/providers/Commands";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
+import { GoogleAnalyticsProvider } from "~/providers/GoogleAnalytics";
 import { MANTINE_THEME } from "~/util/mantine";
 import { ScaffoldErrorHandler } from "./error";
 
@@ -19,33 +20,35 @@ export function Scaffold({ children }: PropsWithChildren) {
 	const colorScheme = useThemePreference();
 
 	return (
-		<FeatureFlagsProvider>
-			<QueryClientProvider client={QUERY_CLIENT}>
-				<MantineProvider
-					withCssVariables
-					theme={MANTINE_THEME}
-					forceColorScheme={colorScheme}
-				>
-					<Notifications containerWidth={400} />
-
-					<ErrorBoundary
-						FallbackComponent={ScaffoldErrorHandler}
-						onReset={() => location.reload()}
+		<GoogleAnalyticsProvider>
+			<FeatureFlagsProvider>
+				<QueryClientProvider client={QUERY_CLIENT}>
+					<MantineProvider
+						withCssVariables
+						theme={MANTINE_THEME}
+						forceColorScheme={colorScheme}
 					>
-						<ContextMenuProvider
-							borderRadius="md"
-							shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
-							submenuDelay={250}
+						<Notifications containerWidth={400} />
+
+						<ErrorBoundary
+							FallbackComponent={ScaffoldErrorHandler}
+							onReset={() => location.reload()}
 						>
-							<ConfirmationProvider>
-								<ModalsProvider>
-									<CommandsProvider>{children}</CommandsProvider>
-								</ModalsProvider>
-							</ConfirmationProvider>
-						</ContextMenuProvider>
-					</ErrorBoundary>
-				</MantineProvider>
-			</QueryClientProvider>
-		</FeatureFlagsProvider>
+							<ContextMenuProvider
+								borderRadius="md"
+								shadow={isLight ? "xs" : "0 6px 12px 2px rgba(0, 0, 0, 0.25)"}
+								submenuDelay={250}
+							>
+								<ConfirmationProvider>
+									<ModalsProvider>
+										<CommandsProvider>{children}</CommandsProvider>
+									</ModalsProvider>
+								</ConfirmationProvider>
+							</ContextMenuProvider>
+						</ErrorBoundary>
+					</MantineProvider>
+				</QueryClientProvider>
+			</FeatureFlagsProvider>
+		</GoogleAnalyticsProvider>
 	);
 }

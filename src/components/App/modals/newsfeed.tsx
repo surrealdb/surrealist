@@ -23,7 +23,7 @@ import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -31,7 +31,6 @@ import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { captureMetric } from "~/util/metrics";
 
 interface NewsItem {
 	id: string;
@@ -52,12 +51,16 @@ export function NewsFeedDrawer() {
 
 	const [isReading, readingHandle] = useDisclosure();
 	const [reading, setReading] = useState<NewsItem | null>(null);
+	const [pendingEvent, setPendingEvent] = useState<object>();
 
 	const readArticle = (item: NewsItem) => {
 		setReading(item);
 		readingHandle.open();
-		captureMetric("newsfeed_read", {
-			article: item.id,
+
+		setPendingEvent({
+			blog_id: item.id,
+			blog_name: item.title,
+			open_time: new Date().toISOString(),
 		});
 	};
 
@@ -65,13 +68,12 @@ export function NewsFeedDrawer() {
 		openHandle.close();
 		readingHandle.close();
 		updateViewedNews();
-	});
 
-	useEffect(() => {
-		if (isOpen) {
-			captureMetric("newsfeed_open");
-		}
-	}, [isOpen]);
+		window.tagEvent("blog_opened", {
+			...pendingEvent,
+			close_time: new Date().toISOString(),
+		});
+	});
 
 	useIntent("open-news", ({ id }) => {
 		openHandle.open();

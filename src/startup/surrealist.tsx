@@ -14,7 +14,6 @@ import "../util/markdown";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import posthog from "posthog-js";
 import { createRoot } from "react-dom/client";
 import { invalidateSession } from "~/cloud/api/auth";
 import { clearCachedConnections } from "~/cloud/helpers";
@@ -23,19 +22,9 @@ import { adapter } from "../adapter";
 import { App } from "../components/App";
 import { generateEditorIcons } from "../editor/icons";
 import { promptChangelog } from "../util/changelogs";
-import { isProduction } from "../util/environment";
 
 (async () => {
 	dayjs.extend(relativeTime);
-
-	// Initialize posthog
-	if (isProduction) {
-		posthog.init(import.meta.env.POSTHOG_KEY, {
-			api_host: import.meta.env.POSTHOG_URL,
-			autocapture: false,
-			capture_pageview: false,
-		});
-	}
 
 	// Synchronize the config to the store
 	await startConfigSync();

@@ -49,6 +49,11 @@ export function StartConnection({
 			lastDatabase: "",
 			id: newId(),
 		});
+
+		window.tagEvent("connection_duplicated", {
+			protocol: connection.authentication.protocol.toString(),
+			is_local: connection.authentication.hostname.includes("localhost"),
+		});
 	});
 
 	const handleDelete = useConfirmation({
@@ -57,6 +62,11 @@ export function StartConnection({
 		skippable: true,
 		onConfirm() {
 			removeConnection(connection.id);
+
+			window.tagEvent("connection_deleted", {
+				protocol: connection.authentication.protocol.toString(),
+				is_local: connection.authentication.hostname.includes("localhost"),
+			});
 		},
 	});
 

@@ -1,19 +1,15 @@
-import cloudImg from "~/assets/images/cloud-icon.webp";
 import classes from "../style.module.scss";
 
 import {
-	Badge,
 	Box,
 	Button,
 	Divider,
 	Group,
-	Image,
 	Modal,
 	ScrollArea,
 	Stack,
 	Text,
 	TextInput,
-	ThemeIcon,
 } from "@mantine/core";
 
 import { iconChevronRight, iconCloud, iconServer } from "~/util/icons";

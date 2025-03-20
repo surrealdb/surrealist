@@ -4,37 +4,38 @@ import type { FallbackProps } from "react-error-boundary";
 import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
 import { useIsLight } from "~/hooks/theme";
-import {
-	iconBug,
-	iconCheck,
-	iconCopy,
-	iconCursor,
-	iconWarning,
-} from "~/util/icons";
+import { iconBug, iconCheck, iconCopy, iconCursor, iconWarning } from "~/util/icons";
 import { Icon } from "../Icon";
 
-export function ScaffoldErrorHandler({
-	error,
-	resetErrorBoundary,
-}: FallbackProps) {
+export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 	const [copyDebug, clipboard] = useVersionCopy();
 	const isLight = useIsLight();
 
 	const message = error instanceof Error ? error.message : error;
 
 	return (
-		<ScrollArea h="100%" bg={isLight ? "slate.0" : "slate.9"}>
-			<Paper p="xl" maw={800} mx="auto" my={75}>
+		<ScrollArea
+			h="100%"
+			bg={isLight ? "slate.0" : "slate.9"}
+		>
+			<Paper
+				p="xl"
+				maw={800}
+				mx="auto"
+				my={75}
+			>
 				<Stack gap="lg">
 					<Group c="bright">
-						<Icon path={iconWarning} size="lg" />
+						<Icon
+							path={iconWarning}
+							size="lg"
+						/>
 						<Title>Surrealist encountered an error</Title>
 					</Group>
 
 					<Text>
-						You can find a detailed error message below. If you
-						believe this is a bug, please report it on our GitHub
-						repository.
+						You can find a detailed error message below. If you believe this is a bug,
+						please report it on our GitHub repository.
 					</Text>
 
 					<Group>
@@ -51,9 +52,7 @@ export function ScaffoldErrorHandler({
 						<Button
 							leftSection={<Icon path={iconBug} />}
 							onClick={() =>
-								adapter.openUrl(
-									"https://github.com/surrealdb/surrealist/issues",
-								)
+								adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 							}
 							variant="light"
 							color="slate"
@@ -63,22 +62,14 @@ export function ScaffoldErrorHandler({
 							File an issue
 						</Button>
 						<Button
-							leftSection={
-								<Icon
-									path={
-										clipboard.copied ? iconCheck : iconCopy
-									}
-								/>
-							}
+							leftSection={<Icon path={clipboard.copied ? iconCheck : iconCopy} />}
 							onClick={copyDebug}
 							variant="light"
 							color="slate"
 							radius="xs"
 							size="xs"
 						>
-							{clipboard.copied
-								? "Copied!"
-								: "Copy version information"}
+							{clipboard.copied ? "Copied!" : "Copy version information"}
 						</Button>
 					</Group>
 
@@ -88,7 +79,11 @@ export function ScaffoldErrorHandler({
 						<Box>
 							<Title order={3}>Message</Title>
 
-							<Text mt="xs" ff="mono" c="slate">
+							<Text
+								mt="xs"
+								ff="mono"
+								c="slate"
+							>
 								{message}
 							</Text>
 						</Box>

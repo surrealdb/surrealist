@@ -30,10 +30,8 @@ function addCursorVertically(view: EditorView, offset: number) {
 		const lineAnchor = range.anchor - line.from;
 		const lineHead = range.head - line.from;
 		const newLine = doc.line(newLineNumber);
-		const newAnchor =
-			newLine.from + Math.min(Math.max(lineAnchor, 0), newLine.length);
-		const newTo =
-			newLine.from + Math.min(Math.max(lineHead, 0), newLine.length);
+		const newAnchor = newLine.from + Math.min(Math.max(lineAnchor, 0), newLine.length);
+		const newTo = newLine.from + Math.min(Math.max(lineHead, 0), newLine.length);
 
 		newRanges.push(EditorSelection.range(newAnchor, newTo));
 	}

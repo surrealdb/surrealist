@@ -177,7 +177,7 @@ export function MembersPage() {
 						</Menu>
 						<TextInput
 							value={""}
-							onChange={() => { }}
+							onChange={() => {}}
 							placeholder="Search members"
 							leftSection={
 								<Icon

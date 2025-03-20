@@ -9,9 +9,7 @@ import { useStable } from "./stable";
  * @param doLater The callback to invoke
  * @returns The function to trigger invocation
  */
-export function useLater<T extends any[]>(
-	doLater: (...args: T) => unknown,
-): (...args: T) => void {
+export function useLater<T extends any[]>(doLater: (...args: T) => unknown): (...args: T) => void {
 	const [shouldFire, setShouldFire] = useState(false);
 	const argsRef = useRef<T>();
 

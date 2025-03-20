@@ -90,7 +90,6 @@ export default defineConfig(({ mode }) => {
 					experimentalMinChunkSize: 5000,
 					manualChunks: {
 						react: ["react", "react-dom"],
-						posthog: ["posthog-js"],
 						codemirror: [
 							"codemirror",
 							"@surrealdb/codemirror",
@@ -129,10 +128,7 @@ export default defineConfig(({ mode }) => {
 			"import.meta.env.VERSION": JSON.stringify(version),
 			"import.meta.env.SDB_VERSION": JSON.stringify(surreal),
 			"import.meta.env.MODE": JSON.stringify(mode),
-			"import.meta.env.POSTHOG_URL": JSON.stringify("https://eu.i.posthog.com"),
-			"import.meta.env.POSTHOG_KEY": JSON.stringify(
-				"phc_BWVuHaJuhnFi3HthLhb9l8opktRrNeFHVnisZdQ5404",
-			),
+			"import.meta.env.GTM_ID": JSON.stringify("G-PVD8NEJ3Z2"),
 		},
 		optimizeDeps: {
 			exclude: ["@surrealdb/wasm", "@surrealdb/ql-wasm"],

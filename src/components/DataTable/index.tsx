@@ -100,7 +100,10 @@ export function DataTable(props: DataTableProps) {
 
 	const columnHeaders = useMemo(() => {
 		return keys.map((key) => (
-			<Box key={key} component="th">
+			<Box
+				key={key}
+				component="th"
+			>
 				<Text
 					span
 					fw={700}
@@ -114,11 +117,7 @@ export function DataTable(props: DataTableProps) {
 					{key}
 					{sorting?.[0] === key && (
 						<Icon
-							path={
-								sorting[1] === "asc"
-									? iconChevronDown
-									: iconChevronUp
-							}
+							path={sorting[1] === "asc" ? iconChevronDown : iconChevronUp}
 							pos="absolute"
 						/>
 					)}
@@ -167,7 +166,11 @@ export function DataTable(props: DataTableProps) {
 	}
 
 	return (
-		<ScrollArea className={classes.root} scrollbars="xy" {...rest}>
+		<ScrollArea
+			className={classes.root}
+			scrollbars="xy"
+			{...rest}
+		>
 			<Table className={classes.table}>
 				<thead>
 					<tr>{columnHeaders}</tr>
@@ -175,7 +178,11 @@ export function DataTable(props: DataTableProps) {
 				<tbody>{recordRows}</tbody>
 			</Table>
 			{truncated && (
-				<Group mt="md" mb="xl" c="red">
+				<Group
+					mt="md"
+					mb="xl"
+					c="red"
+				>
 					<Icon path={iconWarning} />
 					The rows have been truncated to 100 for performance reasons
 				</Group>

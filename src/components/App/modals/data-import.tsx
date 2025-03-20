@@ -1036,12 +1036,17 @@ export function DataImportModal() {
 			importFile.current = file;
 			openedHandle.open();
 
+			const configureImportType = (type: ImportType) => {
+				setImportType(type);
+				window.tagEvent("import", { extension: type });
+			};
+
 			const extractFromFileType = (fileFormat: DataFileFormat) => {
 				const possibleTableName = file.name.replace(`.${fileFormat}`, "");
 				const possibleTableNameRegex = /^[a-zA-Z][a-zA-Z0-9_]*$/;
 				const isValidTableName = !!possibleTableName.match(possibleTableNameRegex);
 
-				setImportType(fileFormat);
+				configureImportType(fileFormat);
 				setDefaultTableName(isValidTableName ? possibleTableName : "");
 			};
 
@@ -1052,7 +1057,7 @@ export function DataImportModal() {
 			} else if (file.name.endsWith(".ndjson")) {
 				extractFromFileType("ndjson");
 			} else {
-				setImportType("sql");
+				configureImportType("sql");
 			}
 		} finally {
 			setImporting(false);

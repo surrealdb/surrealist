@@ -5,9 +5,7 @@ import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 
 export function DocsGlobalDatabases({ language }: TopicProps) {
-	const [database] = useConnection((c) => [
-		c?.authentication.database ?? "",
-	]);
+	const [database] = useConnection((c) => [c?.authentication.database ?? ""]);
 
 	const esc_database = JSON.stringify(database);
 

@@ -51,6 +51,8 @@ export function DocumentationModal() {
 				return [];
 			}
 
+			window.tagEvent("documentation_search_query", { search: searchQuery });
+
 			const params = new URLSearchParams();
 
 			params.append("hostname", "main--surrealdb-docs.netlify.app");
@@ -76,6 +78,8 @@ export function DocumentationModal() {
 		if (search) {
 			setSearch(search);
 		}
+
+		window.tagEvent("documentation_search_open");
 	});
 
 	const isEmpty = data?.length === 0;

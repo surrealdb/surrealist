@@ -235,9 +235,6 @@ importers:
       papaparse:
         specifier: ^5.4.1
         version: 5.4.1
-      posthog-js:
-        specifier: ^1.121.4
-        version: 1.174.3
       radash:
         specifier: ^11.0.0
         version: 11.0.0
@@ -2229,9 +2226,6 @@ packages:
     resolution: {integrity: sha512-V7/RktU11J3I36Nwq2JnZEM7tNm17eBJz+u25qdxBZeCKiX6BkVSZQjwWIr+IobgnZy+ag73tTZgZi7tr0LrBw==}
     engines: {node: '>=6.0.0'}
 
-  fflate@0.4.8:
-    resolution: {integrity: sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==}
-
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
@@ -2553,12 +2547,6 @@ packages:
   postcss@8.5.1:
     resolution: {integrity: sha512-6oz2beyjc5VMn/KV1pPw8fliQkhBXrVn1Z3TVyqZxU8kZpzEKhBdmCFqI6ZbmGtamQvQGuU1sgPTk8ZrXDD7jQ==}
     engines: {node: ^10 || ^12 || >=14}
-
-  posthog-js@1.174.3:
-    resolution: {integrity: sha512-fRLncd3jkT9Y7gLiyQe8v8sJ9yuTIiQBBWcYQ8l+vv+m504LWFtxl+/JZtHXPhaG3Eyf7AzZ/Kafkw8jorWV9w==}
-
-  preact@10.24.3:
-    resolution: {integrity: sha512-Z2dPnBnMUfyQfSQ+GBdsGa16hz35YmLmtTLhM169uW944hYL6xzTYkJjC07j+Wosz733pMWx0fgON3JNw1jJQA==}
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
@@ -3020,9 +3008,6 @@ packages:
 
   w3c-keyname@2.2.8:
     resolution: {integrity: sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==}
-
-  web-vitals@4.2.4:
-    resolution: {integrity: sha512-r4DIlprAGwJ7YM11VZp4R884m0Vmgr6EAKe3P+kO0PPj3Unqyvv59rczf6UiGcb9Z8QxZVcqKNwv/g0WNdWwsw==}
 
   wouter@3.3.5:
     resolution: {integrity: sha512-bx3fLQAMn+EhYbBdY3W1gw9ZfO/uchudxYMwOIBzF3HVgqNEEIT199vEoh7FLTC0Vz5+rpMO6NdFsOkGX1QQCw==}
@@ -5008,8 +4993,6 @@ snapshots:
 
   fast-equals@5.2.2: {}
 
-  fflate@0.4.8: {}
-
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
@@ -5293,15 +5276,6 @@ snapshots:
       nanoid: 3.3.8
       picocolors: 1.1.1
       source-map-js: 1.2.1
-
-  posthog-js@1.174.3:
-    dependencies:
-      core-js: 3.38.1
-      fflate: 0.4.8
-      preact: 10.24.3
-      web-vitals: 4.2.4
-
-  preact@10.24.3: {}
 
   prop-types@15.8.1:
     dependencies:
@@ -5805,8 +5779,6 @@ snapshots:
       typescript: 5.6.3
 
   w3c-keyname@2.2.8: {}
-
-  web-vitals@4.2.4: {}
 
   wouter@3.3.5(react@18.3.1):
     dependencies:

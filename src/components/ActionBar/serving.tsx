@@ -8,7 +8,6 @@ import { getConnection } from "~/util/connection";
 import { isHostLocal } from "~/util/helpers";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { captureMetric } from "~/util/metrics";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
 
@@ -21,7 +20,7 @@ export function DatabaseServing() {
 	const isServing = useDatabaseStore((s) => s.isServing);
 	const isPending = useDatabaseStore((s) => s.servePending);
 
-	const handleToggle = useStable(() => {
+	const handleToggle = useStable(async () => {
 		if (isPending) {
 			return;
 		}
@@ -33,11 +32,10 @@ export function DatabaseServing() {
 		} else {
 			prepareServe();
 
-			adapter.startDatabase().catch(() => {
-				stopServing();
-			});
-
-			captureMetric("serve_start");
+			adapter
+				.startDatabase()
+				.then(() => window.tagEvent("database_serve"))
+				.catch(() => stopServing());
 		}
 
 		setHasStarted(true);

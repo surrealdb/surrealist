@@ -1,12 +1,7 @@
 import "leaflet/dist/leaflet.css";
 
 import { Overlay, Paper } from "@mantine/core";
-import {
-	type Map as GeoMap,
-	type LatLng,
-	geoJSON as createGeoJSON,
-	latLng,
-} from "leaflet";
+import { type Map as GeoMap, type LatLng, geoJSON as createGeoJSON, latLng } from "leaflet";
 import { useEffect, useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import type {
@@ -42,17 +37,12 @@ export type GeographyInput =
 	| GeometryMultiPolygon
 	| GeometryCollection;
 
-const convertCoordsToLatLng = (
-	point: [number, number] | [number, number, number],
-): LatLng => {
+const convertCoordsToLatLng = (point: [number, number] | [number, number, number]): LatLng => {
 	return latLng({ lat: point[1], lng: point[0] });
 };
 
 const DEFAULT_ZOOM = 15;
-const DEFAULT_CENTER = latLng(
-	51.515_449_578_195_174,
-	-0.139_976_602_926_186_13,
-);
+const DEFAULT_CENTER = latLng(51.515_449_578_195_174, -0.139_976_602_926_186_13);
 
 const PLACEHOLDER = {
 	type: "FeatureCollection",
@@ -133,7 +123,10 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 				}}
 			>
 				<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-				<GeoJSON key={isPlaceholderData ? null : value} data={data} />
+				<GeoJSON
+					key={isPlaceholderData ? null : value}
+					data={data}
+				/>
 			</MapContainer>
 		</Paper>
 	);

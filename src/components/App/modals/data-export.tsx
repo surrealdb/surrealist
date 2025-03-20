@@ -69,6 +69,8 @@ export function DataExportModal() {
 					title: "Export",
 					subtitle: "Database successfully exported",
 				});
+
+				window.tagEvent("export", { extension: "surql" });
 			}
 		} catch (err: any) {
 			showError({

@@ -25,7 +25,10 @@ import classes from "./style.module.scss";
 
 function NullishCell(props: { value: null | undefined }) {
 	return (
-		<Text c="slate" ff="JetBrains Mono">
+		<Text
+			c="slate"
+			ff="JetBrains Mono"
+		>
 			{props.value === null ? "null" : "—"}
 		</Text>
 	);
@@ -33,9 +36,15 @@ function NullishCell(props: { value: null | undefined }) {
 
 function BooleanCell(props: { value: boolean }) {
 	const icon = props.value ? (
-		<Icon path={iconCheck} color="green" />
+		<Icon
+			path={iconCheck}
+			color="green"
+		/>
 	) : (
-		<Icon path={iconClose} color="pink.9" />
+		<Icon
+			path={iconClose}
+			color="pink.9"
+		/>
 	);
 
 	return <div>{icon}</div>;
@@ -61,7 +70,10 @@ function NumberCell(props: { value: number }) {
 
 function UuidCell(props: { value: Uuid }) {
 	return (
-		<Text ff="monospace" c="bright">
+		<Text
+			ff="monospace"
+			c="bright"
+		>
 			{props.value.toString()}
 		</Text>
 	);
@@ -77,7 +89,11 @@ function DateTimeCell(props: { value: Date }) {
 
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
-			<Icon path={iconClock} left mt={-3} />
+			<Icon
+				path={iconClock}
+				left
+				mt={-3}
+			/>
 			{date.toLocaleString()}
 		</Text>
 	);
@@ -89,24 +105,41 @@ function ArrayCell(props: { value: any[] }) {
 
 	return (
 		<div>
-			<HoverCard shadow="xl" withArrow position="bottom-start">
+			<HoverCard
+				shadow="xl"
+				withArrow
+				position="bottom-start"
+			>
 				<HoverCard.Target>
-					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
+					<Text
+						span
+						ff="JetBrains Mono"
+						style={{ cursor: "help" }}
+					>
 						Array({props.value.length})
 					</Text>
 				</HoverCard.Target>
 				<HoverCard.Dropdown>
 					<Stack gap="sm">
 						{preview.map((item, i) => (
-							<Group key={i} wrap="nowrap">
+							<Group
+								key={i}
+								wrap="nowrap"
+							>
 								<span style={{ opacity: 0.5 }}>#{i + 1}</span>
-								<div key={i} style={TRUNCATE_STYLE}>
+								<div
+									key={i}
+									style={TRUNCATE_STYLE}
+								>
 									<DataCell value={item} />
 								</div>
 							</Group>
 						))}
 						{items.length > 10 && (
-							<Text size="sm" c="bright">
+							<Text
+								size="sm"
+								c="bright"
+							>
 								And {items.length - 10} more...
 							</Text>
 						)}
@@ -127,7 +160,11 @@ function ObjectCell(props: { value: any }) {
 				position="bottom-start"
 			>
 				<HoverCard.Target>
-					<Text span ff="JetBrains Mono" style={{ cursor: "help" }}>
+					<Text
+						span
+						ff="JetBrains Mono"
+						style={{ cursor: "help" }}
+					>
 						Object({Object.keys(props.value).length})
 					</Text>
 				</HoverCard.Target>
@@ -150,7 +187,7 @@ function GeographyPointCell({ value }: { value: GeometryPoint }) {
 	const [long, lat] = value.point;
 	try {
 		const converted = convert(`${lat} ${long}`);
-		
+
 		return (
 			<GeographyLink
 				value={value}
@@ -162,38 +199,64 @@ function GeographyPointCell({ value }: { value: GeometryPoint }) {
 		return (
 			<GeographyLink
 				value={value}
-				text={
-					lat === 0 && long === 0
-						? "0° N, 0° E (Null Island)"
-						: `(${lat}, ${long})`
-				}
+				text={lat === 0 && long === 0 ? "0° N, 0° E (Null Island)" : `(${lat}, ${long})`}
 			/>
 		);
 	}
 }
 
 function GeographyLineStringCell({ value }: { value: GeometryLine }) {
-	return <GeographyLink value={value} text="LineString" />;
+	return (
+		<GeographyLink
+			value={value}
+			text="LineString"
+		/>
+	);
 }
 
 function GeographyPolygonCell({ value }: { value: GeometryPolygon }) {
-	return <GeographyLink value={value} text="Polygon" />;
+	return (
+		<GeographyLink
+			value={value}
+			text="Polygon"
+		/>
+	);
 }
 
 function GeographyMultiPointCell({ value }: { value: GeometryMultiPoint }) {
-	return <GeographyLink value={value} text="MultiPoint" />;
+	return (
+		<GeographyLink
+			value={value}
+			text="MultiPoint"
+		/>
+	);
 }
 
 function GeographyMultiLineCell({ value }: { value: GeometryMultiLine }) {
-	return <GeographyLink value={value} text="MultiLineString" />;
+	return (
+		<GeographyLink
+			value={value}
+			text="MultiLineString"
+		/>
+	);
 }
 
 function GeographyMultiPolygonCell({ value }: { value: GeometryMultiPolygon }) {
-	return <GeographyLink value={value} text="MultiPolygon" />;
+	return (
+		<GeographyLink
+			value={value}
+			text="MultiPolygon"
+		/>
+	);
 }
 
 function GeographyCollectionCell({ value }: { value: GeometryCollection }) {
-	return <GeographyLink value={value} text="GeometryCollection" />;
+	return (
+		<GeographyLink
+			value={value}
+			text="GeometryCollection"
+		/>
+	);
 }
 
 export const DataCell = ({ value }: { value: any }) => {

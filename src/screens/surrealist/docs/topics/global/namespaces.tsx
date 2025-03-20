@@ -5,9 +5,7 @@ import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 
 export function DocsGlobalNamespaces({ language }: TopicProps) {
-	const [namespace] = useConnection((c) => [
-		c?.authentication.namespace ?? "",
-	]);
+	const [namespace] = useConnection((c) => [c?.authentication.namespace ?? ""]);
 
 	const esc_namespace = JSON.stringify(namespace);
 

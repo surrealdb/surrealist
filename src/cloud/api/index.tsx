@@ -8,8 +8,6 @@ import type {
 
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
-import { captureMetric } from "~/util/metrics";
 import { getCloudEndpoints } from "./endpoints";
 
 export interface APIRequestInit extends RequestInit {
@@ -54,12 +52,6 @@ export async function fetchAPI<T = unknown>(
 			const { message } = await response.json();
 			reason = message;
 		}
-
-		captureMetric("cloud_api_error", {
-			status: response.status,
-			endpoint: path,
-			message: reason,
-		});
 
 		throw new ApiError(response, reason);
 	}
