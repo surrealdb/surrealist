@@ -158,7 +158,7 @@ export function StartConnection({
 										leftSection={<Icon path={iconEdit} />}
 										onClick={handleEdit}
 									>
-										Edit details
+										Edit connection
 									</Menu.Item>
 									<Menu.Item
 										leftSection={<Icon path={iconCopy} />}

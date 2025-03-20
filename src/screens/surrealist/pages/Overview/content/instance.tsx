@@ -282,13 +282,17 @@ export function StartInstance({
 								</ActionIcon>
 							</Menu.Target>
 							<Menu.Dropdown>
-								<Menu.Item
-									leftSection={<Icon path={iconEdit} />}
-									onClick={handleEdit}
-								>
-									Edit details
-								</Menu.Item>
-								<Menu.Divider />
+								{connection && (
+									<>
+										<Menu.Item
+											leftSection={<Icon path={iconEdit} />}
+											onClick={handleEdit}
+										>
+											Edit connection
+										</Menu.Item>
+										<Menu.Divider />
+									</>
+								)}
 								<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
 								<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
 								{instance.state === "ready" ? (
