@@ -28,8 +28,8 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		window.tagEvent = async (event: string, data?: object) => {
 			await initializer.promise;
 			window.gtag({
+				event,
 				...(data ?? {}),
-				event_name: event,
 				adapter: adapter.id,
 				platform: adapter.platform,
 			});
