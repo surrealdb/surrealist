@@ -20,8 +20,9 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		window.dataLayer = window.dataLayer ?? [];
 
 		// assign global gtag function
-		window.gtag = (...args: any[]) => {
-			window.dataLayer.push(...args);
+		window.gtag = function(...args: unknown[]) {
+			// biome-ignore lint/complexity/useArrowFunction lint/style/noArguments: Doesn't work here
+			window.dataLayer.push(arguments);
 		};
 
 		window.tagEvent = async (event: string, data?: object) => {
@@ -34,7 +35,9 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 			});
 		};
 
-		const host = window.location.host;
+		const host = window.location.host.includes('localhost') 
+			? 'dev.surrealist.app' 
+			: window.location.host;
 		const server_container_url = `https://${host}/data`;
 		const scriptSource = `https://${host}/data/script.js`;
 
@@ -45,7 +48,7 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 
 		script.id = "surreal-gtm";
 		script.src = scriptSource; // <---- TODO: Change this to the correct URL?
-		script.defer = true;
+		script.async = true;
 
 		script.addEventListener("load", async () => {
 			console.info("Google Analytics loaded");
@@ -60,7 +63,7 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		script.addEventListener("error", onError);
 		script.addEventListener("abort", onError);
 
-		setTimeout(() => document.head.appendChild(script), 250);
+		document.head.appendChild(script);
 	}, []);
 
 	return (
