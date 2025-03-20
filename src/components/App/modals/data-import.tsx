@@ -10,8 +10,8 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import papaparse from "papaparse";
-import { cluster, isArray, sleep, unique } from "radash";
+import papaparse, { LocalFile } from "papaparse";
+import { cluster, isArray, isObject, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
@@ -32,7 +32,8 @@ import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
 
-type ImportType = "sql" | "csv";
+type DataFileFormat = "csv" | "json" | "ndjson";
+type ImportType = "sql" | DataFileFormat;
 
 type ExecuteTransformAndImportFn = (content: string) => Promise<void>;
 
@@ -134,6 +135,39 @@ const extractSurrealType = (value: any): SurrealKind => {
 	return type as "string" | "number" | "object";
 };
 
+const extractColumnNames = (importedRows: any[], withHeader: boolean) => {
+	return withHeader
+		? Object.keys(importedRows?.[0] ?? {})
+		: Array(((importedRows?.[0] as unknown[]) ?? []).length).fill("");
+};
+
+const extractColumnType = (importedRows: any[], index: number, withHeader: boolean) => {
+	const values = withHeader
+		? importedRows.map((row: any) => {
+				const key = Object.keys(importedRows?.[0] ?? {})[index];
+				return row?.[key];
+			})
+		: (importedRows as unknown[][]).map((row) => row[index]);
+
+	const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
+
+	if (uniqueTypes.length === 1) {
+		return uniqueTypes[0];
+	}
+
+	return "string";
+};
+
+const extractColumnTypes = (importedRows: any[], withHeader: boolean) => {
+	const length = withHeader
+		? Object.keys(importedRows?.[0] ?? {}).length
+		: ((importedRows?.[0] as unknown[]) ?? []).length;
+
+	return Array(length)
+		.fill("")
+		.map((_, index) => extractColumnType(importedRows, index, withHeader));
+};
+
 const isValidColumnType = (type: string) => {
 	return (SURREAL_KINDS as readonly string[]).includes(type);
 };
@@ -180,317 +214,159 @@ const convertValueToType = (value: any, type: SurrealKind): any => {
 	}
 };
 
-type CsvImportFormProps = {
+const createEntityId = (value: any, type: SurrealKind, table: string) => {
+	if (type === "record") {
+		return convertValueToType(value, type);
+	}
+
+	return new RecordId(table, convertValueToType(value, type));
+};
+
+const createEntity = (data: any, table: string, columnNames: string[], columnTypes: string[]) => {
+	const o: any = {};
+
+	for (const key of Object.keys(data)) {
+		const value = data[key];
+		const type = columnTypes[columnNames.indexOf(key)] as SurrealKind;
+
+		if (key === "id") {
+			o[key] = createEntityId(value, type, table);
+		} else {
+			o[key] = convertValueToType(value, type);
+		}
+	}
+
+	return o;
+};
+
+const applySingleBatchImport = async (items: any[], table: string, insertRelation: boolean) => {
+	const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
+
+	let successImportCount = 0;
+	let errorImportCount = 0;
+	let errorMessage = undefined;
+
+	const [response] = await executeQuery(/* surql */ `${queryAction} INTO $table $content`, {
+		table: new Table(table),
+		content: items,
+	});
+
+	if (response.success) {
+		successImportCount += items.length;
+	} else {
+		errorImportCount += items.length;
+		errorMessage = response.result;
+	}
+
+	return { success: response.success, successImportCount, errorImportCount, errorMessage };
+};
+
+const applyBatchImport = async (items: any[], table: string, insertRelation: boolean) => {
+	const BATCH_CHUNK_SIZE = 1000;
+
+	let successImportCount = 0;
+	let errorImportCount = 0;
+	let errorMessage = undefined;
+
+	for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
+		const batchedResponse = await applySingleBatchImport(batchedItems, table, insertRelation);
+
+		if (batchedResponse.success) {
+			successImportCount += batchedResponse.successImportCount;
+		} else {
+			errorImportCount += batchedResponse.errorImportCount;
+			errorMessage = batchedResponse.errorMessage;
+			break;
+		}
+	}
+
+	return { successImportCount, errorImportCount, errorMessage };
+};
+
+const completeBatchImport = async (
+	successImportCount: number,
+	errorImportCount: number,
+	errorMessage: string | undefined,
+) => {
+	if (errorImportCount > 0) {
+		if (successImportCount > 0) {
+			showWarning({
+				title: "Import partially failed",
+				subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
+			});
+		} else {
+			showError({
+				title: "Import failed",
+				subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
+			});
+		}
+	} else {
+		showInfo({
+			title: "Import successful",
+			subtitle: `${successImportCount} records were successfully inserted`,
+		});
+	}
+
+	await syncConnectionSchema();
+};
+
+type DataFileImportFormProps = {
+	fileFormat: DataFileFormat;
 	defaultTableName: string;
 	isImporting: boolean;
 	importFile: MutableRefObject<OpenedTextFile | null>;
 	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
 };
 
-const CsvImportForm = ({
-	defaultTableName,
-	isImporting,
-	importFile,
-	confirmImport,
-}: CsvImportFormProps) => {
-	const tables = useTableNames();
-
-	const [table, setTable] = useInputState(defaultTableName);
-	const [header, setHeader] = useInputState(true);
-	const [delimiter, setDelimiter] = useInputState(papaparse.DefaultDelimiter);
-	const [insertRelation, setInsertRelation] = useInputState(false);
-
-	const { data: importedRows, errors } = useMemo(() => {
-		if (importFile.current) {
-			const content = importFile.current.content.trim();
-
-			return papaparse.parse(content, {
-				delimiter,
-				header,
-				dynamicTyping: true,
-				transform(value) {
-					try {
-						return parseValue(value);
-					} catch {
-						return value;
-					}
-				},
-			});
-		}
-
-		return { data: [], errors: [] } as Omit<papaparse.ParseResult<unknown>, "meta">;
-	}, [importFile.current, delimiter, header]);
-
-	const extractColumnNames = useStable(() => {
-		return header
-			? Object.keys(importedRows?.[0] ?? {})
-			: Array(((importedRows?.[0] as unknown[]) ?? []).length).fill("");
-	});
-
-	const extractColumnType = useStable((index: number) => {
-		const values = header
-			? importedRows.map((row: any) => {
-					const key = Object.keys(importedRows?.[0] ?? {})[index];
-					return row?.[key];
-				})
-			: (importedRows as unknown[][]).map((row) => row[index]);
-
-		const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
-
-		if (uniqueTypes.length === 1) {
-			return uniqueTypes[0];
-		}
-
-		return "string";
-	});
-
-	const extractColumnTypes = useStable(() => {
-		const length = header
-			? Object.keys(importedRows?.[0] ?? {}).length
-			: ((importedRows?.[0] as unknown[]) ?? []).length;
-
-		return Array(length)
-			.fill("")
-			.map((_, index) => extractColumnType(index));
-	});
-
-	const [columnNames, setColumnNames] = useState<string[]>(extractColumnNames());
-	const [columnTypes, setColumnTypes] = useState<string[]>(extractColumnTypes());
-
-	const submit = () => {
-		const createEntityId = (value: any, type: SurrealKind) => {
-			if (type === "record") {
-				return convertValueToType(value, type);
-			}
-
-			return new RecordId(table, convertValueToType(value, type));
-		};
-
-		const createEntityWithHeader = (data: any) => {
-			const o: any = {};
-
-			for (const key of Object.keys(data)) {
-				const value = data[key];
-				const type = columnTypes[columnNames.indexOf(key)] as SurrealKind;
-
-				if (key === "id") {
-					o[key] = createEntityId(value, type);
-				} else {
-					o[key] = convertValueToType(value, type);
-				}
-			}
-
-			return o;
-		};
-
-		const createEntityWithoutHeader = (data: unknown[]) => {
-			const o: any = {};
-
-			for (let i = 0; i < data.length; i++) {
-				const key = columnNames[i];
-				const value = data[i];
-				const type = columnTypes[i] as SurrealKind;
-
-				if (key === "id") {
-					o[key] = createEntityId(value, type);
-				} else {
-					o[key] = convertValueToType(value, type);
-				}
-			}
-
-			return o;
-		};
-
-		const execute = async (content: string) => {
-			const items: any[] = [];
-			let isParserSuccess = true;
-
-			papaparse.parse(content, {
-				delimiter,
-				header,
-				step: async (row, parser) => {
-					if (row.errors.length > 0) {
-						const err = row.errors[0].message;
-
-						showError({
-							title: "Import failed",
-							subtitle: `There was an error importing the CSV file: ${err}`,
-						});
-
-						isParserSuccess = false;
-						parser.abort();
-						return;
-					}
-
-					const content = header
-						? createEntityWithHeader(row.data as any)
-						: createEntityWithoutHeader(row.data as unknown[]);
-
-					items.push(content);
-				},
-			});
-
-			if (!isParserSuccess) {
-				return;
-			}
-
-			const BATCH_CHUNK_SIZE = 1000;
-			const queryAction = insertRelation ? "INSERT RELATION" : "INSERT";
-
-			let successImportCount = 0;
-			let errorImportCount = 0;
-			let errorMessage = undefined;
-
-			for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
-				const [response] = await executeQuery(
-					/* surql */ `${queryAction} INTO $table $content`,
-					{
-						table: new Table(table),
-						content: batchedItems,
-					},
-				);
-
-				if (response.success) {
-					successImportCount += batchedItems.length;
-				} else {
-					errorImportCount += batchedItems.length;
-					errorMessage = response.result;
-					break;
-				}
-			}
-
-			if (errorImportCount > 0) {
-				if (successImportCount > 0) {
-					showWarning({
-						title: "Import partially failed",
-						subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
-					});
-				} else {
-					showError({
-						title: "Import failed",
-						subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
-					});
-				}
-			} else {
-				showInfo({
-					title: "Import successful",
-					subtitle: `${successImportCount} records were successfully inserted`,
-				});
-			}
-
-			await syncConnectionSchema();
-		};
-
-		confirmImport(execute);
-	};
-
-	const canExport = useMemo(() => {
-		return (
-			!!table &&
-			columnNames.length > 0 &&
-			columnNames.every((c) => !!c) &&
-			unique(columnNames).length === columnNames.length &&
-			columnTypes.every(isValidColumnType)
-		);
-	}, [table, columnNames, columnTypes]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	useEffect(() => {
-		setColumnNames(extractColumnNames());
-		setColumnTypes(extractColumnTypes());
-	}, [delimiter, header]);
-
-	const handleColumnNameChange = useStable((e: ChangeEvent<HTMLInputElement>, index: number) => {
-		setColumnNames((prev) => {
-			const newColumnNames = [...prev];
-			newColumnNames[index] = e.target.value;
-			return newColumnNames;
-		});
-	});
-
-	const handleColumnTypeChange = useStable((type: string, index: number) => {
-		setColumnTypes((prev) => {
-			const newColumnTypes = [...prev];
-			newColumnTypes[index] = type;
-			return newColumnTypes;
-		});
-	});
-
-	const errorMessage = errors.length > 0 ? errors[0].message : null;
-
-	const canInsertRelation = useMemo(() => {
-		if (!columnNames.includes("in")) {
-			return false;
-		}
-		if (!columnNames.includes("out")) {
-			return false;
-		}
-
-		if (columnTypes[columnNames.indexOf("in")] !== "record") {
-			return false;
-		}
-		if (columnTypes[columnNames.indexOf("out")] !== "record") {
-			return false;
-		}
-
-		return true;
-	}, [columnNames, columnTypes]);
-
-	useEffect(() => {
-		if (!canInsertRelation) {
-			setInsertRelation(false);
-		}
-	}, [canInsertRelation]);
-
+const FileFormatFormHeader = ({ fileFormat }: Pick<DataFileImportFormProps, "fileFormat">) => {
 	return (
-		<Stack>
-			<Text>This importer allows you to parse CSV data into a table.</Text>
+		<>
+			<Text>
+				This importer allows you to parse {fileFormat.toUpperCase()} data into a table.
+			</Text>
 
 			<Text>
 				While existing data will be preserved, it may be overwritten by the imported data.
 			</Text>
+		</>
+	);
+};
 
-			<Divider />
+type TableAutocompleteProps = {
+	value: string;
+	onChange: (value: string) => void;
+};
 
-			<Autocomplete
-				data={tables}
-				value={table}
-				onChange={setTable}
-				label="Table name"
-				size="sm"
-				required
-				placeholder="table_name"
-			/>
+const TableAutocomplete = ({ value, onChange }: TableAutocompleteProps) => {
+	const tables = useTableNames();
 
-			<Divider />
+	return (
+		<Autocomplete
+			data={tables}
+			value={value}
+			onChange={onChange}
+			label="Table name"
+			size="sm"
+			required
+			placeholder="table_name"
+		/>
+	);
+};
 
-			<Group
-				justify="space-between"
-				grow
-			>
-				<Stack>
-					<Label>With headers</Label>
-					<Switch
-						checked={header}
-						onChange={setHeader}
-						aria-label="With headers"
-						size="sm"
-						required
-					/>
-				</Stack>
+type EditColumnsFormProps = {
+	columnNames: string[];
+	columnTypes: string[];
+	nameChangeDisabled?: boolean;
+	onColumnNameChange: (e: ChangeEvent<HTMLInputElement>, index: number) => void;
+	onColumnTypeChange: (type: string, index: number) => void;
+};
 
-				<TextInput
-					value={delimiter}
-					onChange={setDelimiter}
-					label="Column delimiter"
-					size="sm"
-					required
-					maxLength={1}
-				/>
-			</Group>
+const EditColumnsForm = (props: EditColumnsFormProps) => {
+	const { columnNames, columnTypes, nameChangeDisabled, onColumnNameChange, onColumnTypeChange } =
+		props;
 
-			<Divider />
-
+	return (
+		<>
 			<Label>Columns</Label>
 
 			<Stack>
@@ -501,14 +377,14 @@ const CsvImportForm = ({
 						<Group key={index}>
 							<TextInput
 								value={c}
-								onChange={(e) => handleColumnNameChange(e, index)}
-								disabled={header}
+								onChange={(e) => onColumnNameChange(e, index)}
+								disabled={nameChangeDisabled}
 								leftSection={<Text>{index + 1}</Text>}
 								placeholder="name"
 							/>
 							<FieldKindInputCore
 								value={type}
-								onChange={(t) => handleColumnTypeChange(t, index)}
+								onChange={(t) => onColumnTypeChange(t, index)}
 								data={SURREAL_KINDS}
 								placeholder="type"
 							/>
@@ -516,9 +392,35 @@ const CsvImportForm = ({
 					);
 				})}
 			</Stack>
+		</>
+	);
+};
 
-			<Divider />
+type FileFormatFormFooterProps = {
+	insertRelation: boolean;
+	setInsertRelation: (value: boolean | ChangeEvent<any> | null | undefined) => void;
+	canInsertRelation: boolean;
+	errorMessage: string | null;
+	isImporting: boolean;
+	importedRows: any[];
+	canExport: boolean;
+	submit: () => void;
+};
 
+const FileFormatFormFooter = (props: FileFormatFormFooterProps) => {
+	const {
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		errorMessage,
+		isImporting,
+		importedRows,
+		canExport,
+		submit,
+	} = props;
+
+	return (
+		<>
 			<Switch
 				checked={insertRelation}
 				onChange={setInsertRelation}
@@ -552,9 +454,546 @@ const CsvImportForm = ({
 					mt={-3}
 				>
 					Importing this file will create{insertRelation ? "" : " or update"}{" "}
-					{importedRows.length} records in total.
+					{Math.min(importedRows.length, 1_000)}
+					{importedRows.length >= 1_000 ? "+" : ""} records in total.
 				</Text>
 			) : null}
+		</>
+	);
+};
+
+type UseFileFormatFormProps = {
+	defaultTableName: string;
+	importedRows: any[];
+	withHeader?: boolean;
+};
+
+const useFileFormatForm = (props: UseFileFormatFormProps) => {
+	const { defaultTableName, importedRows, withHeader } = props;
+
+	const [table, setTable] = useInputState(defaultTableName);
+	const [insertRelation, setInsertRelation] = useInputState(false);
+
+	const [columnNames, setColumnNames] = useState<string[]>(
+		extractColumnNames(importedRows, withHeader ?? true),
+	);
+	const [columnTypes, setColumnTypes] = useState<string[]>(
+		extractColumnTypes(importedRows, withHeader ?? true),
+	);
+
+	const canInsertRelation = useMemo(() => {
+		if (!columnNames.includes("in")) {
+			return false;
+		}
+		if (!columnNames.includes("out")) {
+			return false;
+		}
+
+		if (columnTypes[columnNames.indexOf("in")] !== "record") {
+			return false;
+		}
+		if (columnTypes[columnNames.indexOf("out")] !== "record") {
+			return false;
+		}
+
+		return true;
+	}, [columnNames, columnTypes]);
+
+	useEffect(() => {
+		if (!canInsertRelation) {
+			setInsertRelation(false);
+		}
+	}, [canInsertRelation]);
+
+	const canExport = useMemo(() => {
+		return (
+			!!table &&
+			columnNames.length > 0 &&
+			columnNames.every((c) => !!c) &&
+			unique(columnNames).length === columnNames.length &&
+			columnTypes.every(isValidColumnType)
+		);
+	}, [table, columnNames, columnTypes]);
+
+	const handleColumnNameChange = useStable((e: ChangeEvent<HTMLInputElement>, index: number) => {
+		setColumnNames((prev) => {
+			const newColumnNames = [...prev];
+			newColumnNames[index] = e.target.value;
+			return newColumnNames;
+		});
+	});
+
+	const handleColumnTypeChange = useStable((type: string, index: number) => {
+		setColumnTypes((prev) => {
+			const newColumnTypes = [...prev];
+			newColumnTypes[index] = type;
+			return newColumnTypes;
+		});
+	});
+
+	return {
+		table,
+		setTable,
+		columnNames,
+		handleColumnNameChange,
+		setColumnNames,
+		columnTypes,
+		handleColumnTypeChange,
+		setColumnTypes,
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		canExport,
+	};
+};
+
+type CsvImportFormProps = DataFileImportFormProps;
+
+const CsvImportForm = ({
+	fileFormat,
+	defaultTableName,
+	isImporting,
+	importFile,
+	confirmImport,
+}: CsvImportFormProps) => {
+	const [header, setHeader] = useInputState(true);
+	const [delimiter, setDelimiter] = useInputState(papaparse.DefaultDelimiter);
+
+	const { data: importedRows, errors } = useMemo(() => {
+		if (importFile.current) {
+			const content = importFile.current.content.trim();
+
+			return papaparse.parse(content, {
+				delimiter,
+				header,
+				dynamicTyping: true,
+				transform(value) {
+					try {
+						return parseValue(value);
+					} catch {
+						return value;
+					}
+				},
+				preview: 1_000,
+			});
+		}
+
+		return { data: [], errors: [] } as Omit<papaparse.ParseResult<unknown>, "meta">;
+	}, [importFile.current, delimiter, header]);
+
+	const {
+		table,
+		setTable,
+		columnNames,
+		handleColumnNameChange,
+		setColumnNames,
+		columnTypes,
+		handleColumnTypeChange,
+		setColumnTypes,
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		canExport,
+	} = useFileFormatForm({
+		defaultTableName,
+		importedRows,
+		withHeader: header,
+	});
+
+	const submit = () => {
+		const createEntityWithoutHeader = (data: unknown[]) => {
+			const o: any = {};
+
+			for (let i = 0; i < data.length; i++) {
+				const key = columnNames[i];
+				const value = data[i];
+				const type = columnTypes[i] as SurrealKind;
+
+				if (key === "id") {
+					o[key] = createEntityId(value, type, table);
+				} else {
+					o[key] = convertValueToType(value, type);
+				}
+			}
+
+			return o;
+		};
+
+		const execute = async (content: string) => {
+			if (!importFile.current?.self) {
+				const items: any[] = [];
+
+				let isParserSuccess = true;
+
+				papaparse.parse(content, {
+					delimiter,
+					header,
+					skipEmptyLines: true,
+					step: async (row, parser) => {
+						if (row.errors.length > 0) {
+							const err = row.errors[0].message;
+
+							showError({
+								title: "Import failed",
+								subtitle: `There was an error importing the CSV file: ${err}`,
+							});
+
+							isParserSuccess = false;
+							parser.abort();
+							return;
+						}
+
+						const content = header
+							? createEntity(row.data as any, table, columnNames, columnTypes)
+							: createEntityWithoutHeader(row.data as unknown[]);
+
+						items.push(content);
+					},
+				});
+
+				if (!isParserSuccess) {
+					return;
+				}
+
+				const { errorImportCount, successImportCount, errorMessage } =
+					await applyBatchImport(items, table, insertRelation);
+				await completeBatchImport(successImportCount, errorImportCount, errorMessage);
+			} else {
+				let successImportCount = 0;
+				let errorImportCount = 0;
+				let errorMessage: string | undefined = undefined;
+
+				await new Promise((resolve, reject) => {
+					// biome-ignore lint/style/noNonNullAssertion: <explanation>
+					papaparse.parse(importFile.current!.self as LocalFile, {
+						delimiter,
+						header,
+						skipEmptyLines: true,
+						chunkSize: 100 * 1_024,
+						chunk: async (results, parser) => {
+							if (results.errors.length > 0) {
+								const err = results.errors[0].message;
+
+								showError({
+									title: "Import failed",
+									subtitle: `There was an error importing the CSV file: ${err}`,
+								});
+
+								parser.abort();
+								reject();
+							}
+
+							const items = results.data.map((row) => {
+								return header
+									? createEntity(row as any, table, columnNames, columnTypes)
+									: createEntityWithoutHeader(row as unknown[]);
+							});
+
+							parser.pause();
+
+							const batchedResponse = await applySingleBatchImport(
+								items,
+								table,
+								insertRelation,
+							);
+
+							successImportCount += batchedResponse.successImportCount;
+							errorImportCount += batchedResponse.errorImportCount;
+							if (!errorMessage) {
+								errorMessage = batchedResponse.errorMessage;
+							}
+
+							parser.resume();
+						},
+						complete: () => {
+							resolve("completed");
+						},
+					});
+				});
+				await completeBatchImport(successImportCount, errorImportCount, errorMessage);
+			}
+		};
+
+		confirmImport(execute);
+	};
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		setColumnNames(extractColumnNames(importedRows, header));
+		setColumnTypes(extractColumnTypes(importedRows, header));
+	}, [delimiter, header]);
+
+	const errorMessage = errors.length > 0 ? errors[0].message : null;
+
+	return (
+		<Stack>
+			<FileFormatFormHeader fileFormat={fileFormat} />
+
+			<Divider />
+
+			<TableAutocomplete
+				value={table}
+				onChange={setTable}
+			/>
+
+			<Divider />
+
+			<Group
+				justify="space-between"
+				grow
+			>
+				<Stack>
+					<Label>With headers</Label>
+					<Switch
+						checked={header}
+						onChange={setHeader}
+						aria-label="With headers"
+						size="sm"
+						required
+					/>
+				</Stack>
+
+				<TextInput
+					value={delimiter}
+					onChange={setDelimiter}
+					label="Column delimiter"
+					size="sm"
+					required
+					maxLength={1}
+				/>
+			</Group>
+
+			<Divider />
+
+			<EditColumnsForm
+				columnNames={columnNames}
+				columnTypes={columnTypes}
+				nameChangeDisabled={header}
+				onColumnNameChange={handleColumnNameChange}
+				onColumnTypeChange={handleColumnTypeChange}
+			/>
+
+			<Divider />
+
+			<FileFormatFormFooter
+				insertRelation={insertRelation}
+				setInsertRelation={setInsertRelation}
+				canInsertRelation={canInsertRelation}
+				errorMessage={errorMessage}
+				isImporting={isImporting}
+				importedRows={importedRows}
+				canExport={canExport}
+				submit={submit}
+			/>
+		</Stack>
+	);
+};
+
+type JsonImportFormProps = DataFileImportFormProps;
+
+const JsonImportForm = ({
+	fileFormat,
+	defaultTableName,
+	isImporting,
+	importFile,
+	confirmImport,
+}: JsonImportFormProps) => {
+	const { data: importedRows, errors } = useMemo(() => {
+		if (importFile.current) {
+			const content = importFile.current.content.trim();
+
+			try {
+				const value = JSON.parse(content);
+				const items = isArray(value) ? value : [value];
+
+				return { data: items, errors: [] } as { data: any[]; errors: Error[] };
+			} catch (err) {
+				return { data: [], errors: [err] } as { data: any[]; errors: Error[] };
+			}
+		}
+
+		return { data: [], errors: [] } as { data: any[]; errors: Error[] };
+	}, [importFile.current]);
+
+	const {
+		table,
+		setTable,
+		columnNames,
+		handleColumnNameChange,
+		columnTypes,
+		handleColumnTypeChange,
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		canExport,
+	} = useFileFormatForm({
+		defaultTableName,
+		importedRows,
+	});
+
+	const submit = () => {
+		const execute = async (content: string) => {
+			const value = JSON.parse(content);
+			const items = (isArray(value) ? value : [value]).map((data) =>
+				createEntity(data, table, columnNames, columnTypes),
+			);
+
+			const { errorImportCount, successImportCount, errorMessage } = await applyBatchImport(
+				items,
+				table,
+				insertRelation,
+			);
+			await completeBatchImport(successImportCount, errorImportCount, errorMessage);
+		};
+
+		confirmImport(execute);
+	};
+
+	const errorMessage = errors.length > 0 ? errors[0].message : null;
+
+	return (
+		<Stack>
+			<FileFormatFormHeader fileFormat={fileFormat} />
+
+			<Divider />
+
+			<TableAutocomplete
+				value={table}
+				onChange={setTable}
+			/>
+
+			<Divider />
+
+			<EditColumnsForm
+				columnNames={columnNames}
+				columnTypes={columnTypes}
+				onColumnNameChange={handleColumnNameChange}
+				onColumnTypeChange={handleColumnTypeChange}
+			/>
+
+			<Divider />
+
+			<FileFormatFormFooter
+				insertRelation={insertRelation}
+				setInsertRelation={setInsertRelation}
+				canInsertRelation={canInsertRelation}
+				errorMessage={errorMessage}
+				isImporting={isImporting}
+				importedRows={importedRows}
+				canExport={canExport}
+				submit={submit}
+			/>
+		</Stack>
+	);
+};
+
+type NdJsonImportFormProps = DataFileImportFormProps;
+
+const NdJsonImportForm = ({
+	fileFormat,
+	defaultTableName,
+	isImporting,
+	importFile,
+	confirmImport,
+}: NdJsonImportFormProps) => {
+	const extractItems = useStable((content: string) => {
+		const newlineRegex = /\r?\n/;
+
+		return content
+			.split(newlineRegex)
+			.map((s) => s.trim())
+			.map((s) => JSON.parse(s));
+	});
+
+	const { data: importedRows, errors } = useMemo(() => {
+		if (importFile.current) {
+			const content = importFile.current.content.trim();
+
+			try {
+				const items = extractItems(content);
+
+				for (const item of items) {
+					if (!isObject(item)) {
+						throw new Error("Invalid JSON object");
+					}
+				}
+
+				return { data: items, errors: [] } as { data: any[]; errors: Error[] };
+			} catch (err) {
+				return { data: [], errors: [err] } as { data: any[]; errors: Error[] };
+			}
+		}
+
+		return { data: [], errors: [] } as { data: any[]; errors: Error[] };
+	}, [importFile.current]);
+
+	const {
+		table,
+		setTable,
+		columnNames,
+		handleColumnNameChange,
+		columnTypes,
+		handleColumnTypeChange,
+		insertRelation,
+		setInsertRelation,
+		canInsertRelation,
+		canExport,
+	} = useFileFormatForm({
+		defaultTableName,
+		importedRows,
+	});
+
+	const submit = () => {
+		const execute = async (content: string) => {
+			const items = extractItems(content).map((data) =>
+				createEntity(data, table, columnNames, columnTypes),
+			);
+
+			const { errorImportCount, successImportCount, errorMessage } = await applyBatchImport(
+				items,
+				table,
+				insertRelation,
+			);
+			await completeBatchImport(successImportCount, errorImportCount, errorMessage);
+		};
+
+		confirmImport(execute);
+	};
+
+	const errorMessage = errors.length > 0 ? errors[0].message : null;
+
+	return (
+		<Stack>
+			<FileFormatFormHeader fileFormat={fileFormat} />
+
+			<Divider />
+
+			<TableAutocomplete
+				value={table}
+				onChange={setTable}
+			/>
+
+			<Divider />
+
+			<EditColumnsForm
+				columnNames={columnNames}
+				columnTypes={columnTypes}
+				onColumnNameChange={handleColumnNameChange}
+				onColumnTypeChange={handleColumnTypeChange}
+			/>
+
+			<Divider />
+
+			<FileFormatFormFooter
+				insertRelation={insertRelation}
+				setInsertRelation={setInsertRelation}
+				canInsertRelation={canInsertRelation}
+				errorMessage={errorMessage}
+				isImporting={isImporting}
+				importedRows={importedRows}
+				canExport={canExport}
+				submit={submit}
+			/>
 		</Stack>
 	);
 };
@@ -578,6 +1017,14 @@ export function DataImportModal() {
 						name: "Table data (csv)",
 						extensions: ["csv"],
 					},
+					{
+						name: "JavaScript Object Notation data (json)",
+						extensions: ["json"],
+					},
+					{
+						name: "Newline Delimited JSON data (ndjson)",
+						extensions: ["ndjson"],
+					},
 				],
 				false,
 			);
@@ -589,12 +1036,21 @@ export function DataImportModal() {
 			importFile.current = file;
 			openedHandle.open();
 
-			if (file.name.endsWith(".csv")) {
-				const possibleTableName = file.name.replace(".csv", "");
-				const isValidTableName = !!possibleTableName.match(/^[a-zA-Z][a-zA-Z0-9_]*$/);
+			const extractFromFileType = (fileFormat: DataFileFormat) => {
+				const possibleTableName = file.name.replace(`.${fileFormat}`, "");
+				const possibleTableNameRegex = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+				const isValidTableName = !!possibleTableName.match(possibleTableNameRegex);
 
-				setImportType("csv");
+				setImportType(fileFormat);
 				setDefaultTableName(isValidTableName ? possibleTableName : "");
+			};
+
+			if (file.name.endsWith(".csv")) {
+				extractFromFileType("csv");
+			} else if (file.name.endsWith(".json")) {
+				extractFromFileType("json");
+			} else if (file.name.endsWith(".ndjson")) {
+				extractFromFileType("ndjson");
 			} else {
 				setImportType("sql");
 			}
@@ -647,6 +1103,25 @@ export function DataImportModal() {
 			) : null}
 			{importType === "csv" ? (
 				<CsvImportForm
+					fileFormat={importType}
+					defaultTableName={defaultTableName}
+					isImporting={isImporting}
+					importFile={importFile}
+					confirmImport={confirmImport}
+				/>
+			) : null}
+			{importType === "json" ? (
+				<JsonImportForm
+					fileFormat={importType}
+					defaultTableName={defaultTableName}
+					isImporting={isImporting}
+					importFile={importFile}
+					confirmImport={confirmImport}
+				/>
+			) : null}
+			{importType === "ndjson" ? (
+				<NdJsonImportForm
+					fileFormat={importType}
 					defaultTableName={defaultTableName}
 					isImporting={isImporting}
 					importFile={importFile}
