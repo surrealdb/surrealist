@@ -1,9 +1,9 @@
 import { Box } from "@mantine/core";
 import { useEffect } from "react";
+import { CloudSplash } from "~/components/CloudSplash";
 import { TopGlow } from "~/components/TopGlow";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudSplash } from "~/components/CloudSplash";
 
 export function CloudPage() {
 	const authState = useCloudStore((s) => s.authState);

@@ -38,6 +38,7 @@ import { ReactNode } from "react";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
+import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -47,7 +48,6 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconChevronRight, iconCopy, iconHelp, iconOpen } from "~/util/icons";
-import { CloudSplash } from "~/components/CloudSplash";
 
 const REWARDS = [1, 10, 25, 100, 500];
 

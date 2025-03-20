@@ -1,14 +1,14 @@
 import cloudImg from "~/assets/images/cloud-icon.webp";
-import logoLightImg from "~/assets/images/light/cloud-logo.svg";
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
+import logoLightImg from "~/assets/images/light/cloud-logo.svg";
 
-import { Center, Stack, Group, Button, Image, Text } from "@mantine/core";
+import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { iconChevronRight, iconOpen } from "~/util/icons";
-import { Icon } from "../Icon";
 import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
+import { iconChevronRight, iconOpen } from "~/util/icons";
+import { Icon } from "../Icon";
 
 export function CloudSplash() {
 	const authState = useCloudStore((s) => s.authState);

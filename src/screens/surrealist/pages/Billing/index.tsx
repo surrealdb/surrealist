@@ -38,6 +38,7 @@ import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
 import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
 import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
+import { CloudSplash } from "~/components/CloudSplash";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -54,7 +55,6 @@ import { measureComputeCost } from "~/util/cloud";
 import { showError, showInfo } from "~/util/helpers";
 import { openBillingDetails } from "../../../../cloud/modals/billing";
 import { Section } from "../../../../components/Section";
-import { CloudSplash } from "~/components/CloudSplash";
 
 function isCouponActive(coupon: CloudCoupon) {
 	if (coupon.amount_remaining <= 0) {
