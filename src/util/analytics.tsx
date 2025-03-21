@@ -13,7 +13,7 @@ const HOSTNAME = isProduction
 /**
  * Track analytics events
  */
-export function tagEvent(name: string, payload: Record<string, unknown> = {}) {
+export async function tagEvent(name: string, payload: Record<string, unknown> = {}) {
 	const uniqueId = (incrementalId++).toString();
 	const params = new URLSearchParams();
 
@@ -41,13 +41,21 @@ export function tagEvent(name: string, payload: Record<string, unknown> = {}) {
 		params.append(`epn.${key}`, `${value}`);
 	}
 
-	fetch(`https://${HOSTNAME}/data/event/${btoa(params.toString())}`, {
-		method: "POST",
-		mode: "no-cors",
-		credentials: "include",
-		headers: {
-			"Content-Type": "text/plain;charset=UTF-8",
-		},
-		body: "",
-	});
+	try {
+		adapter.log("Tag", `Recorded ${name}`);
+
+		const res = await fetch(`https://${HOSTNAME}/data/event/${btoa(params.toString())}`, {
+			method: "POST",
+			mode: "no-cors",
+			credentials: "include",
+			headers: {
+				"Content-Type": "text/plain;charset=UTF-8",
+			},
+			body: "",
+		});
+
+		console.log("Response =", await res.text());
+	} catch (err: any) {
+		console.error("Failure", err);
+	}
 }

@@ -7,7 +7,7 @@
 use std::env;
 
 use database::DatabaseState;
-use log::info;
+use log::{info, LevelFilter};
 use paths::get_logs_directory;
 use tauri::{Emitter, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
@@ -55,6 +55,7 @@ fn main() {
         }))
         .plugin(
             tauri_plugin_log::Builder::new()
+                .level(LevelFilter::Debug)
                 .format(move |out, message, record| {
                     let now = OffsetDateTime::now_utc();
                     let time = now.format(&log_time_fmt).expect("Failed to format time");
