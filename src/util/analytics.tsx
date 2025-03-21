@@ -13,7 +13,7 @@ const HOSTNAME = isProduction
 /**
  * Track analytics events
  */
-export function tagEvent(name: string, payload: Record<string, string> = {}) {
+export function tagEvent(name: string, payload: Record<string, unknown> = {}) {
 	const uniqueId = (incrementalId++).toString();
 	const params = new URLSearchParams();
 
@@ -38,7 +38,7 @@ export function tagEvent(name: string, payload: Record<string, string> = {}) {
 	params.append("ep.surrealist_mode", import.meta.env.MODE);
 
 	for (const [key, value] of Object.entries(payload)) {
-		params.append(`epn.${key}`, value);
+		params.append(`epn.${key}`, `${value}`);
 	}
 
 	fetch(`https://${HOSTNAME}/data/event/${btoa(params.toString())}`, {
