@@ -44,6 +44,7 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
+import { tagEvent } from "~/util/analytics";
 
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
@@ -109,7 +110,7 @@ export function QueryView() {
 		});
 
 		isSavingHandle.close();
-		window.tagEvent("query_save");
+		tagEvent("query_save");
 	});
 
 	const showVariables = !!active?.showVariables;

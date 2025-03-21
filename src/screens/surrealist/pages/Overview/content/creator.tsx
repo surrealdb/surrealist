@@ -41,7 +41,6 @@ export function StartCreator({
 							c="bright"
 							fw={600}
 							fz="lg"
-							// mt={isCard ? "xs" : 0}
 						>
 							{title}
 						</Text>

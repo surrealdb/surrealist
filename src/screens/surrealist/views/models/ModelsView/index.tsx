@@ -18,6 +18,7 @@ import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { EditorPanel } from "../EditorPanel";
 import { ModelsPanel } from "../ModelsPanel";
+import { tagEvent } from "~/util/analytics";
 
 const SURML_FILTERS = [
 	{
@@ -77,7 +78,7 @@ export function ModelsView() {
 				body: file.content,
 			});
 
-			window.tagEvent("import", { extension: "surml" });
+			tagEvent("import", { extension: "surml" });
 		}
 
 		syncConnectionSchema();
@@ -105,7 +106,7 @@ export function ModelsView() {
 				}).then((res) => res.blob()),
 		);
 
-		window.tagEvent("export", { extension: "surml" });
+		tagEvent("export", { extension: "surml" });
 	});
 
 	const snippet = useMemo(

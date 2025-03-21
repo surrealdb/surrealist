@@ -12,6 +12,7 @@ import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { ON_STOP_PROPAGATION, newId } from "~/util/helpers";
 import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
@@ -50,7 +51,7 @@ export function StartConnection({
 			id: newId(),
 		});
 
-		window.tagEvent("connection_duplicated", {
+		tagEvent("connection_duplicated", {
 			protocol: connection.authentication.protocol.toString(),
 			is_local: connection.authentication.hostname.includes("localhost"),
 		});
@@ -63,7 +64,7 @@ export function StartConnection({
 		onConfirm() {
 			removeConnection(connection.id);
 
-			window.tagEvent("connection_deleted", {
+			tagEvent("connection_deleted", {
 				protocol: connection.authentication.protocol.toString(),
 				is_local: connection.authentication.hostname.includes("localhost"),
 			});
@@ -129,7 +130,7 @@ export function StartConnection({
 									mt={-4}
 									truncate
 								>
-									{target}
+									{isSandbox ? "Your personal playground" : target}
 								</Text>
 							</Box>
 						</Group>
@@ -158,7 +159,7 @@ export function StartConnection({
 										leftSection={<Icon path={iconEdit} />}
 										onClick={handleEdit}
 									>
-										Edit details
+										Edit connection
 									</Menu.Item>
 									<Menu.Item
 										leftSection={<Icon path={iconCopy} />}
@@ -184,7 +185,17 @@ export function StartConnection({
 						</div>
 					)}
 				</Group>
-				<Group gap="xs">{labels}</Group>
+				{isSandbox ? (
+					<Badge
+						color="slate"
+						variant="subtle"
+						px={0}
+					>
+						Built-in
+					</Badge>
+				) : (
+					<Group gap="xs">{labels}</Group>
+				)}
 				<Faint containerRef={containerRef} />
 			</Paper>
 		</UnstyledButton>

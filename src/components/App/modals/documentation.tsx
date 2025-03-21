@@ -23,6 +23,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { tagEvent } from "~/util/analytics";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
 import { iconBook } from "~/util/icons";
 
@@ -51,7 +52,7 @@ export function DocumentationModal() {
 				return [];
 			}
 
-			window.tagEvent("documentation_search_query", { search: searchQuery });
+			tagEvent("documentation_search_query", { search: searchQuery });
 
 			const params = new URLSearchParams();
 
@@ -79,7 +80,7 @@ export function DocumentationModal() {
 			setSearch(search);
 		}
 
-		window.tagEvent("documentation_search_open");
+		tagEvent("documentation_search_open");
 	});
 
 	const isEmpty = data?.length === 0;

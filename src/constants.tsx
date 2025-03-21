@@ -191,6 +191,11 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Overview",
 		icon: iconExplorer,
 	},
+	"/cloud": {
+		id: "/cloud",
+		name: "Surreal Cloud",
+		icon: iconCloud,
+	},
 	"/billing": {
 		id: "/billing",
 		name: "Billing",

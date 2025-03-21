@@ -1,14 +1,14 @@
 import { useLayoutEffect } from "react";
-import { useLocation } from "wouter";
-import { useSearchParams } from "~/hooks/routing";
+import { useAbsoluteLocation, useSearchParams } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
+import { tagEvent } from "~/util/analytics";
 import { handleIntentRequest } from "~/util/intents";
 import { REFERRER_KEY } from "~/util/storage";
 
 export function useAppRouter() {
 	const { setActiveResource } = useConfigStore.getState();
 
-	const [path, setPath] = useLocation();
+	const [path, setPath] = useAbsoluteLocation();
 	const { intent, referrer } = useSearchParams();
 	const resource = useConfigStore((s) => s.activeResource);
 
@@ -38,4 +38,9 @@ export function useAppRouter() {
 			sessionStorage.setItem(REFERRER_KEY, referrer);
 		}
 	}, [referrer]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Page views
+	useLayoutEffect(() => {
+		tagEvent("page_view");
+	}, [path]);
 }

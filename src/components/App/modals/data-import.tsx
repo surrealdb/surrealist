@@ -27,6 +27,7 @@ import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { tagEvent } from "~/util/analytics";
 import { showError, showInfo, showWarning } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
@@ -1038,7 +1039,7 @@ export function DataImportModal() {
 
 			const configureImportType = (type: ImportType) => {
 				setImportType(type);
-				window.tagEvent("import", { extension: type });
+				tagEvent("import", { extension: type });
 			};
 
 			const extractFromFileType = (fileFormat: DataFileFormat) => {

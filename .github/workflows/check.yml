@@ -46,7 +46,7 @@ jobs:
 
       - name: Frontend linting
         run: |
-          pnpm lint:check
+          pnpm qc
 
       - name: Backend linting
         run: |

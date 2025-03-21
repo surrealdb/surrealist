@@ -269,7 +269,7 @@ export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
 				{
 					id: newId(),
 					title: "SurrealQL",
-					link: "https://surrealdb.com/docs/surrealdb/surrealql/",
+					link: "https://surrealdb.com/docs/surrealql/",
 				},
 				{
 					id: newId(),

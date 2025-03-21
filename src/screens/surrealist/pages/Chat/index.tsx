@@ -204,7 +204,7 @@ export function ChatPage() {
 								w={196}
 							/>
 							<PrimaryTitle fz={42}>Welcome to Sidekick</PrimaryTitle>
-							<Text fz="lg">
+							<Text fz="xl">
 								Your personal Surreal assistant designed to answer your database
 								questions.
 							</Text>
@@ -232,7 +232,7 @@ export function ChatPage() {
 								<Group
 									mt="xl"
 									w="100%"
-									maw={400}
+									maw={450}
 								>
 									<Button
 										flex={1}

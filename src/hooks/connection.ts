@@ -166,12 +166,13 @@ export function useRequireDatabase(callback: () => void) {
 export interface ConnectionFilter {
 	search?: string;
 	label?: string;
+	includeEmpty?: boolean;
 }
 
 /**
  * Retrieve the structured list of instances and connections
  */
-export function useConnectionOverview({ search, label }: ConnectionFilter) {
+export function useConnectionOverview({ search, label, includeEmpty }: ConnectionFilter) {
 	const { entries, isPending } = useCloudInstanceList();
 
 	const connections = useConnectionList();
@@ -187,7 +188,7 @@ export function useConnectionOverview({ search, label }: ConnectionFilter) {
 		for (const entry of entries) {
 			const instances = filterInstances(entry.instances, search, label);
 
-			if (instances.length > 0 || (!search && !label)) {
+			if (instances.length > 0 || includeEmpty) {
 				organizations.push({
 					info: entry.organization,
 					instances,
@@ -198,7 +199,7 @@ export function useConnectionOverview({ search, label }: ConnectionFilter) {
 		const isEmpty = !sandbox && userConnections.length === 0 && organizations.length === 0;
 
 		return [userConnections, sandbox, organizations, isEmpty] as const;
-	}, [connections, sandboxInfo, entries, search, label]);
+	}, [connections, sandboxInfo, entries, search, label, includeEmpty]);
 
 	return {
 		isPending,

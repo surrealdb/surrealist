@@ -409,6 +409,7 @@ body.mod .cm-record-link:hover {
 .mantine-SegmentedControl-root {
 	background-color: unset;
 	border: 1px solid var(--mantine-color-slate-6);
+	padding: 0;
 
 	@include light {
 		border-color: var(--mantine-color-slate-2);
@@ -433,6 +434,8 @@ body.mod .cm-record-link:hover {
 	}
 
 	.mantine-SegmentedControl-control {
+		padding: 2px;
+
 		--separator-color: var(--mantine-color-slate-6);
 
 		@include light {

@@ -30,6 +30,7 @@ import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { Template } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
 import { iconArrowLeft, iconChevronDown, iconChevronRight, iconHomePlus } from "~/util/icons";
@@ -50,7 +51,7 @@ export function CreateConnectionPage() {
 		addConnection(connection);
 		navigateConnection(connection.id);
 
-		window.tagEvent("connection_created", {
+		tagEvent("connection_created", {
 			protocol: connection.authentication.protocol.toString(),
 			is_local: connection.authentication.hostname.includes("localhost"),
 		});

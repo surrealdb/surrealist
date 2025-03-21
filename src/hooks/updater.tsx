@@ -8,6 +8,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconDownload } from "~/util/icons";
 import { useStable } from "./stable";
+import { tagEvent } from "~/util/analytics";
 
 type Phase = "idle" | "downloading" | "error";
 
@@ -55,7 +56,7 @@ export function useDesktopUpdater() {
 				}
 			});
 
-			await window.tagEvent("version_updated", {
+			await tagEvent("version_updated", {
 				from_version: import.meta.env.VERSION,
 				to_version: update.version,
 			});

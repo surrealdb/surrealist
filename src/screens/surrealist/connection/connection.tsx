@@ -37,6 +37,7 @@ import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
+import { tagEvent } from "~/util/analytics";
 
 export interface ConnectOptions {
 	connection?: Connection;
@@ -192,7 +193,7 @@ export async function openConnection(options?: ConnectOptions) {
 
 			ConnectedEvent.dispatch(null);
 
-			window.tagEvent("connection_connected", {
+			tagEvent("connection_connected", {
 				protocol: connection.authentication.protocol.toString(),
 			});
 		}
@@ -451,7 +452,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		setQueryResponse(id, response);
 
-		window.tagEvent("query_execute", {
+		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "surql",
 		});
@@ -555,7 +556,7 @@ export async function executeGraphql(
 
 		setGraphqlResponse(connection.id, response);
 
-		window.tagEvent("query_execute", {
+		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "graphql",
 		});
