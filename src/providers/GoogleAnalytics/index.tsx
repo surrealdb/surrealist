@@ -35,11 +35,6 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 			});
 		};
 
-		const host = window.location.host.includes("localhost")
-			? "dev.surrealist.app"
-			: window.location.host;
-		const scriptSource = `https://${host}/data/script.js`;
-
 		window.gtag("set", "linker", {
 			accept_incoming: true,
 			decorate_forms: true,
@@ -50,6 +45,10 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		window.gtag("js", new Date());
 
 		if (isBrowser) {
+			const host = window.location.host.includes("localhost")
+				? "dev.surrealist.app"
+				: window.location.host;
+
 			const server_container_url = `https://${host}/data`;
 
 			window.gtag("config", import.meta.env.GTM_ID, { server_container_url });
@@ -60,7 +59,7 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		const script = document.createElement("script");
 
 		script.id = "surreal-gtm";
-		script.src = scriptSource; // <---- TODO: Change this to the correct URL?
+		script.src = "https://surrealist.app/data/script.js";
 		script.async = true;
 
 		script.addEventListener("load", async () => {
