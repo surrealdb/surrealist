@@ -1,5 +1,5 @@
 import { type ReactNode, createContext, useEffect } from "react";
-import { adapter } from "~/adapter";
+import { adapter, isBrowser, isDesktop } from "~/adapter";
 
 interface GoogleAnalyticsProviderProps {
 	children: ReactNode;
@@ -38,7 +38,6 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		const host = window.location.host.includes("localhost")
 			? "dev.surrealist.app"
 			: window.location.host;
-		const server_container_url = `https://${host}/data`;
 		const scriptSource = `https://${host}/data/script.js`;
 
 		window.gtag("set", "linker", {
@@ -47,8 +46,16 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 			url_position: "query",
 			domains: ["surrealdb.com", "surrealist.app"],
 		});
+
 		window.gtag("js", new Date());
-		window.gtag("config", import.meta.env.GTM_ID, { server_container_url });
+
+		if (isBrowser) {
+			const server_container_url = `https://${host}/data`;
+
+			window.gtag("config", import.meta.env.GTM_ID, { server_container_url });
+		} else {
+			window.gtag("config", import.meta.env.GTM_ID);
+		}
 
 		const script = document.createElement("script");
 
@@ -71,7 +78,7 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 
 		document.head.appendChild(script);
 
-		if ("serviceWorker" in navigator) {
+		if (isBrowser && "serviceWorker" in navigator) {
 			navigator.serviceWorker.register("/sw.js");
 			navigator.serviceWorker.addEventListener("controllerchange", () => {
 				window.location.reload();
