@@ -10,6 +10,7 @@ import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
+import { tagEvent } from "~/util/analytics";
 
 export function DatabaseServing() {
 	const [hasStarted, setHasStarted] = useState(false);
@@ -34,7 +35,7 @@ export function DatabaseServing() {
 
 			adapter
 				.startDatabase()
-				.then(() => window.tagEvent("database_serve"))
+				.then(() => tagEvent("database_serve"))
 				.catch(() => stopServing());
 		}
 

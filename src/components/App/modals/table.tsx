@@ -12,6 +12,7 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import type { SchemaMode } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { iconPlus, iconRelation, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
@@ -57,7 +58,7 @@ export function TableCreatorModal() {
 			});
 		}
 
-		window.tagEvent("table_created");
+		tagEvent("table_created");
 	});
 
 	useLayoutEffect(() => {

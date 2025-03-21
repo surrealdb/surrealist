@@ -6,6 +6,7 @@ import { useStable } from "~/hooks/stable";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
+import { tagEvent } from "~/util/analytics";
 
 type InspectFunction = (record: RecordId | string) => void;
 type StopInspectFunction = () => void;
@@ -56,7 +57,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 			setHistoryItems([recordId]);
 		}
 
-		window.tagEvent("record_inspector_open");
+		tagEvent("record_inspector_open");
 	});
 
 	const stopInspect = useStable(() => {

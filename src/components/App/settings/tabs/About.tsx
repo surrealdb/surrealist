@@ -1,6 +1,6 @@
 import classes from "../style.module.scss";
 
-import { Button, Stack, Text, Transition } from "@mantine/core";
+import { Button, Stack, Text } from "@mantine/core";
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import { adapter, isDesktop } from "~/adapter";

@@ -4,6 +4,7 @@ import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudProfile } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { fastParseJwt, newId, showError } from "~/util/helpers";
 
 const WORKFLOW_ID = import.meta.env.VITE_SCOUT_WORKFLOW_ID;
@@ -77,7 +78,7 @@ export function useCopilotMutation() {
 				thinking: "Thinking...",
 			});
 
-			window.tagEvent("sidekick_question_asked", {
+			tagEvent("sidekick_question_asked", {
 				response_time: res.headers.get("X-Response-Time"),
 				prompt_length: message.length,
 			});

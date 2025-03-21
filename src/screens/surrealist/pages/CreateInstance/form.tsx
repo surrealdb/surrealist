@@ -18,6 +18,7 @@ import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionOrganizationStep } from "./steps/organization";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
+import { tagEvent } from "~/util/analytics";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
@@ -70,7 +71,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				}),
 			});
 
-			window.tagEvent("cloud_instance_created", {
+			tagEvent("cloud_instance_created", {
 				region: details.region,
 				version: details.version,
 				compute_type: details.type,

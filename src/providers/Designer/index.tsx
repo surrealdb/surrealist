@@ -12,6 +12,7 @@ import { syncConnectionSchema } from "~/util/schema";
 import { SDB_2_0_0 } from "~/util/versions";
 import { DesignDrawer } from "./drawer";
 import { buildDefinitionQueries, isSchemaValid } from "./helpers";
+import { tagEvent } from "~/util/analytics";
 
 type DesignFunction = (table: string) => void;
 type StopDesignFunction = () => void;
@@ -79,7 +80,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 		saveHandle.track();
 		designingHandle.open();
 
-		window.tagEvent("table_designer_open");
+		tagEvent("table_designer_open");
 	});
 
 	const closeDrawer = useStable((force?: boolean) => {

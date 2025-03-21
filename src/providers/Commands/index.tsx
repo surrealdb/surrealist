@@ -9,6 +9,7 @@ import { useConfigStore } from "~/stores/config";
 import { dispatchIntent } from "~/util/intents";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory, CommandPayload } from "./types";
+import { tagEvent } from "~/util/analytics";
 
 const CommandsContext = createContext<{
 	categories: CommandCategory[];
@@ -96,7 +97,7 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
-		window.tagEvent("execute_command", {
+		tagEvent("execute_command", {
 			command: cmd.name,
 		});
 

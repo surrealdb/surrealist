@@ -31,6 +31,7 @@ import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
+import { tagEvent } from "~/util/analytics";
 
 interface NewsItem {
 	id: string;
@@ -69,7 +70,7 @@ export function NewsFeedDrawer() {
 		readingHandle.close();
 		updateViewedNews();
 
-		window.tagEvent("blog_opened", {
+		tagEvent("blog_opened", {
 			...pendingEvent,
 			close_time: new Date().toISOString(),
 		});
