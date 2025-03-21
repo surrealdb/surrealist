@@ -4,7 +4,9 @@
 	"version": "3.3.0",
 	"surreal": "2.0.0",
 	"type": "module",
-	"authors": ["SurrealDB"],
+	"authors": [
+		"SurrealDB"
+	],
 	"scripts": {
 		"build": "tsc && vite build",
 		"dev": "vite",
@@ -56,16 +58,16 @@
 		"@surrealdb/ql-wasm": "0.2.0-beta.10",
 		"@surrealdb/wasm": "1.2.0",
 		"@tanstack/react-query": "^5.37.1",
-		"@tauri-apps/api": "2.0.0-rc.4",
-		"@tauri-apps/plugin-deep-link": "2.0.0-rc.1",
-		"@tauri-apps/plugin-dialog": "2.0.0-rc.1",
-		"@tauri-apps/plugin-fs": "2.0.0-rc.2",
-		"@tauri-apps/plugin-http": "2.0.0-rc.2",
-		"@tauri-apps/plugin-log": "2.0.0-rc.1",
-		"@tauri-apps/plugin-os": "2.0.0-rc.1",
-		"@tauri-apps/plugin-process": "2.0.0-rc.1",
-		"@tauri-apps/plugin-shell": "2.0.0-rc.1",
-		"@tauri-apps/plugin-updater": "2.0.0-rc.2",
+		"@tauri-apps/api": "2.4.0",
+		"@tauri-apps/plugin-deep-link": "2.2.0",
+		"@tauri-apps/plugin-dialog": "2.2.0",
+		"@tauri-apps/plugin-fs": "2.2.0",
+		"@tauri-apps/plugin-http": "2.4.2",
+		"@tauri-apps/plugin-log": "2.3.1",
+		"@tauri-apps/plugin-os": "2.2.1",
+		"@tauri-apps/plugin-process": "2.2.0",
+		"@tauri-apps/plugin-shell": "2.2.0",
+		"@tauri-apps/plugin-updater": "2.6.1",
 		"@theopensource-company/feature-flags": "^0.4.6",
 		"@xyflow/react": "^12.3.2",
 		"ansi-to-html": "^0.7.2",
@@ -111,7 +113,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.8.3",
-		"@tauri-apps/cli": "2.0.0-rc.11",
+		"@tauri-apps/cli": "2.4.0",
 		"@types/leaflet": "^1.9.12",
 		"@types/node": "^20.4.9",
 		"@types/papaparse": "^5.3.14",
@@ -133,6 +135,12 @@
 		"patchedDependencies": {
 			"graphql@16.9.0": "patches/graphql@16.9.0.patch"
 		},
-		"onlyBuiltDependencies": ["@biomejs/biome", "core-js", "esbuild", "sharp"]
-	}
+		"onlyBuiltDependencies": [
+			"@biomejs/biome",
+			"core-js",
+			"esbuild",
+			"sharp"
+		]
+	},
+	"packageManager": "pnpm@10.6.3+sha512.bb45e34d50a9a76e858a95837301bfb6bd6d35aea2c5d52094fa497a467c43f5c440103ce2511e9e0a2f89c3d6071baac3358fc68ac6fb75e2ceb3d2736065e6"
 }
