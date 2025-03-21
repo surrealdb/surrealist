@@ -1,5 +1,6 @@
 import { type ReactNode, createContext, useEffect } from "react";
 import { adapter, isBrowser, isDesktop } from "~/adapter";
+import { isPreview, isProduction } from "~/util/environment";
 
 interface GoogleAnalyticsProviderProps {
 	children: ReactNode;
@@ -9,10 +10,6 @@ interface GoogleAnalyticsProviderProps {
 export type GAIdentifier = "event" | "pageview";
 
 const GoogleAnalyticsContext = createContext(null);
-
-// Create a promise that resolves when Google Analytics is loaded
-// This is needed to ensure that the trackEvent function is only called after Google Analytics is loaded.
-const initializer = Promise.withResolvers<null>();
 
 function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 	// Initialize Google Analytics
@@ -26,14 +23,19 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		};
 
 		window.tagEvent = async (event: string, data?: object) => {
-			await initializer.promise;
-			window.gtag({
-				event,
+			window.gtag("event", event, {
 				...(data ?? {}),
 				adapter: adapter.id,
 				platform: adapter.platform,
 			});
 		};
+
+		const host = isProduction
+			? "surrealist.app"
+			: isPreview
+				? "beta.surrealist.app"
+				: "dev.surrealist.app";
+		const server_container_url = `https://${host}/data`;
 
 		window.gtag("set", "linker", {
 			accept_incoming: true,
@@ -43,18 +45,7 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		});
 
 		window.gtag("js", new Date());
-
-		if (isBrowser) {
-			const host = window.location.host.includes("localhost")
-				? "dev.surrealist.app"
-				: window.location.host;
-
-			const server_container_url = `https://${host}/data`;
-
-			window.gtag("config", import.meta.env.GTM_ID, { server_container_url });
-		} else {
-			window.gtag("config", import.meta.env.GTM_ID);
-		}
+		window.gtag("config", import.meta.env.GTM_ID, { server_container_url });
 
 		const script = document.createElement("script");
 
@@ -63,13 +54,11 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		script.async = true;
 
 		script.addEventListener("load", async () => {
-			console.info("Google Analytics loaded");
-			initializer.resolve(null);
+			console.debug("GTM initialized");
 		});
 
 		const onError = () => {
 			console.error("Failed to load Google Analytics");
-			initializer.reject();
 		};
 
 		script.addEventListener("error", onError);
