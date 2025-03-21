@@ -54,7 +54,7 @@ function GoogleAnalyticsProvider(props: GoogleAnalyticsProviderProps) {
 		script.async = true;
 
 		script.addEventListener("load", async () => {
-			console.debug("GTM initialized");
+			console.debug(`GTM initialized with ${server_container_url}`);
 		});
 
 		const onError = () => {
