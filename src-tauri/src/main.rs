@@ -13,6 +13,7 @@ use tauri::{Emitter, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 use time::{format_description, OffsetDateTime};
 
+mod analytics;
 mod config;
 mod database;
 mod open;
@@ -75,6 +76,7 @@ fn main() {
         .manage(open::OpenResourceState(Default::default()))
         .manage(DatabaseState(Default::default()))
         .invoke_handler(tauri::generate_handler![
+            analytics::track_event,
             config::load_config,
             config::save_config,
             config::backup_config,

@@ -1,19 +1,25 @@
 import { adapter } from "~/adapter";
 import { isPreview, isProduction } from "./environment";
 import { CLIENT_KEY } from "./storage";
+import { featureFlags } from "./feature-flags";
+import { getSetting } from "./config";
 
 let incrementalId = 1;
 
-const HOSTNAME = isProduction
-	? "surrealist.app"
-	: isPreview
-		? "beta.surrealist.app"
-		: "dev.surrealist.app";
+export const HOSTNAME = isProduction
+		? "surrealist.app"
+		: isPreview
+			? "beta.surrealist.app"
+			: "dev.surrealist.app";
 
 /**
  * Track analytics events
  */
 export async function tagEvent(name: string, payload: Record<string, unknown> = {}) {
+	const { gtm_debug } = featureFlags.store;
+	const debug_origin = getSetting("gtm", "origin");
+	const debug_mode = getSetting("gtm", "debug_mode");
+	const hostname = (gtm_debug && debug_origin) || HOSTNAME;
 	const uniqueId = (incrementalId++).toString();
 	const params = new URLSearchParams();
 
@@ -31,6 +37,9 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	params.append("dl", window.location.href);
 	params.append("dt", document.title);
 	params.append("_s", uniqueId);
+	if (debug_mode) {
+		params.append("debug_mode", "1");
+	}
 
 	params.append("ep.surrealist_version", import.meta.env.VERSION);
 	params.append("ep.surrealist_platform", adapter.platform);
@@ -43,18 +52,9 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 
 	try {
 		adapter.log("Tag", `Recorded ${name}`);
+		const url = `https://${hostname}/data/event/${btoa(params.toString())}`;
 
-		const res = await fetch(`https://${HOSTNAME}/data/event/${btoa(params.toString())}`, {
-			method: "POST",
-			mode: "no-cors",
-			credentials: "include",
-			headers: {
-				"Content-Type": "text/plain;charset=UTF-8",
-			},
-			body: "",
-		});
-
-		console.log("Response =", await res.text());
+		const res = await adapter.trackEvent(url);
 	} catch (err: any) {
 		console.error("Failure", err);
 	}

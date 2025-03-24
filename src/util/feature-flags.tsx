@@ -76,6 +76,9 @@ export const schema = {
 	sidebar_customization: {
 		options: [false, true],
 	},
+	gtm_debug: {
+		options: [false, true],
+	}
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
@@ -100,6 +103,7 @@ export const featureFlags = new FeatureFlags({
 			themes: true,
 			syntax_themes: true,
 			sidebar_customization: true,
+			gtm_debug: false,
 		},
 		preview: {
 			query_view: true,
@@ -118,6 +122,7 @@ export const featureFlags = new FeatureFlags({
 			newsfeed: true,
 			themes: true,
 			sidebar_customization: true,
+			gtm_debug: false,
 		},
 		production: {
 			query_view: true,
@@ -135,6 +140,7 @@ export const featureFlags = new FeatureFlags({
 			cloud_access: true,
 			newsfeed: true,
 			themes: true,
+			gtm_debug: false,
 		},
 	},
 	overrides: (flag) => {

@@ -88,7 +88,7 @@ export class FlagSetController<K extends string, T extends Flags<K>> {
  * Compute available preferences based on the current state
  */
 export function computePreferences(): PreferenceSection[] {
-	const { themes, syntax_themes, cloud_endpoints, sidebar_customization } = featureFlags.store;
+	const { themes, syntax_themes, cloud_endpoints, gtm_debug, sidebar_customization } = featureFlags.store;
 
 	const sections: PreferenceSection[] = [];
 
@@ -419,6 +419,49 @@ export function computePreferences(): PreferenceSection[] {
 						writer: (config, value) => {
 							config.settings.cloud.urlApiBase = value;
 							config.settings.cloud.urlApiMgmtBase = value;
+						},
+					}),
+				},
+			],
+		});
+	}
+
+	if (gtm_debug) {
+		sections.push({
+			name: "GTM Debug",
+			preferences: [
+				{
+					name: "Origin",
+					description: "What host to use for the origin. Origin is only overridden in the desktop app",
+					controller: new SelectionController({
+						options: [
+							{ label: "Production", value: "surrealist.app" },
+							{ label: "Beta", value: "beta.surrealist.app" },
+							{ label: "Development", value: "dev.surrealist.app" },
+						] as const,
+						reader: (config) => config.settings.gtm.origin,
+						writer: (config, value) => {
+							config.settings.gtm.origin = value;
+						},
+					}),
+				},
+				{
+					name: "Debug Mode",
+					description: "Enable debug mode for GTM requests",
+					controller: new CheckboxController({
+						reader: (config) => config.settings.gtm.debug_mode,
+						writer: (config, value) => {
+							config.settings.gtm.debug_mode = value;
+						},
+					}),
+				},
+				{
+					name: "X-Gtm-Server-Preview",
+					description: "Header value can be obtained inside the GTM preview application",
+					controller: new TextController({
+						reader: (config) => config.settings.gtm.preview_header,
+						writer: (config, value) => {
+							config.settings.gtm.preview_header = value;
 						},
 					}),
 				},

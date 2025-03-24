@@ -302,4 +302,20 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 		return config;
 	}
+
+	public async trackEvent(url: string): Promise<void> {
+		try {
+			await fetch(url, {
+				method: "POST",
+				mode: "no-cors",
+				credentials: "include",
+				headers: {
+					"Content-Type": "text/plain;charset=UTF-8",
+				},
+				body: "",
+			});
+		} catch (err: any) {
+			console.error("Failed to track event: ", err);
+		}
+	}
 }
