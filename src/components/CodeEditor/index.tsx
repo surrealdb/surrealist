@@ -57,7 +57,9 @@ export function CodeEditor(props: CodeEditorProps) {
 	const internalCompartment = useRef(new Compartment());
 	const externalCompartment = useRef(new Compartment());
 	const handleChange = useStable((update: ViewUpdate) => {
-		onChange?.(update.state.doc.toString(), update.state.toJSON(serialize), update.state);
+		if (initializedRef.current) {
+			onChange?.(update.state.doc.toString(), update.state.toJSON(serialize), update.state);
+		}
 	});
 
 	// The internally controlled extensions
@@ -114,8 +116,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		const newState = state
 			? EditorState.fromJSON(state, { extensions: combined }, serialize)
 			: EditorState.create({ extensions: combined });
-
-		editor.setState(newState);
+		setTimeout(() => editor.setState(newState), 1);
 		forceLinting(editor);
 	}, [state]);
 
