@@ -51,10 +51,7 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	}
 
 	try {
-		adapter.log("Tag", `Recorded ${name}`);
-		const url = `https://${hostname}/data/event/${btoa(params.toString())}`;
-
-		const res = await adapter.trackEvent(url);
+		await adapter.trackEvent(`https://${hostname}/data/event/${btoa(params.toString())}`);
 	} catch (err: any) {
 		console.error("Failure", err);
 	}
