@@ -116,7 +116,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		const newState = state
 			? EditorState.fromJSON(state, { extensions: combined }, serialize)
 			: EditorState.create({ extensions: combined });
-		setTimeout(() => editor.setState(newState), 1);
+		setTimeout(() => editor.setState(newState), 10);
 		forceLinting(editor);
 	}, [state]);
 
