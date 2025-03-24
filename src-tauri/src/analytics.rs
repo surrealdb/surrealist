@@ -79,7 +79,7 @@ pub async fn track_event(
     }
 
     // Make the request with the custom header
-    let request = client
+    let response = client
         .post(url.to_string())
         .headers(headers)
         .body("")
