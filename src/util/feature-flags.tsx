@@ -78,7 +78,7 @@ export const schema = {
 	},
 	gtm_debug: {
 		options: [false, true],
-	}
+	},
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({

@@ -3,10 +3,10 @@ import { type PropsWithChildren, createContext, useContext, useState } from "rea
 import { RecordId } from "surrealdb";
 import { type HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
+import { tagEvent } from "~/util/analytics";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
-import { tagEvent } from "~/util/analytics";
 
 type InspectFunction = (record: RecordId | string) => void;
 type StopInspectFunction = () => void;

@@ -12,13 +12,13 @@ import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { showError } from "~/util/helpers";
 import { iconArrowLeft } from "~/util/icons";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionOrganizationStep } from "./steps/organization";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
-import { tagEvent } from "~/util/analytics";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",

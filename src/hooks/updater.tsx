@@ -6,9 +6,9 @@ import { Icon } from "~/components/Icon";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { tagEvent } from "~/util/analytics";
 import { iconDownload } from "~/util/icons";
 import { useStable } from "./stable";
-import { tagEvent } from "~/util/analytics";
 
 type Phase = "idle" | "downloading" | "error";
 

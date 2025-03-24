@@ -1,16 +1,16 @@
 import { adapter } from "~/adapter";
-import { isPreview, isProduction } from "./environment";
-import { CLIENT_KEY } from "./storage";
-import { featureFlags } from "./feature-flags";
 import { getSetting } from "./config";
+import { isPreview, isProduction } from "./environment";
+import { featureFlags } from "./feature-flags";
+import { CLIENT_KEY } from "./storage";
 
 let incrementalId = 1;
 
 export const HOSTNAME = isProduction
-		? "surrealist.app"
-		: isPreview
-			? "beta.surrealist.app"
-			: "dev.surrealist.app";
+	? "surrealist.app"
+	: isPreview
+		? "beta.surrealist.app"
+		: "dev.surrealist.app";
 
 /**
  * Track analytics events

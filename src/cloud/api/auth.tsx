@@ -3,6 +3,7 @@ import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudSignin } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
@@ -11,7 +12,6 @@ import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
-import { tagEvent } from "~/util/analytics";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";

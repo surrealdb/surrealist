@@ -30,6 +30,7 @@ import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { AuthDetails, Authentication, CloudInstance, Connection, Protocol } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -37,7 +38,6 @@ import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
-import { tagEvent } from "~/util/analytics";
 
 export interface ConnectOptions {
 	connection?: Connection;

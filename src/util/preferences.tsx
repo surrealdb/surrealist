@@ -88,7 +88,8 @@ export class FlagSetController<K extends string, T extends Flags<K>> {
  * Compute available preferences based on the current state
  */
 export function computePreferences(): PreferenceSection[] {
-	const { themes, syntax_themes, cloud_endpoints, gtm_debug, sidebar_customization } = featureFlags.store;
+	const { themes, syntax_themes, cloud_endpoints, gtm_debug, sidebar_customization } =
+		featureFlags.store;
 
 	const sections: PreferenceSection[] = [];
 
@@ -432,7 +433,8 @@ export function computePreferences(): PreferenceSection[] {
 			preferences: [
 				{
 					name: "Origin",
-					description: "What host to use for the origin. Origin is only overridden in the desktop app",
+					description:
+						"What host to use for the origin. Origin is only overridden in the desktop app",
 					controller: new SelectionController({
 						options: [
 							{ label: "Production", value: "surrealist.app" },

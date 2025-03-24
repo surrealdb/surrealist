@@ -35,6 +35,7 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { SetQueryEvent } from "~/util/global-events";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
@@ -44,7 +45,6 @@ import { ResultPane } from "../ResultPane";
 import { SavesDrawer } from "../SavesDrawer";
 import { TabsPane } from "../TabsPane";
 import { VariablesPane } from "../VariablesPane";
-import { tagEvent } from "~/util/analytics";
 
 const QueryPaneLazy = memo(QueryPane);
 const VariablesPaneLazy = memo(VariablesPane);
