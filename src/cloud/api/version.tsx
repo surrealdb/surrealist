@@ -2,6 +2,7 @@ import { compareVersions } from "compare-versions";
 import { sleep } from "radash";
 import { featureFlags } from "~/util/feature-flags";
 import { fetchAPI } from ".";
+import { featureFlagsLock } from "~/providers/FeatureFlags";
 
 interface VersionInfo {
 	version: string;
@@ -12,10 +13,9 @@ interface VersionInfo {
  * Returns whether the client is supported by the server
  */
 export async function isClientSupported() {
-	// This function is called before feature flags are processed
-	// so we need to wait a bit before checking the killswitch
-	await sleep(50);
+	await featureFlagsLock;
 
+	console.log("!!!! cloud killswitch", featureFlags.get("cloud_killswitch"));
 	if (!featureFlags.get("cloud_killswitch")) {
 		return true;
 	}
