@@ -3,6 +3,7 @@ import { getSetting } from "./config";
 import { isPreview, isProduction } from "./environment";
 import { featureFlags } from "./feature-flags";
 import { CLIENT_KEY } from "./storage";
+import { useCloudStore } from "~/stores/cloud";
 
 let incrementalId = 1;
 
@@ -22,6 +23,7 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	const hostname = (gtm_debug && debug_origin) || HOSTNAME;
 	const uniqueId = (incrementalId++).toString();
 	const params = new URLSearchParams();
+	const { profile, userId } = useCloudStore.getState();
 
 	let client = localStorage.getItem(CLIENT_KEY);
 
@@ -37,6 +39,7 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	params.append("dl", window.location.href);
 	params.append("dt", document.title);
 	params.append("_s", uniqueId);
+
 	if (debug_mode) {
 		params.append("debug_mode", "1");
 	}
@@ -49,6 +52,16 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	for (const [key, value] of Object.entries(payload)) {
 		params.append(`epn.${key}`, `${value}`);
 	}
+
+	if (userId) {
+		params.append("ep.aid", userId);
+	}
+
+	if (name === "cloud_signin") {
+		params.append("ep.email", profile.username);
+	}
+
+	params.append('ep.utk', client);
 
 	try {
 		await adapter.trackEvent(`https://${hostname}/data/event/${btoa(params.toString())}`);
