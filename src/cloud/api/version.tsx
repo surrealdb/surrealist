@@ -14,8 +14,6 @@ interface VersionInfo {
  */
 export async function isClientSupported() {
 	await featureFlagsLock;
-
-	console.log("!!!! cloud killswitch", featureFlags.get("cloud_killswitch"));
 	if (!featureFlags.get("cloud_killswitch")) {
 		return true;
 	}
