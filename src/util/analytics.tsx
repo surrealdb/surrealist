@@ -1,9 +1,9 @@
 import { adapter } from "~/adapter";
+import { useCloudStore } from "~/stores/cloud";
 import { getSetting } from "./config";
 import { isPreview, isProduction } from "./environment";
 import { featureFlags } from "./feature-flags";
 import { CLIENT_KEY } from "./storage";
-import { useCloudStore } from "~/stores/cloud";
 
 let incrementalId = 1;
 
@@ -61,7 +61,7 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 		params.append("ep.email", profile.username);
 	}
 
-	params.append('ep.utk', client);
+	params.append("ep.utk", client);
 
 	try {
 		await adapter.trackEvent(`https://${hostname}/data/event/${btoa(params.toString())}`);
