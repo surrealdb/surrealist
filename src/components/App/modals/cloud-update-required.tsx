@@ -68,9 +68,9 @@ export function CloudUpdateRequiredDialog() {
 					<Text mt={4}>
 						{noUpdate ? (
 							<Text c="red">
-								No update available, please contact{" "}
+								No update available. Please contact{" "}
 								<a href="mailto:support@surrealdb.com">support@surrealdb.com</a> for
-								assistance.
+								assistance
 							</Text>
 						) : phase === "downloading" ? (
 							<Text c="gray.5">Installing... ({progress}%)</Text>
