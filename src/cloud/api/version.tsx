@@ -1,8 +1,8 @@
 import { compareVersions } from "compare-versions";
 import { sleep } from "radash";
+import { featureFlagsLock } from "~/providers/FeatureFlags";
 import { featureFlags } from "~/util/feature-flags";
 import { fetchAPI } from ".";
-import { featureFlagsLock } from "~/providers/FeatureFlags";
 
 interface VersionInfo {
 	version: string;

@@ -6,6 +6,7 @@ import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
 import { CloudExpiredDialog } from "./modals/cloud-expired";
+import { CloudUpdateRequiredDialog } from "./modals/cloud-update-required";
 import { CommandPaletteModal } from "./modals/commands";
 import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
@@ -21,7 +22,6 @@ import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
-import { CloudUpdateRequiredDialog } from "./modals/cloud-update-required";
 
 function Surrealist() {
 	return (

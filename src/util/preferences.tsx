@@ -14,12 +14,12 @@ import {
 } from "~/constants";
 
 import { objectify } from "radash";
+import { useMemo } from "react";
 import { isDesktop } from "~/adapter";
+import { featureFlagsLock } from "~/providers/FeatureFlags";
 import { Flags, type Listable, Selectable, type SurrealistConfig } from "~/types";
 import { featureFlags, useFeatureFlags } from "./feature-flags";
 import { optional } from "./helpers";
-import { featureFlagsLock } from "~/providers/FeatureFlags";
-import { useMemo } from "react";
 
 interface ReaderWriter<T> {
 	reader: (config: SurrealistConfig) => T;
@@ -90,7 +90,8 @@ export class FlagSetController<K extends string, T extends Flags<K>> {
  * Compute available preferences based on the current state
  */
 export function useComputedPreferences(): PreferenceSection[] {
-	const [{ themes, syntax_themes, cloud_endpoints, gtm_debug, sidebar_customization }] = useFeatureFlags();
+	const [{ themes, syntax_themes, cloud_endpoints, gtm_debug, sidebar_customization }] =
+		useFeatureFlags();
 
 	return useMemo(() => {
 		const sections: PreferenceSection[] = [];
@@ -461,7 +462,8 @@ export function useComputedPreferences(): PreferenceSection[] {
 					},
 					{
 						name: "X-Gtm-Server-Preview",
-						description: "Header value can be obtained inside the GTM preview application",
+						description:
+							"Header value can be obtained inside the GTM preview application",
 						controller: new TextController({
 							reader: (config) => config.settings.gtm.preview_header,
 							writer: (config, value) => {

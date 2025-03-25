@@ -119,10 +119,10 @@ export function CodeEditor(props: CodeEditorProps) {
 		];
 
 		const newState = EditorState.fromJSON(state, { extensions: combined }, serialize);
-		
+
 		editor.setState(newState);
 		forceLinting(editor);
-		
+
 		// After state is set, allow change notifications to proceed
 		requestAnimationFrame(() => {
 			preventChangeNotificationsRef.current = false;
@@ -153,7 +153,7 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		editor.dispatch(transaction);
 		forceLinting(editor);
-		
+
 		// After content is updated, allow change notifications to proceed
 		requestAnimationFrame(() => {
 			preventChangeNotificationsRef.current = false;
@@ -163,13 +163,13 @@ export function CodeEditor(props: CodeEditorProps) {
 	// Update internal extension state
 	useEffect(() => {
 		if (!editorRef.current) return;
-		
+
 		preventChangeNotificationsRef.current = true;
-		
+
 		editorRef.current.dispatch({
 			effects: internalCompartment.current?.reconfigure(internalExtensions),
 		});
-		
+
 		requestAnimationFrame(() => {
 			preventChangeNotificationsRef.current = false;
 		});
@@ -178,13 +178,13 @@ export function CodeEditor(props: CodeEditorProps) {
 	// Update external extension state
 	useEffect(() => {
 		if (!editorRef.current) return;
-		
+
 		preventChangeNotificationsRef.current = true;
-		
+
 		editorRef.current.dispatch({
 			effects: externalCompartment.current?.reconfigure(extensions ?? []),
 		});
-		
+
 		requestAnimationFrame(() => {
 			preventChangeNotificationsRef.current = false;
 		});
@@ -212,7 +212,7 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		onMount?.(editor);
 		initializedRef.current = true;
-		
+
 		// Allow change notifications after initialization is complete
 		requestAnimationFrame(() => {
 			preventChangeNotificationsRef.current = false;
