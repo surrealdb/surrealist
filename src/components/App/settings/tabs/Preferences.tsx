@@ -20,7 +20,7 @@ import {
 	FlagSetController,
 	Preference,
 	PreferenceController,
-	computePreferences,
+	useComputedPreferences,
 } from "~/util/preferences";
 
 function isTallInput(preference: Preference) {
@@ -30,9 +30,7 @@ function isTallInput(preference: Preference) {
 export function PreferencesTab() {
 	const [search, setSearch] = useInputState("");
 
-	const original = useMemo(() => {
-		return computePreferences();
-	}, []);
+	const original = useComputedPreferences();
 
 	const sections = useMemo(() => {
 		return original.flatMap((section) => {

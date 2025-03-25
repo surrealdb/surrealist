@@ -68,7 +68,7 @@ import type { IntentPayload, IntentType } from "~/util/intents";
 import {
 	FlagSetController,
 	type PreferenceController,
-	computePreferences,
+	useComputedPreferences,
 } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
@@ -110,11 +110,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 	const isSandbox = connection === SANDBOX;
 	const canDisconnect = currentState !== "disconnected" && !isSandbox;
 
+	const original = useComputedPreferences();
 	const preferences = useMemo(() => {
-		return computePreferences().flatMap(({ name, preferences }) =>
+		return original.flatMap(({ name, preferences }) =>
 			preferences.map((pref) => ({ ...pref, name: `${name} > ${pref.name}` })),
 		);
-	}, []);
+	}, [original]);
 
 	return useMemo(() => {
 		const categories: CommandCategory[] = [];
