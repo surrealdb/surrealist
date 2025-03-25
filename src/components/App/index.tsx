@@ -21,6 +21,7 @@ import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
+import { CloudUpdateRequiredDialog } from "./modals/cloud-update-required";
 
 function Surrealist() {
 	return (
@@ -56,6 +57,7 @@ export function App() {
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
 			<CloudExpiredDialog />
+			<CloudUpdateRequiredDialog />
 
 			{isDesktop && <UpdaterDialog />}
 		</Scaffold>

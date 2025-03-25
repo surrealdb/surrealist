@@ -54,7 +54,8 @@
 				"https://checkout.stripe.com/*",
 				"https://lago-production.s3.amazonaws.com/*",
 				"https://api-prod.scoutos.com/*",
-				"https://api-iam.intercom.io/*"
+				"https://api-iam.intercom.io/*",
+				"https://cloud-api-use1.staging.surrealdb.cloud/*"
 			]
 		}
 	]
