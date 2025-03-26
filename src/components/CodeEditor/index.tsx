@@ -100,7 +100,7 @@ export function CodeEditor(props: CodeEditorProps) {
 
 	// Update editor state when state prop changes
 	useEffect(() => {
-		if (!editorRef.current || !state) return;
+		if (!editorRef.current) return;
 
 		const editor = editorRef.current;
 		const current = editor.state.toJSON(serialize);
@@ -118,7 +118,9 @@ export function CodeEditor(props: CodeEditorProps) {
 			externalCompartment.current.of(extensions ?? []),
 		];
 
-		const newState = EditorState.fromJSON(state, { extensions: combined }, serialize);
+		const newState = state
+		? EditorState.fromJSON(state, { extensions: combined }, serialize)
+		: EditorState.create({ extensions: combined });
 
 		editor.setState(newState);
 		forceLinting(editor);
