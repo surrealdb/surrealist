@@ -42,7 +42,8 @@ export function DocumentationModal() {
 	const [isOpen, openHandle] = useBoolean();
 	const [search, setSearch] = useInputState("");
 
-	const [searchQuery] = useDebouncedValue(search, 150);
+	const [searchQuery] = useDebouncedValue(search, 300);
+	const [trackedQuery] = useDebouncedValue(search, 1500);
 
 	const { data, isFetching } = useQuery({
 		queryKey: ["documentation", searchQuery],
@@ -51,8 +52,6 @@ export function DocumentationModal() {
 			if (!searchQuery) {
 				return [];
 			}
-
-			tagEvent("documentation_search_query", { search: searchQuery });
 
 			const params = new URLSearchParams();
 
@@ -63,6 +62,18 @@ export function DocumentationModal() {
 			const result: Result[] = await response.json();
 
 			return result.map((doc) => ({ ...doc, id: doc.url }));
+		},
+	});
+
+	useQuery({
+		queryKey: ["documentation-track-query", searchQuery],
+		placeholderData: keepPreviousData,
+		queryFn: async () => {
+			if (!trackedQuery) {
+				return [];
+			}
+
+			tagEvent("documentation_search_query", { search: trackedQuery });
 		},
 	});
 
