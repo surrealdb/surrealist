@@ -29,16 +29,15 @@ export function useLatestNewsQuery() {
 				throw new Error(parseError);
 			}
 
-			return [...result.querySelectorAll("item")]
-				.map((item) => ({
-					id: item.querySelector("guid")?.textContent || "",
-					title: item.querySelector("title")?.textContent || "",
-					link: item.querySelector("link")?.textContent || "",
-					description: item.querySelector("description")?.textContent || "",
-					thumbnail: item.querySelector("content")?.getAttribute("url") || "",
-					content: item.querySelector("encoded")?.textContent || "",
-					published: item.querySelector("pubDate")?.textContent || "",
-				}));
+			return [...result.querySelectorAll("item")].map((item) => ({
+				id: item.querySelector("guid")?.textContent || "",
+				title: item.querySelector("title")?.textContent || "",
+				link: item.querySelector("link")?.textContent || "",
+				description: item.querySelector("description")?.textContent || "",
+				thumbnail: item.querySelector("content")?.getAttribute("url") || "",
+				content: item.querySelector("encoded")?.textContent || "",
+				published: item.querySelector("pubDate")?.textContent || "",
+			}));
 		},
 	});
 }
