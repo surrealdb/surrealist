@@ -30,11 +30,6 @@ export function useLatestNewsQuery() {
 			}
 
 			return [...result.querySelectorAll("item")]
-				.filter((item) =>
-					[...item.querySelectorAll("category")].some(
-						(child) => child.textContent?.toLowerCase() === "surrealist",
-					),
-				)
 				.map((item) => ({
 					id: item.querySelector("guid")?.textContent || "",
 					title: item.querySelector("title")?.textContent || "",
