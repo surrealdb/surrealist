@@ -6,6 +6,7 @@ import { Icon } from "~/components/Icon";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { tagEvent } from "~/util/analytics";
 import { iconDownload } from "~/util/icons";
 import { useStable } from "./stable";
 
@@ -55,7 +56,7 @@ export function useDesktopUpdater() {
 				}
 			});
 
-			await window.tagEvent("version_updated", {
+			await tagEvent("version_updated", {
 				from_version: import.meta.env.VERSION,
 				to_version: update.version,
 			});

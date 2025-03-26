@@ -19,7 +19,7 @@ export function useLatestNewsQuery() {
 	return useQuery<NewsPost[]>({
 		queryKey: ["newsfeed"],
 		queryFn: async () => {
-			const response = await fetch(`https://surrealdb.com/feed/blog.rss`);
+			const response = await fetch(`https://surrealdb.com/feed/surrealist.rss`);
 			const body = await response.text();
 			const result = new DOMParser().parseFromString(body, "text/xml");
 
@@ -29,21 +29,15 @@ export function useLatestNewsQuery() {
 				throw new Error(parseError);
 			}
 
-			return [...result.querySelectorAll("item")]
-				.filter((item) =>
-					[...item.querySelectorAll("category")].some(
-						(child) => child.textContent?.toLowerCase() === "surrealist",
-					),
-				)
-				.map((item) => ({
-					id: item.querySelector("guid")?.textContent || "",
-					title: item.querySelector("title")?.textContent || "",
-					link: item.querySelector("link")?.textContent || "",
-					description: item.querySelector("description")?.textContent || "",
-					thumbnail: item.querySelector("content")?.getAttribute("url") || "",
-					content: item.querySelector("encoded")?.textContent || "",
-					published: item.querySelector("pubDate")?.textContent || "",
-				}));
+			return [...result.querySelectorAll("item")].map((item) => ({
+				id: item.querySelector("guid")?.textContent || "",
+				title: item.querySelector("title")?.textContent || "",
+				link: item.querySelector("link")?.textContent || "",
+				description: item.querySelector("description")?.textContent || "",
+				thumbnail: item.querySelector("content")?.getAttribute("url") || "",
+				content: item.querySelector("encoded")?.textContent || "",
+				published: item.querySelector("pubDate")?.textContent || "",
+			}));
 		},
 	});
 }

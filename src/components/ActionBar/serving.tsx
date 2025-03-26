@@ -4,6 +4,7 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openConnection } from "~/screens/surrealist/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
+import { tagEvent } from "~/util/analytics";
 import { getConnection } from "~/util/connection";
 import { isHostLocal } from "~/util/helpers";
 import { iconConsole, iconPlay, iconStop } from "~/util/icons";
@@ -34,7 +35,7 @@ export function DatabaseServing() {
 
 			adapter
 				.startDatabase()
-				.then(() => window.tagEvent("database_serve"))
+				.then(() => tagEvent("database_serve"))
 				.catch(() => stopServing());
 		}
 

@@ -8,6 +8,7 @@ import type {
 	SurrealistSettings,
 } from "~/types";
 
+import { HOSTNAME } from "./analytics";
 import { newId } from "./helpers";
 
 export const CONFIG_VERSION = 2;
@@ -84,6 +85,11 @@ export function createBaseSettings(): SurrealistSettings {
 			urlAuthBase: "",
 			urlApiBase: "",
 			urlApiMgmtBase: "",
+		},
+		gtm: {
+			origin: HOSTNAME,
+			preview_header: "",
+			debug_mode: false,
 		},
 	};
 }

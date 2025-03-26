@@ -30,6 +30,7 @@ import { type State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { AuthDetails, Authentication, CloudInstance, Connection, Protocol } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -192,7 +193,7 @@ export async function openConnection(options?: ConnectOptions) {
 
 			ConnectedEvent.dispatch(null);
 
-			window.tagEvent("connection_connected", {
+			tagEvent("connection_connected", {
 				protocol: connection.authentication.protocol.toString(),
 			});
 		}
@@ -451,7 +452,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		setQueryResponse(id, response);
 
-		window.tagEvent("query_execute", {
+		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "surql",
 		});
@@ -555,7 +556,7 @@ export async function executeGraphql(
 
 		setGraphqlResponse(connection.id, response);
 
-		window.tagEvent("query_execute", {
+		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "graphql",
 		});

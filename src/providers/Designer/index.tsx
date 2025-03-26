@@ -7,6 +7,7 @@ import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { TableInfo } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { showError } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { SDB_2_0_0 } from "~/util/versions";
@@ -79,7 +80,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 		saveHandle.track();
 		designingHandle.open();
 
-		window.tagEvent("table_designer_open");
+		tagEvent("table_designer_open");
 	});
 
 	const closeDrawer = useStable((force?: boolean) => {

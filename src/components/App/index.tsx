@@ -6,6 +6,7 @@ import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
 import { CloudExpiredDialog } from "./modals/cloud-expired";
+import { CloudUpdateRequiredDialog } from "./modals/cloud-update-required";
 import { CommandPaletteModal } from "./modals/commands";
 import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
@@ -56,6 +57,7 @@ export function App() {
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
 			<CloudExpiredDialog />
+			<CloudUpdateRequiredDialog />
 
 			{isDesktop && <UpdaterDialog />}
 		</Scaffold>

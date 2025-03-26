@@ -135,4 +135,11 @@ export interface SurrealistAdapter {
 	 * @param options The fetch options
 	 */
 	fetch(url: string, options?: RequestInit): Promise<Response>;
+
+	/**
+	 * Track an analytics event by it's url
+	 *
+	 * @param url The URL of the event
+	 */
+	trackEvent(url: string): Promise<void>;
 }

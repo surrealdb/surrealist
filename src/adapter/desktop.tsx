@@ -398,9 +398,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	private async queryOpenRequest() {
 		const { addQueryTab, setActiveQueryTab } = useConfigStore.getState();
 		const resources = await invoke<Resource[]>("get_opened_resources");
-		const connection = getConnection();
 
-		if (!connection || resources.length === 0) {
+		if (resources.length === 0) {
 			return;
 		}
 
@@ -415,6 +414,16 @@ export class DesktopAdapter implements SurrealistAdapter {
 					});
 
 					continue;
+				}
+
+				const connection = getConnection();
+
+				if (!connection) {
+					showInfo({
+						title: "Connection required",
+						subtitle: "Please open a connection before opening files",
+					});
+					return;
 				}
 
 				const existing = connection.queries.find(
@@ -451,6 +460,38 @@ export class DesktopAdapter implements SurrealistAdapter {
 					}
 				}
 			}
+		}
+	}
+
+	public async trackEvent(url: string): Promise<void> {
+		const stripCookie = (cookie: string) =>
+			cookie
+				.split(";")
+				.map((c) => c.trim())
+				.filter(
+					(c) =>
+						!c.startsWith("HttpOnly") &&
+						!c.startsWith("Secure") &&
+						!c.startsWith("Domain"),
+				)
+				.join("; ");
+
+		const { gtm_debug } = featureFlags.store;
+		const previewHeader = getSetting("gtm", "preview_header");
+
+		try {
+			const cookies = await invoke<Promise<string[]>>("track_event", {
+				url,
+				cookie: document.cookie,
+				userAgent: navigator.userAgent,
+				previewHeader: (gtm_debug && previewHeader) || undefined,
+			});
+
+			for (const cookie of cookies) {
+				document.cookie = stripCookie(cookie);
+			}
+		} catch (err) {
+			console.error("Failed to track event: ", err);
 		}
 	}
 }

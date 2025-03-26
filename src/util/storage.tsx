@@ -5,3 +5,4 @@ export const REFRESH_TOKEN_KEY = "surrealist:oauth_refresh_token";
 export const REFERRER_KEY = "surrealist:referrer_code";
 export const STATE_KEY = "surrealist:oauth_state";
 export const CONFIG_KEY = "surrealist:config";
+export const CLIENT_KEY = "surrealist:client";

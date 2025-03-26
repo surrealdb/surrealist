@@ -26,7 +26,7 @@ export function CloudExpiredDialog() {
 			shadow="sm"
 			radius="md"
 			position={{
-				left: "calc(50% - 300px)",
+				left: "calc(50% - 263px)",
 				right: "calc(50% + 300px)",
 				bottom: 32,
 			}}

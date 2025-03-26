@@ -10,6 +10,7 @@ import type {
 	SurrealistBehaviorSettings,
 	SurrealistCloudSettings,
 	SurrealistConfig,
+	SurrealistGtmSettings,
 	SurrealistServingSettings,
 	SurrealistTemplateSettings,
 } from "~/types";
@@ -72,6 +73,7 @@ export type ConfigStore = SurrealistConfig & {
 	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
 	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
 	updateCloudSettings: (settings: Partial<SurrealistCloudSettings>) => void;
+	updateGtmSettings: (settings: Partial<SurrealistGtmSettings>) => void;
 	setFeatureFlag: <T extends FeatureFlag<typeof schema>>(
 		key: T,
 		value: FeatureFlagOption<typeof schema, T>,
@@ -313,6 +315,17 @@ export const useConfigStore = create<ConfigStore>()(
 					...state.settings,
 					cloud: {
 						...state.settings.cloud,
+						...settings,
+					},
+				},
+			})),
+
+		updateGtmSettings: (settings) =>
+			set((state) => ({
+				settings: {
+					...state.settings,
+					gtm: {
+						...state.settings.gtm,
 						...settings,
 					},
 				},

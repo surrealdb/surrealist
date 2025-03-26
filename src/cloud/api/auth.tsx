@@ -3,6 +3,7 @@ import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudSignin } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
@@ -233,7 +234,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		}
 
 		if (initial) {
-			window.tagEvent("cloud_signin", {
+			tagEvent("cloud_signin", {
 				auth_provider: result.provider,
 				referred: !!referralCode,
 				open_terms: promptTerms,
@@ -283,7 +284,7 @@ export function destroySession() {
 	shutdown();
 
 	adapter.openUrl(`${authBase}/v2/logout?${params.toString()}`, "internal");
-	window.tagEvent("cloud_signout");
+	tagEvent("cloud_signout");
 }
 
 /**

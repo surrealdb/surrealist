@@ -35,6 +35,7 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { SetQueryEvent } from "~/util/global-events";
 import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
@@ -109,7 +110,7 @@ export function QueryView() {
 		});
 
 		isSavingHandle.close();
-		window.tagEvent("query_save");
+		tagEvent("query_save");
 	});
 
 	const showVariables = !!active?.showVariables;

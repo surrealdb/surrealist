@@ -6,6 +6,7 @@ import { adapter } from "~/adapter";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
+import { tagEvent } from "~/util/analytics";
 import { dispatchIntent } from "~/util/intents";
 import { useInternalCommandBuilder } from "./commands";
 import type { Command, CommandCategory, CommandPayload } from "./types";
@@ -96,7 +97,7 @@ export function CommandsProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
-		window.tagEvent("execute_command", {
+		tagEvent("execute_command", {
 			command: cmd.name,
 		});
 

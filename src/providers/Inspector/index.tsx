@@ -3,6 +3,7 @@ import { type PropsWithChildren, createContext, useContext, useState } from "rea
 import { RecordId } from "surrealdb";
 import { type HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
+import { tagEvent } from "~/util/analytics";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
@@ -56,7 +57,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 			setHistoryItems([recordId]);
 		}
 
-		window.tagEvent("record_inspector_open");
+		tagEvent("record_inspector_open");
 	});
 
 	const stopInspect = useStable(() => {

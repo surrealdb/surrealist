@@ -12,6 +12,7 @@ import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { showError } from "~/util/helpers";
 import { iconArrowLeft } from "~/util/icons";
 import { ProvisionDetailsStep } from "./steps/details";
@@ -70,7 +71,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				}),
 			});
 
-			window.tagEvent("cloud_instance_created", {
+			tagEvent("cloud_instance_created", {
 				region: details.region,
 				version: details.version,
 				compute_type: details.type,

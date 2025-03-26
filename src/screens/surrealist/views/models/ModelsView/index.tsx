@@ -12,6 +12,7 @@ import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { composeHttpConnection } from "~/screens/surrealist/connection/connection";
 import type { SchemaModel } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { createBaseAuthentication } from "~/util/defaults";
 import { connectionUri } from "~/util/helpers";
 import { iconModuleML, iconOpen, iconUpload, iconWarning } from "~/util/icons";
@@ -77,7 +78,7 @@ export function ModelsView() {
 				body: file.content,
 			});
 
-			window.tagEvent("import", { extension: "surml" });
+			tagEvent("import", { extension: "surml" });
 		}
 
 		syncConnectionSchema();
@@ -105,7 +106,7 @@ export function ModelsView() {
 				}).then((res) => res.blob()),
 		);
 
-		window.tagEvent("export", { extension: "surml" });
+		tagEvent("export", { extension: "surml" });
 	});
 
 	const snippet = useMemo(

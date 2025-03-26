@@ -13,6 +13,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { BillingPage } from "./pages/Billing";
 import { ChatPage } from "./pages/Chat";
+import { CloudPage } from "./pages/Cloud";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateInstancePage } from "./pages/CreateInstance";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
@@ -35,6 +36,7 @@ import SidekickView from "./views/sidekick/SidekickView";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
+const CloudPageLazy = memo(CloudPage);
 const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
 const BillingPageLazy = memo(BillingPage);
@@ -148,6 +150,10 @@ export function SurrealistScreen() {
 
 							<Route path="/overview">
 								<OverviewPageLazy />
+							</Route>
+
+							<Route path="/cloud">
+								<CloudPageLazy />
 							</Route>
 
 							<Route path="/mini/new">

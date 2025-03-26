@@ -53,6 +53,7 @@ export type AuthMode =
 	| "cloud";
 export type GlobalPage =
 	| "/overview"
+	| "/cloud"
 	| "/billing"
 	| "/chat"
 	| "/support"
@@ -203,6 +204,12 @@ export interface SurrealistCloudSettings {
 	urlAuthBase: string;
 }
 
+export interface SurrealistGtmSettings {
+	preview_header: string;
+	origin: "surrealist.app" | "beta.surrealist.app" | "dev.surrealist.app";
+	debug_mode: boolean;
+}
+
 export interface QueryResponse {
 	execution_time: string;
 	success: boolean;
@@ -241,6 +248,7 @@ export interface SurrealistSettings {
 	templates: SurrealistTemplateSettings;
 	serving: SurrealistServingSettings;
 	cloud: SurrealistCloudSettings;
+	gtm: SurrealistGtmSettings;
 }
 
 export interface SurrealistConfig {

@@ -15,6 +15,7 @@ import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
@@ -25,6 +26,7 @@ export interface ConfigurationCapabilitiesProps {
 }
 
 export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCapabilitiesProps) {
+	const [{ network_access_caps }] = useFeatureFlags();
 	const [value, setValue] = useState<CloudInstanceCapabilities>(
 		parseCapabilities(instance.capabilities),
 	);
@@ -132,17 +134,21 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							topic="endpoints"
 						/>
 
-						<Divider />
+						{network_access_caps && (
+							<>
+								<Divider />
 
-						<FreeRuleSetCapability
-							name="Network access"
-							description="Configure outbound network access to specific targets"
-							value={value}
-							onChange={setValue}
-							allowedField="allowed_networks"
-							deniedField="denied_networks"
-							topic="network"
-						/>
+								<FreeRuleSetCapability
+									name="Network access"
+									description="Configure outbound network access to specific targets"
+									value={value}
+									onChange={setValue}
+									allowedField="allowed_networks"
+									deniedField="denied_networks"
+									topic="network"
+								/>
+							</>
+						)}
 
 						<Divider />
 

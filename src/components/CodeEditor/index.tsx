@@ -50,6 +50,7 @@ export function CodeEditor(props: CodeEditorProps) {
 	const elementRef = useRef<HTMLDivElement | null>(null);
 	const editorRef = useRef<EditorView>();
 	const initializedRef = useRef(false);
+	const preventChangeNotificationsRef = useRef(true);
 	const [editorScale] = useSetting("appearance", "editorScale");
 	const textSize = Math.floor(15 * (editorScale / 100));
 
@@ -57,7 +58,10 @@ export function CodeEditor(props: CodeEditorProps) {
 	const internalCompartment = useRef(new Compartment());
 	const externalCompartment = useRef(new Compartment());
 	const handleChange = useStable((update: ViewUpdate) => {
-		onChange?.(update.state.doc.toString(), update.state.toJSON(serialize), update.state);
+		// Only notify changes if initialization is complete AND we're not preventing notifications
+		if (initializedRef.current && !preventChangeNotificationsRef.current) {
+			onChange?.(update.state.doc.toString(), update.state.toJSON(serialize), update.state);
+		}
 	});
 
 	// The internally controlled extensions
@@ -77,7 +81,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		[readOnly, colorScheme, syntaxTheme, lineNumbers],
 	);
 
-	// Mount the editor
+	// Create the editor
 	useEffect(() => {
 		if (!elementRef.current) return;
 
@@ -94,17 +98,20 @@ export function CodeEditor(props: CodeEditorProps) {
 		};
 	}, []);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Update only state
+	// Update editor state when state prop changes
 	useEffect(() => {
 		if (!editorRef.current) return;
 
 		const editor = editorRef.current;
 		const current = editor.state.toJSON(serialize);
 
-		// Always update state on initialization
+		// Skip if state hasn't changed
 		if (initializedRef.current && equal(current, state)) {
 			return;
 		}
+
+		// Prevent change notifications while we're setting state
+		preventChangeNotificationsRef.current = true;
 
 		const combined = [
 			internalCompartment.current.of(internalExtensions),
@@ -117,17 +124,25 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		editor.setState(newState);
 		forceLinting(editor);
-	}, [state]);
+
+		// After state is set, allow change notifications to proceed
+		requestAnimationFrame(() => {
+			preventChangeNotificationsRef.current = false;
+		});
+	}, [state, internalExtensions, extensions, serialize]);
 
 	// Update textual editor contents
 	useEffect(() => {
-		if (!editorRef.current) return;
+		if (!editorRef.current || value === undefined) return;
 
 		const editor = editorRef.current;
 
 		if (value === editor.state.doc.toString()) {
 			return;
 		}
+
+		// Prevent change notifications while we're updating content
+		preventChangeNotificationsRef.current = true;
 
 		const transaction = editor.state.update({
 			changes: {
@@ -140,19 +155,40 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		editor.dispatch(transaction);
 		forceLinting(editor);
+
+		// After content is updated, allow change notifications to proceed
+		requestAnimationFrame(() => {
+			preventChangeNotificationsRef.current = false;
+		});
 	}, [value]);
 
 	// Update internal extension state
 	useEffect(() => {
-		editorRef.current?.dispatch({
+		if (!editorRef.current) return;
+
+		preventChangeNotificationsRef.current = true;
+
+		editorRef.current.dispatch({
 			effects: internalCompartment.current?.reconfigure(internalExtensions),
+		});
+
+		requestAnimationFrame(() => {
+			preventChangeNotificationsRef.current = false;
 		});
 	}, [internalExtensions]);
 
 	// Update external extension state
 	useEffect(() => {
-		editorRef.current?.dispatch({
+		if (!editorRef.current) return;
+
+		preventChangeNotificationsRef.current = true;
+
+		editorRef.current.dispatch({
 			effects: externalCompartment.current?.reconfigure(extensions ?? []),
+		});
+
+		requestAnimationFrame(() => {
+			preventChangeNotificationsRef.current = false;
 		});
 	}, [extensions]);
 
@@ -178,6 +214,11 @@ export function CodeEditor(props: CodeEditorProps) {
 
 		onMount?.(editor);
 		initializedRef.current = true;
+
+		// Allow change notifications after initialization is complete
+		requestAnimationFrame(() => {
+			preventChangeNotificationsRef.current = false;
+		});
 	}, [onMount]);
 
 	return (

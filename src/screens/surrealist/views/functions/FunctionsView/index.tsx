@@ -238,7 +238,7 @@ export function FunctionsView() {
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() =>
 											adapter.openUrl(
-												"https://surrealdb.com/docs/surrealdb/surrealql/statements/define/function",
+												"https://surrealdb.com/docs/surrealql/statements/define/function",
 											)
 										}
 									>
