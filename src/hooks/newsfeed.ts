@@ -19,7 +19,7 @@ export function useLatestNewsQuery() {
 	return useQuery<NewsPost[]>({
 		queryKey: ["newsfeed"],
 		queryFn: async () => {
-			const response = await fetch(`https://surrealdb.com/feed/blog.rss`);
+			const response = await fetch(`https://surrealdb.com/feed/surrealist.rss`);
 			const body = await response.text();
 			const result = new DOMParser().parseFromString(body, "text/xml");
 
