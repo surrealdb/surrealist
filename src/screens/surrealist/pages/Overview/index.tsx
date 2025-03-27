@@ -84,13 +84,25 @@ export function OverviewPage() {
 	const navigateConnection = useConnectionNavigator();
 
 	const [search, setSearch] = useInputState("");
-	const [label, setLabel] = useState("");
+	const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+	const [labelMode, setLabelMode] = useState<"any" | "all">("any");
+	const [labelInclude, setLabelInclude] = useState(true);
 
-	const noFilter = !search && !label;
+	const noFilter = !search && selectedLabels.length === 0;
+
+	const toggleLabel = (labelToToggle: string) => {
+		setSelectedLabels(prevLabels =>
+			prevLabels.includes(labelToToggle)
+				? prevLabels.filter(label => label !== labelToToggle)
+				: [...prevLabels, labelToToggle]
+		);
+	};
 
 	const { isPending, sandbox, userConnections, organizations } = useConnectionOverview({
 		search,
-		label,
+		labels: selectedLabels,
+		labelMode,
+		labelInclude,
 		includeEmpty: noFilter,
 	});
 
@@ -172,12 +184,15 @@ export function OverviewPage() {
 								<PrimaryTitle>Your connections</PrimaryTitle>
 								<Spacer />
 								{hasLabels && (
-									<Menu>
+									<Menu
+										closeOnItemClick={false}
+									>
 										<Menu.Target>
 											<Indicator
-												disabled={!label}
+												disabled={selectedLabels.length === 0}
 												color="blue"
 												size={7}
+												label={selectedLabels.length > 0 ? selectedLabels.length : undefined}
 											>
 												<ActionButton
 													variant="subtle"
@@ -189,16 +204,15 @@ export function OverviewPage() {
 												</ActionButton>
 											</Indicator>
 										</Menu.Target>
-										<Menu.Dropdown miw={150}>
+										<Menu.Dropdown miw={220}>
+											<Menu.Label>Labels</Menu.Label>
 											{knownLabels.map((option) => {
-												const isActive = label === option;
+												const isActive = selectedLabels.includes(option);
 
 												return (
 													<Menu.Item
 														key={option}
-														onClick={() =>
-															setLabel(isActive ? "" : option)
-														}
+														onClick={() => toggleLabel(option)}
 														rightSection={
 															isActive && <Icon path={iconCheck} />
 														}
@@ -207,6 +221,40 @@ export function OverviewPage() {
 													</Menu.Item>
 												);
 											})}
+
+											<Menu.Divider />
+											<Menu.Label>Filter Type</Menu.Label>
+											<Menu.Item
+												disabled={selectedLabels.length === 0}
+												onClick={() => setLabelInclude(true)}
+												rightSection={labelInclude && <Icon path={iconCheck} />}
+											>
+												Show matching items
+											</Menu.Item>
+											<Menu.Item
+												disabled={selectedLabels.length === 0}
+												onClick={() => setLabelInclude(false)}
+												rightSection={!labelInclude && <Icon path={iconCheck} />}
+											>
+												Hide matching items
+											</Menu.Item>
+
+											<Menu.Divider />
+											<Menu.Label>Match Method</Menu.Label>
+											<Menu.Item
+												disabled={selectedLabels.length === 0}
+												onClick={() => setLabelMode("any")}
+												rightSection={labelMode === "any" && <Icon path={iconCheck} />}
+											>
+												Match any selected label
+											</Menu.Item>
+											<Menu.Item
+												disabled={selectedLabels.length === 0}
+												onClick={() => setLabelMode("all")}
+												rightSection={labelMode === "all" && <Icon path={iconCheck} />}
+											>
+												Match all selected labels
+											</Menu.Item>
 										</Menu.Dropdown>
 									</Menu>
 								)}
