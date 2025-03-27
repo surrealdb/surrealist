@@ -31,6 +31,7 @@ import {
 	iconChevronRight,
 	iconCloud,
 	iconCommunity,
+	iconDelete,
 	iconPlus,
 	iconSearch,
 	iconServer,
@@ -85,7 +86,7 @@ export function OverviewPage() {
 
 	const [search, setSearch] = useInputState("");
 	const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-	const [labelMode, setLabelMode] = useState<"any" | "all">("any");
+	const [labelMode, setLabelMode] = useState<"or" | "and">("or");
 	const [labelInclude, setLabelInclude] = useState(true);
 
 	const noFilter = !search && selectedLabels.length === 0;
@@ -205,7 +206,21 @@ export function OverviewPage() {
 											</Indicator>
 										</Menu.Target>
 										<Menu.Dropdown miw={220}>
-											<Menu.Label>Labels</Menu.Label>
+											<Group justify="space-between" py='xs'>
+												<Menu.Label>Labels</Menu.Label>
+												<Button
+													variant="light"
+													size="compact-xs"
+													mr="xs"
+													leftSection={<Icon path={iconDelete} size="sm" />}
+													disabled={selectedLabels.length === 0}
+													onClick={() => setSelectedLabels([])}
+												>
+													<Text size="sm">
+														Clear
+													</Text>
+												</Button>
+											</Group>
 											{knownLabels.map((option) => {
 												const isActive = selectedLabels.includes(option);
 
@@ -223,7 +238,7 @@ export function OverviewPage() {
 											})}
 
 											<Menu.Divider />
-											<Menu.Label>Filter Type</Menu.Label>
+											<Menu.Label py='xs'>Filter Type</Menu.Label>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
 												onClick={() => setLabelInclude(true)}
@@ -240,18 +255,18 @@ export function OverviewPage() {
 											</Menu.Item>
 
 											<Menu.Divider />
-											<Menu.Label>Match Method</Menu.Label>
+											<Menu.Label py='xs'>Match Method</Menu.Label>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
-												onClick={() => setLabelMode("any")}
-												rightSection={labelMode === "any" && <Icon path={iconCheck} />}
+												onClick={() => setLabelMode("or")}
+												rightSection={labelMode === "or" && <Icon path={iconCheck} />}
 											>
 												Match any selected label
 											</Menu.Item>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
-												onClick={() => setLabelMode("all")}
-												rightSection={labelMode === "all" && <Icon path={iconCheck} />}
+												onClick={() => setLabelMode("and")}
+												rightSection={labelMode === "and" && <Icon path={iconCheck} />}
 											>
 												Match all selected labels
 											</Menu.Item>
