@@ -1,9 +1,5 @@
 export function surqlDurationToSeconds(duration: string): number {
 
-	// the following duration argument can be formatted as:
-	// 0ns, 0us, 0ms, 0s, 0m, 0h, 0d, 0w, 0m, 0y.
-	// We want to convert this to seconds.
-
 	if (duration === '') {
 		return 0;
 	}
