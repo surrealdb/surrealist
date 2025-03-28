@@ -42,7 +42,7 @@ export function ConnectionsModal() {
 
 	const { sandbox, isEmpty, userConnections, organizations } = useConnectionOverview({
 		search,
-		label,
+		labels,
 	});
 
 	const activateConnection = useStable((con: Connection) => {
