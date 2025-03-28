@@ -1,6 +1,5 @@
 export function surqlDurationToSeconds(duration: string): number {
-
-	if (duration === '') {
+	if (duration === "") {
 		return 0;
 	}
 
@@ -8,17 +7,17 @@ export function surqlDurationToSeconds(duration: string): number {
 	const value = Number.parseInt(duration.slice(0, duration.length - 1), 10);
 
 	switch (unit) {
-		case 's':
+		case "s":
 			return value;
-		case 'm':
+		case "m":
 			return value * 60;
-		case 'h':
+		case "h":
 			return value * 60 * 60;
-		case 'd':
+		case "d":
 			return value * 60 * 60 * 24;
-		case 'w':
+		case "w":
 			return value * 60 * 60 * 24 * 7;
-		case 'y':
+		case "y":
 			return value * 60 * 60 * 24 * 365;
 		default:
 			return value;

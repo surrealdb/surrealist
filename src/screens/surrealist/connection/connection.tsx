@@ -32,13 +32,13 @@ import { useQueryStore } from "~/stores/query";
 import type { AuthDetails, Authentication, CloudInstance, Connection, Protocol } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
+import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
-import { surqlDurationToSeconds } from "~/util/duration";
 
 export interface ConnectOptions {
 	connection?: Connection;
@@ -517,7 +517,6 @@ export async function sendGraphqlRequest(
 	operation?: string,
 ) {
 	try {
-
 		const start = performance.now();
 
 		const { result, error } = await instance.graphql({
@@ -572,7 +571,7 @@ export async function executeGraphql(
 		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "graphql",
-			compute_time: surqlDurationToSeconds(response.execution_time)
+			compute_time: surqlDurationToSeconds(response.execution_time),
 		});
 	} catch (err: any) {
 		console.warn("executeGraphql fail", err);
