@@ -86,7 +86,7 @@ export function OverviewPage() {
 
 	const [search, setSearch] = useInputState("");
 	const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-	const [labelMode, setLabelMode] = useState<"or" | "and">("or");
+	const [labelMode, setLabelMode] = useState<"any" | "all">("any");
 	const [labelInclude, setLabelInclude] = useState(true);
 
 	const noFilter = !search && selectedLabels.length === 0;
@@ -258,15 +258,15 @@ export function OverviewPage() {
 											<Menu.Label py='xs'>Match Method</Menu.Label>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
-												onClick={() => setLabelMode("or")}
-												rightSection={labelMode === "or" && <Icon path={iconCheck} />}
+												onClick={() => setLabelMode("any")}
+												rightSection={labelMode === "any" && <Icon path={iconCheck} />}
 											>
 												Match any selected label
 											</Menu.Item>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
-												onClick={() => setLabelMode("and")}
-												rightSection={labelMode === "and" && <Icon path={iconCheck} />}
+												onClick={() => setLabelMode("all")}
+												rightSection={labelMode === "all" && <Icon path={iconCheck} />}
 											>
 												Match all selected labels
 											</Menu.Item>

@@ -166,7 +166,7 @@ export function useRequireDatabase(callback: () => void) {
 export interface ConnectionFilter {
 	search?: string;
 	labels?: string[];
-	labelMode?: "or" | "and";
+	labelMode?: "any" | "all";
 	labelInclude?: boolean;
 	includeEmpty?: boolean;
 }
@@ -177,7 +177,7 @@ export interface ConnectionFilter {
 export function useConnectionOverview({
 	search,
 	labels = [],
-	labelMode = "or",
+	labelMode = "any",
 	labelInclude = true,
 	includeEmpty
 }: ConnectionFilter) {
@@ -225,7 +225,7 @@ function filterConnections(
 	list: Connection[],
 	search?: string,
 	labels?: string[],
-	labelMode: "or" | "and" = "or",
+	labelMode: "any" | "all" = "any",
 	labelInclude: boolean = true
 ) {
 	if (!search && (!labels || labels.length === 0)) {
@@ -236,7 +236,7 @@ function filterConnections(
 		if (labels && labels.length > 0 && target.labels?.length) {
 			let matches = false;
 
-			if (labelMode === "or") {
+			if (labelMode === "any") {
 				// "OR" mode - connection has at least one of the selected labels
 				matches = labels.some(label => target.labels?.includes(label));
 			} else {
@@ -272,7 +272,7 @@ function filterInstances(
 	list: CloudInstance[],
 	search?: string,
 	labels?: string[],
-	labelMode: "or" | "and" = "or",
+	labelMode: "any" | "all" = "any",
 	labelInclude: boolean = true
 ) {
 	if (!search && (!labels || labels.length === 0)) {
@@ -287,7 +287,7 @@ function filterInstances(
 		if (labels && labels.length > 0 && connection?.labels?.length) {
 			let matches = false;
 
-			if (labelMode === "or") {
+			if (labelMode === "any") {
 				// "OR" mode - connection has at least one of the selected labels
 				matches = labels.some(label => connection.labels?.includes(label));
 			} else {
