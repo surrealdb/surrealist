@@ -38,6 +38,7 @@ import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
+import { surqlDurationToSeconds } from "~/util/duration";
 
 export interface ConnectOptions {
 	connection?: Connection;
@@ -452,9 +453,14 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		setQueryResponse(id, response);
 
+		const compute_time = response
+			.map(({ execution_time }) => surqlDurationToSeconds(execution_time))
+			.reduce((a, b) => a + b, 0);
+
 		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "surql",
+			compute_time: compute_time,
 		});
 
 		if (query.length <= MAX_HISTORY_QUERY_LENGTH) {
@@ -511,20 +517,27 @@ export async function sendGraphqlRequest(
 	operation?: string,
 ) {
 	try {
+
+		const start = performance.now();
+
 		const { result, error } = await instance.graphql({
 			query,
 			variables: params,
 			operationName: operation,
 		});
 
+		const end = performance.now();
+
 		return {
 			success: !!result,
 			result: result || error,
+			execution_time: `${(end - start).toFixed(2)}ms`,
 		};
 	} catch (err: any) {
 		return {
 			success: false,
 			result: err.message,
+			execution_time: "",
 		};
 	}
 }
@@ -559,6 +572,7 @@ export async function executeGraphql(
 		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "graphql",
+			compute_time: surqlDurationToSeconds(response.execution_time)
 		});
 	} catch (err: any) {
 		console.warn("executeGraphql fail", err);
