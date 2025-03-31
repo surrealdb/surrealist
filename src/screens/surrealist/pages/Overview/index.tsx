@@ -92,10 +92,10 @@ export function OverviewPage() {
 	const noFilter = !search && selectedLabels.length === 0;
 
 	const toggleLabel = (labelToToggle: string) => {
-		setSelectedLabels(prevLabels =>
+		setSelectedLabels((prevLabels) =>
 			prevLabels.includes(labelToToggle)
-				? prevLabels.filter(label => label !== labelToToggle)
-				: [...prevLabels, labelToToggle]
+				? prevLabels.filter((label) => label !== labelToToggle)
+				: [...prevLabels, labelToToggle],
 		);
 	};
 
@@ -185,15 +185,17 @@ export function OverviewPage() {
 								<PrimaryTitle>Your connections</PrimaryTitle>
 								<Spacer />
 								{hasLabels && (
-									<Menu
-										closeOnItemClick={false}
-									>
+									<Menu closeOnItemClick={false}>
 										<Menu.Target>
 											<Indicator
 												disabled={selectedLabels.length === 0}
 												color="blue"
 												size={7}
-												label={selectedLabels.length > 0 ? selectedLabels.length : undefined}
+												label={
+													selectedLabels.length > 0
+														? selectedLabels.length
+														: undefined
+												}
 											>
 												<ActionButton
 													variant="subtle"
@@ -206,19 +208,25 @@ export function OverviewPage() {
 											</Indicator>
 										</Menu.Target>
 										<Menu.Dropdown miw={220}>
-											<Group justify="space-between" py='xs'>
+											<Group
+												justify="space-between"
+												py="xs"
+											>
 												<Menu.Label>Labels</Menu.Label>
 												<Button
 													variant="light"
 													size="compact-xs"
 													mr="xs"
-													leftSection={<Icon path={iconDelete} size="sm" />}
+													leftSection={
+														<Icon
+															path={iconDelete}
+															size="sm"
+														/>
+													}
 													disabled={selectedLabels.length === 0}
 													onClick={() => setSelectedLabels([])}
 												>
-													<Text size="sm">
-														Clear
-													</Text>
+													<Text size="sm">Clear</Text>
 												</Button>
 											</Group>
 											{knownLabels.map((option) => {
@@ -238,35 +246,43 @@ export function OverviewPage() {
 											})}
 
 											<Menu.Divider />
-											<Menu.Label py='xs'>Filter Type</Menu.Label>
+											<Menu.Label py="xs">Filter Type</Menu.Label>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
 												onClick={() => setLabelInclude(true)}
-												rightSection={labelInclude && <Icon path={iconCheck} />}
+												rightSection={
+													labelInclude && <Icon path={iconCheck} />
+												}
 											>
 												Show matching items
 											</Menu.Item>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
 												onClick={() => setLabelInclude(false)}
-												rightSection={!labelInclude && <Icon path={iconCheck} />}
+												rightSection={
+													!labelInclude && <Icon path={iconCheck} />
+												}
 											>
 												Hide matching items
 											</Menu.Item>
 
 											<Menu.Divider />
-											<Menu.Label py='xs'>Match Method</Menu.Label>
+											<Menu.Label py="xs">Match Method</Menu.Label>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
 												onClick={() => setLabelMode("any")}
-												rightSection={labelMode === "any" && <Icon path={iconCheck} />}
+												rightSection={
+													labelMode === "any" && <Icon path={iconCheck} />
+												}
 											>
 												Match any selected label
 											</Menu.Item>
 											<Menu.Item
 												disabled={selectedLabels.length === 0}
 												onClick={() => setLabelMode("all")}
-												rightSection={labelMode === "all" && <Icon path={iconCheck} />}
+												rightSection={
+													labelMode === "all" && <Icon path={iconCheck} />
+												}
 											>
 												Match all selected labels
 											</Menu.Item>

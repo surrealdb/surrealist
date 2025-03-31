@@ -179,7 +179,7 @@ export function useConnectionOverview({
 	labels = [],
 	labelMode = "any",
 	labelInclude = true,
-	includeEmpty
+	includeEmpty,
 }: ConnectionFilter) {
 	const { entries, isPending } = useCloudInstanceList();
 
@@ -189,12 +189,24 @@ export function useConnectionOverview({
 	const [userConnections, sandbox, organizations, isEmpty] = useMemo(() => {
 		const organizations = [];
 		const normalConnections = connections.filter((c) => !c.authentication.cloudInstance);
-		const userConnections = filterConnections(normalConnections, search, labels, labelMode, labelInclude);
+		const userConnections = filterConnections(
+			normalConnections,
+			search,
+			labels,
+			labelMode,
+			labelInclude,
+		);
 
 		const [sandbox] = filterConnections([sandboxInfo], search, labels, labelMode, labelInclude);
 
 		for (const entry of entries) {
-			const instances = filterInstances(entry.instances, search, labels, labelMode, labelInclude);
+			const instances = filterInstances(
+				entry.instances,
+				search,
+				labels,
+				labelMode,
+				labelInclude,
+			);
 
 			if (instances.length > 0 || includeEmpty) {
 				organizations.push({
@@ -226,7 +238,7 @@ function filterConnections(
 	search?: string,
 	labels?: string[],
 	labelMode: "any" | "all" = "any",
-	labelInclude: boolean = true
+	labelInclude = true,
 ) {
 	if (!search && (!labels || labels.length === 0)) {
 		return list;
@@ -238,10 +250,10 @@ function filterConnections(
 
 			if (labelMode === "any") {
 				// "OR" mode - connection has at least one of the selected labels
-				matches = labels.some(label => target.labels?.includes(label));
+				matches = labels.some((label) => target.labels?.includes(label));
 			} else {
 				// "AND" mode - connection has all of the selected labels
-				matches = labels.every(label => target.labels?.includes(label));
+				matches = labels.every((label) => target.labels?.includes(label));
 			}
 
 			// If include=false, EXCLUDE matching connections
@@ -273,7 +285,7 @@ function filterInstances(
 	search?: string,
 	labels?: string[],
 	labelMode: "any" | "all" = "any",
-	labelInclude: boolean = true
+	labelInclude = true,
 ) {
 	if (!search && (!labels || labels.length === 0)) {
 		return list;
@@ -289,10 +301,10 @@ function filterInstances(
 
 			if (labelMode === "any") {
 				// "OR" mode - connection has at least one of the selected labels
-				matches = labels.some(label => connection.labels?.includes(label));
+				matches = labels.some((label) => connection.labels?.includes(label));
 			} else {
 				// "AND" mode - connection has all of the selected labels
-				matches = labels.every(label => connection.labels?.includes(label));
+				matches = labels.every((label) => connection.labels?.includes(label));
 			}
 
 			// If include=false, EXCLUDE matching connections
