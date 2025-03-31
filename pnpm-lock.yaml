@@ -107,11 +107,11 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(sigma@3.0.0(graphology-types@0.24.8))
       '@surrealdb/codemirror':
-        specifier: 1.0.0-beta.20
-        version: 1.0.0-beta.20
+        specifier: 1.0.0-beta.21
+        version: 1.0.0-beta.21
       '@surrealdb/lezer':
-        specifier: 1.0.0-beta.20
-        version: 1.0.0-beta.20
+        specifier: 1.0.0-beta.21
+        version: 1.0.0-beta.21
       '@surrealdb/ql-wasm':
         specifier: 0.2.0-beta.10
         version: 0.2.0-beta.10
@@ -1623,11 +1623,11 @@ packages:
     resolution: {integrity: sha512-QWLl2P+rsCJeofkDNIT3WFmb6NrRud1SUYW8dIhXK/46XFV8Q/g7Bsvib0Askb0reRLe+WYPeeE+l5cH7SlkuQ==}
     engines: {node: '>=18'}
 
-  '@surrealdb/codemirror@1.0.0-beta.20':
-    resolution: {integrity: sha512-C4lYniC9iH5qTQoTtPEUSg8PDHYqdS3ylJ2hYdd0IrLPjyzntzubJNRz246h/ZdkB6UY2r/VL/IhcMC8O22Ijg==}
+  '@surrealdb/codemirror@1.0.0-beta.21':
+    resolution: {integrity: sha512-9zDQPTD9OuCDpJ+KvbqzXEE85LwOEXjh6ZaBWIP/eEbvw+fYtj7YIfxTUiTxlaqq+Igt7ACvfryNXTPX4KaVuw==}
 
-  '@surrealdb/lezer@1.0.0-beta.20':
-    resolution: {integrity: sha512-uuLpYO8DWt41OVmBara29IpRVcyq2evq3aPt0022EjW27vZnoXNa84vvY0dt4H5KO40kB27UyqFmmccMN811Pw==}
+  '@surrealdb/lezer@1.0.0-beta.21':
+    resolution: {integrity: sha512-8laD/9nCgIGqFFj3p1R2JZaEAzTAkjpyW6+zO4ZplIeC3DwbI9/JZQbaLzKZ2tFOd8wNZsniMxdAajWkenCSgQ==}
 
   '@surrealdb/ql-wasm@0.2.0-beta.10':
     resolution: {integrity: sha512-6zXNEGJDDNyvV+licGsRjKF/icVRHVpmv8zGkKS8KpXPI3jj3cEdLvWLHSUc66gxtF8t9r53DWoExygtmLteFg==}
@@ -4340,16 +4340,16 @@ snapshots:
 
   '@sindresorhus/is@7.0.1': {}
 
-  '@surrealdb/codemirror@1.0.0-beta.20':
+  '@surrealdb/codemirror@1.0.0-beta.21':
     dependencies:
       '@codemirror/language': 6.10.3
       '@codemirror/lint': 6.8.2
       '@lezer/common': 1.2.3
       '@lezer/javascript': 1.4.19
-      '@surrealdb/lezer': 1.0.0-beta.20
+      '@surrealdb/lezer': 1.0.0-beta.21
       compare-versions: 6.1.1
 
-  '@surrealdb/lezer@1.0.0-beta.20':
+  '@surrealdb/lezer@1.0.0-beta.21':
     dependencies:
       '@lezer/common': 1.2.3
       '@lezer/highlight': 1.2.1

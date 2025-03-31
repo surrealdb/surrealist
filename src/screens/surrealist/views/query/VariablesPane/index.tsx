@@ -46,18 +46,19 @@ export function VariablesPane({
 	const setVariables = useDebouncedFunction((content: string | undefined) => {
 		if (!activeTab || !connection) return;
 
+		const json = content || "";
+
+		updateQueryTab(connection, {
+			id: activeTab.id,
+			variables: json,
+		});
+
 		try {
-			const json = content || "";
 			const parsed = decodeCbor(Value.from_string(json).to_cbor().buffer);
 
 			if (typeof parsed !== "object" || Array.isArray(parsed)) {
 				throw new TypeError("Must be object");
 			}
-
-			updateQueryTab(connection, {
-				id: activeTab.id,
-				variables: json,
-			});
 
 			setIsValid(true);
 		} catch {

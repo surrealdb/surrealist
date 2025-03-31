@@ -16,8 +16,10 @@ import { useStable } from "~/hooks/stable";
 import { authenticate, register } from "~/screens/surrealist/connection/connection";
 import { composeAuthentication } from "~/screens/surrealist/connection/helpers";
 import type { AccessField, SchemaAccess } from "~/types";
-import { extractVariables, showError, showInfo } from "~/util/helpers";
+import { showError, showInfo } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
+import { parser } from "@surrealdb/lezer";
+import { parseVariables } from "~/util/surrealql";
 
 export function RegisterUserModal() {
 	const schema = useDatabaseSchema();
@@ -79,10 +81,18 @@ export function RegisterUserModal() {
 		const accessInfo = schema.accesses.find((a) => a.name === access);
 
 		if (accessInfo && accessInfo.kind.kind === "RECORD") {
-			const fields = extractVariables(accessInfo.kind.signup).map((field) => ({
-				subject: field,
-				value: "",
-			}));
+			const signup = accessInfo.kind.signup;
+			let fields: AccessField[] = [];
+
+			if (signup.length > 0) {
+				const tree = parser.parse(signup);
+				const discovered = parseVariables(tree, (from, to) => signup.slice(from, to));
+
+				fields = discovered.map((field) => ({
+					subject: field,
+					value: "",
+				}));
+			}
 
 			setAccess(accessInfo);
 			setFields(fields);

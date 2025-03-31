@@ -3,26 +3,11 @@ import { Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
 import escapeRegex from "escape-string-regexp";
-import { title, uid } from "radash";
+import { uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { Authentication, Selectable } from "~/types";
-
-const VARIABLE_PATTERN = /\$\w+/gi;
-const RESERVED_VARIABLES = new Set([
-	"auth",
-	"token",
-	"access",
-	"session",
-	"before",
-	"after",
-	"value",
-	"input",
-	"this",
-	"parent",
-	"event",
-]);
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -388,18 +373,6 @@ export function fuzzyMultiMatch(query: string, target: string) {
 export function isMobile() {
 	const userAgent = navigator.userAgent.toLowerCase();
 	return /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(userAgent);
-}
-
-/**
- * Extract a list of variables from the given query
- *
- * @param query The query to extract from
- * @returns The list of variables
- */
-export function extractVariables(query: string): string[] {
-	const matches = query.match(VARIABLE_PATTERN) || [];
-
-	return matches.map((v) => v.slice(1)).filter((v) => !RESERVED_VARIABLES.has(v));
 }
 
 /**
