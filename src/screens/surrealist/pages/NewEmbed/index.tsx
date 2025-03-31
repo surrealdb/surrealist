@@ -127,40 +127,30 @@ export function NewEmbedPage() {
 										<CopyButton value={snippet}>
 											{({ copied, copy }) => (
 												<Button
-													size="xs"
 													color="slate"
-													variant={copied ? "gradient" : undefined}
+													variant={copied ? "gradient" : "light"}
 													leftSection={
-														copied ? undefined : <Icon path={iconXml} />
+														<Icon path={copied ? iconCheck : iconXml} />
 													}
 													onClick={copy}
 												>
-													{copied ? (
-														<Icon path={iconCheck} />
-													) : (
-														"Copy iframe"
-													)}
+													Copy iframe
 												</Button>
 											)}
 										</CopyButton>
 										<CopyButton value={url}>
 											{({ copied, copy }) => (
 												<Button
-													size="xs"
 													color="slate"
-													variant={copied ? "gradient" : undefined}
+													variant={copied ? "gradient" : "light"}
 													leftSection={
-														copied ? undefined : (
-															<Icon path={iconTransfer} />
-														)
+														<Icon
+															path={copied ? iconCheck : iconTransfer}
+														/>
 													}
 													onClick={copy}
 												>
-													{copied ? (
-														<Icon path={iconCheck} />
-													) : (
-														"Copy URL"
-													)}
+													Copy URL
 												</Button>
 											)}
 										</CopyButton>
@@ -196,6 +186,7 @@ export function NewEmbedPage() {
 									<Button
 										size="sm"
 										color="slate"
+										variant="light"
 										onClick={showParseHandle.open}
 									>
 										Restore from URL

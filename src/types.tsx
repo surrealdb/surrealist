@@ -143,12 +143,6 @@ export interface Template {
 	labels?: string[];
 }
 
-export interface ConnectionGroup {
-	id: string;
-	name: string;
-	collapsed?: boolean;
-}
-
 export interface SurrealistBehaviorSettings {
 	updateChecker: boolean;
 	tableSuggest: boolean;

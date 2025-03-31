@@ -20,12 +20,13 @@ import {
 } from "~/util/icons";
 
 import { historyField } from "@codemirror/commands";
+import { syntaxTree } from "@codemirror/language";
 import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { Group, HoverCard, ThemeIcon } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { trim } from "radash";
+import { objectify, trim } from "radash";
 import { useMemo, useRef } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
@@ -42,8 +43,8 @@ import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
-import { extractVariables, showError, tryParseParams } from "~/util/helpers";
-import { formatQuery, formatValue } from "~/util/surrealql";
+import { showError, tryParseParams } from "~/util/helpers";
+import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
 import { readQuery, writeQuery } from "../QueryView/strategy";
 
 const SERIALIZE = {
@@ -158,19 +159,14 @@ export function QueryPane({
 	const inferVariables = useStable(() => {
 		if (!activeTab || !connection) return;
 
-		const document = editor.state.doc;
+		const tree = syntaxTree(editor.state);
+		const discovered = parseVariables(tree, (from, to) => editor.state.sliceDoc(from, to));
 		const currentVars = tryParseParams(activeTab.variables);
-		const currentKeys = Object.keys(currentVars);
-		const variables = extractVariables(document.toString()).filter(
-			(v) => !currentKeys.includes(v),
-		);
 
-		const newVars = variables.reduce(
-			(acc, v) => {
-				acc[v] = "";
-				return acc;
-			},
-			{} as Record<string, any>,
+		const newVars = objectify(
+			discovered,
+			(v) => v,
+			(v) => currentVars[v] ?? "",
 		);
 
 		const mergedVars = {

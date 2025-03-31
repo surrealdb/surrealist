@@ -1,3 +1,4 @@
+import { Tree } from "@lezer/common";
 import { SurrealQL, Value } from "@surrealdb/ql-wasm";
 import { decodeCbor, encodeCbor } from "surrealdb";
 import { DATASETS } from "~/constants";
@@ -184,4 +185,39 @@ export function parseDatasetURL(source: string) {
 	}
 
 	return new URL(path, "https://datasets.surrealdb.com");
+}
+
+const RESERVED_VARIABLES = new Set([
+	"auth",
+	"token",
+	"access",
+	"session",
+	"before",
+	"after",
+	"value",
+	"input",
+	"this",
+	"parent",
+	"event",
+]);
+
+/**
+ * Parse variables from the given SurrealQL tree
+ *
+ * @param tree The parse tree
+ * @param extract The function to extract the variable name
+ */
+export function parseVariables(tree: Tree, extract: (from: number, to: number) => string) {
+	const discovered = new Set<string>();
+
+	tree.iterate({
+		enter: (node) => {
+			if (node.name === "LetStatementName") return false;
+			if (node.name !== "VariableName") return;
+
+			discovered.add(extract(node.from + 1, node.to));
+		},
+	});
+
+	return [...discovered.values().filter((v) => !RESERVED_VARIABLES.has(v))];
 }

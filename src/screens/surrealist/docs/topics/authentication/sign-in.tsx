@@ -7,11 +7,11 @@ import { createBaseAuthentication } from "~/util/defaults";
 import { connectionUri } from "~/util/helpers";
 
 export function DocsAuthSignIn({ language }: TopicProps) {
-	const authentication = useConnection((c) => c?.authentication ?? createBaseAuthentication());
-	const endpoint = connectionUri(authentication);
+	const auth = useConnection((c) => c?.authentication ?? createBaseAuthentication());
+	const endpoint = connectionUri(auth.protocol, auth.hostname);
 	const esc_endpoint = JSON.stringify(endpoint);
-	const esc_namespace = JSON.stringify(authentication.namespace);
-	const esc_database = JSON.stringify(authentication.database);
+	const esc_namespace = JSON.stringify(auth.namespace);
+	const esc_database = JSON.stringify(auth.database);
 
 	const descriptions = {
 		cli: `With the CLI's surreal sql command, you can sign in as a system (Root, Namespace and Database) users. This example shows a command on how to sign in as a root user with the username and password left blank.`,

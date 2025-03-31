@@ -88,8 +88,12 @@ export async function openConnection(options?: ConnectOptions) {
 
 	const { setCurrentState, setVersion, setLatestError, clearSchema } =
 		useDatabaseStore.getState();
-	const rpcEndpoint = connectionUri(connection.authentication);
+
 	const thisInstance = instance;
+	const rpcEndpoint = connectionUri(
+		connection.authentication.protocol,
+		connection.authentication.hostname,
+	);
 
 	clearSchema();
 

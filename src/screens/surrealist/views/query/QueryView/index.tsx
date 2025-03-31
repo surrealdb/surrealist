@@ -18,7 +18,6 @@ import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";

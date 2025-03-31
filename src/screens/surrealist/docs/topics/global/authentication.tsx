@@ -4,14 +4,11 @@ import { useConnection } from "~/hooks/connection";
 import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 import { createBaseAuthentication } from "~/util/defaults";
-import { connectionUri } from "~/util/helpers";
 
 export function DocsGlobalAuthentication({ language, topic }: TopicProps) {
-	const authentication = useConnection((c) => c?.authentication ?? createBaseAuthentication());
-	const endpoint = connectionUri(authentication);
-	const esc_endpoint = JSON.stringify(endpoint);
-	const esc_namespace = JSON.stringify(authentication.namespace);
-	const esc_database = JSON.stringify(authentication.database);
+	const auth = useConnection((c) => c?.authentication ?? createBaseAuthentication());
+	const esc_namespace = JSON.stringify(auth.namespace);
+	const esc_database = JSON.stringify(auth.database);
 
 	const snippets = useMemo<Snippets>(
 		() => ({
