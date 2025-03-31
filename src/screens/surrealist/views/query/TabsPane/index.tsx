@@ -206,7 +206,7 @@ function Query({
 						/>
 					)}
 
-					{queries.length > 1 && queryQuickClose && (
+					{queryQuickClose && (
 						<ActionButton
 							size="sm"
 							variant="transparent"
@@ -273,6 +273,10 @@ export function TabsPane(props: TabsPaneProps) {
 
 		if (adapter instanceof DesktopAdapter) {
 			adapter.pruneQueryFiles();
+		}
+
+		if (queries.length === 1) {
+			newTab();
 		}
 	});
 
