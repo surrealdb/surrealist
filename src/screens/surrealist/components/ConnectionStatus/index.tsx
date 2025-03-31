@@ -1,6 +1,7 @@
 import {
 	iconClose,
 	iconDownload,
+	iconEdit,
 	iconRefresh,
 	iconRelation,
 	iconReset,
@@ -26,6 +27,8 @@ import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
+import { openConnectionEditModal } from "~/modals/edit-connection";
+import { getConnectionById } from "~/util/connection";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);
@@ -65,6 +68,14 @@ export function ConnectionStatus() {
 	const confirmDataset = useStable(async () => {
 		await applyDataset(dataset);
 		showDatasetsHandle.close();
+	});
+
+	const openEditor = useStable(() => {
+		const connection = getConnectionById(connectionId);
+
+		if (connection) {
+			openConnectionEditModal(connection);
+		}
 	});
 
 	const isSandbox = connectionId === SANDBOX;
@@ -183,7 +194,15 @@ export function ConnectionStatus() {
 						>
 							Import database
 						</Menu.Item>
-						<Menu.Label mt="sm">Instance</Menu.Label>
+						<Menu.Label mt="sm">Manage</Menu.Label>
+						{!isSandbox && (
+							<Menu.Item
+								leftSection={<Icon path={iconEdit} />}
+								onClick={openEditor}
+							>
+								Edit connection
+							</Menu.Item>
+						)}
 						<Menu.Item
 							leftSection={<Icon path={iconRelation} />}
 							disabled={currentState !== "connected"}
