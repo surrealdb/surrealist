@@ -15,8 +15,9 @@ import { queryEditorField, setQueryEditor } from "~/editor/query";
 import { useActiveQuery } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConnectionAndView } from "~/hooks/routing";
+import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { iconClose, iconDollar } from "~/util/icons";
+import { iconClose, iconDollar, iconReset } from "~/util/icons";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -66,6 +67,11 @@ export function VariablesPane({
 		}
 	}, 50);
 
+	const clearVariables = useStable(() => {
+		if (!activeTab || !connection) return;
+		setVariables("{}");
+	});
+
 	useEffect(() => {
 		if (variableEditor && editor) {
 			setQueryEditor(variableEditor, editor);
@@ -95,6 +101,13 @@ export function VariablesPane({
 								Invalid syntax
 							</Badge>
 						)}
+						<ActionButton
+							color="slate"
+							onClick={clearVariables}
+							label="Clear variables"
+						>
+							<Icon path={iconReset} />
+						</ActionButton>
 						<ActionButton
 							color="slate"
 							onClick={closeVariables}
