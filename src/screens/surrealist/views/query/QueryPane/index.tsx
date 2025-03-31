@@ -20,6 +20,7 @@ import {
 } from "~/util/icons";
 
 import { historyField } from "@codemirror/commands";
+import { syntaxTree } from "@codemirror/language";
 import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { Group, HoverCard, ThemeIcon } from "@mantine/core";
@@ -45,7 +46,6 @@ import type { QueryTab } from "~/types";
 import { showError, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
 import { readQuery, writeQuery } from "../QueryView/strategy";
-import { syntaxTree } from "@codemirror/language";
 
 const SERIALIZE = {
 	history: historyField,

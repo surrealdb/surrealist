@@ -1,5 +1,6 @@
 import { Table, Text } from "@mantine/core";
 import { Button, Group, Modal, PasswordInput, TextInput } from "@mantine/core";
+import { parser } from "@surrealdb/lezer";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
@@ -18,7 +19,6 @@ import { composeAuthentication } from "~/screens/surrealist/connection/helpers";
 import type { AccessField, SchemaAccess } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
-import { parser } from "@surrealdb/lezer";
 import { parseVariables } from "~/util/surrealql";
 
 export function RegisterUserModal() {
