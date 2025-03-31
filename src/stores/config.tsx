@@ -1,6 +1,5 @@
 import type {
 	Connection,
-	ConnectionGroup,
 	HistoryQuery,
 	PartialId,
 	QueryTab,
@@ -33,7 +32,7 @@ interface NewQueryTab {
 	variables?: string;
 }
 
-function updateConnection(state: ConfigStore, connection: string, modifier: ConnectionUpdater) {
+function modifyConnection(state: ConfigStore, connection: string, modifier: ConnectionUpdater) {
 	if (connection === SANDBOX) {
 		return {
 			sandbox: {
@@ -44,11 +43,11 @@ function updateConnection(state: ConfigStore, connection: string, modifier: Conn
 		};
 	}
 
-	const connections = state.connections.map((con) => {
-		return con.id === connection ? { ...con, ...modifier(con), id: con.id } : con;
-	});
-
-	return { connections };
+	return {
+		connections: state.connections.map((con) => {
+			return con.id === connection ? { ...con, ...modifier(con), id: con.id } : con;
+		}),
+	};
 }
 
 export type ConfigStore = SurrealistConfig & {
@@ -112,11 +111,7 @@ export const useConfigStore = create<ConfigStore>()(
 			}),
 
 		updateConnection: (connection) =>
-			set((state) => ({
-				connections: state.connections.map((current) =>
-					current.id === connection.id ? { ...current, ...connection } : current,
-				),
-			})),
+			set((state) => modifyConnection(state, connection.id, () => connection)),
 
 		setConnections: (connections) => set(() => ({ connections })),
 
@@ -124,7 +119,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 		addQueryTab: (connectionId, options) =>
 			set((state) =>
-				updateConnection(state, connectionId, (current) => {
+				modifyConnection(state, connectionId, (current) => {
 					const tabId = newId();
 					const existing = current.queries.map((query) => query.name ?? "");
 					const queryName = uniqueName(options?.name || "New query", existing);
@@ -146,7 +141,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 		removeQueryTab: (connectionId, queryId) =>
 			set((state) =>
-				updateConnection(state, connectionId, (current) => {
+				modifyConnection(state, connectionId, (current) => {
 					const index = current.queries.findIndex((query) => query.id === queryId);
 
 					if (index < 0) {
@@ -171,7 +166,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 		updateQueryTab: (connectionId, connection) =>
 			set((state) =>
-				updateConnection(state, connectionId, (current) => {
+				modifyConnection(state, connectionId, (current) => {
 					const index = current.queries.findIndex((query) => query.id === connection.id);
 
 					if (index < 0) {
@@ -189,7 +184,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 		setActiveQueryTab: (connectionId, tabId) =>
 			set((state) =>
-				updateConnection(state, connectionId, () => ({
+				modifyConnection(state, connectionId, () => ({
 					activeQuery: tabId,
 				})),
 			),
@@ -224,7 +219,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 		addHistoryEntry: (connectionId, entry) =>
 			set((state) =>
-				updateConnection(state, connectionId, (current) => {
+				modifyConnection(state, connectionId, (current) => {
 					const queryHistory = [...current.queryHistory];
 
 					queryHistory.push(entry);
@@ -241,7 +236,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 		toggleTablePin: (connectionId, table) =>
 			set((state) =>
-				updateConnection(state, connectionId, (current) => {
+				modifyConnection(state, connectionId, (current) => {
 					const pinnedTables = [...current.pinnedTables];
 					const index = pinnedTables.indexOf(table);
 
