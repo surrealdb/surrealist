@@ -140,13 +140,13 @@ export function DashboardView() {
 								</Group>
 								<Group gap="sm">
 									<Text fz="md">{details?.host}</Text>
-									<CopyButton value={instance ?? ""}>
+									<CopyButton value={details?.host ?? ""}>
 										{({ copied, copy }) => (
 											<ActionIcon
 												variant={copied ? "gradient" : undefined}
 												size="sm"
 												onClick={copy}
-												aria-label="Copy id to clipboard"
+												aria-label="Copy hostname to clipboard"
 											>
 												<Icon
 													path={copied ? iconCheck : iconCopy}
