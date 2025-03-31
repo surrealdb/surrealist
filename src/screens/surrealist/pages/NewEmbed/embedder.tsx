@@ -25,7 +25,7 @@ export const DEFAULT_STATE: EmbedState = {
 	dataset: "none",
 	setup: "",
 	query: "",
-	theme: "dark",
+	theme: "auto",
 	variables: "{}",
 	orientation: "vertical",
 	transparent: false,
