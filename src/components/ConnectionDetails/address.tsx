@@ -164,8 +164,8 @@ export function ConnectionAddressDetails({
 									<Tooltip
 										label={
 											status
-												? "Instance is reachable"
-												: "Instance cannot be reached"
+												? "Surrealist is able to connect"
+												: "Surrealist is unable to connect"
 										}
 									>
 										<Indicator
