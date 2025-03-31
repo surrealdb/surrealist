@@ -1,13 +1,28 @@
-import { Alert, Box, Button, Collapse, Group, Select, TextInput } from "@mantine/core";
+import {
+	Alert,
+	Box,
+	Button,
+	Collapse,
+	Group,
+	Indicator,
+	Loader,
+	Select,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { Text } from "@mantine/core";
-import { fork } from "radash";
-import { useMemo } from "react";
+import { useDebouncedValue } from "@mantine/hooks";
+import { useQuery } from "@tanstack/react-query";
+import { fork, sleep } from "radash";
+import { useEffect, useMemo, useState } from "react";
+import Surreal from "surrealdb";
 import { Updater } from "use-immer";
 import { CONNECTION_PROTOCOLS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { createSurreal } from "~/screens/surrealist/connection/surreal";
 import { Connection, Protocol } from "~/types";
-import { isHostLocal } from "~/util/helpers";
+import { connectionUri, isHostLocal } from "~/util/helpers";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 
@@ -76,7 +91,37 @@ export function ConnectionAddressDetails({
 	const showSslNotice = isLocalhost && isSecure;
 	const insecureVariant = protocol === "wss" ? "ws" : "http";
 
-	const placeholder = isMemory ? "Not applicable" : isIndexDB ? "database_name" : "hostname:port";
+	const placeholder = isMemory
+		? "Not applicable"
+		: isIndexDB
+			? "database_name"
+			: "example.com:8000";
+
+	const {
+		data: status,
+		isFetched: statusReady,
+		isFetching: statusFetching,
+	} = useQuery({
+		queryKey: ["connect-status", { protocol, hostname }],
+		enabled: !!protocol && !!hostname,
+		queryFn: async ({ signal }) => {
+			const test = await createSurreal();
+
+			await sleep(500);
+			if (signal.aborted) return;
+
+			try {
+				await test.connect(connectionUri(protocol, hostname));
+				return true;
+			} catch {
+				return false;
+			} finally {
+				test.close();
+			}
+		},
+	});
+
+	const showStatus = protocol !== "indxdb" && protocol !== "mem" && statusReady;
 
 	return (
 		<Box>
@@ -108,6 +153,29 @@ export function ConnectionAddressDetails({
 						disabled={isMemory}
 						placeholder={placeholder}
 						onChange={handleEndpointChange}
+						rightSection={
+							statusFetching ? (
+								<Loader
+									color="slate.5"
+									size={16}
+								/>
+							) : (
+								showStatus && (
+									<Tooltip
+										label={
+											status
+												? "Instance is reachable"
+												: "Instance cannot be reached"
+										}
+									>
+										<Indicator
+											processing
+											color={status ? "green" : "red"}
+										/>
+									</Tooltip>
+								)
+							)
+						}
 					/>
 				)}
 			</Group>

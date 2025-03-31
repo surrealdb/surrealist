@@ -31,7 +31,7 @@ export function ModelsView() {
 	const models = useDatabaseSchema()?.models ?? [];
 	const isConnected = useIsConnected();
 
-	const [id, namespace, database, authentication] = useConnection((c) => [
+	const [id, namespace, database, auth] = useConnection((c) => [
 		c?.id ?? "",
 		c?.lastNamespace ?? "",
 		c?.lastDatabase ?? "",
@@ -39,7 +39,7 @@ export function ModelsView() {
 	]);
 
 	const [details, setDetails] = useImmer<SchemaModel | null>(null);
-	const isAvailable = ML_SUPPORTED.has(authentication.protocol);
+	const isAvailable = ML_SUPPORTED.has(auth.protocol);
 	const isSandbox = id === "sandbox";
 
 	const handle = useSaveable({
@@ -62,7 +62,7 @@ export function ModelsView() {
 	const uploadModel = useRequireDatabase(async () => {
 		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
 		const { endpoint, headers } = composeHttpConnection(
-			authentication,
+			auth,
 			namespace,
 			database,
 			"/ml/import",
@@ -89,7 +89,7 @@ export function ModelsView() {
 		const [, name, version] = /^(\w+)<(.+)>$/.exec(model.name) || [];
 
 		const { endpoint, headers } = composeHttpConnection(
-			authentication,
+			auth,
 			namespace,
 			database,
 			`/ml/export/${name}/${version}`,
@@ -117,7 +117,7 @@ export function ModelsView() {
 			# Upload your model directly to SurrealDB
 			SurMlFile.upload(
 				path="./model.surml",
-				url="${isAvailable ? connectionUri(authentication, "ml/import") : "http://surrealdb.example.com/ml/import"}",
+				url="${isAvailable ? connectionUri(auth.protocol, auth.hostname, "ml/import") : "http://surrealdb.example.com/ml/import"}",
 				chunk_size=36864,
 				namespace="${namespace}",
 				database="${database}",
@@ -126,7 +126,7 @@ export function ModelsView() {
 			)							
 		`,
 		}),
-		[authentication, namespace, database, isAvailable],
+		[auth, namespace, database, isAvailable],
 	);
 
 	useViewFocus("models", () => {

@@ -135,7 +135,7 @@ export function isConnectionValid(auth: Authentication | undefined) {
 	}
 
 	try {
-		connectionUri(auth);
+		connectionUri(auth.protocol, auth.hostname);
 	} catch {
 		return false;
 	}
