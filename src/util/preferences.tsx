@@ -397,7 +397,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 			},
 		);
 
-		if (cloud_endpoints === 'custom') {
+		if (cloud_endpoints === "custom") {
 			sections.push({
 				name: "Cloud endpoints",
 				preferences: [
