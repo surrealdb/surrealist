@@ -13,12 +13,10 @@ import {
 	VIEW_PAGES,
 } from "~/constants";
 
-import { objectify } from "radash";
 import { useMemo } from "react";
 import { isDesktop } from "~/adapter";
-import { featureFlagsLock } from "~/providers/FeatureFlags";
 import { Flags, type Listable, Selectable, type SurrealistConfig } from "~/types";
-import { featureFlags, useFeatureFlags } from "./feature-flags";
+import { useFeatureFlags } from "./feature-flags";
 import { optional } from "./helpers";
 
 interface ReaderWriter<T> {
@@ -399,7 +397,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 			},
 		);
 
-		if (cloud_endpoints) {
+		if (cloud_endpoints === "custom") {
 			sections.push({
 				name: "Cloud endpoints",
 				preferences: [
