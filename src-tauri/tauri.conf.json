@@ -3,8 +3,8 @@
 	"version": "../package.json",
 	"identifier": "com.surrealdb.surrealist",
 	"build": {
-		"beforeDevCommand": "bun dev",
-		"beforeBuildCommand": "bun build",
+		"beforeDevCommand": "bun run dev",
+		"beforeBuildCommand": "bun run build",
 		"frontendDist": "../dist",
 		"devUrl": "http://localhost:1420"
 	},
