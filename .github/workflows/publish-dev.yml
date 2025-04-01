@@ -18,24 +18,24 @@ jobs:
     name: Extract version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.extract_version.outputs.version }}
+      version: ${{ steps.extract.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Extract version
-        id: extract_version
-        uses: Saionaro/extract-package-version@v1.3.0
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@v2
+
+      - name: Extract package version
+        id: extract
+        run: |
+          echo "version=$(jq -r '.version' package.json)" >> "$GITHUB_OUTPUT"
 
   build-web:
     name: Build Web
     runs-on: "ubuntu-20.04"
     needs:
       - version
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [20]
     steps:
       - name: Information
         run: echo "Building Surrealist version ${{ needs.version.outputs.version }} for web"
@@ -43,25 +43,19 @@ jobs:
       - name: Code checkout
         uses: actions/checkout@v3
 
-      - name: Setup node
-        uses: actions/setup-node@v2
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
+          bun-version: 1.2.8
 
       - name: Frontend dependencies
-        run: |
-          pnpm i --frozen-lockfile
+        run: bun install
 
       - name: Generate license report
-        run: pnpm license-report
+        run: bun run license-report
 
       - name: Build application
-        run: pnpm build
+        run: bun run build
         env:
           VITE_SURREALIST_PREVIEW: "true"
           VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}

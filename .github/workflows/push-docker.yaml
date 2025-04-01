@@ -15,24 +15,18 @@ jobs:
     name: Extract version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.extract_version.outputs.version }}
+      version: ${{ steps.extract.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@v2
 
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Extract version
-        id: extract_version
-        uses: Saionaro/extract-package-version@v1.3.0
+      - name: Extract package version
+        id: extract
+        run: |
+          echo "version=$(jq -r '.version' package.json)" >> "$GITHUB_OUTPUT"
 
   push_docker_image:
     name: Push Docker image to Docker Hub

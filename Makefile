@@ -22,12 +22,12 @@ setup:
 	@echo "Setup..."
 	rustup target add wasm32-unknown-unknown
 	cargo install wasm-bindgen-cli
-	pnpm install
+	bun install
 
 .PHONY: serve
 serve: build-embed
 	@echo "Serving..."
-	pnpm tauri:dev
+	bun tauri:dev
 
 .PHONY: deploy
 deploy:

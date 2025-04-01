@@ -1,19 +1,17 @@
 # build app with node
-FROM node:latest AS builder
-
-RUN npm i -g pnpm
+FROM oven/bun:latest AS builder
 
 WORKDIR /app
 
 COPY ../package.json .
 COPY ../patches patches
-COPY ../pnpm-lock.yaml .
+COPY ../bun.lock .
 
-RUN pnpm install
+RUN bun install
 
 COPY .. .
 ENV VITE_SURREALIST_INSTANCE=true
-RUN npm run build
+RUN bun run build
 
 # set up production image (static assets served by nginx)
 FROM nginx:stable-alpine

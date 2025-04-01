@@ -32,23 +32,18 @@ jobs:
           sudo apt update
           sudo apt install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
+          bun-version: 1.2.8
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      # This step is required to run following steps, as they require the `dist` directory
       - name: Build frontend
-        run: pnpm install --no-frozen-lockfile && pnpm build
+        run: bun install && bun build
 
-      - name: Frontend linting
+      - name: Check frontend
         run: |
-          pnpm qc
+          bun qc
 
-      - name: Backend linting
+      - name: Check backend
         run: |
           cd src-tauri
           cargo fmt --all -- --check

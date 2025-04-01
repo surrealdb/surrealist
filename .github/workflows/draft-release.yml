@@ -28,30 +28,23 @@ jobs:
     name: Extract version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.extract_version.outputs.version }}
+      version: ${{ steps.extract.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@v2
 
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Set inputted version
+      - name: Overwrite version
         if: ${{ inputs.version }}
         run: |
-          pnpm pkg set version=${{ inputs.version }}
+          jq --arg version "${{ inputs.version }}" '.version = $version' package.json > package.tmp.json
+          mv package.tmp.json package.json
 
       - name: Validate unique version
         run: |
-          v=$(pnpm pkg get version)
-          v=${v:1:-1}
+          v=$(jq -r '.version' package.json)
           TAG="surrealist-v$v"
           if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
             echo "ERR: Tag ${TAG} already exists! Please bump the version."
@@ -60,9 +53,10 @@ jobs:
             echo "OK: All clear! No such tag as ${TAG} found."
           fi
 
-      - name: Extract version
-        id: extract_version
-        uses: Saionaro/extract-package-version@v1.3.0
+      - name: Extract package version
+        id: extract
+        run: |
+          echo "version=$(jq -r '.version' package.json)" >> "$GITHUB_OUTPUT"
 
   draft:
     name: Draft release
@@ -101,15 +95,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - name: Setup PNPM
-        uses: pnpm/action-setup@v3
-        with:
-          version: 10
+      - name: Setup jq
+        uses: dcarbone/install-jq-action@v2
 
-      - name: Setup node
-        uses: actions/setup-node@v4
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
+          bun-version: 1.2.8
 
       - name: Setup Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -121,17 +113,16 @@ jobs:
         with:
           workspaces: "./src-tauri -> target"
 
-      - name: Setup jq
-        uses: dcarbone/install-jq-action@v2
-
       - name: Install frontend dependencies
-        run: pnpm i --frozen-lockfile
+        run: bun install
 
       - name: Generate license report
-        run: pnpm license-report
+        run: bun run license-report
 
       - name: Set version
-        run: pnpm pkg set version=${{ needs.version.outputs.version }}
+        run: |
+          jq --arg version "${{ needs.version.outputs.version }}" '.version = $version' package.json > package.tmp.json
+          mv package.tmp.json package.json
 
       - name: Persist Apple API Key
         if: matrix.settings.platform == 'macos-latest'
