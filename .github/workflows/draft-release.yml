@@ -40,6 +40,7 @@ jobs:
         if: ${{ inputs.version }}
         run: |
           jq --arg version "${{ inputs.version }}" '.version = $version' package.json > package.tmp.json
+          rm package.json
           mv package.tmp.json package.json
 
       - name: Validate unique version
@@ -122,6 +123,7 @@ jobs:
       - name: Set version
         run: |
           jq --arg version "${{ needs.version.outputs.version }}" '.version = $version' package.json > package.tmp.json
+          rm package.json
           mv package.tmp.json package.json
 
       - name: Persist Apple API Key
