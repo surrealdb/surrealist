@@ -308,7 +308,7 @@ export function Sidekick() {
 						ta="center"
 						c="slate"
 					>
-						You are chatting with an AI assistant, responses may be inaccurate.
+						You are chatting with an AI assistant. Responses may be inaccurate.
 					</Text>
 				</Box>
 			)}
