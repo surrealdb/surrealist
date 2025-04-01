@@ -350,7 +350,6 @@ export function OverviewPage() {
 										</Menu.Item>
 										<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
 										<Menu.Item
-											disabled={authState !== "authenticated"}
 											leftSection={
 												<ThemeIcon
 													color="surreal"
@@ -366,7 +365,11 @@ export function OverviewPage() {
 												</ThemeIcon>
 											}
 											onClick={() => {
+												// if (authState === "authenticated") {
 												navigate("/create/instance");
+												// } else if(authState === "unauthenticated") {
+												// 	openCloudAuthentication();
+												// }
 											}}
 										>
 											<Box>
@@ -380,7 +383,6 @@ export function OverviewPage() {
 											</Box>
 										</Menu.Item>
 										<Menu.Item
-											disabled
 											leftSection={
 												<ThemeIcon
 													color="violet"

@@ -1,5 +1,5 @@
 import { Box, Button, Collapse, Divider, Group, Stack, Text } from "@mantine/core";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
@@ -8,9 +8,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError } from "~/util/helpers";
@@ -33,9 +31,6 @@ export interface ProvisionFormProps {
 }
 
 export function ProvisionForm({ onCreated }: ProvisionFormProps) {
-	const [, navigate] = useAbsoluteLocation();
-
-	const authState = useCloudStore((s) => s.authState);
 	const organization = useOrganization();
 	const [details, setDetails] = useImmer(DEFAULT);
 	const instanceTypes = useAvailableInstanceTypes();
@@ -87,12 +82,6 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			});
 		}
 	});
-
-	useEffect(() => {
-		if (authState === "unauthenticated") {
-			navigate("/overview");
-		}
-	}, [authState]);
 
 	return (
 		<Stack
