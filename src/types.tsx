@@ -55,6 +55,7 @@ export type GlobalPage =
 	| "/overview"
 	| "/cloud"
 	| "/billing"
+	| "/organizations"
 	| "/chat"
 	| "/support"
 	| "/referrals"

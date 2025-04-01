@@ -201,6 +201,11 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Billing",
 		icon: iconCreditCard,
 	},
+	"/organizations": {
+		id: "/organizations",
+		name: "Organizations",
+		icon: iconAccount,
+	},
 	"/chat": {
 		id: "/chat",
 		name: "Sidekick",

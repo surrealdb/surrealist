@@ -5,6 +5,7 @@ import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 
 import {
+	ActionIcon,
 	Box,
 	Button,
 	Center,
@@ -30,8 +31,10 @@ import {
 	iconChevronDown,
 	iconChevronRight,
 	iconCloud,
+	iconCog,
 	iconCommunity,
 	iconDelete,
+	iconDotsVertical,
 	iconPlus,
 	iconSearch,
 	iconServer,
@@ -365,11 +368,7 @@ export function OverviewPage() {
 												</ThemeIcon>
 											}
 											onClick={() => {
-												// if (authState === "authenticated") {
 												navigate("/create/instance");
-												// } else if(authState === "unauthenticated") {
-												// 	openCloudAuthentication();
-												// }
 											}}
 										>
 											<Box>
@@ -441,17 +440,11 @@ export function OverviewPage() {
 							{authState === "authenticated" &&
 								organizations.map(({ info, instances }) => (
 									<Fragment key={info.id}>
-										<Group
-											gap="xs"
-											mt="xl"
-										>
-											<PrimaryTitle fz="xl">Surreal Cloud</PrimaryTitle>
-											<Icon
-												path={iconChevronRight}
-												c="slate"
-												size="lg"
-											/>
-											<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
+										<Group mt="xl">
+											<Box>
+												<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
+												<Text>Surreal Cloud</Text>
+											</Box>
 										</Group>
 										<SimpleGrid cols={GRID_COLUMNS}>
 											{instances.map((instance) => (
