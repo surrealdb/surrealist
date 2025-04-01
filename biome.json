@@ -55,6 +55,14 @@
 		"ignore": ["src/util/icons.tsx"]
 	},
 	"files": {
-		"ignore": [".vscode", ".github", "node_modules", "src-tauri", "dist", "*.js"]
+		"ignore": [
+			".vscode",
+			".github",
+			"node_modules",
+			"src-tauri",
+			"dist",
+			"*.js",
+			"src/assets/data/license-report.json"
+		]
 	}
 }
