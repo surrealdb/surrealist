@@ -8,6 +8,7 @@ import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
@@ -65,6 +66,12 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				client.invalidateQueries({
 					queryKey: ["cloud", "instances"],
 				});
+
+				tagEvent("cloud_instance_paused", {
+					region: instance.region,
+					version: instance.version,
+					compute_type: instance.type.category,
+				});
 			} catch (err: any) {
 				showError({
 					title: "Failed to pause instance",
@@ -89,6 +96,12 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 
 				client.invalidateQueries({
 					queryKey: ["cloud", "instances"],
+				});
+
+				tagEvent("cloud_instance_resumed", {
+					region: instance.region,
+					version: instance.version,
+					compute_type: instance.type.category,
 				});
 			} catch (err: any) {
 				showError({
@@ -142,6 +155,12 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 
 				client.invalidateQueries({
 					queryKey: ["cloud", "instances"],
+				});
+
+				tagEvent("cloud_instance_deleted", {
+					region: instance.region,
+					version: instance.version,
+					compute_type: instance.type.category,
 				});
 			} catch (err: any) {
 				showError({

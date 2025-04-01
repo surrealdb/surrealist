@@ -32,6 +32,7 @@ import { useQueryStore } from "~/stores/query";
 import type { AuthDetails, Authentication, CloudInstance, Connection, Protocol } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
+import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
@@ -456,9 +457,14 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		setQueryResponse(id, response);
 
+		const compute_time = response
+			.map(({ execution_time }) => surqlDurationToSeconds(execution_time))
+			.reduce((a, b) => a + b, 0);
+
 		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "surql",
+			compute_time: compute_time,
 		});
 
 		if (query.length <= MAX_HISTORY_QUERY_LENGTH) {
@@ -515,20 +521,26 @@ export async function sendGraphqlRequest(
 	operation?: string,
 ) {
 	try {
+		const start = performance.now();
+
 		const { result, error } = await instance.graphql({
 			query,
 			variables: params,
 			operationName: operation,
 		});
 
+		const end = performance.now();
+
 		return {
 			success: !!result,
 			result: result || error,
+			execution_time: `${(end - start).toFixed(2)}ms`,
 		};
 	} catch (err: any) {
 		return {
 			success: false,
 			result: err.message,
+			execution_time: "",
 		};
 	}
 }
@@ -563,6 +575,7 @@ export async function executeGraphql(
 		tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "graphql",
+			compute_time: surqlDurationToSeconds(response.execution_time),
 		});
 	} catch (err: any) {
 		console.warn("executeGraphql fail", err);
