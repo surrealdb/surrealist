@@ -48,14 +48,23 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 
 	const submit = () => {
 		const execute = async (content: string) => {
-			await executeQuery(content);
+			const result = await executeQuery(content);
 
-			showInfo({
-				title: "Importer",
-				subtitle: "Database was successfully imported",
-			});
+			if (!result[0].success) {
+				showError({
+					title: "Import failed",
+					subtitle: `There was an error importing the database: ${result[0].result}`,
+				});
 
-			await syncConnectionSchema();
+				return;
+			} else {
+				showInfo({
+					title: "Importer",
+					subtitle: "Database was successfully imported",
+				});
+
+				await syncConnectionSchema();
+			}
 		};
 
 		confirmImport(execute);
@@ -145,9 +154,9 @@ const extractColumnNames = (importedRows: any[], withHeader: boolean) => {
 const extractColumnType = (importedRows: any[], index: number, withHeader: boolean) => {
 	const values = withHeader
 		? importedRows.map((row: any) => {
-				const key = Object.keys(importedRows?.[0] ?? {})[index];
-				return row?.[key];
-			})
+			const key = Object.keys(importedRows?.[0] ?? {})[index];
+			return row?.[key];
+		})
 		: (importedRows as unknown[][]).map((row) => row[index]);
 
 	const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
