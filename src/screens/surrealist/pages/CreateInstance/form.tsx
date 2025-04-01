@@ -94,6 +94,17 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				<Text fz="xl">Create a managed cloud instance</Text>
 			</Box>
 
+			<Link to="/overview">
+				<Button
+					variant="light"
+					color="slate"
+					size="xs"
+					leftSection={<Icon path={iconArrowLeft} />}
+				>
+					Back to overview
+				</Button>
+			</Link>
+
 			<Box mt="xl">
 				<Text
 					fz="xl"

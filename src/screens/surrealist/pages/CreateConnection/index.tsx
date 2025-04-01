@@ -2,6 +2,7 @@ import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
+	Alert,
 	Box,
 	Button,
 	Group,
@@ -147,100 +148,96 @@ export function CreateConnectionPage() {
 						<Text fz="xl">Connect to any SurrealDB instance</Text>
 					</Box>
 
-					{showTemplates && (
-						<Paper p="md">
-							<Group>
-								<Box flex={1}>
-									<Text
-										fz="xl"
-										fw={600}
-										c="bright"
-									>
-										Apply connection template
-									</Text>
-									<Text>Initialize this connection with a template</Text>
-								</Box>
-								<Menu>
-									<Menu.Target>
-										<Button
-											rightSection={<Icon path={iconChevronDown} />}
-											color="slate"
-											variant="light"
-										>
-											Apply
-										</Button>
-									</Menu.Target>
-									<Menu.Dropdown miw={200}>
-										{adapter.isServeSupported && (
-											<>
-												<Menu.Item
-													onClick={() => applyTemplate(localhost)}
-													leftSection={
-														<ThemeIcon
-															color="slate"
-															variant="light"
-															radius="xs"
-															mr="xs"
-														>
-															<Icon path={iconHomePlus} />
-														</ThemeIcon>
-													}
-												>
-													<Box>
-														<Text
-															c="bright"
-															fw={500}
-															lh={1}
-														>
-															Localhost
-														</Text>
-														<Text fz="sm">Automatic template</Text>
-													</Box>
-												</Menu.Item>
-												<Menu.Divider />
-											</>
-										)}
-										{templates.length > 0 && (
-											<>
-												{templates.map((template) => (
-													<Menu.Item
-														key={template.id}
-														onClick={() => applyTemplate(template)}
-														leftSection={
-															<ThemeIcon
-																color="slate"
-																variant="light"
-																radius="xs"
-																mr="xs"
-															>
-																<Icon
-																	path={USER_ICONS[template.icon]}
-																/>
-															</ThemeIcon>
-														}
-													>
-														<Text
-															c="bright"
-															fw={500}
-														>
-															{template.name}
-														</Text>
-													</Menu.Item>
-												))}
-												<Menu.Divider />
-											</>
-										)}
+					<Group>
+						<Link to="/overview">
+							<Button
+								variant="light"
+								color="slate"
+								size="xs"
+								leftSection={<Icon path={iconArrowLeft} />}
+							>
+								Back to overview
+							</Button>
+						</Link>
+						<Spacer />
+						<Menu position="bottom-end">
+							<Menu.Target>
+								<Button
+									rightSection={<Icon path={iconChevronDown} />}
+									color="slate"
+									variant="light"
+									size="xs"
+								>
+									Apply template
+								</Button>
+							</Menu.Target>
+							<Menu.Dropdown miw={200}>
+								{adapter.isServeSupported && (
+									<>
 										<Menu.Item
-											rightSection={<Icon path={iconChevronRight} />}
-											onClick={openTemplates}
+											onClick={() => applyTemplate(localhost)}
+											leftSection={
+												<ThemeIcon
+													color="slate"
+													variant="light"
+													radius="xs"
+													mr="xs"
+												>
+													<Icon path={iconHomePlus} />
+												</ThemeIcon>
+											}
 										>
-											Manage templates
+											<Box>
+												<Text
+													c="bright"
+													fw={500}
+													lh={1}
+												>
+													Localhost
+												</Text>
+												<Text fz="sm">Automatic template</Text>
+											</Box>
 										</Menu.Item>
-									</Menu.Dropdown>
-								</Menu>
-							</Group>
-						</Paper>
-					)}
+										<Menu.Divider />
+									</>
+								)}
+								{templates.length > 0 && (
+									<>
+										{templates.map((template) => (
+											<Menu.Item
+												key={template.id}
+												onClick={() => applyTemplate(template)}
+												leftSection={
+													<ThemeIcon
+														color="slate"
+														variant="light"
+														radius="xs"
+														mr="xs"
+													>
+														<Icon path={USER_ICONS[template.icon]} />
+													</ThemeIcon>
+												}
+											>
+												<Text
+													c="bright"
+													fw={500}
+												>
+													{template.name}
+												</Text>
+											</Menu.Item>
+										))}
+										<Menu.Divider />
+									</>
+								)}
+								<Menu.Item
+									rightSection={<Icon path={iconChevronRight} />}
+									onClick={openTemplates}
+								>
+									Manage templates
+								</Menu.Item>
+							</Menu.Dropdown>
+						</Menu>
+					</Group>
 
 					<Box mt="xl">
 						<Text
