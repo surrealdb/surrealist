@@ -59,11 +59,13 @@ interface RewardProps extends Omit<SlabProps, "title"> {
 }
 
 function Reward({ title, description, icon, active, ...other }: RewardProps) {
+	const isLight = useIsLight();
+
 	return (
 		<Slab {...other}>
 			<Box
 				p="xl"
-				c={active ? "white" : undefined}
+				c={!isLight && active ? "white" : undefined}
 			>
 				<Image
 					src={icon}
