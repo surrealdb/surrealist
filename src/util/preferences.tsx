@@ -13,12 +13,10 @@ import {
 	VIEW_PAGES,
 } from "~/constants";
 
-import { objectify } from "radash";
 import { useMemo } from "react";
 import { isDesktop } from "~/adapter";
-import { featureFlagsLock } from "~/providers/FeatureFlags";
 import { Flags, type Listable, Selectable, type SurrealistConfig } from "~/types";
-import { featureFlags, useFeatureFlags } from "./feature-flags";
+import { useFeatureFlags } from "./feature-flags";
 import { optional } from "./helpers";
 
 interface ReaderWriter<T> {
@@ -48,28 +46,28 @@ export interface PreferenceSection {
  * A preference controller for a checkbox
  */
 export class CheckboxController {
-	constructor(public options: ReaderWriter<boolean>) {}
+	constructor(public options: ReaderWriter<boolean>) { }
 }
 
 /**
  * A preference controller for a number
  */
 export class NumberController {
-	constructor(public options: ReaderWriter<number>) {}
+	constructor(public options: ReaderWriter<number>) { }
 }
 
 /**
  * A preference controller for text inputs
  */
 export class TextController {
-	constructor(public options: ReaderWriter<string> & { placeholder?: string }) {}
+	constructor(public options: ReaderWriter<string> & { placeholder?: string }) { }
 }
 
 /**
  * A preference controller for a selection dropdown
  */
 export class SelectionController<T extends string> {
-	constructor(public options: ReaderWriter<T> & { options: Selectable<T>[] }) {}
+	constructor(public options: ReaderWriter<T> & { options: Selectable<T>[] }) { }
 }
 
 /**
@@ -83,7 +81,7 @@ export class FlagSetController<K extends string, T extends Flags<K>> {
 			default?: boolean;
 			minWidth?: string | number;
 		},
-	) {}
+	) { }
 }
 
 /**
@@ -399,7 +397,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 			},
 		);
 
-		if (cloud_endpoints) {
+		if (cloud_endpoints === 'custom') {
 			sections.push({
 				name: "Cloud endpoints",
 				preferences: [
