@@ -65,7 +65,7 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 		<Slab {...other}>
 			<Box
 				p="xl"
-				c={(!isLight && active) ? "white" : undefined}
+				c={!isLight && active ? "white" : undefined}
 			>
 				<Image
 					src={icon}
