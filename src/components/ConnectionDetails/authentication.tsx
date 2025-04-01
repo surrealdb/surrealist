@@ -71,7 +71,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 				<SimpleGrid cols={2}>
 					<TextInput
 						label="Username"
-						placeholder="root"
+						placeholder="admin"
 						value={value.authentication.username}
 						spellCheck={false}
 						onChange={(e) =>
@@ -82,7 +82,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 					/>
 					<PasswordInput
 						label="Password"
-						placeholder="root"
+						placeholder="admin"
 						value={value.authentication.password}
 						spellCheck={false}
 						onChange={(e) =>
