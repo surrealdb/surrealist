@@ -58,7 +58,7 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 
 				return;
 			}
-			
+
 			showInfo({
 				title: "Importer",
 				subtitle: "Database was successfully imported",
