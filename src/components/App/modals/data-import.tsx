@@ -48,7 +48,17 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 
 	const submit = () => {
 		const execute = async (content: string) => {
-			await executeQuery(content);
+			const result = await executeQuery(content);
+			const failed = result.some((result) => !result.success);
+
+			if (failed) {
+				showError({
+					title: "Import failed",
+					subtitle: "There was an error importing the database",
+				});
+
+				return;
+			}
 
 			showInfo({
 				title: "Importer",
