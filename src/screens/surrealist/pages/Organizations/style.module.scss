@@ -1,63 +1,26 @@
-.feature-list li:not(:last-child) {
-	margin-bottom: var(--mantine-spacing-sm);
-}
-
-.feature-icon {
-	background-image: var(--surrealist-gradient);
-	border-radius: 100%;
-	// border: 1px solid rgba(255, 255, 255, 0.3);
-	// background-origin: border-box;
-
-	* {
-		color: white
-	}
-
-	;
-}
-
 .scroll-area :global(.mantine-ScrollArea-viewport)>div {
 	display: block !important;
 }
 
-.table {
-	-webkit-user-select: text;
-	user-select: text;
+.organization-box {
+	position: relative;
+	overflow: hidden;
+	background-color: var(--surrealist-faint-body);
+	outline: 1px solid transparent;
+	height: 112px;
+	display: flex;
+	flex-direction: column;
 
-	th {
-		color: var(--mantine-color-bright);
-		text-align: start;
-		position: sticky;
-		top: 0;
+	@include light {
+		background-color: rgba(255, 255, 255, 0.5);
+		outline-color: hsl(300, 15%, 88%);
 	}
 
-	thead tr {
-		border: none;
-	}
-
-	tbody tr {
-		border: none;
-	}
-
-	tbody tr:nth-child(odd) {
-		background-color: rgba(255, 255, 255, 0.05);
+	&:hover {
+		outline-color: rgba(255, 221, 251, 0.15);
 
 		@include light {
-			background-color: rgba(0, 0, 0, 0.025);
+			outline-color: rgba(139, 89, 139, 0.25);
 		}
 	}
-
-	td {
-		&:first-child {
-			border-top-left-radius: var(--mantine-radius-xs);
-			border-bottom-left-radius: var(--mantine-radius-xs);
-			padding-left: 0.75rem;
-		}
-
-		&:last-child {
-			border-top-right-radius: var(--mantine-radius-xs);
-			border-bottom-right-radius: var(--mantine-radius-xs);
-			padding-right: 0.75rem;
-		}
-	}
-
 }

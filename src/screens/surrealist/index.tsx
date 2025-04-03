@@ -13,6 +13,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { BillingPage } from "./pages/Billing";
 import { OrganizationsPage } from "./pages/Organizations";
+import { OrganizationManagePage } from "./pages/OrganizationManage";
 import { ChatPage } from "./pages/Chat";
 import { CloudPage } from "./pages/Cloud";
 import { CreateConnectionPage } from "./pages/CreateConnection";
@@ -42,6 +43,7 @@ const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
 const BillingPageLazy = memo(BillingPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
+const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
@@ -170,10 +172,6 @@ export function SurrealistScreen() {
 								<BillingPageLazy />
 							</Route>
 
-							<Route path="/organizations">
-								<OrganizationsPageLazy />
-							</Route>
-
 							<Route path="/referrals">
 								<ReferralPageLazy />
 							</Route>
@@ -192,6 +190,16 @@ export function SurrealistScreen() {
 
 							<Route path="/support">
 								<SupportPageLazy />
+							</Route>
+
+							<Route path="/organizations">
+								<OrganizationsPageLazy />
+							</Route>
+
+							<Route path="/o/:organization">
+								{({ organization }) => (
+									<OrganizationManagePageLazy id={organization} />
+								)}
 							</Route>
 
 							<Route path="/c/:connection/:view">

@@ -70,6 +70,7 @@ import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartResource } from "./content/resource";
+import { Link } from "wouter";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -322,94 +323,91 @@ export function OverviewPage() {
 										</Button>
 									</Menu.Target>
 									<Menu.Dropdown>
-										<Menu.Item
-											leftSection={
-												<ThemeIcon
-													color={isLight ? "slate" : "slate.0"}
-													mr="xs"
-													radius="xs"
-													size="lg"
-													variant="light"
-												>
-													<Icon
-														path={iconPlus}
+										<Link to="/create/connection">
+											<Menu.Item
+												leftSection={
+													<ThemeIcon
+														color={isLight ? "slate" : "slate.0"}
+														mr="xs"
+														radius="xs"
 														size="lg"
-													/>
-												</ThemeIcon>
-											}
-											onClick={() => {
-												navigate("/create/connection");
-											}}
-										>
-											<Box>
-												<Text
-													c="bright"
-													fw={600}
-												>
-													Connection
-												</Text>
-												<Text>Connect to any SurrealDB instance</Text>
-											</Box>
-										</Menu.Item>
+														variant="light"
+													>
+														<Icon
+															path={iconPlus}
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Connection
+													</Text>
+													<Text>Connect to any SurrealDB instance</Text>
+												</Box>
+											</Menu.Item>
+										</Link>
 										<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
-										<Menu.Item
-											leftSection={
-												<ThemeIcon
-													color="surreal"
-													mr="xs"
-													radius="xs"
-													size="lg"
-													variant="light"
-												>
-													<Icon
-														path={iconCloud}
+										<Link to="/create/instance">
+											<Menu.Item
+												leftSection={
+													<ThemeIcon
+														color="surreal"
+														mr="xs"
+														radius="xs"
 														size="lg"
-													/>
-												</ThemeIcon>
-											}
-											onClick={() => {
-												navigate("/create/instance");
-											}}
-										>
-											<Box>
-												<Text
-													c="bright"
-													fw={600}
-												>
-													Cloud Instance
-												</Text>
-												<Text>Create a managed cloud instance</Text>
-											</Box>
-										</Menu.Item>
-										<Menu.Item
-											leftSection={
-												<ThemeIcon
-													color="violet"
-													mr="xs"
-													radius="xs"
-													size="lg"
-													variant="light"
-												>
-													<Icon
-														path={iconAccount}
+														variant="light"
+													>
+														<Icon
+															path={iconCloud}
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Cloud Instance
+													</Text>
+													<Text>Create a managed cloud instance</Text>
+												</Box>
+											</Menu.Item>
+										</Link>
+										<Link to="/create/organization">
+											<Menu.Item
+												leftSection={
+													<ThemeIcon
+														color="violet"
+														mr="xs"
+														radius="xs"
 														size="lg"
-													/>
-												</ThemeIcon>
-											}
-											onClick={() => {
-												navigate("/create/organization");
-											}}
-										>
-											<Box>
-												<Text
-													c="bright"
-													fw={600}
-												>
-													Organization
-												</Text>
-												<Text>Create a space to manage your team</Text>
-											</Box>
-										</Menu.Item>
+														variant="light"
+													>
+														<Icon
+															path={iconAccount}
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Organization
+													</Text>
+													<Text>Create a space to manage your team</Text>
+												</Box>
+											</Menu.Item>
+										</Link>
 									</Menu.Dropdown>
 								</Menu>
 							</Group>
@@ -442,8 +440,8 @@ export function OverviewPage() {
 									<Fragment key={info.id}>
 										<Group mt="xl">
 											<Box>
-												<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
 												<Text>Surreal Cloud</Text>
+												<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
 											</Box>
 										</Group>
 										<SimpleGrid cols={GRID_COLUMNS}>

@@ -1,8 +1,8 @@
 import classes from "./style.module.scss";
 
-import { Alert, Box, Button, Group, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Button, Group, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
 import { AuthGuard } from "~/components/AuthGuard";
@@ -19,20 +19,23 @@ import { iconArrowLeft } from "~/util/icons";
 export function CreateOrganizationPage() {
 	const [, navigate] = useAbsoluteLocation();
 	const [name, setName] = useInputState("");
+	const client = useQueryClient();
 
-	const { mutateAsync } = useMutation({
+	const { mutateAsync, isPending } = useMutation({
 		mutationKey: ["create-organization"],
 		mutationFn: async () => {
-			const result = await fetchAPI<CloudOrganization>("/organizations", {
+			const organization = await fetchAPI<CloudOrganization>("/organizations", {
 				method: "POST",
 				body: JSON.stringify({ name }),
 			});
 
 			tagEvent("cloud_organization_created");
 
-			console.log(result);
+			client.invalidateQueries({
+				queryKey: ["cloud", "instances"],
+			});
 
-			navigate("/overview");
+			navigate(`/o/${organization.id}`);
 		},
 	});
 
@@ -114,6 +117,7 @@ export function CreateOrganizationPage() {
 								variant="gradient"
 								disabled={!name}
 								onClick={handleCreate}
+								loading={isPending}
 							>
 								Create organization
 							</Button>

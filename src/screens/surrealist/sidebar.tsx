@@ -33,9 +33,9 @@ import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
-	["/overview"],
+	["/overview", "/organizations"],
 	["/chat", "/mini/new"],
-	["/organizations", "/referrals", "/support"],
+	["/referrals", "/support"],
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
