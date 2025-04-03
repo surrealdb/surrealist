@@ -11,7 +11,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
-import { BillingPage } from "./pages/Billing";
 import { OrganizationsPage } from "./pages/Organizations";
 import { OrganizationManagePage } from "./pages/OrganizationManage";
 import { ChatPage } from "./pages/Chat";
@@ -41,7 +40,6 @@ const OverviewPageLazy = memo(OverviewPage);
 const CloudPageLazy = memo(CloudPage);
 const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
-const BillingPageLazy = memo(BillingPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const ReferralPageLazy = memo(ReferralPage);
@@ -168,10 +166,6 @@ export function SurrealistScreen() {
 								<ChatPageLazy />
 							</Route>
 
-							<Route path="/billing">
-								<BillingPageLazy />
-							</Route>
-
 							<Route path="/referrals">
 								<ReferralPageLazy />
 							</Route>
@@ -190,6 +184,10 @@ export function SurrealistScreen() {
 
 							<Route path="/support">
 								<SupportPageLazy />
+							</Route>
+
+							<Route path="/billing">
+								<Redirect to="/organizations" />
 							</Route>
 
 							<Route path="/organizations">
