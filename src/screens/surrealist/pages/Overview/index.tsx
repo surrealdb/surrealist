@@ -149,7 +149,7 @@ export function OverviewPage() {
 						<Stack
 							className={classes.content}
 							justify="center"
-							maw={1100}
+							maw={1000}
 							px="xl"
 							mx="auto"
 							py={96}

@@ -2,6 +2,8 @@ import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
+	Badge,
+	Box,
 	BoxProps,
 	Group,
 	Menu,
@@ -14,6 +16,7 @@ import {
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
@@ -60,7 +63,10 @@ export function OrganizationTile({
 					align="strech"
 					flex={1}
 				>
-					<Stack flex={1}>
+					<Stack
+						gap={0}
+						flex={1}
+					>
 						<Group>
 							<Text
 								c="bright"
@@ -71,6 +77,14 @@ export function OrganizationTile({
 							</Text>
 						</Group>
 						<Text>{organization.plan.name}</Text>
+						<Spacer />
+						<Badge
+							color="violet"
+							variant="subtle"
+							px={0}
+						>
+							? members
+						</Badge>
 					</Stack>
 					<div
 						onClick={ON_STOP_PROPAGATION}

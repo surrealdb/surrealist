@@ -43,7 +43,7 @@ export function OrganizationsPage() {
 					<Stack
 						px="xl"
 						mx="auto"
-						maw={1100}
+						maw={1000}
 						mt={75}
 					>
 						<Box>
