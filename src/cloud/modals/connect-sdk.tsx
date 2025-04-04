@@ -162,6 +162,9 @@ from surrealdb import Surreal, RecordID
 				use surrealdb::opt::auth::Root;
 				use tokio;
 
+				// Open a connection
+				let db = any::connect("wss://${instance.host}").await?;
+
 				// Select namespace and database
 				db.use_ns("${namespace}").use_db("${database}").await?;
 
