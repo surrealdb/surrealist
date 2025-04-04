@@ -150,10 +150,7 @@ pub async fn open_query_file(app: AppHandle, window: Window) {
             FilePath::Url(_) => None,
             FilePath::Path(buf) => Some(buf.display().to_string()),
         })
-        .filter_map(|f| match url::Url::from_file_path(f) {
-            Ok(u) => Some(u),
-            Err(_) => None,
-        })
+        .filter_map(|f| url::Url::from_file_path(f).ok())
         .collect();
 
     info!("My paths: {:?}", urls);
