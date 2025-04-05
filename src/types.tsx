@@ -14,6 +14,7 @@ export type DiagramDirection = "default" | "ltr" | "rtl";
 export type DiagramLineStyle = "default" | "metro" | "straight" | "smooth";
 export type DiagramLinks = "default" | "hidden" | "visible";
 export type DiagramMode = "default" | "fields" | "summary" | "simple";
+export type DiagramHoverFocus = "default" | "none" | "dim";
 export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
@@ -123,6 +124,7 @@ export interface Connection {
 	diagramDirection: DiagramDirection;
 	diagramLineStyle: DiagramLineStyle;
 	diagramLinkMode: DiagramLinks;
+	diagramHoverFocus: DiagramHoverFocus;
 	diagramMode: DiagramMode;
 	designerTableList: boolean;
 	explorerTableList: boolean;
@@ -171,6 +173,7 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramLineStyle: DiagramLineStyle;
 	defaultDiagramLinkMode: DiagramLinks;
 	defaultDiagramMode: DiagramMode;
+	defaultDiagramHoverFocus: DiagramHoverFocus;
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
 	sidebarViews: Flags<ViewPage>;
