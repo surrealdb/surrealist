@@ -120,6 +120,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		diagramLineStyle,
 		diagramLinkMode,
 		diagramMode,
+		diagramHoverFocus,
 	] = useConnection((c) => [
 		c?.id ?? "",
 		c?.designerTableList,
@@ -128,6 +129,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		c?.diagramLineStyle,
 		c?.diagramLinkMode,
 		c?.diagramMode,
+		c?.diagramHoverFocus,
 	]);
 
 	const [isExporting, setIsExporting] = useState(false);
@@ -144,17 +146,22 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const nodesInitialized = useNodesInitialized({ includeHiddenNodes: true });
 	const isLayedOut = useRef(false);
 
+	const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+	const [isDragging, setIsDragging] = useState(false);
+
 	const [defaultAlgorithm] = useSetting("appearance", "defaultDiagramAlgorithm");
 	const [defaultDirection] = useSetting("appearance", "defaultDiagramDirection");
 	const [defaultLineStyle] = useSetting("appearance", "defaultDiagramLineStyle");
 	const [defaultLinkMode] = useSetting("appearance", "defaultDiagramLinkMode");
 	const [defaultNodeMode] = useSetting("appearance", "defaultDiagramMode");
+	const [defaultHoverFocus] = useSetting("appearance", "defaultDiagramHoverFocus");
 
 	const algorithm = applyDefault(diagramAlgorithm, defaultAlgorithm);
 	const direction = applyDefault(diagramDirection, defaultDirection);
 	const lineStyle = applyDefault(diagramLineStyle, defaultLineStyle);
 	const linkMode = applyDefault(diagramLinkMode, defaultLinkMode);
 	const nodeMode = applyDefault(diagramMode, defaultNodeMode);
+	const hoverFocus = applyDefault(diagramHoverFocus, defaultHoverFocus);
 
 	useLayoutEffect(() => {
 		if (isLayedOut.current || !nodesInitialized) {
@@ -216,6 +223,24 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				};
 			}),
 		);
+
+		setIsDragging(true);
+	});
+
+	const handleNodeDragStop = useStable((_: MouseEvent, node: Node) => {
+		setIsDragging(false);
+	});
+
+	const handleNodeMouseEnter = useStable((_: MouseEvent, node: Node) => {
+		if (hoverFocus === "dim") {
+			setHoveredNode(node.id);
+		}
+	});
+
+	const handleNodeMouseLeave = useStable(() => {
+		if (hoverFocus === "dim") {
+			setHoveredNode(null);
+		}
 	});
 
 	const saveImage = useStable(async (type: "png" | "svg") => {
@@ -338,6 +363,92 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			});
 		});
 	}, [props.active]);
+
+	useEffect(() => {
+		const shouldApplyDimming = hoverFocus === "dim" && hoveredNode !== null && !isDragging;
+
+		if (!shouldApplyDimming) {
+			setNodes((nodes) =>
+				nodes.map((node) => ({
+					...node,
+					className: node.className
+						? node.className
+								.split(" ")
+								.filter((c) => c !== "dimmed")
+								.join(" ")
+						: undefined,
+				})),
+			);
+
+			setEdges((edges) =>
+				edges.map((edge) => ({
+					...edge,
+					className: edge.className
+						? edge.className
+								.split(" ")
+								.filter((c) => c !== "dimmed")
+								.join(" ")
+						: edge.type === "elk"
+							? "record-link"
+							: undefined,
+				})),
+			);
+
+			return;
+		}
+
+		const relatedNodes = new Set<string>([hoveredNode]);
+
+		for (const edge of edges) {
+			if (edge.source === hoveredNode) {
+				relatedNodes.add(edge.target);
+			}
+			if (edge.target === hoveredNode) {
+				relatedNodes.add(edge.source);
+			}
+		}
+
+		setNodes((nodes) =>
+			nodes.map((node) => {
+				const isRelated = relatedNodes.has(node.id);
+				const classes = node.className
+					? node.className.split(" ").filter((c) => c !== "dimmed")
+					: [];
+
+				if (!isRelated) {
+					classes.push("dimmed");
+				}
+
+				return {
+					...node,
+					className: classes.length > 0 ? classes.join(" ") : undefined,
+				};
+			}),
+		);
+
+		setEdges((edges) =>
+			edges.map((edge) => {
+				const isRelated = relatedNodes.has(edge.source) && relatedNodes.has(edge.target);
+
+				const baseClasses = edge.className
+					? edge.className.split(" ").filter((c) => c !== "dimmed")
+					: [];
+
+				if (edge.type === "elk" && baseClasses.length === 0) {
+					baseClasses.push("record-link");
+				}
+
+				if (!isRelated) {
+					baseClasses.push("dimmed");
+				}
+
+				return {
+					...edge,
+					className: baseClasses.join(" "),
+				};
+			}),
+		);
+	}, [hoveredNode, hoverFocus, edges, isDragging]);
 
 	useIntent("focus-table", ({ table }) => {
 		const node = getNodes().find((node) => node.id === table);
@@ -507,6 +618,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					}}
 					onNodeClick={handleNodeClick}
 					onNodeDragStart={handleNodeDragStart}
+					onNodeDragStop={handleNodeDragStop}
+					onNodeMouseEnter={handleNodeMouseEnter}
+					onNodeMouseLeave={handleNodeMouseLeave}
 					onContextMenu={showContextMenu([
 						{
 							key: "create",
