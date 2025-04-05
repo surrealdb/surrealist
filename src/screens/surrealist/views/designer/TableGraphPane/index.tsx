@@ -63,6 +63,7 @@ import {
 import {
 	DESIGNER_ALGORITHMS,
 	DESIGNER_DIRECTIONS,
+	DESIGNER_HOVER_FOCUS,
 	DESIGNER_LINE_STYLES,
 	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
@@ -71,6 +72,7 @@ import {
 import type {
 	DiagramAlgorithm,
 	DiagramDirection,
+	DiagramHoverFocus,
 	DiagramLineStyle,
 	DiagramLinks,
 	DiagramMode,
@@ -320,6 +322,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		updateConnection({
 			id: connectionId,
 			diagramMode: mode as DiagramMode,
+		});
+	});
+
+	const setDiagramHoverFocus = useStable((mode: string) => {
+		updateConnection({
+			id: connectionId,
+			diagramHoverFocus: mode as DiagramHoverFocus,
 		});
 	});
 
@@ -577,6 +586,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 									data={DESIGNER_LINKS}
 									value={diagramLinkMode}
 									onChange={setDiagramLinkMode as any}
+									comboboxProps={{ withinPortal: false }}
+								/>
+								<Label>Hover focus</Label>
+								<Select
+									data={DESIGNER_HOVER_FOCUS}
+									value={diagramHoverFocus}
+									onChange={setDiagramHoverFocus as any}
 									comboboxProps={{ withinPortal: false }}
 								/>
 							</SimpleGrid>
