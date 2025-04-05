@@ -68,18 +68,10 @@
 		stroke-dasharray: 5;
 	}
 
-	:global(.react-flow__node.dimmed) {
-		opacity: 0.2;
-		transition: opacity 0.2s ease-in-out;
-	}
-
+	:global(.react-flow__node.dimmed),
+	:global(.react-flow__edge.dimmed) :global(.react-flow__edge-text),
 	:global(.react-flow__edge.dimmed)>path {
 		opacity: 0.2;
-		transition: opacity 0.2s ease-in-out;
-	}
-
-	:global(.react-flow__edge.dimmed) :global(.react-flow__edge-text) {
-		opacity: 0.3;
 		transition: opacity 0.2s ease-in-out;
 	}
 
