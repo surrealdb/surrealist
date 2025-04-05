@@ -234,13 +234,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const handleNodeMouseEnter = useStable((_: MouseEvent, node: Node) => {
-		if (hoverFocus === "dim") {
+		if (hoverFocus === "dim" || hoverFocus === "recursive") {
 			setHoveredNode(node.id);
 		}
 	});
 
 	const handleNodeMouseLeave = useStable(() => {
-		if (hoverFocus === "dim") {
+		if (hoverFocus === "dim" || hoverFocus === "recursive") {
 			setHoveredNode(null);
 		}
 	});
@@ -374,7 +374,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [props.active]);
 
 	useEffect(() => {
-		const shouldApplyDimming = hoverFocus === "dim" && hoveredNode !== null && !isDragging;
+		const shouldApplyDimming =
+			(hoverFocus === "dim" || hoverFocus === "recursive") &&
+			hoveredNode !== null &&
+			!isDragging;
 
 		if (!shouldApplyDimming) {
 			setNodes((nodes) =>
@@ -408,12 +411,33 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 		const relatedNodes = new Set<string>([hoveredNode]);
 
-		for (const edge of edges) {
-			if (edge.source === hoveredNode) {
-				relatedNodes.add(edge.target);
-			}
-			if (edge.target === hoveredNode) {
-				relatedNodes.add(edge.source);
+		if (hoverFocus === "recursive") {
+			const traverseGraph = (nodeId: string, visited: Set<string>, isForward: boolean) => {
+				if (visited.has(nodeId)) return;
+
+				visited.add(nodeId);
+				relatedNodes.add(nodeId);
+
+				for (const edge of edges) {
+					if (isForward && edge.source === nodeId && !visited.has(edge.target)) {
+						traverseGraph(edge.target, visited, true);
+					}
+					if (!isForward && edge.target === nodeId && !visited.has(edge.source)) {
+						traverseGraph(edge.source, visited, false);
+					}
+				}
+			};
+
+			traverseGraph(hoveredNode, new Set<string>(), true);
+			traverseGraph(hoveredNode, new Set<string>(), false);
+		} else {
+			for (const edge of edges) {
+				if (edge.source === hoveredNode) {
+					relatedNodes.add(edge.target);
+				}
+				if (edge.target === hoveredNode) {
+					relatedNodes.add(edge.source);
+				}
 			}
 		}
 
