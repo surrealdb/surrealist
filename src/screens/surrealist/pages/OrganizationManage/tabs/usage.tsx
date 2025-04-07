@@ -9,7 +9,7 @@ import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
 import { measureComputeCost } from "~/util/cloud";
 
 export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
-	const usageQuery = useCloudOrgUsageQuery(organization?.id);
+	const usageQuery = useCloudOrgUsageQuery(organization.id);
 
 	const usageCharge = measureComputeCost(usageQuery.data ?? []);
 

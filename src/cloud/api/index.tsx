@@ -67,8 +67,7 @@ export async function fetchAPI<T = unknown>(
  * Fetch essential information from the API
  */
 export async function updateCloudInformation() {
-	const { selectedOrganization, setCloudValues, setProfile, setSelectedOrganization } =
-		useCloudStore.getState();
+	const { setCloudValues, setProfile } = useCloudStore.getState();
 
 	// Load essential information
 	const [instanceVersions, instanceTypes, regions, billingCountries] = await Promise.all([
@@ -79,10 +78,6 @@ export async function updateCloudInformation() {
 	]);
 
 	const organizations = await fetchAPI<CloudOrganization[]>(`/organizations`);
-
-	if (!selectedOrganization && organizations.length > 0) {
-		setSelectedOrganization(organizations[0].id);
-	}
 
 	setCloudValues({
 		instanceVersions,

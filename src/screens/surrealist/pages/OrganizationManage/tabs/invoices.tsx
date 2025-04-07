@@ -16,7 +16,7 @@ const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> =
 };
 
 export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) {
-	const invoiceQuery = useCloudInvoicesQuery(organization?.id);
+	const invoiceQuery = useCloudInvoicesQuery(organization.id);
 
 	return (
 		<Section

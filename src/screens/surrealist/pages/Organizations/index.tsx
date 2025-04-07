@@ -10,6 +10,7 @@ import { Spacer } from "~/components/Spacer";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { Link } from "wouter";
 import { OrganizationTile } from "./organization";
+import { ORGANIZATIONS, useSavepoint } from "~/hooks/overview";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -21,6 +22,8 @@ export function OrganizationsPage() {
 	const isAuthed = useIsAuthenticated();
 
 	const { data } = useCloudOrganizationsQuery();
+
+	useSavepoint(ORGANIZATIONS);
 
 	return (
 		<Box
@@ -57,7 +60,6 @@ export function OrganizationsPage() {
 							<Link to="/create/organization">
 								<Button
 									size="xs"
-									color="slate"
 									variant="gradient"
 								>
 									Create organization

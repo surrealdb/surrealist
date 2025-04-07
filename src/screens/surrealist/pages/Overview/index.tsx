@@ -5,7 +5,6 @@ import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 
 import {
-	ActionIcon,
 	Box,
 	Button,
 	Center,
@@ -31,13 +30,10 @@ import {
 	iconChevronDown,
 	iconChevronRight,
 	iconCloud,
-	iconCog,
 	iconCommunity,
 	iconDelete,
-	iconDotsVertical,
 	iconPlus,
 	iconSearch,
-	iconServer,
 	iconSidekick,
 	iconTune,
 	iconUniversity,
@@ -71,6 +67,7 @@ import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartResource } from "./content/resource";
 import { Link } from "wouter";
+import { OVERVIEW, useSavepoint } from "~/hooks/overview";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -79,7 +76,6 @@ const GRID_COLUMNS = {
 };
 
 export function OverviewPage() {
-	const { setSelectedOrganization } = useCloudStore.getState();
 	const knownLabels = useConnectionLabels();
 	const isLight = useIsLight();
 
@@ -127,6 +123,8 @@ export function OverviewPage() {
 		light: logoLightUrl,
 		dark: logoDarkUrl,
 	});
+
+	useSavepoint(OVERVIEW);
 
 	return (
 		<Box
@@ -457,7 +455,6 @@ export function OverviewPage() {
 													title="No instances"
 													subtitle="Click to provision a new instance"
 													onCreate={() => {
-														setSelectedOrganization(info.id);
 														navigate("/create/instance");
 													}}
 												/>

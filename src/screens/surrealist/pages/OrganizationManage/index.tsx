@@ -25,6 +25,8 @@ import { OrganizationBillingTab } from "./tabs/billing";
 import { OrganizationUsageTab } from "./tabs/usage";
 import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationSettingsTab } from "./tabs/settings";
+import { useMemo } from "react";
+import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 
 export interface OrganizationManagePageProps {
 	id: string;
@@ -33,6 +35,16 @@ export interface OrganizationManagePageProps {
 export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 	const { data, isSuccess } = useCloudOrganizationsQuery();
 	const organization = data?.find((org) => org.id === id);
+
+	const savepoint = useMemo<Savepoint>(() => {
+		if (organization) {
+			return { path: `/o/${organization.id}`, name: organization.name };
+		}
+
+		return OVERVIEW;
+	}, [organization]);
+
+	useSavepoint(savepoint);
 
 	if (isSuccess && !organization) {
 		return <Redirect to="/organizations" />;

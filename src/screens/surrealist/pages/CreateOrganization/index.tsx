@@ -10,6 +10,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
+import { useLastSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
@@ -43,6 +44,8 @@ export function CreateOrganizationPage() {
 		mutateAsync();
 	});
 
+	const savepoint = useLastSavepoint();
+
 	return (
 		<AuthGuard>
 			<Box
@@ -71,14 +74,14 @@ export function CreateOrganizationPage() {
 							<Text fz="xl">Create a space to manage your team</Text>
 						</Box>
 
-						<Link to="/overview">
+						<Link to={savepoint.path}>
 							<Button
 								variant="light"
 								color="slate"
 								size="xs"
 								leftSection={<Icon path={iconArrowLeft} />}
 							>
-								Back to overview
+								Back to {savepoint.name}
 							</Button>
 						</Link>
 
@@ -100,14 +103,12 @@ export function CreateOrganizationPage() {
 						/>
 
 						<Group mt="xl">
-							<Link to="/overview">
+							<Link to={savepoint.path}>
 								<Button
-									w={150}
 									color="slate"
 									variant="light"
-									leftSection={<Icon path={iconArrowLeft} />}
 								>
-									Back to overview
+									Cancel
 								</Button>
 							</Link>
 							<Spacer />

@@ -27,6 +27,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
+import { useLastSavepoint } from "~/hooks/overview";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
@@ -119,7 +120,7 @@ export function CreateConnectionPage() {
 	}, []);
 
 	const templates = useConfigStore((s) => s.settings.templates.list);
-	const showTemplates = templates.length > 0 || adapter.isServeSupported;
+	const savepoint = useLastSavepoint();
 
 	return (
 		<Box
@@ -149,14 +150,14 @@ export function CreateConnectionPage() {
 					</Box>
 
 					<Group>
-						<Link to="/overview">
+						<Link to={savepoint.path}>
 							<Button
 								variant="light"
 								color="slate"
 								size="xs"
 								leftSection={<Icon path={iconArrowLeft} />}
 							>
-								Back to overview
+								Back to {savepoint.name}
 							</Button>
 						</Link>
 						<Spacer />
@@ -304,14 +305,12 @@ export function CreateConnectionPage() {
 					/>
 
 					<Group mt="xl">
-						<Link to="/overview">
+						<Link to={savepoint.path}>
 							<Button
-								w={150}
 								color="slate"
 								variant="light"
-								leftSection={<Icon path={iconArrowLeft} />}
 							>
-								Back to overview
+								Cancel
 							</Button>
 						</Link>
 						<Spacer />

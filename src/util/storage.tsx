@@ -7,3 +7,4 @@ export const INVITATION_KEY = "surrealist:invitation_code";
 export const STATE_KEY = "surrealist:oauth_state";
 export const CONFIG_KEY = "surrealist:config";
 export const CLIENT_KEY = "surrealist:client";
+export const OVERVIEW_KEY = "surrealist:overview";

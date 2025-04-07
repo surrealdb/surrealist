@@ -670,3 +670,9 @@ export interface CloudBackup {
 	snapshot_started_at: string;
 	snapshot_id: string;
 }
+
+export interface CloudMember {
+	user_id: string;
+	organization_id: string;
+	role: string;
+}

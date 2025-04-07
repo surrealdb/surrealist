@@ -34,19 +34,17 @@ import { capitalize } from "radash";
 import { useState, useRef } from "react";
 import { fetchAPI, updateCloudInformation } from "~/cloud/api";
 import { useStable } from "~/hooks/stable";
-import { measureComputeCost } from "~/util/cloud";
 import { showInfo, showError } from "~/util/helpers";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
-import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
 import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	const client = useQueryClient();
 
-	const billingQuery = useCloudBillingQuery(organization?.id);
-	const paymentQuery = useCloudPaymentsQuery(organization?.id);
-	const couponQuery = useCloudCouponsQuery(organization?.id);
+	const billingQuery = useCloudBillingQuery(organization.id);
+	const paymentQuery = useCloudPaymentsQuery(organization.id);
+	const couponQuery = useCloudCouponsQuery(organization.id);
 
 	const [requesting, setRequesting] = useState(false);
 	const [coupon, setCoupon] = useInputState("");

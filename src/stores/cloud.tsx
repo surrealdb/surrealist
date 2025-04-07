@@ -37,7 +37,6 @@ export type CloudStore = {
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
-	selectedOrganization: string;
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
 	chatConversation: CloudChatMessage[];
@@ -51,7 +50,6 @@ export type CloudStore = {
 	setIsSupported: (supported: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
 	setProfile: (profile: CloudProfile) => void;
-	setSelectedOrganization: (id: string) => void;
 	setSessionExpired: (expired: boolean) => void;
 	clearSession: () => void;
 	pushChatMessage: (message: CloudChatMessage) => void;
@@ -72,7 +70,6 @@ export const useCloudStore = create<CloudStore>()(
 		instanceVersions: [],
 		regions: [],
 		organizations: [],
-		selectedOrganization: "",
 		billingCountries: [],
 		sessionExpired: false,
 		isProvisioning: false,
@@ -117,11 +114,6 @@ export const useCloudStore = create<CloudStore>()(
 		setProfile: (profile) =>
 			set({
 				profile,
-			}),
-
-		setSelectedOrganization: (id) =>
-			set({
-				selectedOrganization: id,
 			}),
 
 		clearSession: () =>

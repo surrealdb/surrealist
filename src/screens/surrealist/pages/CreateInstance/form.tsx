@@ -17,6 +17,7 @@ import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionOrganizationStep } from "./steps/organization";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
+import { useLastSavepoint } from "~/hooks/overview";
 
 const DEFAULT: ProvisionConfig = {
 	name: "",
@@ -83,6 +84,8 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 		}
 	});
 
+	const savepoint = useLastSavepoint();
+
 	return (
 		<Stack
 			mx="auto"
@@ -94,14 +97,14 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				<Text fz="xl">Create a managed cloud instance</Text>
 			</Box>
 
-			<Link to="/overview">
+			<Link to={savepoint.path}>
 				<Button
 					variant="light"
 					color="slate"
 					size="xs"
 					leftSection={<Icon path={iconArrowLeft} />}
 				>
-					Back to overview
+					Back to {savepoint.name}
 				</Button>
 			</Link>
 
@@ -164,14 +167,12 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			)}
 
 			<Group mt="xl">
-				<Link to="/overview">
+				<Link to={savepoint.path}>
 					<Button
-						w={150}
 						color="slate"
 						variant="light"
-						leftSection={<Icon path={iconArrowLeft} />}
 					>
-						Back to overview
+						Cancel
 					</Button>
 				</Link>
 				<Spacer />
