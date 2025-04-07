@@ -7,7 +7,7 @@ import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
+import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
@@ -20,6 +20,7 @@ import { ProvisionConfig } from "./types";
 import { useLastSavepoint } from "~/hooks/overview";
 
 const DEFAULT: ProvisionConfig = {
+	organization: "",
 	name: "",
 	region: "",
 	type: "",
@@ -32,9 +33,10 @@ export interface ProvisionFormProps {
 }
 
 export function ProvisionForm({ onCreated }: ProvisionFormProps) {
-	const organization = useOrganization();
+	const organizations = useOrganizations();
 	const [details, setDetails] = useImmer(DEFAULT);
-	const instanceTypes = useAvailableInstanceTypes();
+	const organization = organizations.find((org) => org.id === details.organization);
+	const instanceTypes = organization?.plan.instance_types ?? [];
 
 	const instanceType = useMemo(() => {
 		return instanceTypes.find((t) => t.slug === details.type);

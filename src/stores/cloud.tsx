@@ -11,7 +11,6 @@ import type {
 
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { newId } from "~/util/helpers";
 
 interface CloudValues {
 	instanceVersions: string[];
@@ -24,6 +23,7 @@ interface CloudValues {
 export const EMPTY_PROFILE: CloudProfile = {
 	username: "",
 	name: "",
+	default_org: "",
 };
 
 export type CloudStore = {

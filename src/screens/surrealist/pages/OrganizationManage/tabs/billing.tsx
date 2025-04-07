@@ -88,6 +88,10 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 		}
 	});
 
+	const handleEditBilling = useStable(() => {
+		openBillingDetails(organization);
+	});
+
 	useWindowEvent("focus", async () => {
 		if (!organization || !hasRequested.current) return;
 
@@ -162,7 +166,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 							<Button
 								color="slate"
 								variant="light"
-								onClick={openBillingDetails}
+								onClick={handleEditBilling}
 							>
 								Edit
 							</Button>

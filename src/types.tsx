@@ -506,6 +506,7 @@ export interface CloudSignin {
 export interface CloudProfile {
 	username: string;
 	name: string;
+	default_org: string;
 	picture?: string;
 	user_hmac?: string;
 }
@@ -516,6 +517,7 @@ export interface CloudInstance {
 	host: string;
 	region: string;
 	version: string;
+	organization_id: string;
 	available_versions: string[];
 	compute_units: number;
 	storage_size: number;
