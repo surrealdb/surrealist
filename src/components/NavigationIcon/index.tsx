@@ -2,8 +2,6 @@ import { Box, Indicator, type IndicatorProps, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
-import { useRoute } from "wouter";
-import { useHoverIcon } from "~/hooks/hover-icon";
 import { useAbsoluteRoute } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
@@ -33,13 +31,13 @@ export function NavigationIcon({
 }: NavigationIconProps) {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const [active] = useAbsoluteRoute(path || "");
-	const hasIcon = typeof icon === "string";
+	// const hasIcon = typeof icon === "string";
 	const isActive = active && !!path;
 
-	const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
-		animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,
-		className: classes.animation,
-	});
+	// const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
+	// 	animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,
+	// 	className: classes.animation,
+	// });
 
 	const handleClick = useStable(() => {
 		setOverlaySidebar(false);
@@ -56,27 +54,23 @@ export function NavigationIcon({
 		>
 			<Box
 				w="100%"
-				onMouseEnter={onMouseEnter}
-				onMouseLeave={onMouseLeave}
+				// onMouseEnter={onMouseEnter}
+				// onMouseLeave={onMouseLeave}
 			>
 				<Entry
 					className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
 					isActive={isActive}
-					style={{ opacity: isLoading ? 0 : 1 }}
+					// style={{ opacity: isLoading ? 0 : 1 }}
 					onClick={handleClick}
 					leftSection={
 						<Indicator
 							disabled={!indicator}
 							{...(isObject(indicator) ? indicator : {})}
 						>
-							{hasIcon ? (
-								<Icon
-									path={icon}
-									size="lg"
-								/>
-							) : (
-								<div ref={ref} />
-							)}
+							<Icon
+								path={icon}
+								size="lg"
+							/>
 						</Indicator>
 					}
 					{...rest}
