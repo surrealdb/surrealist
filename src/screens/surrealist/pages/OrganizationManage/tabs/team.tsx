@@ -29,6 +29,7 @@ import { useStable } from "~/hooks/stable";
 import { openMemberInvitation } from "~/cloud/modals/member-invite";
 import { ActionButton } from "~/components/ActionButton";
 import { useRevocationMutation } from "~/cloud/mutations/invites";
+import { useMemo } from "react";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const membersQuery = useCloudMembersQuery(organization.id);
@@ -39,6 +40,10 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const handleInvite = useStable(() => {
 		openMemberInvitation(organization);
 	});
+
+	const invitations = useMemo(() => {
+		return invitesQuery.data?.filter((invite) => invite.status !== "accepted") || [];
+	}, [invitesQuery.data]);
 
 	return (
 		<Stack>
@@ -94,7 +99,9 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 												</Text>
 											</Box>
 										</Table.Td>
-										{!isSelf && (
+										{isSelf ? (
+											<Table.Td w={0} />
+										) : (
 											<Table.Td
 												w={0}
 												pr="md"
@@ -138,7 +145,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 					</Table>
 				</Paper>
 			</Section>
-			{!!invitesQuery.data?.length && (
+			{!!invitations.length && (
 				<Section
 					title={
 						<Group gap="sm">
@@ -157,8 +164,8 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 					<Paper p="md">
 						<Table className={classes.table}>
 							<Table.Tbody>
-								{invitesQuery.data?.map((invite) => (
-									<Table.Tr key={invite.email}>
+								{invitations.map((invite) => (
+									<Table.Tr key={invite.code}>
 										<Table.Td c="bright">
 											<Group gap="sm">
 												<Text fw={500}>{invite.email}</Text>

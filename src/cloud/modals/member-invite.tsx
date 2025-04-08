@@ -11,6 +11,7 @@ import { useInvitationMutation } from "../mutations/invites";
 import { useInputState } from "@mantine/hooks";
 import { useCloudRolesQuery } from "../queries/roles";
 import { capitalize } from "radash";
+import { showError } from "~/util/helpers";
 
 export function openMemberInvitation(organization: CloudOrganization) {
 	openModal({
@@ -46,12 +47,17 @@ function InviteModal({ organization }: InviteModalProps) {
 	});
 
 	const handleSubmit = useStable(async () => {
-		await inviteMutation.mutateAsync({
-			email,
-			role,
-		});
-
-		if (inviteMutation.isSuccess) {
+		try {
+			await inviteMutation.mutateAsync({
+				email,
+				role,
+			});
+		} catch {
+			showError({
+				title: "Invitation failed",
+				subtitle: "Failed to send an invitation to this user",
+			});
+		} finally {
 			handleClose();
 		}
 	});
