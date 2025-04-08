@@ -32,11 +32,15 @@ import { useRevocationMutation } from "~/cloud/mutations/invites";
 import { useMemo } from "react";
 import { useOrganizationRole } from "~/cloud/hooks/role";
 import { openMemberRoleModal } from "~/cloud/modals/member-role";
+import { useConfirmation } from "~/providers/Confirmation";
+import { CloudMember } from "~/types";
+import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
+	const removeMutation = useRemoveMemberMutation(organization.id);
 	const userId = useCloudStore((s) => s.userId);
 	const role = useOrganizationRole(organization.id);
 
@@ -47,6 +51,12 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const invitations = useMemo(() => {
 		return invitesQuery.data?.filter((invite) => invite.status !== "accepted") || [];
 	}, [invitesQuery.data]);
+
+	const requestRemove = useConfirmation<CloudMember>({
+		title: "Remove member",
+		message: (member) => `Are you sure you want to remove ${member.name}?`,
+		onConfirm: (value) => removeMutation.mutate(value.user_id),
+	});
 
 	const canModify = role === "owner" || role === "admin";
 
@@ -135,14 +145,14 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 														</Menu.Item>
 														<Menu.Divider />
 														<Menu.Item
+															c="red"
 															leftSection={
 																<Icon
 																	path={iconDelete}
 																	c="red"
 																/>
 															}
-															// onClick={handle}
-															c="red"
+															onClick={() => requestRemove(member)}
 														>
 															Remove member
 														</Menu.Item>
