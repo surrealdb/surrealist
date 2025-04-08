@@ -26,24 +26,29 @@ import {
 import { useCloudStore } from "~/stores/cloud";
 import { useCloudInvitationsQuery } from "~/cloud/queries/invitations";
 import { useStable } from "~/hooks/stable";
-import { openMemberInvitation } from "~/cloud/modals/member-invite";
+import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
 import { ActionButton } from "~/components/ActionButton";
 import { useRevocationMutation } from "~/cloud/mutations/invites";
 import { useMemo } from "react";
+import { useOrganizationRole } from "~/cloud/hooks/role";
+import { openMemberRoleModal } from "~/cloud/modals/member-role";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
 	const userId = useCloudStore((s) => s.userId);
+	const role = useOrganizationRole(organization.id);
 
 	const handleInvite = useStable(() => {
-		openMemberInvitation(organization);
+		openMemberInvitationModal(organization);
 	});
 
 	const invitations = useMemo(() => {
 		return invitesQuery.data?.filter((invite) => invite.status !== "accepted") || [];
 	}, [invitesQuery.data]);
+
+	const canModify = role === "owner" || role === "admin";
 
 	return (
 		<Stack>
@@ -51,14 +56,16 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 				title="Team members"
 				description="Manage the members of your organization"
 				rightSection={
-					<Button
-						size="xs"
-						variant="gradient"
-						leftSection={<Icon path={iconAccountPlus} />}
-						onClick={handleInvite}
-					>
-						Invite member
-					</Button>
+					canModify && (
+						<Button
+							size="xs"
+							variant="gradient"
+							leftSection={<Icon path={iconAccountPlus} />}
+							onClick={handleInvite}
+						>
+							Invite member
+						</Button>
+					)
 				}
 			>
 				<Paper p="md">
@@ -99,7 +106,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 												</Text>
 											</Box>
 										</Table.Td>
-										{isSelf ? (
+										{isSelf || canModify ? (
 											<Table.Td w={0} />
 										) : (
 											<Table.Td
@@ -117,6 +124,12 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 														<Menu.Item
 															leftSection={
 																<Icon path={iconServerSecure} />
+															}
+															onClick={() =>
+																openMemberRoleModal(
+																	organization,
+																	member,
+																)
 															}
 														>
 															Update role

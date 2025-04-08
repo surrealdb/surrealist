@@ -1,61 +1,65 @@
-import { Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
+import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
-import { CloudOrganization } from "~/types";
-import { iconAccountPlus } from "~/util/icons";
-import { useInvitationMutation } from "../mutations/invites";
-import { useInputState } from "@mantine/hooks";
+import { CloudMember, CloudOrganization } from "~/types";
+import { iconTag } from "~/util/icons";
 import { useCloudRolesQuery } from "../queries/roles";
 import { capitalize } from "radash";
 import { showError } from "~/util/helpers";
+import { useUpdateRoleMutation } from "../mutations/role";
 
-export function openMemberInvitationModal(organization: CloudOrganization) {
+export function openMemberRoleModal(organization: CloudOrganization, member: CloudMember) {
 	openModal({
-		modalId: "invite-member",
+		modalId: "member-role",
 		title: (
 			<Group>
 				<Icon
-					path={iconAccountPlus}
+					path={iconTag}
 					size="xl"
 				/>
-				<PrimaryTitle>Invite member</PrimaryTitle>
+				<PrimaryTitle>Update role</PrimaryTitle>
 			</Group>
 		),
 		trapFocus: false,
 		withCloseButton: true,
-		children: <InviteModal organization={organization} />,
+		children: (
+			<RoleModal
+				organization={organization}
+				member={member}
+			/>
+		),
 	});
 }
 
-interface InviteModalProps {
+interface RoleModalProps {
 	organization: CloudOrganization;
+	member: CloudMember;
 }
 
-function InviteModal({ organization }: InviteModalProps) {
-	const inviteMutation = useInvitationMutation(organization.id);
+function RoleModal({ organization, member }: RoleModalProps) {
+	const roleMutation = useUpdateRoleMutation(organization.id);
 	const rolesQuery = useCloudRolesQuery(organization.id);
 
-	const [email, setEmail] = useInputState("");
-	const [role, setRole] = useState("member");
+	const [role, setRole] = useState(member.role);
 
 	const handleClose = useStable(() => {
-		closeModal("invite-member");
+		closeModal("member-role");
 	});
 
 	const handleSubmit = useStable(async () => {
 		try {
-			await inviteMutation.mutateAsync({
-				email,
+			await roleMutation.mutateAsync({
+				userId: member.user_id,
 				role,
 			});
 		} catch {
 			showError({
-				title: "Invitation failed",
-				subtitle: "Failed to send an invitation to this user",
+				title: "Role change failed",
+				subtitle: "Failed to update member role",
 			});
 		} finally {
 			handleClose();
@@ -71,18 +75,7 @@ function InviteModal({ organization }: InviteModalProps) {
 	return (
 		<Form onSubmit={handleSubmit}>
 			<Stack>
-				<Text size="lg">
-					Invite new members to your organization by entering their email addresses below.
-				</Text>
-
-				<TextInput
-					mt="md"
-					label="Email"
-					placeholder="user@example.com"
-					value={email}
-					onChange={setEmail}
-					autoFocus
-				/>
+				<Text size="lg">Choose a new role for {member.name}</Text>
 
 				<Select
 					data={roles}
@@ -104,10 +97,9 @@ function InviteModal({ organization }: InviteModalProps) {
 						type="submit"
 						variant="gradient"
 						flex={1}
-						disabled={!email || !role}
-						loading={inviteMutation.isPending}
+						loading={roleMutation.isPending}
 					>
-						Send invite
+						Update role
 					</Button>
 				</Group>
 			</Stack>
