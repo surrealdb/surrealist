@@ -10,7 +10,7 @@ export function useOrganizationSelection(): Selectable[] {
 
 	return useMemo(() => {
 		return list
-			.filter((org) => !!org.archived_at)
+			.filter((org) => !org.archived_at)
 			.map((org) => ({
 				value: org.id,
 				label: org.name,
