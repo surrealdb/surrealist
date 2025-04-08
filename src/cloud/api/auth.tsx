@@ -7,7 +7,13 @@ import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
-import { REFERRER_KEY, REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
+import {
+	INVITATION_KEY,
+	REFERRER_KEY,
+	REFRESH_TOKEN_KEY,
+	STATE_KEY,
+	VERIFIER_KEY,
+} from "~/util/storage";
 import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
@@ -199,18 +205,23 @@ export async function refreshAccess() {
 export async function acquireSession(accessToken: string, initial: boolean) {
 	try {
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
+		const invitationCode = sessionStorage.getItem(INVITATION_KEY);
 		const { setSessionToken, setAuthProvider, setUserId, setSessionExpired } =
 			useCloudStore.getState();
 
 		adapter.log("Cloud", "Acquiring cloud session");
 
-		let endpoint = "/signin";
+		const params = new URLSearchParams();
 
 		if (referralCode) {
-			endpoint += `?referral=${referralCode}`;
+			params.append("referral", referralCode);
 		}
 
-		const result = await fetchAPI<CloudSignin>(endpoint, {
+		if (invitationCode) {
+			params.append("invitation", invitationCode);
+		}
+
+		const result = await fetchAPI<CloudSignin>(`/signin?${params}`, {
 			method: "POST",
 			body: JSON.stringify(accessToken),
 		});
