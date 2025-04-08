@@ -1,4 +1,4 @@
-import { Badge, Divider, Group, Tabs } from "@mantine/core";
+import { Badge, Divider, Group, Tabs, Tooltip } from "@mantine/core";
 import classes from "./style.module.scss";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -28,6 +28,7 @@ import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationSettingsTab } from "./tabs/settings";
 import { useMemo } from "react";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
+import { formatArchiveDate } from "~/util/cloud";
 
 export interface OrganizationManagePageProps {
 	id: string;
@@ -86,21 +87,17 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 							</Link>
 							<PrimaryTitle fz={26}>{organization?.name}</PrimaryTitle>
 							{organization?.archived_at && (
-								<Badge
-									color="orange"
-									variant="light"
-									size="lg"
-									leftSection={
+								<Tooltip
+									label={`Organization was archived on ${formatArchiveDate(organization)}`}
+								>
+									<div>
 										<Icon
 											path={iconPackageClosed}
-											size="sm"
+											size="xl"
 											mr="xs"
 										/>
-									}
-									mb={-2}
-								>
-									Archived
-								</Badge>
+									</div>
+								</Tooltip>
 							)}
 						</Group>
 

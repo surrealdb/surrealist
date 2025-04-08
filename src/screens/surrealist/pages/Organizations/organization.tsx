@@ -104,14 +104,24 @@ export function OrganizationTile({
 						</Group>
 						<Text>{organization.plan.name}</Text>
 						<Spacer />
-						<Badge
-							color="violet"
-							variant="subtle"
-							px={0}
-						>
-							{organization.member_count}{" "}
-							{plural(organization.member_count, "member")}
-						</Badge>
+						{organization.archived_at ? (
+							<Badge
+								color="orange"
+								variant="transparent"
+								px={0}
+							>
+								Archived
+							</Badge>
+						) : (
+							<Badge
+								color="violet"
+								variant="transparent"
+								px={0}
+							>
+								{organization.member_count}{" "}
+								{plural(organization.member_count, "member")}
+							</Badge>
+						)}
 					</Stack>
 					<div
 						onClick={ON_STOP_PROPAGATION}

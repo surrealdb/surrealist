@@ -55,7 +55,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 						onConnect={activateInstance}
 					/>
 				))}
-				{instances.length === 0 && (
+				{instances.length === 0 && !isArchived && (
 					<StartCreator
 						title="No instances"
 						subtitle="Click to provision a new instance"

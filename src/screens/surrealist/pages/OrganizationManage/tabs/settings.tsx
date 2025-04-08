@@ -11,6 +11,7 @@ import { useOrganizationRole } from "~/cloud/hooks/role";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useArchiveOrganizationMutation } from "~/cloud/mutations/archive";
+import { formatArchiveDate } from "~/util/cloud";
 
 export function OrganizationSettingsTab({ organization }: OrganizationTabProps) {
 	const updateMutation = useUpdateOrganizationMutation(organization.id);
@@ -33,8 +34,15 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 
 	const requestArchive = useConfirmation({
 		title: `Archive ${organization.name}`,
-		message:
-			"Are you sure you want to archive this organization? Instances will continue to use resources and you will be billed for them.",
+		message: (
+			<Stack>
+				<Text>
+					Are you sure you want to archive this organization? Instances will continue to
+					use resources and you will be billed for them.
+				</Text>
+				<Text c="bright">This action cannot be undone.</Text>
+			</Stack>
+		),
 		confirmText: "Archive",
 		verification: organization.name,
 		verifyText: "Type the organization name to confirm",
@@ -88,13 +96,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 							icon={<Icon path={iconPackageClosed} />}
 						>
 							<Text>
-								This organization was archived on{" "}
-								{new Date(organization.archived_at).toLocaleDateString("en-US", {
-									year: "numeric",
-									month: "long",
-									day: "numeric",
-								})}
-								.
+								This organization was archived on {formatArchiveDate(organization)}.
 							</Text>
 						</Alert>
 					) : (
