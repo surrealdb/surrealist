@@ -29,12 +29,15 @@ import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationSettingsTab } from "./tabs/settings";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
+import { useIsAuthenticated } from "~/hooks/cloud";
+import { CloudSplash } from "~/components/CloudSplash";
 
 export interface OrganizationManagePageProps {
 	id: string;
 }
 
 export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
+	const isAuthed = useIsAuthenticated();
 	const { data, isSuccess } = useCloudOrganizationsQuery();
 	const organization = data?.find((org) => org.id === id);
 
@@ -54,130 +57,135 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 
 	return (
 		<AuthGuard>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<TopGlow offset={200} />
-
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					viewportProps={{
-						style: { paddingBottom: 75 },
-					}}
+			{isAuthed ? (
+				<Box
+					flex={1}
+					pos="relative"
 				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1000}
-						mt={75}
+					<TopGlow offset={200} />
+
+					<ScrollArea
+						pos="absolute"
+						scrollbars="y"
+						type="scroll"
+						inset={0}
+						className={classes.scrollArea}
+						viewportProps={{
+							style: { paddingBottom: 75 },
+						}}
 					>
-						<Group py="md">
-							<Link to="/organizations">
-								<ActionButton
-									label="Back to organizations"
-									size="lg"
-								>
-									<Icon path={iconArrowLeft} />
-								</ActionButton>
-							</Link>
-							<PrimaryTitle fz={26}>{organization?.name}</PrimaryTitle>
-							{organization?.archived_at && (
-								<Tooltip
-									label={`Organization was archived on ${formatArchiveDate(organization)}`}
-								>
-									<div>
-										<Icon
-											path={iconPackageClosed}
-											size="xl"
-											mr="xs"
-										/>
-									</div>
-								</Tooltip>
+						<Stack
+							px="xl"
+							mx="auto"
+							maw={1000}
+							mt={75}
+						>
+							{organization && (
+								<>
+									<Group py="md">
+										<Link to="/organizations">
+											<ActionButton
+												label="Back to organizations"
+												size="lg"
+											>
+												<Icon path={iconArrowLeft} />
+											</ActionButton>
+										</Link>
+										<PrimaryTitle fz={26}>{organization?.name}</PrimaryTitle>
+										{organization?.archived_at && (
+											<Tooltip
+												label={`Organization was archived on ${formatArchiveDate(organization)}`}
+											>
+												<div>
+													<Icon
+														path={iconPackageClosed}
+														size="xl"
+														mr="xs"
+													/>
+												</div>
+											</Tooltip>
+										)}
+									</Group>
+									<Tabs defaultValue="instances">
+										<Tabs.List>
+											<Tabs.Tab
+												value="instances"
+												leftSection={<Icon path={iconServer} />}
+												px="xl"
+											>
+												Instances
+											</Tabs.Tab>
+											<Tabs.Tab
+												value="team"
+												leftSection={<Icon path={iconAccount} />}
+												px="xl"
+											>
+												Team
+											</Tabs.Tab>
+											<Tabs.Tab
+												value="invoices"
+												leftSection={<Icon path={iconDollar} />}
+												px="xl"
+											>
+												Invoices
+											</Tabs.Tab>
+											<Tabs.Tab
+												value="usage"
+												leftSection={<Icon path={iconProgressClock} />}
+												px="xl"
+											>
+												Usage
+											</Tabs.Tab>
+											<Tabs.Tab
+												value="billing"
+												leftSection={<Icon path={iconCreditCard} />}
+												px="xl"
+											>
+												Billing
+											</Tabs.Tab>
+											<Tabs.Tab
+												value="settings"
+												leftSection={<Icon path={iconCog} />}
+												px="xl"
+											>
+												Settings
+											</Tabs.Tab>
+										</Tabs.List>
+
+										<Divider my="xl" />
+
+										<Tabs.Panel value="instances">
+											<OrganizationInstancesTab organization={organization} />
+										</Tabs.Panel>
+
+										<Tabs.Panel value="team">
+											<OrganizationTeamTab organization={organization} />
+										</Tabs.Panel>
+
+										<Tabs.Panel value="invoices">
+											<OrganizationInvoicesTab organization={organization} />
+										</Tabs.Panel>
+
+										<Tabs.Panel value="billing">
+											<OrganizationBillingTab organization={organization} />
+										</Tabs.Panel>
+
+										<Tabs.Panel value="usage">
+											<OrganizationUsageTab organization={organization} />
+										</Tabs.Panel>
+
+										<Tabs.Panel value="settings">
+											<OrganizationSettingsTab organization={organization} />
+										</Tabs.Panel>
+									</Tabs>
+								</>
 							)}
-						</Group>
-
-						{organization && (
-							<Tabs defaultValue="instances">
-								<Tabs.List>
-									<Tabs.Tab
-										value="instances"
-										leftSection={<Icon path={iconServer} />}
-										px="xl"
-									>
-										Instances
-									</Tabs.Tab>
-									<Tabs.Tab
-										value="team"
-										leftSection={<Icon path={iconAccount} />}
-										px="xl"
-									>
-										Team
-									</Tabs.Tab>
-									<Tabs.Tab
-										value="invoices"
-										leftSection={<Icon path={iconDollar} />}
-										px="xl"
-									>
-										Invoices
-									</Tabs.Tab>
-									<Tabs.Tab
-										value="usage"
-										leftSection={<Icon path={iconProgressClock} />}
-										px="xl"
-									>
-										Usage
-									</Tabs.Tab>
-									<Tabs.Tab
-										value="billing"
-										leftSection={<Icon path={iconCreditCard} />}
-										px="xl"
-									>
-										Billing
-									</Tabs.Tab>
-									<Tabs.Tab
-										value="settings"
-										leftSection={<Icon path={iconCog} />}
-										px="xl"
-									>
-										Settings
-									</Tabs.Tab>
-								</Tabs.List>
-
-								<Divider my="xl" />
-
-								<Tabs.Panel value="instances">
-									<OrganizationInstancesTab organization={organization} />
-								</Tabs.Panel>
-
-								<Tabs.Panel value="team">
-									<OrganizationTeamTab organization={organization} />
-								</Tabs.Panel>
-
-								<Tabs.Panel value="invoices">
-									<OrganizationInvoicesTab organization={organization} />
-								</Tabs.Panel>
-
-								<Tabs.Panel value="billing">
-									<OrganizationBillingTab organization={organization} />
-								</Tabs.Panel>
-
-								<Tabs.Panel value="usage">
-									<OrganizationUsageTab organization={organization} />
-								</Tabs.Panel>
-
-								<Tabs.Panel value="settings">
-									<OrganizationSettingsTab organization={organization} />
-								</Tabs.Panel>
-							</Tabs>
-						)}
-					</Stack>
-				</ScrollArea>
-			</Box>
+						</Stack>
+					</ScrollArea>
+				</Box>
+			) : (
+				<CloudSplash />
+			)}
 		</AuthGuard>
 	);
 }

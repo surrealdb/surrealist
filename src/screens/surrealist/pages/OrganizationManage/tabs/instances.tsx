@@ -1,4 +1,4 @@
-import { Button, SimpleGrid } from "@mantine/core";
+import { Button, SimpleGrid, Skeleton } from "@mantine/core";
 import { Link } from "wouter";
 import { useHasOrganizationWriteAccess } from "~/cloud/hooks/role";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
@@ -20,7 +20,7 @@ const GRID_COLUMNS = {
 export function OrganizationInstancesTab({ organization }: OrganizationTabProps) {
 	const [, navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
-	const { data, isSuccess } = useCloudOrganizationInstancesQuery(organization.id);
+	const { data, isSuccess, isPending } = useCloudOrganizationInstancesQuery(organization.id);
 	const canModify = useHasOrganizationWriteAccess(organization.id);
 	const instances = isSuccess ? data : [];
 	const isArchived = !!organization.archived_at;
@@ -48,6 +48,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 			}
 		>
 			<SimpleGrid cols={GRID_COLUMNS}>
+				{isPending && <Skeleton h={112} />}
 				{instances.map((instance) => (
 					<StartInstance
 						key={instance.id}
@@ -55,7 +56,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 						onConnect={activateInstance}
 					/>
 				))}
-				{instances.length === 0 && !isArchived && (
+				{isSuccess && instances.length === 0 && !isArchived && (
 					<StartCreator
 						title="No instances"
 						subtitle="Click to provision a new instance"
