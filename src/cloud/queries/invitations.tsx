@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudMember } from "~/types";
+import type { CloudInvitation } from "~/types";
 import { fetchAPI } from "../api";
 
 /**
- * Fetch organization members
+ * Fetch pending organization invitation
  */
-export function useCloudMembersQuery(organization?: string) {
+export function useCloudInvitationsQuery(organization?: string) {
 	const authState = useCloudStore((state) => state.authState);
 
 	return useQuery({
-		queryKey: ["cloud", "members", organization],
+		queryKey: ["cloud", "invitations", organization],
 		enabled: !!organization && authState === "authenticated",
 		queryFn: async () => {
-			return fetchAPI<CloudMember[]>(`/organizations/${organization}/members`);
+			return fetchAPI<CloudInvitation[]>(`/organizations/${organization}/invitations`);
 		},
 	});
 }

@@ -1,6 +1,5 @@
 import { Box, Group, Stack, Text } from "@mantine/core";
 import type { PropsWithChildren, ReactNode } from "react";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
 
 export interface SectionProps {

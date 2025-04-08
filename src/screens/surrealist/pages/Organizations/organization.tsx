@@ -13,15 +13,17 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { PropsWithChildren, useRef } from "react";
+import { PropsWithChildren, useMemo, useRef } from "react";
+import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization } from "~/types";
-import { ON_STOP_PROPAGATION, showInfo } from "~/util/helpers";
-import { iconDelete, iconDotsVertical, iconExitToAp } from "~/util/icons";
+import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";
+import { iconDelete, iconDotsVertical, iconExitToAp, iconPackageClosed } from "~/util/icons";
 
 export interface OrganizationTileProps extends BoxProps {
 	organization: CloudOrganization;
@@ -32,8 +34,16 @@ export function OrganizationTile({
 	children,
 	...other
 }: PropsWithChildren<OrganizationTileProps>) {
+	const userId = useCloudStore((s) => s.userId);
+	const membersQuery = useCloudMembersQuery(organization.id);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [, navigate] = useAbsoluteLocation();
+
+	const members = membersQuery.isSuccess ? membersQuery.data : [];
+
+	const isOwner = useMemo(() => {
+		return members.some((member) => member.user_id === userId && member.role === "owner");
+	}, [members, userId]);
 
 	const handleManage = useStable(() => {
 		navigate(`/o/${organization.id}`);
@@ -83,7 +93,7 @@ export function OrganizationTile({
 							variant="subtle"
 							px={0}
 						>
-							? members
+							{members.length} {plural(members.length, "member")}
 						</Badge>
 					</Stack>
 					<div
@@ -107,32 +117,35 @@ export function OrganizationTile({
 							<Menu.Dropdown>
 								<Menu.Item onClick={handleCopyID}>Copy organization ID</Menu.Item>
 								<Menu.Divider />
-								<Menu.Item
-									leftSection={
-										<Icon
-											path={iconExitToAp}
-											c="red"
-										/>
-									}
-									onClick={() => {}}
-									disabled
-									c="red"
-								>
-									Leave organization
-								</Menu.Item>
-								<Menu.Item
-									leftSection={
-										<Icon
-											path={iconDelete}
-											c="red"
-										/>
-									}
-									onClick={() => {}}
-									disabled
-									c="red"
-								>
-									Delete organization
-								</Menu.Item>
+								{isOwner ? (
+									<Menu.Item
+										leftSection={
+											<Icon
+												path={iconPackageClosed}
+												c="red"
+											/>
+										}
+										onClick={() => {}}
+										disabled
+										c="red"
+									>
+										Archive organization
+									</Menu.Item>
+								) : (
+									<Menu.Item
+										leftSection={
+											<Icon
+												path={iconExitToAp}
+												c="red"
+											/>
+										}
+										onClick={() => {}}
+										disabled
+										c="red"
+									>
+										Leave organization
+									</Menu.Item>
+								)}
 							</Menu.Dropdown>
 						</Menu>
 					</div>

@@ -1,35 +1,173 @@
 import classes from "../style.module.scss";
 
-import { ActionIcon, Badge, Group, Menu, Paper, Stack, Table } from "@mantine/core";
+import {
+	ActionIcon,
+	Badge,
+	Box,
+	Button,
+	Group,
+	Menu,
+	Paper,
+	Stack,
+	Table,
+	Text,
+} from "@mantine/core";
 import { OrganizationTabProps } from "../types";
 import { Section } from "~/components/Section";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { Icon } from "~/components/Icon";
-import { iconDelete, iconDotsVertical, iconServerSecure } from "~/util/icons";
+import {
+	iconAccountPlus,
+	iconClose,
+	iconDelete,
+	iconDotsVertical,
+	iconServerSecure,
+} from "~/util/icons";
+import { useCloudStore } from "~/stores/cloud";
+import { useCloudInvitationsQuery } from "~/cloud/queries/invitations";
+import { useStable } from "~/hooks/stable";
+import { openMemberInvitation } from "~/cloud/modals/member-invite";
+import { ActionButton } from "~/components/ActionButton";
+import { useRevocationMutation } from "~/cloud/mutations/invites";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
-	const { data } = useCloudMembersQuery(organization.id);
+	const membersQuery = useCloudMembersQuery(organization.id);
+	const invitesQuery = useCloudInvitationsQuery(organization.id);
+	const revokeMutation = useRevocationMutation(organization.id);
+	const userId = useCloudStore((s) => s.userId);
+
+	const handleInvite = useStable(() => {
+		openMemberInvitation(organization);
+	});
 
 	return (
 		<Stack>
 			<Section
 				title="Team members"
 				description="Manage the members of your organization"
+				rightSection={
+					<Button
+						size="xs"
+						variant="gradient"
+						leftSection={<Icon path={iconAccountPlus} />}
+						onClick={handleInvite}
+					>
+						Invite member
+					</Button>
+				}
 			>
 				<Paper p="md">
 					<Table className={classes.table}>
 						<Table.Tbody>
-							{data?.map((member) => {
+							{membersQuery.data?.map((member) => {
+								const isSelf = member.user_id === userId;
+
 								return (
 									<Table.Tr key={member.user_id}>
 										<Table.Td c="bright">
-											<Group>
-												{member.user_id}
+											<Box>
+												<Group gap="sm">
+													<Text fw={500}>{member.name}</Text>
+													<Badge
+														color="slate"
+														variant="light"
+														size="sm"
+													>
+														{member.role}
+													</Badge>
+													{isSelf && (
+														<Badge
+															color="violet"
+															variant="light"
+															size="sm"
+														>
+															You
+														</Badge>
+													)}
+												</Group>
+
+												<Text
+													fz="sm"
+													opacity={0.6}
+												>
+													{member.username}
+												</Text>
+											</Box>
+										</Table.Td>
+										{!isSelf && (
+											<Table.Td
+												w={0}
+												pr="md"
+												style={{ textWrap: "nowrap" }}
+											>
+												<Menu>
+													<Menu.Target>
+														<ActionIcon>
+															<Icon path={iconDotsVertical} />
+														</ActionIcon>
+													</Menu.Target>
+													<Menu.Dropdown>
+														<Menu.Item
+															leftSection={
+																<Icon path={iconServerSecure} />
+															}
+														>
+															Update role
+														</Menu.Item>
+														<Menu.Divider />
+														<Menu.Item
+															leftSection={
+																<Icon
+																	path={iconDelete}
+																	c="red"
+																/>
+															}
+															// onClick={handle}
+															c="red"
+														>
+															Remove member
+														</Menu.Item>
+													</Menu.Dropdown>
+												</Menu>
+											</Table.Td>
+										)}
+									</Table.Tr>
+								);
+							})}
+						</Table.Tbody>
+					</Table>
+				</Paper>
+			</Section>
+			{!!invitesQuery.data?.length && (
+				<Section
+					title={
+						<Group gap="sm">
+							Pending invitations
+							<Badge
+								color="slate"
+								variant="light"
+								size="sm"
+							>
+								{membersQuery.data?.length}
+							</Badge>
+						</Group>
+					}
+					description="Sent invitations awaiting acceptance"
+				>
+					<Paper p="md">
+						<Table className={classes.table}>
+							<Table.Tbody>
+								{invitesQuery.data?.map((invite) => (
+									<Table.Tr key={invite.email}>
+										<Table.Td c="bright">
+											<Group gap="sm">
+												<Text fw={500}>{invite.email}</Text>
 												<Badge
 													color="slate"
 													variant="light"
+													size="sm"
 												>
-													{member.role}
+													{invite.role}
 												</Badge>
 											</Group>
 										</Table.Td>
@@ -38,49 +176,20 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											<Menu>
-												<Menu.Target>
-													<ActionIcon>
-														<Icon path={iconDotsVertical} />
-													</ActionIcon>
-												</Menu.Target>
-												<Menu.Dropdown>
-													<Menu.Item
-														leftSection={
-															<Icon path={iconServerSecure} />
-														}
-													>
-														Update role
-													</Menu.Item>
-													<Menu.Divider />
-													<Menu.Item
-														leftSection={
-															<Icon
-																path={iconDelete}
-																c="red"
-															/>
-														}
-														// onClick={handle}
-														c="red"
-													>
-														Remove member
-													</Menu.Item>
-												</Menu.Dropdown>
-											</Menu>
+											<ActionButton
+												label="Revoke invitation"
+												onClick={() => revokeMutation.mutate(invite.code)}
+											>
+												<Icon path={iconClose} />
+											</ActionButton>
 										</Table.Td>
 									</Table.Tr>
-								);
-							})}
-						</Table.Tbody>
-					</Table>
-				</Paper>
-			</Section>
-			<Section
-				title="Pending invitations"
-				description="View or revoke pending invitations"
-			>
-				<Paper p="md">test</Paper>
-			</Section>
+								))}
+							</Table.Tbody>
+						</Table>
+					</Paper>
+				</Section>
+			)}
 		</Stack>
 	);
 }

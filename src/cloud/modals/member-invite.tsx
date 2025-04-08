@@ -1,0 +1,110 @@
+import { Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
+import { closeModal, openModal } from "@mantine/modals";
+import { useState } from "react";
+import { Form } from "~/components/Form";
+import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useStable } from "~/hooks/stable";
+import { CloudOrganization } from "~/types";
+import { iconAccountPlus } from "~/util/icons";
+import { useInvitationMutation } from "../mutations/invites";
+import { useInputState } from "@mantine/hooks";
+import { useCloudRolesQuery } from "../queries/roles";
+import { capitalize } from "radash";
+
+export function openMemberInvitation(organization: CloudOrganization) {
+	openModal({
+		modalId: "invite-member",
+		title: (
+			<Group>
+				<Icon
+					path={iconAccountPlus}
+					size="xl"
+				/>
+				<PrimaryTitle>Invite member</PrimaryTitle>
+			</Group>
+		),
+		trapFocus: false,
+		withCloseButton: true,
+		children: <InviteModal organization={organization} />,
+	});
+}
+
+interface InviteModalProps {
+	organization: CloudOrganization;
+}
+
+function InviteModal({ organization }: InviteModalProps) {
+	const inviteMutation = useInvitationMutation(organization.id);
+	const rolesQuery = useCloudRolesQuery(organization.id);
+
+	const [email, setEmail] = useInputState("");
+	const [role, setRole] = useState("member");
+
+	const handleClose = useStable(() => {
+		closeModal("invite-member");
+	});
+
+	const handleSubmit = useStable(async () => {
+		await inviteMutation.mutateAsync({
+			email,
+			role,
+		});
+
+		if (inviteMutation.isSuccess) {
+			handleClose();
+		}
+	});
+
+	const roles =
+		rolesQuery.data?.map((role) => ({
+			label: capitalize(role.name),
+			value: role.name,
+		})) || [];
+
+	return (
+		<Form onSubmit={handleSubmit}>
+			<Stack>
+				<Text size="lg">
+					Invite new members to your organization by entering their email addresses below.
+				</Text>
+
+				<TextInput
+					mt="md"
+					label="Email"
+					placeholder="user@example.com"
+					value={email}
+					onChange={setEmail}
+					autoFocus
+				/>
+
+				<Select
+					data={roles}
+					label="Role"
+					value={role}
+					onChange={setRole as any}
+				/>
+
+				<Group mt="xl">
+					<Button
+						onClick={handleClose}
+						color="slate"
+						variant="light"
+						flex={1}
+					>
+						Close
+					</Button>
+					<Button
+						type="submit"
+						variant="gradient"
+						flex={1}
+						disabled={!email || !role}
+						loading={inviteMutation.isPending}
+					>
+						Send invite
+					</Button>
+				</Group>
+			</Stack>
+		</Form>
+	);
+}

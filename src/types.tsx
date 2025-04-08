@@ -677,4 +677,22 @@ export interface CloudMember {
 	user_id: string;
 	organization_id: string;
 	role: string;
+	name: string;
+	username: string;
+}
+
+export interface CloudInvitation {
+	organization_id: string;
+	code: string;
+	role: string;
+	email: string;
+	status: string;
+}
+
+export interface CloudRole {
+	name: string;
+	permissions: {
+		resource: string;
+		action: string;
+	}[];
 }

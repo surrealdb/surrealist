@@ -20,7 +20,6 @@ const GRID_COLUMNS = {
 
 export function OrganizationsPage() {
 	const isAuthed = useIsAuthenticated();
-
 	const { data } = useCloudOrganizationsQuery();
 
 	useSavepoint(ORGANIZATIONS);
