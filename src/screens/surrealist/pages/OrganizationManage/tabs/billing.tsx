@@ -38,8 +38,10 @@ import { showInfo, showError } from "~/util/helpers";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
 import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
+import { useHasOrganizationWriteAccess } from "~/cloud/hooks/role";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
+	const canModify = useHasOrganizationWriteAccess(organization.id);
 	const client = useQueryClient();
 
 	const billingQuery = useCloudBillingQuery(organization.id);
@@ -163,13 +165,15 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 								Billing Details
 							</Text>
 							<Spacer />
-							<Button
-								color="slate"
-								variant="light"
-								onClick={handleEditBilling}
-							>
-								Edit
-							</Button>
+							{canModify && (
+								<Button
+									color="slate"
+									variant="light"
+									onClick={handleEditBilling}
+								>
+									Edit
+								</Button>
+							)}
 						</Group>
 						<Divider my="md" />
 						<Stack>
@@ -229,20 +233,22 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 								Payment Details
 							</Text>
 							<Spacer />
-							<Tooltip
-								disabled={organization?.billing_info}
-								label="Please provide billing details first"
-							>
-								<Button
-									color="slate"
-									variant="light"
-									loading={requesting}
-									onClick={requestPaymentUrl}
-									disabled={!organization?.billing_info}
+							{canModify && (
+								<Tooltip
+									disabled={organization?.billing_info}
+									label="Please provide billing details first"
 								>
-									Edit
-								</Button>
-							</Tooltip>
+									<Button
+										color="slate"
+										variant="light"
+										loading={requesting}
+										onClick={requestPaymentUrl}
+										disabled={!organization?.billing_info}
+									>
+										Edit
+									</Button>
+								</Tooltip>
+							)}
 						</Group>
 						<Divider my="md" />
 						<Stack mt="md">

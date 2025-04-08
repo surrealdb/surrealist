@@ -1,4 +1,4 @@
-import { Divider, Group, Tabs } from "@mantine/core";
+import { Badge, Divider, Group, Tabs } from "@mantine/core";
 import classes from "./style.module.scss";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -15,6 +15,7 @@ import {
 	iconCloud,
 	iconServer,
 	iconCog,
+	iconPackageClosed,
 } from "~/util/icons";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { Link, Redirect } from "wouter";
@@ -84,6 +85,23 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 								</ActionButton>
 							</Link>
 							<PrimaryTitle fz={26}>{organization?.name}</PrimaryTitle>
+							{organization?.archived_at && (
+								<Badge
+									color="orange"
+									variant="light"
+									size="lg"
+									leftSection={
+										<Icon
+											path={iconPackageClosed}
+											size="sm"
+											mr="xs"
+										/>
+									}
+									mb={-2}
+								>
+									Archived
+								</Badge>
+							)}
 						</Group>
 
 						{organization && (

@@ -12,3 +12,12 @@ export function useOrganizationRole(organizationId: string) {
 
 	return member?.role || null;
 }
+
+/**
+ * Returns whether the user has write access to the given organization.
+ */
+export function useHasOrganizationWriteAccess(organizationId: string) {
+	const role = useOrganizationRole(organizationId);
+
+	return role === "owner" || role === "admin";
+}

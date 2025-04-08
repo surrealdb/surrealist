@@ -30,7 +30,7 @@ import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
 import { ActionButton } from "~/components/ActionButton";
 import { useRevocationMutation } from "~/cloud/mutations/invites";
 import { useMemo } from "react";
-import { useOrganizationRole } from "~/cloud/hooks/role";
+import { useHasOrganizationWriteAccess, useOrganizationRole } from "~/cloud/hooks/role";
 import { openMemberRoleModal } from "~/cloud/modals/member-role";
 import { useConfirmation } from "~/providers/Confirmation";
 import { CloudMember } from "~/types";
@@ -41,8 +41,9 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
+	const canModify = useHasOrganizationWriteAccess(organization.id);
+	const isArchived = !!organization.archived_at;
 	const userId = useCloudStore((s) => s.userId);
-	const role = useOrganizationRole(organization.id);
 
 	const handleInvite = useStable(() => {
 		openMemberInvitationModal(organization);
@@ -58,8 +59,6 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 		onConfirm: (value) => removeMutation.mutate(value.user_id),
 	});
 
-	const canModify = role === "owner" || role === "admin";
-
 	return (
 		<Stack>
 			<Section
@@ -70,6 +69,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Button
 							size="xs"
 							variant="gradient"
+							disabled={isArchived}
 							leftSection={<Icon path={iconAccountPlus} />}
 							onClick={handleInvite}
 						>

@@ -11,6 +11,7 @@ import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { Link } from "wouter";
 import { OrganizationTile } from "./organization";
 import { ORGANIZATIONS, useSavepoint } from "~/hooks/overview";
+import { fork } from "radash";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -23,6 +24,8 @@ export function OrganizationsPage() {
 	const { data } = useCloudOrganizationsQuery();
 
 	useSavepoint(ORGANIZATIONS);
+
+	const [active, archived] = fork(data || [], (org) => org.archived_at === undefined);
 
 	return (
 		<Box
@@ -67,13 +70,28 @@ export function OrganizationsPage() {
 						</Group>
 
 						<SimpleGrid cols={GRID_COLUMNS}>
-							{data?.map((org) => (
+							{active.map((org) => (
 								<OrganizationTile
 									key={org.id}
 									organization={org}
 								/>
 							))}
 						</SimpleGrid>
+
+						{archived.length > 0 && (
+							<>
+								<PrimaryTitle mt="xl">Archived organizations</PrimaryTitle>
+
+								<SimpleGrid cols={GRID_COLUMNS}>
+									{archived.map((org) => (
+										<OrganizationTile
+											key={org.id}
+											organization={org}
+										/>
+									))}
+								</SimpleGrid>
+							</>
+						)}
 					</Stack>
 				</ScrollArea>
 			) : (

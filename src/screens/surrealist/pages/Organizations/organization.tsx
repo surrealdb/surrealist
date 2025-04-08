@@ -3,7 +3,6 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Badge,
-	Box,
 	BoxProps,
 	Group,
 	Menu,
@@ -14,16 +13,18 @@ import {
 } from "@mantine/core";
 
 import { PropsWithChildren, useMemo, useRef } from "react";
+import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";
-import { iconDelete, iconDotsVertical, iconExitToAp, iconPackageClosed } from "~/util/icons";
+import { iconDotsVertical, iconExitToAp, iconPackageClosed } from "~/util/icons";
 
 export interface OrganizationTileProps extends BoxProps {
 	organization: CloudOrganization;
@@ -36,14 +37,15 @@ export function OrganizationTile({
 }: PropsWithChildren<OrganizationTileProps>) {
 	const userId = useCloudStore((s) => s.userId);
 	const membersQuery = useCloudMembersQuery(organization.id);
+	const removeMutation = useRemoveMemberMutation(organization.id);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [, navigate] = useAbsoluteLocation();
 
-	const members = membersQuery.isSuccess ? membersQuery.data : [];
-
 	const isOwner = useMemo(() => {
+		const members = membersQuery.data || [];
+
 		return members.some((member) => member.user_id === userId && member.role === "owner");
-	}, [members, userId]);
+	}, [membersQuery.data, userId]);
 
 	const handleManage = useStable(() => {
 		navigate(`/o/${organization.id}`);
@@ -56,6 +58,20 @@ export function OrganizationTile({
 				subtitle: "Successfully copied organization id to clipboard",
 			});
 		});
+	});
+
+	const requestLeave = useConfirmation({
+		title: "Leave organization",
+		message: "Are you sure you want to leave this organization?",
+		confirmText: "Leave",
+		onConfirm: async () => {
+			await removeMutation.mutateAsync(userId);
+
+			showInfo({
+				title: "Left organization",
+				subtitle: "You have successfully left the organization.",
+			});
+		},
 	});
 
 	return (
@@ -93,7 +109,8 @@ export function OrganizationTile({
 							variant="subtle"
 							px={0}
 						>
-							{members.length} {plural(members.length, "member")}
+							{organization.member_count}{" "}
+							{plural(organization.member_count, "member")}
 						</Badge>
 					</Stack>
 					<div
@@ -116,35 +133,23 @@ export function OrganizationTile({
 							</Menu.Target>
 							<Menu.Dropdown>
 								<Menu.Item onClick={handleCopyID}>Copy organization ID</Menu.Item>
-								<Menu.Divider />
-								{isOwner ? (
-									<Menu.Item
-										leftSection={
-											<Icon
-												path={iconPackageClosed}
-												c="red"
-											/>
-										}
-										onClick={() => {}}
-										disabled
-										c="red"
-									>
-										Archive organization
-									</Menu.Item>
-								) : (
-									<Menu.Item
-										leftSection={
-											<Icon
-												path={iconExitToAp}
-												c="red"
-											/>
-										}
-										onClick={() => {}}
-										disabled
-										c="red"
-									>
-										Leave organization
-									</Menu.Item>
+								{!isOwner && (
+									<>
+										<Menu.Divider />
+										<Menu.Item
+											leftSection={
+												<Icon
+													path={iconExitToAp}
+													c="red"
+												/>
+											}
+											onClick={requestLeave}
+											disabled
+											c="red"
+										>
+											Leave organization
+										</Menu.Item>
+									</>
 								)}
 							</Menu.Dropdown>
 						</Menu>
