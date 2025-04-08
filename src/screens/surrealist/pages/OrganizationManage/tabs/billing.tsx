@@ -1,44 +1,44 @@
 import classes from "../style.module.scss";
 
 import {
-	Skeleton,
-	SimpleGrid,
-	Paper,
-	Group,
+	Box,
 	Button,
 	Divider,
+	Group,
+	Paper,
+	SimpleGrid,
+	Skeleton,
 	Stack,
-	Box,
-	TextInput,
-	Text,
 	Table,
+	Text,
+	TextInput,
 	Tooltip,
 } from "@mantine/core";
 
+import { useInputState, useWindowEvent } from "@mantine/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
+import { capitalize } from "radash";
+import { useRef, useState } from "react";
+import { adapter } from "~/adapter";
+import { fetchAPI, updateCloudInformation } from "~/cloud/api";
+import { useHasOrganizationWriteAccess } from "~/cloud/hooks/role";
 import { openBillingDetails } from "~/cloud/modals/billing";
+import { useCloudBillingQuery } from "~/cloud/queries/billing";
+import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
+import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { Spacer } from "~/components/Spacer";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { CloudCoupon } from "~/types";
+import { showError, showInfo } from "~/util/helpers";
 import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
-import { useIsLight } from "~/hooks/theme";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { adapter } from "~/adapter";
-import { useCloudBillingQuery } from "~/cloud/queries/billing";
-import { CloudCoupon } from "~/types";
-import { useInputState, useWindowEvent } from "@mantine/hooks";
-import { capitalize } from "radash";
-import { useState, useRef } from "react";
-import { fetchAPI, updateCloudInformation } from "~/cloud/api";
-import { useStable } from "~/hooks/stable";
-import { showInfo, showError } from "~/util/helpers";
-import { useQueryClient } from "@tanstack/react-query";
-import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
-import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
-import { useHasOrganizationWriteAccess } from "~/cloud/hooks/role";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	const canModify = useHasOrganizationWriteAccess(organization.id);

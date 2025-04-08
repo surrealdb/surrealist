@@ -9,10 +9,10 @@ import {
 import { useLayoutEffect } from "react";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
+import { CloudOrganization } from "~/types";
 import { featureFlags, useFeatureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./routing";
-import { CloudOrganization } from "~/types";
 
 /**
  * Returns whether cloud functionality is enabled

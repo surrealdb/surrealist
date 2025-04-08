@@ -2,11 +2,11 @@ import classes from "./style.module.scss";
 
 import { Box, ScrollArea } from "@mantine/core";
 import { useState } from "react";
+import { AuthGuard } from "~/components/AuthGuard";
 import { TopGlow } from "~/components/TopGlow";
 import type { CloudInstance } from "~/types";
 import { ProvisionForm } from "./form";
 import { ProvisionPoller } from "./poller";
-import { AuthGuard } from "~/components/AuthGuard";
 
 export function CreateInstancePage() {
 	const [created, setCreated] = useState<CloudInstance | null>(null);

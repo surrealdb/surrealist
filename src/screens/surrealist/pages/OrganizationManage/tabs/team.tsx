@@ -12,10 +12,21 @@ import {
 	Table,
 	Text,
 } from "@mantine/core";
-import { OrganizationTabProps } from "../types";
-import { Section } from "~/components/Section";
+import { useMemo } from "react";
+import { useHasOrganizationWriteAccess, useOrganizationRole } from "~/cloud/hooks/role";
+import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
+import { openMemberRoleModal } from "~/cloud/modals/member-role";
+import { useRevocationMutation } from "~/cloud/mutations/invites";
+import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
+import { useCloudInvitationsQuery } from "~/cloud/queries/invitations";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
+import { Section } from "~/components/Section";
+import { useStable } from "~/hooks/stable";
+import { useConfirmation } from "~/providers/Confirmation";
+import { useCloudStore } from "~/stores/cloud";
+import { CloudMember } from "~/types";
 import {
 	iconAccountPlus,
 	iconClose,
@@ -23,18 +34,7 @@ import {
 	iconDotsVertical,
 	iconServerSecure,
 } from "~/util/icons";
-import { useCloudStore } from "~/stores/cloud";
-import { useCloudInvitationsQuery } from "~/cloud/queries/invitations";
-import { useStable } from "~/hooks/stable";
-import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
-import { ActionButton } from "~/components/ActionButton";
-import { useRevocationMutation } from "~/cloud/mutations/invites";
-import { useMemo } from "react";
-import { useHasOrganizationWriteAccess, useOrganizationRole } from "~/cloud/hooks/role";
-import { openMemberRoleModal } from "~/cloud/modals/member-role";
-import { useConfirmation } from "~/providers/Confirmation";
-import { CloudMember } from "~/types";
-import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
+import { OrganizationTabProps } from "../types";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const membersQuery = useCloudMembersQuery(organization.id);

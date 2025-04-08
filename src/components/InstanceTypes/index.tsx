@@ -19,12 +19,12 @@ import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { Tile } from "~/components/Tile";
+import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { iconAuth, iconChevronDown, iconChevronRight } from "~/util/icons";
 import { Label } from "../Label";
-import { useOrganizations } from "~/hooks/cloud";
 
 export interface InstanceTypesProps {
 	value: string;

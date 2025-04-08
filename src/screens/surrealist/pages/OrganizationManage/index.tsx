@@ -2,33 +2,33 @@ import { Badge, Divider, Group, Tabs, Tooltip } from "@mantine/core";
 import classes from "./style.module.scss";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
+import { useMemo } from "react";
+import { Link, Redirect } from "wouter";
+import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import { ActionButton } from "~/components/ActionButton";
 import { AuthGuard } from "~/components/AuthGuard";
+import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
-import { Icon } from "~/components/Icon";
-import {
-	iconAccount,
-	iconCreditCard,
-	iconArrowLeft,
-	iconDollar,
-	iconProgressClock,
-	iconCloud,
-	iconServer,
-	iconCog,
-	iconPackageClosed,
-} from "~/util/icons";
-import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
-import { Link, Redirect } from "wouter";
-import { ActionButton } from "~/components/ActionButton";
-import { OrganizationTeamTab } from "./tabs/team";
-import { OrganizationInvoicesTab } from "./tabs/invoices";
-import { OrganizationBillingTab } from "./tabs/billing";
-import { OrganizationUsageTab } from "./tabs/usage";
-import { OrganizationInstancesTab } from "./tabs/instances";
-import { OrganizationSettingsTab } from "./tabs/settings";
-import { useMemo } from "react";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
+import {
+	iconAccount,
+	iconArrowLeft,
+	iconCloud,
+	iconCog,
+	iconCreditCard,
+	iconDollar,
+	iconPackageClosed,
+	iconProgressClock,
+	iconServer,
+} from "~/util/icons";
+import { OrganizationBillingTab } from "./tabs/billing";
+import { OrganizationInstancesTab } from "./tabs/instances";
+import { OrganizationInvoicesTab } from "./tabs/invoices";
+import { OrganizationSettingsTab } from "./tabs/settings";
+import { OrganizationTeamTab } from "./tabs/team";
+import { OrganizationUsageTab } from "./tabs/usage";
 
 export interface OrganizationManagePageProps {
 	id: string;

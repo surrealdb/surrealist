@@ -8,6 +8,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useOrganizations } from "~/hooks/cloud";
+import { useLastSavepoint } from "~/hooks/overview";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
@@ -17,7 +18,6 @@ import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionOrganizationStep } from "./steps/organization";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
-import { useLastSavepoint } from "~/hooks/overview";
 
 const DEFAULT: ProvisionConfig = {
 	organization: "",

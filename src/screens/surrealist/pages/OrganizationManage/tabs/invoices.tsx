@@ -1,13 +1,13 @@
 import classes from "../style.module.scss";
 
-import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
-import { OrganizationTabProps } from "../types";
-import { Stack, Skeleton, ActionIcon, Alert, Table, Paper } from "@mantine/core";
+import { ActionIcon, Alert, Paper, Skeleton, Stack, Table } from "@mantine/core";
 import { Link } from "wouter";
+import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
 import { Icon } from "~/components/Icon";
-import { iconOpen, iconHelp } from "~/util/icons";
-import { InvoiceStatus } from "~/types";
 import { Section } from "~/components/Section";
+import { InvoiceStatus } from "~/types";
+import { iconHelp, iconOpen } from "~/util/icons";
+import { OrganizationTabProps } from "../types";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {
 	succeeded: { name: "Paid", color: "green" },

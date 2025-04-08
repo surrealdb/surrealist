@@ -1,16 +1,16 @@
 import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { capitalize } from "radash";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudMember, CloudOrganization } from "~/types";
-import { iconTag } from "~/util/icons";
-import { useCloudRolesQuery } from "../queries/roles";
-import { capitalize } from "radash";
 import { showError } from "~/util/helpers";
+import { iconTag } from "~/util/icons";
 import { useUpdateRoleMutation } from "../mutations/role";
+import { useCloudRolesQuery } from "../queries/roles";
 
 export function openMemberRoleModal(organization: CloudOrganization, member: CloudMember) {
 	openModal({

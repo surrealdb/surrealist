@@ -42,6 +42,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
+import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
@@ -52,6 +53,7 @@ import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
+import { OVERVIEW, useSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
@@ -66,8 +68,6 @@ import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartResource } from "./content/resource";
-import { Link } from "wouter";
-import { OVERVIEW, useSavepoint } from "~/hooks/overview";
 
 const GRID_COLUMNS = {
 	xs: 1,

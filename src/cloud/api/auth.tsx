@@ -1,12 +1,15 @@
 import { shutdown } from "@intercom/messenger-js-sdk";
+import { showNotification } from "@mantine/notifications";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudSignin } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
+import { iconCheck } from "~/util/icons";
 import {
 	INVITATION_KEY,
 	REFERRER_KEY,
@@ -18,9 +21,6 @@ import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
-import { showNotification } from "@mantine/notifications";
-import { Icon } from "~/components/Icon";
-import { iconCheck } from "~/util/icons";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";

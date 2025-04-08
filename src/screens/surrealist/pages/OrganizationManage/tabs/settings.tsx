@@ -1,17 +1,17 @@
 import { Alert, Box, Button, Stack, Text, TextInput } from "@mantine/core";
-import { OrganizationTabProps } from "../types";
-import { Section } from "~/components/Section";
-import { iconPackageClosed } from "~/util/icons";
-import { Icon } from "~/components/Icon";
-import { useUpdateOrganizationMutation } from "~/cloud/mutations/update";
 import { useInputState } from "@mantine/hooks";
-import { useStable } from "~/hooks/stable";
-import { showInfo } from "~/util/helpers";
 import { useOrganizationRole } from "~/cloud/hooks/role";
-import { useConfirmation } from "~/providers/Confirmation";
-import { useAbsoluteLocation } from "~/hooks/routing";
 import { useArchiveOrganizationMutation } from "~/cloud/mutations/archive";
+import { useUpdateOrganizationMutation } from "~/cloud/mutations/update";
+import { Icon } from "~/components/Icon";
+import { Section } from "~/components/Section";
+import { useAbsoluteLocation } from "~/hooks/routing";
+import { useStable } from "~/hooks/stable";
+import { useConfirmation } from "~/providers/Confirmation";
 import { formatArchiveDate } from "~/util/cloud";
+import { showInfo } from "~/util/helpers";
+import { iconPackageClosed } from "~/util/icons";
+import { OrganizationTabProps } from "../types";
 
 export function OrganizationSettingsTab({ organization }: OrganizationTabProps) {
 	const updateMutation = useUpdateOrganizationMutation(organization.id);

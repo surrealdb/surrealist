@@ -4,9 +4,9 @@ import { Icon } from "~/components/Icon";
 import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceVersions, useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
 import { iconCheck } from "~/util/icons";
 import type { ProvisionStepProps } from "../types";
-import { useCloudStore } from "~/stores/cloud";
 
 export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps) {
 	const versions = useAvailableInstanceVersions();
