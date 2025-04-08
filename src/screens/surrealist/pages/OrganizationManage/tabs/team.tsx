@@ -73,6 +73,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Table.Tbody>
 							{membersQuery.data?.map((member) => {
 								const isSelf = member.user_id === userId;
+								const isOwner = member.role === "owner";
 
 								return (
 									<Table.Tr key={member.user_id}>
@@ -106,14 +107,12 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 												</Text>
 											</Box>
 										</Table.Td>
-										{isSelf || canModify ? (
-											<Table.Td w={0} />
-										) : (
-											<Table.Td
-												w={0}
-												pr="md"
-												style={{ textWrap: "nowrap" }}
-											>
+										<Table.Td
+											w={0}
+											pr="md"
+											style={{ textWrap: "nowrap" }}
+										>
+											{!isSelf && !isOwner && canModify && (
 												<Menu>
 													<Menu.Target>
 														<ActionIcon>
@@ -149,8 +148,8 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 														</Menu.Item>
 													</Menu.Dropdown>
 												</Menu>
-											</Table.Td>
-										)}
+											)}
+										</Table.Td>
 									</Table.Tr>
 								);
 							})}
@@ -196,12 +195,16 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											<ActionButton
-												label="Revoke invitation"
-												onClick={() => revokeMutation.mutate(invite.code)}
-											>
-												<Icon path={iconClose} />
-											</ActionButton>
+											{canModify && (
+												<ActionButton
+													label="Revoke invitation"
+													onClick={() =>
+														revokeMutation.mutate(invite.code)
+													}
+												>
+													<Icon path={iconClose} />
+												</ActionButton>
+											)}
 										</Table.Td>
 									</Table.Tr>
 								))}
