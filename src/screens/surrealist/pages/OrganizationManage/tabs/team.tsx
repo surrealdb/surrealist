@@ -168,7 +168,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 								variant="light"
 								size="sm"
 							>
-								{membersQuery.data?.length}
+								{invitations.length}
 							</Badge>
 						</Group>
 					}
