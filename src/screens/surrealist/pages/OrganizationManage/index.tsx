@@ -7,9 +7,11 @@ import { Link, Redirect } from "wouter";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionButton } from "~/components/ActionButton";
 import { AuthGuard } from "~/components/AuthGuard";
+import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
 import {
@@ -29,8 +31,6 @@ import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationSettingsTab } from "./tabs/settings";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
-import { useIsAuthenticated } from "~/hooks/cloud";
-import { CloudSplash } from "~/components/CloudSplash";
 
 export interface OrganizationManagePageProps {
 	id: string;
