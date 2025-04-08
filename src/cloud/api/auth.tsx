@@ -18,6 +18,9 @@ import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
+import { showNotification } from "@mantine/notifications";
+import { Icon } from "~/components/Icon";
+import { iconCheck } from "~/util/icons";
 
 const CLIENT_ID = import.meta.env.VITE_CLOUD_CLIENT_ID;
 const VERIFIER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -203,11 +206,12 @@ export async function refreshAccess() {
  * Attempt to start a new session using the given access token
  */
 export async function acquireSession(accessToken: string, initial: boolean) {
+	const { setSessionToken, setAuthProvider, setUserId, setSessionExpired, setAuthError } =
+		useCloudStore.getState();
+
 	try {
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
 		const invitationCode = sessionStorage.getItem(INVITATION_KEY);
-		const { setSessionToken, setAuthProvider, setUserId, setSessionExpired } =
-			useCloudStore.getState();
 
 		adapter.log("Cloud", "Acquiring cloud session");
 
@@ -233,9 +237,9 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		await updateCloudInformation();
 
 		adapter.log("Cloud", `Session acquired`);
-		sessionStorage.removeItem(REFERRER_KEY);
 		CloudAuthEvent.dispatch(null);
 
+		setAuthError("");
 		setSessionExpired(false);
 
 		const promptTerms = !result.terms_accepted_at;
@@ -252,14 +256,27 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 				first_signin: promptTerms,
 			});
 		}
+
+		if (invitationCode) {
+			showNotification({
+				color: "surreal",
+				title: "Invitation accepted",
+				message: "You have joined the organization",
+				icon: <Icon path={iconCheck} />,
+			});
+		}
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);
 
+		setAuthError(err.message);
 		invalidateSession();
 		showError({
 			title: "Failed to authenticate",
 			subtitle: "Please try signing into Surreal Cloud again",
 		});
+	} finally {
+		sessionStorage.removeItem(REFERRER_KEY);
+		sessionStorage.removeItem(INVITATION_KEY);
 	}
 }
 

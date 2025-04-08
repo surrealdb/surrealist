@@ -28,6 +28,7 @@ export const EMPTY_PROFILE: CloudProfile = {
 
 export type CloudStore = {
 	authState: AuthState;
+	authError: string;
 	sessionToken: string;
 	authProvider: string;
 	userId: string;
@@ -43,6 +44,7 @@ export type CloudStore = {
 	chatLastResponse: string;
 
 	setLoading: () => void;
+	setAuthError: (error: string) => void;
 	setSessionToken: (token: string) => void;
 	setUserId: (id: string) => void;
 	setAuthProvider: (provider: string) => void;
@@ -61,6 +63,7 @@ export type CloudStore = {
 export const useCloudStore = create<CloudStore>()(
 	immer((set) => ({
 		authState: "unknown",
+		authError: "",
 		sessionToken: "",
 		userId: "",
 		authProvider: "",
@@ -79,6 +82,11 @@ export const useCloudStore = create<CloudStore>()(
 		chatLastResponse: "",
 
 		setLoading: () => set({ authState: "loading" }),
+
+		setAuthError: (error) =>
+			set({
+				authError: error,
+			}),
 
 		setSessionToken: (token) =>
 			set({
