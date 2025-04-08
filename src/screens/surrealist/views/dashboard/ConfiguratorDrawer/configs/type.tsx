@@ -65,6 +65,7 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 						<InstanceTypes
 							value={selected}
 							active={instance.type.slug}
+							organizationId={instance.organization_id}
 							onChange={setSelected}
 						/>
 					</Stack>

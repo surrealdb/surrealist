@@ -1,10 +1,12 @@
 import { InstanceTypes } from "~/components/InstanceTypes";
-import { useAvailableInstanceTypes } from "~/hooks/cloud";
+import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import type { ProvisionStepProps } from "../types";
 
 export function ProvisionCategoryStep({ details, setDetails }: ProvisionStepProps) {
-	const instanceTypes = useAvailableInstanceTypes();
+	const organizations = useOrganizations();
+	const organization = organizations.find((org) => org.id === details.organization);
+	const instanceTypes = organization?.plan.instance_types ?? [];
 
 	const updateType = useStable((type: string) => {
 		const info = instanceTypes.find((t) => t.slug === type);
@@ -22,6 +24,7 @@ export function ProvisionCategoryStep({ details, setDetails }: ProvisionStepProp
 	return (
 		<InstanceTypes
 			value={details.type}
+			organizationId={details.organization}
 			onChange={(value) => updateType(value)}
 		/>
 	);

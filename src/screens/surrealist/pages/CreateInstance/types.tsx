@@ -1,6 +1,7 @@
 import type { Updater } from "use-immer";
 
 export interface ProvisionConfig {
+	organization: string;
 	name: string;
 	version: string;
 	region: string;

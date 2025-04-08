@@ -2,14 +2,21 @@ import { Badge, Group, Image, Paper, Select, Stack, TextInput } from "@mantine/c
 import { type ChangeEvent, useLayoutEffect } from "react";
 import { Icon } from "~/components/Icon";
 import { REGION_FLAGS } from "~/constants";
-import { useAvailableInstanceVersions, useAvailableRegions } from "~/hooks/cloud";
+import { useAvailableInstanceVersions, useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
 import { iconCheck } from "~/util/icons";
 import type { ProvisionStepProps } from "../types";
 
 export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps) {
 	const versions = useAvailableInstanceVersions();
-	const regions = useAvailableRegions();
+	const organizations = useOrganizations();
+	const regions = useCloudStore((s) => s.regions);
+
+	const organization = organizations.find((org) => org.id === details.organization);
+
+	const regionSet = new Set(organization?.plan.regions ?? []);
+	const supportedRegions = regions.filter((region) => regionSet.has(region.slug));
 
 	const versionList = versions.map((ver) => ({
 		value: ver,
@@ -50,10 +57,10 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 	useLayoutEffect(() => {
 		if (!details.region) {
 			setDetails((draft) => {
-				draft.region = regions[0]?.slug ?? "";
+				draft.region = supportedRegions[0]?.slug ?? "";
 			});
 		}
-	}, [details.region, regions, setDetails]);
+	}, [details.region, supportedRegions, setDetails]);
 
 	return (
 		<>

@@ -1,6 +1,6 @@
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudMeasurement } from "~/types";
+import { CloudMeasurement, CloudOrganization } from "~/types";
 
 /**
  * Measure the compute history
@@ -78,4 +78,19 @@ export function measureComputeCost(measurements: CloudMeasurement[]) {
  */
 export function openSurrealChangelog(version: string) {
 	adapter.openUrl(`https://surrealdb.com/releases#v${version.replaceAll(".", "-")}`);
+}
+
+/**
+ * Format the archive date for the given organization
+ */
+export function formatArchiveDate(organization: CloudOrganization) {
+	if (!organization.archived_at) {
+		return "";
+	}
+
+	return new Date(organization.archived_at).toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
 }

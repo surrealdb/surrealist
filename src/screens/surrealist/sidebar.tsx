@@ -22,6 +22,7 @@ import { GLOBAL_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useAvailableViews } from "~/hooks/connection";
+import { useLastSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -33,9 +34,9 @@ import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
-	["/overview"],
+	["/overview", "/organizations"],
 	["/chat", "/mini/new"],
-	["/billing", "/referrals", "/support"],
+	["/referrals", "/support"],
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
@@ -131,6 +132,8 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const isCollapsed = sidebarMode === "compact" || sidebarMode === "expandable";
 	const isFilled = sidebarMode === "fill";
 
+	const savepoint = useLastSavepoint();
+
 	return (
 		<ScrollArea
 			scrollbars="y"
@@ -192,9 +195,9 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					{connection && (
 						<>
 							<NavigationIcon
-								name="Back to overview"
+								name={`Back to ${savepoint.name}`}
 								icon={iconArrowLeft}
-								onClick={() => setLocation("/overview")}
+								onClick={() => setLocation(savepoint.path)}
 								onMouseEnter={hoverSidebarHandle.open}
 								withTooltip={sidebarMode === "compact"}
 							/>

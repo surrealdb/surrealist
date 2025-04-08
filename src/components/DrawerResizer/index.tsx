@@ -1,6 +1,5 @@
 import classes from "./style.module.scss";
 
-import { update } from "@intercom/messenger-js-sdk";
 import { Box } from "@mantine/core";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
@@ -15,18 +14,6 @@ export interface DrawerResizerProps {
 export function DrawerResizer({ minSize, maxSize, onResize }: DrawerResizerProps) {
 	const [isResizing, setIsResizing] = useState(false);
 	const resizer = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		update({
-			hide_default_launcher: true,
-		});
-
-		return () => {
-			update({
-				hide_default_launcher: false,
-			});
-		};
-	}, []);
 
 	useEffect(() => {
 		const onMouseMove = (event: MouseEvent) => {

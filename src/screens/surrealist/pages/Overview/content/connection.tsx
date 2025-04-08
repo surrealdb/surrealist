@@ -74,7 +74,7 @@ export function StartConnection({
 	const labels = connection?.labels?.map((label, i) => (
 		<Badge
 			key={i}
-			color="slate"
+			color="violet"
 			variant="light"
 		>
 			{label}
@@ -187,7 +187,7 @@ export function StartConnection({
 				</Group>
 				{isSandbox ? (
 					<Badge
-						color="slate"
+						color="violet"
 						variant="subtle"
 						px={0}
 					>

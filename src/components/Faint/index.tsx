@@ -68,6 +68,7 @@ export function Faint({ containerRef }: FaintProps) {
 
 			const hitX = relX >= -faint.w && relX <= container.w + faint.w;
 			const hitY = relY >= -faint.h && relY <= container.h + faint.h;
+			const opacityMod = isLight ? 0.3 : 1;
 
 			if (hitX || hitY) {
 				// Batch style updates for better performance
@@ -79,12 +80,12 @@ export function Faint({ containerRef }: FaintProps) {
 
 				if (outsideMax === 0) {
 					style.transform = "scale(1)";
-					style.opacity = "1";
+					style.opacity = `${1 * opacityMod}`;
 				} else {
 					const scale = 1 - outsideMax / 175;
 					const opacity = 1 - outsideMax / 150;
 					style.transform = `scale(${scale})`;
-					style.opacity = `${opacity}`;
+					style.opacity = `${opacity * opacityMod}`;
 				}
 			}
 
@@ -101,7 +102,7 @@ export function Faint({ containerRef }: FaintProps) {
 				cancelAnimationFrame(animationFrameRef.current);
 			}
 		};
-	}, [containerRef, mouseX, mouseY]);
+	}, [containerRef, isLight, mouseX, mouseY]);
 
 	return (
 		<img
@@ -114,7 +115,7 @@ export function Faint({ containerRef }: FaintProps) {
 				position: "absolute",
 				top: -500,
 				left: -500,
-				opacity: hasMouseMoved ? (isLight ? 0.5 : 1) : 0,
+				opacity: 0,
 				outline: "none",
 				zIndex: -1,
 			}}

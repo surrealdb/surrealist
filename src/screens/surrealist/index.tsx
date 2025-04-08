@@ -11,13 +11,14 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
-import { BillingPage } from "./pages/Billing";
 import { ChatPage } from "./pages/Chat";
 import { CloudPage } from "./pages/Cloud";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateInstancePage } from "./pages/CreateInstance";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
+import { OrganizationManagePage } from "./pages/OrganizationManage";
+import { OrganizationsPage } from "./pages/Organizations";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SupportPage } from "./pages/Support";
@@ -39,7 +40,8 @@ const OverviewPageLazy = memo(OverviewPage);
 const CloudPageLazy = memo(CloudPage);
 const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
-const BillingPageLazy = memo(BillingPage);
+const OrganizationsPageLazy = memo(OrganizationsPage);
+const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
@@ -164,10 +166,6 @@ export function SurrealistScreen() {
 								<ChatPageLazy />
 							</Route>
 
-							<Route path="/billing">
-								<BillingPageLazy />
-							</Route>
-
 							<Route path="/referrals">
 								<ReferralPageLazy />
 							</Route>
@@ -186,6 +184,20 @@ export function SurrealistScreen() {
 
 							<Route path="/support">
 								<SupportPageLazy />
+							</Route>
+
+							<Route path="/billing">
+								<Redirect to="/organizations" />
+							</Route>
+
+							<Route path="/organizations">
+								<OrganizationsPageLazy />
+							</Route>
+
+							<Route path="/o/:organization">
+								{({ organization }) => (
+									<OrganizationManagePageLazy id={organization} />
+								)}
 							</Route>
 
 							<Route path="/c/:connection/:view">

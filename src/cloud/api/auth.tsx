@@ -1,13 +1,22 @@
 import { shutdown } from "@intercom/messenger-js-sdk";
+import { showNotification } from "@mantine/notifications";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudSignin } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { showError } from "~/util/helpers";
-import { REFERRER_KEY, REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
+import { iconCheck } from "~/util/icons";
+import {
+	INVITATION_KEY,
+	REFERRER_KEY,
+	REFRESH_TOKEN_KEY,
+	STATE_KEY,
+	VERIFIER_KEY,
+} from "~/util/storage";
 import { fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
@@ -197,20 +206,26 @@ export async function refreshAccess() {
  * Attempt to start a new session using the given access token
  */
 export async function acquireSession(accessToken: string, initial: boolean) {
+	const { setSessionToken, setAuthProvider, setUserId, setSessionExpired, setAuthError } =
+		useCloudStore.getState();
+
 	try {
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
-		const { setSessionToken, setAuthProvider, setUserId, setSessionExpired } =
-			useCloudStore.getState();
+		const invitationCode = sessionStorage.getItem(INVITATION_KEY);
 
 		adapter.log("Cloud", "Acquiring cloud session");
 
-		let endpoint = "/signin";
+		const params = new URLSearchParams();
 
 		if (referralCode) {
-			endpoint += `?referral=${referralCode}`;
+			params.append("referral", referralCode);
 		}
 
-		const result = await fetchAPI<CloudSignin>(endpoint, {
+		if (invitationCode) {
+			params.append("invitation", invitationCode);
+		}
+
+		const result = await fetchAPI<CloudSignin>(`/signin?${params}`, {
 			method: "POST",
 			body: JSON.stringify(accessToken),
 		});
@@ -222,9 +237,9 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		await updateCloudInformation();
 
 		adapter.log("Cloud", `Session acquired`);
-		sessionStorage.removeItem(REFERRER_KEY);
 		CloudAuthEvent.dispatch(null);
 
+		setAuthError("");
 		setSessionExpired(false);
 
 		const promptTerms = !result.terms_accepted_at;
@@ -241,14 +256,27 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 				first_signin: promptTerms,
 			});
 		}
+
+		if (invitationCode) {
+			showNotification({
+				color: "surreal",
+				title: "Invitation accepted",
+				message: "You have joined the organization",
+				icon: <Icon path={iconCheck} />,
+			});
+		}
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);
 
+		setAuthError(err.message);
 		invalidateSession();
 		showError({
 			title: "Failed to authenticate",
 			subtitle: "Please try signing into Surreal Cloud again",
 		});
+	} finally {
+		sessionStorage.removeItem(REFERRER_KEY);
+		sessionStorage.removeItem(INVITATION_KEY);
 	}
 }
 

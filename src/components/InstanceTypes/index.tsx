@@ -19,7 +19,7 @@ import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { Tile } from "~/components/Tile";
-import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
+import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
 import { formatMemory } from "~/util/helpers";
@@ -29,14 +29,16 @@ import { Label } from "../Label";
 export interface InstanceTypesProps {
 	value: string;
 	active?: string;
+	organizationId: string;
 	onChange: (value: string) => void;
 }
 
-export function InstanceTypes({ value, active, onChange }: InstanceTypesProps) {
-	const organization = useOrganization();
-	const instanceTypes = useAvailableInstanceTypes();
+export function InstanceTypes({ value, active, organizationId, onChange }: InstanceTypesProps) {
+	const organizations = useOrganizations();
+	const organization = organizations.find((org) => org.id === organizationId);
 	const instances = useCloudOrganizationInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instances.data ?? []);
+	const instanceTypes = organization?.plan.instance_types ?? [];
 
 	const groupedTypes = useMemo(() => {
 		return group(instanceTypes, (type) => type.category);

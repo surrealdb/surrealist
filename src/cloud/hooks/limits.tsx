@@ -1,31 +1,30 @@
 import { fork } from "radash";
 import { useMemo } from "react";
-import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import type { CloudInstance, CloudInstanceType } from "~/types";
+import type { CloudInstance, CloudInstanceType, CloudOrganization } from "~/types";
 
 /**
  * Split instance types into available and unavailable types
  */
 export function useCloudTypeLimits(
 	instances: CloudInstance[],
+	organization?: CloudOrganization,
 ): (type: CloudInstanceType) => boolean {
-	const current = useOrganization();
-	const types = useAvailableInstanceTypes();
+	const types = organization?.plan.instance_types ?? [];
 
-	const available = useMemo(
-		() =>
-			types.filter((type) => {
-				if (!current) return false;
+	const available = useMemo(() => {
+		if (!organization) {
+			return [];
+		}
 
-				const [free, paid] = fork(instances ?? [], (i) => i.type.price_hour === 0);
-				const isFree = type.price_hour === 0;
+		return types.filter((type) => {
+			const [free, paid] = fork(instances ?? [], (i) => i.type.price_hour === 0);
+			const isFree = type.price_hour === 0;
 
-				return isFree
-					? free.length < current.max_free_instances
-					: paid.length < current.max_paid_instances;
-			}),
-		[types, current, instances],
-	);
+			return isFree
+				? free.length < organization.max_free_instances
+				: paid.length < organization.max_paid_instances;
+		});
+	}, [types, organization, instances]);
 
 	return (type) => available.includes(type);
 }

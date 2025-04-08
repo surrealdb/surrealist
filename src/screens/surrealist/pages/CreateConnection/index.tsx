@@ -2,6 +2,7 @@ import classes from "./style.module.scss";
 
 import {
 	ActionIcon,
+	Alert,
 	Box,
 	Button,
 	Group,
@@ -26,6 +27,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
+import { useLastSavepoint } from "~/hooks/overview";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
@@ -118,7 +120,7 @@ export function CreateConnectionPage() {
 	}, []);
 
 	const templates = useConfigStore((s) => s.settings.templates.list);
-	const showTemplates = templates.length > 0 || adapter.isServeSupported;
+	const savepoint = useLastSavepoint();
 
 	return (
 		<Box
@@ -147,100 +149,96 @@ export function CreateConnectionPage() {
 						<Text fz="xl">Connect to any SurrealDB instance</Text>
 					</Box>
 
-					{showTemplates && (
-						<Paper p="md">
-							<Group>
-								<Box flex={1}>
-									<Text
-										fz="xl"
-										fw={600}
-										c="bright"
-									>
-										Apply connection template
-									</Text>
-									<Text>Initialize this connection with a template</Text>
-								</Box>
-								<Menu>
-									<Menu.Target>
-										<Button
-											rightSection={<Icon path={iconChevronDown} />}
-											color="slate"
-											variant="light"
-										>
-											Apply
-										</Button>
-									</Menu.Target>
-									<Menu.Dropdown miw={200}>
-										{adapter.isServeSupported && (
-											<>
-												<Menu.Item
-													onClick={() => applyTemplate(localhost)}
-													leftSection={
-														<ThemeIcon
-															color="slate"
-															variant="light"
-															radius="xs"
-															mr="xs"
-														>
-															<Icon path={iconHomePlus} />
-														</ThemeIcon>
-													}
-												>
-													<Box>
-														<Text
-															c="bright"
-															fw={500}
-															lh={1}
-														>
-															Localhost
-														</Text>
-														<Text fz="sm">Automatic template</Text>
-													</Box>
-												</Menu.Item>
-												<Menu.Divider />
-											</>
-										)}
-										{templates.length > 0 && (
-											<>
-												{templates.map((template) => (
-													<Menu.Item
-														key={template.id}
-														onClick={() => applyTemplate(template)}
-														leftSection={
-															<ThemeIcon
-																color="slate"
-																variant="light"
-																radius="xs"
-																mr="xs"
-															>
-																<Icon
-																	path={USER_ICONS[template.icon]}
-																/>
-															</ThemeIcon>
-														}
-													>
-														<Text
-															c="bright"
-															fw={500}
-														>
-															{template.name}
-														</Text>
-													</Menu.Item>
-												))}
-												<Menu.Divider />
-											</>
-										)}
+					<Group>
+						<Link to={savepoint.path}>
+							<Button
+								variant="light"
+								color="slate"
+								size="xs"
+								leftSection={<Icon path={iconArrowLeft} />}
+							>
+								Back to {savepoint.name}
+							</Button>
+						</Link>
+						<Spacer />
+						<Menu position="bottom-end">
+							<Menu.Target>
+								<Button
+									rightSection={<Icon path={iconChevronDown} />}
+									color="slate"
+									variant="light"
+									size="xs"
+								>
+									Apply template
+								</Button>
+							</Menu.Target>
+							<Menu.Dropdown miw={200}>
+								{adapter.isServeSupported && (
+									<>
 										<Menu.Item
-											rightSection={<Icon path={iconChevronRight} />}
-											onClick={openTemplates}
+											onClick={() => applyTemplate(localhost)}
+											leftSection={
+												<ThemeIcon
+													color="slate"
+													variant="light"
+													radius="xs"
+													mr="xs"
+												>
+													<Icon path={iconHomePlus} />
+												</ThemeIcon>
+											}
 										>
-											Manage templates
+											<Box>
+												<Text
+													c="bright"
+													fw={500}
+													lh={1}
+												>
+													Localhost
+												</Text>
+												<Text fz="sm">Automatic template</Text>
+											</Box>
 										</Menu.Item>
-									</Menu.Dropdown>
-								</Menu>
-							</Group>
-						</Paper>
-					)}
+										<Menu.Divider />
+									</>
+								)}
+								{templates.length > 0 && (
+									<>
+										{templates.map((template) => (
+											<Menu.Item
+												key={template.id}
+												onClick={() => applyTemplate(template)}
+												leftSection={
+													<ThemeIcon
+														color="slate"
+														variant="light"
+														radius="xs"
+														mr="xs"
+													>
+														<Icon path={USER_ICONS[template.icon]} />
+													</ThemeIcon>
+												}
+											>
+												<Text
+													c="bright"
+													fw={500}
+												>
+													{template.name}
+												</Text>
+											</Menu.Item>
+										))}
+										<Menu.Divider />
+									</>
+								)}
+								<Menu.Item
+									rightSection={<Icon path={iconChevronRight} />}
+									onClick={openTemplates}
+								>
+									Manage templates
+								</Menu.Item>
+							</Menu.Dropdown>
+						</Menu>
+					</Group>
 
 					<Box mt="xl">
 						<Text
@@ -307,14 +305,12 @@ export function CreateConnectionPage() {
 					/>
 
 					<Group mt="xl">
-						<Link to="/overview">
+						<Link to={savepoint.path}>
 							<Button
-								w={150}
 								color="slate"
 								variant="light"
-								leftSection={<Icon path={iconArrowLeft} />}
 							>
-								Back to overview
+								Cancel
 							</Button>
 						</Link>
 						<Spacer />

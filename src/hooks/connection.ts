@@ -200,6 +200,10 @@ export function useConnectionOverview({
 		const [sandbox] = filterConnections([sandboxInfo], search, labels, labelMode, labelInclude);
 
 		for (const entry of entries) {
+			if (entry.organization.archived_at) {
+				continue;
+			}
+
 			const instances = filterInstances(
 				entry.instances,
 				search,

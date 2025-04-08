@@ -9,6 +9,7 @@ import {
 import { useLayoutEffect } from "react";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
+import { CloudOrganization } from "~/types";
 import { featureFlags, useFeatureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./routing";
@@ -21,16 +22,6 @@ export function useSurrealCloud() {
 }
 
 /**
- * Returns the actively selected organization
- */
-export function useOrganization() {
-	const list = useCloudStore((s) => s.organizations);
-	const selected = useCloudStore((s) => s.selectedOrganization);
-
-	return list.find((org) => org.id === selected);
-}
-
-/**
  * Returns whether the user is authenticated to Surreal Cloud
  */
 export function useIsAuthenticated() {
@@ -38,23 +29,10 @@ export function useIsAuthenticated() {
 }
 
 /**
- * Lists out the available regions for the current organization
+ * Returns the list of known organizations
  */
-export function useAvailableRegions() {
-	const current = useOrganization();
-	const regions = useCloudStore((s) => s.regions);
-	const valid = new Set(current?.plan?.regions ?? []);
-
-	return regions.filter((region) => valid.has(region.slug));
-}
-
-/**
- * Lists out the available instance types for the current organization
- */
-export function useAvailableInstanceTypes() {
-	const current = useOrganization();
-
-	return current?.plan.instance_types ?? [];
+export function useOrganizations() {
+	return useCloudStore((s) => s.organizations);
 }
 
 /**

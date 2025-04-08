@@ -9,14 +9,13 @@ import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
 import { useCloudBillingQuery } from "../queries/billing";
 
-export async function openBillingDetails() {
+export async function openBillingDetails(organization: CloudOrganization) {
 	return new Promise<void>((resolve) => {
 		openModal({
 			modalId: "billing",
@@ -32,13 +31,16 @@ export async function openBillingDetails() {
 					<PrimaryTitle>Billing Details</PrimaryTitle>
 				</Group>
 			),
-			children: <BillingDetailsModal />,
+			children: <BillingDetailsModal organization={organization} />,
 		});
 	});
 }
 
-function BillingDetailsModal() {
-	const organization = useOrganization();
+interface BillingDetailsModalProps {
+	organization: CloudOrganization;
+}
+
+function BillingDetailsModal({ organization }: BillingDetailsModalProps) {
 	const details = useCloudBillingQuery(organization?.id);
 
 	return details.data && organization ? (

@@ -55,6 +55,7 @@ export type GlobalPage =
 	| "/overview"
 	| "/cloud"
 	| "/billing"
+	| "/organizations"
 	| "/chat"
 	| "/support"
 	| "/referrals"
@@ -505,6 +506,7 @@ export interface CloudSignin {
 export interface CloudProfile {
 	username: string;
 	name: string;
+	default_org: string;
 	picture?: string;
 	user_hmac?: string;
 }
@@ -515,6 +517,7 @@ export interface CloudInstance {
 	host: string;
 	region: string;
 	version: string;
+	organization_id: string;
 	available_versions: string[];
 	compute_units: number;
 	storage_size: number;
@@ -583,6 +586,8 @@ export interface CloudOrganization {
 	payment_info: boolean;
 	plan: CloudPlan;
 	available_plans: CloudPlan[];
+	archived_at?: string;
+	member_count: number;
 }
 
 export interface CloudBanner {
@@ -668,4 +673,28 @@ export interface CloudCoupon {
 export interface CloudBackup {
 	snapshot_started_at: string;
 	snapshot_id: string;
+}
+
+export interface CloudMember {
+	user_id: string;
+	organization_id: string;
+	role: string;
+	name: string;
+	username: string;
+}
+
+export interface CloudInvitation {
+	organization_id: string;
+	code: string;
+	role: string;
+	email: string;
+	status: string;
+}
+
+export interface CloudRole {
+	name: string;
+	permissions: {
+		resource: string;
+		action: string;
+	}[];
 }

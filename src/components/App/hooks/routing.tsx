@@ -3,13 +3,13 @@ import { useAbsoluteLocation, useSearchParams } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { tagEvent } from "~/util/analytics";
 import { handleIntentRequest } from "~/util/intents";
-import { REFERRER_KEY } from "~/util/storage";
+import { INVITATION_KEY, REFERRER_KEY } from "~/util/storage";
 
 export function useAppRouter() {
 	const { setActiveResource } = useConfigStore.getState();
 
 	const [path, setPath] = useAbsoluteLocation();
-	const { intent, referrer } = useSearchParams();
+	const { intent, referrer, invitation } = useSearchParams();
 	const resource = useConfigStore((s) => s.activeResource);
 
 	// Restore active resource
@@ -38,6 +38,13 @@ export function useAppRouter() {
 			sessionStorage.setItem(REFERRER_KEY, referrer);
 		}
 	}, [referrer]);
+
+	// Cloud invitation codes
+	useLayoutEffect(() => {
+		if (invitation) {
+			sessionStorage.setItem(INVITATION_KEY, invitation);
+		}
+	}, [invitation]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Page views
 	useLayoutEffect(() => {

@@ -34,7 +34,6 @@ import {
 	iconDelete,
 	iconPlus,
 	iconSearch,
-	iconServer,
 	iconSidekick,
 	iconTune,
 	iconUniversity,
@@ -43,6 +42,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { Fragment } from "react/jsx-runtime";
+import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
@@ -53,6 +53,7 @@ import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
+import { OVERVIEW, useSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
@@ -75,7 +76,6 @@ const GRID_COLUMNS = {
 };
 
 export function OverviewPage() {
-	const { setSelectedOrganization } = useCloudStore.getState();
 	const knownLabels = useConnectionLabels();
 	const isLight = useIsLight();
 
@@ -124,6 +124,8 @@ export function OverviewPage() {
 		dark: logoDarkUrl,
 	});
 
+	useSavepoint(OVERVIEW);
+
 	return (
 		<Box
 			flex={1}
@@ -145,7 +147,7 @@ export function OverviewPage() {
 						<Stack
 							className={classes.content}
 							justify="center"
-							maw={1100}
+							maw={1000}
 							px="xl"
 							mx="auto"
 							py={96}
@@ -319,96 +321,91 @@ export function OverviewPage() {
 										</Button>
 									</Menu.Target>
 									<Menu.Dropdown>
-										<Menu.Item
-											leftSection={
-												<ThemeIcon
-													color={isLight ? "slate" : "slate.0"}
-													mr="xs"
-													radius="xs"
-													size="lg"
-													variant="light"
-												>
-													<Icon
-														path={iconPlus}
+										<Link to="/create/connection">
+											<Menu.Item
+												leftSection={
+													<ThemeIcon
+														color={isLight ? "slate" : "slate.0"}
+														mr="xs"
+														radius="xs"
 														size="lg"
-													/>
-												</ThemeIcon>
-											}
-											onClick={() => {
-												navigate("/create/connection");
-											}}
-										>
-											<Box>
-												<Text
-													c="bright"
-													fw={600}
-												>
-													Connection
-												</Text>
-												<Text>Connect to any SurrealDB instance</Text>
-											</Box>
-										</Menu.Item>
+														variant="light"
+													>
+														<Icon
+															path={iconPlus}
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Connection
+													</Text>
+													<Text>Connect to any SurrealDB instance</Text>
+												</Box>
+											</Menu.Item>
+										</Link>
 										<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
-										<Menu.Item
-											disabled={authState !== "authenticated"}
-											leftSection={
-												<ThemeIcon
-													color="surreal"
-													mr="xs"
-													radius="xs"
-													size="lg"
-													variant="light"
-												>
-													<Icon
-														path={iconCloud}
+										<Link to="/create/instance">
+											<Menu.Item
+												leftSection={
+													<ThemeIcon
+														color="surreal"
+														mr="xs"
+														radius="xs"
 														size="lg"
-													/>
-												</ThemeIcon>
-											}
-											onClick={() => {
-												navigate("/create/instance");
-											}}
-										>
-											<Box>
-												<Text
-													c="bright"
-													fw={600}
-												>
-													Cloud Instance
-												</Text>
-												<Text>Create a managed cloud instance</Text>
-											</Box>
-										</Menu.Item>
-										<Menu.Item
-											disabled
-											leftSection={
-												<ThemeIcon
-													color="violet"
-													mr="xs"
-													radius="xs"
-													size="lg"
-													variant="light"
-												>
-													<Icon
-														path={iconAccount}
+														variant="light"
+													>
+														<Icon
+															path={iconCloud}
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Cloud Instance
+													</Text>
+													<Text>Create a managed cloud instance</Text>
+												</Box>
+											</Menu.Item>
+										</Link>
+										<Link to="/create/organization">
+											<Menu.Item
+												leftSection={
+													<ThemeIcon
+														color="violet"
+														mr="xs"
+														radius="xs"
 														size="lg"
-													/>
-												</ThemeIcon>
-											}
-											onClick={() => {
-												navigate("/create/organization");
-											}}
-										>
-											<Box>
-												<Text
-													c="bright"
-													fw={600}
-												>
-													Organization
-												</Text>
-												<Text>Create a space to manage your team</Text>
-											</Box>
-										</Menu.Item>
+														variant="light"
+													>
+														<Icon
+															path={iconAccount}
+															size="lg"
+														/>
+													</ThemeIcon>
+												}
+											>
+												<Box>
+													<Text
+														c="bright"
+														fw={600}
+													>
+														Organization
+													</Text>
+													<Text>Create a space to manage your team</Text>
+												</Box>
+											</Menu.Item>
+										</Link>
 									</Menu.Dropdown>
 								</Menu>
 							</Group>
@@ -439,17 +436,11 @@ export function OverviewPage() {
 							{authState === "authenticated" &&
 								organizations.map(({ info, instances }) => (
 									<Fragment key={info.id}>
-										<Group
-											gap="xs"
-											mt="xl"
-										>
-											<PrimaryTitle fz="xl">Surreal Cloud</PrimaryTitle>
-											<Icon
-												path={iconChevronRight}
-												c="slate"
-												size="lg"
-											/>
-											<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
+										<Group mt="xl">
+											<Box>
+												<Text>Surreal Cloud</Text>
+												<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
+											</Box>
 										</Group>
 										<SimpleGrid cols={GRID_COLUMNS}>
 											{instances.map((instance) => (
@@ -464,7 +455,6 @@ export function OverviewPage() {
 													title="No instances"
 													subtitle="Click to provision a new instance"
 													onCreate={() => {
-														setSelectedOrganization(info.id);
 														navigate("/create/instance");
 													}}
 												/>

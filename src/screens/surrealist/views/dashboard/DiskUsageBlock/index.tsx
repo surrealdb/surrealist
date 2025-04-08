@@ -1,4 +1,4 @@
-import { Box, Divider, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
+import { Divider, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance, CloudMeasurement } from "~/types";

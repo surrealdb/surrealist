@@ -11,7 +11,6 @@ import type {
 
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { newId } from "~/util/helpers";
 
 interface CloudValues {
 	instanceVersions: string[];
@@ -24,10 +23,12 @@ interface CloudValues {
 export const EMPTY_PROFILE: CloudProfile = {
 	username: "",
 	name: "",
+	default_org: "",
 };
 
 export type CloudStore = {
 	authState: AuthState;
+	authError: string;
 	sessionToken: string;
 	authProvider: string;
 	userId: string;
@@ -37,13 +38,13 @@ export type CloudStore = {
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
 	organizations: CloudOrganization[];
-	selectedOrganization: string;
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
 	chatConversation: CloudChatMessage[];
 	chatLastResponse: string;
 
 	setLoading: () => void;
+	setAuthError: (error: string) => void;
 	setSessionToken: (token: string) => void;
 	setUserId: (id: string) => void;
 	setAuthProvider: (provider: string) => void;
@@ -51,7 +52,6 @@ export type CloudStore = {
 	setIsSupported: (supported: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
 	setProfile: (profile: CloudProfile) => void;
-	setSelectedOrganization: (id: string) => void;
 	setSessionExpired: (expired: boolean) => void;
 	clearSession: () => void;
 	pushChatMessage: (message: CloudChatMessage) => void;
@@ -63,6 +63,7 @@ export type CloudStore = {
 export const useCloudStore = create<CloudStore>()(
 	immer((set) => ({
 		authState: "unknown",
+		authError: "",
 		sessionToken: "",
 		userId: "",
 		authProvider: "",
@@ -72,7 +73,6 @@ export const useCloudStore = create<CloudStore>()(
 		instanceVersions: [],
 		regions: [],
 		organizations: [],
-		selectedOrganization: "",
 		billingCountries: [],
 		sessionExpired: false,
 		isProvisioning: false,
@@ -82,6 +82,11 @@ export const useCloudStore = create<CloudStore>()(
 		chatLastResponse: "",
 
 		setLoading: () => set({ authState: "loading" }),
+
+		setAuthError: (error) =>
+			set({
+				authError: error,
+			}),
 
 		setSessionToken: (token) =>
 			set({
@@ -117,11 +122,6 @@ export const useCloudStore = create<CloudStore>()(
 		setProfile: (profile) =>
 			set({
 				profile,
-			}),
-
-		setSelectedOrganization: (id) =>
-			set({
-				selectedOrganization: id,
 			}),
 
 		clearSession: () =>

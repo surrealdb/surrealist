@@ -71,6 +71,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 				<SimpleGrid cols={2}>
 					<TextInput
 						label="Username"
+						placeholder="admin"
 						value={value.authentication.username}
 						spellCheck={false}
 						onChange={(e) =>
@@ -81,6 +82,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 					/>
 					<PasswordInput
 						label="Password"
+						placeholder="admin"
 						value={value.authentication.password}
 						spellCheck={false}
 						onChange={(e) =>
@@ -97,6 +99,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 					{showNamespace && (
 						<TextInput
 							label="Namespace"
+							placeholder="my_namespace"
 							value={value.authentication.namespace}
 							spellCheck={false}
 							onChange={(e) =>
@@ -110,6 +113,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 					{showDatabase && (
 						<TextInput
 							label="Database"
+							placeholder="my_database"
 							value={value.authentication.database}
 							spellCheck={false}
 							onChange={(e) =>
@@ -127,6 +131,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 					<TextInput
 						flex={1}
 						label="Access method"
+						placeholder="my_access_method"
 						value={value.authentication.access}
 						spellCheck={false}
 						onChange={(e) =>

@@ -1,5 +1,5 @@
 import { Box, Button, Collapse, Divider, Group, Stack, Text } from "@mantine/core";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
@@ -7,10 +7,9 @@ import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useAvailableInstanceTypes, useOrganization } from "~/hooks/cloud";
-import { useAbsoluteLocation } from "~/hooks/routing";
+import { useOrganizations } from "~/hooks/cloud";
+import { useLastSavepoint } from "~/hooks/overview";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError } from "~/util/helpers";
@@ -21,6 +20,7 @@ import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
 
 const DEFAULT: ProvisionConfig = {
+	organization: "",
 	name: "",
 	region: "",
 	type: "",
@@ -33,12 +33,10 @@ export interface ProvisionFormProps {
 }
 
 export function ProvisionForm({ onCreated }: ProvisionFormProps) {
-	const [, navigate] = useAbsoluteLocation();
-
-	const authState = useCloudStore((s) => s.authState);
-	const organization = useOrganization();
+	const organizations = useOrganizations();
 	const [details, setDetails] = useImmer(DEFAULT);
-	const instanceTypes = useAvailableInstanceTypes();
+	const organization = organizations.find((org) => org.id === details.organization);
+	const instanceTypes = organization?.plan.instance_types ?? [];
 
 	const instanceType = useMemo(() => {
 		return instanceTypes.find((t) => t.slug === details.type);
@@ -88,11 +86,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 		}
 	});
 
-	useEffect(() => {
-		if (authState === "unauthenticated") {
-			navigate("/overview");
-		}
-	}, [authState]);
+	const savepoint = useLastSavepoint();
 
 	return (
 		<Stack
@@ -104,6 +98,17 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				<PrimaryTitle fz={26}>New Cloud instance</PrimaryTitle>
 				<Text fz="xl">Create a managed cloud instance</Text>
 			</Box>
+
+			<Link to={savepoint.path}>
+				<Button
+					variant="light"
+					color="slate"
+					size="xs"
+					leftSection={<Icon path={iconArrowLeft} />}
+				>
+					Back to {savepoint.name}
+				</Button>
+			</Link>
 
 			<Box mt="xl">
 				<Text
@@ -164,14 +169,12 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			)}
 
 			<Group mt="xl">
-				<Link to="/overview">
+				<Link to={savepoint.path}>
 					<Button
-						w={150}
 						color="slate"
 						variant="light"
-						leftSection={<Icon path={iconArrowLeft} />}
 					>
-						Back to overview
+						Cancel
 					</Button>
 				</Link>
 				<Spacer />
