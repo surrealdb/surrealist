@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { Box, Button, Group, ScrollArea, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Box, Button, Group, ScrollArea, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
 
 import { fork } from "radash";
 import { Link } from "wouter";
@@ -21,7 +21,7 @@ const GRID_COLUMNS = {
 
 export function OrganizationsPage() {
 	const isAuthed = useIsAuthenticated();
-	const { data } = useCloudOrganizationsQuery();
+	const { data, isPending } = useCloudOrganizationsQuery();
 
 	useSavepoint(ORGANIZATIONS);
 
@@ -70,6 +70,7 @@ export function OrganizationsPage() {
 						</Group>
 
 						<SimpleGrid cols={GRID_COLUMNS}>
+							{isPending && <Skeleton h={112} />}
 							{active.map((org) => (
 								<OrganizationTile
 									key={org.id}
