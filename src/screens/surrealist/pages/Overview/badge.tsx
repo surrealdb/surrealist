@@ -1,13 +1,4 @@
-import {
-	Box,
-	BoxProps,
-	Center,
-	Indicator,
-	Loader,
-	MantineColor,
-	MantineSize,
-	Tooltip,
-} from "@mantine/core";
+import { BoxProps, Center, Indicator, Loader, MantineColor, Tooltip } from "@mantine/core";
 import { InstanceState } from "~/types";
 
 const BADGE_INFO = {
