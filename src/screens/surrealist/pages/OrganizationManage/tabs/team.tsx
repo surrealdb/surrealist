@@ -107,6 +107,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Table.Tbody>
 							{membersQuery.data?.map((member) => {
 								const isSelf = member.user_id === userId;
+								const showLeave = member.role !== "owner" && isSelf;
 								const showActions = member.role !== "owner" && isOwner;
 
 								return (
@@ -146,7 +147,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											{isSelf ? (
+											{showLeave ? (
 												<ActionButton
 													label="Leave organization"
 													onClick={requestLeave}
