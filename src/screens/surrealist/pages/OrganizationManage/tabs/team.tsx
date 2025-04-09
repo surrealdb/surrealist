@@ -46,9 +46,11 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
-	const isAdmin = useHasOrganizationRole(organization.id, "admin");
 	const isArchived = !!organization.archived_at;
 	const userId = useCloudStore((s) => s.userId);
+
+	const isOwner = useHasOrganizationRole(organization.id, "owner");
+	const isAdmin = useHasOrganizationRole(organization.id, "admin");
 
 	const [, navigate] = useAbsoluteLocation();
 
@@ -105,8 +107,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Table.Tbody>
 							{membersQuery.data?.map((member) => {
 								const isSelf = member.user_id === userId;
-								const isOwner = member.role === "owner";
-								const showActions = !isOwner && isAdmin;
+								const showActions = member.role !== "owner" && isOwner;
 
 								return (
 									<Table.Tr key={member.user_id}>
