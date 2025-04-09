@@ -9,10 +9,10 @@ import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { formatArchiveDate } from "~/util/cloud";
+import { useFeatureFlags } from "~/util/feature-flags";
 import { showInfo } from "~/util/helpers";
 import { iconPackageClosed } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
-import { useFeatureFlags } from "~/util/feature-flags";
 
 export function OrganizationSettingsTab({ organization }: OrganizationTabProps) {
 	const [{ organization_archiving }] = useFeatureFlags();

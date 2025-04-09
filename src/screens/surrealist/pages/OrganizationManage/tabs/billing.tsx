@@ -22,6 +22,7 @@ import { capitalize } from "radash";
 import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { fetchAPI, updateCloudInformation } from "~/cloud/api";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { openBillingDetails } from "~/cloud/modals/billing";
 import { useCloudBillingQuery } from "~/cloud/queries/billing";
 import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
@@ -38,7 +39,6 @@ import { CloudCoupon } from "~/types";
 import { showError, showInfo } from "~/util/helpers";
 import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	const isAdmin = useHasOrganizationRole(organization.id, "admin");

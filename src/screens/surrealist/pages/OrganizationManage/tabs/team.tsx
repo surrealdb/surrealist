@@ -22,6 +22,7 @@ import {
 	iconServerSecure,
 } from "~/util/icons";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
@@ -33,14 +34,13 @@ import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
+import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudMember } from "~/types";
-import { OrganizationTabProps } from "../types";
-import { useAbsoluteLocation } from "~/hooks/routing";
 import { showInfo } from "~/util/helpers";
-import { useQueryClient } from "@tanstack/react-query";
+import { OrganizationTabProps } from "../types";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const client = useQueryClient();

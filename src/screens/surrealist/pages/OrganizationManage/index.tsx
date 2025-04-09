@@ -4,6 +4,7 @@ import classes from "./style.module.scss";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import { Link, Redirect } from "wouter";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionButton } from "~/components/ActionButton";
 import { AuthGuard } from "~/components/AuthGuard";
@@ -30,7 +31,6 @@ import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationSettingsTab } from "./tabs/settings";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 export interface OrganizationManagePageProps {
 	id: string;

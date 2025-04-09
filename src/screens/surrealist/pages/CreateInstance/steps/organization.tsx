@@ -2,11 +2,11 @@ import { Select } from "@mantine/core";
 import { useEffect, useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
 import { useOrganizationSelection } from "~/cloud/hooks/organizations";
+import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import type { ProvisionStepProps } from "../types";
 import { iconOrganization } from "~/util/icons";
-import { Icon } from "~/components/Icon";
+import type { ProvisionStepProps } from "../types";
 
 export function ProvisionOrganizationStep({ details, setDetails }: ProvisionStepProps) {
 	const organizations = useOrganizationSelection();

@@ -16,9 +16,9 @@ import { showError } from "~/util/helpers";
 import { iconArrowLeft } from "~/util/icons";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionOrganizationStep } from "./steps/organization";
+import { ProvisionRegionStep } from "./steps/region";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
-import { ProvisionRegionStep } from "./steps/region";
 
 const DEFAULT: ProvisionConfig = {
 	organization: "",

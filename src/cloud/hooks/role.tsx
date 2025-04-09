@@ -1,6 +1,6 @@
+import { CLOUD_ROLES } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { useCloudMembersQuery } from "../queries/members";
-import { CLOUD_ROLES } from "~/constants";
 
 /**
  * Returns the users role in the given organization.
