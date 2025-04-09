@@ -12,8 +12,11 @@ import { formatArchiveDate } from "~/util/cloud";
 import { showInfo } from "~/util/helpers";
 import { iconPackageClosed } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 export function OrganizationSettingsTab({ organization }: OrganizationTabProps) {
+	const [{ organization_archiving }] = useFeatureFlags();
+
 	const updateMutation = useUpdateOrganizationMutation(organization.id);
 	const archiveMutation = useArchiveOrganizationMutation(organization.id);
 	const isOwner = useHasOrganizationRole(organization.id, "owner");
@@ -81,7 +84,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 				</Box>
 			</Section>
 
-			{isOwner && (
+			{organization_archiving && isOwner && (
 				<Section
 					title="Archive organization"
 					description="Mark this organization as archived. This will hide it from the list of organizations."
