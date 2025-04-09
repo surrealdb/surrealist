@@ -68,6 +68,7 @@ import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartResource } from "./content/resource";
+import { createInstancePath } from "~/cloud/helpers";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -454,9 +455,9 @@ export function OverviewPage() {
 												<StartCreator
 													title="No instances"
 													subtitle="Click to provision a new instance"
-													onCreate={() => {
-														navigate("/create/instance");
-													}}
+													onCreate={() =>
+														navigate(createInstancePath(info))
+													}
 												/>
 											)}
 										</SimpleGrid>

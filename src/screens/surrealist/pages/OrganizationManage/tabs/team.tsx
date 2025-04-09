@@ -12,8 +12,17 @@ import {
 	Table,
 	Text,
 } from "@mantine/core";
+
+import {
+	iconAccountPlus,
+	iconClose,
+	iconDelete,
+	iconDotsVertical,
+	iconServerSecure,
+} from "~/util/icons";
+
 import { useMemo } from "react";
-import { useHasOrganizationWriteAccess, useOrganizationRole } from "~/cloud/hooks/role";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
 import { openMemberRoleModal } from "~/cloud/modals/member-role";
 import { useRevocationMutation } from "~/cloud/mutations/invites";
@@ -27,13 +36,6 @@ import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudMember } from "~/types";
-import {
-	iconAccountPlus,
-	iconClose,
-	iconDelete,
-	iconDotsVertical,
-	iconServerSecure,
-} from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
@@ -41,7 +43,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
-	const canModify = useHasOrganizationWriteAccess(organization.id);
+	const isAdmin = useHasOrganizationRole(organization.id, "admin");
 	const isArchived = !!organization.archived_at;
 	const userId = useCloudStore((s) => s.userId);
 
@@ -65,7 +67,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 				title="Team members"
 				description="Manage the members of your organization"
 				rightSection={
-					canModify && (
+					isAdmin && (
 						<Button
 							size="xs"
 							variant="gradient"
@@ -122,7 +124,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											{!isSelf && !isOwner && canModify && (
+											{!isSelf && !isOwner && isAdmin && (
 												<Menu>
 													<Menu.Target>
 														<ActionIcon>
@@ -205,7 +207,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											{canModify && (
+											{isAdmin && (
 												<ActionButton
 													label="Revoke invitation"
 													onClick={() =>

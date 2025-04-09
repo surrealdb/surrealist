@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useOrganizationRole } from "~/cloud/hooks/role";
+import { useHasOrganizationRole, useOrganizationRole } from "~/cloud/hooks/role";
 import { useArchiveOrganizationMutation } from "~/cloud/mutations/archive";
 import { useUpdateOrganizationMutation } from "~/cloud/mutations/update";
 import { Icon } from "~/components/Icon";
@@ -16,7 +16,7 @@ import { OrganizationTabProps } from "../types";
 export function OrganizationSettingsTab({ organization }: OrganizationTabProps) {
 	const updateMutation = useUpdateOrganizationMutation(organization.id);
 	const archiveMutation = useArchiveOrganizationMutation(organization.id);
-	const role = useOrganizationRole(organization.id);
+	const isOwner = useHasOrganizationRole(organization.id, "owner");
 
 	const [, navigate] = useAbsoluteLocation();
 	const [name, setName] = useInputState(organization.name);
@@ -58,9 +58,6 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 		},
 	});
 
-	const isPersonal = organization.name === "Individual";
-	const isOwner = role === "owner";
-
 	return (
 		<Stack>
 			<Section
@@ -84,7 +81,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 				</Box>
 			</Section>
 
-			{isOwner && !isPersonal && (
+			{isOwner && (
 				<Section
 					title="Archive organization"
 					description="Mark this organization as archived. This will hide it from the list of organizations."

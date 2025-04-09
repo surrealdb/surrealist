@@ -30,6 +30,8 @@ import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationSettingsTab } from "./tabs/settings";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { isOrganizationManaged } from "~/cloud/helpers";
 
 export interface OrganizationManagePageProps {
 	id: string;
@@ -37,8 +39,10 @@ export interface OrganizationManagePageProps {
 
 export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 	const isAuthed = useIsAuthenticated();
+	const isAdmin = useHasOrganizationRole(id, "admin");
 	const { data, isSuccess } = useCloudOrganizationsQuery();
 	const organization = data?.find((org) => org.id === id);
+	const isManaged = organization ? isOrganizationManaged(organization) : false;
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {
@@ -121,34 +125,41 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 											>
 												Team
 											</Tabs.Tab>
-											<Tabs.Tab
-												value="invoices"
-												leftSection={<Icon path={iconDollar} />}
-												px="xl"
-											>
-												Invoices
-											</Tabs.Tab>
-											<Tabs.Tab
-												value="usage"
-												leftSection={<Icon path={iconProgressClock} />}
-												px="xl"
-											>
-												Usage
-											</Tabs.Tab>
-											<Tabs.Tab
-												value="billing"
-												leftSection={<Icon path={iconCreditCard} />}
-												px="xl"
-											>
-												Billing
-											</Tabs.Tab>
-											<Tabs.Tab
-												value="settings"
-												leftSection={<Icon path={iconCog} />}
-												px="xl"
-											>
-												Settings
-											</Tabs.Tab>
+											{isAdmin && (
+												<>
+													<Tabs.Tab
+														value="invoices"
+														leftSection={<Icon path={iconDollar} />}
+														px="xl"
+													>
+														Invoices
+													</Tabs.Tab>
+													<Tabs.Tab
+														value="usage"
+														leftSection={
+															<Icon path={iconProgressClock} />
+														}
+														px="xl"
+													>
+														Usage
+													</Tabs.Tab>
+													<Tabs.Tab
+														value="billing"
+														leftSection={<Icon path={iconCreditCard} />}
+														px="xl"
+													>
+														Billing
+													</Tabs.Tab>
+													<Tabs.Tab
+														value="settings"
+														leftSection={<Icon path={iconCog} />}
+														disabled={isManaged}
+														px="xl"
+													>
+														Settings
+													</Tabs.Tab>
+												</>
+											)}
 										</Tabs.List>
 
 										<Divider my="xl" />
