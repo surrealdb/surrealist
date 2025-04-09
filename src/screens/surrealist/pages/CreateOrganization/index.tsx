@@ -100,6 +100,12 @@ export function CreateOrganizationPage() {
 							placeholder="My organization"
 							value={name}
 							onChange={setName}
+							error={
+								name.length > 30
+									? "Organization name cannot exceed 30 characters"
+									: null
+							}
+							autoFocus
 						/>
 
 						<Group mt="xl">
@@ -116,7 +122,7 @@ export function CreateOrganizationPage() {
 								w={150}
 								type="submit"
 								variant="gradient"
-								disabled={!name}
+								disabled={name.length === 0 || name.length > 30}
 								onClick={handleCreate}
 								loading={isPending}
 							>

@@ -76,7 +76,7 @@ export function ProvisionDetailsStep({ details, setDetails }: ProvisionStepProps
 						onChange={updateName}
 						error={
 							details.name.length > 30
-								? "Instance name cannot exceed than 30 characters"
+								? "Instance name cannot exceed 30 characters"
 								: null
 						}
 						autoFocus
