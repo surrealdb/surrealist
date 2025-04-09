@@ -13,6 +13,7 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
@@ -44,6 +45,7 @@ export function OrganizationTile({
 	children,
 	...other
 }: PropsWithChildren<OrganizationTileProps>) {
+	const client = useQueryClient();
 	const userId = useCloudStore((s) => s.userId);
 	const defaultOrg = useCloudStore((s) => s.profile.default_org);
 	const membersQuery = useCloudMembersQuery(organization.id);
@@ -80,6 +82,10 @@ export function OrganizationTile({
 			showInfo({
 				title: "Left organization",
 				subtitle: "You have successfully left the organization.",
+			});
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "organizations"],
 			});
 		},
 	});

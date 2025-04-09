@@ -40,8 +40,10 @@ import { CloudMember } from "~/types";
 import { OrganizationTabProps } from "../types";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { showInfo } from "~/util/helpers";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
+	const client = useQueryClient();
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
@@ -71,6 +73,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const requestLeave = useConfirmation({
 		title: "Leave organization",
 		message: `Are you sure you want to leave ${organization.name}?`,
+		confirmText: "Leave",
 		onConfirm: async () => {
 			navigate("/organizations");
 
@@ -79,6 +82,10 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 			showInfo({
 				title: "Left organization",
 				subtitle: "You have successfully left the organization.",
+			});
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "organizations"],
 			});
 		},
 	});
