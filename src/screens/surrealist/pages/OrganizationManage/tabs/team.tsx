@@ -18,6 +18,7 @@ import {
 	iconClose,
 	iconDelete,
 	iconDotsVertical,
+	iconExitToAp,
 	iconServerSecure,
 } from "~/util/icons";
 
@@ -61,6 +62,12 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 		onConfirm: (value) => removeMutation.mutate(value.user_id),
 	});
 
+	const requestLeave = useConfirmation({
+		title: "Leave organization",
+		message: `Are you sure you want to leave ${organization.name}?`,
+		onConfirm: () => removeMutation.mutate(userId),
+	});
+
 	return (
 		<Stack>
 			<Section
@@ -86,6 +93,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 							{membersQuery.data?.map((member) => {
 								const isSelf = member.user_id === userId;
 								const isOwner = member.role === "owner";
+								const showActions = !isOwner && isAdmin;
 
 								return (
 									<Table.Tr key={member.user_id}>
@@ -124,43 +132,53 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											{!isSelf && !isOwner && isAdmin && (
-												<Menu>
-													<Menu.Target>
-														<ActionIcon>
-															<Icon path={iconDotsVertical} />
-														</ActionIcon>
-													</Menu.Target>
-													<Menu.Dropdown>
-														<Menu.Item
-															leftSection={
-																<Icon path={iconServerSecure} />
-															}
-															onClick={() =>
-																openMemberRoleModal(
-																	organization,
-																	member,
-																)
-															}
-														>
-															Update role
-														</Menu.Item>
-														<Menu.Divider />
-														<Menu.Item
-															c="red"
-															leftSection={
-																<Icon
-																	path={iconDelete}
-																	c="red"
-																/>
-															}
-															onClick={() => requestRemove(member)}
-														>
-															Remove member
-														</Menu.Item>
-													</Menu.Dropdown>
-												</Menu>
-											)}
+											{showActions &&
+												(isSelf ? (
+													<ActionButton
+														label="Leave organization"
+														onClick={requestLeave}
+													>
+														<Icon path={iconExitToAp} />
+													</ActionButton>
+												) : (
+													<Menu>
+														<Menu.Target>
+															<ActionButton label="Member actions">
+																<Icon path={iconDotsVertical} />
+															</ActionButton>
+														</Menu.Target>
+														<Menu.Dropdown>
+															<Menu.Item
+																leftSection={
+																	<Icon path={iconServerSecure} />
+																}
+																onClick={() =>
+																	openMemberRoleModal(
+																		organization,
+																		member,
+																	)
+																}
+															>
+																Update role
+															</Menu.Item>
+															<Menu.Divider />
+															<Menu.Item
+																c="red"
+																leftSection={
+																	<Icon
+																		path={iconDelete}
+																		c="red"
+																	/>
+																}
+																onClick={() =>
+																	requestRemove(member)
+																}
+															>
+																Remove member
+															</Menu.Item>
+														</Menu.Dropdown>
+													</Menu>
+												))}
 										</Table.Td>
 									</Table.Tr>
 								);
