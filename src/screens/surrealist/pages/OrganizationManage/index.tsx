@@ -31,7 +31,6 @@ import { OrganizationSettingsTab } from "./tabs/settings";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
-import { isOrganizationManaged } from "~/cloud/helpers";
 
 export interface OrganizationManagePageProps {
 	id: string;
@@ -42,7 +41,6 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 	const isAdmin = useHasOrganizationRole(id, "admin");
 	const { data, isSuccess } = useCloudOrganizationsQuery();
 	const organization = data?.find((org) => org.id === id);
-	const isManaged = organization ? isOrganizationManaged(organization) : false;
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {
@@ -153,7 +151,6 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 													<Tabs.Tab
 														value="settings"
 														leftSection={<Icon path={iconCog} />}
-														disabled={isManaged}
 														px="xl"
 													>
 														Settings

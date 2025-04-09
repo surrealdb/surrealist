@@ -100,7 +100,7 @@ export function StartInstance({
 										state={instance.state}
 									/>
 								</Group>
-								<Text>ID: {instance.id}</Text>
+								<Text>SurrealDB {instance.version}</Text>
 							</Box>
 						</Group>
 					</Stack>

@@ -663,7 +663,6 @@ export interface CloudMeasurement {
 }
 
 export interface CloudCoupon {
-	id: string;
 	name: string;
 	amount: number;
 	amount_remaining: number;

@@ -9,6 +9,8 @@ import {
 	Paper,
 	Stack,
 	Text,
+	ThemeIcon,
+	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
 
@@ -24,7 +26,14 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";
-import { iconDotsVertical, iconExitToAp, iconPackageClosed } from "~/util/icons";
+import {
+	iconAccount,
+	iconDollar,
+	iconDotsVertical,
+	iconExitToAp,
+	iconReferral,
+	iconTag,
+} from "~/util/icons";
 
 export interface OrganizationTileProps extends BoxProps {
 	organization: CloudOrganization;
@@ -36,6 +45,7 @@ export function OrganizationTile({
 	...other
 }: PropsWithChildren<OrganizationTileProps>) {
 	const userId = useCloudStore((s) => s.userId);
+	const defaultOrg = useCloudStore((s) => s.profile.default_org);
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -123,9 +133,11 @@ export function OrganizationTile({
 							</Badge>
 						)}
 					</Stack>
-					<div
+					<Stack
+						gap={0}
 						onClick={ON_STOP_PROPAGATION}
 						onKeyDown={ON_STOP_PROPAGATION}
+						align="end"
 					>
 						<Menu
 							transitionProps={{
@@ -163,7 +175,18 @@ export function OrganizationTile({
 								)}
 							</Menu.Dropdown>
 						</Menu>
-					</div>
+						<Spacer />
+						{defaultOrg === organization.id && (
+							<Tooltip label="This is your personal organization and allows one free instance">
+								<ThemeIcon
+									variant="transparent"
+									color="violet"
+								>
+									<Icon path={iconAccount} />
+								</ThemeIcon>
+							</Tooltip>
+						)}
+					</Stack>
 				</Group>
 				<Faint containerRef={containerRef} />
 			</Paper>

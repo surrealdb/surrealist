@@ -8,9 +8,10 @@ import { iconOpen, iconReset } from "~/util/icons";
 export interface UpdateBlockProps {
 	instance: CloudInstance | undefined;
 	onUpdate: (version: string) => void;
+	onVersions: () => void;
 }
 
-export function UpdateBlock({ instance, onUpdate }: UpdateBlockProps) {
+export function UpdateBlock({ instance, onUpdate, onVersions }: UpdateBlockProps) {
 	const versions = instance?.available_versions ?? [];
 	const latest = versions[0] ?? "";
 	const visible = latest && instance?.state === "ready";
@@ -43,6 +44,14 @@ export function UpdateBlock({ instance, onUpdate }: UpdateBlockProps) {
 						onClick={() => openSurrealChangelog(latest)}
 					>
 						View changelog
+					</Button>
+					<Button
+						size="xs"
+						color="slate"
+						variant="light"
+						onClick={onVersions}
+					>
+						View all versions
 					</Button>
 				</Group>
 			</Alert>

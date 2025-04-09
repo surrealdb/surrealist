@@ -11,10 +11,6 @@ export function clearCachedConnections() {
 	});
 }
 
-export function isOrganizationManaged(organization: CloudOrganization) {
-	return organization.name === "Individual";
-}
-
 export function createInstancePath(organization?: CloudOrganization) {
 	if (!organization) {
 		return "/create/instance";
