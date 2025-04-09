@@ -145,15 +145,15 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											{showActions &&
-												(isSelf ? (
-													<ActionButton
-														label="Leave organization"
-														onClick={requestLeave}
-													>
-														<Icon path={iconExitToAp} />
-													</ActionButton>
-												) : (
+											{isSelf ? (
+												<ActionButton
+													label="Leave organization"
+													onClick={requestLeave}
+												>
+													<Icon path={iconExitToAp} />
+												</ActionButton>
+											) : (
+												showActions && (
 													<Menu>
 														<Menu.Target>
 															<ActionButton label="Member actions">
@@ -191,7 +191,8 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 															</Menu.Item>
 														</Menu.Dropdown>
 													</Menu>
-												))}
+												)
+											)}
 										</Table.Td>
 									</Table.Tr>
 								);
