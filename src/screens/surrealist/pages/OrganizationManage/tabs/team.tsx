@@ -38,6 +38,8 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudMember } from "~/types";
 import { OrganizationTabProps } from "../types";
+import { useAbsoluteLocation } from "~/hooks/routing";
+import { showInfo } from "~/util/helpers";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const membersQuery = useCloudMembersQuery(organization.id);
@@ -47,6 +49,8 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const isAdmin = useHasOrganizationRole(organization.id, "admin");
 	const isArchived = !!organization.archived_at;
 	const userId = useCloudStore((s) => s.userId);
+
+	const [, navigate] = useAbsoluteLocation();
 
 	const handleInvite = useStable(() => {
 		openMemberInvitationModal(organization);
@@ -65,7 +69,16 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const requestLeave = useConfirmation({
 		title: "Leave organization",
 		message: `Are you sure you want to leave ${organization.name}?`,
-		onConfirm: () => removeMutation.mutate(userId),
+		onConfirm: async () => {
+			navigate("/organizations");
+
+			await removeMutation.mutateAsync(userId);
+
+			showInfo({
+				title: "Left organization",
+				subtitle: "You have successfully left the organization.",
+			});
+		},
 	});
 
 	return (
