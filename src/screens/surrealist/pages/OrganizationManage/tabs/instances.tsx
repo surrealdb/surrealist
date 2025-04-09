@@ -1,6 +1,7 @@
 import { Button, SimpleGrid, Skeleton } from "@mantine/core";
 import { Link } from "wouter";
-import { useHasOrganizationWriteAccess } from "~/cloud/hooks/role";
+import { createInstancePath } from "~/cloud/helpers";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Section } from "~/components/Section";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
@@ -21,7 +22,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	const [, navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 	const { data, isSuccess, isPending } = useCloudOrganizationInstancesQuery(organization.id);
-	const canModify = useHasOrganizationWriteAccess(organization.id);
+	const isAdmin = useHasOrganizationRole(organization.id, "admin");
 	const instances = isSuccess ? data : [];
 	const isArchived = !!organization.archived_at;
 
@@ -34,8 +35,8 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 			title="Instances"
 			description="The list of instances that are part of this organization"
 			rightSection={
-				canModify && (
-					<Link href="/create/instance">
+				isAdmin && (
+					<Link href={createInstancePath(organization)}>
 						<Button
 							size="xs"
 							disabled={isArchived}
@@ -60,9 +61,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 					<StartCreator
 						title="No instances"
 						subtitle="Click to provision a new instance"
-						onCreate={() => {
-							navigate("/create/instance");
-						}}
+						onCreate={() => navigate(createInstancePath(organization))}
 					/>
 				)}
 			</SimpleGrid>

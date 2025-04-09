@@ -45,6 +45,7 @@ import { Fragment } from "react/jsx-runtime";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
+import { createInstancePath } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -454,9 +455,9 @@ export function OverviewPage() {
 												<StartCreator
 													title="No instances"
 													subtitle="Click to provision a new instance"
-													onCreate={() => {
-														navigate("/create/instance");
-													}}
+													onCreate={() =>
+														navigate(createInstancePath(info))
+													}
 												/>
 											)}
 										</SimpleGrid>

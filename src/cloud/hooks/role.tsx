@@ -1,3 +1,4 @@
+import { CLOUD_ROLES } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import { useCloudMembersQuery } from "../queries/members";
 
@@ -7,17 +8,18 @@ import { useCloudMembersQuery } from "../queries/members";
 export function useOrganizationRole(organizationId: string) {
 	const userId = useCloudStore((s) => s.userId);
 	const membersQuery = useCloudMembersQuery(organizationId);
-
 	const member = membersQuery.data?.find((member) => member.user_id === userId);
 
 	return member?.role || null;
 }
 
 /**
- * Returns whether the user has write access to the given organization.
+ * Returns whether the current user has the required role in the given organization.
  */
-export function useHasOrganizationWriteAccess(organizationId: string) {
-	const role = useOrganizationRole(organizationId);
+export function useHasOrganizationRole(organizationId: string, role: string) {
+	const currentRole = useOrganizationRole(organizationId);
+	const required = CLOUD_ROLES.indexOf(role);
+	const current = CLOUD_ROLES.indexOf(currentRole ?? "");
 
-	return role === "owner" || role === "admin";
+	return current >= required;
 }

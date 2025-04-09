@@ -16,6 +16,7 @@ import { showError } from "~/util/helpers";
 import { iconArrowLeft } from "~/util/icons";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionOrganizationStep } from "./steps/organization";
+import { ProvisionRegionStep } from "./steps/region";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
 
@@ -92,7 +93,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 		<Stack
 			mx="auto"
 			maw={650}
-			gap="xl"
+			gap="lg"
 		>
 			<Box>
 				<PrimaryTitle fz={26}>New Cloud instance</PrimaryTitle>
@@ -110,7 +111,23 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				</Button>
 			</Link>
 
-			<Box mt="xl">
+			<Box mt={24}>
+				<Text
+					fz="xl"
+					fw={600}
+					c="bright"
+				>
+					Information
+				</Text>
+				<Text>Specify an instance name and version</Text>
+			</Box>
+
+			<ProvisionDetailsStep
+				details={details}
+				setDetails={setDetails}
+			/>
+
+			<Box mt={24}>
 				<Text
 					fz="xl"
 					fw={600}
@@ -126,23 +143,23 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				setDetails={setDetails}
 			/>
 
-			<Box mt="xl">
+			<Box mt={24}>
 				<Text
 					fz="xl"
 					fw={600}
 					c="bright"
 				>
-					Configuration
+					Instance region
 				</Text>
-				<Text>Specify the instance name, region, and version</Text>
+				<Text>Where should this instance be located?</Text>
 			</Box>
 
-			<ProvisionDetailsStep
+			<ProvisionRegionStep
 				details={details}
 				setDetails={setDetails}
 			/>
 
-			<Box mt="xl">
+			<Box mt={24}>
 				<Text
 					fz="xl"
 					fw={600}
@@ -158,17 +175,26 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				setDetails={setDetails}
 			/>
 
-			{instanceType && (
-				<Collapse in={!!instanceType}>
-					<Divider my="md" />
+			<Collapse in={!!instanceType}>
+				<Stack gap="xl">
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Estimated cost
+						</Text>
+						<Text>The cost estimation based on the current configuration</Text>
+					</Box>
 					<EstimatedCost
 						type={instanceType}
 						units={details.units}
 					/>
-				</Collapse>
-			)}
+				</Stack>
+			</Collapse>
 
-			<Group mt="xl">
+			<Group mt={24}>
 				<Link to={savepoint.path}>
 					<Button
 						color="slate"

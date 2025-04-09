@@ -12,8 +12,19 @@ import {
 	Table,
 	Text,
 } from "@mantine/core";
+
+import {
+	iconAccountPlus,
+	iconClose,
+	iconDelete,
+	iconDotsVertical,
+	iconExitToAp,
+	iconServerSecure,
+} from "~/util/icons";
+
+import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useHasOrganizationWriteAccess, useOrganizationRole } from "~/cloud/hooks/role";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
 import { openMemberRoleModal } from "~/cloud/modals/member-role";
 import { useRevocationMutation } from "~/cloud/mutations/invites";
@@ -23,27 +34,27 @@ import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
+import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudMember } from "~/types";
-import {
-	iconAccountPlus,
-	iconClose,
-	iconDelete,
-	iconDotsVertical,
-	iconServerSecure,
-} from "~/util/icons";
+import { showInfo } from "~/util/helpers";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
+	const client = useQueryClient();
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
-	const canModify = useHasOrganizationWriteAccess(organization.id);
 	const isArchived = !!organization.archived_at;
 	const userId = useCloudStore((s) => s.userId);
+
+	const isOwner = useHasOrganizationRole(organization.id, "owner");
+	const isAdmin = useHasOrganizationRole(organization.id, "admin");
+
+	const [, navigate] = useAbsoluteLocation();
 
 	const handleInvite = useStable(() => {
 		openMemberInvitationModal(organization);
@@ -59,13 +70,33 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 		onConfirm: (value) => removeMutation.mutate(value.user_id),
 	});
 
+	const requestLeave = useConfirmation({
+		title: "Leave organization",
+		message: `Are you sure you want to leave ${organization.name}?`,
+		confirmText: "Leave",
+		onConfirm: async () => {
+			navigate("/organizations");
+
+			await removeMutation.mutateAsync(userId);
+
+			showInfo({
+				title: "Left organization",
+				subtitle: "You have successfully left the organization.",
+			});
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "organizations"],
+			});
+		},
+	});
+
 	return (
 		<Stack>
 			<Section
 				title="Team members"
 				description="Manage the members of your organization"
 				rightSection={
-					canModify && (
+					isAdmin && (
 						<Button
 							size="xs"
 							variant="gradient"
@@ -83,7 +114,8 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Table.Tbody>
 							{membersQuery.data?.map((member) => {
 								const isSelf = member.user_id === userId;
-								const isOwner = member.role === "owner";
+								const showLeave = member.role !== "owner" && isSelf;
+								const showActions = member.role !== "owner" && isOwner;
 
 								return (
 									<Table.Tr key={member.user_id}>
@@ -122,42 +154,53 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											{!isSelf && !isOwner && canModify && (
-												<Menu>
-													<Menu.Target>
-														<ActionIcon>
-															<Icon path={iconDotsVertical} />
-														</ActionIcon>
-													</Menu.Target>
-													<Menu.Dropdown>
-														<Menu.Item
-															leftSection={
-																<Icon path={iconServerSecure} />
-															}
-															onClick={() =>
-																openMemberRoleModal(
-																	organization,
-																	member,
-																)
-															}
-														>
-															Update role
-														</Menu.Item>
-														<Menu.Divider />
-														<Menu.Item
-															c="red"
-															leftSection={
-																<Icon
-																	path={iconDelete}
-																	c="red"
-																/>
-															}
-															onClick={() => requestRemove(member)}
-														>
-															Remove member
-														</Menu.Item>
-													</Menu.Dropdown>
-												</Menu>
+											{showLeave ? (
+												<ActionButton
+													label="Leave organization"
+													onClick={requestLeave}
+												>
+													<Icon path={iconExitToAp} />
+												</ActionButton>
+											) : (
+												showActions && (
+													<Menu>
+														<Menu.Target>
+															<ActionButton label="Member actions">
+																<Icon path={iconDotsVertical} />
+															</ActionButton>
+														</Menu.Target>
+														<Menu.Dropdown>
+															<Menu.Item
+																leftSection={
+																	<Icon path={iconServerSecure} />
+																}
+																onClick={() =>
+																	openMemberRoleModal(
+																		organization,
+																		member,
+																	)
+																}
+															>
+																Update role
+															</Menu.Item>
+															<Menu.Divider />
+															<Menu.Item
+																c="red"
+																leftSection={
+																	<Icon
+																		path={iconDelete}
+																		c="red"
+																	/>
+																}
+																onClick={() =>
+																	requestRemove(member)
+																}
+															>
+																Remove member
+															</Menu.Item>
+														</Menu.Dropdown>
+													</Menu>
+												)
 											)}
 										</Table.Td>
 									</Table.Tr>
@@ -205,7 +248,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											{canModify && (
+											{isAdmin && (
 												<ActionButton
 													label="Revoke invitation"
 													onClick={() =>

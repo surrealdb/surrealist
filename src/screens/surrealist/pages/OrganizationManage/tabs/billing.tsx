@@ -22,7 +22,7 @@ import { capitalize } from "radash";
 import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { fetchAPI, updateCloudInformation } from "~/cloud/api";
-import { useHasOrganizationWriteAccess } from "~/cloud/hooks/role";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { openBillingDetails } from "~/cloud/modals/billing";
 import { useCloudBillingQuery } from "~/cloud/queries/billing";
 import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
@@ -41,7 +41,7 @@ import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
-	const canModify = useHasOrganizationWriteAccess(organization.id);
+	const isAdmin = useHasOrganizationRole(organization.id, "admin");
 	const client = useQueryClient();
 
 	const billingQuery = useCloudBillingQuery(organization.id);
@@ -165,7 +165,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 								Billing Details
 							</Text>
 							<Spacer />
-							{canModify && (
+							{isAdmin && (
 								<Button
 									color="slate"
 									variant="light"
@@ -233,7 +233,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 								Payment Details
 							</Text>
 							<Spacer />
-							{canModify && (
+							{isAdmin && (
 								<Tooltip
 									disabled={organization?.billing_info}
 									label="Please provide billing details first"
@@ -325,12 +325,12 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 						mt="md"
 					>
 						<Table.Tbody>
-							{coupons.map((coupon) => {
+							{coupons.map((coupon, i) => {
 								const [isExpired, expiresAt] = getExpiry(coupon);
 
 								return (
 									<Table.Tr
-										key={coupon.id}
+										key={i}
 										h={42}
 									>
 										<Table.Td

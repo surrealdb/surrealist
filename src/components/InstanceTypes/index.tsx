@@ -37,7 +37,7 @@ export function InstanceTypes({ value, active, organizationId, onChange }: Insta
 	const organizations = useOrganizations();
 	const organization = organizations.find((org) => org.id === organizationId);
 	const instances = useCloudOrganizationInstancesQuery(organization?.id);
-	const isAvailable = useCloudTypeLimits(instances.data ?? []);
+	const isAvailable = useCloudTypeLimits(instances.data ?? [], organization);
 	const instanceTypes = organization?.plan.instance_types ?? [];
 
 	const groupedTypes = useMemo(() => {

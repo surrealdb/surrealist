@@ -58,6 +58,11 @@ export function DashboardView() {
 		configureHandle.open();
 	});
 
+	const handleVersions = useStable(() => {
+		setActiveTab("version");
+		configureHandle.open();
+	});
+
 	const isLoading = detailsPending || backupsPending || usagePending;
 	const isRenamed = !detailsPending && name !== details?.name;
 
@@ -163,6 +168,7 @@ export function DashboardView() {
 					<UpdateBlockLazy
 						instance={details}
 						onUpdate={handleUpdate}
+						onVersions={handleVersions}
 					/>
 
 					<SimpleGrid

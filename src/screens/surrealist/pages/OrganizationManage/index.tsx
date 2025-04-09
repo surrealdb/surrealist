@@ -1,9 +1,10 @@
-import { Badge, Divider, Group, Tabs, Tooltip } from "@mantine/core";
+import { Divider, Group, Tabs, Tooltip } from "@mantine/core";
 import classes from "./style.module.scss";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import { Link, Redirect } from "wouter";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionButton } from "~/components/ActionButton";
 import { AuthGuard } from "~/components/AuthGuard";
@@ -15,12 +16,11 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
 import {
-	iconAccount,
 	iconArrowLeft,
-	iconCloud,
 	iconCog,
 	iconCreditCard,
 	iconDollar,
+	iconOrganization,
 	iconPackageClosed,
 	iconProgressClock,
 	iconServer,
@@ -38,6 +38,7 @@ export interface OrganizationManagePageProps {
 
 export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 	const isAuthed = useIsAuthenticated();
+	const isAdmin = useHasOrganizationRole(id, "admin");
 	const { data, isSuccess } = useCloudOrganizationsQuery();
 	const organization = data?.find((org) => org.id === id);
 
@@ -117,39 +118,45 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 											</Tabs.Tab>
 											<Tabs.Tab
 												value="team"
-												leftSection={<Icon path={iconAccount} />}
+												leftSection={<Icon path={iconOrganization} />}
 												px="xl"
 											>
 												Team
 											</Tabs.Tab>
-											<Tabs.Tab
-												value="invoices"
-												leftSection={<Icon path={iconDollar} />}
-												px="xl"
-											>
-												Invoices
-											</Tabs.Tab>
-											<Tabs.Tab
-												value="usage"
-												leftSection={<Icon path={iconProgressClock} />}
-												px="xl"
-											>
-												Usage
-											</Tabs.Tab>
-											<Tabs.Tab
-												value="billing"
-												leftSection={<Icon path={iconCreditCard} />}
-												px="xl"
-											>
-												Billing
-											</Tabs.Tab>
-											<Tabs.Tab
-												value="settings"
-												leftSection={<Icon path={iconCog} />}
-												px="xl"
-											>
-												Settings
-											</Tabs.Tab>
+											{isAdmin && (
+												<>
+													<Tabs.Tab
+														value="invoices"
+														leftSection={<Icon path={iconDollar} />}
+														px="xl"
+													>
+														Invoices
+													</Tabs.Tab>
+													<Tabs.Tab
+														value="usage"
+														leftSection={
+															<Icon path={iconProgressClock} />
+														}
+														px="xl"
+													>
+														Usage
+													</Tabs.Tab>
+													<Tabs.Tab
+														value="billing"
+														leftSection={<Icon path={iconCreditCard} />}
+														px="xl"
+													>
+														Billing
+													</Tabs.Tab>
+													<Tabs.Tab
+														value="settings"
+														leftSection={<Icon path={iconCog} />}
+														px="xl"
+													>
+														Settings
+													</Tabs.Tab>
+												</>
+											)}
 										</Tabs.List>
 
 										<Divider my="xl" />

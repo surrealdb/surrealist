@@ -82,6 +82,9 @@ export const schema = {
 	network_access_caps: {
 		options: [false, true],
 	},
+	organization_archiving: {
+		options: [false, true],
+	},
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
@@ -108,6 +111,7 @@ export const featureFlags = new FeatureFlags({
 			sidebar_customization: true,
 			gtm_debug: false,
 			network_access_caps: false,
+			organization_archiving: true,
 		},
 		preview: {
 			query_view: true,

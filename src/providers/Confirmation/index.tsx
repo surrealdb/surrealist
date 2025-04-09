@@ -115,7 +115,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 							}
 							autoFocus
 							onKeyDown={(event) => {
-								if (event.key === "Enter") {
+								if (event.key === "Enter" && isVerified) {
 									onConfirm();
 								}
 							}}

@@ -1,13 +1,4 @@
-import {
-	Box,
-	BoxProps,
-	Center,
-	Indicator,
-	Loader,
-	MantineColor,
-	MantineSize,
-	Tooltip,
-} from "@mantine/core";
+import { BoxProps, Center, Indicator, Loader, MantineColor, Tooltip } from "@mantine/core";
 import { InstanceState } from "~/types";
 
 const BADGE_INFO = {
@@ -44,6 +35,7 @@ export function StateBadge({ state, size, ...other }: StateBadgeProps) {
 				) : (
 					<Loader
 						size={size}
+						type="dots"
 						style={{ transform: "scale(1.5)" }}
 					/>
 				)}
