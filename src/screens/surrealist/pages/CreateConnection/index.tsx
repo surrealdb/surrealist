@@ -142,7 +142,7 @@ export function CreateConnectionPage() {
 				<Stack
 					mx="auto"
 					maw={650}
-					gap="xl"
+					gap="lg"
 				>
 					<Box>
 						<PrimaryTitle fz={26}>New connection</PrimaryTitle>
@@ -240,7 +240,7 @@ export function CreateConnectionPage() {
 						</Menu>
 					</Group>
 
-					<Box mt="xl">
+					<Box mt={24}>
 						<Text
 							fz="xl"
 							fw={600}
@@ -256,7 +256,7 @@ export function CreateConnectionPage() {
 						onChange={setConnection}
 					/>
 
-					<Box mt="xl">
+					<Box mt={32}>
 						<Text
 							fz="xl"
 							fw={600}
@@ -272,7 +272,7 @@ export function CreateConnectionPage() {
 						onChange={setConnection}
 					/>
 
-					<Box mt="xl">
+					<Box mt={24}>
 						<Text
 							fz="xl"
 							fw={600}
@@ -288,7 +288,7 @@ export function CreateConnectionPage() {
 						onChange={setConnection}
 					/>
 
-					<Box mt="xl">
+					<Box mt={24}>
 						<Text
 							fz="xl"
 							fw={600}
@@ -304,7 +304,7 @@ export function CreateConnectionPage() {
 						onChange={setConnection}
 					/>
 
-					<Group mt="xl">
+					<Group mt={24}>
 						<Link to={savepoint.path}>
 							<Button
 								color="slate"

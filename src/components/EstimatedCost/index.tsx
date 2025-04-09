@@ -1,5 +1,4 @@
 import { Box, Text } from "@mantine/core";
-import { Label } from "~/components/Label";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstanceType } from "~/types";
 
@@ -15,8 +14,6 @@ export function EstimatedCost({ type, units }: EstimatedCostProps) {
 
 	return (
 		<Box style={{ WebkitUserSelect: "text", userSelect: "text" }}>
-			<Label>Estimated costs</Label>
-
 			<Text c={isLight ? "slate.6" : "slate.2"}>
 				<Text
 					span

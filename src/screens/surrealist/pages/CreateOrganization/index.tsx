@@ -15,7 +15,7 @@ import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconArrowLeft } from "~/util/icons";
+import { iconArrowLeft, iconOrganization } from "~/util/icons";
 
 export function CreateOrganizationPage() {
 	const [, navigate] = useAbsoluteLocation();
@@ -67,7 +67,7 @@ export function CreateOrganizationPage() {
 					<Stack
 						mx="auto"
 						maw={650}
-						gap="xl"
+						gap="lg"
 					>
 						<Box>
 							<PrimaryTitle fz={26}>New organization</PrimaryTitle>
@@ -85,7 +85,7 @@ export function CreateOrganizationPage() {
 							</Button>
 						</Link>
 
-						<Box mt="xl">
+						<Box mt={24}>
 							<Text
 								fz="xl"
 								fw={600}
@@ -97,18 +97,24 @@ export function CreateOrganizationPage() {
 						</Box>
 
 						<TextInput
+							autoFocus
 							placeholder="My organization"
 							value={name}
 							onChange={setName}
+							leftSection={<Icon path={iconOrganization} />}
 							error={
 								name.length > 30
 									? "Organization name cannot exceed 30 characters"
 									: null
 							}
-							autoFocus
+							wrapperProps={{
+								__vars: {
+									"--input-section-color": "var(--mantine-color-surreal-text)",
+								},
+							}}
 						/>
 
-						<Group mt="xl">
+						<Group mt={24}>
 							<Link to={savepoint.path}>
 								<Button
 									color="slate"
