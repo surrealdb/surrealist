@@ -1,4 +1,4 @@
-import { Badge, Divider, Group, Tabs, Tooltip } from "@mantine/core";
+import { Divider, Group, Tabs, Tooltip } from "@mantine/core";
 import classes from "./style.module.scss";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -15,12 +15,11 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
 import {
-	iconAccount,
 	iconArrowLeft,
-	iconCloud,
 	iconCog,
 	iconCreditCard,
 	iconDollar,
+	iconOrganization,
 	iconPackageClosed,
 	iconProgressClock,
 	iconServer,
@@ -117,7 +116,7 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 											</Tabs.Tab>
 											<Tabs.Tab
 												value="team"
-												leftSection={<Icon path={iconAccount} />}
+												leftSection={<Icon path={iconOrganization} />}
 												px="xl"
 											>
 												Team

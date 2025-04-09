@@ -54,6 +54,7 @@ import {
 	iconHelp,
 	iconLive,
 	iconModuleML,
+	iconOrganization,
 	iconPlus,
 	iconQuery,
 	iconReferral,
@@ -195,7 +196,7 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 	"/organizations": {
 		id: "/organizations",
 		name: "Organizations",
-		icon: iconCloud,
+		icon: iconOrganization,
 	},
 	"/chat": {
 		id: "/chat",
