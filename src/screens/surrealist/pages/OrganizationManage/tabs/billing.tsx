@@ -325,12 +325,12 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 						mt="md"
 					>
 						<Table.Tbody>
-							{coupons.map((coupon) => {
+							{coupons.map((coupon, i) => {
 								const [isExpired, expiresAt] = getExpiry(coupon);
 
 								return (
 									<Table.Tr
-										key={coupon.id}
+										key={i}
 										h={42}
 									>
 										<Table.Td
