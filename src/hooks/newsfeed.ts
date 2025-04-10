@@ -50,11 +50,11 @@ export function useUnreadNewsPosts() {
 	const newsQuery = useLatestNewsQuery();
 
 	return useMemo(() => {
-		const lastViewed = lastViewedAt || Date.now();
+		const lastViewed = lastViewedAt ? new Date(lastViewedAt) : new Date();
 
 		return (
 			newsQuery.data
-				?.filter((item) => new Date(item.published).getTime() > lastViewed)
+				?.filter((item) => new Date(item.published) > lastViewed)
 				?.map((item) => item.id) || []
 		);
 	}, [newsQuery.data, lastViewedAt]);
