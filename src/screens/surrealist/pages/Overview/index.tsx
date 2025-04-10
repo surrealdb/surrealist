@@ -295,7 +295,7 @@ export function OverviewPage() {
 								<TextInput
 									value={search}
 									onChange={setSearch}
-									placeholder="Search instances"
+									placeholder="Search connections"
 									leftSection={
 										<Icon
 											path={iconSearch}
