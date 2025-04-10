@@ -172,7 +172,6 @@ export function OrganizationTile({
 												/>
 											}
 											onClick={requestLeave}
-											disabled
 											c="red"
 										>
 											Leave organization
