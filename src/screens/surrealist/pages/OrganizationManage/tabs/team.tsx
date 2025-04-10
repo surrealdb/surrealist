@@ -2,6 +2,7 @@ import classes from "../style.module.scss";
 
 import {
 	ActionIcon,
+	Avatar,
 	Badge,
 	Box,
 	Button,
@@ -120,34 +121,41 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 								return (
 									<Table.Tr key={member.user_id}>
 										<Table.Td c="bright">
-											<Box>
-												<Group gap="sm">
-													<Text fw={500}>{member.name}</Text>
-													<Badge
-														color="slate"
-														variant="light"
-														size="sm"
-													>
-														{member.role}
-													</Badge>
-													{isSelf && (
+											<Group>
+												<Avatar
+													src={member.profile_picture}
+													name={member.name}
+													radius="sm"
+												/>
+												<Box>
+													<Group gap="sm">
+														<Text fw={500}>{member.name}</Text>
 														<Badge
-															color="violet"
+															color="slate"
 															variant="light"
 															size="sm"
 														>
-															You
+															{member.role}
 														</Badge>
-													)}
-												</Group>
+														{isSelf && (
+															<Badge
+																color="violet"
+																variant="light"
+																size="sm"
+															>
+																You
+															</Badge>
+														)}
+													</Group>
 
-												<Text
-													fz="sm"
-													opacity={0.6}
-												>
-													{member.username}
-												</Text>
-											</Box>
+													<Text
+														fz="sm"
+														opacity={0.6}
+													>
+														{member.username}
+													</Text>
+												</Box>
+											</Group>
 										</Table.Td>
 										<Table.Td
 											w={0}

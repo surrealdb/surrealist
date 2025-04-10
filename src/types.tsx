@@ -680,6 +680,7 @@ export interface CloudMember {
 	role: string;
 	name: string;
 	username: string;
+	profile_picture: string;
 }
 
 export interface CloudInvitation {
