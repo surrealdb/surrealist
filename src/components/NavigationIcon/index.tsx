@@ -1,4 +1,4 @@
-import { Box, Indicator, type IndicatorProps, Tooltip } from "@mantine/core";
+import { Box, Indicator, type IndicatorProps, Text, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
@@ -75,7 +75,12 @@ export function NavigationIcon({
 					}
 					{...rest}
 				>
-					{name}
+					<Text
+						truncate
+						inherit
+					>
+						{name}
+					</Text>
 				</Entry>
 			</Box>
 		</Tooltip>
