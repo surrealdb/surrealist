@@ -194,9 +194,18 @@ export function SurrealistScreen() {
 								<OrganizationsPageLazy />
 							</Route>
 
+							<Route path="/o/:organization/:tab">
+								{({ organization, tab }) => (
+									<OrganizationManagePageLazy
+										id={organization}
+										tab={tab}
+									/>
+								)}
+							</Route>
+
 							<Route path="/o/:organization">
 								{({ organization }) => (
-									<OrganizationManagePageLazy id={organization} />
+									<Redirect to={`/o/${organization}/instances`} />
 								)}
 							</Route>
 

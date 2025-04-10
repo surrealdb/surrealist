@@ -200,7 +200,7 @@ function InstanceTypeCategory({
 								color="blue"
 								size="xs"
 								mt="md"
-								onClick={() => navigate("/billing")}
+								onClick={() => navigate(`/o/${organization.id}/billing`)}
 							>
 								Enter billing & payment details
 							</Button>

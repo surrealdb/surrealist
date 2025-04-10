@@ -3,7 +3,7 @@ import classes from "./style.module.scss";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { useMemo } from "react";
-import { Link, Redirect } from "wouter";
+import { Link, Redirect, useLocation } from "wouter";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionButton } from "~/components/ActionButton";
@@ -34,11 +34,13 @@ import { OrganizationUsageTab } from "./tabs/usage";
 
 export interface OrganizationManagePageProps {
 	id: string;
+	tab: string;
 }
 
-export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
+export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps) {
 	const isAuthed = useIsAuthenticated();
 	const isAdmin = useHasOrganizationRole(id, "admin");
+	const [, navigate] = useLocation();
 	const { data, isSuccess } = useCloudOrganizationsQuery();
 	const organization = data?.find((org) => org.id === id);
 
@@ -107,7 +109,14 @@ export function OrganizationManagePage({ id }: OrganizationManagePageProps) {
 											</Tooltip>
 										)}
 									</Group>
-									<Tabs defaultValue="instances">
+									<Tabs
+										value={tab}
+										onChange={(value) => {
+											if (value) {
+												navigate(value);
+											}
+										}}
+									>
 										<Tabs.List>
 											<Tabs.Tab
 												value="instances"
