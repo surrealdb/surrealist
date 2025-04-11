@@ -10,8 +10,9 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
-import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
+import { iconDelete, iconEdit, iconPause, iconPlay, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
+import { getInstanceAuthToken } from "~/cloud/modals/connect-cli";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
@@ -45,6 +46,16 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 			showInfo({
 				title: "Copied",
 				subtitle: "Successfully copied instance id to clipboard",
+			});
+		});
+	});
+
+	const handleCopyAuthToken = useStable(async () => {
+		const token = await getInstanceAuthToken(instance);
+		navigator.clipboard.writeText(token).then(() => {
+			showInfo({
+				title: "Copied",
+				subtitle: "Successfully copied auth token to clipboard",
 			});
 		});
 	});
@@ -194,6 +205,11 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
 				{instance.state === "ready" ? (
 					<>
+						<Menu.Item
+							onClick={handleCopyAuthToken}
+						>
+							Copy Auth token
+						</Menu.Item>
 						<Menu.Divider />
 						<Menu.Item
 							leftSection={<Icon path={iconPause} />}

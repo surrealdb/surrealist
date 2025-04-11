@@ -31,15 +31,17 @@ interface ConnectCliModalProps {
 	instance: CloudInstance;
 }
 
+export async function getInstanceAuthToken(instance: CloudInstance): Promise<string> {
+	return await fetchAPI<{ token: string; }>(
+		`/instances/${instance.id}/auth`,
+	).then((res) => res.token);
+}
+
 function ConnectCliModal({ instance }: ConnectCliModalProps) {
 	const { data, isPending } = useQuery({
 		queryKey: ["cloud", "cli"],
 		refetchInterval: 1000 * 60,
-		queryFn: async () => {
-			return fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
-				(res) => res.token,
-			);
-		},
+		queryFn: async () => await getInstanceAuthToken(instance),
 	});
 
 	const endpoint = `wss://${instance.host}`;
