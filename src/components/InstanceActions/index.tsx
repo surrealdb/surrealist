@@ -3,6 +3,7 @@ import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useCallback, useMemo } from "react";
 import { fetchAPI } from "~/cloud/api";
+import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
@@ -12,7 +13,6 @@ import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
-import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
@@ -52,7 +52,6 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 	});
 
 	const handleCopyAuthToken = async () => {
-
 		const token = await authTokenMutation.mutateAsync();
 
 		if (!token) {

@@ -10,7 +10,9 @@ export function useCloudAuthTokenMutation(instance?: string | CloudInstance) {
 	return useMutation({
 		mutationFn: async () => {
 			if (!id) return undefined;
-			return await fetchAPI<{ token: string; }>(`/instances/${id}/auth`).then((res) => res.token);
-		}
+			return await fetchAPI<{ token: string }>(`/instances/${id}/auth`).then(
+				(res) => res.token,
+			);
+		},
 	});
 }
