@@ -32,9 +32,9 @@ interface ConnectCliModalProps {
 }
 
 export async function getInstanceAuthToken(instance: CloudInstance): Promise<string> {
-	return await fetchAPI<{ token: string; }>(
-		`/instances/${instance.id}/auth`,
-	).then((res) => res.token);
+	return await fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
+		(res) => res.token,
+	);
 }
 
 function ConnectCliModal({ instance }: ConnectCliModalProps) {

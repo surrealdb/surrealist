@@ -3,6 +3,7 @@ import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useMemo } from "react";
 import { fetchAPI } from "~/cloud/api";
+import { getInstanceAuthToken } from "~/cloud/modals/connect-cli";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
@@ -10,9 +11,8 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
-import { iconDelete, iconEdit, iconPause, iconPlay, iconCopy } from "~/util/icons";
+import { iconCopy, iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
-import { getInstanceAuthToken } from "~/cloud/modals/connect-cli";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
@@ -205,11 +205,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
 				{instance.state === "ready" ? (
 					<>
-						<Menu.Item
-							onClick={handleCopyAuthToken}
-						>
-							Copy Auth token
-						</Menu.Item>
+						<Menu.Item onClick={handleCopyAuthToken}>Copy Auth token</Menu.Item>
 						<Menu.Divider />
 						<Menu.Item
 							leftSection={<Icon path={iconPause} />}
