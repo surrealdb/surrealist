@@ -54,7 +54,6 @@ export type AuthMode =
 export type GlobalPage =
 	| "/overview"
 	| "/cloud"
-	| "/billing"
 	| "/organizations"
 	| "/chat"
 	| "/support"
