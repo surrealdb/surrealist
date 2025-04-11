@@ -1,9 +1,8 @@
 import { Alert, Menu, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
-import { PropsWithChildren, useMemo } from "react";
+import { PropsWithChildren, useCallback, useMemo } from "react";
 import { fetchAPI } from "~/cloud/api";
-import { getInstanceAuthToken } from "~/cloud/modals/connect-cli";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
@@ -11,14 +10,16 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
-import { iconCopy, iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
+import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
+import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
 }
 
 export function InstanceActions({ instance, children }: PropsWithChildren<InstanceActionsProps>) {
+	const authTokenMutation = useCloudAuthTokenMutation(instance.id);
 	const connections = useConnectionList();
 	const client = useQueryClient();
 
@@ -50,15 +51,30 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		});
 	});
 
-	const handleCopyAuthToken = useStable(async () => {
-		const token = await getInstanceAuthToken(instance);
-		navigator.clipboard.writeText(token).then(() => {
+	const handleCopyAuthToken = async () => {
+
+		const token = await authTokenMutation.mutateAsync();
+
+		if (!token) {
+			return showError({
+				title: "Failed to copy auth token",
+				subtitle: "Auth token is not available",
+			});
+		}
+
+		try {
+			await navigator.clipboard.writeText(token);
 			showInfo({
 				title: "Copied",
 				subtitle: "Successfully copied auth token to clipboard",
 			});
-		});
-	});
+		} catch (error) {
+			showError({
+				title: "Failed to copy auth token",
+				subtitle: "Unable to copy auth token to clipboard",
+			});
+		}
+	};
 
 	const handlePause = useConfirmation({
 		title: `Pause ${instance.name}`,

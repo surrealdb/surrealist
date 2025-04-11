@@ -14,7 +14,7 @@ export function useCloudBackupsQuery(instance?: string) {
 		refetchInterval: 15_000,
 		enabled: !!instance && authState === "authenticated",
 		queryFn: async () => {
-			const { db_backups } = await fetchAPI<{ db_backups: CloudBackup[] }>(
+			const { db_backups } = await fetchAPI<{ db_backups: CloudBackup[]; }>(
 				`/instances/${instance}/status`,
 			);
 

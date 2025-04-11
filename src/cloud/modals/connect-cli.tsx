@@ -9,6 +9,8 @@ import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import type { CloudInstance } from "~/types";
 import { iconConsole } from "~/util/icons";
+import { useCloudAuthTokenMutation } from "../mutations/auth";
+import { useEffect } from "react";
 
 export function openConnectCli(instance: CloudInstance) {
 	openModal({
@@ -31,21 +33,16 @@ interface ConnectCliModalProps {
 	instance: CloudInstance;
 }
 
-export async function getInstanceAuthToken(instance: CloudInstance): Promise<string> {
-	return await fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
-		(res) => res.token,
-	);
-}
-
 function ConnectCliModal({ instance }: ConnectCliModalProps) {
-	const { data, isPending } = useQuery({
-		queryKey: ["cloud", "cli"],
-		refetchInterval: 1000 * 60,
-		queryFn: async () => await getInstanceAuthToken(instance),
-	});
+	const { data, mutateAsync, isPending } = useCloudAuthTokenMutation(instance.id);
 
 	const endpoint = `wss://${instance.host}`;
 	const command = `surreal sql --endpoint ${endpoint} --token ${data}`;
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only trigger on mount
+	useEffect(() => {
+		mutateAsync();
+	}, []);
 
 	return (
 		<>
