@@ -97,11 +97,13 @@ export async function updateCloudInformation() {
  * Error response from the API
  */
 export class ApiError extends Error {
+	public status: number;
 	public reason: string;
 
 	public constructor(response: Response, reason: string) {
 		super(`Request failed for "${response.url}" (${response.status}): ${reason}`);
 
+		this.status = response.status;
 		this.reason = reason;
 	}
 }
