@@ -10,7 +10,7 @@ COPY ../bun.lock .
 RUN bun install
 
 COPY .. .
-ENV VITE_SURREALIST_INSTANCE=true
+ENV VITE_SURREALIST_DOCKER=true
 RUN bun run build
 
 # set up production image (static assets served by nginx)

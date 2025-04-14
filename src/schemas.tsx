@@ -18,9 +18,7 @@ export const ProtocolSchema = v.union([
 ]);
 
 export const InstanceConfigSchema = v.object({
-	groupName: v.optional(v.string(), "Instance"),
-	groupCollapsed: v.optional(v.boolean(), false),
-	defaultConnection: v.optional(v.string()),
+	telemetry: v.optional(v.boolean(), true),
 	connections: v.optional(
 		v.array(
 			v.object({
@@ -37,7 +35,7 @@ export const InstanceConfigSchema = v.object({
 				}),
 			}),
 		),
-		[], // defaults to empty array
+		[],
 	),
 });
 
