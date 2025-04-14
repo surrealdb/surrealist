@@ -54,13 +54,13 @@ export type AuthMode =
 export type GlobalPage =
 	| "/overview"
 	| "/cloud"
-	| "/organizations"
+	| "/organisations"
 	| "/chat"
 	| "/support"
 	| "/referrals"
 	| "/mini/new"
 	| "/create/connection"
-	| "/create/organization"
+	| "/create/organisation"
 	| "/create/instance";
 export type ViewPage =
 	| "dashboard"

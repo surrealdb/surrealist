@@ -12,9 +12,7 @@ import {
 } from "@mantine/core";
 import { formatDistance } from "date-fns";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
-import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
 import { CloudBackup, CloudInstance } from "~/types";
 import { iconChevronRight, iconHistory } from "~/util/icons";
 

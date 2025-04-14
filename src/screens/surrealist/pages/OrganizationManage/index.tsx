@@ -55,7 +55,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 	useSavepoint(savepoint);
 
 	if (isSuccess && !organization) {
-		return <Redirect to="/organizations" />;
+		return <Redirect to="/organisations" />;
 	}
 
 	return (
@@ -86,9 +86,9 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 							{organization && (
 								<>
 									<Group py="md">
-										<Link to="/organizations">
+										<Link to="/organisations">
 											<ActionButton
-												label="Back to organizations"
+												label="Back to organisations"
 												size="lg"
 											>
 												<Icon path={iconArrowLeft} />
@@ -97,7 +97,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 										<PrimaryTitle fz={26}>{organization?.name}</PrimaryTitle>
 										{organization?.archived_at && (
 											<Tooltip
-												label={`Organization was archived on ${formatArchiveDate(organization)}`}
+												label={`Organisation was archived on ${formatArchiveDate(organization)}`}
 											>
 												<div>
 													<Icon

@@ -52,19 +52,19 @@ export function OrganizationsPage() {
 						mt={75}
 					>
 						<Box>
-							<PrimaryTitle fz={26}>Organizations</PrimaryTitle>
-							<Text fz="xl">View and manage your Surreal Cloud organizations</Text>
+							<PrimaryTitle fz={26}>Organisations</PrimaryTitle>
+							<Text fz="xl">View and manage your Surreal Cloud organisations</Text>
 						</Box>
 
 						<Group mt="xl">
-							<PrimaryTitle>Your organizations</PrimaryTitle>
+							<PrimaryTitle>Your organisations</PrimaryTitle>
 							<Spacer />
-							<Link to="/create/organization">
+							<Link to="/create/organisation">
 								<Button
 									size="xs"
 									variant="gradient"
 								>
-									Create organization
+									Create organisation
 								</Button>
 							</Link>
 						</Group>
@@ -81,7 +81,7 @@ export function OrganizationsPage() {
 
 						{archived.length > 0 && (
 							<>
-								<PrimaryTitle mt="xl">Archived organizations</PrimaryTitle>
+								<PrimaryTitle mt="xl">Archived organisations</PrimaryTitle>
 
 								<SimpleGrid cols={GRID_COLUMNS}>
 									{archived.map((org) => (

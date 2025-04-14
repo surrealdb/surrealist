@@ -70,7 +70,7 @@ export function CreateOrganizationPage() {
 						gap="lg"
 					>
 						<Box>
-							<PrimaryTitle fz={26}>New organization</PrimaryTitle>
+							<PrimaryTitle fz={26}>New organisation</PrimaryTitle>
 							<Text fz="xl">Create a space to manage your team</Text>
 						</Box>
 
@@ -93,18 +93,18 @@ export function CreateOrganizationPage() {
 							>
 								Name
 							</Text>
-							<Text>Specify the name of your organization</Text>
+							<Text>Specify the name of your organisation</Text>
 						</Box>
 
 						<TextInput
 							autoFocus
-							placeholder="My organization"
+							placeholder="My organisation"
 							value={name}
 							onChange={setName}
 							leftSection={<Icon path={iconOrganization} />}
 							error={
 								name.length > 30
-									? "Organization name cannot exceed 30 characters"
+									? "Organisation name cannot exceed 30 characters"
 									: null
 							}
 							wrapperProps={{
@@ -132,7 +132,7 @@ export function CreateOrganizationPage() {
 								onClick={handleCreate}
 								loading={isPending}
 							>
-								Create organization
+								Create organisation
 							</Button>
 						</Group>
 					</Stack>

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { OVERVIEW_KEY } from "~/util/storage";
 
 export const OVERVIEW: Savepoint = { path: "/overview", name: "Overview" };
-export const ORGANIZATIONS: Savepoint = { path: "/organizations", name: "Organizations" };
+export const ORGANIZATIONS: Savepoint = { path: "/organizations", name: "Organisations" };
 
 export interface Savepoint {
 	path: string;

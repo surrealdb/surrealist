@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useHasOrganizationRole, useOrganizationRole } from "~/cloud/hooks/role";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useArchiveOrganizationMutation } from "~/cloud/mutations/archive";
 import { useUpdateOrganizationMutation } from "~/cloud/mutations/update";
 import { Icon } from "~/components/Icon";
@@ -31,7 +31,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 
 		showInfo({
 			title: "Name updated",
-			subtitle: "The organization name has been updated",
+			subtitle: "The organisation name has been updated",
 		});
 	});
 
@@ -40,7 +40,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 		message: (
 			<Stack>
 				<Text>
-					Are you sure you want to archive this organization? Instances will continue to
+					Are you sure you want to archive this organisation? Instances will continue to
 					use resources and you will be billed for them.
 				</Text>
 				<Text c="bright">This action cannot be undone.</Text>
@@ -48,14 +48,14 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 		),
 		confirmText: "Archive",
 		verification: organization.name,
-		verifyText: "Type the organization name to confirm",
+		verifyText: "Type the organisation name to confirm",
 		onConfirm: async () => {
-			navigate("/organizations");
+			navigate("/organisations");
 
 			await archiveMutation.mutateAsync();
 
 			showInfo({
-				title: "Organization archived",
+				title: "Organisation archived",
 				subtitle: `${organization.name} has been archived`,
 			});
 		},
@@ -64,8 +64,8 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 	return (
 		<Stack>
 			<Section
-				title="Organization name"
-				description="Update the name of your organization"
+				title="Organisation name"
+				description="Update the name of your organisation"
 			>
 				<TextInput
 					value={name}
@@ -86,27 +86,27 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 
 			{organization_archiving && isOwner && (
 				<Section
-					title="Archive organization"
-					description="Mark this organization as archived. This will hide it from the list of organizations."
+					title="Archive organisation"
+					description="Mark this organisation as archived. This will hide it from the list of organisations."
 				>
 					{organization.archived_at ? (
 						<Alert
 							color="orange"
-							title="Organization already archived"
+							title="Organisation already archived"
 							icon={<Icon path={iconPackageClosed} />}
 						>
 							<Text>
-								This organization was archived on {formatArchiveDate(organization)}.
+								This organisation was archived on {formatArchiveDate(organization)}.
 							</Text>
 						</Alert>
 					) : (
 						<Alert
 							color="orange"
-							title="Archive this organization"
+							title="Archive this organisation"
 							icon={<Icon path={iconPackageClosed} />}
 						>
 							<Text>
-								You can archive this organization to remove it from your overview
+								You can archive this organisation to remove it from your overview
 								page, however instances will continue to use resources and you will
 								be billed for them.
 							</Text>
@@ -118,7 +118,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 								loading={archiveMutation.isPending}
 								onClick={requestArchive}
 							>
-								Archive organization
+								Archive organisation
 							</Button>
 						</Alert>
 					)}

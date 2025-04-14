@@ -1,5 +1,5 @@
 import { Select } from "@mantine/core";
-import { useEffect, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
 import { useOrganizationSelection } from "~/cloud/hooks/organizations";
 import { Icon } from "~/components/Icon";
@@ -32,7 +32,7 @@ export function ProvisionOrganizationStep({ details, setDetails }: ProvisionStep
 			data={organizations}
 			value={details.organization}
 			onChange={updateOrganization as any}
-			placeholder="Loading organizations..."
+			placeholder="Loading organisations..."
 			leftSection={details.organization && <Icon path={iconOrganization} />}
 			wrapperProps={{
 				__vars: {

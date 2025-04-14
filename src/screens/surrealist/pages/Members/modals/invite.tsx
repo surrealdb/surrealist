@@ -35,11 +35,11 @@ export function InviteModal({ opened, onClose }: InviteModalProps) {
 			onClose={onClose}
 			trapFocus={false}
 			size="md"
-			title={<PrimaryTitle>Invite members to organization</PrimaryTitle>}
+			title={<PrimaryTitle>Invite members to organisation</PrimaryTitle>}
 		>
 			<Form onSubmit={onClose}>
 				<Text size="lg">
-					Invite new members to your organization by entering their email addresses below.
+					Invite new members to your organisation by entering their email addresses below.
 					Press enter to add each email.
 				</Text>
 

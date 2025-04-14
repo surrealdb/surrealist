@@ -131,7 +131,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 		<Stack>
 			<Section
 				title="Your plan"
-				description="The plan active for this organization"
+				description="The plan active for this organisation"
 			>
 				<Skeleton visible={!organization?.plan}>
 					<BillingPlan
@@ -142,7 +142,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 			</Section>
 			<Section
 				title="Billing Information"
-				description="Manage organization payment and billing information"
+				description="Manage organisation payment and billing information"
 			>
 				<SimpleGrid
 					cols={{
@@ -299,7 +299,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 
 			<Section
 				title="Discount Codes"
-				description="Apply discount codes to your organization"
+				description="Apply discount codes to your organisation"
 			>
 				<Form onSubmit={redeemCoupon}>
 					<Group maw={500}>

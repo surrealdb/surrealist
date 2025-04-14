@@ -261,7 +261,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 			showNotification({
 				color: "surreal",
 				title: "Invitation accepted",
-				message: "You have joined the organization",
+				message: "You have joined the organisation",
 				icon: <Icon path={iconCheck} />,
 			});
 		}
@@ -273,8 +273,8 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 
 		if (err instanceof ApiError && err.status === 422) {
 			showError({
-				title: "Already in organization",
-				subtitle: "You are already a member of this organization",
+				title: "Already in organisation",
+				subtitle: "You are already a member of this organisation",
 			});
 		} else {
 			showError({
