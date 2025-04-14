@@ -7,14 +7,15 @@ import { iconOpen, iconReset } from "~/util/icons";
 
 export interface UpdateBlockProps {
 	instance: CloudInstance | undefined;
+	isLoading: boolean;
 	onUpdate: (version: string) => void;
 	onVersions: () => void;
 }
 
-export function UpdateBlock({ instance, onUpdate, onVersions }: UpdateBlockProps) {
+export function UpdateBlock({ instance, isLoading, onUpdate, onVersions }: UpdateBlockProps) {
 	const versions = instance?.available_versions ?? [];
 	const latest = versions[0] ?? "";
-	const visible = latest && instance?.state === "ready";
+	const visible = latest && instance?.state === "ready" && !isLoading;
 
 	const handleUpdate = useStable(() => {
 		onUpdate(latest);
