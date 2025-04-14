@@ -24,7 +24,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 	const connections = useConnectionList();
 	const client = useQueryClient();
 
-	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
+	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "owner");
 
 	const connection = useMemo(() => {
 		return connections.find((c) => c.authentication.cloudInstance === instance.id);
