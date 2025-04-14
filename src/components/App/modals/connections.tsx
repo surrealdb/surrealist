@@ -212,7 +212,7 @@ export function ConnectionsModal() {
 							key={org.info.id}
 							gap="xs"
 						>
-							<Group gap={4}>
+							<Group gap={2}>
 								<Text
 									fz="lg"
 									fw={500}
