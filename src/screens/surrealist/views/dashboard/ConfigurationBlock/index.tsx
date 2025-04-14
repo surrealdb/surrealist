@@ -36,7 +36,7 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 	const storageText = formatMemory(storageSize * 1024);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
-	const canModify = instance ? useHasOrganizationRole(instance.organization_id, "admin") : false;
+	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 
 	return (
 		<Skeleton

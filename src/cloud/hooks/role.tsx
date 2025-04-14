@@ -18,6 +18,11 @@ export function useOrganizationRole(organizationId: string) {
  */
 export function useHasOrganizationRole(organizationId: string, role: string) {
 	const currentRole = useOrganizationRole(organizationId);
+
+	if (!currentRole) {
+		return false;
+	}
+
 	const required = CLOUD_ROLES.indexOf(role);
 	const current = CLOUD_ROLES.indexOf(currentRole ?? "");
 

@@ -13,6 +13,7 @@ import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
@@ -22,6 +23,8 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 	const authTokenMutation = useCloudAuthTokenMutation(instance.id);
 	const connections = useConnectionList();
 	const client = useQueryClient();
+
+	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 
 	const connection = useMemo(() => {
 		return connections.find((c) => c.authentication.cloudInstance === instance.id);
@@ -218,10 +221,15 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				)}
 				<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
 				<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
-				{instance.state === "ready" ? (
+				<Menu.Item
+					onClick={handleCopyAuthToken}
+					disabled={instance.state !== "ready"}
+				>
+					Copy Auth token
+				</Menu.Item>
+				<Menu.Divider />
+				{canModify && instance.state === "ready" ? (
 					<>
-						<Menu.Item onClick={handleCopyAuthToken}>Copy Auth token</Menu.Item>
-						<Menu.Divider />
 						<Menu.Item
 							leftSection={<Icon path={iconPause} />}
 							onClick={handlePause}
@@ -242,6 +250,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 						</Menu.Item>
 					</>
 				) : (
+					canModify &&
 					instance.state === "paused" && (
 						<>
 							<Menu.Divider />
