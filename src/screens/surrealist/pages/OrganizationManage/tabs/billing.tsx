@@ -41,7 +41,7 @@ import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
-	const isAdmin = useHasOrganizationRole(organization.id, "admin");
+	const isOwner = useHasOrganizationRole(organization.id, "owner");
 	const client = useQueryClient();
 
 	const billingQuery = useCloudBillingQuery(organization.id);
@@ -165,7 +165,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 								Billing Details
 							</Text>
 							<Spacer />
-							{isAdmin && (
+							{isOwner && (
 								<Button
 									color="slate"
 									variant="light"
@@ -233,7 +233,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 								Payment Details
 							</Text>
 							<Spacer />
-							{isAdmin && (
+							{isOwner && (
 								<Tooltip
 									disabled={organization?.billing_info}
 									label="Please provide billing details first"
