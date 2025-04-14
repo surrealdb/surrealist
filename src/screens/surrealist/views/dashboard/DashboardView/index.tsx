@@ -37,10 +37,9 @@ const BackupsBlockLazy = memo(BackupsBlock);
 const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
 
 export function DashboardView() {
-	const [isCloud, instance, name] = useConnection((c) => [
+	const [isCloud, instance] = useConnection((c) => [
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
-		c?.name ?? "",
 	]);
 
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
@@ -64,7 +63,6 @@ export function DashboardView() {
 	});
 
 	const isLoading = detailsPending || backupsPending || usagePending;
-	const isRenamed = !detailsPending && name !== details?.name;
 
 	if (!isCloud) {
 		return <Redirect to="/query" />;
@@ -112,16 +110,7 @@ export function DashboardView() {
 						) : (
 							<>
 								<Group>
-									<PrimaryTitle fz={38}>{name}</PrimaryTitle>
-									{isRenamed && (
-										<Text
-											fw={400}
-											fz={38}
-											c="slate"
-										>
-											({details?.name})
-										</Text>
-									)}
+									<PrimaryTitle fz={38}>{details?.name}</PrimaryTitle>
 									{details?.state && (
 										<StateBadge
 											mt="xs"
