@@ -46,6 +46,7 @@ import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { createInstancePath } from "~/cloud/helpers";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -69,7 +70,6 @@ import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartResource } from "./content/resource";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 const GRID_COLUMNS = {
 	xs: 1,
