@@ -17,7 +17,7 @@ import {
 	STATE_KEY,
 	VERIFIER_KEY,
 } from "~/util/storage";
-import { fetchAPI, updateCloudInformation } from ".";
+import { ApiError, fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
@@ -261,7 +261,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 			showNotification({
 				color: "surreal",
 				title: "Invitation accepted",
-				message: "You have joined the organization",
+				message: "You have joined the organisation",
 				icon: <Icon path={iconCheck} />,
 			});
 		}
@@ -270,10 +270,18 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 
 		setAuthError(err.message);
 		invalidateSession();
-		showError({
-			title: "Failed to authenticate",
-			subtitle: "Please try signing into Surreal Cloud again",
-		});
+
+		if (err instanceof ApiError && err.status === 422) {
+			showError({
+				title: "Already in organisation",
+				subtitle: "You are already a member of this organisation",
+			});
+		} else {
+			showError({
+				title: "Failed to authenticate",
+				subtitle: "Please try signing into Surreal Cloud again",
+			});
+		}
 	} finally {
 		sessionStorage.removeItem(REFERRER_KEY);
 		sessionStorage.removeItem(INVITATION_KEY);

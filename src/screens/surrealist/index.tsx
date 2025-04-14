@@ -174,7 +174,7 @@ export function SurrealistScreen() {
 								<CreateConnectionPageLazy />
 							</Route>
 
-							<Route path="/create/organization">
+							<Route path="/create/organisation">
 								<CreateOrganizationsPageLazy />
 							</Route>
 
@@ -187,10 +187,10 @@ export function SurrealistScreen() {
 							</Route>
 
 							<Route path="/billing">
-								<Redirect to="/organizations" />
+								<Redirect to="/organisations" />
 							</Route>
 
-							<Route path="/organizations">
+							<Route path="/organisations">
 								<OrganizationsPageLazy />
 							</Route>
 

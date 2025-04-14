@@ -16,7 +16,7 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 	return (
 		<Section
 			title="Usage charges"
-			description="Your organization's usage charges for the current month"
+			description="Your organisation's usage charges for the current month"
 		>
 			<Paper
 				p="xl"

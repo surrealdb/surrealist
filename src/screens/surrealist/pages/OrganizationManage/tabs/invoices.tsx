@@ -77,7 +77,7 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 				) : (
 					<Alert
 						icon={<Icon path={iconHelp} />}
-						title="Your organization has no invoices yet"
+						title="Your organisation has no invoices yet"
 						color="blue"
 						pr="xl"
 					>

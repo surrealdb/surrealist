@@ -27,14 +27,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";
-import {
-	iconAccount,
-	iconDollar,
-	iconDotsVertical,
-	iconExitToAp,
-	iconReferral,
-	iconTag,
-} from "~/util/icons";
+import { iconAccount, iconDotsVertical, iconExitToAp } from "~/util/icons";
 
 export interface OrganizationTileProps extends BoxProps {
 	organization: CloudOrganization;
@@ -67,21 +60,21 @@ export function OrganizationTile({
 		navigator.clipboard.writeText(organization.id).then(() => {
 			showInfo({
 				title: "Copied",
-				subtitle: "Successfully copied organization id to clipboard",
+				subtitle: "Successfully copied organisation id to clipboard",
 			});
 		});
 	});
 
 	const requestLeave = useConfirmation({
-		title: "Leave organization",
-		message: "Are you sure you want to leave this organization?",
+		title: "Leave organisation",
+		message: "Are you sure you want to leave this organisation?",
 		confirmText: "Leave",
 		onConfirm: async () => {
 			await removeMutation.mutateAsync(userId);
 
 			showInfo({
-				title: "Left organization",
-				subtitle: "You have successfully left the organization.",
+				title: "Left organisation",
+				subtitle: "You have successfully left the organisation.",
 			});
 
 			client.invalidateQueries({
@@ -160,7 +153,7 @@ export function OrganizationTile({
 								</ActionIcon>
 							</Menu.Target>
 							<Menu.Dropdown>
-								<Menu.Item onClick={handleCopyID}>Copy organization ID</Menu.Item>
+								<Menu.Item onClick={handleCopyID}>Copy organisation ID</Menu.Item>
 								{!isOwner && (
 									<>
 										<Menu.Divider />
@@ -174,7 +167,7 @@ export function OrganizationTile({
 											onClick={requestLeave}
 											c="red"
 										>
-											Leave organization
+											Leave organisation
 										</Menu.Item>
 									</>
 								)}
@@ -182,7 +175,7 @@ export function OrganizationTile({
 						</Menu>
 						<Spacer />
 						{defaultOrg === organization.id && (
-							<Tooltip label="This is your personal organization and allows one free instance">
+							<Tooltip label="This is your personal organisation and allows one free instance">
 								<ThemeIcon
 									variant="transparent"
 									color="violet"

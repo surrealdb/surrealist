@@ -2,7 +2,6 @@ import type {
 	AuthState,
 	CloudBillingCountry,
 	CloudChatMessage,
-	CloudInstance,
 	CloudInstanceType,
 	CloudOrganization,
 	CloudProfile,

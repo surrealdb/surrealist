@@ -93,7 +93,7 @@ export function StartInstance({
 										fw={600}
 										fz="xl"
 									>
-										{connection?.name ?? instance.name}
+										{instance.name}
 									</Text>
 									<StateBadge
 										size={10}

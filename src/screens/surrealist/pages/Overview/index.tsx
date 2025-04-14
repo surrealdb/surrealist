@@ -379,7 +379,7 @@ export function OverviewPage() {
 												</Box>
 											</Menu.Item>
 										</Link>
-										<Link to="/create/organization">
+										<Link to="/create/organisation">
 											<Menu.Item
 												leftSection={
 													<ThemeIcon
@@ -401,7 +401,7 @@ export function OverviewPage() {
 														c="bright"
 														fw={600}
 													>
-														Organization
+														Organisation
 													</Text>
 													<Text>Create a space to manage your team</Text>
 												</Box>

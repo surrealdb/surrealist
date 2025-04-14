@@ -2,6 +2,7 @@ import { Alert, Menu, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useCallback, useMemo } from "react";
+import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
@@ -12,7 +13,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
-import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
+import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
 
 export interface InstanceActionsProps {
@@ -24,7 +25,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 	const connections = useConnectionList();
 	const client = useQueryClient();
 
-	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
+	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "owner");
 
 	const connection = useMemo(() => {
 		return connections.find((c) => c.authentication.cloudInstance === instance.id);
@@ -208,17 +209,19 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		>
 			<Menu.Target>{children}</Menu.Target>
 			<Menu.Dropdown>
-				{connection && (
-					<>
-						<Menu.Item
-							leftSection={<Icon path={iconEdit} />}
-							onClick={handleEdit}
-						>
-							Edit connection
-						</Menu.Item>
-						<Menu.Divider />
-					</>
-				)}
+				<Menu.Item
+					leftSection={<Icon path={iconEdit} />}
+					onClick={handleEdit}
+					disabled={!connection}
+				>
+					Edit connection
+				</Menu.Item>
+				<Link href={`/o/${instance.organization_id}`}>
+					<Menu.Item leftSection={<Icon path={iconOrganization} />}>
+						View organisation
+					</Menu.Item>
+				</Link>
+				<Menu.Divider />
 				<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
 				<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
 				<Menu.Item

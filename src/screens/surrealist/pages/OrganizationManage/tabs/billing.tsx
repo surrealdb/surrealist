@@ -41,7 +41,7 @@ import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
-	const isAdmin = useHasOrganizationRole(organization.id, "admin");
+	const isOwner = useHasOrganizationRole(organization.id, "owner");
 	const client = useQueryClient();
 
 	const billingQuery = useCloudBillingQuery(organization.id);
@@ -131,7 +131,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 		<Stack>
 			<Section
 				title="Your plan"
-				description="The plan active for this organization"
+				description="The plan active for this organisation"
 			>
 				<Skeleton visible={!organization?.plan}>
 					<BillingPlan
@@ -142,7 +142,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 			</Section>
 			<Section
 				title="Billing Information"
-				description="Manage organization payment and billing information"
+				description="Manage organisation payment and billing information"
 			>
 				<SimpleGrid
 					cols={{
@@ -165,7 +165,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 								Billing Details
 							</Text>
 							<Spacer />
-							{isAdmin && (
+							{isOwner && (
 								<Button
 									color="slate"
 									variant="light"
@@ -233,7 +233,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 								Payment Details
 							</Text>
 							<Spacer />
-							{isAdmin && (
+							{isOwner && (
 								<Tooltip
 									disabled={organization?.billing_info}
 									label="Please provide billing details first"
@@ -299,7 +299,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 
 			<Section
 				title="Discount Codes"
-				description="Apply discount codes to your organization"
+				description="Apply discount codes to your organisation"
 			>
 				<Form onSubmit={redeemCoupon}>
 					<Group maw={500}>

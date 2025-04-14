@@ -72,17 +72,17 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	});
 
 	const requestLeave = useConfirmation({
-		title: "Leave organization",
+		title: "Leave organisation",
 		message: `Are you sure you want to leave ${organization.name}?`,
 		confirmText: "Leave",
 		onConfirm: async () => {
-			navigate("/organizations");
+			navigate("/organisations");
 
 			await removeMutation.mutateAsync(userId);
 
 			showInfo({
-				title: "Left organization",
-				subtitle: "You have successfully left the organization.",
+				title: "Left organisation",
+				subtitle: "You have successfully left the organisation.",
 			});
 
 			client.invalidateQueries({
@@ -95,7 +95,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 		<Stack>
 			<Section
 				title="Team members"
-				description="Manage the members of your organization"
+				description="Manage the members of your organisation"
 				rightSection={
 					isAdmin && (
 						<Button
@@ -164,7 +164,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 										>
 											{showLeave ? (
 												<ActionButton
-													label="Leave organization"
+													label="Leave organisation"
 													onClick={requestLeave}
 												>
 													<Icon path={iconExitToAp} />

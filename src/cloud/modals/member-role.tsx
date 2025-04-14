@@ -4,6 +4,7 @@ import { capitalize } from "radash";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudMember, CloudOrganization } from "~/types";
@@ -83,6 +84,10 @@ function RoleModal({ organization, member }: RoleModalProps) {
 					value={role}
 					onChange={setRole as any}
 				/>
+
+				<LearnMore href="https://surrealdb.com/docs/cloud/advanced-topics/manage-organisation-permissions">
+					Learn more about roles and permissions
+				</LearnMore>
 
 				<Group mt="xl">
 					<Button

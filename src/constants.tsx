@@ -189,9 +189,9 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Surreal Cloud",
 		icon: iconCloud,
 	},
-	"/organizations": {
-		id: "/organizations",
-		name: "Organizations",
+	"/organisations": {
+		id: "/organisations",
+		name: "Organisations",
 		icon: iconOrganization,
 	},
 	"/chat": {
@@ -219,9 +219,9 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Connect to SurrealDB",
 		icon: iconPlus,
 	},
-	"/create/organization": {
-		id: "/create/organization",
-		name: "New organization",
+	"/create/organisation": {
+		id: "/create/organisation",
+		name: "New organisation",
 		icon: iconPlus,
 	},
 	"/create/instance": {

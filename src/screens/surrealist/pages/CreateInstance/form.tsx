@@ -133,9 +133,9 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 					fw={600}
 					c="bright"
 				>
-					Organization
+					Organisation
 				</Text>
-				<Text>Choose which organization should own this instance</Text>
+				<Text>Choose which organisation should own this instance</Text>
 			</Box>
 
 			<ProvisionOrganizationStep

@@ -12,7 +12,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 
-import { iconChevronRight, iconCloud, iconServer } from "~/util/icons";
+import { iconChevronRight, iconCircle, iconCloud, iconServer } from "~/util/icons";
 
 import clsx from "clsx";
 import { useMemo, useState } from "react";
@@ -212,25 +212,19 @@ export function ConnectionsModal() {
 							key={org.info.id}
 							gap="xs"
 						>
-							<Group gap="xs">
+							<Group gap={2}>
 								<Text
-									fz="xl"
-									fw={500}
-									c="bright"
-								>
-									Surreal Cloud
-								</Text>
-								<Icon
-									path={iconChevronRight}
-									c="slate"
-								/>
-								<Text
-									fz="xl"
+									fz="lg"
 									fw={500}
 									c="bright"
 								>
 									{org.info.name}
 								</Text>
+								<Icon
+									path={iconCircle}
+									c="slate"
+								/>
+								<Text>Surreal Cloud</Text>
 							</Group>
 							{org.instances.map((instance) => (
 								<InstanceEntry

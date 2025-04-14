@@ -33,7 +33,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	return (
 		<Section
 			title="Instances"
-			description="The list of instances that are part of this organization"
+			description="The list of instances that are part of this organisation"
 			rightSection={
 				isAdmin && (
 					<Link href={createInstancePath(organization)}>
