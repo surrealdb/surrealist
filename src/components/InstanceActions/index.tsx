@@ -3,6 +3,7 @@ import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useCallback, useMemo } from "react";
 import { fetchAPI } from "~/cloud/api";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -13,7 +14,6 @@ import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;

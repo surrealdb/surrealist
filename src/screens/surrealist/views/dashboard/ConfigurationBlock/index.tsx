@@ -10,11 +10,11 @@ import {
 import { BoxProps, Button, Skeleton, ThemeIcon } from "@mantine/core";
 import { Group, Paper, Stack, Text } from "@mantine/core";
 import { ReactNode } from "react";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { formatMemory } from "~/util/helpers";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
