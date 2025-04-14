@@ -227,41 +227,44 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				>
 					Copy Auth token
 				</Menu.Item>
-				<Menu.Divider />
-				{canModify && instance.state === "ready" ? (
+				{canModify && (
 					<>
-						<Menu.Item
-							leftSection={<Icon path={iconPause} />}
-							onClick={handlePause}
-						>
-							Pause instance
-						</Menu.Item>
-						<Menu.Item
-							leftSection={
-								<Icon
-									path={iconDelete}
+						<Menu.Divider />
+						{instance.state === "ready" ? (
+							<>
+								<Menu.Item
+									leftSection={<Icon path={iconPause} />}
+									onClick={handlePause}
+								>
+									Pause instance
+								</Menu.Item>
+								<Menu.Item
+									leftSection={
+										<Icon
+											path={iconDelete}
+											c="red"
+										/>
+									}
+									onClick={handleDelete}
 									c="red"
-								/>
-							}
-							onClick={handleDelete}
-							c="red"
-						>
-							Delete instance
-						</Menu.Item>
+								>
+									Delete instance
+								</Menu.Item>
+							</>
+						) : (
+							instance.state === "paused" && (
+								<>
+									<Menu.Divider />
+									<Menu.Item
+										leftSection={<Icon path={iconPlay} />}
+										onClick={handleResume}
+									>
+										Resume instance
+									</Menu.Item>
+								</>
+							)
+						)}
 					</>
-				) : (
-					canModify &&
-					instance.state === "paused" && (
-						<>
-							<Menu.Divider />
-							<Menu.Item
-								leftSection={<Icon path={iconPlay} />}
-								onClick={handleResume}
-							>
-								Resume instance
-							</Menu.Item>
-						</>
-					)
 				)}
 			</Menu.Dropdown>
 		</Menu>
