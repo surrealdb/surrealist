@@ -69,6 +69,7 @@ import { StartConnection } from "./content/connection";
 import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
+import { StartPlaceholder } from "./content/placeholder";
 import { StartResource } from "./content/resource";
 
 const GRID_COLUMNS = {
@@ -567,13 +568,19 @@ function OrganizationInstances({ organization, onConnect }: OrganizationInstance
 						onConnect={onConnect}
 					/>
 				))}
-				{organization.instances.length === 0 && isAdmin && (
-					<StartCreator
-						title="No instances"
-						subtitle="Click to provision a new instance"
-						onCreate={() => navigate(createInstancePath(organization.info))}
-					/>
-				)}
+				{organization.instances.length === 0 &&
+					(isAdmin ? (
+						<StartCreator
+							title="No instances"
+							subtitle="Click to provision a new instance"
+							onCreate={() => navigate(createInstancePath(organization.info))}
+						/>
+					) : (
+						<StartPlaceholder
+							title="No instances"
+							subtitle="This organisation has no instances"
+						/>
+					))}
 			</SimpleGrid>
 		</>
 	);
