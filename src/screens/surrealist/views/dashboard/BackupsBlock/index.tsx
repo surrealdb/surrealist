@@ -11,6 +11,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { formatDistance } from "date-fns";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -26,6 +27,7 @@ export interface BackupsBlockProps {
 
 export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: BackupsBlockProps) {
 	const latest = backups?.[0];
+	const canUpgrade = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 	const unavailable = instance?.type.category === "free";
 
 	return (
@@ -63,14 +65,16 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 								Automated backups are not available for free instances. Upgrade this
 								instance to enable automatic backups.
 							</Text>
-							<Button
-								size="xs"
-								rightSection={<Icon path={iconChevronRight} />}
-								variant="gradient"
-								onClick={onUpgrade}
-							>
-								Upgrade instance
-							</Button>
+							{canUpgrade && (
+								<Button
+									size="xs"
+									rightSection={<Icon path={iconChevronRight} />}
+									variant="gradient"
+									onClick={onUpgrade}
+								>
+									Upgrade instance
+								</Button>
+							)}
 						</>
 					) : latest ? (
 						<>
