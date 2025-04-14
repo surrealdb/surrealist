@@ -59,7 +59,7 @@ import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance, Connection } from "~/types";
+import { CloudInstance, CloudOrganization, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
 import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
@@ -69,6 +69,7 @@ import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartResource } from "./content/resource";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -435,33 +436,12 @@ export function OverviewPage() {
 							</SimpleGrid>
 
 							{authState === "authenticated" &&
-								organizations.map(({ info, instances }) => (
-									<Fragment key={info.id}>
-										<Group mt="xl">
-											<Box>
-												<Text>Surreal Cloud</Text>
-												<PrimaryTitle fz="xl">{info.name}</PrimaryTitle>
-											</Box>
-										</Group>
-										<SimpleGrid cols={GRID_COLUMNS}>
-											{instances.map((instance) => (
-												<StartInstance
-													key={instance.id}
-													instance={instance}
-													onConnect={activateInstance}
-												/>
-											))}
-											{instances.length === 0 && (
-												<StartCreator
-													title="No instances"
-													subtitle="Click to provision a new instance"
-													onCreate={() =>
-														navigate(createInstancePath(info))
-													}
-												/>
-											)}
-										</SimpleGrid>
-									</Fragment>
+								organizations.map((organization) => (
+									<OrganizationInstances
+										key={organization.info.id}
+										organization={organization}
+										onConnect={activateInstance}
+									/>
 								))}
 
 							{(authState === "loading" || isPending) && (
@@ -556,5 +536,45 @@ export function OverviewPage() {
 				)}
 			</Transition>
 		</Box>
+	);
+}
+
+interface OrganizationInstancesProps {
+	organization: {
+		info: CloudOrganization;
+		instances: CloudInstance[];
+	};
+	onConnect: (instance: CloudInstance) => void;
+}
+
+function OrganizationInstances({ organization, onConnect }: OrganizationInstancesProps) {
+	const [, navigate] = useAbsoluteLocation();
+	const isAdmin = useHasOrganizationRole(organization.info.id, "admin");
+
+	return (
+		<>
+			<Group mt="xl">
+				<Box>
+					<Text>Surreal Cloud</Text>
+					<PrimaryTitle fz="xl">{organization.info.name}</PrimaryTitle>
+				</Box>
+			</Group>
+			<SimpleGrid cols={GRID_COLUMNS}>
+				{organization.instances.map((instance) => (
+					<StartInstance
+						key={instance.id}
+						instance={instance}
+						onConnect={onConnect}
+					/>
+				))}
+				{organization.instances.length === 0 && isAdmin && (
+					<StartCreator
+						title="No instances"
+						subtitle="Click to provision a new instance"
+						onCreate={() => navigate(createInstancePath(organization.info))}
+					/>
+				)}
+			</SimpleGrid>
+		</>
 	);
 }

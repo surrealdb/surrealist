@@ -25,6 +25,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	const isAdmin = useHasOrganizationRole(organization.id, "admin");
 	const instances = isSuccess ? data : [];
 	const isArchived = !!organization.archived_at;
+	const canCreate = isSuccess && instances.length === 0 && !isArchived && isAdmin;
 
 	const activateInstance = useStable((instance: CloudInstance) => {
 		navigateConnection(resolveInstanceConnection(instance).id);
@@ -57,7 +58,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 						onConnect={activateInstance}
 					/>
 				))}
-				{isSuccess && instances.length === 0 && !isArchived && (
+				{canCreate && (
 					<StartCreator
 						title="No instances"
 						subtitle="Click to provision a new instance"
