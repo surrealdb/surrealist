@@ -10,6 +10,7 @@ import { CloudInstance } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
 import { StartCreator } from "../../Overview/content/creator";
 import { StartInstance } from "../../Overview/content/instance";
+import { StartPlaceholder } from "../../Overview/content/placeholder";
 import { OrganizationTabProps } from "../types";
 
 const GRID_COLUMNS = {
@@ -25,6 +26,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	const isAdmin = useHasOrganizationRole(organization.id, "admin");
 	const instances = isSuccess ? data : [];
 	const isArchived = !!organization.archived_at;
+	const canCreate = isSuccess && instances.length === 0 && !isArchived && isAdmin;
 
 	const activateInstance = useStable((instance: CloudInstance) => {
 		navigateConnection(resolveInstanceConnection(instance).id);
@@ -57,13 +59,19 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 						onConnect={activateInstance}
 					/>
 				))}
-				{isSuccess && instances.length === 0 && !isArchived && (
-					<StartCreator
-						title="No instances"
-						subtitle="Click to provision a new instance"
-						onCreate={() => navigate(createInstancePath(organization))}
-					/>
-				)}
+				{canCreate &&
+					(isAdmin ? (
+						<StartCreator
+							title="No instances"
+							subtitle="Click to provision a new instance"
+							onCreate={() => navigate(createInstancePath(organization))}
+						/>
+					) : (
+						<StartPlaceholder
+							title="No instances"
+							subtitle="This organisation has no instances"
+						/>
+					))}
 			</SimpleGrid>
 		</Section>
 	);
