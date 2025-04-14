@@ -12,8 +12,9 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
-import { iconDelete, iconEdit, iconPause, iconPlay } from "~/util/icons";
+import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
+import { Link } from "wouter";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
@@ -208,17 +209,19 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		>
 			<Menu.Target>{children}</Menu.Target>
 			<Menu.Dropdown>
-				{connection && (
-					<>
-						<Menu.Item
-							leftSection={<Icon path={iconEdit} />}
-							onClick={handleEdit}
-						>
-							Edit connection
-						</Menu.Item>
-						<Menu.Divider />
-					</>
-				)}
+				<Menu.Item
+					leftSection={<Icon path={iconEdit} />}
+					onClick={handleEdit}
+					disabled={!connection}
+				>
+					Edit connection
+				</Menu.Item>
+				<Link href={`/o/${instance.organization_id}`}>
+					<Menu.Item leftSection={<Icon path={iconOrganization} />}>
+						View organisation
+					</Menu.Item>
+				</Link>
+				<Menu.Divider />
 				<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
 				<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
 				<Menu.Item
