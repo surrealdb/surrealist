@@ -4,6 +4,7 @@ import { capitalize } from "radash";
 import { useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudMember, CloudOrganization } from "~/types";
@@ -11,7 +12,6 @@ import { showError } from "~/util/helpers";
 import { iconTag } from "~/util/icons";
 import { useUpdateRoleMutation } from "../mutations/role";
 import { useCloudRolesQuery } from "../queries/roles";
-import { LearnMore } from "~/components/LearnMore";
 
 export function openMemberRoleModal(organization: CloudOrganization, member: CloudMember) {
 	openModal({

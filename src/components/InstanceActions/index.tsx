@@ -2,6 +2,7 @@ import { Alert, Menu, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useCallback, useMemo } from "react";
+import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
@@ -14,7 +15,6 @@ import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
-import { Link } from "wouter";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
