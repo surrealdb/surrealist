@@ -11,6 +11,7 @@ import { showError } from "~/util/helpers";
 import { iconTag } from "~/util/icons";
 import { useUpdateRoleMutation } from "../mutations/role";
 import { useCloudRolesQuery } from "../queries/roles";
+import { LearnMore } from "~/components/LearnMore";
 
 export function openMemberRoleModal(organization: CloudOrganization, member: CloudMember) {
 	openModal({
@@ -83,6 +84,10 @@ function RoleModal({ organization, member }: RoleModalProps) {
 					value={role}
 					onChange={setRole as any}
 				/>
+
+				<LearnMore href="https://surrealdb.com/docs/cloud/advanced-topics/manage-organisation-permissions">
+					Learn more about roles and permissions
+				</LearnMore>
 
 				<Group mt="xl">
 					<Button
