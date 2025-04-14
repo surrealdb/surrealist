@@ -167,6 +167,7 @@ export function DashboardView() {
 
 					<UpdateBlockLazy
 						instance={details}
+						isLoading={isLoading}
 						onUpdate={handleUpdate}
 						onVersions={handleVersions}
 					/>

@@ -178,21 +178,33 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											<OrganizationTeamTab organization={organization} />
 										</Tabs.Panel>
 
-										<Tabs.Panel value="invoices">
-											<OrganizationInvoicesTab organization={organization} />
-										</Tabs.Panel>
+										{isAdmin && (
+											<>
+												<Tabs.Panel value="invoices">
+													<OrganizationInvoicesTab
+														organization={organization}
+													/>
+												</Tabs.Panel>
 
-										<Tabs.Panel value="billing">
-											<OrganizationBillingTab organization={organization} />
-										</Tabs.Panel>
+												<Tabs.Panel value="billing">
+													<OrganizationBillingTab
+														organization={organization}
+													/>
+												</Tabs.Panel>
 
-										<Tabs.Panel value="usage">
-											<OrganizationUsageTab organization={organization} />
-										</Tabs.Panel>
+												<Tabs.Panel value="usage">
+													<OrganizationUsageTab
+														organization={organization}
+													/>
+												</Tabs.Panel>
 
-										<Tabs.Panel value="settings">
-											<OrganizationSettingsTab organization={organization} />
-										</Tabs.Panel>
+												<Tabs.Panel value="settings">
+													<OrganizationSettingsTab
+														organization={organization}
+													/>
+												</Tabs.Panel>
+											</>
+										)}
 									</Tabs>
 								</>
 							)}

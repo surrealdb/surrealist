@@ -3,6 +3,7 @@ import { Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useCallback, useMemo } from "react";
 import { fetchAPI } from "~/cloud/api";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -22,6 +23,8 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 	const authTokenMutation = useCloudAuthTokenMutation(instance.id);
 	const connections = useConnectionList();
 	const client = useQueryClient();
+
+	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 
 	const connection = useMemo(() => {
 		return connections.find((c) => c.authentication.cloudInstance === instance.id);
@@ -218,41 +221,50 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				)}
 				<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
 				<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>
-				{instance.state === "ready" ? (
+				<Menu.Item
+					onClick={handleCopyAuthToken}
+					disabled={instance.state !== "ready"}
+				>
+					Copy Auth token
+				</Menu.Item>
+				{canModify && (
 					<>
-						<Menu.Item onClick={handleCopyAuthToken}>Copy Auth token</Menu.Item>
 						<Menu.Divider />
-						<Menu.Item
-							leftSection={<Icon path={iconPause} />}
-							onClick={handlePause}
-						>
-							Pause instance
-						</Menu.Item>
-						<Menu.Item
-							leftSection={
-								<Icon
-									path={iconDelete}
+						{instance.state === "ready" ? (
+							<>
+								<Menu.Item
+									leftSection={<Icon path={iconPause} />}
+									onClick={handlePause}
+								>
+									Pause instance
+								</Menu.Item>
+								<Menu.Item
+									leftSection={
+										<Icon
+											path={iconDelete}
+											c="red"
+										/>
+									}
+									onClick={handleDelete}
 									c="red"
-								/>
-							}
-							onClick={handleDelete}
-							c="red"
-						>
-							Delete instance
-						</Menu.Item>
+								>
+									Delete instance
+								</Menu.Item>
+							</>
+						) : (
+							instance.state === "paused" && (
+								<>
+									<Menu.Divider />
+									<Menu.Item
+										leftSection={<Icon path={iconPlay} />}
+										onClick={handleResume}
+									>
+										Resume instance
+									</Menu.Item>
+								</>
+							)
+						)}
 					</>
-				) : (
-					instance.state === "paused" && (
-						<>
-							<Menu.Divider />
-							<Menu.Item
-								leftSection={<Icon path={iconPlay} />}
-								onClick={handleResume}
-							>
-								Resume instance
-							</Menu.Item>
-						</>
-					)
 				)}
 			</Menu.Dropdown>
 		</Menu>

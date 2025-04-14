@@ -10,6 +10,7 @@ import {
 import { BoxProps, Button, Skeleton, ThemeIcon } from "@mantine/core";
 import { Group, Paper, Stack, Text } from "@mantine/core";
 import { ReactNode } from "react";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
@@ -35,6 +36,7 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 	const storageText = formatMemory(storageSize * 1024);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
+	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 
 	return (
 		<Skeleton
@@ -75,17 +77,19 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 							flex={1}
 						/>
 
-						<Button
-							size="xs"
-							color="slate"
-							rightSection={<Icon path={iconChevronRight} />}
-							onClick={onConfigure}
-							disabled={!instance || isIdle}
-							variant="light"
-							my={-2}
-						>
-							Configure instance
-						</Button>
+						{canModify && (
+							<Button
+								size="xs"
+								color="slate"
+								rightSection={<Icon path={iconChevronRight} />}
+								onClick={onConfigure}
+								disabled={!instance || isIdle}
+								variant="light"
+								my={-2}
+							>
+								Configure instance
+							</Button>
+						)}
 					</Group>
 				</Stack>
 			</Paper>
