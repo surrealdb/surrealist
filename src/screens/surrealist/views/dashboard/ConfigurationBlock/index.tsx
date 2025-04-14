@@ -14,6 +14,7 @@ import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { formatMemory } from "~/util/helpers";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -35,6 +36,7 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 	const storageText = formatMemory(storageSize * 1024);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
+	const canModify = instance ? useHasOrganizationRole(instance.organization_id, "admin") : false;
 
 	return (
 		<Skeleton
@@ -75,17 +77,19 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 							flex={1}
 						/>
 
-						<Button
-							size="xs"
-							color="slate"
-							rightSection={<Icon path={iconChevronRight} />}
-							onClick={onConfigure}
-							disabled={!instance || isIdle}
-							variant="light"
-							my={-2}
-						>
-							Configure instance
-						</Button>
+						{canModify && (
+							<Button
+								size="xs"
+								color="slate"
+								rightSection={<Icon path={iconChevronRight} />}
+								onClick={onConfigure}
+								disabled={!instance || isIdle}
+								variant="light"
+								my={-2}
+							>
+								Configure instance
+							</Button>
+						)}
 					</Group>
 				</Stack>
 			</Paper>
