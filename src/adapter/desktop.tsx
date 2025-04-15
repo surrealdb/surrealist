@@ -52,6 +52,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
+	public isTelemetryEnabled = true;
 	public hasTitlebar = false;
 	public platform: Platform = "windows";
 

@@ -28,6 +28,11 @@ export interface SurrealistAdapter {
 	isUpdateCheckSupported: boolean;
 
 	/**
+	 * Whether telemetry is enabled
+	 */
+	isTelemetryEnabled: boolean;
+
+	/**
 	 * Whether the window has a native titlebar
 	 */
 	hasTitlebar: boolean;

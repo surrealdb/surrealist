@@ -2,9 +2,9 @@ import * as v from "valibot";
 import { INSTANCE_CONFIG } from "~/constants";
 import { type InstanceConfig, InstanceConfigSchema } from "~/schemas";
 import type { SurrealistConfig } from "~/types";
-import { isDevelopment } from "~/util/environment";
 import { showError } from "~/util/helpers";
 import { BrowserAdapter } from "./browser";
+import { createBaseAuthentication, createBaseConnection } from "~/util/defaults";
 
 /**
  * Base adapter for running as docker image
@@ -13,33 +13,31 @@ export class DockerAdapter extends BrowserAdapter {
 	public readonly id: string = "docker";
 
 	public async processConfig(config: SurrealistConfig) {
-		if (!import.meta.env.VITE_SURREALIST_DOCKER && !isDevelopment) {
-			return config;
-		}
-
 		this.log("Adapter", "Fetching instance config");
 
-		const instanceConfig = await this.fetchInstanceConfig();
+		const instanceConfigJson = await this.fetchInstanceConfig();
 
-		if (!instanceConfig) {
+		if (!instanceConfigJson) {
 			return config;
 		}
 
 		try {
-			const parsed = v.parse(InstanceConfigSchema, instanceConfig);
-			const ids = new Set<string>();
+			const instanceConfig = v.parse(InstanceConfigSchema, instanceConfigJson);
+			const uniqueIds = new Set<string>();
 
-			for (const con of parsed.connections) {
-				if (ids.has(con.id)) {
+			this.isTelemetryEnabled = instanceConfig.telemetry ?? true;
+
+			for (const con of instanceConfig.connections) {
+				if (uniqueIds.has(con.id)) {
 					throw new Error(`Duplicate connection ID: ${con.id}`);
 				}
 
-				ids.add(con.id);
+				uniqueIds.add(con.id);
 			}
 
 			this.log("Adapter", "Applying instance config");
 
-			return this.applyInstanceConfig(config, parsed);
+			return this.applyInstanceConfig(config, instanceConfig);
 		} catch (err: any) {
 			console.warn(err);
 
@@ -61,77 +59,38 @@ export class DockerAdapter extends BrowserAdapter {
 	}
 
 	private applyInstanceConfig(config: SurrealistConfig, instanceConfig: InstanceConfig) {
-		// // nothing configured in the instance file
-		// // clean instance connections
-		// if (instanceConfig.connections.length <= 0) {
-		// 	config.connectionGroups = config.connectionGroups.filter(
-		// 		(group) => group.id !== INSTANCE_GROUP,
-		// 	);
-		// 	config.connections = config.connections.filter(
-		// 		(connection) => connection.group !== INSTANCE_GROUP,
-		// 	);
+		const { connections } = instanceConfig;
 
-		// 	return config;
-		// }
+		// Synchronize connections
+		for (const con of connections) {
+			let connection = config.connections.find((c) => c.id === con.id);
 
-		// // sync connection groups
-		// const existingConnectionGroup = config.connectionGroups.find(
-		// 	(group) => group.id === INSTANCE_GROUP,
-		// );
+			if (!connection) {
+				connection = createBaseConnection(config.settings);
+				connection.id = con.id;
+				config.connections.push(connection);
+			}
 
-		// if (existingConnectionGroup) {
-		// 	existingConnectionGroup.name = instanceConfig.groupName;
-		// 	existingConnectionGroup.collapsed = instanceConfig.groupCollapsed;
-		// } else {
-		// 	config.connectionGroups.push({
-		// 		id: INSTANCE_GROUP,
-		// 		name: instanceConfig.groupName,
-		// 		collapsed: instanceConfig.groupCollapsed,
-		// 	});
-		// }
+			connection.name = con.name;
+			connection.instance = true;
+			connection.authentication = {
+				...createBaseAuthentication(),
+				...con.authentication,
+			};
 
-		// // Add missing connections
-		// for (const con of instanceConfig.connections) {
-		// 	const existingConnection = config.connections.find((c) => c.id === con.id);
+			if (con.defaultNamespace) {
+				connection.lastNamespace = con.defaultNamespace;
 
-		// 	if (existingConnection) {
-		// 		continue;
-		// 	}
+				if (con.defaultDatabase) {
+					connection.lastDatabase = con.defaultDatabase;
+				}
+			}
+		}
 
-		// 	const newConnection = createBaseConnection(config.settings);
-
-		// 	newConnection.id = con.id;
-		// 	newConnection.name = con.name;
-		// 	newConnection.group = INSTANCE_GROUP;
-		// 	newConnection.authentication = con.authentication as Authentication;
-
-		// 	if (con.defaultNamespace) {
-		// 		newConnection.lastNamespace = con.defaultNamespace;
-
-		// 		if (con.defaultDatabase) {
-		// 			newConnection.lastDatabase = con.defaultDatabase;
-		// 		}
-		// 	}
-
-		// 	config.connections.push(newConnection);
-		// }
-
-		// // Remove connections that are not in the instance config
-		// config.connections = config.connections.filter(
-		// 	(c) =>
-		// 		c.group !== INSTANCE_GROUP ||
-		// 		instanceConfig.connections.some((ic) => ic.id === c.id),
-		// );
-
-		// const isValidActiveConnection = config.connections.some(
-		// 	(c) => c.id === instanceConfig.defaultConnection,
-		// );
-
-		// // Change activeConnection if instance config is valid
-		// // FIXME navigate to connection
-		// // if (isValidActiveConnection) {
-		// // 	config.activeConnection = instanceConfig.defaultConnection ?? "";
-		// // }
+		// Remove previously managed connections
+		config.connections = config.connections.filter(
+			(c) => !c.instance || instanceConfig.connections.some((ic) => ic.id === c.id),
+		);
 
 		return config;
 	}

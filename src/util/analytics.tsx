@@ -17,6 +17,10 @@ export const HOSTNAME = isProduction
  * Track analytics events
  */
 export async function tagEvent(name: string, payload: Record<string, unknown> = {}) {
+	if (!adapter.isTelemetryEnabled) {
+		return;
+	}
+
 	const { gtm_debug } = featureFlags.store;
 	const debug_origin = getSetting("gtm", "origin");
 	const debug_mode = getSetting("gtm", "debug_mode");

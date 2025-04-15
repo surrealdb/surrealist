@@ -33,6 +33,7 @@ export function StartConnection({
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isSandbox = connection.id === SANDBOX;
+	const isManaged = isSandbox || connection.instance;
 	const target = protocol === "mem" ? "In-Memory" : protocol === "indxdb" ? "IndexDB" : hostname;
 
 	const handleConnect = useStable(() => {
@@ -135,7 +136,7 @@ export function StartConnection({
 							</Box>
 						</Group>
 					</Stack>
-					{!isSandbox && (
+					{!isManaged && (
 						<div
 							onClick={ON_STOP_PROPAGATION}
 							onKeyDown={ON_STOP_PROPAGATION}
@@ -185,7 +186,7 @@ export function StartConnection({
 						</div>
 					)}
 				</Group>
-				{isSandbox ? (
+				{isManaged ? (
 					<Badge
 						color="violet"
 						variant="subtle"

@@ -6,7 +6,7 @@ import { MiniAdapter } from "./mini";
 
 const useDesktop = "__TAURI_INTERNALS__" in window;
 const useMini = document.querySelector("meta[name=surrealist-mini]");
-const useDocker = process.env.VITE_SURREALIST_DOCKER === "true";
+const useDocker = import.meta.env.VITE_SURREALIST_DOCKER === "true";
 
 /**
  * The active environment adapter

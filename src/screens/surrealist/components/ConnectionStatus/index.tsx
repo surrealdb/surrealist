@@ -35,11 +35,12 @@ export function ConnectionStatus() {
 	const schema = useDatabaseSchema();
 
 	const [connection] = useConnectionAndView();
-	const [connectionId, name, icon, database] = useConnection((c) => [
+	const [connectionId, name, icon, database, instance] = useConnection((c) => [
 		c?.id ?? "",
 		c?.name ?? "",
 		c?.icon ?? 0,
 		c?.lastDatabase,
+		c?.instance ?? false,
 	]);
 
 	const noTables = schema.tables.length === 0;
@@ -79,6 +80,7 @@ export function ConnectionStatus() {
 	});
 
 	const isSandbox = connectionId === SANDBOX;
+	const isManaged = isSandbox || instance;
 
 	const statusInfo = {
 		disconnected: ["Disconnected", "red", false],
@@ -195,7 +197,7 @@ export function ConnectionStatus() {
 							Import database
 						</Menu.Item>
 						<Menu.Label mt="sm">Manage</Menu.Label>
-						{!isSandbox && (
+						{!isManaged && (
 							<Menu.Item
 								leftSection={<Icon path={iconEdit} />}
 								onClick={openEditor}

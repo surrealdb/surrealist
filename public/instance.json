@@ -1,0 +1,9 @@
+{
+	"telemetry": false,
+	"connections": [
+		{
+			"id": "bruh",
+			"name": "Bruh moment"
+		}
+	]
+}

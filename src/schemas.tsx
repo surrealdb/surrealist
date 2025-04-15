@@ -26,13 +26,15 @@ export const InstanceConfigSchema = v.object({
 				name: v.string(),
 				defaultNamespace: v.optional(v.string()),
 				defaultDatabase: v.optional(v.string()),
-				authentication: v.object({
-					protocol: ProtocolSchema,
-					hostname: v.string(),
-					mode: AuthModeSchema,
-					namespace: v.optional(v.string()),
-					database: v.optional(v.string()),
-				}),
+				authentication: v.optional(
+					v.object({
+						protocol: ProtocolSchema,
+						hostname: v.string(),
+						mode: AuthModeSchema,
+						namespace: v.optional(v.string()),
+						database: v.optional(v.string()),
+					}),
+				),
 			}),
 		),
 		[],
