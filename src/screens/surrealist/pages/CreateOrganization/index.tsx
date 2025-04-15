@@ -30,7 +30,9 @@ export function CreateOrganizationPage() {
 				body: JSON.stringify({ name }),
 			});
 
-			tagEvent("cloud_organization_created");
+			tagEvent("cloud_organisation_created", {
+				organisation: organization.id,
+			});
 
 			client.invalidateQueries({
 				queryKey: ["cloud", "instances"],
