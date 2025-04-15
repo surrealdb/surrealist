@@ -177,8 +177,8 @@ export function OrganizationTile({
 						{defaultOrg === organization.id && (
 							<Tooltip label="This is your personal organisation and allows one free instance">
 								<ThemeIcon
-									variant="transparent"
-									color="violet"
+									radius="xs"
+									variant="gradient"
 								>
 									<Icon path={iconAccount} />
 								</ThemeIcon>
