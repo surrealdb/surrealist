@@ -25,7 +25,7 @@ setup:
 	bun install
 
 .PHONY: serve
-serve: build-embed
+serve:
 	@echo "Serving..."
 	bun tauri:dev
 
