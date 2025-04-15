@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchAPI } from "../api";
 import { tagEvent } from "~/util/analytics";
+import { fetchAPI } from "../api";
 
 export interface Invitation {
 	email: string;

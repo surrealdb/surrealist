@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { closeConnection } from "~/screens/surrealist/connection/connection";
-import { fetchAPI } from "../api";
 import { tagEvent } from "~/util/analytics";
+import { fetchAPI } from "../api";
 
 /**
  * Instance version updating mutation
