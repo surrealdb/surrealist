@@ -161,7 +161,7 @@ export const featureFlags = new FeatureFlags({
 		}
 
 		if (flag === "cloud_enabled") {
-			return import.meta.env.VITE_SURREALIST_INSTANCE !== "true";
+			return import.meta.env.VITE_SURREALIST_DOCKER !== "true";
 		}
 	},
 });

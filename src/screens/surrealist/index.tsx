@@ -5,6 +5,7 @@ import { type FC, Suspense, memo } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useAvailableViews } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -84,6 +85,7 @@ export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
+	const showCloud = useIsCloudEnabled();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 	const views = useAvailableViews();
@@ -154,60 +156,64 @@ export function SurrealistScreen() {
 								<OverviewPageLazy />
 							</Route>
 
-							<Route path="/cloud">
-								<CloudPageLazy />
-							</Route>
-
 							<Route path="/mini/new">
 								<NewEmbedPageLazy />
-							</Route>
-
-							<Route path="/chat">
-								<ChatPageLazy />
-							</Route>
-
-							<Route path="/referrals">
-								<ReferralPageLazy />
 							</Route>
 
 							<Route path="/create/connection">
 								<CreateConnectionPageLazy />
 							</Route>
 
-							<Route path="/create/organisation">
-								<CreateOrganizationsPageLazy />
-							</Route>
-
-							<Route path="/create/instance">
-								<CreateInstancePageLazy />
-							</Route>
-
 							<Route path="/support">
 								<SupportPageLazy />
 							</Route>
 
-							<Route path="/billing">
-								<Redirect to="/organisations" />
-							</Route>
+							{showCloud && (
+								<>
+									<Route path="/organisations">
+										<OrganizationsPageLazy />
+									</Route>
 
-							<Route path="/organisations">
-								<OrganizationsPageLazy />
-							</Route>
+									<Route path="/o/:organization/:tab">
+										{({ organization, tab }) => (
+											<OrganizationManagePageLazy
+												id={organization}
+												tab={tab}
+											/>
+										)}
+									</Route>
 
-							<Route path="/o/:organization/:tab">
-								{({ organization, tab }) => (
-									<OrganizationManagePageLazy
-										id={organization}
-										tab={tab}
-									/>
-								)}
-							</Route>
+									<Route path="/o/:organization">
+										{({ organization }) => (
+											<Redirect to={`/o/${organization}/instances`} />
+										)}
+									</Route>
 
-							<Route path="/o/:organization">
-								{({ organization }) => (
-									<Redirect to={`/o/${organization}/instances`} />
-								)}
-							</Route>
+									<Route path="/chat">
+										<ChatPageLazy />
+									</Route>
+
+									<Route path="/referrals">
+										<ReferralPageLazy />
+									</Route>
+
+									<Route path="/create/organisation">
+										<CreateOrganizationsPageLazy />
+									</Route>
+
+									<Route path="/create/instance">
+										<CreateInstancePageLazy />
+									</Route>
+
+									<Route path="/cloud">
+										<CloudPageLazy />
+									</Route>
+
+									<Route path="/billing">
+										<Redirect to="/organisations" />
+									</Route>
+								</>
+							)}
 
 							<Route path="/c/:connection/:view">
 								{({ view }) => {

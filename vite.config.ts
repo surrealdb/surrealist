@@ -11,7 +11,7 @@ import { surreal, version } from "./package.json";
 
 const isTauri = !!process.env.TAURI_ENV_PLATFORM;
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
-const isInstance = process.env.VITE_SURREALIST_INSTANCE === "true";
+const isDocker = process.env.VITE_SURREALIST_DOCKER === "true";
 
 const ENTRYPOINTS = {
 	surrealist: "/index.html",
@@ -63,9 +63,9 @@ export default defineConfig(({ mode }) => {
 		plugins.push(
 			compression({
 				deleteOriginalAssets: true,
-				threshold: isInstance ? 100 : undefined,
-				filename: isInstance ? undefined : (id) => id,
-				include: isInstance
+				threshold: isDocker ? 100 : undefined,
+				filename: isDocker ? undefined : (id) => id,
+				include: isDocker
 					? /assets\/.+\.(html|xml|css|json|js|mjs|svg|wasm)$/
 					: /\.(wasm)$/,
 			}),

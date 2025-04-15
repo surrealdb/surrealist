@@ -16,7 +16,7 @@ import { useIntent } from "./routing";
 /**
  * Returns whether cloud functionality is enabled
  */
-export function useSurrealCloud() {
+export function useIsCloudEnabled() {
 	return useFeatureFlags()[0].cloud_enabled;
 }
 

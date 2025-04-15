@@ -73,8 +73,7 @@ export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_HISTORY_QUERY_LENGTH = 7500;
 export const MAX_LIVE_MESSAGES = 50;
-export const INSTANCE_CONFIG = "connections.json";
-export const INSTANCE_GROUP = "__instance";
+export const INSTANCE_CONFIG = "instance.json";
 export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
@@ -188,21 +187,25 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/cloud",
 		name: "Surreal Cloud",
 		icon: iconCloud,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/organisations": {
 		id: "/organisations",
 		name: "Organisations",
 		icon: iconOrganization,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/chat": {
 		id: "/chat",
 		name: "Sidekick",
 		icon: iconSidekick,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/referrals": {
 		id: "/referrals",
 		name: "Referrals",
 		icon: iconReferral,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/support": {
 		id: "/support",
@@ -223,11 +226,13 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/create/organisation",
 		name: "New organisation",
 		icon: iconPlus,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/create/instance": {
 		id: "/create/instance",
 		name: "Provision Instance",
 		icon: iconPlus,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 };
 

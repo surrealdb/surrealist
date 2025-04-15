@@ -112,6 +112,7 @@ export interface Connection {
 	name: string;
 	icon: number;
 	labels?: string[];
+	instance?: boolean;
 	lastNamespace: string;
 	lastDatabase: string;
 	queries: QueryTab[];
@@ -467,6 +468,11 @@ export interface GlobalPageInfo {
 	name: string;
 	icon: string;
 	anim?: any;
+	disabled?: (condition: GlobalCondition) => boolean;
+}
+
+export interface GlobalCondition {
+	flags: FeatureFlagMap;
 }
 
 export interface ViewPageInfo {
