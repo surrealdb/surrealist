@@ -15,12 +15,15 @@ import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
+import { useConfigStore } from "~/stores/config";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
 }
 
 export function InstanceActions({ instance, children }: PropsWithChildren<InstanceActionsProps>) {
+	const { removeConnection } = useConfigStore.getState();
+
 	const authTokenMutation = useCloudAuthTokenMutation(instance.id);
 	const connections = useConnectionList();
 	const client = useQueryClient();
@@ -171,6 +174,10 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				await fetchAPI(`/instances/${instance.id}`, {
 					method: "DELETE",
 				});
+
+				if (connection) {
+					removeConnection(connection.id);
+				}
 
 				showInfo({
 					title: "Deleting instance",
