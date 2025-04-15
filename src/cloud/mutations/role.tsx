@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "../api";
+import { tagEvent } from "~/util/analytics";
 
 export interface RoleUpdate {
 	userId: string;
@@ -21,6 +22,10 @@ export function useUpdateRoleMutation(organization: string | undefined) {
 
 			client.invalidateQueries({
 				queryKey: ["cloud", "members", organization],
+			});
+
+			tagEvent("cloud_organisation_member_role", {
+				organisation: organization,
 			});
 		},
 	});

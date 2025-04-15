@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "../api";
+import { tagEvent } from "~/util/analytics";
 
 /**
  * Member removal mutation
@@ -15,6 +16,10 @@ export function useRemoveMemberMutation(organization: string | undefined) {
 
 			client.invalidateQueries({
 				queryKey: ["cloud", "members", organization],
+			});
+
+			tagEvent("cloud_organisation_member_remove", {
+				organisation: organization,
 			});
 		},
 	});

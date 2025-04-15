@@ -71,9 +71,11 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			});
 
 			tagEvent("cloud_instance_created", {
+				instance: result.id,
 				region: details.region,
 				version: details.version,
 				compute_type: details.type,
+				organisation: organization?.id,
 			});
 
 			onCreated(result);

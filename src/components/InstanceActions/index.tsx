@@ -98,9 +98,11 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				});
 
 				tagEvent("cloud_instance_paused", {
+					instance: instance.id,
 					region: instance.region,
 					version: instance.version,
 					compute_type: instance.type.category,
+					organisation: instance.organization_id,
 				});
 			} catch (err: any) {
 				showError({
@@ -129,9 +131,11 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				});
 
 				tagEvent("cloud_instance_resumed", {
+					instance: instance.id,
 					region: instance.region,
 					version: instance.version,
 					compute_type: instance.type.category,
+					organisation: instance.organization_id,
 				});
 			} catch (err: any) {
 				showError({
@@ -188,9 +192,11 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				});
 
 				tagEvent("cloud_instance_deleted", {
+					instance: instance.id,
 					region: instance.region,
 					version: instance.version,
 					compute_type: instance.type.category,
+					organisation: instance.organization_id,
 				});
 			} catch (err: any) {
 				showError({

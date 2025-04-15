@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { closeConnection } from "~/screens/surrealist/connection/connection";
 import { fetchAPI } from "../api";
+import { tagEvent } from "~/util/analytics";
 
 /**
  * Instance version updating mutation
@@ -20,6 +21,11 @@ export function useUpdateInstanceVersionMutation(instance: string | undefined) {
 			});
 
 			closeConnection(true);
+
+			tagEvent("cloud_instance_version_updated", {
+				instance,
+				version,
+			});
 		},
 	});
 }

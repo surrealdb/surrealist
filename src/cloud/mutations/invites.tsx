@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "../api";
+import { tagEvent } from "~/util/analytics";
 
 export interface Invitation {
 	email: string;
@@ -21,6 +22,11 @@ export function useInvitationMutation(organization: string | undefined) {
 
 			client.invalidateQueries({
 				queryKey: ["cloud", "invitations", organization],
+			});
+
+			tagEvent("cloud_organisation_member_invite", {
+				organisation: organization,
+				role,
 			});
 		},
 	});
