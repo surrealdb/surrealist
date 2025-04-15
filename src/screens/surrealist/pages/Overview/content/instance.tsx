@@ -45,6 +45,10 @@ export function StartInstance({
 	}, [connections, instance.id]);
 
 	const handleConnect = useStable(() => {
+		if (instance.state === "deleting") {
+			return;
+		}
+
 		onConnect(instance);
 	});
 

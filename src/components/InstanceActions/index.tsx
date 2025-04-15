@@ -10,6 +10,7 @@ import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
+import { useConfigStore } from "~/stores/config";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
@@ -21,6 +22,8 @@ export interface InstanceActionsProps {
 }
 
 export function InstanceActions({ instance, children }: PropsWithChildren<InstanceActionsProps>) {
+	const { removeConnection } = useConfigStore.getState();
+
 	const authTokenMutation = useCloudAuthTokenMutation(instance.id);
 	const connections = useConnectionList();
 	const client = useQueryClient();
@@ -171,6 +174,10 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				await fetchAPI(`/instances/${instance.id}`, {
 					method: "DELETE",
 				});
+
+				if (connection) {
+					removeConnection(connection.id);
+				}
 
 				showInfo({
 					title: "Deleting instance",
