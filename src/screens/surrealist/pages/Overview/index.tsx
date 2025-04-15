@@ -52,6 +52,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { OVERVIEW, useSavepoint } from "~/hooks/overview";
@@ -70,7 +71,6 @@ import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartPlaceholder } from "./content/placeholder";
 import { StartResource } from "./content/resource";
-import { useIsCloudEnabled } from "~/hooks/cloud";
 
 const GRID_COLUMNS = {
 	xs: 1,

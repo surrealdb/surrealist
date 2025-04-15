@@ -2,9 +2,9 @@ import * as v from "valibot";
 import { INSTANCE_CONFIG } from "~/constants";
 import { type InstanceConfig, InstanceConfigSchema } from "~/schemas";
 import type { SurrealistConfig } from "~/types";
+import { createBaseAuthentication, createBaseConnection } from "~/util/defaults";
 import { showError } from "~/util/helpers";
 import { BrowserAdapter } from "./browser";
-import { createBaseAuthentication, createBaseConnection } from "~/util/defaults";
 
 /**
  * Base adapter for running as docker image
