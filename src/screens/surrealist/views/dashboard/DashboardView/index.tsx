@@ -68,6 +68,10 @@ export function DashboardView() {
 		return <Redirect to="/query" />;
 	}
 
+	if (details?.state === "deleting") {
+		return <Redirect to="/overview" />;
+	}
+
 	return (
 		<Box
 			flex={1}
