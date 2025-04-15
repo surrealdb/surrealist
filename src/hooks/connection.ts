@@ -3,11 +3,20 @@ import { pick, unique } from "radash";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useCloudInstanceList } from "~/cloud/hooks/instances";
-import { SANDBOX, VIEW_PAGES } from "~/constants";
+import { GLOBAL_PAGES, SANDBOX, VIEW_PAGES } from "~/constants";
 import { openRequiredDatabaseModal } from "~/modals/require-database";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
-import { CloudInstance, Connection, ViewCondition, ViewPage, ViewPageInfo } from "~/types";
+import {
+	CloudInstance,
+	Connection,
+	GlobalCondition,
+	GlobalPage,
+	GlobalPageInfo,
+	ViewCondition,
+	ViewPage,
+	ViewPageInfo,
+} from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { fuzzyMatch } from "~/util/helpers";
@@ -85,6 +94,26 @@ export function useView() {
 	const [, view] = useConnectionAndView();
 
 	return view ? VIEW_PAGES[view] : null;
+}
+
+/**
+ * Returns a mapping of available global pages
+ */
+export function useAvailablePages(): Partial<Record<GlobalPage, GlobalPageInfo>> {
+	const [flags] = useFeatureFlags();
+
+	return useMemo(() => {
+		const draft = { ...GLOBAL_PAGES } as const;
+		const condition: GlobalCondition = { flags };
+
+		for (const { id, disabled } of Object.values(draft)) {
+			if (disabled?.(condition)) {
+				delete draft[id];
+			}
+		}
+
+		return draft;
+	}, [flags]);
 }
 
 /**

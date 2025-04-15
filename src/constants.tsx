@@ -187,21 +187,25 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/cloud",
 		name: "Surreal Cloud",
 		icon: iconCloud,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/organisations": {
 		id: "/organisations",
 		name: "Organisations",
 		icon: iconOrganization,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/chat": {
 		id: "/chat",
 		name: "Sidekick",
 		icon: iconSidekick,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/referrals": {
 		id: "/referrals",
 		name: "Referrals",
 		icon: iconReferral,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/support": {
 		id: "/support",
@@ -222,11 +226,13 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/create/organisation",
 		name: "New organisation",
 		icon: iconPlus,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/create/instance": {
 		id: "/create/instance",
 		name: "Provision Instance",
 		icon: iconPlus,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 };
 

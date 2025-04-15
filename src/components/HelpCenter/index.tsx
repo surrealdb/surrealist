@@ -23,7 +23,7 @@ import type { PropsWithChildren } from "react";
 import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
 import { openAccountSupport } from "~/cloud/modals/account-support";
-import { useSurrealCloud } from "~/hooks/cloud";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
@@ -34,7 +34,7 @@ export interface HelpCenterProps {
 }
 
 export function HelpCenter({ onBody }: HelpCenterProps) {
-	const showCloud = useSurrealCloud();
+	const showCloud = useIsCloudEnabled();
 	const [, navigate] = useLocation();
 
 	return (

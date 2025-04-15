@@ -21,7 +21,7 @@ import { Spacer } from "~/components/Spacer";
 import { GLOBAL_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useAvailableViews } from "~/hooks/connection";
+import { useAvailablePages, useAvailableViews } from "~/hooks/connection";
 import { useLastSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -65,6 +65,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const navigateConnection = useConnectionNavigator();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
+	const pages = useAvailablePages();
 	const views = useAvailableViews();
 
 	const { setOverlaySidebar } = useInterfaceStore.getState();
@@ -78,7 +79,11 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const globalNavigation: NavigationItem[][] = useMemo(() => {
 		return GLOBAL_NAVIGATION.flatMap((row) => {
 			const items = row.flatMap((id) => {
-				const info = GLOBAL_PAGES[id];
+				const info = pages[id];
+
+				if (!info) {
+					return [];
+				}
 
 				return {
 					id: info.id,
@@ -91,7 +96,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, []);
+	}, [pages]);
 
 	const viewNavigation: NavigationItem[][] = useMemo(() => {
 		if (!connection) {

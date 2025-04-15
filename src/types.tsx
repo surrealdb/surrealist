@@ -468,6 +468,11 @@ export interface GlobalPageInfo {
 	name: string;
 	icon: string;
 	anim?: any;
+	disabled?: (condition: GlobalCondition) => boolean;
+}
+
+export interface GlobalCondition {
+	flags: FeatureFlagMap;
 }
 
 export interface ViewPageInfo {

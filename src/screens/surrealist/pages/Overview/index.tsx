@@ -41,7 +41,6 @@ import {
 
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
-import { Fragment } from "react/jsx-runtime";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
@@ -71,6 +70,7 @@ import { StartInstance } from "./content/instance";
 import { StartNews } from "./content/news";
 import { StartPlaceholder } from "./content/placeholder";
 import { StartResource } from "./content/resource";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -80,6 +80,7 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const knownLabels = useConnectionLabels();
+	const showCloud = useIsCloudEnabled();
 	const isLight = useIsLight();
 
 	const newsQuery = useLatestNewsQuery();
@@ -352,63 +353,71 @@ export function OverviewPage() {
 												</Box>
 											</Menu.Item>
 										</Link>
-										<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
-										<Link to="/create/instance">
-											<Menu.Item
-												leftSection={
-													<ThemeIcon
-														color="surreal"
-														mr="xs"
-														radius="xs"
-														size="lg"
-														variant="light"
+										{showCloud && (
+											<>
+												<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
+												<Link to="/create/instance">
+													<Menu.Item
+														leftSection={
+															<ThemeIcon
+																color="surreal"
+																mr="xs"
+																radius="xs"
+																size="lg"
+																variant="light"
+															>
+																<Icon
+																	path={iconCloud}
+																	size="lg"
+																/>
+															</ThemeIcon>
+														}
 													>
-														<Icon
-															path={iconCloud}
-															size="lg"
-														/>
-													</ThemeIcon>
-												}
-											>
-												<Box>
-													<Text
-														c="bright"
-														fw={600}
+														<Box>
+															<Text
+																c="bright"
+																fw={600}
+															>
+																Cloud Instance
+															</Text>
+															<Text>
+																Create a managed cloud instance
+															</Text>
+														</Box>
+													</Menu.Item>
+												</Link>
+												<Link to="/create/organisation">
+													<Menu.Item
+														leftSection={
+															<ThemeIcon
+																color="violet"
+																mr="xs"
+																radius="xs"
+																size="lg"
+																variant="light"
+															>
+																<Icon
+																	path={iconAccount}
+																	size="lg"
+																/>
+															</ThemeIcon>
+														}
 													>
-														Cloud Instance
-													</Text>
-													<Text>Create a managed cloud instance</Text>
-												</Box>
-											</Menu.Item>
-										</Link>
-										<Link to="/create/organisation">
-											<Menu.Item
-												leftSection={
-													<ThemeIcon
-														color="violet"
-														mr="xs"
-														radius="xs"
-														size="lg"
-														variant="light"
-													>
-														<Icon
-															path={iconAccount}
-															size="lg"
-														/>
-													</ThemeIcon>
-												}
-											>
-												<Box>
-													<Text
-														c="bright"
-														fw={600}
-													>
-														Organisation
-													</Text>
-													<Text>Create a space to manage your team</Text>
-												</Box>
-											</Menu.Item>
-										</Link>
+														<Box>
+															<Text
+																c="bright"
+																fw={600}
+															>
+																Organisation
+															</Text>
+															<Text>
+																Create a space to manage your team
+															</Text>
+														</Box>
+													</Menu.Item>
+												</Link>
+											</>
+										)}
 									</Menu.Dropdown>
 								</Menu>
 							</Group>
@@ -451,7 +460,7 @@ export function OverviewPage() {
 								</Center>
 							)}
 
-							{authState === "unauthenticated" && (
+							{authState === "unauthenticated" && showCloud && (
 								<>
 									<PrimaryTitle mt="xl">Surreal Cloud</PrimaryTitle>
 									<StartCloud
