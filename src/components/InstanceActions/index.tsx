@@ -10,12 +10,12 @@ import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { useConfirmation } from "~/providers/Confirmation";
+import { useConfigStore } from "~/stores/config";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
-import { useConfigStore } from "~/stores/config";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
