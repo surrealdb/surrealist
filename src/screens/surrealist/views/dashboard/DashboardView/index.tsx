@@ -1,9 +1,19 @@
 import classes from "./style.module.scss";
 
-import { ActionIcon, Button, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
+import {
+	ActionIcon,
+	Button,
+	CopyButton,
+	Group,
+	Paper,
+	SimpleGrid,
+	Skeleton,
+	Text,
+	ThemeIcon,
+} from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { memo, useState } from "react";
-import { Redirect } from "wouter";
+import { Link, Redirect } from "wouter";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
@@ -19,7 +29,17 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
-import { iconCheck, iconChevronDown, iconCopy, iconDotsVertical } from "~/util/icons";
+import {
+	iconAuth,
+	iconCheck,
+	iconChevronDown,
+	iconChevronRight,
+	iconCopy,
+	iconDesigner,
+	iconDotsVertical,
+	iconExplorer,
+	iconQuery,
+} from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
@@ -166,6 +186,49 @@ export function DashboardView() {
 					/>
 
 					<SimpleGrid
+						cols={4}
+						spacing="xl"
+					>
+						<Link href="query">
+							<ViewBox
+								icon={iconQuery}
+								color="surreal"
+								title="Run queries"
+								description="Query your database"
+							/>
+						</Link>
+						<Link href="explorer">
+							<ViewBox
+								icon={iconExplorer}
+								color="blue"
+								title="Explore data"
+								description="Browse your records"
+							/>
+						</Link>
+						<Link href="authentication">
+							<ViewBox
+								icon={iconAuth}
+								color="violet"
+								title="Manage access"
+								description="Control access rules"
+							/>
+						</Link>
+						<Link href="designer">
+							<ViewBox
+								icon={iconDesigner}
+								color="orange"
+								title="Design your schema"
+								description="Structure your data"
+							/>
+						</Link>
+					</SimpleGrid>
+
+					<Box mt={32}>
+						<PrimaryTitle>Your instance</PrimaryTitle>
+						<Text>Manage your instance settings and usage</Text>
+					</Box>
+
+					<SimpleGrid
 						cols={2}
 						spacing="xl"
 					>
@@ -179,6 +242,11 @@ export function DashboardView() {
 							isLoading={isLoading}
 						/>
 					</SimpleGrid>
+
+					<Box mt={32}>
+						<PrimaryTitle>Monitoring</PrimaryTitle>
+						<Text>View and monitor your cloud instance</Text>
+					</Box>
 
 					<SimpleGrid
 						cols={3}
@@ -214,6 +282,58 @@ export function DashboardView() {
 				/>
 			)}
 		</Box>
+	);
+}
+
+interface ViewBoxProps {
+	icon: string;
+	color: string;
+	title: string;
+	description: string;
+}
+
+function ViewBox({ icon, color, title, description }: ViewBoxProps) {
+	return (
+		<Paper
+			p="md"
+			className={classes.viewBox}
+		>
+			<Group
+				wrap="nowrap"
+				style={{ color: "var(--mantine-color-slate-text)" }}
+			>
+				<ThemeIcon
+					variant="light"
+					bg="slate"
+					radius="xs"
+					color={color}
+					size={38}
+				>
+					<Icon
+						path={icon}
+						size="xl"
+					/>
+				</ThemeIcon>
+				<Box>
+					<Text
+						fw={500}
+						fz="xl"
+						c="bright"
+						lh={1}
+					>
+						{title}
+					</Text>
+					<Text
+						c="slate.3"
+						mt="xs"
+					>
+						{description}
+					</Text>
+				</Box>
+				<Spacer />
+				<Icon path={iconChevronRight} />
+			</Group>
+		</Paper>
 	);
 }
 
