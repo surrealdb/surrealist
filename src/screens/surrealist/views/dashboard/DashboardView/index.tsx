@@ -316,9 +316,9 @@ function ViewBox({ icon, color, title, description }: ViewBoxProps) {
 				</ThemeIcon>
 				<Box>
 					<Text
-						fw={500}
-						fz="xl"
 						c="bright"
+						fw={600}
+						fz="xl"
 						lh={1}
 					>
 						{title}
