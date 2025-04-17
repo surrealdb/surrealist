@@ -8,6 +8,7 @@ import {
 	Box,
 	Button,
 	Center,
+	Collapse,
 	Group,
 	Image,
 	Indicator,
@@ -33,6 +34,7 @@ import {
 	iconCommunity,
 	iconDelete,
 	iconPlus,
+	iconReset,
 	iconSearch,
 	iconSidekick,
 	iconTune,
@@ -40,7 +42,7 @@ import {
 } from "~/util/icons";
 
 import { useInputState } from "@mantine/hooks";
-import { useState } from "react";
+import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
@@ -95,11 +97,16 @@ export function OverviewPage() {
 
 	const noFilter = !search && selectedLabels.length === 0;
 
-	const toggleLabel = (labelToToggle: string) => {
-		setSelectedLabels((prevLabels) =>
-			prevLabels.includes(labelToToggle)
-				? prevLabels.filter((label) => label !== labelToToggle)
-				: [...prevLabels, labelToToggle],
+	const toggleLabel = (e: MouseEvent, labelToToggle: string) => {
+		if (e.ctrlKey || e.metaKey) {
+			setSelectedLabels([labelToToggle]);
+			return;
+		}
+
+		setSelectedLabels((current) =>
+			current.includes(labelToToggle)
+				? current.filter((label) => label !== labelToToggle)
+				: [...current, labelToToggle],
 		);
 	};
 
@@ -195,13 +202,9 @@ export function OverviewPage() {
 										<Menu.Target>
 											<Indicator
 												disabled={selectedLabels.length === 0}
-												color="blue"
-												size={7}
-												label={
-													selectedLabels.length > 0
-														? selectedLabels.length
-														: undefined
-												}
+												color="violet"
+												size={14}
+												label={selectedLabels.length}
 											>
 												<ActionButton
 													variant="subtle"
@@ -214,26 +217,19 @@ export function OverviewPage() {
 											</Indicator>
 										</Menu.Target>
 										<Menu.Dropdown miw={220}>
-											<Group
-												justify="space-between"
-												py="xs"
-											>
-												<Menu.Label>Labels</Menu.Label>
-												<Button
-													variant="light"
-													size="compact-xs"
-													mr="xs"
-													leftSection={
-														<Icon
-															path={iconDelete}
-															size="sm"
-														/>
-													}
-													disabled={selectedLabels.length === 0}
-													onClick={() => setSelectedLabels([])}
-												>
-													<Text size="sm">Clear</Text>
-												</Button>
+											<Group justify="space-between">
+												<Menu.Label py="xs">Labels</Menu.Label>
+												{selectedLabels.length > 0 && (
+													<ActionButton
+														size="sm"
+														mr="xs"
+														label="Reset filter"
+														variant="subtle"
+														onClick={() => setSelectedLabels([])}
+													>
+														<Icon path={iconReset} />
+													</ActionButton>
+												)}
 											</Group>
 											{knownLabels.map((option) => {
 												const isActive = selectedLabels.includes(option);
@@ -241,7 +237,7 @@ export function OverviewPage() {
 												return (
 													<Menu.Item
 														key={option}
-														onClick={() => toggleLabel(option)}
+														onClick={(e) => toggleLabel(e, option)}
 														rightSection={
 															isActive && <Icon path={iconCheck} />
 														}
@@ -250,48 +246,55 @@ export function OverviewPage() {
 													</Menu.Item>
 												);
 											})}
+											<Collapse in={selectedLabels.length > 0}>
+												<>
+													<Menu.Divider />
+													<Menu.Label mt="sm">Visibility</Menu.Label>
+													<Menu.Item
+														onClick={() => setLabelInclude(true)}
+														rightSection={
+															labelInclude && (
+																<Icon path={iconCheck} />
+															)
+														}
+													>
+														Show matching items
+													</Menu.Item>
+													<Menu.Item
+														onClick={() => setLabelInclude(false)}
+														rightSection={
+															!labelInclude && (
+																<Icon path={iconCheck} />
+															)
+														}
+													>
+														Hide matching items
+													</Menu.Item>
 
-											<Menu.Divider />
-											<Menu.Label py="xs">Filter Type</Menu.Label>
-											<Menu.Item
-												disabled={selectedLabels.length === 0}
-												onClick={() => setLabelInclude(true)}
-												rightSection={
-													labelInclude && <Icon path={iconCheck} />
-												}
-											>
-												Show matching items
-											</Menu.Item>
-											<Menu.Item
-												disabled={selectedLabels.length === 0}
-												onClick={() => setLabelInclude(false)}
-												rightSection={
-													!labelInclude && <Icon path={iconCheck} />
-												}
-											>
-												Hide matching items
-											</Menu.Item>
-
-											<Menu.Divider />
-											<Menu.Label py="xs">Match Method</Menu.Label>
-											<Menu.Item
-												disabled={selectedLabels.length === 0}
-												onClick={() => setLabelMode("any")}
-												rightSection={
-													labelMode === "any" && <Icon path={iconCheck} />
-												}
-											>
-												Match any selected label
-											</Menu.Item>
-											<Menu.Item
-												disabled={selectedLabels.length === 0}
-												onClick={() => setLabelMode("all")}
-												rightSection={
-													labelMode === "all" && <Icon path={iconCheck} />
-												}
-											>
-												Match all selected labels
-											</Menu.Item>
+													<Menu.Divider />
+													<Menu.Label mt="sm">Method</Menu.Label>
+													<Menu.Item
+														onClick={() => setLabelMode("any")}
+														rightSection={
+															labelMode === "any" && (
+																<Icon path={iconCheck} />
+															)
+														}
+													>
+														Any selected label
+													</Menu.Item>
+													<Menu.Item
+														onClick={() => setLabelMode("all")}
+														rightSection={
+															labelMode === "all" && (
+																<Icon path={iconCheck} />
+															)
+														}
+													>
+														All selected labels
+													</Menu.Item>
+												</>
+											</Collapse>
 										</Menu.Dropdown>
 									</Menu>
 								)}

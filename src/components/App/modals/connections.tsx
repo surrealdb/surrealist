@@ -42,7 +42,8 @@ export function ConnectionsModal() {
 
 	const { sandbox, isEmpty, userConnections, organizations } = useConnectionOverview({
 		search,
-		labels,
+		labels: showAll ? undefined : [label],
+		labelMode: "any",
 	});
 
 	const activateConnection = useStable((con: Connection) => {

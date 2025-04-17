@@ -44,6 +44,7 @@ export const ENDPOINT_TARGETS = [
 	{ label: "SQL", value: "sql" },
 	{ label: "GraphQL", value: "graphql" },
 	{ label: "ML", value: "ml" },
+	{ label: "API", value: "api" },
 ];
 
 /**
