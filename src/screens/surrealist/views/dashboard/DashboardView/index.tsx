@@ -47,6 +47,7 @@ import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { UpdateBlock } from "../UpdateBlock";
+import { NavigationBlock } from "../NavigationBlock";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ConfigurationBlockLazy = memo(ConfigurationBlock);
@@ -185,43 +186,7 @@ export function DashboardView() {
 						onVersions={handleVersions}
 					/>
 
-					<SimpleGrid
-						cols={4}
-						spacing="xl"
-					>
-						<Link href="query">
-							<ViewBox
-								icon={iconQuery}
-								color="surreal"
-								title="Run queries"
-								description="Query your database"
-							/>
-						</Link>
-						<Link href="explorer">
-							<ViewBox
-								icon={iconExplorer}
-								color="blue"
-								title="Explore data"
-								description="Browse your records"
-							/>
-						</Link>
-						<Link href="authentication">
-							<ViewBox
-								icon={iconAuth}
-								color="violet"
-								title="Manage access"
-								description="Control access rules"
-							/>
-						</Link>
-						<Link href="designer">
-							<ViewBox
-								icon={iconDesigner}
-								color="orange"
-								title="Design your schema"
-								description="Structure your data"
-							/>
-						</Link>
-					</SimpleGrid>
+					<NavigationBlock isLoading={isLoading} />
 
 					<Box mt={32}>
 						<PrimaryTitle>Your instance</PrimaryTitle>
@@ -282,58 +247,6 @@ export function DashboardView() {
 				/>
 			)}
 		</Box>
-	);
-}
-
-interface ViewBoxProps {
-	icon: string;
-	color: string;
-	title: string;
-	description: string;
-}
-
-function ViewBox({ icon, color, title, description }: ViewBoxProps) {
-	return (
-		<Paper
-			p="md"
-			className={classes.viewBox}
-		>
-			<Group
-				wrap="nowrap"
-				style={{ color: "var(--mantine-color-slate-text)" }}
-			>
-				<ThemeIcon
-					variant="light"
-					bg="slate"
-					radius="xs"
-					color={color}
-					size={38}
-				>
-					<Icon
-						path={icon}
-						size="xl"
-					/>
-				</ThemeIcon>
-				<Box>
-					<Text
-						c="bright"
-						fw={600}
-						fz="xl"
-						lh={1}
-					>
-						{title}
-					</Text>
-					<Text
-						c="slate.3"
-						mt="xs"
-					>
-						{description}
-					</Text>
-				</Box>
-				<Spacer />
-				<Icon path={iconChevronRight} />
-			</Group>
-		</Paper>
 	);
 }
 
