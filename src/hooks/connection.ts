@@ -1,5 +1,5 @@
 import { compareVersions } from "compare-versions";
-import { pick, unique } from "radash";
+import { unique } from "radash";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { useCloudInstanceList } from "~/cloud/hooks/instances";
@@ -17,10 +17,9 @@ import {
 	ViewPage,
 	ViewPageInfo,
 } from "~/types";
-import { createBaseConnection } from "~/util/defaults";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { fuzzyMatch } from "~/util/helpers";
-import { useConnectionAndView, useConnectionNavigator } from "./routing";
+import { useConnectionAndView } from "./routing";
 import { useStable } from "./stable";
 
 /**
@@ -192,10 +191,12 @@ export function useRequireDatabase(callback: () => void) {
 	});
 }
 
+export type FilterMode = "any" | "all";
+
 export interface ConnectionFilter {
 	search?: string;
 	labels?: string[];
-	labelMode?: "any" | "all";
+	labelMode?: FilterMode;
 	labelInclude?: boolean;
 	includeEmpty?: boolean;
 }
@@ -204,7 +205,7 @@ export interface ConnectionFilter {
  * Retrieve the structured list of instances and connections
  */
 export function useConnectionOverview({
-	search,
+	search = "",
 	labels = [],
 	labelMode = "any",
 	labelInclude = true,
@@ -268,28 +269,23 @@ export function useConnectionOverview({
  */
 function filterConnections(
 	list: Connection[],
-	search?: string,
-	labels?: string[],
-	labelMode: "any" | "all" = "any",
+	search: string,
+	labels: string[],
+	labelMode: FilterMode = "any",
 	labelInclude = true,
 ) {
-	if (!search && (!labels || labels.length === 0)) {
+	if (!search && labels.length === 0) {
 		return list;
 	}
 
 	return list.filter((target) => {
-		if (labels && labels.length > 0 && target.labels?.length) {
-			let matches = false;
+		// Label filtering
+		if (labels.length > 0) {
+			const matches =
+				labelMode === "any"
+					? labels.some((label) => target.labels?.includes(label))
+					: labels.every((label) => target.labels?.includes(label));
 
-			if (labelMode === "any") {
-				// "OR" mode - connection has at least one of the selected labels
-				matches = labels.some((label) => target.labels?.includes(label));
-			} else {
-				// "AND" mode - connection has all of the selected labels
-				matches = labels.every((label) => target.labels?.includes(label));
-			}
-
-			// If include=false, EXCLUDE matching connections
 			if (matches !== labelInclude) {
 				return false;
 			}
@@ -315,12 +311,12 @@ function filterConnections(
  */
 function filterInstances(
 	list: CloudInstance[],
-	search?: string,
-	labels?: string[],
-	labelMode: "any" | "all" = "any",
+	search: string,
+	labels: string[],
+	labelMode: FilterMode = "any",
 	labelInclude = true,
 ) {
-	if (!search && (!labels || labels.length === 0)) {
+	if (!search && labels.length === 0) {
 		return list;
 	}
 
@@ -329,18 +325,13 @@ function filterInstances(
 	return list.filter((target) => {
 		const connection = connections.find((c) => c.authentication.cloudInstance === target.id);
 
-		if (labels && labels.length > 0 && connection?.labels?.length) {
-			let matches = false;
+		// Label filtering
+		if (labels.length > 0) {
+			const matches =
+				labelMode === "any"
+					? labels.some((label) => connection?.labels?.includes(label))
+					: labels.every((label) => connection?.labels?.includes(label));
 
-			if (labelMode === "any") {
-				// "OR" mode - connection has at least one of the selected labels
-				matches = labels.some((label) => connection.labels?.includes(label));
-			} else {
-				// "AND" mode - connection has all of the selected labels
-				matches = labels.every((label) => connection.labels?.includes(label));
-			}
-
-			// If include=false, EXCLUDE matching connections
 			if (matches !== labelInclude) {
 				return false;
 			}
