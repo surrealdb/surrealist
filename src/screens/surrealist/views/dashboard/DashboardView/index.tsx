@@ -190,7 +190,7 @@ export function DashboardView() {
 
 					<Box mt={32}>
 						<PrimaryTitle>Your instance</PrimaryTitle>
-						<Text>Manage your instance settings and usage</Text>
+						<Text>Customise and connect to your Surreal Cloud instance</Text>
 					</Box>
 
 					<SimpleGrid
@@ -210,7 +210,7 @@ export function DashboardView() {
 
 					<Box mt={32}>
 						<PrimaryTitle>Monitoring</PrimaryTitle>
-						<Text>View and monitor your cloud instance</Text>
+						<Text>View and monitor your Surreal Cloud instance</Text>
 					</Box>
 
 					<SimpleGrid
