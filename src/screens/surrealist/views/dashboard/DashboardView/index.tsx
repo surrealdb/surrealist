@@ -46,8 +46,8 @@ import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
-import { UpdateBlock } from "../UpdateBlock";
 import { NavigationBlock } from "../NavigationBlock";
+import { UpdateBlock } from "../UpdateBlock";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ConfigurationBlockLazy = memo(ConfigurationBlock);
