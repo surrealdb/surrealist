@@ -1,9 +1,19 @@
 import classes from "./style.module.scss";
 
-import { ActionIcon, Button, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
+import {
+	ActionIcon,
+	Button,
+	CopyButton,
+	Group,
+	Paper,
+	SimpleGrid,
+	Skeleton,
+	Text,
+	ThemeIcon,
+} from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { memo, useState } from "react";
-import { Redirect } from "wouter";
+import { Link, Redirect } from "wouter";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
@@ -19,13 +29,24 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
-import { iconCheck, iconChevronDown, iconCopy, iconDotsVertical } from "~/util/icons";
+import {
+	iconAuth,
+	iconCheck,
+	iconChevronDown,
+	iconChevronRight,
+	iconCopy,
+	iconDesigner,
+	iconDotsVertical,
+	iconExplorer,
+	iconQuery,
+} from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
+import { NavigationBlock } from "../NavigationBlock";
 import { UpdateBlock } from "../UpdateBlock";
 
 const UpdateBlockLazy = memo(UpdateBlock);
@@ -165,6 +186,13 @@ export function DashboardView() {
 						onVersions={handleVersions}
 					/>
 
+					<NavigationBlock isLoading={isLoading} />
+
+					<Box mt={32}>
+						<PrimaryTitle>Your instance</PrimaryTitle>
+						<Text>Customise and connect to your Surreal Cloud instance</Text>
+					</Box>
+
 					<SimpleGrid
 						cols={2}
 						spacing="xl"
@@ -179,6 +207,11 @@ export function DashboardView() {
 							isLoading={isLoading}
 						/>
 					</SimpleGrid>
+
+					<Box mt={32}>
+						<PrimaryTitle>Monitoring</PrimaryTitle>
+						<Text>View and monitor your Surreal Cloud instance</Text>
+					</Box>
 
 					<SimpleGrid
 						cols={3}
