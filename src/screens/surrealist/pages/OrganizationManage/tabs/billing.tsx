@@ -108,6 +108,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 		});
 	});
 
+	const hasBilling = organization.payment_info && organization.billing_info;
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
 	const cardLast4 = paymentQuery.data?.info?.card_last4 ?? "";
 	const cardDescription = `${capitalize(cardBrand)} ending in ${cardLast4}`;
@@ -309,13 +310,18 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 							onChange={setCoupon}
 							placeholder="Enter discount code"
 						/>
-						<Button
-							type="submit"
-							variant="gradient"
-							disabled={!coupon}
+						<Tooltip
+							label="Please enter billing information before applying a discount code"
+							disabled={hasBilling}
 						>
-							Apply
-						</Button>
+							<Button
+								type="submit"
+								variant="gradient"
+								disabled={!coupon || !hasBilling}
+							>
+								Apply
+							</Button>
+						</Tooltip>
 					</Group>
 				</Form>
 

@@ -214,6 +214,9 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		},
 	});
 
+	const isReady = instance.state === "ready";
+	const isPaused = instance.state === "paused";
+
 	return (
 		<Menu
 			transitionProps={{
@@ -243,10 +246,10 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				>
 					Copy Auth token
 				</Menu.Item>
-				{canModify && (
+				{canModify && (isReady || isPaused) && (
 					<>
 						<Menu.Divider />
-						{instance.state === "ready" ? (
+						{isReady ? (
 							<>
 								<Menu.Item
 									leftSection={<Icon path={iconPause} />}
@@ -268,7 +271,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 								</Menu.Item>
 							</>
 						) : (
-							instance.state === "paused" && (
+							isPaused && (
 								<>
 									<Menu.Divider />
 									<Menu.Item
