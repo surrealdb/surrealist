@@ -23,6 +23,7 @@ import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
+import { marked } from "marked";
 import { Fragment, useMemo, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -32,7 +33,6 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { tagEvent } from "~/util/analytics";
-import { marked } from "marked";
 
 interface NewsItem {
 	id: string;

@@ -1,8 +1,8 @@
 import { marked } from "marked";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { renderHighlighting } from "./highlighting";
 import classes from "~/styles/markdown.module.css";
+import { renderHighlighting } from "./highlighting";
 
 marked.use({
 	gfm: true,
@@ -25,6 +25,6 @@ marked.use({
 					/>
 				</div>
 			`;
-		}
+		},
 	},
 });
