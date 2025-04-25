@@ -48,7 +48,7 @@
         "@tauri-apps/plugin-log": "2.3.1",
         "@tauri-apps/plugin-os": "2.2.1",
         "@tauri-apps/plugin-process": "2.2.0",
-        "@tauri-apps/plugin-shell": "2.2.0",
+        "@tauri-apps/plugin-shell": "2.2.1",
         "@tauri-apps/plugin-updater": "2.6.1",
         "@theopensource-company/feature-flags": "^0.4.6",
         "@xyflow/react": "^12.3.2",
@@ -629,7 +629,7 @@
 
     "@tauri-apps/plugin-process": ["@tauri-apps/plugin-process@2.2.0", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-uypN2Crmyop9z+KRJr3zl71OyVFgTuvHFjsJ0UxxQ/J5212jVa5w4nPEYjIewcn8bUEXacRebwE6F7owgrbhSw=="],
 
-    "@tauri-apps/plugin-shell": ["@tauri-apps/plugin-shell@2.2.0", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-iC3Ic1hLmasoboG7BO+7p+AriSoqAwKrIk+Hpk+S/bjTQdXqbl2GbdclghI4gM32X0bls7xHzIFqhRdrlvJeaA=="],
+    "@tauri-apps/plugin-shell": ["@tauri-apps/plugin-shell@2.2.1", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-G1GFYyWe/KlCsymuLiNImUgC8zGY0tI0Y3p8JgBCWduR5IEXlIJS+JuG1qtveitwYXlfJrsExt3enhv5l2/yhA=="],
 
     "@tauri-apps/plugin-updater": ["@tauri-apps/plugin-updater@2.6.1", "", { "dependencies": { "@tauri-apps/api": "^2.0.0" } }, "sha512-iiOevw4kc12Ok99J9KthXwUqwPv1sYjG+tNEDZqPmwvOmIq7s58nKMRz6NJPKXT4U16NzMPffFcP/LUOsz6c4A=="],
 

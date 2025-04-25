@@ -1,4 +1,4 @@
-# build app with node
+# build app with bun
 FROM oven/bun:latest AS builder
 
 WORKDIR /app
