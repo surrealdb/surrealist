@@ -105,6 +105,27 @@ export interface Authentication {
 	access: string;
 	accessFields: AccessField[];
 	cloudInstance?: string;
+	ssh?: SshTunnel | null;
+}
+
+export interface SshTunnel {
+	host: string;
+	port: number;
+	username: string;
+	authMethod:
+		| {
+				type: "password";
+				password: string;
+		  }
+		| {
+				type: "publicKey";
+				privateKey: string;
+				passphrase: string;
+		  };
+	// | {
+	// 		type: "agent";
+	// 		agent: string;
+	// 	};
 }
 
 export interface Connection {

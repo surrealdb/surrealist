@@ -30,6 +30,10 @@ log = "^0.4"
 url = "2"
 showfile = "0.1.1"
 reqwest = "0.12"
+russh = "0.52.0"
+tokio = { version = "1.44.2", features = ["full"] }
+tauri-events = { path = "crates/tauri-events" }
+ts-rs = "10.1.0"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 openssl = { version = "0.10.72", features = ["vendored"] }
