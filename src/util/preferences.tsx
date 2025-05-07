@@ -396,7 +396,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 					},
 					{
 						name: "Default relational hover focus",
-						description: "The default effect of relations when hovered",
+						description: "The default dimming behaviour of relations when hovered",
 						controller: new SelectionController({
 							options: nodef(DESIGNER_HOVER_FOCUS),
 							reader: (config) => config.settings.appearance.defaultDiagramHoverFocus,
