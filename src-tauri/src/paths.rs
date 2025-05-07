@@ -46,3 +46,10 @@ pub fn get_logs_directory() -> PathBuf {
     config_path.push("logs");
     config_path
 }
+
+pub fn get_ssh_known_hosts_path() -> PathBuf {
+    let mut config_path = get_data_directory();
+    config_path.push("ssh");
+    config_path.push("known_hosts.json");
+    config_path
+}
