@@ -23,7 +23,8 @@ import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import dayjs from "dayjs";
-import { Fragment, useState } from "react";
+import { marked } from "marked";
+import { Fragment, useMemo, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -87,6 +88,10 @@ export function NewsFeedDrawer() {
 	});
 
 	const isEmpty = newsQuery.isFetched && newsQuery.data?.length === 0;
+
+	const content = useMemo<string>(() => {
+		return marked(reading?.content ?? "", { async: false });
+	}, [reading?.content]);
 
 	return (
 		<>
@@ -172,7 +177,7 @@ export function NewsFeedDrawer() {
 											className={classes.newsPostContent}
 											// biome-ignore lint/security/noDangerouslySetInnerHtml: Replace with markdown
 											dangerouslySetInnerHTML={{
-												__html: reading.content,
+												__html: content,
 											}}
 										/>
 										{reading.link && (
