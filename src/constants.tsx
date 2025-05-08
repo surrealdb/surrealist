@@ -384,7 +384,8 @@ export const DESIGNER_ALGORITHMS: Selectable<DiagramAlgorithm>[] = [
 export const DESIGNER_HOVER_FOCUS: Selectable<DiagramHoverFocus>[] = [
 	{ label: "Default", value: "default" },
 	{ label: "None", value: "none" },
-	{ label: "Neighbours", value: "dim" },
+	{ label: "Neighbours", value: "neighbours" },
+	{ label: "Chain", value: "chain" },
 	{ label: "Recursive", value: "recursive" },
 ];
 

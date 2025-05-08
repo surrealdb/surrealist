@@ -234,13 +234,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const handleNodeMouseEnter = useStable((_: MouseEvent, node: Node) => {
-		if (hoverFocus === "dim" || hoverFocus === "recursive") {
+		if (hoverFocus === "neighbours" || hoverFocus === "chain" || hoverFocus === "recursive") {
 			setHoveredNode(node.id);
 		}
 	});
 
 	const handleNodeMouseLeave = useStable(() => {
-		if (hoverFocus === "dim" || hoverFocus === "recursive") {
+		if (hoverFocus === "neighbours" || hoverFocus === "chain" || hoverFocus === "recursive") {
 			setHoveredNode(null);
 		}
 	});
@@ -375,7 +375,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	useEffect(() => {
 		const shouldApplyDimming =
-			(hoverFocus === "dim" || hoverFocus === "recursive") &&
+			(hoverFocus === "neighbours" || hoverFocus === "chain" || hoverFocus === "recursive") &&
 			hoveredNode !== null &&
 			!isDragging;
 
@@ -411,8 +411,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 		const relatedNodes = new Set<string>([hoveredNode]);
 
-		if (hoverFocus === "recursive") {
-			const traverseGraph = (nodeId: string, visited: Set<string>, isForward: boolean) => {
+		if (hoverFocus === "chain") {
+			const traverseRelations = (
+				nodeId: string,
+				visited: Set<string>,
+				isForward: boolean,
+			) => {
 				if (visited.has(nodeId)) return;
 
 				visited.add(nodeId);
@@ -420,16 +424,32 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 				for (const edge of edges) {
 					if (isForward && edge.source === nodeId && !visited.has(edge.target)) {
-						traverseGraph(edge.target, visited, true);
+						traverseRelations(edge.target, visited, true);
 					}
 					if (!isForward && edge.target === nodeId && !visited.has(edge.source)) {
-						traverseGraph(edge.source, visited, false);
+						traverseRelations(edge.source, visited, false);
 					}
 				}
 			};
 
-			traverseGraph(hoveredNode, new Set<string>(), true);
-			traverseGraph(hoveredNode, new Set<string>(), false);
+			traverseRelations(hoveredNode, new Set<string>(), true);
+			traverseRelations(hoveredNode, new Set<string>(), false);
+		} else if (hoverFocus === "recursive") {
+			const traverseRelations = (nodeId: string, visited: Set<string>) => {
+				if (visited.has(nodeId)) return;
+				visited.add(nodeId);
+				relatedNodes.add(nodeId);
+
+				for (const edge of edges) {
+					if (edge.source === nodeId && !visited.has(edge.target)) {
+						traverseRelations(edge.target, visited);
+					}
+					if (edge.target === nodeId && !visited.has(edge.source)) {
+						traverseRelations(edge.source, visited);
+					}
+				}
+			};
+			traverseRelations(hoveredNode, new Set<string>());
 		} else {
 			for (const edge of edges) {
 				if (edge.source === hoveredNode) {
