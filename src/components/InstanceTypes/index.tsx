@@ -19,7 +19,6 @@ import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { Tile } from "~/components/Tile";
-import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
 import { formatMemory } from "~/util/helpers";
@@ -30,10 +29,21 @@ export interface InstanceTypesProps {
 	value: string;
 	active?: string;
 	organization: CloudOrganization;
+	withFree?: boolean;
+	withDevelopment?: boolean;
+	withProduction?: boolean;
 	onChange: (value: string) => void;
 }
 
-export function InstanceTypes({ value, active, organization, onChange }: InstanceTypesProps) {
+export function InstanceTypes({
+	value,
+	active,
+	organization,
+	withFree,
+	withDevelopment,
+	withProduction,
+	onChange,
+}: InstanceTypesProps) {
 	const instances = useCloudOrganizationInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instances.data ?? [], organization);
 	const instanceTypes = organization?.plan.instance_types ?? [];
@@ -85,46 +95,52 @@ export function InstanceTypes({ value, active, organization, onChange }: Instanc
 					},
 				}}
 			>
-				<InstanceTypeCategory
-					organization={organization}
-					activeCategory={category}
-					selectedType={value}
-					activeType={active}
-					category="free"
-					title="Free"
-					description="A free instance to get started with SurrealDB"
-					instanceTypes={freeTypes}
-					isAvailable={isAvailable}
-					onSelect={handleUpdate}
-				/>
+				{withFree !== false && (
+					<InstanceTypeCategory
+						organization={organization}
+						activeCategory={category}
+						selectedType={value}
+						activeType={active}
+						category="free"
+						title="Free"
+						description="A free instance to get started with SurrealDB"
+						instanceTypes={freeTypes}
+						isAvailable={isAvailable}
+						onSelect={handleUpdate}
+					/>
+				)}
 
-				<InstanceTypeCategory
-					organization={organization}
-					activeCategory={category}
-					selectedType={value}
-					activeType={active}
-					category="development"
-					title="Development"
-					description="Configurations optimized for development workloads"
-					instanceTypes={developmentTypes}
-					withBillingRequired
-					isAvailable={isAvailable}
-					onSelect={handleUpdate}
-				/>
+				{withDevelopment !== false && (
+					<InstanceTypeCategory
+						organization={organization}
+						activeCategory={category}
+						selectedType={value}
+						activeType={active}
+						category="development"
+						title="Development"
+						description="Configurations optimized for development workloads"
+						instanceTypes={developmentTypes}
+						withBillingRequired
+						isAvailable={isAvailable}
+						onSelect={handleUpdate}
+					/>
+				)}
 
-				<InstanceTypeCategory
-					organization={organization}
-					activeCategory={category}
-					selectedType={value}
-					activeType={active}
-					category="production"
-					title="Production"
-					description="Configurations optimized for production workloads"
-					instanceTypes={productionTypes}
-					withBillingRequired
-					isAvailable={isAvailable}
-					onSelect={handleUpdate}
-				/>
+				{withProduction !== false && (
+					<InstanceTypeCategory
+						organization={organization}
+						activeCategory={category}
+						selectedType={value}
+						activeType={active}
+						category="production"
+						title="Production"
+						description="Configurations optimized for production workloads"
+						instanceTypes={productionTypes}
+						withBillingRequired
+						isAvailable={isAvailable}
+						onSelect={handleUpdate}
+					/>
+				)}
 			</Accordion>
 		</>
 	);

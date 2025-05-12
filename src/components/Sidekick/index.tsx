@@ -43,7 +43,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useCloudProfile, useIsAuthenticated } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
@@ -77,8 +77,8 @@ export function Sidekick() {
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [input, setInput] = useInputState("");
 
+	const profile = useCloudProfile();
 	const isAuthed = useIsAuthenticated();
-	const profile = useCloudStore((s) => s.profile);
 	const conversation = useCloudStore((s) => s.chatConversation);
 	const lastResponse = useCloudStore((s) => s.chatLastResponse);
 

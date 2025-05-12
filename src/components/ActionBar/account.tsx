@@ -25,6 +25,7 @@ import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
+import { useCloudProfile } from "~/hooks/cloud";
 
 interface AccountFormProps {
 	onClose(): void;
@@ -33,7 +34,7 @@ interface AccountFormProps {
 function AccountForm({ onClose }: AccountFormProps) {
 	const { setAccountProfile } = useCloudStore.getState();
 
-	const profile = useCloudStore((s) => s.profile);
+	const profile = useCloudProfile();
 	const provider = useCloudStore((s) => s.authProvider);
 	const [isLoading, setLoading] = useState(false);
 
@@ -103,7 +104,7 @@ function AccountForm({ onClose }: AccountFormProps) {
 export function CloudAccount() {
 	const [showSettings, settingsModal] = useBoolean();
 
-	const profile = useCloudStore((s) => s.profile);
+	const profile = useCloudProfile();
 	const state = useCloudStore((s) => s.authState);
 
 	if (state === "unauthenticated" || state === "unknown") {

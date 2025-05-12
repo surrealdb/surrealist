@@ -19,6 +19,10 @@ export function ProvisionCategoryStep({ details, setDetails }: ProvisionStepProp
 		setDetails((draft) => {
 			draft.type = info.slug;
 			draft.units = info.compute_units.min ?? 1;
+
+			if (info.price_hour === 0) {
+				draft.storage_mode = "standalone";
+			}
 		});
 	});
 

@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Divider, Group, Stack, Text } from "@mantine/core";
+import { Box, Button, Collapse, Group, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
@@ -7,7 +7,7 @@ import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useOrganizations } from "~/hooks/cloud";
+import { useHasCloudFeature, useOrganizations } from "~/hooks/cloud";
 import { useLastSavepoint } from "~/hooks/overview";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
@@ -19,6 +19,10 @@ import { ProvisionOrganizationStep } from "./steps/organization";
 import { ProvisionRegionStep } from "./steps/region";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
+import { StorageModeStep } from "./steps/storage-mode";
+import { StorageCategoryStep } from "./steps/storage-class";
+import { StorageSizeStep } from "./steps/storage-size";
+import { ComputeUnitsStep } from "./steps/compute";
 
 const DEFAULT: ProvisionConfig = {
 	organization: "",
@@ -27,6 +31,9 @@ const DEFAULT: ProvisionConfig = {
 	type: "",
 	units: 1,
 	version: "",
+	storage_mode: "standalone",
+	storage_category: "standard",
+	storage_amount: 0,
 };
 
 export interface ProvisionFormProps {
@@ -35,6 +42,7 @@ export interface ProvisionFormProps {
 
 export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 	const organizations = useOrganizations();
+	const showDistributed = useHasCloudFeature("distributed_storage");
 	const [details, setDetails] = useImmer(DEFAULT);
 	const organization = organizations.find((org) => org.id === details.organization);
 	const instanceTypes = organization?.plan.instance_types ?? [];
@@ -76,6 +84,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				version: details.version,
 				compute_type: details.type,
 				organisation: organization?.id,
+				storage_mode: details.storage_mode,
 			});
 
 			onCreated(result);
@@ -176,6 +185,78 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				details={details}
 				setDetails={setDetails}
 			/>
+
+			{showDistributed && (
+				<>
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Storage mode
+						</Text>
+						<Text>Choose between standalone and distributed data storage</Text>
+					</Box>
+
+					<StorageModeStep
+						details={details}
+						setDetails={setDetails}
+					/>
+				</>
+			)}
+
+			{details.storage_mode === "distributed" && (
+				<>
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Storage class
+						</Text>
+						<Text>Pick a suitable storage class for your intended workload</Text>
+					</Box>
+
+					<StorageCategoryStep
+						details={details}
+						setDetails={setDetails}
+					/>
+
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Storage size
+						</Text>
+						<Text>Set a desired initial size for your storage volume</Text>
+					</Box>
+
+					<StorageSizeStep
+						details={details}
+						setDetails={setDetails}
+					/>
+
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Compute nodes
+						</Text>
+						<Text>Select how many compute nodes to allocate</Text>
+					</Box>
+
+					<ComputeUnitsStep
+						details={details}
+						setDetails={setDetails}
+					/>
+				</>
+			)}
 
 			<Collapse in={!!instanceType}>
 				<Stack gap="xl">
