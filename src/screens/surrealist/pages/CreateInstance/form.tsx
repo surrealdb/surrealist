@@ -76,6 +76,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 			};
 
 			if (details.storage_mode === "distributed") {
+				configuration.storage = details.storage_amount;
 				configuration.distributed_storage_specs = {
 					category: details.storage_category,
 					autoscaling: false,
