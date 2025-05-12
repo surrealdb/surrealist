@@ -3,10 +3,10 @@ import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
 import { useOrganizationSelection } from "~/cloud/hooks/organizations";
 import { Icon } from "~/components/Icon";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { iconOrganization } from "~/util/icons";
 import type { ProvisionStepProps } from "../types";
-import { useCloudProfile } from "~/hooks/cloud";
 
 export function ProvisionOrganizationStep({ details, setDetails }: ProvisionStepProps) {
 	const organizations = useOrganizationSelection();

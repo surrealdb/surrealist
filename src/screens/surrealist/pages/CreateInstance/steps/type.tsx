@@ -1,8 +1,8 @@
+import { Skeleton } from "@mantine/core";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import type { ProvisionStepProps } from "../types";
-import { Skeleton } from "@mantine/core";
 
 export function ProvisionCategoryStep({ details, setDetails }: ProvisionStepProps) {
 	const organizations = useOrganizations();

@@ -1,7 +1,7 @@
-import { useStable } from "~/hooks/stable";
-import type { ProvisionStepProps } from "../types";
 import { Paper, Slider } from "@mantine/core";
 import { useOrganizations } from "~/hooks/cloud";
+import { useStable } from "~/hooks/stable";
+import type { ProvisionStepProps } from "../types";
 
 export function StorageSizeStep({ details, setDetails }: ProvisionStepProps) {
 	const organizations = useOrganizations();

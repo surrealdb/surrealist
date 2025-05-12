@@ -14,15 +14,15 @@ import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError } from "~/util/helpers";
 import { iconArrowLeft } from "~/util/icons";
+import { ComputeUnitsStep } from "./steps/compute";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionOrganizationStep } from "./steps/organization";
 import { ProvisionRegionStep } from "./steps/region";
+import { StorageCategoryStep } from "./steps/storage-class";
+import { StorageModeStep } from "./steps/storage-mode";
+import { StorageSizeStep } from "./steps/storage-size";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
-import { StorageModeStep } from "./steps/storage-mode";
-import { StorageCategoryStep } from "./steps/storage-class";
-import { StorageSizeStep } from "./steps/storage-size";
-import { ComputeUnitsStep } from "./steps/compute";
 
 const DEFAULT: ProvisionConfig = {
 	organization: "",

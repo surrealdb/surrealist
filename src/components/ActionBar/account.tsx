@@ -17,6 +17,7 @@ import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";
 import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
 import { useBoolean } from "~/hooks/boolean";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
@@ -25,7 +26,6 @@ import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { useCloudProfile } from "~/hooks/cloud";
 
 interface AccountFormProps {
 	onClose(): void;

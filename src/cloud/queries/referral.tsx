@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
 import { fetchAPI } from "../api";
-import { useCloudProfile } from "~/hooks/cloud";
 
 /**
  * Fetch referral statistics

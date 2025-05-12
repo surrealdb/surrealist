@@ -1,7 +1,7 @@
-import { useStable } from "~/hooks/stable";
-import type { ProvisionStepProps, StorageCategory } from "../types";
 import { Box, Radio, Stack, Text } from "@mantine/core";
 import { Label } from "~/components/Label";
+import { useStable } from "~/hooks/stable";
+import type { ProvisionStepProps, StorageCategory } from "../types";
 
 export function StorageCategoryStep({ details, setDetails }: ProvisionStepProps) {
 	const updateCategory = useStable((value: string) => {
