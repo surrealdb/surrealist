@@ -64,18 +64,28 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 
 	const provisionInstance = useStable(async () => {
 		try {
+			const configuration: any = {
+				name: details.name,
+				org: organization?.id,
+				region: details.region,
+				specs: {
+					slug: details.type,
+					version: details.version,
+					compute_units: details.type === "free" ? undefined : details.units,
+				},
+			};
+
+			if (details.storage_mode === "distributed") {
+				configuration.distributed_storage_specs = {
+					category: details.storage_category,
+					autoscaling: false,
+					max_compute_units: details.units,
+				};
+			}
+
 			const result = await fetchAPI<CloudInstance>("/instances", {
 				method: "POST",
-				body: JSON.stringify({
-					name: details.name,
-					org: organization?.id,
-					region: details.region,
-					specs: {
-						slug: details.type,
-						version: details.version,
-						compute_units: details.type === "free" ? undefined : details.units,
-					},
-				}),
+				body: JSON.stringify(configuration),
 			});
 
 			tagEvent("cloud_instance_created", {
