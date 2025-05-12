@@ -29,13 +29,11 @@ import { Label } from "../Label";
 export interface InstanceTypesProps {
 	value: string;
 	active?: string;
-	organizationId: string;
+	organization: CloudOrganization;
 	onChange: (value: string) => void;
 }
 
-export function InstanceTypes({ value, active, organizationId, onChange }: InstanceTypesProps) {
-	const organizations = useOrganizations();
-	const organization = organizations.find((org) => org.id === organizationId);
+export function InstanceTypes({ value, active, organization, onChange }: InstanceTypesProps) {
 	const instances = useCloudOrganizationInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instances.data ?? [], organization);
 	const instanceTypes = organization?.plan.instance_types ?? [];
@@ -69,7 +67,7 @@ export function InstanceTypes({ value, active, organizationId, onChange }: Insta
 	const developmentTypes = groupedTypes.development ?? [];
 	const productionTypes = groupedTypes.production ?? [];
 
-	return organization ? (
+	return (
 		<>
 			<Accordion
 				value={category}
@@ -129,8 +127,6 @@ export function InstanceTypes({ value, active, organizationId, onChange }: Insta
 				/>
 			</Accordion>
 		</>
-	) : (
-		<Skeleton h={52} />
 	);
 }
 
