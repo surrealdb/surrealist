@@ -85,7 +85,7 @@ export function InstanceTypes({
 	const productionTypes = groupedTypes.production ?? [];
 	const prodCompTypes = groupedTypes["production-compute"] ?? [];
 
-	const isStandalone = storageMode === "standalone";
+	const isDistributed = storageMode === "distributed";
 
 	return (
 		<>
@@ -105,7 +105,35 @@ export function InstanceTypes({
 					},
 				}}
 			>
-				{isStandalone ? (
+				{isDistributed ? (
+					<>
+						<InstanceTypeCategory
+							organization={organization}
+							activeCategory={category}
+							selectedType={value}
+							activeType={active}
+							category="production"
+							title="Memory intensive"
+							instanceTypes={productionTypes}
+							withBillingRequired
+							isAvailable={isAvailable}
+							onSelect={handleUpdate}
+						/>
+
+						<InstanceTypeCategory
+							organization={organization}
+							activeCategory={category}
+							selectedType={value}
+							activeType={active}
+							category="production-compute"
+							title="Compute intensive"
+							instanceTypes={prodCompTypes}
+							withBillingRequired
+							isAvailable={isAvailable}
+							onSelect={handleUpdate}
+						/>
+					</>
+				) : (
 					<>
 						<InstanceTypeCategory
 							organization={organization}
@@ -140,34 +168,6 @@ export function InstanceTypes({
 							category="production"
 							title="Production"
 							instanceTypes={productionTypes}
-							withBillingRequired
-							isAvailable={isAvailable}
-							onSelect={handleUpdate}
-						/>
-					</>
-				) : (
-					<>
-						<InstanceTypeCategory
-							organization={organization}
-							activeCategory={category}
-							selectedType={value}
-							activeType={active}
-							category="production"
-							title="Memory intensive"
-							instanceTypes={productionTypes}
-							withBillingRequired
-							isAvailable={isAvailable}
-							onSelect={handleUpdate}
-						/>
-
-						<InstanceTypeCategory
-							organization={organization}
-							activeCategory={category}
-							selectedType={value}
-							activeType={active}
-							category="production-compute"
-							title="Compute intensive"
-							instanceTypes={prodCompTypes}
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
