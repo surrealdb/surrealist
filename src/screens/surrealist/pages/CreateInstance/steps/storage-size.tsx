@@ -1,8 +1,8 @@
 import { Slider } from "@mantine/core";
-import { useStable } from "~/hooks/stable";
-import type { ProvisionStepProps } from "../types";
-import { formatMemory } from "~/util/helpers";
 import { list } from "radash";
+import { useStable } from "~/hooks/stable";
+import { formatMemory } from "~/util/helpers";
+import type { ProvisionStepProps } from "../types";
 
 export function StorageSizeStep({ details, setDetails }: ProvisionStepProps) {
 	const updateAmount = useStable((value: number) => {

@@ -20,11 +20,11 @@ import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { Tile } from "~/components/Tile";
 import { useStable } from "~/hooks/stable";
+import { StorageMode } from "~/screens/surrealist/pages/CreateInstance/types";
 import { CloudInstanceType, CloudOrganization } from "~/types";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconAuth, iconChevronDown, iconChevronRight } from "~/util/icons";
 import { Label } from "../Label";
-import { StorageMode } from "~/screens/surrealist/pages/CreateInstance/types";
 
 export interface InstanceTypesProps {
 	value: string;
