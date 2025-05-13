@@ -15,7 +15,7 @@ export function ComputeUnitsStep({ details, setDetails }: ProvisionStepProps) {
 	});
 
 	const minimum = instanceType?.compute_units.min ?? 1;
-	const maximum = instanceType?.max_storage_size ?? 1;
+	const maximum = instanceType?.compute_units.max ?? 1;
 
 	const marks = [minimum, maximum].map((value) => ({
 		value,
