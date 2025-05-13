@@ -23,6 +23,7 @@ export const EMPTY_PROFILE: CloudProfile = {
 	username: "",
 	name: "",
 	default_org: "",
+	enabled_features: [],
 };
 
 export type CloudStore = {
