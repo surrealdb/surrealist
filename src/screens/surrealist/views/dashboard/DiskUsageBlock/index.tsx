@@ -1,4 +1,4 @@
-import { Divider, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
+import { Alert, Divider, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance, CloudMeasurement } from "~/types";
@@ -49,35 +49,48 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 					gap={0}
 					flex={1}
 				>
-					<Group>
-						<Text
-							c="bright"
-							fz="xl"
-							fw={600}
+					{instance?.distributed_storage_specs ? (
+						<Alert
+							flex={1}
+							color="violet"
+							title="Coming soon"
 						>
-							{storageUsageMB}
-						</Text>
-						<Spacer />
-						<Text
-							fz="xl"
-							fw={600}
-						>
-							{storageMaxMB}
-						</Text>
-					</Group>
+							Storage usage for distributed instances is not yet available and will be
+							added in a future release.
+						</Alert>
+					) : (
+						<>
+							<Group>
+								<Text
+									c="bright"
+									fz="xl"
+									fw={600}
+								>
+									{storageUsageMB}
+								</Text>
+								<Spacer />
+								<Text
+									fz="xl"
+									fw={600}
+								>
+									{storageMaxMB}
+								</Text>
+							</Group>
 
-					<Progress
-						value={storageFrac}
-						color={storageColor}
-						size={6}
-						mt="md"
-					/>
+							<Progress
+								value={storageFrac}
+								color={storageColor}
+								size={6}
+								mt="md"
+							/>
 
-					<Spacer />
+							<Spacer />
 
-					<Text ta="center">
-						You have used {storageFrac.toFixed(2)}% of your storage limit
-					</Text>
+							<Text ta="center">
+								You have used {storageFrac.toFixed(2)}% of your storage limit
+							</Text>
+						</>
+					)}
 				</Stack>
 			</Paper>
 		</Skeleton>
