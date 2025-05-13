@@ -25,6 +25,7 @@ import { CloudInstanceType, CloudOrganization } from "~/types";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconAuth, iconChevronDown, iconChevronRight } from "~/util/icons";
 import { Label } from "../Label";
+import { getTypeCategoryName } from "~/util/cloud";
 
 export interface InstanceTypesProps {
 	value: string;
@@ -113,11 +114,11 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="production"
-							title="Memory intensive"
 							instanceTypes={productionTypes}
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
+							distributed
 						/>
 
 						<InstanceTypeCategory
@@ -126,11 +127,11 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="production-compute"
-							title="Compute intensive"
 							instanceTypes={prodCompTypes}
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
+							distributed
 						/>
 					</>
 				) : (
@@ -141,7 +142,6 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="free"
-							title="Free"
 							instanceTypes={freeTypes}
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
@@ -153,7 +153,6 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="development"
-							title="Development"
 							instanceTypes={developmentTypes}
 							withBillingRequired
 							isAvailable={isAvailable}
@@ -166,7 +165,6 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="production"
-							title="Production"
 							instanceTypes={productionTypes}
 							withBillingRequired
 							isAvailable={isAvailable}
@@ -185,7 +183,7 @@ interface InstanceTypeCategoryProps {
 	selectedType: string;
 	activeType?: string;
 	category: string;
-	title: string;
+	distributed?: boolean;
 	instanceTypes: CloudInstanceType[];
 	withBillingRequired?: boolean;
 	isAvailable: (type: CloudInstanceType) => boolean;
@@ -198,7 +196,7 @@ function InstanceTypeCategory({
 	selectedType,
 	activeType,
 	category,
-	title,
+	distributed,
 	instanceTypes,
 	withBillingRequired,
 	isAvailable,
@@ -214,7 +212,7 @@ function InstanceTypeCategory({
 						fw={600}
 						fz="xl"
 					>
-						{title}
+						{getTypeCategoryName(category, distributed ?? false)}
 					</Text>
 				</Group>
 			</Accordion.Control>
