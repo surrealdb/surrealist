@@ -1,7 +1,7 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import type { AnyAuth, Duration, Token } from "surrealdb";
-import type { FeatureFlagMap } from "./util/feature-flags";
 import { StorageCategory } from "./screens/surrealist/pages/CreateInstance/types";
+import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
 export type BannerType = "info" | "warning" | "important";
