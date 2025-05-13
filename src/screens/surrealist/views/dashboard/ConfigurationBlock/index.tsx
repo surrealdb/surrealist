@@ -14,8 +14,8 @@ import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
-import { formatMemory } from "~/util/helpers";
 import { getTypeCategoryName } from "~/util/cloud";
+import { formatMemory } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;

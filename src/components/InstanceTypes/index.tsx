@@ -22,10 +22,10 @@ import { Tile } from "~/components/Tile";
 import { useStable } from "~/hooks/stable";
 import { StorageMode } from "~/screens/surrealist/pages/CreateInstance/types";
 import { CloudInstanceType, CloudOrganization } from "~/types";
+import { getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconAuth, iconChevronDown, iconChevronRight } from "~/util/icons";
 import { Label } from "../Label";
-import { getTypeCategoryName } from "~/util/cloud";
 
 export interface InstanceTypesProps {
 	value: string;
