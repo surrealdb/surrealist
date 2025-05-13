@@ -24,6 +24,13 @@ export const Y_SLIDE_TRANSITION = {
 
 export const DATE_TIME_FORMAT = "E MMM dd yyyy HH:mm";
 
+export const CURRENCY_FORMAT = new Intl.NumberFormat("en-US", {
+	style: "currency",
+	currency: "USD",
+	currencyDisplay: "narrowSymbol",
+	maximumFractionDigits: 3,
+});
+
 export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
 	e.stopPropagation();
 };
@@ -437,12 +444,18 @@ export function __throw(error: Error | string): never {
 /**
  * Format the given memory amount in MB to a human readable string
  */
-export function formatMemory(amountInMB: number) {
-	if (amountInMB < 1024) {
+export function formatMemory(amountInMB: number, rounded = false) {
+	const factor = rounded ? 1000 : 1024;
+
+	if (amountInMB < factor) {
 		return `${Number.parseFloat(amountInMB.toFixed(2))} MB`;
 	}
 
-	return `${Number.parseFloat((amountInMB / 1024).toFixed(2))} GB`;
+	if (amountInMB < factor * factor) {
+		return `${Number.parseFloat((amountInMB / factor).toFixed(2))} GB`;
+	}
+
+	return `${Number.parseFloat((amountInMB / (factor * factor)).toFixed(2))} TB`;
 }
 
 /**

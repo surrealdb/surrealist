@@ -1,29 +1,24 @@
-import { Paper, Slider } from "@mantine/core";
-import { useOrganizations } from "~/hooks/cloud";
+import { Slider } from "@mantine/core";
 import { useStable } from "~/hooks/stable";
 import type { ProvisionStepProps } from "../types";
+import { formatMemory } from "~/util/helpers";
+import { list } from "radash";
 
 export function StorageSizeStep({ details, setDetails }: ProvisionStepProps) {
-	const organizations = useOrganizations();
-	const organization = organizations.find((org) => org.id === details.organization);
-	const instanceType = organization?.plan.instance_types.find((t) => t.slug === details.type);
-
-	if (!instanceType) {
-		throw new Error("Instance type not found");
-	}
-
 	const updateAmount = useStable((value: number) => {
 		setDetails((draft) => {
-			draft.storage_amount = value;
+			draft.storageAmount = value;
 		});
 	});
 
-	const minimum = 1;
-	const maximum = instanceType.max_storage_size;
+	const isStandard = details.storageCategory === "standard";
+	const minimum = 100;
+	const maximum = isStandard ? 1000 : 6000;
+	const segments = isStandard ? list(100, 1000, (i) => i, 100) : list(0, 6000, (i) => i, 1000);
 
-	const marks = [minimum, maximum].map((value) => ({
+	const marks = segments.map((value) => ({
 		value,
-		label: `${value} GB`,
+		label: formatMemory(Math.max(value, 100) * 1000, true),
 	}));
 
 	return (
@@ -31,16 +26,16 @@ export function StorageSizeStep({ details, setDetails }: ProvisionStepProps) {
 			mb="sm"
 			min={minimum}
 			max={maximum}
-			step={1}
-			value={details.storage_amount}
+			step={100}
+			value={details.storageAmount}
 			onChange={updateAmount}
 			marks={marks}
-			label={(value) => `${value} GB`}
+			label={(value) => formatMemory(value * 1000, true)}
 			color="slate"
 			styles={{
 				label: {
 					paddingInline: 10,
-					fontSize: "var(--mantine-font-size-lg)",
+					fontSize: "var(--mantine-font-size-md)",
 					fontWeight: 600,
 				},
 			}}

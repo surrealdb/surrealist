@@ -10,9 +10,9 @@ export interface ProvisionConfig {
 	region: string;
 	type: string;
 	units: number;
-	storage_mode: StorageMode;
-	storage_category: StorageCategory;
-	storage_amount: number;
+	storageMode: StorageMode;
+	storageCategory: StorageCategory;
+	storageAmount: number;
 }
 
 export interface ProvisionStepProps {

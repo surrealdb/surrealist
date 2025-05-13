@@ -31,9 +31,9 @@ const DEFAULT: ProvisionConfig = {
 	type: "",
 	units: 1,
 	version: "",
-	storage_mode: "standalone",
-	storage_category: "standard",
-	storage_amount: 0,
+	storageMode: "standalone",
+	storageCategory: "standard",
+	storageAmount: 0,
 };
 
 export interface ProvisionFormProps {
@@ -75,10 +75,10 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				},
 			};
 
-			if (details.storage_mode === "distributed") {
-				configuration.storage = details.storage_amount;
+			if (details.storageMode === "distributed") {
+				configuration.storage = details.storageAmount;
 				configuration.distributed_storage_specs = {
-					category: details.storage_category,
+					category: details.storageCategory,
 					autoscaling: false,
 					max_compute_units: details.units,
 				};
@@ -95,7 +95,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				version: details.version,
 				compute_type: details.type,
 				organisation: organization?.id,
-				storage_mode: details.storage_mode,
+				storage_mode: details.storageMode,
 			});
 
 			onCreated(result);
@@ -181,22 +181,6 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				setDetails={setDetails}
 			/>
 
-			<Box mt={24}>
-				<Text
-					fz="xl"
-					fw={600}
-					c="bright"
-				>
-					Instance type
-				</Text>
-				<Text>Configure system configuration</Text>
-			</Box>
-
-			<ProvisionCategoryStep
-				details={details}
-				setDetails={setDetails}
-			/>
-
 			{showDistributed && (
 				<>
 					<Box mt={24}>
@@ -217,7 +201,23 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				</>
 			)}
 
-			{details.storage_mode === "distributed" && (
+			<Box mt={24}>
+				<Text
+					fz="xl"
+					fw={600}
+					c="bright"
+				>
+					Instance type
+				</Text>
+				<Text>Configure system configuration</Text>
+			</Box>
+
+			<ProvisionCategoryStep
+				details={details}
+				setDetails={setDetails}
+			/>
+
+			{details.storageMode === "distributed" && (
 				<>
 					<Box mt={24}>
 						<Text
@@ -259,7 +259,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 						>
 							Compute nodes
 						</Text>
-						<Text>Select how many compute nodes to allocate</Text>
+						<Text>Select how many SurrealDB compute nodes to allocate</Text>
 					</Box>
 
 					<ComputeUnitsStep

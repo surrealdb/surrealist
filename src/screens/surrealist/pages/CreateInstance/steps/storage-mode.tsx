@@ -6,15 +6,14 @@ import type { ProvisionStepProps, StorageMode } from "../types";
 export function StorageModeStep({ details, setDetails }: ProvisionStepProps) {
 	const updateMode = useStable((value: string) => {
 		setDetails((draft) => {
-			draft.storage_mode = value as StorageMode;
+			draft.storageMode = value as StorageMode;
+			draft.type = "";
 		});
 	});
 
-	const allowDistributed = details.type && details.type !== "free";
-
 	return (
 		<Radio.Group
-			value={details.storage_mode}
+			value={details.storageMode}
 			onChange={updateMode}
 		>
 			<Stack>
@@ -29,7 +28,6 @@ export function StorageModeStep({ details, setDetails }: ProvisionStepProps) {
 				/>
 				<Radio
 					value="distributed"
-					disabled={!allowDistributed}
 					label={
 						<Box>
 							<Label>Distributed</Label>

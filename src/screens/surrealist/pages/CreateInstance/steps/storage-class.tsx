@@ -6,13 +6,13 @@ import type { ProvisionStepProps, StorageCategory } from "../types";
 export function StorageCategoryStep({ details, setDetails }: ProvisionStepProps) {
 	const updateCategory = useStable((value: string) => {
 		setDetails((draft) => {
-			draft.storage_category = value as StorageCategory;
+			draft.storageCategory = value as StorageCategory;
 		});
 	});
 
 	return (
 		<Radio.Group
-			value={details.storage_category}
+			value={details.storageCategory}
 			onChange={updateCategory}
 		>
 			<Stack>
@@ -22,9 +22,8 @@ export function StorageCategoryStep({ details, setDetails }: ProvisionStepProps)
 						<Box>
 							<Label>Standard</Label>
 							<Text>
-								For small workloads and development environments. Allows you to
-								scale up to 1 TB of data, best suited for up to two SurrealDB
-								Compute nodes.
+								For small workloads. Allows you to scale up to 1 TB of data, best
+								suited for up to two SurrealDB Compute nodes.
 							</Text>
 						</Box>
 					}
