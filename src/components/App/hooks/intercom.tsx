@@ -1,14 +1,15 @@
 import { Intercom, update } from "@intercom/messenger-js-sdk";
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
 
 export function useIntercom() {
 	const [location] = useLocation();
 	const initialize = useRef(true);
 
+	const profile = useCloudProfile();
 	const authState = useCloudStore((s) => s.authState);
-	const profile = useCloudStore((s) => s.profile);
 	const userId = useCloudStore((s) => s.userId);
 
 	const isReady = authState !== "unknown" && authState !== "loading";

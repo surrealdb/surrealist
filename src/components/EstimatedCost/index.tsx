@@ -1,6 +1,7 @@
 import { Box, Text } from "@mantine/core";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstanceType } from "~/types";
+import { CURRENCY_FORMAT } from "~/util/helpers";
 
 export interface EstimatedCostProps {
 	type?: CloudInstanceType;
@@ -21,7 +22,7 @@ export function EstimatedCost({ type, units }: EstimatedCostProps) {
 					fw={500}
 					c="bright"
 				>
-					${estimatedCost.toFixed(3)}
+					{CURRENCY_FORMAT.format(estimatedCost)}
 				</Text>
 				/hour
 			</Text>
@@ -33,7 +34,7 @@ export function EstimatedCost({ type, units }: EstimatedCostProps) {
 					fw={500}
 					c="bright"
 				>
-					${(estimatedCost * 24 * 30).toFixed(3)}
+					{CURRENCY_FORMAT.format(estimatedCost * 24 * 30)}
 				</Text>
 				/month
 			</Text>

@@ -3,14 +3,14 @@ import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
 import { useOrganizationSelection } from "~/cloud/hooks/organizations";
 import { Icon } from "~/components/Icon";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { iconOrganization } from "~/util/icons";
 import type { ProvisionStepProps } from "../types";
 
 export function ProvisionOrganizationStep({ details, setDetails }: ProvisionStepProps) {
 	const organizations = useOrganizationSelection();
-	const profile = useCloudStore((s) => s.profile);
+	const profile = useCloudProfile();
 	const [search] = useSearchParams();
 
 	const updateOrganization = useStable((org: string) => {

@@ -13,29 +13,35 @@ import {
 } from "@mantine/core";
 
 import { capitalize, group } from "radash";
-import { useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { Tile } from "~/components/Tile";
-import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
+import { StorageMode } from "~/screens/surrealist/pages/CreateInstance/types";
 import { CloudInstanceType, CloudOrganization } from "~/types";
-import { formatMemory } from "~/util/helpers";
+import { getTypeCategoryName } from "~/util/cloud";
+import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconAuth, iconChevronDown, iconChevronRight } from "~/util/icons";
 import { Label } from "../Label";
 
 export interface InstanceTypesProps {
 	value: string;
 	active?: string;
-	organizationId: string;
+	organization: CloudOrganization;
+	storageMode?: StorageMode;
 	onChange: (value: string) => void;
 }
 
-export function InstanceTypes({ value, active, organizationId, onChange }: InstanceTypesProps) {
-	const organizations = useOrganizations();
-	const organization = organizations.find((org) => org.id === organizationId);
+export function InstanceTypes({
+	value,
+	active,
+	organization,
+	storageMode,
+	onChange,
+}: InstanceTypesProps) {
 	const instances = useCloudOrganizationInstancesQuery(organization?.id);
 	const isAvailable = useCloudTypeLimits(instances.data ?? [], organization);
 	const instanceTypes = organization?.plan.instance_types ?? [];
@@ -48,7 +54,7 @@ export function InstanceTypes({ value, active, organizationId, onChange }: Insta
 		onChange(type.slug);
 	});
 
-	const initialCategory = useMemo(() => {
+	const defaultCategory = useMemo(() => {
 		if (active) {
 			const category = instanceTypes.find((type) => type.slug === active)?.category;
 
@@ -57,19 +63,32 @@ export function InstanceTypes({ value, active, organizationId, onChange }: Insta
 			}
 		}
 
+		if (storageMode === "distributed") {
+			return "production";
+		}
+
 		const freeType = instanceTypes.find((type) => type.category === "free");
 		const isFreeAvailable = freeType && isAvailable(freeType);
 
 		return isFreeAvailable ? "free" : "development";
-	}, [active, instanceTypes, isAvailable]);
+	}, [active, instanceTypes, isAvailable, storageMode]);
 
-	const [category, setCategory] = useState(initialCategory);
+	const [category, setCategory] = useState("");
+
+	useLayoutEffect(() => {
+		if (instances.isSuccess) {
+			setCategory(defaultCategory);
+		}
+	}, [instances.isSuccess, defaultCategory]);
 
 	const freeTypes = groupedTypes.free ?? [];
 	const developmentTypes = groupedTypes.development ?? [];
 	const productionTypes = groupedTypes.production ?? [];
+	const prodCompTypes = groupedTypes["production-compute"] ?? [];
 
-	return organization ? (
+	const isDistributed = storageMode === "distributed";
+
+	return (
 		<>
 			<Accordion
 				value={category}
@@ -87,50 +106,74 @@ export function InstanceTypes({ value, active, organizationId, onChange }: Insta
 					},
 				}}
 			>
-				<InstanceTypeCategory
-					organization={organization}
-					activeCategory={category}
-					selectedType={value}
-					activeType={active}
-					category="free"
-					title="Free"
-					description="A free instance to get started with SurrealDB"
-					instanceTypes={freeTypes}
-					isAvailable={isAvailable}
-					onSelect={handleUpdate}
-				/>
+				{isDistributed ? (
+					<>
+						<InstanceTypeCategory
+							organization={organization}
+							activeCategory={category}
+							selectedType={value}
+							activeType={active}
+							category="production"
+							instanceTypes={productionTypes}
+							withBillingRequired
+							isAvailable={isAvailable}
+							onSelect={handleUpdate}
+							distributed
+						/>
 
-				<InstanceTypeCategory
-					organization={organization}
-					activeCategory={category}
-					selectedType={value}
-					activeType={active}
-					category="development"
-					title="Development"
-					description="Configurations optimized for development workloads"
-					instanceTypes={developmentTypes}
-					withBillingRequired
-					isAvailable={isAvailable}
-					onSelect={handleUpdate}
-				/>
+						<InstanceTypeCategory
+							organization={organization}
+							activeCategory={category}
+							selectedType={value}
+							activeType={active}
+							category="production-compute"
+							instanceTypes={prodCompTypes}
+							withBillingRequired
+							isAvailable={isAvailable}
+							onSelect={handleUpdate}
+							distributed
+						/>
+					</>
+				) : (
+					<>
+						<InstanceTypeCategory
+							organization={organization}
+							activeCategory={category}
+							selectedType={value}
+							activeType={active}
+							category="free"
+							instanceTypes={freeTypes}
+							isAvailable={isAvailable}
+							onSelect={handleUpdate}
+						/>
 
-				<InstanceTypeCategory
-					organization={organization}
-					activeCategory={category}
-					selectedType={value}
-					activeType={active}
-					category="production"
-					title="Production"
-					description="Configurations optimized for production workloads"
-					instanceTypes={productionTypes}
-					withBillingRequired
-					isAvailable={isAvailable}
-					onSelect={handleUpdate}
-				/>
+						<InstanceTypeCategory
+							organization={organization}
+							activeCategory={category}
+							selectedType={value}
+							activeType={active}
+							category="development"
+							instanceTypes={developmentTypes}
+							withBillingRequired
+							isAvailable={isAvailable}
+							onSelect={handleUpdate}
+						/>
+
+						<InstanceTypeCategory
+							organization={organization}
+							activeCategory={category}
+							selectedType={value}
+							activeType={active}
+							category="production"
+							instanceTypes={productionTypes}
+							withBillingRequired
+							isAvailable={isAvailable}
+							onSelect={handleUpdate}
+						/>
+					</>
+				)}
 			</Accordion>
 		</>
-	) : (
-		<Skeleton h={52} />
 	);
 }
 
@@ -140,8 +183,7 @@ interface InstanceTypeCategoryProps {
 	selectedType: string;
 	activeType?: string;
 	category: string;
-	title: string;
-	description: string;
+	distributed?: boolean;
 	instanceTypes: CloudInstanceType[];
 	withBillingRequired?: boolean;
 	isAvailable: (type: CloudInstanceType) => boolean;
@@ -154,8 +196,7 @@ function InstanceTypeCategory({
 	selectedType,
 	activeType,
 	category,
-	title,
-	description,
+	distributed,
 	instanceTypes,
 	withBillingRequired,
 	isAvailable,
@@ -171,15 +212,9 @@ function InstanceTypeCategory({
 						fw={600}
 						fz="xl"
 					>
-						{title}
+						{getTypeCategoryName(category, distributed ?? false)}
 					</Text>
 				</Group>
-				{/* <Text
-					c="slate.4"
-					fw={500}
-				>
-					{description}
-				</Text> */}
 			</Accordion.Control>
 			<Accordion.Panel>
 				<Stack
@@ -281,7 +316,7 @@ function InstanceTypeRow({
 						)}
 					</Group>
 					{estimatedCost > 0 ? (
-						<Text mt={2}>${estimatedCost.toFixed(3)} per hour</Text>
+						<Text mt={2}>{CURRENCY_FORMAT.format(estimatedCost)} per hour</Text>
 					) : (
 						<Text
 							fz="sm"

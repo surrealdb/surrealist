@@ -216,6 +216,10 @@ body.mod .cm-record-link:hover {
 		border-color: rgba(255, 255, 255, 0.3);
 	}
 
+	.mantine-Radio-label[data-disabled] {
+		color: unset;
+		opacity: 0.5;
+	}
 }
 
 .mantine-Input-input {

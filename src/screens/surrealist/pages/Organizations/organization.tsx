@@ -21,6 +21,7 @@ import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -40,7 +41,7 @@ export function OrganizationTile({
 }: PropsWithChildren<OrganizationTileProps>) {
 	const client = useQueryClient();
 	const userId = useCloudStore((s) => s.userId);
-	const defaultOrg = useCloudStore((s) => s.profile.default_org);
+	const defaultOrg = useCloudProfile().default_org;
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
 	const containerRef = useRef<HTMLDivElement>(null);

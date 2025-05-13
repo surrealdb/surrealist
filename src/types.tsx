@@ -1,5 +1,6 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import type { AnyAuth, Duration, Token } from "surrealdb";
+import { StorageCategory } from "./screens/surrealist/pages/CreateInstance/types";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
@@ -514,6 +515,7 @@ export interface CloudProfile {
 	default_org: string;
 	picture?: string;
 	user_hmac?: string;
+	enabled_features: string[];
 }
 
 export interface CloudInstance {
@@ -532,6 +534,7 @@ export interface CloudInstance {
 	capabilities: CloudInstanceCapabilities;
 	state: InstanceState;
 	type: CloudInstanceType;
+	distributed_storage_specs?: CloudDistributedStorageSpecs;
 }
 
 export interface CloudInstanceCapabilities {
@@ -550,6 +553,12 @@ export interface CloudInstanceCapabilities {
 	denied_experimental: string[];
 	allowed_arbitrary_query: string[];
 	denied_arbitrary_query: string[];
+}
+
+export interface CloudDistributedStorageSpecs {
+	category: StorageCategory;
+	autoscaling: boolean;
+	max_compute_units: number;
 }
 
 export interface CloudInstanceType {

@@ -14,6 +14,7 @@ import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
+import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
@@ -30,10 +31,11 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 	const storageSize = instance?.storage_size ?? 0;
 	const typeName = instance?.type.display_name ?? "";
 	const typeCategory = instance?.type.category ?? "";
+	const isDistributed = instance?.distributed_storage_specs !== undefined;
 
 	const backupText = instance?.type.category === "free" ? "Disabled" : "Enabled";
-	const typeText = `${typeName} (${typeCategory})`;
-	const storageText = formatMemory(storageSize * 1024);
+	const typeText = `${typeName} (${getTypeCategoryName(typeCategory, isDistributed)})`;
+	const storageText = formatMemory(storageSize * 1000, true);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");

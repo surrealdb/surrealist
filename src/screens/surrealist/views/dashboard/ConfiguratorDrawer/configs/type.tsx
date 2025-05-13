@@ -5,7 +5,9 @@ import { useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceTypeMutation } from "~/cloud/mutations/type";
 import { InstanceTypes } from "~/components/InstanceTypes";
+import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
+import { StorageMode } from "~/screens/surrealist/pages/CreateInstance/types";
 import { CloudInstance } from "~/types";
 
 export interface ConfigurationInstanceTypeProps {
@@ -18,6 +20,12 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 
 	const { mutateAsync } = useUpdateInstanceTypeMutation(instance.id);
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
+	const organizations = useOrganizations();
+	const organization = organizations.find((org) => org.id === instance.organization_id);
+
+	const storageMode: StorageMode = instance.distributed_storage_specs
+		? "distributed"
+		: "standalone";
 
 	const handleUpdate = useStable(() => {
 		onClose();
@@ -62,12 +70,15 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 								your instance, including memory and CPU.
 							</Text>
 						</Box>
-						<InstanceTypes
-							value={selected}
-							active={instance.type.slug}
-							organizationId={instance.organization_id}
-							onChange={setSelected}
-						/>
+						{organization && (
+							<InstanceTypes
+								value={selected}
+								active={instance.type.slug}
+								storageMode={storageMode}
+								organization={organization}
+								onChange={setSelected}
+							/>
+						)}
 					</Stack>
 				</ScrollArea>
 			</Box>

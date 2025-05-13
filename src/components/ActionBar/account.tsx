@@ -17,6 +17,7 @@ import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";
 import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
 import { useBoolean } from "~/hooks/boolean";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
@@ -33,7 +34,7 @@ interface AccountFormProps {
 function AccountForm({ onClose }: AccountFormProps) {
 	const { setAccountProfile } = useCloudStore.getState();
 
-	const profile = useCloudStore((s) => s.profile);
+	const profile = useCloudProfile();
 	const provider = useCloudStore((s) => s.authProvider);
 	const [isLoading, setLoading] = useState(false);
 
@@ -103,7 +104,7 @@ function AccountForm({ onClose }: AccountFormProps) {
 export function CloudAccount() {
 	const [showSettings, settingsModal] = useBoolean();
 
-	const profile = useCloudStore((s) => s.profile);
+	const profile = useCloudProfile();
 	const state = useCloudStore((s) => s.authState);
 
 	if (state === "unauthenticated" || state === "unknown") {

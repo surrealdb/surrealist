@@ -1,4 +1,4 @@
-import { Box, Button, Collapse, Divider, Group, Stack, Text } from "@mantine/core";
+import { Box, Button, Collapse, Group, Stack, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
@@ -7,16 +7,20 @@ import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useOrganizations } from "~/hooks/cloud";
+import { useHasCloudFeature, useOrganizations } from "~/hooks/cloud";
 import { useLastSavepoint } from "~/hooks/overview";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showError } from "~/util/helpers";
 import { iconArrowLeft } from "~/util/icons";
+import { ComputeUnitsStep } from "./steps/compute";
 import { ProvisionDetailsStep } from "./steps/details";
 import { ProvisionOrganizationStep } from "./steps/organization";
 import { ProvisionRegionStep } from "./steps/region";
+import { StorageCategoryStep } from "./steps/storage-class";
+import { StorageModeStep } from "./steps/storage-mode";
+import { StorageSizeStep } from "./steps/storage-size";
 import { ProvisionCategoryStep } from "./steps/type";
 import { ProvisionConfig } from "./types";
 
@@ -27,6 +31,9 @@ const DEFAULT: ProvisionConfig = {
 	type: "",
 	units: 1,
 	version: "",
+	storageMode: "standalone",
+	storageCategory: "standard",
+	storageAmount: 0,
 };
 
 export interface ProvisionFormProps {
@@ -35,6 +42,7 @@ export interface ProvisionFormProps {
 
 export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 	const organizations = useOrganizations();
+	const showDistributed = useHasCloudFeature("distributed_storage");
 	const [details, setDetails] = useImmer(DEFAULT);
 	const organization = organizations.find((org) => org.id === details.organization);
 	const instanceTypes = organization?.plan.instance_types ?? [];
@@ -56,18 +64,29 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 
 	const provisionInstance = useStable(async () => {
 		try {
+			const configuration: any = {
+				name: details.name,
+				org: organization?.id,
+				region: details.region,
+				specs: {
+					slug: details.type,
+					version: details.version,
+					compute_units: details.type === "free" ? undefined : details.units,
+				},
+			};
+
+			if (details.storageMode === "distributed") {
+				configuration.storage = details.storageAmount;
+				configuration.distributed_storage_specs = {
+					category: details.storageCategory,
+					autoscaling: false,
+					max_compute_units: details.units,
+				};
+			}
+
 			const result = await fetchAPI<CloudInstance>("/instances", {
 				method: "POST",
-				body: JSON.stringify({
-					name: details.name,
-					org: organization?.id,
-					region: details.region,
-					specs: {
-						slug: details.type,
-						version: details.version,
-						compute_units: details.type === "free" ? undefined : details.units,
-					},
-				}),
+				body: JSON.stringify(configuration),
 			});
 
 			tagEvent("cloud_instance_created", {
@@ -76,6 +95,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				version: details.version,
 				compute_type: details.type,
 				organisation: organization?.id,
+				storage_mode: details.storageMode,
 			});
 
 			onCreated(result);
@@ -89,6 +109,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 		}
 	});
 
+	const isDistributed = details.storageMode === "distributed";
 	const savepoint = useLastSavepoint();
 
 	return (
@@ -161,6 +182,26 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				setDetails={setDetails}
 			/>
 
+			{showDistributed && (
+				<>
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Storage mode
+						</Text>
+						<Text>Choose between standalone and distributed data storage</Text>
+					</Box>
+
+					<StorageModeStep
+						details={details}
+						setDetails={setDetails}
+					/>
+				</>
+			)}
+
 			<Box mt={24}>
 				<Text
 					fz="xl"
@@ -177,7 +218,59 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				setDetails={setDetails}
 			/>
 
-			<Collapse in={!!instanceType}>
+			{isDistributed && (
+				<>
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Storage class
+						</Text>
+						<Text>Pick a suitable storage class for your intended workload</Text>
+					</Box>
+
+					<StorageCategoryStep
+						details={details}
+						setDetails={setDetails}
+					/>
+
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Storage size
+						</Text>
+						<Text>Set a desired initial size for your storage volume</Text>
+					</Box>
+
+					<StorageSizeStep
+						details={details}
+						setDetails={setDetails}
+					/>
+
+					<Box mt={24}>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Compute nodes
+						</Text>
+						<Text>Select how many SurrealDB compute nodes to allocate</Text>
+					</Box>
+
+					<ComputeUnitsStep
+						details={details}
+						setDetails={setDetails}
+					/>
+				</>
+			)}
+
+			<Collapse in={!!instanceType && !isDistributed}>
 				<Stack gap="xl">
 					<Box mt={24}>
 						<Text

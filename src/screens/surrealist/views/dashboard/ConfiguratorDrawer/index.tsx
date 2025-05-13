@@ -38,6 +38,8 @@ export function ConfiguratorDrawer({
 		onChangeTab("type");
 	});
 
+	const hideDisk = instance.distributed_storage_specs !== undefined;
+
 	return (
 		<Drawer
 			opened={opened}
@@ -97,7 +99,12 @@ export function ConfiguratorDrawer({
 					<Tabs.Tab value="capabilities">Capabilities</Tabs.Tab>
 					<Tabs.Tab value="version">Version</Tabs.Tab>
 					<Tabs.Tab value="type">Instance type</Tabs.Tab>
-					<Tabs.Tab value="disk">Disk size</Tabs.Tab>
+					<Tabs.Tab
+						value="disk"
+						disabled={hideDisk}
+					>
+						Disk size
+					</Tabs.Tab>
 				</Tabs.List>
 
 				<Tabs.Panel value="capabilities">

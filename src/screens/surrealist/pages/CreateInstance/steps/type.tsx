@@ -1,3 +1,4 @@
+import { Skeleton } from "@mantine/core";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
@@ -21,11 +22,14 @@ export function ProvisionCategoryStep({ details, setDetails }: ProvisionStepProp
 		});
 	});
 
-	return (
+	return organization ? (
 		<InstanceTypes
 			value={details.type}
-			organizationId={details.organization}
+			organization={organization}
+			storageMode={details.storageMode}
 			onChange={(value) => updateType(value)}
 		/>
+	) : (
+		<Skeleton h={52} />
 	);
 }

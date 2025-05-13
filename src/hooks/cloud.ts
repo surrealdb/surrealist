@@ -28,6 +28,22 @@ export function useIsAuthenticated() {
 }
 
 /**
+ * Returns the current user profile
+ */
+export function useCloudProfile() {
+	return useCloudStore((s) => s.profile);
+}
+
+/**
+ * Returns whether the user has a specific cloud feature flag enabled
+ */
+export function useHasCloudFeature(feature: string) {
+	const { enabled_features } = useCloudProfile();
+
+	return enabled_features?.includes(feature) ?? false;
+}
+
+/**
  * Returns the list of known organizations
  */
 export function useOrganizations() {

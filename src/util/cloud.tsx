@@ -1,6 +1,6 @@
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudMeasurement, CloudOrganization } from "~/types";
+import { CloudInstance, CloudInstanceType, CloudMeasurement, CloudOrganization } from "~/types";
 
 /**
  * Measure the compute history
@@ -93,4 +93,24 @@ export function formatArchiveDate(organization: CloudOrganization) {
 		month: "long",
 		day: "numeric",
 	});
+}
+
+/**
+ * Returns the display name for the given instance type category
+ */
+export function getTypeCategoryName(category: string, distributed: boolean) {
+	switch (true) {
+		case category === "free":
+			return "Free";
+		case category === "development":
+			return "Development";
+		case category === "production" && !distributed:
+			return "Production";
+		case category === "production" && distributed:
+			return "Memory intensive";
+		case category === "production-compute":
+			return "Compute intensive";
+		default:
+			return category;
+	}
 }
