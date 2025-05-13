@@ -109,6 +109,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 		}
 	});
 
+	const isDistributed = details.storageMode === "distributed";
 	const savepoint = useLastSavepoint();
 
 	return (
@@ -217,7 +218,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				setDetails={setDetails}
 			/>
 
-			{details.storageMode === "distributed" && (
+			{isDistributed && (
 				<>
 					<Box mt={24}>
 						<Text
@@ -269,7 +270,7 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 				</>
 			)}
 
-			<Collapse in={!!instanceType}>
+			<Collapse in={!!instanceType && !isDistributed}>
 				<Stack gap="xl">
 					<Box mt={24}>
 						<Text
