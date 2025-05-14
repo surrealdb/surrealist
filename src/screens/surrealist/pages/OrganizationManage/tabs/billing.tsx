@@ -60,6 +60,11 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 			const url = await fetchAPI<string>(`/organizations/${organization?.id}/payment/url`);
 
 			adapter.openUrl(url);
+		} catch (err: any) {
+			showError({
+				title: "Failed to open payment page",
+				subtitle: err.message,
+			});
 		} finally {
 			setRequesting(false);
 		}
