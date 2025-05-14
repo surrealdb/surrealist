@@ -7,16 +7,16 @@ import { openSurrealChangelog } from "~/util/cloud";
 import { iconOpen, iconReset } from "~/util/icons";
 
 export interface UpdateBlockProps {
-	instance: CloudInstance | undefined;
+	instance: CloudInstance;
 	isLoading: boolean;
 	onUpdate: (version: string) => void;
 	onVersions: () => void;
 }
 
 export function UpdateBlock({ instance, isLoading, onUpdate, onVersions }: UpdateBlockProps) {
-	const latest = instance?.available_versions?.[0] ?? "";
-	const canUpdate = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
-	const visible = latest && instance?.state === "ready" && !isLoading && canUpdate;
+	const latest = instance.available_versions[0] ?? "";
+	const canUpdate = useHasOrganizationRole(instance.organization_id, "admin");
+	const visible = latest && instance.state === "ready" && !isLoading && canUpdate;
 
 	const handleUpdate = useStable(() => {
 		onUpdate(latest);

@@ -6,6 +6,7 @@ import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
+import { useDeleteInstance, usePauseInstance, useResumeInstance } from "~/hooks/cloud";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
@@ -22,17 +23,18 @@ export interface InstanceActionsProps {
 }
 
 export function InstanceActions({ instance, children }: PropsWithChildren<InstanceActionsProps>) {
-	const { removeConnection } = useConfigStore.getState();
-
 	const authTokenMutation = useCloudAuthTokenMutation(instance.id);
 	const connections = useConnectionList();
-	const client = useQueryClient();
 
 	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "owner");
 
 	const connection = useMemo(() => {
 		return connections.find((c) => c.authentication.cloudInstance === instance.id);
 	}, [connections, instance.id]);
+
+	const pauseInstance = usePauseInstance(instance);
+	const resumeInstance = useResumeInstance(instance);
+	const deleteInstance = useDeleteInstance(instance, connection);
 
 	const handleEdit = useStable(() => {
 		if (!connection) return;
@@ -82,138 +84,6 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		}
 	};
 
-	const handlePause = useConfirmation({
-		title: `Pause ${instance.name}`,
-		message:
-			"You can pause this instance to temporarily stop all resources and save costs, while data contained in this instance will be preserved.",
-		confirmText: "Pause",
-		confirmProps: {
-			variant: "gradient",
-		},
-		onConfirm: async () => {
-			try {
-				await fetchAPI(`/instances/${instance.id}/pause`, {
-					method: "POST",
-				});
-
-				client.invalidateQueries({
-					queryKey: ["cloud", "instances"],
-				});
-
-				tagEvent("cloud_instance_paused", {
-					instance: instance.id,
-					region: instance.region,
-					version: instance.version,
-					compute_type: instance.type.category,
-					organisation: instance.organization_id,
-				});
-			} catch (err: any) {
-				showError({
-					title: "Failed to pause instance",
-					subtitle: err.message,
-				});
-			}
-		},
-	});
-
-	const handleResume = useConfirmation({
-		title: `Resume ${instance.name}`,
-		message: "Resume your instance to restore all resources and allow access to your data",
-		confirmText: "Resume",
-		confirmProps: {
-			variant: "gradient",
-		},
-		onConfirm: async () => {
-			try {
-				await fetchAPI(`/instances/${instance.id}/resume`, {
-					method: "POST",
-				});
-
-				client.invalidateQueries({
-					queryKey: ["cloud", "instances"],
-				});
-
-				tagEvent("cloud_instance_resumed", {
-					instance: instance.id,
-					region: instance.region,
-					version: instance.version,
-					compute_type: instance.type.category,
-					organisation: instance.organization_id,
-				});
-			} catch (err: any) {
-				showError({
-					title: "Failed to resume instance",
-					subtitle: err.message,
-				});
-			}
-		},
-	});
-
-	const handleDelete = useConfirmation({
-		message: (
-			<Stack>
-				<Text>
-					You are about to delete this instance. This will cause all associated resources
-					to be destroyed.
-				</Text>
-				<Alert
-					title="Important"
-					color="red"
-				>
-					Data stored within this instance will be permanently deleted and cannot be
-					recovered.
-				</Alert>
-			</Stack>
-		),
-		confirmText: "Delete",
-		title: `Delete ${instance.name}`,
-		verification: instance.name,
-		verifyText: "Type the instance name to confirm",
-		onConfirm: async () => {
-			try {
-				await fetchAPI(`/instances/${instance.id}`, {
-					method: "DELETE",
-				});
-
-				if (connection) {
-					removeConnection(connection.id);
-				}
-
-				showInfo({
-					title: "Deleting instance",
-					subtitle: (
-						<>
-							<Text
-								span
-								c="bright"
-							>
-								{instance.name}
-							</Text>{" "}
-							is being deleted
-						</>
-					),
-				});
-
-				client.invalidateQueries({
-					queryKey: ["cloud", "instances"],
-				});
-
-				tagEvent("cloud_instance_deleted", {
-					instance: instance.id,
-					region: instance.region,
-					version: instance.version,
-					compute_type: instance.type.category,
-					organisation: instance.organization_id,
-				});
-			} catch (err: any) {
-				showError({
-					title: "Failed to delete instance",
-					subtitle: err.message,
-				});
-			}
-		},
-	});
-
 	const isReady = instance.state === "ready";
 	const isPaused = instance.state === "paused";
 
@@ -253,7 +123,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 							<>
 								<Menu.Item
 									leftSection={<Icon path={iconPause} />}
-									onClick={handlePause}
+									onClick={pauseInstance}
 								>
 									Pause instance
 								</Menu.Item>
@@ -264,7 +134,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 											c="red"
 										/>
 									}
-									onClick={handleDelete}
+									onClick={deleteInstance}
 									c="red"
 								>
 									Delete instance
@@ -276,7 +146,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 									<Menu.Divider />
 									<Menu.Item
 										leftSection={<Icon path={iconPlay} />}
-										onClick={handleResume}
+										onClick={resumeInstance}
 									>
 										Resume instance
 									</Menu.Item>

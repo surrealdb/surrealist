@@ -1,25 +1,14 @@
 import classes from "./style.module.scss";
 
-import {
-	ActionIcon,
-	Button,
-	CopyButton,
-	Group,
-	Paper,
-	SimpleGrid,
-	Skeleton,
-	Text,
-	ThemeIcon,
-} from "@mantine/core";
+import { ActionIcon, Button, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { memo, useState } from "react";
-import { Link, Redirect } from "wouter";
+import { Redirect } from "wouter";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
-import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -29,17 +18,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
-import {
-	iconAuth,
-	iconCheck,
-	iconChevronDown,
-	iconChevronRight,
-	iconCopy,
-	iconDesigner,
-	iconDotsVertical,
-	iconExplorer,
-	iconQuery,
-} from "~/util/icons";
+import { iconCheck, iconChevronDown, iconCopy } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
@@ -47,9 +26,11 @@ import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { NavigationBlock } from "../NavigationBlock";
+import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 
 const UpdateBlockLazy = memo(UpdateBlock);
+const ResumeBlockLazy = memo(ResumeBlock);
 const ConfigurationBlockLazy = memo(ConfigurationBlock);
 const ConnectBlockLazy = memo(ConnectBlock);
 const ComputeUsageBlockLazy = memo(ComputeUsageBlock);
@@ -179,19 +160,21 @@ export function DashboardView() {
 						)}
 					</Box>
 
-					<UpdateBlockLazy
-						instance={details}
-						isLoading={isLoading}
-						onUpdate={handleUpdate}
-						onVersions={handleVersions}
-					/>
-
 					<NavigationBlock isLoading={isLoading} />
 
 					<Box mt={32}>
 						<PrimaryTitle>Your instance</PrimaryTitle>
 						<Text>Customise and connect to your Surreal Cloud instance</Text>
 					</Box>
+
+					{details && (
+						<UpdateBlockLazy
+							instance={details}
+							isLoading={isLoading}
+							onUpdate={handleUpdate}
+							onVersions={handleVersions}
+						/>
+					)}
 
 					<SimpleGrid
 						cols={2}
@@ -202,10 +185,14 @@ export function DashboardView() {
 							isLoading={isLoading}
 							onConfigure={configureHandle.open}
 						/>
-						<ConnectBlockLazy
-							instance={details}
-							isLoading={isLoading}
-						/>
+						{details && !isLoading && details.state === "paused" ? (
+							<ResumeBlockLazy instance={details} />
+						) : (
+							<ConnectBlockLazy
+								instance={details}
+								isLoading={isLoading}
+							/>
+						)}
 					</SimpleGrid>
 
 					<Box mt={32}>
