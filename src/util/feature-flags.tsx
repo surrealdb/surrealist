@@ -4,7 +4,7 @@ import {
 	type TFeatureFlags,
 } from "@theopensource-company/feature-flags";
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
-import { environment, isProduction } from "./environment";
+import { environment } from "./environment";
 
 // How to manage feature flag schema:
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
@@ -62,7 +62,6 @@ export const schema = {
 	},
 	cloud_endpoints: {
 		options: ["production", "custom"],
-		readonly: isProduction,
 	},
 	cloud_access: {
 		options: [false, true],
@@ -158,10 +157,6 @@ export const featureFlags = new FeatureFlags({
 
 		if (value) {
 			return JSON.parse(value);
-		}
-
-		if (flag === "cloud_enabled") {
-			return import.meta.env.VITE_SURREALIST_DOCKER !== "true";
 		}
 	},
 });

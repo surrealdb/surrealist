@@ -5,5 +5,8 @@
 			"id": "example",
 			"name": "Example connection"
 		}
-	]
+	],
+	"cloud": {
+		"enabled": false
+	}
 }
