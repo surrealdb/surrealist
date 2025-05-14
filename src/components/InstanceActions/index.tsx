@@ -272,15 +272,12 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 							</>
 						) : (
 							isPaused && (
-								<>
-									<Menu.Divider />
-									<Menu.Item
-										leftSection={<Icon path={iconPlay} />}
-										onClick={handleResume}
-									>
-										Resume instance
-									</Menu.Item>
-								</>
+								<Menu.Item
+									leftSection={<Icon path={iconPlay} />}
+									onClick={handleResume}
+								>
+									Resume instance
+								</Menu.Item>
 							)
 						)}
 					</>
