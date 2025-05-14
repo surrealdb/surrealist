@@ -158,10 +158,6 @@ export const featureFlags = new FeatureFlags({
 		if (value) {
 			return JSON.parse(value);
 		}
-
-		if (flag === "cloud_enabled") {
-			return import.meta.env.VITE_SURREALIST_DOCKER !== "true";
-		}
 	},
 });
 

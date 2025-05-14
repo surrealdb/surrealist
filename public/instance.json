@@ -5,5 +5,10 @@
 			"id": "example",
 			"name": "Example connection"
 		}
-	]
+	],
+	"cloud": {
+		"enabled": true,
+		"auth_endpoint": "https://auth.example.com",
+		"api_endpoint": "https://api.example.com"
+	}
 }

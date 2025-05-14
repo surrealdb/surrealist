@@ -12,6 +12,10 @@ import { BrowserAdapter } from "./browser";
 export class DockerAdapter extends BrowserAdapter {
 	public readonly id: string = "docker";
 
+	public cloudEnabled = false;
+	public cloudAuthEndpoint = "";
+	public cloudApiEndpoint = "";
+
 	public async processConfig(config: SurrealistConfig) {
 		this.log("Adapter", "Fetching instance config");
 
@@ -91,6 +95,20 @@ export class DockerAdapter extends BrowserAdapter {
 		config.connections = config.connections.filter(
 			(c) => !c.instance || instanceConfig.connections.some((ic) => ic.id === c.id),
 		);
+
+		// Cloud configuration
+		const { enabled, api_endpoint, auth_endpoint } = instanceConfig.cloud ?? {};
+
+		this.cloudEnabled = enabled ?? false;
+		this.cloudAuthEndpoint = auth_endpoint ?? "";
+		this.cloudApiEndpoint = api_endpoint ?? "";
+
+		config.settings.cloud.urlAuthBase = this.cloudAuthEndpoint;
+		config.settings.cloud.urlApiBase = this.cloudApiEndpoint;
+
+		config.featureFlags.cloud_enabled = this.cloudEnabled;
+		config.featureFlags.cloud_endpoints =
+			auth_endpoint && api_endpoint ? "custom" : "production";
 
 		return config;
 	}
