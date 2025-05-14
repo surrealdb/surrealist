@@ -13,7 +13,7 @@ import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { ChatPage } from "./pages/Chat";
-import { CloudPage } from "./pages/Cloud";
+import { StartPage } from "./pages/Start";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateInstancePage } from "./pages/CreateInstance";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
@@ -38,7 +38,7 @@ import SidekickView from "./views/sidekick/SidekickView";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
-const CloudPageLazy = memo(CloudPage);
+const StartPageLazy = memo(StartPage);
 const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
@@ -205,8 +205,12 @@ export function SurrealistScreen() {
 										<CreateInstancePageLazy />
 									</Route>
 
+									<Route path="/start">
+										<StartPageLazy />
+									</Route>
+
 									<Route path="/cloud">
-										<CloudPageLazy />
+										<Redirect to="/start" />
 									</Route>
 
 									<Route path="/billing">
