@@ -16,8 +16,10 @@ use time::{format_description, OffsetDateTime};
 mod analytics;
 mod config;
 mod database;
+mod helpers;
 mod open;
 mod paths;
+mod ssh;
 mod whitelist;
 mod window;
 
@@ -90,6 +92,7 @@ fn main() {
             open::prune_allowed_files,
             open::open_query_file,
             open::open_in_explorer,
+            ssh::test_ssh_connection,
         ])
         .setup(|app| {
             info!("Launch args: {:?}", env::args());
