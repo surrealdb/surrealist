@@ -5,6 +5,7 @@ import { Text } from "@mantine/core";
 import { Link } from "wouter";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { useIsLight } from "~/hooks/theme";
 import { iconAuth, iconChevronRight, iconDesigner, iconExplorer, iconQuery } from "~/util/icons";
 
 export interface NavigationBlockProps {
@@ -66,6 +67,8 @@ interface NavigationBoxProps {
 }
 
 function NavigationBox({ icon, color, title, description, isLoading }: NavigationBoxProps) {
+	const isLight = useIsLight();
+
 	return (
 		<Skeleton visible={isLoading}>
 			<Paper
@@ -75,7 +78,7 @@ function NavigationBox({ icon, color, title, description, isLoading }: Navigatio
 				<Group wrap="nowrap">
 					<ThemeIcon
 						variant="light"
-						bg="slate"
+						bg={isLight ? undefined : "slate"}
 						radius="xs"
 						color={color}
 						size={38}
