@@ -31,8 +31,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 		parseCapabilities(instance.capabilities),
 	);
 
-	// const hasArbitraryQuery = compareVersions(instance.version, "2.2.0") >= 0;
-	const hasArbitraryQuery = false;
+	const hasArbitraryQuery = compareVersions(instance.version, "2.2.0") >= 0;
 
 	const { mutateAsync } = useUpdateInstanceCapabilitiesMutation(instance.id);
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
