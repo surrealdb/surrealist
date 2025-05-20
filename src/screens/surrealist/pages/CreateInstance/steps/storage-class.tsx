@@ -7,6 +7,10 @@ export function StorageCategoryStep({ details, setDetails }: ProvisionStepProps)
 	const updateCategory = useStable((value: string) => {
 		setDetails((draft) => {
 			draft.storageCategory = value as StorageCategory;
+
+			if (draft.storageCategory === "standard") {
+				draft.storageAmount = Math.min(draft.storageAmount, 1000);
+			}
 		});
 	});
 

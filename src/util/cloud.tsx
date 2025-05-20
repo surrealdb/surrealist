@@ -98,15 +98,15 @@ export function formatArchiveDate(organization: CloudOrganization) {
 /**
  * Returns the display name for the given instance type category
  */
-export function getTypeCategoryName(category: string, distributed: boolean) {
+export function getTypeCategoryName(category: string) {
 	switch (true) {
 		case category === "free":
 			return "Free";
 		case category === "development":
 			return "Development";
-		case category === "production" && !distributed:
+		case category === "production":
 			return "Production";
-		case category === "production" && distributed:
+		case category === "production-memory":
 			return "Memory intensive";
 		case category === "production-compute":
 			return "Compute intensive";

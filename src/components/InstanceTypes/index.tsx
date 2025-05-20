@@ -6,14 +6,13 @@ import {
 	Button,
 	Divider,
 	Group,
-	Skeleton,
 	Stack,
 	Text,
 	Tooltip,
 } from "@mantine/core";
 
 import { capitalize, group } from "radash";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useCloudTypeLimits } from "~/cloud/hooks/limits";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
@@ -64,7 +63,7 @@ export function InstanceTypes({
 		}
 
 		if (storageMode === "distributed") {
-			return "production";
+			return "production-memory";
 		}
 
 		const freeType = instanceTypes.find((type) => type.category === "free");
@@ -80,13 +79,6 @@ export function InstanceTypes({
 			setCategory(defaultCategory);
 		}
 	}, [instances.isSuccess, defaultCategory]);
-
-	const freeTypes = groupedTypes.free ?? [];
-	const developmentTypes = groupedTypes.development ?? [];
-	const productionTypes = groupedTypes.production ?? [];
-	const prodCompTypes = groupedTypes["production-compute"] ?? [];
-
-	const isDistributed = storageMode === "distributed";
 
 	return (
 		<>
@@ -106,19 +98,18 @@ export function InstanceTypes({
 					},
 				}}
 			>
-				{isDistributed ? (
+				{storageMode === "distributed" ? (
 					<>
 						<InstanceTypeCategory
 							organization={organization}
 							activeCategory={category}
 							selectedType={value}
 							activeType={active}
-							category="production"
-							instanceTypes={productionTypes}
+							category="production-memory"
+							instanceTypes={groupedTypes["production-memory"] ?? []}
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
-							distributed
 						/>
 
 						<InstanceTypeCategory
@@ -127,11 +118,10 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="production-compute"
-							instanceTypes={prodCompTypes}
+							instanceTypes={groupedTypes["production-compute"] ?? []}
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
-							distributed
 						/>
 					</>
 				) : (
@@ -142,7 +132,7 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="free"
-							instanceTypes={freeTypes}
+							instanceTypes={groupedTypes.free ?? []}
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
 						/>
@@ -153,7 +143,7 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="development"
-							instanceTypes={developmentTypes}
+							instanceTypes={groupedTypes.development ?? []}
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
@@ -165,7 +155,7 @@ export function InstanceTypes({
 							selectedType={value}
 							activeType={active}
 							category="production"
-							instanceTypes={productionTypes}
+							instanceTypes={groupedTypes.production ?? []}
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
@@ -183,7 +173,6 @@ interface InstanceTypeCategoryProps {
 	selectedType: string;
 	activeType?: string;
 	category: string;
-	distributed?: boolean;
 	instanceTypes: CloudInstanceType[];
 	withBillingRequired?: boolean;
 	isAvailable: (type: CloudInstanceType) => boolean;
@@ -196,7 +185,6 @@ function InstanceTypeCategory({
 	selectedType,
 	activeType,
 	category,
-	distributed,
 	instanceTypes,
 	withBillingRequired,
 	isAvailable,
@@ -212,7 +200,7 @@ function InstanceTypeCategory({
 						fw={600}
 						fz="xl"
 					>
-						{getTypeCategoryName(category, distributed ?? false)}
+						{getTypeCategoryName(category)}
 					</Text>
 				</Group>
 			</Accordion.Control>
