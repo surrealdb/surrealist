@@ -110,7 +110,6 @@ export function InstanceTypes({
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
-							distributed
 						/>
 
 						<InstanceTypeCategory
@@ -123,7 +122,6 @@ export function InstanceTypes({
 							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
-							distributed
 						/>
 					</>
 				) : (
@@ -175,7 +173,6 @@ interface InstanceTypeCategoryProps {
 	selectedType: string;
 	activeType?: string;
 	category: string;
-	distributed?: boolean;
 	instanceTypes: CloudInstanceType[];
 	withBillingRequired?: boolean;
 	isAvailable: (type: CloudInstanceType) => boolean;
@@ -188,7 +185,6 @@ function InstanceTypeCategory({
 	selectedType,
 	activeType,
 	category,
-	distributed,
 	instanceTypes,
 	withBillingRequired,
 	isAvailable,
@@ -204,7 +200,7 @@ function InstanceTypeCategory({
 						fw={600}
 						fz="xl"
 					>
-						{getTypeCategoryName(category, distributed ?? false)}
+						{getTypeCategoryName(category)}
 					</Text>
 				</Group>
 			</Accordion.Control>

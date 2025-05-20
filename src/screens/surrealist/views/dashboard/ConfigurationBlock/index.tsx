@@ -31,10 +31,9 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 	const storageSize = instance?.storage_size ?? 0;
 	const typeName = instance?.type.display_name ?? "";
 	const typeCategory = instance?.type.category ?? "";
-	const isDistributed = instance?.distributed_storage_specs !== undefined;
 
 	const backupText = instance?.type.category === "free" ? "Disabled" : "Enabled";
-	const typeText = `${typeName} (${getTypeCategoryName(typeCategory, isDistributed)})`;
+	const typeText = `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const storageText = formatMemory(storageSize * 1000, true);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
