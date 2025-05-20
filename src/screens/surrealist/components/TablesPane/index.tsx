@@ -34,9 +34,9 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { RecordsChangedEvent } from "~/util/global-events";
 import { fuzzyMultiMatch } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
-import { RecordsChangedEvent } from "~/util/global-events";
 
 export interface TablesPaneProps {
 	icon?: string;
@@ -108,7 +108,7 @@ export function TablesPane({
 	});
 
 	const clearTable = useConfirmation({
-		message: "You are about to clear the data in this table. This action cannot be undone.",
+		message: "You are about to clear all records in this table. This action cannot be undone.",
 		confirmText: "Clear",
 		onConfirm: async (table: string) => {
 			await executeQuery(`DELETE ${escapeIdent(table)}`);
