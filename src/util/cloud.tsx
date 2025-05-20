@@ -106,7 +106,7 @@ export function getTypeCategoryName(category: string, distributed: boolean) {
 			return "Development";
 		case category === "production" && !distributed:
 			return "Production";
-		case category === "production" && distributed:
+		case category === "production-memory" && distributed:
 			return "Memory intensive";
 		case category === "production-compute":
 			return "Compute intensive";
