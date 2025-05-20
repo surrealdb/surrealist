@@ -112,10 +112,6 @@ export function TablesPane({
 		confirmText: "Clear",
 		onConfirm: async (table: string) => {
 			await executeQuery(`DELETE ${escapeIdent(table)}`);
-			await syncConnectionSchema({
-				tables: [table],
-			});
-
 			RecordsChangedEvent.dispatch(null);
 		},
 	});
