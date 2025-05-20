@@ -1,11 +1,16 @@
 import { Center, Text } from "@mantine/core";
 import { Group, Loader } from "@mantine/core";
 import { PropsWithChildren, useEffect } from "react";
+import { Redirect } from "wouter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
 
-export function AuthGuard({ children }: PropsWithChildren) {
+export interface AuthGuardProps {
+	redirect?: string;
+}
+
+export function AuthGuard({ redirect, children }: PropsWithChildren<AuthGuardProps>) {
 	const [, navigate] = useAbsoluteLocation();
 	const authState = useCloudStore((s) => s.authState);
 	const authError = useCloudStore((s) => s.authError);
@@ -20,8 +25,12 @@ export function AuthGuard({ children }: PropsWithChildren) {
 		}
 	}, [authError, authState]);
 
-	return authState !== "unauthenticated" ? (
-		children
+	return authState !== "unauthenticated" && authState !== "unknown" ? (
+		redirect ? (
+			<Redirect to={redirect} />
+		) : (
+			children
+		)
 	) : (
 		<Center flex={1}>
 			<Group>

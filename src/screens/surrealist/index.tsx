@@ -5,6 +5,7 @@ import { type FC, Suspense, memo } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
+import { AuthGuard } from "~/components/AuthGuard";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useAvailableViews } from "~/hooks/connection";
@@ -13,7 +14,6 @@ import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { ChatPage } from "./pages/Chat";
-import { CloudPage } from "./pages/Cloud";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateInstancePage } from "./pages/CreateInstance";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
@@ -38,7 +38,6 @@ import SidekickView from "./views/sidekick/SidekickView";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
-const CloudPageLazy = memo(CloudPage);
 const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
@@ -205,8 +204,12 @@ export function SurrealistScreen() {
 										<CreateInstancePageLazy />
 									</Route>
 
+									<Route path="/signin">
+										<AuthGuard redirect="/overview" />
+									</Route>
+
 									<Route path="/cloud">
-										<CloudPageLazy />
+										<Redirect to="/signin" />
 									</Route>
 
 									<Route path="/billing">
