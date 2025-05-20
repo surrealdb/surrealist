@@ -79,6 +79,7 @@ export function NavigationIcon({
 						truncate
 						inherit
 						span
+						lh="normal"
 					>
 						{name}
 					</Text>

@@ -18,7 +18,6 @@ import iconUrl from "~/assets/images/icon.webp";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
-import { GLOBAL_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useAvailablePages, useAvailableViews } from "~/hooks/connection";
