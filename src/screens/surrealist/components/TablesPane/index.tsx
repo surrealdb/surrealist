@@ -8,6 +8,7 @@ import {
 	iconPinOff,
 	iconPlus,
 	iconRelation,
+	iconReset,
 	iconSearch,
 	iconTable,
 } from "~/util/icons";
@@ -35,6 +36,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { fuzzyMultiMatch } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
+import { RecordsChangedEvent } from "~/util/global-events";
 
 export interface TablesPaneProps {
 	icon?: string;
@@ -102,6 +104,19 @@ export function TablesPane({
 			if (activeTable === table) {
 				onTableSelect("");
 			}
+		},
+	});
+
+	const clearTable = useConfirmation({
+		message: "You are about to clear the data in this table. This action cannot be undone.",
+		confirmText: "Clear",
+		onConfirm: async (table: string) => {
+			await executeQuery(`DELETE ${escapeIdent(table)}`);
+			await syncConnectionSchema({
+				tables: [table],
+			});
+
+			RecordsChangedEvent.dispatch(null);
 		},
 	});
 
@@ -221,6 +236,13 @@ export function TablesPane({
 										},
 										{
 											key: "divider-2",
+										},
+										{
+											key: "clear",
+											title: "Clear table",
+											color: "pink.7",
+											icon: <Icon path={iconReset} />,
+											onClick: () => clearTable(table.schema.name),
 										},
 										{
 											key: "remove",
