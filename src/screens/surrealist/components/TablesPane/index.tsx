@@ -8,6 +8,7 @@ import {
 	iconPinOff,
 	iconPlus,
 	iconRelation,
+	iconReset,
 	iconSearch,
 	iconTable,
 } from "~/util/icons";
@@ -33,6 +34,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { RecordsChangedEvent } from "~/util/global-events";
 import { fuzzyMultiMatch } from "~/util/helpers";
 import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
 
@@ -102,6 +104,15 @@ export function TablesPane({
 			if (activeTable === table) {
 				onTableSelect("");
 			}
+		},
+	});
+
+	const clearTable = useConfirmation({
+		message: "You are about to clear all records in this table. This action cannot be undone.",
+		confirmText: "Clear",
+		onConfirm: async (table: string) => {
+			await executeQuery(`DELETE ${escapeIdent(table)}`);
+			RecordsChangedEvent.dispatch(null);
 		},
 	});
 
@@ -221,6 +232,13 @@ export function TablesPane({
 										},
 										{
 											key: "divider-2",
+										},
+										{
+											key: "clear",
+											title: "Clear table",
+											color: "pink.7",
+											icon: <Icon path={iconReset} />,
+											onClick: () => clearTable(table.schema.name),
 										},
 										{
 											key: "remove",
