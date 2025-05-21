@@ -42,7 +42,7 @@ export function SaveBox({
 			variant="gradient"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
-			onClick={() => handle.save()}
+			onClick={() => handle.save(false)}
 			px={!minimal ? 32 : undefined}
 		>
 			{saveText ?? (minimal ? "Save changes" : "Save")}
