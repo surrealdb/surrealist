@@ -13,6 +13,7 @@ import { isDevelopment, isPreview } from "~/util/environment";
 import { iconCheck, iconReset, iconWrench } from "~/util/icons";
 
 export function AboutTab() {
+	const currDate = new Date();
 	const [copyDebug, clipboard] = useVersionCopy();
 	const [isChecking, setChecking] = useState(false);
 
@@ -49,7 +50,7 @@ export function AboutTab() {
 
 	return (
 		<>
-			<Text c="slate">Surrealist &copy; 2024 SurrealDB Ltd</Text>
+			<Text c="slate">Surrealist &copy; {format(currDate, "yyyy")} SurrealDB Ltd</Text>
 			<Stack
 				gap="xs"
 				mt="xl"
