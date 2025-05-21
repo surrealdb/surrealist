@@ -59,7 +59,7 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 				<SaveBox
 					handle={saveHandle}
 					inline
-					allowApply
+					withApply
 					inlineProps={{
 						className: classes.saveBox,
 					}}

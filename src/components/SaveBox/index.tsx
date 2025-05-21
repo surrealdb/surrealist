@@ -13,7 +13,7 @@ export interface SaveBoxProps {
 	inline?: boolean;
 	inlineProps?: GroupProps;
 	minimal?: boolean;
-	allowApply?: boolean;
+	withApply?: boolean;
 	position?: "left" | "center" | "right";
 	saveText?: ReactNode;
 	applyText?: ReactNode;
@@ -31,7 +31,7 @@ export function SaveBox({
 	position,
 	saveText,
 	minimal,
-	allowApply,
+	withApply,
 	applyText,
 	revertText,
 }: SaveBoxProps) {
@@ -86,14 +86,14 @@ export function SaveBox({
 				{revertButton}
 				{!minimal && <Spacer />}
 
-				{(allowApply || !minimal) && (
+				{(withApply || !minimal) && (
 					<Button.Group>
-						{allowApply && applyButton}
+						{withApply && applyButton}
 						{saveButton}
 					</Button.Group>
 				)}
 
-				{!allowApply && minimal && saveButton}
+				{!withApply && minimal && saveButton}
 			</Group>
 		);
 	}
@@ -133,7 +133,7 @@ export function SaveBox({
 					{revertButton}
 					<Spacer />
 					<Button.Group>
-						{allowApply && applyButton}
+						{withApply && applyButton}
 						{saveButton}
 					</Button.Group>
 				</Group>

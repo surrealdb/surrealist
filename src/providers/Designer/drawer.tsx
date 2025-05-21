@@ -241,7 +241,7 @@ export function DesignDrawer({
 					<SaveBox
 						handle={handle}
 						inline
-						allowApply
+						withApply
 						inlineProps={{
 							className: classes.saveBox,
 						}}
