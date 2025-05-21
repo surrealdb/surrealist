@@ -22,7 +22,7 @@ export interface SaveableOptions<T> {
 	 *
 	 * @param original The original state
 	 */
-	onSave: (original: T) => Task | Task<boolean>;
+	onSave: (original: T, isApply?: boolean) => Task | Task<boolean>;
 
 	/**
 	 * Called when the current state should be reverted
@@ -61,7 +61,7 @@ export interface SaveableHandle {
 	 * After onSave is complete, the tracked state will be scheduled
 	 * to be refreshed after the current render cycle.
 	 */
-	save: () => Promise<void>;
+	save: (isApply?: boolean) => Promise<void>;
 
 	/**
 	 * Revert the current state and invoke the onRevert callback.
@@ -95,10 +95,10 @@ export function useSaveable<T extends Record<string, any>>(
 		setSkipTrack(false);
 	});
 
-	const save = useStable(async () => {
+	const save = useStable(async (isApply?: boolean) => {
 		setIsSaving(true);
 
-		const result = await options.onSave(original);
+		const result = await options.onSave(original, isApply);
 
 		setIsSaving(false);
 

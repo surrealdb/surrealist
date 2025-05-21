@@ -237,13 +237,16 @@ export function DesignDrawer({
 				</Accordion>
 			</ScrollArea>
 			<Box mt="lg">
-				<SaveBox
-					handle={handle}
-					inline
-					inlineProps={{
-						className: classes.saveBox,
-					}}
-				/>
+				{handle.isChanged && (
+					<SaveBox
+						handle={handle}
+						inline
+						allowApply
+						inlineProps={{
+							className: classes.saveBox,
+						}}
+					/>
+				)}
 			</Box>
 		</Drawer>
 	);

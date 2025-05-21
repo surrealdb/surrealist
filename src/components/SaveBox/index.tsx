@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { capitalize } from "radash";
 import type { ReactNode } from "react";
 import type { SaveableHandle } from "~/hooks/save";
-import { iconCheck, iconHelp } from "~/util/icons";
+import { iconCheck, iconHelp, iconReset } from "~/util/icons";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
@@ -12,8 +12,11 @@ export interface SaveBoxProps {
 	handle: SaveableHandle;
 	inline?: boolean;
 	inlineProps?: GroupProps;
+	minimal?: boolean;
+	allowApply?: boolean;
 	position?: "left" | "center" | "right";
 	saveText?: ReactNode;
+	applyText?: ReactNode;
 	revertText?: ReactNode;
 }
 
@@ -27,28 +30,48 @@ export function SaveBox({
 	inlineProps,
 	position,
 	saveText,
+	minimal,
+	allowApply,
+	applyText,
 	revertText,
 }: SaveBoxProps) {
 	const saveButton = (
 		<Button
+			w={minimal ? undefined : 125}
 			rightSection={<Icon path={iconCheck} />}
 			variant="gradient"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
-			onClick={handle.save}
+			onClick={() => handle.save()}
+			px={!minimal ? 32 : undefined}
 		>
-			{saveText ?? "Save changes"}
+			{saveText ?? (minimal ? "Save changes" : "Save")}
+		</Button>
+	);
+
+	const applyButton = (
+		<Button
+			w={minimal ? undefined : 125}
+			color="slate"
+			variant="light"
+			loading={handle.isSaving}
+			disabled={!handle.isSaveable}
+			onClick={() => handle.save(true)}
+			px={!minimal ? 32 : undefined}
+		>
+			{applyText ?? "Apply"}
 		</Button>
 	);
 
 	const revertButton = (
 		<Button
+			maw={minimal ? undefined : 150}
 			disabled={!handle.isChanged}
 			onClick={handle.revert}
 			color="slate"
 			variant="light"
 		>
-			{revertText ?? "Revert"}
+			{revertText ?? (minimal ? "Revert" : "Revert changes")}
 		</Button>
 	);
 
@@ -61,7 +84,16 @@ export function SaveBox({
 				{...inlineProps}
 			>
 				{revertButton}
-				{saveButton}
+				{!minimal && <Spacer />}
+
+				{(allowApply || !minimal) && (
+					<Button.Group>
+						{allowApply && applyButton}
+						{saveButton}
+					</Button.Group>
+				)}
+
+				{!allowApply && minimal && saveButton}
 			</Group>
 		);
 	}
@@ -99,7 +131,11 @@ export function SaveBox({
 					There are unsaved changes
 					<Spacer />
 					{revertButton}
-					{saveButton}
+					<Spacer />
+					<Button.Group>
+						{allowApply && applyButton}
+						{saveButton}
+					</Button.Group>
 				</Group>
 			</Notification>
 		</Portal>
