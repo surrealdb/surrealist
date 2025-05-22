@@ -100,7 +100,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 		track: {
 			data,
 		},
-		onSave: async ({ data: previous }) => {
+		onSave: async ({ data: previous }, isApply) => {
 			if (!previous) {
 				throw new Error("Could not determine previous state");
 			}
@@ -131,7 +131,9 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 					tables: [data.schema.name],
 				});
 
-				designingHandle.close();
+				if (!isApply) {
+					designingHandle.close();
+				}
 			} catch (err: any) {
 				showError({
 					title: "Failed to apply schema",

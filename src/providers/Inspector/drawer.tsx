@@ -73,7 +73,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			setRecordBody(original.recordBody);
 			setError("");
 		},
-		onSave: async () => {
+		onSave: async (original, isApply) => {
 			const id = history.current;
 
 			const [{ success, result }] = await executeQuery(
@@ -90,7 +90,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			}
 
 			onRefresh();
-			onClose();
+
+			if (!isApply) {
+				onClose();
+			}
 		},
 	});
 

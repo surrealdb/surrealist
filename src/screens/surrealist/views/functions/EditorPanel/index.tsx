@@ -410,7 +410,7 @@ export function EditorPanel({
 							<Button
 								variant="gradient"
 								rightSection={<Icon path={iconPlus} />}
-								onClick={handle.save}
+								onClick={() => handle.save()}
 								style={{ flexShrink: 0 }}
 							>
 								Create function
@@ -419,6 +419,7 @@ export function EditorPanel({
 							<SaveBox
 								handle={handle}
 								inline
+								minimal
 								inlineProps={{
 									className: classes.saveBox,
 								}}
