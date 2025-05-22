@@ -48,6 +48,8 @@ import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
+import { useTables } from "~/hooks/schema";
+import { getTableVariant } from "~/util/schema";
 
 export interface ExplorerPaneProps {
 	activeTable: string;
@@ -61,6 +63,9 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const pagination = usePagination();
 	const [connection] = useConnectionAndView();
 	const navigateConnection = useConnectionNavigator();
+	const schema = useTables().find((t) => t.schema.name === activeTable);
+
+	const allowCreate = schema && getTableVariant(schema) !== "view";
 
 	const [filtering, setFiltering] = useState(false);
 	const [filter, setFilter] = useInputState("");
@@ -227,12 +232,14 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			rightSection={
 				activeTable && (
 					<Group align="center">
-						<ActionButton
-							onClick={openCreator}
-							label="Create record"
-						>
-							<Icon path={iconPlus} />
-						</ActionButton>
+						{allowCreate && (
+							<ActionButton
+								onClick={openCreator}
+								label="Create record"
+							>
+								<Icon path={iconPlus} />
+							</ActionButton>
+						)}
 
 						<ActionButton
 							onClick={refetch}
@@ -311,13 +318,15 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 							</Text>
 							<Text>This table contains no records</Text>
 						</Box>
-						<Button
-							variant="gradient"
-							leftSection={<Icon path={iconPlus} />}
-							onClick={openCreator}
-						>
-							Create record
-						</Button>
+						{allowCreate && (
+							<Button
+								variant="gradient"
+								leftSection={<Icon path={iconPlus} />}
+								onClick={openCreator}
+							>
+								Create record
+							</Button>
+						)}
 					</Stack>
 				</Center>
 			)}

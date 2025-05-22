@@ -1,9 +1,20 @@
-import { Button, Group, Modal, MultiSelect, Select, Stack, Tabs, TextInput } from "@mantine/core";
+import {
+	Button,
+	Group,
+	Modal,
+	MultiSelect,
+	SegmentedControl,
+	Select,
+	Stack,
+	Tabs,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { CodeInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SCHEMA_MODES } from "~/constants";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
@@ -11,9 +22,9 @@ import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
-import type { SchemaMode } from "~/types";
+import { TableVariant, type SchemaMode } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconPlus, iconRelation, iconTable } from "~/util/icons";
+import { iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -24,10 +35,11 @@ export function TableCreatorModal() {
 	const tables = useTableNames();
 	const [, view] = useConnectionAndView();
 
-	const [createType, setCreateType] = useState("table");
+	const [createType, setCreateType] = useState<TableVariant>("normal");
 	const [tableName, setTableName] = useInputState("");
 	const [tableIn, setTableIn] = useState<string[]>([]);
 	const [tableOut, setTableOut] = useState<string[]>([]);
+	const [tableView, setTableView] = useState("");
 	const [mode, setMode] = useState<SchemaMode>("schemaless");
 
 	const createTable = useStable(async () => {
@@ -42,7 +54,13 @@ export function TableCreatorModal() {
 			query += `DEFINE FIELD in ON ${escapeIdent(tableName)} TYPE record<${inTables}>;`;
 			query += `DEFINE FIELD out ON ${escapeIdent(tableName)} TYPE record<${outTables}>;`;
 		} else {
-			query += "NORMAL;";
+			query += "NORMAL";
+
+			if (createType === "view") {
+				query += ` AS ${tableView}`;
+			}
+
+			query += ";";
 		}
 
 		closeTableCreator();
@@ -64,6 +82,7 @@ export function TableCreatorModal() {
 	useLayoutEffect(() => {
 		if (opened) {
 			setTableName("");
+			setCreateType("normal");
 			setTableIn([]);
 			setTableOut([]);
 		}
@@ -78,8 +97,12 @@ export function TableCreatorModal() {
 			return tableIn.length > 0 && tableOut.length > 0;
 		}
 
+		if (createType === "view") {
+			return tableView.length > 0;
+		}
+
 		return true;
-	}, [tableName, tableIn, tableOut, createType]);
+	}, [tableName, tableIn, tableOut, createType, tableView]);
 
 	return (
 		<>
@@ -87,64 +110,101 @@ export function TableCreatorModal() {
 				opened={opened}
 				onClose={closeTableCreator}
 				trapFocus={false}
-				size="sm"
-				title={<PrimaryTitle>{`Create new ${createType}`}</PrimaryTitle>}
+				size="md"
+				title={<PrimaryTitle>Create new table</PrimaryTitle>}
 			>
-				<Tabs
-					mb="xl"
-					defaultValue="table"
+				<SegmentedControl
+					fullWidth
+					variant="gradient"
+					data={[
+						{
+							value: "normal",
+							label: (
+								<Group
+									justify="center"
+									gap="xs"
+								>
+									<Icon path={iconTable} />
+									Table
+								</Group>
+							),
+						},
+						{
+							value: "relation",
+							label: (
+								<Group
+									justify="center"
+									gap="xs"
+								>
+									<Icon path={iconRelation} />
+									Relation
+								</Group>
+							),
+						},
+						{
+							value: "view",
+							label: (
+								<Group
+									justify="center"
+									gap="xs"
+								>
+									<Icon path={iconSearch} />
+									View
+								</Group>
+							),
+						},
+					]}
 					value={createType}
 					onChange={setCreateType as any}
-				>
-					<Tabs.List grow>
-						<Tabs.Tab
-							value="table"
-							rightSection={<Icon path={iconTable} />}
-						>
-							Table
-						</Tabs.Tab>
-						<Tabs.Tab
-							value="relation"
-							rightSection={<Icon path={iconRelation} />}
-						>
-							Relation
-						</Tabs.Tab>
-					</Tabs.List>
-				</Tabs>
+					mb={32}
+				/>
 
 				<Form onSubmit={createTable}>
-					<Stack>
+					<Stack gap="xl">
 						<TextInput
-							placeholder="Enter table name"
+							label="Table name"
 							value={tableName}
 							spellCheck={false}
 							onChange={setTableName}
+							placeholder="my_table"
 							autoFocus
+						/>
+						<Select
+							data={SCHEMA_MODES}
+							value={mode}
+							onChange={setMode as any}
+							label="Schema mode"
 						/>
 						{createType === "relation" && (
 							<>
 								<MultiSelect
 									data={tables}
+									label="Incoming tables"
 									searchable
-									placeholder="Select incoming tables"
 									value={tableIn}
 									onChange={setTableIn}
 								/>
 
 								<MultiSelect
 									data={tables}
+									label="Outgoing tables"
 									searchable
-									placeholder="Select outgoing tables"
 									value={tableOut}
 									onChange={setTableOut}
 								/>
 							</>
 						)}
-						<Select
-							data={SCHEMA_MODES}
-							value={mode}
-							onChange={setMode as any}
-						/>
+						{createType === "view" && (
+							<CodeInput
+								label="View query"
+								value={tableView}
+								onChange={setTableView}
+								placeholder="Write a SELECT query..."
+								multiline
+								height={84}
+							/>
+						)}
+
 						<Group mt="lg">
 							<Button
 								onClick={closeTableCreator}
