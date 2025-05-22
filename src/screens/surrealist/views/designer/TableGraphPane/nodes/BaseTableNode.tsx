@@ -11,6 +11,8 @@ import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { extractKindRecords } from "~/util/surrealql";
 import classes from "../style.module.scss";
+import { TABLE_VARIANT_ICONS } from "~/constants";
+import { getTableVariant } from "~/util/schema";
 
 interface SummaryProps {
 	isLight: boolean;
@@ -172,8 +174,7 @@ function Fields(props: FieldsProps) {
 	);
 }
 
-interface BaseNodeProps {
-	icon: string;
+interface BaseTableNodeProps {
 	table: TableInfo;
 	direction: DiagramDirection;
 	mode: DiagramMode;
@@ -181,10 +182,11 @@ interface BaseNodeProps {
 	isEdge?: boolean;
 }
 
-export function BaseNode({ icon, table, direction, mode, isSelected, isEdge }: BaseNodeProps) {
+export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: BaseTableNodeProps) {
 	const isLight = useIsLight();
 	const isLTR = direction === "ltr";
 	const showMore = mode === "summary" || (mode === "fields" && table.fields.length > 0);
+	const variant = getTableVariant(table);
 
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
@@ -224,7 +226,7 @@ export function BaseNode({ icon, table, direction, mode, isSelected, isEdge }: B
 					wrap="nowrap"
 				>
 					<Icon
-						path={icon}
+						path={TABLE_VARIANT_ICONS[variant]}
 						color={isSelected ? "surreal" : isLight ? "slate.7" : "slate.2"}
 					/>
 					<Text

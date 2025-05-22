@@ -1,9 +1,6 @@
 import { SANDBOX } from "~/constants";
 import { useDatabaseStore } from "~/stores/database";
-import { isEdgeTable } from "~/util/schema";
 import { useConnection } from "./connection";
-
-type TableMode = "ALL" | "TABLE" | "EDGE";
 
 const BASE_KINDS = [
 	"any",
@@ -54,22 +51,14 @@ export function useDatabaseSchema() {
  * @param mode The filter mode
  * @returns The filtered tables
  */
-export function useTables(mode: TableMode = "ALL") {
+export function useTables() {
 	const schema = useDatabaseSchema();
 
 	if (!schema) {
 		return [];
 	}
 
-	if (mode === "ALL") {
-		return schema.tables;
-	}
-
-	return schema.tables.filter((t) => {
-		if (mode === "TABLE") return !isEdgeTable(t);
-		if (mode === "EDGE") return isEdgeTable(t);
-		return false;
-	});
+	return schema.tables;
 }
 
 /**
@@ -78,8 +67,8 @@ export function useTables(mode: TableMode = "ALL") {
  * @param mode The filter mode
  * @returns The table names
  */
-export function useTableNames(mode: TableMode = "ALL") {
-	return useTables(mode).map((t) => t.schema.name);
+export function useTableNames() {
+	return useTables().map((t) => t.schema.name);
 }
 
 /**

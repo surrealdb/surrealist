@@ -30,6 +30,7 @@ export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
 export type SourceMode = "schema" | "infer";
 export type SyntaxTheme = "default" | "vivid";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";

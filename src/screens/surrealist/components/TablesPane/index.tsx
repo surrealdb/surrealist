@@ -36,7 +36,11 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { fuzzyMultiMatch } from "~/util/helpers";
-import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
+import { getTableVariant, syncConnectionSchema } from "~/util/schema";
+import { TableVariant } from "~/types";
+import { TABLE_VARIANT_ICONS } from "~/constants";
+
+const VARIANT_ORDER: TableVariant[] = ["normal", "view", "relation"];
 
 export interface TablesPaneProps {
 	icon?: string;
@@ -78,10 +82,10 @@ export function TablesPane({
 			: schema;
 
 		return sort(tables, (table) => {
-			const [isEdge] = extractEdgeRecords(table);
+			const variant = getTableVariant(table);
 			const pinned = pinnedTables.includes(table.schema.name);
 
-			return Number(isEdge) - (pinned ? 999 : 0);
+			return VARIANT_ORDER.indexOf(variant) - (pinned ? 999 : 0);
 		});
 	}, [pinnedTables, schema, search]);
 
@@ -205,7 +209,7 @@ export function TablesPane({
 						{tablesFiltered.map((table) => {
 							const isActive = activeTable === table.schema.name;
 							const isPinned = pinnedTables.includes(table.schema.name);
-							const [isEdge] = extractEdgeRecords(table);
+							const variant = getTableVariant(table);
 
 							return (
 								<Entry
@@ -248,7 +252,7 @@ export function TablesPane({
 											onClick: () => removeTable(table.schema.name),
 										},
 									])}
-									leftSection={<Icon path={isEdge ? iconRelation : iconTable} />}
+									leftSection={<Icon path={TABLE_VARIANT_ICONS[variant]} />}
 									rightSection={
 										isPinned && (
 											<Icon
