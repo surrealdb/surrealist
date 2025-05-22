@@ -24,6 +24,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
+import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
@@ -34,11 +35,10 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { TableVariant } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { fuzzyMultiMatch } from "~/util/helpers";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";
-import { TableVariant } from "~/types";
-import { TABLE_VARIANT_ICONS } from "~/constants";
 
 const VARIANT_ORDER: TableVariant[] = ["normal", "view", "relation"];
 

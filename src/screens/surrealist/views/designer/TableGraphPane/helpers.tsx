@@ -25,8 +25,8 @@ import { objectify } from "radash";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
 import { extractKindRecords } from "~/util/surrealql";
 import { ElkStepEdge } from "./edges/ElkEdge";
-import { RelationTableNode } from "./nodes/RelationTableNode";
 import { NormalTableNode } from "./nodes/NormalTableNode";
+import { RelationTableNode } from "./nodes/RelationTableNode";
 import { ViewTableNode } from "./nodes/ViewTableNode";
 
 type EdgeWarning = {

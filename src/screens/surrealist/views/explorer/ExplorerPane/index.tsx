@@ -41,15 +41,15 @@ import { RecordLink } from "~/components/RecordLink";
 import { useConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
+import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
+import { getTableVariant } from "~/util/schema";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
-import { useTables } from "~/hooks/schema";
-import { getTableVariant } from "~/util/schema";
 
 export interface ExplorerPaneProps {
 	activeTable: string;

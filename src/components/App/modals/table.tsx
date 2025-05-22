@@ -22,7 +22,7 @@ import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
-import { TableVariant, type SchemaMode } from "~/types";
+import { type SchemaMode, TableVariant } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";

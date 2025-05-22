@@ -3,16 +3,16 @@ import { Handle, Position } from "@xyflow/react";
 import { type MouseEvent, type ReactNode, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { ON_STOP_PROPAGATION, simplifyKind } from "~/util/helpers";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
+import { getTableVariant } from "~/util/schema";
 import { extractKindRecords } from "~/util/surrealql";
 import classes from "../style.module.scss";
-import { TABLE_VARIANT_ICONS } from "~/constants";
-import { getTableVariant } from "~/util/schema";
 
 interface SummaryProps {
 	isLight: boolean;

@@ -28,6 +28,7 @@ import {
 	iconWarning,
 } from "~/util/icons";
 
+import { capitalize } from "radash";
 import { useState } from "react";
 import { escapeIdent } from "surrealdb";
 import type { Updater } from "use-immer";
@@ -37,6 +38,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
+import { TABLE_VARIANT_ICONS } from "~/constants";
 import type { SaveableHandle } from "~/hooks/save";
 import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -50,8 +52,6 @@ import { FieldsElement } from "./elements/fields";
 import { GeneralElement } from "./elements/general";
 import { IndexesElement } from "./elements/indexes";
 import { PermissionsElement } from "./elements/permissions";
-import { TABLE_VARIANT_ICONS } from "~/constants";
-import { capitalize } from "radash";
 
 export interface SchemaDrawerProps {
 	opened: boolean;
