@@ -12,6 +12,7 @@ import {
 	ScrollArea,
 	SimpleGrid,
 	Stack,
+	Switch,
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
@@ -23,6 +24,7 @@ import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address
 import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
 import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
 import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
+import { ConnectionSshDetails } from "~/components/ConnectionDetails/ssh";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -121,6 +123,24 @@ export function CreateConnectionPage() {
 
 	const templates = useConfigStore((s) => s.settings.templates.list);
 	const savepoint = useLastSavepoint();
+
+	const handleSshToggle = (checked: boolean) => {
+		setConnection((draft) => {
+			if (checked) {
+				draft.authentication.ssh = {
+					host: "",
+					port: 22,
+					username: "",
+					authMethod: {
+						type: "password",
+						password: "",
+					},
+				};
+			} else {
+				draft.authentication.ssh = null;
+			}
+		});
+	};
 
 	return (
 		<Box
@@ -271,6 +291,35 @@ export function CreateConnectionPage() {
 						value={connection}
 						onChange={setConnection}
 					/>
+
+					<Box mt={24}>
+						<Group
+							align="center"
+							justify="space-between"
+						>
+							<Text
+								fz="xl"
+								fw={600}
+								c="bright"
+							>
+								SSH Tunnel
+							</Text>
+
+							<Switch
+								checked={!!connection.authentication.ssh}
+								disabled={connection.authentication.protocol === "mem"}
+								onChange={(e) => handleSshToggle(e.currentTarget.checked)}
+							/>
+						</Group>
+						<Text>Use an SSH tunnel to connect to your instance.</Text>
+					</Box>
+
+					{connection.authentication.ssh && (
+						<ConnectionSshDetails
+							value={connection}
+							onChange={setConnection}
+						/>
+					)}
 
 					<Box mt={24}>
 						<Text
