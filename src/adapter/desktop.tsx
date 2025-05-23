@@ -85,6 +85,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 			this.queryOpenRequest();
 		});
 
+		getCurrentWindow().listen("config-updated", (event) => {
+			const config = JSON.parse(event.payload as string);
+			useConfigStore.setState(config);
+			console.log("Config updated", config);
+		});
+
 		getCurrentWindow().listen("tauri://focus", () => {
 			this.checkForUpdates();
 		});

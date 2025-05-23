@@ -84,6 +84,7 @@ fn main() {
             database::start_database,
             database::stop_database,
             window::toggle_devtools,
+            window::new_window,
             open::get_opened_resources,
             open::read_query_file,
             open::write_query_file,
@@ -99,18 +100,7 @@ fn main() {
                 open::store_resources(app.handle(), env::args());
             }
 
-            let builder = tauri::WebviewWindowBuilder::new(app, "main", Default::default())
-                .title("Surrealist")
-                .inner_size(1435.0, 775.0)
-                .center()
-                .min_inner_size(825.0, 675.0);
-
-            #[cfg(target_os = "macos")]
-            let builder = builder
-                .title_bar_style(tauri::TitleBarStyle::Overlay)
-                .hidden_title(true);
-
-            builder.build().expect("Failed to create window");
+            tauri::async_runtime::block_on(window::new_window(app.handle().clone()));
 
             Ok(())
         })

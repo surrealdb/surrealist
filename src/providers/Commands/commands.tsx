@@ -72,6 +72,7 @@ import {
 } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
+import { invoke } from "@tauri-apps/api/core";
 
 /** Create a launch command */
 const launch = (handler: () => void) => ({ type: "launch", handler }) as const;
@@ -670,6 +671,16 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconDownload,
 							action: launch(() => {
 								(adapter as DesktopAdapter).checkForUpdates(true);
+							}),
+						},
+					),
+					...optional(
+						isDesktop && {
+							id: "new-window",
+							name: "Open a new window",
+							icon: iconPlus,
+							action: launch(() => {
+								invoke("new_window");
 							}),
 						},
 					),
