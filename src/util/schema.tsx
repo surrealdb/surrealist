@@ -8,6 +8,7 @@ import type {
 	SchemaInfoTB,
 	SchemaModel,
 	TableInfo,
+	TableVariant,
 } from "~/types";
 
 import { klona } from "klona";
@@ -194,15 +195,14 @@ export function buildModelDefinition(func: SchemaModel): string {
 }
 
 /**
- * Returns true if the table is an edge table
- *
- * @param table The table to check
- * @returns True if the table is an edge table
+ * Returns the variant of a given table
  */
-export function extractEdgeRecords(table: TableInfo): [boolean, string[], string[]] {
-	const { kind } = table.schema;
+export function getTableVariant(table: TableInfo): TableVariant {
+	if (table.schema.view) {
+		return "view";
+	}
 
-	return [kind.kind === "RELATION", kind.in || [], kind.out || []];
+	return table.schema.kind.kind === "RELATION" ? "relation" : "normal";
 }
 
 /**
@@ -211,8 +211,10 @@ export function extractEdgeRecords(table: TableInfo): [boolean, string[], string
  * @param table The table to check
  * @returns True if the table is an edge table
  */
-export function isEdgeTable(table: TableInfo) {
-	return extractEdgeRecords(table)[0];
+export function extractEdgeRecords(table: TableInfo): [string[], string[]] {
+	const { kind } = table.schema;
+
+	return [kind.in || [], kind.out || []];
 }
 
 /**

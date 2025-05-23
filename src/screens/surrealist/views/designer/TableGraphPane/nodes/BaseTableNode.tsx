@@ -3,12 +3,14 @@ import { Handle, Position } from "@xyflow/react";
 import { type MouseEvent, type ReactNode, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
+import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { ON_STOP_PROPAGATION, simplifyKind } from "~/util/helpers";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
+import { getTableVariant } from "~/util/schema";
 import { extractKindRecords } from "~/util/surrealql";
 import classes from "../style.module.scss";
 
@@ -172,8 +174,7 @@ function Fields(props: FieldsProps) {
 	);
 }
 
-interface BaseNodeProps {
-	icon: string;
+interface BaseTableNodeProps {
 	table: TableInfo;
 	direction: DiagramDirection;
 	mode: DiagramMode;
@@ -181,10 +182,11 @@ interface BaseNodeProps {
 	isEdge?: boolean;
 }
 
-export function BaseNode({ icon, table, direction, mode, isSelected, isEdge }: BaseNodeProps) {
+export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: BaseTableNodeProps) {
 	const isLight = useIsLight();
 	const isLTR = direction === "ltr";
 	const showMore = mode === "summary" || (mode === "fields" && table.fields.length > 0);
+	const variant = getTableVariant(table);
 
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
@@ -224,7 +226,7 @@ export function BaseNode({ icon, table, direction, mode, isSelected, isEdge }: B
 					wrap="nowrap"
 				>
 					<Icon
-						path={icon}
+						path={TABLE_VARIANT_ICONS[variant]}
 						color={isSelected ? "surreal" : isLight ? "slate.7" : "slate.2"}
 					/>
 					<Text

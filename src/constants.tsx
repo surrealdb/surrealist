@@ -34,6 +34,7 @@ import type {
 	Selectable,
 	SidebarMode,
 	SyntaxTheme,
+	TableVariant,
 	ViewPage,
 	ViewPageInfo,
 } from "./types";
@@ -59,7 +60,9 @@ import {
 	iconQuery,
 	iconReferral,
 	iconRelation,
+	iconSearch,
 	iconSidekick,
+	iconTable,
 	iconTune,
 	iconXml,
 } from "./util/icons";
@@ -385,6 +388,12 @@ export const SCHEMA_MODES: Selectable<SchemaMode>[] = [
 export const REGION_FLAGS: Record<string, string> = {
 	"aws-euw1": flagIE,
 	"aws-use1": flagUS,
+};
+
+export const TABLE_VARIANT_ICONS: Record<TableVariant, string> = {
+	normal: iconTable,
+	relation: iconRelation,
+	view: iconSearch,
 };
 
 export const DRIVERS: Driver[] = [

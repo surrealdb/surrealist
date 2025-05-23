@@ -17,15 +17,17 @@ import type {
 	DiagramLinks,
 	DiagramMode,
 	TableInfo,
+	TableVariant,
 } from "~/types";
 
 import { toBlob, toSvg } from "html-to-image";
 import { objectify } from "radash";
-import { extractEdgeRecords } from "~/util/schema";
+import { extractEdgeRecords, getTableVariant } from "~/util/schema";
 import { extractKindRecords } from "~/util/surrealql";
 import { ElkStepEdge } from "./edges/ElkEdge";
-import { EdgeNode } from "./nodes/EdgeNode";
-import { TableNode } from "./nodes/TableNode";
+import { NormalTableNode } from "./nodes/NormalTableNode";
+import { RelationTableNode } from "./nodes/RelationTableNode";
+import { ViewTableNode } from "./nodes/ViewTableNode";
 
 type EdgeWarning = {
 	type: "edge";
@@ -42,8 +44,9 @@ type LinkWarning = {
 };
 
 export const NODE_TYPES: NodeTypes = {
-	table: TableNode,
-	edge: EdgeNode,
+	normal: NormalTableNode,
+	relation: RelationTableNode,
+	view: ViewTableNode,
 };
 
 export const EDGE_TYPES: EdgeTypes = {
@@ -61,7 +64,7 @@ export type SharedNodeData = {
 };
 
 interface NormalizedTable {
-	isEdge: boolean;
+	variant: TableVariant;
 	table: TableInfo;
 	from: string[];
 	to: string[];
@@ -69,11 +72,12 @@ interface NormalizedTable {
 
 function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
 	return tables.map((table) => {
-		const [isEdge, from, to] = extractEdgeRecords(table);
+		const [from, to] = extractEdgeRecords(table);
+		const variant = getTableVariant(table);
 
 		return {
 			table,
-			isEdge,
+			variant,
 			to,
 			from,
 		};
@@ -114,11 +118,11 @@ export function buildFlowNodes(
 	}
 
 	// Define all nodes
-	for (const { table, isEdge } of items) {
+	for (const { table, variant } of items) {
 		const name = table.schema.name;
 		const node: any = {
 			id: name,
-			type: isEdge ? "edge" : "table",
+			type: variant,
 			position: { x: 0, y: 0 },
 			deletable: false,
 			data: {
@@ -133,7 +137,7 @@ export function buildFlowNodes(
 		nodeIndex[name] = node;
 	}
 
-	const edgeItems = items.filter((item) => item.isEdge);
+	const edgeItems = items.filter((item) => item.variant === "relation");
 	const edgeIndex = new Map<string, boolean>();
 	const warnings: GraphWarning[] = [];
 

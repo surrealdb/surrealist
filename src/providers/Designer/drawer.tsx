@@ -7,10 +7,14 @@ import {
 	Badge,
 	Box,
 	CopyButton,
+	Divider,
 	Drawer,
 	Group,
 	Paper,
 	ScrollArea,
+	Stack,
+	Text,
+	ThemeIcon,
 } from "@mantine/core";
 
 import {
@@ -24,6 +28,7 @@ import {
 	iconWarning,
 } from "~/util/icons";
 
+import { capitalize } from "radash";
 import { useState } from "react";
 import { escapeIdent } from "surrealdb";
 import type { Updater } from "use-immer";
@@ -33,13 +38,14 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
+import { TABLE_VARIANT_ICONS } from "~/constants";
 import type { SaveableHandle } from "~/hooks/save";
 import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import type { TableInfo } from "~/types";
-import { syncConnectionSchema } from "~/util/schema";
+import { getTableVariant, syncConnectionSchema } from "~/util/schema";
 import { ChangefeedElement } from "./elements/changefeed";
 import { EventsElement } from "./elements/events";
 import { FieldsElement } from "./elements/fields";
@@ -84,7 +90,7 @@ export function DesignDrawer({
 		},
 	});
 
-	const isEdge = value.schema.kind.kind === "RELATION";
+	const variant = getTableVariant(value);
 
 	return (
 		<Drawer
@@ -156,19 +162,37 @@ export function DesignDrawer({
 				</ActionButton>
 			</Group>
 			<Paper
-				bg={isLight ? "white" : "slate.9"}
-				p="sm"
-				ff="monospace"
-				mb="md"
+				withBorder
+				my="md"
+				p="md"
 			>
-				<Group gap="sm">
-					<Icon path={isEdge ? iconRelation : iconTable} />
-					{value.schema.name}
+				<Group>
+					<ThemeIcon
+						radius="sm"
+						color="violet"
+						variant="light"
+						size={38}
+					>
+						<Icon
+							path={TABLE_VARIANT_ICONS[variant]}
+							size="lg"
+						/>
+					</ThemeIcon>
+					<Box>
+						<Text
+							fz="xl"
+							fw={500}
+							c="bright"
+						>
+							{value.schema.name}
+						</Text>
+						<Text>{capitalize(variant)} table</Text>
+					</Box>
 					<Spacer />
 					<CopyButton value={value.schema.name}>
 						{({ copied, copy }) => (
 							<ActionIcon
-								variant={copied ? "gradient" : undefined}
+								variant={copied ? "gradient" : "subtle"}
 								onClick={copy}
 								aria-label="Copy name to clipboard"
 							>

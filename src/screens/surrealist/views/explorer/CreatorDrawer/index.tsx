@@ -34,9 +34,9 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
-import { extractEdgeRecords } from "~/util/schema";
+import { extractEdgeRecords, getTableVariant } from "~/util/schema";
 
-type EdgeInfo = [boolean, string[], string[]];
+type EdgeInfo = [string[], string[]];
 
 export interface CreatorDrawerProps {
 	opened: boolean;
@@ -55,10 +55,9 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	const tables = useTableNames();
 
 	const tableInfo = useTables().find((t) => t.schema.name === recordTable);
+	const isRelation = tableInfo ? getTableVariant(tableInfo) === "relation" : false;
 
-	const [isRelation, fromTables, toTables]: EdgeInfo = tableInfo
-		? extractEdgeRecords(tableInfo)
-		: [false, [], []];
+	const [fromTables, toTables]: EdgeInfo = tableInfo ? extractEdgeRecords(tableInfo) : [[], []];
 
 	const handleSubmit = useStable(async () => {
 		if (!isValid) {
