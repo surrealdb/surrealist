@@ -38,6 +38,12 @@ export function Pagination({ store, loading }: PaginationProps) {
 		setCustomPage(store.currentPage.toString());
 	}, [store.currentPage]);
 
+	useLayoutEffect(() => {
+		if (store.pageCount > 0 && store.currentPage > store.pageCount) {
+			store.setCurrentPage(store.pageCount);
+		}
+	}, [store.currentPage, store.pageCount, store.setCurrentPage]);
+
 	return (
 		<>
 			<Group
