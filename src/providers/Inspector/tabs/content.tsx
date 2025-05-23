@@ -55,16 +55,11 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 				/>
 			</Paper>
 
-			{saveHandle.isChanged && (
-				<SaveBox
-					handle={saveHandle}
-					inline
-					withApply
-					inlineProps={{
-						className: classes.saveBox,
-					}}
-				/>
-			)}
+			<SaveBox
+				handle={saveHandle}
+				inline
+				withApply
+			/>
 		</>
 	);
 }
