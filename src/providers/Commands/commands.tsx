@@ -46,6 +46,7 @@ import {
 	iconWrench,
 } from "~/util/icons";
 
+import { invoke } from "@tauri-apps/api/core";
 import { dash } from "radash";
 import { useMemo } from "react";
 import { adapter, isDesktop } from "~/adapter";
@@ -72,7 +73,6 @@ import {
 } from "~/util/preferences";
 import { syncConnectionSchema } from "~/util/schema";
 import type { CommandCategory } from "./types";
-import { invoke } from "@tauri-apps/api/core";
 
 /** Create a launch command */
 const launch = (handler: () => void) => ({ type: "launch", handler }) as const;
