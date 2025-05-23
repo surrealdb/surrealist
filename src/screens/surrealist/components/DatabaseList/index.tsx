@@ -5,6 +5,7 @@ import {
 	type ButtonProps,
 	Divider,
 	Group,
+	Loader,
 	Menu,
 	ScrollArea,
 	Stack,
@@ -17,6 +18,7 @@ import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useNamespaceSchema } from "~/hooks/schema";
@@ -114,12 +116,14 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 		return schema.databases.map((db) => parseIdent(db.name));
 	}, [schema, authentication]);
 
-	const openDatabase = useStable(async (db: string) => {
-		if (database !== db) {
-			await activateDatabase(namespace, db);
-		}
+	const { mutate, isPending } = useMutation({
+		mutationFn: async (db: string) => {
+			if (database !== db) {
+				await activateDatabase(namespace, db);
+			}
 
-		openHandle.close();
+			openHandle.close();
+		},
 	});
 
 	const openCreator = useStable(() => {
@@ -178,14 +182,15 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 					flex={1}
 					p="sm"
 				>
-					<Group>
+					<Group gap="sm">
 						<Text
-							flex={1}
 							fw={600}
 							c="bright"
 						>
 							Databases
 						</Text>
+						{isPending && <Loader size={14} />}
+						<Spacer />
 						<ActionButton
 							color="slate"
 							variant="light"
@@ -208,7 +213,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 										value={db}
 										activeNamespace={namespace}
 										activeDatabase={database}
-										onOpen={() => openDatabase(db)}
+										onOpen={mutate}
 										onRemove={openHandle.close}
 									/>
 								))}

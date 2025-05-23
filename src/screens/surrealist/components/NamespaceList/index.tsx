@@ -5,17 +5,20 @@ import {
 	type ButtonProps,
 	Divider,
 	Group,
+	Loader,
 	Menu,
 	ScrollArea,
 	Stack,
 	Text,
 } from "@mantine/core";
 
+import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useRootSchema } from "~/hooks/schema";
@@ -111,12 +114,14 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 		return schema.namespaces.map((ns) => parseIdent(ns.name));
 	}, [schema, authentication]);
 
-	const openNamespace = useStable(async (ns: string) => {
-		if (namespace !== ns) {
-			await activateDatabase(ns, "");
-		}
+	const { mutate, isPending } = useMutation({
+		mutationFn: async (ns: string) => {
+			if (namespace !== ns) {
+				await activateDatabase(ns, "");
+			}
 
-		openHandle.close();
+			openHandle.close();
+		},
 	});
 
 	const openCreator = useStable(() => {
@@ -176,14 +181,15 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 					p="sm"
 					gap="sm"
 				>
-					<Group>
+					<Group gap="sm">
 						<Text
-							flex={1}
 							fw={600}
 							c="bright"
 						>
 							Namespaces
 						</Text>
+						{isPending && <Loader size={14} />}
+						<Spacer />
 						<ActionButton
 							color="slate"
 							variant="light"
@@ -205,7 +211,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 										key={ns}
 										value={ns}
 										activeNamespace={namespace}
-										onOpen={openNamespace}
+										onOpen={mutate}
 										onRemove={openHandle.close}
 									/>
 								))}
