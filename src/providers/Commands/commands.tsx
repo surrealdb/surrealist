@@ -46,6 +46,7 @@ import {
 	iconWrench,
 } from "~/util/icons";
 
+import { invoke } from "@tauri-apps/api/core";
 import { dash } from "radash";
 import { useMemo } from "react";
 import { adapter, isDesktop } from "~/adapter";
@@ -670,6 +671,16 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconDownload,
 							action: launch(() => {
 								(adapter as DesktopAdapter).checkForUpdates(true);
+							}),
+						},
+					),
+					...optional(
+						isDesktop && {
+							id: "new-window",
+							name: "Open a new window",
+							icon: iconPlus,
+							action: launch(() => {
+								invoke("new_window");
 							}),
 						},
 					),
