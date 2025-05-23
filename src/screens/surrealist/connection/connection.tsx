@@ -1,9 +1,9 @@
 import {
 	type AccessRecordAuth,
+	AuthController,
 	type ExportOptions,
 	QueryParameters,
 	type ScopeAuth,
-	type Surreal,
 	SurrealDbError,
 	UnsupportedVersion,
 	Uuid,
@@ -157,14 +157,20 @@ export async function openConnection(options?: ConnectOptions) {
 		await instance.connect(rpcEndpoint, {
 			versionCheck,
 			versionCheckTimeout,
-			prepare: async (surreal) => {
+			prepare: async (controller) => {
+				const { protocol } = connection.authentication;
+
+				if (protocol === "mem" || protocol === "indxdb") {
+					return;
+				}
+
 				try {
 					const auth = await composeAuthentication(connection.authentication);
 
 					if (isAccessSignup) {
-						await register(buildAccessAuth(connection.authentication), surreal);
+						await register(buildAccessAuth(connection.authentication), controller);
 					} else {
-						await authenticate(auth, surreal);
+						await authenticate(auth, controller);
 					}
 				} catch (err) {
 					throw new Error(`Authentication failed: ${err}`);
@@ -267,10 +273,10 @@ export function isConnected() {
  * @param auth The authentication details
  * @param surreal The optional surreal instance
  */
-export async function register(auth: ScopeAuth | AccessRecordAuth, surreal?: Surreal) {
-	const db = surreal ?? instance;
+export async function register(auth: ScopeAuth | AccessRecordAuth, controller?: AuthController) {
+	const impl = controller ?? instance;
 
-	await db
+	await impl
 		.signup(auth)
 		.then((t) => {
 			accessToken = t;
@@ -286,19 +292,19 @@ export async function register(auth: ScopeAuth | AccessRecordAuth, surreal?: Sur
  * @param auth The authentication details
  * @param surreal The optional surreal instance
  */
-export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
-	const db = surreal ?? instance;
+export async function authenticate(auth: AuthDetails, controller?: AuthController) {
+	const impl = controller ?? instance;
 
 	if (auth === undefined) {
 		accessToken = "";
-		await db.invalidate();
+		await impl.invalidate();
 	} else if (typeof auth === "string") {
 		accessToken = auth;
-		await db.authenticate(auth).catch(() => {
+		await impl.authenticate(auth).catch(() => {
 			throw new Error("Authentication token invalid");
 		});
 	} else if (auth) {
-		await db
+		await impl
 			.signin(auth)
 			.then((t) => {
 				accessToken = t;
