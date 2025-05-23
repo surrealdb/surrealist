@@ -53,6 +53,8 @@ export function getSetting<C extends Category, K extends keyof Settings<C>>(cate
 	return useConfigStore.getState().settings[category][key];
 }
 
+let skipConfigSave = false;
+
 /**
  * Start the config synchronization process
  */
@@ -70,24 +72,41 @@ export async function startConfigSync() {
 		return;
 	}
 
+	// Create save function
+	const scheduleSave = debounce(
+		{
+			delay: 250,
+		},
+		(state: SurrealistConfig) => {
+			adapter.saveConfig(state);
+		},
+	);
+
 	// Update the internal config state
 	useConfigStore.setState(config);
 
 	// Sync the config with the adapter
-	useConfigStore.subscribe(
-		debounce(
-			{
-				delay: 250,
-			},
-			(state) => {
-				adapter.saveConfig(state);
-			},
-		),
-	);
+	useConfigStore.subscribe((updated) => {
+		if (!skipConfigSave) {
+			scheduleSave(updated);
+		}
+	});
 
 	// Prune removed query files
 	if (adapter instanceof DesktopAdapter) {
 		adapter.pruneQueryFiles();
+	}
+}
+
+/**
+ * Overwrite the config store without triggering a save
+ */
+export function overwriteConfig(config: SurrealistConfig) {
+	try {
+		skipConfigSave = true;
+		useConfigStore.setState(config);
+	} finally {
+		skipConfigSave = false;
 	}
 }
 

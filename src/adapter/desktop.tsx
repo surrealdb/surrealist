@@ -1,6 +1,6 @@
 import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { Event, listen } from "@tauri-apps/api/event";
 import { basename } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -17,7 +17,7 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
-import { getSetting, watchStore } from "~/util/config";
+import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
@@ -85,10 +85,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 			this.queryOpenRequest();
 		});
 
-		getCurrentWindow().listen("config-updated", (event) => {
-			const config = JSON.parse(event.payload as string);
-			useConfigStore.setState(config);
-			console.log("Config updated", config);
+		getCurrentWindow().listen("config-updated", (event: Event<string>) => {
+			overwriteConfig(JSON.parse(event.payload));
 		});
 
 		getCurrentWindow().listen("tauri://focus", () => {
