@@ -34,7 +34,7 @@ import { tagEvent } from "~/util/analytics";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
-import { ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
+import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
 import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
@@ -666,7 +666,11 @@ export async function activateDatabase(namespace: string, database: string) {
 	}
 
 	try {
-		await syncConnectionSchema();
+		ActivateDatabaseEvent.dispatch(null);
+
+		await syncConnectionSchema({
+			clearDatabase: true,
+		});
 	} catch (err: any) {
 		showError({
 			title: "Failed to parse schema",

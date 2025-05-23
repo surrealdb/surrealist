@@ -26,6 +26,9 @@ import { getStatementCount } from "./surrealql";
 
 export interface SchemaSyncOptions {
 	tables?: string[];
+	clearRoot?: boolean;
+	clearNamespace?: boolean;
+	clearDatabase?: boolean;
 }
 
 /**
@@ -34,13 +37,23 @@ export interface SchemaSyncOptions {
  * @param options Sync options
  */
 export async function syncConnectionSchema(options?: SchemaSyncOptions) {
-	const { currentState } = useDatabaseStore.getState();
+	const { currentState, connectionSchema, setDatabaseSchema } = useDatabaseStore.getState();
+	const { tables: onlyTables, clearRoot, clearNamespace, clearDatabase } = options ?? {};
+
+	if (clearRoot || clearNamespace || clearDatabase) {
+		const reset = createConnectionSchema();
+
+		setDatabaseSchema({
+			root: clearRoot ? reset.root : connectionSchema.root,
+			namespace: clearNamespace ? reset.namespace : connectionSchema.namespace,
+			database: clearDatabase ? reset.database : connectionSchema.database,
+		});
+	}
 
 	if (currentState !== "connected") {
 		return;
 	}
 
-	const { connectionSchema, setDatabaseSchema } = useDatabaseStore.getState();
 	const schema = createConnectionSchema();
 
 	adapter.log("Schema", "Synchronizing database schema");
@@ -96,8 +109,8 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 		}));
 
 		// Tables
-		const isLimited = Array.isArray(options?.tables);
-		const tablesToSync = isLimited ? (options.tables as string[]) : tables.map((t) => t.name);
+		const isLimited = Array.isArray(onlyTables);
+		const tablesToSync = isLimited ? onlyTables : tables.map((t) => t.name);
 
 		const tbInfoMap = await executeQuery(
 			tablesToSync
