@@ -153,7 +153,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 			opened={opened}
 			onChange={openHandle.set}
 			trigger="click"
-			position="bottom"
+			position="bottom-start"
 			transitionProps={{
 				transition: "scale-y",
 			}}
