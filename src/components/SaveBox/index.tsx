@@ -37,13 +37,12 @@ export function SaveBox({
 }: SaveBoxProps) {
 	const saveButton = (
 		<Button
-			w={minimal ? undefined : 125}
+			miw={100}
 			rightSection={<Icon path={iconCheck} />}
 			variant="gradient"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={() => handle.save(false)}
-			px={!minimal ? 32 : undefined}
 		>
 			{saveText ?? (minimal ? "Save changes" : "Save")}
 		</Button>
@@ -51,13 +50,13 @@ export function SaveBox({
 
 	const applyButton = (
 		<Button
-			w={minimal ? undefined : 125}
+			miw={100}
+			px="xl"
 			color="slate"
 			variant="light"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={() => handle.save(true)}
-			px={!minimal ? 32 : undefined}
 		>
 			{applyText ?? "Apply"}
 		</Button>
@@ -65,7 +64,7 @@ export function SaveBox({
 
 	const revertButton = (
 		<Button
-			maw={minimal ? undefined : 150}
+			px="xl"
 			disabled={!handle.isChanged}
 			onClick={handle.revert}
 			color="slate"
@@ -79,18 +78,16 @@ export function SaveBox({
 		return (
 			<Group
 				gap={10}
-				align="center"
-				justify="apart"
 				{...inlineProps}
 			>
 				{revertButton}
 				{!minimal && <Spacer />}
 
 				{(withApply || !minimal) && (
-					<Button.Group>
+					<>
 						{withApply && applyButton}
 						{saveButton}
-					</Button.Group>
+					</>
 				)}
 
 				{!withApply && minimal && saveButton}
