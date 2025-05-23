@@ -12,6 +12,11 @@ export const ConnectedEvent = createEventBus();
 export const DisconnectedEvent = createEventBus();
 
 /**
+ * Invoked when a database and namespace is activated
+ */
+export const ActivateDatabaseEvent = createEventBus();
+
+/**
  * Invoked when records in the database have been altered
  */
 export const RecordsChangedEvent = createEventBus();
