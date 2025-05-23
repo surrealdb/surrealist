@@ -3,7 +3,7 @@
 	"identifier": "surrealist",
 	"description": "default surrealist permissions",
 	"windows": [
-		"main"
+		"surrealist-*"
 	],
 	"permissions": [
 		"core:path:default",

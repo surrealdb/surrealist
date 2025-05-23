@@ -13,7 +13,7 @@ import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
 import { VIEW_PAGES } from "~/constants";
-import { useConfigStore } from "~/stores/config";
+import { ConfigStore, useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
@@ -82,6 +82,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		listen("open-resource", () => {
 			this.queryOpenRequest();
+		});
+
+		listen("config-updated", (event) => {
+			const config = JSON.parse(event.payload as string);
+			useConfigStore.setState(config);
+			console.log("Config updated", config);
 		});
 
 		listen("tauri://focus", () => {
