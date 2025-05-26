@@ -164,17 +164,17 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				key: "divider-1",
 			},
 			{
-				key: "select",
+				key: "select-query",
 				title: "Use in SELECT query",
 				onClick: () => openQuery(record.id, "SELECT * FROM"),
 			},
 			{
-				key: "select",
+				key: "update-query",
 				title: "Use in UPDATE query",
 				onClick: () => openQuery(record.id, "UPDATE"),
 			},
 			{
-				key: "select",
+				key: "delete-query",
 				title: "Use in DELETE query",
 				onClick: () => openQuery(record.id, "DELETE"),
 			},
@@ -182,7 +182,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				key: "divider-2",
 			},
 			{
-				key: "delete",
+				key: "delete-record",
 				title: "Delete record",
 				color: "pink.7",
 				icon: <Icon path={iconDelete} />,
