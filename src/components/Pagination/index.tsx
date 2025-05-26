@@ -35,14 +35,14 @@ export function Pagination({ store, loading }: PaginationProps) {
 	});
 
 	useLayoutEffect(() => {
-		setCustomPage(store.currentPage.toString());
-	}, [store.currentPage]);
-
-	useLayoutEffect(() => {
 		if (store.pageCount > 0 && store.currentPage > store.pageCount) {
 			store.setCurrentPage(store.pageCount);
+		} else if (store.currentPage < 1) {
+			store.setCurrentPage(1);
 		}
-	}, [store.currentPage, store.pageCount, store.setCurrentPage]);
+
+		setCustomPage(store.currentPage.toString());
+	}, [store.setCurrentPage, store.currentPage, store.pageCount]);
 
 	return (
 		<>
