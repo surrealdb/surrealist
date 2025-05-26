@@ -41,12 +41,18 @@ function getState() {
  * Open the cloud authentication page
  */
 export async function openCloudAuthentication() {
-	const { setIsSupported } = useCloudStore.getState();
+	const { setIsSupported, setFailedConnected } = useCloudStore.getState();
 	const { authBase } = getCloudEndpoints();
-	const isSupported = await isClientSupported();
+	const versionResponse = await isClientSupported();
+
+	if (versionResponse instanceof Error) {
+		console.error(`Failed to fetch Cloud Version: ${versionResponse.message}`);
+		setFailedConnected(true);
+		return;
+	}
 
 	// If the client is not supported, disable the cloud
-	if (!isSupported) {
+	if (!versionResponse) {
 		setIsSupported(false);
 		return;
 	}
@@ -150,11 +156,19 @@ export async function verifyAuthentication(code: string, state: string) {
  * Refresh the current access token
  */
 export async function refreshAccess() {
-	const { setIsSupported, setLoading, setSessionExpired } = useCloudStore.getState();
+	const { setIsSupported, setFailedConnected, setLoading, setSessionExpired } =
+		useCloudStore.getState();
 	const { authBase } = getCloudEndpoints();
-	const isSupported = await isClientSupported();
+	const versionResponse = await isClientSupported();
 
-	if (!isSupported) {
+	if (versionResponse instanceof Error) {
+		console.error(`Failed to fetch Cloud Version: ${versionResponse.message}`);
+		setFailedConnected(true);
+		invalidateSession();
+		return;
+	}
+
+	if (!versionResponse) {
 		invalidateSession();
 		setIsSupported(false);
 		return;

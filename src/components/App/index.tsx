@@ -22,6 +22,7 @@ import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
+import { FailedConnectDialog } from "./modals/failed-connect";
 
 function Surrealist() {
 	return (
@@ -58,6 +59,7 @@ export function App() {
 			<NewsFeedDrawer />
 			<CloudExpiredDialog />
 			<CloudUpdateRequiredDialog />
+			<FailedConnectDialog />
 
 			{isDesktop && <UpdaterDialog />}
 		</Scaffold>

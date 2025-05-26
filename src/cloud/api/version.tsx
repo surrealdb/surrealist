@@ -1,5 +1,4 @@
 import { compareVersions } from "compare-versions";
-import { sleep } from "radash";
 import { featureFlagsLock } from "~/providers/FeatureFlags";
 import { featureFlags } from "~/util/feature-flags";
 import { fetchAPI } from ".";
@@ -14,11 +13,19 @@ interface VersionInfo {
  */
 export async function isClientSupported() {
 	await featureFlagsLock;
+
 	if (!featureFlags.get("cloud_killswitch")) {
 		return true;
 	}
 
-	const res = await fetchAPI<VersionInfo>("/version");
+	try {
+		const res = await fetchAPI<VersionInfo>("/version");
+		return compareVersions(import.meta.env.VERSION, res.ui_version) >= 0;
+	} catch (err) {
+		if (err instanceof Error) {
+			return err;
+		}
 
-	return compareVersions(import.meta.env.VERSION, res.ui_version) >= 0;
+		return new Error(err as string);
+	}
 }
