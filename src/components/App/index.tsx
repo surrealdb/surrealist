@@ -14,6 +14,7 @@ import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
 import { DocumentationModal } from "./modals/documentation";
 import { DownloadModal } from "./modals/download";
+import { FailedConnectDialog } from "./modals/failed-connect";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { RegisterUserModal } from "./modals/register";
@@ -22,7 +23,6 @@ import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
-import { FailedConnectDialog } from "./modals/failed-connect";
 
 function Surrealist() {
 	return (
