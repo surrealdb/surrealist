@@ -26,11 +26,11 @@
         "@lezer/php": "^1.0.2",
         "@lezer/python": "^1.1.14",
         "@lezer/rust": "^1.0.2",
-        "@mantine/charts": "^7.16.3",
-        "@mantine/core": "^7.16.1",
-        "@mantine/hooks": "^7.16.1",
-        "@mantine/modals": "^7.16.1",
-        "@mantine/notifications": "^7.16.1",
+        "@mantine/charts": "7.16.1",
+        "@mantine/core": "7.16.1",
+        "@mantine/hooks": "7.16.1",
+        "@mantine/modals": "7.16.1",
+        "@mantine/notifications": "7.16.1",
         "@mdi/js": "^7.2.96",
         "@replit/codemirror-indentation-markers": "^6.5.0",
         "@sigma/edge-curve": "^3.1.0",
@@ -477,17 +477,17 @@
 
     "@lezer/rust": ["@lezer/rust@1.0.2", "", { "dependencies": { "@lezer/common": "^1.2.0", "@lezer/highlight": "^1.0.0", "@lezer/lr": "^1.0.0" } }, "sha512-Lz5sIPBdF2FUXcWeCu1//ojFAZqzTQNRga0aYv6dYXqJqPfMdCAI0NzajWUd4Xijj1IKJLtjoXRPMvTKWBcqKg=="],
 
-    "@mantine/charts": ["@mantine/charts@7.17.3", "", { "peerDependencies": { "@mantine/core": "7.17.3", "@mantine/hooks": "7.17.3", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x", "recharts": "^2.13.3" } }, "sha512-YGx8hLi4E3yyiRx9fNAoPPF+YrFkLWM+fnzqKIVvRbWqMbUw920AU+K5XSDjPmNB7cuYWSVwxxA/hIstQ8x3VA=="],
+    "@mantine/charts": ["@mantine/charts@7.16.1", "", { "peerDependencies": { "@mantine/core": "7.16.1", "@mantine/hooks": "7.16.1", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x", "recharts": "^2.13.3" } }, "sha512-19wfccpk8VMa3xoIEklXxF/O1xYEn8dBeTSOMMVDTnmLCltqJjhcSNZdv0ycXIcWHOZ9rrbAsAFWJLbTFJmsOQ=="],
 
-    "@mantine/core": ["@mantine/core@7.17.3", "", { "dependencies": { "@floating-ui/react": "^0.26.28", "clsx": "^2.1.1", "react-number-format": "^5.4.3", "react-remove-scroll": "^2.6.2", "react-textarea-autosize": "8.5.6", "type-fest": "^4.27.0" }, "peerDependencies": { "@mantine/hooks": "7.17.3", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-N/AfV5eMnfEMx9WzI7AU5pNFBEzAfT/KtE2XDKS+0ht6RifUmolIxyIvoGMYz2yUEsCBMJZqmBq33Rabf5W7Ug=="],
+    "@mantine/core": ["@mantine/core@7.16.1", "", { "dependencies": { "@floating-ui/react": "^0.26.28", "clsx": "^2.1.1", "react-number-format": "^5.4.3", "react-remove-scroll": "^2.6.2", "react-textarea-autosize": "8.5.6", "type-fest": "^4.27.0" }, "peerDependencies": { "@mantine/hooks": "7.16.1", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-HYdjCeMU3dUJbc1CrAAedeAASTG5kVyL/qsiuYh5b7BoG0qsRtK8WJxBpUjW6VqtJpUaE94c5tlBJ8MgAmPHTQ=="],
 
-    "@mantine/hooks": ["@mantine/hooks@7.17.3", "", { "peerDependencies": { "react": "^18.x || ^19.x" } }, "sha512-6o65Rbfl8jd1C1nF9icvungqL0qZViEOmrZgkyKXxBYkC3x91fz4zftwQgNjt1tZHWDNO6Bo4GpRjJyAdwl48g=="],
+    "@mantine/hooks": ["@mantine/hooks@7.16.1", "", { "peerDependencies": { "react": "^18.x || ^19.x" } }, "sha512-+hER8E4d2ByfQ/DKIXGM3Euxb7IH5ArSjzzzoF21sG095iXIryOCob22ZanrmiXCoAzKKdxqgVj4Di67ikLYSQ=="],
 
-    "@mantine/modals": ["@mantine/modals@7.17.3", "", { "peerDependencies": { "@mantine/core": "7.17.3", "@mantine/hooks": "7.17.3", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-ZwNDTmfqyVRPUNl+vtBDbgZ9aVeQw6H+KLDSZxEsIYjc8p6u7FgCQ/FaBpsJOf//Oc7gHTLF0al27AqvW8jmOA=="],
+    "@mantine/modals": ["@mantine/modals@7.16.1", "", { "peerDependencies": { "@mantine/core": "7.16.1", "@mantine/hooks": "7.16.1", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-kr5CgA/PKBgQ1yvXYauLYss20dkzYwgm+o+MKPeJ+bzJaHn6MkRhvXu4DnIurc8bUPKqDs6tUnLESRpUGv7bNQ=="],
 
-    "@mantine/notifications": ["@mantine/notifications@7.17.3", "", { "dependencies": { "@mantine/store": "7.17.3", "react-transition-group": "4.4.5" }, "peerDependencies": { "@mantine/core": "7.17.3", "@mantine/hooks": "7.17.3", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-MqakDqu/CZzO4arZGpXs3TmGTajqL4xm28vtqW4qWFSU5HZWQ4EosqipqvIJ+swC6YbxNiWvFcfnxxPlHdYk9g=="],
+    "@mantine/notifications": ["@mantine/notifications@7.16.1", "", { "dependencies": { "@mantine/store": "7.16.1", "react-transition-group": "4.4.5" }, "peerDependencies": { "@mantine/core": "7.16.1", "@mantine/hooks": "7.16.1", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-kCYbuanL+y/VZ0UqgE0fpQcpTznWHwLEOw4waMXHyig6z4AEEB45U3iFpBtuSXpuFjfqH0corMaaWkAVocwj2Q=="],
 
-    "@mantine/store": ["@mantine/store@7.17.3", "", { "peerDependencies": { "react": "^18.x || ^19.x" } }, "sha512-wXQXe/Ljv2N6TDRsoVwOHmTGZey7Nt/SS6VeeMujKeNnAybPPXaP1jIbN50MKJoDS4qVPCHJNaHwVKIgMur2aQ=="],
+    "@mantine/store": ["@mantine/store@7.16.1", "", { "peerDependencies": { "react": "^18.x || ^19.x" } }, "sha512-EZjNzsLPWXB5MgBDa5FUEg5vbN+uo3hctSgplC7kkimjW7K3qfMiszwTt8cQgb7RRn7xH5sfC3U0Cm8X9h4kmA=="],
 
     "@marijn/find-cluster-break": ["@marijn/find-cluster-break@1.0.2", "", {}, "sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g=="],
 
