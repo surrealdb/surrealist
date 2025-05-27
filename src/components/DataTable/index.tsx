@@ -1,7 +1,7 @@
-import { Box, type BoxProps, Group, Text } from "@mantine/core";
+import { Box, type BoxProps, Checkbox, Group, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { alphabetical, isObject } from "radash";
-import { type MouseEvent, useMemo } from "react";
+import { type MouseEvent, useEffect, useMemo } from "react";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
 import type { ColumnSort } from "~/types";
@@ -9,6 +9,8 @@ import { iconChevronDown, iconChevronUp, iconWarning } from "~/util/icons";
 import { Icon } from "../Icon";
 import { DataCell } from "./datatypes";
 import classes from "./style.module.scss";
+import { RecordId } from "surrealdb";
+import { useInputState } from "@mantine/hooks";
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
@@ -16,9 +18,12 @@ function isRenderable(value: any) {
 
 interface DataTableProps extends BoxProps {
 	data: any;
+	selected: RecordId[];
 	active?: string | null;
 	sorting?: ColumnSort | null;
 	headers?: string[];
+	onSelectionChange: (id: RecordId, isSelected: boolean) => void;
+	onSelectionChangeAll: (isSelected: boolean) => void;
 	onSortingChange?: (order: ColumnSort | null) => void;
 	onRowContextMenu?: (event: MouseEvent, row: any) => void;
 }
@@ -29,8 +34,11 @@ export function DataTable(props: DataTableProps) {
 	const {
 		data,
 		active,
+		selected,
 		sorting,
 		headers,
+		onSelectionChange,
+		onSelectionChangeAll,
 		onSortingChange,
 		onRowContextMenu,
 		className,
@@ -99,11 +107,8 @@ export function DataTable(props: DataTableProps) {
 	}, [data, headers]);
 
 	const columnHeaders = useMemo(() => {
-		return keys.map((key) => (
-			<Box
-				key={key}
-				component="th"
-			>
+		return keys.map((key, i) => (
+			<Table.Th key={key}>
 				<Text
 					span
 					fw={700}
@@ -122,7 +127,7 @@ export function DataTable(props: DataTableProps) {
 						/>
 					)}
 				</Text>
-			</Box>
+			</Table.Th>
 		));
 	}, [keys, sorting, onSortingChange]);
 
@@ -132,14 +137,14 @@ export function DataTable(props: DataTableProps) {
 				const cellValue = value[key];
 
 				return (
-					<Box
+					<Table.Td
 						key={j}
-						component="td"
-						className={classes.tableValue}
 						h={37}
+						className={classes.tableValue}
+						onClick={() => value.id && inspect(value.id)}
 					>
 						<DataCell value={cellValue} />
-					</Box>
+					</Table.Td>
 				);
 			});
 
@@ -149,17 +154,44 @@ export function DataTable(props: DataTableProps) {
 				<Box
 					key={i}
 					component="tr"
-					onClick={() => value.id && inspect(value.id)}
 					onContextMenu={(e) => onRowContextMenu?.(e, value)}
 					style={{
 						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
 					}}
 				>
+					<Table.Td
+						h={37}
+						className={classes.tableValue}
+					>
+						<Checkbox
+							size="xs"
+							checked={selected.includes(value.id)}
+							styles={{
+								input: {
+									cursor: "pointer",
+								},
+								root: {
+									width: 16,
+								},
+							}}
+							onChange={(e) => {
+								if (!value.id) return;
+
+								const isChecked = e.currentTarget.checked;
+
+								if (isChecked) {
+									onSelectionChange(value.id, true);
+								} else {
+									onSelectionChange(value.id, false);
+								}
+							}}
+						/>
+					</Table.Td>
 					{columns}
 				</Box>
 			);
 		});
-	}, [keys, values, active, inspect, onRowContextMenu]);
+	}, [keys, values, active, selected, inspect, onRowContextMenu, onSelectionChange]);
 
 	if (!isRenderable(data)) {
 		return <Text c="slate">Result could not be displayed as a table.</Text>;
@@ -168,14 +200,45 @@ export function DataTable(props: DataTableProps) {
 	return (
 		<ScrollArea
 			className={classes.root}
+			styles={{
+				scrollbar: {
+					zIndex: 4,
+				},
+			}}
 			scrollbars="xy"
 			{...rest}
 		>
 			<Table className={classes.table}>
-				<thead>
-					<tr>{columnHeaders}</tr>
-				</thead>
-				<tbody>{recordRows}</tbody>
+				<Table.Thead
+					style={{
+						position: "sticky",
+					}}
+				>
+					<Table.Tr>
+						<Table.Th>
+							<Checkbox
+								size="xs"
+								styles={{
+									input: {
+										cursor: "pointer",
+									},
+									root: {
+										width: 16,
+									},
+								}}
+								indeterminate={
+									selected.length > 0 && selected.length < values.length
+								}
+								checked={(selected.length ?? 0) > 0}
+								onChange={(e) => {
+									onSelectionChangeAll(e.currentTarget.checked);
+								}}
+							/>
+						</Table.Th>
+						{columnHeaders}
+					</Table.Tr>
+				</Table.Thead>
+				<Table.Tbody>{recordRows}</Table.Tbody>
 			</Table>
 			{truncated && (
 				<Group

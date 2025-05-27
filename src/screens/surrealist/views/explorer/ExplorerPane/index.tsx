@@ -1,6 +1,7 @@
 import classes from "./style.module.scss";
 
 import {
+	Badge,
 	Box,
 	Button,
 	Center,
@@ -67,10 +68,11 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const allowCreate = schema && getTableVariant(schema) !== "view";
 
-	const [filtering, setFiltering] = useState(false);
-	const [filter, setFilter] = useInputState("");
 	const [sortMode, setSortMode] = useState<SortMode>(null);
 
+	const [selected, setSelected] = useInputState<RecordId[]>([]);
+	const [filter, setFilter] = useInputState("");
+	const [filtering, setFiltering] = useState(false);
 	const [showFilter] = useDebouncedValue(filtering, 250);
 	const [filterClause] = useDebouncedValue(filter, 500);
 
@@ -133,6 +135,15 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		),
 		onConfirm: async (id) => {
 			await executeQuery(`DELETE ${formatValue(id)}`);
+			refetch();
+		},
+	});
+
+	const removeSelectedRecords = useConfirmation({
+		title: "Bulk delete records",
+		message: () => <Box>Are you sure you want to delete all {selected.length} records?</Box>,
+		onConfirm: async () => {
+			await executeQuery(`DELETE ${selected.map((i) => formatValue(i)).join(", ")}`);
 			refetch();
 		},
 	});
@@ -200,6 +211,30 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		])(e);
 	});
 
+	const onSelectionChangeAll = useStable((isSelected: boolean) => {
+		if (isSelected) {
+			const newSelection = records
+				.map((record: any) => record.id)
+				.filter(Boolean) as RecordId[];
+
+			setSelected(newSelection);
+		} else {
+			setSelected([]);
+		}
+	});
+
+	const onSelectionChange = useStable((record: RecordId, isSelected: boolean) => {
+		if (isSelected && !selected.some((id) => id === record)) {
+			const newSelection = [...selected, record];
+
+			setSelected(newSelection);
+		} else if (!isSelected && selected.some((id) => id === record)) {
+			const newSelection = selected.filter((id) => id !== record);
+
+			setSelected(newSelection);
+		}
+	});
+
 	useLayoutEffect(() => {
 		pagination.setTotal(recordCount);
 	}, [pagination.setTotal, recordCount]);
@@ -208,6 +243,11 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	useLayoutEffect(() => {
 		pagination.setCurrentPage(1);
 	}, [pagination.setCurrentPage, activeTable]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Clear selection when changing pages or tables
+	useLayoutEffect(() => {
+		setSelected([]);
+	}, [pagination.currentPage, pagination.pageSize, activeTable, recordCount]);
 
 	useEventSubscription(RecordsChangedEvent, refetch);
 
@@ -229,9 +269,33 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					</ActionButton>
 				)
 			}
+			infoSection={
+				activeTable &&
+				selected.length > 0 && (
+					<Badge
+						variant="light"
+						color="violet"
+					>
+						{selected.length} selected
+					</Badge>
+				)
+			}
 			rightSection={
 				activeTable && (
 					<Group align="center">
+						{selected.length > 0 && (
+							<>
+								<ActionButton
+									onClick={removeSelectedRecords}
+									label="Delete selected records"
+									color="pink.7"
+								>
+									<Icon path={iconDelete} />
+								</ActionButton>
+								<Divider orientation="vertical" />
+							</>
+						)}
+
 						{allowCreate && (
 							<ActionButton
 								onClick={openCreator}
@@ -294,7 +358,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					<DataTable
 						data={records}
 						sorting={sortMode}
+						selected={selected}
 						onSortingChange={setSortMode}
+						onSelectionChange={onSelectionChange}
+						onSelectionChangeAll={onSelectionChangeAll}
 						onRowContextMenu={onRecordContextMenu}
 						headers={headers}
 					/>
