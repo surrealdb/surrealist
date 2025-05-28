@@ -475,6 +475,21 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 					},
 				],
 			});
+
+			categories.push({
+				name: "Window",
+				commands: [
+					{
+						id: "new-window",
+						name: "Open a new window",
+						icon: iconPlus,
+						binding: ["mod", "shift", "n"],
+						action: launch(() => {
+							invoke("new_window");
+						}),
+					},
+				],
+			});
 		}
 
 		categories.push(
@@ -671,16 +686,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							icon: iconDownload,
 							action: launch(() => {
 								(adapter as DesktopAdapter).checkForUpdates(true);
-							}),
-						},
-					),
-					...optional(
-						isDesktop && {
-							id: "new-window",
-							name: "Open a new window",
-							icon: iconPlus,
-							action: launch(() => {
-								invoke("new_window");
 							}),
 						},
 					),
