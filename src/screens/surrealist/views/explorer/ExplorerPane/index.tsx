@@ -7,6 +7,7 @@ import {
 	Center,
 	Divider,
 	Group,
+	Menu,
 	ScrollArea,
 	Stack,
 	Text,
@@ -16,13 +17,19 @@ import {
 import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
 
 import {
+	iconChevronDown,
 	iconChevronRight,
+	iconClose,
 	iconCopy,
+	iconCursor,
 	iconDelete,
+	iconDotsVertical,
 	iconFilter,
+	iconFullscreen,
 	iconJSON,
 	iconPlus,
 	iconRefresh,
+	iconReset,
 	iconServer,
 	iconTable,
 } from "~/util/icons";
@@ -30,7 +37,7 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { RecordId } from "surrealdb";
+import { escapeIdent, RecordId, StringRecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
@@ -45,7 +52,7 @@ import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery, executeQueryFirst } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { getTableVariant } from "~/util/schema";
@@ -70,7 +77,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const [sortMode, setSortMode] = useState<SortMode>(null);
 
-	const [selected, setSelected] = useInputState<RecordId[]>([]);
+	const [selected, setSelected] = useInputState(new Set<string>());
 	const [filter, setFilter] = useInputState("");
 	const [filtering, setFiltering] = useState(false);
 	const [showFilter] = useDebouncedValue(filtering, 250);
@@ -141,9 +148,15 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const removeSelectedRecords = useConfirmation({
 		title: "Bulk delete records",
-		message: () => <Box>Are you sure you want to delete all {selected.length} records?</Box>,
+		message: `Are you sure you want to delete all ${selected.size} records?`,
 		onConfirm: async () => {
-			await executeQuery(`DELETE ${selected.map((i) => formatValue(i)).join(", ")}`);
+			const selectedRecords = Array.from(selected)
+				.map((it) => new StringRecordId(it))
+				.map((id) => formatValue(id))
+				.join(", ");
+
+			await executeQuery(`DELETE ${selectedRecords}`);
+			setSelected(new Set<string>());
 			refetch();
 		},
 	});
@@ -211,27 +224,31 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		])(e);
 	});
 
-	const onSelectionChangeAll = useStable((isSelected: boolean) => {
-		if (isSelected) {
-			const newSelection = records
-				.map((record: any) => record.id)
-				.filter(Boolean) as RecordId[];
+	const onSelectionChangeAll = useStable((values: RecordId[], isSelected: boolean) => {
+		const selectedArray = Array.from(selected);
 
-			setSelected(newSelection);
+		if (isSelected) {
+			const valueMap = values.map((rid) => rid.toString());
+
+			setSelected(new Set([...selectedArray, ...valueMap]));
 		} else {
-			setSelected([]);
+			setSelected(
+				new Set(
+					selectedArray.filter(
+						(id) => !values.some((v: RecordId) => v.toString() === id),
+					),
+				),
+			);
 		}
 	});
 
 	const onSelectionChange = useStable((record: RecordId, isSelected: boolean) => {
-		if (isSelected && !selected.some((id) => id === record)) {
-			const newSelection = [...selected, record];
+		const selectedArray = Array.from(selected);
 
-			setSelected(newSelection);
-		} else if (!isSelected && selected.some((id) => id === record)) {
-			const newSelection = selected.filter((id) => id !== record);
-
-			setSelected(newSelection);
+		if (isSelected) {
+			setSelected(new Set([...selectedArray, record.toString()]));
+		} else {
+			setSelected(new Set(selectedArray.filter((id) => id !== record.toString())));
 		}
 	});
 
@@ -243,11 +260,6 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	useLayoutEffect(() => {
 		pagination.setCurrentPage(1);
 	}, [pagination.setCurrentPage, activeTable]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Clear selection when changing pages or tables
-	useLayoutEffect(() => {
-		setSelected([]);
-	}, [pagination.currentPage, pagination.pageSize, activeTable, recordCount]);
 
 	useEventSubscription(RecordsChangedEvent, refetch);
 
@@ -269,29 +281,122 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					</ActionButton>
 				)
 			}
-			infoSection={
-				activeTable &&
-				selected.length > 0 && (
-					<Badge
-						variant="light"
-						color="violet"
-					>
-						{selected.length} selected
-					</Badge>
-				)
-			}
 			rightSection={
 				activeTable && (
 					<Group align="center">
-						{selected.length > 0 && (
+						{selected.size > 0 && (
 							<>
-								<ActionButton
-									onClick={removeSelectedRecords}
-									label="Delete selected records"
-									color="pink.7"
+								<Menu
+									position="bottom-start"
+									trigger="click"
+									transitionProps={{
+										transition: "scale-y",
+									}}
 								>
-									<Icon path={iconDelete} />
-								</ActionButton>
+									<Menu.Target>
+										<Button
+											size="xs"
+											color="violet"
+											variant="light"
+											rightSection={<Icon path={iconChevronDown} />}
+										>
+											{selected.size} selected
+										</Button>
+									</Menu.Target>
+
+									<Menu.Dropdown w={150}>
+										<Menu.Label>Selection</Menu.Label>
+										<Menu.Item
+											onClick={async () => {
+												let fetchQuery = `SELECT id FROM ${escapeIdent(activeTable)}`;
+
+												if (filter) {
+													fetchQuery += ` WHERE ${filter}`;
+												}
+
+												if (sortMode) {
+													fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
+												}
+
+												const allRecords =
+													await executeQueryFirst(fetchQuery);
+
+												const notSelected = allRecords
+													.map((r: any) => r.id.toString())
+													.filter((it: string) => !selected.has(it));
+
+												setSelected(new Set([...selected, ...notSelected]));
+											}}
+										>
+											Select all records
+										</Menu.Item>
+										<Menu.Item
+											onClick={async () => {
+												const allRecords = await executeQueryFirst(
+													`SELECT id FROM ${escapeIdent(activeTable)}`,
+												);
+
+												const newSelected = allRecords
+													.map((it: any) => it.id.toString())
+													.filter((it: string) => !selected.has(it));
+
+												setSelected(new Set(newSelected));
+											}}
+										>
+											Invert selection
+										</Menu.Item>
+										<Menu.Item
+											onClick={async () => {
+												setSelected(new Set<string>());
+											}}
+										>
+											Clear selection
+										</Menu.Item>
+
+										<Menu.Label mt="sm">Actions</Menu.Label>
+
+										<Menu.Item
+											leftSection={<Icon path={iconCopy} />}
+											onClick={() => {
+												navigator.clipboard.writeText(
+													Array.from(selected).join(", "),
+												);
+											}}
+										>
+											Copy record ids
+										</Menu.Item>
+										<Menu.Item
+											leftSection={<Icon path={iconJSON} />}
+											onClick={async () => {
+												const records = Array.from(selected)
+													.map((id) => new StringRecordId(id))
+													.join(", ");
+
+												const result = await executeQueryFirst(
+													`SELECT * FROM ${records}`,
+												);
+
+												navigator.clipboard.writeText(
+													formatValue(result, true, true),
+												);
+											}}
+										>
+											Copy as JSON
+										</Menu.Item>
+										<Menu.Item
+											c="pink.7"
+											leftSection={
+												<Icon
+													color="pink.7"
+													path={iconDelete}
+												/>
+											}
+											onClick={removeSelectedRecords}
+										>
+											Delete records
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
 								<Divider orientation="vertical" />
 							</>
 						)}

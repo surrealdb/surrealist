@@ -18,12 +18,12 @@ function isRenderable(value: any) {
 
 interface DataTableProps extends BoxProps {
 	data: any;
-	selected: RecordId[];
+	selected: Set<string>;
 	active?: string | null;
 	sorting?: ColumnSort | null;
 	headers?: string[];
 	onSelectionChange: (id: RecordId, isSelected: boolean) => void;
-	onSelectionChangeAll: (isSelected: boolean) => void;
+	onSelectionChangeAll: (values: RecordId[], isSelected: boolean) => void;
 	onSortingChange?: (order: ColumnSort | null) => void;
 	onRowContextMenu?: (event: MouseEvent, row: any) => void;
 }
@@ -165,7 +165,7 @@ export function DataTable(props: DataTableProps) {
 					>
 						<Checkbox
 							size="xs"
-							checked={selected.includes(value.id)}
+							checked={selected.has((value.id as RecordId).toString())}
 							styles={{
 								input: {
 									cursor: "pointer",
@@ -227,11 +227,19 @@ export function DataTable(props: DataTableProps) {
 									},
 								}}
 								indeterminate={
-									selected.length > 0 && selected.length < values.length
+									values.some((v) => selected.has(v.id.toString())) &&
+									!values.every((v) =>
+										selected.has((v.id as RecordId).toString()),
+									)
 								}
-								checked={(selected.length ?? 0) > 0}
+								checked={values.some((v) =>
+									selected.has((v.id as RecordId).toString()),
+								)}
 								onChange={(e) => {
-									onSelectionChangeAll(e.currentTarget.checked);
+									onSelectionChangeAll(
+										values.map((v) => v.id),
+										e.currentTarget.checked,
+									);
 								}}
 							/>
 						</Table.Th>
