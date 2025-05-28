@@ -41,7 +41,10 @@ export function TablePreview({ responses, selected }: PreviewProps) {
 					flex={1}
 					pos="relative"
 				>
-					<DataTable data={pageSlice} />
+					<DataTable
+						selected={new Set()}
+						data={pageSlice}
+					/>
 				</Box>
 
 				<Divider w="100%" />

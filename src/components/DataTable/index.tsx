@@ -21,8 +21,8 @@ interface DataTableProps extends BoxProps {
 	active?: string | null;
 	sorting?: ColumnSort | null;
 	headers?: string[];
-	onSelectionChange: (id: RecordId, isSelected: boolean) => void;
-	onSelectionChangeAll: (values: RecordId[], isSelected: boolean) => void;
+	onSelectionChange?: (id: RecordId, isSelected: boolean) => void;
+	onSelectionChangeAll?: (values: RecordId[], isSelected: boolean) => void;
 	onSortingChange?: (order: ColumnSort | null) => void;
 	onRowContextMenu?: (event: MouseEvent, row: any) => void;
 }
@@ -158,34 +158,36 @@ export function DataTable(props: DataTableProps) {
 						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
 					}}
 				>
-					<Table.Td
-						h={37}
-						className={classes.tableValue}
-					>
-						<Checkbox
-							size="xs"
-							checked={selected.has((value.id as RecordId).toString())}
-							styles={{
-								input: {
-									cursor: "pointer",
-								},
-								root: {
-									width: 16,
-								},
-							}}
-							onChange={(e) => {
-								if (!value.id) return;
+					{onSelectionChange && (
+						<Table.Td
+							h={37}
+							className={classes.tableValue}
+						>
+							<Checkbox
+								size="xs"
+								checked={selected.has((value.id as RecordId).toString())}
+								styles={{
+									input: {
+										cursor: "pointer",
+									},
+									root: {
+										width: 16,
+									},
+								}}
+								onChange={(e) => {
+									if (!value.id) return;
 
-								const isChecked = e.currentTarget.checked;
+									const isChecked = e.currentTarget.checked;
 
-								if (isChecked) {
-									onSelectionChange(value.id, true);
-								} else {
-									onSelectionChange(value.id, false);
-								}
-							}}
-						/>
-					</Table.Td>
+									if (isChecked) {
+										onSelectionChange(value.id, true);
+									} else {
+										onSelectionChange(value.id, false);
+									}
+								}}
+							/>
+						</Table.Td>
+					)}
 					{columns}
 				</Box>
 			);
@@ -214,34 +216,36 @@ export function DataTable(props: DataTableProps) {
 					}}
 				>
 					<Table.Tr>
-						<Table.Th>
-							<Checkbox
-								size="xs"
-								styles={{
-									input: {
-										cursor: "pointer",
-									},
-									root: {
-										width: 16,
-									},
-								}}
-								indeterminate={
-									values.some((v) => selected.has(v.id.toString())) &&
-									!values.every((v) =>
+						{onSelectionChangeAll && (
+							<Table.Th>
+								<Checkbox
+									size="xs"
+									styles={{
+										input: {
+											cursor: "pointer",
+										},
+										root: {
+											width: 16,
+										},
+									}}
+									indeterminate={
+										values.some((v) => selected.has(v.id.toString())) &&
+										!values.every((v) =>
+											selected.has((v.id as RecordId).toString()),
+										)
+									}
+									checked={values.some((v) =>
 										selected.has((v.id as RecordId).toString()),
-									)
-								}
-								checked={values.some((v) =>
-									selected.has((v.id as RecordId).toString()),
-								)}
-								onChange={(e) => {
-									onSelectionChangeAll(
-										values.map((v) => v.id),
-										e.currentTarget.checked,
-									);
-								}}
-							/>
-						</Table.Th>
+									)}
+									onChange={(e) => {
+										onSelectionChangeAll(
+											values.map((v) => v.id),
+											e.currentTarget.checked,
+										);
+									}}
+								/>
+							</Table.Th>
+						)}
 						{columnHeaders}
 					</Table.Tr>
 				</Table.Thead>
