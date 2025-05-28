@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 
 import {
-	Badge,
 	Box,
 	Button,
 	Center,
@@ -19,17 +18,12 @@ import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
 import {
 	iconChevronDown,
 	iconChevronRight,
-	iconClose,
 	iconCopy,
-	iconCursor,
 	iconDelete,
-	iconDotsVertical,
 	iconFilter,
-	iconFullscreen,
 	iconJSON,
 	iconPlus,
 	iconRefresh,
-	iconReset,
 	iconServer,
 	iconTable,
 } from "~/util/icons";
@@ -37,7 +31,7 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { escapeIdent, RecordId, StringRecordId } from "surrealdb";
+import { RecordId, StringRecordId, escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";

@@ -1,7 +1,8 @@
 import { Box, type BoxProps, Checkbox, Group, Text } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { alphabetical, isObject } from "radash";
-import { type MouseEvent, useEffect, useMemo } from "react";
+import { type MouseEvent, useMemo } from "react";
+import { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
 import type { ColumnSort } from "~/types";
@@ -9,8 +10,6 @@ import { iconChevronDown, iconChevronUp, iconWarning } from "~/util/icons";
 import { Icon } from "../Icon";
 import { DataCell } from "./datatypes";
 import classes from "./style.module.scss";
-import { RecordId } from "surrealdb";
-import { useInputState } from "@mantine/hooks";
 
 function isRenderable(value: any) {
 	return Array.isArray(value) && value.every((v) => isObject(v));
