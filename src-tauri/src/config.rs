@@ -53,9 +53,7 @@ pub fn save_config(app: AppHandle, window: Window, config: &str) {
     write_config(config, get_config_path());
 
     app.emit_filter("config-updated", config, |w| match w {
-        EventTarget::Window { label } => {
-            return label != window.label();
-        }
+        EventTarget::Window { label } => label != window.label(),
         _ => false,
     })
     .unwrap();
