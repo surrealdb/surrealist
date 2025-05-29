@@ -105,6 +105,7 @@ fn main() {
         ])
         .setup(|app| {
             info!("Launch args: {:?}", env::args());
+            set_app_handle(app.handle().clone());
 
             #[cfg(target_os = "macos")]
             tray::macos::setup_dock_menu();
@@ -115,7 +116,6 @@ fn main() {
             }
 
             tauri::async_runtime::block_on(window::open_new_window(app.handle()));
-            set_app_handle(app.handle().clone());
 
             Ok(())
         })
