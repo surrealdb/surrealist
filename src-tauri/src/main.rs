@@ -4,12 +4,12 @@
     windows_subsystem = "windows"
 )]
 
-use std::env;
+use std::{env, sync::OnceLock};
 
 use database::DatabaseState;
 use log::info;
 use paths::get_logs_directory;
-use tauri::{Emitter, Manager, RunEvent};
+use tauri::{AppHandle, Emitter, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 use time::{format_description, OffsetDateTime};
 
@@ -18,8 +18,19 @@ mod config;
 mod database;
 mod open;
 mod paths;
+mod tray;
 mod whitelist;
-mod window;
+pub mod window;
+
+static APP_HANDLE: OnceLock<AppHandle> = OnceLock::new();
+
+fn set_app_handle(app: AppHandle) {
+    APP_HANDLE.set(app).ok().expect("App handle already set");
+}
+
+pub fn get_app_handle() -> &'static AppHandle {
+    APP_HANDLE.get().expect("App handle not set")
+}
 
 fn main() {
     env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
@@ -95,12 +106,16 @@ fn main() {
         .setup(|app| {
             info!("Launch args: {:?}", env::args());
 
+            #[cfg(target_os = "macos")]
+            tray::macos::setup_dock_menu();
+
             #[cfg(any(windows, target_os = "linux"))]
             {
-                open::store_resources(app.handle(), env::args());
+                open::store_resources(get_app_handle(), env::args());
             }
 
-            tauri::async_runtime::block_on(window::new_window(app.handle().clone()));
+            tauri::async_runtime::block_on(window::open_new_window(app.handle()));
+            set_app_handle(app.handle().clone());
 
             Ok(())
         })
