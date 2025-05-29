@@ -31,6 +31,8 @@ url = "2"
 showfile = "0.1.1"
 reqwest = "0.12"
 uuid = "1.17.0"
+cocoa = "0.26.1"
+objc = "0.2.7"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 openssl = { version = "0.10.72", features = ["vendored"] }

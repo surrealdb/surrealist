@@ -12,8 +12,12 @@ pub fn toggle_devtools(window: tauri::WebviewWindow) {
 
 #[tauri::command]
 pub async fn new_window(app: AppHandle) {
+    open_new_window(&app).await;
+}
+
+pub async fn open_new_window(app: &AppHandle) {
     let window_label = format!("surrealist-{}", Uuid::new_v4());
-    let builder = tauri::WebviewWindowBuilder::new(&app, window_label, Default::default())
+    let builder = tauri::WebviewWindowBuilder::new(app, window_label, Default::default())
         .title("Surrealist")
         .inner_size(1435.0, 775.0)
         .center()
