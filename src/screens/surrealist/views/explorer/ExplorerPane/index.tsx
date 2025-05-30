@@ -6,6 +6,7 @@ import {
 	Center,
 	Divider,
 	Group,
+	Menu,
 	ScrollArea,
 	Stack,
 	Text,
@@ -15,6 +16,7 @@ import {
 import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
 
 import {
+	iconChevronDown,
 	iconChevronRight,
 	iconCopy,
 	iconDelete,
@@ -29,7 +31,7 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { RecordId } from "surrealdb";
+import { RecordId, StringRecordId, escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
@@ -44,7 +46,7 @@ import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery, executeQueryFirst } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { getTableVariant } from "~/util/schema";
@@ -67,10 +69,11 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const allowCreate = schema && getTableVariant(schema) !== "view";
 
-	const [filtering, setFiltering] = useState(false);
-	const [filter, setFilter] = useInputState("");
 	const [sortMode, setSortMode] = useState<SortMode>(null);
 
+	const [selected, setSelected] = useInputState(new Set<string>());
+	const [filter, setFilter] = useInputState("");
+	const [filtering, setFiltering] = useState(false);
 	const [showFilter] = useDebouncedValue(filtering, 250);
 	const [filterClause] = useDebouncedValue(filter, 500);
 
@@ -119,6 +122,46 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		paginationQuery.refetch();
 	});
 
+	const selectAllRecords = useStable(async () => {
+		let fetchQuery = `SELECT id FROM ${escapeIdent(activeTable)}`;
+
+		if (filter) {
+			fetchQuery += ` WHERE ${filter}`;
+		}
+
+		if (sortMode) {
+			fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
+		}
+
+		const allRecords = await executeQueryFirst(fetchQuery);
+		setSelected(new Set([...allRecords.map((r: any) => r.id.toString())]));
+	});
+
+	const invertSelection = useStable(async () => {
+		const allRecords = await executeQueryFirst(`SELECT id FROM ${escapeIdent(activeTable)}`);
+
+		const newSelected = allRecords
+			.map((it: any) => it.id.toString())
+			.filter((it: string) => !selected.has(it));
+
+		setSelected(new Set(newSelected));
+	});
+
+	const clearSelection = useStable(() => {
+		setSelected(new Set<string>());
+	});
+
+	const copySelectedRecords = useStable(() => {
+		navigator.clipboard.writeText(Array.from(selected).join(", "));
+	});
+
+	const copySelectedRecordsJSON = useStable(async () => {
+		const records = Array.from(selected).map((id) => new StringRecordId(id));
+		const result = await executeQueryFirst("SELECT * FROM $records", { records });
+
+		navigator.clipboard.writeText(formatValue(result, true, true));
+	});
+
 	const removeRecord = useConfirmation<RecordId>({
 		title: "Delete record",
 		message: (value) => (
@@ -133,6 +176,19 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		),
 		onConfirm: async (id) => {
 			await executeQuery(`DELETE ${formatValue(id)}`);
+			refetch();
+		},
+	});
+
+	const removeSelectedRecords = useConfirmation({
+		title: "Bulk delete records",
+		message: `Are you sure you want to delete all ${selected.size} records?`,
+		onConfirm: async () => {
+			const selectedRecords = Array.from(selected).map((it) => new StringRecordId(it));
+
+			await executeQuery("DELETE $selectedRecords", { selectedRecords });
+
+			setSelected(new Set<string>());
 			refetch();
 		},
 	});
@@ -200,6 +256,34 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		])(e);
 	});
 
+	const onSelectionChangeAll = useStable((values: RecordId[], isSelected: boolean) => {
+		const selectedArray = Array.from(selected);
+
+		if (isSelected) {
+			const valueMap = values.map((rid) => rid.toString());
+
+			setSelected(new Set([...selectedArray, ...valueMap]));
+		} else {
+			setSelected(
+				new Set(
+					selectedArray.filter(
+						(id) => !values.some((v: RecordId) => v.toString() === id),
+					),
+				),
+			);
+		}
+	});
+
+	const onSelectionChange = useStable((record: RecordId, isSelected: boolean) => {
+		const selectedArray = Array.from(selected);
+
+		if (isSelected) {
+			setSelected(new Set([...selectedArray, record.toString()]));
+		} else {
+			setSelected(new Set(selectedArray.filter((id) => id !== record.toString())));
+		}
+	});
+
 	useLayoutEffect(() => {
 		pagination.setTotal(recordCount);
 	}, [pagination.setTotal, recordCount]);
@@ -232,6 +316,70 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			rightSection={
 				activeTable && (
 					<Group align="center">
+						{selected.size > 0 && (
+							<>
+								<Menu
+									position="bottom-start"
+									trigger="click"
+									transitionProps={{
+										transition: "scale-y",
+									}}
+								>
+									<Menu.Target>
+										<Button
+											size="xs"
+											color="violet"
+											variant="light"
+											rightSection={<Icon path={iconChevronDown} />}
+										>
+											{selected.size} selected
+										</Button>
+									</Menu.Target>
+
+									<Menu.Dropdown w={150}>
+										<Menu.Label>Selection</Menu.Label>
+										<Menu.Item onClick={selectAllRecords}>
+											Select all records
+										</Menu.Item>
+										<Menu.Item onClick={invertSelection}>
+											Invert selection
+										</Menu.Item>
+										<Menu.Item onClick={clearSelection}>
+											Clear selection
+										</Menu.Item>
+
+										<Menu.Label mt="sm">Actions</Menu.Label>
+
+										<Menu.Item
+											leftSection={<Icon path={iconCopy} />}
+											onClick={copySelectedRecords}
+										>
+											Copy record ids
+										</Menu.Item>
+										<Menu.Item
+											leftSection={<Icon path={iconJSON} />}
+											onClick={copySelectedRecordsJSON}
+										>
+											Copy as JSON
+										</Menu.Item>
+										<Menu.Item
+											c="pink.7"
+											leftSection={
+												<Icon
+													color="pink.7"
+													path={iconDelete}
+												/>
+											}
+											onClick={removeSelectedRecords}
+										>
+											Delete records
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
+								<Divider orientation="vertical" />
+							</>
+						)}
+
 						{allowCreate && (
 							<ActionButton
 								onClick={openCreator}
@@ -294,7 +442,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					<DataTable
 						data={records}
 						sorting={sortMode}
+						selected={selected}
 						onSortingChange={setSortMode}
+						onSelectionChange={onSelectionChange}
+						onSelectionChangeAll={onSelectionChangeAll}
 						onRowContextMenu={onRecordContextMenu}
 						headers={headers}
 					/>
