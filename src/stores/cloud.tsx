@@ -8,9 +8,9 @@ import type {
 	CloudRegion,
 } from "~/types";
 
+import { persistNSync } from "persist-and-sync";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { persistNSync } from "persist-and-sync";
 
 interface CloudValues {
 	instanceVersions: string[];

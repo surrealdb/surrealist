@@ -15,6 +15,7 @@ import type {
 } from "~/types";
 
 import type { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
+import { persistNSync } from "persist-and-sync";
 import { unique } from "radash";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -22,7 +23,6 @@ import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import { createBaseConfig, createBaseQuery } from "~/util/defaults";
 import type { schema } from "~/util/feature-flags";
 import { newId, uniqueName } from "~/util/helpers";
-import { persistNSync } from "persist-and-sync";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
