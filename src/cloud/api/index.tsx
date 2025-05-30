@@ -34,30 +34,34 @@ export async function fetchAPI<T = unknown>(
 		headers.Authorization = `Bearer ${sessionToken}`;
 	}
 
-	const response = await adapter.fetch(`${baseUrl}${path}`, {
-		headers: {
-			...headers,
-			...options?.headers,
-		},
-		...options,
-	});
+	try {
+		const response = await adapter.fetch(`${baseUrl}${path}`, {
+			headers: {
+				...headers,
+				...options?.headers,
+			},
+			...options,
+		});
 
-	if (!response.ok) {
-		const isJson =
-			response.headers.get("Content-Type")?.startsWith("application/json") ?? false;
+		if (!response.ok) {
+			const isJson =
+				response.headers.get("Content-Type")?.startsWith("application/json") ?? false;
 
-		let reason = response.statusText;
+			let reason = response.statusText;
 
-		if (isJson) {
-			const { message } = await response.json();
-			reason = message;
+			if (isJson) {
+				const { message } = await response.json();
+				reason = message;
+			}
+
+			throw new ApiError(response, reason);
 		}
 
-		throw new ApiError(response, reason);
-	}
-
-	if (response.headers.get("Content-Type")?.startsWith("application/json")) {
-		return await response.json();
+		if (response.headers.get("Content-Type")?.startsWith("application/json")) {
+			return await response.json();
+		}
+	} catch (err) {
+		throw new Error(`Failed API request to ${baseUrl}${path}: ${err}`);
 	}
 
 	return {} as T;

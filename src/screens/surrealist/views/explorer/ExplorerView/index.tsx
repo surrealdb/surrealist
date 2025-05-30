@@ -27,7 +27,7 @@ import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { DisconnectedEvent } from "~/util/global-events";
+import { ActivateDatabaseEvent, DisconnectedEvent } from "~/util/global-events";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
@@ -85,10 +85,13 @@ export function ExplorerView() {
 		});
 	});
 
-	useEventSubscription(DisconnectedEvent, () => {
+	const resetTable = useStable(() => {
 		isCreatingHandle.close();
 		setActiveTable(undefined);
 	});
+
+	useEventSubscription(DisconnectedEvent, resetTable);
+	useEventSubscription(ActivateDatabaseEvent, resetTable);
 
 	useIntent("explore-table", ({ table }) => {
 		setActiveTable(table);

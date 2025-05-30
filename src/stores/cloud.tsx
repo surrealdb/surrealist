@@ -34,6 +34,7 @@ export type CloudStore = {
 	authProvider: string;
 	userId: string;
 	isSupported: boolean;
+	failedConnect: boolean;
 	profile: CloudProfile;
 	instanceVersions: string[];
 	instanceTypes: CloudInstanceType[];
@@ -51,6 +52,7 @@ export type CloudStore = {
 	setAuthProvider: (provider: string) => void;
 	setAccountProfile: (profile: CloudProfile) => void;
 	setIsSupported: (supported: boolean) => void;
+	setFailedConnected: (failed: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
 	setProfile: (profile: CloudProfile) => void;
 	setSessionExpired: (expired: boolean) => void;
@@ -71,6 +73,7 @@ export const useCloudStore = create<CloudStore>()(
 				userId: "",
 				authProvider: "",
 				isSupported: true,
+				failedConnect: false,
 				profile: EMPTY_PROFILE,
 				instanceTypes: [],
 				instanceVersions: [],
@@ -111,9 +114,15 @@ export const useCloudStore = create<CloudStore>()(
 						profile,
 					}),
 
+
 				setIsSupported: (isSupported) =>
 					set({
 						isSupported,
+					}),
+
+				setFailedConnected: (failedConnect) =>
+					set({
+						failedConnect,
 					}),
 
 				setCloudValues: (values) =>
