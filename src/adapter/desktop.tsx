@@ -1,6 +1,6 @@
 import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
-import { Event, listen } from "@tauri-apps/api/event";
+import { listen } from "@tauri-apps/api/event";
 import { basename } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -13,11 +13,11 @@ import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
 import { VIEW_PAGES } from "~/constants";
-import { ConfigStore, useConfigStore } from "~/stores/config";
+import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
-import { getSetting, overwriteConfig, watchStore } from "~/util/config";
+import { getSetting, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
@@ -82,10 +82,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		listen("open-resource", () => {
 			this.queryOpenRequest();
-		});
-
-		listen("config-updated", (event: Event<string>) => {
-			overwriteConfig(JSON.parse(event.payload));
 		});
 
 		listen("tauri://focus", () => {
