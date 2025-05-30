@@ -122,6 +122,46 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		paginationQuery.refetch();
 	});
 
+	const selectAllRecords = useStable(async () => {
+		let fetchQuery = `SELECT id FROM ${escapeIdent(activeTable)}`;
+
+		if (filter) {
+			fetchQuery += ` WHERE ${filter}`;
+		}
+
+		if (sortMode) {
+			fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
+		}
+
+		const allRecords = await executeQueryFirst(fetchQuery);
+		setSelected(new Set([...allRecords.map((r: any) => r.id.toString())]));
+	});
+
+	const invertSelection = useStable(async () => {
+		const allRecords = await executeQueryFirst(`SELECT id FROM ${escapeIdent(activeTable)}`);
+
+		const newSelected = allRecords
+			.map((it: any) => it.id.toString())
+			.filter((it: string) => !selected.has(it));
+
+		setSelected(new Set(newSelected));
+	});
+
+	const clearSelection = useStable(() => {
+		setSelected(new Set<string>());
+	});
+
+	const copySelectedRecords = useStable(() => {
+		navigator.clipboard.writeText(Array.from(selected).join(", "));
+	});
+
+	const copySelectedRecordsJSON = useStable(async () => {
+		const records = Array.from(selected).map((id) => new StringRecordId(id));
+		const result = await executeQueryFirst(`SELECT * FROM ${records}`);
+
+		navigator.clipboard.writeText(formatValue(result, true, true));
+	});
+
 	const removeRecord = useConfirmation<RecordId>({
 		title: "Delete record",
 		message: (value) => (
@@ -144,12 +184,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		title: "Bulk delete records",
 		message: `Are you sure you want to delete all ${selected.size} records?`,
 		onConfirm: async () => {
-			const selectedRecords = Array.from(selected)
-				.map((it) => new StringRecordId(it))
-				.map((id) => formatValue(id))
-				.join(", ");
+			const selectedRecords = Array.from(selected).map((it) => new StringRecordId(it));
 
 			await executeQuery(`DELETE ${selectedRecords}`);
+
 			setSelected(new Set<string>());
 			refetch();
 		},
@@ -300,50 +338,13 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 									<Menu.Dropdown w={150}>
 										<Menu.Label>Selection</Menu.Label>
-										<Menu.Item
-											onClick={async () => {
-												let fetchQuery = `SELECT id FROM ${escapeIdent(activeTable)}`;
-
-												if (filter) {
-													fetchQuery += ` WHERE ${filter}`;
-												}
-
-												if (sortMode) {
-													fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
-												}
-
-												const allRecords =
-													await executeQueryFirst(fetchQuery);
-
-												const notSelected = allRecords
-													.map((r: any) => r.id.toString())
-													.filter((it: string) => !selected.has(it));
-
-												setSelected(new Set([...selected, ...notSelected]));
-											}}
-										>
+										<Menu.Item onClick={selectAllRecords}>
 											Select all records
 										</Menu.Item>
-										<Menu.Item
-											onClick={async () => {
-												const allRecords = await executeQueryFirst(
-													`SELECT id FROM ${escapeIdent(activeTable)}`,
-												);
-
-												const newSelected = allRecords
-													.map((it: any) => it.id.toString())
-													.filter((it: string) => !selected.has(it));
-
-												setSelected(new Set(newSelected));
-											}}
-										>
+										<Menu.Item onClick={invertSelection}>
 											Invert selection
 										</Menu.Item>
-										<Menu.Item
-											onClick={async () => {
-												setSelected(new Set<string>());
-											}}
-										>
+										<Menu.Item onClick={clearSelection}>
 											Clear selection
 										</Menu.Item>
 
@@ -351,29 +352,13 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 										<Menu.Item
 											leftSection={<Icon path={iconCopy} />}
-											onClick={() => {
-												navigator.clipboard.writeText(
-													Array.from(selected).join(", "),
-												);
-											}}
+											onClick={copySelectedRecords}
 										>
 											Copy record ids
 										</Menu.Item>
 										<Menu.Item
 											leftSection={<Icon path={iconJSON} />}
-											onClick={async () => {
-												const records = Array.from(selected)
-													.map((id) => new StringRecordId(id))
-													.join(", ");
-
-												const result = await executeQueryFirst(
-													`SELECT * FROM ${records}`,
-												);
-
-												navigator.clipboard.writeText(
-													formatValue(result, true, true),
-												);
-											}}
+											onClick={copySelectedRecordsJSON}
 										>
 											Copy as JSON
 										</Menu.Item>

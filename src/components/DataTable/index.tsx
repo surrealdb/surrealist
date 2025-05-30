@@ -17,10 +17,10 @@ function isRenderable(value: any) {
 
 interface DataTableProps extends BoxProps {
 	data: any;
-	selected: Set<string>;
 	active?: string | null;
 	sorting?: ColumnSort | null;
 	headers?: string[];
+	selected?: Set<string>;
 	onSelectionChange?: (id: RecordId, isSelected: boolean) => void;
 	onSelectionChangeAll?: (values: RecordId[], isSelected: boolean) => void;
 	onSortingChange?: (order: ColumnSort | null) => void;
@@ -165,7 +165,7 @@ export function DataTable(props: DataTableProps) {
 						>
 							<Checkbox
 								size="xs"
-								checked={selected.has((value.id as RecordId).toString())}
+								checked={selected?.has((value.id as RecordId).toString())}
 								styles={{
 									input: {
 										cursor: "pointer",
@@ -177,13 +177,7 @@ export function DataTable(props: DataTableProps) {
 								onChange={(e) => {
 									if (!value.id) return;
 
-									const isChecked = e.currentTarget.checked;
-
-									if (isChecked) {
-										onSelectionChange(value.id, true);
-									} else {
-										onSelectionChange(value.id, false);
-									}
+									onSelectionChange(value.id, e.currentTarget.checked);
 								}}
 							/>
 						</Table.Td>
@@ -229,13 +223,13 @@ export function DataTable(props: DataTableProps) {
 										},
 									}}
 									indeterminate={
-										values.some((v) => selected.has(v.id.toString())) &&
+										values.some((v) => selected?.has(v.id.toString())) &&
 										!values.every((v) =>
-											selected.has((v.id as RecordId).toString()),
+											selected?.has((v.id as RecordId).toString()),
 										)
 									}
 									checked={values.some((v) =>
-										selected.has((v.id as RecordId).toString()),
+										selected?.has((v.id as RecordId).toString()),
 									)}
 									onChange={(e) => {
 										onSelectionChangeAll(
