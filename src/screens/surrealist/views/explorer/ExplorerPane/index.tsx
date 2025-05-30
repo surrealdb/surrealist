@@ -157,7 +157,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const copySelectedRecordsJSON = useStable(async () => {
 		const records = Array.from(selected).map((id) => new StringRecordId(id));
-		const result = await executeQueryFirst(`SELECT * FROM ${records}`);
+		const result = await executeQueryFirst("SELECT * FROM $records", { records });
 
 		navigator.clipboard.writeText(formatValue(result, true, true));
 	});
@@ -186,7 +186,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		onConfirm: async () => {
 			const selectedRecords = Array.from(selected).map((it) => new StringRecordId(it));
 
-			await executeQuery(`DELETE ${selectedRecords}`);
+			await executeQuery("DELETE $selectedRecords", { selectedRecords });
 
 			setSelected(new Set<string>());
 			refetch();
