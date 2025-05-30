@@ -342,8 +342,8 @@ export async function executeQuery(...args: QueryParameters) {
  * Execute a query against the active connection and
  * return the first response
  */
-export async function executeQueryFirst(query: string) {
-	const results = await executeQuery(query);
+export async function executeQueryFirst(...args: QueryParameters) {
+	const results = await executeQuery(...args);
 	const { success, result } = results[0];
 
 	if (success) {
