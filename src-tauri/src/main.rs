@@ -14,11 +14,11 @@ use tauri_plugin_log::{Target, TargetKind};
 use time::{format_description, OffsetDateTime};
 
 mod analytics;
+mod appbar;
 mod config;
 mod database;
 mod open;
 mod paths;
-mod tray;
 mod whitelist;
 pub mod window;
 
@@ -108,7 +108,7 @@ fn main() {
             set_app_handle(app.handle().clone());
 
             #[cfg(target_os = "macos")]
-            tray::macos::setup_dock_menu();
+            appbar::macos::setup_dock_menu();
 
             #[cfg(any(windows, target_os = "linux"))]
             {
