@@ -15,11 +15,9 @@ import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
-import { SupportCapability } from "../capabilities/support";
 
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;
@@ -27,7 +25,6 @@ export interface ConfigurationCapabilitiesProps {
 }
 
 export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCapabilitiesProps) {
-	const [{ network_access_caps }] = useFeatureFlags();
 	const [value, setValue] = useState<CloudInstanceCapabilities>(
 		parseCapabilities(instance.capabilities),
 	);
@@ -137,24 +134,16 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 
 						<Divider />
 
-						{network_access_caps ? (
-							<FreeRuleSetCapability
-								name="Network access"
-								description="Configure outbound network access to specific targets"
-								value={value}
-								onChange={setValue}
-								allowedField="allowed_networks"
-								deniedField="denied_networks"
-								topic="network"
-							/>
-						) : (
-							<SupportCapability
-								name="Network access"
-								description="Configure outbound network access to specific targets"
-								value={value}
-								onChange={setValue}
-							/>
-						)}
+						<FreeRuleSetCapability
+							name="Network access"
+							description="Configure outbound network access to specific targets"
+							value={value}
+							onChange={setValue}
+							disallowWildcard
+							allowedField="allowed_networks"
+							deniedField="denied_networks"
+							topic="network"
+						/>
 
 						<Divider />
 
