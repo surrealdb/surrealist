@@ -242,7 +242,7 @@ export function DashboardView() {
 							onChange={(e) => setMetricsDuration((e as MetricsDuration) ?? "hour")}
 							data={[
 								{ value: "hour", label: "Last Hour" },
-								{ value: "12hr", label: "Last 12 Hours" },
+								{ value: "half", label: "Last 12 Hours" },
 								{ value: "day", label: "Last Day" },
 								{ value: "week", label: "Last Week" },
 								{ value: "month", label: "Last Month" },
@@ -267,6 +267,7 @@ export function DashboardView() {
 						/>
 						<MemoryUsageChart
 							metrics={memoryMetrics}
+							duration={metricsDuration}
 							isLoading={memoryMetricsPending}
 						/>
 						<ComputeActivityChart

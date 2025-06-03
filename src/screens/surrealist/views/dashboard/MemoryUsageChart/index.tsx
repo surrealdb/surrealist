@@ -1,18 +1,25 @@
 import { Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
-import { AreaChart } from "@mantine/charts";
+import { AreaChart, ChartTooltip } from "@mantine/charts";
 import { Icon } from "~/components/Icon";
-import { CloudInstance, CloudMetrics } from "~/types";
+import { CloudMetrics, MetricsDuration } from "~/types";
 import { iconHelp } from "~/util/icons";
 import dayjs from "dayjs";
+import { computeMetricRange } from "~/cloud/helpers";
+import { format } from "date-fns";
+import { useStable } from "~/hooks/stable";
+import { formatMemory } from "~/util/helpers";
 
 export interface MemoryUsageChartProps {
 	metrics: CloudMetrics | undefined;
+	duration: MetricsDuration;
 	isLoading: boolean;
 }
 
-export function MemoryUsageChart({ metrics, isLoading }: MemoryUsageChartProps) {
+export function MemoryUsageChart({ metrics, duration, isLoading }: MemoryUsageChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
+
+	const [startAt, endAt] = computeMetricRange(duration);
 
 	const series = data.map((metric) => ({
 		name: metric.labels,
@@ -22,7 +29,7 @@ export function MemoryUsageChart({ metrics, isLoading }: MemoryUsageChartProps) 
 
 	const values = timestamps?.map((timestamp, i) => {
 		const value: Record<string, unknown> = {
-			label: dayjs(timestamp).format("HH:mm"),
+			time: dayjs(timestamp).valueOf(),
 		};
 
 		for (const metric of data) {
@@ -34,6 +41,17 @@ export function MemoryUsageChart({ metrics, isLoading }: MemoryUsageChartProps) 
 		}
 
 		return value;
+	});
+
+	const tooltip = useStable(({ label, payload }) => {
+		return (
+			<ChartTooltip
+				label={label ? format(label as number, "hh:mm") : label}
+				payload={payload}
+				series={series}
+				valueFormatter={(value: number) => formatMemory(value)}
+			/>
+		);
 	});
 
 	return (
@@ -70,18 +88,29 @@ export function MemoryUsageChart({ metrics, isLoading }: MemoryUsageChartProps) 
 							</Tooltip>
 						</Group>
 						<AreaChart
+							data={values}
 							withDots={false}
-							unit=" MB"
-							dataKey="label"
+							dataKey="time"
 							flex={1}
 							series={series}
+							tooltipProps={{
+								content: tooltip,
+							}}
 							yAxisProps={{
 								interval: 0,
+								tickFormatter(value) {
+									return formatMemory(value as number);
+								},
 							}}
 							xAxisProps={{
-								interval: Math.floor(timestamps.length / 5),
+								scale: "time",
+								type: "number",
+								interval: "equidistantPreserveStart",
+								domain: [startAt.valueOf(), endAt.valueOf()],
+								tickFormatter(value) {
+									return format(value as number, "hh:mm");
+								},
 							}}
-							data={values}
 						/>
 					</>
 				)}
