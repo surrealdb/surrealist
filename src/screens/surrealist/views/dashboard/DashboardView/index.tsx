@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { ActionIcon, Button, CopyButton, Group, SimpleGrid, Skeleton, Text } from "@mantine/core";
+import { ActionIcon, Button, CopyButton, Group, Select, SimpleGrid, Skeleton, Text } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { memo, useState } from "react";
 import { Redirect } from "wouter";
@@ -18,7 +18,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
-import { iconCheck, iconChevronDown, iconCopy } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconClock, iconCopy } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeUsageBlock } from "../ComputeUsageBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
@@ -28,6 +28,13 @@ import { DiskUsageBlock } from "../DiskUsageBlock";
 import { NavigationBlock } from "../NavigationBlock";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
+import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
+import { NetworkIngressChart } from "../NetworkIngressChart";
+import { NetworkEgressChart } from "../NetworkEgressChart";
+import { MemoryUsageChart } from "../MemoryUsageChart";
+import { CpuUsageChart } from "../CpuUsageChart";
+import { useInputState } from "@mantine/hooks";
+import { MetricsDuration } from "~/types";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -44,15 +51,21 @@ export function DashboardView() {
 		c?.authentication.cloudInstance,
 	]);
 
-	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
-	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instance);
-	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
-
 	const { mutateAsync } = useUpdateInstanceVersionMutation(instance);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
 	const [configuring, configureHandle] = useBoolean();
 	const [activeTab, setActiveTab] = useState("capabilities");
+	const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
+
+	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
+	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instance);
+	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
+
+	const { data: networkIngressMetrics, isPending: networkIngressMetricsPending } = useCloudMetricsQuery(instance, "ingress", metricsDuration);
+	const { data: networkEgressMetrics, isPending: networkEgressMetricsPending } = useCloudMetricsQuery(instance, "egress", metricsDuration);
+	const { data: memoryMetrics, isPending: memoryMetricsPending } = useCloudMetricsQuery(instance, "memory", metricsDuration);
+	const { data: cpuMetrics, isPending: cpuMetricsPending } = useCloudMetricsQuery(instance, "cpu", metricsDuration);
 
 	const handleUpgrade = useStable(() => {
 		setActiveTab("type");
@@ -195,9 +208,61 @@ export function DashboardView() {
 						)}
 					</SimpleGrid>
 
+					<Group mt={32}>
+						<Box>
+							<PrimaryTitle>Metrics</PrimaryTitle>
+							<Text>View and monitor the metrics for your Surreal Cloud instance</Text>
+						</Box>
+
+						<Spacer />
+
+						<Select
+							placeholder="Duration"
+							size="sm"
+							value={metricsDuration}
+							onChange={(e) => setMetricsDuration((e as MetricsDuration) ?? "hour")}
+							data={[
+								{ value: "hour", label: "Last Hour" },
+								{ value: "12hr", label: "Last 12 Hours" },
+								{ value: "day", label: "Last Day" },
+								{ value: "week", label: "Last Week" },
+								{ value: "month", label: "Last Month" },
+							]}
+							leftSection={<Icon path={iconClock} />}
+							rightSection={<Icon path={iconChevronDown} />}
+							rightSectionWidth={30}
+						/>
+					</Group>
+
+					<SimpleGrid
+						cols={2}
+						spacing="xl"
+					>
+						<NetworkIngressChart
+							metrics={networkIngressMetrics}
+							instance={details}
+							isLoading={networkIngressMetricsPending}
+						/>
+						<NetworkEgressChart
+							metrics={networkEgressMetrics}
+							instance={details}
+							isLoading={networkEgressMetricsPending}
+						/>
+						<MemoryUsageChart
+							metrics={memoryMetrics}
+							instance={details}
+							isLoading={memoryMetricsPending}
+						/>
+						<CpuUsageChart
+							metrics={cpuMetrics}
+							instance={details}
+							isLoading={cpuMetricsPending}
+						/>
+					</SimpleGrid>
+
 					<Box mt={32}>
-						<PrimaryTitle>Monitoring</PrimaryTitle>
-						<Text>View and monitor your Surreal Cloud instance</Text>
+						<PrimaryTitle>Resources</PrimaryTitle>
+						<Text>View the resources of your Surreal Cloud instance</Text>
 					</Box>
 
 					<SimpleGrid
