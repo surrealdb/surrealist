@@ -73,6 +73,7 @@ function CreateDatabase() {
 						variant="gradient"
 						flex={1}
 						loading={isPending}
+						disabled={!databaseName}
 						rightSection={<Icon path={iconPlus} />}
 					>
 						Create
