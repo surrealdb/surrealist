@@ -1,4 +1,15 @@
-import { Alert, Badge, Box, Divider, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
+import {
+	Alert,
+	Badge,
+	Box,
+	Divider,
+	Group,
+	Paper,
+	Progress,
+	Skeleton,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance, CloudMeasurement } from "~/types";
@@ -39,9 +50,7 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 					>
 						Storage usage
 					</Text>
-					<Text>
-						{storageFrac.toFixed(2)}% used
-					</Text>
+					<Text>{storageFrac.toFixed(2)}% used</Text>
 				</Stack>
 
 				{instance?.distributed_storage_specs ? (
@@ -54,29 +63,25 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 						added in a future release.
 					</Alert>
 				) : (
-						<Box>
-							<Group>
-								<Text
-									c="bright"
-									fz="lg"
-									fw={600}
-								>
-									{storageUsageMB}
-								</Text>
-								<Spacer />
-								<Text
-									fz="lg"
-								>
-									{storageMaxMB}
-								</Text>
-							</Group>
-							<Progress
-								value={storageFrac}
-								color={storageColor}
-								size={4}
-								mt="md"
-							/>
-						</Box>
+					<Box>
+						<Group>
+							<Text
+								c="bright"
+								fz="lg"
+								fw={600}
+							>
+								{storageUsageMB}
+							</Text>
+							<Spacer />
+							<Text fz="lg">{storageMaxMB}</Text>
+						</Group>
+						<Progress
+							value={storageFrac}
+							color={storageColor}
+							size={4}
+							mt="md"
+						/>
+					</Box>
 				)}
 			</Paper>
 		</Skeleton>

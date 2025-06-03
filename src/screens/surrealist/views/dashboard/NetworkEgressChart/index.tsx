@@ -1,9 +1,9 @@
-import { Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
+import { Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import dayjs from "dayjs";
 import { Icon } from "~/components/Icon";
 import { CloudMetrics } from "~/types";
 import { iconHelp } from "~/util/icons";
-import dayjs from "dayjs";
 
 export interface NetworkEgressChartProps {
 	metrics: CloudMetrics | undefined;

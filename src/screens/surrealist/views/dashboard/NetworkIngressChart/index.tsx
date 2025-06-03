@@ -1,19 +1,9 @@
-import {
-	Badge,
-	Center,
-	Divider,
-	Group,
-	Paper,
-	Skeleton,
-	Stack,
-	Text,
-	Tooltip,
-} from "@mantine/core";
-import { AreaChart, BarChart } from "@mantine/charts";
-import { Icon } from "~/components/Icon";
-import { CloudInstance, CloudMetrics } from "~/types";
-import { iconArrowDownFat, iconHelp } from "~/util/icons";
+import { AreaChart } from "@mantine/charts";
+import { Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import dayjs from "dayjs";
+import { Icon } from "~/components/Icon";
+import { CloudMetrics } from "~/types";
+import { iconHelp } from "~/util/icons";
 
 export interface NetworkIngressChartProps {
 	metrics: CloudMetrics | undefined;

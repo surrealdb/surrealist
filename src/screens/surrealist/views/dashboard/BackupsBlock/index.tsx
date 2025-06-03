@@ -1,14 +1,4 @@
-import {
-	Box,
-	Button,
-	Center,
-	Group,
-	Paper,
-	Skeleton,
-	Stack,
-	Text,
-	Tooltip,
-} from "@mantine/core";
+import { Box, Button, Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { formatDistance } from "date-fns";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
@@ -75,9 +65,9 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 							</Text>
 						</Box>
 						<Tooltip label="This functionality will be available soon">
-						<Button
-							size="xs"
-							rightSection={<Icon path={iconChevronRight} />}
+							<Button
+								size="xs"
+								rightSection={<Icon path={iconChevronRight} />}
 								variant="gradient"
 								disabled
 							>
