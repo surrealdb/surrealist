@@ -32,8 +32,8 @@ import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { MetricsDuration } from "~/types";
 import { iconCheck, iconChevronDown, iconClock, iconCopy } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
-import { ComputeActivityChart } from "../ComputeActivityChart";
-import { ComputeUsageBlock } from "../ComputeUsageBlock";
+import { ComputeUsageChart } from "../ComputeUsageChart";
+import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
@@ -49,7 +49,7 @@ const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
 const ConfigurationBlockLazy = memo(ConfigurationBlock);
 const ConnectBlockLazy = memo(ConnectBlock);
-const ComputeUsageBlockLazy = memo(ComputeUsageBlock);
+const ComputeUsageBlockLazy = memo(ComputeHoursBlock);
 const DiskUsageBlockLazy = memo(DiskUsageBlock);
 const BackupsBlockLazy = memo(BackupsBlock);
 const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
@@ -272,7 +272,7 @@ export function DashboardView() {
 							duration={metricsDuration}
 							isLoading={memoryMetricsPending}
 						/>
-						<ComputeActivityChart
+						<ComputeUsageChart
 							metrics={cpuMetrics}
 							duration={metricsDuration}
 							isLoading={cpuMetricsPending}

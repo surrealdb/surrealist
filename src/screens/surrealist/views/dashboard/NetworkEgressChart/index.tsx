@@ -102,7 +102,8 @@ export function NetworkEgressChart({ metrics, duration, isLoading }: NetworkEgre
 							xAxisProps={{
 								scale: "time",
 								type: "number",
-								interval: "preserveStart",
+								interval: "equidistantPreserveStart",
+								minTickGap: 15,
 								domain: [startAt.valueOf(), endAt.valueOf()],
 								tickFormatter(value) {
 									return ["week", "month"].includes(duration)

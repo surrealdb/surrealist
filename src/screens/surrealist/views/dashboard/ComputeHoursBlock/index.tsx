@@ -14,12 +14,12 @@ import { Spacer } from "~/components/Spacer";
 import { CloudMeasurement } from "~/types";
 import { measureComputeHistory, measureComputeTotal } from "~/util/cloud";
 
-export interface ComputeUsageBlockProps {
+export interface ComputeHoursBlockProps {
 	usage: CloudMeasurement[] | undefined;
 	isLoading: boolean;
 }
 
-export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) {
+export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) {
 	const computeHistory = measureComputeHistory(usage ?? []);
 	const computeTotal = measureComputeTotal(usage ?? []);
 
@@ -34,7 +34,7 @@ export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) 
 			>
 				{computeHistory.length === 0 ? (
 					<Center flex={1}>
-						<Text c="slate">Recording compute usage...</Text>
+						<Text c="slate">Recording compute hours...</Text>
 					</Center>
 				) : (
 					<>
@@ -44,7 +44,7 @@ export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) 
 								fw={700}
 								fz="xl"
 							>
-								Compute usage
+								Compute hours
 							</Text>
 							<Text>{computeTotal} hours total</Text>
 						</Stack>

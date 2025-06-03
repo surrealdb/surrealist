@@ -105,7 +105,8 @@ export function MemoryUsageChart({ metrics, duration, isLoading }: MemoryUsageCh
 							xAxisProps={{
 								scale: "time",
 								type: "number",
-								interval: "preserveStart",
+								interval: "equidistantPreserveStart",
+								minTickGap: 15,
 								domain: [startAt.valueOf(), endAt.valueOf()],
 								tickFormatter(value) {
 									return ["week", "month"].includes(duration)

@@ -8,13 +8,13 @@ import { useStable } from "~/hooks/stable";
 import { CloudMetrics, MetricsDuration } from "~/types";
 import { iconHelp } from "~/util/icons";
 
-export interface CpuUsageChartProps {
+export interface ComputeUsageChartProps {
 	metrics: CloudMetrics | undefined;
 	duration: MetricsDuration;
 	isLoading: boolean;
 }
 
-export function ComputeActivityChart({ metrics, duration, isLoading }: CpuUsageChartProps) {
+export function ComputeUsageChart({ metrics, duration, isLoading }: ComputeUsageChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 
@@ -74,7 +74,7 @@ export function ComputeActivityChart({ metrics, duration, isLoading }: CpuUsageC
 								fw={700}
 								fz="xl"
 							>
-								Compute activity
+								Compute usage
 							</Text>
 
 							<Tooltip label="The average CPU core usage measured in vCPU(s)">
@@ -101,7 +101,8 @@ export function ComputeActivityChart({ metrics, duration, isLoading }: CpuUsageC
 							xAxisProps={{
 								scale: "time",
 								type: "number",
-								interval: "preserveStart",
+								interval: "equidistantPreserveStart",
+								minTickGap: 15,
 								domain: [startAt.valueOf(), endAt.valueOf()],
 								tickFormatter(value) {
 									return ["week", "month"].includes(duration)
