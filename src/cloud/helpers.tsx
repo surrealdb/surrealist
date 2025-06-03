@@ -25,7 +25,7 @@ const METRIC_DURATION_MAP: Record<MetricsDuration, Duration> = {
 	half: { hours: 12 },
 	day: { days: 1 },
 	week: { weeks: 1 },
-	month: { months: 1 },
+	month: { days: 29 },
 };
 
 export function computeMetricRange(duration: MetricsDuration): [Date, Date] {
