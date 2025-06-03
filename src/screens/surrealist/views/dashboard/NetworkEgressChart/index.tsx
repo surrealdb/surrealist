@@ -1,18 +1,24 @@
-import { AreaChart } from "@mantine/charts";
+import { AreaChart, ChartTooltip } from "@mantine/charts";
 import { Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import { format } from "date-fns";
 import dayjs from "dayjs";
+import { computeMetricRange } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
-import { CloudMetrics } from "~/types";
+import { useStable } from "~/hooks/stable";
+import { CloudMetrics, MetricsDuration } from "~/types";
 import { iconHelp } from "~/util/icons";
 
 export interface NetworkEgressChartProps {
 	metrics: CloudMetrics | undefined;
+	duration: MetricsDuration;
 	isLoading: boolean;
 }
 
-export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartProps) {
+export function NetworkEgressChart({ metrics, duration, isLoading }: NetworkEgressChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
+
+	const [startAt, endAt] = computeMetricRange(duration);
 
 	const series = data.map((metric) => ({
 		name: metric.labels,
@@ -22,7 +28,7 @@ export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartPro
 
 	const values = timestamps?.map((timestamp, i) => {
 		const value: Record<string, unknown> = {
-			label: dayjs(timestamp).format("HH:mm"),
+			time: dayjs(timestamp).valueOf(),
 		};
 
 		for (const metric of data) {
@@ -34,6 +40,17 @@ export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartPro
 		}
 
 		return value;
+	});
+
+	const tooltip = useStable(({ label, payload }) => {
+		return (
+			<ChartTooltip
+				label={label ? format(label as number, "hh:mm") : label}
+				payload={payload}
+				series={series}
+				unit=" kb/s"
+			/>
+		);
 	});
 
 	return (
@@ -57,7 +74,7 @@ export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartPro
 								fw={700}
 								fz="xl"
 							>
-								Network Egress
+								Network egress
 							</Text>
 
 							<Tooltip label="The average outgoing network traffic measured in bytes per second">
@@ -70,19 +87,27 @@ export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartPro
 							</Tooltip>
 						</Group>
 						<AreaChart
+							data={values}
 							withDots={false}
-							unit=" kb/s"
-							yAxisProps={{
-								unit: " kb/s",
-								interval: 0,
-							}}
-							xAxisProps={{
-								interval: Math.floor(timestamps.length / 5),
-							}}
-							dataKey="label"
+							dataKey="time"
 							flex={1}
 							series={series}
-							data={values}
+							tooltipProps={{
+								content: tooltip,
+							}}
+							yAxisProps={{
+								interval: 0,
+								unit: " kb/s",
+							}}
+							xAxisProps={{
+								scale: "time",
+								type: "number",
+								interval: "preserveStart",
+								domain: [startAt.valueOf(), endAt.valueOf()],
+								tickFormatter(value) {
+									return format(value as number, "hh:mm");
+								},
+							}}
 						/>
 					</>
 				)}

@@ -259,10 +259,12 @@ export function DashboardView() {
 					>
 						<NetworkIngressChart
 							metrics={networkIngressMetrics}
+							duration={metricsDuration}
 							isLoading={networkIngressMetricsPending}
 						/>
 						<NetworkEgressChart
 							metrics={networkEgressMetrics}
+							duration={metricsDuration}
 							isLoading={networkEgressMetricsPending}
 						/>
 						<MemoryUsageChart
@@ -272,6 +274,7 @@ export function DashboardView() {
 						/>
 						<ComputeActivityChart
 							metrics={cpuMetrics}
+							duration={metricsDuration}
 							isLoading={cpuMetricsPending}
 						/>
 					</SimpleGrid>

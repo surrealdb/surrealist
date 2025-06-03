@@ -1,18 +1,24 @@
-import { AreaChart } from "@mantine/charts";
+import { AreaChart, ChartTooltip } from "@mantine/charts";
 import { Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import { format } from "date-fns";
 import dayjs from "dayjs";
+import { computeMetricRange } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
-import { CloudMetrics } from "~/types";
+import { useStable } from "~/hooks/stable";
+import { CloudMetrics, MetricsDuration } from "~/types";
 import { iconHelp } from "~/util/icons";
 
 export interface CpuUsageChartProps {
 	metrics: CloudMetrics | undefined;
+	duration: MetricsDuration;
 	isLoading: boolean;
 }
 
-export function ComputeActivityChart({ metrics, isLoading }: CpuUsageChartProps) {
+export function ComputeActivityChart({ metrics, duration, isLoading }: CpuUsageChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
+
+	const [startAt, endAt] = computeMetricRange(duration);
 
 	const series = data.map((metric) => ({
 		name: metric.labels,
@@ -22,7 +28,7 @@ export function ComputeActivityChart({ metrics, isLoading }: CpuUsageChartProps)
 
 	const values = timestamps?.map((timestamp, i) => {
 		const value: Record<string, unknown> = {
-			label: dayjs(timestamp).format("HH:mm"),
+			time: dayjs(timestamp).valueOf(),
 		};
 
 		for (const metric of data) {
@@ -34,6 +40,17 @@ export function ComputeActivityChart({ metrics, isLoading }: CpuUsageChartProps)
 		}
 
 		return value;
+	});
+
+	const tooltip = useStable(({ label, payload }) => {
+		return (
+			<ChartTooltip
+				label={label ? format(label as number, "hh:mm") : label}
+				payload={payload}
+				series={series}
+				unit=" vCPU(s)"
+			/>
+		);
 	});
 
 	return (
@@ -60,7 +77,7 @@ export function ComputeActivityChart({ metrics, isLoading }: CpuUsageChartProps)
 								Compute activity
 							</Text>
 
-							<Tooltip label="The average CPU core usage measured in vCPU(s) per second">
+							<Tooltip label="The average CPU core usage measured in vCPU(s)">
 								<div>
 									<Icon
 										path={iconHelp}
@@ -70,19 +87,26 @@ export function ComputeActivityChart({ metrics, isLoading }: CpuUsageChartProps)
 							</Tooltip>
 						</Group>
 						<AreaChart
+							data={values}
 							withDots={false}
-							unit={` ${metrics?.unit ?? "vCPU(s)"}`}
+							dataKey="time"
+							flex={1}
+							series={series}
+							tooltipProps={{
+								content: tooltip,
+							}}
 							yAxisProps={{
-								unit: "",
 								interval: 0,
 							}}
 							xAxisProps={{
-								interval: Math.floor(timestamps.length / 5),
+								scale: "time",
+								type: "number",
+								interval: "preserveStart",
+								domain: [startAt.valueOf(), endAt.valueOf()],
+								tickFormatter(value) {
+									return format(value as number, "hh:mm");
+								},
 							}}
-							dataKey="label"
-							flex={1}
-							series={series}
-							data={values}
 						/>
 					</>
 				)}

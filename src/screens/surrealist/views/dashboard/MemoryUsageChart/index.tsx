@@ -75,7 +75,7 @@ export function MemoryUsageChart({ metrics, duration, isLoading }: MemoryUsageCh
 								fw={700}
 								fz="xl"
 							>
-								Memory Usage
+								Memory usage
 							</Text>
 
 							<Tooltip label="The average amount of memory used by the instance in megabytes.">
@@ -105,7 +105,7 @@ export function MemoryUsageChart({ metrics, duration, isLoading }: MemoryUsageCh
 							xAxisProps={{
 								scale: "time",
 								type: "number",
-								interval: "equidistantPreserveStart",
+								interval: "preserveStart",
 								domain: [startAt.valueOf(), endAt.valueOf()],
 								tickFormatter(value) {
 									return format(value as number, "hh:mm");
