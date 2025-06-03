@@ -32,7 +32,7 @@ export function ComputeUsageBlock({ usage, isLoading }: ComputeUsageBlockProps) 
 				pos="relative"
 				mih={168}
 			>
-				{computeHistory.length !== 0 ? (
+				{computeHistory.length === 0 ? (
 					<Center flex={1}>
 						<Text c="slate">Recording compute usage...</Text>
 					</Center>
