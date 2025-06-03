@@ -45,7 +45,7 @@ export function ComputeActivityChart({ metrics, duration, isLoading }: CpuUsageC
 	const tooltip = useStable(({ label, payload }) => {
 		return (
 			<ChartTooltip
-				label={label ? format(label as number, "hh:mm") : label}
+				label={label ? format(label as number, "MMMM d, yyyy - h:mm a") : label}
 				payload={payload}
 				series={series}
 				unit=" vCPU(s)"
@@ -104,7 +104,9 @@ export function ComputeActivityChart({ metrics, duration, isLoading }: CpuUsageC
 								interval: "preserveStart",
 								domain: [startAt.valueOf(), endAt.valueOf()],
 								tickFormatter(value) {
-									return format(value as number, "hh:mm");
+									return ["week", "month"].includes(duration)
+										? format(value as number, "M/d/yy")
+										: format(value as number, "hh:mm");
 								},
 							}}
 						/>
