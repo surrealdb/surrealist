@@ -7,11 +7,10 @@ import dayjs from "dayjs";
 
 export interface MemoryUsageChartProps {
 	metrics: CloudMetrics | undefined;
-	instance: CloudInstance | undefined;
 	isLoading: boolean;
 }
 
-export function MemoryUsageChart({ metrics, instance, isLoading }: MemoryUsageChartProps) {
+export function MemoryUsageChart({ metrics, isLoading }: MemoryUsageChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 

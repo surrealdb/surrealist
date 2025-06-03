@@ -7,11 +7,10 @@ import dayjs from "dayjs";
 
 export interface CpuUsageChartProps {
 	metrics: CloudMetrics | undefined;
-	instance: CloudInstance | undefined;
 	isLoading: boolean;
 }
 
-export function ComputeActivityChart({ metrics, instance, isLoading }: CpuUsageChartProps) {
+export function ComputeActivityChart({ metrics, isLoading }: CpuUsageChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 

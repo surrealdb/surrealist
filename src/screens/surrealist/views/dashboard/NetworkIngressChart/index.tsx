@@ -17,11 +17,10 @@ import dayjs from "dayjs";
 
 export interface NetworkIngressChartProps {
 	metrics: CloudMetrics | undefined;
-	instance: CloudInstance | undefined;
 	isLoading: boolean;
 }
 
-export function NetworkIngressChart({ metrics, instance, isLoading }: NetworkIngressChartProps) {
+export function NetworkIngressChart({ metrics, isLoading }: NetworkIngressChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 
