@@ -688,9 +688,9 @@ export interface CloudMetrics {
 		timestamps: string[];
 		metrics: {
 			labels: string;
-			values: number[];
+			values: (number | null)[];
 		}[];
-	}
+	};
 }
 
 export interface CloudCoupon {

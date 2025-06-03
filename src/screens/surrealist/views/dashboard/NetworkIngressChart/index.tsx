@@ -1,5 +1,15 @@
-import { Badge, Divider, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
-import { AreaChart, BarChart } from '@mantine/charts';
+import {
+	Badge,
+	Center,
+	Divider,
+	Group,
+	Paper,
+	Skeleton,
+	Stack,
+	Text,
+	Tooltip,
+} from "@mantine/core";
+import { AreaChart, BarChart } from "@mantine/charts";
 import { Icon } from "~/components/Icon";
 import { CloudInstance, CloudMetrics } from "~/types";
 import { iconArrowDownFat, iconHelp } from "~/util/icons";
@@ -15,10 +25,27 @@ export function NetworkIngressChart({ metrics, instance, isLoading }: NetworkIng
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 
-	const values = timestamps?.map((timestamp, i) => ({
-		label: dayjs(timestamp).format("HH:mm"),
-		ingress: Math.round((data[0].values[i] ?? 0) / 1000),
+	const series = data.map((metric) => ({
+		name: metric.labels,
+		color: "surreal",
+		label: `Ingress traffic (${metric.labels})`,
 	}));
+
+	const values = timestamps?.map((timestamp, i) => {
+		const value: Record<string, unknown> = {
+			label: dayjs(timestamp).format("HH:mm"),
+		};
+
+		for (const metric of data) {
+			const data = metric.values[i];
+
+			if (data !== null) {
+				value[metric.labels] = Math.round(data / 1000);
+			}
+		}
+
+		return value;
+	});
 
 	return (
 		<Skeleton visible={isLoading}>
@@ -27,49 +54,48 @@ export function NetworkIngressChart({ metrics, instance, isLoading }: NetworkIng
 				gap={24}
 				component={Stack}
 				pos="relative"
-				mih={200}
+				h={280}
 			>
-				<Group gap="xs">
-					<Text
-						c="bright"
-						fw={700}
-						fz="xl"
-					>
-						Network Ingress
-					</Text>
-										
-					<Tooltip label="The average incoming network traffic measured in bytes per second">
-						<div>
-							<Icon
-								path={iconHelp}
-								size="sm"
-							/>
-						</div>
-					</Tooltip>
-				</Group>
+				{values.length < 2 ? (
+					<Center flex={1}>
+						<Text c="slate">Recording ingress network traffic...</Text>
+					</Center>
+				) : (
+					<>
+						<Group gap="xs">
+							<Text
+								c="bright"
+								fw={700}
+								fz="xl"
+							>
+								Network Ingress
+							</Text>
 
-				{values.length < 2 && (
-					<Text c="dimmed" fz="sm">
-						Recording Network Ingress data...
-					</Text>
-				)}
-				
-				{values.length >= 2 && (
-					<AreaChart
-						withDots={false}
-						unit=" kb/s"
-						yAxisProps={{
-							unit: " kb/s",
-							interval: 0
-						}}
-						xAxisProps={{
-							interval: Math.floor(timestamps.length / 5)
-						}}
-						dataKey="label"
-						h={200}
-						series={[{ name: "ingress", color: "surreal", label: "Ingress" }]}
-						data={values}
-					/>
+							<Tooltip label="The average incoming network traffic measured in bytes per second">
+								<div>
+									<Icon
+										path={iconHelp}
+										size="sm"
+									/>
+								</div>
+							</Tooltip>
+						</Group>
+						<AreaChart
+							withDots={false}
+							unit=" kb/s"
+							yAxisProps={{
+								unit: " kb/s",
+								interval: 0,
+							}}
+							xAxisProps={{
+								interval: Math.floor(timestamps.length / 5),
+							}}
+							dataKey="label"
+							flex={1}
+							series={series}
+							data={values}
+						/>
+					</>
 				)}
 			</Paper>
 		</Skeleton>

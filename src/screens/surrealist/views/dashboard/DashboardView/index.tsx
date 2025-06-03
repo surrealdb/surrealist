@@ -1,6 +1,15 @@
 import classes from "./style.module.scss";
 
-import { ActionIcon, Button, CopyButton, Group, Select, SimpleGrid, Skeleton, Text } from "@mantine/core";
+import {
+	ActionIcon,
+	Button,
+	CopyButton,
+	Group,
+	Select,
+	SimpleGrid,
+	Skeleton,
+	Text,
+} from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { memo, useState } from "react";
 import { Redirect } from "wouter";
@@ -32,7 +41,7 @@ import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { NetworkIngressChart } from "../NetworkIngressChart";
 import { NetworkEgressChart } from "../NetworkEgressChart";
 import { MemoryUsageChart } from "../MemoryUsageChart";
-import { CpuUsageChart } from "../CpuUsageChart";
+import { ComputeActivityChart } from "../ComputeActivityChart";
 import { useInputState } from "@mantine/hooks";
 import { MetricsDuration } from "~/types";
 
@@ -62,10 +71,20 @@ export function DashboardView() {
 	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instance);
 	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
 
-	const { data: networkIngressMetrics, isPending: networkIngressMetricsPending } = useCloudMetricsQuery(instance, "ingress", metricsDuration);
-	const { data: networkEgressMetrics, isPending: networkEgressMetricsPending } = useCloudMetricsQuery(instance, "egress", metricsDuration);
-	const { data: memoryMetrics, isPending: memoryMetricsPending } = useCloudMetricsQuery(instance, "memory", metricsDuration);
-	const { data: cpuMetrics, isPending: cpuMetricsPending } = useCloudMetricsQuery(instance, "cpu", metricsDuration);
+	const { data: networkIngressMetrics, isPending: networkIngressMetricsPending } =
+		useCloudMetricsQuery(instance, "ingress", metricsDuration);
+	const { data: networkEgressMetrics, isPending: networkEgressMetricsPending } =
+		useCloudMetricsQuery(instance, "egress", metricsDuration);
+	const { data: memoryMetrics, isPending: memoryMetricsPending } = useCloudMetricsQuery(
+		instance,
+		"memory",
+		metricsDuration,
+	);
+	const { data: cpuMetrics, isPending: cpuMetricsPending } = useCloudMetricsQuery(
+		instance,
+		"cpu",
+		metricsDuration,
+	);
 
 	const handleUpgrade = useStable(() => {
 		setActiveTab("type");
@@ -211,7 +230,7 @@ export function DashboardView() {
 					<Group mt={32}>
 						<Box>
 							<PrimaryTitle>Metrics</PrimaryTitle>
-							<Text>View and monitor the metrics for your Surreal Cloud instance</Text>
+							<Text>View and track instance activity metrics</Text>
 						</Box>
 
 						<Spacer />
@@ -253,7 +272,7 @@ export function DashboardView() {
 							instance={details}
 							isLoading={memoryMetricsPending}
 						/>
-						<CpuUsageChart
+						<ComputeActivityChart
 							metrics={cpuMetrics}
 							instance={details}
 							isLoading={cpuMetricsPending}
@@ -262,7 +281,7 @@ export function DashboardView() {
 
 					<Box mt={32}>
 						<PrimaryTitle>Resources</PrimaryTitle>
-						<Text>View the resources of your Surreal Cloud instance</Text>
+						<Text>Monitor and explore instance resources</Text>
 					</Box>
 
 					<SimpleGrid

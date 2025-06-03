@@ -1,23 +1,24 @@
 import { Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
 import { Icon } from "~/components/Icon";
-import { CloudMetrics } from "~/types";
+import { CloudInstance, CloudMetrics } from "~/types";
 import { iconHelp } from "~/util/icons";
 import dayjs from "dayjs";
 
-export interface NetworkEgressChartProps {
+export interface CpuUsageChartProps {
 	metrics: CloudMetrics | undefined;
+	instance: CloudInstance | undefined;
 	isLoading: boolean;
 }
 
-export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartProps) {
+export function ComputeActivityChart({ metrics, instance, isLoading }: CpuUsageChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 
 	const series = data.map((metric) => ({
 		name: metric.labels,
 		color: "surreal",
-		label: `Egress traffic (${metric.labels})`,
+		label: `vCPU(s)/sec (${metric.labels})`,
 	}));
 
 	const values = timestamps?.map((timestamp, i) => {
@@ -29,7 +30,7 @@ export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartPro
 			const data = metric.values[i];
 
 			if (data !== null) {
-				value[metric.labels] = Math.round(data / 1000);
+				value[metric.labels] = data.toFixed(2);
 			}
 		}
 
@@ -47,7 +48,7 @@ export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartPro
 			>
 				{values.length < 2 ? (
 					<Center flex={1}>
-						<Text c="slate">Recording egress network traffic...</Text>
+						<Text c="slate">Recording compute activity...</Text>
 					</Center>
 				) : (
 					<>
@@ -57,10 +58,10 @@ export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartPro
 								fw={700}
 								fz="xl"
 							>
-								Network Egress
+								Compute activity
 							</Text>
 
-							<Tooltip label="The average outgoing network traffic measured in bytes per second">
+							<Tooltip label="The average CPU core usage measured in vCPU(s) per second">
 								<div>
 									<Icon
 										path={iconHelp}
@@ -71,9 +72,9 @@ export function NetworkEgressChart({ metrics, isLoading }: NetworkEgressChartPro
 						</Group>
 						<AreaChart
 							withDots={false}
-							unit=" kb/s"
+							unit={` ${metrics?.unit ?? "vCPU(s)"}`}
 							yAxisProps={{
-								unit: " kb/s",
+								unit: "",
 								interval: 0,
 							}}
 							xAxisProps={{

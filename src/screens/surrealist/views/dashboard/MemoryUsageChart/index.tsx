@@ -1,8 +1,8 @@
-import { Badge, Divider, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
-import { AreaChart, BarChart } from '@mantine/charts';
+import { Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import { AreaChart } from "@mantine/charts";
 import { Icon } from "~/components/Icon";
 import { CloudInstance, CloudMetrics } from "~/types";
-import { iconArrowDownFat, iconArrowUpRight, iconHelp, iconMemory } from "~/util/icons";
+import { iconHelp } from "~/util/icons";
 import dayjs from "dayjs";
 
 export interface MemoryUsageChartProps {
@@ -15,10 +15,27 @@ export function MemoryUsageChart({ metrics, instance, isLoading }: MemoryUsageCh
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 
-	const values = timestamps?.map((timestamp, i) => ({
-		label: dayjs(timestamp).format("HH:mm"),
-		memory: (Math.round(data[0].values[i] / 1000000) ?? 0),
+	const series = data.map((metric) => ({
+		name: metric.labels,
+		color: "surreal",
+		label: `Memory usage (${metric.labels})`,
 	}));
+
+	const values = timestamps?.map((timestamp, i) => {
+		const value: Record<string, unknown> = {
+			label: dayjs(timestamp).format("HH:mm"),
+		};
+
+		for (const metric of data) {
+			const data = metric.values[i];
+
+			if (data !== null) {
+				value[metric.labels] = Math.round(data / 1000000);
+			}
+		}
+
+		return value;
+	});
 
 	return (
 		<Skeleton visible={isLoading}>
@@ -27,48 +44,47 @@ export function MemoryUsageChart({ metrics, instance, isLoading }: MemoryUsageCh
 				gap={24}
 				component={Stack}
 				pos="relative"
-				mih={200}
+				h={280}
 			>
-				<Group gap="xs">
-					<Text
-						c="bright"
-						fw={700}
-						fz="xl"
-					>
-						Memory Usage
-					</Text>
-					
-					<Tooltip label="The average amount of memory used by the instance in megabytes.">
-						<div>
-							<Icon
-								path={iconHelp}
-								size="sm"
-							/>
-						</div>
-					</Tooltip>
-				</Group>
+				{values.length < 2 ? (
+					<Center flex={1}>
+						<Text c="slate">Recording memory usage...</Text>
+					</Center>
+				) : (
+					<>
+						<Group gap="xs">
+							<Text
+								c="bright"
+								fw={700}
+								fz="xl"
+							>
+								Memory Usage
+							</Text>
 
-				{values.length < 2 && (
-					<Text c="dimmed" fz="sm">
-						Recording Memory usage...
-					</Text>
-				)}
-				
-				{values.length >= 2 && (
-					<AreaChart
-						withDots={false}
-						unit=" MB"
-						dataKey="label"
-						h={200}
-						series={[{ name: "memory", color: "surreal", label: "Memory Usage" }]}
-						yAxisProps={{
-							interval: 0
-						}}
-						xAxisProps={{
-							interval: Math.floor(timestamps.length / 5)
-						}}
-						data={values}
-					/>
+							<Tooltip label="The average amount of memory used by the instance in megabytes.">
+								<div>
+									<Icon
+										path={iconHelp}
+										size="sm"
+									/>
+								</div>
+							</Tooltip>
+						</Group>
+						<AreaChart
+							withDots={false}
+							unit=" MB"
+							dataKey="label"
+							flex={1}
+							series={series}
+							yAxisProps={{
+								interval: 0,
+							}}
+							xAxisProps={{
+								interval: Math.floor(timestamps.length / 5),
+							}}
+							data={values}
+						/>
+					</>
 				)}
 			</Paper>
 		</Skeleton>
