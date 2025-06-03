@@ -3,11 +3,17 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Button,
+	Center,
+	Checkbox,
 	CopyButton,
 	Group,
+	Indicator,
+	Menu,
+	MultiSelect,
 	Select,
 	SimpleGrid,
 	Skeleton,
+	Switch,
 	Text,
 } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -30,7 +36,14 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { MetricsDuration } from "~/types";
-import { iconCheck, iconChevronDown, iconClock, iconCopy } from "~/util/icons";
+import {
+	iconCheck,
+	iconChevronDown,
+	iconClock,
+	iconCopy,
+	iconDatabase,
+	iconFilter,
+} from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
@@ -44,6 +57,7 @@ import { NetworkEgressChart } from "../NetworkEgressChart";
 import { NetworkIngressChart } from "../NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
+import { ActionButton } from "~/components/ActionButton";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -251,6 +265,110 @@ export function DashboardView() {
 							rightSection={<Icon path={iconChevronDown} />}
 							rightSectionWidth={30}
 						/>
+
+						<Menu>
+							<Menu.Target>
+								<Indicator>
+									<ActionButton
+										variant="light"
+										color="slate"
+										label="Node filter"
+										size="lg"
+									>
+										<Icon
+											size="md"
+											path={iconFilter}
+										/>
+									</ActionButton>
+								</Indicator>
+							</Menu.Target>
+
+							<Menu.Dropdown p="md">
+								<Group>
+									<Checkbox
+										indeterminate
+										variant="gradient"
+										checked={true}
+									/>
+									<Text
+										c="bright"
+										fw={500}
+										fz={13}
+									>
+										All nodes
+									</Text>
+								</Group>
+
+								<Menu.Divider my="md" />
+
+								<Stack>
+									<Group>
+										<Checkbox
+											variant="gradient"
+											checked={true}
+										/>
+										<Text
+											c="bright"
+											fw={500}
+										>
+											surrealdb-cd4951e9b0c75354
+										</Text>
+									</Group>
+
+									<Group>
+										<Checkbox
+											variant="gradient"
+											checked={true}
+										/>
+										<Text
+											c="bright"
+											fw={500}
+										>
+											surrealdb-cd4951e9b0c75354
+										</Text>
+									</Group>
+
+									<Group>
+										<Checkbox
+											variant="gradient"
+											checked={true}
+										/>
+										<Text
+											c="bright"
+											fw={500}
+										>
+											surrealdb-cd4951e9b0c75354
+										</Text>
+									</Group>
+
+									<Group>
+										<Checkbox
+											variant="gradient"
+											checked={true}
+										/>
+										<Text
+											c="bright"
+											fw={500}
+										>
+											surrealdb-cd4951e9b0c75354
+										</Text>
+									</Group>
+
+									<Group>
+										<Checkbox
+											variant="gradient"
+											checked={false}
+										/>
+										<Text
+											c="bright"
+											fw={500}
+										>
+											surrealdb-cd4951e9b0c75354
+										</Text>
+									</Group>
+								</Stack>
+							</Menu.Dropdown>
+						</Menu>
 					</Group>
 
 					<SimpleGrid
