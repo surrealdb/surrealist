@@ -26,6 +26,7 @@ import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -45,8 +46,8 @@ import {
 	iconFilter,
 } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
-import { ComputeUsageChart } from "../ComputeUsageChart";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
+import { ComputeUsageChart } from "../ComputeUsageChart";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
@@ -57,7 +58,6 @@ import { NetworkEgressChart } from "../NetworkEgressChart";
 import { NetworkIngressChart } from "../NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
-import { ActionButton } from "~/components/ActionButton";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
