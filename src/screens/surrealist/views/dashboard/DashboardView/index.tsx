@@ -417,18 +417,6 @@ export function DashboardView() {
 						cols={2}
 						spacing="xl"
 					>
-						<NetworkIngressChart
-							metrics={networkIngressMetrics}
-							duration={metricsDuration}
-							nodeFilter={metricsNodeFilter}
-							isLoading={networkIngressMetricsPending}
-						/>
-						<NetworkEgressChart
-							metrics={networkEgressMetrics}
-							duration={metricsDuration}
-							nodeFilter={metricsNodeFilter}
-							isLoading={networkEgressMetricsPending}
-						/>
 						<MemoryUsageChart
 							metrics={memoryMetrics}
 							duration={metricsDuration}
@@ -440,6 +428,18 @@ export function DashboardView() {
 							duration={metricsDuration}
 							nodeFilter={metricsNodeFilter}
 							isLoading={cpuMetricsPending}
+						/>
+						<NetworkIngressChart
+							metrics={networkIngressMetrics}
+							duration={metricsDuration}
+							nodeFilter={metricsNodeFilter}
+							isLoading={networkIngressMetricsPending}
+						/>
+						<NetworkEgressChart
+							metrics={networkEgressMetrics}
+							duration={metricsDuration}
+							nodeFilter={metricsNodeFilter}
+							isLoading={networkEgressMetricsPending}
 						/>
 					</SimpleGrid>
 
