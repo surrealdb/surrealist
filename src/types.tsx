@@ -18,6 +18,8 @@ export type DiagramMode = "default" | "fields" | "summary" | "simple";
 export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
+export type MetricsDuration = "hour" | "half" | "day" | "week" | "month";
+export type MetricsType = "cpu" | "memory" | "ingress" | "egress";
 export type MiniAppearance = "normal" | "compact" | "plain";
 export type Orientation = "horizontal" | "vertical";
 export type Platform = "darwin" | "windows" | "linux";
@@ -674,6 +676,20 @@ export interface CloudMeasurement {
 	// Storage
 	disk_used_bytes?: number;
 	source?: string;
+}
+
+export interface CloudMetrics {
+	metric: MetricsType;
+	from_time: string;
+	to_time: string;
+	unit: string;
+	values: {
+		timestamps: string[];
+		metrics: {
+			labels: string;
+			values: (number | null)[];
+		}[];
+	};
 }
 
 export interface CloudCoupon {
