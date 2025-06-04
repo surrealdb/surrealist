@@ -96,8 +96,6 @@ export function ConfiguratorDrawer({
 					mb="xl"
 					mx="xl"
 				>
-					<Tabs.Tab value="capabilities">Capabilities</Tabs.Tab>
-					<Tabs.Tab value="version">Version</Tabs.Tab>
 					<Tabs.Tab value="type">Instance type</Tabs.Tab>
 					<Tabs.Tab
 						value="disk"
@@ -105,6 +103,8 @@ export function ConfiguratorDrawer({
 					>
 						Disk size
 					</Tabs.Tab>
+					<Tabs.Tab value="version">Version</Tabs.Tab>
+					<Tabs.Tab value="capabilities">Capabilities</Tabs.Tab>
 				</Tabs.List>
 
 				<Tabs.Panel value="capabilities">

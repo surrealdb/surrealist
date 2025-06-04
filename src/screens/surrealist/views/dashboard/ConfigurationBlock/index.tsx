@@ -1,9 +1,11 @@
 import {
 	iconChevronRight,
+	iconCloud,
 	iconDatabase,
 	iconHistory,
 	iconMarker,
 	iconMemory,
+	iconQuery,
 	iconTag,
 } from "~/util/icons";
 
@@ -15,25 +17,36 @@ import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
-import { formatMemory } from "~/util/helpers";
+import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
 	isLoading: boolean;
+	onUpgrade: () => void;
 	onConfigure: () => void;
 }
 
-export function ConfigurationBlock({ instance, isLoading, onConfigure }: ConfigurationBlockProps) {
+export function ConfigurationBlock({
+	instance,
+	isLoading,
+	onUpgrade,
+	onConfigure,
+}: ConfigurationBlockProps) {
 	const regions = useCloudStore((s) => s.regions);
 	const region = instance?.region;
 	const regionName = regions.find((r) => r.slug === region)?.description ?? region;
 
 	const storageSize = instance?.storage_size ?? 0;
+	const memoryMax = instance?.type.memory ?? 0;
+	const computeCores = instance?.type.cpu ?? 0;
+	const computeMax = instance?.type.compute_units.max ?? 0;
 	const typeName = instance?.type.display_name ?? "";
 	const typeCategory = instance?.type.category ?? "";
 
-	const backupText = instance?.type.category === "free" ? "Disabled" : "Enabled";
+	const isFree = instance?.type.category === "free";
+	const backupText = isFree ? "Not Available" : "Enabled";
 	const typeText = `${typeName} (${getTypeCategoryName(typeCategory)})`;
+	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const storageText = formatMemory(storageSize * 1000, true);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
@@ -47,21 +60,15 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 			<Paper p="xl">
 				<Stack gap="sm">
 					<ConfigValue
-						title="Region"
-						icon={iconMarker}
-						value={regionName}
-					/>
-
-					<ConfigValue
 						title="Type"
-						icon={iconMemory}
+						icon={iconCloud}
 						value={typeText}
 					/>
 
 					<ConfigValue
-						title="Backups"
-						icon={iconHistory}
-						value={backupText}
+						title="Region"
+						icon={iconMarker}
+						value={regionName}
 					/>
 
 					<ConfigValue
@@ -70,26 +77,74 @@ export function ConfigurationBlock({ instance, isLoading, onConfigure }: Configu
 						value={`SurrealDB ${instance?.version}`}
 					/>
 
+					<ConfigValue
+						title="Backups"
+						icon={iconHistory}
+						value={
+							<Group gap={5}>
+								<Text c="bright">{backupText}</Text>
+
+								{isFree && (
+									<Group gap={5}>
+										<Text c="dimmed">-</Text>
+										<Button
+											variant="transparent"
+											c="surreal"
+											fw={600}
+											fz="md"
+											p={0}
+											onClick={onUpgrade}
+										>
+											Upgrade
+										</Button>
+									</Group>
+								)}
+							</Group>
+						}
+					/>
+
+					<ConfigValue
+						title="Memory"
+						icon={iconMemory}
+						value={formatMemory(memoryMax)}
+					/>
+
+					<ConfigValue
+						title="Compute"
+						icon={iconQuery}
+						value={computeText}
+					/>
+
 					<Group>
 						<ConfigValue
 							title="Storage"
+							flex={1}
 							icon={iconDatabase}
 							value={storageText}
-							flex={1}
 						/>
 
 						{canModify && (
-							<Button
-								size="xs"
-								color="slate"
-								rightSection={<Icon path={iconChevronRight} />}
-								onClick={onConfigure}
-								disabled={!instance || isIdle}
-								variant="light"
-								my={-2}
-							>
-								Configure instance
-							</Button>
+							<Button.Group>
+								<Button
+									size="xs"
+									color="slate"
+									onClick={onConfigure}
+									disabled={!instance || isIdle}
+									variant="light"
+									my={-2}
+								>
+									Configure
+								</Button>
+								<Button
+									size="xs"
+									onClick={onUpgrade}
+									disabled={!instance || isIdle}
+									variant="gradient"
+									my={-2}
+								>
+									Upgrade
+								</Button>
+							</Button.Group>
 						)}
 					</Group>
 				</Stack>

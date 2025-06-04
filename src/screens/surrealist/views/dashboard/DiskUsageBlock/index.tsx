@@ -2,6 +2,8 @@ import {
 	Alert,
 	Badge,
 	Box,
+	Button,
+	Center,
 	Divider,
 	Group,
 	Paper,
@@ -42,16 +44,28 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 				pos="relative"
 				mih={168}
 			>
-				<Stack gap={0}>
-					<Text
-						c="bright"
-						fw={700}
-						fz="xl"
+				<Group>
+					<Stack gap={0}>
+						<Text
+							c="bright"
+							fw={700}
+							fz="xl"
+						>
+							Storage usage
+						</Text>
+						<Text>{storageFrac.toFixed(2)}% used</Text>
+					</Stack>
+					<Spacer />
+					<Button
+						c="surreal"
+						size="xs"
+						p={0}
+						fz={13}
+						variant="transparent"
 					>
-						Storage usage
-					</Text>
-					<Text>{storageFrac.toFixed(2)}% used</Text>
-				</Stack>
+						Upgrade
+					</Button>
+				</Group>
 
 				{instance?.distributed_storage_specs ? (
 					<Alert

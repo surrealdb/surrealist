@@ -142,6 +142,11 @@ export function DashboardView() {
 		setMetricsNodeFilter(undefined);
 	}, [metricsDuration]);
 
+	const handleConfigure = useStable(() => {
+		setActiveTab("capabilities");
+		configureHandle.open();
+	});
+
 	const handleUpgrade = useStable(() => {
 		setActiveTab("type");
 		configureHandle.open();
@@ -271,7 +276,8 @@ export function DashboardView() {
 						<ConfigurationBlockLazy
 							instance={details}
 							isLoading={isLoading}
-							onConfigure={configureHandle.open}
+							onUpgrade={handleUpgrade}
+							onConfigure={handleConfigure}
 						/>
 						{details && !isLoading && details.state === "paused" ? (
 							<ResumeBlockLazy instance={details} />
