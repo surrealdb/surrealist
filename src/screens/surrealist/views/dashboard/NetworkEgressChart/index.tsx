@@ -11,20 +11,28 @@ import { iconHelp } from "~/util/icons";
 export interface NetworkEgressChartProps {
 	metrics: CloudMetrics | undefined;
 	duration: MetricsDuration;
+	nodeFilter?: string[];
 	isLoading: boolean;
 }
 
-export function NetworkEgressChart({ metrics, duration, isLoading }: NetworkEgressChartProps) {
+export function NetworkEgressChart({
+	metrics,
+	duration,
+	nodeFilter,
+	isLoading,
+}: NetworkEgressChartProps) {
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 
 	const [startAt, endAt] = computeMetricRange(duration);
 
-	const series = data.map((metric) => ({
-		name: metric.labels,
-		color: "surreal",
-		label: `Egress traffic (${metric.labels})`,
-	}));
+	const series = data
+		.filter((dat) => nodeFilter === undefined || nodeFilter.includes(dat.labels))
+		.map((metric) => ({
+			name: metric.labels,
+			color: "surreal",
+			label: `Egress traffic (${metric.labels})`,
+		}));
 
 	const values = timestamps?.map((timestamp, i) => {
 		const value: Record<string, unknown> = {

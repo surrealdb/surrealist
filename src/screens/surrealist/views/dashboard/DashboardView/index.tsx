@@ -18,7 +18,7 @@ import {
 } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Redirect } from "wouter";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
@@ -78,6 +78,10 @@ export function DashboardView() {
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
 	const [configuring, configureHandle] = useBoolean();
+	const [metricsNodes, setMetricsNodes] = useInputState<string[]>([]);
+	const [metricsNodeFilter, setMetricsNodeFilter] = useInputState<string[] | undefined>(
+		undefined,
+	);
 	const [activeTab, setActiveTab] = useState("capabilities");
 	const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
 
@@ -87,18 +91,56 @@ export function DashboardView() {
 
 	const { data: networkIngressMetrics, isPending: networkIngressMetricsPending } =
 		useCloudMetricsQuery(instance, "ingress", metricsDuration);
+
 	const { data: networkEgressMetrics, isPending: networkEgressMetricsPending } =
 		useCloudMetricsQuery(instance, "egress", metricsDuration);
+
 	const { data: memoryMetrics, isPending: memoryMetricsPending } = useCloudMetricsQuery(
 		instance,
 		"memory",
 		metricsDuration,
 	);
+
 	const { data: cpuMetrics, isPending: cpuMetricsPending } = useCloudMetricsQuery(
 		instance,
 		"cpu",
 		metricsDuration,
 	);
+
+	useEffect(() => {
+		const nodes = new Set<string>();
+
+		if (networkIngressMetrics) {
+			for (const m of networkIngressMetrics.values.metrics) {
+				nodes.add(m.labels);
+			}
+		}
+
+		if (networkEgressMetrics) {
+			for (const m of networkEgressMetrics.values.metrics) {
+				nodes.add(m.labels);
+			}
+		}
+
+		if (memoryMetrics) {
+			for (const m of memoryMetrics.values.metrics) {
+				nodes.add(m.labels);
+			}
+		}
+
+		if (cpuMetrics) {
+			for (const m of cpuMetrics.values.metrics) {
+				nodes.add(m.labels);
+			}
+		}
+
+		setMetricsNodes(Array.from(nodes));
+	}, [networkIngressMetrics, networkEgressMetrics, memoryMetrics, cpuMetrics]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset evert time the metrics duration changes
+	useEffect(() => {
+		setMetricsNodeFilter(undefined);
+	}, [metricsDuration]);
 
 	const handleUpgrade = useStable(() => {
 		setActiveTab("type");
@@ -265,10 +307,14 @@ export function DashboardView() {
 							rightSection={<Icon path={iconChevronDown} />}
 							rightSectionWidth={30}
 						/>
-
 						<Menu>
 							<Menu.Target>
-								<Indicator>
+								<Indicator
+									disabled={
+										metricsNodeFilter === undefined ||
+										metricsNodeFilter.length === metricsNodes.length
+									}
+								>
 									<ActionButton
 										variant="light"
 										color="slate"
@@ -286,9 +332,28 @@ export function DashboardView() {
 							<Menu.Dropdown p="md">
 								<Group>
 									<Checkbox
-										indeterminate
+										indeterminate={
+											metricsNodeFilter !== undefined &&
+											metricsNodeFilter.length > 0 &&
+											!metricsNodes.every((n) =>
+												metricsNodeFilter.includes(n),
+											)
+										}
 										variant="gradient"
-										checked={true}
+										checked={
+											metricsNodeFilter === undefined ||
+											metricsNodeFilter.length > 0 ||
+											metricsNodes.every((n) => metricsNodeFilter.includes(n))
+										}
+										onChange={(e) => {
+											const checked = e.currentTarget.checked;
+
+											if (checked) {
+												setMetricsNodeFilter(metricsNodes);
+											} else {
+												setMetricsNodeFilter([]);
+											}
+										}}
 									/>
 									<Text
 										c="bright"
@@ -302,70 +367,47 @@ export function DashboardView() {
 								<Menu.Divider my="md" />
 
 								<Stack>
-									<Group>
-										<Checkbox
-											variant="gradient"
-											checked={true}
-										/>
-										<Text
-											c="bright"
-											fw={500}
-										>
-											surrealdb-cd4951e9b0c75354
-										</Text>
-									</Group>
+									{metricsNodes.map((node, i) => (
+										<Group key={i}>
+											<Checkbox
+												variant="gradient"
+												checked={
+													metricsNodeFilter?.includes(node) ||
+													metricsNodeFilter === undefined
+												}
+												onChange={(e) => {
+													const checked = e.currentTarget.checked;
 
-									<Group>
-										<Checkbox
-											variant="gradient"
-											checked={true}
-										/>
-										<Text
-											c="bright"
-											fw={500}
-										>
-											surrealdb-cd4951e9b0c75354
-										</Text>
-									</Group>
-
-									<Group>
-										<Checkbox
-											variant="gradient"
-											checked={true}
-										/>
-										<Text
-											c="bright"
-											fw={500}
-										>
-											surrealdb-cd4951e9b0c75354
-										</Text>
-									</Group>
-
-									<Group>
-										<Checkbox
-											variant="gradient"
-											checked={true}
-										/>
-										<Text
-											c="bright"
-											fw={500}
-										>
-											surrealdb-cd4951e9b0c75354
-										</Text>
-									</Group>
-
-									<Group>
-										<Checkbox
-											variant="gradient"
-											checked={false}
-										/>
-										<Text
-											c="bright"
-											fw={500}
-										>
-											surrealdb-cd4951e9b0c75354
-										</Text>
-									</Group>
+													if (checked) {
+														setMetricsNodeFilter([
+															...(metricsNodeFilter ?? []),
+															node,
+														]);
+													} else {
+														if (metricsNodeFilter === undefined) {
+															setMetricsNodeFilter(
+																metricsNodes.filter(
+																	(n) => n !== node,
+																),
+															);
+														} else {
+															setMetricsNodeFilter(
+																metricsNodeFilter?.filter(
+																	(n) => n !== node,
+																),
+															);
+														}
+													}
+												}}
+											/>
+											<Text
+												c="bright"
+												fw={500}
+											>
+												{node}
+											</Text>
+										</Group>
+									))}
 								</Stack>
 							</Menu.Dropdown>
 						</Menu>
@@ -378,21 +420,25 @@ export function DashboardView() {
 						<NetworkIngressChart
 							metrics={networkIngressMetrics}
 							duration={metricsDuration}
+							nodeFilter={metricsNodeFilter}
 							isLoading={networkIngressMetricsPending}
 						/>
 						<NetworkEgressChart
 							metrics={networkEgressMetrics}
 							duration={metricsDuration}
+							nodeFilter={metricsNodeFilter}
 							isLoading={networkEgressMetricsPending}
 						/>
 						<MemoryUsageChart
 							metrics={memoryMetrics}
 							duration={metricsDuration}
+							nodeFilter={metricsNodeFilter}
 							isLoading={memoryMetricsPending}
 						/>
 						<ComputeUsageChart
 							metrics={cpuMetrics}
 							duration={metricsDuration}
+							nodeFilter={metricsNodeFilter}
 							isLoading={cpuMetricsPending}
 						/>
 					</SimpleGrid>
