@@ -55,7 +55,7 @@ function InviteModal({ organization }: InviteModalProps) {
 		} catch {
 			showError({
 				title: "Invitation failed",
-				subtitle: "Failed to send an invitation to this user",
+				content: "Failed to send an invitation to this user",
 			});
 		} finally {
 			handleClose();

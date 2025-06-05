@@ -60,7 +60,7 @@ function RoleModal({ organization, member }: RoleModalProps) {
 		} catch {
 			showError({
 				title: "Role change failed",
-				subtitle: "Failed to update member role",
+				content: "Failed to update member role",
 			});
 		} finally {
 			handleClose();

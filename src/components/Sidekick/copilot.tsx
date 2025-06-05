@@ -98,7 +98,7 @@ export function useCopilotMutation() {
 
 						showError({
 							title: "Chat error",
-							subtitle: "Sidekick encountered an unexpected error",
+							content: "Sidekick encountered an unexpected error",
 						});
 						break;
 					}

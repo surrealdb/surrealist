@@ -95,7 +95,7 @@ export function QueryPane({
 		} catch {
 			showError({
 				title: "Failed to format",
-				subtitle: "Your query must be valid to format it",
+				content: "Your query must be valid to format it",
 			});
 		}
 	});
@@ -146,7 +146,7 @@ export function QueryPane({
 		} catch {
 			showError({
 				title: "Failed to infer variables",
-				subtitle: "Your query must be valid to infer variables",
+				content: "Your query must be valid to infer variables",
 			});
 		}
 	});

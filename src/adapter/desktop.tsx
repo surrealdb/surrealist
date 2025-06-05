@@ -391,7 +391,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			showError({
 				title: "Serving failed",
-				subtitle: msg,
+				content: msg,
 			});
 		});
 	}
@@ -411,7 +411,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				if (!success) {
 					showError({
 						title: `Failed to open "${name}"`,
-						subtitle: `File exceeds maximum size limit`,
+						content: `File exceeds maximum size limit`,
 					});
 
 					continue;

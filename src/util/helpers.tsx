@@ -55,39 +55,33 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showErrorWithInfo(info: {
-	title: string;
-	message?: string;
-	cause?: string;
-	trace?: string;
-}) {
-	showNotification({
-		color: "red",
-		title: info.title,
-		message: "Click here for more information",
-		autoClose: false,
-		style: {
-			cursor: "pointer",
-		},
-		onClick: (e) => {
-			openErrorModal(info.title, info.message, info.cause, info.trace);
-			hideNotification(e.currentTarget.id);
-		},
-	});
-}
-
-/**
- * Display an error notification
- *
- * @param title The title message
- * @param subtitle The subtitle message
- */
-export function showError(info: { title: ReactNode; subtitle: ReactNode }) {
-	showNotification({
-		color: "red",
-		title: info.title,
-		message: info.subtitle,
-	});
+export function showError(info: { title: ReactNode; content: any }) {
+	if (info.content instanceof Error) {
+		showNotification({
+			color: "red",
+			title: info.title,
+			message: "Click here for more details",
+			autoClose: false,
+			style: {
+				cursor: "pointer",
+			},
+			onClick: (e) => {
+				openErrorModal(
+					info.title,
+					info.content.message,
+					info.content.cause,
+					info.content.stack,
+				);
+				hideNotification(e.currentTarget.id);
+			},
+		});
+	} else {
+		showNotification({
+			color: "red",
+			title: info.title,
+			message: info.content,
+		});
+	}
 }
 
 /**

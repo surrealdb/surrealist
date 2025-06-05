@@ -56,7 +56,7 @@ function AccountForm({ onClose }: AccountFormProps) {
 		} catch (err: any) {
 			showError({
 				title: "Failed to save account",
-				subtitle: err.message,
+				content: err.message,
 			});
 		} finally {
 			setLoading(false);

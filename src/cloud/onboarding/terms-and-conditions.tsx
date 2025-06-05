@@ -77,7 +77,7 @@ function TermsModal({ conditions }: TermsModalProps) {
 		} catch (err: any) {
 			showError({
 				title: "Failed to accept terms",
-				subtitle: err.message,
+				content: err.message,
 			});
 		} finally {
 			setLoading(false);

@@ -108,7 +108,7 @@ export function EditorPanel({
 		if (isFunctionBlockInvalid) {
 			showError({
 				title: "Failed to format",
-				subtitle: "Your function must be valid to format it",
+				content: "Your function must be valid to format it",
 			});
 			return;
 		}

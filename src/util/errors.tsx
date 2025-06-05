@@ -6,6 +6,7 @@ import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { iconBug, iconCheck, iconCursor, iconWarning } from "./icons";
+import { ReactNode } from "react";
 
 /**
  * Thrown during a failure in a cloud operation.
@@ -21,7 +22,7 @@ export class CloudError extends Error {}
  * @param trace - An optional stack trace for debugging purposes.
  */
 export async function openErrorModal(
-	title: string,
+	title: ReactNode | string,
 	message?: string,
 	cause?: string,
 	trace?: string,

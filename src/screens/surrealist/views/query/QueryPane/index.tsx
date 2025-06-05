@@ -147,7 +147,7 @@ export function QueryPane({
 		} catch {
 			showError({
 				title: "Failed to format",
-				subtitle: "Your query must be valid to format it",
+				content: "Your query must be valid to format it",
 			});
 		}
 	});

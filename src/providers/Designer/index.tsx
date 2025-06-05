@@ -8,7 +8,7 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { TableInfo } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { showError, showErrorWithInfo } from "~/util/helpers";
+import { showError } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { SDB_2_0_0 } from "~/util/versions";
 import { DesignDrawer } from "./drawer";
@@ -135,11 +135,9 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 					designingHandle.close();
 				}
 			} catch (err: any) {
-				showErrorWithInfo({
+				showError({
 					title: "Failed to apply schema",
-					message: err.message ?? "An unknown error has occurred",
-					cause: err.cause,
-					trace: err.stack,
+					content: err,
 				});
 			}
 		},

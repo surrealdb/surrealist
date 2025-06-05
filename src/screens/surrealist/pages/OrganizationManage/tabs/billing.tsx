@@ -36,7 +36,7 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { CloudCoupon } from "~/types";
-import { showError, showErrorWithInfo, showInfo } from "~/util/helpers";
+import { showError, showInfo } from "~/util/helpers";
 import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
@@ -61,11 +61,9 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 
 			adapter.openUrl(url);
 		} catch (err: any) {
-			showErrorWithInfo({
+			showError({
 				title: "Failed to open payment page",
-				message: err.message ?? "An unknown error has occurred",
-				cause: err.cause,
-				trace: err.stack,
+				content: err,
 			});
 		} finally {
 			setRequesting(false);
@@ -92,7 +90,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 		} catch (err: any) {
 			showError({
 				title: "Failed to apply discount code",
-				subtitle: "The discount code is invalid or has already been applied",
+				content: "The discount code is invalid or has already been applied",
 			});
 		}
 	});

@@ -18,7 +18,7 @@ import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { SchemaFunction } from "~/types";
-import { showError, showErrorWithInfo } from "~/util/helpers";
+import { showError } from "~/util/helpers";
 import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
@@ -70,11 +70,9 @@ export function FunctionsView() {
 
 				isCreatingHandle.close();
 			} catch (err: any) {
-				showErrorWithInfo({
+				showError({
 					title: "Failed to apply schema",
-					message: err.message ?? "An unknown error has occurred",
-					cause: err.cause,
-					trace: err.stack,
+					content: err,
 				});
 			}
 		},
@@ -104,7 +102,7 @@ export function FunctionsView() {
 		if (!selectedFunction) {
 			showError({
 				title: "Function not found",
-				subtitle: "The selected function was not found",
+				content: "The selected function was not found",
 			});
 			return;
 		}

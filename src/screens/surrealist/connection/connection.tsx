@@ -35,7 +35,7 @@ import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
-import { connectionUri, newId, showError, showErrorWithInfo, showWarning } from "~/util/helpers";
+import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
@@ -218,15 +218,13 @@ export async function openConnection(options?: ConnectOptions) {
 				} else if (err instanceof UnsupportedVersion) {
 					showError({
 						title: "Unsupported version",
-						subtitle: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`,
+						content: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`,
 					});
 				} else if (!(err instanceof CloudError)) {
 					console.error(err);
-					showErrorWithInfo({
+					showError({
 						title: "Connection failed",
-						message: err.message ?? "An unknown error has occurred",
-						cause: err.cause,
-						trace: err.stack,
+						content: err,
 					});
 				}
 			}
@@ -385,7 +383,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the remote instance",
+			content: "You must be connected to the remote instance",
 		});
 		return;
 	}
@@ -423,7 +421,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.authentication.protocol)) {
 			showError({
 				title: "Live queries unsupported",
-				subtitle:
+				content:
 					"Unfortunately live queries are not supported in the active connection protocol",
 			});
 		}
@@ -561,7 +559,7 @@ export async function executeGraphql(
 	if (!connection || currentState !== "connected") {
 		showError({
 			title: "Failed to execute",
-			subtitle: "You must be connected to the remote instance",
+			content: "You must be connected to the remote instance",
 		});
 
 		throw new Error("Not connected");
@@ -674,11 +672,9 @@ export async function activateDatabase(namespace: string, database: string) {
 			clearDatabase: true,
 		});
 	} catch (err: any) {
-		showErrorWithInfo({
+		showError({
 			title: "Failed to parse schema",
-			message: err.message ?? "An unknown error has occurred",
-			cause: err.cause,
-			trace: err.stack,
+			content: err,
 		});
 	}
 }

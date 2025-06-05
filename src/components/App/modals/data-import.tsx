@@ -28,7 +28,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
-import { showError, showErrorWithInfo, showInfo, showWarning } from "~/util/helpers";
+import { showError, showInfo, showWarning } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
@@ -53,9 +53,9 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 
 			if (failed.length > 0) {
 				for (const fail of failed) {
-					showErrorWithInfo({
+					showError({
 						title: "Import failed",
-						message: fail.result,
+						content: new Error(fail.result),
 					});
 				}
 				return;
@@ -309,7 +309,7 @@ const completeBatchImport = async (
 		} else {
 			showError({
 				title: "Import failed",
-				subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
+				content: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
 			});
 		}
 	} else {
@@ -645,9 +645,9 @@ const CsvImportForm = ({
 						if (row.errors.length > 0) {
 							const err = row.errors[0].message;
 
-							showErrorWithInfo({
+							showError({
 								title: "Import failed",
-								message: `There was an error importing the CSV file: ${err}`,
+								content: `There was an error importing the CSV file: ${err}`,
 							});
 
 							isParserSuccess = false;
@@ -686,9 +686,9 @@ const CsvImportForm = ({
 							if (results.errors.length > 0) {
 								const err = results.errors[0];
 
-								showErrorWithInfo({
+								showError({
 									title: "Import failed",
-									message: `There was an error importing the CSV file: ${err.message}`,
+									content: err,
 								});
 
 								parser.abort();
@@ -1089,11 +1089,9 @@ export function DataImportModal() {
 
 				await executeTransformAndImport(content);
 			} catch (err: any) {
-				showErrorWithInfo({
+				showError({
 					title: "Import failed",
-					message: err.message ?? "An unknown error has occurred",
-					cause: err.cause,
-					trace: err.stack,
+					content: err,
 				});
 			} finally {
 				setImporting(false);

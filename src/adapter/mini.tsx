@@ -96,7 +96,7 @@ export class MiniAdapter extends BrowserAdapter {
 			} catch {
 				showError({
 					title: "Startup error",
-					subtitle: "Variables could not be parsed",
+					content: "Variables could not be parsed",
 				});
 			}
 		}
@@ -110,7 +110,7 @@ export class MiniAdapter extends BrowserAdapter {
 			} else {
 				showError({
 					title: "Startup error",
-					subtitle: "Dataset not recognised",
+					content: "Dataset not recognised",
 				});
 			}
 		}
@@ -127,7 +127,7 @@ export class MiniAdapter extends BrowserAdapter {
 			} else {
 				showError({
 					title: "Startup error",
-					subtitle: "Theme not recognised",
+					content: "Theme not recognised",
 				});
 			}
 		}
@@ -139,7 +139,7 @@ export class MiniAdapter extends BrowserAdapter {
 			} else {
 				showError({
 					title: "Startup error",
-					subtitle: "Orientation not recognised",
+					content: "Orientation not recognised",
 				});
 			}
 		}
@@ -151,7 +151,7 @@ export class MiniAdapter extends BrowserAdapter {
 			} else {
 				showError({
 					title: "Startup error",
-					subtitle: "Result mode not recognised",
+					content: "Result mode not recognised",
 				});
 			}
 		}

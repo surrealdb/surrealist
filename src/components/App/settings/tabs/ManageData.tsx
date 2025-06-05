@@ -69,7 +69,7 @@ export function ManageDataTab() {
 		if (typeof parsed !== "object" || typeof parsed.config !== "object") {
 			showError({
 				title: "Restore failed",
-				subtitle: "Invalid backup file provided",
+				content: "Invalid backup file provided",
 			});
 			return;
 		}

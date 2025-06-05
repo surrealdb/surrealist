@@ -66,7 +66,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		if (!token) {
 			return showError({
 				title: "Failed to copy auth token",
-				subtitle: "Auth token is not available",
+				content: "Auth token is not available",
 			});
 		}
 
@@ -79,7 +79,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		} catch (error) {
 			showError({
 				title: "Failed to copy auth token",
-				subtitle: "Unable to copy auth token to clipboard",
+				content: "Unable to copy auth token to clipboard",
 			});
 		}
 	};

@@ -147,7 +147,7 @@ export async function verifyAuthentication(code: string, state: string) {
 		invalidateSession();
 		showError({
 			title: "Authentication failed",
-			subtitle: "Could not verify the authentication details",
+			content: "Could not verify the authentication details",
 		});
 	}
 }
@@ -288,12 +288,12 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		if (err instanceof ApiError && err.status === 422) {
 			showError({
 				title: "Already in organisation",
-				subtitle: "You are already a member of this organisation",
+				content: "You are already a member of this organisation",
 			});
 		} else {
 			showError({
 				title: "Failed to authenticate",
-				subtitle: "Please try signing into Surreal Cloud again",
+				content: "Please try signing into Surreal Cloud again",
 			});
 		}
 	} finally {
