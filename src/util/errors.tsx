@@ -4,8 +4,8 @@ import { openModal } from "@mantine/modals";
 import { adapter } from "~/adapter";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
-import { iconBug, iconCheck, iconCursor, iconWarning } from "./icons";
 import { Spacer } from "~/components/Spacer";
+import { iconBug, iconCheck, iconCursor, iconWarning } from "./icons";
 
 /**
  * Thrown during a failure in a cloud operation.
