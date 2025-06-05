@@ -1,6 +1,6 @@
 import { Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import { hideNotification, showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
 import escapeRegex from "escape-string-regexp";
 import { uid } from "radash";
@@ -8,6 +8,7 @@ import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react
 import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { Authentication, Protocol, Selectable } from "~/types";
+import { openErrorModal } from "./errors";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -47,6 +48,33 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
 		window.getSelection()?.addRange(range);
 	}
 };
+
+/**
+ * Display an error notification
+ *
+ * @param title The title message
+ * @param subtitle The subtitle message
+ */
+export function showErrorWithInfo(info: {
+	title: string;
+	message?: string;
+	cause?: string;
+	trace?: string;
+}) {
+	showNotification({
+		color: "red",
+		title: info.title,
+		message: "Click here for more information",
+		autoClose: false,
+		style: {
+			cursor: "pointer",
+		},
+		onClick: (e) => {
+			openErrorModal(info.title, info.message, info.cause, info.trace);
+			hideNotification(e.currentTarget.id);
+		},
+	});
+}
 
 /**
  * Display an error notification
