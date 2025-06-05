@@ -17,7 +17,7 @@ import { useStable } from "~/hooks/stable";
 import { authenticate, register } from "~/screens/surrealist/connection/connection";
 import { composeAuthentication } from "~/screens/surrealist/connection/helpers";
 import type { AccessField, SchemaAccess } from "~/types";
-import { showError, showInfo } from "~/util/helpers";
+import { showError, showErrorWithInfo, showInfo } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
 import { parseVariables } from "~/util/surrealql";
 
@@ -64,9 +64,11 @@ export function RegisterUserModal() {
 			adapter.warn("Auth", `Failed to register user: ${err.message}`);
 			console.error(err);
 
-			showError({
+			showErrorWithInfo({
 				title: "Registration failed",
-				subtitle: err.message,
+				message: err.message,
+				cause: err.cause,
+				trace: err.stack,
 			});
 		} finally {
 			setLoading(false);

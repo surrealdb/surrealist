@@ -5,7 +5,7 @@ import type { Uuid } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { executeQuerySingle } from "~/screens/surrealist/connection/connection";
-import { showError } from "~/util/helpers";
+import { showError, showErrorWithInfo } from "~/util/helpers";
 import { iconCircle, iconCircleFilled } from "~/util/icons";
 
 interface Node {
@@ -74,9 +74,11 @@ export async function showNodeStatus() {
 	} catch (err: any) {
 		console.warn("Failed to retrieve node status", err);
 
-		showError({
+		showErrorWithInfo({
 			title: "Failed to retrieve node status",
-			subtitle: err.message,
+			message: err.message ?? "An unknown error has occurred",
+			cause: err.cause,
+			trace: err.stack,
 		});
 	}
 }

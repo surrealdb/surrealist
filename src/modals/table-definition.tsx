@@ -4,7 +4,7 @@ import { escapeIdent } from "surrealdb";
 import { CodePreview } from "~/components/CodePreview";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { executeQuerySingle } from "~/screens/surrealist/connection/connection";
-import { showError } from "~/util/helpers";
+import { showError, showErrorWithInfo } from "~/util/helpers";
 
 function header(name: string) {
 	return `\n\n-- ------------------------------\n-- ${name}\n-- ------------------------------ \n\n`;
@@ -54,9 +54,11 @@ export async function showTableDefinitionModal(table: string) {
 	} catch (err: any) {
 		console.warn("Failed to generate definition", err);
 
-		showError({
+		showErrorWithInfo({
 			title: "Failed to generate table definition",
-			subtitle: err.message,
+			message: err.message ?? "An unknown error has occurred",
+			cause: err.cause,
+			trace: err.stack,
 		});
 	}
 }

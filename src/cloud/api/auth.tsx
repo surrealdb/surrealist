@@ -147,7 +147,7 @@ export async function verifyAuthentication(code: string, state: string) {
 		invalidateSession();
 		showError({
 			title: "Authentication failed",
-			subtitle: "An error occurred while verifying the authentication details",
+			subtitle: "Could not verify the authentication details",
 		});
 	}
 }

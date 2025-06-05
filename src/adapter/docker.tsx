@@ -3,7 +3,7 @@ import { INSTANCE_CONFIG } from "~/constants";
 import { type InstanceConfig, InstanceConfigSchema } from "~/schemas";
 import type { SurrealistConfig } from "~/types";
 import { createBaseAuthentication, createBaseConnection } from "~/util/defaults";
-import { showError } from "~/util/helpers";
+import { showError, showErrorWithInfo } from "~/util/helpers";
 import { BrowserAdapter } from "./browser";
 
 /**
@@ -45,9 +45,11 @@ export class DockerAdapter extends BrowserAdapter {
 		} catch (err: any) {
 			console.warn(err);
 
-			showError({
+			showErrorWithInfo({
 				title: "Failed to parse instance config",
-				subtitle: `The file "${INSTANCE_CONFIG}" is incorrectly configured`,
+				message: `The file "${INSTANCE_CONFIG}" is incorrectly configured! Error: ${err.message ?? "Unknown"}`,
+				cause: err.cause,
+				trace: err.stack,
 			});
 
 			return config;

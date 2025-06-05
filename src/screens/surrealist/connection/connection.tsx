@@ -35,7 +35,7 @@ import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
-import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
+import { connectionUri, newId, showError, showErrorWithInfo, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
@@ -222,9 +222,11 @@ export async function openConnection(options?: ConnectOptions) {
 					});
 				} else if (!(err instanceof CloudError)) {
 					console.error(err);
-					showError({
+					showErrorWithInfo({
 						title: "Connection failed",
-						subtitle: err.message,
+						message: err.message ?? "An unknown error has occurred",
+						cause: err.cause,
+						trace: err.stack,
 					});
 				}
 			}
@@ -672,9 +674,11 @@ export async function activateDatabase(namespace: string, database: string) {
 			clearDatabase: true,
 		});
 	} catch (err: any) {
-		showError({
+		showErrorWithInfo({
 			title: "Failed to parse schema",
-			subtitle: err.message,
+			message: err.message ?? "An unknown error has occurred",
+			cause: err.cause,
+			trace: err.stack,
 		});
 	}
 }

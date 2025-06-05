@@ -22,7 +22,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { Base, SchemaUser } from "~/types";
-import { showError } from "~/util/helpers";
+import { showError, showErrorWithInfo } from "~/util/helpers";
 import { iconCheck, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -95,9 +95,11 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			await executeQuery(query);
 			await syncConnectionSchema();
 		} catch (err: any) {
-			showError({
+			showErrorWithInfo({
 				title: "Failed to save user",
-				subtitle: err.message,
+				message: err.message ?? "An unknown error has occurred",
+				cause: err.cause,
+				trace: err.stack,
 			});
 		} finally {
 			onClose();

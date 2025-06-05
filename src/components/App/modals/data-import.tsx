@@ -13,7 +13,7 @@ import { useInputState } from "@mantine/hooks";
 import papaparse, { LocalFile } from "papaparse";
 import { cluster, isArray, isObject, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
-import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
+import { Duration, RecordId, StringRecordId, SurrealDbError, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
 import { Icon } from "~/components/Icon";
@@ -28,7 +28,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
-import { showError, showInfo, showWarning } from "~/util/helpers";
+import { showError, showErrorWithInfo, showInfo, showWarning } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
@@ -49,14 +49,15 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 	const submit = () => {
 		const execute = async (content: string) => {
 			const result = await executeQuery(content);
-			const failed = result.some((result) => !result.success);
+			const failed = result.filter((result) => !result.success);
 
-			if (failed) {
-				showError({
-					title: "Import failed",
-					subtitle: "There was an error importing the database",
-				});
-
+			if (failed.length > 0) {
+				for (const fail of failed) {
+					showErrorWithInfo({
+						title: "Import failed",
+						message: fail.result,
+					});
+				}
 				return;
 			}
 
@@ -644,9 +645,9 @@ const CsvImportForm = ({
 						if (row.errors.length > 0) {
 							const err = row.errors[0].message;
 
-							showError({
+							showErrorWithInfo({
 								title: "Import failed",
-								subtitle: `There was an error importing the CSV file: ${err}`,
+								message: `There was an error importing the CSV file: ${err}`,
 							});
 
 							isParserSuccess = false;
@@ -683,11 +684,11 @@ const CsvImportForm = ({
 						chunkSize: 100 * 1_024,
 						chunk: async (results, parser) => {
 							if (results.errors.length > 0) {
-								const err = results.errors[0].message;
+								const err = results.errors[0];
 
-								showError({
+								showErrorWithInfo({
 									title: "Import failed",
-									subtitle: `There was an error importing the CSV file: ${err}`,
+									message: `There was an error importing the CSV file: ${err.message}`,
 								});
 
 								parser.abort();
@@ -1088,11 +1089,11 @@ export function DataImportModal() {
 
 				await executeTransformAndImport(content);
 			} catch (err: any) {
-				console.error(err);
-
-				showError({
+				showErrorWithInfo({
 					title: "Import failed",
-					subtitle: "There was an error importing the database",
+					message: err.message ?? "An unknown error has occurred",
+					cause: err.cause,
+					trace: err.stack,
 				});
 			} finally {
 				setImporting(false);

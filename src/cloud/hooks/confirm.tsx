@@ -1,5 +1,5 @@
 import { useConfirmation } from "~/providers/Confirmation";
-import { showError } from "~/util/helpers";
+import { showErrorWithInfo } from "~/util/helpers";
 
 /**
  * Confirm the update of an instance.
@@ -17,9 +17,11 @@ export function useUpdateConfirmation<T>(callback: (value: T) => unknown) {
 			try {
 				await callback(value);
 			} catch (err: any) {
-				showError({
-					title: "Failed to update instance",
-					subtitle: err.message ?? "Unknown error",
+				showErrorWithInfo({
+					title: "Instance update failed",
+					message: err.message ?? "An unknown error has occurred",
+					cause: err.cause,
+					trace: err.stack,
 				});
 			}
 		},

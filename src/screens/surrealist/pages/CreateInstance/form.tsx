@@ -12,7 +12,7 @@ import { useLastSavepoint } from "~/hooks/overview";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { showError } from "~/util/helpers";
+import { showError, showErrorWithInfo } from "~/util/helpers";
 import { iconArrowLeft } from "~/util/icons";
 import { ComputeUnitsStep } from "./steps/compute";
 import { ProvisionDetailsStep } from "./steps/details";
@@ -102,9 +102,11 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 		} catch (err: any) {
 			console.log("Failed to provision database:", [...err.response.headers.entries()]);
 
-			showError({
+			showErrorWithInfo({
 				title: "Failed to provision database",
-				subtitle: "Please try again later",
+				message: err.message ?? "An unknown error has occurred",
+				cause: err.cause,
+				trace: err.stack,
 			});
 		}
 	});

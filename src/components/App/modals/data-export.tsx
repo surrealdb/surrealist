@@ -16,7 +16,7 @@ import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { requestDatabaseExport } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
-import { showError, showInfo, slugify } from "~/util/helpers";
+import { showError, showErrorWithInfo, showInfo, slugify } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -74,9 +74,11 @@ export function DataExportModal() {
 				tagEvent("export", { extension: "surql" });
 			}
 		} catch (err: any) {
-			showError({
+			showErrorWithInfo({
 				title: "Export failed",
-				subtitle: err.message,
+				message: err.message ?? "An unknown error has occurred",
+				cause: err.cause,
+				trace: err.stack,
 			});
 		} finally {
 			setIsExporting(false);

@@ -36,7 +36,7 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { CloudCoupon } from "~/types";
-import { showError, showInfo } from "~/util/helpers";
+import { showError, showErrorWithInfo, showInfo } from "~/util/helpers";
 import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
@@ -61,9 +61,11 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 
 			adapter.openUrl(url);
 		} catch (err: any) {
-			showError({
+			showErrorWithInfo({
 				title: "Failed to open payment page",
-				subtitle: err.message,
+				message: err.message ?? "An unknown error has occurred",
+				cause: err.cause,
+				trace: err.stack,
 			});
 		} finally {
 			setRequesting(false);
