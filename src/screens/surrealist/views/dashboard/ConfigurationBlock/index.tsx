@@ -1,11 +1,12 @@
 import {
-	iconChevronRight,
-	iconCloud,
+	iconArrowDownFat,
 	iconDatabase,
 	iconHistory,
 	iconMarker,
 	iconMemory,
+	iconPackageClosed,
 	iconQuery,
+	iconRelation,
 	iconTag,
 } from "~/util/icons";
 
@@ -18,7 +19,6 @@ import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
-import { Spacer } from "~/components/Spacer";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -43,12 +43,14 @@ export function ConfigurationBlock({
 	const computeMax = instance?.type.compute_units.max ?? 0;
 	const typeName = instance?.type.display_name ?? "";
 	const typeCategory = instance?.type.category ?? "";
+	const nodeCount = instance?.compute_units ?? 0;
 
 	const isFree = instance?.type.category === "free";
-	const backupText = isFree ? "Upgrade Required" : "Enabled";
+	const backupText = isFree ? "Upgrade required" : "Active";
 	const typeText = `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const storageText = formatMemory(storageSize * 1000, true);
+	const nodeText = `${nodeCount} Node${plural(nodeCount, "", "s")}`;
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
@@ -59,11 +61,14 @@ export function ConfigurationBlock({
 			display="grid"
 		>
 			<Paper p="xl">
-				<SimpleGrid cols={2}>
-					<Stack gap="sm">
+				<SimpleGrid
+					cols={{ base: 1, xl: 2 }}
+					spacing="xs"
+				>
+					<Stack gap="xs">
 						<ConfigValue
 							title="Type"
-							icon={iconCloud}
+							icon={iconPackageClosed}
 							value={typeText}
 						/>
 
@@ -81,10 +86,10 @@ export function ConfigurationBlock({
 						<ConfigValue
 							title="Backups"
 							icon={iconHistory}
-							value={<Text c={isFree ? "dimmed" : "bright"}>{backupText}</Text>}
+							value={<Text c={isFree ? "orange" : "green"}>{backupText}</Text>}
 						/>
 					</Stack>
-					<Stack gap="sm">
+					<Stack gap="xs">
 						<ConfigValue
 							title="Memory"
 							icon={iconMemory}
@@ -96,15 +101,25 @@ export function ConfigurationBlock({
 							icon={iconQuery}
 							value={computeText}
 						/>
+
 						<ConfigValue
-							title="Storage"
+							title="Nodes"
+							icon={iconRelation}
+							value={nodeText}
+						/>
+
+						<ConfigValue
+							title="Storage limit"
 							icon={iconDatabase}
 							value={storageText}
 						/>
 					</Stack>
 				</SimpleGrid>
 				{canModify && (
-					<Group pt="lg">
+					<SimpleGrid
+						mt="xl"
+						cols={2}
+					>
 						<Button
 							size="xs"
 							color="slate"
@@ -112,20 +127,28 @@ export function ConfigurationBlock({
 							disabled={!instance || isIdle}
 							variant="light"
 							my={-2}
+							fullWidth
 						>
-							Configure
+							Configure instance
 						</Button>
-						<Spacer />
 						<Button
 							size="xs"
 							onClick={onUpgrade}
 							disabled={!instance || isIdle}
 							variant="gradient"
 							my={-2}
+							fullWidth
+							rightSection={
+								<Icon
+									style={{ rotate: "180deg" }}
+									path={iconArrowDownFat}
+									size="sm"
+								/>
+							}
 						>
-							Upgrade
+							Upgrade now
 						</Button>
-					</Group>
+					</SimpleGrid>
 				)}
 			</Paper>
 		</Skeleton>
