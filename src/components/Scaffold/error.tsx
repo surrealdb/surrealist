@@ -5,8 +5,8 @@ import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
 import { useIsLight } from "~/hooks/theme";
 import { iconBug, iconCheck, iconCopy, iconCursor, iconWarning } from "~/util/icons";
-import { Icon } from "../Icon";
 import { CodePreview } from "../CodePreview";
+import { Icon } from "../Icon";
 
 export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 	const [copyDebug, clipboard] = useVersionCopy();

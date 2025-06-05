@@ -1,10 +1,10 @@
 import { Box, Button, Divider, Group, Stack, Title } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { adapter } from "~/adapter";
+import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { iconBug, iconCheck, iconCursor, iconWarning } from "./icons";
-import { CodePreview } from "~/components/CodePreview";
-import { Text } from "@mantine/core";
-import { adapter } from "~/adapter";
 
 /**
  * Thrown during a failure in a cloud operation.
