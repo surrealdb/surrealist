@@ -425,7 +425,7 @@ function SupportPlan({ name, description }: SupportPlanProps) {
 					<PrimaryTitle>{name}</PrimaryTitle>
 					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
 				</Box>
-				<Tooltip label="More support options are coming soon!">
+				<Tooltip label="More support options coming soon">
 					<Button
 						variant="gradient"
 						disabled
