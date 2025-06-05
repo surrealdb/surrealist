@@ -45,9 +45,8 @@ export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUs
 					<Button
 						c="surreal"
 						size="xs"
-						p={0}
 						fz={13}
-						variant="transparent"
+						variant="subtle"
 						onClick={onUpgrade}
 					>
 						Upgrade
