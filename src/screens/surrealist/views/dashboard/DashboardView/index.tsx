@@ -147,8 +147,13 @@ export function DashboardView() {
 		configureHandle.open();
 	});
 
-	const handleUpgrade = useStable(() => {
+	const handleUpgradeType = useStable(() => {
 		setActiveTab("type");
+		configureHandle.open();
+	});
+
+	const handleUpgradeStorage = useStable(() => {
+		setActiveTab("disk");
 		configureHandle.open();
 	});
 
@@ -276,7 +281,7 @@ export function DashboardView() {
 						<ConfigurationBlockLazy
 							instance={details}
 							isLoading={isLoading}
-							onUpgrade={handleUpgrade}
+							onUpgrade={handleUpgradeType}
 							onConfigure={handleConfigure}
 						/>
 						{details && !isLoading && details.state === "paused" ? (
@@ -466,12 +471,13 @@ export function DashboardView() {
 							usage={usage}
 							instance={details}
 							isLoading={isLoading}
+							onUpgrade={handleUpgradeStorage}
 						/>
 						<BackupsBlockLazy
 							instance={details}
 							backups={backups}
 							isLoading={isLoading}
-							onUpgrade={handleUpgrade}
+							onUpgrade={handleUpgradeType}
 						/>
 					</SimpleGrid>
 				</Stack>

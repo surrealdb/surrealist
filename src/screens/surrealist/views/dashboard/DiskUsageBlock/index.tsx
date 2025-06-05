@@ -1,31 +1,17 @@
-import {
-	Alert,
-	Badge,
-	Box,
-	Button,
-	Center,
-	Divider,
-	Group,
-	Paper,
-	Progress,
-	Skeleton,
-	Stack,
-	Text,
-} from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Alert, Box, Button, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance, CloudMeasurement } from "~/types";
 import { measureStorageUsage } from "~/util/cloud";
 import { formatMemory } from "~/util/helpers";
-import { iconDatabase } from "~/util/icons";
 
 export interface DiskUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
 	instance: CloudInstance | undefined;
 	isLoading: boolean;
+	onUpgrade?: () => void;
 }
 
-export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockProps) {
+export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUsageBlockProps) {
 	const storageUsage = measureStorageUsage(usage ?? []);
 	const storageMaxGB = instance?.storage_size ?? 0;
 	const storageMax = storageMaxGB * 1024;
@@ -62,6 +48,7 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 						p={0}
 						fz={13}
 						variant="transparent"
+						onClick={onUpgrade}
 					>
 						Upgrade
 					</Button>
