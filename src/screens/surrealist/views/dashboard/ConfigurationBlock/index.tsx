@@ -47,7 +47,7 @@ export function ConfigurationBlock({
 
 	const isFree = instance?.type.category === "free";
 	const backupText = isFree ? "Upgrade required" : "Active";
-	const typeText = `${typeName} (${getTypeCategoryName(typeCategory)})`;
+	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const storageText = formatMemory(storageSize * 1000, true);
 	const nodeText = `${nodeCount} Node${plural(nodeCount, "", "s")}`;
