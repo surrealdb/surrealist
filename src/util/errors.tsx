@@ -5,6 +5,7 @@ import { adapter } from "~/adapter";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { iconBug, iconCheck, iconCursor, iconWarning } from "./icons";
+import { Spacer } from "~/components/Spacer";
 
 /**
  * Thrown during a failure in a cloud operation.
@@ -34,11 +35,6 @@ export async function openErrorModal(
 			closeButtonProps: {
 				size: "lg",
 			},
-			styles: {
-				header: {
-					paddingBottom: "5px",
-				},
-			},
 			title: (
 				<Group c="bright">
 					<Icon
@@ -50,28 +46,6 @@ export async function openErrorModal(
 			),
 			children: (
 				<Stack gap="lg">
-					<Text>
-						You can find a detailed error message below. If you believe this is a bug,
-						please report it on our GitHub repository.
-					</Text>
-
-					<Group>
-						<Button
-							leftSection={<Icon path={iconBug} />}
-							onClick={() =>
-								adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
-							}
-							variant="light"
-							color="slate"
-							radius="xs"
-							size="xs"
-						>
-							File an issue
-						</Button>
-					</Group>
-
-					<Divider />
-
 					{message && (
 						<Box>
 							<Title order={3}>Message</Title>
@@ -103,6 +77,29 @@ export async function openErrorModal(
 							/>
 						</Box>
 					)}
+
+					<Divider />
+
+					<Group>
+						<Text>
+							If you believe this is a bug, please report it on our GitHub repository.
+						</Text>
+
+						<Spacer />
+
+						<Button
+							leftSection={<Icon path={iconBug} />}
+							onClick={() =>
+								adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
+							}
+							variant="light"
+							color="slate"
+							radius="xs"
+							size="xs"
+						>
+							File an issue
+						</Button>
+					</Group>
 				</Stack>
 			),
 		});
