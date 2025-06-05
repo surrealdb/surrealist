@@ -24,7 +24,6 @@ function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectAct
 			display="grid"
 		>
 			<Paper
-				px="xl"
 				className={classes.action}
 				onClick={onClick}
 				component="button"

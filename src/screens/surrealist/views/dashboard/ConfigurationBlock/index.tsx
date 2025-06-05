@@ -9,7 +9,7 @@ import {
 	iconTag,
 } from "~/util/icons";
 
-import { BoxProps, Button, Skeleton, ThemeIcon } from "@mantine/core";
+import { BoxProps, Button, SimpleGrid, Skeleton, ThemeIcon } from "@mantine/core";
 import { Group, Paper, Stack, Text } from "@mantine/core";
 import { ReactNode } from "react";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
@@ -18,6 +18,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
+import { Spacer } from "~/components/Spacer";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -44,7 +45,7 @@ export function ConfigurationBlock({
 	const typeCategory = instance?.type.category ?? "";
 
 	const isFree = instance?.type.category === "free";
-	const backupText = isFree ? "Not Available" : "Enabled";
+	const backupText = isFree ? "Upgrade Required" : "Enabled";
 	const typeText = `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const storageText = formatMemory(storageSize * 1000, true);
@@ -58,96 +59,74 @@ export function ConfigurationBlock({
 			display="grid"
 		>
 			<Paper p="xl">
-				<Stack gap="sm">
-					<ConfigValue
-						title="Type"
-						icon={iconCloud}
-						value={typeText}
-					/>
+				<SimpleGrid cols={2}>
+					<Stack gap="sm">
+						<ConfigValue
+							title="Type"
+							icon={iconCloud}
+							value={typeText}
+						/>
 
-					<ConfigValue
-						title="Region"
-						icon={iconMarker}
-						value={regionName}
-					/>
+						<ConfigValue
+							title="Region"
+							icon={iconMarker}
+							value={regionName}
+						/>
 
-					<ConfigValue
-						title="Version"
-						icon={iconTag}
-						value={`SurrealDB ${instance?.version}`}
-					/>
+						<ConfigValue
+							title="Version"
+							icon={iconTag}
+							value={`SurrealDB ${instance?.version}`}
+						/>
+						<ConfigValue
+							title="Backups"
+							icon={iconHistory}
+							value={<Text c={isFree ? "dimmed" : "bright"}>{backupText}</Text>}
+						/>
+					</Stack>
+					<Stack gap="sm">
+						<ConfigValue
+							title="Memory"
+							icon={iconMemory}
+							value={formatMemory(memoryMax)}
+						/>
 
-					<ConfigValue
-						title="Backups"
-						icon={iconHistory}
-						value={
-							<Group gap={5}>
-								<Text c="bright">{backupText}</Text>
-
-								{isFree && (
-									<Group gap={5}>
-										<Text c="dimmed">-</Text>
-										<Button
-											variant="transparent"
-											c="surreal"
-											fw={600}
-											fz="md"
-											p={0}
-											onClick={onUpgrade}
-										>
-											Upgrade
-										</Button>
-									</Group>
-								)}
-							</Group>
-						}
-					/>
-
-					<ConfigValue
-						title="Memory"
-						icon={iconMemory}
-						value={formatMemory(memoryMax)}
-					/>
-
-					<ConfigValue
-						title="Compute"
-						icon={iconQuery}
-						value={computeText}
-					/>
-
-					<Group>
+						<ConfigValue
+							title="Compute"
+							icon={iconQuery}
+							value={computeText}
+						/>
 						<ConfigValue
 							title="Storage"
-							flex={1}
 							icon={iconDatabase}
 							value={storageText}
 						/>
-
-						{canModify && (
-							<Button.Group>
-								<Button
-									size="xs"
-									color="slate"
-									onClick={onConfigure}
-									disabled={!instance || isIdle}
-									variant="light"
-									my={-2}
-								>
-									Configure
-								</Button>
-								<Button
-									size="xs"
-									onClick={onUpgrade}
-									disabled={!instance || isIdle}
-									variant="gradient"
-									my={-2}
-								>
-									Upgrade
-								</Button>
-							</Button.Group>
-						)}
+					</Stack>
+				</SimpleGrid>
+				{canModify && (
+					<Group pt="lg">
+						<Button
+							size="xs"
+							color="slate"
+							onClick={onConfigure}
+							disabled={!instance || isIdle}
+							variant="light"
+							my={-2}
+						>
+							Configure
+						</Button>
+						<Spacer />
+						<Button
+							size="xs"
+							onClick={onUpgrade}
+							disabled={!instance || isIdle}
+							variant="gradient"
+							my={-2}
+						>
+							Upgrade
+						</Button>
 					</Group>
-				</Stack>
+				)}
 			</Paper>
 		</Skeleton>
 	);
