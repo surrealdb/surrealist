@@ -1,7 +1,5 @@
-import { Image } from "@mantine/core";
 import { useMouse } from "@mantine/hooks";
 import { type RefObject, useEffect, useRef, useState } from "react";
-import { adapter, isDesktop } from "~/adapter";
 import faintUrl from "~/assets/images/faint.png";
 import { useIsLight } from "~/hooks/theme";
 

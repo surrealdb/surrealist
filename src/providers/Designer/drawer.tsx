@@ -7,12 +7,10 @@ import {
 	Badge,
 	Box,
 	CopyButton,
-	Divider,
 	Drawer,
 	Group,
 	Paper,
 	ScrollArea,
-	Stack,
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
@@ -23,8 +21,6 @@ import {
 	iconCopy,
 	iconDelete,
 	iconDesigner,
-	iconRelation,
-	iconTable,
 	iconWarning,
 } from "~/util/icons";
 

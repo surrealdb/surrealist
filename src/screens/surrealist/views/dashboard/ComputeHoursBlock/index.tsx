@@ -1,15 +1,4 @@
-import {
-	Badge,
-	Box,
-	Center,
-	Divider,
-	Group,
-	Paper,
-	Progress,
-	Skeleton,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Box, Center, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { CloudMeasurement } from "~/types";
 import { measureComputeHistory, measureComputeTotal } from "~/util/cloud";

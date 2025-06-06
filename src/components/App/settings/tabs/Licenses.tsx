@@ -1,4 +1,4 @@
-import { Box, ScrollArea, Table } from "@mantine/core";
+import { ScrollArea, Table } from "@mantine/core";
 import licenseReport from "~/assets/data/license-report.json";
 import { Link } from "~/components/Link";
 

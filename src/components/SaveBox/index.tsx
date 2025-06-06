@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { capitalize } from "radash";
 import type { ReactNode } from "react";
 import type { SaveableHandle } from "~/hooks/save";
-import { iconCheck, iconHelp, iconReset } from "~/util/icons";
+import { iconCheck, iconHelp } from "~/util/icons";
 import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";

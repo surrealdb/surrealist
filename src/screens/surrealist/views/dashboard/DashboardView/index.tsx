@@ -3,17 +3,14 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Button,
-	Center,
 	Checkbox,
 	CopyButton,
 	Group,
 	Indicator,
 	Menu,
-	MultiSelect,
 	Select,
 	SimpleGrid,
 	Skeleton,
-	Switch,
 	Text,
 } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -37,14 +34,7 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { MetricsDuration } from "~/types";
-import {
-	iconCheck,
-	iconChevronDown,
-	iconClock,
-	iconCopy,
-	iconDatabase,
-	iconFilter,
-} from "~/util/icons";
+import { iconCheck, iconChevronDown, iconClock, iconCopy, iconFilter } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";

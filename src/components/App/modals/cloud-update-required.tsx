@@ -7,7 +7,7 @@ import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useCloudStore } from "~/stores/cloud";
 import { useInterfaceStore } from "~/stores/interface";
-import { iconClose, iconDownload } from "~/util/icons";
+import { iconClose } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export function CloudUpdateRequiredDialog() {

@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, ScrollArea, Stack, Text, TextInput, Tooltip } from "@mantine/core";
+import { Badge, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
