@@ -6,7 +6,7 @@ import { adapter } from "~/adapter";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { iconBug, iconCheck, iconCursor, iconWarning } from "./icons";
+import { iconBug, iconWarning } from "./icons";
 
 /**
  * Thrown during a failure in a cloud operation.

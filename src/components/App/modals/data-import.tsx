@@ -13,7 +13,7 @@ import { useInputState } from "@mantine/hooks";
 import papaparse, { LocalFile } from "papaparse";
 import { cluster, isArray, isObject, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
-import { Duration, RecordId, StringRecordId, SurrealDbError, Table, Uuid } from "surrealdb";
+import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
 import { Icon } from "~/components/Icon";
