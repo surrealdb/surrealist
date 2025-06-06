@@ -1,6 +1,6 @@
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance, CloudInstanceType, CloudMeasurement, CloudOrganization } from "~/types";
+import { CloudMeasurement, CloudOrganization } from "~/types";
 
 /**
  * Measure the compute history
@@ -103,9 +103,9 @@ export function getTypeCategoryName(category: string) {
 		case category === "free":
 			return "Free";
 		case category === "development":
-			return "Development";
+			return "Burstable";
 		case category === "production":
-			return "Production";
+			return "General purpose";
 		case category === "production-memory":
 			return "Memory intensive";
 		case category === "production-compute":

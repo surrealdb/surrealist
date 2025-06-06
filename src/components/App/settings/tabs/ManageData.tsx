@@ -1,15 +1,5 @@
-import {
-	Box,
-	Button,
-	Checkbox,
-	Collapse,
-	Group,
-	MultiSelect,
-	ScrollArea,
-	Stack,
-	Text,
-} from "@mantine/core";
-import { assign, isObject, merge } from "radash";
+import { Box, Button, Checkbox, Group, MultiSelect, ScrollArea, Stack, Text } from "@mantine/core";
+import { assign } from "radash";
 
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";

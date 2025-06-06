@@ -1,5 +1,4 @@
 import {
-	Alert,
 	Button,
 	Checkbox,
 	Group,

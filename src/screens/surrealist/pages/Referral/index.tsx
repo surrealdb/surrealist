@@ -1,4 +1,3 @@
-import cloudImg from "~/assets/images/cloud-icon.webp";
 import classes from "./style.module.scss";
 
 import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
@@ -9,7 +8,6 @@ import tier4DarkUrl from "~/assets/images/dark/referral-tier-4.png";
 import tier5DarkUrl from "~/assets/images/dark/referral-tier-5.png";
 
 import iconLightUrl from "~/assets/images/light/referral-icon.png";
-import logoLightUrl from "~/assets/images/light/referral-logo.png";
 import tier1LightUrl from "~/assets/images/light/referral-tier-1.png";
 import tier2LightUrl from "~/assets/images/light/referral-tier-2.png";
 import tier3LightUrl from "~/assets/images/light/referral-tier-3.png";
@@ -20,7 +18,6 @@ import {
 	ActionIcon,
 	Box,
 	Button,
-	Center,
 	CopyButton,
 	Group,
 	Image,
@@ -35,8 +32,6 @@ import {
 } from "@mantine/core";
 
 import { ReactNode } from "react";
-import { adapter } from "~/adapter";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
@@ -47,7 +42,7 @@ import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconCheck, iconChevronRight, iconCopy, iconHelp, iconOpen } from "~/util/icons";
+import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
 
 const REWARDS = [1, 10, 25, 100, 500];
 

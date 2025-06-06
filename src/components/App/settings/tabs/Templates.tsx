@@ -1,11 +1,4 @@
-import {
-	iconCheck,
-	iconCopy,
-	iconDelete,
-	iconDotsVertical,
-	iconFile,
-	iconPlus,
-} from "~/util/icons";
+import { iconCopy, iconDelete, iconDotsVertical, iconPlus } from "~/util/icons";
 
 import { ActionIcon, Box, Button, Group, Menu, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";

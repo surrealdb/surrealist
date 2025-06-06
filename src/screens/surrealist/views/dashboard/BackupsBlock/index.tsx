@@ -1,4 +1,4 @@
-import { Box, Button, Center, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import { Box, Button, Center, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { formatDistance } from "date-fns";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";

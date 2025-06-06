@@ -10,7 +10,6 @@ import {
 	SimpleGrid,
 	Text,
 	TextInput,
-	Tooltip,
 } from "@mantine/core";
 
 import {

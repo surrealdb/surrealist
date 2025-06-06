@@ -11,11 +11,9 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { Text } from "@mantine/core";
-import { useDebouncedValue } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { fork, sleep } from "radash";
-import { useEffect, useMemo, useState } from "react";
-import Surreal from "surrealdb";
+import { useMemo } from "react";
 import { Updater } from "use-immer";
 import { CONNECTION_PROTOCOLS } from "~/constants";
 import { useStable } from "~/hooks/stable";

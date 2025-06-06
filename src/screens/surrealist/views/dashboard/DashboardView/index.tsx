@@ -3,17 +3,14 @@ import classes from "./style.module.scss";
 import {
 	ActionIcon,
 	Button,
-	Center,
 	Checkbox,
 	CopyButton,
 	Group,
 	Indicator,
 	Menu,
-	MultiSelect,
 	Select,
 	SimpleGrid,
 	Skeleton,
-	Switch,
 	Text,
 } from "@mantine/core";
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -37,14 +34,7 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { MetricsDuration } from "~/types";
-import {
-	iconCheck,
-	iconChevronDown,
-	iconClock,
-	iconCopy,
-	iconDatabase,
-	iconFilter,
-} from "~/util/icons";
+import { iconCheck, iconChevronDown, iconClock, iconCopy, iconFilter } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";
@@ -58,6 +48,7 @@ import { NetworkEgressChart } from "../NetworkEgressChart";
 import { NetworkIngressChart } from "../NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
+import { UpgradeDrawer } from "../UpgradeDrawer";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -67,6 +58,7 @@ const ComputeUsageBlockLazy = memo(ComputeHoursBlock);
 const DiskUsageBlockLazy = memo(DiskUsageBlock);
 const BackupsBlockLazy = memo(BackupsBlock);
 const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
+const UpgradeDrawerLazy = memo(UpgradeDrawer);
 
 export function DashboardView() {
 	const [isCloud, instance] = useConnection((c) => [
@@ -77,12 +69,15 @@ export function DashboardView() {
 	const { mutateAsync } = useUpdateInstanceVersionMutation(instance);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
-	const [configuring, configureHandle] = useBoolean();
+	const [upgrading, upgradingHandle] = useBoolean();
+	const [configuring, configuringHandle] = useBoolean();
 	const [metricsNodes, setMetricsNodes] = useInputState<string[]>([]);
 	const [metricsNodeFilter, setMetricsNodeFilter] = useInputState<string[] | undefined>(
 		undefined,
 	);
-	const [activeTab, setActiveTab] = useState("capabilities");
+
+	const [upgradeTab, setUpgradeTab] = useState("type");
+	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
 	const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
 
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
@@ -142,14 +137,24 @@ export function DashboardView() {
 		setMetricsNodeFilter(undefined);
 	}, [metricsDuration]);
 
-	const handleUpgrade = useStable(() => {
-		setActiveTab("type");
-		configureHandle.open();
+	const handleUpgradeType = useStable(() => {
+		setUpgradeTab("type");
+		upgradingHandle.open();
+	});
+
+	const handleUpgradeStorage = useStable(() => {
+		setUpgradeTab("disk");
+		upgradingHandle.open();
+	});
+
+	const handleConfigure = useStable(() => {
+		setConfiguratorTab("capabilities");
+		configuringHandle.open();
 	});
 
 	const handleVersions = useStable(() => {
-		setActiveTab("version");
-		configureHandle.open();
+		setConfiguratorTab("version");
+		configuringHandle.open();
 	});
 
 	const isLoading = detailsPending || backupsPending || usagePending;
@@ -271,7 +276,8 @@ export function DashboardView() {
 						<ConfigurationBlockLazy
 							instance={details}
 							isLoading={isLoading}
-							onConfigure={configureHandle.open}
+							onUpgrade={handleUpgradeType}
+							onConfigure={handleConfigure}
 						/>
 						{details && !isLoading && details.state === "paused" ? (
 							<ResumeBlockLazy instance={details} />
@@ -460,26 +466,36 @@ export function DashboardView() {
 							usage={usage}
 							instance={details}
 							isLoading={isLoading}
+							onUpgrade={handleUpgradeStorage}
 						/>
 						<BackupsBlockLazy
 							instance={details}
 							backups={backups}
 							isLoading={isLoading}
-							onUpgrade={handleUpgrade}
+							onUpgrade={handleUpgradeType}
 						/>
 					</SimpleGrid>
 				</Stack>
 			</ScrollArea>
 
 			{details && (
-				<ConfiguratorDrawerLazy
-					opened={configuring}
-					tab={activeTab}
-					instance={details}
-					onChangeTab={setActiveTab}
-					onClose={configureHandle.close}
-					onUpdate={handleUpdate}
-				/>
+				<>
+					<ConfiguratorDrawerLazy
+						opened={configuring}
+						tab={configuratorTab}
+						instance={details}
+						onChangeTab={setConfiguratorTab}
+						onClose={configuringHandle.close}
+						onUpdate={handleUpdate}
+					/>
+					<UpgradeDrawerLazy
+						opened={upgrading}
+						instance={details}
+						tab={upgradeTab}
+						onChangeTab={setUpgradeTab}
+						onClose={upgradingHandle.close}
+					/>
+				</>
 			)}
 		</Box>
 	);

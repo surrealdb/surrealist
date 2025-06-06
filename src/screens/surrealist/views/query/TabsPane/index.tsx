@@ -16,15 +16,7 @@ import {
 	iconText,
 } from "~/util/icons";
 
-import {
-	ActionIcon,
-	Badge,
-	type BoxProps,
-	Divider,
-	type ElementProps,
-	ScrollArea,
-	Stack,
-} from "@mantine/core";
+import { Badge, type BoxProps, Divider, type ElementProps, ScrollArea, Stack } from "@mantine/core";
 
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
