@@ -17,7 +17,7 @@ import { useConfigStore } from "~/stores/config";
 import { CloudInstance, Connection } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { featureFlags, useFeatureFlags } from "~/util/feature-flags";
-import { showError, showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import { useIntent } from "./routing";
 
@@ -148,9 +148,9 @@ export function usePauseInstance(instance: CloudInstance): () => void {
 					organisation: instance.organization_id,
 				});
 			} catch (err: any) {
-				showError({
+				showErrorNotification({
 					title: "Failed to pause instance",
-					subtitle: err.message,
+					content: err,
 				});
 			}
 		},
@@ -188,9 +188,9 @@ export function useResumeInstance(instance: CloudInstance): () => void {
 					organisation: instance.organization_id,
 				});
 			} catch (err: any) {
-				showError({
+				showErrorNotification({
 					title: "Failed to resume instance",
-					subtitle: err.message,
+					content: err,
 				});
 			}
 		},
@@ -262,9 +262,9 @@ export function useDeleteInstance(instance: CloudInstance, connection?: Connecti
 					organisation: instance.organization_id,
 				});
 			} catch (err: any) {
-				showError({
+				showErrorNotification({
 					title: "Failed to delete instance",
-					subtitle: err.message,
+					content: err,
 				});
 			}
 		},

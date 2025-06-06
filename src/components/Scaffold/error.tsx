@@ -5,6 +5,7 @@ import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
 import { useIsLight } from "~/hooks/theme";
 import { iconBug, iconCheck, iconCopy, iconCursor, iconWarning } from "~/util/icons";
+import { CodePreview } from "../CodePreview";
 import { Icon } from "../Icon";
 
 export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
@@ -79,13 +80,10 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Message</Title>
 
-							<Text
-								mt="xs"
-								ff="mono"
-								c="slate"
-							>
-								{message}
-							</Text>
+							<CodePreview
+								value={message}
+								withCopy
+							/>
 						</Box>
 					)}
 
@@ -93,20 +91,10 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Cause</Title>
 
-							<Box
-								mt="xs"
-								ff="mono"
-								c="slate"
-								style={{
-									whiteSpace: "pre",
-									overflowX: "auto",
-									maxWidth: "90vw",
-									WebkitUserSelect: "initial",
-									userSelect: "initial",
-								}}
-							>
-								{error.cause}
-							</Box>
+							<CodePreview
+								value={error.cause}
+								withCopy
+							/>
 						</Box>
 					)}
 
@@ -114,20 +102,10 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Stack trace</Title>
 
-							<Box
-								mt="xs"
-								ff="mono"
-								c="slate"
-								style={{
-									whiteSpace: "pre",
-									overflowX: "auto",
-									maxWidth: "90vw",
-									WebkitUserSelect: "initial",
-									userSelect: "initial",
-								}}
-							>
-								{error.stack}
-							</Box>
+							<CodePreview
+								value={error.stack}
+								withCopy
+							/>
 						</Box>
 					)}
 				</Stack>

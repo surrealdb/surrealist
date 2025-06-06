@@ -36,7 +36,7 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { CloudCoupon } from "~/types";
-import { showError, showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
@@ -61,9 +61,9 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 
 			adapter.openUrl(url);
 		} catch (err: any) {
-			showError({
+			showErrorNotification({
 				title: "Failed to open payment page",
-				subtitle: err.message,
+				content: err,
 			});
 		} finally {
 			setRequesting(false);
@@ -88,9 +88,9 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 				queryKey: ["cloud", "coupons"],
 			});
 		} catch (err: any) {
-			showError({
+			showErrorNotification({
 				title: "Failed to apply discount code",
-				subtitle: "The discount code is invalid or has already been applied",
+				content: "The discount code is invalid or has already been applied",
 			});
 		}
 	});
