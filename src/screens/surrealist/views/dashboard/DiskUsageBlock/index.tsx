@@ -1,29 +1,17 @@
-import {
-	Alert,
-	Badge,
-	Box,
-	Divider,
-	Group,
-	Paper,
-	Progress,
-	Skeleton,
-	Stack,
-	Text,
-} from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Alert, Box, Button, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance, CloudMeasurement } from "~/types";
 import { measureStorageUsage } from "~/util/cloud";
 import { formatMemory } from "~/util/helpers";
-import { iconDatabase } from "~/util/icons";
 
 export interface DiskUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
 	instance: CloudInstance | undefined;
 	isLoading: boolean;
+	onUpgrade?: () => void;
 }
 
-export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockProps) {
+export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUsageBlockProps) {
 	const storageUsage = measureStorageUsage(usage ?? []);
 	const storageMaxGB = instance?.storage_size ?? 0;
 	const storageMax = storageMaxGB * 1024;
@@ -42,16 +30,28 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 				pos="relative"
 				mih={168}
 			>
-				<Stack gap={0}>
-					<Text
-						c="bright"
-						fw={700}
-						fz="xl"
+				<Group>
+					<Stack gap={0}>
+						<Text
+							c="bright"
+							fw={700}
+							fz="xl"
+						>
+							Storage usage
+						</Text>
+						<Text>{storageFrac.toFixed(2)}% used</Text>
+					</Stack>
+					<Spacer />
+					<Button
+						c="surreal"
+						size="xs"
+						fz={13}
+						variant="subtle"
+						onClick={onUpgrade}
 					>
-						Storage usage
-					</Text>
-					<Text>{storageFrac.toFixed(2)}% used</Text>
-				</Stack>
+						Upgrade
+					</Button>
+				</Group>
 
 				{instance?.distributed_storage_specs ? (
 					<Alert

@@ -7,29 +7,28 @@ import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
-import { iconClose, iconTune } from "~/util/icons";
-import { ConfigurationCapabilities } from "./configs/capabilities";
-import { ConfigurationVersion } from "./configs/version";
+import { iconArrowDownFat, iconClose, iconTune } from "~/util/icons";
+import { ConfigurationStorage } from "../UpgradeDrawer/configs/storage";
+import { ConfigurationInstanceType } from "../UpgradeDrawer/configs/type";
 
-export interface ConfiguratorDrawerProps {
+export interface UpgradeDrawerProps {
 	opened: boolean;
 	tab: string;
 	instance: CloudInstance;
 	onChangeTab: (tab: string) => void;
-	onUpdate: (version: string) => void;
 	onClose: () => void;
 }
 
-export function ConfiguratorDrawer({
-	opened,
-	tab,
-	instance,
-	onChangeTab,
-	onUpdate,
-	onClose,
-}: ConfiguratorDrawerProps) {
+export function UpgradeDrawer({ opened, tab, instance, onChangeTab, onClose }: UpgradeDrawerProps) {
 	const [width, setWidth] = useState(650);
+
+	const openTypes = useStable(() => {
+		onChangeTab("type");
+	});
+
+	const hideDisk = instance.distributed_storage_specs !== undefined;
 
 	return (
 		<Drawer
@@ -60,10 +59,13 @@ export function ConfiguratorDrawer({
 				<PrimaryTitle>
 					<Icon
 						left
-						path={iconTune}
+						style={{
+							rotate: "180deg",
+						}}
+						path={iconArrowDownFat}
 						size="sm"
 					/>
-					Configure instance
+					Upgrade instance
 				</PrimaryTitle>
 
 				<Spacer />
@@ -87,22 +89,27 @@ export function ConfiguratorDrawer({
 					mb="xl"
 					mx="xl"
 				>
-					<Tabs.Tab value="capabilities">Capabilities</Tabs.Tab>
-					<Tabs.Tab value="version">Version</Tabs.Tab>
+					<Tabs.Tab value="type">Instance type</Tabs.Tab>
+					<Tabs.Tab
+						value="disk"
+						disabled={hideDisk}
+					>
+						Disk size
+					</Tabs.Tab>
 				</Tabs.List>
 
-				<Tabs.Panel value="capabilities">
-					<ConfigurationCapabilities
+				<Tabs.Panel value="type">
+					<ConfigurationInstanceType
 						instance={instance}
 						onClose={onClose}
 					/>
 				</Tabs.Panel>
 
-				<Tabs.Panel value="version">
-					<ConfigurationVersion
+				<Tabs.Panel value="disk">
+					<ConfigurationStorage
 						instance={instance}
-						onUpdate={onUpdate}
 						onClose={onClose}
+						onUpgrade={openTypes}
 					/>
 				</Tabs.Panel>
 			</Tabs>
