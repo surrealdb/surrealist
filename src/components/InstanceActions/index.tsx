@@ -14,7 +14,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { showError, showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
 
@@ -64,7 +64,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		const token = await authTokenMutation.mutateAsync();
 
 		if (!token) {
-			return showError({
+			return showErrorNotification({
 				title: "Failed to copy auth token",
 				content: "Auth token is not available",
 			});
@@ -77,7 +77,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				subtitle: "Successfully copied auth token to clipboard",
 			});
 		} catch (error) {
-			showError({
+			showErrorNotification({
 				title: "Failed to copy auth token",
 				content: "Unable to copy auth token to clipboard",
 			});

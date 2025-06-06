@@ -33,7 +33,7 @@ import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import { showError, showInfo, tryParseParams } from "~/util/helpers";
+import { showErrorNotification, showInfo, tryParseParams } from "~/util/helpers";
 import { formatValue } from "~/util/surrealql";
 
 export interface QueryPaneProps {
@@ -93,7 +93,7 @@ export function QueryPane({
 		try {
 			setQueryForced(print(parse(queryText)));
 		} catch {
-			showError({
+			showErrorNotification({
 				title: "Failed to format",
 				content: "Your query must be valid to format it",
 			});
@@ -144,7 +144,7 @@ export function QueryPane({
 				graphqlVariables: formatValue(mergedVars, false, true),
 			});
 		} catch {
-			showError({
+			showErrorNotification({
 				title: "Failed to infer variables",
 				content: "Your query must be valid to infer variables",
 			});

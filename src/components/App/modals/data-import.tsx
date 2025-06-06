@@ -28,7 +28,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
-import { showError, showInfo, showWarning } from "~/util/helpers";
+import { showErrorNotification, showInfo, showWarning } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
@@ -53,7 +53,7 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 
 			if (failed.length > 0) {
 				for (const fail of failed) {
-					showError({
+					showErrorNotification({
 						title: "Import failed",
 						content: new Error(fail.result),
 					});
@@ -307,7 +307,7 @@ const completeBatchImport = async (
 				subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
 			});
 		} else {
-			showError({
+			showErrorNotification({
 				title: "Import failed",
 				content: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
 			});
@@ -645,7 +645,7 @@ const CsvImportForm = ({
 						if (row.errors.length > 0) {
 							const err = row.errors[0].message;
 
-							showError({
+							showErrorNotification({
 								title: "Import failed",
 								content: `There was an error importing the CSV file: ${err}`,
 							});
@@ -686,7 +686,7 @@ const CsvImportForm = ({
 							if (results.errors.length > 0) {
 								const err = results.errors[0];
 
-								showError({
+								showErrorNotification({
 									title: "Import failed",
 									content: err,
 								});
@@ -1089,7 +1089,7 @@ export function DataImportModal() {
 
 				await executeTransformAndImport(content);
 			} catch (err: any) {
-				showError({
+				showErrorNotification({
 					title: "Import failed",
 					content: err,
 				});

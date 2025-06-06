@@ -8,7 +8,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
 import { useInvitationMutation } from "../mutations/invites";
 import { useCloudRolesQuery } from "../queries/roles";
@@ -53,7 +53,7 @@ function InviteModal({ organization }: InviteModalProps) {
 				role,
 			});
 		} catch {
-			showError({
+			showErrorNotification({
 				title: "Invitation failed",
 				content: "Failed to send an invitation to this user",
 			});

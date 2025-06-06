@@ -1,5 +1,5 @@
 import { useConfirmation } from "~/providers/Confirmation";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 
 /**
  * Confirm the update of an instance.
@@ -17,7 +17,7 @@ export function useUpdateConfirmation<T>(callback: (value: T) => unknown) {
 			try {
 				await callback(value);
 			} catch (err: any) {
-				showError({
+				showErrorNotification({
 					title: "Instance update failed",
 					content: err,
 				});

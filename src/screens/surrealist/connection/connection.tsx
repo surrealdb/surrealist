@@ -35,7 +35,7 @@ import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
-import { connectionUri, newId, showError, showWarning } from "~/util/helpers";
+import { connectionUri, newId, showErrorNotification, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
 import { createPlaceholder, createSurreal } from "./surreal";
@@ -216,13 +216,13 @@ export async function openConnection(options?: ConnectOptions) {
 							"The database version could not be determined. Please ensure the database is running and accessible by Surrealist.",
 					});
 				} else if (err instanceof UnsupportedVersion) {
-					showError({
+					showErrorNotification({
 						title: "Unsupported version",
 						content: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`,
 					});
 				} else if (!(err instanceof CloudError)) {
 					console.error(err);
-					showError({
+					showErrorNotification({
 						title: "Connection failed",
 						content: err,
 					});
@@ -381,7 +381,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	const connection = getConnection();
 
 	if (!connection || currentState !== "connected") {
-		showError({
+		showErrorNotification({
 			title: "Failed to execute",
 			content: "You must be connected to the remote instance",
 		});
@@ -419,7 +419,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		}
 
 		if (liveIndexes.length > 0 && !LQ_SUPPORTED.has(connection.authentication.protocol)) {
-			showError({
+			showErrorNotification({
 				title: "Live queries unsupported",
 				content:
 					"Unfortunately live queries are not supported in the active connection protocol",
@@ -557,7 +557,7 @@ export async function executeGraphql(
 	const connection = getConnection();
 
 	if (!connection || currentState !== "connected") {
-		showError({
+		showErrorNotification({
 			title: "Failed to execute",
 			content: "You must be connected to the remote instance",
 		});
@@ -672,7 +672,7 @@ export async function activateDatabase(namespace: string, database: string) {
 			clearDatabase: true,
 		});
 	} catch (err: any) {
-		showError({
+		showErrorNotification({
 			title: "Failed to parse schema",
 			content: err,
 		});

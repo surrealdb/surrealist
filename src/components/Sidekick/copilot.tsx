@@ -5,7 +5,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudProfile } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { fastParseJwt, newId, showError } from "~/util/helpers";
+import { fastParseJwt, newId, showErrorNotification } from "~/util/helpers";
 
 const WORKFLOW_ID = import.meta.env.VITE_SCOUT_WORKFLOW_ID;
 const COPILOT_ID = import.meta.env.VITE_SCOUT_COPILOT_ID;
@@ -96,7 +96,7 @@ export function useCopilotMutation() {
 							msg.loading = false;
 						});
 
-						showError({
+						showErrorNotification({
 							title: "Chat error",
 							content: "Sidekick encountered an unexpected error",
 						});

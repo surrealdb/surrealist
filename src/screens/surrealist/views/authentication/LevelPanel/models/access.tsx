@@ -24,7 +24,7 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { AccessType, Base, SchemaAccess } from "~/types";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { iconPlus } from "~/util/icons";
 import { readBlock, syncConnectionSchema, writeBlock } from "~/util/schema";
 
@@ -180,7 +180,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			await executeQuery(query);
 			await syncConnectionSchema();
 		} catch (err: any) {
-			showError({
+			showErrorNotification({
 				title: "Failed to save user",
 				content: err,
 			});

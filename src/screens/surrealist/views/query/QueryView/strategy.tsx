@@ -3,7 +3,7 @@ import { DesktopAdapter } from "~/adapter/desktop";
 import { useConfigStore } from "~/stores/config";
 import type { QueryTab } from "~/types";
 import { getActiveConnection } from "~/util/connection";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 
 export interface SaveStrategy {
 	read: (tab: QueryTab) => Result<string>;
@@ -38,7 +38,7 @@ const FILE_STRATEGY: SaveStrategy = {
 		} catch (err: any) {
 			adapter.warn("Query", err);
 
-			showError({
+			showErrorNotification({
 				title: "Failed to load query file",
 				content: err,
 			});
@@ -56,7 +56,7 @@ const FILE_STRATEGY: SaveStrategy = {
 		} catch (err: any) {
 			adapter.warn("Query", err);
 
-			showError({
+			showErrorNotification({
 				title: "Failed to save query file",
 				content: err,
 			});

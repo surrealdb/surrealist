@@ -8,7 +8,7 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { TableInfo } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { SDB_2_0_0 } from "~/util/versions";
 import { DesignDrawer } from "./drawer";
@@ -135,7 +135,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 					designingHandle.close();
 				}
 			} catch (err: any) {
-				showError({
+				showErrorNotification({
 					title: "Failed to apply schema",
 					content: err,
 				});
