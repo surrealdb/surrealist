@@ -125,7 +125,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public async loadConfig() {
-		switch (await type()) {
+		switch (type()) {
 			case "windows": {
 				this.platform = "windows";
 				break;
