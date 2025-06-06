@@ -76,7 +76,7 @@
 		"deep-link": {
 			"mobile": [],
 			"desktop": {
-				"schemes": ["surrealist"]
+				"schemes": ["surrealist-*"]
 			}
 		}
 	},
