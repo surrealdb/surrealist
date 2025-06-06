@@ -19,7 +19,7 @@ pub mod macos {
             let item: *mut Object = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
                 title,
                 selector,
-                NSString::alloc(nil).init_str("")
+                NSString::alloc(nil).init_str(""),
             );
 
             let class_name = "SurrealistDockMenuTarget";
