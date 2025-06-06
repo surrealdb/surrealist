@@ -1,12 +1,9 @@
-import { Alert, Box, Group, Select, Text, TextInput } from "@mantine/core";
+import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Icon } from "~/components/Icon";
 import { useTableNames } from "~/hooks/schema";
 import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { iconWarning } from "~/util/icons";
 
 export function DocsTablesIntroduction({ language }: TopicProps) {
 	const { setDocsTable } = useInterfaceStore.getState();

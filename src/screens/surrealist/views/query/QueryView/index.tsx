@@ -1,16 +1,4 @@
-import classes from "./style.module.scss";
-
-import {
-	Box,
-	Button,
-	Group,
-	Modal,
-	SegmentedControl,
-	Stack,
-	TagsInput,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { Box, Button, Group, Modal, Stack, TagsInput, Text, TextInput } from "@mantine/core";
 
 import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";

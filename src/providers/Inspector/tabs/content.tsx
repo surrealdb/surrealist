@@ -1,4 +1,4 @@
-import { Alert, Paper, Stack } from "@mantine/core";
+import { Alert, Paper } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -9,7 +9,6 @@ import { useSetting } from "~/hooks/config";
 import type { SaveableHandle } from "~/hooks/save";
 import { iconWarning } from "~/util/icons";
 import { useInspector } from "..";
-import classes from "../style.module.scss";
 
 export interface ContentTabProps {
 	value: string;

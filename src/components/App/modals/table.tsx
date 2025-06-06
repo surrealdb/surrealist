@@ -6,7 +6,6 @@ import {
 	SegmentedControl,
 	Select,
 	Stack,
-	Tabs,
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";

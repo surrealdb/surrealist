@@ -1,6 +1,6 @@
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance, CloudInstanceType, CloudMeasurement, CloudOrganization } from "~/types";
+import { CloudMeasurement, CloudOrganization } from "~/types";
 
 /**
  * Measure the compute history

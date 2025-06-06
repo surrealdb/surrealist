@@ -3,12 +3,10 @@ import { PathPattern, matchRoute, useRouter, useSearch } from "wouter";
 import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
-import { useConfigStore } from "~/stores/config";
 import type { ViewPage } from "~/types";
-import { getActiveConnection, getConnection, getConnectionById } from "~/util/connection";
+import { getConnectionById } from "~/util/connection";
 import { IntentEvent } from "~/util/global-events";
 import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
-import { useConnectionList } from "./connection";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
 

@@ -1,5 +1,5 @@
 import { useWindowEvent } from "@mantine/hooks";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import type { Identified } from "~/types";
 import { useStable } from "./stable";
 

@@ -29,7 +29,6 @@ import {
 	useCommandKeybinds,
 	useCommandRegistry,
 } from "~/providers/Commands";
-import { displayBinding, formatBinding } from "~/providers/Commands/keybindings";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconEdit, iconPlus, iconSearch } from "~/util/icons";

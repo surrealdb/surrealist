@@ -8,7 +8,6 @@ import {
 	Modal,
 	Stack,
 	TextInput,
-	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
 import { Text } from "@mantine/core";

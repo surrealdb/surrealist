@@ -1,18 +1,6 @@
 import classes from "../style.module.scss";
 
-import {
-	ActionIcon,
-	Avatar,
-	Badge,
-	Box,
-	Button,
-	Group,
-	Menu,
-	Paper,
-	Stack,
-	Table,
-	Text,
-} from "@mantine/core";
+import { Avatar, Badge, Box, Button, Group, Menu, Paper, Stack, Table, Text } from "@mantine/core";
 
 import {
 	iconAccountPlus,

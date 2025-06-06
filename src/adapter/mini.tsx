@@ -1,6 +1,6 @@
 import type { MantineColorScheme } from "@mantine/core";
 import { Value } from "@surrealdb/ql-wasm";
-import { ORIENTATIONS, RESULT_MODES, SANDBOX } from "~/constants";
+import { ORIENTATIONS, RESULT_MODES } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/connection";
 import type { MiniAppearance, Orientation, ResultMode, SurrealistConfig } from "~/types";
 import { dedent } from "~/util/dedent";
