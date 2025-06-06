@@ -136,15 +136,15 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	return (
 		<Stack>
 			<Section
-				title="Your plan"
-				description="The plan active for this organisation"
+				title="Support Plan"
+				description="The support plan for this organisation"
 			>
-				<Skeleton visible={!organization?.plan}>
-					<BillingPlan
-						name={organization?.plan?.name ?? ""}
-						description={organization?.plan?.description ?? ""}
-					/>
-				</Skeleton>
+				{/* <Skeleton visible={!organization?.plan}> */}
+				<SupportPlan
+					name="Community"
+					description="Receive help from community members on Discord and GitHub"
+				/>
+				{/* </Skeleton> */}
 			</Section>
 			<Section
 				title="Billing Information"
@@ -410,12 +410,12 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	);
 }
 
-interface BillingPlanProps {
+interface SupportPlanProps {
 	name: string;
 	description: string;
 }
 
-function BillingPlan({ name, description }: BillingPlanProps) {
+function SupportPlan({ name, description }: SupportPlanProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -425,13 +425,20 @@ function BillingPlan({ name, description }: BillingPlanProps) {
 					<PrimaryTitle>{name}</PrimaryTitle>
 					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
 				</Box>
-				<Button
-					variant="gradient"
-					rightSection={<Icon path={iconOpen} />}
-					onClick={() => adapter.openUrl("https://surrealdb.com/pricing")}
-				>
-					View plans
-				</Button>
+				<Tooltip label="More support options coming soon">
+					<Button
+						variant="gradient"
+						disabled
+						rightSection={
+							<Icon
+								path={iconOpen}
+								size="md"
+							/>
+						}
+					>
+						Upgrade Plan
+					</Button>
+				</Tooltip>
 			</Group>
 		</Paper>
 	);
