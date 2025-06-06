@@ -42,7 +42,8 @@
 							{ "name": "useConnectionNavigator", "stableResult": true }
 						]
 					}
-				}
+				},
+				"noUnusedImports": "warn"
 			}
 		}
 	},
