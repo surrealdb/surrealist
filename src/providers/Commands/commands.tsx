@@ -53,7 +53,7 @@ import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX } from "~/constants";
 import { useAvailableViews, useConnectionList } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
-import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
+import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { showNodeStatus } from "~/modals/node-status";
 import {
 	closeConnection,

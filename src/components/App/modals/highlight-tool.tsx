@@ -1,7 +1,6 @@
-import { Button, Divider, Group, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
+import { Button, Divider, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { s } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { RadioSelect } from "~/components/RadioSelect";

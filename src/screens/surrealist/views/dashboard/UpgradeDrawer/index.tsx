@@ -9,7 +9,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
-import { iconArrowDownFat, iconClose, iconTune } from "~/util/icons";
+import { iconArrowDownFat, iconClose } from "~/util/icons";
 import { ConfigurationStorage } from "../UpgradeDrawer/configs/storage";
 import { ConfigurationInstanceType } from "../UpgradeDrawer/configs/type";
 

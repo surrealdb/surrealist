@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import classes from "../style.module.scss";
 
-import { Box, BoxProps, Flex, Paper, Text, UnstyledButton } from "@mantine/core";
+import { Box, BoxProps, Flex, Paper, Text } from "@mantine/core";
 import { PropsWithChildren, ReactNode, useRef } from "react";
 
 export interface StartPlaceholderProps extends BoxProps {

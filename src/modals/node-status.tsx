@@ -6,7 +6,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { executeQuerySingle } from "~/screens/surrealist/connection/connection";
 import { showError } from "~/util/helpers";
-import { iconCircle, iconCircleFilled } from "~/util/icons";
+import { iconCircleFilled } from "~/util/icons";
 
 interface Node {
 	seen: number;
