@@ -6,10 +6,11 @@ import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 import { useDeleteInstance, usePauseInstance, useResumeInstance } from "~/hooks/cloud";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { openConnectionEditModal } from "~/moda
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
+import { CloudInstance } from "~/types";
+import { openConnectionEditModal } from "~/modals/edit-connection";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
