@@ -107,9 +107,6 @@ fn main() {
             info!("Launch args: {:?}", env::args());
             set_app_handle(app.handle().clone());
 
-            #[cfg(target_os = "macos")]
-            appbar::macos::setup_dock_menu();
-
             #[cfg(any(windows, target_os = "linux"))]
             {
                 open::store_resources(get_app_handle(), env::args());
@@ -123,6 +120,10 @@ fn main() {
         .expect("Tauri failed to initialize");
 
     tauri.run(move |app, event| match event {
+        #[cfg(target_os = "macos")]
+        RunEvent::Ready => {
+            appbar::macos::setup_dock_menu();
+        }
         #[cfg(any(target_os = "macos", target_os = "ios"))]
         RunEvent::Opened { urls } => {
             info!("Opened resources: {:?}", urls);

@@ -1,53 +1,46 @@
 #[cfg(target_os = "macos")]
 pub mod macos {
-    use crate::get_app_handle;
-    use cocoa::appkit::{NSApp, NSMenu, NSMenuItem, NSWindow};
-    use cocoa::base::{id, nil};
-    use cocoa::foundation::{NSAutoreleasePool, NSString};
+    use cocoa::appkit::{NSApp, NSMenu, NSMenuItem};
+    use cocoa::base::nil;
+    use cocoa::foundation::NSString;
+    use objc::runtime::{Object, Sel, Class};
+    use objc::{msg_send, sel, sel_impl};
+    use std::sync::Once;
     use objc::declare::ClassDecl;
-    use objc::runtime::{Object, Sel};
-    use objc::{class, msg_send, sel, sel_impl};
-
-    extern "C" fn application_dock_menu(_: &Object, _: Sel, _: id) -> id {
-        unsafe {
-            let menu = NSMenu::new(nil).autorelease();
-            let item = NSMenuItem::alloc(nil).initWithTitle_action_keyEquivalent_(
-                NSString::alloc(nil).init_str("New Window"),
-                sel!(openNewWindow:),
-                NSString::alloc(nil).init_str(""),
-            );
-            menu.addItem_(item);
-            menu
-        }
-    }
-
-    extern "C" fn open_new_window(_: &Object, _: Sel, _: id) {
-        tauri::async_runtime::block_on(crate::window::open_new_window(get_app_handle()));
-    }
 
     pub fn setup_dock_menu() {
-        unsafe {
-            let superclass = class!(NSObject);
-            let mut decl = ClassDecl::new("TauriAppDelegate", superclass).unwrap();
+        static INIT: Once = Once::new();
 
-            decl.add_method(
-                sel!(applicationDockMenu:),
-                application_dock_menu as extern "C" fn(&Object, Sel, id) -> id,
-            );
-            decl.add_method(
-                sel!(openNewWindow:),
-                open_new_window as extern "C" fn(&Object, Sel, id),
-            );
+        INIT.call_once(|| unsafe {
+            let app = NSApp();
+            let dock_menu: *mut Object = NSMenu::new(nil);
+            let title = NSString::alloc(nil).init_str("New Window");
+            let selector = Sel::register("openNewWindowAction:");
+            let item: *mut Object = NSMenuItem::alloc(nil)
+                .initWithTitle_action_keyEquivalent_(
+                    title,
+                    selector,
+                    NSString::alloc(nil).init_str("")
+                );
 
-            let delegate_class = decl.register();
-            let delegate: id = msg_send![delegate_class, new];
-            let ns_app = NSApp();
-            ns_app.setDelegate_(delegate);
-        }
+            let class_name = "SurrealistDockMenuTarget";
+            let mut decl = ClassDecl::new(class_name, Class::get("NSObject").unwrap()).unwrap();
+
+            extern "C" fn open_new_window_action(_this: &Object, _cmd: Sel, _sender: *mut Object) {
+                tauri::async_runtime::block_on(crate::window::open_new_window(crate::get_app_handle()));
+            }
+
+            let selector = Sel::register("openNewWindowAction:");
+
+            decl.add_method(selector, open_new_window_action as extern "C" fn(&Object, Sel, *mut Object));
+			
+            let custom_class = decl.register();
+            let target: *mut Object = msg_send![custom_class, new];
+
+            let _: () = msg_send![item, setTarget: target];
+            let _: () = msg_send![dock_menu, addItem: item];
+            let _: () = msg_send![item, setEnabled: true];
+            let _: () = msg_send![app, setDockMenu: dock_menu];
+        });
     }
-}
-
-#[cfg(target_os = "windows")]
-pub mod windows {
-    //
 }
