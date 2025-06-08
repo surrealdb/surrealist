@@ -20,7 +20,7 @@ import { useCloudProfile } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
@@ -53,9 +53,9 @@ function AccountForm({ onClose }: AccountFormProps) {
 			setAccountProfile(profile);
 			onClose();
 		} catch (err: any) {
-			showError({
+			showErrorNotification({
 				title: "Failed to save account",
-				subtitle: err.message,
+				content: err.message,
 			});
 		} finally {
 			setLoading(false);
