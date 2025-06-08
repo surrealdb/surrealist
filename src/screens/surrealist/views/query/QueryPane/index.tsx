@@ -43,7 +43,7 @@ import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
-import { showError, tryParseParams } from "~/util/helpers";
+import { showErrorNotification, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
 import { readQuery, writeQuery } from "../QueryView/strategy";
 
@@ -145,9 +145,9 @@ export function QueryPane({
 
 			setEditorText(editor, formatted);
 		} catch {
-			showError({
+			showErrorNotification({
 				title: "Failed to format",
-				subtitle: "Your query must be valid to format it",
+				content: "Your query must be valid to format it",
 			});
 		}
 	});

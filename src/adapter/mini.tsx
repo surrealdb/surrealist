@@ -5,7 +5,7 @@ import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/
 import type { MiniAppearance, Orientation, ResultMode, SurrealistConfig } from "~/types";
 import { dedent } from "~/util/dedent";
 import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { broadcastMessage } from "~/util/messaging";
 import { parseDatasetURL } from "~/util/surrealql";
 import { BrowserAdapter } from "./browser";
@@ -94,9 +94,9 @@ export class MiniAdapter extends BrowserAdapter {
 				const parsed = Value.from_string(variables);
 				mainTab.variables = dedent(parsed.format(true));
 			} catch {
-				showError({
+				showErrorNotification({
 					title: "Startup error",
-					subtitle: "Variables could not be parsed",
+					content: "Variables could not be parsed",
 				});
 			}
 		}
@@ -108,9 +108,9 @@ export class MiniAdapter extends BrowserAdapter {
 			if (datasetUrl) {
 				this.#datasetQuery = await fetch(datasetUrl).then((res) => res.text());
 			} else {
-				showError({
+				showErrorNotification({
 					title: "Startup error",
-					subtitle: "Dataset not recognised",
+					content: "Dataset not recognised",
 				});
 			}
 		}
@@ -125,9 +125,9 @@ export class MiniAdapter extends BrowserAdapter {
 			if (THEMES.has(theme)) {
 				settings.appearance.colorScheme = theme as MantineColorScheme;
 			} else {
-				showError({
+				showErrorNotification({
 					title: "Startup error",
-					subtitle: "Theme not recognised",
+					content: "Theme not recognised",
 				});
 			}
 		}
@@ -137,9 +137,9 @@ export class MiniAdapter extends BrowserAdapter {
 			if (ORIENTATIONS.some((o) => o.value === orientation)) {
 				settings.appearance.queryOrientation = orientation as Orientation;
 			} else {
-				showError({
+				showErrorNotification({
 					title: "Startup error",
-					subtitle: "Orientation not recognised",
+					content: "Orientation not recognised",
 				});
 			}
 		}
@@ -149,9 +149,9 @@ export class MiniAdapter extends BrowserAdapter {
 			if (RESULT_MODES.some((m) => m.value === resultmode)) {
 				mainTab.resultMode = resultmode as ResultMode;
 			} else {
-				showError({
+				showErrorNotification({
 					title: "Startup error",
-					subtitle: "Result mode not recognised",
+					content: "Result mode not recognised",
 				});
 			}
 		}

@@ -8,7 +8,7 @@ import type { CloudSignin } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import {
 	INVITATION_KEY,
@@ -145,9 +145,9 @@ export async function verifyAuthentication(code: string, state: string) {
 		console.error("Failed to verify authentication", err);
 
 		invalidateSession();
-		showError({
+		showErrorNotification({
 			title: "Authentication failed",
-			subtitle: "An error occurred while verifying the authentication details",
+			content: "Could not verify the authentication details",
 		});
 	}
 }
@@ -286,14 +286,14 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		invalidateSession();
 
 		if (err instanceof ApiError && err.status === 422) {
-			showError({
+			showErrorNotification({
 				title: "Already in organisation",
-				subtitle: "You are already a member of this organisation",
+				content: "You are already a member of this organisation",
 			});
 		} else {
-			showError({
+			showErrorNotification({
 				title: "Failed to authenticate",
-				subtitle: "Please try signing into Surreal Cloud again",
+				content: "Please try signing into Surreal Cloud again",
 			});
 		}
 	} finally {
