@@ -97,6 +97,7 @@ fn main() {
             window::toggle_devtools,
             window::new_window,
             open::get_opened_resources,
+            open::clear_opened_resources,
             open::read_query_file,
             open::write_query_file,
             open::prune_allowed_files,
