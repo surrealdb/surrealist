@@ -81,13 +81,12 @@ pub async fn open_new_window(app: &AppHandle) {
 
     let window = builder.build().expect("Failed to create window");
 
-    window.on_window_event(move |event| match event {
-        WindowEvent::Focused(focused) => {
+    window.on_window_event(move |event| {
+        if let WindowEvent::Focused(focused) = event {
             if *focused {
                 set_last_focused_window(&window_label);
             }
         }
-        _ => {}
     });
 }
 
