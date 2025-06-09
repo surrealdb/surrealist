@@ -19,6 +19,8 @@ import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
+import { useStable } from "~/hooks/stable";
+import { tagEvent } from "~/util/analytics";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -54,6 +56,11 @@ export function ConfigurationBlock({
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
+
+	const handleUpgrade = useStable(() => {
+		onUpgrade();
+		tagEvent("cloud_instance_upgrade_click");
+	});
 
 	return (
 		<Skeleton
@@ -133,7 +140,7 @@ export function ConfigurationBlock({
 						</Button>
 						<Button
 							size="xs"
-							onClick={onUpgrade}
+							onClick={handleUpgrade}
 							disabled={!instance || isIdle}
 							variant="gradient"
 							my={-2}
