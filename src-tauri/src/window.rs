@@ -1,8 +1,11 @@
+use std::sync::{Mutex, OnceLock};
 use tauri::{
     menu::{MenuBuilder, SubmenuBuilder},
-    App, AppHandle, Emitter,
+    App, AppHandle, Emitter, Manager, WindowEvent,
 };
 use uuid::Uuid;
+
+static LAST_FOCUSED_WINDOW: OnceLock<Mutex<Option<String>>> = OnceLock::new();
 
 #[tauri::command]
 pub fn toggle_devtools(window: tauri::WebviewWindow) {
@@ -44,14 +47,10 @@ pub fn setup_menu_bar(app: &App) -> Result<(), Box<dyn std::error::Error>> {
     app.on_menu_event(
         move |app_handle: &tauri::AppHandle, event| match event.id().0.as_str() {
             "about" => {
-                app_handle
-                    .emit("window:open_settings", "about")
-                    .expect("Failed to emit open about event");
+                emit_last(app_handle, "window:open_settings", "about");
             }
             "settings" => {
-                app_handle
-                    .emit("window:open_settings", "preferences")
-                    .expect("Failed to emit open settings event");
+                emit_last(app_handle, "window:open_settings", "preferences");
             }
             "new-window" => {
                 let app_handle = app_handle.clone();
@@ -69,7 +68,7 @@ pub fn setup_menu_bar(app: &App) -> Result<(), Box<dyn std::error::Error>> {
 
 pub async fn open_new_window(app: &AppHandle) {
     let window_label = format!("surrealist-{}", Uuid::new_v4());
-    let builder = tauri::WebviewWindowBuilder::new(app, window_label, Default::default())
+    let builder = tauri::WebviewWindowBuilder::new(app, &window_label, Default::default())
         .title("Surrealist")
         .inner_size(1435.0, 775.0)
         .center()
@@ -80,5 +79,44 @@ pub async fn open_new_window(app: &AppHandle) {
         .title_bar_style(tauri::TitleBarStyle::Overlay)
         .hidden_title(true);
 
-    builder.build().expect("Failed to create window");
+    let window = builder.build().expect("Failed to create window");
+
+    window.on_window_event(move |event| match event {
+        WindowEvent::Focused(focused) => {
+            if *focused {
+                set_last_focused_window(&window_label);
+            }
+        }
+        _ => {}
+    });
+}
+
+pub fn set_last_focused_window(label: &str) {
+    let storage = LAST_FOCUSED_WINDOW.get_or_init(|| Mutex::new(None));
+    let mut last = storage.lock().unwrap();
+    *last = Some(label.to_string());
+}
+
+pub fn get_last_focused_window(app: &AppHandle) -> tauri::WebviewWindow {
+    let storage = LAST_FOCUSED_WINDOW.get_or_init(|| Mutex::new(None));
+    let last = storage.lock().unwrap();
+    if let Some(label) = last.as_ref() {
+        if let Some(window) = app.get_webview_window(label) {
+            return window;
+        }
+    }
+
+    // Fallback: return the first available window
+    app.webview_windows()
+        .values()
+        .next()
+        .expect("No windows available")
+        .clone()
+}
+
+pub fn emit_last(app: &AppHandle, event: &str, payload: impl serde::Serialize + Clone) {
+    let last_window = get_last_focused_window(app);
+
+    app.emit_to(last_window.label(), event, payload)
+        .expect("Failed to emit event");
 }

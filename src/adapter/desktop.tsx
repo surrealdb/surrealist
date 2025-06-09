@@ -81,11 +81,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 			getHotkeyHandler([["mod+alt+i", () => invoke("toggle_devtools")]]),
 		);
 
-		listen("open-resource", () => {
+		getCurrentWindow().listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
 
-		listen("tauri://focus", () => {
+		getCurrentWindow().listen("tauri://focus", () => {
 			this.checkForUpdates();
 		});
 	}
@@ -398,9 +398,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	private initWindowEvents() {
-		listen("window:open_settings", (e) => {
-			dispatchIntent("open-settings", e.payload ? { tab: e.payload as string } : undefined);
-		});
+		getCurrentWindow().listen("window:open_settings", (e) => 
+           dispatchIntent("open-settings", e.payload ? { tab: e.payload as string } : undefined));
 	}
 
 	private async queryOpenRequest() {

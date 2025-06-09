@@ -9,7 +9,7 @@ use std::{env, sync::OnceLock};
 use database::DatabaseState;
 use log::info;
 use paths::get_logs_directory;
-use tauri::{AppHandle, Emitter, Manager, RunEvent};
+use tauri::{AppHandle, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 use time::{format_description, OffsetDateTime};
 
@@ -58,7 +58,7 @@ fn main() {
             open::store_resources(app, args);
 
             if emit_event {
-                app.emit("open-resource", ()).unwrap();
+                window::emit_last(app, "open-resource", ());
             }
 
             if let Some((_, window)) = app.webview_windows().iter().next() {
@@ -131,9 +131,7 @@ fn main() {
             info!("Opened resources: {:?}", urls);
 
             *app.state::<open::OpenResourceState>().0.lock().unwrap() = urls;
-            app.emit("open-resource", ()).unwrap();
-
-            info!("Emitted open-resource event");
+            window::emit_last(app, "open-resource", ());
         }
         RunEvent::Exit => {
             let state = app.state::<DatabaseState>();
