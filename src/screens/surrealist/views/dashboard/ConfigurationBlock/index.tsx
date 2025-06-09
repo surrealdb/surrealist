@@ -15,12 +15,12 @@ import { Group, Paper, Stack, Text } from "@mantine/core";
 import { ReactNode } from "react";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
+import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
-import { useStable } from "~/hooks/stable";
-import { tagEvent } from "~/util/analytics";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
