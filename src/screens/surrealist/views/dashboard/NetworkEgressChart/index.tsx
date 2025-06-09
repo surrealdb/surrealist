@@ -85,7 +85,7 @@ export function NetworkEgressChart({
 								Network egress
 							</Text>
 
-							<Tooltip label="The average outgoing network traffic measured in bytes per second">
+							<Tooltip label="The outgoing network traffic measured in kilobytes per second">
 								<div>
 									<Icon
 										path={iconHelp}
