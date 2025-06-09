@@ -85,7 +85,7 @@ export function NetworkIngressChart({
 								Network ingress
 							</Text>
 
-							<Tooltip label="The average incoming network traffic measured in bytes per second">
+							<Tooltip label="The incoming network traffic measured in kilobytes per second">
 								<div>
 									<Icon
 										path={iconHelp}

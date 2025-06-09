@@ -86,7 +86,7 @@ export function MemoryUsageChart({
 								Memory usage
 							</Text>
 
-							<Tooltip label="The average amount of memory used by the instance in megabytes.">
+							<Tooltip label="The amount of memory used by the instance in megabytes.">
 								<div>
 									<Icon
 										path={iconHelp}
