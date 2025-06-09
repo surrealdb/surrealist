@@ -92,6 +92,11 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
 }
 
 #[tauri::command]
+pub fn clear_opened_resources(state: State<OpenResourceState>) {
+    *state.0.lock().unwrap() = Vec::new();
+}
+
+#[tauri::command]
 pub fn read_query_file(path: String) -> Result<String, String> {
     let whitelist = read_allowed_files();
 

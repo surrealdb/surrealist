@@ -445,6 +445,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				}
 
 				NavigateViewEvent.dispatch("query");
+				await invoke("clear_opened_resources");
 			} else if (Link) {
 				const { host, params } = Link;
 
@@ -467,6 +468,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 						});
 					}
 				}
+
+				await invoke("clear_opened_resources");
 			}
 		}
 	}
