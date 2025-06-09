@@ -94,7 +94,7 @@ export function UpgradeDrawer({ opened, tab, instance, onChangeTab, onClose }: U
 						value="disk"
 						disabled={hideDisk}
 					>
-						Disk size
+						Storage capacity
 					</Tabs.Tab>
 				</Tabs.List>
 

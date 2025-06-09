@@ -102,15 +102,15 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 								c="bright"
 								fw={600}
 							>
-								Increase disk size
+								Increase storage capacity
 							</Text>
 
 							<Text
 								mt="sm"
 								fz="lg"
 							>
-								You can increase your disk size to store more data within your
-								database.
+								You can increase your storage size to accommodate more data within
+								your database.
 							</Text>
 						</Box>
 
@@ -120,8 +120,9 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 								color="red"
 							>
 								<Box>
-									Disk size expansion is unavailable for free instances. Upgrade
-									your instance to unlock the ability to increase your disk size.
+									Storage expansion is unavailable for free instances. Upgrade
+									your instance to unlock the ability to increase your storage
+									capacity.
 								</Box>
 								<Button
 									mt="md"
@@ -139,7 +140,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 									<Alert
 										mb="md"
 										color="slate"
-										title="Disk size limit reached"
+										title="Maximum storage capacity reached"
 										icon={<Icon path={iconHelp} />}
 									>
 										If you require more storage space, please contact support at{" "}
@@ -155,8 +156,8 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 											title="Please wait"
 											icon={<Icon path={iconClock} />}
 										>
-											You have recently updated your disk size. You can update
-											it again in {timeLeft}.
+											You have recently updated your storage capacity. You can
+											update it again in {timeLeft}.
 										</Alert>
 									)
 								)}
@@ -194,7 +195,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 										title="Warning"
 										icon={<Icon path={iconWarning} />}
 									>
-										You cannot decrease the storage size of your instance
+										You cannot decrease the storage capacity of your instance
 									</Alert>
 								)}
 							</>
@@ -219,7 +220,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 					onClick={handleUpdate}
 					flex={1}
 				>
-					Increase storage size
+					Apply storage expansion
 				</Button>
 			</Group>
 		</Stack>
