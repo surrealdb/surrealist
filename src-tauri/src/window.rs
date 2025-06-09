@@ -22,17 +22,23 @@ pub async fn new_window(app: AppHandle) {
 }
 
 pub fn setup_menu_bar(app: &App) -> Result<(), Box<dyn std::error::Error>> {
-    let surrealist_menu = SubmenuBuilder::new(app, "Surrealist")
+    let mut surrealist_menu = SubmenuBuilder::new(app, "Surrealist")
         .text("about", "About Surrealist")
         .separator()
         .text("settings", "Settings")
-        .separator()
-        .hide_with_text("Hide Surrealist")
-        .hide_others()
-        .show_all()
-        .separator()
-        .quit_with_text("Quit Surrealist")
-        .build()?;
+        .separator();
+
+    // macOS-specific menu items
+    #[cfg(target_os = "macos")]
+    {
+        surrealist_menu = surrealist_menu
+            .hide_with_text("Hide Surrealist")
+            .hide_others()
+            .show_all()
+            .separator();
+    }
+
+    let surrealist_menu = surrealist_menu.quit_with_text("Quit Surrealist").build()?;
 
     let file_menu = SubmenuBuilder::new(app, "File")
         .text("new-window", "New Window")
