@@ -9,7 +9,7 @@ use std::{env, sync::OnceLock};
 use database::DatabaseState;
 use log::info;
 use paths::get_logs_directory;
-use tauri::{menu::{AboutMetadata, MenuBuilder, MenuItem, SubmenuBuilder}, AppHandle, Emitter, Manager, RunEvent};
+use tauri::{AppHandle, Emitter, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 use time::{format_description, OffsetDateTime};
 
@@ -107,57 +107,7 @@ fn main() {
             info!("Launch args: {:?}", env::args());
             set_app_handle(app.handle().clone());
 
-            let surrealist_menu = SubmenuBuilder::new(app, "Surrealist")
-                .about_with_text(
-					"About Surrealist",
-                    Some(AboutMetadata {
-                        name: Some("Surrealist".to_string()),
-                        version: Some(app.package_info().version.to_string()),
-                        short_version: None,
-                        authors: Some(vec!["SurrealDB".to_string()]),
-                        comments: None,
-                        copyright: Some("© 2025 SurrealDB".to_string()),
-                        license: Some("MIT".to_string()),
-                        website: None,
-                        website_label: None,
-                        credits: None,
-                        icon: None,
-                    })
-                )
-				.separator()
-				.text("settings", "Settings")
-				.separator()
-				.hide_with_text("Hide Surrealist")
-				.hide_others()
-				.show_all()
-				.separator()
-				.quit_with_text("Quit Surrealist")
-                .build()?;
-
-			let file_menu = SubmenuBuilder::new(app, "File")
-				.text("new-window", "New Window")
-				.build()?;
-
-			let menu = MenuBuilder::new(app)
-				.items(&[&surrealist_menu, &file_menu])
-				.build()?;
-
-			let _ = app.set_menu(menu);
-
-            app.on_menu_event(move |app_handle: &tauri::AppHandle, event| {
-                match event.id().0.as_str() {
-                    "settings" => {
-                        // TODO
-                    }
-                    "new-window" => {
-                        let app_handle = app_handle.clone();
-                        tauri::async_runtime::spawn(async move {
-                            window::open_new_window(&app_handle).await;
-                        });
-                    }
-                    _ => {}
-                }
-            });
+            window::setup_menu_bar(app).expect("Failed to setup menu bar");
 
             #[cfg(any(windows, target_os = "linux"))]
             {

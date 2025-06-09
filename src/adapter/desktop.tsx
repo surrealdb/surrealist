@@ -22,7 +22,7 @@ import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
 import { showError, showInfo } from "~/util/helpers";
-import { handleIntentRequest } from "~/util/intents";
+import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
@@ -64,6 +64,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
 
 		this.initDatabaseEvents();
+		this.initWindowEvents();
 
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
@@ -394,6 +395,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 				subtitle: msg,
 			});
 		});
+	}
+
+	private initWindowEvents() {
+		listen("window:open_settings", (e) => dispatchIntent("open-settings", e.payload ? { tab: e.payload as string } : undefined));
 	}
 
 	private async queryOpenRequest() {
