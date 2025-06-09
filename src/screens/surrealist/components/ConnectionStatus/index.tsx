@@ -15,7 +15,7 @@ import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnection } from "~/hooks/connection";
+import { useConnection, useRequireDatabase } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
@@ -61,7 +61,7 @@ export function ConnectionStatus() {
 		setIsDropped(false);
 	});
 
-	const openDatasets = useStable(() => {
+	const _openDatasets = useStable(() => {
 		showDatasetsHandle.open();
 		setDataset("");
 	});
@@ -70,6 +70,11 @@ export function ConnectionStatus() {
 		await applyDataset(dataset);
 		showDatasetsHandle.close();
 	});
+
+	const openDatasets = useRequireDatabase(_openDatasets);
+	const syncSchema = useRequireDatabase(() => syncConnectionSchema());
+	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"));
+	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
 
 	const openEditor = useStable(() => {
 		const connection = getConnectionById(connectionId);
@@ -167,9 +172,7 @@ export function ConnectionStatus() {
 						{!isSandbox && (
 							<Menu.Item
 								leftSection={<Icon path={iconTable} />}
-								disabled={
-									currentState !== "connected" || !isSchemaEmpty || !database
-								}
+								disabled={currentState !== "connected" || !isSchemaEmpty}
 								onClick={openDatasets}
 							>
 								Apply dataset
@@ -177,22 +180,22 @@ export function ConnectionStatus() {
 						)}
 						<Menu.Item
 							leftSection={<Icon path={iconRefresh} />}
-							disabled={currentState !== "connected" || !database}
-							onClick={() => syncConnectionSchema()}
+							disabled={currentState !== "connected"}
+							onClick={syncSchema}
 						>
 							Sync schema
 						</Menu.Item>
 						<Menu.Item
 							leftSection={<Icon path={iconUpload} />}
-							disabled={currentState !== "connected" || !database}
-							onClick={() => dispatchIntent("export-database")}
+							disabled={currentState !== "connected"}
+							onClick={exportDatabase}
 						>
 							Export database
 						</Menu.Item>
 						<Menu.Item
 							leftSection={<Icon path={iconDownload} />}
-							disabled={currentState !== "connected" || !database}
-							onClick={() => dispatchIntent("import-database")}
+							disabled={currentState !== "connected"}
+							onClick={importDatabase}
 						>
 							Import database
 						</Menu.Item>

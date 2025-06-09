@@ -12,7 +12,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 
-import { iconChevronRight, iconCircle, iconCloud, iconServer } from "~/util/icons";
+import { iconCircle, iconCloud, iconServer } from "~/util/icons";
 
 import clsx from "clsx";
 import { useMemo, useState } from "react";

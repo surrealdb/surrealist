@@ -2,7 +2,6 @@ import { ActionIcon, Box, Group, Popover, SimpleGrid, TextInput, Tooltip } from 
 import { useDisclosure } from "@mantine/hooks";
 import { Updater } from "use-immer";
 import { Connection } from "~/types";
-import { iconServer } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../Icon";
 

@@ -36,7 +36,7 @@ import { useToggleList } from "~/hooks/toggle";
 import { openGraphLabelEditorModal } from "~/modals/graph-labels";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
-import { __throw, plural } from "~/util/helpers";
+import { plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { type PreviewProps } from ".";

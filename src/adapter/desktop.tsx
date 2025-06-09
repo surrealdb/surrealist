@@ -21,7 +21,7 @@ import { getSetting, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
-import { showError, showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
@@ -390,15 +390,16 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			useDatabaseStore.getState().stopServing();
 
-			showError({
+			showErrorNotification({
 				title: "Serving failed",
-				subtitle: msg,
+				content: msg,
 			});
 		});
 	}
 
 	private initWindowEvents() {
-		listen("window:open_settings", (e) => dispatchIntent("open-settings", e.payload ? { tab: e.payload as string } : undefined));
+		listen("window:open_settings", (e) => 
+           ("open-settings", e.payload ? { tab: e.payload as string } : undefined));
 	}
 
 	private async queryOpenRequest() {
@@ -414,9 +415,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 				const { success, name, path } = File;
 
 				if (!success) {
-					showError({
+					showErrorNotification({
 						title: `Failed to open "${name}"`,
-						subtitle: `File exceeds maximum size limit`,
+						content: `File exceeds maximum size limit`,
 					});
 
 					continue;

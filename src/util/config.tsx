@@ -1,5 +1,5 @@
 import { klona } from "klona";
-import { assign, debounce, isEmpty, isEqual, pick } from "radash";
+import { assign, debounce, isEmpty, isEqual } from "radash";
 import type { StoreApi, UseBoundStore } from "zustand";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";

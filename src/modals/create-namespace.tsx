@@ -69,6 +69,7 @@ function CreateNamespace() {
 						variant="gradient"
 						flex={1}
 						loading={isPending}
+						disabled={!namespaceName}
 						rightSection={<Icon path={iconPlus} />}
 					>
 						Create

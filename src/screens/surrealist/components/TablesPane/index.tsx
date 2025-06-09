@@ -7,10 +7,8 @@ import {
 	iconPin,
 	iconPinOff,
 	iconPlus,
-	iconRelation,
 	iconReset,
 	iconSearch,
-	iconTable,
 } from "~/util/icons";
 
 import { Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";

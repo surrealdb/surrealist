@@ -1,4 +1,4 @@
-import { Alert, Box, Group, Select, Text } from "@mantine/core";
+import { Alert, Group, Select, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { Icon } from "~/components/Icon";
 import { useTableNames } from "~/hooks/schema";

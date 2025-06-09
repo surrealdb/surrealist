@@ -14,11 +14,7 @@ import type {
 import { klona } from "klona";
 import { escapeIdent } from "surrealdb";
 import { adapter } from "~/adapter";
-import {
-	executeQuery,
-	executeQueryFirst,
-	executeQuerySingle,
-} from "~/screens/surrealist/connection/connection";
+import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";

@@ -45,6 +45,8 @@ export function ExplorerView() {
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
 	const [connection] = useConnectionAndView();
 	const openTableCreator = useRequireDatabase(_openTableCreator);
+	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
+	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"));
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
@@ -134,7 +136,7 @@ export function ExplorerView() {
 											<Entry
 												leftSection={<Icon path={iconUpload} />}
 												rightSection={<Icon path={iconChevronRight} />}
-												onClick={() => dispatchIntent("export-database")}
+												onClick={exportDatabase}
 												style={{ flexShrink: 0 }}
 												bg="transparent"
 											>
@@ -143,7 +145,7 @@ export function ExplorerView() {
 											<Entry
 												leftSection={<Icon path={iconDownload} />}
 												rightSection={<Icon path={iconChevronRight} />}
-												onClick={() => dispatchIntent("import-database")}
+												onClick={importDatabase}
 												style={{ flexShrink: 0 }}
 												bg="transparent"
 											>

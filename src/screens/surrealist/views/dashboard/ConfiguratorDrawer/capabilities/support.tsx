@@ -1,12 +1,9 @@
 import {
 	Alert,
 	Box,
-	Button,
 	Collapse,
 	Group,
 	Paper,
-	SimpleGrid,
-	Stack,
 	Text,
 	ThemeIcon,
 	Tooltip,
@@ -17,18 +14,10 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
-import { BASE_STATUS, CapabilityBaseProps, DynamicInputList, RuleSetBase } from "./shared";
+import { CapabilityBaseProps } from "./shared";
 
-import {
-	iconCancel,
-	iconCheck,
-	iconChevronDown,
-	iconChevronUp,
-	iconHelp,
-	iconWrench,
-} from "~/util/icons";
+import { iconChevronDown, iconChevronUp, iconHelp } from "~/util/icons";
 
-import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
 
 export function SupportCapability({ name, description }: CapabilityBaseProps) {

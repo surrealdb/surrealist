@@ -1,6 +1,5 @@
 import { Box, Center, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import type { PropsWithChildren, ReactNode } from "react";
-import { useIsLight } from "~/hooks/theme";
 import { CodePreview } from "../CodePreview";
 import { Icon } from "../Icon";
 

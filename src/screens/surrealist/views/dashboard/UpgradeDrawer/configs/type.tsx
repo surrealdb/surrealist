@@ -19,6 +19,7 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 	const [selected, setSelected] = useState("");
 
 	const { mutateAsync } = useUpdateInstanceTypeMutation(instance.id);
+	const instanceType = instance.type.slug;
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 	const organizations = useOrganizations();
 	const organization = organizations.find((org) => org.id === instance.organization_id);
@@ -73,7 +74,7 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 						{organization && (
 							<InstanceTypes
 								value={selected}
-								active={instance.type.slug}
+								active={instanceType === "free" ? "development" : instanceType}
 								storageMode={storageMode}
 								organization={organization}
 								onChange={setSelected}

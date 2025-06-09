@@ -1,4 +1,4 @@
-import { Badge, Group, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import { Badge, Group, Select, SimpleGrid, TextInput } from "@mantine/core";
 import { type ChangeEvent, useLayoutEffect } from "react";
 import { Icon } from "~/components/Icon";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";

@@ -1,7 +1,7 @@
 import { highlightCode } from "@lezer/highlight";
 import { adapter } from "~/adapter";
 import { createStyleHighlighter } from "~/editor";
-import type { CodeLang, ColorScheme, SyntaxTheme } from "~/types";
+import type { ColorScheme, SyntaxTheme } from "~/types";
 
 import { StreamLanguage } from "@codemirror/language";
 import { csharp, java } from "@codemirror/legacy-modes/mode/clike";

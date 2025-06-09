@@ -1,20 +1,14 @@
-import { Alert, Menu, Stack } from "@mantine/core";
-import { Text } from "@mantine/core";
-import { useQueryClient } from "@tanstack/react-query";
-import { PropsWithChildren, useCallback, useMemo } from "react";
+import { Menu } from "@mantine/core";
+import { PropsWithChildren, useMemo } from "react";
 import { Link } from "wouter";
-import { fetchAPI } from "~/cloud/api";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 import { useDeleteInstance, usePauseInstance, useResumeInstance } from "~/hooks/cloud";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
-import { useConfirmation } from "~/providers/Confirmation";
-import { useConfigStore } from "~/stores/config";
 import { CloudInstance } from "~/types";
-import { tagEvent } from "~/util/analytics";
-import { showError, showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
 
@@ -64,9 +58,9 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 		const token = await authTokenMutation.mutateAsync();
 
 		if (!token) {
-			return showError({
+			return showErrorNotification({
 				title: "Failed to copy auth token",
-				subtitle: "Auth token is not available",
+				content: "Auth token is not available",
 			});
 		}
 
@@ -77,9 +71,9 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				subtitle: "Successfully copied auth token to clipboard",
 			});
 		} catch (error) {
-			showError({
+			showErrorNotification({
 				title: "Failed to copy auth token",
-				subtitle: "Unable to copy auth token to clipboard",
+				content: "Unable to copy auth token to clipboard",
 			});
 		}
 	};

@@ -1,20 +1,6 @@
 import classes from "./style.module.scss";
 
-import {
-	ActionIcon,
-	Alert,
-	Box,
-	Button,
-	Group,
-	Menu,
-	MenuItem,
-	Paper,
-	ScrollArea,
-	SimpleGrid,
-	Stack,
-	Text,
-	ThemeIcon,
-} from "@mantine/core";
+import { Box, Button, Group, Menu, ScrollArea, Stack, Text, ThemeIcon } from "@mantine/core";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";

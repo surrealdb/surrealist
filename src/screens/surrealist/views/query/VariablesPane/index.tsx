@@ -1,6 +1,6 @@
 import { Prec } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
-import { ActionIcon, Badge, Group } from "@mantine/core";
+import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
 import { useEffect, useMemo, useState } from "react";

@@ -1,15 +1,5 @@
-import {
-	Box,
-	Button,
-	Checkbox,
-	Collapse,
-	Group,
-	MultiSelect,
-	ScrollArea,
-	Stack,
-	Text,
-} from "@mantine/core";
-import { assign, isObject, merge } from "radash";
+import { Box, Button, Checkbox, Group, MultiSelect, ScrollArea, Stack, Text } from "@mantine/core";
+import { assign } from "radash";
 
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
@@ -20,7 +10,7 @@ import { useCheckbox } from "~/hooks/events";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { backupConfig } from "~/util/config";
-import { showError, showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconCheck, iconDownload, iconUpload } from "~/util/icons";
 import { applyMigrations } from "~/util/migrator";
 
@@ -67,9 +57,9 @@ export function ManageDataTab() {
 		const parsed = JSON.parse(restoreConfig);
 
 		if (typeof parsed !== "object" || typeof parsed.config !== "object") {
-			showError({
+			showErrorNotification({
 				title: "Restore failed",
-				subtitle: "Invalid backup file provided",
+				content: "Invalid backup file provided",
 			});
 			return;
 		}

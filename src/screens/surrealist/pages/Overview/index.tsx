@@ -32,7 +32,6 @@ import {
 	iconChevronRight,
 	iconCloud,
 	iconCommunity,
-	iconDelete,
 	iconPlus,
 	iconReset,
 	iconSearch,

@@ -1,4 +1,4 @@
-import { Alert, Group, Stack, Text } from "@mantine/core";
+import { Alert, Group, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";

@@ -1,6 +1,5 @@
 import { Button, Group, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
-import { useEffect } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useConnection } from "~/hooks/connection";

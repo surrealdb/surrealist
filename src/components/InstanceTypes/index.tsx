@@ -66,11 +66,8 @@ export function InstanceTypes({
 			return "production-memory";
 		}
 
-		const freeType = instanceTypes.find((type) => type.category === "free");
-		const isFreeAvailable = freeType && isAvailable(freeType);
-
-		return isFreeAvailable ? "free" : "development";
-	}, [active, instanceTypes, isAvailable, storageMode]);
+		return "production";
+	}, [active, instanceTypes, storageMode]);
 
 	const [category, setCategory] = useState("");
 
@@ -131,12 +128,12 @@ export function InstanceTypes({
 							activeCategory={category}
 							selectedType={value}
 							activeType={active}
-							category="free"
-							instanceTypes={groupedTypes.free ?? []}
+							category="production"
+							instanceTypes={groupedTypes.production ?? []}
+							withBillingRequired
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
 						/>
-
 						<InstanceTypeCategory
 							organization={organization}
 							activeCategory={category}
@@ -148,15 +145,13 @@ export function InstanceTypes({
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
 						/>
-
 						<InstanceTypeCategory
 							organization={organization}
 							activeCategory={category}
 							selectedType={value}
 							activeType={active}
-							category="production"
-							instanceTypes={groupedTypes.production ?? []}
-							withBillingRequired
+							category="free"
+							instanceTypes={groupedTypes.free ?? []}
 							isAvailable={isAvailable}
 							onSelect={handleUpdate}
 						/>

@@ -1,16 +1,6 @@
 import classes from "./style.module.scss";
 
-import {
-	ActionIcon,
-	Badge,
-	Box,
-	Group,
-	Menu,
-	ScrollArea,
-	Stack,
-	Text,
-	Tooltip,
-} from "@mantine/core";
+import { ActionIcon, Badge, Box, Group, Menu, ScrollArea, Stack, Text } from "@mantine/core";
 
 import { capitalize } from "radash";
 import { type ReactNode, useState } from "react";

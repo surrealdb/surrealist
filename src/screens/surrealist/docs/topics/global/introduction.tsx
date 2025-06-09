@@ -4,7 +4,6 @@ import { DriverSelector } from "~/components/DriverSelector";
 import { Icon } from "~/components/Icon";
 import { DRIVERS } from "~/constants";
 import { useSetting } from "~/hooks/config";
-import { useIsLight } from "~/hooks/theme";
 import { Article } from "~/screens/surrealist/docs/components";
 import { iconOpen } from "~/util/icons";
 

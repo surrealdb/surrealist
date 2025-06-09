@@ -1,18 +1,17 @@
-import { Alert, Divider, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Alert, Box, Button, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance, CloudMeasurement } from "~/types";
 import { measureStorageUsage } from "~/util/cloud";
 import { formatMemory } from "~/util/helpers";
-import { iconDatabase } from "~/util/icons";
 
 export interface DiskUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
 	instance: CloudInstance | undefined;
 	isLoading: boolean;
+	onUpgrade?: () => void;
 }
 
-export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockProps) {
+export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUsageBlockProps) {
 	const storageUsage = measureStorageUsage(usage ?? []);
 	const storageMaxGB = instance?.storage_size ?? 0;
 	const storageMax = storageMaxGB * 1024;
@@ -25,73 +24,65 @@ export function DiskUsageBlock({ usage, instance, isLoading }: DiskUsageBlockPro
 	return (
 		<Skeleton visible={isLoading}>
 			<Paper
-				gap={0}
+				p="xl"
+				gap={30}
 				component={Stack}
 				pos="relative"
-				mih={202}
+				mih={168}
 			>
-				<Group p="xl">
-					<Icon
-						path={iconDatabase}
-						size="lg"
-					/>
-					<Text
-						c="bright"
-						fw={700}
-						fz="xl"
-					>
-						Storage usage
-					</Text>
-				</Group>
-				<Divider />
-				<Stack
-					p="xl"
-					gap={0}
-					flex={1}
-				>
-					{instance?.distributed_storage_specs ? (
-						<Alert
-							flex={1}
-							color="violet"
-							title="Coming soon"
+				<Group>
+					<Stack gap={0}>
+						<Text
+							c="bright"
+							fw={700}
+							fz="xl"
 						>
-							Storage usage for distributed instances is not yet available and will be
-							added in a future release.
-						</Alert>
-					) : (
-						<>
-							<Group>
-								<Text
-									c="bright"
-									fz="xl"
-									fw={600}
-								>
-									{storageUsageMB}
-								</Text>
-								<Spacer />
-								<Text
-									fz="xl"
-									fw={600}
-								>
-									{storageMaxMB}
-								</Text>
-							</Group>
+							Storage usage
+						</Text>
+						<Text>{storageFrac.toFixed(2)}% used</Text>
+					</Stack>
+					<Spacer />
+					<Button
+						c="surreal"
+						size="xs"
+						fz={13}
+						variant="subtle"
+						onClick={onUpgrade}
+					>
+						Upgrade
+					</Button>
+				</Group>
 
-							<Progress
-								value={storageFrac}
-								color={storageColor}
-								size={6}
-								mt="md"
-							/>
-
-							<Spacer />
-
-							<Text ta="center">
-								You have used {storageFrac.toFixed(2)}% of your storage limit
+				{instance?.distributed_storage_specs ? (
+					<Alert
+						flex={1}
+						color="violet"
+						title="Coming soon"
+					>
+						Storage usage for distributed instances is not yet available and will be
+						added in a future release.
+					</Alert>
+				) : (
+					<Box>
+						<Group>
+							<Text
+								c="bright"
+								fz="lg"
+								fw={600}
+							>
+								{storageUsageMB}
 							</Text>
-						</>
-					)}
-				</Stack>
+							<Spacer />
+							<Text fz="lg">{storageMaxMB}</Text>
+						</Group>
+						<Progress
+							value={storageFrac}
+							color={storageColor}
+							size={4}
+							mt="md"
+						/>
+					</Box>
+				)}
 			</Paper>
 		</Skeleton>
 	);

@@ -22,7 +22,7 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION, fuzzyMatch } from "~/util/helpers";
-import { iconOpen, iconSearch } from "~/util/icons";
+import { iconSearch } from "~/util/icons";
 
 export function CommandPaletteModal() {
 	const { pushCommand } = useConfigStore.getState();

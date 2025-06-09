@@ -1,5 +1,5 @@
 import { objectify } from "radash";
-import type { AccessRecordAuth, QueryResult, ScopeAuth } from "surrealdb";
+import type { AccessRecordAuth, QueryResult } from "surrealdb";
 import { fetchAPI } from "~/cloud/api";
 import type { AuthDetails, Authentication, QueryResponse } from "~/types";
 import { getSetting } from "~/util/config";

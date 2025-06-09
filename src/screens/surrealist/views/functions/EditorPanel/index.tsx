@@ -10,7 +10,6 @@ import {
 	SimpleGrid,
 	Text,
 	TextInput,
-	Tooltip,
 } from "@mantine/core";
 
 import {
@@ -53,7 +52,7 @@ import type { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { SchemaFunction } from "~/types";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { SDB_2_0_0 } from "~/util/versions";
@@ -106,9 +105,9 @@ export function EditorPanel({
 	const formatFunction = useStable(() => {
 		const isFunctionBlockInvalid = validateQuery(details.block);
 		if (isFunctionBlockInvalid) {
-			showError({
+			showErrorNotification({
 				title: "Failed to format",
-				subtitle: "Your function must be valid to format it",
+				content: "Your function must be valid to format it",
 			});
 			return;
 		}

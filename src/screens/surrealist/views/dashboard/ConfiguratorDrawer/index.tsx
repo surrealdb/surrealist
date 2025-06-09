@@ -7,12 +7,9 @@ import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { iconClose, iconTune } from "~/util/icons";
 import { ConfigurationCapabilities } from "./configs/capabilities";
-import { ConfigurationStorage } from "./configs/storage";
-import { ConfigurationInstanceType } from "./configs/type";
 import { ConfigurationVersion } from "./configs/version";
 
 export interface ConfiguratorDrawerProps {
@@ -33,12 +30,6 @@ export function ConfiguratorDrawer({
 	onClose,
 }: ConfiguratorDrawerProps) {
 	const [width, setWidth] = useState(650);
-
-	const openTypes = useStable(() => {
-		onChangeTab("type");
-	});
-
-	const hideDisk = instance.distributed_storage_specs !== undefined;
 
 	return (
 		<Drawer
@@ -72,7 +63,7 @@ export function ConfiguratorDrawer({
 						path={iconTune}
 						size="sm"
 					/>
-					Instance configuration
+					Configure instance
 				</PrimaryTitle>
 
 				<Spacer />
@@ -98,13 +89,6 @@ export function ConfiguratorDrawer({
 				>
 					<Tabs.Tab value="capabilities">Capabilities</Tabs.Tab>
 					<Tabs.Tab value="version">Version</Tabs.Tab>
-					<Tabs.Tab value="type">Instance type</Tabs.Tab>
-					<Tabs.Tab
-						value="disk"
-						disabled={hideDisk}
-					>
-						Disk size
-					</Tabs.Tab>
 				</Tabs.List>
 
 				<Tabs.Panel value="capabilities">
@@ -119,21 +103,6 @@ export function ConfiguratorDrawer({
 						instance={instance}
 						onUpdate={onUpdate}
 						onClose={onClose}
-					/>
-				</Tabs.Panel>
-
-				<Tabs.Panel value="type">
-					<ConfigurationInstanceType
-						instance={instance}
-						onClose={onClose}
-					/>
-				</Tabs.Panel>
-
-				<Tabs.Panel value="disk">
-					<ConfigurationStorage
-						instance={instance}
-						onClose={onClose}
-						onUpgrade={openTypes}
 					/>
 				</Tabs.Panel>
 			</Tabs>

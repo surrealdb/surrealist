@@ -36,7 +36,7 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { CloudCoupon } from "~/types";
-import { showError, showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconAccount, iconCreditCard, iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
@@ -61,9 +61,9 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 
 			adapter.openUrl(url);
 		} catch (err: any) {
-			showError({
+			showErrorNotification({
 				title: "Failed to open payment page",
-				subtitle: err.message,
+				content: err,
 			});
 		} finally {
 			setRequesting(false);
@@ -88,9 +88,9 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 				queryKey: ["cloud", "coupons"],
 			});
 		} catch (err: any) {
-			showError({
+			showErrorNotification({
 				title: "Failed to apply discount code",
-				subtitle: "The discount code is invalid or has already been applied",
+				content: "The discount code is invalid or has already been applied",
 			});
 		}
 	});
@@ -136,15 +136,15 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	return (
 		<Stack>
 			<Section
-				title="Your plan"
-				description="The plan active for this organisation"
+				title="Support Plan"
+				description="The support plan for this organisation"
 			>
-				<Skeleton visible={!organization?.plan}>
-					<BillingPlan
-						name={organization?.plan?.name ?? ""}
-						description={organization?.plan?.description ?? ""}
-					/>
-				</Skeleton>
+				{/* <Skeleton visible={!organization?.plan}> */}
+				<SupportPlan
+					name="Community"
+					description="Receive help from community members on Discord and GitHub"
+				/>
+				{/* </Skeleton> */}
 			</Section>
 			<Section
 				title="Billing Information"
@@ -410,12 +410,12 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	);
 }
 
-interface BillingPlanProps {
+interface SupportPlanProps {
 	name: string;
 	description: string;
 }
 
-function BillingPlan({ name, description }: BillingPlanProps) {
+function SupportPlan({ name, description }: SupportPlanProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -425,13 +425,20 @@ function BillingPlan({ name, description }: BillingPlanProps) {
 					<PrimaryTitle>{name}</PrimaryTitle>
 					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
 				</Box>
-				<Button
-					variant="gradient"
-					rightSection={<Icon path={iconOpen} />}
-					onClick={() => adapter.openUrl("https://surrealdb.com/pricing")}
-				>
-					View plans
-				</Button>
+				<Tooltip label="More support options coming soon">
+					<Button
+						variant="gradient"
+						disabled
+						rightSection={
+							<Icon
+								path={iconOpen}
+								size="md"
+							/>
+						}
+					>
+						Upgrade Plan
+					</Button>
+				</Tooltip>
 			</Group>
 		</Paper>
 	);
