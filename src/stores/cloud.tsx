@@ -159,7 +159,8 @@ export const useCloudStore = create<CloudStore>()(
 						if (msgIndex >= 0) {
 							updater(state.chatConversation[msgIndex]);
 						}
-						return {};
+
+						return state;
 					}),
 
 				completeChatResponse: (id) =>
