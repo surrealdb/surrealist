@@ -43,7 +43,7 @@ export function ComputeUsageChart({
 			const data = metric.values[i];
 
 			if (data !== null) {
-				value[metric.labels] = data.toFixed(2);
+				value[metric.labels] = Math.round(data * 100) / 100;
 			}
 		}
 
