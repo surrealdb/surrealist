@@ -41,8 +41,7 @@ export function ConfigurationBlock({
 
 	const storageSize = instance?.storage_size ?? 0;
 	const memoryMax = instance?.type.memory ?? 0;
-	const computeCores = instance?.type.cpu ?? 0;
-	const computeMax = instance?.type.compute_units.max ?? 0;
+	const cpuCount = instance?.type.cpu ?? 0;
 	const typeName = instance?.type.display_name ?? "";
 	const typeCategory = instance?.type.category ?? "";
 	const nodeCount = instance?.compute_units ?? 0;
@@ -50,9 +49,9 @@ export function ConfigurationBlock({
 	const isFree = instance?.type.category === "free";
 	const backupText = isFree ? "Upgrade required" : "Active";
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
-	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
+	const computeText = `${cpuCount} ${plural(cpuCount, "vCPU")}`;
 	const storageText = formatMemory(storageSize * 1000, true);
-	const nodeText = `${nodeCount} Node${plural(nodeCount, "", "s")}`;
+	const nodeText = nodeCount === 1 ? "Single node" : `${nodeCount} Node`;
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
@@ -110,13 +109,13 @@ export function ConfigurationBlock({
 						/>
 
 						<ConfigValue
-							title="Nodes"
+							title="Cluster"
 							icon={iconRelation}
 							value={nodeText}
 						/>
 
 						<ConfigValue
-							title="Storage limit"
+							title="Storage"
 							icon={iconDatabase}
 							value={storageText}
 						/>
