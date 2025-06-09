@@ -398,8 +398,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	private initWindowEvents() {
-		listen("window:open_settings", (e) => 
-           ("open-settings", e.payload ? { tab: e.payload as string } : undefined));
+		listen("window:open_settings", (e) => {
+			dispatchIntent("open-settings", e.payload ? { tab: e.payload as string } : undefined);
+		});
 	}
 
 	private async queryOpenRequest() {
