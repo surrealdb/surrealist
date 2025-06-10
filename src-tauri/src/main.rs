@@ -96,6 +96,9 @@ fn main() {
             database::stop_database,
             window::toggle_devtools,
             window::new_window,
+            window::minimize_window,
+            window::maximize_window,
+            window::close_window,
             open::get_opened_resources,
             open::clear_opened_resources,
             open::read_query_file,
@@ -108,6 +111,7 @@ fn main() {
             info!("Launch args: {:?}", env::args());
             set_app_handle(app.handle().clone());
 
+            #[cfg(target_os = "macos")]
             window::setup_menu_bar(app).expect("Failed to setup menu bar");
 
             #[cfg(any(windows, target_os = "linux"))]

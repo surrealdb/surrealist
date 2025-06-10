@@ -1,0 +1,62 @@
+.title-bar {
+	display: flex;
+	align-items: center;
+	height: 32px;
+	width: 100%;
+	user-select: none;
+	position: fixed;
+	z-index: 1000;
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.drag-area {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	cursor: default;
+	position: relative;
+}
+
+.title {
+	font-weight: 700;
+	color: var(--mantine-color-gray-4);
+}
+
+.window-controls {
+	display: flex;
+	align-items: center;
+	flex: 0 0 auto;
+}
+
+.menu-button {
+	padding: 7px 10px;
+	border-radius: 4px;
+	font-size: small;
+
+	&:hover {
+		background: var(--mantine-color-slate-6);
+	}
+}
+
+.control-button {
+	border-radius: 0;
+	width: 46px;
+	height: 32px;
+
+	&:hover {
+		background: var(--mantine-color-slate-6);
+	}
+}
+
+.close-button {
+	border-radius: 0;
+	width: 46px;
+	height: 32px;
+
+	&:hover {
+		background: var(--mantine-color-red-7);
+		color: white;
+	}
+}
