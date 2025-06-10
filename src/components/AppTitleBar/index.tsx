@@ -1,12 +1,24 @@
-import { ActionIcon, Box, Group, Image, Menu, Text } from "@mantine/core";
+import { Box, Group, Image, Menu, Text } from "@mantine/core";
 import { invoke } from "@tauri-apps/api/core";
 import icon from "~/assets/images/icon.webp";
 import { Icon } from "~/components/Icon";
-import { iconClose, iconTextBox, iconTextBoxMinus } from "~/util/icons";
+import { iconExit, iconMaximize, iconMinimize, iconRestore } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { useState } from "react";
+import { useInterfaceStore } from "~/stores/interface";
+import { ActionButton } from "../ActionButton";
 
 export function AppTitleBar() {
+	const currentWindow = getCurrentWindow();
+	const { title } = useInterfaceStore.getState();
+	const [isMaximized, setMaximized] = useState(false);
+
+	getCurrentWindow().onResized(() => {
+		getCurrentWindow().isMaximized().then(setMaximized);
+	});
+
 	return (
 		<Box className={classes.titleBar}>
 			<Group gap={0}>
@@ -141,7 +153,7 @@ export function AppTitleBar() {
 					fw={600}
 					data-tauri-drag-region
 				>
-					{document.title}
+					{title}
 				</Text>
 			</Box>
 
@@ -149,41 +161,52 @@ export function AppTitleBar() {
 				gap={0}
 				className={classes.windowControls}
 			>
-				<ActionIcon
-					aria-label="Minimize"
+				<ActionButton
+					label="Minimize"
+					variant="subtle"
+					color="gray"
+					size="md"
+					openDelay={500}
+					className={classes.controlButton}
+					onClick={async () => {
+						await currentWindow.minimize();
+					}}
+				>
+					<Icon path={iconMinimize} />
+				</ActionButton>
+				<ActionButton
+					label={isMaximized ? "Restore" : "Maximize"}
+					openDelay={500}
 					variant="subtle"
 					color="gray"
 					size="md"
 					className={classes.controlButton}
 					onClick={async () => {
-						await invoke("minimize_window");
+						const maximized = await currentWindow.isMaximized();
+
+						if (maximized) {
+							await currentWindow.unmaximize();
+							setMaximized(false);
+						} else {
+							await currentWindow.maximize();
+							setMaximized(true);
+						}
 					}}
 				>
-					<Icon path={iconTextBoxMinus} />
-				</ActionIcon>
-				<ActionIcon
-					aria-label="Maximize"
-					variant="subtle"
-					color="gray"
-					size="md"
-					className={classes.controlButton}
-					onClick={async () => {
-						await invoke("maximize_window");
-					}}
-				>
-					<Icon path={iconTextBox} />
-				</ActionIcon>
-				<ActionIcon
-					aria-label="Close"
+					<Icon path={isMaximized ? iconRestore : iconMaximize} />
+				</ActionButton>
+				<ActionButton
+					label="Close"
+					openDelay={500}
 					variant="subtle"
 					size="md"
 					className={classes.closeButton}
 					onClick={async () => {
-						await invoke("close_window");
+						await currentWindow.close();
 					}}
 				>
-					<Icon path={iconClose} />
-				</ActionIcon>
+					<Icon path={iconExit} />
+				</ActionButton>
 			</Group>
 		</Box>
 	);
