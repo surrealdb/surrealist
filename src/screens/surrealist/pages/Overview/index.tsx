@@ -153,6 +153,7 @@ export function OverviewPage() {
 						pos="absolute"
 						inset={0}
 						style={style}
+						mt={96}
 					>
 						<Stack
 							className={classes.content}
@@ -160,7 +161,7 @@ export function OverviewPage() {
 							maw={1000}
 							px="xl"
 							mx="auto"
-							py={96}
+							pb={96}
 						>
 							<Stack
 								align="center"
