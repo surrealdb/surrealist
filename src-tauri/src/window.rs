@@ -1,9 +1,12 @@
 use std::sync::{Mutex, OnceLock};
-use tauri::{App, AppHandle, Emitter, Manager, WindowEvent};
+use tauri::{AppHandle, Emitter, Manager, WindowEvent};
 use uuid::Uuid;
 
 #[cfg(target_os = "macos")]
 use tauri::menu::{MenuBuilder, SubmenuBuilder};
+
+#[cfg(target_os = "macos")]
+use tauri::App;
 
 static LAST_FOCUSED_WINDOW: OnceLock<Mutex<Option<String>>> = OnceLock::new();
 
@@ -19,41 +22,6 @@ pub fn toggle_devtools(window: tauri::WebviewWindow) {
 #[tauri::command]
 pub async fn new_window(app: AppHandle) {
     open_new_window(&app).await;
-}
-
-#[tauri::command]
-pub async fn minimize_window(window: tauri::WebviewWindow) {
-    println!("Minimizing window: {}", window.label());
-    if let Err(e) = window.minimize() {
-        eprintln!("Failed to minimize window: {}", e);
-    }
-}
-
-#[tauri::command]
-pub async fn maximize_window(window: tauri::WebviewWindow) {
-    println!("Maximizing/unmaximizing window: {}", window.label());
-    match window.is_maximized() {
-        Ok(is_maximized) => {
-            if is_maximized {
-                if let Err(e) = window.unmaximize() {
-                    eprintln!("Failed to unmaximize window: {}", e);
-                }
-            } else if let Err(e) = window.maximize() {
-                eprintln!("Failed to maximize window: {}", e);
-            }
-        }
-        Err(e) => {
-            eprintln!("Failed to check window maximize state: {}", e);
-        }
-    }
-}
-
-#[tauri::command]
-pub async fn close_window(window: tauri::WebviewWindow) {
-    println!("Closing window: {}", window.label());
-    if let Err(e) = window.close() {
-        eprintln!("Failed to close window: {}", e);
-    }
 }
 
 #[cfg(target_os = "macos")]
@@ -105,7 +73,7 @@ pub fn setup_menu_bar(app: &App) -> Result<(), Box<dyn std::error::Error>> {
 pub async fn open_new_window(app: &AppHandle) {
     let window_label = format!("surrealist-{}", Uuid::new_v4());
 
-    #[allow(clippy::unnecessary_mut_passed)]
+    #[allow(unused_mut)]
     let mut builder = tauri::WebviewWindowBuilder::new(app, &window_label, Default::default())
         .title("Surrealist")
         .inner_size(1435.0, 775.0)
