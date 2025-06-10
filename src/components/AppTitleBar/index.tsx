@@ -1,9 +1,9 @@
 import { ActionIcon, Box, Group, Image, Menu, Text } from "@mantine/core";
 import { invoke } from "@tauri-apps/api/core";
+import icon from "~/assets/images/icon.webp";
 import { Icon } from "~/components/Icon";
 import { iconClose, iconTextBox, iconTextBoxMinus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import icon from "~/assets/images/icon.webp";
 import classes from "./style.module.scss";
 
 export function AppTitleBar() {
