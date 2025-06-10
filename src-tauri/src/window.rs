@@ -38,10 +38,8 @@ pub async fn maximize_window(window: tauri::WebviewWindow) {
                 if let Err(e) = window.unmaximize() {
                     eprintln!("Failed to unmaximize window: {}", e);
                 }
-            } else {
-                if let Err(e) = window.maximize() {
-                    eprintln!("Failed to maximize window: {}", e);
-                }
+            } else if let Err(e) = window.maximize() {
+                eprintln!("Failed to maximize window: {}", e);
             }
         }
         Err(e) => {
@@ -106,6 +104,8 @@ pub fn setup_menu_bar(app: &App) -> Result<(), Box<dyn std::error::Error>> {
 
 pub async fn open_new_window(app: &AppHandle) {
     let window_label = format!("surrealist-{}", Uuid::new_v4());
+
+    #[allow(clippy::unnecessary_mut_passed)]
     let mut builder = tauri::WebviewWindowBuilder::new(app, &window_label, Default::default())
         .title("Surrealist")
         .inner_size(1435.0, 775.0)
