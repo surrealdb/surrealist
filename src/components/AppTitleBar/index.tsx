@@ -1,14 +1,14 @@
 import { Box, Group, Image, Menu, Text } from "@mantine/core";
 import { invoke } from "@tauri-apps/api/core";
-import icon from "~/assets/images/icon.webp";
-import { Icon } from "~/components/Icon";
-import { iconExit, iconMaximize, iconMinimize, iconRestore } from "~/util/icons";
-import { dispatchIntent } from "~/util/intents";
-import classes from "./style.module.scss";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
+import icon from "~/assets/images/icon.webp";
+import { Icon } from "~/components/Icon";
 import { useInterfaceStore } from "~/stores/interface";
+import { iconExit, iconMaximize, iconMinimize, iconRestore } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
+import classes from "./style.module.scss";
 
 export function AppTitleBar() {
 	const currentWindow = getCurrentWindow();
