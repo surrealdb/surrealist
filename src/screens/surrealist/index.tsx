@@ -6,6 +6,7 @@ import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AuthGuard } from "~/components/AuthGuard";
+import { AppTitleBar } from "~/components/AppTitleBar";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useAvailableViews } from "~/hooks/connection";
@@ -90,14 +91,14 @@ export function SurrealistScreen() {
 	const views = useAvailableViews();
 
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
-	const customTitlebar = adapter.platform === "darwin" && isDesktop;
+	const isMacos = adapter.platform === "darwin" && isDesktop;
 
 	const onCloseSidebar = useStable(() => {
 		setOverlaySidebar(false);
 	});
 
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
-	const titlebarOffset = customTitlebar ? 15 : 0;
+	const titlebarOffset = isMacos ? 15 : !isMacos ? 32 : 0;
 
 	return (
 		<Box
@@ -108,6 +109,7 @@ export function SurrealistScreen() {
 				"--titlebar-offset": `${titlebarOffset}px`,
 			}}
 		>
+			{!isMacos && <AppTitleBar />}
 			<Flex
 				direction="column"
 				flex={1}
@@ -119,7 +121,7 @@ export function SurrealistScreen() {
 				/>
 
 				<Box className={classes.wrapper}>
-					{customTitlebar && (
+					{isMacos && (
 						<Flex
 							data-tauri-drag-region
 							className={classes.titlebar}
