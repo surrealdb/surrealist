@@ -8,9 +8,10 @@ import type { CloudSignin } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
-import { showErrorNotification } from "~/util/helpers";
+import { fastParseJwt, showErrorNotification } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import {
+	ACCESS_TOKEN_KEY,
 	INVITATION_KEY,
 	REFERRER_KEY,
 	REFRESH_TOKEN_KEY,
@@ -176,6 +177,7 @@ export async function refreshAccess() {
 
 	try {
 		const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+		const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
 
 		adapter.log("Cloud", "Refreshing cloud access token");
 
@@ -185,6 +187,12 @@ export async function refreshAccess() {
 		}
 
 		setLoading();
+
+		if (accessToken && fastParseJwt(accessToken).exp > Date.now() / 1000) {
+			adapter.log("Cloud", "Access token is still valid, skipping refresh");
+			acquireSession(accessToken, false);
+			return;
+		}
 
 		const response = await adapter.fetch(`${authBase}/oauth/token`, {
 			method: "POST",
@@ -205,7 +213,10 @@ export async function refreshAccess() {
 			throw new Error(`Invalid authentication response: ${result.error}`);
 		}
 
+		console.log(result.refresh_token);
+
 		localStorage.setItem(REFRESH_TOKEN_KEY, result.refresh_token);
+		localStorage.setItem(ACCESS_TOKEN_KEY, result.access_token);
 
 		acquireSession(result.access_token, false);
 	} catch (err: any) {

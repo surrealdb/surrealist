@@ -1,25 +1,13 @@
-import {
-	checkSessionExpiry,
-	invalidateSession,
-	openCloudAuthentication,
-	refreshAccess,
-	verifyAuthentication,
-} from "~/cloud/api/auth";
-
 import { Alert, Stack, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
-import { useLayoutEffect } from "react";
-import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { CloudInstance, Connection } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { featureFlags, useFeatureFlags } from "~/util/feature-flags";
+import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
-import { useIntent } from "./routing";
 
 /**
  * Returns whether cloud functionality is enabled
@@ -63,57 +51,6 @@ export function useOrganizations() {
  */
 export function useAvailableInstanceVersions() {
 	return useCloudStore((s) => s.instanceVersions);
-}
-
-/**
- * Automatically set up the cloud authentication flow
- */
-export function useCloudAuthentication() {
-	useLayoutEffect(() => {
-		const responseCode = sessionStorage.getItem(CODE_RES_KEY);
-		const responseState = sessionStorage.getItem(STATE_RES_KEY);
-
-		// Check for configured redirect response, otherwise
-		// attempt to refresh the currently active session
-		if (responseCode && responseState) {
-			sessionStorage.removeItem(CODE_RES_KEY);
-			sessionStorage.removeItem(STATE_RES_KEY);
-
-			verifyAuthentication(responseCode, responseState);
-		} else {
-			refreshAccess();
-		}
-
-		// Automatically refresh the session before it expires
-		setInterval(checkSessionExpiry, 1000 * 60 * 3);
-	}, []);
-
-	// React to authentication intents
-	useIntent("cloud-auth", (payload) => {
-		const { code, state } = payload;
-
-		if (!code || !state) {
-			adapter.warn("Cloud", "Invalid cloud callback payload");
-			return;
-		}
-
-		verifyAuthentication(code, state);
-	});
-
-	// React to signin intents
-	useIntent("cloud-signin", () => {
-		openCloudAuthentication();
-	});
-
-	// React to callback intents
-	useIntent("cloud-signout", () => {
-		invalidateSession();
-	});
-
-	// React to cloud activation
-	useIntent("cloud-activate", () => {
-		featureFlags.set("cloud_access", true);
-	});
 }
 
 /**
