@@ -140,7 +140,7 @@ export function CloudAccount() {
 						src={profile.picture}
 						component={UnstyledButton}
 					>
-						{state === "loading" && !profile.picture && (
+						{!profile.username && (
 							<Loader
 								size="sm"
 								color="slate.4"
