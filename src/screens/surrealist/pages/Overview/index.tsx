@@ -32,6 +32,7 @@ import {
 	iconChevronRight,
 	iconCloud,
 	iconCommunity,
+	iconOpen,
 	iconPlus,
 	iconReset,
 	iconSearch,
@@ -568,7 +569,22 @@ function OrganizationInstances({ organization, onConnect }: OrganizationInstance
 			<Group mt="xl">
 				<Box>
 					<Text>Surreal Cloud</Text>
-					<PrimaryTitle fz="xl">{organization.info.name}</PrimaryTitle>
+					<Link href={`/o/${organization.info.id}`}>
+						<Group gap="sm">
+							<PrimaryTitle
+								fz="xl"
+								className={classes.organisationName}
+							>
+								{organization.info.name}
+							</PrimaryTitle>
+							<Icon
+								path={iconOpen}
+								c="bright"
+								size="sm"
+								mb={-4}
+							/>
+						</Group>
+					</Link>
 				</Box>
 			</Group>
 			<SimpleGrid cols={GRID_COLUMNS}>

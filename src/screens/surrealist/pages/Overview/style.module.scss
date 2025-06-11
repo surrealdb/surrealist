@@ -3,6 +3,17 @@
 	z-index: 0;
 }
 
+.organisation-name {
+	+svg {
+		opacity: 0;
+		transition: opacity 0.2s;
+	}
+
+	&:hover+svg {
+		opacity: 1;
+	}
+}
+
 .start-box {
 	position: relative;
 	overflow: hidden;
