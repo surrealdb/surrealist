@@ -1,5 +1,5 @@
-import { Center, Text } from "@mantine/core";
-import { Group, Loader } from "@mantine/core";
+import { Center } from "@mantine/core";
+import { Loader } from "@mantine/core";
 import { PropsWithChildren, useEffect } from "react";
 import { Redirect } from "wouter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
@@ -33,16 +33,7 @@ export function AuthGuard({ redirect, children }: PropsWithChildren<AuthGuardPro
 		)
 	) : (
 		<Center flex={1}>
-			<Group>
-				<Loader size="sm" />
-				<Text
-					c="bright"
-					fz="xl"
-					fw={500}
-				>
-					Redirecting to sign in...
-				</Text>
-			</Group>
+			<Loader size="lg" />
 		</Center>
 	);
 }
