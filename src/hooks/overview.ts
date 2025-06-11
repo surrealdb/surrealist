@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { OVERVIEW_KEY } from "~/util/storage";
 
 export const OVERVIEW: Savepoint = { path: "/overview", name: "Overview" };
-export const ORGANIZATIONS: Savepoint = { path: "/organizations", name: "Organisations" };
+export const ORGANIZATIONS: Savepoint = { path: "/organisations", name: "Organisations" };
 
 export interface Savepoint {
 	path: string;
@@ -14,7 +14,7 @@ export interface Savepoint {
  */
 export function useSavepoint(savepoint: Savepoint) {
 	useEffect(() => {
-		sessionStorage.setItem(OVERVIEW_KEY, JSON.stringify(savepoint));
+		return () => sessionStorage.setItem(OVERVIEW_KEY, JSON.stringify(savepoint));
 	}, [savepoint]);
 }
 

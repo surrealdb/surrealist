@@ -13,7 +13,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
+import { OVERVIEW, Savepoint, useLastSavepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
 import {
 	iconArrowLeft,
@@ -42,6 +42,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 	const isAdmin = useHasOrganizationRole(id, "admin");
 	const [, navigate] = useLocation();
 	const { data, isSuccess } = useCloudOrganizationsQuery();
+	const lastSavepoint = useLastSavepoint();
 	const organization = data?.find((org) => org.id === id);
 
 	const savepoint = useMemo<Savepoint>(() => {
@@ -86,9 +87,9 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 							{organization && (
 								<>
 									<Group py="md">
-										<Link to="/organisations">
+										<Link to={lastSavepoint.path}>
 											<ActionButton
-												label="Back to organisations"
+												label={`Back to ${lastSavepoint.name}`}
 												size="lg"
 											>
 												<Icon path={iconArrowLeft} />
