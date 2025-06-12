@@ -1,8 +1,12 @@
 import classes from "./style.module.scss";
 
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
+import databaseUrl from "~/assets/images/database.png";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
+import sidekickUrl from "~/assets/images/sidekick.png";
+import communityUrl from "~/assets/images/surrealism.png";
+import universityUrl from "~/assets/images/university.png";
 
 import {
 	Box,
@@ -25,18 +29,15 @@ import {
 
 import {
 	iconAccount,
-	iconBook,
+	iconArrowLeft,
 	iconCheck,
 	iconChevronDown,
 	iconCloud,
-	iconCommunity,
 	iconOpen,
 	iconPlus,
 	iconReset,
 	iconSearch,
-	iconSidekick,
 	iconTune,
-	iconUniversity,
 } from "~/util/icons";
 
 import { useInputState } from "@mantine/hooks";
@@ -62,6 +63,7 @@ import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, CloudOrganization, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
+import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
 import { StartBlog } from "./content/blog";
 import { StartCloud } from "./content/cloud";
@@ -487,16 +489,16 @@ export function OverviewPage() {
 							>
 								<StartResource
 									title="Documentation"
-									subtitle="Learn more about Surrealist"
-									icon={iconBook}
+									subtitle="Explore the SurrealDB documentation"
+									image={databaseUrl}
 									onClick={() =>
-										adapter.openUrl("https://surrealdb.com/docs/surrealist")
+										adapter.openUrl("https://surrealdb.com/docs/surrealdb")
 									}
 								/>
 								<StartResource
 									title="Community"
 									subtitle="Join the discussion on Discord"
-									icon={iconCommunity}
+									image={communityUrl}
 									onClick={() =>
 										adapter.openUrl("https://discord.com/invite/surrealdb")
 									}
@@ -504,23 +506,38 @@ export function OverviewPage() {
 								<StartResource
 									title="University"
 									subtitle="Learn the SurrealDB fundamentals in 3 hours"
-									icon={iconUniversity}
+									image={universityUrl}
 									onClick={() => adapter.openUrl("https://surrealdb.com/learn")}
 								/>
 								<StartResource
 									title="Sidekick"
 									subtitle="Get support from your personal Surreal AI assistant"
-									icon={iconSidekick}
+									image={sidekickUrl}
 									onClick={() => navigate("/chat")}
 								/>
 							</SimpleGrid>
 
-							<PrimaryTitle
-								mt="xl"
-								fz={26}
-							>
-								Blog
-							</PrimaryTitle>
+							<Group mt="xl">
+								<PrimaryTitle
+									fz={26}
+									flex={1}
+								>
+									Blog
+								</PrimaryTitle>
+								<Button
+									rightSection={
+										<Icon
+											path={iconArrowLeft}
+											flip="horizontal"
+										/>
+									}
+									onClick={() => dispatchIntent("open-news")}
+									color="slate"
+									variant="subtle"
+								>
+									Read all articles
+								</Button>
+							</Group>
 
 							<SimpleGrid
 								cols={{
@@ -535,36 +552,6 @@ export function OverviewPage() {
 									/>
 								))}
 							</SimpleGrid>
-
-							{/* {newsQuery.isPending ? (
-								<>
-									<Skeleton h={144} />
-									<Skeleton h={144} />
-									<Skeleton h={144} />
-								</>
-							) : (
-								<>
-									{newsPosts.map((article, i) => (
-										<StartNews
-											key={i}
-											post={article}
-										/>
-									))}
-
-									<Center>
-										<Button
-											rightSection={<Icon path={iconChevronRight} />}
-											onClick={() => dispatchIntent("open-news")}
-											color="slate"
-											variant="white"
-											radius="xl"
-											mt="xl"
-										>
-											Read more news
-										</Button>
-									</Center>
-								</>
-							)} */}
 						</Stack>
 					</ScrollArea>
 				)}
