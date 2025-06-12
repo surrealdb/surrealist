@@ -143,6 +143,8 @@ export function QueryView() {
 			flex={1}
 			h="100%"
 			ref={wrapperRef}
+			pr="lg"
+			pb="lg"
 		>
 			<PanelGroup direction={orientation}>
 				<Panel minSize={15}>

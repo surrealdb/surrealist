@@ -79,15 +79,14 @@ export function NewEmbedPage() {
 				inset={0}
 				className={classes.scrollArea}
 				viewportProps={{
-					style: { paddingBlock: 75 },
+					style: { paddingBottom: 75 },
 				}}
 			>
 				<Stack
-					w="100%"
-					maw={1100}
+					px="xl"
 					mx="auto"
-					gap="xl"
-					pos="relative"
+					maw={1200}
+					mt={90}
 				>
 					<Box>
 						<PageBreadcrumbs
@@ -109,15 +108,70 @@ export function NewEmbedPage() {
 						mt="xl"
 					>
 						<Grid.Col span={5}>
-							<Paper p="xl">
-								<Embedder
-									value={parsedState}
-									onChangeURL={setUrl}
-								/>
-							</Paper>
+							<Stack gap="xl">
+								<Paper p="xl">
+									<Embedder
+										value={parsedState}
+										onChangeURL={setUrl}
+									/>
+								</Paper>
+								<Paper p="xl">
+									<Text
+										fw={600}
+										fz="lg"
+										mb={2}
+										c="bright"
+									>
+										Restore configuration
+									</Text>
+									<Text>
+										Optionally paste in an existing mini URL to restore the
+										configuration
+									</Text>
+									<Button
+										mt="xl"
+										size="sm"
+										color="slate"
+										variant="light"
+										onClick={showParseHandle.open}
+									>
+										Restore from URL
+									</Button>
+									<Modal
+										opened={showParse}
+										onClose={showParseHandle.close}
+									>
+										<Group>
+											<TextInput
+												onChange={parseUrl}
+												spellCheck={false}
+												placeholder="Paste your mini URL here"
+												flex={1}
+											/>
+											<ActionIcon onClick={showParseHandle.close}>
+												<Icon path={iconClose} />
+											</ActionIcon>
+										</Group>
+									</Modal>
+								</Paper>
+							</Stack>
 						</Grid.Col>
 						<Grid.Col span={7}>
 							<Stack gap="xl">
+								<Paper style={{ overflow: "hidden" }}>
+									<iframe
+										ref={frame}
+										width="100%"
+										height="500"
+										src={url}
+										title="Surrealist Mini"
+										referrerPolicy="strict-origin-when-cross-origin"
+										style={{
+											border: "none",
+											display: "block",
+										}}
+									/>
+								</Paper>
 								<Paper p="xl">
 									<Text
 										fw={600}
@@ -166,59 +220,6 @@ export function NewEmbedPage() {
 											)}
 										</CopyButton>
 									</SimpleGrid>
-								</Paper>
-								<Paper style={{ overflow: "hidden" }}>
-									<iframe
-										ref={frame}
-										width="100%"
-										height="500"
-										src={url}
-										title="Surrealist Mini"
-										referrerPolicy="strict-origin-when-cross-origin"
-										style={{
-											border: "none",
-											display: "block",
-										}}
-									/>
-								</Paper>
-								<Paper p="xl">
-									<Text
-										fw={600}
-										fz="lg"
-										mb={2}
-										c="bright"
-									>
-										Restore configuration
-									</Text>
-									<Text>
-										Optionally paste in an existing mini URL to restore the
-										configuration
-									</Text>
-									<Button
-										mt="xl"
-										size="sm"
-										color="slate"
-										variant="light"
-										onClick={showParseHandle.open}
-									>
-										Restore from URL
-									</Button>
-									<Modal
-										opened={showParse}
-										onClose={showParseHandle.close}
-									>
-										<Group>
-											<TextInput
-												onChange={parseUrl}
-												spellCheck={false}
-												placeholder="Paste your mini URL here"
-												flex={1}
-											/>
-											<ActionIcon onClick={showParseHandle.close}>
-												<Icon path={iconClose} />
-											</ActionIcon>
-										</Group>
-									</Modal>
 								</Paper>
 							</Stack>
 						</Grid.Col>

@@ -138,6 +138,8 @@ export function ModelsView() {
 			h="100%"
 			wrap="nowrap"
 			gap="var(--surrealist-divider-size)"
+			pr="lg"
+			pb="lg"
 		>
 			{isAvailable && (
 				<ModelsPanel

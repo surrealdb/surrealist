@@ -37,55 +37,57 @@ export function AuthenticationView() {
 	});
 
 	return (
-		<>
-			<Box h="100%">
-				<PanelGroup direction="horizontal">
-					<Panel minSize={15}>
-						<LevelPanelLazy
-							level="ROOT"
-							color="red"
-							icon={iconServerSecure}
-							users={users}
-							accesses={accesses}
-						/>
-					</Panel>
-					<PanelDragger />
-					<Panel minSize={15}>
-						<LevelPanelLazy
-							level="NAMESPACE"
-							color="blue"
-							icon={iconFolderSecure}
-							users={users}
-							accesses={accesses}
-							disabled={
-								!namespace && {
-									message:
-										"You need to select a namespace before viewing namespace authentication",
-									selector: { withNamespace: true },
-								}
+		<Box
+			h="100%"
+			pr="lg"
+			pb="lg"
+		>
+			<PanelGroup direction="horizontal">
+				<Panel minSize={15}>
+					<LevelPanelLazy
+						level="ROOT"
+						color="red"
+						icon={iconServerSecure}
+						users={users}
+						accesses={accesses}
+					/>
+				</Panel>
+				<PanelDragger />
+				<Panel minSize={15}>
+					<LevelPanelLazy
+						level="NAMESPACE"
+						color="blue"
+						icon={iconFolderSecure}
+						users={users}
+						accesses={accesses}
+						disabled={
+							!namespace && {
+								message:
+									"You need to select a namespace before viewing namespace authentication",
+								selector: { withNamespace: true },
 							}
-						/>
-					</Panel>
-					<PanelDragger />
-					<Panel minSize={15}>
-						<LevelPanelLazy
-							level="DATABASE"
-							color="orange"
-							icon={iconDatabaseSecure}
-							users={users}
-							accesses={accesses}
-							disabled={
-								!database && {
-									message:
-										"You need to select a database before viewing database authentication",
-									selector: { withDatabase: true },
-								}
+						}
+					/>
+				</Panel>
+				<PanelDragger />
+				<Panel minSize={15}>
+					<LevelPanelLazy
+						level="DATABASE"
+						color="orange"
+						icon={iconDatabaseSecure}
+						users={users}
+						accesses={accesses}
+						disabled={
+							!database && {
+								message:
+									"You need to select a database before viewing database authentication",
+								selector: { withDatabase: true },
 							}
-						/>
-					</Panel>
-				</PanelGroup>
-			</Box>
-		</>
+						}
+					/>
+				</Panel>
+			</PanelGroup>
+		</Box>
 	);
 }
 

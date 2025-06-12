@@ -6,6 +6,22 @@ import { fetchAPI } from "../api";
 /**
  * Fetch organization details
  */
+export function useCloudOrganizationQuery(organisation?: string) {
+	const authState = useCloudStore((state) => state.authState);
+
+	return useQuery({
+		queryKey: ["cloud", "organizations", organisation],
+		refetchInterval: 15_000,
+		enabled: authState === "authenticated",
+		queryFn: async () => {
+			return fetchAPI<CloudOrganization>(`/organizations/${organisation}`);
+		},
+	});
+}
+
+/**
+ * Fetch organization details
+ */
 export function useCloudOrganizationsQuery() {
 	const authState = useCloudStore((state) => state.authState);
 

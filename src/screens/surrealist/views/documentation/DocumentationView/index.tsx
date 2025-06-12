@@ -25,27 +25,27 @@ export function DocumentationView() {
 	});
 
 	return (
-		<>
-			<Group
-				h="100%"
-				wrap="nowrap"
-				gap="var(--surrealist-divider-size)"
-			>
-				<TocPaneLazy
-					active={active}
-					docs={docs}
-					language={language}
-					scrollRef={scrollRef}
-				/>
-				<ArticlePaneLazy
-					docs={docs}
-					language={language}
-					scrollRef={scrollRef}
-					onLanguageChange={setLanguage}
-					onChangeActiveTopic={setActive}
-				/>
-			</Group>
-		</>
+		<Group
+			h="100%"
+			wrap="nowrap"
+			gap="var(--surrealist-divider-size)"
+			pr="lg"
+			pb="lg"
+		>
+			<TocPaneLazy
+				active={active}
+				docs={docs}
+				language={language}
+				scrollRef={scrollRef}
+			/>
+			<ArticlePaneLazy
+				docs={docs}
+				language={language}
+				scrollRef={scrollRef}
+				onLanguageChange={setLanguage}
+				onChangeActiveTopic={setActive}
+			/>
+		</Group>
 	);
 }
 

@@ -1,10 +1,8 @@
 import classes from "./style.module.scss";
 
 import {
-	ActionIcon,
 	Button,
 	Checkbox,
-	CopyButton,
 	Group,
 	Indicator,
 	Menu,
@@ -25,16 +23,14 @@ import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
-import { InstanceActions } from "~/components/InstanceActions";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { MetricsDuration } from "~/types";
-import { iconCheck, iconChevronDown, iconClock, iconCopy, iconFilter } from "~/util/icons";
+import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";
@@ -49,6 +45,10 @@ import { NetworkIngressChart } from "../NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
+import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
+import { InstanceActions } from "~/components/InstanceActions";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -80,9 +80,12 @@ export function DashboardView() {
 	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
 	const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
 
+	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
 	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instance);
-	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
+	const { data: organisation, isPending: organisationPending } = useCloudOrganizationQuery(
+		details?.organization_id,
+	);
 
 	const { data: networkIngressMetrics, isPending: networkIngressMetricsPending } =
 		useCloudMetricsQuery(instance, "ingress", metricsDuration);
@@ -157,7 +160,7 @@ export function DashboardView() {
 		configuringHandle.open();
 	});
 
-	const isLoading = detailsPending || backupsPending || usagePending;
+	const isLoading = detailsPending || backupsPending || usagePending || organisationPending;
 
 	if (!isCloud) {
 		return <Redirect to="/query" />;
@@ -181,76 +184,58 @@ export function DashboardView() {
 				inset={0}
 				className={classes.scrollArea}
 				viewportProps={{
-					style: { paddingBlock: 75 },
+					style: { paddingBottom: 75 },
 				}}
 			>
 				<Stack
+					px="xl"
 					mx="auto"
-					maw={1150}
-					h="100%"
-					gap="xl"
+					maw={1200}
+					mt={22}
 				>
-					<Box mb={38}>
-						{isLoading ? (
-							<>
-								<Skeleton
-									w="100%"
-									maw={250}
-									height={41}
-									my={10}
+					<Box mb={18}>
+						<Skeleton
+							visible={isLoading}
+							width={isLoading ? 350 : undefined}
+						>
+							<PageBreadcrumbs
+								items={[
+									{ label: "Surrealist", href: "/overview" },
+									{ label: "Organisations", href: "/organisations" },
+									{
+										label: organisation?.name ?? "",
+										href: `/o/${details?.organization_id}`,
+									},
+									{ label: details?.name ?? "" },
+								]}
+							/>
+						</Skeleton>
+						<Group mt="sm">
+							<Skeleton
+								visible={isLoading}
+								width={isLoading ? 200 : "max-content"}
+							>
+								<PrimaryTitle fz={32}>{details?.name ?? "_"}</PrimaryTitle>
+							</Skeleton>
+							{details?.state && (
+								<StateBadge
+									size={14}
+									state={details.state}
 								/>
-								<Skeleton
-									w="100%"
-									maw={500}
-									height={18}
-									my={2}
-								/>
-							</>
-						) : (
-							<>
-								<Group>
-									<PrimaryTitle fz={38}>{details?.name}</PrimaryTitle>
-									{details?.state && (
-										<StateBadge
-											mt="xs"
-											ml="xs"
-											size={14}
-											state={details.state}
-										/>
-									)}
-									<Spacer />
-									{details && (
-										<InstanceActions instance={details}>
-											<Button
-												color="slate"
-												variant="light"
-												rightSection={<Icon path={iconChevronDown} />}
-											>
-												Actions
-											</Button>
-										</InstanceActions>
-									)}
-								</Group>
-								<Group gap="sm">
-									<Text fz="md">{details?.host}</Text>
-									<CopyButton value={details?.host ?? ""}>
-										{({ copied, copy }) => (
-											<ActionIcon
-												variant={copied ? "gradient" : undefined}
-												size="sm"
-												onClick={copy}
-												aria-label="Copy hostname to clipboard"
-											>
-												<Icon
-													path={copied ? iconCheck : iconCopy}
-													size="sm"
-												/>
-											</ActionIcon>
-										)}
-									</CopyButton>
-								</Group>
-							</>
-						)}
+							)}
+							<Spacer />
+							{details && (
+								<InstanceActions instance={details}>
+									<Button
+										color="violet"
+										variant="light"
+										rightSection={<Icon path={iconChevronDown} />}
+									>
+										Instance actions
+									</Button>
+								</InstanceActions>
+							)}
+						</Group>
 					</Box>
 
 					<NavigationBlock isLoading={isLoading} />
