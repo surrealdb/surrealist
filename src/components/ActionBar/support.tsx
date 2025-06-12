@@ -11,6 +11,11 @@ export function HelpAndSupport() {
 			radius="md"
 			variant="subtle"
 			label="Help and support"
+			tooltipProps={{
+				position: "bottom",
+				label: "Help and support",
+				children: null,
+			}}
 			onClick={openHelpAndSupport}
 		>
 			<Icon
