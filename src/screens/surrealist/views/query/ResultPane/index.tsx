@@ -178,6 +178,8 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		URL.revokeObjectURL(url);
 	});
 
+	const runText = `Run ${selection ? "selection" : "query"}`;
+
 	return (
 		<ContentPane
 			title={panelTitle}
@@ -316,13 +318,26 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 						color="slate"
 						variant={isQueryValid ? "gradient" : "light"}
 						style={{ border: "none" }}
-						className={classes.run}
+						className={classes.runLarge}
 						loading={isQuerying}
 						onClick={runQuery}
 						rightSection={<Icon path={iconCursor} />}
 					>
-						Run {selection ? "selection" : "query"}
+						{runText}
 					</Button>
+
+					<ActionButton
+						label={runText}
+						radius="xs"
+						size={30}
+						color="slate"
+						variant={isQueryValid ? "gradient" : "light"}
+						className={classes.runSmall}
+						loading={isQuerying}
+						onClick={runQuery}
+					>
+						<Icon path={iconCursor} />
+					</ActionButton>
 				</Group>
 			}
 		>
