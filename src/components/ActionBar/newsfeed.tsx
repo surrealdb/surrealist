@@ -16,6 +16,11 @@ export function NewsFeed() {
 				radius="md"
 				variant="subtle"
 				label="Latest news"
+				tooltipProps={{
+					position: "bottom",
+					label: "Latest news",
+					children: null,
+				}}
 				onClick={() => dispatchIntent("open-news")}
 			>
 				<Icon
