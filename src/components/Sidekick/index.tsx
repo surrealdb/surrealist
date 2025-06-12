@@ -133,7 +133,7 @@ export function Sidekick() {
 			w="100%"
 			align="center"
 		>
-			<TopGlow offset={200} />
+			<TopGlow offset={250} />
 
 			<Box
 				flex={1}

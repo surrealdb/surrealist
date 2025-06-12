@@ -20,13 +20,14 @@ export function SupportPage() {
 				inset={0}
 				className={classes.scrollArea}
 				viewportProps={{
-					style: { paddingBlock: 75 },
+					style: { paddingBottom: 75 },
 				}}
 			>
 				<Stack
+					px="xl"
 					mx="auto"
-					maw={1100}
-					h="100%"
+					maw={1200}
+					mt={90}
 				>
 					<Box>
 						<PageBreadcrumbs

@@ -13,7 +13,7 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { OVERVIEW, Savepoint, useLastSavepoint, useSavepoint } from "~/hooks/overview";
+import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
 import {
 	iconCog,
@@ -41,7 +41,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 	const isAdmin = useHasOrganizationRole(id, "admin");
 	const [, navigate] = useLocation();
 	const { data, isSuccess } = useCloudOrganizationsQuery();
-	const lastSavepoint = useLastSavepoint();
 	const organization = data?.find((org) => org.id === id);
 
 	const savepoint = useMemo<Savepoint>(() => {
@@ -65,7 +64,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 					flex={1}
 					pos="relative"
 				>
-					<TopGlow offset={200} />
+					<TopGlow offset={250} />
 
 					<ScrollArea
 						pos="absolute"
@@ -80,8 +79,8 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 						<Stack
 							px="xl"
 							mx="auto"
-							maw={1000}
-							mt={75}
+							maw={1200}
+							mt={90}
 						>
 							{organization && (
 								<>

@@ -168,6 +168,8 @@ export function FunctionsView() {
 			<Box
 				h="100%"
 				ref={ref}
+				pr="lg"
+				pb="lg"
 			>
 				<PanelGroup
 					direction="horizontal"

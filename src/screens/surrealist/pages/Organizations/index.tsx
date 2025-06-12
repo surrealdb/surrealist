@@ -33,7 +33,7 @@ export function OrganizationsPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={200} />
+			<TopGlow offset={250} />
 
 			{isAuthed ? (
 				<ScrollArea
@@ -49,8 +49,8 @@ export function OrganizationsPage() {
 					<Stack
 						px="xl"
 						mx="auto"
-						maw={1000}
-						mt={75}
+						maw={1200}
+						mt={90}
 					>
 						<Box>
 							<PageBreadcrumbs
@@ -68,7 +68,7 @@ export function OrganizationsPage() {
 						</Box>
 
 						<Group mt="xl">
-							<PrimaryTitle>Your organisations</PrimaryTitle>
+							<PrimaryTitle fz={22}>Your organisations</PrimaryTitle>
 							<Spacer />
 							<Link to="/create/organisation">
 								<Button
@@ -92,7 +92,12 @@ export function OrganizationsPage() {
 
 						{archived.length > 0 && (
 							<>
-								<PrimaryTitle mt="xl">Archived organisations</PrimaryTitle>
+								<PrimaryTitle
+									mt="xl"
+									fz={22}
+								>
+									Archived organisations
+								</PrimaryTitle>
 
 								<SimpleGrid cols={GRID_COLUMNS}>
 									{archived.map((org) => (

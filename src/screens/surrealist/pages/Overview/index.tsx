@@ -153,6 +153,9 @@ export function OverviewPage() {
 						pos="absolute"
 						inset={0}
 						style={style}
+						viewportProps={{
+							style: { paddingBottom: 75 },
+						}}
 					>
 						<Stack
 							className={classes.content}
@@ -160,7 +163,7 @@ export function OverviewPage() {
 							maw={1200}
 							px="xl"
 							mx="auto"
-							py={96}
+							pt={78}
 						>
 							<Stack
 								align="center"
@@ -194,7 +197,7 @@ export function OverviewPage() {
 							))}
 
 							<Group mt="xl">
-								<PrimaryTitle fz={26}>Connections</PrimaryTitle>
+								<PrimaryTitle fz={22}>Connections</PrimaryTitle>
 								<Spacer />
 								{hasLabels && (
 									<Menu closeOnItemClick={false}>
@@ -307,9 +310,9 @@ export function OverviewPage() {
 											size="sm"
 										/>
 									}
-									radius="sm"
 									size="xs"
-									className={classes.search}
+									flex={1}
+									maw={264}
 								/>
 
 								<Menu
@@ -464,7 +467,12 @@ export function OverviewPage() {
 
 							{authState === "unauthenticated" && showCloud && (
 								<>
-									<PrimaryTitle mt="xl">Surreal Cloud</PrimaryTitle>
+									<PrimaryTitle
+										mt={36}
+										fz={22}
+									>
+										Surreal Cloud
+									</PrimaryTitle>
 									<StartCloud
 										title="Try Surreal Cloud"
 										subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure. Get your own free instance today."
@@ -475,8 +483,8 @@ export function OverviewPage() {
 							)}
 
 							<PrimaryTitle
-								mt="xl"
-								fz={26}
+								mt={36}
+								fz={22}
 							>
 								Resources
 							</PrimaryTitle>
@@ -517,12 +525,12 @@ export function OverviewPage() {
 								/>
 							</SimpleGrid>
 
-							<Group mt="xl">
+							<Group mt={36}>
 								<PrimaryTitle
-									fz={26}
+									fz={22}
 									flex={1}
 								>
-									Blog
+									Featured articles
 								</PrimaryTitle>
 								<Button
 									rightSection={
@@ -581,6 +589,7 @@ function OrganizationInstances({ organization, onConnect }: OrganizationInstance
 						<Group gap="sm">
 							<PrimaryTitle
 								fz="xl"
+								lh="h1"
 								className={classes.organisationName}
 							>
 								{organization.info.name}
@@ -595,7 +604,10 @@ function OrganizationInstances({ organization, onConnect }: OrganizationInstance
 					</Link>
 				</Box>
 			</Group>
-			<SimpleGrid cols={GRID_COLUMNS}>
+			<SimpleGrid
+				cols={GRID_COLUMNS}
+				mt="xs"
+			>
 				{organization.instances.map((instance) => (
 					<StartInstance
 						key={instance.id}

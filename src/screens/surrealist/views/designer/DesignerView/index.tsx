@@ -76,102 +76,102 @@ export function DesignerView() {
 	const [minSize, ref] = usePanelMinSize(275);
 
 	return (
-		<>
-			<Box
-				h="100%"
-				ref={ref}
+		<Box
+			h="100%"
+			ref={ref}
+			pr="lg"
+			pb="lg"
+		>
+			<PanelGroup
+				direction="horizontal"
+				style={{ opacity: minSize === 0 ? 0 : 1 }}
 			>
-				<PanelGroup
-					direction="horizontal"
-					style={{ opacity: minSize === 0 ? 0 : 1 }}
-				>
-					{(designerTableList || emptySchema) && (
-						<>
-							<Panel
-								defaultSize={minSize}
-								minSize={minSize}
-								maxSize={35}
-								id="tables"
-								order={1}
-							>
-								<TablesPane
-									icon={iconDesigner}
-									closeDisabled={emptySchema}
-									onTableSelect={design}
-									onTableContextMenu={buildContextMenu}
-									onClose={closeTableList}
-								/>
-							</Panel>
-							<PanelDragger />
-						</>
-					)}
-					<Panel
-						minSize={minSize}
-						id="graph"
-						order={2}
-					>
-						{tables.length > 0 ? (
-							<ReactFlowProvider>
-								<TableGraphPaneLazy
-									tables={tables}
-									active={isDesigning ? active : null}
-									setActiveTable={design}
-								/>
-							</ReactFlowProvider>
-						) : (
-							<Introduction
-								title="Designer"
+				{(designerTableList || emptySchema) && (
+					<>
+						<Panel
+							defaultSize={minSize}
+							minSize={minSize}
+							maxSize={35}
+							id="tables"
+							order={1}
+						>
+							<TablesPane
 								icon={iconDesigner}
-								snippet={{
-									language: "surrealql",
-									title: "SurrealQL",
-									code: `
-										-- Declare a new table
-										DEFINE TABLE person;
-										
-										-- Define a table field
-										DEFINE FIELD name ON person TYPE string;
+								closeDisabled={emptySchema}
+								onTableSelect={design}
+								onTableContextMenu={buildContextMenu}
+								onClose={closeTableList}
+							/>
+						</Panel>
+						<PanelDragger />
+					</>
+				)}
+				<Panel
+					minSize={minSize}
+					id="graph"
+					order={2}
+				>
+					{tables.length > 0 ? (
+						<ReactFlowProvider>
+							<TableGraphPaneLazy
+								tables={tables}
+								active={isDesigning ? active : null}
+								setActiveTable={design}
+							/>
+						</ReactFlowProvider>
+					) : (
+						<Introduction
+							title="Designer"
+							icon={iconDesigner}
+							snippet={{
+								language: "surrealql",
+								title: "SurrealQL",
+								code: `
+									-- Declare a new table
+									DEFINE TABLE person;
+									
+									-- Define a table field
+									DEFINE FIELD name ON person TYPE string;
 
-										-- Define an index on the field
-										DEFINE INDEX unique_name ON person
-											FIELDS name UNIQUE;
-									`,
-								}}
-							>
-								<Text>
-									The designer view allows you to visually design your database
-									schema without writing queries.
-								</Text>
-								<Group>
-									<Button
-										flex={1}
-										variant="gradient"
-										leftSection={<Icon path={iconPlus} />}
-										disabled={!isConnected}
-										onClick={openTableCreator}
-									>
-										Create table
-									</Button>
-									<Button
-										flex={1}
-										color="slate"
-										variant="light"
-										rightSection={<Icon path={iconOpen} />}
-										onClick={() =>
-											adapter.openUrl(
-												"https://surrealdb.com/docs/surrealql/statements/define/table",
-											)
-										}
-									>
-										Learn more
-									</Button>
-								</Group>
-							</Introduction>
-						)}
-					</Panel>
-				</PanelGroup>
-			</Box>
-		</>
+									-- Define an index on the field
+									DEFINE INDEX unique_name ON person
+										FIELDS name UNIQUE;
+								`,
+							}}
+						>
+							<Text>
+								The designer view allows you to visually design your database schema
+								without writing queries.
+							</Text>
+							<Group>
+								<Button
+									flex={1}
+									variant="gradient"
+									leftSection={<Icon path={iconPlus} />}
+									disabled={!isConnected}
+									onClick={openTableCreator}
+								>
+									Create table
+								</Button>
+								<Button
+									flex={1}
+									color="slate"
+									variant="light"
+									rightSection={<Icon path={iconOpen} />}
+									onClick={() =>
+										adapter.openUrl(
+											"https://surrealdb.com/docs/surrealql/statements/define/table",
+										)
+									}
+								>
+									Learn more
+								</Button>
+							</Group>
+						</Introduction>
+					)}
+				</Panel>
+			</PanelGroup>
+		</Box>
 	);
 }
 

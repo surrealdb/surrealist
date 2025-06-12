@@ -110,6 +110,8 @@ export function ExplorerView() {
 			<Box
 				h="100%"
 				ref={ref}
+				pr="lg"
+				pb="lg"
 			>
 				<PanelGroup
 					direction="horizontal"

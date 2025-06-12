@@ -118,6 +118,8 @@ export function GraphqlView() {
 		<Stack
 			gap="md"
 			h="100%"
+			pr="lg"
+			pb="lg"
 		>
 			<PanelGroup direction="horizontal">
 				<Panel minSize={15}>

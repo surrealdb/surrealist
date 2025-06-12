@@ -1,5 +1,5 @@
 .scroll-area :global(.mantine-ScrollArea-viewport)>div {
-	height: 100%;
+	display: block !important;
 }
 
 .preview {

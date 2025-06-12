@@ -112,7 +112,7 @@ export function ReferralPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={200} />
+			<TopGlow offset={250} />
 
 			{isAuthed ? (
 				<ScrollArea
@@ -122,15 +122,14 @@ export function ReferralPage() {
 					inset={0}
 					className={classes.scrollArea}
 					viewportProps={{
-						style: { paddingBlock: 75 },
+						style: { paddingBottom: 75 },
 					}}
 				>
 					<Stack
-						w="100%"
-						maw={1100}
+						px="xl"
 						mx="auto"
-						gap={38}
-						pos="relative"
+						maw={1200}
+						mt={90}
 					>
 						<Box>
 							<PageBreadcrumbs
@@ -150,7 +149,6 @@ export function ReferralPage() {
 						<Slab
 							p="xl"
 							shadow="md"
-							radius={28}
 						>
 							<Group gap={0}>
 								<Box style={{ alignSelf: "start" }}>
@@ -232,7 +230,7 @@ export function ReferralPage() {
 						</Slab>
 
 						<Box>
-							<PrimaryTitle>Progress</PrimaryTitle>
+							<PrimaryTitle fz={22}>Progress</PrimaryTitle>
 							<Text>
 								You have referred{" "}
 								<Text
@@ -257,7 +255,7 @@ export function ReferralPage() {
 								users to unlock the next reward.
 							</Text>
 							<Progress
-								mt="md"
+								mt="lg"
 								value={progress}
 								bg={isLight ? "slate.2" : "slate"}
 								styles={{
@@ -273,7 +271,7 @@ export function ReferralPage() {
 						</Box>
 
 						<Box>
-							<PrimaryTitle>Rewards</PrimaryTitle>
+							<PrimaryTitle fz={22}>Unlockable rewards</PrimaryTitle>
 							<SimpleGrid
 								mt="sm"
 								cols={{ base: 1, xs: 3, sm: 2, md: 3, lg: 5 }}
@@ -337,7 +335,7 @@ export function ReferralPage() {
 						</Box>
 
 						<Box>
-							<PrimaryTitle>How does this work?</PrimaryTitle>
+							<PrimaryTitle fz={22}>How does this work?</PrimaryTitle>
 							<SimpleGrid
 								mt="sm"
 								cols={{
