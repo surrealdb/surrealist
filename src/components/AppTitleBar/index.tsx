@@ -169,7 +169,7 @@ export function AppTitleBar() {
 					openDelay={500}
 					className={classes.controlButton}
 					onClick={async () => {
-						await currentWindow.minimize();
+						await invoke("minimize_window");
 					}}
 				>
 					<Icon path={iconMinimize} />
@@ -202,7 +202,7 @@ export function AppTitleBar() {
 					size="md"
 					className={classes.closeButton}
 					onClick={async () => {
-						await currentWindow.close();
+						await invoke("close_window");
 					}}
 				>
 					<Icon path={iconExit} />

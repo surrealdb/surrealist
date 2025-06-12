@@ -24,6 +24,22 @@ pub async fn new_window(app: AppHandle) {
     open_new_window(&app).await;
 }
 
+#[tauri::command]
+pub async fn minimize_window(window: tauri::WebviewWindow) {
+    println!("Minimizing window: {}", window.label());
+    if let Err(e) = window.minimize() {
+        eprintln!("Failed to minimize window: {}", e);
+    }
+}
+
+#[tauri::command]
+pub async fn close_window(window: tauri::WebviewWindow) {
+    println!("Closing window: {}", window.label());
+    if let Err(e) = window.close() {
+        eprintln!("Failed to close window: {}", e);
+    }
+}
+
 #[cfg(target_os = "macos")]
 pub fn setup_menu_bar(app: &App) -> Result<(), Box<dyn std::error::Error>> {
     let surrealist_menu = SubmenuBuilder::new(app, "Surrealist")
