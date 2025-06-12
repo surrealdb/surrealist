@@ -97,14 +97,15 @@ export function MiniQueryView() {
 						<Link href="https://surrealdb.com/surrealist">
 							<Group>
 								<Image
-									h={16}
+									h={18}
+									w="auto"
 									src={surrealistIcon}
 								/>
 								<Image
 									src={logoUrl}
-									style={{ pointerEvents: "none" }}
-									height={20}
-									width={20}
+									// style={{ pointerEvents: "none" }}
+									h={18}
+									w="auto"
 								/>
 							</Group>
 						</Link>
