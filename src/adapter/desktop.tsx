@@ -226,7 +226,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					type: "Custom",
 					name: "GitHub",
 					action: () => {
-						this.openUrl("https://github.com/surrealdb/surrealist");
+						this.openUrl("https://github.com/surrealdb");
 					},
 				},
 				{
@@ -251,7 +251,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					type: "Custom",
 					name: "Surrealist Docs",
 					action: () => {
-						this.openUrl("https://surrealdb.com/docs/surrealdb");
+						this.openUrl("https://surrealdb.com/docs/surrealist");
 					},
 				},
 				separator,
@@ -279,8 +279,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					action: () => {
 						this.openUrl("https://github.com/surrealdb/surrealist/issues/new/choose");
 					},
-				},
-				about,
+				}
 			],
 		};
 
@@ -288,6 +287,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			menuList.push(surrealistMenu);
 		} else {
 			fileMenu.items.push(separator, settings);
+			helpMenu.items.push(about);
 		}
 
 		fileMenu.items.push(separator, {
