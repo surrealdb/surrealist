@@ -2,12 +2,6 @@ use std::sync::{Mutex, OnceLock};
 use tauri::{AppHandle, Emitter, Manager, WindowEvent};
 use uuid::Uuid;
 
-#[cfg(target_os = "macos")]
-use tauri::menu::{MenuBuilder, SubmenuBuilder};
-
-#[cfg(target_os = "macos")]
-use tauri::App;
-
 static LAST_FOCUSED_WINDOW: OnceLock<Mutex<Option<String>>> = OnceLock::new();
 
 #[tauri::command]
