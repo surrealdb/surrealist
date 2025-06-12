@@ -25,6 +25,7 @@ import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import { Menu, MenuItem, PredefinedMenuItem, Submenu } from "@tauri-apps/api/menu";
 
 const WAIT_DURATION = 1000;
 
@@ -55,6 +56,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public isTelemetryEnabled = true;
 	public hasTitlebar = false;
 	public platform: Platform = "windows";
+	public menu: Menu | undefined = undefined;
 
 	#startTask: any;
 	#arch: string = arch();
@@ -96,6 +98,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 		this.queryOpenRequest();
 		this.checkForUpdates();
 
+		await this.setupWindowMenu();
+
 		watchStore({
 			initial: true,
 			store: useConfigStore,
@@ -123,6 +127,110 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public async setWindowTitle(title: string) {
 		getCurrentWindow().setTitle(title || "Surrealist");
+	}
+
+	public async setupWindowMenu() {
+		const separator = await PredefinedMenuItem.new({
+			item: "Separator",
+		});
+
+		const hide = await PredefinedMenuItem.new({
+			item: "Hide",
+		});
+
+		const hideOthers = await PredefinedMenuItem.new({
+			item: "HideOthers",
+		});
+
+		const showAll = await PredefinedMenuItem.new({
+			item: "ShowAll",
+		});
+
+		const about = await MenuItem.new({
+			id: "about",
+			text: "About Surrealist",
+			enabled: true,
+			action: () => {
+				dispatchIntent("open-settings", { tab: "about" });
+			},
+		});
+
+		const settings = await MenuItem.new({
+			id: "settings",
+			text: "Settings",
+			enabled: true,
+			action: () => {
+				dispatchIntent("open-settings", { tab: "preferences" });
+			},
+		});
+
+		const surrealist = await Submenu.new({
+			id: "surrealist",
+			text: "Surrealist",
+			enabled: true,
+			items: [
+				about,
+				separator,
+				settings,
+				separator,
+				hide,
+				hideOthers,
+				showAll,
+				separator,
+				{
+					item: "Quit",
+					text: "Quit Surrealist",
+				},
+			],
+		});
+
+		const file = await Submenu.new({
+			id: "file",
+			text: "File",
+			enabled: true,
+			items: [
+				{
+					id: "new_window",
+					text: "New Window",
+					enabled: true,
+					action: async () => {
+						await invoke("new_window");
+					},
+				},
+			],
+		});
+
+		const help = await Submenu.new({
+			id: "help",
+			text: "Help",
+			enabled: true,
+			items: [],
+		});
+
+		const menu = await Menu.new();
+		const closeWindow = await MenuItem.new({
+			id: "close",
+			text: "Close Window",
+			enabled: true,
+			action: () => {
+				invoke("close_window");
+			},
+		});
+
+		if (this.platform === "darwin") {
+			menu.append(surrealist);
+		} else {
+			file.append([separator, settings, separator, closeWindow]);
+			help.append(about);
+		}
+
+		menu.append([file, help]);
+
+		this.menu = menu;
+
+		if (this.platform !== "darwin") {
+			await this.menu.setAsAppMenu();
+		}
 	}
 
 	public async loadConfig() {
