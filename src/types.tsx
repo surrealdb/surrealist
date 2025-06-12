@@ -1,8 +1,8 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
+import { AboutMetadata } from "@tauri-apps/api/menu";
 import type { AnyAuth, Duration, Token } from "surrealdb";
 import { StorageCategory } from "./screens/surrealist/pages/CreateInstance/types";
 import type { FeatureFlagMap } from "./util/feature-flags";
-import { AboutMetadata } from "@tauri-apps/api/menu";
 
 export type AccessType = "JWT" | "RECORD";
 export type BannerType = "info" | "warning" | "important";
