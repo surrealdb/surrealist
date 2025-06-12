@@ -1,6 +1,7 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import type { AnyAuth, Duration, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
+import { AboutMetadata } from "@tauri-apps/api/menu";
 
 export type AccessType = "JWT" | "RECORD";
 export type BannerType = "info" | "warning" | "important";
@@ -76,6 +77,29 @@ export type ViewPage =
 	| "models"
 	| "sidekick"
 	| "documentation";
+
+export type AppMenuItemType =
+	| "Separator"
+	| "Copy"
+	| "Cut"
+	| "Paste"
+	| "SelectAll"
+	| "Undo"
+	| "Redo"
+	| "Minimize"
+	| "Maximize"
+	| "Fullscreen"
+	| "Hide"
+	| "HideOthers"
+	| "ShowAll"
+	| "CloseWindow"
+	| "Quit"
+	| "Services"
+	| "Custom"
+	| {
+			About: AboutMetadata | null;
+	  };
+
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";
 
 export type OpenFn = (id: string | null) => void;
@@ -739,4 +763,20 @@ export interface CloudDeployConfig {
 	storageCategory: StorageCategory;
 	storageAmount: number;
 	dataset: boolean;
+}
+
+export interface AppMenu {
+	id: string;
+	name: string;
+	disabled?: boolean;
+	items: AppMenuItem[];
+}
+
+export interface AppMenuItem {
+	id: string;
+	type: AppMenuItemType;
+	name?: string;
+	data?: any;
+	disabled?: boolean;
+	action?: () => void;
 }
