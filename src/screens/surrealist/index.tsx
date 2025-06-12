@@ -94,6 +94,7 @@ export function SurrealistScreen() {
 
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const isMacos = adapter.platform === "darwin" && isDesktop;
+	const isOtherOS = adapter.platform !== "darwin" && isDesktop;
 
 	const onCloseSidebar = useStable(() => {
 		setOverlaySidebar(false);
@@ -111,7 +112,7 @@ export function SurrealistScreen() {
 				"--titlebar-offset": `${titlebarOffset}px`,
 			}}
 		>
-			{!isMacos && <AppTitleBar />}
+			{isOtherOS && <AppTitleBar />}
 			<Flex
 				direction="column"
 				flex={1}
