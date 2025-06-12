@@ -156,13 +156,6 @@ export function Sidekick() {
 								wrap="nowrap"
 								align="start"
 							>
-								<Box>
-									<PrimaryTitle fz={26}>Surreal Sidekick</PrimaryTitle>
-									<Text fz="xl">
-										Your personal Surreal assistant designed to answer your
-										database questions.
-									</Text>
-								</Box>
 								<Spacer />
 								{!isResponding && conversation.length > 1 && (
 									<ActionButton
@@ -220,7 +213,6 @@ export function Sidekick() {
 										<StartResource
 											key={question.title}
 											title={question.title}
-											icon={question.icon}
 											onClick={() => {
 												setInput(question.title);
 												inputRef.current?.focus();

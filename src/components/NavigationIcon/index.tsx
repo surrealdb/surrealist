@@ -2,7 +2,7 @@ import { Box, Indicator, type IndicatorProps, Text, Tooltip } from "@mantine/cor
 import clsx from "clsx";
 import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
-import { useAbsoluteRoute } from "~/hooks/routing";
+import { useRouteMatcher } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { Entry, type EntryProps } from "../Entry";
@@ -13,7 +13,7 @@ export interface NavigationIconProps
 	extends EntryProps,
 		Omit<HTMLProps<HTMLButtonElement>, "name" | "color" | "size" | "style" | "type" | "ref"> {
 	name: ReactNode;
-	path?: string;
+	match?: string[];
 	indicator?: boolean | IndicatorProps;
 	icon: string | any;
 	withTooltip?: boolean;
@@ -22,7 +22,7 @@ export interface NavigationIconProps
 
 export function NavigationIcon({
 	name,
-	path,
+	match,
 	icon,
 	withTooltip,
 	onClick,
@@ -30,9 +30,8 @@ export function NavigationIcon({
 	...rest
 }: NavigationIconProps) {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
-	const [active] = useAbsoluteRoute(path || "");
-	// const hasIcon = typeof icon === "string";
-	const isActive = active && !!path;
+	const active = useRouteMatcher(match || []);
+	const isActive = match && active && match?.length > 0;
 
 	// const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
 	// 	animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,

@@ -471,7 +471,7 @@ export interface GlobalPageInfo {
 	id: GlobalPage;
 	name: string;
 	icon: string;
-	anim?: any;
+	aliases?: string[];
 	disabled?: (condition: GlobalCondition) => boolean;
 }
 

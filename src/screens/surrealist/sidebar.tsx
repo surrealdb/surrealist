@@ -48,7 +48,7 @@ const VIEW_NAVIGATION: ViewPage[][] = [
 interface NavigationItem {
 	name: string;
 	icon: string;
-	match: string;
+	match: string[];
 	navigate: () => void;
 }
 
@@ -88,7 +88,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
-					match: info.id,
+					match: [info.id, ...(info.aliases || [])],
 					navigate: () => setLocation(info.id),
 				};
 			});
@@ -114,7 +114,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
-					match: `/c/*/${info.id}`,
+					match: [`/c/*/${info.id}`],
 					disabled: !connection,
 					navigate: () => {
 						hoverSidebarHandle.close();
@@ -219,8 +219,8 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 								>
 									<NavigationIcon
 										name={info.name}
-										path={info.match}
 										icon={info.icon}
+										match={info.match}
 										onClick={info.navigate}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}
