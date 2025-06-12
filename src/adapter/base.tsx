@@ -1,3 +1,4 @@
+import { Menu } from "@tauri-apps/api/menu";
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
 
 export interface OpenedTextFile {
@@ -36,6 +37,11 @@ export interface SurrealistAdapter {
 	 * Whether the window has a native titlebar
 	 */
 	hasTitlebar: boolean;
+
+	/**
+	 * The app menu bar if applicable
+	 */
+	menu?: Menu;
 
 	/**
 	 * The currently active platform

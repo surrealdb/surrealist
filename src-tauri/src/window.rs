@@ -40,52 +40,6 @@ pub async fn close_window(window: tauri::WebviewWindow) {
     }
 }
 
-#[cfg(target_os = "macos")]
-pub fn setup_menu_bar(app: &App) -> Result<(), Box<dyn std::error::Error>> {
-    let surrealist_menu = SubmenuBuilder::new(app, "Surrealist")
-        .text("about", "About Surrealist")
-        .separator()
-        .text("settings", "Settings")
-        .separator()
-        .hide_with_text("Hide Surrealist")
-        .hide_others()
-        .show_all()
-        .separator()
-        .quit_with_text("Quit Surrealist")
-        .build()?;
-
-    let file_menu = SubmenuBuilder::new(app, "File")
-        .text("new-window", "New Window")
-        .build()?;
-
-    let menu = MenuBuilder::new(app)
-        .items(&[&surrealist_menu, &file_menu])
-        .build()?;
-
-    app.set_menu(menu)?;
-
-    app.on_menu_event(
-        move |app_handle: &tauri::AppHandle, event| match event.id().0.as_str() {
-            "about" => {
-                emit_last(app_handle, "window:open_settings", "about");
-            }
-            "settings" => {
-                emit_last(app_handle, "window:open_settings", "preferences");
-            }
-            "new-window" => {
-                let app_handle = app_handle.clone();
-
-                tauri::async_runtime::spawn(async move {
-                    open_new_window(&app_handle).await;
-                });
-            }
-            _ => {}
-        },
-    );
-
-    Ok(())
-}
-
 pub async fn open_new_window(app: &AppHandle) {
     let window_label = format!("surrealist-{}", Uuid::new_v4());
 
@@ -103,7 +57,7 @@ pub async fn open_new_window(app: &AppHandle) {
             .hidden_title(true);
     }
 
-    #[cfg(target_os = "windows")]
+    #[cfg(not(target_os = "macos"))]
     {
         builder = builder.decorations(false);
     }

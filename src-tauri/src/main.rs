@@ -110,9 +110,6 @@ fn main() {
             info!("Launch args: {:?}", env::args());
             set_app_handle(app.handle().clone());
 
-            #[cfg(target_os = "macos")]
-            window::setup_menu_bar(app).expect("Failed to setup menu bar");
-
             #[cfg(any(windows, target_os = "linux"))]
             {
                 open::store_resources(get_app_handle(), env::args());
