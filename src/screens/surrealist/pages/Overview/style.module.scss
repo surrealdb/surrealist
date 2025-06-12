@@ -78,22 +78,19 @@
 	height: 82px;
 }
 
-.start-news-inner {
-	flex-direction: column;
-
-	@include xs-and-up {
-		flex-direction: row;
-	}
+.start-blog-header {
+	background-position: center;
+	background-size: cover;
+	background-image: linear-gradient(to bottom, transparent, var(--mantine-color-body)), var(--image-url);
 }
 
-.start-news-thumbnail {
-	flex-shrink: 0;
-	background-size: cover;
-	aspect-ratio: 200 / 110;
+.start-blog-arrow {
+	transition: transform 0.2s;
+	transform: scaleX(-1);
+}
 
-	@include xs-and-up {
-		height: 110px;
-	}
+.start-blog:hover .start-blog-arrow {
+	transform: scaleX(-1) translateX(-0.25rem);
 }
 
 .cloud-image {

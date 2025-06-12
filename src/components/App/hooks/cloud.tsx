@@ -1,9 +1,9 @@
 import {
 	checkSessionExpiry,
-	verifyAuthentication,
-	openCloudAuthentication,
 	invalidateSession,
+	openCloudAuthentication,
 	refreshAccess,
+	verifyAuthentication,
 } from "~/cloud/api/auth";
 
 import { useLayoutEffect } from "react";

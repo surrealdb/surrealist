@@ -4,10 +4,10 @@ import {
 	Alert,
 	Badge,
 	Box,
-	Button,
 	Divider,
 	Drawer,
 	Flex,
+	Group,
 	Image,
 	Loader,
 	ScrollArea,
@@ -18,10 +18,11 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "~/util/icons";
+import { iconArrowLeft, iconArrowUpRight, iconClose } from "~/util/icons";
 
 import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { format } from "date-fns";
 import dayjs from "dayjs";
 import { marked } from "marked";
 import { Fragment, useMemo, useState } from "react";
@@ -106,17 +107,6 @@ export function NewsFeedDrawer() {
 					body: classes.newsDrawerBody,
 				}}
 			>
-				<ActionButton
-					pos="absolute"
-					top={20}
-					right={20}
-					label="Close"
-					onClick={openHandle.close}
-					style={{ zIndex: 1 }}
-				>
-					<Icon path={iconClose} />
-				</ActionButton>
-
 				<Transition
 					mounted={isReading}
 					transition="fade"
@@ -139,41 +129,56 @@ export function NewsFeedDrawer() {
 									<Box
 										w="100%"
 										h={250}
+										pos="relative"
 										className={classes.newsPostHeader}
 										__vars={{
 											"--image-url": `url("${reading.thumbnail}")`,
 										}}
 									>
-										<Button
-											m="md"
-											pos="relative"
+										<ActionButton
+											pos="absolute"
+											size="lg"
+											top={20}
+											left={20}
+											label="All articles"
 											onClick={readingHandle.close}
-											leftSection={
-												<Icon
-													path={iconChevronLeft}
-													size="sm"
-												/>
-											}
-											className={classes.newsPostBack}
-											size="md"
+											style={{ zIndex: 1, backdropFilter: "blur(4px)" }}
 										>
-											Go back
-										</Button>
+											<Icon path={iconArrowLeft} />
+										</ActionButton>
+
+										<ActionButton
+											pos="absolute"
+											size="lg"
+											top={20}
+											right={20}
+											label="Close"
+											onClick={openHandle.close}
+											style={{ zIndex: 1, backdropFilter: "blur(4px)" }}
+										>
+											<Icon path={iconClose} />
+										</ActionButton>
 									</Box>
 									<Box
 										p="xl"
 										pt="xs"
-										mt={-52}
+										mt={-42}
 									>
-										<Text c="slate">{dayjs(reading.published).fromNow()}</Text>
 										<Title
 											fz={28}
 											c="bright"
+											pos="relative"
 										>
 											{reading.title}
 										</Title>
-										<TypographyStylesProvider
+										<Text
 											mt="lg"
+											fz="lg"
+										>
+											{format(reading.published, "MMMM d, yyyy - h:mm a")}
+										</Text>
+										<Divider my="xl" />
+										<TypographyStylesProvider
 											fz={14}
 											className={classes.newsPostContent}
 											// biome-ignore lint/security/noDangerouslySetInnerHtml: Replace with markdown
@@ -250,30 +255,32 @@ export function NewsFeedDrawer() {
 										c="slate"
 										ta="center"
 									>
-										No news items available
+										No blog articles available
 									</Text>
 								) : (
 									<Stack gap="xl">
 										{newsQuery.data?.map((item, i) => (
 											<Fragment key={i}>
-												<UnstyledButton onClick={() => readArticle(item)}>
+												<UnstyledButton
+													onClick={() => readArticle(item)}
+													className={classes.newsItem}
+												>
 													<Image
 														src={item.thumbnail}
 														radius="lg"
 														mb="lg"
 													/>
 													<Flex align="center">
-														<Text c="slate">
+														<Text py="xs">
 															{dayjs(item.published).fromNow()}
 														</Text>
 														{unread.includes(item.id) && (
 															<Badge
-																color="surreal"
-																size="xs"
+																variant="light"
+																color="violet"
 																ml="sm"
-																h={14}
 															>
-																New post
+																New
 															</Badge>
 														)}
 													</Flex>
@@ -285,16 +292,17 @@ export function NewsFeedDrawer() {
 														{item.title}
 													</Title>
 													<Text py="sm">{item.description}</Text>
-													<Text
-														c="surreal"
-														fw={600}
+													<Group
+														mt="sm"
+														gap="xs"
 													>
-														Read more
+														<Text c="surreal">Read article</Text>
 														<Icon
-															path={iconChevronRight}
-															right
+															className={classes.newsItemArrow}
+															path={iconArrowLeft}
+															c="surreal"
 														/>
-													</Text>
+													</Group>
 												</UnstyledButton>
 												{i < newsQuery.data?.length - 1 && <Divider />}
 											</Fragment>
