@@ -78,9 +78,6 @@ export const schema = {
 	gtm_debug: {
 		options: [false, true],
 	},
-	network_access_caps: {
-		options: [false, true],
-	},
 	organization_archiving: {
 		options: [false, true],
 	},
@@ -109,7 +106,6 @@ export const featureFlags = new FeatureFlags({
 			syntax_themes: true,
 			sidebar_customization: true,
 			gtm_debug: false,
-			network_access_caps: false,
 			organization_archiving: true,
 		},
 		preview: {
@@ -130,7 +126,6 @@ export const featureFlags = new FeatureFlags({
 			themes: true,
 			sidebar_customization: true,
 			gtm_debug: false,
-			network_access_caps: false,
 		},
 		production: {
 			query_view: true,
@@ -149,7 +144,6 @@ export const featureFlags = new FeatureFlags({
 			newsfeed: true,
 			themes: true,
 			gtm_debug: false,
-			network_access_caps: false,
 		},
 	},
 	overrides: (flag) => {
