@@ -91,6 +91,16 @@
 	padding: 0;
 }
 
+
+.news-item-arrow {
+	transition: transform 0.2s;
+	transform: scaleX(-1);
+}
+
+.news-item:hover .news-item-arrow {
+	transform: scaleX(-1) translateX(-0.25rem);
+}
+
 .news-post-header {
 	background-position: center;
 	background-size: cover;
@@ -116,16 +126,6 @@
 	a {
 		color: var(--mantine-color-surreal-5);
 	}
-}
-
-.news-post-back {
-	-webkit-backdrop-filter: blur(4px);
-	backdrop-filter: blur(4px);
-	z-index: 10;
-	border-radius: var(--mantine-radius-lg);
-	background-color: rgba(0, 0, 0, 0.35);
-	background-clip: padding-box;
-	border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .provision-loader::after {

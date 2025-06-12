@@ -16,7 +16,6 @@ import {
 	Menu,
 	ScrollArea,
 	SimpleGrid,
-	Skeleton,
 	Stack,
 	Text,
 	TextInput,
@@ -29,7 +28,6 @@ import {
 	iconBook,
 	iconCheck,
 	iconChevronDown,
-	iconChevronRight,
 	iconCloud,
 	iconCommunity,
 	iconOpen,
@@ -64,13 +62,12 @@ import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, CloudOrganization, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
-import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
+import { StartBlog } from "./content/blog";
 import { StartCloud } from "./content/cloud";
 import { StartConnection } from "./content/connection";
 import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
-import { StartNews } from "./content/news";
 import { StartPlaceholder } from "./content/placeholder";
 import { StartResource } from "./content/resource";
 
@@ -127,7 +124,7 @@ export function OverviewPage() {
 	});
 
 	const authState = useCloudStore((s) => s.authState);
-	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
+	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
 	const hasLabels = knownLabels.length > 0;
 
 	const logoUrl = useThemeImage({
@@ -158,7 +155,7 @@ export function OverviewPage() {
 						<Stack
 							className={classes.content}
 							justify="center"
-							maw={1000}
+							maw={1200}
 							px="xl"
 							mx="auto"
 							py={96}
@@ -195,7 +192,7 @@ export function OverviewPage() {
 							))}
 
 							<Group mt="xl">
-								<PrimaryTitle>Your connections</PrimaryTitle>
+								<PrimaryTitle fz={26}>Connections</PrimaryTitle>
 								<Spacer />
 								{hasLabels && (
 									<Menu closeOnItemClick={false}>
@@ -475,7 +472,12 @@ export function OverviewPage() {
 								</>
 							)}
 
-							<PrimaryTitle mt="xl">Resources</PrimaryTitle>
+							<PrimaryTitle
+								mt="xl"
+								fz={26}
+							>
+								Resources
+							</PrimaryTitle>
 
 							<SimpleGrid
 								cols={{
@@ -513,9 +515,28 @@ export function OverviewPage() {
 								/>
 							</SimpleGrid>
 
-							<PrimaryTitle mt="xl">Latest news</PrimaryTitle>
+							<PrimaryTitle
+								mt="xl"
+								fz={26}
+							>
+								Blog
+							</PrimaryTitle>
 
-							{newsQuery.isPending ? (
+							<SimpleGrid
+								cols={{
+									xs: 1,
+									sm: 2,
+								}}
+							>
+								{newsPosts.map((article, i) => (
+									<StartBlog
+										key={i}
+										post={article}
+									/>
+								))}
+							</SimpleGrid>
+
+							{/* {newsQuery.isPending ? (
 								<>
 									<Skeleton h={144} />
 									<Skeleton h={144} />
@@ -543,7 +564,7 @@ export function OverviewPage() {
 										</Button>
 									</Center>
 								</>
-							)}
+							)} */}
 						</Stack>
 					</ScrollArea>
 				)}

@@ -127,11 +127,8 @@ export function StartConnection({
 								>
 									{connection.name}
 								</Text>
-								<Text
-									mt={-4}
-									truncate
-								>
-									{isSandbox ? "Your personal playground" : target}
+								<Text truncate>
+									{isSandbox ? "Your personal offline playground" : target}
 								</Text>
 							</Box>
 						</Group>
