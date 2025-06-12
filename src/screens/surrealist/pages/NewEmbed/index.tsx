@@ -19,6 +19,7 @@ import {
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useStable } from "~/hooks/stable";
@@ -89,11 +90,18 @@ export function NewEmbedPage() {
 					pos="relative"
 				>
 					<Box>
-						<PrimaryTitle fz={26}>Embed Surrealist</PrimaryTitle>
-						<Text fz="xl">
-							Integrate Surrealist Mini into to your content for interactive SurrealQL
-							snippets
-						</Text>
+						<PageBreadcrumbs
+							items={[
+								{ label: "Surrealist", href: "/overview" },
+								{ label: "Embed Surrealist" },
+							]}
+						/>
+						<PrimaryTitle
+							fz={32}
+							mt="sm"
+						>
+							Embed Surrealist
+						</PrimaryTitle>
 					</Box>
 
 					<Grid
@@ -101,7 +109,7 @@ export function NewEmbedPage() {
 						mt="xl"
 					>
 						<Grid.Col span={5}>
-							<Paper p="md">
+							<Paper p="xl">
 								<Embedder
 									value={parsedState}
 									onChangeURL={setUrl}
@@ -110,7 +118,7 @@ export function NewEmbedPage() {
 						</Grid.Col>
 						<Grid.Col span={7}>
 							<Stack gap="xl">
-								<Paper p="md">
+								<Paper p="xl">
 									<Text
 										fw={600}
 										fz="lg"
@@ -119,11 +127,14 @@ export function NewEmbedPage() {
 									>
 										Integrate your Surrealist Mini
 									</Text>
-									<Text mb="md">
+									<Text>
 										Copy your Surrealist Mini as an embeddable iframe snippet or
 										as direct URL
 									</Text>
-									<SimpleGrid cols={2}>
+									<SimpleGrid
+										cols={2}
+										mt="xl"
+									>
 										<CopyButton value={snippet}>
 											{({ copied, copy }) => (
 												<Button
@@ -170,7 +181,7 @@ export function NewEmbedPage() {
 										}}
 									/>
 								</Paper>
-								<Paper p="md">
+								<Paper p="xl">
 									<Text
 										fw={600}
 										fz="lg"
@@ -179,11 +190,12 @@ export function NewEmbedPage() {
 									>
 										Restore configuration
 									</Text>
-									<Text mb="md">
+									<Text>
 										Optionally paste in an existing mini URL to restore the
 										configuration
 									</Text>
 									<Button
+										mt="xl"
 										size="sm"
 										color="slate"
 										variant="light"

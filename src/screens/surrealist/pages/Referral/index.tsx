@@ -36,6 +36,7 @@ import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/querie
 import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Slab, SlabProps } from "~/components/Slab";
 import { TopGlow } from "~/components/TopGlow";
@@ -132,10 +133,18 @@ export function ReferralPage() {
 						pos="relative"
 					>
 						<Box>
-							<PrimaryTitle fz={26}>Referral Program</PrimaryTitle>
-							<Text fz="xl">
-								Earn rewards for referring your friends and contacts
-							</Text>
+							<PageBreadcrumbs
+								items={[
+									{ label: "Surrealist", href: "/overview" },
+									{ label: "Referral Program" },
+								]}
+							/>
+							<PrimaryTitle
+								fz={32}
+								mt="sm"
+							>
+								Referral Program
+							</PrimaryTitle>
 						</Box>
 
 						<Slab

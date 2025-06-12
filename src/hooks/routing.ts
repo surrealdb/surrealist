@@ -27,6 +27,18 @@ export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pa
 }
 
 /**
+ * Returns whether any of the provided match patterns match the current route.
+ */
+export function useRouteMatcher(match: string[]) {
+	const parser = useRouter().parser;
+	const location = useAbsoluteLocation()[0];
+
+	return match.some((m) => {
+		return matchRoute(parser, m, location)[0];
+	});
+}
+
+/**
  * Returns the active connection and view
  */
 export function useConnectionAndView() {

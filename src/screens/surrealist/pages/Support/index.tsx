@@ -1,6 +1,6 @@
 import { Box, Center, ScrollArea, Stack } from "@mantine/core";
-import { Text } from "@mantine/core";
 import { HelpCenter } from "~/components/HelpCenter";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import classes from "./style.module.scss";
@@ -29,8 +29,18 @@ export function SupportPage() {
 					h="100%"
 				>
 					<Box>
-						<PrimaryTitle fz={26}>Help & Support</PrimaryTitle>
-						<Text fz="xl">Explore the resources below to get help with SurrealDB.</Text>
+						<PageBreadcrumbs
+							items={[
+								{ label: "Surrealist", href: "/overview" },
+								{ label: "Help & Support" },
+							]}
+						/>
+						<PrimaryTitle
+							fz={32}
+							mt="sm"
+						>
+							Help & Support
+						</PrimaryTitle>
 					</Box>
 					<Center
 						flex={1}

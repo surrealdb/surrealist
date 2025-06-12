@@ -193,6 +193,7 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/organisations",
 		name: "Organisations",
 		icon: iconOrganization,
+		aliases: ["/o/*"],
 		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/chat": {

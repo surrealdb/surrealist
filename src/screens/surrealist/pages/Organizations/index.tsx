@@ -1,11 +1,12 @@
 import classes from "./style.module.scss";
 
-import { Box, Button, Group, ScrollArea, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
+import { Box, Button, Group, ScrollArea, SimpleGrid, Skeleton, Stack } from "@mantine/core";
 
 import { fork } from "radash";
 import { Link } from "wouter";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { CloudSplash } from "~/components/CloudSplash";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
@@ -52,8 +53,18 @@ export function OrganizationsPage() {
 						mt={75}
 					>
 						<Box>
-							<PrimaryTitle fz={26}>Organisations</PrimaryTitle>
-							<Text fz="xl">View and manage your Surreal Cloud organisations</Text>
+							<PageBreadcrumbs
+								items={[
+									{ label: "Surrealist", href: "/overview" },
+									{ label: "Organisations" },
+								]}
+							/>
+							<PrimaryTitle
+								fz={32}
+								mt="sm"
+							>
+								Organisations
+							</PrimaryTitle>
 						</Box>
 
 						<Group mt="xl">

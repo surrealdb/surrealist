@@ -22,7 +22,7 @@ import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { handleIntentRequest } from "~/util/intents";
+import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
@@ -64,6 +64,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
 
 		this.initDatabaseEvents();
+		this.initWindowEvents();
 
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
@@ -80,11 +81,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 			getHotkeyHandler([["mod+alt+i", () => invoke("toggle_devtools")]]),
 		);
 
-		listen("open-resource", () => {
+		getCurrentWindow().listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
 
-		listen("tauri://focus", () => {
+		getCurrentWindow().listen("tauri://focus", () => {
 			this.checkForUpdates();
 		});
 	}
@@ -125,7 +126,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public async loadConfig() {
-		switch (await type()) {
+		switch (type()) {
 			case "windows": {
 				this.platform = "windows";
 				break;
@@ -396,6 +397,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
+	private initWindowEvents() {
+		getCurrentWindow().listen("window:open_settings", (e) =>
+			dispatchIntent("open-settings", e.payload ? { tab: e.payload as string } : undefined),
+		);
+	}
+
 	private async queryOpenRequest() {
 		const { addQueryTab, setActiveQueryTab } = useConfigStore.getState();
 		const resources = await invoke<Resource[]>("get_opened_resources");
@@ -438,6 +445,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				}
 
 				NavigateViewEvent.dispatch("query");
+				await invoke("clear_opened_resources");
 			} else if (Link) {
 				const { host, params } = Link;
 
@@ -460,6 +468,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 						});
 					}
 				}
+
+				await invoke("clear_opened_resources");
 			}
 		}
 	}
