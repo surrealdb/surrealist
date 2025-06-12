@@ -228,7 +228,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		this.menu = menu;
 
-		if (this.platform !== "darwin") {
+		if (this.platform === "darwin") {
 			await this.menu.setAsAppMenu();
 		}
 	}
