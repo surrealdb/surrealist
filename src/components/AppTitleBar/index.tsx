@@ -6,9 +6,9 @@ import icon from "~/assets/images/icon.webp";
 import { Icon } from "~/components/Icon";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconExit, iconMaximize, iconMinimize, iconRestore } from "~/util/icons";
-import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
 import classes from "./style.module.scss";
+import { adapter } from "~/adapter";
 
 export function AppTitleBar() {
 	const currentWindow = getCurrentWindow();
@@ -28,119 +28,46 @@ export function AppTitleBar() {
 					m="md"
 					data-tauri-drag-region
 				/>
-				<Menu>
-					<Menu.Target>
-						<Text
-							size="md"
-							className={classes.menuButton}
+				{adapter?.menuList
+					?.filter((it) => !it.disabled)
+					.map((menu) => (
+						<Menu
+							key={menu.id}
+							position="bottom-start"
 						>
-							File
-						</Text>
-					</Menu.Target>
-					<Menu.Dropdown p="xs">
-						<Menu.Item
-							onClick={async () => {
-								await invoke("new_window");
-							}}
-						>
-							New Window
-						</Menu.Item>
-						<Menu.Divider />
-						<Menu.Item
-							onClick={() => {
-								dispatchIntent("open-settings", { tab: "preferences" });
-							}}
-						>
-							Settings
-						</Menu.Item>
-						<Menu.Divider />
-						<Menu.Item
-							onClick={async () => {
-								await invoke("close_window");
-							}}
-						>
-							Close Window
-						</Menu.Item>
-					</Menu.Dropdown>
-				</Menu>
+							<Menu.Target key={`${menu.id}-target`}>
+								<Text
+									size="md"
+									className={classes.menuButton}
+								>
+									{menu.name}
+								</Text>
+							</Menu.Target>
 
-				<Menu>
-					<Menu.Target>
-						<Text className={classes.menuButton}>Help</Text>
-					</Menu.Target>
-					<Menu.Dropdown p="xs">
-						<Menu.Label>Community</Menu.Label>
-						<Menu.Item
-							component="a"
-							target="_blank"
-							href="https://discord.gg/dc4JNWrrMc"
-						>
-							Discord
-						</Menu.Item>
-						<Menu.Item
-							component="a"
-							target="_blank"
-							href="https://github.com/surrealdb"
-						>
-							GitHub
-						</Menu.Item>
-						<Menu.Item
-							component="a"
-							target="_blank"
-							href="https://youtube.com/@SurrealDB"
-						>
-							YouTube
-						</Menu.Item>
+							<Menu.Dropdown
+								key={`${menu.id}-dropdown`}
+								p="xs"
+							>
+								{menu.items.map((item, index) => {
+									if (item.type === "Separator") {
+										return <Menu.Divider key={index} />;
+									}
 
-						<Menu.Label mt={8}>Documentation</Menu.Label>
-						<Menu.Item
-							component="a"
-							target="_blank"
-							href="https://surrealdb.com/docs/surrealdb"
-						>
-							SurrealDB docs
-						</Menu.Item>
-						<Menu.Item
-							component="a"
-							target="_blank"
-							href="https://surrealdb.com/docs/surrealist"
-						>
-							Surrealist docs
-						</Menu.Item>
-
-						<Menu.Label mt={8}>University</Menu.Label>
-						<Menu.Item
-							component="a"
-							target="_blank"
-							href="https://surrealdb.com/learn/fundamentals"
-						>
-							Fundamentals course
-						</Menu.Item>
-						<Menu.Item
-							component="a"
-							target="_blank"
-							href="https://surrealdb.com/learn/book"
-						>
-							Book
-						</Menu.Item>
-
-						<Menu.Divider />
-						<Menu.Item
-							component="a"
-							target="_blank"
-							href="https://github.com/surrealdb/surrealist/issues/new/choose"
-						>
-							Report an issue
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => {
-								dispatchIntent("open-settings", { tab: "about" });
-							}}
-						>
-							About Surrealist
-						</Menu.Item>
-					</Menu.Dropdown>
-				</Menu>
+									if (item.type === "Custom") {
+										return (
+											<Menu.Item
+												key={item.id}
+												disabled={item.disabled}
+												onClick={item.action}
+											>
+												{item.name}
+											</Menu.Item>
+										);
+									}
+								})}
+							</Menu.Dropdown>
+						</Menu>
+					))}
 			</Group>
 
 			<Box
@@ -150,7 +77,7 @@ export function AppTitleBar() {
 				<Text
 					c="bright"
 					fz="lg"
-					fw={600}
+					fw={500}
 					data-tauri-drag-region
 				>
 					{title}

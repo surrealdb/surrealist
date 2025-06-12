@@ -17,7 +17,7 @@ import { VIEW_PAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
+import type { AppMenu, AppMenuItem, Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
 import { getSetting, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
@@ -56,7 +56,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public isTelemetryEnabled = true;
 	public hasTitlebar = false;
 	public platform: Platform = "windows";
-	public menu: Menu | undefined = undefined;
+	public menuList: AppMenu[] | undefined = undefined;
 
 	#startTask: any;
 	#arch: string = arch();
@@ -97,8 +97,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		this.queryOpenRequest();
 		this.checkForUpdates();
+		this.defineMenuItems();
 
-		await this.setupWindowMenu();
+		if (this.platform === "darwin") {
+			await this.setupWindowMenu();
+		}
 
 		watchStore({
 			initial: true,
@@ -129,45 +132,55 @@ export class DesktopAdapter implements SurrealistAdapter {
 		getCurrentWindow().setTitle(title || "Surrealist");
 	}
 
-	public async setupWindowMenu() {
-		const separator = await PredefinedMenuItem.new({
-			item: "Separator",
-		});
+	public defineMenuItems() {
+		const menuList: AppMenu[] = [];
+		const separator: AppMenuItem = {
+			id: "separator",
+			type: "Separator",
+		};
 
-		const hide = await PredefinedMenuItem.new({
-			item: "Hide",
-		});
+		const hide: AppMenuItem = {
+			id: "hide",
+			type: "Hide",
+		};
 
-		const hideOthers = await PredefinedMenuItem.new({
-			item: "HideOthers",
-		});
+		const hideOthers: AppMenuItem = {
+			id: "hide_others",
+			type: "HideOthers",
+		};
 
-		const showAll = await PredefinedMenuItem.new({
-			item: "ShowAll",
-		});
+		const showAll: AppMenuItem = {
+			id: "show_all",
+			type: "ShowAll",
+		};
 
-		const about = await MenuItem.new({
+		const quit: AppMenuItem = {
+			id: "quit",
+			type: "Quit",
+			name: "Quit Surrealist",
+		};
+
+		const about: AppMenuItem = {
 			id: "about",
-			text: "About Surrealist",
-			enabled: true,
+			type: "Custom",
+			name: "About Surrealist",
 			action: () => {
 				dispatchIntent("open-settings", { tab: "about" });
 			},
-		});
+		};
 
-		const settings = await MenuItem.new({
+		const settings: AppMenuItem = {
 			id: "settings",
-			text: "Settings",
-			enabled: true,
+			type: "Custom",
+			name: "Settings",
 			action: () => {
 				dispatchIntent("open-settings", { tab: "preferences" });
 			},
-		});
+		};
 
-		const surrealist = await Submenu.new({
+		const surrealistMenu: AppMenu = {
 			id: "surrealist",
-			text: "Surrealist",
-			enabled: true,
+			name: "Surrealist",
 			items: [
 				about,
 				separator,
@@ -177,60 +190,155 @@ export class DesktopAdapter implements SurrealistAdapter {
 				hideOthers,
 				showAll,
 				separator,
-				{
-					item: "Quit",
-					text: "Quit Surrealist",
-				},
+				quit,
 			],
-		});
+		};
 
-		const file = await Submenu.new({
+		const fileMenu: AppMenu = {
 			id: "file",
-			text: "File",
-			enabled: true,
+			name: "File",
 			items: [
 				{
 					id: "new_window",
-					text: "New Window",
-					enabled: true,
+					type: "Custom",
+					name: "New Window",
 					action: async () => {
 						await invoke("new_window");
 					},
 				},
 			],
-		});
+		};
 
-		const help = await Submenu.new({
+		const helpMenu: AppMenu = {
 			id: "help",
-			text: "Help",
-			enabled: true,
-			items: [],
-		});
+			name: "Help",
+			items: [
+				{
+					id: "discord",
+					type: "Custom",
+					name: "Discord",
+					action: () => {
+						this.openUrl("https://discord.gg/surrealdb");
+					},
+				},
+				{
+					id: "github",
+					type: "Custom",
+					name: "GitHub",
+					action: () => {
+						this.openUrl("https://github.com/surrealdb/surrealist");
+					},
+				},
+				{
+					id: "youtube",
+					type: "Custom",
+					name: "YouTube",
+					action: () => {
+						this.openUrl("https://www.youtube.com/@surrealdb");
+					},
+				},
+				separator,
+				{
+					id: "surrealdb_docs",
+					type: "Custom",
+					name: "SurrealDB Docs",
+					action: () => {
+						this.openUrl("https://surrealdb.com/docs/surrealdb");
+					},
+				},
+				{
+					id: "surrealist_docs",
+					type: "Custom",
+					name: "Surrealist Docs",
+					action: () => {
+						this.openUrl("https://surrealdb.com/docs/surrealdb");
+					},
+				},
+				separator,
+				{
+					id: "fundamentals",
+					type: "Custom",
+					name: "Fundamentals Course",
+					action: () => {
+						this.openUrl("https://surrealdb.com/learn/fundamentals");
+					},
+				},
+				{
+					id: "book",
+					type: "Custom",
+					name: "Book",
+					action: () => {
+						this.openUrl("https://surrealdb.com/learn/book");
+					},
+				},
+				separator,
+				{
+					id: "report_issue",
+					type: "Custom",
+					name: "Report Issue",
+					action: () => {
+						this.openUrl("https://github.com/surrealdb/surrealist/issues/new/choose");
+					},
+				},
+				about,
+			],
+		};
 
-		const menu = await Menu.new();
-		const closeWindow = await MenuItem.new({
-			id: "close",
-			text: "Close Window",
-			enabled: true,
-			action: () => {
-				invoke("close_window");
+		if (this.platform === "darwin") {
+			menuList.push(surrealistMenu);
+		} else {
+			fileMenu.items.push(separator, settings);
+		}
+
+		fileMenu.items.push(separator, {
+			id: "close_window",
+			type: "Custom",
+			name: "Close Window",
+			action: async () => {
+				await invoke("close_window");
 			},
 		});
 
-		if (this.platform === "darwin") {
-			menu.append(surrealist);
-		} else {
-			file.append([separator, settings, separator, closeWindow]);
-			help.append(about);
+		menuList.push(fileMenu, helpMenu);
+		this.menuList = menuList;
+	}
+
+	public async setupWindowMenu() {
+		const appMenu = await Menu.new();
+
+		for (const menu of this.menuList || []) {
+			const menuItems = [];
+
+			for (const item of menu.items) {
+				if (item.type !== "Custom") {
+					const predefined = await PredefinedMenuItem.new({
+						item: item.type,
+					});
+
+					menuItems.push(predefined);
+					continue;
+				}
+
+				const custom = await MenuItem.new({
+					id: item.id,
+					text: item.name ?? "Unnamed",
+					enabled: !item.disabled,
+					action: item.action,
+				});
+
+				menuItems.push(custom);
+			}
+
+			const submenu = await Submenu.new({
+				id: menu.id,
+				text: menu.name,
+				items: menuItems,
+			});
+
+			appMenu.append(submenu);
 		}
 
-		menu.append([file, help]);
-
-		this.menu = menu;
-
-		if (this.platform === "darwin") {
-			await this.menu.setAsAppMenu();
-		}
+		await appMenu.setAsAppMenu();
 	}
 
 	public async loadConfig() {

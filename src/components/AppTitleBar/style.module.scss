@@ -6,7 +6,12 @@
 	user-select: none;
 	position: fixed;
 	z-index: 1000;
-	background-color: rgba(0, 0, 0, 0.3);
+	background-color: var(--mantine-color-body);
+	border-bottom: 1px solid var(--mantine-color-slate-7);
+
+	@include light {
+		border-color: var(--mantine-color-slate-2);
+	}
 }
 
 .drag-area {
