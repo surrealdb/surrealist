@@ -408,7 +408,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public async setupWindowMenu() {
 		const appMenu = await Menu.new({
-			id: getCurrentWindow().label
+			id: getCurrentWindow().label,
 		});
 
 		for (const menu of this.menuList || []) {
