@@ -4,19 +4,22 @@ import classes from "../style.module.scss";
 import { Image, Text } from "@mantine/core";
 import { BoxProps, Group, Paper, Stack, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
-import { ReactNode, useRef } from "react";
+import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
+import { iconArrowLeft } from "~/util/icons";
 
 export interface StartCloudProps extends BoxProps {
-	title: ReactNode;
-	subtitle: ReactNode;
-	icon?: string;
+	action: string;
 	onClick: () => void;
 }
 
-export function StartCloud({ title, subtitle, icon, onClick, ...other }: StartCloudProps) {
+export function StartCloud({
+	onClick,
+	action,
+	children,
+	...other
+}: PropsWithChildren<StartCloudProps>) {
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	return (
@@ -30,29 +33,22 @@ export function StartCloud({ title, subtitle, icon, onClick, ...other }: StartCl
 				ref={containerRef}
 				className={clsx(classes.startBox, classes.startCloud)}
 				renderRoot={(props) => <Stack {...props} />}
+				mih={145}
 			>
-				<Group
-					wrap="nowrap"
-					align="start"
-					h="100%"
+				<Text
+					maw={450}
+					fz="lg"
 				>
-					<Text
-						c="bright"
-						fw={600}
-						fz="xl"
-					>
-						{title}
-					</Text>
-					<Spacer />
-					{icon && (
-						<Icon
-							className={classes.startCloudIcon}
-							path={icon}
-							size="xl"
-						/>
-					)}
+					{children}
+				</Text>
+				<Group gap="xs">
+					<Text c="surreal">{action}</Text>
+					<Icon
+						className={classes.startCloudArrow}
+						path={iconArrowLeft}
+						c="surreal"
+					/>
 				</Group>
-				<Text maw={450}>{subtitle}</Text>
 				<Image
 					src={cloudSplashUrl}
 					className={classes.cloudImage}
