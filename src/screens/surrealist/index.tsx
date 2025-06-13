@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
 import { Box, Drawer, Flex, Group, Stack } from "@mantine/core";
-import { type FC, Suspense, memo } from "react";
+import { type FC, Suspense, memo, useLayoutEffect } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
@@ -102,14 +102,17 @@ export function SurrealistScreen() {
 
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 
+	useLayoutEffect(() => {
+		const body = document.body;
+
+		body.style.setProperty("--sidebar-offset", `${sidebarOffset}px`);
+		body.style.setProperty("--titlebar-offset", `${adapter.titlebarOffset}px`);
+	}, [sidebarOffset]);
+
 	return (
 		<Box
 			className={classes.root}
 			bg={isLight ? "white" : "slate.9"}
-			__vars={{
-				"--sidebar-offset": `${sidebarOffset}px`,
-				"--titlebar-offset": `${adapter.titlebarOffset}px`,
-			}}
 		>
 			{isOtherOS && <AppTitleBar />}
 			<Flex
