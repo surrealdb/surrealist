@@ -22,12 +22,16 @@ import { getSetting, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
-import { showErrorNotification, showInfo } from "~/util/helpers";
+import { optional, showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 const WAIT_DURATION = 1000;
+const SEPARATOR: AppMenuItem = {
+	id: "separator",
+	type: "Separator",
+};
 
 interface Resource {
 	File?: FileResource;
@@ -95,11 +99,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		this.queryOpenRequest();
 		this.checkForUpdates();
-		this.defineMenuItems();
+
+		this.menuList = this.computeMenuItems();
 
 		if (this.platform === "darwin") {
 			await this.setupWindowMenu();
-
 			this.titlebarOffset = 15;
 		} else {
 			this.titlebarOffset = 32;
@@ -134,33 +138,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 		getCurrentWindow().setTitle(title || "Surrealist");
 	}
 
-	public defineMenuItems() {
-		const menuList: AppMenu[] = [];
-		const separator: AppMenuItem = {
-			id: "separator",
-			type: "Separator",
-		};
-
-		const hide: AppMenuItem = {
-			id: "hide",
-			type: "Hide",
-		};
-
-		const hideOthers: AppMenuItem = {
-			id: "hide_others",
-			type: "HideOthers",
-		};
-
-		const showAll: AppMenuItem = {
-			id: "show_all",
-			type: "ShowAll",
-		};
-
-		const quit: AppMenuItem = {
-			id: "quit",
-			type: "Quit",
-			name: "Quit Surrealist",
-		};
+	public computeMenuItems(): AppMenu[] {
+		const isDarwin = this.platform === "darwin";
 
 		const about: AppMenuItem = {
 			id: "about",
@@ -185,14 +164,27 @@ export class DesktopAdapter implements SurrealistAdapter {
 			name: "Surrealist",
 			items: [
 				about,
-				separator,
+				SEPARATOR,
 				settings,
-				separator,
-				hide,
-				hideOthers,
-				showAll,
-				separator,
-				quit,
+				SEPARATOR,
+				{
+					id: "hide",
+					type: "Hide",
+				},
+				{
+					id: "hide_others",
+					type: "HideOthers",
+				},
+				{
+					id: "show_all",
+					type: "ShowAll",
+				},
+				SEPARATOR,
+				{
+					id: "quit",
+					type: "Quit",
+					name: "Quit Surrealist",
+				},
 			],
 		};
 
@@ -208,6 +200,125 @@ export class DesktopAdapter implements SurrealistAdapter {
 						await invoke("new_window");
 					},
 				},
+				{
+					id: "new_window",
+					type: "Custom",
+					name: "New Connection",
+					action: async () => {
+						dispatchIntent("new-connection");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "open_query",
+					type: "Custom",
+					name: "Open Query...",
+					action: async () => {
+						dispatchIntent("open-query-file");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "import_database",
+					type: "Custom",
+					name: "Import Database",
+					action: async () => {
+						dispatchIntent("import-database");
+					},
+				},
+				{
+					id: "export_database",
+					type: "Custom",
+					name: "Export Database",
+					action: async () => {
+						dispatchIntent("export-database");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "open_command_alette",
+					type: "Custom",
+					name: "Open Command Palette",
+					action: async () => {
+						dispatchIntent("open-command-palette");
+					},
+				},
+				{
+					id: "open_documentation_search",
+					type: "Custom",
+					name: "Open Documentation Search",
+					action: async () => {
+						dispatchIntent("open-documentation");
+					},
+				},
+				{
+					id: "command_alette",
+					type: "Custom",
+					name: "Open Connection List",
+					action: async () => {
+						dispatchIntent("open-connections");
+					},
+				},
+				...optional(!isDarwin && [SEPARATOR, settings]),
+				SEPARATOR,
+				{
+					id: "close_window",
+					type: "Custom",
+					name: "Close Window",
+					action: async () => {
+						await invoke("close_window");
+					},
+				},
+			],
+		};
+
+		const viewMenu: AppMenu = {
+			id: "view",
+			name: "View",
+			items: [
+				{
+					id: "toggle_pinned",
+					type: "Custom",
+					name: "Toggle Pinned",
+					action: async () => {
+						dispatchIntent("toggle-pinned");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "window_zoom_in",
+					type: "Custom",
+					name: "Zoom In",
+					action: async () => {
+						dispatchIntent("increase-window-scale");
+					},
+				},
+				{
+					id: "window_zoom_out",
+					type: "Custom",
+					name: "Zoom Out",
+					action: async () => {
+						dispatchIntent("decrease-window-scale");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "editor_zoom_in",
+					type: "Custom",
+					name: "Zoom In Editors",
+					action: async () => {
+						dispatchIntent("increase-editor-scale");
+					},
+				},
+				{
+					id: "editor_zoom_out",
+					type: "Custom",
+					name: "Zoom Out Editors",
+					action: async () => {
+						dispatchIntent("decrease-editor-scale");
+					},
+				},
+				...optional(isDarwin && SEPARATOR),
 			],
 		};
 
@@ -239,7 +350,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 						this.openUrl("https://www.youtube.com/@surrealdb");
 					},
 				},
-				separator,
+				SEPARATOR,
 				{
 					id: "surrealdb_docs",
 					type: "Custom",
@@ -256,7 +367,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 						this.openUrl("https://surrealdb.com/docs/surrealist");
 					},
 				},
-				separator,
+				SEPARATOR,
 				{
 					id: "fundamentals",
 					type: "Custom",
@@ -273,7 +384,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 						this.openUrl("https://surrealdb.com/learn/book");
 					},
 				},
-				separator,
+				SEPARATOR,
 				{
 					id: "report_issue",
 					type: "Custom",
@@ -282,27 +393,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 						this.openUrl("https://github.com/surrealdb/surrealist/issues/new/choose");
 					},
 				},
+				...optional(!isDarwin && about),
 			],
 		};
 
-		if (this.platform === "darwin") {
-			menuList.push(surrealistMenu);
-		} else {
-			fileMenu.items.push(separator, settings);
-			helpMenu.items.push(about);
-		}
-
-		fileMenu.items.push(separator, {
-			id: "close_window",
-			type: "Custom",
-			name: "Close Window",
-			action: async () => {
-				await invoke("close_window");
-			},
-		});
-
-		menuList.push(fileMenu, helpMenu);
-		this.menuList = menuList;
+		return [...optional(isDarwin && surrealistMenu), fileMenu, viewMenu, helpMenu];
 	}
 
 	public async setupWindowMenu() {
