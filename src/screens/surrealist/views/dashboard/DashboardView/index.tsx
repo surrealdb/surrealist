@@ -175,7 +175,7 @@ export function DashboardView() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
+			<TopGlow offset={318} />
 
 			<ScrollArea
 				pos="absolute"

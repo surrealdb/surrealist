@@ -131,7 +131,8 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 		openHandle.close();
 	});
 
-	const willCreate = (level === "root" || level === "namespace") && databases.length === 0;
+	const willCreate =
+		(level === "root" || level === "namespace") && databases.length === 0 && !database;
 
 	return willCreate ? (
 		<Button

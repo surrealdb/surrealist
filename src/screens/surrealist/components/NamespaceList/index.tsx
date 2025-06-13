@@ -129,7 +129,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 		openHandle.close();
 	});
 
-	const willCreate = level === "root" && namespaces.length === 0;
+	const willCreate = level === "root" && namespaces.length === 0 && !namespace;
 
 	return willCreate ? (
 		<Button
