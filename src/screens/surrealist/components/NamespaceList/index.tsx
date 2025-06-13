@@ -3,7 +3,6 @@ import classes from "./style.module.scss";
 import {
 	Button,
 	type ButtonProps,
-	Divider,
 	Group,
 	Loader,
 	Menu,
@@ -152,7 +151,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 		<Menu
 			opened={opened}
 			onChange={openHandle.set}
-			trigger="click"
+			trigger="hover"
 			position="bottom-start"
 			transitionProps={{
 				transition: "scale-y",
@@ -175,50 +174,56 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 					</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown w={250}>
-				<Stack
-					flex={1}
-					p="sm"
+			<Menu.Dropdown w={225}>
+				<Group
 					gap="sm"
+					p="sm"
 				>
-					<Group gap="sm">
+					<Text
+						fw={600}
+						c="bright"
+					>
+						Namespaces
+					</Text>
+					{isPending && <Loader size={14} />}
+					<Spacer />
+					<ActionButton
+						color="slate"
+						variant="light"
+						disabled={!connected || (level !== "root" && level !== "namespace")}
+						label="Create namespace"
+						onClick={openCreator}
+					>
+						<Icon path={iconPlus} />
+					</ActionButton>
+				</Group>
+				<Menu.Divider />
+				<ScrollArea.Autosize mah={350}>
+					{namespaces.length === 0 ? (
 						<Text
-							fw={600}
-							c="bright"
+							c="slate"
+							py="md"
+							ta="center"
 						>
-							Namespaces
+							No namespaces defined
 						</Text>
-						{isPending && <Loader size={14} />}
-						<Spacer />
-						<ActionButton
-							color="slate"
-							variant="light"
-							disabled={!connected || (level !== "root" && level !== "namespace")}
-							label="Create namespace"
-							onClick={openCreator}
+					) : (
+						<Stack
+							gap="xs"
+							p="xs"
 						>
-							<Icon path={iconPlus} />
-						</ActionButton>
-					</Group>
-					<Divider />
-					<ScrollArea.Autosize mah={250}>
-						{namespaces.length === 0 ? (
-							<Text c="slate">No namespaces defined</Text>
-						) : (
-							<Stack gap="xs">
-								{namespaces.map((ns) => (
-									<Namespace
-										key={ns}
-										value={ns}
-										activeNamespace={namespace}
-										onOpen={mutate}
-										onRemove={openHandle.close}
-									/>
-								))}
-							</Stack>
-						)}
-					</ScrollArea.Autosize>
-				</Stack>
+							{namespaces.map((ns) => (
+								<Namespace
+									key={ns}
+									value={ns}
+									activeNamespace={namespace}
+									onOpen={mutate}
+									onRemove={openHandle.close}
+								/>
+							))}
+						</Stack>
+					)}
+				</ScrollArea.Autosize>
 			</Menu.Dropdown>
 		</Menu>
 	);
