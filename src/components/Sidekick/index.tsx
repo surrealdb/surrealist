@@ -8,11 +8,13 @@ import {
 	Center,
 	Group,
 	Image,
+	Paper,
 	ScrollArea,
 	SimpleGrid,
 	Stack,
 	Text,
 	Textarea,
+	ThemeIcon,
 } from "@mantine/core";
 
 import {
@@ -48,7 +50,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { newId } from "~/util/helpers";
-import { StartResource } from "../../screens/surrealist/pages/Overview/content/resource";
 import { useCopilotMutation } from "./copilot";
 import { ChatMessage } from "./message";
 
@@ -210,14 +211,43 @@ export function Sidekick() {
 									}}
 								>
 									{questions.map((question) => (
-										<StartResource
+										<Paper
 											key={question.title}
-											title={question.title}
+											className={classes.preset}
+											role="button"
+											radius={100}
+											tabIndex={0}
 											onClick={() => {
 												setInput(question.title);
 												inputRef.current?.focus();
 											}}
-										/>
+											p="sm"
+										>
+											<Group
+												align="center"
+												wrap="nowrap"
+											>
+												<ThemeIcon
+													radius={100}
+													color="violet"
+													variant="light"
+													size="xl"
+												>
+													<Icon
+														path={question.icon}
+														size="lg"
+													/>
+												</ThemeIcon>
+												<PrimaryTitle
+													c="bright"
+													fw={500}
+													fz="xl"
+													pr="md"
+												>
+													{question.title}
+												</PrimaryTitle>
+											</Group>
+										</Paper>
 									))}
 								</SimpleGrid>
 							) : (
