@@ -52,10 +52,15 @@
 	flex-direction: column;
 }
 
+.start-blog-arrow,
+.start-cloud-arrow {
+	transition: transform 0.2s;
+	transform: scaleX(-1);
+}
+
 .start-cloud {
 	position: relative;
 	overflow: hidden;
-	height: 115px;
 
 	.start-cloud-icon {
 		color: var(--mantine-color-slate-5);
@@ -69,8 +74,8 @@
 		color: var(--mantine-color-bright) !important;
 	}
 
-	@include md-and-up {
-		height: 135px;
+	&:hover .start-cloud-arrow {
+		transform: scaleX(-1) translateX(-0.25rem);
 	}
 }
 
@@ -82,11 +87,6 @@
 	background-position: center;
 	background-size: cover;
 	background-image: linear-gradient(to bottom, transparent, var(--mantine-color-body)), var(--image-url);
-}
-
-.start-blog-arrow {
-	transition: transform 0.2s;
-	transform: scaleX(-1);
 }
 
 .start-blog:hover .start-blog-arrow {

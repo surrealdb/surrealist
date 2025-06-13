@@ -66,12 +66,12 @@ import { resolveInstanceConnection } from "~/util/connection";
 import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
 import { StartBlog } from "./content/blog";
-import { StartCloud } from "./content/cloud";
 import { StartConnection } from "./content/connection";
 import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartPlaceholder } from "./content/placeholder";
 import { StartResource } from "./content/resource";
+import { StartCloud } from "./content/cloud";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -116,6 +116,8 @@ export function OverviewPage() {
 		labelInclude,
 		includeEmpty: noFilter,
 	});
+
+	const hasNoInstances = organizations.every((org) => org.instances.length === 0);
 
 	const activateConnection = useStable((con: Connection) => {
 		navigateConnection(con.id);
@@ -450,7 +452,14 @@ export function OverviewPage() {
 								)}
 							</SimpleGrid>
 
+							{(authState === "loading" || isPending) && (
+								<Center mt={52}>
+									<Loader type="dots" />
+								</Center>
+							)}
+
 							{authState === "authenticated" &&
+								!hasNoInstances &&
 								organizations.map((organization) => (
 									<OrganizationInstances
 										key={organization.info.id}
@@ -459,10 +468,31 @@ export function OverviewPage() {
 									/>
 								))}
 
-							{(authState === "loading" || isPending) && (
-								<Center mt={52}>
-									<Loader type="dots" />
-								</Center>
+							{authState === "authenticated" && hasNoInstances && (
+								<>
+									<PrimaryTitle
+										mt={36}
+										fz={22}
+									>
+										Deploy your first instance
+									</PrimaryTitle>
+									<StartCloud
+										action="Configure your instance"
+										onClick={() => navigate("/create/instance")}
+									>
+										Get started with{" "}
+										<Text
+											span
+											inherit
+											c="bright"
+											fw={500}
+										>
+											Surreal Cloud
+										</Text>{" "}
+										deploying your first instance. Get your own free instance
+										today.
+									</StartCloud>
+								</>
 							)}
 
 							{authState === "unauthenticated" && showCloud && (
@@ -471,14 +501,24 @@ export function OverviewPage() {
 										mt={36}
 										fz={22}
 									>
-										Surreal Cloud
+										Sign in to Surreal Cloud
 									</PrimaryTitle>
 									<StartCloud
-										title="Try Surreal Cloud"
-										subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure. Get your own free instance today."
-										icon={iconCloud}
+										action="Sign in"
 										onClick={openCloudAuthentication}
-									/>
+									>
+										<Text
+											span
+											inherit
+											c="bright"
+											fw={500}
+										>
+											Surreal Cloud
+										</Text>{" "}
+										redefines the database experience, offering the power and
+										flexibility of SurrealDB without the pain of managing
+										infrastructure. Get your own free instance today.
+									</StartCloud>
 								</>
 							)}
 
