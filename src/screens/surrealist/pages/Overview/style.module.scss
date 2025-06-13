@@ -4,13 +4,22 @@
 }
 
 .organisation-name {
-	+svg {
-		opacity: 0;
+	svg {
+		opacity: 0.6;
 		transition: opacity 0.2s;
 	}
 
-	&:hover+svg {
+	&:hover svg {
 		opacity: 1;
+	}
+}
+
+.connection-spacer {
+	visibility: hidden;
+	border-color: rgba(255, 255, 255, 0.075);
+
+	@include light {
+		border-color: rgba(0, 0, 0, 0.1);
 	}
 }
 
@@ -35,14 +44,6 @@
 	}
 }
 
-.start-creator {
-	background-color: hsla(255, 25%, 6%, 0.6);
-
-	@include light {
-		background-color: hsla(240, 11%, 96%, 0.6);
-	}
-}
-
 .start-creator,
 .start-connection,
 .start-instance,
@@ -50,6 +51,10 @@
 	height: 112px;
 	display: flex;
 	flex-direction: column;
+}
+
+.start-creator {
+	color: var(--mantine-color-text);
 }
 
 .start-blog-arrow,

@@ -61,11 +61,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 				))}
 				{canCreate &&
 					(isAdmin ? (
-						<StartCreator
-							title="No instances"
-							subtitle="Click to provision a new instance"
-							onCreate={() => navigate(createInstancePath(organization))}
-						/>
+						<StartCreator organization={organization.id} />
 					) : (
 						<StartPlaceholder
 							title="No instances"
