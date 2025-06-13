@@ -85,6 +85,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 			getHotkeyHandler([["mod+alt+i", () => invoke("toggle_devtools")]]),
 		);
 
+		getCurrentWindow().onFocusChanged(async () => {
+			if (this.platform === "darwin") {
+				await this.setupWindowMenu();
+			}
+		});
+
 		getCurrentWindow().listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
@@ -201,7 +207,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					},
 				},
 				{
-					id: "new_window",
+					id: "new_connection",
 					type: "Custom",
 					name: "New Connection",
 					action: async () => {
@@ -236,7 +242,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				},
 				SEPARATOR,
 				{
-					id: "open_command_alette",
+					id: "open_command_palette",
 					type: "Custom",
 					name: "Open Command Palette",
 					action: async () => {
@@ -252,7 +258,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					},
 				},
 				{
-					id: "command_alette",
+					id: "open_connection_list",
 					type: "Custom",
 					name: "Open Connection List",
 					action: async () => {
@@ -266,7 +272,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					type: "Custom",
 					name: "Close Window",
 					action: async () => {
-						await invoke("close_window");
+						await getCurrentWindow().close();
 					},
 				},
 			],
@@ -401,7 +407,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public async setupWindowMenu() {
-		const appMenu = await Menu.new();
+		const appMenu = await Menu.new({
+			id: getCurrentWindow().label
+		});
 
 		for (const menu of this.menuList || []) {
 			const menuItems = [];
