@@ -1,53 +1,54 @@
 import clsx from "clsx";
 import classes from "../style.module.scss";
 
-import { Box, BoxProps, Flex, Paper, Text, UnstyledButton } from "@mantine/core";
-import { PropsWithChildren, ReactNode, useRef } from "react";
+import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
+import { PropsWithChildren, useRef } from "react";
+import { Link } from "wouter";
+import { Faint } from "~/components/Faint";
+import { Icon } from "~/components/Icon";
+import { iconChevronRight } from "~/util/icons";
 
 export interface StartCreatorProps extends BoxProps {
-	title: ReactNode;
-	subtitle: ReactNode;
-	onCreate: () => void;
+	organization?: string;
 }
 
-export function StartCreator({
-	title,
-	subtitle,
-	onCreate,
-	children,
-	...other
-}: PropsWithChildren<StartCreatorProps>) {
+export function StartCreator({ organization, ...other }: PropsWithChildren<StartCreatorProps>) {
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	return (
-		<UnstyledButton
-			onClick={onCreate}
-			{...other}
-		>
-			<Paper
-				p="lg"
-				ref={containerRef}
-				className={clsx(classes.startBox, classes.startCreator)}
-			>
-				<Flex
-					direction="column"
-					justify="center"
-					align="center"
-					gap={0}
-					h="100%"
+		<Link href={`/create/instance?organization=${organization ?? ""}`}>
+			<UnstyledButton {...other}>
+				<Paper
+					p="lg"
+					ref={containerRef}
+					className={clsx(classes.startBox, classes.startCreator)}
 				>
-					<Box ta="center">
-						<Text
-							c="bright"
-							fw={600}
-							fz="lg"
-						>
-							{title}
-						</Text>
-						<Text>{subtitle}</Text>
-					</Box>
-				</Flex>
-			</Paper>
-		</UnstyledButton>
+					<Group
+						wrap="nowrap"
+						h="100%"
+					>
+						<Box flex={1}>
+							<Text
+								c="bright"
+								fw={600}
+								fz="lg"
+							>
+								Deploy a Surreal Cloud instance
+							</Text>
+							<Text mt="xs">
+								Click to configure and deploy a Surreal Cloud instance in this
+								organisation.
+							</Text>
+						</Box>
+
+						<Icon
+							path={iconChevronRight}
+							ml="xl"
+						/>
+					</Group>
+					<Faint containerRef={containerRef} />
+				</Paper>
+			</UnstyledButton>
+		</Link>
 	);
 }
