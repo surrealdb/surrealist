@@ -281,7 +281,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					action: () => {
 						this.openUrl("https://github.com/surrealdb/surrealist/issues/new/choose");
 					},
-				}
+				},
 			],
 		};
 
