@@ -1,0 +1,99 @@
+.title-bar {
+	display: flex;
+	align-items: center;
+	height: 32px;
+	width: 100%;
+	user-select: none;
+	position: fixed;
+	z-index: 1000;
+	background-color: var(--mantine-color-body);
+	border-bottom: 1px solid var(--mantine-color-slate-7);
+
+	@include light {
+		border-color: var(--mantine-color-slate-2);
+	}
+}
+
+.drag-area {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	cursor: default;
+	position: relative;
+}
+
+.title {
+	font-weight: 700;
+	color: var(--mantine-color-gray-4);
+}
+
+.window-controls {
+	display: flex;
+	align-items: center;
+	flex: 0 0 auto;
+}
+
+.menu-button {
+	color: var(--mantine-color-slate-2);
+	padding: 6px 10px;
+	border-radius: 0;
+	font-size: small;
+
+	&:hover {
+		background: var(--mantine-color-slate-6);
+		color: white;
+
+		@include light {
+			background: var(--mantine-color-slate-1);
+			color: black;
+		}
+	}
+
+	@include light {
+		color: var(--mantine-color-slate-7);
+	}
+}
+
+.control-button {
+	color: var(--mantine-color-slate-2);
+	border-radius: 0;
+	width: 46px;
+	height: 32px;
+
+	&:hover {
+		background: var(--mantine-color-slate-6);
+		color: white;
+
+		@include light {
+			background: var(--mantine-color-slate-1);
+			color: black;
+		}
+	}
+
+	@include light {
+		color: var(--mantine-color-slate-7);
+	}
+}
+
+.close-button {
+	color: var(--mantine-color-slate-2);
+	border-radius: 0;
+	width: 46px;
+	height: 32px;
+
+	&:hover {
+		background: var(--mantine-color-red-7);
+		color: white;
+
+		// yes this is stupid, but it makes it work
+		@include light {
+			color: white;
+		}
+	}
+
+	@include light {
+		color: var(--mantine-color-slate-7);
+	}
+}

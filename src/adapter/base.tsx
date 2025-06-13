@@ -1,4 +1,4 @@
-import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
+import type { AppMenu, Platform, SurrealistConfig, UrlTarget } from "~/types";
 
 export interface OpenedTextFile {
 	name: string;
@@ -33,9 +33,14 @@ export interface SurrealistAdapter {
 	isTelemetryEnabled: boolean;
 
 	/**
-	 * Whether the window has a native titlebar
+	 * What the titlebar offset is if applicable
 	 */
-	hasTitlebar: boolean;
+	titlebarOffset: number;
+
+	/**
+	 * The app menu bar items if applicable
+	 */
+	menuList?: AppMenu[];
 
 	/**
 	 * The currently active platform

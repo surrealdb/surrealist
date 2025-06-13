@@ -4,22 +4,33 @@
     windows_subsystem = "windows"
 )]
 
-use std::env;
+use std::{env, sync::OnceLock};
 
 use database::DatabaseState;
 use log::info;
 use paths::get_logs_directory;
-use tauri::{Emitter, Manager, RunEvent};
+use tauri::{AppHandle, Manager, RunEvent};
 use tauri_plugin_log::{Target, TargetKind};
 use time::{format_description, OffsetDateTime};
 
 mod analytics;
+mod appbar;
 mod config;
 mod database;
 mod open;
 mod paths;
 mod whitelist;
-mod window;
+pub mod window;
+
+static APP_HANDLE: OnceLock<AppHandle> = OnceLock::new();
+
+fn set_app_handle(app: AppHandle) {
+    APP_HANDLE.set(app).expect("App handle already set");
+}
+
+pub fn get_app_handle() -> &'static AppHandle {
+    APP_HANDLE.get().expect("App handle not set")
+}
 
 fn main() {
     env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
@@ -47,7 +58,7 @@ fn main() {
             open::store_resources(app, args);
 
             if emit_event {
-                app.emit("open-resource", ()).unwrap();
+                window::emit_last(app, "open-resource", ());
             }
 
             if let Some((_, window)) = app.webview_windows().iter().next() {
@@ -84,7 +95,9 @@ fn main() {
             database::start_database,
             database::stop_database,
             window::toggle_devtools,
+            window::new_window,
             open::get_opened_resources,
+            open::clear_opened_resources,
             open::read_query_file,
             open::write_query_file,
             open::prune_allowed_files,
@@ -93,24 +106,14 @@ fn main() {
         ])
         .setup(|app| {
             info!("Launch args: {:?}", env::args());
+            set_app_handle(app.handle().clone());
 
             #[cfg(any(windows, target_os = "linux"))]
             {
-                open::store_resources(app.handle(), env::args());
+                open::store_resources(get_app_handle(), env::args());
             }
 
-            let builder = tauri::WebviewWindowBuilder::new(app, "main", Default::default())
-                .title("Surrealist")
-                .inner_size(1435.0, 775.0)
-                .center()
-                .min_inner_size(825.0, 675.0);
-
-            #[cfg(target_os = "macos")]
-            let builder = builder
-                .title_bar_style(tauri::TitleBarStyle::Overlay)
-                .hidden_title(true);
-
-            builder.build().expect("Failed to create window");
+            tauri::async_runtime::block_on(window::open_new_window(app.handle()));
 
             Ok(())
         })
@@ -118,14 +121,16 @@ fn main() {
         .expect("Tauri failed to initialize");
 
     tauri.run(move |app, event| match event {
+        #[cfg(target_os = "macos")]
+        RunEvent::Ready => {
+            appbar::macos::setup_dock_menu();
+        }
         #[cfg(any(target_os = "macos", target_os = "ios"))]
         RunEvent::Opened { urls } => {
             info!("Opened resources: {:?}", urls);
 
             *app.state::<open::OpenResourceState>().0.lock().unwrap() = urls;
-            app.emit("open-resource", ()).unwrap();
-
-            info!("Emitted open-resource event");
+            window::emit_last(app, "open-resource", ());
         }
         RunEvent::Exit => {
             let state = app.state::<DatabaseState>();

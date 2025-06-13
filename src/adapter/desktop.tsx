@@ -1,6 +1,7 @@
 import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { Menu, MenuItem, PredefinedMenuItem, Submenu } from "@tauri-apps/api/menu";
 import { basename } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -16,17 +17,21 @@ import { VIEW_PAGES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
-import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
+import type { AppMenu, AppMenuItem, Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
 import { getSetting, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
-import { showErrorNotification, showInfo } from "~/util/helpers";
-import { handleIntentRequest } from "~/util/intents";
+import { optional, showErrorNotification, showInfo } from "~/util/helpers";
+import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 const WAIT_DURATION = 1000;
+const SEPARATOR: AppMenuItem = {
+	id: "separator",
+	type: "Separator",
+};
 
 interface Resource {
 	File?: FileResource;
@@ -53,17 +58,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
 	public isTelemetryEnabled = true;
-	public hasTitlebar = false;
+	public titlebarOffset = 0;
 	public platform: Platform = "windows";
+	public menuList: AppMenu[] | undefined = undefined;
 
 	#startTask: any;
 	#arch: string = arch();
 	#system: string = type();
 
 	public constructor() {
-		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
-
 		this.initDatabaseEvents();
+		this.initWindowEvents();
 
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
@@ -80,11 +85,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 			getHotkeyHandler([["mod+alt+i", () => invoke("toggle_devtools")]]),
 		);
 
-		listen("open-resource", () => {
+		getCurrentWindow().onFocusChanged(async () => {
+			if (this.platform === "darwin") {
+				await this.setupWindowMenu();
+			}
+		});
+
+		getCurrentWindow().listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
 
-		listen("tauri://focus", () => {
+		getCurrentWindow().listen("tauri://focus", () => {
 			this.checkForUpdates();
 		});
 	}
@@ -94,6 +105,15 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		this.queryOpenRequest();
 		this.checkForUpdates();
+
+		this.menuList = this.computeMenuItems();
+
+		if (this.platform === "darwin") {
+			await this.setupWindowMenu();
+			this.titlebarOffset = 15;
+		} else {
+			this.titlebarOffset = 32;
+		}
 
 		watchStore({
 			initial: true,
@@ -124,8 +144,310 @@ export class DesktopAdapter implements SurrealistAdapter {
 		getCurrentWindow().setTitle(title || "Surrealist");
 	}
 
+	public computeMenuItems(): AppMenu[] {
+		const isDarwin = this.platform === "darwin";
+
+		const about: AppMenuItem = {
+			id: "about",
+			type: "Custom",
+			name: "About Surrealist",
+			action: () => {
+				dispatchIntent("open-settings", { tab: "about" });
+			},
+		};
+
+		const settings: AppMenuItem = {
+			id: "settings",
+			type: "Custom",
+			name: "Settings",
+			action: () => {
+				dispatchIntent("open-settings", { tab: "preferences" });
+			},
+		};
+
+		const surrealistMenu: AppMenu = {
+			id: "surrealist",
+			name: "Surrealist",
+			items: [
+				about,
+				SEPARATOR,
+				settings,
+				SEPARATOR,
+				{
+					id: "hide",
+					type: "Hide",
+				},
+				{
+					id: "hide_others",
+					type: "HideOthers",
+				},
+				{
+					id: "show_all",
+					type: "ShowAll",
+				},
+				SEPARATOR,
+				{
+					id: "quit",
+					type: "Quit",
+					name: "Quit Surrealist",
+				},
+			],
+		};
+
+		const fileMenu: AppMenu = {
+			id: "file",
+			name: "File",
+			items: [
+				{
+					id: "new_window",
+					type: "Custom",
+					name: "New Window",
+					action: async () => {
+						await invoke("new_window");
+					},
+				},
+				{
+					id: "new_connection",
+					type: "Custom",
+					name: "New Connection",
+					action: async () => {
+						dispatchIntent("new-connection");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "open_query",
+					type: "Custom",
+					name: "Open Query...",
+					action: async () => {
+						dispatchIntent("open-query-file");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "import_database",
+					type: "Custom",
+					name: "Import Database",
+					action: async () => {
+						dispatchIntent("import-database");
+					},
+				},
+				{
+					id: "export_database",
+					type: "Custom",
+					name: "Export Database",
+					action: async () => {
+						dispatchIntent("export-database");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "open_command_palette",
+					type: "Custom",
+					name: "Open Command Palette",
+					action: async () => {
+						dispatchIntent("open-command-palette");
+					},
+				},
+				{
+					id: "open_documentation_search",
+					type: "Custom",
+					name: "Open Documentation Search",
+					action: async () => {
+						dispatchIntent("open-documentation");
+					},
+				},
+				{
+					id: "open_connection_list",
+					type: "Custom",
+					name: "Open Connection List",
+					action: async () => {
+						dispatchIntent("open-connections");
+					},
+				},
+				...optional(!isDarwin && [SEPARATOR, settings]),
+				SEPARATOR,
+				{
+					id: "close_window",
+					type: "Custom",
+					name: "Close Window",
+					action: async () => {
+						await getCurrentWindow().close();
+					},
+				},
+			],
+		};
+
+		const viewMenu: AppMenu = {
+			id: "view",
+			name: "View",
+			items: [
+				{
+					id: "toggle_pinned",
+					type: "Custom",
+					name: "Toggle Pinned",
+					action: async () => {
+						dispatchIntent("toggle-pinned");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "window_zoom_in",
+					type: "Custom",
+					name: "Zoom In",
+					action: async () => {
+						dispatchIntent("increase-window-scale");
+					},
+				},
+				{
+					id: "window_zoom_out",
+					type: "Custom",
+					name: "Zoom Out",
+					action: async () => {
+						dispatchIntent("decrease-window-scale");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "editor_zoom_in",
+					type: "Custom",
+					name: "Zoom In Editors",
+					action: async () => {
+						dispatchIntent("increase-editor-scale");
+					},
+				},
+				{
+					id: "editor_zoom_out",
+					type: "Custom",
+					name: "Zoom Out Editors",
+					action: async () => {
+						dispatchIntent("decrease-editor-scale");
+					},
+				},
+				...optional(isDarwin && SEPARATOR),
+			],
+		};
+
+		const helpMenu: AppMenu = {
+			id: "help",
+			name: "Help",
+			items: [
+				{
+					id: "discord",
+					type: "Custom",
+					name: "Discord",
+					action: () => {
+						this.openUrl("https://discord.gg/surrealdb");
+					},
+				},
+				{
+					id: "github",
+					type: "Custom",
+					name: "GitHub",
+					action: () => {
+						this.openUrl("https://github.com/surrealdb");
+					},
+				},
+				{
+					id: "youtube",
+					type: "Custom",
+					name: "YouTube",
+					action: () => {
+						this.openUrl("https://www.youtube.com/@surrealdb");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "surrealdb_docs",
+					type: "Custom",
+					name: "SurrealDB Docs",
+					action: () => {
+						this.openUrl("https://surrealdb.com/docs/surrealdb");
+					},
+				},
+				{
+					id: "surrealist_docs",
+					type: "Custom",
+					name: "Surrealist Docs",
+					action: () => {
+						this.openUrl("https://surrealdb.com/docs/surrealist");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "fundamentals",
+					type: "Custom",
+					name: "Fundamentals Course",
+					action: () => {
+						this.openUrl("https://surrealdb.com/learn/fundamentals");
+					},
+				},
+				{
+					id: "book",
+					type: "Custom",
+					name: "Book",
+					action: () => {
+						this.openUrl("https://surrealdb.com/learn/book");
+					},
+				},
+				SEPARATOR,
+				{
+					id: "report_issue",
+					type: "Custom",
+					name: "Report Issue",
+					action: () => {
+						this.openUrl("https://github.com/surrealdb/surrealist/issues/new/choose");
+					},
+				},
+				...optional(!isDarwin && about),
+			],
+		};
+
+		return [...optional(isDarwin && surrealistMenu), fileMenu, viewMenu, helpMenu];
+	}
+
+	public async setupWindowMenu() {
+		const appMenu = await Menu.new({
+			id: getCurrentWindow().label,
+		});
+
+		for (const menu of this.menuList || []) {
+			const menuItems = [];
+
+			for (const item of menu.items) {
+				if (item.type !== "Custom") {
+					const predefined = await PredefinedMenuItem.new({
+						item: item.type,
+					});
+
+					menuItems.push(predefined);
+					continue;
+				}
+
+				const custom = await MenuItem.new({
+					id: item.id,
+					text: item.name ?? "Unnamed",
+					enabled: !item.disabled,
+					action: item.action,
+				});
+
+				menuItems.push(custom);
+			}
+
+			const submenu = await Submenu.new({
+				id: menu.id,
+				text: menu.name,
+				items: menuItems,
+			});
+
+			appMenu.append(submenu);
+		}
+
+		await appMenu.setAsAppMenu();
+	}
+
 	public async loadConfig() {
-		switch (await type()) {
+		switch (type()) {
 			case "windows": {
 				this.platform = "windows";
 				break;
@@ -396,6 +718,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 		});
 	}
 
+	private initWindowEvents() {
+		getCurrentWindow().listen("window:open_settings", (e) =>
+			dispatchIntent("open-settings", e.payload ? { tab: e.payload as string } : undefined),
+		);
+	}
+
 	private async queryOpenRequest() {
 		const { addQueryTab, setActiveQueryTab } = useConfigStore.getState();
 		const resources = await invoke<Resource[]>("get_opened_resources");
@@ -438,6 +766,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				}
 
 				NavigateViewEvent.dispatch("query");
+				await invoke("clear_opened_resources");
 			} else if (Link) {
 				const { host, params } = Link;
 
@@ -460,6 +789,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 						});
 					}
 				}
+
+				await invoke("clear_opened_resources");
 			}
 		}
 	}
