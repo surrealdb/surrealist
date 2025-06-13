@@ -33,9 +33,9 @@ export interface SurrealistAdapter {
 	isTelemetryEnabled: boolean;
 
 	/**
-	 * Whether the window has a native titlebar
+	 * What the titlebar offset is if applicable
 	 */
-	hasTitlebar: boolean;
+	titlebarOffset: number;
 
 	/**
 	 * The app menu bar items if applicable
