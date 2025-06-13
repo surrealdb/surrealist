@@ -14,3 +14,22 @@
 		margin-bottom: var(--mantine-spacing-lg);
 	}
 }
+
+.preset {
+	cursor: pointer;
+	background-color: var(--surrealist-faint-body);
+	outline: 1px solid transparent;
+
+	@include light {
+		background-color: rgba(255, 255, 255, 0.5);
+		outline-color: hsl(300, 15%, 88%);
+	}
+
+	&:hover {
+		outline-color: rgba(255, 221, 251, 0.15);
+
+		@include light {
+			outline-color: rgba(139, 89, 139, 0.25);
+		}
+	}
+}
