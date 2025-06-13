@@ -1,5 +1,4 @@
 import { Box, Group, Image, Menu, Text } from "@mantine/core";
-import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
 import { adapter } from "~/adapter";
@@ -96,7 +95,7 @@ export function AppTitleBar() {
 					openDelay={500}
 					className={classes.controlButton}
 					onClick={async () => {
-						await invoke("minimize_window");
+						await getCurrentWindow().minimize();
 					}}
 				>
 					<Icon path={iconMinimize} />
@@ -129,7 +128,7 @@ export function AppTitleBar() {
 					size="md"
 					className={classes.closeButton}
 					onClick={async () => {
-						await invoke("close_window");
+						await getCurrentWindow().close();
 					}}
 				>
 					<Icon path={iconExit} />
