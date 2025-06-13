@@ -121,41 +121,39 @@ export function ConfigurationBlock({
 						/>
 					</Stack>
 				</SimpleGrid>
-				{canModify && (
-					<SimpleGrid
-						mt="xl"
-						cols={2}
+				<SimpleGrid
+					mt="xl"
+					cols={2}
+				>
+					<Button
+						size="xs"
+						color="slate"
+						onClick={onConfigure}
+						disabled={!instance || isIdle || !canModify}
+						variant="light"
+						my={-2}
+						fullWidth
 					>
-						<Button
-							size="xs"
-							color="slate"
-							onClick={onConfigure}
-							disabled={!instance || isIdle}
-							variant="light"
-							my={-2}
-							fullWidth
-						>
-							Configure instance
-						</Button>
-						<Button
-							size="xs"
-							onClick={handleUpgrade}
-							disabled={!instance || isIdle}
-							variant="gradient"
-							my={-2}
-							fullWidth
-							rightSection={
-								<Icon
-									style={{ rotate: "180deg" }}
-									path={iconArrowDownFat}
-									size="sm"
-								/>
-							}
-						>
-							Upgrade now
-						</Button>
-					</SimpleGrid>
-				)}
+						Configure instance
+					</Button>
+					<Button
+						size="xs"
+						onClick={onUpgrade}
+						disabled={!instance || isIdle || !canModify}
+						variant="gradient"
+						my={-2}
+						fullWidth
+						rightSection={
+							<Icon
+								style={{ rotate: "180deg" }}
+								path={iconArrowDownFat}
+								size="sm"
+							/>
+						}
+					>
+						Upgrade now
+					</Button>
+				</SimpleGrid>
 			</Paper>
 		</Skeleton>
 	);

@@ -143,8 +143,6 @@ export function QueryView() {
 			flex={1}
 			h="100%"
 			ref={wrapperRef}
-			pr="lg"
-			pb="lg"
 		>
 			<PanelGroup direction={orientation}>
 				<Panel minSize={15}>
@@ -203,16 +201,17 @@ export function QueryView() {
 	);
 
 	return (
-		<Stack
-			gap="md"
-			h="100%"
-		>
+		<>
 			<Box
-				flex={1}
+				h="100%"
 				ref={rootRef}
-				style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
+				pr="lg"
+				pb="lg"
 			>
-				<PanelGroup direction="horizontal">
+				<PanelGroup
+					direction="horizontal"
+					style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
+				>
 					{queryTabList && (
 						<>
 							<Panel
@@ -321,7 +320,7 @@ export function QueryView() {
 					</Stack>
 				</Form>
 			</Modal>
-		</Stack>
+		</>
 	);
 }
 

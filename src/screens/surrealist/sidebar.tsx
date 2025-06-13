@@ -21,7 +21,6 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useAvailablePages, useAvailableViews } from "~/hooks/connection";
-import { useLastSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -136,8 +135,6 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const isCollapsed = sidebarMode === "compact" || sidebarMode === "expandable";
 	const isFilled = sidebarMode === "fill";
 
-	const savepoint = useLastSavepoint();
-
 	return (
 		<ScrollArea
 			scrollbars="y"
@@ -199,9 +196,9 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					{connection && (
 						<>
 							<NavigationIcon
-								name={`Back to ${savepoint.name}`}
+								name="Overview"
 								icon={iconArrowLeft}
-								onClick={() => setLocation(savepoint.path)}
+								onClick={() => setLocation("/overview")}
 								onMouseEnter={hoverSidebarHandle.open}
 								withTooltip={sidebarMode === "compact"}
 							/>

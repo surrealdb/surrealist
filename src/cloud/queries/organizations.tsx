@@ -10,9 +10,9 @@ export function useCloudOrganizationQuery(organisation?: string) {
 	const authState = useCloudStore((state) => state.authState);
 
 	return useQuery({
-		queryKey: ["cloud", "organizations", organisation],
+		queryKey: ["cloud", "organizations", { id: organisation }],
 		refetchInterval: 15_000,
-		enabled: authState === "authenticated",
+		enabled: !!organisation && authState === "authenticated",
 		queryFn: async () => {
 			return fetchAPI<CloudOrganization>(`/organizations/${organisation}`);
 		},
