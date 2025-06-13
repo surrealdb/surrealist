@@ -54,7 +54,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
 	public isTelemetryEnabled = true;
-	public hasTitlebar = false;
+	public titlebarOffset = 0;
 	public platform: Platform = "windows";
 	public menuList: AppMenu[] | undefined = undefined;
 
@@ -63,8 +63,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 	#system: string = type();
 
 	public constructor() {
-		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
-
 		this.initDatabaseEvents();
 		this.initWindowEvents();
 
@@ -101,6 +99,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		if (this.platform === "darwin") {
 			await this.setupWindowMenu();
+
+			this.titlebarOffset = 15;
+		} else {
+			this.titlebarOffset = 32;
 		}
 
 		watchStore({

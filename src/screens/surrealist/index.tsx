@@ -101,7 +101,6 @@ export function SurrealistScreen() {
 	});
 
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
-	const titlebarOffset = isMacos ? 15 : !isMacos ? 32 : 0;
 
 	return (
 		<Box
@@ -109,7 +108,7 @@ export function SurrealistScreen() {
 			bg={isLight ? "white" : "slate.9"}
 			__vars={{
 				"--sidebar-offset": `${sidebarOffset}px`,
-				"--titlebar-offset": `${titlebarOffset}px`,
+				"--titlebar-offset": `${adapter.titlebarOffset}px`,
 			}}
 		>
 			{isOtherOS && <AppTitleBar />}

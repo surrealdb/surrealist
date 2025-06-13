@@ -13,7 +13,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public isServeSupported = false;
 	public isUpdateCheckSupported = false;
 	public isTelemetryEnabled = true;
-	public hasTitlebar = true;
+	public titlebarOffset = 0;
 	public platform: Platform = "windows";
 
 	public initialize() {
