@@ -211,7 +211,6 @@ export function OverviewPage() {
 												variant="subtle"
 												color="slate"
 												label="Filter connections"
-												disabled={!hasLabels}
 											>
 												<Icon path={iconTune} />
 											</ActionButton>
@@ -232,6 +231,16 @@ export function OverviewPage() {
 												</ActionButton>
 											)}
 										</Group>
+										{knownLabels.length === 0 && (
+											<Text
+												maw={200}
+												px="sm"
+												pb="sm"
+											>
+												No labels available. Add labels to your connections
+												to filter them here.
+											</Text>
+										)}
 										{knownLabels.map((option) => {
 											const isActive = selectedLabels.includes(option);
 
