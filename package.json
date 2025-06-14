@@ -45,7 +45,7 @@
 		"@mantine/charts": "7.16.1",
 		"@mantine/core": "7.16.1",
 		"@mantine/hooks": "7.16.1",
-		"@mantine/modals": "7.16.1",
+		"@mantine/modals": "7.17.7",
 		"@mantine/notifications": "7.16.1",
 		"@mdi/js": "^7.2.96",
 		"@replit/codemirror-indentation-markers": "^6.5.0",
