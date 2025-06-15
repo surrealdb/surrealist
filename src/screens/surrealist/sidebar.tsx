@@ -144,7 +144,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 			top={0}
 			left={0}
 			bottom={0}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "white" : "slate.9"}
 			onMouseEnter={hoverSidebarHandle.open}
 			className={clsx(
 				classes.sidebar,

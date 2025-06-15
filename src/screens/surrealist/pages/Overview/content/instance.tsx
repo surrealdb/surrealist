@@ -12,8 +12,6 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
-
-import clsx from "clsx";
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
@@ -69,8 +67,10 @@ export function StartInstance({
 		>
 			<Paper
 				p="lg"
-				className={clsx(classes.startBox, classes.startInstance)}
+				variant="interactive"
+				className={classes.startInstance}
 				ref={containerRef}
+				withBorder
 			>
 				<Group
 					wrap="nowrap"

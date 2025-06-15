@@ -14,10 +14,9 @@ import {
 } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { PropsWithChildren, useMemo, useRef } from "react";
+import { PropsWithChildren, useMemo } from "react";
 import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
-import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useCloudProfile } from "~/hooks/cloud";
@@ -43,7 +42,6 @@ export function OrganizationTile({
 	const defaultOrg = useCloudProfile().default_org;
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
-	const containerRef = useRef<HTMLDivElement>(null);
 	const [, navigate] = useAbsoluteLocation();
 
 	const isOwner = useMemo(() => {
@@ -90,8 +88,9 @@ export function OrganizationTile({
 		>
 			<Paper
 				p="lg"
+				withBorder
+				variant="interactive"
 				className={classes.organizationBox}
-				ref={containerRef}
 			>
 				<Group
 					wrap="nowrap"
@@ -185,7 +184,7 @@ export function OrganizationTile({
 						</Menu>
 					</Stack>
 				</Group>
-				<Faint containerRef={containerRef} />
+				{/* <Faint containerRef={containerRef} /> */}
 			</Paper>
 		</UnstyledButton>
 	);

@@ -19,6 +19,7 @@ import {
 	Indicator,
 	Loader,
 	Menu,
+	Paper,
 	ScrollArea,
 	SimpleGrid,
 	Stack,
@@ -46,7 +47,6 @@ import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Slab } from "~/components/Slab";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useIsCloudEnabled } from "~/hooks/cloud";
@@ -139,7 +139,7 @@ export function OverviewPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={50} />
+			<TopGlow offset={250} />
 
 			<Transition
 				duration={250}
@@ -304,7 +304,7 @@ export function OverviewPage() {
 									</Menu.Dropdown>
 								</Menu>
 
-								<Slab>
+								<Paper>
 									<TextInput
 										value={search}
 										onChange={setSearch}
@@ -323,7 +323,7 @@ export function OverviewPage() {
 											input: { backgroundColor: "unset" },
 										}}
 									/>
-								</Slab>
+								</Paper>
 
 								{showOrgCreator && (
 									<Link href="/create/organisation">

@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import classes from "../style.module.scss";
 
 import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
@@ -21,10 +20,13 @@ export function StartCreator({ organization, ...other }: PropsWithChildren<Start
 				<Paper
 					p="lg"
 					ref={containerRef}
-					className={clsx(classes.startBox, classes.startCreator)}
+					variant="interactive"
+					className={classes.startCreator}
+					withBorder
 				>
 					<Group
 						wrap="nowrap"
+						align="start"
 						h="100%"
 					>
 						<Box flex={1}>
@@ -42,6 +44,7 @@ export function StartCreator({ organization, ...other }: PropsWithChildren<Start
 						</Box>
 
 						<Icon
+							style={{ alignSelf: "center" }}
 							path={iconChevronRight}
 							ml="xl"
 						/>

@@ -213,10 +213,10 @@ export function Sidekick() {
 									{questions.map((question) => (
 										<Paper
 											key={question.title}
-											className={classes.preset}
 											role="button"
 											radius={100}
 											tabIndex={0}
+											variant="interactive"
 											onClick={() => {
 												setInput(question.title);
 												inputRef.current?.focus();

@@ -2,7 +2,6 @@ import classes from "../style.module.scss";
 
 import { ActionIcon, Badge, Menu, Text } from "@mantine/core";
 import { Box, BoxProps, Group, Paper, Stack, ThemeIcon, UnstyledButton } from "@mantine/core";
-import clsx from "clsx";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
@@ -89,8 +88,10 @@ export function StartConnection({
 		>
 			<Paper
 				p="lg"
-				className={clsx(classes.startBox, classes.startConnection)}
 				ref={containerRef}
+				variant="interactive"
+				className={classes.startConnection}
+				withBorder
 			>
 				<Group
 					wrap="nowrap"

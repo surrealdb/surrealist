@@ -26,6 +26,7 @@ function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectAct
 			<Paper
 				className={classes.action}
 				onClick={onClick}
+				variant="interactive"
 				component="button"
 				type="button"
 			>

@@ -21,6 +21,8 @@ import {
 	CopyButton,
 	Group,
 	Image,
+	Paper,
+	PaperProps,
 	Progress,
 	ScrollArea,
 	SimpleGrid,
@@ -38,7 +40,6 @@ import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Slab, SlabProps } from "~/components/Slab";
 import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
@@ -47,7 +48,7 @@ import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
 
 const REWARDS = [1, 10, 25, 100, 500];
 
-interface RewardProps extends Omit<SlabProps, "title"> {
+interface RewardProps extends Omit<PaperProps, "title"> {
 	title: ReactNode;
 	description: ReactNode;
 	icon: string;
@@ -58,7 +59,10 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Slab {...other}>
+		<Paper
+			{...other}
+			variant="gradient"
+		>
 			<Box
 				p="xl"
 				c={!isLight && active ? "white" : undefined}
@@ -82,7 +86,7 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 				</Text>
 				<Box opacity={0.75}>{description}</Box>
 			</Box>
-		</Slab>
+		</Paper>
 	);
 }
 
@@ -146,9 +150,9 @@ export function ReferralPage() {
 							</PrimaryTitle>
 						</Box>
 
-						<Slab
+						<Paper
 							p="xl"
-							shadow="md"
+							variant="gradient"
 						>
 							<Group gap={0}>
 								<Box style={{ alignSelf: "start" }}>
@@ -227,9 +231,9 @@ export function ReferralPage() {
 									</Box>
 								</Stack>
 							</Group>
-						</Slab>
+						</Paper>
 
-						<Box>
+						<Box mt={36}>
 							<PrimaryTitle fz={22}>Progress</PrimaryTitle>
 							<Text>
 								You have referred{" "}
@@ -270,7 +274,7 @@ export function ReferralPage() {
 							/>
 						</Box>
 
-						<Box>
+						<Box mt={36}>
 							<PrimaryTitle fz={22}>Unlockable rewards</PrimaryTitle>
 							<SimpleGrid
 								mt="sm"
@@ -334,7 +338,7 @@ export function ReferralPage() {
 							</SimpleGrid>
 						</Box>
 
-						<Box>
+						<Box mt={36}>
 							<PrimaryTitle fz={22}>How does this work?</PrimaryTitle>
 							<SimpleGrid
 								mt="sm"
@@ -343,7 +347,10 @@ export function ReferralPage() {
 									md: 3,
 								}}
 							>
-								<Slab p="xl">
+								<Paper
+									p="xl"
+									variant="gradient"
+								>
 									<Text
 										fw={600}
 										fz={18}
@@ -356,8 +363,11 @@ export function ReferralPage() {
 										and share it with friends, family, or anyone you think would
 										benefit from our services.
 									</Text>
-								</Slab>
-								<Slab p="xl">
+								</Paper>
+								<Paper
+									p="xl"
+									variant="gradient"
+								>
 									<Text
 										fw={600}
 										fz={18}
@@ -369,8 +379,11 @@ export function ReferralPage() {
 										When someone uses your link to sign up, they'll get a
 										special reward or discount as a welcome gift.
 									</Text>
-								</Slab>
-								<Slab p="xl">
+								</Paper>
+								<Paper
+									p="xl"
+									variant="gradient"
+								>
 									<Text
 										fw={600}
 										fz={18}
@@ -383,7 +396,7 @@ export function ReferralPage() {
 										making a purchase or reaching a milestone), you'll receive
 										your reward too!
 									</Text>
-								</Slab>
+								</Paper>
 							</SimpleGrid>
 						</Box>
 					</Stack>

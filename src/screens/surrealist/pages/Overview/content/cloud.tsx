@@ -3,7 +3,6 @@ import classes from "../style.module.scss";
 
 import { Image, Text } from "@mantine/core";
 import { BoxProps, Group, Paper, Stack, UnstyledButton } from "@mantine/core";
-import clsx from "clsx";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
@@ -30,9 +29,11 @@ export function StartCloud({
 			<Paper
 				p="xl"
 				pos="relative"
+				variant="interactive"
 				ref={containerRef}
-				className={clsx(classes.startBox, classes.startCloud)}
+				className={classes.startCloud}
 				renderRoot={(props) => <Stack {...props} />}
+				withBorder
 				mih={145}
 			>
 				<Text
