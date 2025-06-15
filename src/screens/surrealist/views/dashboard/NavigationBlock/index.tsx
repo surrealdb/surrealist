@@ -73,6 +73,7 @@ function NavigationBox({ icon, color, title, description, isLoading }: Navigatio
 		<Skeleton visible={isLoading}>
 			<Paper
 				p="md"
+				variant="interactive"
 				className={classes.navigationBox}
 			>
 				<Group wrap="nowrap">

@@ -1,7 +1,6 @@
 import classes from "../style.module.scss";
 
 import { Box, BoxProps, Group, Image, Paper, Text, UnstyledButton } from "@mantine/core";
-import clsx from "clsx";
 import { useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
@@ -23,7 +22,9 @@ export function StartResource({ title, subtitle, image, onClick, ...other }: Sta
 		>
 			<Paper
 				p="lg"
-				className={clsx(classes.startBox, classes.startResource)}
+				variant="interactive"
+				className={classes.startResource}
+				withBorder
 				ref={containerRef}
 			>
 				<Group

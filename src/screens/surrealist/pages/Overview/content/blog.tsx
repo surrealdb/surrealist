@@ -2,7 +2,6 @@ import { Group, Text } from "@mantine/core";
 import classes from "../style.module.scss";
 
 import { Box, BoxProps, Paper, UnstyledButton } from "@mantine/core";
-import clsx from "clsx";
 import { format } from "date-fns";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -26,7 +25,11 @@ export function StartBlog({ post, ...other }: StartBlogProps) {
 			onClick={handleClick}
 			{...other}
 		>
-			<Paper className={clsx(classes.startBox, classes.startBlog)}>
+			<Paper
+				variant="interactive"
+				className={classes.startBlog}
+				withBorder
+			>
 				<Box
 					w="100%"
 					h={200}

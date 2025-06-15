@@ -1,6 +1,7 @@
 import "@mantine/core/styles.layer.css";
 
 import "../assets/styles/override.scss";
+import "../assets/styles/variants.scss";
 import "../assets/styles/global.scss";
 
 import { createRoot } from "react-dom/client";

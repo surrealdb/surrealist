@@ -102,7 +102,7 @@ export function SurrealistScreen() {
 	return (
 		<Box
 			className={classes.root}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "white" : "slate.9"}
 			__vars={{
 				"--sidebar-offset": `${sidebarOffset}px`,
 				"--titlebar-offset": `${titlebarOffset}px`,
