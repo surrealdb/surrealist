@@ -1,61 +1,58 @@
-import cloudSplashUrl from "~/assets/images/cloud-splash.webp";
 import classes from "../style.module.scss";
+import glow from "~/assets/images/glow.png";
 
-import { Image, Text } from "@mantine/core";
-import { BoxProps, Group, Paper, Stack, UnstyledButton } from "@mantine/core";
-import { PropsWithChildren, useRef } from "react";
-import { Faint } from "~/components/Faint";
+import { Box, Button, Image, Paper, Stack, Text } from "@mantine/core";
+import { BoxProps } from "@mantine/core";
+import { PropsWithChildren } from "react";
 import { Icon } from "~/components/Icon";
-import { iconArrowLeft } from "~/util/icons";
+import { iconChevronRight } from "~/util/icons";
 
 export interface StartCloudProps extends BoxProps {
 	action: string;
+	image: string;
 	onClick: () => void;
 }
 
 export function StartCloud({
 	onClick,
 	action,
+	image,
 	children,
 	...other
 }: PropsWithChildren<StartCloudProps>) {
-	const containerRef = useRef<HTMLDivElement>(null);
-
 	return (
-		<UnstyledButton
-			onClick={onClick}
+		<Paper
+			p="xl"
+			pos="relative"
+			variant="gradient"
+			className={classes.startCloud}
 			{...other}
 		>
-			<Paper
-				p="xl"
-				pos="relative"
-				variant="interactive"
-				ref={containerRef}
-				className={classes.startCloud}
-				renderRoot={(props) => <Stack {...props} />}
-				withBorder
-				mih={145}
-			>
+			<Stack flex={1}>
 				<Text
 					maw={450}
 					fz="lg"
 				>
 					{children}
 				</Text>
-				<Group gap="xs">
-					<Text c="surreal">{action}</Text>
-					<Icon
-						className={classes.startCloudArrow}
-						path={iconArrowLeft}
-						c="surreal"
-					/>
-				</Group>
-				<Image
-					src={cloudSplashUrl}
-					className={classes.cloudImage}
-				/>
-				<Faint containerRef={containerRef} />
-			</Paper>
-		</UnstyledButton>
+				<Box mt="md">
+					<Button
+						variant="gradient"
+						rightSection={<Icon path={iconChevronRight} />}
+						onClick={onClick}
+					>
+						{action}
+					</Button>
+				</Box>
+			</Stack>
+			<Image
+				src={image}
+				className={classes.cloudImage}
+			/>
+			<Image
+				src={glow}
+				className={classes.cloudGlow}
+			/>
+		</Paper>
 	);
 }

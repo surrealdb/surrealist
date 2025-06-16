@@ -16,7 +16,7 @@
 	&:hover {
 		transform: scale(1.01);
 		box-shadow: var(--mantine-shadow-sm) !important;
-		border-color: var(--mantine-color-slate-5) !important;
+		border-color: rgba(255, 255, 255, 0.15) !important;
 
 		@include light {
 			border-color: var(--mantine-color-slate-2) !important;

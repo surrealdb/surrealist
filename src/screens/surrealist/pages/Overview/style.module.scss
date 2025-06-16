@@ -52,31 +52,9 @@
 	background-color: var(--mantine-color-body) !important;
 }
 
-.start-blog-arrow,
-.start-cloud-arrow {
+.start-blog-arrow {
 	transition: transform 0.2s;
 	transform: scaleX(-1);
-}
-
-.start-cloud {
-	position: relative;
-	overflow: hidden;
-
-	.start-cloud-icon {
-		color: var(--mantine-color-slate-5);
-
-		@include md-and-up {
-			display: none;
-		}
-	}
-
-	&:hover .start-cloud-icon {
-		color: var(--mantine-color-bright) !important;
-	}
-
-	&:hover .start-cloud-arrow {
-		transform: scaleX(-1) translateX(-0.25rem);
-	}
 }
 
 .start-resource {
@@ -94,13 +72,38 @@
 }
 
 .cloud-image {
-	width: 500px;
+	width: 275px;
+	height: 275px;
 	position: absolute;
-	right: -64px;
-	bottom: 0;
-	display: none;
+	right: 0px;
+	opacity: 0.2;
+	bottom: -88px;
+	z-index: 1;
+	transition: bottom 0.5s ease;
 
-	@include md-and-up {
-		display: block;
+	@include sm-and-up {
+		opacity: 1;
+		right: 50px;
+	}
+}
+
+.cloud-glow {
+	width: 900px;
+	height: 900px;
+	position: absolute;
+	right: -400px;
+	bottom: -450px;
+	z-index: 0;
+	opacity: 0.3;
+	transition: opacity 0.5s ease;
+}
+
+.start-cloud:hover {
+	.cloud-image {
+		bottom: -72px;
+	}
+
+	.cloud-glow {
+		opacity: 0.6;
 	}
 }
