@@ -138,7 +138,7 @@ export function getMenuItems(): AppMenu[] {
 			{
 				id: "dec-win-scale",
 				name: "Zoom Out",
-				type: "Custom",
+				type: "Command",
 			},
 			SEPARATOR,
 			{
@@ -149,7 +149,7 @@ export function getMenuItems(): AppMenu[] {
 			{
 				id: "dec-edit-scale",
 				name: "Zoom Out Editors",
-				type: "Custom",
+				type: "Command",
 			},
 			...optional(isDarwin && SEPARATOR),
 		],
@@ -248,35 +248,31 @@ async function setupNativeAppMenu(
 
 		for (const item of menu.items) {
 			if (item.type === "Command") {
-				if (commands.get(item.id)) {
-					const command = commands.get(item.id);
-					const keybind = keybinds.get(item.id);
-					const modifierMap: Record<string, string> = {
-						mod: "CmdOrCtrl",
-					};
+				const keybind = keybinds.get(item.id);
+				const modifierMap: Record<string, string> = {
+					mod: "CmdOrCtrl",
+					meta: "CmdOrCtrl",
+				};
+				const accelerator = keybind
+						? keybind
+								.map(
+									(key) =>
+										modifierMap[key.toLowerCase()] || key.toUpperCase(),
+								)
+								.join("+")
+						: undefined;
+				
+				const custom = await MenuItem.new({
+					id: item.id,
+					text: item.name ?? "Unnamed",
+					enabled: !item.disabled && commands.has(item.id),
+					action: () => {
+						dispatchCommand(item.id, item.data);
+					},
+					accelerator: accelerator,
+				});
 
-					if (command) {
-						const custom = await MenuItem.new({
-							id: item.id,
-							text: item.name ?? "Unnamed",
-							enabled: !item.disabled && commands.has(item.id),
-							action: () => {
-								dispatchCommand(command.id, item.data);
-							},
-							accelerator: keybind
-								? keybind
-										.map(
-											(key) =>
-												modifierMap[key.toLowerCase()] || key.toUpperCase(),
-										)
-										.join("+")
-								: undefined,
-						});
-
-						menuItems.push(custom);
-					}
-				}
-
+				menuItems.push(custom);
 				continue;
 			}
 
