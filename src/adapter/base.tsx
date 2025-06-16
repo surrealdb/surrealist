@@ -1,4 +1,4 @@
-import type { AppMenu, Platform, SurrealistConfig, UrlTarget } from "~/types";
+import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
 
 export interface OpenedTextFile {
 	name: string;
@@ -36,11 +36,6 @@ export interface SurrealistAdapter {
 	 * What the titlebar offset is if applicable
 	 */
 	titlebarOffset: number;
-
-	/**
-	 * The app menu bar items if applicable
-	 */
-	menuList?: AppMenu[];
 
 	/**
 	 * The currently active platform

@@ -1,18 +1,38 @@
 import { Box, Group, Image, Menu, Text } from "@mantine/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
-import { adapter } from "~/adapter";
 import icon from "~/assets/images/icon.webp";
 import { Icon } from "~/components/Icon";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconExit, iconMaximize, iconMinimize, iconRestore } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
 import classes from "./style.module.scss";
+import { getMenuItems } from "../App/hooks/menu";
+import {
+	Command,
+	useCommandCategories,
+	useCommandDispatcher,
+	useCommandKeybinds,
+} from "~/providers/Commands";
+import { Spacer } from "../Spacer";
+import { displayBinding } from "~/providers/Commands/keybindings";
 
 export function AppTitleBar() {
+	const keybinds = useCommandKeybinds();
 	const currentWindow = getCurrentWindow();
+	const cmdCategories = useCommandCategories();
+	const dispatchCommand = useCommandDispatcher();
+	const menuItems = getMenuItems();
+
 	const { title } = useInterfaceStore.getState();
 	const [isMaximized, setMaximized] = useState(false);
+
+	const commands = cmdCategories.reduce((acc, category) => {
+		for (const command of category.commands) {
+			acc.set(command.id, command);
+		}
+		return acc;
+	}, new Map<string, Command>());
 
 	getCurrentWindow().onResized(() => {
 		getCurrentWindow().isMaximized().then(setMaximized);
@@ -27,7 +47,7 @@ export function AppTitleBar() {
 					m="md"
 					data-tauri-drag-region
 				/>
-				{adapter?.menuList
+				{menuItems
 					?.filter((it) => !it.disabled)
 					.map((menu) => (
 						<Menu
@@ -50,6 +70,40 @@ export function AppTitleBar() {
 								{menu.items.map((item, index) => {
 									if (item.type === "Separator") {
 										return <Menu.Divider key={index} />;
+									}
+
+									if (item.type === "Command") {
+										const command = commands.get(item.id);
+										const disabled = item.disabled || !command;
+
+										return (
+											<Menu.Item
+												key={item.id}
+												disabled={disabled}
+												onClick={() => {
+													dispatchCommand(item.id, item.data);
+												}}
+											>
+												<Group gap={8}>
+													{item.name}
+													{keybinds.has(item.id) && (
+														<>
+															<Spacer />
+															<Text c="slate.4">
+																<Group
+																	gap={2}
+																	wrap="nowrap"
+																>
+																	{displayBinding(
+																		keybinds.get(item.id) ?? [],
+																	)}
+																</Group>
+															</Text>
+														</>
+													)}
+												</Group>
+											</Menu.Item>
+										);
 									}
 
 									if (item.type === "Custom") {
@@ -92,7 +146,6 @@ export function AppTitleBar() {
 					variant="subtle"
 					color="gray"
 					size="md"
-					openDelay={500}
 					className={classes.controlButton}
 					onClick={async () => {
 						await getCurrentWindow().minimize();
@@ -102,7 +155,6 @@ export function AppTitleBar() {
 				</ActionButton>
 				<ActionButton
 					label={isMaximized ? "Restore" : "Maximize"}
-					openDelay={500}
 					variant="subtle"
 					color="gray"
 					size="md"
@@ -123,7 +175,6 @@ export function AppTitleBar() {
 				</ActionButton>
 				<ActionButton
 					label="Close"
-					openDelay={500}
 					variant="subtle"
 					size="md"
 					className={classes.closeButton}

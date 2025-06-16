@@ -95,6 +95,7 @@ export type AppMenuItemType =
 	| "CloseWindow"
 	| "Quit"
 	| "Services"
+	| "Command"
 	| "Custom"
 	| {
 			About: AboutMetadata | null;
@@ -778,5 +779,6 @@ export interface AppMenuItem {
 	name?: string;
 	data?: any;
 	disabled?: boolean;
+	binding?: string[];
 	action?: () => void;
 }
