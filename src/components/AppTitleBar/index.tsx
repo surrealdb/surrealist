@@ -3,19 +3,19 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
 import icon from "~/assets/images/icon.webp";
 import { Icon } from "~/components/Icon";
-import { useInterfaceStore } from "~/stores/interface";
-import { iconExit, iconMaximize, iconMinimize, iconRestore } from "~/util/icons";
-import { ActionButton } from "../ActionButton";
-import classes from "./style.module.scss";
-import { getMenuItems } from "../App/hooks/menu";
 import {
 	Command,
 	useCommandCategories,
 	useCommandDispatcher,
 	useCommandKeybinds,
 } from "~/providers/Commands";
-import { Spacer } from "../Spacer";
 import { displayBinding } from "~/providers/Commands/keybindings";
+import { useInterfaceStore } from "~/stores/interface";
+import { iconExit, iconMaximize, iconMinimize, iconRestore } from "~/util/icons";
+import { ActionButton } from "../ActionButton";
+import { getMenuItems } from "../App/hooks/menu";
+import { Spacer } from "../Spacer";
+import classes from "./style.module.scss";
 
 export function AppTitleBar() {
 	const keybinds = useCommandKeybinds();
