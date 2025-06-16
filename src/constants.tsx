@@ -229,12 +229,6 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		icon: iconPlus,
 		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
-	"/create/instance": {
-		id: "/create/instance",
-		name: "Provision Instance",
-		icon: iconPlus,
-		disabled: ({ flags }) => !flags.cloud_enabled,
-	},
 };
 
 export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {

@@ -418,7 +418,7 @@ export function OverviewPage() {
 													flex={1}
 													className={classes.connectionSpacer}
 												/>
-												<Link href="/create/instance">
+												<Link href={`/o/${organization.info.id}/deploy`}>
 													<Button
 														size="xs"
 														variant="gradient"

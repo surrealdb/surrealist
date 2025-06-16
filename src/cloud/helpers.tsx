@@ -1,6 +1,6 @@
 import { Duration, sub } from "date-fns";
 import { useConfigStore } from "~/stores/config";
-import { CloudOrganization, MetricsDuration } from "~/types";
+import { CloudInstanceType, MetricsDuration } from "~/types";
 
 export function clearCachedConnections() {
 	const { connections } = useConfigStore.getState();
@@ -10,14 +10,6 @@ export function clearCachedConnections() {
 	useConfigStore.setState((s) => {
 		s.connections = pruned;
 	});
-}
-
-export function createInstancePath(organization?: CloudOrganization) {
-	if (!organization) {
-		return "/create/instance";
-	}
-
-	return `/create/instance?organization=${organization.id}`;
 }
 
 const METRIC_DURATION_MAP: Record<MetricsDuration, Duration> = {
@@ -33,4 +25,8 @@ export function computeMetricRange(duration: MetricsDuration): [Date, Date] {
 	const start = sub(end, METRIC_DURATION_MAP[duration]);
 
 	return [start, end];
+}
+
+export function isDistributedType(type: CloudInstanceType): boolean {
+	return type.category === "production-memory" || type.category === "production-compute";
 }
