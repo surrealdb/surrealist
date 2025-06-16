@@ -1,6 +1,7 @@
+import { listen } from "@tauri-apps/api/event";
 import { Menu, MenuItem, PredefinedMenuItem, Submenu } from "@tauri-apps/api/menu";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import {
 	Command,
@@ -312,19 +313,40 @@ export function useMenuBar() {
 	const cmdCategories = useCommandCategories();
 	const dispatchCommand = useCommandDispatcher();
 
-	const commands = cmdCategories.reduce((acc, category) => {
-		for (const command of category.commands) {
-			acc.set(command.id, command);
-		}
-		return acc;
-	}, new Map<string, Command>());
+	const commands = useMemo(() => {
+        return cmdCategories.reduce((acc, category) => {
+            for (const command of category.commands) {
+                acc.set(command.id, command);
+            }
+            return acc;
+        }, new Map<string, Command>());
+    }, [cmdCategories]);
 
-	getCurrentWindow().onFocusChanged(async () => {
-		await setupNativeAppMenu(commands, keybinds, dispatchCommand);
-	});
+	const commandsRef = useRef(commands);
+	const keybindsRef = useRef(keybinds);
+	const dispatchCommandRef = useRef(dispatchCommand);
+
+	// Keep refs up to date
+	useEffect(() => {
+		commandsRef.current = commands;
+		keybindsRef.current = keybinds;
+		dispatchCommandRef.current = dispatchCommand;
+	}, [commands, keybinds, dispatchCommand]);
+
+	useEffect(() => {
+		getCurrentWindow().listen("tauri://focus", async () => {
+			await setupNativeAppMenu(
+				commandsRef.current,
+				keybindsRef.current,
+				dispatchCommandRef.current
+			);
+		});
+		
+		return;
+	}, []);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Update whenever the keybinds or commands change
 	useEffect(() => {
 		setupNativeAppMenu(commands, keybinds, dispatchCommand);
-	}, [cmdCategories, keybinds]);
+	}, [commandsRef.current]);
 }
