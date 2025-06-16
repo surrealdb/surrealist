@@ -11,6 +11,10 @@ export interface DeployConfig {
 	units: number;
 	storageCategory: StorageCategory;
 	storageAmount: number;
+	dataset: boolean;
+	credentials: boolean;
+	username: string;
+	password: string;
 }
 
 export interface DeploySectionProps {

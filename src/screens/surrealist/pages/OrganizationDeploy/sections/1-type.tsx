@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Box,
 	Button,
 	Checkbox,
@@ -63,6 +64,10 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 							closeModal("instance-type");
 							setDetails((draft) => {
 								draft.type = type;
+
+								if (type.price_hour === 0) {
+									draft.dataset = true;
+								}
 							});
 						}}
 					/>
@@ -81,18 +86,13 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	return (
 		<Box mt="xl">
-			<PrimaryTitle fz={22}>System configuration</PrimaryTitle>
-			<Text fz="lg">
-				Select a recommended configuration to deploy your instance on, or choose a custom
-				configuration.
-			</Text>
 			<SimpleGrid
-				cols={3}
+				cols={{ base: 1, xs: 2, md: 3 }}
 				mt="xl"
 			>
 				{details.type && !isRecommended ? (
 					<>
-						<Recommendation
+						<InstanceTypeCard
 							type={details.type}
 							details={details}
 							setDetails={setDetails}
@@ -100,7 +100,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 					</>
 				) : (
 					recommendations.map((type) => (
-						<Recommendation
+						<InstanceTypeCard
 							key={type.slug}
 							type={type}
 							details={details}
@@ -109,50 +109,79 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 					))
 				)}
 			</SimpleGrid>
-			<Group mt="xl">
-				<Button
-					mt="md"
-					size="xs"
-					variant="gradient"
-					onClick={openInstanceTypeSelector}
-					rightSection={
-						<Icon
-							path={iconArrowLeft}
-							flip="horizontal"
-						/>
-					}
-				>
-					View all configurations
-				</Button>
-				{details.type && !isRecommended && (
+			{details.type && !isRecommended ? (
+				<Group mt={28}>
 					<Button
-						mt="md"
+						size="xs"
+						variant="gradient"
+						onClick={openInstanceTypeSelector}
+						rightSection={
+							<Icon
+								path={iconArrowLeft}
+								flip="horizontal"
+							/>
+						}
+					>
+						Change configurations
+					</Button>
+					<Button
 						size="xs"
 						color="slate"
 						variant="light"
 						onClick={handleReset}
 					>
-						Recommended configurations
+						View featured configurations
 					</Button>
-				)}
-			</Group>
+				</Group>
+			) : (
+				<Alert
+					title="Looking for something else?"
+					color="violet"
+					variant="subtle"
+					mt={28}
+					p={0}
+				>
+					<Text inherit>
+						Surreal Cloud offers a wide range of configurations to suit your needs.
+					</Text>
+					<Group mt="lg">
+						<Button
+							size="xs"
+							variant="gradient"
+							onClick={openInstanceTypeSelector}
+							rightSection={
+								<Icon
+									path={iconArrowLeft}
+									flip="horizontal"
+								/>
+							}
+						>
+							View all available configurations
+						</Button>
+					</Group>
+				</Alert>
+			)}
 		</Box>
 	);
 }
 
-interface RecommendationProps {
+interface IntanceTypeCardProps {
 	type: CloudInstanceType;
 	details: DeployConfig;
 	setDetails: Updater<DeployConfig>;
 }
 
-function Recommendation({ type, details, setDetails }: RecommendationProps) {
+function InstanceTypeCard({ type, details, setDetails }: IntanceTypeCardProps) {
 	const estimatedCost = type.price_hour / 1000;
 	const isDistributed = isDistributedType(type);
 
 	const handleSelect = useStable(() => {
 		setDetails((draft) => {
 			draft.type = type;
+
+			if (type.price_hour === 0) {
+				draft.dataset = true;
+			}
 		});
 	});
 

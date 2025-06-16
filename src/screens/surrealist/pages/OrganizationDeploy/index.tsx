@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { Box, ScrollArea, Stack } from "@mantine/core";
+import { Box, Button, Divider, Group, Paper, ScrollArea, Stack } from "@mantine/core";
 import { Redirect } from "wouter";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
@@ -13,6 +13,8 @@ import { InstanceTypeSection } from "./sections/1-type";
 import { useImmer } from "use-immer";
 import { DeployConfig } from "./types";
 import { ClusterStorageSection } from "./sections/2-storage";
+import { DeploymentSection } from "./sections/3-instance";
+import { SetupSection } from "./sections/4-setup";
 
 const DEFAULT: DeployConfig = {
 	name: "",
@@ -22,6 +24,10 @@ const DEFAULT: DeployConfig = {
 	version: "",
 	storageCategory: "standard",
 	storageAmount: 0,
+	dataset: false,
+	credentials: false,
+	username: "",
+	password: "",
 };
 
 export interface OrganizationDeployPageProps {
@@ -86,7 +92,7 @@ export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
 										</PrimaryTitle>
 									</Box>
 
-									<Stack gap="xl">
+									<Box pb={300}>
 										<InstanceTypeSection
 											organisation={organization}
 											details={details}
@@ -98,7 +104,40 @@ export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
 											details={details}
 											setDetails={setDetails}
 										/>
-									</Stack>
+
+										<SetupSection
+											organisation={organization}
+											details={details}
+											setDetails={setDetails}
+										/>
+
+										<DeploymentSection
+											organisation={organization}
+											details={details}
+											setDetails={setDetails}
+										/>
+
+										<Group mt={24}>
+											{/* <Link to={savepoint.path}>
+												<Button
+													color="slate"
+													variant="light"
+												>
+													Cancel
+												</Button>
+											</Link>
+											<Spacer /> */}
+											<Button
+												w={150}
+												type="submit"
+												variant="gradient"
+												// disabled={disabled}
+												// onClick={provisionInstance}
+											>
+												Deploy instance
+											</Button>
+										</Group>
+									</Box>
 								</>
 							)}
 						</Stack>

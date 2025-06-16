@@ -1,4 +1,4 @@
-import { Box, Collapse, Radio, Slider, Stack, Text } from "@mantine/core";
+import { Box, Radio, Slider, Stack, Text } from "@mantine/core";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { formatMemory } from "~/util/helpers";
 import { DeploySectionProps, StorageCategory } from "../types";
@@ -7,7 +7,7 @@ import { Label } from "~/components/Label";
 import { list } from "radash";
 import { isDistributedType } from "~/cloud/helpers";
 
-export function ClusterStorageSection({ details, setDetails }: DeploySectionProps) {
+export function InformationSection({ details, setDetails }: DeploySectionProps) {
 	const updateCategory = useStable((value: string) => {
 		setDetails((draft) => {
 			draft.storageCategory = value as StorageCategory;
@@ -34,16 +34,15 @@ export function ClusterStorageSection({ details, setDetails }: DeploySectionProp
 		label: formatMemory(Math.max(value, 100) * 1000, true),
 	}));
 
-	const isDistributed = !!details.type && isDistributedType(details.type);
+	const isDistributed = details.type && isDistributedType(details.type);
+
+	if (!isDistributed) {
+		return null;
+	}
 
 	return (
-		<Collapse in={isDistributed}>
-			<PrimaryTitle
-				fz={22}
-				pt={52}
-			>
-				Cluster
-			</PrimaryTitle>
+		<Box>
+			<PrimaryTitle fz={22}>Cluster configuration</PrimaryTitle>
 
 			<Text fz="lg">Select a suitable storage class and size for your cluster</Text>
 
@@ -85,7 +84,7 @@ export function ClusterStorageSection({ details, setDetails }: DeploySectionProp
 
 				<Slider
 					mt={28}
-					h={50}
+					mb="sm"
 					min={minimum}
 					max={maximum}
 					step={100}
@@ -103,6 +102,6 @@ export function ClusterStorageSection({ details, setDetails }: DeploySectionProp
 					}}
 				/>
 			</Box>
-		</Collapse>
+		</Box>
 	);
 }
