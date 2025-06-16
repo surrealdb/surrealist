@@ -1,4 +1,3 @@
-import { listen } from "@tauri-apps/api/event";
 import { Menu, MenuItem, PredefinedMenuItem, Submenu } from "@tauri-apps/api/menu";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect, useMemo, useRef } from "react";
@@ -255,14 +254,11 @@ async function setupNativeAppMenu(
 					meta: "CmdOrCtrl",
 				};
 				const accelerator = keybind
-						? keybind
-								.map(
-									(key) =>
-										modifierMap[key.toLowerCase()] || key.toUpperCase(),
-								)
-								.join("+")
-						: undefined;
-				
+					? keybind
+							.map((key) => modifierMap[key.toLowerCase()] || key.toUpperCase())
+							.join("+")
+					: undefined;
+
 				const custom = await MenuItem.new({
 					id: item.id,
 					text: item.name ?? "Unnamed",
@@ -314,13 +310,13 @@ export function useMenuBar() {
 	const dispatchCommand = useCommandDispatcher();
 
 	const commands = useMemo(() => {
-        return cmdCategories.reduce((acc, category) => {
-            for (const command of category.commands) {
-                acc.set(command.id, command);
-            }
-            return acc;
-        }, new Map<string, Command>());
-    }, [cmdCategories]);
+		return cmdCategories.reduce((acc, category) => {
+			for (const command of category.commands) {
+				acc.set(command.id, command);
+			}
+			return acc;
+		}, new Map<string, Command>());
+	}, [cmdCategories]);
 
 	const commandsRef = useRef(commands);
 	const keybindsRef = useRef(keybinds);
@@ -338,10 +334,10 @@ export function useMenuBar() {
 			await setupNativeAppMenu(
 				commandsRef.current,
 				keybindsRef.current,
-				dispatchCommandRef.current
+				dispatchCommandRef.current,
 			);
 		});
-		
+
 		return;
 	}, []);
 
