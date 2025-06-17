@@ -1,0 +1,32 @@
+import { BoxProps, Group, ThemeIcon } from "@mantine/core";
+import { Icon } from "../Icon";
+import { ReactNode } from "react";
+import { Text } from "@mantine/core";
+
+export interface PropertyValueProps extends BoxProps {
+	title: string;
+	icon: string;
+	value: ReactNode;
+}
+
+export function PropertyValue({ title, icon, value, ...other }: PropertyValueProps) {
+	return (
+		<Group
+			gap="sm"
+			h={32}
+			{...other}
+		>
+			<ThemeIcon
+				color="slate"
+				radius="xs"
+				variant="light"
+			>
+				<Icon path={icon} />
+			</ThemeIcon>
+			<Group gap="xs">
+				<Text fw={600}>{title}: </Text>
+				<Text c="bright">{value}</Text>
+			</Group>
+		</Group>
+	);
+}

@@ -12,7 +12,7 @@ import { Label } from "../Label";
 const CATEGORIES = ["free", "development", "production", "production-compute", "production-memory"];
 
 export interface InstanceTypesProps {
-	value: CloudInstanceType | null;
+	value?: string;
 	active?: string;
 	organization: CloudOrganization;
 	hideLimited?: boolean;
@@ -59,7 +59,7 @@ export function InstanceTypes({
 					<Stack mt="xl">
 						{types.map((type) => (
 							<InstanceTypeRow
-								selected={value?.slug === type.slug}
+								selected={value === type.slug}
 								active={active === type.slug}
 								key={type.slug}
 								limited={false}

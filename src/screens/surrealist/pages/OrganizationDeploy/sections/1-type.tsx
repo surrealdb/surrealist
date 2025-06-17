@@ -12,17 +12,16 @@ import {
 import { Fragment, ReactNode, useMemo } from "react";
 import { useInstanceTypeAvailable, useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { CloudInstanceType } from "~/types";
+import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
-import { DeployConfig, DeploySectionProps } from "../types";
+import { DeploySectionProps } from "../types";
 import { useStable } from "~/hooks/stable";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { closeModal, openModal } from "@mantine/modals";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { isDistributedType } from "~/cloud/helpers";
-import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Spacer } from "~/components/Spacer";
 
 const RECOMMENDED_TYPES = ["free", "small-dev", "medium", "medium-compute", "xlarge"];
@@ -30,7 +29,6 @@ const RECOMMENDED_TYPES = ["free", "small-dev", "medium", "medium-compute", "xla
 export function InstanceTypeSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 	const isAvailable = useInstanceTypeAvailable(organisation);
-	const instancesQuery = useCloudOrganizationInstancesQuery(organisation.id);
 
 	const recommendations = useMemo(() => {
 		const list = RECOMMENDED_TYPES.flatMap((slug) => {
@@ -49,31 +47,19 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 	const handleUpdate = useStable((type: CloudInstanceType) => {
 		closeModal("instance-type");
 		setDetails((draft) => {
-			draft.type = type;
+			draft.type = type.slug;
+			draft.cluster = isDistributedType(type);
 
 			if (type.price_hour === 0) {
 				draft.dataset = true;
-			}
-
-			if (instancesQuery.isSuccess) {
-				const existing = new Set(instancesQuery.data.map((i) => i.name));
-				const baseName = `${type.display_name}-instance`;
-
-				let counter = 1;
-				let name = baseName;
-
-				while (existing.has(name)) {
-					name = `${baseName}-${++counter}`;
-				}
-
-				draft.name = name;
 			}
 		});
 	});
 
 	const handleReset = useStable(() => {
 		setDetails((draft) => {
-			draft.type = null;
+			draft.type = "";
+			draft.cluster = false;
 		});
 	});
 
@@ -100,18 +86,16 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 		});
 	});
 
-	const isRecommended = recommendations.some((type) => type.slug === details.type?.slug);
+	const isRecommended = recommendations.some((type) => type.slug === details.type);
+	const selected = instanceTypes.get(details.type);
 
 	return (
 		<Box mt="xl">
-			<SimpleGrid
-				cols={{ base: 1, xs: 2, md: 3 }}
-				mt="xl"
-			>
-				{details.type && !isRecommended ? (
+			<SimpleGrid cols={{ base: 1, xs: 2, md: 3 }}>
+				{selected && !isRecommended ? (
 					<>
 						<InstanceTypeCard
-							type={details.type}
+							type={selected}
 							details={details}
 							onChange={handleUpdate}
 						/>
@@ -190,7 +174,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 interface IntanceTypeCardProps {
 	type: CloudInstanceType;
-	details: DeployConfig;
+	details: CloudDeployConfig;
 	onChange: (type: CloudInstanceType) => void;
 }
 
@@ -232,7 +216,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 		</Fragment>,
 	];
 
-	const isActive = details.type?.slug === type.slug;
+	const isActive = details.type === type.slug;
 
 	return (
 		<Paper

@@ -1,0 +1,19 @@
+.scroll-area :global(.mantine-ScrollArea-viewport)>div {
+	display: block !important;
+}
+
+.confirm-box {
+	overflow: hidden;
+	position: relative;
+}
+
+.confirm-glow {
+	width: 900px;
+	height: 900px;
+	position: absolute;
+	left: -400px;
+	bottom: -550px;
+	z-index: 0;
+	opacity: 0.25;
+	transform: rotate(45deg);
+}

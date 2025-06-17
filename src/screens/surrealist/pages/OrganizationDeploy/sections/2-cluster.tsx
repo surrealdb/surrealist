@@ -1,13 +1,16 @@
 import { Box, Collapse, Radio, Slider, Stack, Text } from "@mantine/core";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { formatMemory } from "~/util/helpers";
-import { DeploySectionProps, StorageCategory } from "../types";
+import { DeploySectionProps } from "../types";
 import { useStable } from "~/hooks/stable";
 import { Label } from "~/components/Label";
 import { list } from "radash";
-import { isDistributedType } from "~/cloud/helpers";
+import { StorageCategory } from "~/types";
+import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 
-export function ClusterStorageSection({ details, setDetails }: DeploySectionProps) {
+export function ClusterStorageSection({ organisation, details, setDetails }: DeploySectionProps) {
+	const instanceTypes = useInstanceTypeRegistry(organisation);
+
 	const updateCategory = useStable((value: string) => {
 		setDetails((draft) => {
 			draft.storageCategory = value as StorageCategory;
@@ -31,7 +34,6 @@ export function ClusterStorageSection({ details, setDetails }: DeploySectionProp
 	});
 
 	const isStandard = details.storageCategory === "standard";
-	const isDistributed = !!details.type && isDistributedType(details.type);
 
 	const storageMinimum = 100;
 	const storageMaximum = isStandard ? 1000 : 6000;
@@ -44,8 +46,9 @@ export function ClusterStorageSection({ details, setDetails }: DeploySectionProp
 		label: formatMemory(Math.max(value, 100) * 1000, true),
 	}));
 
-	const computeMinimum = details.type?.compute_units.min ?? 1;
-	const computeMaximum = details.type?.compute_units.max ?? 1;
+	const instanceType = instanceTypes.get(details.type);
+	const computeMinimum = instanceType?.compute_units.min ?? 1;
+	const computeMaximum = instanceType?.compute_units.max ?? 1;
 	const computeSegments = list(computeMinimum, computeMaximum);
 
 	const computeMarks = computeSegments.map((value) => ({
@@ -54,10 +57,9 @@ export function ClusterStorageSection({ details, setDetails }: DeploySectionProp
 	}));
 
 	return (
-		<Collapse in={isDistributed}>
+		<Collapse in={details.cluster}>
 			<Box mt={36}>
 				<PrimaryTitle>Storage class</PrimaryTitle>
-				{/* <Text>Select the storage class for your cluster.</Text> */}
 			</Box>
 
 			<Radio.Group

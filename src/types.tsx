@@ -1,6 +1,5 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import type { AnyAuth, Duration, Token } from "surrealdb";
-import { StorageCategory } from "./screens/surrealist/pages/CreateInstance/types";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
@@ -29,6 +28,7 @@ export type ResultMode = "table" | "single" | "combined" | "graph" | "live";
 export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 export type SchemaMode = "schemaless" | "schemafull";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
+export type StorageCategory = "standard" | "advanced";
 export type SourceMode = "schema" | "infer";
 export type SyntaxTheme = "default" | "vivid";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
@@ -727,4 +727,16 @@ export interface CloudRole {
 		resource: string;
 		action: string;
 	}[];
+}
+
+export interface CloudDeployConfig {
+	name: string;
+	version: string;
+	region: string;
+	type: string;
+	cluster: boolean;
+	units: number;
+	storageCategory: StorageCategory;
+	storageAmount: number;
+	dataset: boolean;
 }

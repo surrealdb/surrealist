@@ -1,15 +1,4 @@
-import {
-	Badge,
-	Box,
-	Checkbox,
-	Collapse,
-	Divider,
-	Group,
-	Image,
-	Select,
-	Stack,
-	TextInput,
-} from "@mantine/core";
+import { Badge, Box, Checkbox, Group, Image, Select, Stack, TextInput } from "@mantine/core";
 
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DeploySectionProps } from "../types";
@@ -20,6 +9,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { iconCheck } from "~/util/icons";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
+import { ON_FOCUS_SELECT } from "~/util/helpers";
 
 export function DeploymentSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const regions = useCloudStore((s) => s.regions);
@@ -71,11 +61,11 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 		});
 	});
 
-	const toggleCredentials = useStable(() => {
-		setDetails((draft) => {
-			draft.credentials = !draft.credentials;
-		});
-	});
+	// const toggleCredentials = useStable(() => {
+	// 	setDetails((draft) => {
+	// 		draft.credentials = !draft.credentials;
+	// 	});
+	// });
 
 	useLayoutEffect(() => {
 		if (!details.version) {
@@ -166,6 +156,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 						description="Choose carefully, as this name cannot be changed later"
 						value={details.name}
 						onChange={updateName}
+						onFocus={ON_FOCUS_SELECT}
 						error={
 							details.name.length > 30
 								? "Instance name cannot exceed 30 characters"
@@ -184,7 +175,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 						checked={details.dataset}
 						onChange={toggleDataset}
 					/>
-					<Box>
+					{/* <Box>
 						<Checkbox
 							label="Configure root credentials"
 							checked={details.credentials}
@@ -226,7 +217,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 								</Stack>
 							</Group>
 						</Collapse>
-					</Box>
+					</Box> */}
 				</Stack>
 			</Group>
 		</Box>

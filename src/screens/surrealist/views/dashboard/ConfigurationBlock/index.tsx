@@ -21,6 +21,7 @@ import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
+import { PropertyValue } from "~/components/PropertyValue";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -72,50 +73,50 @@ export function ConfigurationBlock({
 					spacing="xs"
 				>
 					<Stack gap="xs">
-						<ConfigValue
+						<PropertyValue
 							title="Type"
 							icon={iconPackageClosed}
 							value={typeText}
 						/>
 
-						<ConfigValue
+						<PropertyValue
 							title="Region"
 							icon={iconMarker}
 							value={regionName}
 						/>
 
-						<ConfigValue
+						<PropertyValue
 							title="Version"
 							icon={iconTag}
 							value={`SurrealDB ${instance?.version}`}
 						/>
-						<ConfigValue
+						<PropertyValue
 							title="Backups"
 							icon={iconHistory}
 							value={<Text c={isFree ? "orange" : "green"}>{backupText}</Text>}
 						/>
 					</Stack>
 					<Stack gap="xs">
-						<ConfigValue
+						<PropertyValue
 							title="Memory"
 							icon={iconMemory}
 							value={formatMemory(memoryMax)}
 						/>
 
-						<ConfigValue
+						<PropertyValue
 							title="Compute"
 							icon={iconQuery}
 							value={computeText}
 						/>
 
-						<ConfigValue
-							title="Cluster"
+						<PropertyValue
+							title="Nodes"
 							icon={iconRelation}
 							value={nodeText}
 						/>
 
-						<ConfigValue
-							title="Storage"
+						<PropertyValue
+							title="Storage limit"
 							icon={iconDatabase}
 							value={storageText}
 						/>
@@ -156,33 +157,5 @@ export function ConfigurationBlock({
 				</SimpleGrid>
 			</Paper>
 		</Skeleton>
-	);
-}
-
-interface ConfigValueProps extends BoxProps {
-	title: string;
-	icon: string;
-	value: ReactNode;
-}
-
-function ConfigValue({ title, icon, value, ...other }: ConfigValueProps) {
-	return (
-		<Group
-			gap="sm"
-			h={32}
-			{...other}
-		>
-			<ThemeIcon
-				color="slate"
-				radius="xs"
-				variant="light"
-			>
-				<Icon path={icon} />
-			</ThemeIcon>
-			<Group gap="xs">
-				<Text fw={600}>{title}: </Text>
-				<Text c="bright">{value}</Text>
-			</Group>
-		</Group>
 	);
 }

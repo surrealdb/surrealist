@@ -15,11 +15,11 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { ChatPage } from "./pages/Chat";
 import { CreateConnectionPage } from "./pages/CreateConnection";
-import { CreateInstancePage } from "./pages/CreateInstance";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
 import { OrganizationManagePage } from "./pages/OrganizationManage";
 import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
+import { OrganizationCheckoutPage } from "./pages/OrganizationCheckout";
 import { OrganizationsPage } from "./pages/Organizations";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
@@ -44,11 +44,11 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
+const OrganizationCheckoutPageLazy = memo(OrganizationCheckoutPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
 const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
-const CreateInstancePageLazy = memo(CreateInstancePage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -178,6 +178,12 @@ export function SurrealistScreen() {
 									<Route path="/o/:organization/deploy">
 										{({ organization }) => (
 											<OrganizationDeployPageLazy id={organization} />
+										)}
+									</Route>
+
+									<Route path="/o/:organization/checkout">
+										{({ organization }) => (
+											<OrganizationCheckoutPageLazy id={organization} />
 										)}
 									</Route>
 

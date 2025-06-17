@@ -132,6 +132,10 @@ function BillingForm({ organization, details }: BillingFormProps) {
 			queryClient.invalidateQueries({
 				queryKey: ["cloud", "billing", organization.id],
 			});
+
+			queryClient.invalidateQueries({
+				queryKey: ["cloud", "organizations"],
+			});
 		} catch (err: any) {
 			if (err instanceof ApiError) {
 				setError(err.reason);

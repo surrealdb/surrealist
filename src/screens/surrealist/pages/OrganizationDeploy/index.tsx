@@ -1,7 +1,7 @@
 import classes from "./style.module.scss";
 
 import { Box, Button, Divider, Group, ScrollArea, Stack } from "@mantine/core";
-import { Link, Redirect } from "wouter";
+import { Link, Redirect, useLocation } from "wouter";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudSplash } from "~/components/CloudSplash";
@@ -11,7 +11,6 @@ import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { InstanceTypeSection } from "./sections/1-type";
 import { useImmer } from "use-immer";
-import { DeployConfig } from "./types";
 import { ClusterStorageSection } from "./sections/2-cluster";
 import { DeploymentSection } from "./sections/3-instance";
 import { Spacer } from "~/components/Spacer";
@@ -19,38 +18,70 @@ import { Icon } from "~/components/Icon";
 import { iconChevronRight } from "~/util/icons";
 import { useLastSavepoint } from "~/hooks/overview";
 import { Text } from "@mantine/core";
-import { CURRENCY_FORMAT } from "~/util/helpers";
-import { useIsLight } from "~/hooks/theme";
-
-const DEFAULT: DeployConfig = {
-	name: "",
-	region: "",
-	type: null,
-	units: 1,
-	version: "",
-	storageCategory: "standard",
-	storageAmount: 0,
-	dataset: false,
-	credentials: false,
-	username: "",
-	password: "",
-};
+import { useEffect, useMemo } from "react";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import { generateUniqueName } from "~/util/random";
+import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
+import { useStable } from "~/hooks/stable";
+import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 
 export interface OrganizationDeployPageProps {
 	id: string;
 }
 
 export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
-	const isLight = useIsLight();
 	const savepoint = useLastSavepoint();
 	const isAuthed = useIsAuthenticated();
-	const [details, setDetails] = useImmer(DEFAULT);
+	const [details, setDetails] = useImmer(DEFAULT_DEPLOY_CONFIG);
+	const [, navigate] = useLocation();
 
 	const organisationsQuery = useCloudOrganizationsQuery();
 	const organisation = organisationsQuery.data?.find((org) => org.id === id);
+	const instancesQuery = useCloudOrganizationInstancesQuery(organisation?.id);
 
-	const hourlyPriceThousandth = details.type?.price_hour ?? 0;
-	const estimatedCost = (hourlyPriceThousandth / 1000) * (details.units ?? 0);
+	// const estimationQuery = useCloudEstimationQuery(organisation, details);
+
+	const checkoutDisabled = useMemo(() => {
+		if (!details.name || details.name.length > 30) return true;
+		if (!details.region) return true;
+		if (!details.type) return true;
+		if (!details.version) return true;
+
+		if (details.type !== "free" && !details.units) return true;
+
+		return false;
+	}, [details]);
+
+	const handleCheckout = useStable(() => {
+		localStorage.setItem(`${DEPLOY_CONFIG_KEY}:${id}`, JSON.stringify(details));
+		navigate("checkout");
+	});
+
+	useEffect(() => {
+		if (details.name) return;
+
+		const instances = instancesQuery.data ?? [];
+		const names = new Set(instances.map((i) => i.name));
+
+		setDetails((draft) => {
+			draft.name = generateUniqueName(names);
+		});
+	}, [details, instancesQuery.data]);
+
+	useEffect(() => {
+		if (!isAuthed) return;
+
+		const cached = localStorage.getItem(`${DEPLOY_CONFIG_KEY}:${id}`);
+
+		if (cached) {
+			localStorage.removeItem(`${DEPLOY_CONFIG_KEY}:${id}`);
+
+			setDetails({
+				...DEFAULT_DEPLOY_CONFIG,
+				...JSON.parse(cached),
+			});
+		}
+	}, [isAuthed, id]);
 
 	if (organisationsQuery.isSuccess && !organisation) {
 		return <Redirect to="/organisations" />;
@@ -136,8 +167,8 @@ export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
 											<Button
 												type="submit"
 												variant="gradient"
-												// disabled={disabled}
-												// onClick={provisionInstance}
+												disabled={checkoutDisabled}
+												onClick={handleCheckout}
 												rightSection={<Icon path={iconChevronRight} />}
 											>
 												Continue to checkout
@@ -162,9 +193,10 @@ export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
 														fw={600}
 														c="bright"
 													>
-														{CURRENCY_FORMAT.format(
+														TODO
+														{/* {CURRENCY_FORMAT.format(
 															estimatedCost * 24 * 30,
-														)}
+														)} */}
 													</Text>
 													<Text
 														mt={12}

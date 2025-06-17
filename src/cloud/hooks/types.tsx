@@ -14,8 +14,8 @@ export function useFreeInstanceTypeAvailable(organisation: CloudOrganization) {
 /**
  * Returns a map of all available instance types for the organization
  */
-export function useInstanceTypeRegistry(organisation: CloudOrganization) {
-	const flattened = organisation.available_plans.flatMap((plan) => plan.instance_types);
+export function useInstanceTypeRegistry(organisation?: CloudOrganization) {
+	const flattened = organisation?.available_plans.flatMap((plan) => plan.instance_types) ?? [];
 
 	return useMemo(() => {
 		const instanceTypes = new Map<string, CloudInstanceType>();
