@@ -3,7 +3,7 @@ import { useCloudAuthentication } from "./hooks/cloud";
 import { useConnectionSwitch } from "./hooks/connection";
 import { useKeybindListener, useModKeyTracker } from "./hooks/input";
 import { useIntercom } from "./hooks/intercom";
-import { useMenuBar } from "./hooks/menu";
+import { useNativeMenuBar } from "./hooks/menu";
 import { useGlobalModals } from "./hooks/modals";
 import { usePolicyAlert } from "./hooks/policy";
 import { useAppRouter } from "./hooks/routing";
@@ -27,8 +27,8 @@ export function Globals(): ReactNode {
 
 	// While calling hooks conditionally is usually not a good idea,
 	// this is an exception since the adapter will never change.
-	if (adapter.id === "desktop") {
-		useMenuBar();
+	if (adapter.id === "desktop" && adapter.platform === "darwin") {
+		useNativeMenuBar();
 	}
 
 	return;

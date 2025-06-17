@@ -304,7 +304,7 @@ async function setupNativeAppMenu(
 	await appMenu.setAsAppMenu();
 }
 
-export function useMenuBar() {
+export function useNativeMenuBar() {
 	const keybinds = useCommandKeybinds();
 	const cmdCategories = useCommandCategories();
 	const dispatchCommand = useCommandDispatcher();
