@@ -8,9 +8,10 @@ import { useCloudStore } from "~/stores/cloud";
 
 export interface AuthGuardProps {
 	redirect?: string;
+	loading?: boolean;
 }
 
-export function AuthGuard({ redirect, children }: PropsWithChildren<AuthGuardProps>) {
+export function AuthGuard({ redirect, loading, children }: PropsWithChildren<AuthGuardProps>) {
 	const [, navigate] = useAbsoluteLocation();
 	const authState = useCloudStore((s) => s.authState);
 	const authError = useCloudStore((s) => s.authError);
@@ -25,7 +26,7 @@ export function AuthGuard({ redirect, children }: PropsWithChildren<AuthGuardPro
 		}
 	}, [authError, authState]);
 
-	return authState !== "unauthenticated" && authState !== "unknown" ? (
+	return authState === "authenticated" && !loading ? (
 		redirect ? (
 			<Redirect to={redirect} />
 		) : (

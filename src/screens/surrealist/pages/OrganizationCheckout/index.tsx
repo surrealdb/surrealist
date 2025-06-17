@@ -15,17 +15,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Redirect, useLocation } from "wouter";
-import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
-import { AuthGuard } from "~/components/AuthGuard";
-import { CloudSplash } from "~/components/CloudSplash";
-import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
-import { useIsAuthenticated } from "~/hooks/cloud";
-import { CloudDeployConfig, CloudInstance } from "~/types";
-import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
+
 import {
 	iconCheck,
 	iconCreditCard,
@@ -38,6 +28,18 @@ import {
 	iconRelation,
 	iconTag,
 } from "~/util/icons";
+
+import { Redirect, useLocation } from "wouter";
+import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import { AuthGuard } from "~/components/AuthGuard";
+import { CloudSplash } from "~/components/CloudSplash";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { TopGlow } from "~/components/TopGlow";
+import { useIsAuthenticated } from "~/hooks/cloud";
+import { CloudDeployConfig, CloudInstance, CloudInstanceType, CloudOrganization } from "~/types";
+import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useState } from "react";
 import { DEPLOY_CONFIG_KEY } from "~/util/storage";
@@ -57,8 +59,8 @@ export interface OrganizationCheckoutPageProps {
 }
 
 export function OrganizationCheckoutPage({ id }: OrganizationCheckoutPageProps) {
-	const isAuthed = useIsAuthenticated();
-	const [, navigate] = useLocation();
+	const organisationsQuery = useCloudOrganizationsQuery();
+	const organisation = organisationsQuery.data?.find((org) => org.id === id);
 
 	const [config] = useState(() => {
 		const cached = localStorage.getItem(`${DEPLOY_CONFIG_KEY}:${id}`);
@@ -72,10 +74,37 @@ export function OrganizationCheckoutPage({ id }: OrganizationCheckoutPageProps) 
 		}
 	});
 
-	const organisationsQuery = useCloudOrganizationsQuery();
-	const organisation = organisationsQuery.data?.find((org) => org.id === id);
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 	const instanceType = instanceTypes.get(config?.type ?? "");
+
+	if (organisationsQuery.isSuccess && !organisation) {
+		return <Redirect to="/organisations" />;
+	}
+
+	if (!config || typeof config !== "object" || !instanceType) {
+		return <Redirect to="deploy" />;
+	}
+
+	return (
+		<AuthGuard loading={organisationsQuery.isLoading}>
+			<PageContent
+				organisation={organisation as CloudOrganization}
+				instanceType={instanceType}
+				config={config}
+			/>
+		</AuthGuard>
+	);
+}
+
+interface PageContentProps {
+	organisation: CloudOrganization;
+	instanceType: CloudInstanceType;
+	config: CloudDeployConfig;
+}
+
+function PageContent({ organisation, instanceType, config }: PageContentProps) {
+	const isAuthed = useIsAuthenticated();
+	const [, navigate] = useLocation();
 
 	// const estimationQuery = useCloudEstimationQuery(organisation, details);
 
@@ -133,14 +162,6 @@ export function OrganizationCheckoutPage({ id }: OrganizationCheckoutPageProps) 
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const nodeText = `${nodeCount} Node${plural(nodeCount, "", "s")}`;
 	const datasetText = config?.dataset ? "Yes" : "No";
-
-	if (organisationsQuery.isSuccess && !organisation) {
-		return <Redirect to="/organisations" />;
-	}
-
-	if (!config || typeof config !== "object") {
-		return <Redirect to="deploy" />;
-	}
 
 	return (
 		<AuthGuard>
