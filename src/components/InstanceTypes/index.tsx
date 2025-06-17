@@ -1,6 +1,6 @@
 import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
-import { Fragment, useMemo } from "react";
-import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { useMemo } from "react";
+import { useInstanceTypeAvailable, useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { CloudInstanceType, CloudOrganization } from "~/types";
 import { PrimaryTitle } from "../PrimaryTitle";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
@@ -15,11 +15,19 @@ export interface InstanceTypesProps {
 	value: CloudInstanceType | null;
 	active?: string;
 	organization: CloudOrganization;
+	hideLimited?: boolean;
 	onChange: (value: CloudInstanceType) => void;
 }
 
-export function InstanceTypes({ value, active, organization, onChange }: InstanceTypesProps) {
+export function InstanceTypes({
+	value,
+	active,
+	organization,
+	hideLimited,
+	onChange,
+}: InstanceTypesProps) {
 	const instanceTypes = useInstanceTypeRegistry(organization);
+	const isAvailable = useInstanceTypeAvailable(organization);
 
 	const categories = useMemo(() => {
 		const typeList = [...instanceTypes.values()];
@@ -27,6 +35,7 @@ export function InstanceTypes({ value, active, organization, onChange }: Instanc
 		return CATEGORIES.flatMap((category) => {
 			const types = typeList
 				.filter((type) => type.category === category)
+				.filter((type) => !hideLimited || isAvailable(type))
 				.sort((a, b) => {
 					return a.price_hour - b.price_hour;
 				});
@@ -37,7 +46,7 @@ export function InstanceTypes({ value, active, organization, onChange }: Instanc
 
 			return [{ category, types }];
 		});
-	}, [instanceTypes]);
+	}, [instanceTypes, isAvailable, hideLimited]);
 
 	return (
 		<Stack gap={28}>
@@ -65,190 +74,6 @@ export function InstanceTypes({ value, active, organization, onChange }: Instanc
 		</Stack>
 	);
 }
-
-// export function InstanceTypes({
-// 	value,
-// 	active,
-// 	organization,
-// 	storageMode: _unused,
-// 	onChange,
-// }: InstanceTypesProps) {
-// 	const instances = useCloudOrganizationInstancesQuery(organization?.id);
-// 	const isAvailable = useCloudTypeLimits(instances.data ?? [], organization);
-// 	const instanceTypes = organization?.plan.instance_types ?? [];
-
-// 	const groupedTypes = useMemo(() => {
-// 		return group(instanceTypes, (type) => type.category);
-// 	}, [instanceTypes]);
-
-// 	const handleUpdate = useStable((type: CloudInstanceType) => {
-// 		onChange(type.slug);
-// 	});
-
-// 	return (
-// 		<>
-// 			<Accordion
-// 				value={category}
-// 				variant="separated"
-// 				onChange={setCategory as any}
-// 				chevronPosition="left"
-// 				chevron={<Icon path={iconChevronDown} />}
-// 				styles={{
-// 					item: {
-// 						backgroundColor: "var(--mantine-color-body)",
-// 						overflow: "hidden",
-// 					},
-// 					control: {
-// 						borderRadius: 0,
-// 					},
-// 				}}
-// 			>
-// 				{storageMode === "distributed" ? (
-// 					<>
-// 						<InstanceTypeCategory
-// 							organization={organization}
-// 							activeCategory={category}
-// 							selectedType={value}
-// 							activeType={active}
-// 							category="production-memory"
-// 							instanceTypes={groupedTypes["production-memory"] ?? []}
-// 							withBillingRequired
-// 							isAvailable={isAvailable}
-// 							onSelect={handleUpdate}
-// 						/>
-
-// 						<InstanceTypeCategory
-// 							organization={organization}
-// 							activeCategory={category}
-// 							selectedType={value}
-// 							activeType={active}
-// 							category="production-compute"
-// 							instanceTypes={groupedTypes["production-compute"] ?? []}
-// 							withBillingRequired
-// 							isAvailable={isAvailable}
-// 							onSelect={handleUpdate}
-// 						/>
-// 					</>
-// 				) : (
-// 					<>
-// 						<InstanceTypeCategory
-// 							organization={organization}
-// 							activeCategory={category}
-// 							selectedType={value}
-// 							activeType={active}
-// 							category="production"
-// 							instanceTypes={groupedTypes.production ?? []}
-// 							withBillingRequired
-// 							isAvailable={isAvailable}
-// 							onSelect={handleUpdate}
-// 						/>
-// 						<InstanceTypeCategory
-// 							organization={organization}
-// 							activeCategory={category}
-// 							selectedType={value}
-// 							activeType={active}
-// 							category="development"
-// 							instanceTypes={groupedTypes.development ?? []}
-// 							withBillingRequired
-// 							isAvailable={isAvailable}
-// 							onSelect={handleUpdate}
-// 						/>
-// 						<InstanceTypeCategory
-// 							organization={organization}
-// 							activeCategory={category}
-// 							selectedType={value}
-// 							activeType={active}
-// 							category="free"
-// 							instanceTypes={groupedTypes.free ?? []}
-// 							isAvailable={isAvailable}
-// 							onSelect={handleUpdate}
-// 						/>
-// 					</>
-// 				)}
-// 			</Accordion>
-// 		</>
-// 	);
-// }
-
-// interface InstanceTypeCategoryProps {
-// 	organization: CloudOrganization;
-// 	activeCategory: string;
-// 	selectedType: string;
-// 	activeType?: string;
-// 	category: string;
-// 	instanceTypes: CloudInstanceType[];
-// 	withBillingRequired?: boolean;
-// 	isAvailable: (type: CloudInstanceType) => boolean;
-// 	onSelect: (type: CloudInstanceType) => void;
-// }
-
-// function InstanceTypeCategory({
-// 	organization,
-// 	activeCategory,
-// 	selectedType,
-// 	activeType,
-// 	category,
-// 	instanceTypes,
-// 	withBillingRequired,
-// 	isAvailable,
-// 	onSelect,
-// }: InstanceTypeCategoryProps) {
-// 	const hasBilling = (organization?.billing_info && organization?.payment_info) ?? false;
-
-// 	return (
-// 		<Accordion.Item value={category}>
-// 			<Accordion.Control>
-// 				<Group c={category === activeCategory ? "bright" : undefined}>
-// 					<Text
-// 						fw={600}
-// 						fz="xl"
-// 					>
-// 						{getTypeCategoryName(category)}
-// 					</Text>
-// 				</Group>
-// 			</Accordion.Control>
-// 			<Accordion.Panel>
-// 				<Stack
-// 					gap="sm"
-// 					mt="md"
-// 				>
-// 					{withBillingRequired && !hasBilling && (
-// 						<Alert
-// 							color="blue"
-// 							title={`Upgrade to use ${category} instances`}
-// 						>
-// 							<Box>
-// 								{capitalize(category)} instances require a billing plan to be
-// 								enabled.
-// 							</Box>
-// 							<Button
-// 								rightSection={<Icon path={iconChevronRight} />}
-// 								color="blue"
-// 								size="xs"
-// 								mt="md"
-// 								onClick={() => navigate(`/o/${organization.id}/billing`)}
-// 							>
-// 								Enter billing & payment details
-// 							</Button>
-// 						</Alert>
-// 					)}
-
-// 					{instanceTypes.map((type) => (
-// 						<InstanceTypeRow
-// 							key={type.slug}
-// 							selected={selectedType}
-// 							active={activeType === type.slug}
-// 							limited={!isAvailable(type)}
-// 							restricted={!!withBillingRequired && !hasBilling}
-// 							instanceType={type}
-// 							onSelect={onSelect}
-// 						/>
-// 					))}
-// 				</Stack>
-// 			</Accordion.Panel>
-// 		</Accordion.Item>
-// 	);
-// }
 
 interface InstanceTypeRowProps {
 	selected: boolean;

@@ -1,5 +1,4 @@
 import {
-	Alert,
 	Box,
 	Button,
 	Checkbox,
@@ -17,19 +16,21 @@ import { CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { DeployConfig, DeploySectionProps } from "../types";
-import { Updater } from "use-immer";
 import { useStable } from "~/hooks/stable";
-import { iconArrowLeft } from "~/util/icons";
+import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { Icon } from "~/components/Icon";
 import { closeModal, openModal } from "@mantine/modals";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { isDistributedType } from "~/cloud/helpers";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import { Spacer } from "~/components/Spacer";
 
 const RECOMMENDED_TYPES = ["free", "small-dev", "medium", "medium-compute", "xlarge"];
 
 export function InstanceTypeSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 	const isAvailable = useInstanceTypeAvailable(organisation);
+	const instancesQuery = useCloudOrganizationInstancesQuery(organisation.id);
 
 	const recommendations = useMemo(() => {
 		const list = RECOMMENDED_TYPES.flatMap((slug) => {
@@ -44,6 +45,37 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 		return list.slice(0, 3).reverse();
 	}, [instanceTypes, isAvailable]);
+
+	const handleUpdate = useStable((type: CloudInstanceType) => {
+		closeModal("instance-type");
+		setDetails((draft) => {
+			draft.type = type;
+
+			if (type.price_hour === 0) {
+				draft.dataset = true;
+			}
+
+			if (instancesQuery.isSuccess) {
+				const existing = new Set(instancesQuery.data.map((i) => i.name));
+				const baseName = `${type.display_name}-instance`;
+
+				let counter = 1;
+				let name = baseName;
+
+				while (existing.has(name)) {
+					name = `${baseName}-${++counter}`;
+				}
+
+				draft.name = name;
+			}
+		});
+	});
+
+	const handleReset = useStable(() => {
+		setDetails((draft) => {
+			draft.type = null;
+		});
+	});
 
 	const openInstanceTypeSelector = useStable(() => {
 		openModal({
@@ -60,25 +92,11 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 					<InstanceTypes
 						organization={organisation}
 						value={details.type}
-						onChange={(type) => {
-							closeModal("instance-type");
-							setDetails((draft) => {
-								draft.type = type;
-
-								if (type.price_hour === 0) {
-									draft.dataset = true;
-								}
-							});
-						}}
+						onChange={handleUpdate}
+						hideLimited
 					/>
 				</>
 			),
-		});
-	});
-
-	const handleReset = useStable(() => {
-		setDetails((draft) => {
-			draft.type = null;
 		});
 	});
 
@@ -95,7 +113,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						<InstanceTypeCard
 							type={details.type}
 							details={details}
-							setDetails={setDetails}
+							onChange={handleUpdate}
 						/>
 					</>
 				) : (
@@ -104,47 +122,14 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 							key={type.slug}
 							type={type}
 							details={details}
-							setDetails={setDetails}
+							onChange={handleUpdate}
 						/>
 					))
 				)}
 			</SimpleGrid>
-			{details.type && !isRecommended ? (
-				<Group mt={28}>
-					<Button
-						size="xs"
-						variant="gradient"
-						onClick={openInstanceTypeSelector}
-						rightSection={
-							<Icon
-								path={iconArrowLeft}
-								flip="horizontal"
-							/>
-						}
-					>
-						Change configurations
-					</Button>
-					<Button
-						size="xs"
-						color="slate"
-						variant="light"
-						onClick={handleReset}
-					>
-						View featured configurations
-					</Button>
-				</Group>
-			) : (
-				<Alert
-					title="Looking for something else?"
-					color="violet"
-					variant="subtle"
-					mt={28}
-					p={0}
-				>
-					<Text inherit>
-						Surreal Cloud offers a wide range of configurations to suit your needs.
-					</Text>
-					<Group mt="lg">
+			<Group mt={28}>
+				{details.type && !isRecommended ? (
+					<>
 						<Button
 							size="xs"
 							variant="gradient"
@@ -156,11 +141,49 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 								/>
 							}
 						>
-							View all available configurations
+							Change configurations
 						</Button>
-					</Group>
-				</Alert>
-			)}
+						<Button
+							size="xs"
+							color="slate"
+							variant="light"
+							onClick={handleReset}
+						>
+							View featured configurations
+						</Button>
+					</>
+				) : (
+					<Button
+						size="xs"
+						variant="gradient"
+						onClick={openInstanceTypeSelector}
+						rightSection={
+							<Icon
+								path={iconArrowLeft}
+								flip="horizontal"
+							/>
+						}
+					>
+						View all available configurations
+					</Button>
+				)}
+				<Spacer />
+				<a
+					href="https://surrealdb.com/pricing"
+					target="_blank"
+					rel="noreferrer"
+				>
+					<Button
+						size="xs"
+						color="slate"
+						variant="light"
+						rightSection={<Icon path={iconArrowUpRight} />}
+						onClick={handleReset}
+					>
+						View pricing information
+					</Button>
+				</a>
+			</Group>
 		</Box>
 	);
 }
@@ -168,21 +191,15 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 interface IntanceTypeCardProps {
 	type: CloudInstanceType;
 	details: DeployConfig;
-	setDetails: Updater<DeployConfig>;
+	onChange: (type: CloudInstanceType) => void;
 }
 
-function InstanceTypeCard({ type, details, setDetails }: IntanceTypeCardProps) {
+function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	const estimatedCost = type.price_hour / 1000;
 	const isDistributed = isDistributedType(type);
 
 	const handleSelect = useStable(() => {
-		setDetails((draft) => {
-			draft.type = type;
-
-			if (type.price_hour === 0) {
-				draft.dataset = true;
-			}
-		});
+		onChange(type);
 	});
 
 	const features: ReactNode[] = [
@@ -211,7 +228,7 @@ function InstanceTypeCard({ type, details, setDetails }: IntanceTypeCardProps) {
 			>
 				{isDistributed ? "Multi-Node" : "Single-Node"}
 			</Text>
-			<Text c="slate.3">Cluster</Text>
+			<Text c="slate.3">{isDistributed ? "Cluster" : "Instance"}</Text>
 		</Fragment>,
 	];
 
@@ -236,9 +253,25 @@ function InstanceTypeCard({ type, details, setDetails }: IntanceTypeCardProps) {
 					</Text>
 					<PrimaryTitle lh="h1">{type.display_name}</PrimaryTitle>
 				</Box>
-				<Text fz="lg">
-					{estimatedCost > 0 ? `${CURRENCY_FORMAT.format(estimatedCost)}/hour` : "Free"}
-				</Text>
+				<Group
+					gap={4}
+					align="start"
+				>
+					<Text
+						fz="xl"
+						fw={500}
+						c="bright"
+					>
+						{estimatedCost > 0 ? `${CURRENCY_FORMAT.format(estimatedCost)}` : "Free"}
+					</Text>
+					<Text
+						mt={6}
+						fz="sm"
+						fw={500}
+					>
+						/ hour
+					</Text>
+				</Group>
 			</Group>
 			<Divider my="xl" />
 			<Stack gap="xs">
