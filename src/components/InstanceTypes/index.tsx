@@ -2,12 +2,12 @@ import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantin
 import { useMemo } from "react";
 import { useInstanceTypeAvailable, useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { CloudInstanceType, CloudOrganization } from "~/types";
-import { PrimaryTitle } from "../PrimaryTitle";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconAuth } from "~/util/icons";
 import { Icon } from "../Icon";
 import { Label } from "../Label";
+import { PrimaryTitle } from "../PrimaryTitle";
 
 const CATEGORIES = ["free", "development", "production", "production-compute", "production-memory"];
 

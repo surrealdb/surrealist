@@ -1,8 +1,8 @@
-import { CloudInstanceType, CloudOrganization } from "~/types";
-import { useCloudOrganizationInstancesQuery } from "../queries/instances";
-import { useStable } from "~/hooks/stable";
 import { fork } from "radash";
 import { useMemo } from "react";
+import { useStable } from "~/hooks/stable";
+import { CloudInstanceType, CloudOrganization } from "~/types";
+import { useCloudOrganizationInstancesQuery } from "../queries/instances";
 
 export function useFreeInstanceTypeAvailable(organisation: CloudOrganization) {
 	const { data } = useCloudOrganizationInstancesQuery(organisation.id);

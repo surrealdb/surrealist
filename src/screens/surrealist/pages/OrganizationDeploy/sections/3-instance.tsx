@@ -1,15 +1,15 @@
 import { Badge, Box, Checkbox, Group, Image, Select, Stack, TextInput } from "@mantine/core";
 
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { DeploySectionProps } from "../types";
 import { ChangeEvent, useLayoutEffect } from "react";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
+import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import { iconCheck } from "~/util/icons";
-import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { iconCheck } from "~/util/icons";
+import { DeploySectionProps } from "../types";
 
 export function DeploymentSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const regions = useCloudStore((s) => s.regions);

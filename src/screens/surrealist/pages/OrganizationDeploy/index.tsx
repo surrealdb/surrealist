@@ -1,27 +1,27 @@
 import classes from "./style.module.scss";
 
 import { Box, Button, Divider, Group, ScrollArea, Stack } from "@mantine/core";
-import { Link, Redirect, useLocation } from "wouter";
-import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
-import { AuthGuard } from "~/components/AuthGuard";
-import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
-import { InstanceTypeSection } from "./sections/1-type";
-import { useImmer } from "use-immer";
-import { ClusterStorageSection } from "./sections/2-cluster";
-import { DeploymentSection } from "./sections/3-instance";
-import { Spacer } from "~/components/Spacer";
-import { Icon } from "~/components/Icon";
-import { iconChevronRight } from "~/util/icons";
-import { useLastSavepoint } from "~/hooks/overview";
 import { Text } from "@mantine/core";
 import { useMemo } from "react";
-import { generateRandomName } from "~/util/random";
+import { useImmer } from "use-immer";
+import { Link, Redirect, useLocation } from "wouter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
+import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import { AuthGuard } from "~/components/AuthGuard";
+import { Icon } from "~/components/Icon";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { TopGlow } from "~/components/TopGlow";
+import { useLastSavepoint } from "~/hooks/overview";
 import { useStable } from "~/hooks/stable";
-import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 import { CloudOrganization } from "~/types";
+import { iconChevronRight } from "~/util/icons";
+import { generateRandomName } from "~/util/random";
+import { DEPLOY_CONFIG_KEY } from "~/util/storage";
+import { InstanceTypeSection } from "./sections/1-type";
+import { ClusterStorageSection } from "./sections/2-cluster";
+import { DeploymentSection } from "./sections/3-instance";
 
 export interface OrganizationDeployPageProps {
 	id: string;

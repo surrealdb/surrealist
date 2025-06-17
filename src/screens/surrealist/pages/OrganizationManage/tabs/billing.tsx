@@ -18,8 +18,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import { fetchAPI } from "~/cloud/api";
 import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
+import { BillingDetails } from "~/components/BillingDetails";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { PaymentDetails } from "~/components/PaymentDetails";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
@@ -28,8 +30,6 @@ import { CloudCoupon } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconOpen } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
-import { BillingDetails } from "~/components/BillingDetails";
-import { PaymentDetails } from "~/components/PaymentDetails";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	const client = useQueryClient();

@@ -1,12 +1,12 @@
 import { Box, Collapse, Radio, Slider, Stack, Text } from "@mantine/core";
+import { list } from "radash";
+import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useStable } from "~/hooks/stable";
+import { StorageCategory } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { DeploySectionProps } from "../types";
-import { useStable } from "~/hooks/stable";
-import { Label } from "~/components/Label";
-import { list } from "radash";
-import { StorageCategory } from "~/types";
-import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 
 export function ClusterStorageSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);

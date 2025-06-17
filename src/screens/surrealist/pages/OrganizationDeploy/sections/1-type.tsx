@@ -9,20 +9,20 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { closeModal, openModal } from "@mantine/modals";
 import { Fragment, ReactNode, useMemo } from "react";
+import { isDistributedType } from "~/cloud/helpers";
 import { useInstanceTypeAvailable, useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { Icon } from "~/components/Icon";
+import { InstanceTypes } from "~/components/InstanceTypes";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
-import { DeploySectionProps } from "../types";
-import { useStable } from "~/hooks/stable";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
-import { Icon } from "~/components/Icon";
-import { closeModal, openModal } from "@mantine/modals";
-import { InstanceTypes } from "~/components/InstanceTypes";
-import { isDistributedType } from "~/cloud/helpers";
-import { Spacer } from "~/components/Spacer";
+import { DeploySectionProps } from "../types";
 
 const RECOMMENDED_TYPES = ["free", "small-dev", "medium", "medium-compute", "xlarge"];
 

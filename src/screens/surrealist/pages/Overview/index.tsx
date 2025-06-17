@@ -1,19 +1,19 @@
 import classes from "./style.module.scss";
 
-import logoLightUrl from "~/assets/images/light/logo.webp";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import iconUrl from "~/assets/images/icon.webp";
+import logoLightUrl from "~/assets/images/light/logo.webp";
 
+import cloudLightUrl from "~/assets/images/icons/cloud.light.png";
+import cloudDarkUrl from "~/assets/images/icons/cloud.png";
+import communityLightUrl from "~/assets/images/icons/community.light.png";
+import communityDarkUrl from "~/assets/images/icons/community.png";
+import sidekickLightUrl from "~/assets/images/icons/sidekick.light.png";
+import sidekickDarkUrl from "~/assets/images/icons/sidekick.png";
 import databaseLightUrl from "~/assets/images/icons/surrealdb.light.png";
 import databaseDarkUrl from "~/assets/images/icons/surrealdb.png";
 import universityLightUrl from "~/assets/images/icons/university.light.png";
 import universityDarkUrl from "~/assets/images/icons/university.png";
-import sidekickLightUrl from "~/assets/images/icons/sidekick.light.png";
-import sidekickDarkUrl from "~/assets/images/icons/sidekick.png";
-import communityLightUrl from "~/assets/images/icons/community.light.png";
-import communityDarkUrl from "~/assets/images/icons/community.png";
-import cloudLightUrl from "~/assets/images/icons/cloud.light.png";
-import cloudDarkUrl from "~/assets/images/icons/cloud.png";
 
 import {
 	Box,

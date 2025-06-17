@@ -1,5 +1,5 @@
-import classes from "../style.module.scss";
 import glow from "~/assets/images/glow.png";
+import classes from "../style.module.scss";
 
 import { Box, Button, Image, Paper, Stack, Text } from "@mantine/core";
 import { BoxProps } from "@mantine/core";

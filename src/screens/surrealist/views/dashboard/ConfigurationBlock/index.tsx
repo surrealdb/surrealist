@@ -10,18 +10,17 @@ import {
 	iconTag,
 } from "~/util/icons";
 
-import { BoxProps, Button, SimpleGrid, Skeleton, ThemeIcon } from "@mantine/core";
-import { Group, Paper, Stack, Text } from "@mantine/core";
-import { ReactNode } from "react";
+import { Button, SimpleGrid, Skeleton } from "@mantine/core";
+import { Paper, Stack, Text } from "@mantine/core";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
+import { PropertyValue } from "~/components/PropertyValue";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
-import { PropertyValue } from "~/components/PropertyValue";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -139,7 +138,7 @@ export function ConfigurationBlock({
 					</Button>
 					<Button
 						size="xs"
-						onClick={onUpgrade}
+						onClick={handleUpgrade}
 						disabled={!instance || isIdle || !canModify}
 						variant="gradient"
 						my={-2}

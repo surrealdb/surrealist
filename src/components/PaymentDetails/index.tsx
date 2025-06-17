@@ -1,19 +1,19 @@
-import { Paper, Group, Button, Divider, Stack, Box, Skeleton, Text, Tooltip } from "@mantine/core";
+import { Box, Button, Divider, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import { useWindowEvent } from "@mantine/hooks";
+import { useQueryClient } from "@tanstack/react-query";
+import { capitalize } from "radash";
+import { useRef, useState } from "react";
+import { adapter } from "~/adapter";
+import { fetchAPI, updateCloudInformation } from "~/cloud/api";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
+import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
+import { showErrorNotification } from "~/util/helpers";
 import { iconCreditCard } from "~/util/icons";
 import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { Spacer } from "../Spacer";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
-import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
-import { useRef, useState } from "react";
-import { useStable } from "~/hooks/stable";
-import { adapter } from "~/adapter";
-import { fetchAPI, updateCloudInformation } from "~/cloud/api";
-import { showErrorNotification } from "~/util/helpers";
-import { useWindowEvent } from "@mantine/hooks";
-import { useQueryClient } from "@tanstack/react-query";
-import { capitalize } from "radash";
 
 export interface PaymentDetailsProps {
 	organisation: CloudOrganization;

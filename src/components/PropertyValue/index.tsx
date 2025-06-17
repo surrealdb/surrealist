@@ -1,7 +1,7 @@
 import { BoxProps, Group, ThemeIcon } from "@mantine/core";
-import { Icon } from "../Icon";
-import { ReactNode } from "react";
 import { Text } from "@mantine/core";
+import { ReactNode } from "react";
+import { Icon } from "../Icon";
 
 export interface PropertyValueProps extends BoxProps {
 	title: string;

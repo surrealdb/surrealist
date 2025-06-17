@@ -1,5 +1,5 @@
-import classes from "./style.module.scss";
 import glow from "~/assets/images/glow.png";
+import classes from "./style.module.scss";
 
 import {
 	Alert,
@@ -29,30 +29,30 @@ import {
 	iconTag,
 } from "~/util/icons";
 
+import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
+import { fetchAPI } from "~/cloud/api";
+import { compileDeployConfig } from "~/cloud/helpers";
+import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
+import { BillingDetails } from "~/components/BillingDetails";
 import { CloudSplash } from "~/components/CloudSplash";
+import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
+import { PaymentDetails } from "~/components/PaymentDetails";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { PropertyValue } from "~/components/PropertyValue";
+import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { CloudDeployConfig, CloudInstance, CloudInstanceType, CloudOrganization } from "~/types";
-import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { useState } from "react";
-import { DEPLOY_CONFIG_KEY } from "~/util/storage";
-import { BillingDetails } from "~/components/BillingDetails";
-import { PaymentDetails } from "~/components/PaymentDetails";
-import { PropertyValue } from "~/components/PropertyValue";
-import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
 import { useCloudStore } from "~/stores/cloud";
-import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
-import { getTypeCategoryName } from "~/util/cloud";
-import { compileDeployConfig } from "~/cloud/helpers";
+import { CloudDeployConfig, CloudInstance, CloudInstanceType, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { fetchAPI } from "~/cloud/api";
+import { getTypeCategoryName } from "~/util/cloud";
+import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
+import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 
 export interface OrganizationCheckoutPageProps {
 	id: string;
