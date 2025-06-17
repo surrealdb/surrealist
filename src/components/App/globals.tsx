@@ -10,6 +10,7 @@ import { useAppRouter } from "./hooks/routing";
 import { useTitleSync } from "./hooks/title";
 import { useViewSync } from "./hooks/view";
 import { useWindowSettings } from "./hooks/window";
+import { adapter } from "~/adapter";
 
 export function Globals(): ReactNode {
 	useModKeyTracker();
@@ -23,7 +24,12 @@ export function Globals(): ReactNode {
 	useAppRouter();
 	useIntercom();
 	usePolicyAlert();
-	useMenuBar();
+
+	// While calling hooks conditionally is usually not a good idea,
+	// this is an exception since the adapter will never change.
+	if (adapter.id === "desktop") {
+		useMenuBar();
+	}
 
 	return;
 }
