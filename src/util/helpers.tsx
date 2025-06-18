@@ -1,4 +1,4 @@
-import { Text } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { hideNotification, showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
@@ -9,6 +9,7 @@ import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { Authentication, Protocol, Selectable } from "~/types";
 import { openErrorModal } from "./errors";
+import { Spacer } from "~/components/Spacer";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -59,19 +60,34 @@ export function showErrorNotification(info: { title: ReactNode; content: any }) 
 	if (info.content instanceof Error) {
 		showNotification({
 			color: "red",
-			title: info.title,
-			message: "Click here for more details",
 			autoClose: false,
-			style: {
-				cursor: "pointer",
-			},
+			message: (
+				<Group
+					style={{
+						cursor: "pointer",
+					}}
+					onClick={() => {
+						openErrorModal(
+							info.title,
+							info.content.message,
+							info.content.cause,
+							info.content.stack,
+						);
+					}}
+				>
+					<Stack gap={0}>
+						<Text
+							fw={600}
+							c="bright"
+						>
+							{info.title}
+						</Text>
+						<Text>Click here for more details</Text>
+					</Stack>
+					<Spacer />
+				</Group>
+			),
 			onClick: (e) => {
-				openErrorModal(
-					info.title,
-					info.content.message,
-					info.content.cause,
-					info.content.stack,
-				);
 				hideNotification(e.currentTarget.id);
 			},
 		});
