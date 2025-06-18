@@ -11,10 +11,10 @@ import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { fastParseJwt, showErrorNotification } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import {
-	ACCESS_TOKEN_KEY,
+	TOKEN_ACCESS_KEY,
 	INVITATION_KEY,
 	REFERRER_KEY,
-	REFRESH_TOKEN_KEY,
+	TOKEN_REFRESH_KEY,
 	STATE_KEY,
 	VERIFIER_KEY,
 } from "~/util/storage";
@@ -139,7 +139,7 @@ export async function verifyAuthentication(code: string, state: string) {
 			throw new Error(`Invalid authentication response: ${result.error}`);
 		}
 
-		localStorage.setItem(REFRESH_TOKEN_KEY, result.refresh_token);
+		localStorage.setItem(TOKEN_REFRESH_KEY, result.refresh_token);
 
 		acquireSession(result.access_token, true);
 	} catch (err: any) {
@@ -176,8 +176,8 @@ export async function refreshAccess() {
 	}
 
 	try {
-		const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-		const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+		const refreshToken = localStorage.getItem(TOKEN_REFRESH_KEY);
+		const accessToken = localStorage.getItem(TOKEN_ACCESS_KEY);
 
 		adapter.log("Cloud", "Refreshing cloud access token");
 
@@ -215,8 +215,8 @@ export async function refreshAccess() {
 
 		console.log(result.refresh_token);
 
-		localStorage.setItem(REFRESH_TOKEN_KEY, result.refresh_token);
-		localStorage.setItem(ACCESS_TOKEN_KEY, result.access_token);
+		localStorage.setItem(TOKEN_REFRESH_KEY, result.refresh_token);
+		localStorage.setItem(TOKEN_ACCESS_KEY, result.access_token);
 
 		acquireSession(result.access_token, false);
 	} catch (err: any) {
@@ -318,11 +318,11 @@ export async function acquireSession(accessToken: string, initial: boolean) {
  */
 export function invalidateSession() {
 	const { clearSession } = useCloudStore.getState();
-	const wasAuthed = !!localStorage.getItem(REFRESH_TOKEN_KEY);
+	const wasAuthed = !!localStorage.getItem(TOKEN_REFRESH_KEY);
 
 	adapter.log("Cloud", "Invalidating active session");
 
-	localStorage.removeItem(REFRESH_TOKEN_KEY);
+	localStorage.removeItem(TOKEN_REFRESH_KEY);
 
 	clearSession();
 
