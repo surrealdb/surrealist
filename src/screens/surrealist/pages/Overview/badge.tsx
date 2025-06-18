@@ -35,7 +35,6 @@ export function StateBadge({ state, size, ...other }: StateBadgeProps) {
 				) : (
 					<Loader
 						size={size}
-						type="dots"
 						style={{ transform: "scale(1.5)" }}
 					/>
 				)}

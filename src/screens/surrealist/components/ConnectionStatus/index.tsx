@@ -137,7 +137,6 @@ export function ConnectionStatus() {
 								isLoading ? (
 									<Loader
 										size={14}
-										type="dots"
 										ml={2}
 										mr={-7}
 									/>
