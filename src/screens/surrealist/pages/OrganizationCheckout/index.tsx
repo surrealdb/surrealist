@@ -29,6 +29,7 @@ import {
 	iconTag,
 } from "~/util/icons";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
 import { fetchAPI } from "~/cloud/api";
@@ -46,11 +47,13 @@ import { PropertyValue } from "~/components/PropertyValue";
 import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
+import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudDeployConfig, CloudInstance, CloudInstanceType, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getTypeCategoryName } from "~/util/cloud";
+import { resolveInstanceConnection } from "~/util/connection";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
 import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 
@@ -104,6 +107,8 @@ interface PageContentProps {
 
 function PageContent({ organisation, instanceType, config }: PageContentProps) {
 	const isAuthed = useIsAuthenticated();
+	const queryClient = useQueryClient();
+	const navigateConnection = useConnectionNavigator();
 	const [, navigate] = useLocation();
 
 	// const estimationQuery = useCloudEstimationQuery(organisation, details);
@@ -112,33 +117,36 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 		navigate("deploy");
 	});
 
-	const handleDeploy = useStable(async () => {
-		if (!organisation || !config) return;
+	const deployMutation = useMutation({
+		mutationFn: async () => {
+			if (!organisation || !config) return;
 
-		try {
-			const configuration = compileDeployConfig(organisation, config);
+			try {
+				const configuration = compileDeployConfig(organisation, config);
+				const instance = await fetchAPI<CloudInstance>("/instances", {
+					method: "POST",
+					body: JSON.stringify(configuration),
+				});
 
-			const result = await fetchAPI<CloudInstance>("/instances", {
-				method: "POST",
-				body: JSON.stringify(configuration),
-			});
+				queryClient.setQueryData(["cloud", "instances", { id: instance.id }], instance);
 
-			tagEvent("cloud_instance_created", {
-				instance: result.id,
-				region: config.region,
-				version: config.version,
-				compute_type: config.type,
-				organisation: organisation.id,
-				cluster: config.cluster,
-			});
-		} catch (err: any) {
-			console.log("Failed to provision database:", [...err.response.headers.entries()]);
+				navigateConnection(resolveInstanceConnection(instance).id, "dashboard");
 
-			showErrorNotification({
-				title: "Failed to deploy instance",
-				content: err,
-			});
-		}
+				tagEvent("cloud_instance_created", {
+					instance: instance.id,
+					region: config.region,
+					version: config.version,
+					compute_type: config.type,
+					organisation: organisation.id,
+					cluster: config.cluster,
+				});
+			} catch (err: any) {
+				showErrorNotification({
+					title: "Failed to deploy instance",
+					content: err,
+				});
+			}
+		},
 	});
 
 	const requireBilling = instanceType?.category !== "free";
@@ -367,7 +375,8 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 												type="submit"
 												variant="gradient"
 												disabled={deployDisabled}
-												onClick={handleDeploy}
+												loading={deployMutation.isPending}
+												onClick={() => deployMutation.mutate()}
 											>
 												Deploy instance
 											</Button>
