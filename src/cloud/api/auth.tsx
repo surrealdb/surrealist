@@ -11,11 +11,11 @@ import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { fastParseJwt, showErrorNotification } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import {
-	TOKEN_ACCESS_KEY,
 	INVITATION_KEY,
 	REFERRER_KEY,
-	TOKEN_REFRESH_KEY,
 	STATE_KEY,
+	TOKEN_ACCESS_KEY,
+	TOKEN_REFRESH_KEY,
 	VERIFIER_KEY,
 } from "~/util/storage";
 import { ApiError, fetchAPI, updateCloudInformation } from ".";
