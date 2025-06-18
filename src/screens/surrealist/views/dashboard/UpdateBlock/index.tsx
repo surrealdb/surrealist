@@ -28,6 +28,7 @@ export function UpdateBlock({ instance, isLoading, onUpdate, onVersions }: Updat
 				color="violet"
 				title="Update available"
 				icon={<Icon path={iconReset} />}
+				mb={6}
 			>
 				<Box>Your instance can be updated to SurrealDB {latest}</Box>
 				<Group mt="md">
