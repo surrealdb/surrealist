@@ -129,6 +129,7 @@ export function NewsFeedDrawer() {
 						>
 							{reading && (
 								<ScrollArea
+									className={classes.articleDrawer__scroll}
 									pos="absolute"
 									style={{ width: "var(--drawer-size-lg)" }}
 									left={0}

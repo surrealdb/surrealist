@@ -1,7 +1,7 @@
 {
 	"name": "surrealist",
 	"private": true,
-	"version": "3.3.4",
+	"version": "3.3.5",
 	"surreal": "2.0.0",
 	"type": "module",
 	"authors": ["SurrealDB"],
@@ -42,8 +42,13 @@
 		"@lezer/php": "^1.0.2",
 		"@lezer/python": "^1.1.14",
 		"@lezer/rust": "^1.0.2",
+<<<<<<< snyk-upgrade-a12e6b8c6ee70fb3ae38c022ff13ee86
 		"@mantine/charts": "7.16.1",
 		"@mantine/core": "7.17.7",
+=======
+		"@mantine/charts": "7.17.7",
+		"@mantine/core": "7.16.1",
+>>>>>>> main
 		"@mantine/hooks": "7.16.1",
 		"@mantine/modals": "7.16.1",
 		"@mantine/notifications": "7.16.1",

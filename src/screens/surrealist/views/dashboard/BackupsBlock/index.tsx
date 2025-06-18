@@ -2,7 +2,9 @@ import { Box, Button, Center, Paper, Skeleton, Stack, Text, Tooltip } from "@man
 import { formatDistance } from "date-fns";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
+import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { iconChevronRight } from "~/util/icons";
 
 export interface BackupsBlockProps {
@@ -16,6 +18,11 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 	const latest = backups?.[0];
 	const canUpgrade = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 	const unavailable = instance?.type.category === "free";
+
+	const handleUpgrade = useStable(() => {
+		onUpgrade();
+		tagEvent("cloud_instance_backup_upgrade_click");
+	});
 
 	return (
 		<Skeleton visible={isLoading}>
@@ -44,7 +51,7 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 								size="xs"
 								rightSection={<Icon path={iconChevronRight} />}
 								variant="gradient"
-								onClick={onUpgrade}
+								onClick={handleUpgrade}
 							>
 								Upgrade instance
 							</Button>
