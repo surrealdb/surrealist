@@ -3,7 +3,6 @@ import classes from "./style.module.scss";
 import {
 	Button,
 	type ButtonProps,
-	Divider,
 	Group,
 	Loader,
 	Menu,
@@ -131,7 +130,8 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 		openHandle.close();
 	});
 
-	const willCreate = (level === "root" || level === "namespace") && databases.length === 0;
+	const willCreate =
+		(level === "root" || level === "namespace") && databases.length === 0 && !database;
 
 	return willCreate ? (
 		<Button
@@ -154,7 +154,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 		<Menu
 			opened={opened}
 			onChange={openHandle.set}
-			trigger="click"
+			trigger="hover"
 			position="bottom-start"
 			transitionProps={{
 				transition: "scale-y",
@@ -177,50 +177,57 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 					</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown w={250}>
-				<Stack
-					flex={1}
+			<Menu.Dropdown w={225}>
+				<Group
+					gap="sm"
 					p="sm"
 				>
-					<Group gap="sm">
+					<Text
+						fw={600}
+						c="bright"
+					>
+						Databases
+					</Text>
+					{isPending && <Loader size={14} />}
+					<Spacer />
+					<ActionButton
+						color="slate"
+						variant="light"
+						disabled={!connected || (level !== "root" && level !== "namespace")}
+						label="Create database"
+						onClick={openCreator}
+					>
+						<Icon path={iconPlus} />
+					</ActionButton>
+				</Group>
+				<Menu.Divider />
+				<ScrollArea.Autosize mah={350}>
+					{databases.length !== 0 ? (
 						<Text
-							fw={600}
-							c="bright"
+							c="slate"
+							py="md"
+							ta="center"
 						>
-							Databases
+							No databases defined
 						</Text>
-						{isPending && <Loader size={14} />}
-						<Spacer />
-						<ActionButton
-							color="slate"
-							variant="light"
-							disabled={!connected || (level !== "root" && level !== "namespace")}
-							label="Create database"
-							onClick={openCreator}
+					) : (
+						<Stack
+							gap="xs"
+							p="xs"
 						>
-							<Icon path={iconPlus} />
-						</ActionButton>
-					</Group>
-					<Divider />
-					<ScrollArea.Autosize mah={250}>
-						{databases.length === 0 ? (
-							<Text c="slate">No databases defined</Text>
-						) : (
-							<Stack gap="xs">
-								{databases.map((db) => (
-									<Database
-										key={db}
-										value={db}
-										activeNamespace={namespace}
-										activeDatabase={database}
-										onOpen={mutate}
-										onRemove={openHandle.close}
-									/>
-								))}
-							</Stack>
-						)}
-					</ScrollArea.Autosize>
-				</Stack>
+							{databases.map((db) => (
+								<Database
+									key={db}
+									value={db}
+									activeNamespace={namespace}
+									activeDatabase={database}
+									onOpen={mutate}
+									onRemove={openHandle.close}
+								/>
+							))}
+						</Stack>
+					)}
+				</ScrollArea.Autosize>
 			</Menu.Dropdown>
 		</Menu>
 	);

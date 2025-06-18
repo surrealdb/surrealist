@@ -10,7 +10,18 @@ import {
 	iconUpload,
 } from "~/util/icons";
 
-import { Button, Group, Indicator, Menu, Modal, Select, Stack, Text } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Group,
+	Indicator,
+	Loader,
+	Menu,
+	Modal,
+	Select,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SANDBOX } from "~/constants";
@@ -86,15 +97,17 @@ export function ConnectionStatus() {
 
 	const isSandbox = connectionId === SANDBOX;
 	const isManaged = isSandbox || instance;
+	const isLoading = currentState === "connecting" || currentState === "retrying";
+	const pulse = currentState === "connected";
 
 	const statusInfo = {
-		disconnected: ["Disconnected", "red", false],
-		retrying: ["Retrying...", "red", true],
-		connecting: ["Connecting...", "yellow.6", true],
-		connected: [`SurrealDB ${remoteVersion}`, "green", false],
+		disconnected: ["Disconnected", "red"],
+		connected: [`SurrealDB ${remoteVersion}`, "green"],
+		retrying: ["Reconnecting...", ""],
+		connecting: ["Connecting...", ""],
 	} as const;
 
-	const [statusText, color, pulse] = statusInfo[currentState];
+	const [statusText, color] = statusInfo[currentState];
 
 	return (
 		<>
@@ -121,12 +134,20 @@ export function ConnectionStatus() {
 								)
 							}
 							rightSection={
-								<Indicator
-									processing={pulse}
-									color={color}
-									size={9}
-									ml="sm"
-								/>
+								isLoading ? (
+									<Loader
+										size={14}
+										ml={2}
+										mr={-7}
+									/>
+								) : (
+									<Indicator
+										processing={pulse}
+										color={color}
+										size={9}
+										ml="sm"
+									/>
+								)
 							}
 						>
 							<Text
@@ -140,14 +161,23 @@ export function ConnectionStatus() {
 							</Text>
 						</Button>
 					</Menu.Target>
-					<Menu.Dropdown miw={175}>
-						<Text
-							py={2}
-							px="sm"
-							c="slate"
-						>
-							{statusText}
-						</Text>
+					<Menu.Dropdown w={225}>
+						<Box p="sm">
+							<Text
+								fw={600}
+								c="bright"
+							>
+								Connection
+							</Text>
+							<Text
+								c="slate"
+								fz="sm"
+								truncate
+							>
+								{statusText}
+							</Text>
+						</Box>
+
 						<Menu.Divider />
 
 						{!isSandbox && (

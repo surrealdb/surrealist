@@ -15,9 +15,10 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { ChatPage } from "./pages/Chat";
 import { CreateConnectionPage } from "./pages/CreateConnection";
-import { CreateInstancePage } from "./pages/CreateInstance";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
+import { OrganizationCheckoutPage } from "./pages/OrganizationCheckout";
+import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
 import { OrganizationManagePage } from "./pages/OrganizationManage";
 import { OrganizationsPage } from "./pages/Organizations";
 import { OverviewPage } from "./pages/Overview";
@@ -42,11 +43,12 @@ const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
+const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
+const OrganizationCheckoutPageLazy = memo(OrganizationCheckoutPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
 const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
-const CreateInstancePageLazy = memo(CreateInstancePage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -102,7 +104,7 @@ export function SurrealistScreen() {
 	return (
 		<Box
 			className={classes.root}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "white" : "slate.9"}
 			__vars={{
 				"--sidebar-offset": `${sidebarOffset}px`,
 				"--titlebar-offset": `${titlebarOffset}px`,
@@ -173,6 +175,18 @@ export function SurrealistScreen() {
 										<OrganizationsPageLazy />
 									</Route>
 
+									<Route path="/o/:organization/deploy">
+										{({ organization }) => (
+											<OrganizationDeployPageLazy id={organization} />
+										)}
+									</Route>
+
+									<Route path="/o/:organization/checkout">
+										{({ organization }) => (
+											<OrganizationCheckoutPageLazy id={organization} />
+										)}
+									</Route>
+
 									<Route path="/o/:organization/:tab">
 										{({ organization, tab }) => (
 											<OrganizationManagePageLazy
@@ -198,10 +212,6 @@ export function SurrealistScreen() {
 
 									<Route path="/create/organisation">
 										<CreateOrganizationsPageLazy />
-									</Route>
-
-									<Route path="/create/instance">
-										<CreateInstancePageLazy />
 									</Route>
 
 									<Route path="/signin">

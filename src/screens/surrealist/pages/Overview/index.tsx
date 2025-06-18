@@ -4,40 +4,40 @@ import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 
+import cloudUrl from "~/assets/images/icons/cloud.png";
+import communityUrl from "~/assets/images/icons/community.png";
+import sidekickUrl from "~/assets/images/icons/sidekick.png";
+import databaseUrl from "~/assets/images/icons/surrealdb.png";
+import universityUrl from "~/assets/images/icons/university.png";
+
 import {
 	Box,
 	Button,
 	Center,
 	Collapse,
+	Divider,
 	Group,
 	Image,
 	Indicator,
 	Loader,
 	Menu,
+	Paper,
 	ScrollArea,
 	SimpleGrid,
-	Skeleton,
 	Stack,
 	Text,
 	TextInput,
-	ThemeIcon,
 	Transition,
 } from "@mantine/core";
 
 import {
-	iconAccount,
-	iconBook,
+	iconArrowLeft,
+	iconArrowUpRight,
 	iconCheck,
-	iconChevronDown,
-	iconChevronRight,
-	iconCloud,
-	iconCommunity,
-	iconPlus,
+	iconOrganization,
 	iconReset,
 	iconSearch,
-	iconSidekick,
 	iconTune,
-	iconUniversity,
 } from "~/util/icons";
 
 import { useInputState } from "@mantine/hooks";
@@ -45,8 +45,6 @@ import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { createInstancePath } from "~/cloud/helpers";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -59,18 +57,17 @@ import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { OVERVIEW, useSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIsLight, useThemeImage } from "~/hooks/theme";
+import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance, CloudOrganization, Connection } from "~/types";
+import { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
 import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
+import { StartBlog } from "./content/blog";
 import { StartCloud } from "./content/cloud";
 import { StartConnection } from "./content/connection";
 import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
-import { StartNews } from "./content/news";
-import { StartPlaceholder } from "./content/placeholder";
 import { StartResource } from "./content/resource";
 
 const GRID_COLUMNS = {
@@ -82,7 +79,6 @@ const GRID_COLUMNS = {
 export function OverviewPage() {
 	const knownLabels = useConnectionLabels();
 	const showCloud = useIsCloudEnabled();
-	const isLight = useIsLight();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
@@ -126,8 +122,12 @@ export function OverviewPage() {
 	});
 
 	const authState = useCloudStore((s) => s.authState);
-	const newsPosts = newsQuery.data?.slice(0, 5) ?? [];
+	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
 	const hasLabels = knownLabels.length > 0;
+	const isLoading = authState === "loading" || isPending;
+	const showConnections = !isLoading && (sandbox || userConnections.length > 0);
+	const hasNoResults = !isLoading && organizations.length === 0 && !showConnections;
+	const showOrgCreator = authState === "authenticated" || authState === "loading";
 
 	const logoUrl = useThemeImage({
 		light: logoLightUrl,
@@ -141,7 +141,7 @@ export function OverviewPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow />
+			<TopGlow offset={250} />
 
 			<Transition
 				duration={250}
@@ -153,14 +153,17 @@ export function OverviewPage() {
 						pos="absolute"
 						inset={0}
 						style={style}
+						viewportProps={{
+							style: { paddingBottom: 75 },
+						}}
 					>
 						<Stack
 							className={classes.content}
 							justify="center"
-							maw={1000}
+							maw={1200}
 							px="xl"
 							mx="auto"
-							py={96}
+							pt={78}
 						>
 							<Stack
 								align="center"
@@ -194,287 +197,315 @@ export function OverviewPage() {
 							))}
 
 							<Group mt="xl">
-								<PrimaryTitle>Your connections</PrimaryTitle>
+								<PrimaryTitle fz={22}>Your instances</PrimaryTitle>
+
 								<Spacer />
-								{hasLabels && (
-									<Menu closeOnItemClick={false}>
-										<Menu.Target>
-											<Indicator
-												disabled={selectedLabels.length === 0}
-												color="violet"
-												size={14}
-												label={selectedLabels.length}
-											>
-												<ActionButton
-													variant="subtle"
-													color="slate"
-													label="Filter connections"
-													disabled={!hasLabels}
-												>
-													<Icon path={iconTune} />
-												</ActionButton>
-											</Indicator>
-										</Menu.Target>
-										<Menu.Dropdown miw={220}>
-											<Group justify="space-between">
-												<Menu.Label py="xs">Labels</Menu.Label>
-												{selectedLabels.length > 0 && (
-													<ActionButton
-														size="sm"
-														mr="xs"
-														label="Reset filter"
-														variant="subtle"
-														onClick={() => setSelectedLabels([])}
-													>
-														<Icon path={iconReset} />
-													</ActionButton>
-												)}
-											</Group>
-											{knownLabels.map((option) => {
-												const isActive = selectedLabels.includes(option);
 
-												return (
-													<Menu.Item
-														key={option}
-														onClick={(e) => toggleLabel(e, option)}
-														rightSection={
-															isActive && <Icon path={iconCheck} />
-														}
-													>
-														{option}
-													</Menu.Item>
-												);
-											})}
-											<Collapse in={selectedLabels.length > 0}>
-												<>
-													<Menu.Divider />
-													<Menu.Label mt="sm">Visibility</Menu.Label>
-													<Menu.Item
-														onClick={() => setLabelInclude(true)}
-														rightSection={
-															labelInclude && (
-																<Icon path={iconCheck} />
-															)
-														}
-													>
-														Show matching items
-													</Menu.Item>
-													<Menu.Item
-														onClick={() => setLabelInclude(false)}
-														rightSection={
-															!labelInclude && (
-																<Icon path={iconCheck} />
-															)
-														}
-													>
-														Hide matching items
-													</Menu.Item>
-
-													<Menu.Divider />
-													<Menu.Label mt="sm">Method</Menu.Label>
-													<Menu.Item
-														onClick={() => setLabelMode("any")}
-														rightSection={
-															labelMode === "any" && (
-																<Icon path={iconCheck} />
-															)
-														}
-													>
-														Any selected label
-													</Menu.Item>
-													<Menu.Item
-														onClick={() => setLabelMode("all")}
-														rightSection={
-															labelMode === "all" && (
-																<Icon path={iconCheck} />
-															)
-														}
-													>
-														All selected labels
-													</Menu.Item>
-												</>
-											</Collapse>
-										</Menu.Dropdown>
-									</Menu>
-								)}
-								<TextInput
-									value={search}
-									onChange={setSearch}
-									placeholder="Search connections"
-									leftSection={
-										<Icon
-											path={iconSearch}
-											size="sm"
-										/>
-									}
-									radius="sm"
-									size="xs"
-									className={classes.search}
-								/>
-
-								<Menu
-									transitionProps={{ transition: "scale-y" }}
-									position="bottom-end"
-								>
+								<Menu closeOnItemClick={false}>
 									<Menu.Target>
-										<Button
-											size="xs"
-											color="slate"
-											variant="gradient"
-											rightSection={<Icon path={iconChevronDown} />}
+										<Indicator
+											disabled={selectedLabels.length === 0}
+											color="violet"
+											size={14}
+											label={selectedLabels.length}
 										>
-											Create new
-										</Button>
-									</Menu.Target>
-									<Menu.Dropdown>
-										<Link to="/create/connection">
-											<Menu.Item
-												leftSection={
-													<ThemeIcon
-														color={isLight ? "slate" : "slate.0"}
-														mr="xs"
-														radius="xs"
-														size="lg"
-														variant="light"
-													>
-														<Icon
-															path={iconPlus}
-															size="lg"
-														/>
-													</ThemeIcon>
-												}
+											<ActionButton
+												variant="subtle"
+												color="slate"
+												label="Filter connections"
 											>
-												<Box>
-													<Text
-														c="bright"
-														fw={600}
-													>
-														Connection
-													</Text>
-													<Text>Connect to any SurrealDB instance</Text>
-												</Box>
-											</Menu.Item>
-										</Link>
-										{showCloud && (
-											<>
-												<Menu.Label mt="sm">Surreal Cloud</Menu.Label>
-												<Link to="/create/instance">
-													<Menu.Item
-														leftSection={
-															<ThemeIcon
-																color="surreal"
-																mr="xs"
-																radius="xs"
-																size="lg"
-																variant="light"
-															>
-																<Icon
-																	path={iconCloud}
-																	size="lg"
-																/>
-															</ThemeIcon>
-														}
-													>
-														<Box>
-															<Text
-																c="bright"
-																fw={600}
-															>
-																Cloud Instance
-															</Text>
-															<Text>
-																Create a managed cloud instance
-															</Text>
-														</Box>
-													</Menu.Item>
-												</Link>
-												<Link to="/create/organisation">
-													<Menu.Item
-														leftSection={
-															<ThemeIcon
-																color="violet"
-																mr="xs"
-																radius="xs"
-																size="lg"
-																variant="light"
-															>
-																<Icon
-																	path={iconAccount}
-																	size="lg"
-																/>
-															</ThemeIcon>
-														}
-													>
-														<Box>
-															<Text
-																c="bright"
-																fw={600}
-															>
-																Organisation
-															</Text>
-															<Text>
-																Create a space to manage your team
-															</Text>
-														</Box>
-													</Menu.Item>
-												</Link>
-											</>
+												<Icon path={iconTune} />
+											</ActionButton>
+										</Indicator>
+									</Menu.Target>
+									<Menu.Dropdown miw={220}>
+										<Group justify="space-between">
+											<Menu.Label py="xs">Labels</Menu.Label>
+											{selectedLabels.length > 0 && (
+												<ActionButton
+													size="sm"
+													mr="xs"
+													label="Reset filter"
+													variant="subtle"
+													onClick={() => setSelectedLabels([])}
+												>
+													<Icon path={iconReset} />
+												</ActionButton>
+											)}
+										</Group>
+										{knownLabels.length === 0 && (
+											<Text
+												maw={200}
+												px="sm"
+												pb="sm"
+											>
+												No labels available. Add labels to your connections
+												to filter them here.
+											</Text>
 										)}
+										{knownLabels.map((option) => {
+											const isActive = selectedLabels.includes(option);
+
+											return (
+												<Menu.Item
+													key={option}
+													onClick={(e) => toggleLabel(e, option)}
+													rightSection={
+														isActive && <Icon path={iconCheck} />
+													}
+												>
+													{option}
+												</Menu.Item>
+											);
+										})}
+										<Collapse in={selectedLabels.length > 0}>
+											<>
+												<Menu.Divider />
+												<Menu.Label mt="sm">Visibility</Menu.Label>
+												<Menu.Item
+													onClick={() => setLabelInclude(true)}
+													rightSection={
+														labelInclude && <Icon path={iconCheck} />
+													}
+												>
+													Show matching items
+												</Menu.Item>
+												<Menu.Item
+													onClick={() => setLabelInclude(false)}
+													rightSection={
+														!labelInclude && <Icon path={iconCheck} />
+													}
+												>
+													Hide matching items
+												</Menu.Item>
+
+												<Menu.Divider />
+												<Menu.Label mt="sm">Method</Menu.Label>
+												<Menu.Item
+													onClick={() => setLabelMode("any")}
+													rightSection={
+														labelMode === "any" && (
+															<Icon path={iconCheck} />
+														)
+													}
+												>
+													Any selected label
+												</Menu.Item>
+												<Menu.Item
+													onClick={() => setLabelMode("all")}
+													rightSection={
+														labelMode === "all" && (
+															<Icon path={iconCheck} />
+														)
+													}
+												>
+													All selected labels
+												</Menu.Item>
+											</>
+										</Collapse>
 									</Menu.Dropdown>
 								</Menu>
+
+								<Paper>
+									<TextInput
+										value={search}
+										onChange={setSearch}
+										placeholder="Search instances..."
+										leftSection={
+											<Icon
+												path={iconSearch}
+												size="sm"
+											/>
+										}
+										flex={1}
+										w={264}
+										size="xs"
+										variant="unstyled"
+										styles={{
+											input: { backgroundColor: "unset" },
+										}}
+									/>
+								</Paper>
+
+								{showOrgCreator && (
+									<Link href="/create/organisation">
+										<Button
+											size="xs"
+											color="violet"
+											variant="light"
+											leftSection={<Icon path={iconOrganization} />}
+										>
+											Create organisation
+										</Button>
+									</Link>
+								)}
 							</Group>
 
-							<SimpleGrid cols={GRID_COLUMNS}>
-								{sandbox && (
-									<StartConnection
-										connection={sandbox}
-										onConnect={activateConnection}
-									/>
-								)}
-								{userConnections.map((connection) => (
-									<StartConnection
-										key={connection.id}
-										connection={connection}
-										onConnect={activateConnection}
-									/>
-								))}
-								{userConnections.length === 0 && noFilter && (
-									<StartCreator
-										title="No connections"
-										subtitle="Click to create your first connection"
-										onCreate={() => navigate("/create/connection")}
-									/>
-								)}
-							</SimpleGrid>
-
-							{authState === "authenticated" &&
-								organizations.map((organization) => (
-									<OrganizationInstances
-										key={organization.info.id}
-										organization={organization}
-										onConnect={activateInstance}
-									/>
-								))}
-
-							{(authState === "loading" || isPending) && (
+							{isLoading && (
 								<Center mt={52}>
 									<Loader type="dots" />
 								</Center>
 							)}
 
+							{hasNoResults && (
+								<Center mt={52}>
+									<Text>No instances match the provided filters</Text>
+								</Center>
+							)}
+
+							<Stack
+								gap={36}
+								mt="sm"
+							>
+								{authState === "authenticated" &&
+									organizations.map((organization) => (
+										<Box key={organization.info.id}>
+											<Group gap="xl">
+												<Box>
+													<Text>Surreal Cloud</Text>
+													<Link href={`/o/${organization.info.id}`}>
+														<Group
+															gap="sm"
+															className={classes.organisationName}
+														>
+															<PrimaryTitle
+																fz={18}
+																lh="h1"
+																fw={600}
+															>
+																{organization.info.name}
+															</PrimaryTitle>
+															<Icon
+																path={iconArrowUpRight}
+																c="bright"
+																size="sm"
+																mb={-4}
+															/>
+														</Group>
+													</Link>
+												</Box>
+												<Divider
+													flex={1}
+													className={classes.connectionSpacer}
+												/>
+												<Link href={`/o/${organization.info.id}/deploy`}>
+													<Button
+														size="xs"
+														variant="gradient"
+													>
+														Deploy instance
+													</Button>
+												</Link>
+											</Group>
+											<SimpleGrid
+												cols={GRID_COLUMNS}
+												mt="xl"
+											>
+												{organization.instances.map((instance) => (
+													<StartInstance
+														key={instance.id}
+														instance={instance}
+														onConnect={activateInstance}
+													/>
+												))}
+												{organization.instances.length === 0 && (
+													<StartCreator
+														organization={organization.info.id}
+													/>
+												)}
+											</SimpleGrid>
+										</Box>
+									))}
+
+								{showConnections && (
+									<Box>
+										<Group gap="xl">
+											<Box>
+												<Text>Locally configured</Text>
+												<PrimaryTitle
+													fz={18}
+													lh="h1"
+													fw={600}
+												>
+													Connections
+												</PrimaryTitle>
+											</Box>
+											<Divider
+												flex={1}
+												className={classes.connectionSpacer}
+											/>
+											<Link href="/create/connection">
+												<Button
+													size="xs"
+													variant="gradient"
+												>
+													Create connection
+												</Button>
+											</Link>
+										</Group>
+
+										<SimpleGrid
+											cols={GRID_COLUMNS}
+											mt="xl"
+										>
+											{sandbox && (
+												<StartConnection
+													connection={sandbox}
+													onConnect={activateConnection}
+												/>
+											)}
+											{userConnections.map((connection) => (
+												<StartConnection
+													key={connection.id}
+													connection={connection}
+													onConnect={activateConnection}
+												/>
+											))}
+											{/* {userConnections.length === 0 && noFilter && (
+									<StartCreator
+										title="No connections"
+										subtitle="Click to create your first connection"
+										onCreate={() => navigate("/create/connection")}
+									/>
+								)} */}
+										</SimpleGrid>
+									</Box>
+								)}
+							</Stack>
+
 							{authState === "unauthenticated" && showCloud && (
 								<>
-									<PrimaryTitle mt="xl">Surreal Cloud</PrimaryTitle>
+									<PrimaryTitle
+										mt={36}
+										fz={22}
+									>
+										Sign in to Surreal Cloud
+									</PrimaryTitle>
 									<StartCloud
-										title="Try Surreal Cloud"
-										subtitle="Surreal Cloud redefines the database experience, offering the power and flexibility of SurrealDB without the pain of managing infrastructure. Get your own free instance today."
-										icon={iconCloud}
+										action="Sign in"
+										image={cloudUrl}
 										onClick={openCloudAuthentication}
-									/>
+									>
+										<Text
+											span
+											inherit
+											c="bright"
+										>
+											Surreal Cloud
+										</Text>{" "}
+										redefines the database experience, offering the power and
+										flexibility of SurrealDB without the pain of managing
+										infrastructure. Get your own free instance today.
+									</StartCloud>
 								</>
 							)}
 
-							<PrimaryTitle mt="xl">Resources</PrimaryTitle>
+							<PrimaryTitle
+								mt={36}
+								fz={22}
+							>
+								Resources
+							</PrimaryTitle>
 
 							<SimpleGrid
 								cols={{
@@ -484,16 +515,16 @@ export function OverviewPage() {
 							>
 								<StartResource
 									title="Documentation"
-									subtitle="Learn more about Surrealist"
-									icon={iconBook}
+									subtitle="Explore the SurrealDB documentation"
+									image={databaseUrl}
 									onClick={() =>
-										adapter.openUrl("https://surrealdb.com/docs/surrealist")
+										adapter.openUrl("https://surrealdb.com/docs/surrealdb")
 									}
 								/>
 								<StartResource
 									title="Community"
 									subtitle="Join the discussion on Discord"
-									icon={iconCommunity}
+									image={communityUrl}
 									onClick={() =>
 										adapter.openUrl("https://discord.com/invite/surrealdb")
 									}
@@ -501,98 +532,56 @@ export function OverviewPage() {
 								<StartResource
 									title="University"
 									subtitle="Learn the SurrealDB fundamentals in 3 hours"
-									icon={iconUniversity}
+									image={universityUrl}
 									onClick={() => adapter.openUrl("https://surrealdb.com/learn")}
 								/>
 								<StartResource
 									title="Sidekick"
 									subtitle="Get support from your personal Surreal AI assistant"
-									icon={iconSidekick}
+									image={sidekickUrl}
 									onClick={() => navigate("/chat")}
 								/>
 							</SimpleGrid>
 
-							<PrimaryTitle mt="xl">Latest news</PrimaryTitle>
-
-							{newsQuery.isPending ? (
-								<>
-									<Skeleton h={144} />
-									<Skeleton h={144} />
-									<Skeleton h={144} />
-								</>
-							) : (
-								<>
-									{newsPosts.map((article, i) => (
-										<StartNews
-											key={i}
-											post={article}
+							<Group mt={36}>
+								<PrimaryTitle
+									fz={22}
+									flex={1}
+								>
+									Featured articles
+								</PrimaryTitle>
+								<Button
+									rightSection={
+										<Icon
+											path={iconArrowLeft}
+											flip="horizontal"
 										/>
-									))}
+									}
+									onClick={() => dispatchIntent("open-news")}
+									color="slate"
+									variant="subtle"
+								>
+									Read all articles
+								</Button>
+							</Group>
 
-									<Center>
-										<Button
-											rightSection={<Icon path={iconChevronRight} />}
-											onClick={() => dispatchIntent("open-news")}
-											color="slate"
-											variant="white"
-											radius="xl"
-											mt="xl"
-										>
-											Read more news
-										</Button>
-									</Center>
-								</>
-							)}
+							<SimpleGrid
+								cols={{
+									xs: 1,
+									sm: 2,
+								}}
+							>
+								{newsPosts.map((article, i) => (
+									<StartBlog
+										key={i}
+										post={article}
+									/>
+								))}
+							</SimpleGrid>
 						</Stack>
 					</ScrollArea>
 				)}
 			</Transition>
 		</Box>
-	);
-}
-
-interface OrganizationInstancesProps {
-	organization: {
-		info: CloudOrganization;
-		instances: CloudInstance[];
-	};
-	onConnect: (instance: CloudInstance) => void;
-}
-
-function OrganizationInstances({ organization, onConnect }: OrganizationInstancesProps) {
-	const [, navigate] = useAbsoluteLocation();
-	const isAdmin = useHasOrganizationRole(organization.info.id, "admin");
-
-	return (
-		<>
-			<Group mt="xl">
-				<Box>
-					<Text>Surreal Cloud</Text>
-					<PrimaryTitle fz="xl">{organization.info.name}</PrimaryTitle>
-				</Box>
-			</Group>
-			<SimpleGrid cols={GRID_COLUMNS}>
-				{organization.instances.map((instance) => (
-					<StartInstance
-						key={instance.id}
-						instance={instance}
-						onConnect={onConnect}
-					/>
-				))}
-				{organization.instances.length === 0 &&
-					(isAdmin ? (
-						<StartCreator
-							title="No instances"
-							subtitle="Click to provision a new instance"
-							onCreate={() => navigate(createInstancePath(organization.info))}
-						/>
-					) : (
-						<StartPlaceholder
-							title="No instances"
-							subtitle="This organisation has no instances"
-						/>
-					))}
-			</SimpleGrid>
-		</>
 	);
 }

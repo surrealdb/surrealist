@@ -1,6 +1,18 @@
 import { Duration, sub } from "date-fns";
 import { useConfigStore } from "~/stores/config";
-import { CloudOrganization, MetricsDuration } from "~/types";
+import { CloudDeployConfig, CloudInstanceType, CloudOrganization, MetricsDuration } from "~/types";
+
+export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
+	name: "",
+	region: "",
+	type: "",
+	cluster: false,
+	units: 1,
+	version: "",
+	storageCategory: "standard",
+	storageAmount: 0,
+	dataset: false,
+});
 
 export function clearCachedConnections() {
 	const { connections } = useConfigStore.getState();
@@ -10,14 +22,6 @@ export function clearCachedConnections() {
 	useConfigStore.setState((s) => {
 		s.connections = pruned;
 	});
-}
-
-export function createInstancePath(organization?: CloudOrganization) {
-	if (!organization) {
-		return "/create/instance";
-	}
-
-	return `/create/instance?organization=${organization.id}`;
 }
 
 const METRIC_DURATION_MAP: Record<MetricsDuration, Duration> = {
@@ -33,4 +37,39 @@ export function computeMetricRange(duration: MetricsDuration): [Date, Date] {
 	const start = sub(end, METRIC_DURATION_MAP[duration]);
 
 	return [start, end];
+}
+
+export function isDistributedType(type: CloudInstanceType): boolean {
+	return type.category === "production-memory" || type.category === "production-compute";
+}
+
+export function compileDeployConfig(
+	organisation: CloudOrganization,
+	config: CloudDeployConfig,
+): object {
+	if (!config.type) {
+		throw new Error("Deployment type is required to compile configuration.");
+	}
+
+	const configuration: Record<string, unknown> = {
+		name: config.name,
+		org: organisation.id,
+		region: config.region,
+		specs: {
+			slug: config.type,
+			version: config.version,
+			compute_units: config.type === "free" ? undefined : config.units,
+		},
+	};
+
+	if (config.cluster) {
+		configuration.storage = config.storageAmount;
+		configuration.distributed_storage_specs = {
+			category: config.storageCategory,
+			autoscaling: false,
+			max_compute_units: config.units,
+		};
+	}
+
+	return configuration;
 }

@@ -10,7 +10,7 @@ export async function openHelpAndSupport() {
 		title: <PrimaryTitle fz={24}>How can we help you?</PrimaryTitle>,
 		withCloseButton: true,
 		size: 900,
-		children: <HelpCenter onBody />,
+		children: <HelpCenter />,
 		padding: 32,
 	});
 }

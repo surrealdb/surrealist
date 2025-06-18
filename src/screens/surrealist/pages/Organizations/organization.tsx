@@ -9,16 +9,14 @@ import {
 	Paper,
 	Stack,
 	Text,
-	ThemeIcon,
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 
-import { PropsWithChildren, useMemo, useRef } from "react";
+import { PropsWithChildren, useMemo } from "react";
 import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
-import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useCloudProfile } from "~/hooks/cloud";
@@ -28,7 +26,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";
-import { iconAccount, iconDotsVertical, iconExitToAp } from "~/util/icons";
+import { iconDotsVertical, iconExitToAp } from "~/util/icons";
 
 export interface OrganizationTileProps extends BoxProps {
 	organization: CloudOrganization;
@@ -44,7 +42,6 @@ export function OrganizationTile({
 	const defaultOrg = useCloudProfile().default_org;
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
-	const containerRef = useRef<HTMLDivElement>(null);
 	const [, navigate] = useAbsoluteLocation();
 
 	const isOwner = useMemo(() => {
@@ -91,8 +88,9 @@ export function OrganizationTile({
 		>
 			<Paper
 				p="lg"
+				withBorder
+				variant="interactive"
 				className={classes.organizationBox}
-				ref={containerRef}
 			>
 				<Group
 					wrap="nowrap"
@@ -112,7 +110,17 @@ export function OrganizationTile({
 								{organization.name}
 							</Text>
 						</Group>
-						<Text>{organization.plan.name}</Text>
+						<Group gap="xs">
+							<Text>{organization.plan.name}</Text>
+							{defaultOrg === organization.id && (
+								<>
+									<Text c="slate">&mdash;</Text>
+									<Tooltip label="This is your personal organisation and allows one free instance">
+										<Text c="surreal">Personal</Text>
+									</Tooltip>
+								</>
+							)}
+						</Group>
 						<Spacer />
 						{organization.archived_at ? (
 							<Badge
@@ -174,20 +182,9 @@ export function OrganizationTile({
 								)}
 							</Menu.Dropdown>
 						</Menu>
-						<Spacer />
-						{defaultOrg === organization.id && (
-							<Tooltip label="This is your personal organisation and allows one free instance">
-								<ThemeIcon
-									radius="xs"
-									variant="gradient"
-								>
-									<Icon path={iconAccount} />
-								</ThemeIcon>
-							</Tooltip>
-						)}
 					</Stack>
 				</Group>
-				<Faint containerRef={containerRef} />
+				{/* <Faint containerRef={containerRef} /> */}
 			</Paper>
 		</UnstyledButton>
 	);

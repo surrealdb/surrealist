@@ -113,7 +113,7 @@ export function CreateConnectionPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={200} />
+			<TopGlow offset={250} />
 
 			<ScrollArea
 				pos="absolute"

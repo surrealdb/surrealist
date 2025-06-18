@@ -1,7 +1,6 @@
 import classes from "../style.module.scss";
 
-import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
-import clsx from "clsx";
+import { Box, BoxProps, Group, Image, Paper, Text, UnstyledButton } from "@mantine/core";
 import { useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
@@ -10,11 +9,11 @@ import { iconChevronRight } from "~/util/icons";
 export interface StartResourceProps extends BoxProps {
 	title: string;
 	subtitle?: string;
-	icon: string;
+	image: string;
 	onClick: () => void;
 }
 
-export function StartResource({ title, subtitle, icon, onClick, ...other }: StartResourceProps) {
+export function StartResource({ title, subtitle, image, onClick, ...other }: StartResourceProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	return (
 		<UnstyledButton
@@ -23,17 +22,19 @@ export function StartResource({ title, subtitle, icon, onClick, ...other }: Star
 		>
 			<Paper
 				p="lg"
-				className={clsx(classes.startBox, classes.startResource)}
+				variant="interactive"
+				className={classes.startResource}
+				withBorder
 				ref={containerRef}
 			>
 				<Group
 					wrap="nowrap"
 					h="100%"
 				>
-					<Icon
-						path={icon}
-						mx="md"
-						size="xl"
+					<Image
+						src={image}
+						w={52}
+						h={52}
 					/>
 					<Box flex={1}>
 						<Text

@@ -1,22 +1,21 @@
-import { Divider, Group, Tabs, Tooltip } from "@mantine/core";
+import { Divider, Group, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
 import classes from "./style.module.scss";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { useMemo } from "react";
-import { Link, Redirect, useLocation } from "wouter";
+import { Redirect, useLocation } from "wouter";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
-import { ActionButton } from "~/components/ActionButton";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
 import {
-	iconArrowLeft,
 	iconCog,
 	iconCreditCard,
 	iconDollar,
@@ -65,7 +64,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 					flex={1}
 					pos="relative"
 				>
-					<TopGlow offset={200} />
+					<TopGlow offset={250} />
 
 					<ScrollArea
 						pos="absolute"
@@ -80,20 +79,12 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 						<Stack
 							px="xl"
 							mx="auto"
-							maw={1000}
-							mt={75}
+							maw={1200}
+							mt={90}
 						>
 							{organization && (
 								<>
-									<Group py="md">
-										<Link to="/organisations">
-											<ActionButton
-												label="Back to organisations"
-												size="lg"
-											>
-												<Icon path={iconArrowLeft} />
-											</ActionButton>
-										</Link>
+									{/* <Group py="md">
 										<PrimaryTitle fz={26}>{organization?.name}</PrimaryTitle>
 										{organization?.archived_at && (
 											<Tooltip
@@ -108,8 +99,36 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 												</div>
 											</Tooltip>
 										)}
-									</Group>
+									</Group> */}
+									<Box>
+										<PageBreadcrumbs
+											items={[
+												{ label: "Surrealist", href: "/overview" },
+												{ label: "Organisations", href: "/organisations" },
+												{ label: organization.name },
+											]}
+										/>
+										<Group mt="sm">
+											<PrimaryTitle fz={32}>{organization.name}</PrimaryTitle>
+											{organization?.archived_at && (
+												<Tooltip
+													label={`Organisation was archived on ${formatArchiveDate(organization)}`}
+												>
+													<ThemeIcon
+														color="orange"
+														variant="transparent"
+													>
+														<Icon
+															path={iconPackageClosed}
+															size="xl"
+														/>
+													</ThemeIcon>
+												</Tooltip>
+											)}
+										</Group>
+									</Box>
 									<Tabs
+										mt="xl"
 										value={tab}
 										onChange={(value) => {
 											if (value) {

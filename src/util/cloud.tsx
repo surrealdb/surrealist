@@ -99,17 +99,34 @@ export function formatArchiveDate(organization: CloudOrganization) {
  * Returns the display name for the given instance type category
  */
 export function getTypeCategoryName(category: string) {
-	switch (true) {
-		case category === "free":
+	switch (category) {
+		case "free":
 			return "Free";
-		case category === "development":
+		case "development":
 			return "Burstable";
-		case category === "production":
+		case "production":
 			return "General purpose";
-		case category === "production-memory":
+		case "production-memory":
 			return "Memory intensive";
-		case category === "production-compute":
+		case "production-compute":
 			return "Compute intensive";
+		default:
+			return category;
+	}
+}
+
+export function getTypeCategoryDescription(category: string) {
+	switch (category) {
+		case "free":
+			return "Explore SurrealDB with a free instance";
+		case "development":
+			return "Burstable instances for development";
+		case "production":
+			return "General purpose instances for production workloads";
+		case "production-memory":
+			return "Distributed memory intensive instances for high throughput";
+		case "production-compute":
+			return "Distributed compute intensive instances for high performance";
 		default:
 			return category;
 	}

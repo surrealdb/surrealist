@@ -10,11 +10,11 @@ import {
 	iconTag,
 } from "~/util/icons";
 
-import { BoxProps, Button, SimpleGrid, Skeleton, ThemeIcon } from "@mantine/core";
-import { Group, Paper, Stack, Text } from "@mantine/core";
-import { ReactNode } from "react";
+import { Button, SimpleGrid, Skeleton } from "@mantine/core";
+import { Paper, Stack, Text } from "@mantine/core";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
+import { PropertyValue } from "~/components/PropertyValue";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
@@ -51,7 +51,7 @@ export function ConfigurationBlock({
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${cpuCount} ${plural(cpuCount, "vCPU")}`;
 	const storageText = formatMemory(storageSize * 1000, true);
-	const nodeText = nodeCount === 1 ? "Single node" : `${nodeCount} Node`;
+	const nodeText = nodeCount === 1 ? "Single-node" : `${nodeCount} Node`;
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
@@ -72,119 +72,89 @@ export function ConfigurationBlock({
 					spacing="xs"
 				>
 					<Stack gap="xs">
-						<ConfigValue
+						<PropertyValue
 							title="Type"
 							icon={iconPackageClosed}
 							value={typeText}
 						/>
 
-						<ConfigValue
+						<PropertyValue
 							title="Region"
 							icon={iconMarker}
 							value={regionName}
 						/>
 
-						<ConfigValue
+						<PropertyValue
 							title="Version"
 							icon={iconTag}
 							value={`SurrealDB ${instance?.version}`}
 						/>
-						<ConfigValue
+						<PropertyValue
 							title="Backups"
 							icon={iconHistory}
 							value={<Text c={isFree ? "orange" : "green"}>{backupText}</Text>}
 						/>
 					</Stack>
 					<Stack gap="xs">
-						<ConfigValue
+						<PropertyValue
 							title="Memory"
 							icon={iconMemory}
 							value={formatMemory(memoryMax)}
 						/>
 
-						<ConfigValue
+						<PropertyValue
 							title="Compute"
 							icon={iconQuery}
 							value={computeText}
 						/>
 
-						<ConfigValue
-							title="Cluster"
+						<PropertyValue
+							title="Nodes"
 							icon={iconRelation}
 							value={nodeText}
 						/>
 
-						<ConfigValue
-							title="Storage"
+						<PropertyValue
+							title="Storage limit"
 							icon={iconDatabase}
 							value={storageText}
 						/>
 					</Stack>
 				</SimpleGrid>
-				{canModify && (
-					<SimpleGrid
-						mt="xl"
-						cols={2}
+				<SimpleGrid
+					mt="xl"
+					cols={2}
+				>
+					<Button
+						size="xs"
+						color="slate"
+						onClick={onConfigure}
+						disabled={!instance || isIdle || !canModify}
+						variant="light"
+						my={-2}
+						fullWidth
 					>
-						<Button
-							size="xs"
-							color="slate"
-							onClick={onConfigure}
-							disabled={!instance || isIdle}
-							variant="light"
-							my={-2}
-							fullWidth
-						>
-							Configure instance
-						</Button>
-						<Button
-							size="xs"
-							onClick={handleUpgrade}
-							disabled={!instance || isIdle}
-							variant="gradient"
-							my={-2}
-							fullWidth
-							rightSection={
-								<Icon
-									style={{ rotate: "180deg" }}
-									path={iconArrowDownFat}
-									size="sm"
-								/>
-							}
-						>
-							Upgrade now
-						</Button>
-					</SimpleGrid>
-				)}
+						Configure instance
+					</Button>
+					<Button
+						size="xs"
+						onClick={handleUpgrade}
+						disabled={!instance || isIdle || !canModify}
+						variant="gradient"
+						my={-2}
+						fullWidth
+						rightSection={
+							<Icon
+								style={{ rotate: "180deg" }}
+								path={iconArrowDownFat}
+								size="sm"
+							/>
+						}
+					>
+						Upgrade now
+					</Button>
+				</SimpleGrid>
 			</Paper>
 		</Skeleton>
-	);
-}
-
-interface ConfigValueProps extends BoxProps {
-	title: string;
-	icon: string;
-	value: ReactNode;
-}
-
-function ConfigValue({ title, icon, value, ...other }: ConfigValueProps) {
-	return (
-		<Group
-			gap="sm"
-			h={32}
-			{...other}
-		>
-			<ThemeIcon
-				color="slate"
-				radius="xs"
-				variant="light"
-			>
-				<Icon path={icon} />
-			</ThemeIcon>
-			<Group gap="xs">
-				<Text fw={600}>{title}: </Text>
-				<Text c="bright">{value}</Text>
-			</Group>
-		</Group>
 	);
 }

@@ -124,6 +124,15 @@ body.mod .cm-record-link:hover {
 	}
 }
 
+.mantine-ActionIcon-root {
+	box-sizing: border-box;
+	background-origin: border-box;
+
+	&[data-variant="gradient"]:not(:disabled) {
+		border: 1px solid rgba(255, 255, 255, 0.3) !important;
+	}
+}
+
 .mantine-Button-root {
 	box-sizing: border-box;
 	background-origin: border-box;
@@ -289,6 +298,7 @@ body.mod .cm-record-link:hover {
 .mantine-InputWrapper-description {
 	font-size: var(--mantine-font-size-sm);
 	color: var(--mantine-color-text);
+	margin-bottom: 6px;
 }
 
 .mantine-InputWrapper-label {

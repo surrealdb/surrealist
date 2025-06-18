@@ -1,6 +1,5 @@
 import { Button, SimpleGrid, Skeleton } from "@mantine/core";
 import { Link } from "wouter";
-import { createInstancePath } from "~/cloud/helpers";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Section } from "~/components/Section";
@@ -38,13 +37,13 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 			description="The list of instances that are part of this organisation"
 			rightSection={
 				isAdmin && (
-					<Link href={createInstancePath(organization)}>
+					<Link href={`/o/${organization.id}/deploy`}>
 						<Button
 							size="xs"
 							disabled={isArchived}
 							variant="gradient"
 						>
-							New instance
+							Deploy instance
 						</Button>
 					</Link>
 				)
@@ -61,11 +60,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 				))}
 				{canCreate &&
 					(isAdmin ? (
-						<StartCreator
-							title="No instances"
-							subtitle="Click to provision a new instance"
-							onCreate={() => navigate(createInstancePath(organization))}
-						/>
+						<StartCreator organization={organization.id} />
 					) : (
 						<StartPlaceholder
 							title="No instances"

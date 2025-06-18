@@ -4,6 +4,8 @@ import type { CloudInstance, CloudInstanceType, CloudOrganization } from "~/type
 
 /**
  * Split instance types into available and unavailable types
+ *
+ * @deprecated use `useInstanceTypeAvailable` instead
  */
 export function useCloudTypeLimits(
 	instances: CloudInstance[],

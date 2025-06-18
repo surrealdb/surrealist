@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import classes from "../style.module.scss";
 
 import { Box, BoxProps, Flex, Paper, Text } from "@mantine/core";
@@ -21,7 +20,9 @@ export function StartPlaceholder({
 		<Paper
 			p="lg"
 			ref={containerRef}
-			className={clsx(classes.startBox, classes.startPlaceholder)}
+			variant="interactive"
+			className={classes.startPlaceholder}
+			withBorder
 			{...other}
 		>
 			<Flex

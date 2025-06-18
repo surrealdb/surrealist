@@ -21,7 +21,6 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useAvailablePages, useAvailableViews } from "~/hooks/connection";
-import { useLastSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -48,7 +47,7 @@ const VIEW_NAVIGATION: ViewPage[][] = [
 interface NavigationItem {
 	name: string;
 	icon: string;
-	match: string;
+	match: string[];
 	navigate: () => void;
 }
 
@@ -88,7 +87,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
-					match: info.id,
+					match: [info.id, ...(info.aliases || [])],
 					navigate: () => setLocation(info.id),
 				};
 			});
@@ -114,7 +113,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
-					match: `/c/*/${info.id}`,
+					match: [`/c/*/${info.id}`],
 					disabled: !connection,
 					navigate: () => {
 						hoverSidebarHandle.close();
@@ -136,8 +135,6 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const isCollapsed = sidebarMode === "compact" || sidebarMode === "expandable";
 	const isFilled = sidebarMode === "fill";
 
-	const savepoint = useLastSavepoint();
-
 	return (
 		<ScrollArea
 			scrollbars="y"
@@ -147,7 +144,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 			top={0}
 			left={0}
 			bottom={0}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "white" : "slate.9"}
 			onMouseEnter={hoverSidebarHandle.open}
 			className={clsx(
 				classes.sidebar,
@@ -199,9 +196,9 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					{connection && (
 						<>
 							<NavigationIcon
-								name={`Back to ${savepoint.name}`}
+								name="Overview"
 								icon={iconArrowLeft}
-								onClick={() => setLocation(savepoint.path)}
+								onClick={() => setLocation("/overview")}
 								onMouseEnter={hoverSidebarHandle.open}
 								withTooltip={sidebarMode === "compact"}
 							/>
@@ -219,8 +216,8 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 								>
 									<NavigationIcon
 										name={info.name}
-										path={info.match}
 										icon={info.icon}
+										match={info.match}
 										onClick={info.navigate}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}

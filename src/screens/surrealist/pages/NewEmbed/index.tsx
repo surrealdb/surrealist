@@ -19,6 +19,7 @@ import {
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useStable } from "~/hooks/stable";
@@ -78,22 +79,28 @@ export function NewEmbedPage() {
 				inset={0}
 				className={classes.scrollArea}
 				viewportProps={{
-					style: { paddingBlock: 75 },
+					style: { paddingBottom: 75 },
 				}}
 			>
 				<Stack
-					w="100%"
-					maw={1100}
+					px="xl"
 					mx="auto"
-					gap="xl"
-					pos="relative"
+					maw={1200}
+					mt={90}
 				>
 					<Box>
-						<PrimaryTitle fz={26}>Embed Surrealist</PrimaryTitle>
-						<Text fz="xl">
-							Integrate Surrealist Mini into to your content for interactive SurrealQL
-							snippets
-						</Text>
+						<PageBreadcrumbs
+							items={[
+								{ label: "Surrealist", href: "/overview" },
+								{ label: "Embed Surrealist" },
+							]}
+						/>
+						<PrimaryTitle
+							fz={32}
+							mt="sm"
+						>
+							Embed Surrealist
+						</PrimaryTitle>
 					</Box>
 
 					<Grid
@@ -101,16 +108,71 @@ export function NewEmbedPage() {
 						mt="xl"
 					>
 						<Grid.Col span={5}>
-							<Paper p="md">
-								<Embedder
-									value={parsedState}
-									onChangeURL={setUrl}
-								/>
-							</Paper>
+							<Stack gap="xl">
+								<Paper p="xl">
+									<Embedder
+										value={parsedState}
+										onChangeURL={setUrl}
+									/>
+								</Paper>
+								<Paper p="xl">
+									<Text
+										fw={600}
+										fz="lg"
+										mb={2}
+										c="bright"
+									>
+										Restore configuration
+									</Text>
+									<Text>
+										Optionally paste in an existing mini URL to restore the
+										configuration
+									</Text>
+									<Button
+										mt="xl"
+										size="sm"
+										color="slate"
+										variant="light"
+										onClick={showParseHandle.open}
+									>
+										Restore from URL
+									</Button>
+									<Modal
+										opened={showParse}
+										onClose={showParseHandle.close}
+									>
+										<Group>
+											<TextInput
+												onChange={parseUrl}
+												spellCheck={false}
+												placeholder="Paste your mini URL here"
+												flex={1}
+											/>
+											<ActionIcon onClick={showParseHandle.close}>
+												<Icon path={iconClose} />
+											</ActionIcon>
+										</Group>
+									</Modal>
+								</Paper>
+							</Stack>
 						</Grid.Col>
 						<Grid.Col span={7}>
 							<Stack gap="xl">
-								<Paper p="md">
+								<Paper style={{ overflow: "hidden" }}>
+									<iframe
+										ref={frame}
+										width="100%"
+										height="500"
+										src={url}
+										title="Surrealist Mini"
+										referrerPolicy="strict-origin-when-cross-origin"
+										style={{
+											border: "none",
+											display: "block",
+										}}
+									/>
+								</Paper>
+								<Paper p="xl">
 									<Text
 										fw={600}
 										fz="lg"
@@ -119,11 +181,14 @@ export function NewEmbedPage() {
 									>
 										Integrate your Surrealist Mini
 									</Text>
-									<Text mb="md">
+									<Text>
 										Copy your Surrealist Mini as an embeddable iframe snippet or
 										as direct URL
 									</Text>
-									<SimpleGrid cols={2}>
+									<SimpleGrid
+										cols={2}
+										mt="xl"
+									>
 										<CopyButton value={snippet}>
 											{({ copied, copy }) => (
 												<Button
@@ -155,58 +220,6 @@ export function NewEmbedPage() {
 											)}
 										</CopyButton>
 									</SimpleGrid>
-								</Paper>
-								<Paper style={{ overflow: "hidden" }}>
-									<iframe
-										ref={frame}
-										width="100%"
-										height="500"
-										src={url}
-										title="Surrealist Mini"
-										referrerPolicy="strict-origin-when-cross-origin"
-										style={{
-											border: "none",
-											display: "block",
-										}}
-									/>
-								</Paper>
-								<Paper p="md">
-									<Text
-										fw={600}
-										fz="lg"
-										mb={2}
-										c="bright"
-									>
-										Restore configuration
-									</Text>
-									<Text mb="md">
-										Optionally paste in an existing mini URL to restore the
-										configuration
-									</Text>
-									<Button
-										size="sm"
-										color="slate"
-										variant="light"
-										onClick={showParseHandle.open}
-									>
-										Restore from URL
-									</Button>
-									<Modal
-										opened={showParse}
-										onClose={showParseHandle.close}
-									>
-										<Group>
-											<TextInput
-												onChange={parseUrl}
-												spellCheck={false}
-												placeholder="Paste your mini URL here"
-												flex={1}
-											/>
-											<ActionIcon onClick={showParseHandle.close}>
-												<Icon path={iconClose} />
-											</ActionIcon>
-										</Group>
-									</Modal>
 								</Paper>
 							</Stack>
 						</Grid.Col>
