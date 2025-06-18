@@ -1,5 +1,5 @@
-import classes from "../style.module.scss";
 import cloudUrl from "~/assets/images/icons/cloud.png";
+import classes from "../style.module.scss";
 
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
 import type { MouseEvent } from "react";
