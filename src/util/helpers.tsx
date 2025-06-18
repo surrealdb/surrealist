@@ -7,9 +7,9 @@ import { uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
+import { Spacer } from "~/components/Spacer";
 import type { Authentication, Protocol, Selectable } from "~/types";
 import { openErrorModal } from "./errors";
-import { Spacer } from "~/components/Spacer";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
