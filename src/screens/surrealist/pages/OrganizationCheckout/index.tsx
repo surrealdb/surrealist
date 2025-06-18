@@ -1,5 +1,5 @@
-import glow from "~/assets/images/glow.png";
-import cloud from "~/assets/images/icons/cloud.png";
+import glow from "~/assets/images/glow.webp";
+import cloud from "~/assets/images/icons/cloud.webp";
 import classes from "./style.module.scss";
 
 import {

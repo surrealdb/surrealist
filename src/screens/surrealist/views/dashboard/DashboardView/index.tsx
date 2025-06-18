@@ -1,9 +1,9 @@
 import classes from "./style.module.scss";
 
-import cloudUrl from "~/assets/images/icons/cloud.png";
-import communtyUrl from "~/assets/images/icons/community.png";
-import documentationUrl from "~/assets/images/icons/document.png";
-import tutorialsUrl from "~/assets/images/icons/tutorials.png";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
+import communtyUrl from "~/assets/images/icons/community.webp";
+import documentationUrl from "~/assets/images/icons/document.webp";
+import tutorialsUrl from "~/assets/images/icons/tutorials.webp";
 
 import {
 	Button,

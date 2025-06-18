@@ -1,4 +1,4 @@
-import cloudUrl from "~/assets/images/icons/cloud.png";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
 import classes from "../style.module.scss";
 
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";

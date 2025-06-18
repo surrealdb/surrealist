@@ -1,4 +1,4 @@
-import glow from "~/assets/images/glow.png";
+import glow from "~/assets/images/glow.webp";
 import classes from "../style.module.scss";
 
 import { Box, Button, Image, Paper, Stack, Text } from "@mantine/core";

@@ -4,11 +4,11 @@ import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 
-import cloudUrl from "~/assets/images/icons/cloud.png";
-import communityUrl from "~/assets/images/icons/community.png";
-import sidekickUrl from "~/assets/images/icons/sidekick.png";
-import databaseUrl from "~/assets/images/icons/surrealdb.png";
-import universityUrl from "~/assets/images/icons/university.png";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
+import communityUrl from "~/assets/images/icons/community.webp";
+import sidekickUrl from "~/assets/images/icons/sidekick.webp";
+import databaseUrl from "~/assets/images/icons/surrealdb.webp";
+import universityUrl from "~/assets/images/icons/university.webp";
 
 import {
 	Box,

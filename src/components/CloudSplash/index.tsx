@@ -1,5 +1,5 @@
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
-import cloudImg from "~/assets/images/icons/cloud.png";
+import cloudImg from "~/assets/images/icons/cloud.webp";
 import logoLightImg from "~/assets/images/light/cloud-logo.svg";
 
 import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
