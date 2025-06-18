@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Box,
 	Collapse,
 	Group,
@@ -33,7 +34,7 @@ import {
 	iconWrench,
 } from "~/util/icons";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Label } from "~/components/Label";
 import { plural } from "~/util/helpers";
 
@@ -41,6 +42,7 @@ export interface FreeRuleSetCapabilityProps extends CapabilityBaseProps {
 	allowedField: CapabilityField;
 	deniedField: CapabilityField;
 	topic: string;
+	disallowWildcard?: boolean;
 }
 
 export function FreeRuleSetCapability({
@@ -51,6 +53,7 @@ export function FreeRuleSetCapability({
 	allowedField,
 	deniedField,
 	topic,
+	disallowWildcard,
 }: FreeRuleSetCapabilityProps) {
 	const isLight = useIsLight();
 	const [isExpanded, expandedHandle] = useBoolean();
@@ -79,6 +82,13 @@ export function FreeRuleSetCapability({
 	const [base, setBase] = useState<BaseValue>(defaultBase);
 	const [allowlist, setAllowlist] = useState<string[]>(defaultAllowList);
 	const [denylist, setDenylist] = useState<string[]>(defaultDenyList);
+
+	const hasInvalidWildcard = useMemo(() => {
+		if (disallowWildcard) {
+			return allowed.some((i) => i.includes("*")) && denied.some((i) => i.includes("*"));
+		}
+		return false;
+	}, [allowed, denied, disallowWildcard]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Do not question it
 	useEffect(() => {
@@ -181,6 +191,17 @@ export function FreeRuleSetCapability({
 							onChange={setBase}
 						/>
 					</SimpleGrid>
+
+					{hasInvalidWildcard && (
+						<Alert
+							color="red"
+							title="Wildcard patterns"
+							mt="xl"
+						>
+							Wildcard patterns (e.g., `*`) are not allowed in this context. Please
+							remove any wildcard patterns from the allowed or denied lists.
+						</Alert>
+					)}
 
 					<Paper
 						my="xl"
