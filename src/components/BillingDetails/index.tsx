@@ -37,7 +37,7 @@ export function BillingDetails({ organisation }: BillingDetails) {
 					fw={600}
 					c="bright"
 				>
-					Billing Details
+					Billing details
 				</Text>
 				<Spacer />
 				{isOwner && (

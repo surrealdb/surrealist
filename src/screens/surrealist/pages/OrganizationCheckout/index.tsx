@@ -1,4 +1,5 @@
 import glow from "~/assets/images/glow.png";
+import cloud from "~/assets/images/icons/cloud.png";
 import classes from "./style.module.scss";
 
 import {
@@ -17,7 +18,7 @@ import {
 } from "@mantine/core";
 
 import {
-	iconCheck,
+	iconArrowUpRight,
 	iconCreditCard,
 	iconDatabase,
 	iconHistory,
@@ -323,42 +324,124 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 										</Box>
 
 										{!requireBilling ? (
+											<Paper
+												className={classes.freeBox}
+												variant="gradient"
+												mt="md"
+												p="xl"
+											>
+												<Stack gap={0}>
+													<Text
+														c="bright"
+														fw={600}
+														fz="xl"
+													>
+														No billing information required
+													</Text>
+													<Box
+														mt="sm"
+														maw={400}
+													>
+														Your free Surreal Cloud instance is ready to
+														deploy. Upgrades are available at any time
+														once you have deployed your instance.
+													</Box>
+												</Stack>
+												<Image
+													src={cloud}
+													className={classes.cloudImage}
+												/>
+												<Image
+													src={glow}
+													className={classes.freeGlow}
+												/>
+											</Paper>
+										) : hasBilling ? (
+											<Paper
+												variant="gradient"
+												mt="md"
+												p={4}
+												pr="xl"
+											>
+												<Flex
+													wrap="nowrap"
+													direction={{ base: "column", sm: "row" }}
+													align={{ base: "start", sm: "center" }}
+												>
+													<Alert
+														flex={1}
+														color="slate"
+														variant="subtle"
+														icon={<Icon path={iconCreditCard} />}
+														title="Billing & payment information available"
+													>
+														<Text>
+															Your billing and payment information is
+															already set up for this organisation.
+														</Text>
+														<Button
+															mt="md"
+															size="xs"
+															hiddenFrom="sm"
+															color="slate"
+															variant="light"
+															rightSection={
+																<Icon path={iconArrowUpRight} />
+															}
+															onClick={() =>
+																navigate(
+																	`/o/${organisation.id}/billing`,
+																)
+															}
+														>
+															Update billing details
+														</Button>
+													</Alert>
+													<Button
+														size="xs"
+														visibleFrom="sm"
+														color="slate"
+														variant="light"
+														rightSection={
+															<Icon path={iconArrowUpRight} />
+														}
+														onClick={() =>
+															navigate(
+																`/o/${organisation.id}/billing`,
+															)
+														}
+													>
+														Update billing details
+													</Button>
+												</Flex>
+											</Paper>
+										) : (
 											<Alert
 												mt="md"
-												color="violet"
-												icon={<Icon path={iconCheck} />}
-												title="Billing & payment information optional"
+												color="orange"
+												icon={<Icon path={iconCreditCard} />}
+												title="Billing & payment information required"
 											>
-												This instance is free, no billing details are
-												required.
+												You must provide billing and payment details to
+												deploy this instance. This information will be
+												remembered for future deployments in this
+												organisation.
 											</Alert>
-										) : (
-											!hasBilling && (
-												<Alert
-													mt="md"
-													color="orange"
-													icon={<Icon path={iconCreditCard} />}
-													title="Billing & payment information required"
-												>
-													You must provide billing and payment details to
-													deploy this instance. This information will be
-													remembered for future deployments in this
-													organisation.
-												</Alert>
-											)
 										)}
 
-										<SimpleGrid
-											mt="xl"
-											spacing="xl"
-											cols={{
-												xs: 1,
-												md: 2,
-											}}
-										>
-											<BillingDetails organisation={organisation} />
-											<PaymentDetails organisation={organisation} />
-										</SimpleGrid>
+										{requireBilling && !hasBilling && (
+											<SimpleGrid
+												mt="xl"
+												spacing="xl"
+												cols={{
+													xs: 1,
+													md: 2,
+												}}
+											>
+												<BillingDetails organisation={organisation} />
+												<PaymentDetails organisation={organisation} />
+											</SimpleGrid>
+										)}
 
 										<Divider my={36} />
 
