@@ -1,11 +1,9 @@
 import classes from "./style.module.scss";
 
-import communtyDarkUrl from "~/assets/images/dark/picto-community.svg";
-import documentationDarkUrl from "~/assets/images/dark/picto-documentation.svg";
-import tutorialDarkUrl from "~/assets/images/dark/picto-tutorial.svg";
-import communtyLightUrl from "~/assets/images/light/picto-community.svg";
-import documentationLightUrl from "~/assets/images/light/picto-documentation.svg";
-import tutorialLightUrl from "~/assets/images/light/picto-tutorial.svg";
+import cloudUrl from "~/assets/images/icons/cloud.png";
+import communtyUrl from "~/assets/images/icons/community.png";
+import documentationUrl from "~/assets/images/icons/document.png";
+import tutorialsUrl from "~/assets/images/icons/tutorials.png";
 
 import {
 	Button,
@@ -21,7 +19,6 @@ import {
 	SimpleGrid,
 	Skeleton,
 	Text,
-	ThemeIcon,
 } from "@mantine/core";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -46,10 +43,9 @@ import { TopGlow } from "~/components/TopGlow";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { MetricsDuration } from "~/types";
-import { iconChevronDown, iconClock, iconFilter, iconSurreal } from "~/util/icons";
+import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";
@@ -527,23 +523,6 @@ export function DashboardView() {
 }
 
 function LoadingScreen() {
-	const isLight = useIsLight();
-
-	const tutorialUrl = useThemeImage({
-		dark: tutorialDarkUrl,
-		light: tutorialLightUrl,
-	});
-
-	const documentationUrl = useThemeImage({
-		dark: documentationDarkUrl,
-		light: documentationLightUrl,
-	});
-
-	const communtyUrl = useThemeImage({
-		dark: communtyDarkUrl,
-		light: communtyLightUrl,
-	});
-
 	return (
 		<>
 			<Center
@@ -560,16 +539,13 @@ function LoadingScreen() {
 					size="100%"
 					pos="absolute"
 				/>
-				<svg
-					viewBox="0 0 24 24"
+				<Image
 					className={classes.provisionIcon}
-				>
-					<title>Loading spinner</title>
-					<path
-						d={iconSurreal}
-						fill={isLight ? "black" : "white"}
-					/>
-				</svg>
+					src={cloudUrl}
+					w={82}
+					h={82}
+					mt={-8}
+				/>
 			</Center>
 
 			<Box
@@ -589,6 +565,8 @@ function LoadingScreen() {
 			<SimpleGrid
 				cols={{ base: 1, md: 3 }}
 				spacing="xl"
+				mx="auto"
+				maw={900}
 			>
 				<GettingStartedLink
 					title="Cloud Documentation"
@@ -605,7 +583,7 @@ function LoadingScreen() {
 				<GettingStartedLink
 					title="Quick Start Tutorial"
 					description="Watch a quick tutorial to get started with Surreal Cloud."
-					image={tutorialUrl}
+					image={tutorialsUrl}
 					href="https://www.youtube.com/watch?v=upm1lwaHmwU"
 				/>
 			</SimpleGrid>
@@ -633,21 +611,16 @@ function GettingStartedLink({ image, description, title, href }: GettingStartedL
 				variant="interactive"
 			>
 				<Group wrap="nowrap">
-					<ThemeIcon
-						color="slate"
-						size={64}
-					>
-						<Image
-							src={image}
-							w={52}
-							h={52}
-						/>
-					</ThemeIcon>
+					<Image
+						src={image}
+						w={52}
+						h={52}
+					/>
 					<Box>
 						<Text
 							c="bright"
-							fz="lg"
-							fw={500}
+							fw={600}
+							fz="xl"
 						>
 							{title}
 						</Text>

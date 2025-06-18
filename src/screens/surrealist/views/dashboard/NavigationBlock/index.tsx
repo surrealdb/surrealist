@@ -15,7 +15,7 @@ export interface NavigationBlockProps {
 export function NavigationBlock({ isLoading }: NavigationBlockProps) {
 	return (
 		<SimpleGrid
-			cols={4}
+			cols={{ base: 1, sm: 2, lg: 4 }}
 			spacing="xl"
 		>
 			<Link href="query">

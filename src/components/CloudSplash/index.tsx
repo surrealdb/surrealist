@@ -1,4 +1,4 @@
-import cloudImg from "~/assets/images/cloud-icon.webp";
+import cloudImg from "~/assets/images/icons/cloud.png";
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
 import logoLightImg from "~/assets/images/light/cloud-logo.svg";
 
