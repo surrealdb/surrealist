@@ -167,7 +167,7 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 	const backupText = isFree ? "Upgrade required" : "Available";
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
-	const nodeText = `${nodeCount} Node${plural(nodeCount, "", "s")}`;
+	const nodeText = nodeCount === 1 ? "Single node" : `${nodeCount} Node`;
 	const datasetText = config?.dataset ? "Yes" : "No";
 
 	return (

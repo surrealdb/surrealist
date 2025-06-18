@@ -210,7 +210,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 				fw={500}
 				c="bright"
 			>
-				{isDistributed ? "Multi-Node" : "Single-Node"}
+				{isDistributed ? "Multi-node" : "Single-node"}
 			</Text>
 			<Text c="slate.3">{isDistributed ? "Cluster" : "Instance"}</Text>
 		</Fragment>,

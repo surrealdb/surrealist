@@ -14,8 +14,8 @@ import { Button, SimpleGrid, Skeleton } from "@mantine/core";
 import { Paper, Stack, Text } from "@mantine/core";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
-import { useStable } from "~/hooks/stable";
 import { PropertyValue } from "~/components/PropertyValue";
+import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
@@ -51,7 +51,7 @@ export function ConfigurationBlock({
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${cpuCount} ${plural(cpuCount, "vCPU")}`;
 	const storageText = formatMemory(storageSize * 1000, true);
-	const nodeText = nodeCount === 1 ? "Single node" : `${nodeCount} Node`;
+	const nodeText = nodeCount === 1 ? "Single-node" : `${nodeCount} Node`;
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
