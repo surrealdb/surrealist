@@ -1,6 +1,8 @@
 import { Alert, Box, Button, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
+import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudMeasurement } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { measureStorageUsage } from "~/util/cloud";
 import { formatMemory } from "~/util/helpers";
 
@@ -8,7 +10,7 @@ export interface DiskUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
 	instance: CloudInstance | undefined;
 	isLoading: boolean;
-	onUpgrade?: () => void;
+	onUpgrade: () => void;
 }
 
 export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUsageBlockProps) {
@@ -20,6 +22,11 @@ export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUs
 	const storageUsageMB = formatMemory(storageUsage);
 	const storageMaxMB = formatMemory(storageMax);
 	const storageColor = storageFrac > 80 ? "red" : "surreal";
+
+	const handleUpgrade = useStable(() => {
+		onUpgrade();
+		tagEvent("cloud_instance_storage_upgrade_click");
+	});
 
 	return (
 		<Skeleton visible={isLoading}>
@@ -47,7 +54,7 @@ export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUs
 						size="xs"
 						fz={13}
 						variant="subtle"
-						onClick={onUpgrade}
+						onClick={handleUpgrade}
 					>
 						Upgrade
 					</Button>

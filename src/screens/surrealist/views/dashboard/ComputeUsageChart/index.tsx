@@ -85,7 +85,7 @@ export function ComputeUsageChart({
 								Compute usage
 							</Text>
 
-							<Tooltip label="The average CPU core usage measured in vCPU(s)">
+							<Tooltip label="The CPU core usage measured in vCPU(s)">
 								<div>
 									<Icon
 										path={iconHelp}
