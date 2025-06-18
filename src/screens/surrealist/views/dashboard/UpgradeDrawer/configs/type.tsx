@@ -7,7 +7,6 @@ import { useUpdateInstanceTypeMutation } from "~/cloud/mutations/type";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { StorageMode } from "~/screens/surrealist/pages/CreateInstance/types";
 import { CloudInstance } from "~/types";
 
 export interface ConfigurationInstanceTypeProps {
@@ -23,10 +22,6 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 	const organizations = useOrganizations();
 	const organization = organizations.find((org) => org.id === instance.organization_id);
-
-	const storageMode: StorageMode = instance.distributed_storage_specs
-		? "distributed"
-		: "standalone";
 
 	const handleUpdate = useStable(() => {
 		onClose();
@@ -74,10 +69,9 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 						{organization && (
 							<InstanceTypes
 								value={selected}
-								active={instanceType === "free" ? "development" : instanceType}
-								storageMode={storageMode}
+								active={instanceType}
 								organization={organization}
-								onChange={setSelected}
+								onChange={(type) => setSelected(type.slug)}
 							/>
 						)}
 					</Stack>

@@ -99,10 +99,8 @@ function InstanceTypeRow({
 	return (
 		<Paper
 			p="lg"
-			variant={selected ? "selected" : "interactive"}
-			// disabled={active || restricted || limited}
-			// isActive={selected === instanceType.slug}
-			onClick={() => onSelect(instanceType)}
+			variant={active ? "gradient" : selected ? "selected" : "interactive"}
+			onClick={() => !active && onSelect(instanceType)}
 		>
 			<Group>
 				<Box flex={1}>
