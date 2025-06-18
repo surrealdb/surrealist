@@ -153,7 +153,7 @@ export function OverviewPage() {
 						pos="absolute"
 						inset={0}
 						style={style}
-						mt={96}
+						mt={68 + adapter.titlebarOffset}
 					>
 						<Stack
 							className={classes.content}
@@ -161,7 +161,7 @@ export function OverviewPage() {
 							maw={1200}
 							px="xl"
 							mx="auto"
-							pb={96}
+							pb={68}
 						>
 							<Stack
 								align="center"

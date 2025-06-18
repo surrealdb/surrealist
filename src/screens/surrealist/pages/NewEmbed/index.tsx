@@ -26,6 +26,7 @@ import { useStable } from "~/hooks/stable";
 import { dedent } from "~/util/dedent";
 import { iconCheck, iconClose, iconTransfer, iconXml } from "~/util/icons";
 import { DEFAULT_STATE, EmbedState, Embedder } from "./embedder";
+import { adapter } from "~/adapter";
 
 export function NewEmbedPage() {
 	const [url, setUrl] = useDebouncedState("", 250);
@@ -78,15 +79,13 @@ export function NewEmbedPage() {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBottom: 75 },
-				}}
+				mt={68 + adapter.titlebarOffset}
 			>
 				<Stack
 					px="xl"
 					mx="auto"
 					maw={1200}
-					mt={90}
+					pb={68}
 				>
 					<Box>
 						<PageBreadcrumbs

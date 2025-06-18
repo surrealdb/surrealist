@@ -30,6 +30,7 @@ import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationSettingsTab } from "./tabs/settings";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
+import { adapter } from "~/adapter";
 
 export interface OrganizationManagePageProps {
 	id: string;
@@ -72,15 +73,13 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 						type="scroll"
 						inset={0}
 						className={classes.scrollArea}
-						viewportProps={{
-							style: { paddingBottom: 75 },
-						}}
+						mt={68 + adapter.titlebarOffset}
 					>
 						<Stack
 							px="xl"
 							mx="auto"
 							maw={1200}
-							mt={90}
+							pb={68}
 						>
 							{organization && (
 								<>

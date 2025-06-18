@@ -22,6 +22,7 @@ import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 import { InstanceTypeSection } from "./sections/1-type";
 import { ClusterStorageSection } from "./sections/2-cluster";
 import { DeploymentSection } from "./sections/3-instance";
+import { adapter } from "~/adapter";
 
 export interface OrganizationDeployPageProps {
 	id: string;
@@ -94,15 +95,13 @@ function PageContent({ organisation }: PageContentProps) {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBottom: 75 },
-				}}
+				mt={68 + adapter.titlebarOffset}
 			>
 				<Stack
 					px="xl"
 					mx="auto"
 					maw={1200}
-					mt={90}
+					pb={68}
 				>
 					{organisation && (
 						<>

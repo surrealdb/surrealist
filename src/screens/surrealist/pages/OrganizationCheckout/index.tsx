@@ -57,6 +57,7 @@ import { getTypeCategoryName } from "~/util/cloud";
 import { resolveInstanceConnection } from "~/util/connection";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
 import { DEPLOY_CONFIG_KEY } from "~/util/storage";
+import { adapter } from "~/adapter";
 
 export interface OrganizationCheckoutPageProps {
 	id: string;
@@ -185,15 +186,13 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 						type="scroll"
 						inset={0}
 						className={classes.scrollArea}
-						viewportProps={{
-							style: { paddingBottom: 75 },
-						}}
+						mt={68 + adapter.titlebarOffset}
 					>
 						<Stack
 							px="xl"
 							mx="auto"
 							maw={1200}
-							mt={90}
+							pb={68}
 						>
 							{organisation && (
 								<>

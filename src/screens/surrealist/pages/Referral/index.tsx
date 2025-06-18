@@ -45,6 +45,7 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
+import { adapter } from "~/adapter";
 
 const REWARDS = [1, 10, 25, 100, 500];
 
@@ -125,15 +126,13 @@ export function ReferralPage() {
 					type="scroll"
 					inset={0}
 					className={classes.scrollArea}
-					viewportProps={{
-						style: { paddingBottom: 75 },
-					}}
+					mt={68 + adapter.titlebarOffset}
 				>
 					<Stack
 						px="xl"
 						mx="auto"
 						maw={1200}
-						mt={90}
+						pb={68}
 					>
 						<Box>
 							<PageBreadcrumbs

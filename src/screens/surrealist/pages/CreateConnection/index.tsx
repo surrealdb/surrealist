@@ -121,14 +121,13 @@ export function CreateConnectionPage() {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBlock: 75 },
-				}}
+				mt={68 + adapter.titlebarOffset}
 			>
 				<Stack
 					mx="auto"
 					maw={650}
 					gap="lg"
+					pb={68}
 				>
 					<Box>
 						<PrimaryTitle fz={26}>New connection</PrimaryTitle>
