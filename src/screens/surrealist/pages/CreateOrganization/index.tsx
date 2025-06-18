@@ -103,17 +103,17 @@ export function CreateOrganizationPage() {
 							placeholder="My organisation"
 							value={name}
 							onChange={setName}
-							leftSection={<Icon path={iconOrganization} />}
+							leftSection={
+								<Icon
+									c="surreal"
+									path={iconOrganization}
+								/>
+							}
 							error={
 								name.length > 30
 									? "Organisation name cannot exceed 30 characters"
 									: null
 							}
-							wrapperProps={{
-								__vars: {
-									"--input-section-color": "var(--mantine-color-surreal-text)",
-								},
-							}}
 						/>
 
 						<Group mt={24}>
