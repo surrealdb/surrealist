@@ -153,9 +153,7 @@ export function OverviewPage() {
 						pos="absolute"
 						inset={0}
 						style={style}
-						viewportProps={{
-							style: { paddingBottom: 75 },
-						}}
+						mt={96}
 					>
 						<Stack
 							className={classes.content}
@@ -163,7 +161,7 @@ export function OverviewPage() {
 							maw={1200}
 							px="xl"
 							mx="auto"
-							pt={78}
+							pb={96}
 						>
 							<Stack
 								align="center"

@@ -1,10 +1,11 @@
 import classes from "./style.module.scss";
 
 import { Box, Drawer, Flex, Group, Stack } from "@mantine/core";
-import { type FC, Suspense, memo } from "react";
+import { type FC, Suspense, memo, useLayoutEffect } from "react";
 import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
+import { AppTitleBar } from "~/components/AppTitleBar";
 import { AuthGuard } from "~/components/AuthGuard";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
@@ -92,24 +93,28 @@ export function SurrealistScreen() {
 	const views = useAvailableViews();
 
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
-	const customTitlebar = adapter.platform === "darwin" && isDesktop;
+	const isMacos = adapter.platform === "darwin" && isDesktop;
+	const isOtherOS = adapter.platform !== "darwin" && isDesktop;
 
 	const onCloseSidebar = useStable(() => {
 		setOverlaySidebar(false);
 	});
 
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
-	const titlebarOffset = customTitlebar ? 15 : 0;
+
+	useLayoutEffect(() => {
+		const body = document.body;
+
+		body.style.setProperty("--sidebar-offset", `${sidebarOffset}px`);
+		body.style.setProperty("--titlebar-offset", `${adapter.titlebarOffset}px`);
+	}, [sidebarOffset]);
 
 	return (
 		<Box
 			className={classes.root}
 			bg={isLight ? "white" : "slate.9"}
-			__vars={{
-				"--sidebar-offset": `${sidebarOffset}px`,
-				"--titlebar-offset": `${titlebarOffset}px`,
-			}}
 		>
+			{isOtherOS && <AppTitleBar />}
 			<Flex
 				direction="column"
 				flex={1}
@@ -121,7 +126,7 @@ export function SurrealistScreen() {
 				/>
 
 				<Box className={classes.wrapper}>
-					{customTitlebar && (
+					{isMacos && (
 						<Flex
 							data-tauri-drag-region
 							className={classes.titlebar}

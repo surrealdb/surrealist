@@ -27,7 +27,6 @@ import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 const WAIT_DURATION = 1000;
-
 interface Resource {
 	File?: FileResource;
 	Link?: LinkResource;
@@ -53,7 +52,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
 	public isTelemetryEnabled = true;
-	public hasTitlebar = false;
+	public titlebarOffset = 0;
 	public platform: Platform = "windows";
 
 	#startTask: any;
@@ -61,8 +60,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 	#system: string = type();
 
 	public constructor() {
-		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
-
 		this.initDatabaseEvents();
 		this.initWindowEvents();
 
@@ -95,6 +92,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		this.queryOpenRequest();
 		this.checkForUpdates();
+
+		if (this.platform === "darwin") {
+			this.titlebarOffset = 15;
+		} else {
+			this.titlebarOffset = 32;
+		}
 
 		watchStore({
 			initial: true,

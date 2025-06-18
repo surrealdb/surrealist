@@ -469,3 +469,8 @@ body.mod .cm-record-link:hover {
 		}
 	}
 }
+
+.mantine-Drawer-content {
+	margin-top: calc(var(--drawer-offset) + var(--titlebar-offset, 0px));
+	height: var(--drawer-height, calc(100% - var(--drawer-offset) * 2 - var(--titlebar-offset, 0px)));
+}
