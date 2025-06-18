@@ -239,38 +239,35 @@ export function DashboardView() {
 										]}
 									/>
 								)}
-								<Group mt="sm">
+								{isLoading ? (
 									<Skeleton
-										visible={isLoading}
-										width={isLoading ? 200 : "max-content"}
-									>
-										<PrimaryTitle fz={32}>{details?.name ?? "_"}</PrimaryTitle>
-									</Skeleton>
-									{!isLoading && (
-										<>
-											{details?.state && (
-												<StateBadge
-													size={14}
-													state={details.state}
-												/>
-											)}
-											<Spacer />
-											{details && (
-												<InstanceActions instance={details}>
-													<Button
-														color="violet"
-														variant="light"
-														rightSection={
-															<Icon path={iconChevronDown} />
-														}
-													>
-														Instance actions
-													</Button>
-												</InstanceActions>
-											)}
-										</>
-									)}
-								</Group>
+										mt="sm"
+										width={200}
+										h={50}
+									/>
+								) : (
+									<Group mt="sm">
+										<PrimaryTitle fz={32}>{details?.name}</PrimaryTitle>
+										{details?.state && (
+											<StateBadge
+												size={14}
+												state={details.state}
+											/>
+										)}
+										<Spacer />
+										{details && (
+											<InstanceActions instance={details}>
+												<Button
+													color="violet"
+													variant="light"
+													rightSection={<Icon path={iconChevronDown} />}
+												>
+													Instance actions
+												</Button>
+											</InstanceActions>
+										)}
+									</Group>
+								)}
 							</Box>
 
 							<NavigationBlock isLoading={isLoading} />
