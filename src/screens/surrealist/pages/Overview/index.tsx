@@ -4,16 +4,11 @@ import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 
-import cloudLightUrl from "~/assets/images/icons/cloud.light.png";
-import cloudDarkUrl from "~/assets/images/icons/cloud.png";
-import communityLightUrl from "~/assets/images/icons/community.light.png";
-import communityDarkUrl from "~/assets/images/icons/community.png";
-import sidekickLightUrl from "~/assets/images/icons/sidekick.light.png";
-import sidekickDarkUrl from "~/assets/images/icons/sidekick.png";
-import databaseLightUrl from "~/assets/images/icons/surrealdb.light.png";
-import databaseDarkUrl from "~/assets/images/icons/surrealdb.png";
-import universityLightUrl from "~/assets/images/icons/university.light.png";
-import universityDarkUrl from "~/assets/images/icons/university.png";
+import cloudUrl from "~/assets/images/icons/cloud.png";
+import communityUrl from "~/assets/images/icons/community.png";
+import sidekickUrl from "~/assets/images/icons/sidekick.png";
+import databaseUrl from "~/assets/images/icons/surrealdb.png";
+import universityUrl from "~/assets/images/icons/university.png";
 
 import {
 	Box,
@@ -137,31 +132,6 @@ export function OverviewPage() {
 	const logoUrl = useThemeImage({
 		light: logoLightUrl,
 		dark: logoDarkUrl,
-	});
-
-	const cloudUrl = useThemeImage({
-		light: cloudLightUrl,
-		dark: cloudDarkUrl,
-	});
-
-	const databaseUrl = useThemeImage({
-		light: databaseLightUrl,
-		dark: databaseDarkUrl,
-	});
-
-	const universityUrl = useThemeImage({
-		light: universityLightUrl,
-		dark: universityDarkUrl,
-	});
-
-	const sidekickUrl = useThemeImage({
-		light: sidekickLightUrl,
-		dark: sidekickDarkUrl,
-	});
-
-	const communityUrl = useThemeImage({
-		light: communityLightUrl,
-		dark: communityDarkUrl,
 	});
 
 	useSavepoint(OVERVIEW);
