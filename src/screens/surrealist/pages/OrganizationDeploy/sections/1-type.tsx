@@ -112,6 +112,22 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 				)}
 			</SimpleGrid>
 			<Group mt={28}>
+				<a
+					href="https://surrealdb.com/pricing"
+					target="_blank"
+					rel="noreferrer"
+				>
+					<Button
+						size="xs"
+						color="slate"
+						variant="light"
+						rightSection={<Icon path={iconArrowUpRight} />}
+						onClick={handleReset}
+					>
+						View pricing information
+					</Button>
+				</a>
+				<Spacer />
 				{details.type && !isRecommended ? (
 					<>
 						<Button
@@ -151,22 +167,6 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						View all available configurations
 					</Button>
 				)}
-				<Spacer />
-				<a
-					href="https://surrealdb.com/pricing"
-					target="_blank"
-					rel="noreferrer"
-				>
-					<Button
-						size="xs"
-						color="slate"
-						variant="light"
-						rightSection={<Icon path={iconArrowUpRight} />}
-						onClick={handleReset}
-					>
-						View pricing information
-					</Button>
-				</a>
 			</Group>
 		</Box>
 	);
