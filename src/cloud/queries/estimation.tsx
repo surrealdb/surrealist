@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudDeployConfig, CloudOrganization } from "~/types";
 import { fetchAPI } from "../api";
@@ -22,6 +22,7 @@ export function useCloudEstimationQuery(
 	return useQuery<Estimation | null>({
 		queryKey: ["cloud", "estimation", config],
 		enabled: organisation && config && authState === "authenticated",
+		placeholderData: keepPreviousData,
 		queryFn: async () => {
 			console.log("Fetching estimation for", organisation, config);
 
@@ -30,7 +31,7 @@ export function useCloudEstimationQuery(
 			}
 
 			return await fetchAPI<Estimation>(`/instance_cost`, {
-				method: "POST",
+				method: "PUT",
 				body: JSON.stringify(compileDeployConfig(organisation, config)),
 			});
 		},

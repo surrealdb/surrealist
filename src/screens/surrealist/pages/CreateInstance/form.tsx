@@ -3,7 +3,6 @@ import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
-import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -282,10 +281,6 @@ export function ProvisionForm({ onCreated }: ProvisionFormProps) {
 						</Text>
 						<Text>The cost estimation based on the current configuration</Text>
 					</Box>
-					<EstimatedCost
-						type={instanceType}
-						units={details.units}
-					/>
 				</Stack>
 			</Collapse>
 

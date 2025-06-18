@@ -39,6 +39,7 @@ import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { BillingDetails } from "~/components/BillingDetails";
 import { CloudSplash } from "~/components/CloudSplash";
+import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PaymentDetails } from "~/components/PaymentDetails";
@@ -110,8 +111,6 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 	const queryClient = useQueryClient();
 	const navigateConnection = useConnectionNavigator();
 	const [, navigate] = useLocation();
-
-	// const estimationQuery = useCloudEstimationQuery(organisation, details);
 
 	const handleBack = useStable(() => {
 		navigate("deploy");
@@ -381,39 +380,11 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 												Deploy instance
 											</Button>
 											<Spacer />
-											<Box ta="right">
-												<Text
-													c="var(--mantine-color-indigo-light-color)"
-													fz="md"
-													fw={800}
-													tt="uppercase"
-													lts={1}
-												>
-													Billed monthly
-												</Text>
-												<Group
-													gap="xs"
-													align="start"
-												>
-													<Text
-														fz={28}
-														fw={600}
-														c="bright"
-													>
-														TODO
-														{/* {CURRENCY_FORMAT.format(
-															estimatedCost * 24 * 30,
-														)} */}
-													</Text>
-													<Text
-														mt={12}
-														fz="xl"
-														fw={500}
-													>
-														/ mo
-													</Text>
-												</Group>
-											</Box>
+											<EstimatedCost
+												ta="right"
+												organisation={organisation}
+												config={config}
+											/>
 										</Group>
 									</Box>
 								</>

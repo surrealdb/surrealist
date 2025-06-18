@@ -1,13 +1,13 @@
 import classes from "./style.module.scss";
 
 import { Box, Button, Divider, Group, ScrollArea, Stack } from "@mantine/core";
-import { Text } from "@mantine/core";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link, Redirect, useLocation } from "wouter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
+import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -15,7 +15,7 @@ import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useLastSavepoint } from "~/hooks/overview";
 import { useStable } from "~/hooks/stable";
-import { CloudOrganization } from "~/types";
+import { CloudDeployConfig, CloudOrganization } from "~/types";
 import { iconChevronRight } from "~/util/icons";
 import { generateRandomName } from "~/util/random";
 import { DEPLOY_CONFIG_KEY } from "~/util/storage";
@@ -52,7 +52,7 @@ function PageContent({ organisation }: PageContentProps) {
 	const savepoint = useLastSavepoint();
 	const [, navigate] = useLocation();
 
-	const [details, setDetails] = useImmer(() => {
+	const [details, setDetails] = useImmer<CloudDeployConfig>(() => {
 		const cached = localStorage.getItem(cacheKey);
 		const overwrites = cached ? JSON.parse(cached) : {};
 
@@ -64,8 +64,6 @@ function PageContent({ organisation }: PageContentProps) {
 			...overwrites,
 		};
 	});
-
-	// const estimationQuery = useCloudEstimationQuery(organisation, details);
 
 	const checkoutDisabled = useMemo(() => {
 		if (!details.name || details.name.length > 30) return true;
@@ -168,39 +166,11 @@ function PageContent({ organisation }: PageContentProps) {
 										Continue to checkout
 									</Button>
 									<Spacer />
-									<Box ta="right">
-										<Text
-											c="var(--mantine-color-indigo-light-color)"
-											fz="md"
-											fw={800}
-											tt="uppercase"
-											lts={1}
-										>
-											Billed monthly
-										</Text>
-										<Group
-											gap="xs"
-											align="start"
-										>
-											<Text
-												fz={28}
-												fw={600}
-												c="bright"
-											>
-												TODO
-												{/* {CURRENCY_FORMAT.format(
-															estimatedCost * 24 * 30,
-														)} */}
-											</Text>
-											<Text
-												mt={12}
-												fz="xl"
-												fw={500}
-											>
-												/ mo
-											</Text>
-										</Group>
-									</Box>
+									<EstimatedCost
+										ta="right"
+										organisation={organisation}
+										config={details}
+									/>
 								</Group>
 							</Box>
 						</>
