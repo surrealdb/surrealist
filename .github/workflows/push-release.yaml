@@ -5,8 +5,8 @@ on:
     types: [published]
 
 env:
-  CLOUD_CALLBACK_URL_STABLE: "https://surrealist.app/cloud/callback"
-  CLOUD_CALLBACK_URL_BETA: "https://beta.surrealist.app/cloud/callback"
+  CLOUD_CALLBACK_URL_STABLE: "https://app.surrealdb.com/cloud/callback"
+  CLOUD_CALLBACK_URL_BETA: "https://app-app.surrealdb.com/cloud/callback"
   CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
   SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
   SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv

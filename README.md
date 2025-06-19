@@ -88,7 +88,7 @@ Learn more about Surrealist by visiting [the website](https://surrealdb.com/surr
 Surrealist is easy to get started with, as we provide both a web app and a desktop app for you to use. While the web app is the quickest way to get started, the desktop app provides additional features such as local database serving and opening queries from disk.
 
 ### Using the Web App
-Visit https://surrealist.app/ to start using Surrealist in your browser.
+Visit https://app.surrealdb.com/ to start using Surrealist in your browser.
 
 ### Using the Desktop App
 You can download the latest version of Surrealist Desktop [here](https://surrealdb.com/surrealist?download) or find a list of releases on the [GitHub](https://github.com/surrealdb/surrealist/releases) page. This version is the recommended way to interact with SurrealDB, as it supports additional features over the web app.
@@ -102,7 +102,7 @@ You can download the latest version of Surrealist Desktop [here](https://surreal
     <img width="100%" src=".github/images/cloud-dark.png" alt="Surreal Cloud">
 </a>
 
-SurrealDB is available as a [hosted platform](https://surrealist.app/cloud). Forget about infrastructure operations, monitoring, backups or capacity planning. [Surreal Cloud](https://surrealdb.com/cloud) allows you to focus on building great products using the power and flexibility of SurrealDB in just a few clicks. Grow from prototype to enterprise-scale. The Surreal Cloud scalable architecture allows your database to evolve as your application grows, ensuring you are always ahead of demand.
+SurrealDB is available as a [hosted platform](https://app.surrealdb.app/signin). Forget about infrastructure operations, monitoring, backups or capacity planning. [Surreal Cloud](https://app.surrealdb.app/signin) allows you to focus on building great products using the power and flexibility of SurrealDB in just a few clicks. Grow from prototype to enterprise-scale. The Surreal Cloud scalable architecture allows your database to evolve as your application grows, ensuring you are always ahead of demand.
 
 Surrealist features an integrated Surreal Cloud management panel, allowing you to effortlessly provision and connect to your Cloud instances, manage your billing, and monitor your usage. The Surreal Cloud panel is available in both the web and desktop apps.
 

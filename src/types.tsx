@@ -229,7 +229,7 @@ export interface SurrealistCloudSettings {
 
 export interface SurrealistGtmSettings {
 	preview_header: string;
-	origin: "surrealist.app" | "beta.surrealist.app" | "dev.surrealist.app";
+	origin: "app.surrealdb.com" | "beta-app.surrealdb.com" | "dev-app.surrealdb.com";
 	debug_mode: boolean;
 }
 

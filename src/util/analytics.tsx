@@ -8,10 +8,10 @@ import { CLIENT_KEY } from "./storage";
 let incrementalId = 1;
 
 export const HOSTNAME = isProduction
-	? "surrealist.app"
+	? "app.surrealdb.com"
 	: isPreview
-		? "beta.surrealist.app"
-		: "dev.surrealist.app";
+		? "beta-app.surrealdb.com"
+		: "dev-app.surrealdb.com";
 
 /**
  * Track analytics events
