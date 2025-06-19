@@ -15,11 +15,14 @@ import { iconArrowUpRight, iconDownload } from "~/util/icons";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
+import { useState } from "react";
 
 export function NewDomainScreen() {
 	const isLight = useIsLight();
+	const [targetLink, setTargetLink] = useState("https://app.surrealdb.com");
 
 	const saveBackup = useStable(() => {
+		setTargetLink("https://app.surrealdb.com?intent=open-settings:tab=manage-data");
 		adapter.saveFile(
 			"Save config backup",
 			"surrealist-backup.json",
@@ -102,7 +105,7 @@ export function NewDomainScreen() {
 								>
 									Export config
 								</Button>
-								<a href="https://app.surrealdb.com">
+								<a href={targetLink}>
 									<Button
 										rightSection={<Icon path={iconArrowUpRight} />}
 										variant="gradient"
