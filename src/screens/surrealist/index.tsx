@@ -6,7 +6,6 @@ import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AppTitleBar } from "~/components/AppTitleBar";
-import { AuthGuard } from "~/components/AuthGuard";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useAvailableViews } from "~/hooks/connection";
@@ -25,6 +24,7 @@ import { OrganizationsPage } from "./pages/Organizations";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SupportPage } from "./pages/Support";
+import { SigninPage } from "./pages/Signin";
 import { SurrealistSidebar } from "./sidebar";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
@@ -50,6 +50,7 @@ const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
 const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
+const SigninPageLazy = memo(SigninPage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -220,7 +221,7 @@ export function SurrealistScreen() {
 									</Route>
 
 									<Route path="/signin">
-										<AuthGuard redirect="/overview" />
+										<SigninPageLazy />
 									</Route>
 
 									<Route path="/cloud">
