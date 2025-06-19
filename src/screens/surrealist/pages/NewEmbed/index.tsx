@@ -18,6 +18,7 @@ import {
 
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useMemo, useRef, useState } from "react";
+import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -26,7 +27,6 @@ import { useStable } from "~/hooks/stable";
 import { dedent } from "~/util/dedent";
 import { iconCheck, iconClose, iconTransfer, iconXml } from "~/util/icons";
 import { DEFAULT_STATE, EmbedState, Embedder } from "./embedder";
-import { adapter } from "~/adapter";
 
 export function NewEmbedPage() {
 	const [url, setUrl] = useDebouncedState("", 250);

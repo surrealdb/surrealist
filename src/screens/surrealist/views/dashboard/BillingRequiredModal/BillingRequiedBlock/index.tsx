@@ -1,5 +1,5 @@
-import cloudImage from "~/assets/images/icons/cloud.png";
 import glowImage from "~/assets/images/glow.png";
+import cloudImage from "~/assets/images/icons/cloud.png";
 import classes from "./style.module.scss";
 
 import { Image, Paper, Stack, Text } from "@mantine/core";

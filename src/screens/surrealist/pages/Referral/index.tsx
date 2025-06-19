@@ -34,6 +34,7 @@ import {
 } from "@mantine/core";
 
 import { ReactNode } from "react";
+import { adapter } from "~/adapter";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
@@ -45,7 +46,6 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
-import { adapter } from "~/adapter";
 
 const REWARDS = [1, 10, 25, 100, 500];
 

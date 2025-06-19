@@ -51,6 +51,7 @@ import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { MetricsDuration } from "~/types";
 import { iconChevronDown, iconClock, iconFilter, iconSurreal } from "~/util/icons";
 import { BackupsBlock } from "../BackupsBlock";
+import { openBillingModal } from "../BillingRequiredModal";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";
 import { ConfigurationBlock } from "../ConfigurationBlock";
@@ -64,7 +65,6 @@ import { NetworkIngressChart } from "../NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
-import { openBillingModal } from "../BillingRequiredModal";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);

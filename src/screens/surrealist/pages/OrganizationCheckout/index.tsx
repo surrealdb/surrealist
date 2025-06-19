@@ -32,6 +32,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
+import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
 import { compileDeployConfig } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
@@ -57,7 +58,6 @@ import { getTypeCategoryName } from "~/util/cloud";
 import { resolveInstanceConnection } from "~/util/connection";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
 import { DEPLOY_CONFIG_KEY } from "~/util/storage";
-import { adapter } from "~/adapter";
 
 export interface OrganizationCheckoutPageProps {
 	id: string;

@@ -4,6 +4,7 @@ import { Box, Button, Divider, Group, ScrollArea, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link, Redirect, useLocation } from "wouter";
+import { adapter } from "~/adapter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
@@ -22,7 +23,6 @@ import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 import { InstanceTypeSection } from "./sections/1-type";
 import { ClusterStorageSection } from "./sections/2-cluster";
 import { DeploymentSection } from "./sections/3-instance";
-import { adapter } from "~/adapter";
 
 export interface OrganizationDeployPageProps {
 	id: string;

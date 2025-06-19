@@ -1,12 +1,12 @@
-import { Group, Alert, Stack, SimpleGrid } from "@mantine/core";
-import { openModal, closeModal } from "@mantine/modals";
+import { Alert, Group, SimpleGrid, Stack } from "@mantine/core";
+import { Text } from "@mantine/core";
+import { closeModal, openModal } from "@mantine/modals";
 import { BillingDetails } from "~/components/BillingDetails";
+import { Icon } from "~/components/Icon";
 import { PaymentDetails } from "~/components/PaymentDetails";
+import { CloudOrganization } from "~/types";
 import { iconArrowDownFat, iconWarning } from "~/util/icons";
 import { BillingRequiredBlock } from "./BillingRequiedBlock";
-import { Icon } from "~/components/Icon";
-import { Text } from "@mantine/core";
-import { CloudOrganization } from "~/types";
 
 export function openBillingModal(organization: CloudOrganization | undefined) {
 	openModal({
