@@ -155,6 +155,34 @@ export function getMenuItems(): AppMenu[] {
 		],
 	};
 
+	const editMenu: AppMenu = {
+		id: "edit",
+		name: "Edit",
+		items: [
+			{
+				id: "undo",
+				type: "Undo",
+			},
+			{
+				id: "redo",
+				type: "Redo",
+			},
+			SEPARATOR,
+			{
+				id: "cut",
+				type: "Cut",
+			},
+			{
+				id: "copy",
+				type: "Copy",
+			},
+			{
+				id: "paste",
+				type: "Paste",
+			},
+		],
+	};
+
 	const helpMenu: AppMenu = {
 		id: "help",
 		name: "Help",
@@ -230,7 +258,13 @@ export function getMenuItems(): AppMenu[] {
 		],
 	};
 
-	return [...optional(isDarwin && surrealistMenu), fileMenu, viewMenu, helpMenu];
+	return [
+		...optional(isDarwin && surrealistMenu),
+		fileMenu,
+		...optional(isDarwin && editMenu),
+		viewMenu,
+		helpMenu,
+	];
 }
 
 async function setupNativeAppMenu(
