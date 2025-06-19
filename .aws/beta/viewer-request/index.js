@@ -16,7 +16,7 @@ function handler(event) {
 	let host = request.headers.host.value;
 	let path = request.uri.toLowerCase();
 
-	if (host !== 'beta-app.surrealdb.com') {
+	if (host !== 'beta-app.surrealdb.com' && host !== 'beta.surrealist.app') {
 		return redirect(path)
 	}
 
