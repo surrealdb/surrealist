@@ -64,6 +64,7 @@ import { NetworkIngressChart } from "../NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
+import { openBillingModal } from "../BillingRequiredModal";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -156,13 +157,21 @@ export function DashboardView() {
 	}, [metricsDuration]);
 
 	const handleUpgradeType = useStable(() => {
-		setUpgradeTab("type");
-		upgradingHandle.open();
+		if (organisation?.billing_info && organisation?.payment_info) {
+			setUpgradeTab("type");
+			upgradingHandle.open();
+		} else {
+			openBillingModal(organisation);
+		}
 	});
 
 	const handleUpgradeStorage = useStable(() => {
-		setUpgradeTab("disk");
-		upgradingHandle.open();
+		if (organisation?.billing_info && organisation?.payment_info) {
+			setUpgradeTab("disk");
+			upgradingHandle.open();
+		} else {
+			openBillingModal(organisation);
+		}
 	});
 
 	const handleConfigure = useStable(() => {

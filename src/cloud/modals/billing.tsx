@@ -56,9 +56,10 @@ function BillingDetailsModal({ organization }: BillingDetailsModalProps) {
 interface BillingFormProps {
 	organization: CloudOrganization;
 	details: CloudBilling;
+	callback?: () => void;
 }
 
-function BillingForm({ organization, details }: BillingFormProps) {
+function BillingForm({ organization, details, callback }: BillingFormProps) {
 	const [data, setData] = useImmer({
 		Name: details.Name || "",
 		Email: details.Email || "",
@@ -154,6 +155,10 @@ function BillingForm({ organization, details }: BillingFormProps) {
 			}
 		} finally {
 			setLoading(false);
+
+			if (callback) {
+				callback();
+			}
 		}
 	});
 

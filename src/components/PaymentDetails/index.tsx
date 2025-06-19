@@ -1,4 +1,15 @@
-import { Box, Button, Divider, Group, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import {
+	Box,
+	BoxProps,
+	Button,
+	Divider,
+	Group,
+	Paper,
+	Skeleton,
+	Stack,
+	Text,
+	Tooltip,
+} from "@mantine/core";
 import { useWindowEvent } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalize } from "radash";
@@ -15,11 +26,12 @@ import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { Spacer } from "../Spacer";
 
-export interface PaymentDetailsProps {
+export interface PaymentDetailsProps extends BoxProps {
 	organisation: CloudOrganization;
+	completedCallback?: () => void;
 }
 
-export function PaymentDetails({ organisation }: PaymentDetailsProps) {
+export function PaymentDetails({ organisation, completedCallback, ...rest }: PaymentDetailsProps) {
 	const isOwner = useHasOrganizationRole(organisation.id, "owner");
 	const paymentQuery = useCloudPaymentsQuery(organisation.id);
 	const client = useQueryClient();
@@ -52,7 +64,7 @@ export function PaymentDetails({ organisation }: PaymentDetailsProps) {
 			method: "PUT",
 		});
 
-		updateCloudInformation();
+		await updateCloudInformation();
 
 		client.invalidateQueries({
 			queryKey: ["cloud", "payments", organisation.id],
@@ -61,6 +73,8 @@ export function PaymentDetails({ organisation }: PaymentDetailsProps) {
 		client.invalidateQueries({
 			queryKey: ["cloud", "organizations"],
 		});
+
+		completedCallback?.();
 	});
 
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
@@ -71,6 +85,7 @@ export function PaymentDetails({ organisation }: PaymentDetailsProps) {
 		<Paper
 			p="xl"
 			variant="gradient"
+			{...rest}
 		>
 			<Group>
 				<Icon
@@ -93,6 +108,7 @@ export function PaymentDetails({ organisation }: PaymentDetailsProps) {
 						<Button
 							color="slate"
 							variant="light"
+							disabled={!organisation.billing_info}
 							loading={requesting}
 							onClick={requestPaymentUrl}
 						>
