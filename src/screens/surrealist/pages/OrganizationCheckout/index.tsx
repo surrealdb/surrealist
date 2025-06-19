@@ -1,4 +1,5 @@
-import glow from "~/assets/images/glow.png";
+import glow from "~/assets/images/glow.webp";
+import cloud from "~/assets/images/icons/cloud.webp";
 import classes from "./style.module.scss";
 
 import {
@@ -17,7 +18,7 @@ import {
 } from "@mantine/core";
 
 import {
-	iconCheck,
+	iconArrowUpRight,
 	iconCreditCard,
 	iconDatabase,
 	iconHistory,
@@ -29,12 +30,10 @@ import {
 	iconTag,
 } from "~/util/icons";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
-import { fetchAPI } from "~/cloud/api";
-import { compileDeployConfig } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { BillingDetails } from "~/components/BillingDetails";
@@ -51,12 +50,15 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudDeployConfig, CloudInstance, CloudInstanceType, CloudOrganization } from "~/types";
-import { tagEvent } from "~/util/analytics";
+import { useConfigStore } from "~/stores/config";
+import { CloudDeployConfig, CloudInstanceType, CloudOrganization } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
-import { resolveInstanceConnection } from "~/util/connection";
+import { DatasetQuery, QUERY_ONE } from "~/util/dataset";
+import { createBaseQuery } from "~/util/defaults";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
-import { DEPLOY_CONFIG_KEY } from "~/util/storage";
+import { APPLY_DATASET_KEY, DEPLOY_CONFIG_KEY } from "~/util/storage";
+
+const SAMPLE_QUERIES: DatasetQuery[] = [QUERY_ONE];
 
 export interface OrganizationCheckoutPageProps {
 	id: string;
@@ -108,44 +110,44 @@ interface PageContentProps {
 
 function PageContent({ organisation, instanceType, config }: PageContentProps) {
 	const isAuthed = useIsAuthenticated();
-	const queryClient = useQueryClient();
 	const navigateConnection = useConnectionNavigator();
 	const [, navigate] = useLocation();
+
+	const deployMutation = useInstanceDeployMutation(organisation, config);
 
 	const handleBack = useStable(() => {
 		navigate("deploy");
 	});
 
-	const deployMutation = useMutation({
-		mutationFn: async () => {
-			if (!organisation || !config) return;
+	const handleDeploy = useStable(async () => {
+		try {
+			const { settings, updateConnection } = useConfigStore.getState();
+			const [instance, connection] = await deployMutation.mutateAsync();
 
-			try {
-				const configuration = compileDeployConfig(organisation, config);
-				const instance = await fetchAPI<CloudInstance>("/instances", {
-					method: "POST",
-					body: JSON.stringify(configuration),
-				});
+			if (config.dataset) {
+				sessionStorage.setItem(`${APPLY_DATASET_KEY}:${instance.id}`, "surreal-deal-store");
 
-				queryClient.setQueryData(["cloud", "instances", { id: instance.id }], instance);
+				const queries = SAMPLE_QUERIES.map((query) => ({
+					...createBaseQuery(settings, "config"),
+					name: query.name,
+					query: query.query,
+				}));
 
-				navigateConnection(resolveInstanceConnection(instance).id, "dashboard");
-
-				tagEvent("cloud_instance_created", {
-					instance: instance.id,
-					region: config.region,
-					version: config.version,
-					compute_type: config.type,
-					organisation: organisation.id,
-					cluster: config.cluster,
-				});
-			} catch (err: any) {
-				showErrorNotification({
-					title: "Failed to deploy instance",
-					content: err,
+				updateConnection({
+					id: connection.id,
+					activeQuery: queries[0].id,
+					queries,
 				});
 			}
-		},
+
+			navigateConnection(connection.id, "dashboard");
+			localStorage.removeItem(`${DEPLOY_CONFIG_KEY}:${organisation.id}`);
+		} catch (err: any) {
+			showErrorNotification({
+				title: "Failed to deploy instance",
+				content: err.message,
+			});
+		}
 	});
 
 	const requireBilling = instanceType?.category !== "free";
@@ -323,42 +325,124 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 										</Box>
 
 										{!requireBilling ? (
+											<Paper
+												className={classes.freeBox}
+												variant="gradient"
+												mt="md"
+												p="xl"
+											>
+												<Stack gap={0}>
+													<Text
+														c="bright"
+														fw={600}
+														fz="xl"
+													>
+														No billing information required
+													</Text>
+													<Box
+														mt="sm"
+														maw={400}
+													>
+														Your free Surreal Cloud instance is ready to
+														deploy. Upgrades are available at any time
+														once you have deployed your instance.
+													</Box>
+												</Stack>
+												<Image
+													src={cloud}
+													className={classes.cloudImage}
+												/>
+												<Image
+													src={glow}
+													className={classes.freeGlow}
+												/>
+											</Paper>
+										) : hasBilling ? (
+											<Paper
+												variant="gradient"
+												mt="md"
+												p={4}
+												pr="xl"
+											>
+												<Flex
+													wrap="nowrap"
+													direction={{ base: "column", sm: "row" }}
+													align={{ base: "start", sm: "center" }}
+												>
+													<Alert
+														flex={1}
+														color="slate"
+														variant="subtle"
+														icon={<Icon path={iconCreditCard} />}
+														title="Billing & payment information available"
+													>
+														<Text>
+															Your billing and payment information is
+															already set up for this organisation.
+														</Text>
+														<Button
+															mt="md"
+															size="xs"
+															hiddenFrom="sm"
+															color="slate"
+															variant="light"
+															rightSection={
+																<Icon path={iconArrowUpRight} />
+															}
+															onClick={() =>
+																navigate(
+																	`/o/${organisation.id}/billing`,
+																)
+															}
+														>
+															Update billing details
+														</Button>
+													</Alert>
+													<Button
+														size="xs"
+														visibleFrom="sm"
+														color="slate"
+														variant="light"
+														rightSection={
+															<Icon path={iconArrowUpRight} />
+														}
+														onClick={() =>
+															navigate(
+																`/o/${organisation.id}/billing`,
+															)
+														}
+													>
+														Update billing details
+													</Button>
+												</Flex>
+											</Paper>
+										) : (
 											<Alert
 												mt="md"
-												color="violet"
-												icon={<Icon path={iconCheck} />}
-												title="Billing & payment information optional"
+												color="orange"
+												icon={<Icon path={iconCreditCard} />}
+												title="Billing & payment information required"
 											>
-												This instance is free, no billing details are
-												required.
+												You must provide billing and payment details to
+												deploy this instance. This information will be
+												remembered for future deployments in this
+												organisation.
 											</Alert>
-										) : (
-											!hasBilling && (
-												<Alert
-													mt="md"
-													color="orange"
-													icon={<Icon path={iconCreditCard} />}
-													title="Billing & payment information required"
-												>
-													You must provide billing and payment details to
-													deploy this instance. This information will be
-													remembered for future deployments in this
-													organisation.
-												</Alert>
-											)
 										)}
 
-										<SimpleGrid
-											mt="xl"
-											spacing="xl"
-											cols={{
-												xs: 1,
-												md: 2,
-											}}
-										>
-											<BillingDetails organisation={organisation} />
-											<PaymentDetails organisation={organisation} />
-										</SimpleGrid>
+										{requireBilling && !hasBilling && (
+											<SimpleGrid
+												mt="xl"
+												spacing="xl"
+												cols={{
+													xs: 1,
+													md: 2,
+												}}
+											>
+												<BillingDetails organisation={organisation} />
+												<PaymentDetails organisation={organisation} />
+											</SimpleGrid>
+										)}
 
 										<Divider my={36} />
 
@@ -375,7 +459,7 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 												variant="gradient"
 												disabled={deployDisabled}
 												loading={deployMutation.isPending}
-												onClick={() => deployMutation.mutate()}
+												onClick={handleDeploy}
 											>
 												Deploy instance
 											</Button>

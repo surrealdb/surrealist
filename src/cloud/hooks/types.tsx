@@ -1,7 +1,9 @@
 import { fork } from "radash";
 import { useMemo } from "react";
+import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
+import { isDistributedType } from "../helpers";
 import { useCloudOrganizationInstancesQuery } from "../queries/instances";
 
 export function useFreeInstanceTypeAvailable(organisation: CloudOrganization) {
@@ -36,9 +38,14 @@ export function useInstanceTypeRegistry(organisation?: CloudOrganization) {
 export function useInstanceTypeAvailable(organisation: CloudOrganization) {
 	const { data } = useCloudOrganizationInstancesQuery(organisation.id);
 	const instanceTypes = useInstanceTypeRegistry(organisation);
+	const allowCluster = useHasCloudFeature("distributed_storage");
 
 	return useStable((type: CloudInstanceType) => {
 		if (!instanceTypes.has(type.slug)) {
+			return false;
+		}
+
+		if (isDistributedType(type) && !allowCluster) {
 			return false;
 		}
 

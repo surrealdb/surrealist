@@ -82,7 +82,7 @@ export function PaymentDetails({ organisation }: PaymentDetailsProps) {
 					fw={600}
 					c="bright"
 				>
-					Payment Details
+					Payment details
 				</Text>
 				<Spacer />
 				{isOwner && (

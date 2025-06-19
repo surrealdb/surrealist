@@ -15,7 +15,10 @@ export function ResumeBlock({ instance }: ResumelockProps) {
 	const resumeInstance = useResumeInstance(instance);
 
 	return (
-		<Paper p="xl">
+		<Paper
+			p="xl"
+			variant="gradient"
+		>
 			<Center h="100%">
 				<Stack
 					align="center"

@@ -26,11 +26,11 @@
         "@lezer/php": "^1.0.2",
         "@lezer/python": "^1.1.14",
         "@lezer/rust": "^1.0.2",
-        "@mantine/charts": "7.16.1",
-        "@mantine/core": "7.16.1",
-        "@mantine/hooks": "7.16.1",
-        "@mantine/modals": "7.16.1",
-        "@mantine/notifications": "7.16.1",
+        "@mantine/charts": "7.17.7",
+        "@mantine/core": "7.17.7",
+        "@mantine/hooks": "7.17.7",
+        "@mantine/modals": "7.17.7",
+        "@mantine/notifications": "7.17.7",
         "@mdi/js": "^7.2.96",
         "@replit/codemirror-indentation-markers": "^6.5.0",
         "@sigma/edge-curve": "^3.1.0",
@@ -478,17 +478,17 @@
 
     "@lezer/rust": ["@lezer/rust@1.0.2", "", { "dependencies": { "@lezer/common": "^1.2.0", "@lezer/highlight": "^1.0.0", "@lezer/lr": "^1.0.0" } }, "sha512-Lz5sIPBdF2FUXcWeCu1//ojFAZqzTQNRga0aYv6dYXqJqPfMdCAI0NzajWUd4Xijj1IKJLtjoXRPMvTKWBcqKg=="],
 
-    "@mantine/charts": ["@mantine/charts@7.16.1", "", { "peerDependencies": { "@mantine/core": "7.16.1", "@mantine/hooks": "7.16.1", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x", "recharts": "^2.13.3" } }, "sha512-19wfccpk8VMa3xoIEklXxF/O1xYEn8dBeTSOMMVDTnmLCltqJjhcSNZdv0ycXIcWHOZ9rrbAsAFWJLbTFJmsOQ=="],
+    "@mantine/charts": ["@mantine/charts@7.17.7", "", { "peerDependencies": { "@mantine/core": "7.17.7", "@mantine/hooks": "7.17.7", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x", "recharts": "^2.13.3" } }, "sha512-ZhvN6FaPY/kQs606NYBAFVm/SFTwq8p0taWeegZh2fpZbvUmNzVZEeBpoVhYOKEtZQRIQ7t1Y80WJafYumkhTw=="],
 
-    "@mantine/core": ["@mantine/core@7.16.1", "", { "dependencies": { "@floating-ui/react": "^0.26.28", "clsx": "^2.1.1", "react-number-format": "^5.4.3", "react-remove-scroll": "^2.6.2", "react-textarea-autosize": "8.5.6", "type-fest": "^4.27.0" }, "peerDependencies": { "@mantine/hooks": "7.16.1", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-HYdjCeMU3dUJbc1CrAAedeAASTG5kVyL/qsiuYh5b7BoG0qsRtK8WJxBpUjW6VqtJpUaE94c5tlBJ8MgAmPHTQ=="],
+    "@mantine/core": ["@mantine/core@7.17.7", "", { "dependencies": { "@floating-ui/react": "^0.26.28", "clsx": "^2.1.1", "react-number-format": "^5.4.3", "react-remove-scroll": "^2.6.2", "react-textarea-autosize": "8.5.9", "type-fest": "^4.27.0" }, "peerDependencies": { "@mantine/hooks": "7.17.7", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-JMyV4/jPATXxmE31g8TJxsrH7XvdrA5pwT4gg25zBl1KE5vLBpBLLjsHG728+bDKuf+bDV+8lw+1kqgW7FcplQ=="],
 
-    "@mantine/hooks": ["@mantine/hooks@7.16.1", "", { "peerDependencies": { "react": "^18.x || ^19.x" } }, "sha512-+hER8E4d2ByfQ/DKIXGM3Euxb7IH5ArSjzzzoF21sG095iXIryOCob22ZanrmiXCoAzKKdxqgVj4Di67ikLYSQ=="],
+    "@mantine/hooks": ["@mantine/hooks@7.17.7", "", { "peerDependencies": { "react": "^18.x || ^19.x" } }, "sha512-5MIvN/YAcewc97nG3jVrlnFqAExnJRBNWmV6UgGHWbiZiPSCh5o2RJE/5ZVGSfkexDpav9gkm2jkWkIbemVqVA=="],
 
-    "@mantine/modals": ["@mantine/modals@7.16.1", "", { "peerDependencies": { "@mantine/core": "7.16.1", "@mantine/hooks": "7.16.1", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-kr5CgA/PKBgQ1yvXYauLYss20dkzYwgm+o+MKPeJ+bzJaHn6MkRhvXu4DnIurc8bUPKqDs6tUnLESRpUGv7bNQ=="],
+    "@mantine/modals": ["@mantine/modals@7.17.7", "", { "peerDependencies": { "@mantine/core": "7.17.7", "@mantine/hooks": "7.17.7", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-OL2nwGKaoa2YOtX5j4JUIJcto0ws2xVNXrmrVI42PCYWjgyvYfsNDz7RHrR+h0qUTl9unPwTfT/Y7T8xgWk5Iw=="],
 
-    "@mantine/notifications": ["@mantine/notifications@7.16.1", "", { "dependencies": { "@mantine/store": "7.16.1", "react-transition-group": "4.4.5" }, "peerDependencies": { "@mantine/core": "7.16.1", "@mantine/hooks": "7.16.1", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-kCYbuanL+y/VZ0UqgE0fpQcpTznWHwLEOw4waMXHyig6z4AEEB45U3iFpBtuSXpuFjfqH0corMaaWkAVocwj2Q=="],
+    "@mantine/notifications": ["@mantine/notifications@7.17.7", "", { "dependencies": { "@mantine/store": "7.17.7", "react-transition-group": "4.4.5" }, "peerDependencies": { "@mantine/core": "7.17.7", "@mantine/hooks": "7.17.7", "react": "^18.x || ^19.x", "react-dom": "^18.x || ^19.x" } }, "sha512-T6m4uUPEkPcTdo7J29lDey5YDJkVh/t6kWaCGQ0xDX1tzGGGPtaf1Exj1N0EtrIetbXPuEE8+yvq5P7wUJ3t9w=="],
 
-    "@mantine/store": ["@mantine/store@7.16.1", "", { "peerDependencies": { "react": "^18.x || ^19.x" } }, "sha512-EZjNzsLPWXB5MgBDa5FUEg5vbN+uo3hctSgplC7kkimjW7K3qfMiszwTt8cQgb7RRn7xH5sfC3U0Cm8X9h4kmA=="],
+    "@mantine/store": ["@mantine/store@7.17.7", "", { "peerDependencies": { "react": "^18.x || ^19.x" } }, "sha512-a2XmX6/ixuT+q1H7uNZq3opKZWlxS67XWU2fxCc/E/XHbzik25i2oj9inFpIZMT7UmhUkxj4/pbJQGMs3T5liw=="],
 
     "@marijn/find-cluster-break": ["@marijn/find-cluster-break@1.0.2", "", {}, "sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g=="],
 
@@ -1082,7 +1082,7 @@
 
     "react-style-singleton": ["react-style-singleton@2.2.3", "", { "dependencies": { "get-nonce": "^1.0.0", "tslib": "^2.0.0" }, "peerDependencies": { "@types/react": "*", "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc" }, "optionalPeers": ["@types/react"] }, "sha512-b6jSvxvVnyptAiLjbkWLE/lOnR4lfTtDAl+eUC7RZy+QQWc6wRzIV2CE6xBuMmDxc2qIihtDCZD5NPOFl7fRBQ=="],
 
-    "react-textarea-autosize": ["react-textarea-autosize@8.5.6", "", { "dependencies": { "@babel/runtime": "^7.20.13", "use-composed-ref": "^1.3.0", "use-latest": "^1.2.1" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-aT3ioKXMa8f6zHYGebhbdMD2L00tKeRX1zuVuDx9YQK/JLLRSaSxq3ugECEmUB9z2kvk6bFSIoRHLkkUv0RJiw=="],
+    "react-textarea-autosize": ["react-textarea-autosize@8.5.9", "", { "dependencies": { "@babel/runtime": "^7.20.13", "use-composed-ref": "^1.3.0", "use-latest": "^1.2.1" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-U1DGlIQN5AwgjTyOEnI1oCcMuEr1pv1qOtklB2l4nyMGbHzWrI0eFsYK0zos2YWqAolJyG0IWJaqWmWj5ETh0A=="],
 
     "react-transition-group": ["react-transition-group@4.4.5", "", { "dependencies": { "@babel/runtime": "^7.5.5", "dom-helpers": "^5.0.1", "loose-envify": "^1.4.0", "prop-types": "^15.6.2" }, "peerDependencies": { "react": ">=16.6.0", "react-dom": ">=16.6.0" } }, "sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g=="],
 

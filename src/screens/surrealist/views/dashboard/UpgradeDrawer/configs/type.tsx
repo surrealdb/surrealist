@@ -72,6 +72,7 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 								active={instanceType}
 								organization={organization}
 								onChange={(type) => setSelected(type.slug)}
+								hideLimited
 							/>
 						)}
 					</Stack>

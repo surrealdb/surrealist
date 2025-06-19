@@ -68,6 +68,7 @@ export function MemoryUsageChart({
 				p="xl"
 				gap={24}
 				component={Stack}
+				variant="gradient"
 				pos="relative"
 				h={280}
 			>

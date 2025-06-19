@@ -66,7 +66,10 @@ export function ConfigurationBlock({
 			visible={isLoading}
 			display="grid"
 		>
-			<Paper p="xl">
+			<Paper
+				p="xl"
+				variant="gradient"
+			>
 				<SimpleGrid
 					cols={{ base: 1, xl: 2 }}
 					spacing="xs"
