@@ -30,6 +30,7 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 				p="xl"
 				gap={15}
 				component={Stack}
+				variant="gradient"
 				pos="relative"
 				mih={168}
 			>

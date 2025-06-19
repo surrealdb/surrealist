@@ -34,6 +34,7 @@ export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUs
 				p="xl"
 				gap={30}
 				component={Stack}
+				variant="gradient"
 				pos="relative"
 				mih={168}
 			>
