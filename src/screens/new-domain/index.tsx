@@ -12,10 +12,10 @@ import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { backupConfig } from "~/util/config";
 import { iconArrowUpRight, iconDownload } from "~/util/icons";
 
+import { useState } from "react";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import { useState } from "react";
 
 export function NewDomainScreen() {
 	const isLight = useIsLight();
