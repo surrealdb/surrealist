@@ -28,10 +28,9 @@ import { Spacer } from "../Spacer";
 
 export interface PaymentDetailsProps extends BoxProps {
 	organisation: CloudOrganization;
-	completedCallback?: () => void;
 }
 
-export function PaymentDetails({ organisation, completedCallback, ...rest }: PaymentDetailsProps) {
+export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 	const isOwner = useHasOrganizationRole(organisation.id, "owner");
 	const paymentQuery = useCloudPaymentsQuery(organisation.id);
 	const client = useQueryClient();
@@ -73,8 +72,6 @@ export function PaymentDetails({ organisation, completedCallback, ...rest }: Pay
 		client.invalidateQueries({
 			queryKey: ["cloud", "organizations"],
 		});
-
-		completedCallback?.();
 	});
 
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
