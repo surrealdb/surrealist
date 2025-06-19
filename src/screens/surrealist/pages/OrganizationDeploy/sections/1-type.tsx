@@ -6,6 +6,7 @@ import {
 	Group,
 	Paper,
 	SimpleGrid,
+	Skeleton,
 	Stack,
 	Text,
 } from "@mantine/core";
@@ -23,12 +24,15 @@ import { getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { DeploySectionProps } from "../types";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 const RECOMMENDED_TYPES = ["free", "small-dev", "medium", "medium-compute", "xlarge"];
 
 export function InstanceTypeSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 	const isAvailable = useInstanceTypeAvailable(organisation);
+
+	const { isPending } = useCloudOrganizationInstancesQuery(organisation.id);
 
 	const recommendations = useMemo(() => {
 		const list = RECOMMENDED_TYPES.flatMap((slug) => {
@@ -102,12 +106,16 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 					</>
 				) : (
 					recommendations.map((type) => (
-						<InstanceTypeCard
+						<Skeleton
 							key={type.slug}
-							type={type}
-							details={details}
-							onChange={handleUpdate}
-						/>
+							visible={isPending}
+						>
+							<InstanceTypeCard
+								type={type}
+								details={details}
+								onChange={handleUpdate}
+							/>
+						</Skeleton>
 					))
 				)}
 			</SimpleGrid>
