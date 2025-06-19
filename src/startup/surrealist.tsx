@@ -18,13 +18,13 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { invalidateSession } from "~/cloud/api/auth";
 import { clearCachedConnections } from "~/cloud/helpers";
+import { NewDomainScreen } from "~/screens/new-domain";
 import { startConfigSync } from "~/util/config";
 import { preloadImages } from "~/util/preloader";
 import { adapter } from "../adapter";
 import { App } from "../components/App";
 import { generateEditorIcons } from "../editor/icons";
 import { promptChangelog } from "../util/changelogs";
-import { NewDomainScreen } from "~/screens/new-domain";
 
 (async () => {
 	dayjs.extend(relativeTime);
