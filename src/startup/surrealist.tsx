@@ -24,6 +24,7 @@ import { adapter } from "../adapter";
 import { App } from "../components/App";
 import { generateEditorIcons } from "../editor/icons";
 import { promptChangelog } from "../util/changelogs";
+import { NewDomainScreen } from "~/screens/new-domain";
 
 (async () => {
 	dayjs.extend(relativeTime);
@@ -42,6 +43,12 @@ import { promptChangelog } from "../util/changelogs";
 
 	if (!root) {
 		throw new Error("Root element not found");
+	}
+
+	// TODO - Temporary redirect notice
+	if (location.host.endsWith("surrealist.app")) {
+		createRoot(root).render(<NewDomainScreen />);
+		return;
 	}
 
 	createRoot(root).render(<App />);
