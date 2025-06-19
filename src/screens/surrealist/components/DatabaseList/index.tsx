@@ -202,7 +202,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 				</Group>
 				<Menu.Divider />
 				<ScrollArea.Autosize mah={350}>
-					{databases.length !== 0 ? (
+					{databases.length === 0 ? (
 						<Text
 							c="slate"
 							py="md"

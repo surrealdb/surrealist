@@ -10,3 +10,4 @@ export const CONFIG_KEY = "surrealist:config";
 export const CLIENT_KEY = "surrealist:client";
 export const OVERVIEW_KEY = "surrealist:overview";
 export const DEPLOY_CONFIG_KEY = "surrealist:deploy_config";
+export const APPLY_DATASET_KEY = "surrealist:apply_dataset";

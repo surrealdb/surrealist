@@ -97,7 +97,7 @@ export function PaymentDetails({ organisation, completedCallback, ...rest }: Pay
 					fw={600}
 					c="bright"
 				>
-					Payment Details
+					Payment details
 				</Text>
 				<Spacer />
 				{isOwner && (

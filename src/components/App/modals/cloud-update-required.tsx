@@ -1,14 +1,15 @@
+import cloudUrl from "~/assets/images/icons/cloud.webp";
+import classes from "../style.module.scss";
+
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
 import { type MouseEvent, useMemo } from "react";
 import { isDesktop } from "~/adapter";
-import cloudLogo from "~/assets/images/cloud-icon.webp";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useCloudStore } from "~/stores/cloud";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconClose } from "~/util/icons";
-import classes from "../style.module.scss";
 
 export function CloudUpdateRequiredDialog() {
 	const { setIsSupported } = useCloudStore.getState();
@@ -54,7 +55,7 @@ export function CloudUpdateRequiredDialog() {
 		>
 			<Group>
 				<Image
-					src={cloudLogo}
+					src={cloudUrl}
 					alt="Surreal Cloud"
 					w={48}
 				/>

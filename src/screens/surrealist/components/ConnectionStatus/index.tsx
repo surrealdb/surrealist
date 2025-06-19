@@ -82,8 +82,11 @@ export function ConnectionStatus() {
 		showDatasetsHandle.close();
 	});
 
+	const syncSchema = useStable(() => {
+		syncConnectionSchema();
+	});
+
 	const openDatasets = useRequireDatabase(_openDatasets);
-	const syncSchema = useRequireDatabase(() => syncConnectionSchema());
 	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"));
 	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
 

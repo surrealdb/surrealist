@@ -132,11 +132,8 @@ export const useConfigStore = create<ConfigStore>()(
 								queries: [
 									...current.queries,
 									{
-										...createBaseQuery(
-											state.settings,
-											options?.type,
-											options?.query,
-										),
+										...createBaseQuery(state.settings, options?.type),
+										query: options?.query || "",
 										variables: options?.variables || "{}",
 										name: queryName,
 										id: tabId,
