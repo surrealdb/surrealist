@@ -1,11 +1,11 @@
 import { Alert, Group, Modal, SimpleGrid, Stack, Text } from "@mantine/core";
+import { useEffect } from "react";
+import { BillingDetails } from "~/components/BillingDetails";
 import { Icon } from "~/components/Icon";
+import { PaymentDetails } from "~/components/PaymentDetails";
 import { CloudOrganization } from "~/types";
 import { iconArrowDownFat, iconWarning } from "~/util/icons";
 import { BillingRequiredBlock } from "../BillingRequiredBlock";
-import { BillingDetails } from "~/components/BillingDetails";
-import { PaymentDetails } from "~/components/PaymentDetails";
-import { useEffect } from "react";
 
 export interface BillingRequiredModalProps {
 	organization: CloudOrganization | undefined;
