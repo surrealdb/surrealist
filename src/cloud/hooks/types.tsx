@@ -3,6 +3,8 @@ import { useMemo } from "react";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
 import { useCloudOrganizationInstancesQuery } from "../queries/instances";
+import { useHasCloudFeature } from "~/hooks/cloud";
+import { isDistributedType } from "../helpers";
 
 export function useFreeInstanceTypeAvailable(organisation: CloudOrganization) {
 	const { data } = useCloudOrganizationInstancesQuery(organisation.id);
@@ -36,9 +38,14 @@ export function useInstanceTypeRegistry(organisation?: CloudOrganization) {
 export function useInstanceTypeAvailable(organisation: CloudOrganization) {
 	const { data } = useCloudOrganizationInstancesQuery(organisation.id);
 	const instanceTypes = useInstanceTypeRegistry(organisation);
+	const allowCluster = useHasCloudFeature("distributed_storage");
 
 	return useStable((type: CloudInstanceType) => {
 		if (!instanceTypes.has(type.slug)) {
+			return false;
+		}
+
+		if (isDistributedType(type) && !allowCluster) {
 			return false;
 		}
 
