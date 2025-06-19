@@ -1,10 +1,10 @@
 import { fork } from "radash";
 import { useMemo } from "react";
+import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
-import { useCloudOrganizationInstancesQuery } from "../queries/instances";
-import { useHasCloudFeature } from "~/hooks/cloud";
 import { isDistributedType } from "../helpers";
+import { useCloudOrganizationInstancesQuery } from "../queries/instances";
 
 export function useFreeInstanceTypeAvailable(organisation: CloudOrganization) {
 	const { data } = useCloudOrganizationInstancesQuery(organisation.id);
