@@ -14,6 +14,7 @@ import { closeModal, openModal } from "@mantine/modals";
 import { Fragment, ReactNode, useMemo } from "react";
 import { isDistributedType } from "~/cloud/helpers";
 import { useInstanceTypeAvailable, useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -24,7 +25,6 @@ import { getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { DeploySectionProps } from "../types";
-import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 const RECOMMENDED_TYPES = ["free", "small-dev", "medium", "medium-compute", "xlarge"];
 
