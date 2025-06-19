@@ -30,6 +30,19 @@ import {
 	iconTag,
 } from "~/util/icons";
 
+import {
+	DatasetQuery,
+	QUERY_EIGHT,
+	QUERY_FIVE,
+	QUERY_FOUR,
+	QUERY_NINE,
+	QUERY_ONE,
+	QUERY_SEVEN,
+	QUERY_SIX,
+	QUERY_THREE,
+	QUERY_TWO,
+} from "~/util/dataset";
+
 import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
 import { adapter } from "~/adapter";
@@ -54,12 +67,21 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { CloudDeployConfig, CloudInstanceType, CloudOrganization } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
-import { DatasetQuery, QUERY_ONE } from "~/util/dataset";
 import { createBaseQuery } from "~/util/defaults";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
 import { APPLY_DATASET_KEY, DEPLOY_CONFIG_KEY } from "~/util/storage";
 
-const SAMPLE_QUERIES: DatasetQuery[] = [QUERY_ONE];
+const SAMPLE_QUERIES: DatasetQuery[] = [
+	QUERY_ONE,
+	QUERY_TWO,
+	QUERY_THREE,
+	QUERY_FOUR,
+	QUERY_FIVE,
+	QUERY_SIX,
+	QUERY_SEVEN,
+	QUERY_EIGHT,
+	QUERY_NINE,
+];
 
 export interface OrganizationCheckoutPageProps {
 	id: string;
