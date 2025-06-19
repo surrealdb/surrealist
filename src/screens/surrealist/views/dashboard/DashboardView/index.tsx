@@ -51,7 +51,6 @@ import { showErrorNotification } from "~/util/helpers";
 import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
 import { APPLY_DATASET_KEY } from "~/util/storage";
 import { BackupsBlock } from "../BackupsBlock";
-import { openBillingModal } from "../BillingRequiredModal";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";
 import { ConfigurationBlock } from "../ConfigurationBlock";
@@ -65,6 +64,7 @@ import { NetworkIngressChart } from "../NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
+import { BillingRequiredModal } from "./BillingRequiredModal";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -89,6 +89,7 @@ export function DashboardView() {
 	const [upgrading, upgradingHandle] = useBoolean();
 	const [configuring, configuringHandle] = useBoolean();
 	const [metricsNodes, setMetricsNodes] = useInputState<string[]>([]);
+	const [billingRequiredOpened, setBillingRequiredOpened] = useState(false);
 	const [metricsNodeFilter, setMetricsNodeFilter] = useInputState<string[] | undefined>(
 		undefined,
 	);
@@ -186,20 +187,22 @@ export function DashboardView() {
 	}, [details?.state, details?.id]);
 
 	const handleUpgradeType = useStable(() => {
+		setUpgradeTab("type");
+
 		if (organisation?.billing_info && organisation?.payment_info) {
-			setUpgradeTab("type");
 			upgradingHandle.open();
 		} else {
-			openBillingModal(organisation);
+			setBillingRequiredOpened(true);
 		}
 	});
 
 	const handleUpgradeStorage = useStable(() => {
+		setUpgradeTab("disk");
+
 		if (organisation?.billing_info && organisation?.payment_info) {
-			setUpgradeTab("disk");
 			upgradingHandle.open();
 		} else {
-			openBillingModal(organisation);
+			setBillingRequiredOpened(true);
 		}
 	});
 
@@ -557,6 +560,14 @@ export function DashboardView() {
 						tab={upgradeTab}
 						onChangeTab={setUpgradeTab}
 						onClose={upgradingHandle.close}
+					/>
+					<BillingRequiredModal
+						opened={billingRequiredOpened}
+						organization={organisation}
+						onClose={() => setBillingRequiredOpened(false)}
+						onContinue={() => {
+							upgradingHandle.open();
+						}}
 					/>
 				</>
 			)}
