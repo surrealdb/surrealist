@@ -5,7 +5,7 @@ import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconChevronRight } from "~/util/icons";
+import { iconChevronRight, iconKeyboardShift } from "~/util/icons";
 
 export interface BackupsBlockProps {
 	instance: CloudInstance | undefined;
@@ -50,11 +50,11 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 						{canUpgrade && (
 							<Button
 								size="xs"
-								rightSection={<Icon path={iconChevronRight} />}
+								rightSection={<Icon path={iconKeyboardShift} />}
 								variant="gradient"
 								onClick={handleUpgrade}
 							>
-								Upgrade instance
+								Upgrade now
 							</Button>
 						)}
 					</>
