@@ -32,6 +32,7 @@ import {
 
 import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
+import { adapter } from "~/adapter";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
