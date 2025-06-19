@@ -4,6 +4,7 @@ import { Box, Button, Group, ScrollArea, Stack, Text, TextInput } from "@mantine
 import { useInputState } from "@mantine/hooks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
+import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
 import { AuthGuard } from "~/components/AuthGuard";
 import { Icon } from "~/components/Icon";
@@ -62,14 +63,13 @@ export function CreateOrganizationPage() {
 					type="scroll"
 					inset={0}
 					className={classes.scrollArea}
-					viewportProps={{
-						style: { paddingBlock: 75 },
-					}}
+					mt={68 + adapter.titlebarOffset}
 				>
 					<Stack
 						mx="auto"
 						maw={650}
 						gap="lg"
+						pb={68}
 					>
 						<Box>
 							<PrimaryTitle fz={26}>New organisation</PrimaryTitle>
@@ -103,17 +103,17 @@ export function CreateOrganizationPage() {
 							placeholder="My organisation"
 							value={name}
 							onChange={setName}
-							leftSection={<Icon path={iconOrganization} />}
+							leftSection={
+								<Icon
+									c="surreal"
+									path={iconOrganization}
+								/>
+							}
 							error={
 								name.length > 30
 									? "Organisation name cannot exceed 30 characters"
 									: null
 							}
-							wrapperProps={{
-								__vars: {
-									"--input-section-color": "var(--mantine-color-surreal-text)",
-								},
-							}}
 						/>
 
 						<Group mt={24}>

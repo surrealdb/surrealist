@@ -56,10 +56,23 @@ function BillingDetailsModal({ organization }: BillingDetailsModalProps) {
 interface BillingFormProps {
 	organization: CloudOrganization;
 	details: CloudBilling;
+	callback?: () => void;
 }
 
-function BillingForm({ organization, details }: BillingFormProps) {
-	const [data, setData] = useImmer(details);
+function BillingForm({ organization, details, callback }: BillingFormProps) {
+	const [data, setData] = useImmer({
+		Name: details.Name || "",
+		Email: details.Email || "",
+		AddressLine1: details.AddressLine1 || "",
+		AddressLine2: details.AddressLine2 || "",
+		City: details.City || "",
+		Zipcode: details.Zipcode || "",
+		State: details.State || "",
+		Country: details.Country || "",
+		LegalName: details.LegalName || "",
+		TaxIdentificationNumber: details.TaxIdentificationNumber || "",
+		Phone: details.Phone || "",
+	});
 	const [isLoading, setLoading] = useState(false);
 	const queryClient = useQueryClient();
 
@@ -142,6 +155,10 @@ function BillingForm({ organization, details }: BillingFormProps) {
 			}
 		} finally {
 			setLoading(false);
+
+			if (callback) {
+				callback();
+			}
 		}
 	});
 
@@ -223,18 +240,18 @@ function BillingForm({ organization, details }: BillingFormProps) {
 								d.Phone = e.target.value;
 							})
 						}
-					/>
+					/>{" "}
 					<Select
 						label="Country"
 						required
 						searchable
 						data={countryList}
-						value={data.Country}
+						value={data.Country || ""}
 						onBlur={updateValidation}
 						data-1p-ignore
 						onChange={(v) =>
 							setData((d) => {
-								d.Country = v as string;
+								d.Country = v || "";
 							})
 						}
 					/>

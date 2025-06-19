@@ -146,12 +146,12 @@ export function Sidekick() {
 						pos="absolute"
 						viewportRef={scrollRef}
 						inset={0}
+						mt={68 + adapter.titlebarOffset}
 					>
 						<Box
 							mx="auto"
 							maw={900}
-							pb={96}
-							mt={72}
+							pb={68}
 						>
 							<Group
 								wrap="nowrap"

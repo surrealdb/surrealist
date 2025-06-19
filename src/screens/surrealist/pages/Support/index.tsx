@@ -1,4 +1,5 @@
 import { Box, Center, ScrollArea, Stack } from "@mantine/core";
+import { adapter } from "~/adapter";
 import { HelpCenter } from "~/components/HelpCenter";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -19,15 +20,13 @@ export function SupportPage() {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBottom: 75 },
-				}}
+				mt={68 + adapter.titlebarOffset}
 			>
 				<Stack
 					px="xl"
 					mx="auto"
 					maw={1200}
-					mt={90}
+					pb={68}
 				>
 					<Box>
 						<PageBreadcrumbs

@@ -43,7 +43,7 @@ export function AppTitleBar() {
 			<Group gap={0}>
 				<Image
 					src={icon}
-					h={12}
+					w={23}
 					m="md"
 					data-tauri-drag-region
 				/>

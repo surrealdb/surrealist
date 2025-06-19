@@ -4,6 +4,7 @@ import { Box, Button, Divider, Group, ScrollArea, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link, Redirect, useLocation } from "wouter";
+import { adapter } from "~/adapter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
@@ -94,15 +95,13 @@ function PageContent({ organisation }: PageContentProps) {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBottom: 75 },
-				}}
+				mt={68 + adapter.titlebarOffset}
 			>
 				<Stack
 					px="xl"
 					mx="auto"
 					maw={1200}
-					mt={90}
+					pb={68}
 				>
 					{organisation && (
 						<>

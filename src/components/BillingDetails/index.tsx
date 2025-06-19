@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Group, Paper, Skeleton, Stack } from "@mantine/core";
+import { Box, BoxProps, Button, Divider, Group, Paper, Skeleton, Stack } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { openBillingDetails } from "~/cloud/modals/billing";
@@ -10,11 +10,11 @@ import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { Spacer } from "../Spacer";
 
-export interface BillingDetails {
+export interface BillingDetails extends BoxProps {
 	organisation: CloudOrganization;
 }
 
-export function BillingDetails({ organisation }: BillingDetails) {
+export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 	const isOwner = useHasOrganizationRole(organisation.id, "owner");
 	const billingQuery = useCloudBillingQuery(organisation.id);
 
@@ -26,6 +26,7 @@ export function BillingDetails({ organisation }: BillingDetails) {
 		<Paper
 			p="xl"
 			variant="gradient"
+			{...rest}
 		>
 			<Group>
 				<Icon

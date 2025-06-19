@@ -1,0 +1,40 @@
+.cloud-image {
+	width: 200px;
+	height: 200px;
+	position: absolute;
+	right: 0px;
+	opacity: 0.2;
+	bottom: -88px;
+	z-index: 1;
+	transition: bottom 0.5s ease;
+
+	@include sm-and-up {
+		opacity: 1;
+	}
+}
+
+.cloud-glow {
+	width: 850px;
+	height: 850px;
+	position: absolute;
+	right: -400px;
+	bottom: -450px;
+	z-index: 0;
+	opacity: 0.3;
+	transition: opacity 0.5s ease;
+}
+
+.cloud {
+	position: relative;
+	overflow: hidden;
+}
+
+.cloud:hover {
+	.cloud-image {
+		bottom: -72px;
+	}
+
+	.cloud-glow {
+		opacity: 0.6;
+	}
+}

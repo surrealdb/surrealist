@@ -18,6 +18,7 @@ import {
 
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useMemo, useRef, useState } from "react";
+import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -78,15 +79,13 @@ export function NewEmbedPage() {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBottom: 75 },
-				}}
+				mt={68 + adapter.titlebarOffset}
 			>
 				<Stack
 					px="xl"
 					mx="auto"
 					maw={1200}
-					mt={90}
+					pb={68}
 				>
 					<Box>
 						<PageBreadcrumbs

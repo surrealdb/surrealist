@@ -51,6 +51,7 @@ import { showErrorNotification } from "~/util/helpers";
 import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
 import { APPLY_DATASET_KEY } from "~/util/storage";
 import { BackupsBlock } from "../BackupsBlock";
+import { openBillingModal } from "../BillingRequiredModal";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";
 import { ConfigurationBlock } from "../ConfigurationBlock";
@@ -185,13 +186,21 @@ export function DashboardView() {
 	}, [details?.state, details?.id]);
 
 	const handleUpgradeType = useStable(() => {
-		setUpgradeTab("type");
-		upgradingHandle.open();
+		if (organisation?.billing_info && organisation?.payment_info) {
+			setUpgradeTab("type");
+			upgradingHandle.open();
+		} else {
+			openBillingModal(organisation);
+		}
 	});
 
 	const handleUpgradeStorage = useStable(() => {
-		setUpgradeTab("disk");
-		upgradingHandle.open();
+		if (organisation?.billing_info && organisation?.payment_info) {
+			setUpgradeTab("disk");
+			upgradingHandle.open();
+		} else {
+			openBillingModal(organisation);
+		}
 	});
 
 	const handleConfigure = useStable(() => {

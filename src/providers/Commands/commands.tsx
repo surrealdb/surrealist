@@ -161,7 +161,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						name: "Create new connection",
 						icon: iconPlus,
 						binding: true,
-						action: intent("new-connection"),
+						action: navigate("/create/connection"),
 					},
 					{
 						id: "reconnect",

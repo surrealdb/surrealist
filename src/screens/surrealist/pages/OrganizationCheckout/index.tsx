@@ -32,6 +32,7 @@ import {
 
 import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
+import { adapter } from "~/adapter";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
@@ -187,15 +188,13 @@ function PageContent({ organisation, instanceType, config }: PageContentProps) {
 						type="scroll"
 						inset={0}
 						className={classes.scrollArea}
-						viewportProps={{
-							style: { paddingBottom: 75 },
-						}}
+						mt={68 + adapter.titlebarOffset}
 					>
 						<Stack
 							px="xl"
 							mx="auto"
 							maw={1200}
-							mt={90}
+							pb={68}
 						>
 							{organisation && (
 								<>
