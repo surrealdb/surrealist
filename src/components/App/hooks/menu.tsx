@@ -180,6 +180,11 @@ export function getMenuItems(): AppMenu[] {
 				id: "paste",
 				type: "Paste",
 			},
+			SEPARATOR,
+			{
+				id: "select-all",
+				type: "SelectAll",
+			},
 		],
 	};
 
