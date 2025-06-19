@@ -42,10 +42,14 @@ import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
+import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
+import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { MetricsDuration } from "~/types";
+import { showErrorNotification } from "~/util/helpers";
 import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
+import { APPLY_DATASET_KEY } from "~/util/storage";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ComputeUsageChart } from "../ComputeUsageChart";
@@ -77,6 +81,7 @@ export function DashboardView() {
 		c?.authentication.cloudInstance,
 	]);
 
+	const [, applyDataset] = useDatasets();
 	const { mutateAsync } = useUpdateInstanceVersionMutation(instance);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
@@ -116,6 +121,22 @@ export function DashboardView() {
 		metricsDuration,
 	);
 
+	const applyInitialDataset = useStable(async (dataset: string) => {
+		try {
+			await executeQuery(
+				"DEFINE NAMESPACE demo; USE NS demo; DEFINE DATABASE surreal_deal_store;",
+			);
+
+			await activateDatabase("demo", "surreal_deal_store");
+			await applyDataset(dataset);
+		} catch (error) {
+			showErrorNotification({
+				title: "Failed to apply dataset",
+				content: error,
+			});
+		}
+	});
+
 	useEffect(() => {
 		const nodes = new Set<string>();
 
@@ -150,6 +171,18 @@ export function DashboardView() {
 	useEffect(() => {
 		setMetricsNodeFilter(undefined);
 	}, [metricsDuration]);
+
+	// Apply dataset on load
+	useEffect(() => {
+		if (details?.state === "ready") {
+			const dataset = sessionStorage.getItem(`${APPLY_DATASET_KEY}:${details.id}`);
+
+			if (dataset) {
+				sessionStorage.removeItem(`${APPLY_DATASET_KEY}:${details.id}`);
+				applyInitialDataset(dataset);
+			}
+		}
+	}, [details?.state, details?.id]);
 
 	const handleUpgradeType = useStable(() => {
 		setUpgradeTab("type");
