@@ -1,7 +1,7 @@
 {
 	"name": "surrealist",
 	"private": true,
-	"version": "3.3.5",
+	"version": "3.4.0",
 	"surreal": "2.0.0",
 	"type": "module",
 	"authors": ["SurrealDB"],
