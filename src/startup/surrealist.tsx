@@ -46,7 +46,7 @@ import { promptChangelog } from "../util/changelogs";
 	}
 
 	// TODO - Temporary redirect notice
-	if (!location.host.endsWith("surrealist.app")) {
+	if (location.host.endsWith("surrealist.app")) {
 		createRoot(root).render(<NewDomainScreen />);
 		return;
 	}
