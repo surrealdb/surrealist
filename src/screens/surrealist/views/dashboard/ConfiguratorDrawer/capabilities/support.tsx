@@ -1,5 +1,4 @@
 import {
-	Alert,
 	Box,
 	Collapse,
 	Group,
@@ -16,9 +15,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
 import { CapabilityBaseProps } from "./shared";
 
-import { iconChevronDown, iconChevronUp, iconHelp } from "~/util/icons";
-
-import { Link } from "~/components/Link";
+import { iconChevronDown, iconChevronUp, iconDownload, iconHelp } from "~/util/icons";
 
 export function SupportCapability({ name, description }: CapabilityBaseProps) {
 	const isLight = useIsLight();
@@ -78,7 +75,7 @@ export function SupportCapability({ name, description }: CapabilityBaseProps) {
 								variant="light"
 							>
 								<Icon
-									path={iconHelp}
+									path={iconDownload}
 									size="lg"
 								/>
 							</ThemeIcon>
@@ -87,25 +84,12 @@ export function SupportCapability({ name, description }: CapabilityBaseProps) {
 									fw={600}
 									c="bright"
 								>
-									Please contact support
+									Please update your instance version
 								</Text>
 								<Text>
-									This capability is currently not configurable from Surrealist.
-									Please reach out to{" "}
-									<Link href="mailto:support@surrealdb.com">
-										support@surrealdb.com
-									</Link>{" "}
-									if you require this capability to be configured for your
-									instance.
+									This capability is only supported in a newer version of
+									SurrealDB.
 								</Text>
-								<Alert
-									title="Important"
-									color="orange"
-									mt="xl"
-								>
-									Reach out using the email address associated with your Surreal
-									Cloud account.
-								</Alert>
 							</Box>
 						</Group>
 					</Paper>
