@@ -25,6 +25,8 @@ import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import { startCloudSync, syncCloudStore } from "~/util/cloud";
+import { CloudStore } from "~/stores/cloud";
 
 const WAIT_DURATION = 1000;
 interface Resource {
@@ -82,6 +84,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 			overwriteConfig(JSON.parse(event.payload));
 		});
 
+		getCurrentWindow().listen("cloud-updated", (event: Event<CloudStore>) => {
+			syncCloudStore(event.payload);
+		});
+
 		getCurrentWindow().listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
@@ -115,10 +121,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 			store: useConfigStore,
 			select: (s) => s.settings.behavior.windowPinned,
 			then: (pinned) => {
-				console.log("pinned", pinned);
 				getCurrentWindow().setAlwaysOnTop(pinned);
 			},
 		});
+
+		startCloudSync();
 	}
 
 	public dumpDebug = () => ({
