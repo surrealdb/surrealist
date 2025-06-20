@@ -123,7 +123,6 @@ export function OverviewPage() {
 
 	const authState = useCloudStore((s) => s.authState);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
-	const hasLabels = knownLabels.length > 0;
 	const isLoading = authState === "loading" || isPending;
 	const showConnections = !isLoading && (sandbox || userConnections.length > 0);
 	const hasNoResults = !isLoading && organizations.length === 0 && !showConnections;
