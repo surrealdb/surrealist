@@ -438,9 +438,9 @@ export function useComputedPreferences(): PreferenceSection[] {
 							"What host to use for the origin. Origin is only overridden in the desktop app",
 						controller: new SelectionController({
 							options: [
-								{ label: "Production", value: "surrealist.app" },
-								{ label: "Beta", value: "beta.surrealist.app" },
-								{ label: "Development", value: "dev.surrealist.app" },
+								{ label: "Production", value: "app.surrealdb.com" },
+								{ label: "Beta", value: "beta-app.surrealdb.com" },
+								{ label: "Development", value: "dev-app.surrealdb.com" },
 							] as const,
 							reader: (config) => config.settings.gtm.origin,
 							writer: (config, value) => {

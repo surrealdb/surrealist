@@ -81,7 +81,8 @@ export function usePauseInstance(instance: CloudInstance): () => void {
 					instance: instance.id,
 					region: instance.region,
 					version: instance.version,
-					compute_type: instance.type.category,
+					instance_type: instance.type.slug,
+					storage_size: instance.storage_size,
 					organisation: instance.organization_id,
 				});
 			} catch (err: any) {
@@ -121,7 +122,8 @@ export function useResumeInstance(instance: CloudInstance): () => void {
 					instance: instance.id,
 					region: instance.region,
 					version: instance.version,
-					compute_type: instance.type.category,
+					instance_type: instance.type.slug,
+					storage_size: instance.storage_size,
 					organisation: instance.organization_id,
 				});
 			} catch (err: any) {
@@ -195,7 +197,8 @@ export function useDeleteInstance(instance: CloudInstance, connection?: Connecti
 					instance: instance.id,
 					region: instance.region,
 					version: instance.version,
-					compute_type: instance.type.category,
+					instance_type: instance.type.slug,
+					storage_size: instance.storage_size,
 					organisation: instance.organization_id,
 				});
 			} catch (err: any) {

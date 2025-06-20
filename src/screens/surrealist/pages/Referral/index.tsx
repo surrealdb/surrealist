@@ -97,7 +97,7 @@ export function ReferralPage() {
 	const isAuthed = useIsAuthenticated();
 	const isLight = useIsLight();
 
-	const referralLink = `https://surrealist.app/referral?code=${referralCodeQuery.data}`;
+	const referralLink = `https://app.surrealdb.com/referral?code=${referralCodeQuery.data}`;
 	const shareOptions = {
 		title: "Surreal Cloud",
 		text: "Use my referral link to get started today!",

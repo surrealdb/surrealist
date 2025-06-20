@@ -9,7 +9,7 @@ import {
 } from "../capabilities/registry";
 
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { compareVersions } from "compare-versions";
+import { compareVersions, satisfies } from "compare-versions";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
@@ -18,6 +18,7 @@ import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
+import { SupportCapability } from "../capabilities/support";
 
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;
@@ -30,6 +31,10 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 	);
 
 	const hasArbitraryQuery = compareVersions(instance.version, "2.2.0") >= 0;
+	const hasNetworkCaps = satisfies(
+		instance.version,
+		">=2.1.8  <2.2.0 || >=2.2.6  <2.3.0 || >=2.3.6",
+	);
 
 	const { mutateAsync } = useUpdateInstanceCapabilitiesMutation(instance.id);
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
@@ -134,16 +139,25 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 
 						<Divider />
 
-						<FreeRuleSetCapability
-							name="Network access"
-							description="Configure outbound network access to specific targets"
-							value={value}
-							onChange={setValue}
-							disallowWildcard
-							allowedField="allowed_networks"
-							deniedField="denied_networks"
-							topic="network"
-						/>
+						{hasNetworkCaps ? (
+							<FreeRuleSetCapability
+								name="Network access"
+								description="Configure outbound network access to specific targets"
+								value={value}
+								onChange={setValue}
+								disallowWildcard
+								allowedField="allowed_networks"
+								deniedField="denied_networks"
+								topic="network"
+							/>
+						) : (
+							<SupportCapability
+								name="Network access"
+								description="Configure outbound network access to specific targets"
+								value={value}
+								onChange={setValue}
+							/>
+						)}
 
 						<Divider />
 

@@ -58,7 +58,17 @@ export function ConfigurationBlock({
 
 	const handleUpgrade = useStable(() => {
 		onUpgrade();
-		tagEvent("cloud_instance_upgrade_click");
+
+		if (instance) {
+			tagEvent("cloud_instance_upgrade_click", {
+				instance: instance.id,
+				region: instance.region,
+				version: instance.version,
+				instance_type: instance.type.slug,
+				storage_size: instance.storage_size,
+				organisation: instance.organization_id,
+			});
+		}
 	});
 
 	return (

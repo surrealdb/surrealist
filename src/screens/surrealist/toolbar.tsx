@@ -87,8 +87,7 @@ export function SurrealistToolbar() {
 
 			{authState === "unauthenticated" && authMode === "cloud" && (
 				<Button
-					color="orange"
-					variant="light"
+					variant="gradient"
 					size="xs"
 					onClick={openCloudAuthentication}
 				>

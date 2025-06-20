@@ -6,6 +6,7 @@ import {
 	Group,
 	Paper,
 	SimpleGrid,
+	Skeleton,
 	Stack,
 	Text,
 } from "@mantine/core";
@@ -13,6 +14,7 @@ import { closeModal, openModal } from "@mantine/modals";
 import { Fragment, ReactNode, useMemo } from "react";
 import { isDistributedType } from "~/cloud/helpers";
 import { useInstanceTypeAvailable, useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -29,6 +31,8 @@ const RECOMMENDED_TYPES = ["free", "small-dev", "medium", "medium-compute", "xla
 export function InstanceTypeSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 	const isAvailable = useInstanceTypeAvailable(organisation);
+
+	const { isPending } = useCloudOrganizationInstancesQuery(organisation.id);
 
 	const recommendations = useMemo(() => {
 		const list = RECOMMENDED_TYPES.flatMap((slug) => {
@@ -102,12 +106,16 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 					</>
 				) : (
 					recommendations.map((type) => (
-						<InstanceTypeCard
+						<Skeleton
 							key={type.slug}
-							type={type}
-							details={details}
-							onChange={handleUpdate}
-						/>
+							visible={isPending}
+						>
+							<InstanceTypeCard
+								type={type}
+								details={details}
+								onChange={handleUpdate}
+							/>
+						</Skeleton>
 					))
 				)}
 			</SimpleGrid>

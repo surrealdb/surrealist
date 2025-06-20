@@ -18,6 +18,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { invalidateSession } from "~/cloud/api/auth";
 import { clearCachedConnections } from "~/cloud/helpers";
+import { NewDomainScreen } from "~/screens/new-domain";
 import { startConfigSync } from "~/util/config";
 import { preloadImages } from "~/util/preloader";
 import { adapter } from "../adapter";
@@ -42,6 +43,12 @@ import { promptChangelog } from "../util/changelogs";
 
 	if (!root) {
 		throw new Error("Root element not found");
+	}
+
+	// TODO - Temporary redirect notice
+	if (location.host.endsWith("surrealist.app")) {
+		createRoot(root).render(<NewDomainScreen />);
+		return;
 	}
 
 	createRoot(root).render(<App />);

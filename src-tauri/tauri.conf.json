@@ -70,7 +70,7 @@
 		"updater": {
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcyRDczRTc5RDA4RjVGOEUKUldTT1g0L1FlVDdYY2c5cE1KYmNMUDcrR05CdU9DK3E4Vk1UeGNOOE5wd2ZZb1VMNGdmVm9NMGoK",
 			"endpoints": [
-				"https://surrealist.app/latest.json"
+				"https://app.surrealdb.com/latest.json"
 			]
 		},
 		"deep-link": {

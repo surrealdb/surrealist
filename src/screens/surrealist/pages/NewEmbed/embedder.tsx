@@ -168,7 +168,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 		if (isProduction) {
 			url.protocol = "https:";
-			url.hostname = "surrealist.app";
+			url.hostname = "app.surrealdb.com";
 			url.port = "";
 		}
 

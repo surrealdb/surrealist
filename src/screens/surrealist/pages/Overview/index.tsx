@@ -34,7 +34,7 @@ import {
 	iconArrowLeft,
 	iconArrowUpRight,
 	iconCheck,
-	iconOrganization,
+	iconPlus,
 	iconReset,
 	iconSearch,
 	iconTune,
@@ -123,7 +123,6 @@ export function OverviewPage() {
 
 	const authState = useCloudStore((s) => s.authState);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
-	const hasLabels = knownLabels.length > 0;
 	const isLoading = authState === "loading" || isPending;
 	const showConnections = !isLoading && (sandbox || userConnections.length > 0);
 	const hasNoResults = !isLoading && organizations.length === 0 && !showConnections;
@@ -329,9 +328,9 @@ export function OverviewPage() {
 									<Link href="/create/organisation">
 										<Button
 											size="xs"
-											color="violet"
+											color="slate"
 											variant="light"
-											leftSection={<Icon path={iconOrganization} />}
+											rightSection={<Icon path={iconPlus} />}
 										>
 											Create organisation
 										</Button>

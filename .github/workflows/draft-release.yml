@@ -14,10 +14,10 @@ on:
         description: "Optionally input a custom version. If not, the version string will automatically be generated based on the version in package.json"
 
 env:
-  UPDATE_URL_STABLE: "https://surrealist.app/latest.json"
-  UPDATE_URL_BETA: "https://beta.surrealist.app/latest.json"
-  CLOUD_CALLBACK_URL_STABLE: "https://surrealist.app/cloud/callback"
-  CLOUD_CALLBACK_URL_BETA: "https://beta.surrealist.app/cloud/callback"
+  UPDATE_URL_STABLE: "https://app.surrealdb.com/latest.json"
+  UPDATE_URL_BETA: "https://beta-app.surrealdb.com/latest.json"
+  CLOUD_CALLBACK_URL_STABLE: "https://app.surrealdb.com/cloud/callback"
+  CLOUD_CALLBACK_URL_BETA: "https://beta-app.surrealdb.com/cloud/callback"
   CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
   SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
   SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
