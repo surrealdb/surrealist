@@ -34,9 +34,11 @@ export function useInstanceDeployMutation(
 				instance: instance.id,
 				region: config.region,
 				version: config.version,
-				compute_type: config.type,
+				instance_type: instance.type.slug,
+				storage_size: instance.storage_size,
 				organisation: organisation.id,
 				cluster: config.cluster,
+				dataset: config.dataset,
 			});
 
 			return [instance, connection] as const;

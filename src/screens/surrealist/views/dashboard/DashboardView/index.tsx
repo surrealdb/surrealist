@@ -82,10 +82,6 @@ export function DashboardView() {
 		c?.authentication.cloudInstance,
 	]);
 
-	const [, applyDataset] = useDatasets();
-	const { mutateAsync } = useUpdateInstanceVersionMutation(instance);
-	const handleUpdate = useUpdateConfirmation(mutateAsync);
-
 	const [upgrading, upgradingHandle] = useBoolean();
 	const [configuring, configuringHandle] = useBoolean();
 	const [metricsNodes, setMetricsNodes] = useInputState<string[]>([]);
@@ -122,6 +118,10 @@ export function DashboardView() {
 		"cpu",
 		metricsDuration,
 	);
+
+	const [, applyDataset] = useDatasets();
+	const { mutateAsync } = useUpdateInstanceVersionMutation(details);
+	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
 	const applyInitialDataset = useStable(async (dataset: string) => {
 		try {

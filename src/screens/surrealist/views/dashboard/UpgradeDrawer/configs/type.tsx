@@ -17,7 +17,7 @@ export interface ConfigurationInstanceTypeProps {
 export function ConfigurationInstanceType({ instance, onClose }: ConfigurationInstanceTypeProps) {
 	const [selected, setSelected] = useState("");
 
-	const { mutateAsync } = useUpdateInstanceTypeMutation(instance.id);
+	const { mutateAsync } = useUpdateInstanceTypeMutation(instance);
 	const instanceType = instance.type.slug;
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 	const organizations = useOrganizations();

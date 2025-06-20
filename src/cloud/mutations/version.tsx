@@ -2,16 +2,17 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { closeConnection } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { fetchAPI } from "../api";
+import { CloudInstance } from "~/types";
 
 /**
  * Instance version updating mutation
  */
-export function useUpdateInstanceVersionMutation(instance: string | undefined) {
+export function useUpdateInstanceVersionMutation(instance: CloudInstance | undefined) {
 	const client = useQueryClient();
 
 	return useMutation({
 		mutationFn: async (version: string) => {
-			await fetchAPI(`/instances/${instance}/version`, {
+			await fetchAPI(`/instances/${instance?.id}/version`, {
 				method: "PATCH",
 				body: JSON.stringify({ version }),
 			});
@@ -22,10 +23,17 @@ export function useUpdateInstanceVersionMutation(instance: string | undefined) {
 
 			closeConnection(true);
 
-			tagEvent("cloud_instance_version_updated", {
-				instance,
-				version,
-			});
+			if (instance) {
+				tagEvent("cloud_instance_version_updated", {
+					instance: instance.id,
+					region: instance.region,
+					instance_type: instance.type.slug,
+					storage_size: instance.storage_size,
+					organisation: instance.organization_id,
+					old_version: instance.version,
+					new_version: version,
+				});
+			}
 		},
 	});
 }
