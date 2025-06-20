@@ -34,7 +34,7 @@ import {
 	iconArrowLeft,
 	iconArrowUpRight,
 	iconCheck,
-	iconOrganization,
+	iconPlus,
 	iconReset,
 	iconSearch,
 	iconTune,
@@ -329,9 +329,9 @@ export function OverviewPage() {
 									<Link href="/create/organisation">
 										<Button
 											size="xs"
-											color="violet"
+											color="slate"
 											variant="light"
-											leftSection={<Icon path={iconOrganization} />}
+											rightSection={<Icon path={iconPlus} />}
 										>
 											Create organisation
 										</Button>
