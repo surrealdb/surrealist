@@ -13,10 +13,12 @@ import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
 import { VIEW_PAGES } from "~/constants";
+import { CloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
+import { startCloudSync, syncCloudStore } from "~/util/cloud";
 import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
@@ -25,8 +27,6 @@ import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
-import { startCloudSync, syncCloudStore } from "~/util/cloud";
-import { CloudStore } from "~/stores/cloud";
 
 const WAIT_DURATION = 1000;
 interface Resource {
