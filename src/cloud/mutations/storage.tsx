@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchAPI } from "../api";
 import { CloudInstance } from "~/types";
 import { tagEvent } from "~/util/analytics";
+import { fetchAPI } from "../api";
 
 /**
  * Storage size updating mutation
