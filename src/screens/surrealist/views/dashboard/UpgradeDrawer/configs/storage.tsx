@@ -67,7 +67,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 		label: `${value} GB`,
 	}));
 
-	const { mutateAsync } = useUpdateInstanceStorageMutation(instance.id);
+	const { mutateAsync } = useUpdateInstanceStorageMutation(instance);
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 
 	const handleUpdate = useStable(() => {
