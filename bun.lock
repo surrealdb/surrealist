@@ -78,7 +78,6 @@
         "mantine-contextmenu": "^7.15.3",
         "marked": "^15.0.0",
         "papaparse": "^5.4.1",
-        "persist-and-sync": "^1.2.3",
         "radash": "^11.0.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
@@ -1039,8 +1038,6 @@
     "path-parse": ["path-parse@1.0.7", "", {}, "sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw=="],
 
     "pathe": ["pathe@1.1.2", "", {}, "sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ=="],
-
-    "persist-and-sync": ["persist-and-sync@1.2.3", "", { "peerDependencies": { "zustand": ">=3" } }, "sha512-narBnOLMCSNbQ8Jw0uElpl78ALkPNFvDiz0tUV/7JM/q90E9dntblDYz9mgEO8F9JT/S5pU7B7jltEDDdidbBw=="],
 
     "picocolors": ["picocolors@1.1.1", "", {}, "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="],
 
