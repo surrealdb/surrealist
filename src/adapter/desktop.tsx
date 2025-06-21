@@ -14,7 +14,7 @@ import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
 import { VIEW_PAGES } from "~/constants";
 import { CloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
+import { ConfigStore, useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
@@ -80,8 +80,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 			getHotkeyHandler([["mod+alt+i", () => invoke("toggle_devtools")]]),
 		);
 
-		getCurrentWindow().listen("config-updated", (event: Event<string>) => {
-			overwriteConfig(JSON.parse(event.payload));
+		getCurrentWindow().listen("config-updated", (event: Event<ConfigStore>) => {
+			overwriteConfig(event.payload);
 		});
 
 		getCurrentWindow().listen("cloud-updated", (event: Event<CloudStore>) => {

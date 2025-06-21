@@ -4,8 +4,6 @@ use std::{
     path::PathBuf,
 };
 
-use tauri::{AppHandle, Emitter, EventTarget, Window};
-
 use crate::paths::{get_config_backup_path, get_config_path};
 
 const DEFAULT_CONFIG: &str = "{}";
@@ -49,14 +47,8 @@ pub fn load_config() -> String {
 }
 
 #[tauri::command]
-pub fn save_config(app: AppHandle, window: Window, config: &str) {
+pub fn save_config(config: &str) {
     write_config(config, get_config_path());
-
-    app.emit_filter("config-updated", config, |w| match w {
-        EventTarget::Window { label } => label != window.label(),
-        _ => false,
-    })
-    .unwrap();
 }
 
 #[tauri::command]

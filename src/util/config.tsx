@@ -8,6 +8,7 @@ import type { SurrealistConfig } from "~/types";
 import { CONFIG_VERSION, createBaseConfig } from "./defaults";
 import { showDowngradeWarningModal } from "./downgrade";
 import { applyMigrations } from "./migrator";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
@@ -86,9 +87,19 @@ export async function startConfigSync() {
 	useConfigStore.setState(config);
 
 	// Sync the config with the adapter
-	useConfigStore.subscribe((updated) => {
+	useConfigStore.subscribe(async (updated) => {
 		if (!skipConfigSave) {
 			scheduleSave(updated);
+
+			if (adapter instanceof DesktopAdapter) {
+				skipConfigSave = true;
+
+				await getCurrentWindow()
+					.emit("config-updated", updated)
+					.then(() => {
+						skipConfigSave = false;
+					});
+			}
 		}
 	});
 
@@ -102,11 +113,13 @@ export async function startConfigSync() {
  * Overwrite the config store without triggering a save
  */
 export function overwriteConfig(config: SurrealistConfig) {
-	try {
-		skipConfigSave = true;
-		useConfigStore.setState(config);
-	} finally {
-		skipConfigSave = false;
+	if (!skipConfigSave) {
+		try {
+			skipConfigSave = true;
+			useConfigStore.setState(config);
+		} finally {
+			skipConfigSave = false;
+		}
 	}
 }
 
