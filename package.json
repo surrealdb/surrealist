@@ -70,7 +70,7 @@
 		"@xyflow/react": "^12.3.2",
 		"ansi-to-html": "^0.7.2",
 		"clsx": "^2.1.0",
-		"cm6-graphql": "^0.1.1",
+		"cm6-graphql": "^0.2.1",
 		"codemirror": "^6.0.1",
 		"compare-versions": "^6.1.1",
 		"date-fns": "^4.1.0",
