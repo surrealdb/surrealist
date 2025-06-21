@@ -48,7 +48,7 @@ pub fn load_config() -> String {
 
 #[tauri::command]
 pub fn save_config(config: &str) {
-    write_config(config, get_config_path())
+    write_config(config, get_config_path());
 }
 
 #[tauri::command]

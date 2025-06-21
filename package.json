@@ -1,7 +1,7 @@
 {
 	"name": "surrealist",
 	"private": true,
-	"version": "3.4.0",
+	"version": "3.4.1",
 	"surreal": "2.0.0",
 	"type": "module",
 	"authors": ["SurrealDB"],
@@ -94,7 +94,6 @@
 		"mantine-contextmenu": "^7.15.3",
 		"marked": "^15.0.0",
 		"papaparse": "^5.4.1",
-		"persist-and-sync": "^1.2.3",
 		"radash": "^11.0.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",

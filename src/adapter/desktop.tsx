@@ -1,6 +1,6 @@
 import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { Event, listen } from "@tauri-apps/api/event";
 import { basename } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -13,11 +13,13 @@ import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
 import { VIEW_PAGES } from "~/constants";
-import { useConfigStore } from "~/stores/config";
+import { CloudStore } from "~/stores/cloud";
+import { ConfigStore, useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
-import { getSetting, watchStore } from "~/util/config";
+import { startCloudSync, syncCloudStore } from "~/util/cloud";
+import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
@@ -78,6 +80,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 			getHotkeyHandler([["mod+alt+i", () => invoke("toggle_devtools")]]),
 		);
 
+		getCurrentWindow().listen("config-updated", (event: Event<ConfigStore>) => {
+			overwriteConfig(event.payload);
+		});
+
+		getCurrentWindow().listen("cloud-updated", (event: Event<CloudStore>) => {
+			syncCloudStore(event.payload);
+		});
+
 		getCurrentWindow().listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
@@ -111,10 +121,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 			store: useConfigStore,
 			select: (s) => s.settings.behavior.windowPinned,
 			then: (pinned) => {
-				console.log("pinned", pinned);
 				getCurrentWindow().setAlwaysOnTop(pinned);
 			},
 		});
+
+		startCloudSync();
 	}
 
 	public dumpDebug = () => ({

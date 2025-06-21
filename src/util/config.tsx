@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { klona } from "klona";
 import { assign, debounce, isEmpty, isEqual } from "radash";
 import type { StoreApi, UseBoundStore } from "zustand";
@@ -86,9 +87,19 @@ export async function startConfigSync() {
 	useConfigStore.setState(config);
 
 	// Sync the config with the adapter
-	useConfigStore.subscribe((updated) => {
+	useConfigStore.subscribe(async (updated) => {
 		if (!skipConfigSave) {
 			scheduleSave(updated);
+
+			if (adapter instanceof DesktopAdapter) {
+				skipConfigSave = true;
+
+				await getCurrentWindow()
+					.emit("config-updated", updated)
+					.then(() => {
+						skipConfigSave = false;
+					});
+			}
 		}
 	});
 
@@ -102,11 +113,13 @@ export async function startConfigSync() {
  * Overwrite the config store without triggering a save
  */
 export function overwriteConfig(config: SurrealistConfig) {
-	try {
-		skipConfigSave = true;
-		useConfigStore.setState(config);
-	} finally {
-		skipConfigSave = false;
+	if (!skipConfigSave) {
+		try {
+			skipConfigSave = true;
+			useConfigStore.setState(config);
+		} finally {
+			skipConfigSave = false;
+		}
 	}
 }
 
