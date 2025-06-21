@@ -1,3 +1,4 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { klona } from "klona";
 import { assign, debounce, isEmpty, isEqual } from "radash";
 import type { StoreApi, UseBoundStore } from "zustand";
@@ -8,7 +9,6 @@ import type { SurrealistConfig } from "~/types";
 import { CONFIG_VERSION, createBaseConfig } from "./defaults";
 import { showDowngradeWarningModal } from "./downgrade";
 import { applyMigrations } from "./migrator";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 
 export type Category = keyof SurrealistConfig["settings"];
 export type Settings<T extends Category> = SurrealistConfig["settings"][T];
