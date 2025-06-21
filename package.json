@@ -42,7 +42,7 @@
 		"@lezer/php": "^1.0.2",
 		"@lezer/python": "^1.1.14",
 		"@lezer/rust": "^1.0.2",
-		"@mantine/charts": "7.16.1",
+		"@mantine/charts": "7.17.7",
 		"@mantine/core": "7.16.1",
 		"@mantine/hooks": "7.16.1",
 		"@mantine/modals": "7.16.1",
