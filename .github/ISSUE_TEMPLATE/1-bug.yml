@@ -2,21 +2,22 @@ name: Bug report
 description: Report a bug in Surrealist
 title: "Bug: "
 labels: ["Bug", "Triage"]
+type: "Bug"
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
-  - type: textarea
-    id: what
+  - id: what
+    type: textarea
     attributes:
       label: Describe the bug
       description: What exactly is going wrong?
       placeholder: A short description of what the bug is.
     validations:
       required: true
-  - type: textarea
-    id: steps
+  - id: steps
+    type: textarea
     attributes:
       label: Steps to reproduce
       description: What are the steps necessary to reproduce this bug?
@@ -25,8 +26,8 @@ body:
         Remember to include any useful data, queries, screenshots or videos of the issue.
     validations:
       required: true
-  - type: textarea
-    id: expected
+  - id: expected
+    type: textarea
     attributes:
       label: Expected behaviour
       description: What is the behaviour that you would expect to see?
@@ -45,24 +46,24 @@ body:
         4. Paste clipboard contents here
     validations:
       required: true
-  - type: input
-    id: contact
+  - id: contact
+    type: input
     attributes:
       label: Contact Details
       description: How can we get in touch with you if we need more info?
-      placeholder: email@example.com
+      placeholder: discord:username or email@example.com
     validations:
       required: false
-  - type: checkboxes
-    id: check
+  - id: check
+    type: checkboxes
     attributes:
       label: Is there an existing issue for this?
       description: Please search [our issues](https://github.com/surrealdb/surrealist/issues) to see if this bug already exists.
       options:
         - label: I have searched the existing issues
           required: true
-  - type: checkboxes
-    id: terms
+  - id: terms
+    type: checkboxes
     attributes:
       label: Code of Conduct
       description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/surrealdb/surrealist/blob/main/CODE_OF_CONDUCT.md)
