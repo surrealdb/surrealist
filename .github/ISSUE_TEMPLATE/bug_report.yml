@@ -2,6 +2,7 @@ name: Bug report
 description: Report a bug in Surrealist
 title: "Bug: "
 labels: ["Bug", "Triage"]
+type: "Bug"
 body:
   - type: markdown
     attributes:

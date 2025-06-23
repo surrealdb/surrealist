@@ -2,6 +2,7 @@ name: Feature request
 description: Suggest a new feature for Surrealist
 title: "Feature: "
 labels: ["Feature", "Triage"]
+type: "Feature"
 body:
   - type: markdown
     attributes:
