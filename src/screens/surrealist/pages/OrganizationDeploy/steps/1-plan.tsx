@@ -1,33 +1,61 @@
 import { Paper, SimpleGrid } from "@mantine/core";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { StepProps } from "../types";
 
-export function PlanStep({ organisation, setStep }: StepProps) {
+export function PlanStep({ setDetails, setStep }: StepProps) {
+	// TODO Only show free when available
+	const showFree = true;
+
 	return (
 		<>
 			<SimpleGrid cols={4}>
+				{showFree && (
+					<Paper
+						p="xl"
+						variant="interactive"
+						onClick={() => {
+							setStep(1);
+							setDetails((details) => {
+								details.plan = "free";
+								details.type = "free";
+								details.dataset = true;
+							});
+						}}
+					>
+						<PrimaryTitle>Free</PrimaryTitle>
+					</Paper>
+				)}
 				<Paper
 					p="xl"
-					onClick={() => setStep(1)}
+					variant="interactive"
+					onClick={() => {
+						setStep(1);
+						setDetails((details) => {
+							details.plan = "start";
+							details.type = "";
+						});
+					}}
 				>
-					Free
+					<PrimaryTitle>Start</PrimaryTitle>
 				</Paper>
 				<Paper
 					p="xl"
-					onClick={() => setStep(1)}
+					variant="gradient"
 				>
-					Grow
+					<PrimaryTitle>Scale</PrimaryTitle>
 				</Paper>
 				<Paper
 					p="xl"
-					onClick={() => setStep(1)}
+					variant="interactive"
+					onClick={() => {
+						setStep(1);
+						setDetails((details) => {
+							details.plan = "enterprise";
+							details.type = "";
+						});
+					}}
 				>
-					Scale
-				</Paper>
-				<Paper
-					p="xl"
-					onClick={() => setStep(1)}
-				>
-					Enterprise
+					<PrimaryTitle>Enterprise</PrimaryTitle>
 				</Paper>
 			</SimpleGrid>
 		</>

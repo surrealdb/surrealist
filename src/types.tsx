@@ -30,6 +30,7 @@ export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 export type SchemaMode = "schemaless" | "schemafull";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
 export type StorageCategory = "standard" | "advanced";
+export type InstancePlan = "free" | "start" | "scale" | "enterprise";
 export type SourceMode = "schema" | "infer";
 export type SyntaxTheme = "default" | "vivid";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
@@ -759,8 +760,8 @@ export interface CloudDeployConfig {
 	version: string;
 	region: string;
 	type: string;
-	cluster: boolean;
 	units: number;
+	plan: InstancePlan;
 	storageCategory: StorageCategory;
 	storageAmount: number;
 	dataset: boolean;

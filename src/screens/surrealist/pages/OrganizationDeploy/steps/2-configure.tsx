@@ -10,6 +10,8 @@ import { DeploymentSection } from "../sections/3-instance";
 import { StepProps } from "../types";
 
 export function ConfigureStep({ organisation, details, setDetails, setStep }: StepProps) {
+	const showClusterStorage = details.plan === "scale" || details.plan === "enterprise";
+
 	const checkoutDisabled = useMemo(() => {
 		if (!details.name || details.name.length > 30) return true;
 		if (!details.region) return true;
@@ -29,11 +31,13 @@ export function ConfigureStep({ organisation, details, setDetails, setStep }: St
 				setDetails={setDetails}
 			/>
 
-			<ClusterStorageSection
-				organisation={organisation}
-				details={details}
-				setDetails={setDetails}
-			/>
+			{showClusterStorage && (
+				<ClusterStorageSection
+					organisation={organisation}
+					details={details}
+					setDetails={setDetails}
+				/>
+			)}
 
 			<DeploymentSection
 				organisation={organisation}

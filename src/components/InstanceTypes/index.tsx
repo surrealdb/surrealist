@@ -1,6 +1,6 @@
 import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
-import { useInstanceTypeAvailable, useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { CloudInstanceType, CloudOrganization } from "~/types";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
@@ -27,7 +27,6 @@ export function InstanceTypes({
 	onChange,
 }: InstanceTypesProps) {
 	const instanceTypes = useInstanceTypeRegistry(organization);
-	const isAvailable = useInstanceTypeAvailable(organization);
 
 	const categories = useMemo(() => {
 		const typeList = [...instanceTypes.values()];
@@ -35,7 +34,7 @@ export function InstanceTypes({
 		return CATEGORIES.flatMap((category) => {
 			const types = typeList
 				.filter((type) => type.category === category)
-				.filter((type) => !hideLimited || isAvailable(type))
+				.filter((type) => !hideLimited)
 				.sort((a, b) => {
 					return a.price_hour - b.price_hour;
 				});
@@ -46,7 +45,7 @@ export function InstanceTypes({
 
 			return [{ category, types }];
 		});
-	}, [instanceTypes, isAvailable, hideLimited]);
+	}, [instanceTypes, hideLimited]);
 
 	return (
 		<Stack gap={28}>
