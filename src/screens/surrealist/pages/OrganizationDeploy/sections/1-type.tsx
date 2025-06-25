@@ -94,7 +94,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 	const selected = instanceTypes.get(details.type);
 
 	return (
-		<Box mt="xl">
+		<Box>
 			<SimpleGrid cols={{ base: 1, xs: 2, md: 3 }}>
 				{selected && !isRecommended ? (
 					<>

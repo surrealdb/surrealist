@@ -1,28 +1,26 @@
 import classes from "./style.module.scss";
 
-import { Box, Button, Divider, Group, ScrollArea, Stack } from "@mantine/core";
-import { useMemo } from "react";
+import { Box, ScrollArea, Stack, Text } from "@mantine/core";
+import { useState } from "react";
 import { useImmer } from "use-immer";
-import { Link, Redirect, useLocation } from "wouter";
+import { Redirect } from "wouter";
 import { adapter } from "~/adapter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
-import { EstimatedCost } from "~/components/EstimatedCost";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
-import { useLastSavepoint } from "~/hooks/overview";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudOrganization } from "~/types";
-import { iconChevronRight } from "~/util/icons";
+import { clamp } from "~/util/helpers";
 import { generateRandomName } from "~/util/random";
 import { DEPLOY_CONFIG_KEY } from "~/util/storage";
-import { InstanceTypeSection } from "./sections/1-type";
-import { ClusterStorageSection } from "./sections/2-cluster";
-import { DeploymentSection } from "./sections/3-instance";
+import { PlanStep } from "./steps/1-plan";
+import { ConfigureStep } from "./steps/2-configure";
+import { CheckoutStep } from "./steps/3-checkout";
+
+const STEPS = ["Select a plan", "Configure your instance", "Checkout"];
 
 export interface OrganizationDeployPageProps {
 	id: string;
@@ -49,9 +47,7 @@ interface PageContentProps {
 
 function PageContent({ organisation }: PageContentProps) {
 	const cacheKey = `${DEPLOY_CONFIG_KEY}:${organisation.id}`;
-
-	const savepoint = useLastSavepoint();
-	const [, navigate] = useLocation();
+	const [step, setStep] = useState(0);
 
 	const [details, setDetails] = useImmer<CloudDeployConfig>(() => {
 		const cached = localStorage.getItem(cacheKey);
@@ -66,20 +62,8 @@ function PageContent({ organisation }: PageContentProps) {
 		};
 	});
 
-	const checkoutDisabled = useMemo(() => {
-		if (!details.name || details.name.length > 30) return true;
-		if (!details.region) return true;
-		if (!details.type) return true;
-		if (!details.version) return true;
-
-		if (details.type !== "free" && !details.units) return true;
-
-		return false;
-	}, [details]);
-
-	const handleCheckout = useStable(() => {
-		localStorage.setItem(cacheKey, JSON.stringify(details));
-		navigate("checkout");
+	const updateStep = useStable((newStep: number) => {
+		setStep(clamp(newStep, 0, STEPS.length - 1));
 	});
 
 	return (
@@ -121,56 +105,45 @@ function PageContent({ organisation }: PageContentProps) {
 									mt="sm"
 									fz={32}
 								>
-									Deploy your instance
+									<Text
+										span
+										inherit
+										opacity={0.3}
+										mr="sm"
+									>
+										{step + 1}.
+									</Text>
+									{STEPS[step]}
 								</PrimaryTitle>
 							</Box>
 
-							<Box pb={300}>
-								<InstanceTypeSection
-									organisation={organisation}
-									details={details}
-									setDetails={setDetails}
-								/>
-
-								<ClusterStorageSection
-									organisation={organisation}
-									details={details}
-									setDetails={setDetails}
-								/>
-
-								<DeploymentSection
-									organisation={organisation}
-									details={details}
-									setDetails={setDetails}
-								/>
-
-								<Divider my={36} />
-
-								<Group>
-									<Link href={savepoint.path}>
-										<Button
-											color="slate"
-											variant="light"
-										>
-											Cancel
-										</Button>
-									</Link>
-									<Button
-										type="submit"
-										variant="gradient"
-										disabled={checkoutDisabled}
-										onClick={handleCheckout}
-										rightSection={<Icon path={iconChevronRight} />}
-									>
-										Continue to checkout
-									</Button>
-									<Spacer />
-									<EstimatedCost
-										ta="right"
+							<Box my="xl">
+								{step === 0 && (
+									<PlanStep
 										organisation={organisation}
-										config={details}
+										details={details}
+										setDetails={setDetails}
+										setStep={setStep}
 									/>
-								</Group>
+								)}
+
+								{step === 1 && (
+									<ConfigureStep
+										organisation={organisation}
+										details={details}
+										setDetails={setDetails}
+										setStep={updateStep}
+									/>
+								)}
+
+								{step === 2 && (
+									<CheckoutStep
+										organisation={organisation}
+										details={details}
+										setDetails={setDetails}
+										setStep={updateStep}
+									/>
+								)}
 							</Box>
 						</>
 					)}
