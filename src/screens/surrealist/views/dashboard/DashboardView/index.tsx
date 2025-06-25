@@ -19,6 +19,7 @@ import {
 	SimpleGrid,
 	Skeleton,
 	Text,
+	Tooltip,
 } from "@mantine/core";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -349,7 +350,16 @@ export function DashboardView() {
 
 							<Group mt={32}>
 								<Box>
-									<PrimaryTitle>Metrics</PrimaryTitle>
+									<Group gap="lg">
+										<PrimaryTitle>Metrics</PrimaryTitle>
+										<Tooltip label="Metrics update live every 60 seconds">
+											<Indicator
+												processing={true}
+												size={10}
+											/>
+										</Tooltip>
+									</Group>
+
 									<Text>View and track instance activity metrics</Text>
 								</Box>
 
