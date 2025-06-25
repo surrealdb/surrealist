@@ -1,12 +1,14 @@
 import { Box, Group, List, Paper, SimpleGrid, Text } from "@mantine/core";
 import { StepProps } from "../types";
 import { usePlans } from "~/hooks/plan";
+import { useStable } from "~/hooks/stable";
+import { useMemo } from "react";
 
 export function PlanStep({ setDetails, setStep }: StepProps) {
 
 	// TODO Only show free when available
 	const showFree = true;
-	const plans = usePlans(showFree);
+	const { data } = usePlans();
 
 	const map = {
 		"cloud-free": {
@@ -29,22 +31,33 @@ export function PlanStep({ setDetails, setStep }: StepProps) {
 			plan: "enterprise",
 			dataset: false
 		}
-	} as const;
+	};
 
-	const onClickPlan = (planId: keyof typeof map) => {
+	// biome-ignore lint/correctness/useExhaustiveDependencies: false positive
+	const plans = useMemo(() => {
+		if (!data) {
+			return [];
+		}
+
+		if (data && showFree) {
+			return data;
+		}
+
+		return data.filter((plan) => plan.id !== "cloud-free");
+	}, [data, showFree]);
+
+	const onClickPlan = useStable((planId: keyof typeof map) => {
 		setDetails((details) => {
 			const planDetails = map[planId];
-			details.plan = planDetails.plan;
-			details.type = planDetails.type;
-			details.dataset = planDetails.dataset || false;
+			Object.assign(details, planDetails);
 		});
 		setStep(1);
-	};
+	});
 
 	return (
 		<>
 			<SimpleGrid cols={4}>
-				{plans.data?.map((plan) => (
+				{plans.map((plan) => (
 					<Paper
 						key={plan.id}
 						p="xl"

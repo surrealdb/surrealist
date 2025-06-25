@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-export function usePlans(useFreePlan: boolean) {
+export function usePlans() {
 	return useQuery<Plan[]>({
 		queryKey: ["plans"],
 		queryFn: async () => {
@@ -11,8 +11,7 @@ export function usePlans(useFreePlan: boolean) {
 						...plan,
 						features: plan.features.filter((feature) => !feature.includes("<span class='inline-block"))
 					}))
-				)
-				.then((data) => useFreePlan ? data : data.filter((plan) => plan.id !== "cloud-free"));
+				);
 		}
 	});
 }
