@@ -33,8 +33,10 @@ import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
+import { Spacer } from "~/components/Spacer";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import { setEditorText } from "~/editor/helpers";
+import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
@@ -44,11 +46,9 @@ import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { showErrorNotification, tryParseParams } from "~/util/helpers";
+import { dispatchIntent } from "~/util/intents";
 import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
 import { readQuery, writeQuery } from "../QueryView/strategy";
-import { Spacer } from "~/components/Spacer";
-import { dispatchIntent } from "~/util/intents";
-import { useSetting } from "~/hooks/config";
 
 const SERIALIZE = {
 	history: historyField,
