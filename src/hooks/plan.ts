@@ -1,15 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 
-export function usePlans() {
+export function usePlans(useFreePlan: boolean) {
 	return useQuery<Plan[]>({
 		queryKey: ["plans"],
 		queryFn: async () => {
 			return fetch("https://surrealdb.com/api/cloud/pricing.json")
 				.then((response) => response.json() as Promise<Plan[]>)
-				.then((data) => data.map((plan) => ({
-					...plan,
-					features: plan.features.filter((feature) => !feature.includes("<span class='inline-block"))
-				})));
+				.then((data) =>
+					data.map((plan) => ({
+						...plan,
+						features: plan.features.filter((feature) => !feature.includes("<span class='inline-block"))
+					}))
+				)
+				.then((data) => useFreePlan ? data : data.filter((plan) => plan.id !== "cloud-free"));
 		}
 	});
 }
