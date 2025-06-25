@@ -41,25 +41,30 @@ export function setQueryEditor(currentView: EditorView, queryView?: EditorView) 
  * Execute the contents of the editor as a query
  * The source editor can be overriden using the `queryEditorEffect`
  */
-export const executeEditorQuery: Command = (view: EditorView) => {
+export const executeEditorQuery = (view: EditorView, allowSelectionExecution: boolean) => {
 	const editor = view.state.field(queryEditorField, false) ?? view;
 	const ranges = editor.state.selection.ranges;
 
 	let override = "" as string | undefined;
-	if (ranges.length === 1 && !ranges[0].empty) {
-		override = editor.state.sliceDoc(ranges[0].from, ranges[0].to);
-	} else if (ranges.length > 1) {
-		for (const range of ranges) {
-			if (range.empty) {
-				const query = getQueryRange(view, range.head);
-				if (!query) continue;
 
-				const [from, to] = query;
-				override += `${editor.state.sliceDoc(from, to)};\n`;
-			} else {
-				override += `${editor.state.sliceDoc(range.from, range.to)};\n`;
+	if (allowSelectionExecution) {
+		if (ranges.length === 1 && !ranges[0].empty) {
+			override = editor.state.sliceDoc(ranges[0].from, ranges[0].to);
+		} else if (ranges.length > 1) {
+			for (const range of ranges) {
+				if (range.empty) {
+					const query = getQueryRange(view, range.head);
+					if (!query) continue;
+
+					const [from, to] = query;
+					override += `${editor.state.sliceDoc(from, to)};\n`;
+				} else {
+					override += `${editor.state.sliceDoc(range.from, range.to)};\n`;
+				}
 			}
 		}
+	} else {
+		override = undefined;
 	}
 
 	executeUserQuery({

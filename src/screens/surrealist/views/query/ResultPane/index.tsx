@@ -40,6 +40,7 @@ import { GraphPreview } from "./previews/graph";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
+import { useSetting } from "~/hooks/config";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -79,6 +80,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const isQueryValid = useQueryStore((s) => s.isQueryValid);
 
 	const isLight = useIsLight();
+	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
 	const [resultTab, setResultTab] = useState<number>(1);
 	const selectedTab = resultTab - 1;
 	const resultMode = activeTab.resultMode;
@@ -108,7 +110,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const runQuery = useStable(() => {
 		if (editor) {
-			executeEditorQuery(editor);
+			executeEditorQuery(editor, allowSelectionExecution);
 		}
 	});
 
@@ -178,7 +180,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		URL.revokeObjectURL(url);
 	});
 
-	const runText = `Run ${selection ? "selection" : "query"}`;
+	const runText = `Run ${selection && allowSelectionExecution ? "selection" : "query"}`;
 
 	return (
 		<ContentPane

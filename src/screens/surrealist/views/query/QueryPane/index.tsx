@@ -23,7 +23,7 @@ import { historyField } from "@codemirror/commands";
 import { syntaxTree } from "@codemirror/language";
 import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
-import { Group, HoverCard, ThemeIcon } from "@mantine/core";
+import { Alert, Group, HoverCard, ThemeIcon, Transition } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { objectify, trim } from "radash";
@@ -46,6 +46,9 @@ import type { QueryTab } from "~/types";
 import { showErrorNotification, tryParseParams } from "~/util/helpers";
 import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
 import { readQuery, writeQuery } from "../QueryView/strategy";
+import { Spacer } from "~/components/Spacer";
+import { dispatchIntent } from "~/util/intents";
+import { useSetting } from "~/hooks/config";
 
 const SERIALIZE = {
 	history: historyField,
@@ -82,6 +85,11 @@ export function QueryPane({
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
 	const [connection] = useConnectionAndView();
+	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
+	const [allowSelectionExecutionWarning] = useSetting(
+		"behavior",
+		"querySelectionExecutionWarning",
+	);
 	const queryTabList = useConnection((c) => c?.queryTabList);
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
@@ -308,6 +316,61 @@ export function QueryPane({
 				className={classes.editor}
 				mb={-9}
 			/>
+			<Transition
+				mounted={
+					allowSelectionExecutionWarning &&
+					allowSelectionExecution &&
+					selection !== undefined
+				}
+				transition="slide-down"
+				timingFunction="ease"
+				duration={500}
+			>
+				{(style) => (
+					<Alert
+						p="xs"
+						px="md"
+						mb={9}
+						color="slate.6"
+						variant="filled"
+						icon={<Icon path={iconWarning} />}
+						title={
+							<Group>
+								<Text>Only the highlighted selection will execute</Text>
+								<Spacer />
+								<Text
+									c="slate.3"
+									variant="subtle"
+									style={{
+										cursor: "pointer",
+									}}
+									onClick={() => {
+										dispatchIntent("open-settings", {
+											tab: "preferences",
+											section: "query-selection-execution",
+										});
+									}}
+								>
+									Settings
+								</Text>
+							</Group>
+						}
+						styles={{
+							label: {
+								fontWeight: 500,
+								fontSize: 13,
+								width: "100%",
+							},
+							root: {
+								position: "absolute",
+								width: "calc(100% - 6rem)",
+								bottom: 0,
+								left: "3.75rem",
+							},
+						}}
+					/>
+				)}
+			</Transition>
 		</ContentPane>
 	);
 }

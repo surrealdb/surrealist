@@ -241,7 +241,7 @@ export function Settings() {
 		setActiveTab(tab);
 	});
 
-	useIntent("open-settings", ({ tab }) => {
+	useIntent("open-settings", ({ tab, section }) => {
 		if (tab) {
 			setActiveTab(tab);
 
@@ -255,6 +255,16 @@ export function Settings() {
 		}
 
 		openHandle.open();
+
+		setTimeout(() => {
+			if (section) {
+				const element = document.getElementById(section);
+
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+				}
+			}
+		}, 250);
 	});
 
 	// useKeymap([
