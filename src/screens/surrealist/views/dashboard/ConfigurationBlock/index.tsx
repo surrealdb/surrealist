@@ -51,7 +51,7 @@ export function ConfigurationBlock({
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${cpuCount} ${plural(cpuCount, "vCPU")}`;
 	const storageText = formatMemory(storageSize * 1000, true);
-	const nodeText = nodeCount === 1 ? "Single-node" : `${nodeCount} Node`;
+	const nodeText = nodeCount === 1 ? "Single-node" : plural(nodeCount, `${nodeCount} Node`);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");

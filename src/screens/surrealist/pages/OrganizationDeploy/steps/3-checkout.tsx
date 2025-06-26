@@ -129,7 +129,7 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const backupText = isFree ? "Upgrade required" : "Available";
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
-	const nodeText = nodeCount === 1 ? "Single node" : `${nodeCount} Node`;
+	const nodeText = nodeCount === 1 ? "Single node" : plural(nodeCount, `${nodeCount} Node`);
 	const datasetText = details?.dataset ? "Yes" : "No";
 
 	return (
