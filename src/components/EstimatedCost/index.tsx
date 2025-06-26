@@ -2,7 +2,6 @@ import { Box, BoxProps, Group, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { useCloudEstimationQuery } from "~/cloud/queries/estimation";
 import type { CloudDeployConfig, CloudOrganization } from "~/types";
-import { CURRENCY_FORMAT } from "~/util/helpers";
 
 export interface EstimatedCostProps extends BoxProps {
 	organisation: CloudOrganization;
@@ -13,14 +12,13 @@ export function EstimatedCost({ organisation, config, ...other }: EstimatedCostP
 	const { data } = useCloudEstimationQuery(organisation, config);
 
 	const format = useMemo(() => {
-		// return new Intl.NumberFormat("en-US", {
-		// 	style: "currency",
-		// 	currency: data?.currency ?? "USD",
-		// 	currencyDisplay: "narrowSymbol",
-		// 	maximumFractionDigits: 3,
-		// });
-		return CURRENCY_FORMAT;
-	}, []);
+		return new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: data?.currency ?? "USD",
+			currencyDisplay: "narrowSymbol",
+			maximumFractionDigits: 3,
+		});
+	}, [data?.currency]);
 
 	return (
 		<Box {...other}>
@@ -43,7 +41,7 @@ export function EstimatedCost({ organisation, config, ...other }: EstimatedCostP
 						fw={600}
 						c="bright"
 					>
-						{format.format(data.cost / 1000)}
+						{format.format(data.cost)}
 					</Text>
 				) : (
 					<Text
