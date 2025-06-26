@@ -1,5 +1,6 @@
 import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
+import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
@@ -8,7 +9,6 @@ import { iconAuth } from "~/util/icons";
 import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
 
 const CATEGORIES = ["free", "development", "production", "production-compute", "production-memory"];
 

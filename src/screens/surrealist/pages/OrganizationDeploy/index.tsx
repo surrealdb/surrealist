@@ -6,6 +6,7 @@ import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import { adapter } from "~/adapter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
@@ -19,7 +20,6 @@ import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
 import { CheckoutStep } from "./steps/3-checkout";
-import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 const STEPS = ["Select a plan", "Configure your instance", "Checkout"];
 

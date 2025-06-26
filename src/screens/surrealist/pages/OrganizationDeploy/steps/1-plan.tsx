@@ -1,18 +1,18 @@
 import classes from "../style.module.scss";
 
 import { Box, Button, Checkbox, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
-import { StepProps } from "../types";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { CURRENCY_FORMAT } from "~/util/helpers";
-import { Label } from "~/components/Label";
-import { InstancePlanInfo, useCloudPlansQuery } from "~/cloud/queries/plans";
-import { InstancePlan } from "~/types";
-import { useStable } from "~/hooks/stable";
 import clsx from "clsx";
+import { InstancePlanInfo, useCloudPlansQuery } from "~/cloud/queries/plans";
 import { Icon } from "~/components/Icon";
-import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
-import { useHasCloudFeature } from "~/hooks/cloud";
+import { Label } from "~/components/Label";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useHasCloudFeature } from "~/hooks/cloud";
+import { useStable } from "~/hooks/stable";
+import { InstancePlan } from "~/types";
+import { CURRENCY_FORMAT } from "~/util/helpers";
+import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
+import { StepProps } from "../types";
 
 export function PlanStep({ organisation, instances, setDetails, setStep }: StepProps) {
 	const freeCount = instances.filter((instance) => instance.type.price_hour === 0).length;
