@@ -19,7 +19,6 @@ import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
@@ -72,7 +71,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						organization={organisation}
 						value={details.type}
 						onChange={handleUpdate}
-						hideLimited
+						plan={details.plan}
 					/>
 				</>
 			),
@@ -119,12 +118,10 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						color="slate"
 						variant="light"
 						rightSection={<Icon path={iconArrowUpRight} />}
-						onClick={handleReset}
 					>
 						View pricing information
 					</Button>
 				</a>
-				<Spacer />
 				{details.type && !isRecommended ? (
 					<>
 						<Button

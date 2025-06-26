@@ -1,127 +1,213 @@
-import { Box, Group, List, Paper, SimpleGrid, Text } from "@mantine/core";
+import classes from "../style.module.scss";
+
+import { Box, Button, Checkbox, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { StepProps } from "../types";
-import { usePlans } from "~/hooks/plan";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { CURRENCY_FORMAT } from "~/util/helpers";
+import { Label } from "~/components/Label";
+import { InstancePlanInfo, useCloudPlansQuery } from "~/cloud/queries/plans";
+import { InstancePlan } from "~/types";
 import { useStable } from "~/hooks/stable";
-import { useMemo } from "react";
+import clsx from "clsx";
+import { Icon } from "~/components/Icon";
+import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
+import { useHasCloudFeature } from "~/hooks/cloud";
+import { Spacer } from "~/components/Spacer";
 
-export function PlanStep({ setDetails, setStep }: StepProps) {
+export function PlanStep({ organisation, instances, setDetails, setStep }: StepProps) {
+	const freeCount = instances.filter((instance) => instance.type.price_hour === 0).length;
+	const showFree = freeCount < organisation.max_free_instances;
+	const showEnterprise = useHasCloudFeature("distributed_storage");
 
-	// TODO Only show free when available
-	const showFree = true;
-	const { data } = usePlans();
+	const { data } = useCloudPlansQuery();
 
-	const map = {
-		"cloud-free": {
-			dataset: true,
-			type: "free",
-			plan: "free"
-		},
-		"cloud-start": {
-			type: "",
-			plan: "start",
-			dataset: false
-		},
-		"cloud-scale": {
-			type: "",
-			plan: "scale",
-			dataset: false
-		},
-		"cloud-enterprise": {
-			type: "",
-			plan: "enterprise",
-			dataset: false
-		}
-	};
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: false positive
-	const plans = useMemo(() => {
-		if (!data) {
-			return [];
-		}
-
-		if (data && showFree) {
-			return data;
-		}
-
-		return data.filter((plan) => plan.id !== "cloud-free");
-	}, [data, showFree]);
-
-	const onClickPlan = useStable((planId: keyof typeof map) => {
-		setDetails((details) => {
-			const planDetails = map[planId];
-			Object.assign(details, planDetails);
-		});
+	const onClickPlan = useStable(({ surrealist }: InstancePlanInfo) => {
 		setStep(1);
+		setDetails((details) => {
+			details.plan = surrealist.plan as InstancePlan;
+			details.dataset = surrealist.dataset ?? false;
+			details.type = surrealist.defaultType ?? "";
+		});
 	});
 
 	return (
 		<>
-			<SimpleGrid cols={4}>
-				{plans.map((plan) => (
-					<Paper
-						key={plan.id}
-						p="xl"
-						onClick={() => onClickPlan(plan.id as keyof typeof map)}
-						variant="interactive"
-					>
-						<Box mih={150}>
-							<Text size="2rem" fw={500}>{plan.name}</Text>
-							<Text size="xl" mt="xs">
-								{typeof plan.price === "number" ? (
-									<>
-										<Text component="span" size="lg" c="dimmed">
-											Starting at
-										</Text>
-										<Group align="center" gap="xs">
-											<Text component="span" fw="bold" size="1.45rem">
-												${plan.price.toFixed(2).toString()}
-											</Text>
-											<Text component="span" size="md" c="dimmed">
-												per hour
-											</Text>
-										</Group>
-									</>
-								) : plan.price}
-							</Text>
-							<Text size="lg" mt="xs">
-								{plan.description}
-							</Text>
-						</Box>
-						<Box mih={400}>
-							<Text size="lg" mt="xl" fw="bold">
-								{plan.featuresTitle}
-							</Text>
-							<List>
-								{plan.features.map((feature, index) => (
-									<List.Item mt="xs" key={feature}>
-										{feature}
-									</List.Item>
-								))}
-							</List>
-							<Text size="lg" mt="xl" fw="bold">
-								Resources
-							</Text>
-							<List>
-								{plan.resources.map((resource) => (
-									<List.Item mt="xs" key={resource}>
-										{resource}
-									</List.Item>
-								))}
-							</List>
-						</Box>
-						<Text size="lg" mt="xl" fw="bold">
-							Plus
-						</Text>
-						<List>
-							{plan.plus?.map((plus) => (
-								<List.Item mt="xs" key={plus}>
-									{plus}
-								</List.Item>
-							))}
-						</List>
-					</Paper>
-				))}
+			<SimpleGrid
+				cols={{ base: 1, sm: 2, lg: showFree ? 4 : 3 }}
+				spacing="xl"
+			>
+				{showFree && data?.free && (
+					<PlanCard
+						plan={data.free}
+						state="available"
+						onConfigure={onClickPlan}
+					/>
+				)}
+				{data?.start && (
+					<PlanCard
+						plan={data.start}
+						state="available"
+						onConfigure={onClickPlan}
+					/>
+				)}
+				{data?.scale && (
+					<PlanCard
+						plan={data.scale}
+						state="future"
+						onConfigure={onClickPlan}
+					/>
+				)}
+				{data?.enterprise && (
+					<PlanCard
+						plan={data.enterprise}
+						state={showEnterprise ? "available" : "contact"}
+						onConfigure={onClickPlan}
+					/>
+				)}
 			</SimpleGrid>
+
+			<Stack
+				align="center"
+				mt={36}
+			>
+				<Text>Looking for more pricing options and information?</Text>
+				<a
+					href="https://surrealdb.com/pricing"
+					target="_blank"
+					rel="noreferrer"
+				>
+					<Button
+						size="xs"
+						color="slate"
+						variant="light"
+						rightSection={<Icon path={iconArrowUpRight} />}
+					>
+						View pricing information
+					</Button>
+				</a>
+			</Stack>
 		</>
+	);
+}
+
+export type PlanCardState = "available" | "future" | "contact";
+
+export interface PlanCardProps {
+	plan: InstancePlanInfo;
+	state: PlanCardState;
+	recommended?: boolean;
+	onConfigure: (plan: InstancePlanInfo) => void;
+}
+
+function PlanCard({ plan, state, recommended, onConfigure }: PlanCardProps) {
+	return (
+		<Paper
+			p="xl"
+			role="button"
+			tabIndex={0}
+			variant={state === "future" ? "gradient" : "interactive"}
+			className={clsx(
+				recommended && classes.planRecommended,
+				state === "future" && classes.planDisabled,
+			)}
+			onClick={() => {
+				if (state === "available") {
+					onConfigure(plan);
+				} else if (state === "contact") {
+					window.open("https://surrealdb.com/contact", "_blank");
+				}
+			}}
+		>
+			<Stack h="100%">
+				<Box>
+					<Text fz={22}>{plan.name}</Text>
+					{state === "contact" ? (
+						<PrimaryTitle fz={22}>Contact us</PrimaryTitle>
+					) : state === "future" ? (
+						<PrimaryTitle fz={22}>Coming soon</PrimaryTitle>
+					) : (
+						<>
+							{typeof plan.price === "number" ? (
+								<Group
+									align="end"
+									gap="xs"
+								>
+									<Text
+										size="md"
+										lh={2.25}
+									>
+										From
+									</Text>
+									<PrimaryTitle fz={22}>
+										{CURRENCY_FORMAT.format(plan.price)}
+									</PrimaryTitle>
+									<Text
+										size="md"
+										lh={2.25}
+									>
+										/ per hour
+									</Text>
+								</Group>
+							) : (
+								<PrimaryTitle fz={22}>Available</PrimaryTitle>
+							)}
+						</>
+					)}
+				</Box>
+				<Text>{plan.description}</Text>
+				<Label mt="xl">What you get</Label>
+				<Stack>
+					{plan.features.map((feature) => (
+						<Group
+							gap="sm"
+							c="bright"
+							key={feature}
+						>
+							<Checkbox
+								checked
+								size="xs"
+							/>
+							{feature}
+						</Group>
+					))}
+				</Stack>
+				<Label mt="xl">Resources</Label>
+				<Stack>
+					{plan.resources.map((resource) => (
+						<Group
+							gap="sm"
+							c="bright"
+							key={resource}
+						>
+							<Checkbox
+								checked
+								size="xs"
+							/>
+							{resource}
+						</Group>
+					))}
+				</Stack>
+				<Spacer />
+				<Group
+					mt="md"
+					gap="xs"
+					justify="end"
+					c={state === "future" ? "slate" : "surreal"}
+				>
+					<Text inherit>
+						{state === "available"
+							? "Configure instance"
+							: state === "future"
+								? "Coming soon"
+								: "Contact us"}
+					</Text>
+					<Icon
+						className={classes.startBlogArrow}
+						path={iconArrowLeft}
+						flip="horizontal"
+					/>
+				</Group>
+			</Stack>
+		</Paper>
 	);
 }

@@ -1,10 +1,11 @@
 import type { Updater } from "use-immer";
-import { CloudDeployConfig, CloudOrganization } from "~/types";
+import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 
 export interface StepProps {
 	organisation: CloudOrganization;
 	details: CloudDeployConfig;
 	setDetails: Updater<CloudDeployConfig>;
+	instances: CloudInstance[];
 	setStep: (step: number) => void;
 }
 

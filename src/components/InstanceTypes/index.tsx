@@ -1,40 +1,39 @@
 import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
-import { CloudInstanceType, CloudOrganization } from "~/types";
+import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconAuth } from "~/util/icons";
 import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
+import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
 
 const CATEGORIES = ["free", "development", "production", "production-compute", "production-memory"];
 
 export interface InstanceTypesProps {
 	value?: string;
 	active?: string;
+	plan: InstancePlan;
 	organization: CloudOrganization;
-	hideLimited?: boolean;
 	onChange: (value: CloudInstanceType) => void;
 }
 
-export function InstanceTypes({
-	value,
-	active,
-	organization,
-	hideLimited,
-	onChange,
-}: InstanceTypesProps) {
+export function InstanceTypes({ value, active, plan, organization, onChange }: InstanceTypesProps) {
 	const instanceTypes = useInstanceTypeRegistry(organization);
+	const available = INSTANCE_PLAN_CATEGORIES[plan];
 
 	const categories = useMemo(() => {
 		const typeList = [...instanceTypes.values()];
 
 		return CATEGORIES.flatMap((category) => {
+			if (!available.includes(category)) {
+				return [];
+			}
+
 			const types = typeList
 				.filter((type) => type.category === category)
-				.filter((type) => !hideLimited)
 				.sort((a, b) => {
 					return a.price_hour - b.price_hour;
 				});
@@ -45,7 +44,7 @@ export function InstanceTypes({
 
 			return [{ category, types }];
 		});
-	}, [instanceTypes, hideLimited]);
+	}, [instanceTypes, available]);
 
 	return (
 		<Stack gap={28}>

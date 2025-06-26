@@ -12,13 +12,14 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { TopGlow } from "~/components/TopGlow";
 import { useStable } from "~/hooks/stable";
-import { CloudDeployConfig, CloudOrganization } from "~/types";
+import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 import { clamp } from "~/util/helpers";
 import { generateRandomName } from "~/util/random";
 import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
 import { CheckoutStep } from "./steps/3-checkout";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 
 const STEPS = ["Select a plan", "Configure your instance", "Checkout"];
 
@@ -28,24 +29,31 @@ export interface OrganizationDeployPageProps {
 
 export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
 	const organisationsQuery = useCloudOrganizationsQuery();
+	const instancesQuery = useCloudOrganizationInstancesQuery(id);
+
 	const organisation = organisationsQuery.data?.find((org) => org.id === id);
+	const instances = instancesQuery.data ?? [];
 
 	if (organisationsQuery.isSuccess && !organisation) {
 		return <Redirect to="/organisations" />;
 	}
 
 	return (
-		<AuthGuard loading={organisationsQuery.isLoading}>
-			<PageContent organisation={organisation as CloudOrganization} />
+		<AuthGuard loading={organisationsQuery.isLoading || instancesQuery.isLoading}>
+			<PageContent
+				organisation={organisation as CloudOrganization}
+				instances={instances}
+			/>
 		</AuthGuard>
 	);
 }
 
 interface PageContentProps {
 	organisation: CloudOrganization;
+	instances: CloudInstance[];
 }
 
-function PageContent({ organisation }: PageContentProps) {
+function PageContent({ organisation, instances }: PageContentProps) {
 	const cacheKey = `${DEPLOY_CONFIG_KEY}:${organisation.id}`;
 	const [step, setStep] = useState(0);
 
@@ -121,6 +129,7 @@ function PageContent({ organisation }: PageContentProps) {
 								{step === 0 && (
 									<PlanStep
 										organisation={organisation}
+										instances={instances}
 										details={details}
 										setDetails={setDetails}
 										setStep={setStep}
@@ -130,6 +139,7 @@ function PageContent({ organisation }: PageContentProps) {
 								{step === 1 && (
 									<ConfigureStep
 										organisation={organisation}
+										instances={instances}
 										details={details}
 										setDetails={setDetails}
 										setStep={updateStep}
@@ -139,6 +149,7 @@ function PageContent({ organisation }: PageContentProps) {
 								{step === 2 && (
 									<CheckoutStep
 										organisation={organisation}
+										instances={instances}
 										details={details}
 										setDetails={setDetails}
 										setStep={updateStep}
