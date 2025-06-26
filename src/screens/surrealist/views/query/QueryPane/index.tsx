@@ -322,9 +322,7 @@ export function QueryPane({
 					allowSelectionExecution &&
 					selection !== undefined
 				}
-				transition="slide-down"
-				timingFunction="ease"
-				duration={500}
+				transition="slide-up"
 			>
 				{(style) => (
 					<Alert
@@ -355,6 +353,7 @@ export function QueryPane({
 								</Text>
 							</Group>
 						}
+						style={style}
 						styles={{
 							label: {
 								fontWeight: 500,
