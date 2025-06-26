@@ -21,6 +21,14 @@ export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, string[]> = {
 	enterprise: ["production-memory", "production-compute"],
 };
 
+export const INSTANCE_CATEGORY_PLANS: Record<string, InstancePlan> = {
+	free: "start",
+	development: "start",
+	production: "start",
+	"production-memory": "enterprise",
+	"production-compute": "enterprise",
+};
+
 export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	free: ["free", "small-dev", "medium"],
 	start: ["small-dev", "medium", "xlarge"],

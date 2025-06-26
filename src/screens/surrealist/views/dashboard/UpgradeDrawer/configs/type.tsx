@@ -2,6 +2,7 @@ import classes from "../style.module.scss";
 
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { useState } from "react";
+import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceTypeMutation } from "~/cloud/mutations/type";
 import { InstanceTypes } from "~/components/InstanceTypes";
@@ -22,6 +23,8 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 	const organizations = useOrganizations();
 	const organization = organizations.find((org) => org.id === instance.organization_id);
+
+	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
 
 	const handleUpdate = useStable(() => {
 		onClose();
@@ -70,9 +73,9 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 							<InstanceTypes
 								value={selected}
 								active={instanceType}
+								plan={guessedPlan}
 								organization={organization}
 								onChange={(type) => setSelected(type.slug)}
-								hideLimited
 							/>
 						)}
 					</Stack>
