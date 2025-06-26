@@ -25,6 +25,8 @@ import type {
 	GlobalPage,
 	GlobalPageInfo,
 	Listable,
+	Observable,
+	ObserverView,
 	Orientation,
 	Protocol,
 	ResultFormat,
@@ -41,6 +43,8 @@ import type {
 
 import {
 	iconAPI,
+	iconArrowDownFat,
+	iconArrowUpRight,
 	iconAuth,
 	iconBraces,
 	iconCombined,
@@ -48,10 +52,12 @@ import {
 	iconDatabase,
 	iconDesigner,
 	iconExplorer,
+	iconEye,
 	iconFunction,
 	iconGraphql,
 	iconHelp,
 	iconLive,
+	iconMemory,
 	iconModuleML,
 	iconOrganization,
 	iconPlus,
@@ -236,7 +242,13 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		id: "dashboard",
 		name: "Dashboard",
 		icon: iconTune,
-		disabled: ({ flags, isCloud }) => !flags.query_view || !isCloud,
+		disabled: ({ isCloud }) => !isCloud,
+	},
+	observer: {
+		id: "observer",
+		name: "Observer",
+		icon: iconEye,
+		disabled: ({ isCloud }) => !isCloud,
 	},
 	query: {
 		id: "query",
@@ -444,5 +456,43 @@ export const DRIVERS: Driver[] = [
 		name: "C",
 		icon: CIcon,
 		link: "https://github.com/surrealdb/surrealdb.c",
+	},
+];
+
+export const OBSERVER_VIEWS: ObserverView[] = [
+	{
+		id: "log",
+		label: "Logs",
+	},
+	{
+		id: "metric",
+		label: "Metrics",
+	},
+];
+
+export const METRICS_OBSERVABLES: Observable[] = [
+	{
+		id: "cpu",
+		type: "metric",
+		label: "Compute usage",
+		icon: iconQuery,
+	},
+	{
+		id: "memory",
+		type: "metric",
+		label: "Memory usage",
+		icon: iconMemory,
+	},
+	{
+		id: "egress",
+		type: "metric",
+		label: "Network egress",
+		icon: iconArrowUpRight,
+	},
+	{
+		id: "ingress",
+		type: "metric",
+		label: "Network ingress",
+		icon: iconArrowDownFat,
 	},
 ];

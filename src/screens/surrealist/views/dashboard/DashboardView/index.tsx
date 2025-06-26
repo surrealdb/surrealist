@@ -29,7 +29,6 @@ import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
-import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { ActionButton } from "~/components/ActionButton";
@@ -52,15 +51,15 @@ import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
 import { APPLY_DATASET_KEY } from "~/util/storage";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
-import { ComputeUsageChart } from "../ComputeUsageChart";
+import { ComputeUsageChart } from "../../observer/ComputeUsageChart";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
-import { MemoryUsageChart } from "../MemoryUsageChart";
+import { MemoryUsageChart } from "../../observer/MemoryUsageChart";
 import { NavigationBlock } from "../NavigationBlock";
-import { NetworkEgressChart } from "../NetworkEgressChart";
-import { NetworkIngressChart } from "../NetworkIngressChart";
+import { NetworkEgressChart } from "../../observer/NetworkEgressChart";
+import { NetworkIngressChart } from "../../observer/NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
@@ -90,6 +89,11 @@ export function DashboardView() {
 		undefined,
 	);
 
+	const [networkIngressLabels, setNetworkIngressLabels] = useState<string[]>([]);
+	const [networkEgressLabels, setNetworkEgressLabels] = useState<string[]>([]);
+	const [memoryLabels, setMemoryLabels] = useState<string[]>([]);
+	const [cpuLabels, setCpuLabels] = useState<string[]>([]);
+
 	const [upgradeTab, setUpgradeTab] = useState("type");
 	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
 	const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
@@ -99,24 +103,6 @@ export function DashboardView() {
 	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instance);
 	const { data: organisation, isPending: organisationPending } = useCloudOrganizationQuery(
 		details?.organization_id,
-	);
-
-	const { data: networkIngressMetrics, isPending: networkIngressMetricsPending } =
-		useCloudMetricsQuery(instance, "ingress", metricsDuration);
-
-	const { data: networkEgressMetrics, isPending: networkEgressMetricsPending } =
-		useCloudMetricsQuery(instance, "egress", metricsDuration);
-
-	const { data: memoryMetrics, isPending: memoryMetricsPending } = useCloudMetricsQuery(
-		instance,
-		"memory",
-		metricsDuration,
-	);
-
-	const { data: cpuMetrics, isPending: cpuMetricsPending } = useCloudMetricsQuery(
-		instance,
-		"cpu",
-		metricsDuration,
 	);
 
 	const [, applyDataset] = useDatasets();
@@ -142,32 +128,24 @@ export function DashboardView() {
 	useEffect(() => {
 		const nodes = new Set<string>();
 
-		if (networkIngressMetrics) {
-			for (const m of networkIngressMetrics.values.metrics) {
-				nodes.add(m.labels);
-			}
+		for (const label of memoryLabels) {
+			nodes.add(label);
 		}
 
-		if (networkEgressMetrics) {
-			for (const m of networkEgressMetrics.values.metrics) {
-				nodes.add(m.labels);
-			}
+		for (const label of cpuLabels) {
+			nodes.add(label);
 		}
 
-		if (memoryMetrics) {
-			for (const m of memoryMetrics.values.metrics) {
-				nodes.add(m.labels);
-			}
+		for (const label of networkEgressLabels) {
+			nodes.add(label);
 		}
 
-		if (cpuMetrics) {
-			for (const m of cpuMetrics.values.metrics) {
-				nodes.add(m.labels);
-			}
+		for (const label of networkIngressLabels) {
+			nodes.add(label);
 		}
 
 		setMetricsNodes(Array.from(nodes));
-	}, [networkIngressMetrics, networkEgressMetrics, memoryMetrics, cpuMetrics]);
+	}, [memoryLabels, cpuLabels, networkEgressLabels, networkIngressLabels]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset evert time the metrics duration changes
 	useEffect(() => {
@@ -216,15 +194,7 @@ export function DashboardView() {
 		configuringHandle.open();
 	});
 
-	const isLoading =
-		detailsPending ||
-		backupsPending ||
-		usagePending ||
-		organisationPending ||
-		networkIngressMetricsPending ||
-		networkEgressMetricsPending ||
-		memoryMetricsPending ||
-		cpuMetricsPending;
+	const isLoading = detailsPending || backupsPending || usagePending || organisationPending;
 
 	if (!isCloud) {
 		return <Redirect to="/query" />;
@@ -483,35 +453,53 @@ export function DashboardView() {
 								</Menu>
 							</Group>
 
-							<SimpleGrid
-								cols={2}
-								spacing="xl"
-							>
-								<MemoryUsageChart
-									metrics={memoryMetrics}
-									duration={metricsDuration}
-									nodeFilter={metricsNodeFilter}
-									isLoading={isLoading}
-								/>
-								<ComputeUsageChart
-									metrics={cpuMetrics}
-									duration={metricsDuration}
-									nodeFilter={metricsNodeFilter}
-									isLoading={isLoading}
-								/>
-								<NetworkIngressChart
-									metrics={networkIngressMetrics}
-									duration={metricsDuration}
-									nodeFilter={metricsNodeFilter}
-									isLoading={isLoading}
-								/>
-								<NetworkEgressChart
-									metrics={networkEgressMetrics}
-									duration={metricsDuration}
-									nodeFilter={metricsNodeFilter}
-									isLoading={isLoading}
-								/>
-							</SimpleGrid>
+							{instance && (
+								<SimpleGrid
+									cols={2}
+									spacing="xl"
+								>
+									<MemoryUsageChart
+										instance={instance}
+										duration={metricsDuration}
+										nodeFilter={metricsNodeFilter}
+										calculateNodes={(metrics) => {
+											setMemoryLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<ComputeUsageChart
+										instance={instance}
+										duration={metricsDuration}
+										nodeFilter={metricsNodeFilter}
+										calculateNodes={(metrics) => {
+											setCpuLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<NetworkIngressChart
+										instance={instance}
+										duration={metricsDuration}
+										nodeFilter={metricsNodeFilter}
+										calculateNodes={(metrics) => {
+											setNetworkIngressLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<NetworkEgressChart
+										instance={instance}
+										duration={metricsDuration}
+										nodeFilter={metricsNodeFilter}
+										calculateNodes={(metrics) => {
+											setNetworkEgressLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+								</SimpleGrid>
+							)}
 
 							<Box mt={32}>
 								<PrimaryTitle>Resources</PrimaryTitle>

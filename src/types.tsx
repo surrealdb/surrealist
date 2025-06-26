@@ -37,6 +37,7 @@ export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
+export type ObservableType = "log" | "metric";
 
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
 export type InstanceState =
@@ -68,6 +69,7 @@ export type GlobalPage =
 	| "/create/organisation";
 export type ViewPage =
 	| "dashboard"
+	| "observer"
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -781,4 +783,17 @@ export interface AppMenuItem {
 	disabled?: boolean;
 	binding?: string[];
 	action?: () => void;
+}
+
+export interface ObserverView {
+	id: ObservableType;
+	label: string;
+}
+
+// TODO: Also add support for log type when its added
+export interface Observable {
+	id: MetricsType;
+	type: ObservableType;
+	label: string;
+	icon: string;
 }
