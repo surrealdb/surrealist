@@ -59,7 +59,7 @@ import { useConfigStore } from "~/stores/config";
 import { getTypeCategoryName } from "~/util/cloud";
 import { createBaseQuery } from "~/util/defaults";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
-import { APPLY_DATASET_KEY, DEPLOY_CONFIG_KEY } from "~/util/storage";
+import { APPLY_DATASET_KEY } from "~/util/storage";
 import { StepProps } from "../types";
 
 const SAMPLE_QUERIES: DatasetQuery[] = [
@@ -102,7 +102,6 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 			}
 
 			navigateConnection(connection.id, "dashboard");
-			localStorage.removeItem(`${DEPLOY_CONFIG_KEY}:${organisation.id}`);
 		} catch (err: any) {
 			showErrorNotification({
 				title: "Failed to deploy instance",

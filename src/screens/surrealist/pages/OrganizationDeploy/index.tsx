@@ -16,7 +16,6 @@ import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 import { clamp } from "~/util/helpers";
 import { generateRandomName } from "~/util/random";
-import { DEPLOY_CONFIG_KEY } from "~/util/storage";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
 import { CheckoutStep } from "./steps/3-checkout";
@@ -54,21 +53,12 @@ interface PageContentProps {
 }
 
 function PageContent({ organisation, instances }: PageContentProps) {
-	const cacheKey = `${DEPLOY_CONFIG_KEY}:${organisation.id}`;
 	const [step, setStep] = useState(0);
 
-	const [details, setDetails] = useImmer<CloudDeployConfig>(() => {
-		const cached = localStorage.getItem(cacheKey);
-		const overwrites = cached ? JSON.parse(cached) : {};
-
-		localStorage.removeItem(cacheKey);
-
-		return {
-			...DEFAULT_DEPLOY_CONFIG,
-			name: generateRandomName(),
-			...overwrites,
-		};
-	});
+	const [details, setDetails] = useImmer<CloudDeployConfig>(() => ({
+		...DEFAULT_DEPLOY_CONFIG,
+		name: generateRandomName(),
+	}));
 
 	const updateStep = useStable((newStep: number) => {
 		setStep(clamp(newStep, 0, STEPS.length - 1));
