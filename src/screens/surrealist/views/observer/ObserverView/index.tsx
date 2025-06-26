@@ -1,12 +1,12 @@
 import { Box } from "@mantine/core";
 
+import { useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { PanelDragger } from "~/components/Pane/dragger";
-import { usePanelMinSize } from "~/hooks/panels";
-import { ObservablePane } from "../ObservablePane";
-import { useState } from "react";
-import { Observable } from "~/types";
 import { METRICS_OBSERVABLES } from "~/constants";
+import { usePanelMinSize } from "~/hooks/panels";
+import { Observable } from "~/types";
+import { ObservablePane } from "../ObservablePane";
 
 export function QueryView() {
 	const [minSidebarSize, rootRef] = usePanelMinSize(275);

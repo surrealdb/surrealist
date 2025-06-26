@@ -8,10 +8,10 @@ import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { useIsLight } from "~/hooks/theme";
-import { useStable } from "~/hooks/stable";
-import { Observable } from "~/types";
 import { METRICS_OBSERVABLES } from "~/constants";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { Observable } from "~/types";
 
 interface ObservableProps extends BoxProps, ElementProps<"button"> {
 	observable: Observable;

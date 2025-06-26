@@ -1,11 +1,11 @@
 import { ChartTooltip } from "@mantine/charts";
 import { format } from "date-fns";
+import dayjs from "dayjs";
+import { useEffect } from "react";
+import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useStable } from "~/hooks/stable";
 import { formatMemory } from "~/util/helpers";
 import { ObserverChart, ObserverChartParentProps } from "../ObserverChart";
-import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
-import { useEffect } from "react";
-import dayjs from "dayjs";
 
 export function MemoryUsageChart({
 	instance,
