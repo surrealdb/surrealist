@@ -23,7 +23,7 @@ import { historyField } from "@codemirror/commands";
 import { syntaxTree } from "@codemirror/language";
 import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
-import { Alert, Group, HoverCard, ThemeIcon, Transition } from "@mantine/core";
+import { Button, Group, HoverCard, Paper, ThemeIcon, Transition, rem } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { objectify, trim } from "radash";
@@ -41,6 +41,7 @@ import { useConnection } from "~/hooks/connection";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { useInspector } from "~/providers/Inspector";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
@@ -81,19 +82,20 @@ export function QueryPane({
 	onSelectionChange,
 	onEditorMounted,
 }: QueryPaneProps) {
+	const isLight = useIsLight();
 	const { updateQueryTab, updateConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
 	const [connection] = useConnectionAndView();
-	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
-	const [allowSelectionExecutionWarning] = useSetting(
-		"behavior",
-		"querySelectionExecutionWarning",
-	);
 	const queryTabList = useConnection((c) => c?.queryTabList);
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
 	const saveTasks = useRef<Map<string, any>>(new Map());
+	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
+	const [showSelectionExecutionWarning, setShowSelectionExecutionWarning] = useSetting(
+		"behavior",
+		"querySelectionExecutionWarning",
+	);
 
 	// Retrieve a cached editor state, or compute when missing
 	const queryState = useMemo(() => {
@@ -198,6 +200,10 @@ export function QueryPane({
 	});
 
 	const hasSelection = selection?.empty === false;
+
+	const handleHideSelectionWarning = useStable(() => {
+		setShowSelectionExecutionWarning(false);
+	});
 
 	const extensions = useMemo(
 		() => [
@@ -317,57 +323,55 @@ export function QueryPane({
 				mb={-9}
 			/>
 			<Transition
-				mounted={
-					allowSelectionExecutionWarning &&
-					allowSelectionExecution &&
-					selection !== undefined
-				}
 				transition="slide-up"
+				mounted={showSelectionExecutionWarning && allowSelectionExecution && hasSelection}
 			>
 				{(style) => (
-					<Alert
+					<Paper
 						p="xs"
-						px="md"
-						mb={9}
-						color="slate.6"
-						variant="filled"
-						icon={<Icon path={iconWarning} />}
-						title={
-							<Group>
-								<Text>Only the highlighted selection will execute</Text>
-								<Spacer />
-								<Text
-									c="slate.3"
-									variant="subtle"
-									style={{
-										cursor: "pointer",
-									}}
-									onClick={() => {
-										dispatchIntent("open-settings", {
-											tab: "preferences",
-											section: "query-selection-execution",
-										});
-									}}
-								>
-									Settings
-								</Text>
-							</Group>
+						pl="md"
+						variant="gradient"
+						bg={
+							isLight
+								? "var(--mantine-color-slate-1)"
+								: "var(--mantine-color-slate-6)"
 						}
-						style={style}
-						styles={{
-							label: {
-								fontWeight: 500,
-								fontSize: 13,
-								width: "100%",
-							},
-							root: {
-								position: "absolute",
-								width: "calc(100% - 6rem)",
-								bottom: 0,
-								left: "3.75rem",
-							},
+						withBorder={false}
+						style={{
+							...style,
+							position: "absolute",
+							bottom: rem(12),
+							left: rem(12),
+							right: rem(12),
 						}}
-					/>
+					>
+						<Group>
+							<Icon path={iconWarning} />
+							<Text>Only the highlighted selection will execute</Text>
+							<Spacer />
+							<Button
+								size="compact-sm"
+								variant="subtle"
+								color="violet"
+								onClick={handleHideSelectionWarning}
+							>
+								Hide
+							</Button>
+							<Button
+								size="compact-sm"
+								variant="subtle"
+								color="violet"
+								onClick={() => {
+									dispatchIntent("open-settings", {
+										tab: "preferences",
+										section: "query-selection-execution",
+									});
+								}}
+							>
+								Configure
+							</Button>
+						</Group>
+					</Paper>
 				)}
 			</Transition>
 		</ContentPane>

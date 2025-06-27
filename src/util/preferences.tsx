@@ -340,8 +340,8 @@ export function useComputedPreferences(): PreferenceSection[] {
 					},
 					{
 						id: "query-selection-execution",
-						name: "Query selection execution",
-						description: "Allow executing only the selected portion of a query",
+						name: "Execute selection",
+						description: "Executing only the selected portion of a query",
 						controller: new CheckboxController({
 							reader: (config) => config.settings.behavior.querySelectionExecution,
 							writer: (config, value) => {
@@ -351,7 +351,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 					},
 					{
 						id: "query-selection-execution-warning",
-						name: "Query selection execution warning",
+						name: "Execute selection warning",
 						description: "Display a warning when selecting a portion of a query",
 						controller: new CheckboxController({
 							reader: (config) =>

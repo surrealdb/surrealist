@@ -5,7 +5,6 @@
 
 	@include light {
 		background: linear-gradient(var(--mantine-color-body), var(--mantine-color-slate-0));
-		background: linear-gradient(var(--mantine-color-body), rgb(from var(--mantine-color-slate-0) r g b / 0.5));
 	}
 
 }
