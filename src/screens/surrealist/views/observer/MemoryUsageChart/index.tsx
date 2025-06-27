@@ -15,11 +15,12 @@ export function MemoryUsageChart({
 }: ObserverChartParentProps) {
 	const { data: metrics, isPending } = useCloudMetricsQuery(instance.id, "memory", duration);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Results in infinite loop
 	useEffect(() => {
 		if (metrics) {
 			calculateNodes(metrics);
 		}
-	}, [metrics, calculateNodes]);
+	}, [metrics]);
 
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];

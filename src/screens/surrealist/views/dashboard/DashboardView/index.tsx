@@ -75,6 +75,10 @@ const DiskUsageBlockLazy = memo(DiskUsageBlock);
 const BackupsBlockLazy = memo(BackupsBlock);
 const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
 const UpgradeDrawerLazy = memo(UpgradeDrawer);
+const MemoryUsageChartLazy = memo(MemoryUsageChart);
+const ComputeUsageChartLazy = memo(ComputeUsageChart);
+const NetworkIngressChartLazy = memo(NetworkIngressChart);
+const NetworkEgressChartLazy = memo(NetworkEgressChart);
 
 export function DashboardView() {
 	const [isCloud, instanceId] = useConnection((c) => [
@@ -472,7 +476,7 @@ export function DashboardView() {
 									cols={2}
 									spacing="xl"
 								>
-									<MemoryUsageChart
+									<MemoryUsageChartLazy
 										instance={instance}
 										duration={metricsDuration}
 										nodeFilter={metricsNodeFilter}
@@ -482,7 +486,7 @@ export function DashboardView() {
 											);
 										}}
 									/>
-									<ComputeUsageChart
+									<ComputeUsageChartLazy
 										instance={instance}
 										duration={metricsDuration}
 										nodeFilter={metricsNodeFilter}
@@ -492,7 +496,7 @@ export function DashboardView() {
 											);
 										}}
 									/>
-									<NetworkIngressChart
+									<NetworkIngressChartLazy
 										instance={instance}
 										duration={metricsDuration}
 										nodeFilter={metricsNodeFilter}
@@ -502,7 +506,7 @@ export function DashboardView() {
 											);
 										}}
 									/>
-									<NetworkEgressChart
+									<NetworkEgressChartLazy
 										instance={instance}
 										duration={metricsDuration}
 										nodeFilter={metricsNodeFilter}
