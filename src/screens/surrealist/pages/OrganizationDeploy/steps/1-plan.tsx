@@ -1,15 +1,24 @@
+import clsx from "clsx";
 import classes from "../style.module.scss";
 
-import { Box, Button, Checkbox, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
-import clsx from "clsx";
-import { InstancePlanInfo, useCloudPlansQuery } from "~/cloud/queries/plans";
+import {
+	Box,
+	Button,
+	Checkbox,
+	Group,
+	Paper,
+	SimpleGrid,
+	Skeleton,
+	Stack,
+	Text,
+} from "@mantine/core";
+import { PlanConfig, useCloudPlansQuery } from "~/cloud/queries/plans";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { InstancePlan } from "~/types";
 import { CURRENCY_FORMAT } from "~/util/helpers";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { StepProps } from "../types";
@@ -19,14 +28,14 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 	const showFree = freeCount < organisation.max_free_instances;
 	const showEnterprise = useHasCloudFeature("distributed_storage");
 
-	const { data } = useCloudPlansQuery();
+	const planQuery = useCloudPlansQuery();
 
-	const onClickPlan = useStable(({ surrealist }: InstancePlanInfo) => {
+	const onClickPlan = useStable((config: PlanConfig) => {
 		setStep(1);
 		setDetails((details) => {
-			details.plan = surrealist.plan as InstancePlan;
-			details.dataset = surrealist.dataset ?? false;
-			details.type = surrealist.defaultType ?? "";
+			details.plan = config.plan;
+			details.dataset = config.dataset ?? false;
+			details.type = config.defaultType ?? "";
 		});
 	});
 
@@ -36,33 +45,48 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 				cols={{ base: 1, sm: 2, lg: showFree ? 4 : 3 }}
 				spacing="xl"
 			>
-				{showFree && data?.free && (
+				{showFree &&
+					(planQuery.isSuccess ? (
+						<PlanCard
+							state="available"
+							onConfigure={onClickPlan}
+							config={planQuery.data.free}
+						/>
+					) : (
+						<Skeleton h={650} />
+					))}
+
+				{planQuery.isSuccess ? (
 					<PlanCard
-						plan={data.free}
 						state="available"
 						onConfigure={onClickPlan}
+						config={planQuery.data.start}
 					/>
+				) : (
+					<Skeleton h={650} />
 				)}
-				{data?.start && (
+
+				{planQuery.isSuccess ? (
 					<PlanCard
-						plan={data.start}
-						state="available"
-						onConfigure={onClickPlan}
-					/>
-				)}
-				{data?.scale && (
-					<PlanCard
-						plan={data.scale}
 						state="future"
 						onConfigure={onClickPlan}
+						config={planQuery.data.scale}
 					/>
+				) : (
+					<Skeleton h={650} />
 				)}
-				{data?.enterprise && (
+
+				{planQuery.isSuccess ? (
 					<PlanCard
-						plan={data.enterprise}
 						state={showEnterprise ? "available" : "contact"}
 						onConfigure={onClickPlan}
+						config={{
+							...planQuery.data.enterprise,
+							price: showEnterprise ? "Available" : planQuery.data.enterprise.price,
+						}}
 					/>
+				) : (
+					<Skeleton h={650} />
 				)}
 			</SimpleGrid>
 
@@ -93,13 +117,13 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 export type PlanCardState = "available" | "future" | "contact";
 
 export interface PlanCardProps {
-	plan: InstancePlanInfo;
+	config: PlanConfig;
 	state: PlanCardState;
 	recommended?: boolean;
-	onConfigure: (plan: InstancePlanInfo) => void;
+	onConfigure: (config: PlanConfig) => void;
 }
 
-function PlanCard({ plan, state, recommended, onConfigure }: PlanCardProps) {
+function PlanCard({ config, state, recommended, onConfigure }: PlanCardProps) {
 	return (
 		<Paper
 			p="xl"
@@ -112,7 +136,7 @@ function PlanCard({ plan, state, recommended, onConfigure }: PlanCardProps) {
 			)}
 			onClick={() => {
 				if (state === "available") {
-					onConfigure(plan);
+					onConfigure(config);
 				} else if (state === "contact") {
 					window.open("https://surrealdb.com/contact", "_blank");
 				}
@@ -120,44 +144,44 @@ function PlanCard({ plan, state, recommended, onConfigure }: PlanCardProps) {
 		>
 			<Stack h="100%">
 				<Box>
-					<Text fz={22}>{plan.name}</Text>
+					<Text fz={22}>{config.name}</Text>
 					{state === "contact" ? (
 						<PrimaryTitle fz={22}>Contact us</PrimaryTitle>
 					) : state === "future" ? (
 						<PrimaryTitle fz={22}>Coming soon</PrimaryTitle>
+					) : config.price === 0 ? (
+						<PrimaryTitle fz={22}>Free</PrimaryTitle>
+					) : typeof config.price === "string" ? (
+						<PrimaryTitle fz={22}>{config.price}</PrimaryTitle>
 					) : (
-						<>
-							{typeof plan.price === "number" ? (
-								<Group
-									align="end"
-									gap="xs"
+						<Box>
+							<Group
+								align="end"
+								gap="xs"
+							>
+								<Text
+									size="md"
+									lh={2.25}
 								>
-									<Text
-										size="md"
-										lh={2.25}
-									>
-										From
-									</Text>
-									<PrimaryTitle fz={22}>
-										{CURRENCY_FORMAT.format(plan.price)}
-									</PrimaryTitle>
-									<Text
-										size="md"
-										lh={2.25}
-									>
-										/ per hour
-									</Text>
-								</Group>
-							) : (
-								<PrimaryTitle fz={22}>Available</PrimaryTitle>
-							)}
-						</>
+									Starts at
+								</Text>
+								<PrimaryTitle fz={22}>
+									{CURRENCY_FORMAT.format(config.price)}
+								</PrimaryTitle>
+								<Text
+									size="md"
+									lh={2.25}
+								>
+									/ per hour
+								</Text>
+							</Group>
+						</Box>
 					)}
 				</Box>
-				<Text>{plan.description}</Text>
+				<Text>{config.description}</Text>
 				<Label mt="xl">What you get</Label>
 				<Stack>
-					{plan.features.map((feature) => (
+					{config.features.map((feature) => (
 						<Group
 							gap="sm"
 							c="bright"
@@ -173,7 +197,7 @@ function PlanCard({ plan, state, recommended, onConfigure }: PlanCardProps) {
 				</Stack>
 				<Label mt="xl">Resources</Label>
 				<Stack>
-					{plan.resources.map((resource) => (
+					{config.resources.map((resource) => (
 						<Group
 							gap="sm"
 							c="bright"

@@ -2,37 +2,28 @@ import { useQuery } from "@tanstack/react-query";
 import { objectify } from "radash";
 import { InstancePlan } from "~/types";
 
-export interface InstancePlanComputePrice {
-	node: string;
-	type: "Burstable" | "General Purpose";
-	cpu: string;
-	memory: string;
-	compute_price: string;
-}
-
-export interface InstancePlanStoragePrice {
-	storage: string;
-	price: string;
-}
-
-export interface InstancePlanSurrealist {
-	dataset: boolean;
-	defaultType?: string;
-	plan: string;
-}
-
-export interface InstancePlanInfo {
-	id: InstancePlan;
+interface PlanResponse {
 	name: string;
 	description: string;
-	surrealist: InstancePlanSurrealist;
+	surrealist: {
+		plan: InstancePlan;
+		dataset?: boolean;
+		defaultType?: string;
+	};
 	price: string | number;
 	features: string[];
-	featuresTitle: string;
 	resources: string[];
-	plus?: string[];
-	computePrice?: InstancePlanComputePrice[];
-	storagePrice?: InstancePlanStoragePrice[];
+}
+
+export interface PlanConfig {
+	plan: InstancePlan;
+	name: string;
+	description: string;
+	price: string | number;
+	features: string[];
+	resources: string[];
+	dataset: boolean;
+	defaultType?: string;
 }
 
 export function useCloudPlansQuery() {
@@ -40,12 +31,22 @@ export function useCloudPlansQuery() {
 		queryKey: ["plans"],
 		queryFn: async () => {
 			const response = await fetch("http://localhost:4321/api/cloud/pricing.json");
-			const plans: InstancePlanInfo[] = await response.json();
+			const plans: PlanResponse[] = await response.json();
 
 			return objectify(
 				plans,
 				(plan) => plan.surrealist.plan as InstancePlan,
-				(plan) => plan,
+				(plan) =>
+					({
+						plan: plan.surrealist.plan,
+						name: plan.name,
+						description: plan.description,
+						price: plan.price,
+						features: plan.features,
+						resources: plan.resources,
+						dataset: plan.surrealist.dataset,
+						defaultType: plan.surrealist.defaultType,
+					}) as PlanConfig,
 			);
 		},
 	});
