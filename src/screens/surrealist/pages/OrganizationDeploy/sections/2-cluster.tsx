@@ -1,4 +1,4 @@
-import { Box, Collapse, Radio, Slider, Stack, Text } from "@mantine/core";
+import { Box, Radio, Slider, Stack, Text } from "@mantine/core";
 import { list } from "radash";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { Label } from "~/components/Label";
@@ -57,7 +57,7 @@ export function ClusterStorageSection({ organisation, details, setDetails }: Dep
 	}));
 
 	return (
-		<Collapse in={details.cluster}>
+		<>
 			<Box mt={36}>
 				<PrimaryTitle>Storage class</PrimaryTitle>
 			</Box>
@@ -144,6 +144,6 @@ export function ClusterStorageSection({ organisation, details, setDetails }: Dep
 					},
 				}}
 			/>
-		</Collapse>
+		</>
 	);
 }

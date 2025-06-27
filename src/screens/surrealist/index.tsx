@@ -17,7 +17,6 @@ import { ChatPage } from "./pages/Chat";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
-import { OrganizationCheckoutPage } from "./pages/OrganizationCheckout";
 import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
 import { OrganizationManagePage } from "./pages/OrganizationManage";
 import { OrganizationsPage } from "./pages/Organizations";
@@ -45,7 +44,6 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
-const OrganizationCheckoutPageLazy = memo(OrganizationCheckoutPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
@@ -187,12 +185,6 @@ export function SurrealistScreen() {
 										)}
 									</Route>
 
-									<Route path="/o/:organization/checkout">
-										{({ organization }) => (
-											<OrganizationCheckoutPageLazy id={organization} />
-										)}
-									</Route>
-
 									<Route path="/o/:organization/:tab">
 										{({ organization, tab }) => (
 											<OrganizationManagePageLazy
@@ -220,8 +212,8 @@ export function SurrealistScreen() {
 										<CreateOrganizationsPageLazy />
 									</Route>
 
-									<Route path="/signin">
-										<SigninPageLazy />
+									<Route path="/signin/:plan?">
+										{({ plan }) => <SigninPageLazy plan={plan} />}
 									</Route>
 
 									<Route path="/cloud">
