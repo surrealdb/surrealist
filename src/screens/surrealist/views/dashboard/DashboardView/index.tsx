@@ -19,6 +19,7 @@ import {
 	SimpleGrid,
 	Skeleton,
 	Text,
+	Tooltip,
 } from "@mantine/core";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
@@ -76,7 +77,7 @@ const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
 const UpgradeDrawerLazy = memo(UpgradeDrawer);
 
 export function DashboardView() {
-	const [isCloud, instance] = useConnection((c) => [
+	const [isCloud, instanceId] = useConnection((c) => [
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
 	]);
@@ -98,9 +99,10 @@ export function DashboardView() {
 	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
 	const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
 
-	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instance);
-	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instance);
-	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instance);
+	const { data: instance, isPending: instancePending } = useCloudInstanceQuery(instanceId);
+	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instanceId);
+	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instanceId);
+	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instanceId);
 	const { data: organisation, isPending: organisationPending } = useCloudOrganizationQuery(
 		details?.organization_id,
 	);
@@ -194,7 +196,8 @@ export function DashboardView() {
 		configuringHandle.open();
 	});
 
-	const isLoading = detailsPending || backupsPending || usagePending || organisationPending;
+	const isLoading =
+		detailsPending || backupsPending || usagePending || organisationPending || instancePending;
 
 	if (!isCloud) {
 		return <Redirect to="/query" />;
@@ -319,7 +322,18 @@ export function DashboardView() {
 
 							<Group mt={32}>
 								<Box>
-									<PrimaryTitle>Metrics</PrimaryTitle>
+									<Group gap="lg">
+										<PrimaryTitle>Metrics</PrimaryTitle>
+										{instance?.state === "ready" && (
+											<Tooltip label="Metrics update live every 60 seconds">
+												<Indicator
+													processing={true}
+													size={10}
+												/>
+											</Tooltip>
+										)}
+									</Group>
+
 									<Text>View and track instance activity metrics</Text>
 								</Box>
 

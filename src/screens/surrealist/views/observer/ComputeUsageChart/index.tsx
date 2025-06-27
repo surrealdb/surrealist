@@ -12,7 +12,7 @@ export function ComputeUsageChart({
 	nodeFilter,
 	calculateNodes,
 }: ObserverChartParentProps) {
-	const { data: metrics, isPending } = useCloudMetricsQuery(instance, "cpu", duration);
+	const { data: metrics, isPending } = useCloudMetricsQuery(instance.id, "cpu", duration);
 
 	useEffect(() => {
 		if (metrics) {

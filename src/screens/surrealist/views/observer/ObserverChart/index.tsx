@@ -4,7 +4,7 @@ import { Center, Paper, Skeleton, Stack } from "@mantine/core";
 import { format } from "date-fns";
 import { computeMetricRange } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
-import { CloudMetrics, MetricsDuration } from "~/types";
+import { CloudInstance, CloudMetrics, MetricsDuration } from "~/types";
 import { iconHelp } from "~/util/icons";
 
 export interface ObserverChartProps {
@@ -24,7 +24,7 @@ export interface ObserverChartProps {
 }
 
 export interface ObserverChartParentProps {
-	instance: string;
+	instance: CloudInstance;
 	duration: MetricsDuration;
 	nodeFilter?: string[];
 	calculateNodes: (metrics: CloudMetrics) => void;

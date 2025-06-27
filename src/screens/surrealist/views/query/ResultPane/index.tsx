@@ -25,6 +25,7 @@ import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
 import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/query";
+import { useSetting } from "~/hooks/config";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -79,6 +80,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const isQueryValid = useQueryStore((s) => s.isQueryValid);
 
 	const isLight = useIsLight();
+	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
 	const [resultTab, setResultTab] = useState<number>(1);
 	const selectedTab = resultTab - 1;
 	const resultMode = activeTab.resultMode;
@@ -108,7 +110,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const runQuery = useStable(() => {
 		if (editor) {
-			executeEditorQuery(editor);
+			executeEditorQuery(editor, allowSelectionExecution);
 		}
 	});
 
@@ -178,7 +180,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		URL.revokeObjectURL(url);
 	});
 
-	const runText = `Run ${selection ? "selection" : "query"}`;
+	const runText = `Run ${selection && allowSelectionExecution ? "selection" : "query"}`;
 
 	return (
 		<ContentPane

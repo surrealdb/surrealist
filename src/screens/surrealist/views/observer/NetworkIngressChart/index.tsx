@@ -12,7 +12,7 @@ export function NetworkIngressChart({
 	nodeFilter,
 	calculateNodes,
 }: ObserverChartParentProps) {
-	const { data: metrics, isPending } = useCloudMetricsQuery(instance, "ingress", duration);
+	const { data: metrics, isPending } = useCloudMetricsQuery(instance.id, "ingress", duration);
 
 	useEffect(() => {
 		if (metrics) {

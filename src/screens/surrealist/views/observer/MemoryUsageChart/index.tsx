@@ -13,7 +13,7 @@ export function MemoryUsageChart({
 	nodeFilter,
 	calculateNodes,
 }: ObserverChartParentProps) {
-	const { data: metrics, isPending } = useCloudMetricsQuery(instance, "memory", duration);
+	const { data: metrics, isPending } = useCloudMetricsQuery(instance.id, "memory", duration);
 
 	useEffect(() => {
 		if (metrics) {

@@ -180,6 +180,8 @@ export interface SurrealistBehaviorSettings {
 	tableSuggest: boolean;
 	variableSuggest: boolean;
 	queryErrorChecker: boolean;
+	querySelectionExecution: boolean;
+	querySelectionExecutionWarning: boolean;
 	windowPinned: boolean;
 	docsLanguage: CodeLang;
 	versionCheckTimeout: number;
