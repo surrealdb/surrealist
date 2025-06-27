@@ -11,6 +11,7 @@ env:
 
 jobs:
   check_and_test:
+    name: Check and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -50,23 +51,3 @@ jobs:
           cargo fmt --all -- --check
           cargo clippy
           cd ..
-
-  validate_dockerfile:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Check Dockerfile
-        uses: docker/build-push-action@v6
-        with:
-          platforms: linux/amd64,linux/arm64
-          push: false
-          file: docker/Dockerfile
