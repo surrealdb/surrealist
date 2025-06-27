@@ -91,3 +91,7 @@ export function compileDeployConfig(
 
 	return configuration;
 }
+
+export function isInstancePlan(plan: string): plan is InstancePlan {
+	return Object.keys(INSTANCE_PLAN_CATEGORIES).includes(plan);
+}

@@ -30,7 +30,7 @@ export function useCloudPlansQuery() {
 	return useQuery({
 		queryKey: ["plans"],
 		queryFn: async () => {
-			const response = await fetch("http://localhost:4321/api/cloud/pricing.json");
+			const response = await fetch("https://surrealdb.com/api/cloud/pricing.json");
 			const plans: PlanResponse[] = await response.json();
 
 			return objectify(

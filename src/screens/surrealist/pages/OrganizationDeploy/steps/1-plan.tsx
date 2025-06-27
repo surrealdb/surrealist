@@ -12,6 +12,9 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { useLayoutEffect } from "react";
+import { useSearchParams } from "wouter";
+import { isInstancePlan } from "~/cloud/helpers";
 import { PlanConfig, useCloudPlansQuery } from "~/cloud/queries/plans";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -24,10 +27,11 @@ import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { StepProps } from "../types";
 
 export function PlanStep({ organisation, instances, setDetails, setStep }: StepProps) {
+	const [search] = useSearchParams();
+
 	const freeCount = instances.filter((instance) => instance.type.price_hour === 0).length;
 	const showFree = freeCount < organisation.max_free_instances;
-	const showEnterprise = useHasCloudFeature("distributed_storage");
-
+	const showEnterprise = !useHasCloudFeature("distributed_storage");
 	const planQuery = useCloudPlansQuery();
 
 	const onClickPlan = useStable((config: PlanConfig) => {
@@ -38,6 +42,22 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 			details.type = config.defaultType ?? "";
 		});
 	});
+
+	useLayoutEffect(() => {
+		const initialPlan = search.get("plan");
+
+		if (initialPlan && isInstancePlan(initialPlan)) {
+			if (initialPlan === "free" && !showFree) {
+				return;
+			}
+
+			const config = planQuery.data?.[initialPlan];
+
+			if (config) {
+				onClickPlan(config);
+			}
+		}
+	}, [showFree, search, planQuery.data]);
 
 	return (
 		<>

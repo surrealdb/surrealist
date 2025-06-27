@@ -54,7 +54,6 @@ interface PageContentProps {
 
 function PageContent({ organisation, instances }: PageContentProps) {
 	const [step, setStep] = useState(0);
-
 	const [details, setDetails] = useImmer<CloudDeployConfig>(() => ({
 		...DEFAULT_DEPLOY_CONFIG,
 		name: generateRandomName(),

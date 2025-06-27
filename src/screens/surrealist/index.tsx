@@ -212,8 +212,8 @@ export function SurrealistScreen() {
 										<CreateOrganizationsPageLazy />
 									</Route>
 
-									<Route path="/signin">
-										<SigninPageLazy />
+									<Route path="/signin/:plan?">
+										{({ plan }) => <SigninPageLazy plan={plan} />}
 									</Route>
 
 									<Route path="/cloud">
