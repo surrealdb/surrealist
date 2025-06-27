@@ -70,7 +70,10 @@ export function PreferencesTab() {
 					</Text>
 				)}
 				{sections.map((section, i) => (
-					<Box key={i}>
+					<Box
+						key={i}
+						id={section.id}
+					>
 						<Text
 							fw={600}
 							fz={20}
@@ -88,6 +91,7 @@ export function PreferencesTab() {
 								return (
 									<Fragment key={j}>
 										<Flex
+											id={preference.id}
 											align={isTall ? "strech" : "center"}
 											direction={isTall ? "column" : "row"}
 											w="100%"

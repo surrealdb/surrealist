@@ -49,6 +49,7 @@ export function QueryView() {
 	const [showHistory, showHistoryHandle] = useDisclosure();
 	const [showSaved, showSavedHandle] = useDisclosure();
 
+	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
 	const [selection, setSelection] = useState<SelectionRange>();
 
 	const tags = useSavedQueryTags();
@@ -125,7 +126,7 @@ export function QueryView() {
 
 	useIntent("run-query", () => {
 		if (editor) {
-			executeEditorQuery(editor);
+			executeEditorQuery(editor, allowSelectionExecution);
 		}
 	});
 
