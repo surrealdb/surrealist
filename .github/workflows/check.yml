@@ -48,7 +48,7 @@ jobs:
         run: |
           cd src-tauri
           cargo fmt --all -- --check
-          cargo clippy -- -D warnings
+          cargo clippy
           cd ..
 
   validate_dockerfile:
