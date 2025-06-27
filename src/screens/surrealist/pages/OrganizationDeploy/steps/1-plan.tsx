@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
+import { adapter } from "~/adapter";
 import { isInstancePlan } from "~/cloud/helpers";
 import { PlanConfig, useCloudPlansQuery } from "~/cloud/queries/plans";
 import { Icon } from "~/components/Icon";
@@ -158,7 +159,7 @@ function PlanCard({ config, state, recommended, onConfigure }: PlanCardProps) {
 				if (state === "available") {
 					onConfigure(config);
 				} else if (state === "contact") {
-					window.open("https://surrealdb.com/contact", "_blank");
+					adapter.openUrl("https://surrealdb.com/contact");
 				}
 			}}
 		>
