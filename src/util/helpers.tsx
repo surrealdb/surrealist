@@ -4,6 +4,7 @@ import { hideNotification, showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
 import escapeRegex from "escape-string-regexp";
 import { uid } from "radash";
+import { shake } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
@@ -529,4 +530,21 @@ export function plural(count: number, singular: string, plural = `${singular}s`)
  */
 export function selectable(values: string[]): Selectable[] {
 	return values.map((value) => ({ value, label: value }));
+}
+
+/**
+ * Optionally append search parameters to the given URL
+ */
+export function withSearchParams(
+	url: string,
+	params: Record<string, string | undefined> | URLSearchParams,
+) {
+	const search = params instanceof URLSearchParams ? params : new URLSearchParams(shake(params));
+	const value = search.toString();
+
+	if (value) {
+		return `${url}?${value}`;
+	}
+
+	return url;
 }

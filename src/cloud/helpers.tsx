@@ -1,18 +1,40 @@
 import { Duration, sub } from "date-fns";
 import { useConfigStore } from "~/stores/config";
-import { CloudDeployConfig, CloudInstanceType, CloudOrganization, MetricsDuration } from "~/types";
+import { CloudDeployConfig, CloudOrganization, InstancePlan, MetricsDuration } from "~/types";
 
 export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	name: "",
 	region: "",
 	type: "",
-	cluster: false,
 	units: 1,
 	version: "",
+	plan: "free",
 	storageCategory: "standard",
 	storageAmount: 0,
 	dataset: false,
 });
+
+export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, string[]> = {
+	free: ["free", "development", "production"],
+	start: ["development", "production"],
+	scale: ["production-memory", "production-compute"],
+	enterprise: ["production-memory", "production-compute"],
+};
+
+export const INSTANCE_CATEGORY_PLANS: Record<string, InstancePlan> = {
+	free: "start",
+	development: "start",
+	production: "start",
+	"production-memory": "enterprise",
+	"production-compute": "enterprise",
+};
+
+export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
+	free: ["free", "small-dev", "medium"],
+	start: ["small-dev", "medium", "xlarge"],
+	scale: ["medium-compute", "large-compute", "xlarge-memory"],
+	enterprise: ["medium-compute", "large-compute", "xlarge-memory"],
+};
 
 export function clearCachedConnections() {
 	const { connections } = useConfigStore.getState();
@@ -39,10 +61,6 @@ export function computeMetricRange(duration: MetricsDuration): [Date, Date] {
 	return [start, end];
 }
 
-export function isDistributedType(type: CloudInstanceType): boolean {
-	return type.category === "production-memory" || type.category === "production-compute";
-}
-
 export function compileDeployConfig(
 	organisation: CloudOrganization,
 	config: CloudDeployConfig,
@@ -62,7 +80,7 @@ export function compileDeployConfig(
 		},
 	};
 
-	if (config.cluster) {
+	if (config.plan === "scale" || config.plan === "enterprise") {
 		configuration.storage = config.storageAmount;
 		configuration.distributed_storage_specs = {
 			category: config.storageCategory,
@@ -72,4 +90,8 @@ export function compileDeployConfig(
 	}
 
 	return configuration;
+}
+
+export function isInstancePlan(plan: string): plan is InstancePlan {
+	return Object.keys(INSTANCE_PLAN_CATEGORIES).includes(plan);
 }

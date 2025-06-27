@@ -1,9 +1,5 @@
-import { fork } from "radash";
 import { useMemo } from "react";
-import { useHasCloudFeature } from "~/hooks/cloud";
-import { useStable } from "~/hooks/stable";
 import { CloudInstanceType, CloudOrganization } from "~/types";
-import { isDistributedType } from "../helpers";
 import { useCloudOrganizationInstancesQuery } from "../queries/instances";
 
 export function useFreeInstanceTypeAvailable(organisation: CloudOrganization) {
@@ -30,29 +26,4 @@ export function useInstanceTypeRegistry(organisation?: CloudOrganization) {
 
 		return instanceTypes;
 	}, [flattened]);
-}
-
-/**
- * Returns a function to check instance type availability based on the organization's limits.
- */
-export function useInstanceTypeAvailable(organisation: CloudOrganization) {
-	const { data } = useCloudOrganizationInstancesQuery(organisation.id);
-	const instanceTypes = useInstanceTypeRegistry(organisation);
-	const allowCluster = useHasCloudFeature("distributed_storage");
-
-	return useStable((type: CloudInstanceType) => {
-		if (!instanceTypes.has(type.slug)) {
-			return false;
-		}
-
-		if (isDistributedType(type) && !allowCluster) {
-			return false;
-		}
-
-		const [freeList, paidList] = fork(data ?? [], (i) => i.type.price_hour === 0);
-
-		return type.price_hour === 0
-			? freeList.length < organisation.max_free_instances
-			: paidList.length < organisation.max_paid_instances;
-	});
 }

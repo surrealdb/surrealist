@@ -37,7 +37,6 @@ export function useInstanceDeployMutation(
 				instance_type: instance.type.slug,
 				storage_size: instance.storage_size,
 				organisation: organisation.id,
-				cluster: config.cluster,
 				dataset: config.dataset,
 			});
 
