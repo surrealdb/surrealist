@@ -34,7 +34,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	return (
 		<Section
 			title="Instances"
-			description="The list of instances that are part of this organisation"
+			description="All cloud instances deployed in this organization."
 			rightSection={
 				isAdmin && (
 					<Link href={`/o/${organization.id}/deploy`}>
