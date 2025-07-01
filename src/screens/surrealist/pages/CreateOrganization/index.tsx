@@ -82,7 +82,7 @@ export function CreateOrganizationPage() {
 								fz={32}
 								mt="sm"
 							>
-								Embed Surrealist
+								Create organisation
 							</PrimaryTitle>
 						</Box>
 
