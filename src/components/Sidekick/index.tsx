@@ -146,7 +146,6 @@ export function Sidekick() {
 						pos="absolute"
 						viewportRef={scrollRef}
 						inset={0}
-						// mt={68 + adapter.titlebarOffset}
 					>
 						<Box
 							mx="auto"

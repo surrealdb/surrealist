@@ -7,7 +7,6 @@ import {
 	Group,
 	Image,
 	ScrollArea,
-	Space,
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
@@ -156,12 +155,10 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 			{...other}
 		>
 			<Flex
+				className={classes.sidebarInner}
 				direction="column"
-				h="100%"
 				px={16}
-				pt={22}
 			>
-				<Space h="var(--titlebar-offset)" />
 				<UnstyledButton
 					onClick={() => {
 						setLocation("/overview");

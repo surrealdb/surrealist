@@ -164,16 +164,16 @@ export function OverviewPage() {
 							<Stack
 								align="center"
 								gap={0}
-								my={42}
+								mb={52}
 							>
 								<Image
 									src={iconUrl}
-									w={85}
+									w={74}
 								/>
 
 								<Image
 									src={logoUrl}
-									w={225}
+									w={200}
 									mt="md"
 								/>
 
@@ -319,7 +319,7 @@ export function OverviewPage() {
 											/>
 										}
 										flex={1}
-										w={264}
+										w={182}
 										size="xs"
 										variant="unstyled"
 										styles={{

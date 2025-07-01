@@ -4,7 +4,7 @@ import { Sidekick } from "~/components/Sidekick";
 export function ChatPage() {
 	return (
 		<Box
-			mt={86}
+			mt={18}
 			flex={1}
 		>
 			<Sidekick />

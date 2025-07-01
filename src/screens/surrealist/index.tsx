@@ -138,6 +138,7 @@ export function SurrealistScreen() {
 
 					<Stack
 						flex={1}
+						className={classes.pageContent}
 						pos="relative"
 						gap="lg"
 					>
@@ -250,7 +251,6 @@ export function SurrealistScreen() {
 
 											{portal ? (
 												<Stack
-													className={classes.inner}
 													flex={1}
 													gap={0}
 												>

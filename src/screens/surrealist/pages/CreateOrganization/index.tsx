@@ -62,7 +62,7 @@ export function CreateOrganizationPage() {
 					type="scroll"
 					inset={0}
 					className={classes.scrollArea}
-					mt={86}
+					mt={18}
 				>
 					<Stack
 						px="xl"
