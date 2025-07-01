@@ -70,7 +70,7 @@ export function OrganizationsPage() {
 						<Group mt="xl">
 							<PrimaryTitle fz={22}>Your organisations</PrimaryTitle>
 							<Spacer />
-							<Link to="/create/organisation">
+							<Link to="/organisations/create">
 								<Button
 									size="xs"
 									variant="gradient"

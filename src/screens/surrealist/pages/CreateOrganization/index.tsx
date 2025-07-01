@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { Box, Button, Group, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Button, Group, ScrollArea, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
@@ -8,15 +8,15 @@ import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
 import { AuthGuard } from "~/components/AuthGuard";
 import { Icon } from "~/components/Icon";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
 import { TopGlow } from "~/components/TopGlow";
 import { useLastSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconArrowLeft, iconOrganization } from "~/util/icons";
+import { iconOrganization } from "~/util/icons";
 
 export function CreateOrganizationPage() {
 	const [, navigate] = useAbsoluteLocation();
@@ -66,55 +66,51 @@ export function CreateOrganizationPage() {
 					mt={68 + adapter.titlebarOffset}
 				>
 					<Stack
+						px="xl"
 						mx="auto"
-						maw={650}
-						gap="lg"
+						maw={1200}
 						pb={68}
 					>
 						<Box>
-							<PrimaryTitle fz={26}>New organisation</PrimaryTitle>
-							<Text fz="xl">Create a space to manage your team</Text>
+							<PageBreadcrumbs
+								items={[
+									{ label: "Surrealist", href: "/overview" },
+									{ label: "Organisations", href: "/organisations" },
+									{ label: "Create Organisation" },
+								]}
+							/>
+							<PrimaryTitle
+								fz={32}
+								mt="sm"
+							>
+								Embed Surrealist
+							</PrimaryTitle>
 						</Box>
 
-						<Link to={savepoint.path}>
-							<Button
-								variant="light"
-								color="slate"
-								size="xs"
-								leftSection={<Icon path={iconArrowLeft} />}
-							>
-								Back to {savepoint.name}
-							</Button>
-						</Link>
-
-						<Box mt={24}>
-							<Text
-								fz="xl"
-								fw={600}
-								c="bright"
-							>
-								Name
-							</Text>
-							<Text>Specify the name of your organisation</Text>
-						</Box>
-
-						<TextInput
-							autoFocus
-							placeholder="My organisation"
-							value={name}
-							onChange={setName}
-							leftSection={
-								<Icon
-									c="surreal"
-									path={iconOrganization}
-								/>
-							}
-							error={
-								name.length > 30
-									? "Organisation name cannot exceed 30 characters"
-									: null
-							}
-						/>
+						<Stack
+							mt={36}
+							maw={350}
+						>
+							<TextInput
+								autoFocus
+								label="Name"
+								description="Specify the name of your organisation"
+								placeholder="My organisation"
+								value={name}
+								onChange={setName}
+								leftSection={
+									<Icon
+										c="surreal"
+										path={iconOrganization}
+									/>
+								}
+								error={
+									name.length > 30
+										? "Organisation name cannot exceed 30 characters"
+										: null
+								}
+							/>
+						</Stack>
 
 						<Group mt={24}>
 							<Link to={savepoint.path}>
@@ -122,10 +118,9 @@ export function CreateOrganizationPage() {
 									color="slate"
 									variant="light"
 								>
-									Cancel
+									Back
 								</Button>
 							</Link>
-							<Spacer />
 							<Button
 								w={150}
 								type="submit"

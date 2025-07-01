@@ -325,7 +325,7 @@ export function OverviewPage() {
 								</Paper>
 
 								{showOrgCreator && (
-									<Link href="/create/organisation">
+									<Link href="/organisations/create">
 										<Button
 											size="xs"
 											color="slate"
@@ -431,7 +431,7 @@ export function OverviewPage() {
 												flex={1}
 												className={classes.connectionSpacer}
 											/>
-											<Link href="/create/connection">
+											<Link href="/connections/create">
 												<Button
 													size="xs"
 													variant="gradient"
@@ -458,13 +458,6 @@ export function OverviewPage() {
 													onConnect={activateConnection}
 												/>
 											))}
-											{/* {userConnections.length === 0 && noFilter && (
-									<StartCreator
-										title="No connections"
-										subtitle="Click to create your first connection"
-										onCreate={() => navigate("/create/connection")}
-									/>
-								)} */}
 										</SimpleGrid>
 									</Box>
 								)}

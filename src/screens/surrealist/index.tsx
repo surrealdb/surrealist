@@ -165,7 +165,7 @@ export function SurrealistScreen() {
 								<NewEmbedPageLazy />
 							</Route>
 
-							<Route path="/create/connection">
+							<Route path="/connections/create">
 								<CreateConnectionPageLazy />
 							</Route>
 
@@ -175,6 +175,10 @@ export function SurrealistScreen() {
 
 							{showCloud && (
 								<>
+									<Route path="/organisations/create">
+										<CreateOrganizationsPageLazy />
+									</Route>
+
 									<Route path="/organisations">
 										<OrganizationsPageLazy />
 									</Route>
@@ -206,10 +210,6 @@ export function SurrealistScreen() {
 
 									<Route path="/referrals">
 										<ReferralPageLazy />
-									</Route>
-
-									<Route path="/create/organisation">
-										<CreateOrganizationsPageLazy />
 									</Route>
 
 									<Route path="/signin/:plan?">
