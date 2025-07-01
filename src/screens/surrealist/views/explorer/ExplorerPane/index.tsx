@@ -69,7 +69,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const allowCreate = schema && getTableVariant(schema) !== "view";
 
-	const [sortMode, setSortMode] = useState<SortMode>(null);
+	const [sortMode, setSortMode] = useState<SortMode>(["id", "asc"]);
 
 	const [selected, setSelected] = useInputState(new Set<string>());
 	const [filter, setFilter] = useInputState("");
