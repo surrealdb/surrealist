@@ -39,7 +39,13 @@ export function useRecordQuery(input: RecordQueryInput) {
 				}
 
 				if (sortMode) {
-					fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
+					const [sortField, sortDir] = sortMode;
+
+					fetchQuery += ` ORDER BY ${sortField} ${sortDir}`;
+
+					if (sortField !== "id") {
+						fetchQuery += `, id ${sortDir}`;
+					}
 				}
 
 				fetchQuery += ` LIMIT ${limitBy}`;
