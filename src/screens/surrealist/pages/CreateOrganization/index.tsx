@@ -9,7 +9,6 @@ import { AuthGuard } from "~/components/AuthGuard";
 import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
 import { useLastSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -54,8 +53,6 @@ export function CreateOrganizationPage() {
 				flex={1}
 				pos="relative"
 			>
-				<TopGlow offset={250} />
-
 				<ScrollArea
 					pos="absolute"
 					scrollbars="y"

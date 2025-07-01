@@ -9,7 +9,6 @@ import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { ORGANIZATIONS, useSavepoint } from "~/hooks/overview";
 import { OrganizationTile } from "./organization";
@@ -33,8 +32,6 @@ export function OrganizationsPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			{isAuthed ? (
 				<ScrollArea
 					pos="absolute"

@@ -44,7 +44,6 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useCloudProfile, useIsAuthenticated } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -134,8 +133,6 @@ export function Sidekick() {
 			w="100%"
 			align="center"
 		>
-			<TopGlow offset={250} />
-
 			<Box
 				flex={1}
 				w="100%"

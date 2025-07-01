@@ -21,7 +21,6 @@ import { useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
 import { useStable } from "~/hooks/stable";
 import { dedent } from "~/util/dedent";
 import { iconCheck, iconClose, iconTransfer, iconXml } from "~/util/icons";
@@ -70,8 +69,6 @@ export function NewEmbedPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"

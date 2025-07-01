@@ -40,7 +40,6 @@ import { Link } from "~/components/Link";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
@@ -242,8 +241,6 @@ export function DashboardView() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={318} />
-
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"

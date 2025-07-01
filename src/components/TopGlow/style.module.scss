@@ -7,6 +7,7 @@
 	position: absolute;
 	left: 0;
 	right: 0;
+	transition: top 0.75s cubic-bezier(0, 0.55, 0.45, 1);
 	top: var(--offset);
 
 	@include light {

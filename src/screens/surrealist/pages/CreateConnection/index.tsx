@@ -12,7 +12,6 @@ import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
 import { useLastSavepoint } from "~/hooks/overview";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -113,8 +112,6 @@ export function CreateConnectionPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"

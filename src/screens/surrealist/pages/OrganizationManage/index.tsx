@@ -21,7 +21,6 @@ import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
@@ -66,8 +65,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 					flex={1}
 					pos="relative"
 				>
-					<TopGlow offset={250} />
-
 					<ScrollArea
 						pos="absolute"
 						scrollbars="y"

@@ -40,7 +40,6 @@ import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
@@ -116,8 +115,6 @@ export function ReferralPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			{isAuthed ? (
 				<ScrollArea
 					pos="absolute"
