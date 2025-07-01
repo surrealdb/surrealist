@@ -67,6 +67,16 @@ function StringCell(props: { value: string }) {
 function NumberCell(props: { value: number }) {
 	return <Text>{props.value.toLocaleString()}</Text>;
 }
+function BytesCell(props: { value: ArrayBuffer }) {
+	return (
+		<Text
+			span
+			ff="JetBrains Mono"
+		>
+			Bytes({props.value.byteLength})
+		</Text>
+	);
+}
 
 function UuidCell(props: { value: Uuid }) {
 	return (
@@ -278,6 +288,10 @@ export const DataCell = ({ value }: { value: any }) => {
 
 	if (typeof value === "number") {
 		return <NumberCell value={value} />;
+	}
+
+	if (value instanceof ArrayBuffer) {
+		return <BytesCell value={value} />;
 	}
 
 	if (value instanceof Uuid) {
