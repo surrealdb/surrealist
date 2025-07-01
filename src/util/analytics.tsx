@@ -17,7 +17,7 @@ export const HOSTNAME = isProduction
  * Track analytics events
  */
 export async function tagEvent(name: string, payload: Record<string, unknown> = {}) {
-	if (!adapter.isTelemetryEnabled) {
+	if (!adapter.isTelemetryEnabled || !isProduction) {
 		return;
 	}
 
