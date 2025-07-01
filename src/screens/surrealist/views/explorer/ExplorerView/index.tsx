@@ -51,9 +51,11 @@ export function ExplorerView() {
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [creatorTable, setCreatorTable] = useState<string>();
+	const [creatorContent, setCreatorContent] = useState<any>();
 
-	const openCreator = useStable((table?: string) => {
+	const openCreator = useStable((table?: string, content?: any) => {
 		setCreatorTable(table || activeTable);
+		setCreatorContent(content);
 		isCreatingHandle.open();
 	});
 
@@ -223,6 +225,7 @@ export function ExplorerView() {
 			<CreatorDrawer
 				opened={isCreating}
 				table={creatorTable || ""}
+				content={creatorContent}
 				onClose={isCreatingHandle.close}
 			/>
 		</>

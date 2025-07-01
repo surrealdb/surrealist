@@ -21,7 +21,6 @@ import {
 	iconCopy,
 	iconDelete,
 	iconFilter,
-	iconJSON,
 	iconPlus,
 	iconRefresh,
 	iconServer,
@@ -49,13 +48,14 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery, executeQueryFirst } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
+import { showInfo } from "~/util/helpers";
 import { getTableVariant } from "~/util/schema";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 
 export interface ExplorerPaneProps {
 	activeTable: string;
-	onCreateRecord: () => void;
+	onCreateRecord: (table?: string, content?: any) => void;
 }
 
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
@@ -152,7 +152,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	});
 
 	const copySelectedRecords = useStable(() => {
-		navigator.clipboard.writeText(Array.from(selected).join(", "));
+		navigator.clipboard.writeText(Array.from(selected).join("\n"));
 	});
 
 	const copySelectedRecordsJSON = useStable(async () => {
@@ -206,23 +206,43 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 		showContextMenu([
 			{
-				key: "copy-id",
-				title: "Copy record id",
+				key: "duplicate",
+				title: "Duplicate record",
+				disabled: !allowCreate,
 				icon: <Icon path={iconCopy} />,
 				onClick: () => {
+					onCreateRecord(undefined, record);
+				},
+			},
+			{
+				key: "divider-1",
+			},
+			{
+				key: "copy-id",
+				title: "Copy Record ID",
+				onClick: () => {
 					navigator.clipboard.writeText(formatValue(record.id));
+
+					showInfo({
+						title: "Record ID copied",
+						subtitle: `Copied ${formatValue(record.id)}`,
+					});
 				},
 			},
 			{
 				key: "copy-json",
 				title: "Copy as JSON",
-				icon: <Icon path={iconJSON} />,
 				onClick: () => {
 					navigator.clipboard.writeText(formatValue(record, true, true));
+
+					showInfo({
+						title: "Record contents copied",
+						subtitle: `Copied ${formatValue(record.id)}`,
+					});
 				},
 			},
 			{
-				key: "divider-1",
+				key: "divider-2",
 			},
 			{
 				key: "select-query",
@@ -240,7 +260,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				onClick: () => openQuery(record.id, "DELETE"),
 			},
 			{
-				key: "divider-2",
+				key: "divider-3",
 			},
 			{
 				key: "delete-record",
@@ -337,7 +357,6 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 									</Menu.Target>
 
 									<Menu.Dropdown w={150}>
-										<Menu.Label>Selection</Menu.Label>
 										<Menu.Item onClick={selectAllRecords}>
 											Select all records
 										</Menu.Item>
@@ -347,21 +366,14 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 										<Menu.Item onClick={clearSelection}>
 											Clear selection
 										</Menu.Item>
-
-										<Menu.Label mt="sm">Actions</Menu.Label>
-
-										<Menu.Item
-											leftSection={<Icon path={iconCopy} />}
-											onClick={copySelectedRecords}
-										>
-											Copy record ids
+										<Menu.Divider />
+										<Menu.Item onClick={copySelectedRecords}>
+											Copy all Record IDs
 										</Menu.Item>
-										<Menu.Item
-											leftSection={<Icon path={iconJSON} />}
-											onClick={copySelectedRecordsJSON}
-										>
-											Copy as JSON
+										<Menu.Item onClick={copySelectedRecordsJSON}>
+											Copy all as JSON
 										</Menu.Item>
+										<Menu.Divider />
 										<Menu.Item
 											c="pink.7"
 											leftSection={
