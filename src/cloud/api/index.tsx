@@ -1,3 +1,4 @@
+import { useCloudStore } from "~/stores/cloud";
 import type {
 	CloudBillingCountry,
 	CloudInstanceType,
@@ -5,7 +6,6 @@ import type {
 	CloudProfile,
 	CloudRegion,
 } from "~/types";
-import { useCloudStore } from "~/stores/cloud";
 import { getCloudEndpoints } from "./endpoints";
 
 export interface APIRequestInit extends RequestInit {
