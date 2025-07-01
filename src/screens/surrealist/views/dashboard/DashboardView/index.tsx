@@ -352,7 +352,7 @@ export function DashboardView() {
 								<Box>
 									<Group gap="lg">
 										<PrimaryTitle>Metrics</PrimaryTitle>
-										{instance?.state === "ready" && (
+										{!isLoading && instance?.state === "ready" && (
 											<Tooltip label="Metrics update live every 60 seconds">
 												<Indicator
 													processing={true}
