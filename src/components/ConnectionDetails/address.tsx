@@ -123,7 +123,7 @@ export function ConnectionAddressDetails({
 
 	return (
 		<Box>
-			<Group>
+			<Group maw={500}>
 				{showProtocol && (
 					<Select
 						data={protocols}
