@@ -43,9 +43,9 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 						mt="sm"
 					>
 						<Table.Tbody>
-							{usageCharge.summary.map((charge) => (
+							{usageCharge.summary.map((charge, i) => (
 								<Table.Tr
-									key={charge.name}
+									key={i}
 									h={42}
 								>
 									<Table.Td c="bright">{charge.name}</Table.Td>

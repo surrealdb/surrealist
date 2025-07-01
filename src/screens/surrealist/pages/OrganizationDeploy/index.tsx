@@ -6,7 +6,10 @@ import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
-import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import {
+	useCloudOrganizationQuery,
+	useCloudOrganizationsQuery,
+} from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -28,9 +31,9 @@ export interface OrganizationDeployPageProps {
 export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
 	const organisationsQuery = useCloudOrganizationsQuery();
 	const instancesQuery = useCloudOrganizationInstancesQuery(id);
-
-	const organisation = organisationsQuery.data?.find((org) => org.id === id);
 	const instances = instancesQuery.data ?? [];
+
+	const { data: organisation } = useCloudOrganizationQuery(id);
 
 	if (organisationsQuery.isSuccess && !organisation) {
 		return <Redirect to="/organisations" />;

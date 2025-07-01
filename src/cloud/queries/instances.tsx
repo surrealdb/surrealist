@@ -29,8 +29,16 @@ export function useCloudOrganizationInstancesQuery(organization?: string) {
 		queryKey: ["cloud", "instances", { org: organization }],
 		refetchInterval: 15_000,
 		enabled: !!organization && authState === "authenticated",
-		queryFn: async () => {
-			return fetchAPI<CloudInstance[]>(`/organizations/${organization}/instances`);
+		queryFn: async ({ client }) => {
+			const instances = await fetchAPI<CloudInstance[]>(
+				`/organizations/${organization}/instances`,
+			);
+
+			for (const instance of instances) {
+				client.setQueryData(["cloud", "instances", { id: instance.id }], instance);
+			}
+
+			return instances;
 		},
 	});
 }

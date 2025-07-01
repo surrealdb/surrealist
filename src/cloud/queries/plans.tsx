@@ -28,7 +28,7 @@ export interface PlanConfig {
 
 export function useCloudPlansQuery() {
 	return useQuery({
-		queryKey: ["plans"],
+		queryKey: ["cloud", "plans"],
 		queryFn: async () => {
 			const response = await fetch("https://surrealdb.com/api/cloud/pricing.json");
 			const plans: PlanResponse[] = await response.json();
