@@ -75,7 +75,7 @@ export function CreateOrganizationPage() {
 								items={[
 									{ label: "Surrealist", href: "/overview" },
 									{ label: "Organisations", href: "/organisations" },
-									{ label: "Create Organisation" },
+									{ label: "Create" },
 								]}
 							/>
 							<PrimaryTitle
