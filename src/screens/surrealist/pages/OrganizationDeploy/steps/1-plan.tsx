@@ -32,7 +32,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 
 	const freeCount = instances.filter((instance) => instance.type.price_hour === 0).length;
 	const showFree = freeCount < organisation.max_free_instances;
-	const showEnterprise = !useHasCloudFeature("distributed_storage");
+	const showEnterprise = useHasCloudFeature("distributed_storage");
 	const planQuery = useCloudPlansQuery();
 
 	const onClickPlan = useStable((config: PlanConfig) => {
