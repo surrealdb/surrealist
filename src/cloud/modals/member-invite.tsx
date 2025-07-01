@@ -77,6 +77,7 @@ function InviteModal({ organization }: InviteModalProps) {
 
 				<TextInput
 					mt="md"
+					type="email"
 					label="Email"
 					placeholder="user@example.com"
 					value={email}
