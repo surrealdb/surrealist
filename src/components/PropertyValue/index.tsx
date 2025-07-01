@@ -14,6 +14,8 @@ export function PropertyValue({ title, icon, value, ...other }: PropertyValuePro
 		<Group
 			gap="sm"
 			h={32}
+			wrap="nowrap"
+			miw={0}
 			{...other}
 		>
 			<ThemeIcon
@@ -23,9 +25,18 @@ export function PropertyValue({ title, icon, value, ...other }: PropertyValuePro
 			>
 				<Icon path={icon} />
 			</ThemeIcon>
-			<Group gap="xs">
+			<Group
+				gap="xs"
+				wrap="nowrap"
+				miw={0}
+			>
 				<Text fw={600}>{title}: </Text>
-				<Text c="bright">{value}</Text>
+				<Text
+					c="bright"
+					truncate
+				>
+					{value}
+				</Text>
 			</Group>
 		</Group>
 	);

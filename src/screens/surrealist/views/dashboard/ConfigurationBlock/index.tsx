@@ -82,7 +82,7 @@ export function ConfigurationBlock({
 			>
 				<SimpleGrid
 					cols={{ base: 1, xl: 2 }}
-					spacing="xs"
+					spacing="xl"
 				>
 					<Stack gap="xs">
 						<PropertyValue
@@ -137,6 +137,7 @@ export function ConfigurationBlock({
 				<SimpleGrid
 					mt="xl"
 					cols={2}
+					spacing="xl"
 				>
 					<Button
 						size="xs"
