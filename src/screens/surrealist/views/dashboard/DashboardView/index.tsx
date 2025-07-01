@@ -250,15 +250,13 @@ export function DashboardView() {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBottom: 75 },
-				}}
+				mt={18}
 			>
 				<Stack
 					px="xl"
 					mx="auto"
 					maw={1200}
-					mt={22}
+					pb={68}
 				>
 					{details?.state === "creating" ? (
 						<LoadingScreen />

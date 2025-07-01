@@ -4,7 +4,6 @@ import { Box, Button, Group, ScrollArea, Stack, TextInput } from "@mantine/core"
 import { useInputState } from "@mantine/hooks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
 import { AuthGuard } from "~/components/AuthGuard";
 import { Icon } from "~/components/Icon";
@@ -63,7 +62,7 @@ export function CreateOrganizationPage() {
 					type="scroll"
 					inset={0}
 					className={classes.scrollArea}
-					mt={68 + adapter.titlebarOffset}
+					mt={86}
 				>
 					<Stack
 						px="xl"

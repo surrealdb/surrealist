@@ -152,7 +152,7 @@ export function OverviewPage() {
 						pos="absolute"
 						inset={0}
 						style={style}
-						mt={68 + adapter.titlebarOffset}
+						mt={86}
 					>
 						<Stack
 							className={classes.content}

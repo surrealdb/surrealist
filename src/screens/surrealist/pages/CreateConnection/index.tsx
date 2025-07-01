@@ -121,7 +121,7 @@ export function CreateConnectionPage() {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				mt={68 + adapter.titlebarOffset}
+				mt={86}
 			>
 				<Stack
 					mx="auto"

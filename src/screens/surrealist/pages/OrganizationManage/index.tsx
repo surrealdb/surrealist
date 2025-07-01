@@ -4,7 +4,6 @@ import classes from "./style.module.scss";
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
-import { adapter } from "~/adapter";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
@@ -74,7 +73,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 						type="scroll"
 						inset={0}
 						className={classes.scrollArea}
-						mt={68 + adapter.titlebarOffset}
+						mt={86}
 					>
 						<Stack
 							px="xl"

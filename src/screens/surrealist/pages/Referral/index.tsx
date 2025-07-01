@@ -34,7 +34,6 @@ import {
 } from "@mantine/core";
 
 import { ReactNode } from "react";
-import { adapter } from "~/adapter";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
@@ -126,7 +125,7 @@ export function ReferralPage() {
 					type="scroll"
 					inset={0}
 					className={classes.scrollArea}
-					mt={68 + adapter.titlebarOffset}
+					mt={86}
 				>
 					<Stack
 						px="xl"

@@ -4,7 +4,6 @@ import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
-import { adapter } from "~/adapter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
@@ -76,7 +75,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				mt={68 + adapter.titlebarOffset}
+				mt={86}
 			>
 				<Stack
 					px="xl"

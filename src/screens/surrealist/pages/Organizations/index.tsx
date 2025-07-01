@@ -42,15 +42,13 @@ export function OrganizationsPage() {
 					type="scroll"
 					inset={0}
 					className={classes.scrollArea}
-					viewportProps={{
-						style: { paddingBottom: 75 },
-					}}
+					mt={86}
 				>
 					<Stack
 						px="xl"
 						mx="auto"
 						maw={1200}
-						mt={90}
+						pb={68}
 					>
 						<Box>
 							<PageBreadcrumbs
