@@ -152,7 +152,6 @@ export function OverviewPage() {
 						pos="absolute"
 						inset={0}
 						style={style}
-						mt={86}
 					>
 						<Stack
 							className={classes.content}
@@ -165,6 +164,7 @@ export function OverviewPage() {
 							<Stack
 								align="center"
 								gap={0}
+								my={42}
 							>
 								<Image
 									src={iconUrl}
@@ -186,14 +186,18 @@ export function OverviewPage() {
 								</Text>
 							</Stack>
 
-							{bannerQuery.data?.map((banner, i) => (
-								<CloudAlert
-									key={i}
-									banner={banner}
-								/>
-							))}
+							{bannerQuery.isSuccess && bannerQuery.data.length > 0 && (
+								<Box mb={36}>
+									{bannerQuery.data?.map((banner, i) => (
+										<CloudAlert
+											key={i}
+											banner={banner}
+										/>
+									))}
+								</Box>
+							)}
 
-							<Group mt="xl">
+							<Group>
 								<PrimaryTitle fz={22}>Your instances</PrimaryTitle>
 
 								<Spacer />
