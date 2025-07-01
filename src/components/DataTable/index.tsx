@@ -161,6 +161,8 @@ export function DataTable(props: DataTableProps) {
 					{onSelectionChange && (
 						<Table.Td
 							h={37}
+							w={1}
+							style={{ whiteSpace: "nowrap" }}
 							className={classes.tableValue}
 						>
 							<Checkbox
@@ -211,7 +213,10 @@ export function DataTable(props: DataTableProps) {
 				>
 					<Table.Tr>
 						{onSelectionChangeAll && (
-							<Table.Th>
+							<Table.Th
+								w={1}
+								style={{ whiteSpace: "nowrap" }}
+							>
 								<Checkbox
 									size="xs"
 									styles={{

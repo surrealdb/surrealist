@@ -146,9 +146,9 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											</Group>
 										</Table.Td>
 										<Table.Td
-											w={0}
+											w={1}
 											pr="md"
-											style={{ textWrap: "nowrap" }}
+											style={{ whiteSpace: "nowrap" }}
 										>
 											{showLeave ? (
 												<ActionButton
@@ -240,9 +240,9 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 											</Group>
 										</Table.Td>
 										<Table.Td
-											w={0}
+											w={1}
 											pr="md"
-											style={{ textWrap: "nowrap" }}
+											style={{ whiteSpace: "nowrap" }}
 										>
 											{isAdmin && (
 												<ActionButton

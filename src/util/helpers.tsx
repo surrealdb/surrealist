@@ -27,6 +27,8 @@ export const Y_SLIDE_TRANSITION = {
 
 export const DATE_TIME_FORMAT = "E MMM dd yyyy HH:mm";
 
+export const EMAIL_REGEX = /^.+@.+$/;
+
 export const CURRENCY_FORMAT = new Intl.NumberFormat("en-US", {
 	style: "currency",
 	currency: "USD",

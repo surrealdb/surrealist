@@ -40,6 +40,7 @@ export interface OrganizationManagePageProps {
 export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps) {
 	const isAuthed = useIsAuthenticated();
 	const isAdmin = useHasOrganizationRole(id, "admin");
+	const isOwner = useHasOrganizationRole(id, "owner");
 	const [, navigate] = useLocation();
 	const { data, isSuccess } = useCloudOrganizationsQuery();
 	const organization = data?.find((org) => org.id === id);
@@ -150,7 +151,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											>
 												Team
 											</Tabs.Tab>
-											{isAdmin && (
+											{isOwner && (
 												<>
 													<Tabs.Tab
 														value="invoices"
@@ -159,6 +160,18 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 													>
 														Invoices
 													</Tabs.Tab>
+
+													<Tabs.Tab
+														value="billing"
+														leftSection={<Icon path={iconCreditCard} />}
+														px="xl"
+													>
+														Billing
+													</Tabs.Tab>
+												</>
+											)}
+											{isAdmin && (
+												<>
 													<Tabs.Tab
 														value="usage"
 														leftSection={
@@ -167,13 +180,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 														px="xl"
 													>
 														Usage
-													</Tabs.Tab>
-													<Tabs.Tab
-														value="billing"
-														leftSection={<Icon path={iconCreditCard} />}
-														px="xl"
-													>
-														Billing
 													</Tabs.Tab>
 													<Tabs.Tab
 														value="settings"

@@ -2,13 +2,13 @@ import { Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
 import { capitalize } from "radash";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
-import { showErrorNotification } from "~/util/helpers";
+import { EMAIL_REGEX, showErrorNotification } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
 import { useInvitationMutation } from "../mutations/invites";
 import { useCloudRolesQuery } from "../queries/roles";
@@ -68,6 +68,10 @@ function InviteModal({ organization }: InviteModalProps) {
 			value: role.name,
 		})) || [];
 
+	const isValid = useMemo(() => {
+		return EMAIL_REGEX.test(email) && !!role;
+	}, [email, role]);
+
 	return (
 		<Form onSubmit={handleSubmit}>
 			<Stack>
@@ -77,6 +81,7 @@ function InviteModal({ organization }: InviteModalProps) {
 
 				<TextInput
 					mt="md"
+					type="email"
 					label="Email"
 					placeholder="user@example.com"
 					value={email}
@@ -104,7 +109,7 @@ function InviteModal({ organization }: InviteModalProps) {
 						type="submit"
 						variant="gradient"
 						flex={1}
-						disabled={!email || !role}
+						disabled={!isValid}
 						loading={inviteMutation.isPending}
 					>
 						Send invite
