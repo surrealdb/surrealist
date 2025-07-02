@@ -25,14 +25,14 @@ import {
 } from "~/util/icons";
 
 import { formatRelative, subDays } from "date-fns";
-import classes from "./style.module.scss";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Icon } from "~/components/Icon";
 import { useLocation } from "wouter";
-import { Spacer } from "~/components/Spacer";
 import { AccountAvatar } from "~/components/AccountAvatar";
-import { useCloudStore } from "~/stores/cloud";
+import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { useCloudStore } from "~/stores/cloud";
+import classes from "./style.module.scss";
 
 export interface TicketPageProps {
 	id: string;

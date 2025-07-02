@@ -26,6 +26,8 @@ import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
+import TicketsPage from "./pages/Tickets";
+import TicketPage from "./pages/Tickets/ticket";
 import { SurrealistSidebar } from "./sidebar";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
@@ -39,8 +41,6 @@ import MonitorView from "./views/monitor/MonitorView";
 import ParametersView from "./views/parameters/ParametersView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
-import TicketsPage from "./pages/Tickets";
-import TicketPage from "./pages/Tickets/ticket";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
