@@ -13,13 +13,21 @@ import {
 	Stack,
 	Table,
 	Text,
-	Textarea,
 	TextInput,
+	Textarea,
 	UnstyledButton,
 } from "@mantine/core";
-import classes from "./style.module.scss";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useInputState } from "@mantine/hooks";
+import { useLayoutEffect, useState } from "react";
+import { useLocation } from "wouter";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
+import { Pagination } from "~/components/Pagination";
+import { usePagination } from "~/components/Pagination/hook";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import {
 	iconBullhorn,
 	iconCursor,
@@ -30,15 +38,7 @@ import {
 	iconTag,
 	iconTarget,
 } from "~/util/icons";
-import { useIsLight } from "~/hooks/theme";
-import { useLayoutEffect, useState } from "react";
-import { useInputState } from "@mantine/hooks";
-import { useStable } from "~/hooks/stable";
-import { Pagination } from "~/components/Pagination";
-import { usePagination } from "~/components/Pagination/hook";
-import { Spacer } from "~/components/Spacer";
-import { useLocation } from "wouter";
-import { ActionButton } from "~/components/ActionButton";
+import classes from "./style.module.scss";
 
 interface HistoryEntry {
 	id: number;
