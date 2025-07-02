@@ -1,4 +1,4 @@
-import sidekickImg from "~/assets/images/sidekick-glow.webp";
+import sidekickImg from "~/assets/images/icons/sidekick.webp";
 import classes from "./style.module.scss";
 
 import {
@@ -330,7 +330,8 @@ export function Sidekick() {
 						ta="center"
 						c="slate"
 					>
-						You are chatting with an AI assistant. Responses may be inaccurate.
+						You are chatting with an AI assistant, responses may be inaccurate. Refrain
+						from submitting sensitive data.
 					</Text>
 				</Box>
 			)}

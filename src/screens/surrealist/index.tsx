@@ -114,7 +114,7 @@ export function SurrealistScreen() {
 	return (
 		<Box
 			className={classes.root}
-			bg={isLight ? "white" : "slate.9"}
+			bg={isLight ? "slate.0" : "slate.9"}
 		>
 			{isOtherOS && <AppTitleBar />}
 			<Flex

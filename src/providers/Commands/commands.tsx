@@ -696,7 +696,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 					},
 					{
 						id: "reset-tours",
-						name: "Reset tours",
+						name: "Reset guides",
 						icon: iconRoutes,
 						action: launch(resetOnboardings),
 					},

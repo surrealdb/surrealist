@@ -24,10 +24,10 @@ export const ActionButton = createPolymorphicComponent<"button", ActionButtonPro
 	forwardRef<HTMLButtonElement, ActionButtonProps>(
 		({ label, description, tooltipProps, ...other }, ref) => {
 			const tooltipLabel = description ? (
-				<Stack gap={4}>
+				<Stack gap={2}>
 					<Text>{label}</Text>
 					<Text
-						c="dimmed"
+						opacity={0.75}
 						size="sm"
 					>
 						{description}
