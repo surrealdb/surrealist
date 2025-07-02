@@ -102,7 +102,7 @@ export function ConnectBlock({ instance, isLoading }: ConnectBlockProps) {
 				subtitle="For HTTP only environments"
 				icon={iconTransfer}
 				isLoading={isLoading}
-				onClick={() => instance && openConnectCurl(instance)}
+				onClick={() => instance && openConnectCurl(instance, namespace, database)}
 			/>
 		</Box>
 	);
