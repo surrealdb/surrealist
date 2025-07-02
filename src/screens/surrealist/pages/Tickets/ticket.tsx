@@ -27,13 +27,13 @@ import {
 import { formatRelative, subDays } from "date-fns";
 import { useLocation } from "wouter";
 import { AccountAvatar } from "~/components/AccountAvatar";
+import { AuthGuard } from "~/components/AuthGuard";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useCloudStore } from "~/stores/cloud";
 import classes from "./style.module.scss";
-import { AuthGuard } from "~/components/AuthGuard";
 
 export interface TicketPageProps {
 	id: string;

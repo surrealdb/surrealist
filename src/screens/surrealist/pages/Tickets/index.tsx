@@ -21,11 +21,13 @@ import { useInputState } from "@mantine/hooks";
 import { useLayoutEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { ActionButton } from "~/components/ActionButton";
+import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import {
 	iconBullhorn,
@@ -38,8 +40,6 @@ import {
 	iconTarget,
 } from "~/util/icons";
 import classes from "./style.module.scss";
-import { useIsAuthenticated } from "~/hooks/cloud";
-import { CloudSplash } from "~/components/CloudSplash";
 
 interface HistoryEntry {
 	id: number;
