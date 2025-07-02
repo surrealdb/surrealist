@@ -1,11 +1,5 @@
 import { useCloudStore } from "~/stores/cloud";
-import type {
-	CloudBillingCountry,
-	CloudInstanceType,
-	CloudOrganization,
-	CloudProfile,
-	CloudRegion,
-} from "~/types";
+import type { CloudBillingCountry, CloudInstanceType, CloudProfile, CloudRegion } from "~/types";
 import { getCloudEndpoints } from "./endpoints";
 
 export interface APIRequestInit extends RequestInit {
@@ -79,13 +73,10 @@ export async function updateCloudInformation() {
 		fetchAPI<CloudBillingCountry[]>("/billingcountries"),
 	]);
 
-	const organizations = await fetchAPI<CloudOrganization[]>(`/organizations`);
-
 	setCloudValues({
 		instanceVersions,
 		instanceTypes,
 		regions,
-		organizations,
 		billingCountries,
 	});
 

@@ -2,6 +2,7 @@ import classes from "./style.module.scss";
 
 import {
 	Avatar,
+	Box,
 	Flex,
 	Group,
 	Image,
@@ -12,11 +13,11 @@ import {
 	TypographyStylesProvider,
 } from "@mantine/core";
 
-import sidekickImg from "~/assets/images/sidekick.webp";
+import glowImg from "~/assets/images/glow.webp";
+import sidekickImg from "~/assets/images/icons/sidekick.webp";
 
 import { marked } from "marked";
 import { Link } from "~/components/Link";
-import { useIsLight } from "~/hooks/theme";
 import type { CloudChatMessage, CloudProfile } from "~/types";
 
 export interface ChatMessageProps {
@@ -41,7 +42,7 @@ export function ChatMessage({
 			gap="md"
 		>
 			{message.sender === "assistant" ? (
-				<SidekickAvatar />
+				<SidekickAvatar completed={!message.loading} />
 			) : (
 				<Avatar
 					radius="md"
@@ -51,7 +52,7 @@ export function ChatMessage({
 				/>
 			)}
 			{message.loading ? (
-				<Group>
+				<Group pos="relative">
 					<Loader
 						size={14}
 						color={isLight ? "slate.5" : "slate.4"}
@@ -68,6 +69,7 @@ export function ChatMessage({
 					px="lg"
 					py="sm"
 					maw="80%"
+					pos="relative"
 					bg={
 						message.sender === "user"
 							? isLight
@@ -145,21 +147,26 @@ export function ChatMessage({
 	);
 }
 
-function SidekickAvatar() {
-	const isLight = useIsLight();
+interface SidekickAvatarProps {
+	completed: boolean;
+}
 
+function SidekickAvatar({ completed }: SidekickAvatarProps) {
 	return (
-		<Avatar
-			radius="md"
-			variant={isLight ? "filled" : "light"}
-			color="surreal"
-			size={40}
-		>
+		<Box pos="relative">
 			<Image
-				src={sidekickImg}
-				w={28}
-				h={28}
+				pos="absolute"
+				src={glowImg}
+				inset={0}
+				opacity={completed ? 0.3 : 0}
+				style={{ transform: "scale(2)", transition: "opacity 0.3s ease" }}
 			/>
-		</Avatar>
+			<Image
+				pos="relative"
+				src={sidekickImg}
+				w={52}
+				h={52}
+			/>
+		</Box>
 	);
 }

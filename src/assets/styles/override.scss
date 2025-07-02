@@ -442,6 +442,11 @@ body.mod .cm-record-link:hover {
 
 	.mantine-SegmentedControl-innerLabel {
 		transition: color .15s;
+		padding-block: 4px;
+	}
+
+	.mantine-SegmentedControl-label {
+		padding-block: 6px;
 	}
 
 	.mantine-SegmentedControl-control[data-active] .mantine-SegmentedControl-innerLabel {

@@ -50,7 +50,6 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
@@ -140,8 +139,6 @@ export function OverviewPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			<Transition
 				duration={250}
 				transition="fade-up"
@@ -152,7 +149,6 @@ export function OverviewPage() {
 						pos="absolute"
 						inset={0}
 						style={style}
-						mt={68 + adapter.titlebarOffset}
 					>
 						<Stack
 							className={classes.content}
@@ -165,15 +161,16 @@ export function OverviewPage() {
 							<Stack
 								align="center"
 								gap={0}
+								mb={52}
 							>
 								<Image
 									src={iconUrl}
-									w={85}
+									w={74}
 								/>
 
 								<Image
 									src={logoUrl}
-									w={225}
+									w={200}
 									mt="md"
 								/>
 
@@ -186,14 +183,18 @@ export function OverviewPage() {
 								</Text>
 							</Stack>
 
-							{bannerQuery.data?.map((banner, i) => (
-								<CloudAlert
-									key={i}
-									banner={banner}
-								/>
-							))}
+							{bannerQuery.isSuccess && bannerQuery.data.length > 0 && (
+								<Box mb={36}>
+									{bannerQuery.data?.map((banner, i) => (
+										<CloudAlert
+											key={i}
+											banner={banner}
+										/>
+									))}
+								</Box>
+							)}
 
-							<Group mt="xl">
+							<Group>
 								<PrimaryTitle fz={22}>Your instances</PrimaryTitle>
 
 								<Spacer />
@@ -315,7 +316,7 @@ export function OverviewPage() {
 											/>
 										}
 										flex={1}
-										w={264}
+										w={182}
 										size="xs"
 										variant="unstyled"
 										styles={{
@@ -325,7 +326,7 @@ export function OverviewPage() {
 								</Paper>
 
 								{showOrgCreator && (
-									<Link href="/create/organisation">
+									<Link href="/organisations/create">
 										<Button
 											size="xs"
 											color="slate"
@@ -431,7 +432,7 @@ export function OverviewPage() {
 												flex={1}
 												className={classes.connectionSpacer}
 											/>
-											<Link href="/create/connection">
+											<Link href="/connections/create">
 												<Button
 													size="xs"
 													variant="gradient"
@@ -458,13 +459,6 @@ export function OverviewPage() {
 													onConnect={activateConnection}
 												/>
 											))}
-											{/* {userConnections.length === 0 && noFilter && (
-									<StartCreator
-										title="No connections"
-										subtitle="Click to create your first connection"
-										onCreate={() => navigate("/create/connection")}
-									/>
-								)} */}
 										</SimpleGrid>
 									</Box>
 								)}

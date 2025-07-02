@@ -208,6 +208,7 @@ export function QueryView() {
 				ref={rootRef}
 				pr="lg"
 				pb="lg"
+				pl={{ base: "lg", md: 0 }}
 			>
 				<PanelGroup
 					direction="horizontal"

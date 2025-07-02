@@ -6,9 +6,11 @@ import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AppTitleBar } from "~/components/AppTitleBar";
+import { TopGlow } from "~/components/TopGlow";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useAvailableViews } from "~/hooks/connection";
+import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
@@ -99,6 +101,7 @@ export function SurrealistScreen() {
 		setOverlaySidebar(false);
 	});
 
+	const glowOffset = useGlowOffset();
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 
 	useLayoutEffect(() => {
@@ -138,9 +141,12 @@ export function SurrealistScreen() {
 
 					<Stack
 						flex={1}
+						className={classes.pageContent}
 						pos="relative"
 						gap="lg"
 					>
+						<TopGlow offset={glowOffset} />
+
 						<Group
 							gap="md"
 							pos="absolute"
@@ -165,7 +171,7 @@ export function SurrealistScreen() {
 								<NewEmbedPageLazy />
 							</Route>
 
-							<Route path="/create/connection">
+							<Route path="/connections/create">
 								<CreateConnectionPageLazy />
 							</Route>
 
@@ -175,6 +181,10 @@ export function SurrealistScreen() {
 
 							{showCloud && (
 								<>
+									<Route path="/organisations/create">
+										<CreateOrganizationsPageLazy />
+									</Route>
+
 									<Route path="/organisations">
 										<OrganizationsPageLazy />
 									</Route>
@@ -206,10 +216,6 @@ export function SurrealistScreen() {
 
 									<Route path="/referrals">
 										<ReferralPageLazy />
-									</Route>
-
-									<Route path="/create/organisation">
-										<CreateOrganizationsPageLazy />
 									</Route>
 
 									<Route path="/signin/:plan?">
@@ -250,7 +256,6 @@ export function SurrealistScreen() {
 
 											{portal ? (
 												<Stack
-													className={classes.inner}
 													flex={1}
 													gap={0}
 												>
@@ -282,42 +287,3 @@ export function SurrealistScreen() {
 		</Box>
 	);
 }
-
-// interface DatabaseSelectionProps {
-// 	info: ViewPageInfo;
-// }
-
-// function DatabaseSelection({ info }: DatabaseSelectionProps) {
-// 	const isConnected = useIsConnected();
-
-// 	return (
-// 		<Center flex={1}>
-// 			<Paper
-// 				radius="md"
-// 				p="xl"
-// 				w={500}
-// 			>
-// 				<PrimaryTitle>Before you continue...</PrimaryTitle>
-// 				<Text mt="md">
-// 					Please select a namespace and database before accessing the {info?.name} view.
-// 					You can use the buttons below to choose an existing namespace and database, or
-// 					create new ones.
-// 				</Text>
-// 				<SelectDatabase
-// 					withNamespace
-// 					withDatabase
-// 					mt="xl"
-// 				/>
-// 				{!isConnected && (
-// 					<Alert
-// 						mt="xl"
-// 						color="orange"
-// 						icon={<Icon path={iconWarning} />}
-// 					>
-// 						You must be connected before selecting a namespace and database
-// 					</Alert>
-// 				)}
-// 			</Paper>
-// 		</Center>
-// 	);
-// }

@@ -4,14 +4,15 @@ import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
-import { adapter } from "~/adapter";
 import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
-import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import {
+	useCloudOrganizationQuery,
+	useCloudOrganizationsQuery,
+} from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 import { clamp } from "~/util/helpers";
@@ -29,9 +30,9 @@ export interface OrganizationDeployPageProps {
 export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
 	const organisationsQuery = useCloudOrganizationsQuery();
 	const instancesQuery = useCloudOrganizationInstancesQuery(id);
-
-	const organisation = organisationsQuery.data?.find((org) => org.id === id);
 	const instances = instancesQuery.data ?? [];
+
+	const { data: organisation } = useCloudOrganizationQuery(id);
 
 	if (organisationsQuery.isSuccess && !organisation) {
 		return <Redirect to="/organisations" />;
@@ -68,15 +69,13 @@ function PageContent({ organisation, instances }: PageContentProps) {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				mt={68 + adapter.titlebarOffset}
+				mt={18}
 			>
 				<Stack
 					px="xl"

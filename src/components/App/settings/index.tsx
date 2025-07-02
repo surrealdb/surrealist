@@ -288,7 +288,7 @@ export function Settings() {
 			>
 				<Group
 					h="calc(100vh - 100px)"
-					mah={650}
+					mah={800}
 					gap="xs"
 					align="stretch"
 					wrap="nowrap"

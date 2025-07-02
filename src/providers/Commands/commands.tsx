@@ -161,7 +161,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						name: "Create new connection",
 						icon: iconPlus,
 						binding: true,
-						action: navigate("/create/connection"),
+						action: navigate("/connections/create"),
 					},
 					{
 						id: "reconnect",
@@ -654,14 +654,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: navigate("/mini/new"),
 					},
 					{
-						id: "open-docs",
-						name: "Search documentation for:",
-						icon: iconBook,
-						binding: ["mod", "j"],
-						action: intent("open-documentation"),
-						forward: true,
-					},
-					{
 						id: "open-changelog",
 						name: "View release changelogs",
 						icon: iconStar,
@@ -733,6 +725,19 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							action: intent("highlight-tool"),
 						},
 					),
+				],
+			},
+			{
+				name: "Search",
+				commands: [
+					{
+						id: "open-docs",
+						name: "Search documentation for:",
+						icon: iconBook,
+						binding: ["mod", "j"],
+						action: intent("open-documentation"),
+						forward: true,
+					},
 				],
 			},
 		);

@@ -8,6 +8,7 @@ import {
 	Center,
 	Group,
 	Image,
+	Menu,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
@@ -22,6 +23,7 @@ import {
 	iconChevronRight,
 	iconCreditCard,
 	iconCursor,
+	iconDotsVertical,
 	iconDownload,
 	iconHistory,
 	iconLive,
@@ -40,11 +42,8 @@ import { shuffle } from "radash";
 import { memo, useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useCloudProfile, useIsAuthenticated } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -134,8 +133,6 @@ export function Sidekick() {
 			w="100%"
 			align="center"
 		>
-			<TopGlow offset={250} />
-
 			<Box
 				flex={1}
 				w="100%"
@@ -146,32 +143,12 @@ export function Sidekick() {
 						pos="absolute"
 						viewportRef={scrollRef}
 						inset={0}
-						mt={68 + adapter.titlebarOffset}
 					>
 						<Box
 							mx="auto"
 							maw={900}
 							pb={68}
 						>
-							<Group
-								wrap="nowrap"
-								align="start"
-							>
-								<Spacer />
-								{!isResponding && conversation.length > 1 && (
-									<ActionButton
-										label="Reset chat"
-										variant="subtle"
-										size="lg"
-										onClick={clearChatSession}
-									>
-										<Icon
-											path={iconReset}
-											size="lg"
-										/>
-									</ActionButton>
-								)}
-							</Group>
 							<Stack
 								mt={42}
 								gap={42}
@@ -302,27 +279,50 @@ export function Sidekick() {
 						value={input}
 						autoFocus
 						onChange={setInput}
+						rightSectionWidth={96}
 						rightSection={
-							<ActionIcon
-								size="lg"
-								type="submit"
-								variant="gradient"
-								disabled={!canSend}
-								onClick={submitMessage}
-								loading={isResponding}
-								style={{
-									opacity: canSend ? 1 : 0.5,
-									border: "1px solid rgba(255, 255, 255, 0.3)",
-									backgroundOrigin: "border-box",
-									filter: canSend ? undefined : "saturate(0%)",
-									transition: "all 0.1s",
-								}}
-							>
-								<Icon
-									path={iconCursor}
-									c="white"
-								/>
-							</ActionIcon>
+							<Group wrap="nowrap">
+								<Menu position="top">
+									<Menu.Target>
+										<ActionIcon
+											size="lg"
+											color="slate"
+											variant="subtle"
+											onClick={submitMessage}
+										>
+											<Icon path={iconDotsVertical} />
+										</ActionIcon>
+									</Menu.Target>
+									<Menu.Dropdown>
+										<Menu.Item
+											leftSection={<Icon path={iconReset} />}
+											onClick={clearChatSession}
+										>
+											Reset conversation
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
+								<ActionIcon
+									size="lg"
+									type="submit"
+									variant="gradient"
+									disabled={!canSend}
+									onClick={submitMessage}
+									loading={isResponding}
+									style={{
+										opacity: canSend ? 1 : 0.5,
+										border: "1px solid rgba(255, 255, 255, 0.3)",
+										backgroundOrigin: "border-box",
+										filter: canSend ? undefined : "saturate(0%)",
+										transition: "all 0.1s",
+									}}
+								>
+									<Icon
+										path={iconCursor}
+										c="white"
+									/>
+								</ActionIcon>
+							</Group>
 						}
 					/>
 					<Text

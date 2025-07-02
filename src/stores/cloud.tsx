@@ -3,7 +3,6 @@ import type {
 	CloudBillingCountry,
 	CloudChatMessage,
 	CloudInstanceType,
-	CloudOrganization,
 	CloudProfile,
 	CloudRegion,
 } from "~/types";
@@ -15,7 +14,6 @@ interface CloudValues {
 	instanceVersions: string[];
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
-	organizations: CloudOrganization[];
 	billingCountries: CloudBillingCountry[];
 }
 
@@ -38,7 +36,6 @@ export type CloudStore = {
 	instanceVersions: string[];
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
-	organizations: CloudOrganization[];
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
 	chatConversation: CloudChatMessage[];
@@ -75,7 +72,6 @@ export const useCloudStore = create<CloudStore>()(
 		instanceTypes: [],
 		instanceVersions: [],
 		regions: [],
-		organizations: [],
 		billingCountries: [],
 		sessionExpired: false,
 		isProvisioning: false,

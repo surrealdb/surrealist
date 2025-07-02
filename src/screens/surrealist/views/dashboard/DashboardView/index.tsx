@@ -40,7 +40,6 @@ import { Link } from "~/components/Link";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
@@ -242,23 +241,19 @@ export function DashboardView() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={318} />
-
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				viewportProps={{
-					style: { paddingBottom: 75 },
-				}}
+				mt={18}
 			>
 				<Stack
 					px="xl"
 					mx="auto"
 					maw={1200}
-					mt={22}
+					pb={68}
 				>
 					{details?.state === "creating" ? (
 						<LoadingScreen />
@@ -354,7 +349,7 @@ export function DashboardView() {
 								<Box>
 									<Group gap="lg">
 										<PrimaryTitle>Metrics</PrimaryTitle>
-										{instance?.state === "ready" && (
+										{!isLoading && instance?.state === "ready" && (
 											<Tooltip label="Metrics update live every 60 seconds">
 												<Indicator
 													processing={true}
@@ -558,7 +553,7 @@ export function DashboardView() {
 				</Stack>
 			</ScrollArea>
 
-			{details && (
+			{details && organisation && (
 				<>
 					<ConfiguratorDrawerLazy
 						opened={configuring}
@@ -571,6 +566,7 @@ export function DashboardView() {
 					<UpgradeDrawerLazy
 						opened={upgrading}
 						instance={details}
+						organisation={organisation}
 						tab={upgradeTab}
 						onChangeTab={setUpgradeTab}
 						onClose={upgradingHandle.close}

@@ -64,9 +64,7 @@ export type GlobalPage =
 	| "/chat"
 	| "/support"
 	| "/referrals"
-	| "/mini/new"
-	| "/create/connection"
-	| "/create/organisation";
+	| "/mini/new";
 export type ViewPage =
 	| "dashboard"
 	| "query"

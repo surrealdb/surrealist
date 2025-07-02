@@ -120,6 +120,7 @@ export function GraphqlView() {
 			h="100%"
 			pr="lg"
 			pb="lg"
+			pl={{ base: "lg", md: 0 }}
 		>
 			<PanelGroup direction="horizontal">
 				<Panel minSize={15}>

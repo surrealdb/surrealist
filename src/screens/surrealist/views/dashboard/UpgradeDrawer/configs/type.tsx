@@ -6,23 +6,25 @@ import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceTypeMutation } from "~/cloud/mutations/type";
 import { InstanceTypes } from "~/components/InstanceTypes";
-import { useOrganizations } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { CloudInstance } from "~/types";
+import { CloudInstance, CloudOrganization } from "~/types";
 
 export interface ConfigurationInstanceTypeProps {
 	instance: CloudInstance;
+	organisation: CloudOrganization;
 	onClose: () => void;
 }
 
-export function ConfigurationInstanceType({ instance, onClose }: ConfigurationInstanceTypeProps) {
+export function ConfigurationInstanceType({
+	instance,
+	organisation,
+	onClose,
+}: ConfigurationInstanceTypeProps) {
 	const [selected, setSelected] = useState("");
 
 	const { mutateAsync } = useUpdateInstanceTypeMutation(instance);
 	const instanceType = instance.type.slug;
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
-	const organizations = useOrganizations();
-	const organization = organizations.find((org) => org.id === instance.organization_id);
 
 	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
 
@@ -69,12 +71,12 @@ export function ConfigurationInstanceType({ instance, onClose }: ConfigurationIn
 								your instance, including memory and CPU.
 							</Text>
 						</Box>
-						{organization && (
+						{organisation && (
 							<InstanceTypes
 								value={selected}
 								active={instanceType}
 								plan={guessedPlan}
-								organization={organization}
+								organization={organisation}
 								onChange={(type) => setSelected(type.slug)}
 							/>
 						)}

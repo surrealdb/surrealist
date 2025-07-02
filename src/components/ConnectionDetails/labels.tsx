@@ -13,6 +13,7 @@ export function ConnectionLabelsDetails({ value, onChange }: ConnectionLabelsDet
 
 	return (
 		<TagsInput
+			maw={500}
 			data={labels}
 			value={value.labels ?? []}
 			onChange={(value) =>

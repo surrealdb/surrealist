@@ -1,9 +1,7 @@
 import { Box, Center, ScrollArea, Stack } from "@mantine/core";
-import { adapter } from "~/adapter";
 import { HelpCenter } from "~/components/HelpCenter";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
 import classes from "./style.module.scss";
 
 export function SupportPage() {
@@ -12,15 +10,13 @@ export function SupportPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				mt={68 + adapter.titlebarOffset}
+				mt={18}
 			>
 				<Stack
 					px="xl"

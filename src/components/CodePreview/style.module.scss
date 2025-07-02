@@ -10,9 +10,11 @@
 
 .copy {
 	z-index: 1;
-	display: none;
+	opacity: 0;
+	transition: opacity 0.1s ease-in;
+	box-shadow: var(--mantine-shadow-md);
 }
 
 .root:hover .copy {
-	display: block;
+	opacity: 1;
 }

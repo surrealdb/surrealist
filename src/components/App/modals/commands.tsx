@@ -66,7 +66,7 @@ export function CommandPaletteModal() {
 				}
 
 				if (cmd.forward === true) {
-					return true;
+					return !!search;
 				}
 
 				return (

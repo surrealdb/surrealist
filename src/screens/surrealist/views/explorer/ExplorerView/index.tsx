@@ -114,6 +114,7 @@ export function ExplorerView() {
 				ref={ref}
 				pr="lg"
 				pb="lg"
+				pl={{ base: "lg", md: 0 }}
 			>
 				<PanelGroup
 					direction="horizontal"

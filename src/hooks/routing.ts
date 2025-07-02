@@ -31,7 +31,7 @@ export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pa
  */
 export function useRouteMatcher(match: string[]) {
 	const parser = useRouter().parser;
-	const location = useAbsoluteLocation()[0];
+	const [location] = useAbsoluteLocation();
 
 	return match.some((m) => {
 		return matchRoute(parser, m, location)[0];

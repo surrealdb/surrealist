@@ -73,6 +73,11 @@ $sidebar-wide: 215px;
 	}
 }
 
-.inner {
+.sidebar-inner {
+	padding-top: calc(22px + var(--titlebar-offset));
+	height: 100%;
+}
+
+.page-content {
 	padding-top: calc(68px + var(--titlebar-offset));
 }

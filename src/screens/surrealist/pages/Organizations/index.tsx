@@ -9,7 +9,6 @@ import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { ORGANIZATIONS, useSavepoint } from "~/hooks/overview";
 import { OrganizationTile } from "./organization";
@@ -33,8 +32,6 @@ export function OrganizationsPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			{isAuthed ? (
 				<ScrollArea
 					pos="absolute"
@@ -42,15 +39,13 @@ export function OrganizationsPage() {
 					type="scroll"
 					inset={0}
 					className={classes.scrollArea}
-					viewportProps={{
-						style: { paddingBottom: 75 },
-					}}
+					mt={18}
 				>
 					<Stack
 						px="xl"
 						mx="auto"
 						maw={1200}
-						mt={90}
+						pb={68}
 					>
 						<Box>
 							<PageBreadcrumbs
@@ -70,7 +65,7 @@ export function OrganizationsPage() {
 						<Group mt="xl">
 							<PrimaryTitle fz={22}>Your organisations</PrimaryTitle>
 							<Spacer />
-							<Link to="/create/organisation">
+							<Link to="/organisations/create">
 								<Button
 									size="xs"
 									variant="gradient"

@@ -1,21 +1,5 @@
-import { Divider, Group, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
 import classes from "./style.module.scss";
 
-import { Box, ScrollArea, Stack } from "@mantine/core";
-import { useMemo } from "react";
-import { Redirect, useLocation } from "wouter";
-import { adapter } from "~/adapter";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
-import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
-import { AuthGuard } from "~/components/AuthGuard";
-import { CloudSplash } from "~/components/CloudSplash";
-import { Icon } from "~/components/Icon";
-import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { TopGlow } from "~/components/TopGlow";
-import { useIsAuthenticated } from "~/hooks/cloud";
-import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
-import { formatArchiveDate } from "~/util/cloud";
 import {
 	iconCog,
 	iconCreditCard,
@@ -25,6 +9,21 @@ import {
 	iconProgressClock,
 	iconServer,
 } from "~/util/icons";
+
+import { Divider, Group, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
+import { Box, ScrollArea, Stack } from "@mantine/core";
+import { useMemo } from "react";
+import { Redirect, useLocation } from "wouter";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
+import { AuthGuard } from "~/components/AuthGuard";
+import { CloudSplash } from "~/components/CloudSplash";
+import { Icon } from "~/components/Icon";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useIsAuthenticated } from "~/hooks/cloud";
+import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
+import { formatArchiveDate } from "~/util/cloud";
 import { OrganizationBillingTab } from "./tabs/billing";
 import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationInvoicesTab } from "./tabs/invoices";
@@ -42,8 +41,8 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 	const isAdmin = useHasOrganizationRole(id, "admin");
 	const isOwner = useHasOrganizationRole(id, "owner");
 	const [, navigate] = useLocation();
-	const { data, isSuccess } = useCloudOrganizationsQuery();
-	const organization = data?.find((org) => org.id === id);
+
+	const { data: organization, isSuccess } = useCloudOrganizationQuery(id);
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {
@@ -66,15 +65,13 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 					flex={1}
 					pos="relative"
 				>
-					<TopGlow offset={250} />
-
 					<ScrollArea
 						pos="absolute"
 						scrollbars="y"
 						type="scroll"
 						inset={0}
 						className={classes.scrollArea}
-						mt={68 + adapter.titlebarOffset}
+						mt={18}
 					>
 						<Stack
 							px="xl"
@@ -84,22 +81,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 						>
 							{organization && (
 								<>
-									{/* <Group py="md">
-										<PrimaryTitle fz={26}>{organization?.name}</PrimaryTitle>
-										{organization?.archived_at && (
-											<Tooltip
-												label={`Organisation was archived on ${formatArchiveDate(organization)}`}
-											>
-												<div>
-													<Icon
-														path={iconPackageClosed}
-														size="xl"
-														mr="xs"
-													/>
-												</div>
-											</Tooltip>
-										)}
-									</Group> */}
 									<Box>
 										<PageBreadcrumbs
 											items={[

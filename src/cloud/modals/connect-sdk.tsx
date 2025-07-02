@@ -7,7 +7,6 @@ import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DRIVERS } from "~/constants";
-import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance, CodeLang, Snippets } from "~/types";
 import { iconXml } from "~/util/icons";
 
@@ -41,7 +40,6 @@ interface ConnectSdkModalProps {
 }
 
 function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps) {
-	const isLight = useIsLight();
 	const [lang, setLang] = useState<CodeLang>("rust");
 
 	const installation = useMemo<Snippets>(

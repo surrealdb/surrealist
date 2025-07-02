@@ -54,7 +54,6 @@ import {
 	iconLive,
 	iconModuleML,
 	iconOrganization,
-	iconPlus,
 	iconQuery,
 	iconReferral,
 	iconRelation,
@@ -217,17 +216,6 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/mini/new",
 		name: "Embed Surrealist",
 		icon: iconXml,
-	},
-	"/create/connection": {
-		id: "/create/connection",
-		name: "Connect to SurrealDB",
-		icon: iconPlus,
-	},
-	"/create/organisation": {
-		id: "/create/organisation",
-		name: "New organisation",
-		icon: iconPlus,
-		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 };
 

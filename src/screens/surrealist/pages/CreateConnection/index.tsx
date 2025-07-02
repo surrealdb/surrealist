@@ -10,9 +10,8 @@ import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentica
 import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
 import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { Icon } from "~/components/Icon";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
-import { TopGlow } from "~/components/TopGlow";
 import { useLastSavepoint } from "~/hooks/overview";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -21,7 +20,7 @@ import { Template } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
-import { iconArrowLeft, iconChevronDown, iconChevronRight, iconHomePlus } from "~/util/icons";
+import { iconChevronDown, iconChevronRight, iconHomePlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 
@@ -113,86 +112,51 @@ export function CreateConnectionPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={250} />
-
 			<ScrollArea
 				pos="absolute"
 				scrollbars="y"
 				type="scroll"
 				inset={0}
 				className={classes.scrollArea}
-				mt={68 + adapter.titlebarOffset}
+				mt={18}
 			>
 				<Stack
+					px="xl"
 					mx="auto"
-					maw={650}
-					gap="lg"
+					maw={1200}
 					pb={68}
 				>
 					<Box>
-						<PrimaryTitle fz={26}>New connection</PrimaryTitle>
-						<Text fz="xl">Connect to any SurrealDB instance</Text>
-					</Box>
-
-					<Group>
-						<Link to={savepoint.path}>
-							<Button
-								variant="light"
-								color="slate"
-								size="xs"
-								leftSection={<Icon path={iconArrowLeft} />}
+						<PageBreadcrumbs
+							items={[
+								{ label: "Surrealist", href: "/overview" },
+								{ label: "Connections" },
+								{ label: "Create" },
+							]}
+						/>
+						<Group mt="sm">
+							<PrimaryTitle
+								fz={32}
+								flex={1}
 							>
-								Back to {savepoint.name}
-							</Button>
-						</Link>
-						<Spacer />
-						<Menu position="bottom-end">
-							<Menu.Target>
-								<Button
-									rightSection={<Icon path={iconChevronDown} />}
-									color="slate"
-									variant="light"
-									size="xs"
-								>
-									Apply template
-								</Button>
-							</Menu.Target>
-							<Menu.Dropdown miw={200}>
-								{adapter.isServeSupported && (
-									<>
-										<Menu.Item
-											onClick={() => applyTemplate(localhost)}
-											leftSection={
-												<ThemeIcon
-													color="slate"
-													variant="light"
-													radius="xs"
-													mr="xs"
-												>
-													<Icon path={iconHomePlus} />
-												</ThemeIcon>
-											}
-										>
-											<Box>
-												<Text
-													c="bright"
-													fw={500}
-													lh={1}
-												>
-													Localhost
-												</Text>
-												<Text fz="sm">Automatic template</Text>
-											</Box>
-										</Menu.Item>
-										<Menu.Divider />
-									</>
-								)}
-								{templates.length > 0 && (
-									<>
-										{templates.map((template) => (
+								Create connection
+							</PrimaryTitle>
+							<Menu position="bottom-end">
+								<Menu.Target>
+									<Button
+										rightSection={<Icon path={iconChevronDown} />}
+										color="slate"
+										variant="light"
+										size="xs"
+									>
+										Apply template
+									</Button>
+								</Menu.Target>
+								<Menu.Dropdown miw={200}>
+									{adapter.isServeSupported && (
+										<>
 											<Menu.Item
-												key={template.id}
-												onClick={() => applyTemplate(template)}
+												onClick={() => applyTemplate(localhost)}
 												leftSection={
 													<ThemeIcon
 														color="slate"
@@ -200,30 +164,64 @@ export function CreateConnectionPage() {
 														radius="xs"
 														mr="xs"
 													>
-														<Icon path={USER_ICONS[template.icon]} />
+														<Icon path={iconHomePlus} />
 													</ThemeIcon>
 												}
 											>
-												<Text
-													c="bright"
-													fw={500}
-												>
-													{template.name}
-												</Text>
+												<Box>
+													<Text
+														c="bright"
+														fw={500}
+														lh={1}
+													>
+														Localhost
+													</Text>
+													<Text fz="sm">Automatic template</Text>
+												</Box>
 											</Menu.Item>
-										))}
-										<Menu.Divider />
-									</>
-								)}
-								<Menu.Item
-									rightSection={<Icon path={iconChevronRight} />}
-									onClick={openTemplates}
-								>
-									Manage templates
-								</Menu.Item>
-							</Menu.Dropdown>
-						</Menu>
-					</Group>
+											<Menu.Divider />
+										</>
+									)}
+									{templates.length > 0 && (
+										<>
+											{templates.map((template) => (
+												<Menu.Item
+													key={template.id}
+													onClick={() => applyTemplate(template)}
+													leftSection={
+														<ThemeIcon
+															color="slate"
+															variant="light"
+															radius="xs"
+															mr="xs"
+														>
+															<Icon
+																path={USER_ICONS[template.icon]}
+															/>
+														</ThemeIcon>
+													}
+												>
+													<Text
+														c="bright"
+														fw={500}
+													>
+														{template.name}
+													</Text>
+												</Menu.Item>
+											))}
+											<Menu.Divider />
+										</>
+									)}
+									<Menu.Item
+										rightSection={<Icon path={iconChevronRight} />}
+										onClick={openTemplates}
+									>
+										Manage templates
+									</Menu.Item>
+								</Menu.Dropdown>
+							</Menu>
+						</Group>
+					</Box>
 
 					<Box mt={24}>
 						<Text
@@ -295,10 +293,9 @@ export function CreateConnectionPage() {
 								color="slate"
 								variant="light"
 							>
-								Cancel
+								Back
 							</Button>
 						</Link>
-						<Spacer />
 						<Button
 							w={150}
 							type="submit"

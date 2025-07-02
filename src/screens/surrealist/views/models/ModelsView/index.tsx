@@ -140,6 +140,7 @@ export function ModelsView() {
 			gap="var(--surrealist-divider-size)"
 			pr="lg"
 			pb="lg"
+			pl={{ base: "lg", md: 0 }}
 		>
 			{isAvailable && (
 				<ModelsPanel
