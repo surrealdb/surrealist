@@ -11,10 +11,10 @@ import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
 import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
+import { AccountAvatar } from "../AccountAvatar";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
-import { AccountAvatar } from "../AccountAvatar";
 
 interface AccountFormProps {
 	onClose(): void;
