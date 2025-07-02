@@ -152,6 +152,7 @@ function SettingsSidebar({
 			>
 				<Image
 					h={36}
+					w="auto"
 					src={logoUrl}
 				/>
 			</Center>

@@ -13,7 +13,6 @@ import { ConsoleDrawer } from "./modals/console";
 import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
 import { DocumentationModal } from "./modals/documentation";
-import { DownloadModal } from "./modals/download";
 import { FailedConnectDialog } from "./modals/failed-connect";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
@@ -47,7 +46,6 @@ export function App() {
 			<CommandPaletteModal />
 			<DocumentationModal />
 			<ChangelogModal />
-			<DownloadModal />
 			<SandboxModal />
 			<AccessSignupModal />
 			<TableCreatorModal />

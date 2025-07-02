@@ -73,6 +73,7 @@ export function ConnectionNameDetails({ value, onChange }: ConnectionNameDetails
 				placeholder="Connection name"
 				disabled={isCloud}
 				value={value.name}
+				autoFocus
 				onChange={(e) =>
 					onChange((draft) => {
 						draft.name = e.currentTarget.value;

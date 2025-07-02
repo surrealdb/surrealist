@@ -146,6 +146,21 @@ body.mod .cm-record-link:hover {
 	}
 }
 
+.mantine-Tooltip-tooltip {
+	color: var(--mantine-color-text);
+	background-color: var(--mantine-color-violet-8);
+	border: 1px solid var(--mantine-color-violet-8);
+	box-shadow: var(--mantine-shadow-md);
+	padding-block: var(--mantine-spacing-xs);
+	padding-inline: var(--mantine-spacing-md);
+	color: white;
+
+	@include light {
+		background-color: var(--mantine-color-violet-4);
+		border-color: var(--mantine-color-violet-4);
+	}
+}
+
 .mantine-Menu-itemSection {
 	color: var(--mantine-color-slate-2);
 
@@ -322,7 +337,7 @@ body.mod .cm-record-link:hover {
 	border-color: var(--mantine-color-slate-6);
 
 	@include light {
-		border-color: var(--mantine-color-slate-1);
+		border-color: var(--mantine-color-slate-2);
 	}
 }
 

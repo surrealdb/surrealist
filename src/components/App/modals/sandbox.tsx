@@ -1,4 +1,4 @@
-import { Box, Button, Image, Modal, Stack, Text } from "@mantine/core";
+import { Button, Divider, Image, Modal, Paper, Text } from "@mantine/core";
 import { useEffect } from "react";
 import banner from "~/assets/images/sandbox.webp";
 import { ActionButton } from "~/components/ActionButton";
@@ -41,22 +41,28 @@ export function SandboxModal() {
 
 			<Image src={banner} />
 
-			<Box p={24}>
-				<Stack>
-					<Text
-						c="bright"
-						fw={500}
-						fz="lg"
-					>
-						The Sandbox provides an easy to use playground to test, experiment, and
-						learn SurrealDB.
-					</Text>
-					<Text>
-						You can use the sandbox without having to start a database up, and data will
-						be reset after you close Surrealist. Additionally, you can use the buttons
-						in the toolbar to manually reset the sandbox or load an official dataset.
-					</Text>
-				</Stack>
+			<Divider />
+
+			<Paper
+				p={24}
+				variant="gradient"
+				withBorder={false}
+				radius={0}
+			>
+				<Text
+					c="bright"
+					fw={500}
+					fz="xl"
+				>
+					The Surrealist Sandbox provides an easy to use playground to test, experiment,
+					and learn SurrealQL.
+				</Text>
+
+				<Text mt="xl">
+					The sandbox lets you experiment without setting up a database—your data will be
+					cleared when you close Surrealist. You can also use the toolbar buttons to
+					manually reset the sandbox or load an official dataset.
+				</Text>
 
 				<Button
 					mt="xl"
@@ -67,9 +73,9 @@ export function SandboxModal() {
 					rightSection={<Icon path={iconChevronRight} />}
 					radius="sm"
 				>
-					Get started
+					Continue
 				</Button>
-			</Box>
+			</Paper>
 		</Modal>
 	);
 }
