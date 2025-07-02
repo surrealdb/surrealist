@@ -38,6 +38,8 @@ import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
+import TicketsPage from "./pages/Tickets";
+import TicketPage from "./pages/Tickets/ticket";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
@@ -46,6 +48,8 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
+const TicketsPageLazy = memo(TicketsPage);
+const TicketPageLazy = memo(TicketPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
@@ -208,6 +212,14 @@ export function SurrealistScreen() {
 										{({ organization }) => (
 											<Redirect to={`/o/${organization}/instances`} />
 										)}
+									</Route>
+
+									<Route path="/tickets">
+										<TicketsPageLazy />
+									</Route>
+
+									<Route path="/t/:ticket">
+										{({ ticket }) => <TicketPageLazy id={ticket} />}
 									</Route>
 
 									<Route path="/chat">

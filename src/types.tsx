@@ -61,6 +61,7 @@ export type GlobalPage =
 	| "/overview"
 	| "/signin"
 	| "/organisations"
+	| "/tickets"
 	| "/chat"
 	| "/support"
 	| "/referrals"
