@@ -250,7 +250,8 @@ export function DashboardView() {
 				mt={18}
 			>
 				<Stack
-					px="xl"
+					pr="lg"
+					pl={{ base: "lg", md: 0 }}
 					mx="auto"
 					maw={1200}
 					pb={68}

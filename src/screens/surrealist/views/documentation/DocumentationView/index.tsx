@@ -31,6 +31,7 @@ export function DocumentationView() {
 			gap="var(--surrealist-divider-size)"
 			pr="lg"
 			pb="lg"
+			pl={{ base: "lg", md: 0 }}
 		>
 			<TocPaneLazy
 				active={active}
