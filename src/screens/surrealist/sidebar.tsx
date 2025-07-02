@@ -30,8 +30,8 @@ import classes from "./style.module.scss";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
 	["/overview", "/organisations"],
-	["/mini/new"],
-	["/referrals", "/support"],
+	["/referrals", "/mini/new"],
+	["/tickets", "/support"],
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
