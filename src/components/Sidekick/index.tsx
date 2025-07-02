@@ -1,4 +1,4 @@
-import sidekickImg from "~/assets/images/sidekick-glow.webp";
+import sidekickImg from "~/assets/images/icons/sidekick.webp";
 import classes from "./style.module.scss";
 
 import {
