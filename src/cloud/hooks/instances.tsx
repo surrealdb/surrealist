@@ -8,7 +8,7 @@ import { useCloudOrganizationsQuery } from "../queries/organizations";
  * Fetch all instances for all organizations
  */
 export function useCloudInstanceList() {
-	const { data: organizations = [], isSuccess } = useCloudOrganizationsQuery();
+	const { data: organizations = [], isLoading } = useCloudOrganizationsQuery();
 	const authState = useCloudStore((state) => state.authState);
 
 	return useQueries({
@@ -38,7 +38,7 @@ export function useCloudInstanceList() {
 				}) satisfies QueryObserverOptions,
 		),
 		combine: (results) => ({
-			isPending: !isSuccess || results.some((result) => result.isLoading),
+			isPending: isLoading || results.some((result) => result.isLoading),
 			entries: results.filter((result) => !!result.data).map((result) => result.data),
 		}),
 	});
