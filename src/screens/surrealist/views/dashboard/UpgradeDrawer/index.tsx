@@ -8,7 +8,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { CloudInstance } from "~/types";
+import { CloudInstance, CloudOrganization } from "~/types";
 import { iconArrowDownFat, iconClose } from "~/util/icons";
 import { ConfigurationStorage } from "../UpgradeDrawer/configs/storage";
 import { ConfigurationInstanceType } from "../UpgradeDrawer/configs/type";
@@ -17,11 +17,19 @@ export interface UpgradeDrawerProps {
 	opened: boolean;
 	tab: string;
 	instance: CloudInstance;
+	organisation: CloudOrganization;
 	onChangeTab: (tab: string) => void;
 	onClose: () => void;
 }
 
-export function UpgradeDrawer({ opened, tab, instance, onChangeTab, onClose }: UpgradeDrawerProps) {
+export function UpgradeDrawer({
+	opened,
+	tab,
+	instance,
+	organisation,
+	onChangeTab,
+	onClose,
+}: UpgradeDrawerProps) {
 	const [width, setWidth] = useState(650);
 
 	const openTypes = useStable(() => {
@@ -101,6 +109,7 @@ export function UpgradeDrawer({ opened, tab, instance, onChangeTab, onClose }: U
 				<Tabs.Panel value="type">
 					<ConfigurationInstanceType
 						instance={instance}
+						organisation={organisation}
 						onClose={onClose}
 					/>
 				</Tabs.Panel>

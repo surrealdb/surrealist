@@ -40,13 +40,6 @@ export function useHasCloudFeature(feature: string) {
 }
 
 /**
- * Returns the list of known organizations
- */
-export function useOrganizations() {
-	return useCloudStore((s) => s.organizations);
-}
-
-/**
  * Lists out the available instance versions
  */
 export function useAvailableInstanceVersions() {

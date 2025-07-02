@@ -554,7 +554,7 @@ export function DashboardView() {
 				</Stack>
 			</ScrollArea>
 
-			{details && (
+			{details && organisation && (
 				<>
 					<ConfiguratorDrawerLazy
 						opened={configuring}
@@ -567,6 +567,7 @@ export function DashboardView() {
 					<UpgradeDrawerLazy
 						opened={upgrading}
 						instance={details}
+						organisation={organisation}
 						tab={upgradeTab}
 						onChangeTab={setUpgradeTab}
 						onClose={upgradingHandle.close}
