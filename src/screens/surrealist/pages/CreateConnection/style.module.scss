@@ -1,3 +1,44 @@
 .scroll-area :global(.mantine-ScrollArea-viewport)>div {
 	display: block !important;
 }
+
+.cloud-box {
+	overflow: hidden;
+}
+
+.cloud-image {
+	width: 250px;
+	height: 250px;
+	position: absolute;
+	right: 0px;
+	opacity: 0.2;
+	bottom: -88px;
+	z-index: 1;
+	transition: bottom 0.5s ease;
+
+	@include sm-and-up {
+		opacity: 1;
+		right: 25px;
+	}
+}
+
+.cloud-glow {
+	width: 800px;
+	height: 800px;
+	position: absolute;
+	right: -450px;
+	bottom: -450px;
+	z-index: 0;
+	opacity: 0.3;
+	transition: opacity 0.5s ease;
+}
+
+.cloud-box:hover {
+	.cloud-image {
+		bottom: -78px;
+	}
+
+	.cloud-glow {
+		opacity: 0.5;
+	}
+}

@@ -20,7 +20,11 @@ export function SigninPage({ plan }: SigninPageProps) {
 		const hasInstances = entries.some((entry) => entry.instances.length > 0);
 
 		if ((!hasInstances || plan) && default_org) {
-			navigate(withSearchParams(`/o/${default_org}/deploy`, { plan }));
+			const target = withSearchParams(`/o/${default_org}/deploy`, {
+				plan: plan === "deploy" ? undefined : plan,
+			});
+
+			navigate(target);
 		} else {
 			navigate("/overview");
 		}

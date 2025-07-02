@@ -1,6 +1,20 @@
+import glowUrl from "~/assets/images/glow.webp";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
 import classes from "./style.module.scss";
 
-import { Box, Button, Group, Menu, ScrollArea, Stack, Text, ThemeIcon } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Group,
+	Image,
+	Menu,
+	Paper,
+	ScrollArea,
+	Stack,
+	Text,
+	ThemeIcon,
+} from "@mantine/core";
+
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
@@ -222,7 +236,58 @@ export function CreateConnectionPage() {
 							</Menu>
 						</Group>
 					</Box>
-
+					<Paper
+						p="xl"
+						pos="relative"
+						variant="gradient"
+						className={classes.cloudBox}
+					>
+						<Stack flex={1}>
+							<Text
+								maw={650}
+								fz="lg"
+							>
+								Looking for the most hassle-free SurrealDB experience?{" "}
+								<Text
+									span
+									inherit
+									c="bright"
+								>
+									Surreal Cloud
+								</Text>{" "}
+								is the easiest way to deploy and manage your database—no
+								infrastructure setup or maintenance required.
+							</Text>
+							<Group mt="md">
+								<Link href="/signin/deploy">
+									<Button
+										size="xs"
+										variant="gradient"
+										rightSection={<Icon path={iconChevronRight} />}
+									>
+										Deploy now
+									</Button>
+								</Link>
+								<a href="https://surrealdb.com/cloud">
+									<Button
+										size="xs"
+										color="slate"
+										variant="light"
+									>
+										Learn more
+									</Button>
+								</a>
+							</Group>
+						</Stack>
+						<Image
+							src={cloudUrl}
+							className={classes.cloudImage}
+						/>
+						<Image
+							src={glowUrl}
+							className={classes.cloudGlow}
+						/>
+					</Paper>
 					<Box mt={24}>
 						<Text
 							fz="xl"
@@ -233,12 +298,10 @@ export function CreateConnectionPage() {
 						</Text>
 						<Text>Specify an icon and name for this connection</Text>
 					</Box>
-
 					<ConnectionNameDetails
 						value={connection}
 						onChange={setConnection}
 					/>
-
 					<Box mt={32}>
 						<Text
 							fz="xl"
@@ -249,12 +312,10 @@ export function CreateConnectionPage() {
 						</Text>
 						<Text>Select a communication protocol and specify instance address</Text>
 					</Box>
-
 					<ConnectionAddressDetails
 						value={connection}
 						onChange={setConnection}
 					/>
-
 					<Box mt={24}>
 						<Text
 							fz="xl"
@@ -265,12 +326,10 @@ export function CreateConnectionPage() {
 						</Text>
 						<Text>Specify how you want to access your instance</Text>
 					</Box>
-
 					<ConnectionAuthDetails
 						value={connection}
 						onChange={setConnection}
 					/>
-
 					<Box mt={24}>
 						<Text
 							fz="xl"
@@ -281,12 +340,10 @@ export function CreateConnectionPage() {
 						</Text>
 						<Text>Add filtering labels to this connection</Text>
 					</Box>
-
 					<ConnectionLabelsDetails
 						value={connection}
 						onChange={setConnection}
 					/>
-
 					<Group mt={24}>
 						<Link to={savepoint.path}>
 							<Button
