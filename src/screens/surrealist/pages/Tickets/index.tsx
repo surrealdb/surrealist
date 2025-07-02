@@ -27,7 +27,6 @@ import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import {
 	iconBullhorn,
 	iconCursor,
@@ -39,6 +38,8 @@ import {
 	iconTarget,
 } from "~/util/icons";
 import classes from "./style.module.scss";
+import { useIsAuthenticated } from "~/hooks/cloud";
+import { CloudSplash } from "~/components/CloudSplash";
 
 interface HistoryEntry {
 	id: number;
@@ -97,7 +98,7 @@ const STATUS_COLORS = {
 } as const;
 
 export function TicketsPage() {
-	const isLight = useIsLight();
+	const isAuthed = useIsAuthenticated();
 	const [body, setBody] = useInputState("");
 	const [type, setType] = useState("");
 	const [severity, setSeverity] = useState("");
@@ -115,6 +116,10 @@ export function TicketsPage() {
 	const submitTicket = useStable(() => {});
 
 	const canSubmit = type && severity && body;
+
+	if (!isAuthed) {
+		return <CloudSplash />;
+	}
 
 	return (
 		<Box
