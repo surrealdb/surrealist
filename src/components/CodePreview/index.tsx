@@ -92,7 +92,7 @@ export function CodePreview({
 					<CopyButton value={value}>
 						{({ copied, copy }) => (
 							<ActionIcon
-								variant={copied ? "gradient" : undefined}
+								variant="gradient"
 								pos="absolute"
 								size="lg"
 								top={9}
