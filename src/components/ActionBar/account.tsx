@@ -1,15 +1,4 @@
-import {
-	Avatar,
-	Box,
-	Button,
-	Group,
-	Loader,
-	Menu,
-	Modal,
-	Stack,
-	TextInput,
-	UnstyledButton,
-} from "@mantine/core";
+import { Box, Button, Group, Menu, Modal, Stack, TextInput } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
@@ -25,6 +14,7 @@ import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
+import { AccountAvatar } from "../AccountAvatar";
 
 interface AccountFormProps {
 	onClose(): void;
@@ -133,20 +123,9 @@ export function CloudAccount() {
 				}}
 			>
 				<Menu.Target>
-					<Avatar
-						radius="md"
-						size={36}
-						name={name}
-						src={profile.picture}
-						component={UnstyledButton}
-					>
-						{!profile.username && (
-							<Loader
-								size="sm"
-								color="slate.4"
-							/>
-						)}
-					</Avatar>
+					<div>
+						<AccountAvatar />
+					</div>
 				</Menu.Target>
 				<Menu.Dropdown w={200}>
 					<Box
