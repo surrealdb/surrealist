@@ -808,5 +808,4 @@ export interface Observable {
 	id: string;
 	type: ObservableType;
 	name: string;
-	icon: string;
 }

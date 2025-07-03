@@ -1,12 +1,13 @@
 import classes from "./style.module.scss";
 
-import { iconChevronLeft, iconEye } from "~/util/icons";
+import { iconChevronLeft, iconEye, iconList, iconRelation } from "~/util/icons";
 
 import {
 	Box,
 	type BoxProps,
 	Divider,
 	type ElementProps,
+	Group,
 	ScrollArea,
 	Stack,
 	Text,
@@ -20,15 +21,15 @@ import { useStable } from "~/hooks/stable";
 import { group } from "radash";
 import { OBSERVABLES } from "~/constants";
 import { Observable } from "~/types";
-import { Label } from "~/components/Label";
 
 interface ObservableEntryProps extends BoxProps, ElementProps<"button"> {
 	info: Observable;
+	icon: string;
 	isActive: boolean;
 	onActivate: (id: string) => void;
 }
 
-function ObservableEntry({ info, isActive, onActivate, ...other }: ObservableEntryProps) {
+function ObservableEntry({ info, icon, isActive, onActivate, ...other }: ObservableEntryProps) {
 	const handleActivate = useStable(() => {
 		onActivate(info.id);
 	});
@@ -39,7 +40,8 @@ function ObservableEntry({ info, isActive, onActivate, ...other }: ObservableEnt
 			isActive={isActive}
 			onClick={handleActivate}
 			className={classes.observable}
-			// leftSection={<Icon path={info.icon} />}
+			leftSection={<Icon path={icon} />}
+			compact
 			{...other}
 		>
 			<Text
@@ -92,15 +94,28 @@ export function ObservablesPane({ active, onSidebarMinimize, onActivate }: Obser
 				}}
 			>
 				<Box>
-					<Label>Metrics</Label>
+					<Group
+						gap="sm"
+						ml="sm"
+					>
+						<Text
+							c="slate.3"
+							fz="xl"
+							fw={500}
+							lts={0.4}
+						>
+							Metrics
+						</Text>
+					</Group>
 					<Stack
-						gap="xs"
+						gap={4}
 						mt="md"
 					>
 						{metrics.map((metric) => (
 							<ObservableEntry
 								key={metric.id}
 								info={metric}
+								icon={iconRelation}
 								isActive={active === metric.id}
 								onActivate={onActivate}
 							/>
@@ -108,8 +123,20 @@ export function ObservablesPane({ active, onSidebarMinimize, onActivate }: Obser
 					</Stack>
 				</Box>
 				<Divider my="xl" />
-				<Box mt={15}>
-					<Label>Logs</Label>
+				<Box>
+					<Group
+						gap="sm"
+						ml="sm"
+					>
+						<Text
+							c="slate.3"
+							fz="xl"
+							fw={500}
+							lts={0.4}
+						>
+							Logs
+						</Text>
+					</Group>
 					<Stack
 						gap="xs"
 						mt="md"
@@ -118,6 +145,7 @@ export function ObservablesPane({ active, onSidebarMinimize, onActivate }: Obser
 							<ObservableEntry
 								key={log.id}
 								info={log}
+								icon={iconList}
 								isActive={active === log.id}
 								onActivate={onActivate}
 							/>
