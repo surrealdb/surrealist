@@ -2,7 +2,7 @@ import { Paper, Stack } from "@mantine/core";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { iconChevronRight, iconRelation } from "~/util/icons";
+import { iconChart, iconChevronRight } from "~/util/icons";
 import { MetricActions } from "./actions";
 import { MonitorContentProps } from "../helpers";
 
@@ -17,7 +17,7 @@ export function MetricPane({
 		<Stack h="100%">
 			<ContentPane
 				h="unset"
-				icon={iconRelation}
+				icon={iconChart}
 				title={info.name}
 				withDivider={false}
 				leftSection={

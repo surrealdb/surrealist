@@ -1,6 +1,6 @@
 import classes from "./style.module.scss";
 
-import { iconChevronLeft, iconEye, iconList, iconRelation } from "~/util/icons";
+import { iconChart, iconChevronLeft, iconEye, iconList } from "~/util/icons";
 
 import {
 	Box,
@@ -115,7 +115,7 @@ export function MonitorsPane({ active, onSidebarMinimize, onActivate }: Monitors
 							<ObservableEntry
 								key={metric.id}
 								info={metric}
-								icon={iconRelation}
+								icon={iconChart}
 								isActive={active === metric.id}
 								onActivate={onActivate}
 							/>
