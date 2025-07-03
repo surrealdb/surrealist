@@ -39,7 +39,7 @@ export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
-export type ObservableType = "metrics" | "logs";
+export type MonitorType = "metrics" | "logs";
 
 export type InstanceState =
 	| "creating"
@@ -68,7 +68,7 @@ export type GlobalPage =
 	| "/mini/new";
 export type ViewPage =
 	| "dashboard"
-	| "observer"
+	| "monitor"
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -157,6 +157,7 @@ export interface Connection {
 	designerTableList: boolean;
 	explorerTableList: boolean;
 	queryTabList: boolean;
+	monitorList: boolean;
 	graphqlQuery: string;
 	graphqlVariables: string;
 	graphqlShowVariables: boolean;
@@ -804,8 +805,8 @@ export interface ObserverLogFeed {
 	icon: string;
 }
 
-export interface Observable {
+export interface Monitor {
 	id: string;
-	type: ObservableType;
+	type: MonitorType;
 	name: string;
 }

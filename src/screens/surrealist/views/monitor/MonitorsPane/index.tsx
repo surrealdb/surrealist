@@ -19,11 +19,11 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useStable } from "~/hooks/stable";
 import { group } from "radash";
-import { OBSERVABLES } from "~/constants";
-import { Observable } from "~/types";
+import { MONITORS } from "~/constants";
+import { Monitor } from "~/types";
 
 interface ObservableEntryProps extends BoxProps, ElementProps<"button"> {
-	info: Observable;
+	info: Monitor;
 	icon: string;
 	isActive: boolean;
 	onActivate: (id: string) => void;
@@ -58,14 +58,14 @@ function ObservableEntry({ info, icon, isActive, onActivate, ...other }: Observa
 	);
 }
 
-export interface ObservablesPaneProps {
+export interface MonitorsPaneProps {
 	active?: string;
 	onSidebarMinimize?: () => void;
 	onActivate: (observable: string) => void;
 }
 
-export function ObservablesPane({ active, onSidebarMinimize, onActivate }: ObservablesPaneProps) {
-	const observables = group(Object.values(OBSERVABLES), (it) => it.type);
+export function MonitorsPane({ active, onSidebarMinimize, onActivate }: MonitorsPaneProps) {
+	const observables = group(Object.values(MONITORS), (it) => it.type);
 
 	const metrics = observables.metrics ?? [];
 	const logs = observables.logs ?? [];
@@ -73,12 +73,12 @@ export function ObservablesPane({ active, onSidebarMinimize, onActivate }: Obser
 	return (
 		<ContentPane
 			icon={iconEye}
-			title="Observer"
+			title="Monitors"
 			style={{ flexShrink: 0 }}
 			rightSection={
 				<>
 					<ActionButton
-						label="Hide observables"
+						label="Hide monitors"
 						onClick={onSidebarMinimize}
 					>
 						<Icon path={iconChevronLeft} />

@@ -4,29 +4,21 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { MetricsDuration } from "~/types";
 import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
+import { MonitorMetricOptions } from "../helpers";
+import { Updater } from "use-immer";
 
-export interface ObserverActionsProps {
-	metricsDuration: MetricsDuration;
-	setMetricsDuration: (duration: MetricsDuration) => void;
-	metricsNodeFilter: string[] | undefined;
-	setMetricsNodeFilter: (nodes: string[] | undefined) => void;
-	metricsNodes: string[];
+export interface MetricActionsProps {
+	options: MonitorMetricOptions;
+	onChange: Updater<MonitorMetricOptions>;
 }
 
-export function ObserverActions({
-	metricsDuration,
-	setMetricsDuration,
-	metricsNodeFilter,
-	setMetricsNodeFilter,
-	metricsNodes,
-}: ObserverActionsProps) {
+export function MetricActions({ options, onChange }: MetricActionsProps) {
 	return (
 		<>
 			<Select
 				placeholder="Duration"
 				size="sm"
-				value={metricsDuration}
-				onChange={(e) => setMetricsDuration((e as MetricsDuration) ?? "hour")}
+				value={options.duration}
 				data={[
 					{ value: "hour", label: "Last Hour" },
 					{ value: "half", label: "Last 12 Hours" },
@@ -37,14 +29,19 @@ export function ObserverActions({
 				leftSection={<Icon path={iconClock} />}
 				rightSection={<Icon path={iconChevronDown} />}
 				rightSectionWidth={30}
+				onChange={(e) =>
+					onChange((draft) => {
+						draft.duration = (e as MetricsDuration) ?? "hour";
+					})
+				}
 			/>
 
 			<Menu>
 				<Menu.Target>
 					<Indicator
 						disabled={
-							metricsNodeFilter === undefined ||
-							metricsNodeFilter.length === metricsNodes.length
+							options.nodeFilter === undefined ||
+							options.nodeFilter.length === options.nodes.length
 						}
 					>
 						<ActionButton
@@ -65,23 +62,27 @@ export function ObserverActions({
 					<Group>
 						<Checkbox
 							indeterminate={
-								metricsNodeFilter !== undefined &&
-								metricsNodeFilter.length > 0 &&
-								!metricsNodes.every((n) => metricsNodeFilter.includes(n))
+								options.nodeFilter === undefined ||
+								(options.nodeFilter.length > 0 &&
+									!options.nodes.every((n) => options.nodeFilter.includes(n)))
 							}
 							variant="gradient"
 							checked={
-								metricsNodeFilter === undefined ||
-								metricsNodeFilter.length > 0 ||
-								metricsNodes.every((n) => metricsNodeFilter.includes(n))
+								options.nodeFilter === undefined ||
+								options.nodeFilter.length > 0 ||
+								options.nodes.every((n) => options.nodeFilter.includes(n))
 							}
 							onChange={(e) => {
 								const checked = e.currentTarget.checked;
 
 								if (checked) {
-									setMetricsNodeFilter(metricsNodes);
+									onChange((draft) => {
+										draft.nodeFilter = options.nodes;
+									});
 								} else {
-									setMetricsNodeFilter([]);
+									onChange((draft) => {
+										draft.nodeFilter = [];
+									});
 								}
 							}}
 						/>
@@ -97,31 +98,37 @@ export function ObserverActions({
 					<Menu.Divider my="md" />
 
 					<Stack>
-						{metricsNodes.map((node, i) => (
+						{options.nodes.map((node, i) => (
 							<Group key={i}>
 								<Checkbox
 									variant="gradient"
 									checked={
-										metricsNodeFilter?.includes(node) ||
-										metricsNodeFilter === undefined
+										options.nodeFilter?.includes(node) ||
+										options.nodeFilter === undefined
 									}
 									onChange={(e) => {
 										const checked = e.currentTarget.checked;
 
 										if (checked) {
-											setMetricsNodeFilter([
-												...(metricsNodeFilter ?? []),
-												node,
-											]);
+											onChange((draft) => {
+												draft.nodeFilter = [
+													...(draft.nodeFilter ?? []),
+													node,
+												];
+											});
 										} else {
-											if (metricsNodeFilter === undefined) {
-												setMetricsNodeFilter(
-													metricsNodes.filter((n) => n !== node),
-												);
+											if (options.nodeFilter === undefined) {
+												onChange((draft) => {
+													draft.nodeFilter = options.nodes.filter(
+														(n) => n !== node,
+													);
+												});
 											} else {
-												setMetricsNodeFilter(
-													metricsNodeFilter?.filter((n) => n !== node),
-												);
+												onChange((draft) => {
+													draft.nodeFilter = draft.nodeFilter?.filter(
+														(n) => n !== node,
+													);
+												});
 											}
 										}
 									}}

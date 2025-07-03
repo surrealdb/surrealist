@@ -25,7 +25,7 @@ import type {
 	GlobalPage,
 	GlobalPageInfo,
 	Listable,
-	Observable,
+	Monitor,
 	Orientation,
 	Protocol,
 	ResultFormat,
@@ -228,9 +228,9 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		icon: iconTune,
 		disabled: ({ isCloud }) => !isCloud,
 	},
-	observer: {
-		id: "observer",
-		name: "Metrics & Logs",
+	monitor: {
+		id: "monitor",
+		name: "Monitoring",
 		icon: iconEye,
 		disabled: ({ isCloud }) => !isCloud,
 	},
@@ -443,7 +443,7 @@ export const DRIVERS: Driver[] = [
 	},
 ];
 
-export const OBSERVABLES: Record<string, Observable> = {
+export const MONITORS: Record<string, Monitor> = {
 	system: {
 		id: "system",
 		type: "metrics",
