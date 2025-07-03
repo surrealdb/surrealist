@@ -3,17 +3,19 @@ import classes from "./style.module.scss";
 import {
 	Badge,
 	Box,
+	BoxProps,
 	Center,
 	Group,
 	Loader,
 	MantineColor,
 	Paper,
-	ScrollArea,
 	Stack,
 	Text,
 	Tooltip,
 } from "@mantine/core";
 
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList } from "react-window";
 import { useDebouncedValue } from "@mantine/hooks";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { useMemo } from "react";
@@ -98,11 +100,11 @@ export function LogPane({
 					/>
 				}
 			/>
-			<Paper
-				// bg="transparent"
+			<Box
+				bg="transparent"
 				flex={1}
 				pos="relative"
-				p="xl"
+				// p="xl"
 			>
 				{logQuery.isSuccess ? (
 					logLines.length === 0 ? (
@@ -113,20 +115,25 @@ export function LogPane({
 							No log entries found for the selected criteria.
 						</Center>
 					) : (
-						<ScrollArea
-							pos="absolute"
-							type="scroll"
-							inset={0}
-						>
-							<Box p="md">
-								{logLines.map((line, index) => (
-									<LogLine
-										key={index}
-										line={line}
-									/>
-								))}
-							</Box>
-						</ScrollArea>
+						<AutoSizer>
+							{({ width, height }) => (
+								<FixedSizeList
+									height={height}
+									itemCount={logLines.length}
+									overscanCount={2}
+									itemSize={46}
+									width={width}
+								>
+									{({ index, style }) => (
+										<LogLine
+											line={logLines[index]}
+											index={index}
+											style={style}
+										/>
+									)}
+								</FixedSizeList>
+							)}
+						</AutoSizer>
 					)
 				) : (
 					<Center
@@ -136,24 +143,27 @@ export function LogPane({
 						<Loader />
 					</Center>
 				)}
-			</Paper>
+			</Box>
 		</Stack>
 	);
 }
 
-interface LogLine {
+interface LogLine extends BoxProps {
 	line: CloudLogLine;
+	index: number;
 }
 
-export function LogLine({ line }: LogLine) {
+export function LogLine({ line, index, ...other }: LogLine) {
 	const [icon, color] = LOG_LEVEL_DECORATION[line.level] || [iconHelp, "blue"];
 
 	return (
 		<Group
-			p="md"
+			px="md"
 			role="button"
 			tabIndex={0}
+			data-odd={index % 2 === 1}
 			className={classes.line}
+			{...other}
 		>
 			<Tooltip label={formatDistanceToNow(line.timestamp, { addSuffix: true })}>
 				<Text

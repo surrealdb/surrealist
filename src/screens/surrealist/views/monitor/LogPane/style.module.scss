@@ -1,13 +1,9 @@
 .line {
 	cursor: initial;
 
-	&:nth-child(odd) {
-		background-color: var(--mantine-color-slate-7);
+	&[data-odd="true"] {
+		background-color: var(--mantine-color-body);
 		border-radius: var(--mantine-radius-xs);
-
-		@include light {
-			background-color: var(--mantine-color-slate-0);
-		}
 	}
 
 	&:hover .timestamp {
