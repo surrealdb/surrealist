@@ -8,17 +8,16 @@ import {
 	Group,
 	Loader,
 	MantineColor,
-	Paper,
 	Stack,
 	Text,
 	Tooltip,
 } from "@mantine/core";
 
-import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList } from "react-window";
 import { useDebouncedValue } from "@mantine/hooks";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { useMemo } from "react";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { FixedSizeList } from "react-window";
 import { useCloudLogsQuery } from "~/cloud/queries/logs";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
