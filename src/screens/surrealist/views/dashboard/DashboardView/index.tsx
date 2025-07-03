@@ -443,7 +443,7 @@ export function DashboardView() {
 								</Menu>
 							</Group>
 
-							{/* {instance && (
+							{instance && (
 								<SimpleGrid
 									cols={2}
 									spacing="xl"
@@ -452,7 +452,7 @@ export function DashboardView() {
 										instance={instanceId}
 										duration={metricsDuration}
 										nodeFilter={metricsNodeFilter}
-										calculateNodes={(metrics) => {
+										onCalculateMetricsNodes={(metrics) => {
 											setMemoryLabels(
 												metrics.values.metrics.map((it) => it.labels),
 											);
@@ -462,7 +462,7 @@ export function DashboardView() {
 										instance={instanceId}
 										duration={metricsDuration}
 										nodeFilter={metricsNodeFilter}
-										calculateNodes={(metrics) => {
+										onCalculateMetricsNodes={(metrics) => {
 											setCpuLabels(
 												metrics.values.metrics.map((it) => it.labels),
 											);
@@ -472,7 +472,7 @@ export function DashboardView() {
 										instance={instanceId}
 										duration={metricsDuration}
 										nodeFilter={metricsNodeFilter}
-										calculateNodes={(metrics) => {
+										onCalculateMetricsNodes={(metrics) => {
 											setNetworkIngressLabels(
 												metrics.values.metrics.map((it) => it.labels),
 											);
@@ -482,14 +482,14 @@ export function DashboardView() {
 										instance={instanceId}
 										duration={metricsDuration}
 										nodeFilter={metricsNodeFilter}
-										calculateNodes={(metrics) => {
+										onCalculateMetricsNodes={(metrics) => {
 											setNetworkEgressLabels(
 												metrics.values.metrics.map((it) => it.labels),
 											);
 										}}
 									/>
 								</SimpleGrid>
-							)} */}
+							)}
 
 							<Box mt={32}>
 								<PrimaryTitle>Resources</PrimaryTitle>
