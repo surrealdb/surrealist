@@ -1,9 +1,32 @@
 .line {
 	cursor: initial;
+	position: relative;
+	// border-bottom: 1px solid var(--surrealist-divider-color);
 
-	&[data-odd="true"] {
-		background-color: var(--mantine-color-body);
-		border-radius: var(--mantine-radius-xs);
+	&::after {
+		content: "";
+		z-index: -1;
+		position: absolute;
+		transition: opacity 0.2s ease;
+		opacity: 0.05;
+		inset: 0;
+	}
+
+	&:hover[data-level="INFO"]::after {
+		background-color: var(--mantine-color-slate-light);
+	}
+
+	&:hover[data-level="WARN"]::after {
+		background-color: var(--mantine-color-yellow-light);
+	}
+
+	&:hover[data-level="ERROR"]::after,
+	&:hover[data-level="FATAL"]::after {
+		background-color: var(--mantine-color-red-light);
+	}
+
+	&:hover::after {
+		opacity: 0.3;
 	}
 
 	&:hover .timestamp {

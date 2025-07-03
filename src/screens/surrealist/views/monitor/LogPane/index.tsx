@@ -8,6 +8,7 @@ import {
 	Group,
 	Loader,
 	MantineColor,
+	Paper,
 	Stack,
 	Text,
 	Tooltip,
@@ -99,11 +100,10 @@ export function LogPane({
 					/>
 				}
 			/>
-			<Box
-				bg="transparent"
+			<Paper
 				flex={1}
 				pos="relative"
-				// p="xl"
+				style={{ overflow: "hidden" }}
 			>
 				{logQuery.isSuccess ? (
 					logLines.length === 0 ? (
@@ -142,7 +142,7 @@ export function LogPane({
 						<Loader />
 					</Center>
 				)}
-			</Box>
+			</Paper>
 		</Stack>
 	);
 }
@@ -157,26 +157,23 @@ export function LogLine({ line, index, ...other }: LogLine) {
 
 	return (
 		<Group
-			px="md"
+			miw={0}
 			role="button"
 			tabIndex={0}
 			data-odd={index % 2 === 1}
+			data-level={line.level}
 			className={classes.line}
 			{...other}
 		>
-			<Tooltip label={formatDistanceToNow(line.timestamp, { addSuffix: true })}>
-				<Text
-					ff="monospace"
-					className={classes.timestamp}
-					w={124}
-				>
-					{formatDate(line.timestamp, "dd MMM HH:mm:ss")}
-				</Text>
-			</Tooltip>
-			<Box w={96}>
+			<Box
+				w={92}
+				pl="xs"
+			>
 				<Badge
 					pl="xs"
-					variant="light"
+					radius="xs"
+					size="md"
+					variant="transparent"
 					color={color}
 					ff="monospace"
 					leftSection={
@@ -184,13 +181,24 @@ export function LogLine({ line, index, ...other }: LogLine) {
 							path={icon}
 							c={color}
 							size="sm"
-							left
+							mr={4}
 						/>
 					}
 				>
 					{line.level}
 				</Badge>
 			</Box>
+
+			<Tooltip label={formatDistanceToNow(line.timestamp, { addSuffix: true })}>
+				<Text
+					ff="monospace"
+					className={classes.timestamp}
+					w={132}
+				>
+					{formatDate(line.timestamp, "dd MMM HH:mm:ss")}
+				</Text>
+			</Tooltip>
+
 			<Text
 				flex={1}
 				truncate
