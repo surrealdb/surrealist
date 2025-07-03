@@ -25,6 +25,8 @@ import type {
 	GlobalPage,
 	GlobalPageInfo,
 	Listable,
+	ObserverLogFeed,
+	ObserverMetricCollection,
 	Orientation,
 	Protocol,
 	ResultFormat,
@@ -48,17 +50,21 @@ import {
 	iconDatabase,
 	iconDesigner,
 	iconExplorer,
+	iconEye,
 	iconFunction,
 	iconGraphql,
 	iconHelp,
 	iconLive,
+	iconMemory,
 	iconModuleML,
 	iconOrganization,
 	iconQuery,
 	iconReferral,
 	iconRelation,
 	iconSearch,
+	iconServer,
 	iconSidekick,
+	iconSurreal,
 	iconTable,
 	iconTune,
 	iconXml,
@@ -224,7 +230,13 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		id: "dashboard",
 		name: "Dashboard",
 		icon: iconTune,
-		disabled: ({ flags, isCloud }) => !flags.query_view || !isCloud,
+		disabled: ({ isCloud }) => !isCloud,
+	},
+	observer: {
+		id: "observer",
+		name: "Oberver",
+		icon: iconEye,
+		disabled: ({ isCloud }) => !isCloud,
 	},
 	query: {
 		id: "query",
@@ -432,5 +444,57 @@ export const DRIVERS: Driver[] = [
 		name: "C",
 		icon: CIcon,
 		link: "https://github.com/surrealdb/surrealdb.c",
+	},
+];
+
+export const OBSERVABLE_METRIC_COLLECTIONS: ObserverMetricCollection[] = [
+	{
+		id: "system",
+		name: "System",
+		icon: iconMemory,
+		metrics: [
+			{
+				id: "cpu",
+				name: "Compute usage",
+			},
+			{
+				id: "memory",
+				name: "Memory usage",
+			},
+		],
+	},
+	{
+		id: "connections",
+		name: "Connections",
+		icon: iconRelation,
+		metrics: [
+			{
+				id: "rpc_active_connections",
+				name: "Active RPC connections",
+			},
+		],
+	},
+	{
+		id: "network",
+		name: "Network",
+		icon: iconServer,
+		metrics: [
+			{
+				id: "egress",
+				name: "Network egress",
+			},
+			{
+				id: "ingress",
+				name: "Network ingress",
+			},
+		],
+	},
+];
+
+export const OBSERVABLE_LOG_FEEDS: ObserverLogFeed[] = [
+	{
+		id: "surrealdb",
+		name: "SurrealDB",
+		icon: iconSurreal,
 	},
 ];

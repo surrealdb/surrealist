@@ -67,6 +67,7 @@ export type GlobalPage =
 	| "/mini/new";
 export type ViewPage =
 	| "dashboard"
+	| "observer"
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -782,4 +783,22 @@ export interface AppMenuItem {
 	disabled?: boolean;
 	binding?: string[];
 	action?: () => void;
+}
+
+export interface ObserverMetric {
+	id: string;
+	name: string;
+}
+
+export interface ObserverMetricCollection {
+	id: string;
+	name: string;
+	icon: string;
+	metrics: ObserverMetric[];
+}
+
+export interface ObserverLogFeed {
+	id: string;
+	name: string;
+	icon: string;
 }

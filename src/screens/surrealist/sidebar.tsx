@@ -37,7 +37,7 @@ const GLOBAL_NAVIGATION: GlobalPage[][] = [
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
-	["dashboard"],
+	["dashboard", "observer"],
 	["query", "explorer", "graphql"],
 	["designer", "authentication", "functions", "models"],
 	["sidekick", "documentation"],
