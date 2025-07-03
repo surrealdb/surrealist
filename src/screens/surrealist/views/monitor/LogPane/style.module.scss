@@ -1,9 +1,18 @@
 .line {
 	cursor: initial;
-}
 
-.timestamp:hover {
-	color: var(--mantine-color-bright) !important;
+	&:nth-child(odd) {
+		background-color: var(--mantine-color-slate-7);
+		border-radius: var(--mantine-radius-xs);
+
+		@include light {
+			background-color: var(--mantine-color-slate-0);
+		}
+	}
+
+	&:hover .timestamp {
+		color: var(--mantine-color-bright) !important;
+	}
 }
 
 .message {

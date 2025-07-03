@@ -4,7 +4,6 @@ import {
 	Badge,
 	Box,
 	Center,
-	Divider,
 	Group,
 	Loader,
 	MantineColor,
@@ -119,12 +118,14 @@ export function LogPane({
 							type="scroll"
 							inset={0}
 						>
-							{logLines.map((line, index) => (
-								<LogLine
-									key={index}
-									line={line}
-								/>
-							))}
+							<Box p="md">
+								{logLines.map((line, index) => (
+									<LogLine
+										key={index}
+										line={line}
+									/>
+								))}
+							</Box>
 						</ScrollArea>
 					)
 				) : (
@@ -148,51 +149,48 @@ export function LogLine({ line }: LogLine) {
 	const [icon, color] = LOG_LEVEL_DECORATION[line.level] || [iconHelp, "blue"];
 
 	return (
-		<>
-			<Group
-				p="md"
-				role="button"
-				tabIndex={0}
-				className={classes.line}
-			>
-				<Tooltip label={formatDistanceToNow(line.timestamp, { addSuffix: true })}>
-					<Text
-						ff="monospace"
-						className={classes.timestamp}
-						w={124}
-					>
-						{formatDate(line.timestamp, "dd MMM HH:mm:ss")}
-					</Text>
-				</Tooltip>
-				<Box w={96}>
-					<Badge
-						pl="xs"
-						variant="light"
-						color={color}
-						ff="monospace"
-						leftSection={
-							<Icon
-								path={icon}
-								c={color}
-								size="sm"
-								left
-							/>
-						}
-					>
-						{line.level}
-					</Badge>
-				</Box>
+		<Group
+			p="md"
+			role="button"
+			tabIndex={0}
+			className={classes.line}
+		>
+			<Tooltip label={formatDistanceToNow(line.timestamp, { addSuffix: true })}>
 				<Text
-					flex={1}
-					truncate
 					ff="monospace"
-					c="slate.0"
-					className={classes.message}
+					className={classes.timestamp}
+					w={124}
 				>
-					{line.message}
+					{formatDate(line.timestamp, "dd MMM HH:mm:ss")}
 				</Text>
-			</Group>
-			<Divider />
-		</>
+			</Tooltip>
+			<Box w={96}>
+				<Badge
+					pl="xs"
+					variant="light"
+					color={color}
+					ff="monospace"
+					leftSection={
+						<Icon
+							path={icon}
+							c={color}
+							size="sm"
+							left
+						/>
+					}
+				>
+					{line.level}
+				</Badge>
+			</Box>
+			<Text
+				flex={1}
+				truncate
+				ff="monospace"
+				c="bright"
+				className={classes.message}
+			>
+				{line.message}
+			</Text>
+		</Group>
 	);
 }
