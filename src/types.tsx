@@ -38,8 +38,9 @@ export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
-
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type ObservableType = "metrics" | "logs";
+
 export type InstanceState =
 	| "creating"
 	| "updating"
@@ -799,6 +800,13 @@ export interface ObserverMetricCollection {
 
 export interface ObserverLogFeed {
 	id: string;
+	name: string;
+	icon: string;
+}
+
+export interface Observable {
+	id: string;
+	type: ObservableType;
 	name: string;
 	icon: string;
 }

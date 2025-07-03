@@ -25,8 +25,7 @@ import type {
 	GlobalPage,
 	GlobalPageInfo,
 	Listable,
-	ObserverLogFeed,
-	ObserverMetricCollection,
+	Observable,
 	Orientation,
 	Protocol,
 	ResultFormat,
@@ -61,10 +60,10 @@ import {
 	iconQuery,
 	iconReferral,
 	iconRelation,
+	iconSandbox,
 	iconSearch,
 	iconServer,
 	iconSidekick,
-	iconSurreal,
 	iconTable,
 	iconTune,
 	iconXml,
@@ -447,54 +446,29 @@ export const DRIVERS: Driver[] = [
 	},
 ];
 
-export const OBSERVABLE_METRIC_COLLECTIONS: ObserverMetricCollection[] = [
-	{
+export const OBSERVABLES: Record<string, Observable> = {
+	system: {
 		id: "system",
+		type: "metrics",
 		name: "System",
 		icon: iconMemory,
-		metrics: [
-			{
-				id: "cpu",
-				name: "Compute usage",
-			},
-			{
-				id: "memory",
-				name: "Memory usage",
-			},
-		],
 	},
-	{
+	connections: {
 		id: "connections",
+		type: "metrics",
 		name: "Connections",
 		icon: iconRelation,
-		metrics: [
-			{
-				id: "rpc_active_connections",
-				name: "Active RPC connections",
-			},
-		],
 	},
-	{
+	network: {
 		id: "network",
+		type: "metrics",
 		name: "Network",
 		icon: iconServer,
-		metrics: [
-			{
-				id: "egress",
-				name: "Network egress",
-			},
-			{
-				id: "ingress",
-				name: "Network ingress",
-			},
-		],
 	},
-];
-
-export const OBSERVABLE_LOG_FEEDS: ObserverLogFeed[] = [
-	{
+	surrealdb: {
 		id: "surrealdb",
+		type: "logs",
 		name: "SurrealDB",
-		icon: iconSurreal,
+		icon: iconSandbox,
 	},
-];
+};

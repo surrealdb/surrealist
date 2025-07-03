@@ -1,8 +1,7 @@
 import { Box, Paper, SimpleGrid, Stack } from "@mantine/core";
 
-import { objectify } from "radash";
 import { useInputState } from "@mantine/hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -15,7 +14,6 @@ import { iconChevronRight } from "~/util/icons";
 import { ObservablesPane } from "../ObservablesPane";
 import { ObserverActions } from "../ObserverActions";
 import { RPCConnectionsChart } from "~/screens/surrealist/metrics/RPCConnectionsChart";
-import { OBSERVABLE_LOG_FEEDS, OBSERVABLE_METRIC_COLLECTIONS } from "~/constants";
 import { ComputeUsageChart } from "~/screens/surrealist/metrics/ComputeUsageChart";
 import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart";
 import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngressChart";
@@ -56,22 +54,6 @@ export default function ObserverView() {
 	const [memoryLabels, setMemoryLabels] = useState<string[]>([]);
 	const [cpuLabels, setCpuLabels] = useState<string[]>([]);
 	const [activeRPCLabels, setActiveRPCLabels] = useState<string[]>([]);
-
-	const metricCollectionMap = useMemo(() => {
-		return objectify(
-			OBSERVABLE_METRIC_COLLECTIONS,
-			(it) => it.id,
-			(it) => it,
-		);
-	}, []);
-
-	const logsFeedMap = useMemo(() => {
-		return objectify(
-			OBSERVABLE_LOG_FEEDS,
-			(it) => it.id,
-			(it) => it,
-		);
-	}, []);
 
 	useEffect(() => {
 		const nodes = new Set<string>();
@@ -126,7 +108,7 @@ export default function ObserverView() {
 								order={1}
 							>
 								<ObservablesPane
-									activeCategory={activeCategory}
+									active={activeCategory}
 									onSidebarMinimize={() => {
 										setSidebarMinimized(true);
 									}}

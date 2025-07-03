@@ -2,153 +2,129 @@ import classes from "./style.module.scss";
 
 import { iconChevronLeft, iconEye } from "~/util/icons";
 
-import { Box, type BoxProps, type ElementProps, ScrollArea, Stack, Text } from "@mantine/core";
+import {
+	Box,
+	type BoxProps,
+	Divider,
+	type ElementProps,
+	ScrollArea,
+	Stack,
+	Text,
+} from "@mantine/core";
 
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { OBSERVABLE_METRIC_COLLECTIONS } from "~/constants";
+import { group } from "radash";
+import { OBSERVABLES } from "~/constants";
+import { Observable } from "~/types";
+import { Label } from "~/components/Label";
 
-interface ObservableCategoryProps extends BoxProps, ElementProps<"button"> {
-	category: string;
+interface ObservableEntryProps extends BoxProps, ElementProps<"button"> {
+	info: Observable;
 	isActive: boolean;
 	onActivate: (id: string) => void;
 }
 
-function ObservableCategoryItem({
-	category,
-	isActive,
-	onActivate,
-	...other
-}: ObservableCategoryProps) {
+function ObservableEntry({ info, isActive, onActivate, ...other }: ObservableEntryProps) {
 	const handleActivate = useStable(() => {
-		onActivate(category);
+		onActivate(info.id);
 	});
 
 	return (
 		<Entry
-			key={category}
+			key={info.id}
 			isActive={isActive}
 			onClick={handleActivate}
 			className={classes.observable}
-			// leftSection={<Icon path={category?.icon ?? iconEye} />}
+			// leftSection={<Icon path={info.icon} />}
 			{...other}
 		>
 			<Text
+				fw={500}
 				style={{
 					outline: "none",
 					textOverflow: "ellipsis",
 					overflow: "hidden",
 				}}
 			>
-				{category}
+				{info.name}
 			</Text>
 		</Entry>
 	);
 }
 
 export interface ObservablesPaneProps {
-	activeCategory: string;
+	active?: string;
 	onSidebarMinimize?: () => void;
-	onActivate: (category: string) => void;
+	onActivate: (observable: string) => void;
 }
 
-export function ObservablesPane(props: ObservablesPaneProps) {
-	const isLight = useIsLight();
+export function ObservablesPane({ active, onSidebarMinimize, onActivate }: ObservablesPaneProps) {
+	const observables = group(Object.values(OBSERVABLES), (it) => it.type);
+
+	const metrics = observables.metrics ?? [];
+	const logs = observables.logs ?? [];
 
 	return (
 		<ContentPane
 			icon={iconEye}
-			title="Observables"
+			title="Observer"
 			style={{ flexShrink: 0 }}
 			rightSection={
 				<>
 					<ActionButton
 						label="Hide observables"
-						onClick={props.onSidebarMinimize}
+						onClick={onSidebarMinimize}
 					>
 						<Icon path={iconChevronLeft} />
 					</ActionButton>
 				</>
 			}
 		>
-			<Stack
-				pos="absolute"
-				top={0}
-				left={12}
-				right={12}
-				bottom={12}
-				gap={0}
+			<ScrollArea
+				pt="sm"
+				flex={1}
+				classNames={{
+					viewport: classes.scroller,
+				}}
 			>
 				<Box>
-					<Text
-						c="bright"
-						fw={600}
-						fz="lg"
-						mb="sm"
+					<Label>Metrics</Label>
+					<Stack
+						gap="xs"
+						mt="md"
 					>
-						Metrics
-					</Text>
-					<ScrollArea
-						flex={1}
-						classNames={{
-							viewport: classes.scroller,
-						}}
-					>
-						<Stack
-							gap="xs"
-							pb="md"
-						>
-							{OBSERVABLE_METRIC_COLLECTIONS.map((category) => (
-								<ObservableCategoryItem
-									key={category.id}
-									category={category.id}
-									isActive={props.activeCategory === category.id}
-									onActivate={(id) => props.onActivate(id)}
-								/>
-							))}
-						</Stack>
-					</ScrollArea>
+						{metrics.map((metric) => (
+							<ObservableEntry
+								key={metric.id}
+								info={metric}
+								isActive={active === metric.id}
+								onActivate={onActivate}
+							/>
+						))}
+					</Stack>
 				</Box>
+				<Divider my="xl" />
 				<Box mt={15}>
-					<Text
-						c="bright"
-						fw={600}
-						fz="lg"
-						mb="sm"
+					<Label>Logs</Label>
+					<Stack
+						gap="xs"
+						mt="md"
 					>
-						Logs
-					</Text>
-					<ScrollArea
-						flex={1}
-						classNames={{
-							viewport: classes.scroller,
-						}}
-					>
-						<Stack
-							gap="xs"
-							pb="md"
-						>
-							<Text>Coming soon</Text>
-							{/* {LOG_OBSERVABLES.map((observable) => (
-								<ObservableItem
-									key={observable.id}
-									observable={observable}
-									isActive={props.activeObservable.id === observable.id}
-									onActivate={(id) =>
-										props.onActivate(
-											LOG_OBSERVABLES.find((it) => it.id === id) ?? observable,
-										)
-									}
-								/>
-							))} */}
-						</Stack>
-					</ScrollArea>
+						{logs.map((log) => (
+							<ObservableEntry
+								key={log.id}
+								info={log}
+								isActive={active === log.id}
+								onActivate={onActivate}
+							/>
+						))}
+					</Stack>
 				</Box>
-			</Stack>
+			</ScrollArea>
 		</ContentPane>
 	);
 }
