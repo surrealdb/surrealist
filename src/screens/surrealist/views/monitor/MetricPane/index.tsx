@@ -2,13 +2,13 @@ import { Paper, Stack } from "@mantine/core";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { iconChart, iconChevronRight } from "~/util/icons";
-import { MetricActions } from "./actions";
-import { MonitorContentProps, MonitorMetricOptions } from "../helpers";
 import { CloudMetrics } from "~/types";
-import { SystemPanel } from "./metrics/system";
-import { NetworkPanel } from "./metrics/network";
+import { iconChart, iconChevronRight } from "~/util/icons";
+import { MonitorContentProps, MonitorMetricOptions } from "../helpers";
+import { MetricActions } from "./actions";
 import { ConnectionsPanel } from "./metrics/connections";
+import { NetworkPanel } from "./metrics/network";
+import { SystemPanel } from "./metrics/system";
 
 export interface SharedMetricsPanelProps {
 	instance: string | undefined;

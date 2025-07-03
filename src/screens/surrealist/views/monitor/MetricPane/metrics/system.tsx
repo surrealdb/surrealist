@@ -1,7 +1,7 @@
 import { Stack } from "@mantine/core";
-import { SharedMetricsPanelProps } from "..";
 import { ComputeUsageChart } from "~/screens/surrealist/metrics/ComputeUsageChart";
 import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart";
+import { SharedMetricsPanelProps } from "..";
 
 export function SystemPanel({
 	instance,

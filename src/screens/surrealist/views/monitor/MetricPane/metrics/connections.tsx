@@ -1,6 +1,6 @@
 import { Stack } from "@mantine/core";
-import { SharedMetricsPanelProps } from "..";
 import { RPCConnectionsChart } from "~/screens/surrealist/metrics/RPCConnectionsChart";
+import { SharedMetricsPanelProps } from "..";
 
 export function ConnectionsPanel({
 	instance,

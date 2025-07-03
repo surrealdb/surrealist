@@ -5,6 +5,7 @@ import { Panel, PanelGroup } from "react-resizable-panels";
 import { useImmer } from "use-immer";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { MONITORS } from "~/constants";
+import { useConnection } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
 import { MonitorType } from "~/types";
@@ -12,7 +13,6 @@ import { LogPane } from "../LogPane";
 import { MetricPane } from "../MetricPane";
 import { MonitorsPane } from "../MonitorsPane";
 import { MonitorContentProps, MonitorLogOptions, MonitorMetricOptions } from "../helpers";
-import { useConnection } from "~/hooks/connection";
 
 const MONITOR_CONTENTS: Record<MonitorType, React.FC<MonitorContentProps>> = {
 	metrics: memo(MetricPane),
