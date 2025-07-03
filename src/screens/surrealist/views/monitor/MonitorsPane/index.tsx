@@ -17,6 +17,7 @@ import { group } from "radash";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
 import { ContentPane } from "~/components/Pane";
 import { MONITORS } from "~/constants";
 import { useStable } from "~/hooks/stable";
@@ -98,14 +99,7 @@ export function MonitorsPane({ active, onSidebarMinimize, onActivate }: Monitors
 						gap="sm"
 						ml="sm"
 					>
-						<Text
-							c="slate.3"
-							fz="xl"
-							fw={500}
-							lts={0.4}
-						>
-							Metrics
-						</Text>
+						<Label>Metrics</Label>
 					</Group>
 					<Stack
 						gap={4}
@@ -128,14 +122,7 @@ export function MonitorsPane({ active, onSidebarMinimize, onActivate }: Monitors
 						gap="sm"
 						ml="sm"
 					>
-						<Text
-							c="slate.3"
-							fz="xl"
-							fw={500}
-							lts={0.4}
-						>
-							Logs
-						</Text>
+						<Label>Logs</Label>
 					</Group>
 					<Stack
 						gap="xs"

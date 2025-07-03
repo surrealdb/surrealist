@@ -38,6 +38,7 @@ export default function MonitorView() {
 
 	const [logOptions, setLogOptions] = useImmer<MonitorLogOptions>({
 		level: null,
+		search: "",
 		duration: "hour",
 	});
 
