@@ -26,6 +26,8 @@ import { CloudLogLine } from "~/types";
 import { iconChevronRight, iconErrorCircle, iconHelp, iconList, iconWarning } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
+import { fuzzyMatch } from "~/util/helpers";
+import { useDebouncedValue } from "@mantine/hooks";
 
 const LOG_LEVEL_DECORATION: Record<string, [string, MantineColor]> = {
 	INFO: [iconHelp, "violet"],
@@ -44,19 +46,26 @@ export function LogPane({
 	const instance = useConnection((con) => con?.authentication.cloudInstance);
 	const logQuery = useCloudLogsQuery(instance, logOptions.duration);
 
+	const [lazyLevel] = useDebouncedValue(logOptions.level, 300);
+	const [lazySearch] = useDebouncedValue(logOptions.search, 300);
+
 	const logLines = useMemo(() => {
 		if (!logQuery.data) return [];
 
 		return logQuery.data.log_lines
 			.filter((line) => {
-				if (logOptions.level && line.level !== logOptions.level) {
+				if (lazyLevel && line.level !== lazyLevel) {
+					return false;
+				}
+
+				if (lazySearch && !fuzzyMatch(lazySearch, line.message)) {
 					return false;
 				}
 
 				return true;
 			})
 			.slice(0, 500);
-	}, [logQuery.data, logOptions.level]);
+	}, [logQuery.data, lazyLevel, lazySearch]);
 
 	return (
 		<Stack h="100%">

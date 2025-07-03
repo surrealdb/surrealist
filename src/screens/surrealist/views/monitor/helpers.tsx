@@ -8,6 +8,7 @@ export interface MonitorMetricOptions {
 }
 
 export interface MonitorLogOptions {
+	search: string;
 	level: string | null;
 	duration: MetricsDuration;
 }

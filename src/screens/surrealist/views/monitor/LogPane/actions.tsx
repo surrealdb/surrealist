@@ -1,9 +1,9 @@
-import { Group, Select } from "@mantine/core";
+import { Group, Select, TextInput } from "@mantine/core";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { MetricsDuration } from "~/types";
-import { iconChevronDown, iconClock, iconRefresh } from "~/util/icons";
+import { iconChevronDown, iconClock, iconRefresh, iconSearch } from "~/util/icons";
 import { MonitorLogOptions } from "../helpers";
 
 export interface LogActionsProps {
@@ -24,6 +24,16 @@ export function LogActions({ options, isLoading, onChange, onRefresh }: LogActio
 			>
 				<Icon path={iconRefresh} />
 			</ActionButton>
+			<TextInput
+				leftSection={<Icon path={iconSearch} />}
+				placeholder="Search logs..."
+				value={options.search}
+				onChange={(e) =>
+					onChange((draft) => {
+						draft.search = e.currentTarget.value;
+					})
+				}
+			/>
 			<Select
 				placeholder="Duration"
 				size="sm"
