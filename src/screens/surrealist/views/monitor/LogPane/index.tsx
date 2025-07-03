@@ -15,6 +15,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
+import { useDebouncedValue } from "@mantine/hooks";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { useMemo } from "react";
 import { useCloudLogsQuery } from "~/cloud/queries/logs";
@@ -23,11 +24,10 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useConnection } from "~/hooks/connection";
 import { CloudLogLine } from "~/types";
+import { fuzzyMatch } from "~/util/helpers";
 import { iconChevronRight, iconErrorCircle, iconHelp, iconList, iconWarning } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
-import { fuzzyMatch } from "~/util/helpers";
-import { useDebouncedValue } from "@mantine/hooks";
 
 const LOG_LEVEL_DECORATION: Record<string, [string, MantineColor]> = {
 	INFO: [iconHelp, "violet"],
