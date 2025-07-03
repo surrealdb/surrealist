@@ -4,14 +4,14 @@ import dayjs from "dayjs";
 import { useEffect } from "react";
 import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useStable } from "~/hooks/stable";
-import { BaseAreaChart, CommonAreaChartProps } from "../ObserverChart";
+import { BaseAreaChart, CommonAreaChartProps } from "../BaseAreaChart";
 
 export function RPCConnectionsChart({
 	instance,
 	duration,
-	hideHeader,
+	height,
 	nodeFilter,
-	calculateNodes,
+	onCalculateMetricsNodes,
 }: CommonAreaChartProps) {
 	const { data: metrics, isPending } = useCloudMetricsQuery(
 		instance,
@@ -22,7 +22,7 @@ export function RPCConnectionsChart({
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Results in infinite loop
 	useEffect(() => {
 		if (metrics) {
-			calculateNodes(metrics);
+			onCalculateMetricsNodes?.(metrics);
 		}
 	}, [metrics]);
 
@@ -31,6 +31,8 @@ export function RPCConnectionsChart({
 
 	let max = 0;
 	let min = 0;
+
+	console.log(metrics);
 
 	const series = data
 		.filter((dat) => nodeFilter === undefined || nodeFilter.includes(dat.labels))
@@ -84,7 +86,7 @@ export function RPCConnectionsChart({
 			values={values}
 			series={series}
 			tooltip={tooltip}
-			hideHeader={hideHeader}
+			height={height}
 			yAxisDomain={[min, Math.ceil(max / 4) * 4]}
 		/>
 	);

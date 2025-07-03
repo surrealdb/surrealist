@@ -4,21 +4,21 @@ import dayjs from "dayjs";
 import { useEffect } from "react";
 import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useStable } from "~/hooks/stable";
-import { BaseAreaChart, CommonAreaChartProps } from "../ObserverChart";
+import { BaseAreaChart, CommonAreaChartProps } from "../BaseAreaChart";
 
 export function ComputeUsageChart({
 	instance,
 	duration,
-	hideHeader,
+	height,
 	nodeFilter,
-	calculateNodes,
+	onCalculateMetricsNodes,
 }: CommonAreaChartProps) {
 	const { data: metrics, isPending } = useCloudMetricsQuery(instance, "cpu", duration);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Results in infinite loop
 	useEffect(() => {
 		if (metrics) {
-			calculateNodes(metrics);
+			onCalculateMetricsNodes?.(metrics);
 		}
 	}, [metrics]);
 
@@ -69,7 +69,7 @@ export function ComputeUsageChart({
 			values={values}
 			series={series}
 			tooltip={tooltip}
-			hideHeader={hideHeader}
+			height={height}
 		/>
 	);
 }

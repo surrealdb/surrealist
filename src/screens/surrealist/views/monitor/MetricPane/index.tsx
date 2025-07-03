@@ -3,15 +3,27 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { iconChart, iconChevronRight } from "~/util/icons";
-import { MonitorContentProps } from "../helpers";
 import { MetricActions } from "./actions";
+import { MonitorContentProps, MonitorMetricOptions } from "../helpers";
+import { CloudMetrics } from "~/types";
+import { SystemPanel } from "./metrics/system";
+import { NetworkPanel } from "./metrics/network";
+import { ConnectionsPanel } from "./metrics/connections";
+
+export interface SharedMetricsPanelProps {
+	instance: string | undefined;
+	metricOptions: MonitorMetricOptions;
+	onCalculateMetricsNodes?: (metric: CloudMetrics) => void;
+}
 
 export function MetricPane({
 	info,
+	instance,
 	metricOptions,
 	sidebarMinimized,
 	onRevealSidebar,
 	onChangeMetricsOptions,
+	onCalculateMetricsNodes,
 }: MonitorContentProps) {
 	return (
 		<Stack h="100%">
@@ -46,7 +58,27 @@ export function MetricPane({
 				flex={1}
 				p="xl"
 			>
-				Test
+				{info.id === "system" && (
+					<SystemPanel
+						instance={instance}
+						metricOptions={metricOptions}
+						onCalculateMetricsNodes={onCalculateMetricsNodes}
+					/>
+				)}
+				{info.id === "network" && (
+					<NetworkPanel
+						instance={instance}
+						metricOptions={metricOptions}
+						onCalculateMetricsNodes={onCalculateMetricsNodes}
+					/>
+				)}
+				{info.id === "connections" && (
+					<ConnectionsPanel
+						instance={instance}
+						metricOptions={metricOptions}
+						onCalculateMetricsNodes={onCalculateMetricsNodes}
+					/>
+				)}
 			</Paper>
 		</Stack>
 	);

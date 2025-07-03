@@ -64,13 +64,13 @@ export function MetricActions({ options, onChange }: MetricActionsProps) {
 							indeterminate={
 								options.nodeFilter === undefined ||
 								(options.nodeFilter.length > 0 &&
-									!options.nodes.every((n) => options.nodeFilter.includes(n)))
+									!options.nodes.every((n) => options.nodeFilter?.includes(n)))
 							}
 							variant="gradient"
 							checked={
 								options.nodeFilter === undefined ||
 								options.nodeFilter.length > 0 ||
-								options.nodes.every((n) => options.nodeFilter.includes(n))
+								options.nodes.every((n) => options.nodeFilter?.includes(n))
 							}
 							onChange={(e) => {
 								const checked = e.currentTarget.checked;

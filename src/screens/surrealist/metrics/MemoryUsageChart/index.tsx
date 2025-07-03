@@ -5,21 +5,21 @@ import { useEffect } from "react";
 import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useStable } from "~/hooks/stable";
 import { formatMemory } from "~/util/helpers";
-import { BaseAreaChart, CommonAreaChartProps } from "../ObserverChart";
+import { BaseAreaChart, CommonAreaChartProps } from "../BaseAreaChart";
 
 export function MemoryUsageChart({
 	instance,
 	duration,
-	hideHeader,
+	height,
 	nodeFilter,
-	calculateNodes,
+	onCalculateMetricsNodes,
 }: CommonAreaChartProps) {
 	const { data: metrics, isPending } = useCloudMetricsQuery(instance, "memory", duration);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Results in infinite loop
 	useEffect(() => {
 		if (metrics) {
-			calculateNodes(metrics);
+			onCalculateMetricsNodes?.(metrics);
 		}
 	}, [metrics]);
 
@@ -70,7 +70,7 @@ export function MemoryUsageChart({
 			values={values}
 			series={series}
 			tooltip={tooltip}
-			hideHeader={hideHeader}
+			height={height}
 			yAxisTickFormatter={(value) => formatMemory(value as number, true)}
 		/>
 	);

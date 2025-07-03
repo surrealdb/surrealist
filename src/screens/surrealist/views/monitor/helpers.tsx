@@ -1,5 +1,5 @@
 import { Updater } from "use-immer";
-import { MetricsDuration, Monitor } from "~/types";
+import { CloudMetrics, MetricsDuration, Monitor } from "~/types";
 
 export interface MonitorMetricOptions {
 	duration: MetricsDuration;
@@ -15,10 +15,12 @@ export interface MonitorLogOptions {
 
 export interface MonitorContentProps {
 	info: Monitor;
+	instance: string | undefined;
 	sidebarMinimized: boolean;
 	metricOptions: MonitorMetricOptions;
 	logOptions: MonitorLogOptions;
 	onChangeMetricsOptions: Updater<MonitorMetricOptions>;
 	onChangeLogOptions: Updater<MonitorLogOptions>;
 	onRevealSidebar: () => void;
+	onCalculateMetricsNodes?: (metric: CloudMetrics) => void;
 }
