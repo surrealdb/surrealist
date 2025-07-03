@@ -32,8 +32,6 @@ export function RPCConnectionsChart({
 	let max = 0;
 	let min = 0;
 
-	console.log(metrics);
-
 	const series = data
 		.filter((dat) => nodeFilter === undefined || nodeFilter.includes(dat.labels))
 		.map((metric) => ({
