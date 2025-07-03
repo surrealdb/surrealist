@@ -36,9 +36,9 @@ import ExplorerView from "./views/explorer/ExplorerView";
 import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
+import MonitorView from "./views/monitor/MonitorView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
-import MonitorView from "./views/monitor/MonitorView";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);

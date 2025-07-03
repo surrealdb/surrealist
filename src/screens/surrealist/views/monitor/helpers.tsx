@@ -1,16 +1,23 @@
 import { Updater } from "use-immer";
-import { Monitor } from "~/types";
+import { MetricsDuration, Monitor } from "~/types";
 
 export interface MonitorMetricOptions {
-	duration: "hour" | "half" | "day" | "week" | "month";
+	duration: MetricsDuration;
 	nodeFilter: string[] | undefined;
 	nodes: string[];
+}
+
+export interface MonitorLogOptions {
+	level: string | null;
+	duration: MetricsDuration;
 }
 
 export interface MonitorContentProps {
 	info: Monitor;
 	sidebarMinimized: boolean;
 	metricOptions: MonitorMetricOptions;
+	logOptions: MonitorLogOptions;
 	onChangeMetricsOptions: Updater<MonitorMetricOptions>;
+	onChangeLogOptions: Updater<MonitorLogOptions>;
 	onRevealSidebar: () => void;
 }

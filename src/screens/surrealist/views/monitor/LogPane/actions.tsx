@@ -1,20 +1,29 @@
-import { Stack, Text } from "@mantine/core";
-import { Checkbox, Group, Indicator, Menu, Select } from "@mantine/core";
+import { Group, Select } from "@mantine/core";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { MetricsDuration } from "~/types";
-import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
-import { MonitorMetricOptions } from "../helpers";
+import { iconChevronDown, iconClock, iconRefresh } from "~/util/icons";
+import { MonitorLogOptions } from "../helpers";
 
-export interface MetricActionsProps {
-	options: MonitorMetricOptions;
-	onChange: Updater<MonitorMetricOptions>;
+export interface LogActionsProps {
+	options: MonitorLogOptions;
+	isLoading: boolean;
+	onChange: Updater<MonitorLogOptions>;
+	onRefresh: () => void;
 }
 
-export function MetricActions({ options, onChange }: MetricActionsProps) {
+export function LogActions({ options, isLoading, onChange, onRefresh }: LogActionsProps) {
 	return (
 		<Group gap="sm">
+			<ActionButton
+				size="lg"
+				label="Refresh logs"
+				loading={isLoading}
+				onClick={onRefresh}
+			>
+				<Icon path={iconRefresh} />
+			</ActionButton>
 			<Select
 				placeholder="Duration"
 				size="sm"
@@ -35,7 +44,7 @@ export function MetricActions({ options, onChange }: MetricActionsProps) {
 					})
 				}
 			/>
-
+			{/*
 			<Menu>
 				<Menu.Target>
 					<Indicator
@@ -143,7 +152,7 @@ export function MetricActions({ options, onChange }: MetricActionsProps) {
 						))}
 					</Stack>
 				</Menu.Dropdown>
-			</Menu>
+			</Menu> */}
 		</Group>
 	);
 }

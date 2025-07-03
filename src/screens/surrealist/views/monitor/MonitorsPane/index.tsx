@@ -13,13 +13,13 @@ import {
 	Text,
 } from "@mantine/core";
 
+import { group } from "radash";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
-import { useStable } from "~/hooks/stable";
-import { group } from "radash";
 import { MONITORS } from "~/constants";
+import { useStable } from "~/hooks/stable";
 import { Monitor } from "~/types";
 
 interface ObservableEntryProps extends BoxProps, ElementProps<"button"> {

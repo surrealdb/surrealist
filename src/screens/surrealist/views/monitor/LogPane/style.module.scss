@@ -1,0 +1,12 @@
+.line {
+	cursor: initial;
+}
+
+.timestamp:hover {
+	color: var(--mantine-color-bright) !important;
+}
+
+.message {
+	user-select: text;
+	-webkit-user-select: text;
+}

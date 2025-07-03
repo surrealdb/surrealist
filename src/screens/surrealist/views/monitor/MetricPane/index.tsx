@@ -3,8 +3,8 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { iconChart, iconChevronRight } from "~/util/icons";
-import { MetricActions } from "./actions";
 import { MonitorContentProps } from "../helpers";
+import { MetricActions } from "./actions";
 
 export function MetricPane({
 	info,

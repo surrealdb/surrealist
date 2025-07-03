@@ -721,6 +721,19 @@ export interface CloudMetrics {
 	};
 }
 
+export interface CloudLogLine {
+	timestamp: string;
+	pod: string;
+	level: string;
+	message: string;
+}
+
+export interface CloudLogs {
+	from_time: string;
+	to_time: string;
+	log_lines: CloudLogLine[];
+}
+
 export interface CloudCoupon {
 	name: string;
 	amount: number;

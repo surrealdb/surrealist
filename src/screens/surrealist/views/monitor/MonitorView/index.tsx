@@ -2,19 +2,20 @@ import { Box } from "@mantine/core";
 
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { PanelDragger } from "~/components/Pane/dragger";
-import { usePanelMinSize } from "~/hooks/panels";
-import { MonitorType } from "~/types";
-import { MonitorsPane } from "../MonitorsPane";
-import { MetricPane } from "../MetricPane";
-import { MONITORS } from "~/constants";
-import { MonitorContentProps, MonitorMetricOptions } from "../helpers";
-import { useStable } from "~/hooks/stable";
 import { useImmer } from "use-immer";
+import { PanelDragger } from "~/components/Pane/dragger";
+import { MONITORS } from "~/constants";
+import { usePanelMinSize } from "~/hooks/panels";
+import { useStable } from "~/hooks/stable";
+import { MonitorType } from "~/types";
+import { LogPane } from "../LogPane";
+import { MetricPane } from "../MetricPane";
+import { MonitorsPane } from "../MonitorsPane";
+import { MonitorContentProps, MonitorLogOptions, MonitorMetricOptions } from "../helpers";
 
 const MONITOR_CONTENTS: Record<MonitorType, React.FC<MonitorContentProps>> = {
 	metrics: memo(MetricPane),
-	logs: memo(MetricPane),
+	logs: memo(LogPane),
 };
 
 export default function MonitorView() {
@@ -33,6 +34,11 @@ export default function MonitorView() {
 		duration: "hour",
 		nodeFilter: undefined,
 		nodes: [],
+	});
+
+	const [logOptions, setLogOptions] = useImmer<MonitorLogOptions>({
+		level: null,
+		duration: "hour",
 	});
 
 	// const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
@@ -119,9 +125,11 @@ export default function MonitorView() {
 						<Content
 							info={monitorInfo}
 							metricOptions={metricOptions}
+							logOptions={logOptions}
 							sidebarMinimized={sidebarMinimized}
 							onRevealSidebar={revealSidebar}
 							onChangeMetricsOptions={setMetricOptions}
+							onChangeLogOptions={setLogOptions}
 						/>
 					</Panel>
 				</PanelGroup>
