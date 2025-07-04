@@ -147,17 +147,17 @@ body.mod .cm-record-link:hover {
 }
 
 .mantine-Tooltip-tooltip {
-	color: var(--mantine-color-text);
-	background-color: var(--mantine-color-violet-8);
-	border: 1px solid var(--mantine-color-violet-8);
+	color: var(--tooltip-color, var(--mantine-color-text));
+	background-color: var(--tooltip-bg, var(--mantine-color-violet-8));
+	border: 1px solid var(--tooltip-bg, var(--mantine-color-violet-8));
 	box-shadow: var(--mantine-shadow-md);
 	padding-block: var(--mantine-spacing-xs);
 	padding-inline: var(--mantine-spacing-md);
 	color: white;
 
 	@include light {
-		background-color: var(--mantine-color-violet-4);
-		border-color: var(--mantine-color-violet-4);
+		background-color: var(--tooltip-bg, var(--mantine-color-violet-4));
+		border-color: var(--tooltip-bg, var(--mantine-color-violet-4));
 	}
 }
 

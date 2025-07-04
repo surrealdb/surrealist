@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 
 import {
-	Badge,
 	Box,
 	BoxProps,
 	Center,
@@ -18,7 +17,7 @@ import {
 import { BarChart, ChartTooltip } from "@mantine/charts";
 import { useDebouncedValue } from "@mantine/hooks";
 import { format, formatDate, formatDistanceToNow, startOfMinute } from "date-fns";
-import { range } from "radash";
+import { capitalize, range } from "radash";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
@@ -45,7 +44,7 @@ interface ChartMinute {
 
 const LOG_LEVEL_INFO: Record<string, [string, MantineColor, Severity]> = {
 	INFO: [iconHelp, "violet", "info"],
-	WARN: [iconWarning, "yellow", "warning"],
+	WARN: [iconWarning, "orange", "warning"],
 	ERROR: [iconErrorCircle, "red", "error"],
 	FATAL: [iconErrorCircle, "red", "error"],
 };
@@ -175,10 +174,13 @@ export function LogPane({
 			/>
 			<Paper
 				flex={1}
-				pos="relative"
+				bg="transparent"
 				style={{ overflow: "hidden" }}
+				component={Stack}
+				gap={0}
 			>
-				<Box
+				<Paper
+					withBorder={false}
 					px={32}
 					pt="xl"
 					pb="xs"
@@ -217,45 +219,52 @@ export function LogPane({
 						}}
 						series={CHART_SERIES}
 					/>
-				</Box>
+				</Paper>
 				<Divider />
-				{logQuery.isSuccess ? (
-					logLines.length === 0 ? (
+				<Box
+					pos="relative"
+					flex={1}
+					bg="slate.9"
+				>
+					{logQuery.isSuccess ? (
+						logLines.length === 0 ? (
+							<Center
+								pos="absolute"
+								inset={0}
+							>
+								No log entries found for the selected criteria.
+							</Center>
+						) : (
+							<AutoSizer>
+								{({ width, height }) => (
+									<FixedSizeList
+										height={height}
+										itemCount={logLines.length}
+										overscanCount={2}
+										itemSize={46}
+										width={width}
+									>
+										{({ index, style }) => (
+											<LogLine
+												line={logLines[index]}
+												count={logLines.length}
+												index={index}
+												style={style}
+											/>
+										)}
+									</FixedSizeList>
+								)}
+							</AutoSizer>
+						)
+					) : (
 						<Center
 							pos="absolute"
 							inset={0}
 						>
-							No log entries found for the selected criteria.
+							<Loader />
 						</Center>
-					) : (
-						<AutoSizer>
-							{({ width, height }) => (
-								<FixedSizeList
-									height={height}
-									itemCount={logLines.length}
-									overscanCount={2}
-									itemSize={46}
-									width={width}
-								>
-									{({ index, style }) => (
-										<LogLine
-											line={logLines[index]}
-											index={index}
-											style={style}
-										/>
-									)}
-								</FixedSizeList>
-							)}
-						</AutoSizer>
-					)
-				) : (
-					<Center
-						pos="absolute"
-						inset={0}
-					>
-						<Loader />
-					</Center>
-				)}
+					)}
+				</Box>
 			</Paper>
 		</Stack>
 	);
@@ -263,54 +272,62 @@ export function LogPane({
 
 interface LogLine extends BoxProps {
 	line: CloudLogLine;
+	count: number;
 	index: number;
 }
 
-export function LogLine({ line, ...other }: LogLine) {
+export function LogLine({ line, count, index, ...other }: LogLine) {
 	const [icon, color, severity] = LOG_LEVEL_INFO[line.level] || [iconHelp, "blue", "info"];
 
+	const relativeTime = capitalize(formatDistanceToNow(line.timestamp, { addSuffix: true }));
+	const absoluteTime = formatDate(line.timestamp, "MMMM d, yyyy - h:mm a");
+
 	return (
-		<Group
-			miw={0}
-			role="button"
-			tabIndex={0}
+		<Paper
+			withBorder={false}
+			data-odd={index % 2 === 1}
 			data-severity={severity}
+			data-last={count - 1 === index}
 			className={classes.line}
+			component={Group}
+			radius={0}
+			miw={0}
 			{...other}
 		>
-			<Box
-				w={96}
-				pl="md"
-			>
-				<Badge
-					pl="xs"
-					radius="xs"
-					size="md"
-					variant="transparent"
+			<Box w={52}>
+				<Tooltip
+					label={line.level}
 					color={color}
-					ff="monospace"
-					leftSection={
+					styles={{
+						tooltip: {
+							fontFamily: "var(--mantine-font-family-monospace)",
+							fontWeight: 800,
+						},
+					}}
+				>
+					<Box
+						px="xl"
+						w="max-content"
+					>
 						<Icon
 							path={icon}
 							c={color}
-							size={0.9}
-							mr="xs"
 						/>
-					}
-				>
-					{line.level}
-				</Badge>
+					</Box>
+				</Tooltip>
 			</Box>
 
-			<Tooltip label={formatDistanceToNow(line.timestamp, { addSuffix: true })}>
-				<Text
-					ff="monospace"
-					className={classes.timestamp}
-					w={185}
-				>
-					{formatDate(line.timestamp, "MMMM d, yyyy - h:mm a")}
-				</Text>
-			</Tooltip>
+			<Box w={185}>
+				<Tooltip label={relativeTime}>
+					<Text
+						ff="monospace"
+						className={classes.timestamp}
+						w="max-content"
+					>
+						{absoluteTime}
+					</Text>
+				</Tooltip>
+			</Box>
 
 			<Text
 				flex={1}
@@ -321,6 +338,6 @@ export function LogLine({ line, ...other }: LogLine) {
 			>
 				{line.message}
 			</Text>
-		</Group>
+		</Paper>
 	);
 }

@@ -2,29 +2,33 @@
 	cursor: initial;
 	position: relative;
 
+	&:not([data-last="true"]) {
+		border-bottom: 1px solid var(--mantine-color-slate-light);
+	}
+
 	&::after {
 		content: "";
 		z-index: -1;
 		position: absolute;
-		transition: opacity 0.2s ease;
-		opacity: 0.05;
+		transition: opacity 0.1s ease;
+		opacity: 0;
 		inset: 0;
 	}
 
-	&:hover[data-severity="info"]::after {
+	&[data-severity="info"]::after {
 		background-color: var(--mantine-color-slate-light);
 	}
 
-	&:hover[data-severity="warning"]::after {
-		background-color: var(--mantine-color-yellow-light);
+	&[data-severity="warning"]::after {
+		background-color: var(--mantine-color-orange-light);
 	}
 
-	&:hover[data-severity="error"]::after {
+	&[data-severity="error"]::after {
 		background-color: var(--mantine-color-red-light);
 	}
 
 	&:hover::after {
-		opacity: 0.3;
+		opacity: 0.5;
 	}
 
 	&:hover .timestamp {
