@@ -1,17 +1,6 @@
 import classes from "./style.module.scss";
 
-import {
-	Box,
-	BoxProps,
-	Center,
-	Divider,
-	Group,
-	Loader,
-	Paper,
-	Stack,
-	Text,
-	Tooltip,
-} from "@mantine/core";
+import { Box, BoxProps, Center, Group, Loader, Paper, Stack, Text, Tooltip } from "@mantine/core";
 
 import { useDebouncedValue } from "@mantine/hooks";
 import { formatDate, formatDistanceToNow } from "date-fns";
@@ -31,6 +20,7 @@ import { iconChevronRight, iconHelp, iconList } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
 import { LogActivityChart } from "./chart";
+import { useIsLight } from "~/hooks/theme";
 
 export function LogPane({
 	info,
@@ -39,6 +29,7 @@ export function LogPane({
 	onRevealSidebar,
 	onChangeLogOptions,
 }: MonitorContentProps) {
+	const isLight = useIsLight();
 	const instance = useConnection((con) => con?.authentication.cloudInstance);
 	const logQuery = useCloudLogsQuery(instance, logOptions.duration);
 
@@ -99,67 +90,64 @@ export function LogPane({
 					/>
 				}
 			/>
+			{logQuery.isSuccess && (
+				<Paper
+					pt="xl"
+					px="xl"
+				>
+					<LogActivityChart
+						fromTime={fromTime}
+						toTime={toTime}
+						lines={logLines}
+					/>
+				</Paper>
+			)}
 			<Paper
 				flex={1}
-				bg="transparent"
 				style={{ overflow: "hidden" }}
 				component={Stack}
 				gap={0}
+				pos="relative"
+				bg={isLight ? "slate.0" : "slate.9"}
 			>
-				{logQuery.isSuccess && (
-					<>
-						<LogActivityChart
-							fromTime={fromTime}
-							toTime={toTime}
-							lines={logLines}
-						/>
-						<Divider />
-					</>
-				)}
-				<Box
-					pos="relative"
-					flex={1}
-					bg="slate.9"
-				>
-					{logQuery.isSuccess ? (
-						logLines.length === 0 ? (
-							<Center
-								pos="absolute"
-								inset={0}
-							>
-								No log entries found for the selected criteria.
-							</Center>
-						) : (
-							<AutoSizer>
-								{({ width, height }) => (
-									<FixedSizeList
-										height={height}
-										itemCount={logLines.length}
-										overscanCount={2}
-										itemSize={46}
-										width={width}
-									>
-										{({ index, style }) => (
-											<LogLine
-												line={logLines[index]}
-												count={logLines.length}
-												index={index}
-												style={style}
-											/>
-										)}
-									</FixedSizeList>
-								)}
-							</AutoSizer>
-						)
-					) : (
+				{logQuery.isSuccess ? (
+					logLines.length === 0 ? (
 						<Center
 							pos="absolute"
 							inset={0}
 						>
-							<Loader />
+							No log entries found for the selected criteria.
 						</Center>
-					)}
-				</Box>
+					) : (
+						<AutoSizer>
+							{({ width, height }) => (
+								<FixedSizeList
+									height={height}
+									itemCount={logLines.length}
+									overscanCount={2}
+									itemSize={46}
+									width={width}
+								>
+									{({ index, style }) => (
+										<LogLine
+											line={logLines[index]}
+											count={logLines.length}
+											index={index}
+											style={style}
+										/>
+									)}
+								</FixedSizeList>
+							)}
+						</AutoSizer>
+					)
+				) : (
+					<Center
+						pos="absolute"
+						inset={0}
+					>
+						<Loader />
+					</Center>
+				)}
 			</Paper>
 		</Stack>
 	);

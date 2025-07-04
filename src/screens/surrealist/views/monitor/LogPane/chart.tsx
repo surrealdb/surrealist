@@ -1,7 +1,6 @@
 import classes from "./style.module.scss";
 
 import { BarChart, ChartTooltip } from "@mantine/charts";
-import { Paper } from "@mantine/core";
 import { DurationUnit, differenceInHours, format } from "date-fns";
 import { range } from "radash";
 import { useMemo } from "react";
@@ -102,46 +101,38 @@ export function LogActivityChart({ toTime, fromTime, lines }: LogActivityChartPr
 	});
 
 	return (
-		<Paper
-			withBorder={false}
-			px={32}
-			pt="xl"
-			pb="xs"
-		>
-			<BarChart
-				h={92}
-				dataKey="time"
-				type="stacked"
-				data={logData}
-				withYAxis={false}
-				className={classes.chart}
-				gridAxis="none"
-				tooltipProps={{
-					content: tooltip,
-				}}
-				referenceLines={[
-					{
-						y: 0,
-						color: "slate",
-						strokeDasharray: "5 5",
+		<BarChart
+			h={92}
+			dataKey="time"
+			type="stacked"
+			data={logData}
+			withYAxis={false}
+			className={classes.chart}
+			gridAxis="none"
+			tooltipProps={{
+				content: tooltip,
+			}}
+			referenceLines={[
+				{
+					y: 0,
+					strokeDasharray: "4 4",
+				},
+			]}
+			xAxisProps={{
+				scale: "time",
+				type: "number",
+				ticks: [startAt, endAt],
+				domain: [`dataMin - ${interval / 2}`, `dataMax + ${interval / 2}`],
+				tickFormatter: (value) => format(value, "MMMM d, yyyy - h:mm a"),
+				tick: {
+					style: {
+						fontFamily: "var(--mantine-font-family-monospace)",
+						fill: "var(--mantine-color-text)",
+						fontSize: "var(--mantine-font-size-xs)",
 					},
-				]}
-				xAxisProps={{
-					scale: "time",
-					type: "number",
-					ticks: [startAt, endAt],
-					domain: [`dataMin - ${interval / 2}`, `dataMax + ${interval / 2}`],
-					tickFormatter: (value) => format(value, "MMMM d, yyyy - h:mm a"),
-					tick: {
-						style: {
-							fontFamily: "var(--mantine-font-family-monospace)",
-							fill: "var(--mantine-color-text)",
-							fontSize: "var(--mantine-font-size-xs)",
-						},
-					},
-				}}
-				series={CHART_SERIES}
-			/>
-		</Paper>
+				},
+			}}
+			series={CHART_SERIES}
+		/>
 	);
 }
