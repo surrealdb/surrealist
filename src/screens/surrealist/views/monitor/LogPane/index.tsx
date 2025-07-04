@@ -23,13 +23,13 @@ import { useCloudLogsQuery } from "~/cloud/queries/logs";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
+import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { CloudLogLine } from "~/types";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconChevronRight, iconHelp, iconList } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
-import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
 import { LogActivityChart } from "./chart";
 
 export function LogPane({

@@ -2,7 +2,7 @@ import classes from "./style.module.scss";
 
 import { BarChart, ChartTooltip } from "@mantine/charts";
 import { Paper } from "@mantine/core";
-import { differenceInHours, DurationUnit, format } from "date-fns";
+import { DurationUnit, differenceInHours, format } from "date-fns";
 import { range } from "radash";
 import { useMemo } from "react";
 import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
