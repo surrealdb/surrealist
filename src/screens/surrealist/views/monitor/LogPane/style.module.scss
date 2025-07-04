@@ -1,9 +1,30 @@
 .line {
 	cursor: initial;
+	position: relative;
 
-	&[data-odd="true"] {
-		background-color: var(--mantine-color-body);
-		border-radius: var(--mantine-radius-xs);
+	&::after {
+		content: "";
+		z-index: -1;
+		position: absolute;
+		transition: opacity 0.2s ease;
+		opacity: 0.05;
+		inset: 0;
+	}
+
+	&:hover[data-severity="info"]::after {
+		background-color: var(--mantine-color-slate-light);
+	}
+
+	&:hover[data-severity="warning"]::after {
+		background-color: var(--mantine-color-yellow-light);
+	}
+
+	&:hover[data-severity="error"]::after {
+		background-color: var(--mantine-color-red-light);
+	}
+
+	&:hover::after {
+		opacity: 0.3;
 	}
 
 	&:hover .timestamp {
