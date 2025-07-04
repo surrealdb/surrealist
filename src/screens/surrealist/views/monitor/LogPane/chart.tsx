@@ -129,8 +129,8 @@ export function LogActivityChart({ toTime, fromTime, lines }: LogActivityChartPr
 				xAxisProps={{
 					scale: "time",
 					type: "number",
-					domain: [startAt, endAt],
 					ticks: [startAt, endAt],
+					domain: [`dataMin - ${interval / 2}`, `dataMax + ${interval / 2}`],
 					tickFormatter: (value) => format(value, "MMMM d, yyyy - h:mm a"),
 					tick: {
 						style: {
