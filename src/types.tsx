@@ -157,7 +157,6 @@ export interface Connection {
 	designerTableList: boolean;
 	explorerTableList: boolean;
 	queryTabList: boolean;
-	monitorList: boolean;
 	graphqlQuery: string;
 	graphqlVariables: string;
 	graphqlShowVariables: boolean;
