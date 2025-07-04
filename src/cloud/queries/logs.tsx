@@ -21,7 +21,6 @@ export function useCloudLogsQuery(instance: string | undefined, duration: Metric
 			const params = new URLSearchParams({
 				from_time: startAt.toISOString(),
 				to_time: endAt.toISOString(),
-				category: "dummy_data",
 			});
 
 			return fetchAPI<CloudLogs>(withSearchParams(`/instances/${instance}/logs`, params));
