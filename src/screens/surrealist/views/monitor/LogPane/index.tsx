@@ -15,8 +15,10 @@ import {
 	Tooltip,
 } from "@mantine/core";
 
+import { BarChart, ChartTooltip } from "@mantine/charts";
 import { useDebouncedValue } from "@mantine/hooks";
 import { format, formatDate, formatDistanceToNow, startOfMinute } from "date-fns";
+import { range } from "radash";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
@@ -25,14 +27,12 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useConnection } from "~/hooks/connection";
+import { useStable } from "~/hooks/stable";
 import { CloudLogLine } from "~/types";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconChevronRight, iconErrorCircle, iconHelp, iconList, iconWarning } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
-import { BarChart, ChartTooltip } from "@mantine/charts";
-import { range } from "radash";
-import { useStable } from "~/hooks/stable";
 
 type Severity = "info" | "warning" | "error";
 
