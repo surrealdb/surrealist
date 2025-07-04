@@ -46,7 +46,7 @@ import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressCh
 import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngressChart";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { showErrorNotification } from "~/util/helpers";
-import { iconChevronDown } from "~/util/icons";
+import { iconChevronDown, iconChevronRight } from "~/util/icons";
 import { APPLY_DATASET_KEY } from "~/util/storage";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
@@ -62,6 +62,7 @@ import { BillingRequiredModal } from "./BillingRequiredModal";
 import { MonitorMetricOptions } from "../../monitor/helpers";
 import { useImmer } from "use-immer";
 import { MetricActions } from "../../monitor/MetricPane/actions";
+import { navigate } from "wouter/use-browser-location";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -355,51 +356,66 @@ export function DashboardView() {
 							</Group>
 
 							{instance && (
-								<SimpleGrid
-									cols={2}
-									spacing="xl"
-								>
-									<MemoryUsageChartLazy
-										instance={instanceId}
-										duration={metricOptions.duration}
-										nodeFilter={metricOptions.nodeFilter}
-										onCalculateMetricsNodes={(metrics) => {
-											setMemoryLabels(
-												metrics.values.metrics.map((it) => it.labels),
-											);
-										}}
-									/>
-									<ComputeUsageChartLazy
-										instance={instanceId}
-										duration={metricOptions.duration}
-										nodeFilter={metricOptions.nodeFilter}
-										onCalculateMetricsNodes={(metrics) => {
-											setCpuLabels(
-												metrics.values.metrics.map((it) => it.labels),
-											);
-										}}
-									/>
-									<NetworkIngressChartLazy
-										instance={instanceId}
-										duration={metricOptions.duration}
-										nodeFilter={metricOptions.nodeFilter}
-										onCalculateMetricsNodes={(metrics) => {
-											setNetworkIngressLabels(
-												metrics.values.metrics.map((it) => it.labels),
-											);
-										}}
-									/>
-									<NetworkEgressChartLazy
-										instance={instanceId}
-										duration={metricOptions.duration}
-										nodeFilter={metricOptions.nodeFilter}
-										onCalculateMetricsNodes={(metrics) => {
-											setNetworkEgressLabels(
-												metrics.values.metrics.map((it) => it.labels),
-											);
-										}}
-									/>
-								</SimpleGrid>
+								<>
+									<SimpleGrid
+										cols={2}
+										spacing="xl"
+									>
+										<MemoryUsageChartLazy
+											instance={instanceId}
+											duration={metricOptions.duration}
+											nodeFilter={metricOptions.nodeFilter}
+											onCalculateMetricsNodes={(metrics) => {
+												setMemoryLabels(
+													metrics.values.metrics.map((it) => it.labels),
+												);
+											}}
+										/>
+										<ComputeUsageChartLazy
+											instance={instanceId}
+											duration={metricOptions.duration}
+											nodeFilter={metricOptions.nodeFilter}
+											onCalculateMetricsNodes={(metrics) => {
+												setCpuLabels(
+													metrics.values.metrics.map((it) => it.labels),
+												);
+											}}
+										/>
+										<NetworkIngressChartLazy
+											instance={instanceId}
+											duration={metricOptions.duration}
+											nodeFilter={metricOptions.nodeFilter}
+											onCalculateMetricsNodes={(metrics) => {
+												setNetworkIngressLabels(
+													metrics.values.metrics.map((it) => it.labels),
+												);
+											}}
+										/>
+										<NetworkEgressChartLazy
+											instance={instanceId}
+											duration={metricOptions.duration}
+											nodeFilter={metricOptions.nodeFilter}
+											onCalculateMetricsNodes={(metrics) => {
+												setNetworkEgressLabels(
+													metrics.values.metrics.map((it) => it.labels),
+												);
+											}}
+										/>
+									</SimpleGrid>
+									<Group pt="xs">
+										<Spacer />
+										<Button
+											variant="light"
+											color="slate"
+											rightSection={<Icon path={iconChevronRight} />}
+											onClick={() => {
+												navigate("monitor");
+											}}
+										>
+											View more
+										</Button>
+									</Group>
+								</>
 							)}
 
 							<Box mt={32}>
