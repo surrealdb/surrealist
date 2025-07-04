@@ -134,7 +134,7 @@ export function LogPane({
 	const tooltip = useStable(({ label, payload }) => {
 		return (
 			<ChartTooltip
-				label={format(label, "dd MMM yyyy HH:mm")}
+				label={label ? format(label, "MMMM d, yyyy - h:mm a") : "unset"}
 				payload={payload}
 				series={CHART_SERIES}
 			/>
@@ -206,7 +206,7 @@ export function LogPane({
 							type: "number",
 							domain: [startMin, endMin - 60_000],
 							ticks: [startMin, endMin - 60_000],
-							tickFormatter: (value) => format(value, "dd MMM yyyy HH:mm"),
+							tickFormatter: (value) => format(value, "MMMM d, yyyy - h:mm a"),
 							tick: {
 								style: {
 									fontFamily: "var(--mantine-font-family-monospace)",
@@ -306,9 +306,9 @@ export function LogLine({ line, ...other }: LogLine) {
 				<Text
 					ff="monospace"
 					className={classes.timestamp}
-					w={132}
+					w={185}
 				>
-					{formatDate(line.timestamp, "dd MMM HH:mm:ss")}
+					{formatDate(line.timestamp, "MMMM d, yyyy - h:mm a")}
 				</Text>
 			</Tooltip>
 
