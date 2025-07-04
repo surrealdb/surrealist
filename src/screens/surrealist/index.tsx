@@ -36,6 +36,7 @@ import ExplorerView from "./views/explorer/ExplorerView";
 import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
+import MonitorView from "./views/monitor/MonitorView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
 
@@ -60,6 +61,7 @@ const PORTAL_OPTIONS = {
 
 const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	dashboard: createHtmlPortalNode(PORTAL_OPTIONS),
+	monitor: createHtmlPortalNode(PORTAL_OPTIONS),
 	query: createHtmlPortalNode(PORTAL_OPTIONS),
 	explorer: createHtmlPortalNode(PORTAL_OPTIONS),
 	graphql: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -73,6 +75,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 
 const VIEW_COMPONENTS: Record<ViewPage, FC> = {
 	dashboard: memo(DashboardView),
+	monitor: memo(MonitorView),
 	query: memo(QueryView),
 	explorer: memo(ExplorerView),
 	graphql: memo(GraphqlView),

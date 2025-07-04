@@ -6,20 +6,21 @@ import classes from "./style.module.scss";
 
 export interface EntryProps extends ButtonProps {
 	isActive?: boolean;
+	compact?: boolean;
 }
 
 export const Entry = createPolymorphicComponent<"button", EntryProps>(
 	forwardRef<HTMLButtonElement, EntryProps>((props, ref) => {
 		const isLight = useIsLight();
 
-		const { isActive, children, className, ...rest } = props;
+		const { isActive, compact, children, className, ...rest } = props;
 
 		return (
 			<Button
 				ref={ref}
 				fullWidth
 				miw={0}
-				h={40}
+				h={compact ? 32 : 40}
 				px={8}
 				color={isLight ? "slate.0" : "slate.7"}
 				{...rest}

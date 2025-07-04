@@ -25,6 +25,8 @@ import type {
 	GlobalPage,
 	GlobalPageInfo,
 	Listable,
+	Monitor,
+	MonitorSeverity,
 	Orientation,
 	Protocol,
 	ResultFormat,
@@ -47,7 +49,9 @@ import {
 	iconDataTable,
 	iconDatabase,
 	iconDesigner,
+	iconErrorCircle,
 	iconExplorer,
+	iconEye,
 	iconFunction,
 	iconGraphql,
 	iconHelp,
@@ -61,10 +65,11 @@ import {
 	iconSidekick,
 	iconTable,
 	iconTune,
+	iconWarning,
 	iconXml,
 } from "./util/icons";
 
-import type { MantineColorScheme } from "@mantine/core";
+import type { MantineColor, MantineColorScheme } from "@mantine/core";
 
 export type StructureTab = "graph" | "builder";
 export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
@@ -224,7 +229,13 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		id: "dashboard",
 		name: "Dashboard",
 		icon: iconTune,
-		disabled: ({ flags, isCloud }) => !flags.query_view || !isCloud,
+		disabled: ({ isCloud }) => !isCloud,
+	},
+	monitor: {
+		id: "monitor",
+		name: "Monitoring",
+		icon: iconEye,
+		disabled: ({ isCloud }) => !isCloud,
 	},
 	query: {
 		id: "query",
@@ -434,3 +445,33 @@ export const DRIVERS: Driver[] = [
 		link: "https://github.com/surrealdb/surrealdb.c",
 	},
 ];
+
+export const MONITORS: Record<string, Monitor> = {
+	system: {
+		id: "system",
+		type: "metrics",
+		name: "System",
+	},
+	connections: {
+		id: "connections",
+		type: "metrics",
+		name: "Connections",
+	},
+	network: {
+		id: "network",
+		type: "metrics",
+		name: "Network traffic",
+	},
+	surrealdb: {
+		id: "surrealdb",
+		type: "logs",
+		name: "SurrealDB",
+	},
+};
+
+export const MONITOR_LOG_LEVEL_INFO: Record<string, [string, MantineColor, MonitorSeverity]> = {
+	INFO: [iconHelp, "violet", "info"],
+	WARN: [iconWarning, "orange", "warning"],
+	ERROR: [iconErrorCircle, "red", "error"],
+	FATAL: [iconErrorCircle, "red", "error"],
+};

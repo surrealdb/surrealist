@@ -2,6 +2,7 @@ import { Group, Text } from "@mantine/core";
 import { Stack } from "@mantine/core";
 import { hideNotification, showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
+import { DateArg, DurationUnit, startOfDay, startOfHour, startOfMinute } from "date-fns";
 import escapeRegex from "escape-string-regexp";
 import { uid } from "radash";
 import { shake } from "radash";
@@ -549,4 +550,20 @@ export function withSearchParams(
 	}
 
 	return url;
+}
+
+/**
+ * Returns the start of the given date at the specified resolution.
+ */
+export function startOfDate(date: DateArg<Date>, resolution: DurationUnit): Date {
+	switch (resolution) {
+		case "minutes":
+			return startOfMinute(date);
+		case "hours":
+			return startOfHour(date);
+		case "days":
+			return startOfDay(date);
+		default:
+			throw new Error(`Unsupported resolution: ${resolution}`);
+	}
 }

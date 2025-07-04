@@ -19,7 +19,7 @@ export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type MetricsDuration = "hour" | "half" | "day" | "week" | "month";
-export type MetricsType = "cpu" | "memory" | "ingress" | "egress";
+export type MetricsType = "cpu" | "memory" | "ingress" | "egress" | "rpc_active_connections";
 export type MiniAppearance = "normal" | "compact" | "plain";
 export type Orientation = "horizontal" | "vertical";
 export type Platform = "darwin" | "windows" | "linux";
@@ -38,8 +38,10 @@ export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
-
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type MonitorType = "metrics" | "logs";
+export type MonitorSeverity = "info" | "warning" | "error";
+
 export type InstanceState =
 	| "creating"
 	| "updating"
@@ -67,6 +69,7 @@ export type GlobalPage =
 	| "/mini/new";
 export type ViewPage =
 	| "dashboard"
+	| "monitor"
 	| "query"
 	| "explorer"
 	| "graphql"
@@ -718,6 +721,19 @@ export interface CloudMetrics {
 	};
 }
 
+export interface CloudLogLine {
+	timestamp: string;
+	pod: string;
+	level: string;
+	message: string;
+}
+
+export interface CloudLogs {
+	from_time: string;
+	to_time: string;
+	log_lines: CloudLogLine[];
+}
+
 export interface CloudCoupon {
 	name: string;
 	amount: number;
@@ -782,4 +798,28 @@ export interface AppMenuItem {
 	disabled?: boolean;
 	binding?: string[];
 	action?: () => void;
+}
+
+export interface ObserverMetric {
+	id: string;
+	name: string;
+}
+
+export interface ObserverMetricCollection {
+	id: string;
+	name: string;
+	icon: string;
+	metrics: ObserverMetric[];
+}
+
+export interface ObserverLogFeed {
+	id: string;
+	name: string;
+	icon: string;
+}
+
+export interface Monitor {
+	id: string;
+	type: MonitorType;
+	name: string;
 }

@@ -8,14 +8,11 @@ import tutorialsUrl from "~/assets/images/icons/tutorials.webp";
 import {
 	Button,
 	Center,
-	Checkbox,
 	Group,
 	Image,
 	Indicator,
 	Loader,
-	Menu,
 	Paper,
-	Select,
 	SimpleGrid,
 	Skeleton,
 	Text,
@@ -25,15 +22,15 @@ import {
 import { Box, ScrollArea, Stack } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { memo, useEffect, useState } from "react";
+import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
+import { navigate } from "wouter/use-browser-location";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
-import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
-import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
 import { Link } from "~/components/Link";
@@ -45,22 +42,23 @@ import { useConnection } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
 import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
+import { ComputeUsageChart } from "~/screens/surrealist/metrics/ComputeUsageChart";
+import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart";
+import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressChart";
+import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngressChart";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
-import { MetricsDuration } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
+import { iconChevronDown, iconChevronRight } from "~/util/icons";
 import { APPLY_DATASET_KEY } from "~/util/storage";
+import { MetricActions } from "../../monitor/MetricPane/actions";
+import { MonitorMetricOptions } from "../../monitor/helpers";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
-import { ComputeUsageChart } from "../ComputeUsageChart";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
-import { MemoryUsageChart } from "../MemoryUsageChart";
 import { NavigationBlock } from "../NavigationBlock";
-import { NetworkEgressChart } from "../NetworkEgressChart";
-import { NetworkIngressChart } from "../NetworkIngressChart";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
@@ -75,6 +73,10 @@ const DiskUsageBlockLazy = memo(DiskUsageBlock);
 const BackupsBlockLazy = memo(BackupsBlock);
 const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
 const UpgradeDrawerLazy = memo(UpgradeDrawer);
+const MemoryUsageChartLazy = memo(MemoryUsageChart);
+const ComputeUsageChartLazy = memo(ComputeUsageChart);
+const NetworkIngressChartLazy = memo(NetworkIngressChart);
+const NetworkEgressChartLazy = memo(NetworkEgressChart);
 
 export function DashboardView() {
 	const [isCloud, instanceId] = useConnection((c) => [
@@ -86,13 +88,15 @@ export function DashboardView() {
 	const [configuring, configuringHandle] = useBoolean();
 	const [metricsNodes, setMetricsNodes] = useInputState<string[]>([]);
 	const [billingRequiredOpened, setBillingRequiredOpened] = useState(false);
-	const [metricsNodeFilter, setMetricsNodeFilter] = useInputState<string[] | undefined>(
-		undefined,
-	);
 
 	const [upgradeTab, setUpgradeTab] = useState("type");
 	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
-	const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
+
+	const [metricOptions, setMetricOptions] = useImmer<MonitorMetricOptions>({
+		duration: "hour",
+		nodeFilter: undefined,
+		nodes: [],
+	});
 
 	const { data: instance, isPending: instancePending } = useCloudInstanceQuery(instanceId);
 	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instanceId);
@@ -102,23 +106,41 @@ export function DashboardView() {
 		details?.organization_id,
 	);
 
-	const { data: networkIngressMetrics, isPending: networkIngressMetricsPending } =
-		useCloudMetricsQuery(instanceId, "ingress", metricsDuration);
+	const [networkIngressLabels, setNetworkIngressLabels] = useState<string[]>([]);
+	const [networkEgressLabels, setNetworkEgressLabels] = useState<string[]>([]);
+	const [memoryLabels, setMemoryLabels] = useState<string[]>([]);
+	const [cpuLabels, setCpuLabels] = useState<string[]>([]);
 
-	const { data: networkEgressMetrics, isPending: networkEgressMetricsPending } =
-		useCloudMetricsQuery(instanceId, "egress", metricsDuration);
+	useEffect(() => {
+		const nodes = new Set<string>();
 
-	const { data: memoryMetrics, isPending: memoryMetricsPending } = useCloudMetricsQuery(
-		instanceId,
-		"memory",
-		metricsDuration,
-	);
+		for (const label of memoryLabels) {
+			nodes.add(label);
+		}
 
-	const { data: cpuMetrics, isPending: cpuMetricsPending } = useCloudMetricsQuery(
-		instanceId,
-		"cpu",
-		metricsDuration,
-	);
+		for (const label of cpuLabels) {
+			nodes.add(label);
+		}
+
+		for (const label of networkEgressLabels) {
+			nodes.add(label);
+		}
+
+		for (const label of networkIngressLabels) {
+			nodes.add(label);
+		}
+
+		setMetricOptions((draft) => {
+			draft.nodes = Array.from(nodes);
+		});
+	}, [memoryLabels, cpuLabels, networkEgressLabels, networkIngressLabels]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset evert time the metrics duration changes
+	useEffect(() => {
+		setMetricOptions((draft) => {
+			draft.nodeFilter = undefined;
+		});
+	}, [metricOptions.duration]);
 
 	const [, applyDataset] = useDatasets();
 	const { mutateAsync } = useUpdateInstanceVersionMutation(details);
@@ -140,40 +162,12 @@ export function DashboardView() {
 		}
 	});
 
-	useEffect(() => {
-		const nodes = new Set<string>();
-
-		if (networkIngressMetrics) {
-			for (const m of networkIngressMetrics.values.metrics) {
-				nodes.add(m.labels);
-			}
-		}
-
-		if (networkEgressMetrics) {
-			for (const m of networkEgressMetrics.values.metrics) {
-				nodes.add(m.labels);
-			}
-		}
-
-		if (memoryMetrics) {
-			for (const m of memoryMetrics.values.metrics) {
-				nodes.add(m.labels);
-			}
-		}
-
-		if (cpuMetrics) {
-			for (const m of cpuMetrics.values.metrics) {
-				nodes.add(m.labels);
-			}
-		}
-
-		setMetricsNodes(Array.from(nodes));
-	}, [networkIngressMetrics, networkEgressMetrics, memoryMetrics, cpuMetrics]);
-
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset evert time the metrics duration changes
 	useEffect(() => {
-		setMetricsNodeFilter(undefined);
-	}, [metricsDuration]);
+		setMetricOptions((draft) => {
+			draft.nodeFilter = undefined;
+		});
+	}, [metricOptions.duration]);
 
 	// Apply dataset on load
 	useEffect(() => {
@@ -217,16 +211,7 @@ export function DashboardView() {
 		configuringHandle.open();
 	});
 
-	const isLoading =
-		detailsPending ||
-		backupsPending ||
-		instancePending ||
-		usagePending ||
-		organisationPending ||
-		networkIngressMetricsPending ||
-		networkEgressMetricsPending ||
-		memoryMetricsPending ||
-		cpuMetricsPending;
+	const isLoading = detailsPending || backupsPending || instancePending || usagePending;
 
 	if (!isCloud) {
 		return <Redirect to="/query" />;
@@ -364,163 +349,74 @@ export function DashboardView() {
 
 								<Spacer />
 
-								<Select
-									placeholder="Duration"
-									size="sm"
-									value={metricsDuration}
-									onChange={(e) =>
-										setMetricsDuration((e as MetricsDuration) ?? "hour")
-									}
-									data={[
-										{ value: "hour", label: "Last Hour" },
-										{ value: "half", label: "Last 12 Hours" },
-										{ value: "day", label: "Last Day" },
-										{ value: "week", label: "Last Week" },
-										{ value: "month", label: "Last Month" },
-									]}
-									leftSection={<Icon path={iconClock} />}
-									rightSection={<Icon path={iconChevronDown} />}
-									rightSectionWidth={30}
+								<MetricActions
+									options={metricOptions}
+									onChange={setMetricOptions}
 								/>
-								<Menu>
-									<Menu.Target>
-										<Indicator
-											disabled={
-												metricsNodeFilter === undefined ||
-												metricsNodeFilter.length === metricsNodes.length
-											}
-										>
-											<ActionButton
-												variant="light"
-												color="slate"
-												label="Node filter"
-												size="lg"
-											>
-												<Icon
-													size="md"
-													path={iconFilter}
-												/>
-											</ActionButton>
-										</Indicator>
-									</Menu.Target>
-
-									<Menu.Dropdown p="md">
-										<Group>
-											<Checkbox
-												indeterminate={
-													metricsNodeFilter !== undefined &&
-													metricsNodeFilter.length > 0 &&
-													!metricsNodes.every((n) =>
-														metricsNodeFilter.includes(n),
-													)
-												}
-												variant="gradient"
-												checked={
-													metricsNodeFilter === undefined ||
-													metricsNodeFilter.length > 0 ||
-													metricsNodes.every((n) =>
-														metricsNodeFilter.includes(n),
-													)
-												}
-												onChange={(e) => {
-													const checked = e.currentTarget.checked;
-
-													if (checked) {
-														setMetricsNodeFilter(metricsNodes);
-													} else {
-														setMetricsNodeFilter([]);
-													}
-												}}
-											/>
-											<Text
-												c="bright"
-												fw={500}
-												fz={13}
-											>
-												All nodes
-											</Text>
-										</Group>
-
-										<Menu.Divider my="md" />
-
-										<Stack>
-											{metricsNodes.map((node, i) => (
-												<Group key={i}>
-													<Checkbox
-														variant="gradient"
-														checked={
-															metricsNodeFilter?.includes(node) ||
-															metricsNodeFilter === undefined
-														}
-														onChange={(e) => {
-															const checked = e.currentTarget.checked;
-
-															if (checked) {
-																setMetricsNodeFilter([
-																	...(metricsNodeFilter ?? []),
-																	node,
-																]);
-															} else {
-																if (
-																	metricsNodeFilter === undefined
-																) {
-																	setMetricsNodeFilter(
-																		metricsNodes.filter(
-																			(n) => n !== node,
-																		),
-																	);
-																} else {
-																	setMetricsNodeFilter(
-																		metricsNodeFilter?.filter(
-																			(n) => n !== node,
-																		),
-																	);
-																}
-															}
-														}}
-													/>
-													<Text
-														c="bright"
-														fw={500}
-													>
-														{node}
-													</Text>
-												</Group>
-											))}
-										</Stack>
-									</Menu.Dropdown>
-								</Menu>
 							</Group>
 
-							<SimpleGrid
-								cols={2}
-								spacing="xl"
-							>
-								<MemoryUsageChart
-									metrics={memoryMetrics}
-									duration={metricsDuration}
-									nodeFilter={metricsNodeFilter}
-									isLoading={isLoading}
-								/>
-								<ComputeUsageChart
-									metrics={cpuMetrics}
-									duration={metricsDuration}
-									nodeFilter={metricsNodeFilter}
-									isLoading={isLoading}
-								/>
-								<NetworkIngressChart
-									metrics={networkIngressMetrics}
-									duration={metricsDuration}
-									nodeFilter={metricsNodeFilter}
-									isLoading={isLoading}
-								/>
-								<NetworkEgressChart
-									metrics={networkEgressMetrics}
-									duration={metricsDuration}
-									nodeFilter={metricsNodeFilter}
-									isLoading={isLoading}
-								/>
-							</SimpleGrid>
+							{instance && (
+								<>
+									<SimpleGrid
+										cols={2}
+										spacing="xl"
+									>
+										<MemoryUsageChartLazy
+											instance={instanceId}
+											duration={metricOptions.duration}
+											nodeFilter={metricOptions.nodeFilter}
+											onCalculateMetricsNodes={(metrics) => {
+												setMemoryLabels(
+													metrics.values.metrics.map((it) => it.labels),
+												);
+											}}
+										/>
+										<ComputeUsageChartLazy
+											instance={instanceId}
+											duration={metricOptions.duration}
+											nodeFilter={metricOptions.nodeFilter}
+											onCalculateMetricsNodes={(metrics) => {
+												setCpuLabels(
+													metrics.values.metrics.map((it) => it.labels),
+												);
+											}}
+										/>
+										<NetworkIngressChartLazy
+											instance={instanceId}
+											duration={metricOptions.duration}
+											nodeFilter={metricOptions.nodeFilter}
+											onCalculateMetricsNodes={(metrics) => {
+												setNetworkIngressLabels(
+													metrics.values.metrics.map((it) => it.labels),
+												);
+											}}
+										/>
+										<NetworkEgressChartLazy
+											instance={instanceId}
+											duration={metricOptions.duration}
+											nodeFilter={metricOptions.nodeFilter}
+											onCalculateMetricsNodes={(metrics) => {
+												setNetworkEgressLabels(
+													metrics.values.metrics.map((it) => it.labels),
+												);
+											}}
+										/>
+									</SimpleGrid>
+									<Group pt="xs">
+										<Spacer />
+										<Button
+											variant="light"
+											color="slate"
+											rightSection={<Icon path={iconChevronRight} />}
+											onClick={() => {
+												navigate("monitor");
+											}}
+										>
+											View more
+										</Button>
+									</Group>
+								</>
+							)}
 
 							<Box mt={32}>
 								<PrimaryTitle>Resources</PrimaryTitle>
