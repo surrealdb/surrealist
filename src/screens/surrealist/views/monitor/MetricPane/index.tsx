@@ -1,4 +1,4 @@
-import { Paper, Stack } from "@mantine/core";
+import { Paper, ScrollArea, Stack } from "@mantine/core";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
@@ -55,30 +55,37 @@ export function MetricPane({
 			/>
 			<Paper
 				bg="transparent"
+				pos="relative"
 				flex={1}
-				p="xl"
 			>
-				{info.id === "system" && (
-					<SystemPanel
-						instance={instance}
-						metricOptions={metricOptions}
-						onCalculateMetricsNodes={onCalculateMetricsNodes}
-					/>
-				)}
-				{info.id === "network" && (
-					<NetworkPanel
-						instance={instance}
-						metricOptions={metricOptions}
-						onCalculateMetricsNodes={onCalculateMetricsNodes}
-					/>
-				)}
-				{info.id === "connections" && (
-					<ConnectionsPanel
-						instance={instance}
-						metricOptions={metricOptions}
-						onCalculateMetricsNodes={onCalculateMetricsNodes}
-					/>
-				)}
+				<ScrollArea
+					scrollbars="y"
+					pos="absolute"
+					p="xl"
+					inset={0}
+				>
+					{info.id === "system" && (
+						<SystemPanel
+							instance={instance}
+							metricOptions={metricOptions}
+							onCalculateMetricsNodes={onCalculateMetricsNodes}
+						/>
+					)}
+					{info.id === "network" && (
+						<NetworkPanel
+							instance={instance}
+							metricOptions={metricOptions}
+							onCalculateMetricsNodes={onCalculateMetricsNodes}
+						/>
+					)}
+					{info.id === "connections" && (
+						<ConnectionsPanel
+							instance={instance}
+							metricOptions={metricOptions}
+							onCalculateMetricsNodes={onCalculateMetricsNodes}
+						/>
+					)}
+				</ScrollArea>
 			</Paper>
 		</Stack>
 	);
