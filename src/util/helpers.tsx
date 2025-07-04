@@ -11,6 +11,7 @@ import { adapter } from "~/adapter";
 import { Spacer } from "~/components/Spacer";
 import type { Authentication, Protocol, Selectable } from "~/types";
 import { openErrorModal } from "./errors";
+import { DateArg, DurationUnit, startOfDay, startOfHour, startOfMinute } from "date-fns";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -549,4 +550,20 @@ export function withSearchParams(
 	}
 
 	return url;
+}
+
+/**
+ * Returns the start of the given date at the specified resolution.
+ */
+export function startOfDate(date: DateArg<Date>, resolution: DurationUnit): Date {
+	switch (resolution) {
+		case "minutes":
+			return startOfMinute(date);
+		case "hours":
+			return startOfHour(date);
+		case "days":
+			return startOfDay(date);
+		default:
+			throw new Error(`Unsupported resolution: ${resolution}`);
+	}
 }

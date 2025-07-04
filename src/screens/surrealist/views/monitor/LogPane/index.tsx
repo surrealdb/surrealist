@@ -7,17 +7,15 @@ import {
 	Divider,
 	Group,
 	Loader,
-	MantineColor,
 	Paper,
 	Stack,
 	Text,
 	Tooltip,
 } from "@mantine/core";
 
-import { BarChart, ChartTooltip } from "@mantine/charts";
 import { useDebouncedValue } from "@mantine/hooks";
-import { format, formatDate, formatDistanceToNow, startOfMinute } from "date-fns";
-import { capitalize, range } from "radash";
+import { formatDate, formatDistanceToNow } from "date-fns";
+import { capitalize } from "radash";
 import { useMemo } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
@@ -26,34 +24,13 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useConnection } from "~/hooks/connection";
-import { useStable } from "~/hooks/stable";
 import { CloudLogLine } from "~/types";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconChevronRight, iconErrorCircle, iconHelp, iconList, iconWarning } from "~/util/icons";
+import { iconChevronRight, iconHelp, iconList } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
-
-type Severity = "info" | "warning" | "error";
-
-interface ChartMinute {
-	minute: number;
-	info: number;
-	warning: number;
-	error: number;
-}
-
-const LOG_LEVEL_INFO: Record<string, [string, MantineColor, Severity]> = {
-	INFO: [iconHelp, "violet", "info"],
-	WARN: [iconWarning, "orange", "warning"],
-	ERROR: [iconErrorCircle, "red", "error"],
-	FATAL: [iconErrorCircle, "red", "error"],
-};
-
-const CHART_SERIES = [
-	{ name: "info", color: "violet", label: "Infos" },
-	{ name: "warning", color: "yellow", label: "Warnings" },
-	{ name: "error", color: "red", label: "Errors" },
-];
+import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
+import { LogActivityChart } from "./chart";
 
 export function LogPane({
 	info,
@@ -68,6 +45,10 @@ export function LogPane({
 	const [lazyLevel] = useDebouncedValue(logOptions.level, 300);
 	const [lazySearch] = useDebouncedValue(logOptions.search, 300);
 
+	const fromTime = logQuery.isSuccess ? new Date(logQuery.data.from_time) : new Date();
+	const toTime = logQuery.isSuccess ? new Date(logQuery.data.to_time) : new Date();
+
+	// Filter log lines based on options
 	const logLines = useMemo(() => {
 		if (!logQuery.data) return [];
 
@@ -85,60 +66,6 @@ export function LogPane({
 			})
 			.slice(0, 500);
 	}, [logQuery.data, lazyLevel, lazySearch]);
-
-	const [startMin, endMin] = useMemo(() => {
-		if (!logQuery.data) return [0, 0];
-
-		return [
-			startOfMinute(logQuery.data?.from_time).getTime(),
-			startOfMinute(logQuery.data?.to_time).getTime(),
-		];
-	}, [logQuery.data]);
-
-	const logData = useMemo(() => {
-		const minuteIndex: Map<number, ChartMinute> = new Map();
-		const minuteArray: ChartMinute[] = [];
-		const generator = range<ChartMinute>(
-			startMin,
-			endMin - 60_000,
-			(minute) => ({
-				minute,
-				info: 0,
-				warning: 0,
-				error: 0,
-			}),
-			60_000,
-		);
-
-		for (const minute of generator) {
-			minuteIndex.set(minute.minute, minute);
-			minuteArray.push(minute);
-		}
-
-		for (const line of logLines) {
-			const lineTime = startOfMinute(line.timestamp).getTime();
-			const severity = LOG_LEVEL_INFO[line.level]?.[2];
-			const minute = minuteIndex.get(lineTime);
-
-			if (!minute) {
-				throw new Error(`No minute found for timestamp ${lineTime}`);
-			}
-
-			minute[severity]++;
-		}
-
-		return minuteArray;
-	}, [startMin, endMin, logLines]);
-
-	const tooltip = useStable(({ label, payload }) => {
-		return (
-			<ChartTooltip
-				label={label ? format(label, "MMMM d, yyyy - h:mm a") : "unset"}
-				payload={payload}
-				series={CHART_SERIES}
-			/>
-		);
-	});
 
 	return (
 		<Stack h="100%">
@@ -179,48 +106,16 @@ export function LogPane({
 				component={Stack}
 				gap={0}
 			>
-				<Paper
-					withBorder={false}
-					px={32}
-					pt="xl"
-					pb="xs"
-				>
-					<BarChart
-						h={92}
-						dataKey="minute"
-						type="stacked"
-						data={logData}
-						withYAxis={false}
-						className={classes.chart}
-						gridAxis="none"
-						tooltipProps={{
-							content: tooltip,
-						}}
-						referenceLines={[
-							{
-								y: 0,
-								color: "slate",
-								strokeDasharray: "5 5",
-							},
-						]}
-						xAxisProps={{
-							scale: "time",
-							type: "number",
-							domain: [startMin, endMin - 60_000],
-							ticks: [startMin, endMin - 60_000],
-							tickFormatter: (value) => format(value, "MMMM d, yyyy - h:mm a"),
-							tick: {
-								style: {
-									fontFamily: "var(--mantine-font-family-monospace)",
-									fill: "var(--mantine-color-text)",
-									fontSize: "var(--mantine-font-size-xs)",
-								},
-							},
-						}}
-						series={CHART_SERIES}
-					/>
-				</Paper>
-				<Divider />
+				{logQuery.isSuccess && (
+					<>
+						<LogActivityChart
+							fromTime={fromTime}
+							toTime={toTime}
+							lines={logLines}
+						/>
+						<Divider />
+					</>
+				)}
 				<Box
 					pos="relative"
 					flex={1}
@@ -277,7 +172,11 @@ interface LogLine extends BoxProps {
 }
 
 export function LogLine({ line, count, index, ...other }: LogLine) {
-	const [icon, color, severity] = LOG_LEVEL_INFO[line.level] || [iconHelp, "blue", "info"];
+	const [icon, color, severity] = MONITOR_LOG_LEVEL_INFO[line.level] || [
+		iconHelp,
+		"blue",
+		"info",
+	];
 
 	const relativeTime = capitalize(formatDistanceToNow(line.timestamp, { addSuffix: true }));
 	const absoluteTime = formatDate(line.timestamp, "MMMM d, yyyy - h:mm a");

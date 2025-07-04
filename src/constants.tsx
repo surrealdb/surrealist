@@ -26,6 +26,7 @@ import type {
 	GlobalPageInfo,
 	Listable,
 	Monitor,
+	MonitorSeverity,
 	Orientation,
 	Protocol,
 	ResultFormat,
@@ -48,6 +49,7 @@ import {
 	iconDataTable,
 	iconDatabase,
 	iconDesigner,
+	iconErrorCircle,
 	iconExplorer,
 	iconEye,
 	iconFunction,
@@ -63,10 +65,11 @@ import {
 	iconSidekick,
 	iconTable,
 	iconTune,
+	iconWarning,
 	iconXml,
 } from "./util/icons";
 
-import type { MantineColorScheme } from "@mantine/core";
+import type { MantineColor, MantineColorScheme } from "@mantine/core";
 
 export type StructureTab = "graph" | "builder";
 export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
@@ -464,4 +467,11 @@ export const MONITORS: Record<string, Monitor> = {
 		type: "logs",
 		name: "SurrealDB",
 	},
+};
+
+export const MONITOR_LOG_LEVEL_INFO: Record<string, [string, MantineColor, MonitorSeverity]> = {
+	INFO: [iconHelp, "violet", "info"],
+	WARN: [iconWarning, "orange", "warning"],
+	ERROR: [iconErrorCircle, "red", "error"],
+	FATAL: [iconErrorCircle, "red", "error"],
 };
