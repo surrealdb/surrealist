@@ -8,14 +8,11 @@ import tutorialsUrl from "~/assets/images/icons/tutorials.webp";
 import {
 	Button,
 	Center,
-	Checkbox,
 	Group,
 	Image,
 	Indicator,
 	Loader,
-	Menu,
 	Paper,
-	Select,
 	SimpleGrid,
 	Skeleton,
 	Text,
@@ -32,7 +29,6 @@ import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
-import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
 import { Link } from "~/components/Link";
@@ -49,9 +45,8 @@ import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart"
 import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressChart";
 import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngressChart";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
-import { MetricsDuration } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
+import { iconChevronDown } from "~/util/icons";
 import { APPLY_DATASET_KEY } from "~/util/storage";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
@@ -64,6 +59,9 @@ import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
 import { BillingRequiredModal } from "./BillingRequiredModal";
+import { MonitorMetricOptions } from "../../monitor/helpers";
+import { useImmer } from "use-immer";
+import { MetricActions } from "../../monitor/MetricPane/actions";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -89,13 +87,15 @@ export function DashboardView() {
 	const [configuring, configuringHandle] = useBoolean();
 	const [metricsNodes, setMetricsNodes] = useInputState<string[]>([]);
 	const [billingRequiredOpened, setBillingRequiredOpened] = useState(false);
-	const [metricsNodeFilter, setMetricsNodeFilter] = useInputState<string[] | undefined>(
-		undefined,
-	);
 
 	const [upgradeTab, setUpgradeTab] = useState("type");
 	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
-	const [metricsDuration, setMetricsDuration] = useInputState<MetricsDuration>("hour");
+
+	const [metricOptions, setMetricOptions] = useImmer<MonitorMetricOptions>({
+		duration: "hour",
+		nodeFilter: undefined,
+		nodes: [],
+	});
 
 	const { data: instance, isPending: instancePending } = useCloudInstanceQuery(instanceId);
 	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instanceId);
@@ -109,6 +109,37 @@ export function DashboardView() {
 	const [networkEgressLabels, setNetworkEgressLabels] = useState<string[]>([]);
 	const [memoryLabels, setMemoryLabels] = useState<string[]>([]);
 	const [cpuLabels, setCpuLabels] = useState<string[]>([]);
+
+	useEffect(() => {
+		const nodes = new Set<string>();
+
+		for (const label of memoryLabels) {
+			nodes.add(label);
+		}
+
+		for (const label of cpuLabels) {
+			nodes.add(label);
+		}
+
+		for (const label of networkEgressLabels) {
+			nodes.add(label);
+		}
+
+		for (const label of networkIngressLabels) {
+			nodes.add(label);
+		}
+
+		setMetricOptions((draft) => {
+			draft.nodes = Array.from(nodes);
+		});
+	}, [memoryLabels, cpuLabels, networkEgressLabels, networkIngressLabels]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset evert time the metrics duration changes
+	useEffect(() => {
+		setMetricOptions((draft) => {
+			draft.nodeFilter = undefined;
+		});
+	}, [metricOptions.duration]);
 
 	const [, applyDataset] = useDatasets();
 	const { mutateAsync } = useUpdateInstanceVersionMutation(details);
@@ -132,8 +163,10 @@ export function DashboardView() {
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset evert time the metrics duration changes
 	useEffect(() => {
-		setMetricsNodeFilter(undefined);
-	}, [metricsDuration]);
+		setMetricOptions((draft) => {
+			draft.nodeFilter = undefined;
+		});
+	}, [metricOptions.duration]);
 
 	// Apply dataset on load
 	useEffect(() => {
@@ -315,132 +348,10 @@ export function DashboardView() {
 
 								<Spacer />
 
-								<Select
-									placeholder="Duration"
-									size="sm"
-									value={metricsDuration}
-									onChange={(e) =>
-										setMetricsDuration((e as MetricsDuration) ?? "hour")
-									}
-									data={[
-										{ value: "hour", label: "Last Hour" },
-										{ value: "half", label: "Last 12 Hours" },
-										{ value: "day", label: "Last Day" },
-										{ value: "week", label: "Last Week" },
-										{ value: "month", label: "Last Month" },
-									]}
-									leftSection={<Icon path={iconClock} />}
-									rightSection={<Icon path={iconChevronDown} />}
-									rightSectionWidth={30}
+								<MetricActions
+									options={metricOptions}
+									onChange={setMetricOptions}
 								/>
-								<Menu>
-									<Menu.Target>
-										<Indicator
-											disabled={
-												metricsNodeFilter === undefined ||
-												metricsNodeFilter.length === metricsNodes.length
-											}
-										>
-											<ActionButton
-												variant="light"
-												color="slate"
-												label="Node filter"
-												size="lg"
-											>
-												<Icon
-													size="md"
-													path={iconFilter}
-												/>
-											</ActionButton>
-										</Indicator>
-									</Menu.Target>
-
-									<Menu.Dropdown p="md">
-										<Group>
-											<Checkbox
-												indeterminate={
-													metricsNodeFilter !== undefined &&
-													metricsNodeFilter.length > 0 &&
-													!metricsNodes.every((n) =>
-														metricsNodeFilter.includes(n),
-													)
-												}
-												variant="gradient"
-												checked={
-													metricsNodeFilter === undefined ||
-													metricsNodeFilter.length > 0 ||
-													metricsNodes.every((n) =>
-														metricsNodeFilter.includes(n),
-													)
-												}
-												onChange={(e) => {
-													const checked = e.currentTarget.checked;
-
-													if (checked) {
-														setMetricsNodeFilter(metricsNodes);
-													} else {
-														setMetricsNodeFilter([]);
-													}
-												}}
-											/>
-											<Text
-												c="bright"
-												fw={500}
-												fz={13}
-											>
-												All nodes
-											</Text>
-										</Group>
-
-										<Menu.Divider my="md" />
-
-										<Stack>
-											{metricsNodes.map((node, i) => (
-												<Group key={i}>
-													<Checkbox
-														variant="gradient"
-														checked={
-															metricsNodeFilter?.includes(node) ||
-															metricsNodeFilter === undefined
-														}
-														onChange={(e) => {
-															const checked = e.currentTarget.checked;
-
-															if (checked) {
-																setMetricsNodeFilter([
-																	...(metricsNodeFilter ?? []),
-																	node,
-																]);
-															} else {
-																if (
-																	metricsNodeFilter === undefined
-																) {
-																	setMetricsNodeFilter(
-																		metricsNodes.filter(
-																			(n) => n !== node,
-																		),
-																	);
-																} else {
-																	setMetricsNodeFilter(
-																		metricsNodeFilter?.filter(
-																			(n) => n !== node,
-																		),
-																	);
-																}
-															}
-														}}
-													/>
-													<Text
-														c="bright"
-														fw={500}
-													>
-														{node}
-													</Text>
-												</Group>
-											))}
-										</Stack>
-									</Menu.Dropdown>
-								</Menu>
 							</Group>
 
 							{instance && (
@@ -450,8 +361,8 @@ export function DashboardView() {
 								>
 									<MemoryUsageChartLazy
 										instance={instanceId}
-										duration={metricsDuration}
-										nodeFilter={metricsNodeFilter}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
 										onCalculateMetricsNodes={(metrics) => {
 											setMemoryLabels(
 												metrics.values.metrics.map((it) => it.labels),
@@ -460,8 +371,8 @@ export function DashboardView() {
 									/>
 									<ComputeUsageChartLazy
 										instance={instanceId}
-										duration={metricsDuration}
-										nodeFilter={metricsNodeFilter}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
 										onCalculateMetricsNodes={(metrics) => {
 											setCpuLabels(
 												metrics.values.metrics.map((it) => it.labels),
@@ -470,8 +381,8 @@ export function DashboardView() {
 									/>
 									<NetworkIngressChartLazy
 										instance={instanceId}
-										duration={metricsDuration}
-										nodeFilter={metricsNodeFilter}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
 										onCalculateMetricsNodes={(metrics) => {
 											setNetworkIngressLabels(
 												metrics.values.metrics.map((it) => it.labels),
@@ -480,8 +391,8 @@ export function DashboardView() {
 									/>
 									<NetworkEgressChartLazy
 										instance={instanceId}
-										duration={metricsDuration}
-										nodeFilter={metricsNodeFilter}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
 										onCalculateMetricsNodes={(metrics) => {
 											setNetworkEgressLabels(
 												metrics.values.metrics.map((it) => it.labels),
