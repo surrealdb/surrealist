@@ -1,7 +1,6 @@
 .line {
 	cursor: initial;
 	position: relative;
-	// border-bottom: 1px solid var(--surrealist-divider-color);
 
 	&::after {
 		content: "";
@@ -12,16 +11,15 @@
 		inset: 0;
 	}
 
-	&:hover[data-level="INFO"]::after {
+	&:hover[data-severity="info"]::after {
 		background-color: var(--mantine-color-slate-light);
 	}
 
-	&:hover[data-level="WARN"]::after {
+	&:hover[data-severity="warning"]::after {
 		background-color: var(--mantine-color-yellow-light);
 	}
 
-	&:hover[data-level="ERROR"]::after,
-	&:hover[data-level="FATAL"]::after {
+	&:hover[data-severity="error"]::after {
 		background-color: var(--mantine-color-red-light);
 	}
 
