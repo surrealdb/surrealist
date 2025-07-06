@@ -105,7 +105,7 @@ export const featureFlags = new FeatureFlags({
 			highlight_tool: true,
 			cloud_enabled: true,
 			cloud_access: true,
-			tickets_enabled: false,
+			tickets_enabled: true,
 			themes: true,
 			syntax_themes: true,
 			sidebar_customization: true,
