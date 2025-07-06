@@ -40,6 +40,9 @@ import {
 	iconTarget,
 } from "~/util/icons";
 import classes from "./style.module.scss";
+import Surreal from "surrealdb";
+import { TOKEN_ACCESS_KEY } from "~/util/storage";
+import { fastParseJwt } from "~/util/helpers";
 
 interface HistoryEntry {
 	id: number;
@@ -116,6 +119,30 @@ export function TicketsPage() {
 	const submitTicket = useStable(() => {});
 
 	const canSubmit = type && severity && body;
+
+	const bruh = useStable(async () => {
+		try {
+			const surreal = new Surreal();
+			const token = localStorage.getItem(TOKEN_ACCESS_KEY) || "";
+
+			console.log("Token: ", token);
+			console.log(fastParseJwt(token));
+
+			await surreal.connect(
+				"wss://tickets-06bsnqotsps3d5nop1if7bqgq0.aws-euw1.surreal.cloud",
+				{
+					namespace: "surrealdb",
+					database: "tickets",
+				},
+			);
+
+			await surreal.authenticate(token);
+		} catch (error) {
+			console.error("Failed to connect to SurrealDB:", error);
+		}
+	});
+
+	bruh();
 
 	if (!isAuthed) {
 		return <CloudSplash />;
