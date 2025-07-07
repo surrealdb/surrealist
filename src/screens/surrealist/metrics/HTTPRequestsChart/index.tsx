@@ -64,7 +64,7 @@ export function HTTPRequestsChart({
 		<BaseAreaChart
 			isLoading={isPending}
 			title="HTTP Requests"
-			information="The volume of incoming HTTP requests."
+			information="The rate of incoming HTTP requests per second over 5 minutes."
 			duration={duration}
 			values={values}
 			series={series}

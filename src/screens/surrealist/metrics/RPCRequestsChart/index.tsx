@@ -64,7 +64,7 @@ export function RPCRequestsChart({
 		<BaseAreaChart
 			isLoading={isPending}
 			title="RPC Requests"
-			information="The volume of incoming RPC requests."
+			information="The rate of incoming WebSocket RPC requests per second over 5 minutes."
 			duration={duration}
 			values={values}
 			series={series}
