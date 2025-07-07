@@ -594,6 +594,7 @@ export interface CloudDistributedStorageSpecs {
 
 export interface CloudInstanceType {
 	slug: string;
+	restricted?: boolean;
 	display_name: string;
 	description: string;
 	cpu: number;
