@@ -15,7 +15,8 @@
 		border-right: none;
 	}
 
-	:global(.cm-gutters), :global(.cm-gutterElement) {
+	:global(.cm-gutters),
+	:global(.cm-gutterElement) {
 		background-color: unset;
 	}
 
@@ -35,7 +36,8 @@
 		}
 	}
 
-	:global(.cm-cursor), :global(.cm-dropCursor) {
+	:global(.cm-cursor),
+	:global(.cm-dropCursor) {
 		border-color: var(--mantine-color-slate-1);
 		border-width: 2px;
 
@@ -97,8 +99,8 @@
 					color: var(--mantine-color-slate-6);
 				}
 			}
-	
-			li[aria-selected]  {
+
+			li[aria-selected] {
 				background-color: var(--mantine-color-slate-6);
 				color: var(--mantine-color-bright) !important;
 
@@ -155,7 +157,7 @@
 			outline-offset: calc(0.125rem* var(--mantine-scale));
 			border-radius: var(--mantine-radius-xs);
 		}
-		
+
 		button[name="close"] {
 			width: 24px;
 			height: 24px;
@@ -167,12 +169,12 @@
 
 			button {
 				border-color: var(--mantine-color-slate-2);
-	
+
 				&:active {
 					background-color: var(--mantine-color-slate-2) !important;
 				}
 			}
-	
+
 			input {
 				background-color: var(--mantine-color-slate-1);
 			}
@@ -198,73 +200,73 @@
 		"variable"
 	);
 
-	@each $icon in $icons {
-		:global(.cm-completionIcon-#{$icon})::after {
-			content: var(--surrealist-editor-icon-#{$icon});
-		}
+@each $icon in $icons {
+	:global(.cm-completionIcon-#{$icon})::after {
+		content: var(--surrealist-editor-icon-#{$icon});
 	}
+}
 
-	:global(.cm-completionIcon) {
-		padding-left: 4px;
-		opacity: 1;
+:global(.cm-completionIcon) {
+	padding-left: 4px;
+	opacity: 1;
+}
+
+:global(.cm-completionDetail) {
+	color: var(--surrealist-kind-color);
+}
+
+:global(.cm-tooltip-autocomplete) ul li[aria-selected] :global(.cm-completionIcon)::after {
+	filter: brightness(0) saturate(100%) invert(1);
+
+	@include light {
+		filter: brightness(0) saturate(100%);
 	}
+}
 
-	:global(.cm-completionDetail) {
-		color: var(--surrealist-kind-color);
-	}
+:global(.cm-diagnosticText) {
+	font-family: var(--mantine-font-family-monospace);
+}
 
-	:global(.cm-tooltip-autocomplete) ul li[aria-selected] :global(.cm-completionIcon)::after {
-		filter: brightness(0) saturate(100%) invert(1);
+:global(.cm-diagnostic) {
+	max-width: 600px;
+}
 
-		@include light {
-			filter: brightness(0) saturate(100%);
-		}
-	}
+:global(.cm-lintRange) {
+	background-image: none;
+	text-decoration: underline;
+	text-decoration-style: wavy;
+}
 
-	:global(.cm-diagnosticText) {
-		font-family: var(--mantine-font-family-monospace);
-	}
+:global(.cm-lintRange-error) {
+	text-decoration-color: var(--mantine-color-red-6);
+}
 
-	:global(.cm-diagnostic) {
-		max-width: 600px;
-	}
+:global(.cm-lintRange-warning) {
+	text-decoration-color: var(--mantine-color-yellow-6);
+}
 
-	:global(.cm-lintRange) {
-		background-image: none;
-		text-decoration: underline;
-		text-decoration-style: wavy;
-	}
+:global(.cm-lintRange-info) {
+	text-decoration-color: var(--mantine-color-blue-6);
+}
 
-	:global(.cm-lintRange-error) {
-		text-decoration-color: var(--mantine-color-red-6);
-	}
+:global(.cm-lintRange-hint) {
+	text-decoration-color: var(--mantine-color-slate-5);
+}
 
-	:global(.cm-lintRange-warning) {
-		text-decoration-color: var(--mantine-color-yellow-6);
-	}
+:global(.cm-diagnostic-error) {
+	border-color: var(--mantine-color-red-6);
+}
 
-	:global(.cm-lintRange-info) {
-		text-decoration-color: var(--mantine-color-blue-6);
-	}
+:global(.cm-diagnostic-warning) {
+	border-color: var(--mantine-color-yellow-6);
+}
 
-	:global(.cm-lintRange-hint) {
-		text-decoration-color: var(--mantine-color-slate-5);
-	}
+:global(.cm-diagnostic-info) {
+	border-color: var(--mantine-color-blue-6);
+}
 
-	:global(.cm-diagnostic-error) {
-		border-color: var(--mantine-color-red-6);
-	}
-
-	:global(.cm-diagnostic-warning) {
-		border-color: var(--mantine-color-yellow-6);
-	}
-
-	:global(.cm-diagnostic-info) {
-		border-color: var(--mantine-color-blue-6);
-	}
-
-	:global(.cm-diagnostic-hint) {
-		border-color: var(--mantine-color-slate-5);
-	}
+:global(.cm-diagnostic-hint) {
+	border-color: var(--mantine-color-slate-5);
+}
 
 }
