@@ -34,6 +34,7 @@ export function InstanceTypes({ value, active, plan, organization, onChange }: I
 
 			const types = typeList
 				.filter((type) => type.category === category)
+				.filter((type) => type.restricted !== true)
 				.sort((a, b) => {
 					return a.price_hour - b.price_hour;
 				});
