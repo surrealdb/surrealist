@@ -90,7 +90,7 @@ export function LogPane({
 					/>
 				}
 			/>
-			{logQuery.isSuccess && (
+			{logQuery.isSuccess && logLines.length > 0 && (
 				<Paper
 					pt="xl"
 					px="xl"

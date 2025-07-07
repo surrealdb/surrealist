@@ -1,5 +1,6 @@
 import { Stack } from "@mantine/core";
-import { RPCConnectionsChart } from "~/screens/surrealist/metrics/RPCConnectionsChart";
+import { HTTPRequestsChart } from "~/screens/surrealist/metrics/HTTPRequestsChart";
+import { RPCRequestsChart } from "~/screens/surrealist/metrics/RPCRequestsChart";
 import { SharedMetricsPanelProps } from "..";
 
 export function ConnectionsPanel({
@@ -9,7 +10,13 @@ export function ConnectionsPanel({
 }: SharedMetricsPanelProps) {
 	return (
 		<Stack gap="xl">
-			<RPCConnectionsChart
+			<RPCRequestsChart
+				instance={instance}
+				nodeFilter={metricOptions.nodeFilter}
+				duration={metricOptions.duration}
+				onCalculateMetricsNodes={onCalculateMetricsNodes}
+			/>
+			<HTTPRequestsChart
 				instance={instance}
 				nodeFilter={metricOptions.nodeFilter}
 				duration={metricOptions.duration}

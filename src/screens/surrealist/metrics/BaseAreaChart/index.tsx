@@ -22,7 +22,7 @@ export interface BaseAreaChartProps {
 	information?: string;
 	yAxisUnit?: string;
 	yAxisTicks?: number;
-	yAxisDomain?: [number, number];
+	yAxisDomain?: any;
 	yAxisTickFormatter?: (value: any) => string;
 }
 
