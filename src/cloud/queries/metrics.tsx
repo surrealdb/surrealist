@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudMetrics, MetricsDuration, MetricsType } from "~/types";
+import { CloudMetrics, MetricsDuration } from "~/types";
 import { withSearchParams } from "~/util/helpers";
 import { fetchAPI } from "../api";
 import { computeMetricRange } from "../helpers";
@@ -10,7 +10,7 @@ import { computeMetricRange } from "../helpers";
  */
 export function useCloudMetricsQuery(
 	instance: string | undefined,
-	metric: MetricsType,
+	metric: string,
 	duration: MetricsDuration,
 	dummy_data?: boolean,
 ) {

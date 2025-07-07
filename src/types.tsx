@@ -19,7 +19,6 @@ export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type MetricsDuration = "hour" | "half" | "day" | "week" | "month";
-export type MetricsType = "cpu" | "memory" | "ingress" | "egress" | "rpc_active_connections";
 export type MiniAppearance = "normal" | "compact" | "plain";
 export type Orientation = "horizontal" | "vertical";
 export type Platform = "darwin" | "windows" | "linux";
@@ -708,7 +707,7 @@ export interface CloudMeasurement {
 }
 
 export interface CloudMetrics {
-	metric: MetricsType;
+	metric: string;
 	from_time: string;
 	to_time: string;
 	unit: string;

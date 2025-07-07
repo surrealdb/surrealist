@@ -6,18 +6,14 @@ import { useCloudMetricsQuery } from "~/cloud/queries/metrics";
 import { useStable } from "~/hooks/stable";
 import { BaseAreaChart, CommonAreaChartProps } from "../BaseAreaChart";
 
-export function RPCConnectionsChart({
+export function RPCRequestsChart({
 	instance,
 	duration,
 	height,
 	nodeFilter,
 	onCalculateMetricsNodes,
 }: CommonAreaChartProps) {
-	const { data: metrics, isPending } = useCloudMetricsQuery(
-		instance,
-		"rpc_active_connections",
-		duration,
-	);
+	const { data: metrics, isPending } = useCloudMetricsQuery(instance, "rpc_requests", duration);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Results in infinite loop
 	useEffect(() => {
@@ -29,15 +25,12 @@ export function RPCConnectionsChart({
 	const timestamps = metrics?.values.timestamps ?? [];
 	const data = metrics?.values.metrics ?? [];
 
-	let max = 0;
-	let min = 0;
-
 	const series = data
 		.filter((dat) => nodeFilter === undefined || nodeFilter.includes(dat.labels))
 		.map((metric) => ({
 			name: metric.labels,
 			color: "surreal",
-			label: `Active connections (${metric.labels})`,
+			label: `RPC Requests (${metric.labels})`,
 		}));
 
 	const values = timestamps?.map((timestamp, i) => {
@@ -49,15 +42,7 @@ export function RPCConnectionsChart({
 			const data = metric.values[i];
 
 			if (data !== null) {
-				if (data > max) {
-					max = data;
-				}
-
-				if (data < min) {
-					min = data;
-				}
-
-				value[metric.labels] = data;
+				value[metric.labels] = Math.round(data * 1000) / 1000;
 			}
 		}
 
@@ -70,7 +55,7 @@ export function RPCConnectionsChart({
 				label={label ? format(label as number, "MMMM d, yyyy - h:mm a") : label}
 				payload={payload}
 				series={series}
-				unit=" connection(s)"
+				unit=" req/s"
 			/>
 		);
 	});
@@ -78,14 +63,13 @@ export function RPCConnectionsChart({
 	return (
 		<BaseAreaChart
 			isLoading={isPending}
-			title="Active RPC Connections"
-			information="The number of active RPC connections to the instance."
+			title="RPC Requests"
+			information="The volume of incoming RPC requests."
 			duration={duration}
 			values={values}
 			series={series}
 			tooltip={tooltip}
 			height={height}
-			yAxisDomain={[min, Math.ceil(max / 4) * 4]}
 		/>
 	);
 }
