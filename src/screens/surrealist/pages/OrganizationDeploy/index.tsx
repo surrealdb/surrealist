@@ -1,15 +1,16 @@
 import classes from "./style.module.scss";
 
-import { Box, ScrollArea, Stack, Text } from "@mantine/core";
-import { useState } from "react";
-import { useImmer } from "use-immer";
-import { Redirect } from "wouter";
-import { DEFAULT_DEPLOY_CONFIG } from "~/cloud/helpers";
-import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import {
 	useCloudOrganizationQuery,
 	useCloudOrganizationsQuery,
 } from "~/cloud/queries/organizations";
+
+import { Box, ScrollArea, Stack, Text } from "@mantine/core";
+import { useMemo, useState } from "react";
+import { useImmer } from "use-immer";
+import { Redirect } from "wouter";
+import { DEFAULT_DEPLOY_CONFIG, INSTANCE_PLAN_ARCHITECTURES } from "~/cloud/helpers";
+import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { AuthGuard } from "~/components/AuthGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -20,8 +21,6 @@ import { generateRandomName } from "~/util/random";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
 import { CheckoutStep } from "./steps/3-checkout";
-
-const STEPS = ["Select a plan", "Configure your instance", "Checkout"];
 
 export interface OrganizationDeployPageProps {
 	id: string;
@@ -61,8 +60,18 @@ function PageContent({ organisation, instances }: PageContentProps) {
 	}));
 
 	const updateStep = useStable((newStep: number) => {
-		setStep(clamp(newStep, 0, STEPS.length - 1));
+		setStep(clamp(newStep, 0, 2));
 	});
+
+	const stepTitles = useMemo(() => {
+		const [archName, archKind] = INSTANCE_PLAN_ARCHITECTURES[details.plan];
+
+		return [
+			"Select a plan",
+			`Configure your ${archName.toLowerCase()} ${archKind.toLowerCase()}`,
+			"Checkout",
+		];
+	}, [details.plan]);
 
 	return (
 		<Box
@@ -109,7 +118,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 									>
 										{step + 1}.
 									</Text>
-									{STEPS[step]}
+									{stepTitles[step]}
 								</PrimaryTitle>
 							</Box>
 
