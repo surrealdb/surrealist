@@ -5,9 +5,10 @@ import { Box, BoxProps, Center, Group, Loader, Paper, Stack, Text, Tooltip } fro
 import { useDebouncedValue } from "@mantine/hooks";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { capitalize } from "radash";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
+import { computeMetricRange } from "~/cloud/helpers";
 import { useCloudLogsQuery } from "~/cloud/queries/logs";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -30,14 +31,16 @@ export function LogPane({
 	onChangeLogOptions,
 }: MonitorContentProps) {
 	const isLight = useIsLight();
+	const listRef = useRef<FixedSizeList>(null);
 	const instance = useConnection((con) => con?.authentication.cloudInstance);
 	const logQuery = useCloudLogsQuery(instance, logOptions.duration);
 
 	const [lazyLevel] = useDebouncedValue(logOptions.level, 300);
 	const [lazySearch] = useDebouncedValue(logOptions.search, 300);
 
-	const fromTime = logQuery.isSuccess ? new Date(logQuery.data.from_time) : new Date();
-	const toTime = logQuery.isSuccess ? new Date(logQuery.data.to_time) : new Date();
+	const [fromTime, toTime] = useMemo(() => {
+		return computeMetricRange(logOptions.duration);
+	}, [logOptions.duration]);
 
 	// Filter log lines based on options
 	const logLines = useMemo(() => {
@@ -55,8 +58,18 @@ export function LogPane({
 
 				return true;
 			})
-			.slice(0, 500);
+			.sort((a, b) => {
+				return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+			})
+			.slice(0, 1000); // TODO Make this expandable
 	}, [logQuery.data, lazyLevel, lazySearch]);
+
+	// Scroll to the bottom of the log list when new lines are added
+	useEffect(() => {
+		setTimeout(() => {
+			listRef.current?.scrollToItem(logLines.length - 1, "end");
+		});
+	}, [logLines]);
 
 	return (
 		<Stack h="100%">
@@ -124,9 +137,11 @@ export function LogPane({
 								<FixedSizeList
 									height={height}
 									itemCount={logLines.length}
+									initialScrollOffset={logLines.length * 46}
 									overscanCount={2}
 									itemSize={46}
 									width={width}
+									ref={listRef}
 								>
 									{({ index, style }) => (
 										<LogLine
