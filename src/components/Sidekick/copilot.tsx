@@ -111,11 +111,11 @@ export function useCopilotMutation() {
 
 					// Listen for status updates
 					case "block_state_updated": {
-						const { block_type, update_type, update_data } = value.data;
+						const { block_id, update_type, update_data } = value.data;
 
-						switch (block_type) {
+						switch (block_id) {
 							// Incoming response
-							case "com.scoutos.copilot.message": {
+							case "copilot_message_i9qyel": {
 								updateChatMessage(msgId, (msg) => {
 									msg.loading = false;
 
@@ -129,7 +129,7 @@ export function useCopilotMutation() {
 							}
 
 							// Sources list
-							case "com.scoutos.copilot_list_of_links": {
+							case "list_of_links_dwk1vf": {
 								if (update_type === "complete") {
 									updateChatMessage(msgId, (msg) => {
 										msg.sources = update_data.output;
@@ -139,12 +139,26 @@ export function useCopilotMutation() {
 							}
 
 							// Thinking text
-							case "com.scoutos.copilot_thinking_text": {
+							case "copilot_thinking_9i9i1q": {
 								if (update_type === "complete") {
 									updateChatMessage(msgId, (msg) => {
 										msg.thinking = update_data.output.trim();
 									});
 								}
+								break;
+							}
+
+							// Title suggestion
+							case "title_suggestion": {
+								// updateChatMessage(msgId, (msg) => {
+								// 	msg.loading = false;
+
+								// 	if (update_type === "partial") {
+								// 		msg.content = msg.content + update_data.output;
+								// 	} else if (update_type === "complete") {
+								// 		msg.content = update_data.output;
+								// 	}
+								// });
 								break;
 							}
 						}
