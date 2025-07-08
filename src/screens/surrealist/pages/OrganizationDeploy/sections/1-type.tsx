@@ -174,7 +174,7 @@ interface IntanceTypeCardProps {
 
 function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	const estimatedCost = type.price_hour / 1000;
-	const [kindName, kindClass] = INSTANCE_PLAN_ARCHITECTURES[details.plan];
+	const [archName, archKind] = INSTANCE_PLAN_ARCHITECTURES[details.plan];
 
 	const handleSelect = useStable(() => {
 		onChange(type);
@@ -186,9 +186,9 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 				fw={500}
 				c="bright"
 			>
-				{kindName}
+				{archName}
 			</Text>
-			<Text c="slate.3">{kindClass}</Text>
+			<Text c="slate.3">{archKind}</Text>
 		</Fragment>,
 		<Fragment key="cpu">
 			<Text
