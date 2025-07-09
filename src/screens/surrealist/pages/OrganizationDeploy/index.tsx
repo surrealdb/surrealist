@@ -21,6 +21,7 @@ import { generateRandomName } from "~/util/random";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
 import { CheckoutStep } from "./steps/3-checkout";
+import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 
 export interface OrganizationDeployPageProps {
 	id: string;
@@ -74,89 +75,91 @@ function PageContent({ organisation, instances }: PageContentProps) {
 	}, [details.plan]);
 
 	return (
-		<Box
-			flex={1}
-			pos="relative"
-		>
-			<ScrollArea
-				pos="absolute"
-				scrollbars="y"
-				type="scroll"
-				inset={0}
-				className={classes.scrollArea}
-				mt={18}
+		<CloudAdminGuard organizationId={organisation.id}>
+			<Box
+				flex={1}
+				pos="relative"
 			>
-				<Stack
-					px="xl"
-					mx="auto"
-					maw={1200}
-					pb={68}
+				<ScrollArea
+					pos="absolute"
+					scrollbars="y"
+					type="scroll"
+					inset={0}
+					className={classes.scrollArea}
+					mt={18}
 				>
-					{organisation && (
-						<>
-							<Box>
-								<PageBreadcrumbs
-									items={[
-										{ label: "Surrealist", href: "/overview" },
-										{ label: "Organisations", href: "/organisations" },
-										{
-											label: organisation.name,
-											href: `/o/${organisation.id}`,
-										},
-										{ label: "Deploy instance" },
-									]}
-								/>
-								<PrimaryTitle
-									mt="sm"
-									fz={32}
-								>
-									<Text
-										span
-										inherit
-										opacity={0.3}
-										mr="sm"
+					<Stack
+						px="xl"
+						mx="auto"
+						maw={1200}
+						pb={68}
+					>
+						{organisation && (
+							<>
+								<Box>
+									<PageBreadcrumbs
+										items={[
+											{ label: "Surrealist", href: "/overview" },
+											{ label: "Organisations", href: "/organisations" },
+											{
+												label: organisation.name,
+												href: `/o/${organisation.id}`,
+											},
+											{ label: "Deploy instance" },
+										]}
+									/>
+									<PrimaryTitle
+										mt="sm"
+										fz={32}
 									>
-										{step + 1}.
-									</Text>
-									{stepTitles[step]}
-								</PrimaryTitle>
-							</Box>
+										<Text
+											span
+											inherit
+											opacity={0.3}
+											mr="sm"
+										>
+											{step + 1}.
+										</Text>
+										{stepTitles[step]}
+									</PrimaryTitle>
+								</Box>
 
-							<Box my="xl">
-								{step === 0 && (
-									<PlanStep
-										organisation={organisation}
-										instances={instances}
-										details={details}
-										setDetails={setDetails}
-										setStep={setStep}
-									/>
-								)}
+								<Box my="xl">
+									{step === 0 && (
+										<PlanStep
+											organisation={organisation}
+											instances={instances}
+											details={details}
+											setDetails={setDetails}
+											setStep={setStep}
+										/>
+									)}
 
-								{step === 1 && (
-									<ConfigureStep
-										organisation={organisation}
-										instances={instances}
-										details={details}
-										setDetails={setDetails}
-										setStep={updateStep}
-									/>
-								)}
+									{step === 1 && (
+										<ConfigureStep
+											organisation={organisation}
+											instances={instances}
+											details={details}
+											setDetails={setDetails}
+											setStep={updateStep}
+										/>
+									)}
 
-								{step === 2 && (
-									<CheckoutStep
-										organisation={organisation}
-										instances={instances}
-										details={details}
-										setDetails={setDetails}
-										setStep={updateStep}
-									/>
-								)}
-							</Box>
-						</>
-					)}
-				</Stack>
-			</ScrollArea>
-		</Box>
+									{step === 2 && (
+										<CheckoutStep
+											organisation={organisation}
+											instances={instances}
+											details={details}
+											setDetails={setDetails}
+											setStep={updateStep}
+										/>
+									)}
+								</Box>
+							</>
+						)}
+					</Stack>
+				</ScrollArea>
+			</Box>
+		</CloudAdminGuard>
 	);
 }
