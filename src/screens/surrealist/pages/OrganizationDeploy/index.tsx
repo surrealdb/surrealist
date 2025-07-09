@@ -12,6 +12,7 @@ import { Redirect } from "wouter";
 import { DEFAULT_DEPLOY_CONFIG, INSTANCE_PLAN_ARCHITECTURES } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { AuthGuard } from "~/components/AuthGuard";
+import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
@@ -21,7 +22,6 @@ import { generateRandomName } from "~/util/random";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
 import { CheckoutStep } from "./steps/3-checkout";
-import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 
 export interface OrganizationDeployPageProps {
 	id: string;
