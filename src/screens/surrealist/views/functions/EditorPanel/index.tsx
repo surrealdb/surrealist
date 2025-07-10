@@ -7,7 +7,6 @@ import {
 	Flex,
 	Group,
 	ScrollArea,
-	SimpleGrid,
 	Text,
 	TextInput,
 } from "@mantine/core";
@@ -156,12 +155,28 @@ export function EditorPanel({
 				)
 			}
 			rightSection={
-				<ActionButton
-					label="Format function"
-					onClick={formatFunction}
-				>
-					<Icon path={iconText} />
-				</ActionButton>
+				<Group>
+					<ActionButton
+						label="Format function"
+						onClick={formatFunction}
+					>
+						<Icon path={iconText} />
+					</ActionButton>
+					<ActionButton
+						label="Download function"
+						onClick={downloadBody}
+					>
+						<Icon path={iconDownload} />
+					</ActionButton>
+					<ActionButton
+						color="pink.6"
+						variant="light"
+						label="Delete function"
+						onClick={removeFunction}
+					>
+						<Icon path={iconDelete} />
+					</ActionButton>
+				</Group>
 			}
 		>
 			<Group
@@ -247,30 +262,6 @@ export function EditorPanel({
 								</CopyButton>
 							</Flex>
 						</Paper>
-						<SimpleGrid
-							cols={2}
-							mt="md"
-						>
-							<Button
-								size="xs"
-								radius="xs"
-								color="slate"
-								variant="light"
-								rightSection={<Icon path={iconDownload} />}
-								onClick={downloadBody}
-							>
-								Download
-							</Button>
-							<Button
-								size="xs"
-								radius="xs"
-								color="pink.8"
-								rightSection={<Icon path={iconDelete} />}
-								onClick={removeFunction}
-							>
-								Remove
-							</Button>
-						</SimpleGrid>
 					</Box>
 					<ScrollArea
 						flex={1}

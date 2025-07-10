@@ -75,6 +75,7 @@ export type ViewPage =
 	| "designer"
 	| "authentication"
 	| "functions"
+	| "parameters"
 	| "models"
 	| "sidekick"
 	| "documentation";
@@ -349,6 +350,7 @@ export interface DatabaseSchema {
 	accesses: SchemaAccess[];
 	tables: TableInfo[];
 	users: SchemaUser[];
+	params: SchemaParameter[];
 }
 
 export interface SchemaTable {
@@ -418,6 +420,13 @@ export interface SchemaAccess {
 		  };
 }
 
+export interface SchemaParameter {
+	name: string;
+	permissions: boolean | string;
+	value: string;
+	comment?: string;
+}
+
 export interface SchemaFunction {
 	name: string;
 	block: string;
@@ -464,12 +473,12 @@ export interface SchemaInfoNS {
 
 export interface SchemaInfoDB {
 	functions: SchemaFunction[];
+	params: SchemaParameter[];
 	models: SchemaModel[];
 	accesses: SchemaAccess[];
 	tables: SchemaTable[];
 	users: SchemaUser[];
 	analyzers: any[]; // unused
-	params: any[]; // unused
 }
 
 export interface SchemaInfoTB {
