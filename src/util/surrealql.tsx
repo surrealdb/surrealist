@@ -96,8 +96,8 @@ export function getLiveQueries(query: string): number[] {
  * @param query Query string
  * @returns Formatted query
  */
-export function formatQuery(query: string) {
-	return SurrealQL.format(query, true);
+export function formatQuery(query: string, pretty = true) {
+	return SurrealQL.format(query, pretty);
 }
 
 /**

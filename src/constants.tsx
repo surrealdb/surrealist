@@ -65,6 +65,7 @@ import {
 	iconSidekick,
 	iconTable,
 	iconTune,
+	iconVariable,
 	iconWarning,
 	iconXml,
 } from "./util/icons";
@@ -270,6 +271,12 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		icon: iconAuth,
 		anim: import("~/assets/animation/auth.json").then((x) => x.default),
 		disabled: ({ flags }) => !flags.auth_view,
+	},
+	parameters: {
+		id: "parameters",
+		name: "Parameters",
+		icon: iconVariable,
+		disabled: ({ flags }) => !flags.parameters_view,
 	},
 	functions: {
 		id: "functions",

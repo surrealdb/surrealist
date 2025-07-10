@@ -39,6 +39,7 @@ import ModelsView from "./views/models/ModelsView";
 import MonitorView from "./views/monitor/MonitorView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
+import ParametersView from "./views/parameters/ParametersView";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
@@ -68,6 +69,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	designer: createHtmlPortalNode(PORTAL_OPTIONS),
 	authentication: createHtmlPortalNode(PORTAL_OPTIONS),
 	functions: createHtmlPortalNode(PORTAL_OPTIONS),
+	parameters: createHtmlPortalNode(PORTAL_OPTIONS),
 	models: createHtmlPortalNode(PORTAL_OPTIONS),
 	sidekick: createHtmlPortalNode(PORTAL_OPTIONS),
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -82,6 +84,7 @@ const VIEW_COMPONENTS: Record<ViewPage, FC> = {
 	designer: memo(DesignerView),
 	authentication: memo(AuthenticationView),
 	functions: memo(FunctionsView),
+	parameters: memo(ParametersView),
 	models: memo(ModelsView),
 	sidekick: memo(SidekickView),
 	documentation: memo(DocumentationView),

@@ -193,6 +193,7 @@ export function createConnectionSchema(): ConnectionSchema {
 			users: [],
 			functions: [],
 			models: [],
+			params: [],
 		},
 	};
 }

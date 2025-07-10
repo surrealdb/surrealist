@@ -7,6 +7,7 @@ import type {
 	SchemaInfoNS,
 	SchemaInfoTB,
 	SchemaModel,
+	SchemaParameter,
 	TableInfo,
 	TableVariant,
 } from "~/types";
@@ -81,11 +82,12 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 	}
 
 	if (dbInfoTask.status === "fulfilled") {
-		const { accesses, models, users, functions, tables } = dbInfoTask.value;
+		const { accesses, models, users, functions, tables, params } = dbInfoTask.value;
 
 		schema.database.accesses = accesses ?? [];
 		schema.database.models = models;
 		schema.database.users = users;
+		schema.database.params = params;
 
 		// TODO Trim access queries
 
@@ -181,6 +183,27 @@ export function buildFunctionDefinition(func: SchemaFunction): string {
 
 	if (func.comment) {
 		query += ` COMMENT "${func.comment}"`;
+	}
+
+	return query;
+}
+
+/**
+ * Build a parameter definition query
+ */
+export function buildParameterDefinition(param: SchemaParameter): string {
+	let query = `DEFINE PARAM OVERWRITE $${param.name}`;
+
+	if (param.permissions) {
+		query += ` PERMISSIONS ${displaySchemaPermission(param.permissions)}`;
+	}
+
+	if (param.comment) {
+		query += ` COMMENT "${param.comment}"`;
+	}
+
+	if (param.value) {
+		query += ` VALUE ${param.value}`;
 	}
 
 	return query;
