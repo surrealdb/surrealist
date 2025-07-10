@@ -1,11 +1,11 @@
 import { Box, Button, Divider, Group, Paper, ScrollArea, Slider, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
+import { useUpdateInstanceNodeMutation } from "~/cloud/mutations/node";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { plural } from "~/util/helpers";
 import classes from "../style.module.scss";
-import { useUpdateInstanceNodeMutation } from "~/cloud/mutations/node";
 
 export interface ConfigurationNodesProps {
 	instance: CloudInstance;

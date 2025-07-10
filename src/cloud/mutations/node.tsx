@@ -1,19 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CloudInstance } from "~/types";
-import { fetchAPI } from "../api";
 import { tagEvent } from "~/util/analytics";
+import { fetchAPI } from "../api";
 
 export function useUpdateInstanceNodeMutation(instance: CloudInstance) {
 	const client = useQueryClient();
 
 	return useMutation({
 		mutationFn: async (units: number) => {
-
 			await fetchAPI(`/instances/${instance.id}/computeunits`, {
 				method: "PATCH",
 				body: JSON.stringify({
 					compute_units: units,
-				})
+				}),
 			});
 
 			client.invalidateQueries({
@@ -30,6 +29,6 @@ export function useUpdateInstanceNodeMutation(instance: CloudInstance) {
 				old_compute_units: instance.compute_units,
 				new_compute_units: units,
 			});
-		}
+		},
 	});
 }

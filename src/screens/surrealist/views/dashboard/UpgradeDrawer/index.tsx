@@ -2,6 +2,7 @@ import classes from "./style.module.scss";
 
 import { Drawer, Group, Tabs } from "@mantine/core";
 import { useState } from "react";
+import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
@@ -13,7 +14,6 @@ import { iconArrowDownFat, iconClose } from "~/util/icons";
 import { ConfigurationStorage } from "../UpgradeDrawer/configs/storage";
 import { ConfigurationInstanceType } from "../UpgradeDrawer/configs/type";
 import { ConfigurationNodes } from "./configs/nodes";
-import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
 
 export interface UpgradeDrawerProps {
 	opened: boolean;
