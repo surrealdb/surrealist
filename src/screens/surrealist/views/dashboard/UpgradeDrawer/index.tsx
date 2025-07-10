@@ -12,6 +12,8 @@ import { CloudInstance, CloudOrganization } from "~/types";
 import { iconArrowDownFat, iconClose } from "~/util/icons";
 import { ConfigurationStorage } from "../UpgradeDrawer/configs/storage";
 import { ConfigurationInstanceType } from "../UpgradeDrawer/configs/type";
+import { ConfigurationNodes } from "./configs/nodes";
+import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
 
 export interface UpgradeDrawerProps {
 	opened: boolean;
@@ -37,6 +39,9 @@ export function UpgradeDrawer({
 	});
 
 	const hideDisk = instance.distributed_storage_specs !== undefined;
+	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
+
+	const isComputeNodesTabVisible = guessedPlan === "scale" || guessedPlan === "enterprise";
 
 	return (
 		<Drawer
@@ -100,10 +105,13 @@ export function UpgradeDrawer({
 					<Tabs.Tab value="type">Instance type</Tabs.Tab>
 					<Tabs.Tab
 						value="disk"
-						disabled={hideDisk}
+						// disabled={hideDisk}
 					>
 						Storage capacity
 					</Tabs.Tab>
+					{isComputeNodesTabVisible && (
+						<Tabs.Tab value="compute-nodes">Compute nodes</Tabs.Tab>
+					)}
 				</Tabs.List>
 
 				<Tabs.Panel value="type">
@@ -121,6 +129,15 @@ export function UpgradeDrawer({
 						onUpgrade={openTypes}
 					/>
 				</Tabs.Panel>
+
+				{isComputeNodesTabVisible && (
+					<Tabs.Panel value="compute-nodes">
+						<ConfigurationNodes
+							instance={instance}
+							onClose={onClose}
+						/>
+					</Tabs.Panel>
+				)}
 			</Tabs>
 		</Drawer>
 	);
