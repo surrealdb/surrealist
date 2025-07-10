@@ -2,26 +2,26 @@ import { Alert, Badge, Box, Button, Divider, Flex, Group, ScrollArea, Text } fro
 
 import { iconCheck, iconCopy, iconDelete, iconPlus, iconText, iconWarning } from "~/util/icons";
 
+import { EditorView } from "@codemirror/view";
 import { ActionIcon, CopyButton, Paper, Stack, Textarea } from "@mantine/core";
+import { surrealql } from "@surrealdb/codemirror";
+import { useMemo, useState } from "react";
 import type { Updater } from "use-immer";
+import { ActionButton } from "~/components/ActionButton";
+import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { PermissionInput } from "~/components/Inputs";
 import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
+import { surqlLinting } from "~/editor/surrealql";
+import { surqlTableCompletion } from "~/editor/tables";
+import { useDatabaseVersionLinter } from "~/hooks/editor";
 import type { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { SchemaParameter } from "~/types";
 import classes from "./style.module.scss";
-import { CodeEditor } from "~/components/CodeEditor";
-import { useMemo, useState } from "react";
-import { surrealql } from "@surrealdb/codemirror";
-import { surqlLinting } from "~/editor/surrealql";
-import { surqlTableCompletion } from "~/editor/tables";
-import { useDatabaseVersionLinter } from "~/hooks/editor";
-import { EditorView } from "@codemirror/view";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface EditorPanelProps {
 	handle: SaveableHandle;
