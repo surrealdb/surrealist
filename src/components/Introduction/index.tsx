@@ -2,11 +2,13 @@ import { Box, Center, Divider, Group, Paper, Stack, Text, Title } from "@mantine
 import type { PropsWithChildren, ReactNode } from "react";
 import { CodePreview } from "../CodePreview";
 import { Icon } from "../Icon";
+import { Spacer } from "../Spacer";
 
 export interface IntroductionProps {
 	title: string;
 	icon: string;
 	header?: ReactNode;
+	rightSection?: ReactNode;
 	snippet?: {
 		title?: string;
 		code: string;
@@ -21,6 +23,7 @@ export function Introduction({
 	header,
 	snippet,
 	children,
+	rightSection,
 }: PropsWithChildren<IntroductionProps>) {
 	return (
 		<Center
@@ -43,6 +46,8 @@ export function Introduction({
 							size={1.35}
 						/>
 						<Title c="bright">{title}</Title>
+						<Spacer />
+						{rightSection}
 					</Group>
 					{children}
 				</Stack>

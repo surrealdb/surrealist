@@ -35,7 +35,6 @@ import DocumentationView from "./views/documentation/DocumentationView";
 import ExplorerView from "./views/explorer/ExplorerView";
 import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
-import ModelsView from "./views/models/ModelsView";
 import MonitorView from "./views/monitor/MonitorView";
 import ParametersView from "./views/parameters/ParametersView";
 import QueryView from "./views/query/QueryView";
@@ -70,7 +69,6 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	authentication: createHtmlPortalNode(PORTAL_OPTIONS),
 	functions: createHtmlPortalNode(PORTAL_OPTIONS),
 	parameters: createHtmlPortalNode(PORTAL_OPTIONS),
-	models: createHtmlPortalNode(PORTAL_OPTIONS),
 	sidekick: createHtmlPortalNode(PORTAL_OPTIONS),
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
 };
@@ -85,7 +83,6 @@ const VIEW_COMPONENTS: Record<ViewPage, FC> = {
 	authentication: memo(AuthenticationView),
 	functions: memo(FunctionsView),
 	parameters: memo(ParametersView),
-	models: memo(ModelsView),
 	sidekick: memo(SidekickView),
 	documentation: memo(DocumentationView),
 };

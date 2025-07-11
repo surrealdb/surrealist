@@ -56,7 +56,6 @@ import {
 	iconGraphql,
 	iconHelp,
 	iconLive,
-	iconModuleML,
 	iconOrganization,
 	iconQuery,
 	iconReferral,
@@ -283,12 +282,6 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		name: "Functions",
 		icon: iconFunction,
 		disabled: ({ flags }) => !flags.functions_view,
-	},
-	models: {
-		id: "models",
-		name: "Models",
-		icon: iconModuleML,
-		disabled: ({ flags }) => !flags.models_view,
 	},
 	sidekick: {
 		id: "sidekick",
