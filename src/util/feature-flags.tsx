@@ -33,9 +33,6 @@ export const schema = {
 	parameters_view: {
 		options: [false, true],
 	},
-	models_view: {
-		options: [false, true, "force"],
-	},
 	sidekick_view: {
 		options: [false, true],
 	},
@@ -99,7 +96,6 @@ export const featureFlags = new FeatureFlags({
 			auth_view: true,
 			functions_view: true,
 			parameters_view: true,
-			models_view: "force",
 			sidekick_view: true,
 			apidocs_view: true,
 			newsfeed: true,
@@ -120,7 +116,6 @@ export const featureFlags = new FeatureFlags({
 			auth_view: true,
 			functions_view: true,
 			parameters_view: false,
-			models_view: true,
 			sidekick_view: true,
 			apidocs_view: true,
 			changelog: "hidden",
@@ -140,7 +135,6 @@ export const featureFlags = new FeatureFlags({
 			auth_view: true,
 			functions_view: true,
 			parameters_view: false,
-			models_view: true,
 			sidekick_view: true,
 			apidocs_view: true,
 			database_version_check: true,

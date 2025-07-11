@@ -171,17 +171,17 @@ export function buildFunctionDefinition(func: SchemaFunction): string {
 
 	let query = `DEFINE FUNCTION OVERWRITE fn::${func.name}(${args})`;
 
-	if (func.returns) {
+	if (func.returns !== undefined) {
 		query += ` -> ${func.returns}`;
 	}
 
 	query += ` {\n${block}\n}`;
 
-	if (func.permissions) {
+	if (func.permissions !== undefined) {
 		query += ` PERMISSIONS ${displaySchemaPermission(func.permissions)}`;
 	}
 
-	if (func.comment) {
+	if (func.comment !== undefined) {
 		query += ` COMMENT "${func.comment}"`;
 	}
 
@@ -194,15 +194,15 @@ export function buildFunctionDefinition(func: SchemaFunction): string {
 export function buildParameterDefinition(param: SchemaParameter): string {
 	let query = `DEFINE PARAM OVERWRITE $${param.name}`;
 
-	if (param.permissions) {
+	if (param.permissions !== undefined) {
 		query += ` PERMISSIONS ${displaySchemaPermission(param.permissions)}`;
 	}
 
-	if (param.comment) {
+	if (param.comment !== undefined) {
 		query += ` COMMENT "${param.comment}"`;
 	}
 
-	if (param.value) {
+	if (param.value !== undefined) {
 		query += ` VALUE ${param.value}`;
 	}
 

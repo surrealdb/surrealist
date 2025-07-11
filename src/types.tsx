@@ -40,6 +40,7 @@ export type QueryType = "config" | "file";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
 export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
+export type FunctionType = "function" | "model";
 
 export type InstanceState =
 	| "creating"
@@ -76,7 +77,6 @@ export type ViewPage =
 	| "authentication"
 	| "functions"
 	| "parameters"
-	| "models"
 	| "sidekick"
 	| "documentation";
 
@@ -442,6 +442,11 @@ export interface SchemaModel {
 	version: string;
 	permission: boolean | string;
 	comment: string;
+}
+
+export interface FunctionDetails {
+	type: FunctionType;
+	details: SchemaFunction | SchemaModel;
 }
 
 export interface TableInfo {

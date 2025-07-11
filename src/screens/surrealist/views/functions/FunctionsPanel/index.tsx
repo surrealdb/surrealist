@@ -1,4 +1,4 @@
-import { Badge, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { Badge, Group, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
@@ -8,16 +8,27 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
-import type { SchemaFunction } from "~/types";
-import { iconCopy, iconDelete, iconFunction, iconPlus, iconSearch } from "~/util/icons";
+import type { FunctionDetails, SchemaModel } from "~/types";
+import {
+	iconCopy,
+	iconDelete,
+	iconDownload,
+	iconFunction,
+	iconModuleML,
+	iconPlus,
+	iconSearch,
+	iconUpload,
+} from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface FunctionsPanelProps {
 	active: string;
-	functions: SchemaFunction[];
-	onSelect: (id: string) => void;
-	onDelete: (id: string) => void;
-	onDuplicate: (def: SchemaFunction) => void;
+	functions: FunctionDetails[];
+	onSelect: (func: FunctionDetails) => void;
+	onImport: () => void;
+	onDownload: (model: SchemaModel) => void;
+	onDelete: (func: FunctionDetails) => void;
+	onDuplicate: (det: FunctionDetails) => void;
 	onCreate: () => void;
 }
 
@@ -26,6 +37,8 @@ export function FunctionsPanel({
 	functions,
 	onSelect,
 	onDelete,
+	onImport,
+	onDownload,
 	onDuplicate,
 	onCreate,
 }: FunctionsPanelProps) {
@@ -38,7 +51,7 @@ export function FunctionsPanel({
 	const filtered = useMemo(() => {
 		const needle = search.toLowerCase();
 
-		return functions.filter((f) => f.name.toLowerCase().includes(needle));
+		return functions.filter((f) => f.details.name.toLowerCase().includes(needle));
 	}, [functions, search]);
 
 	return (
@@ -56,13 +69,22 @@ export function FunctionsPanel({
 				</Badge>
 			}
 			rightSection={
-				<ActionButton
-					disabled={!isConnected}
-					label="New function"
-					onClick={onCreate}
-				>
-					<Icon path={iconPlus} />
-				</ActionButton>
+				<Group>
+					<ActionButton
+						disabled={!isConnected}
+						label="Import model"
+						onClick={onImport}
+					>
+						<Icon path={iconUpload} />
+					</ActionButton>
+					<ActionButton
+						disabled={!isConnected}
+						label="New function"
+						onClick={onCreate}
+					>
+						<Icon path={iconPlus} />
+					</ActionButton>
+				</Group>
 			}
 		>
 			<ScrollArea
@@ -79,7 +101,7 @@ export function FunctionsPanel({
 					gap="xs"
 					pb="md"
 				>
-					{functions.length > 0 ? (
+					{functions.length > 0 && (
 						<TextInput
 							placeholder="Search functions..."
 							leftSection={<Icon path={iconSearch} />}
@@ -89,64 +111,89 @@ export function FunctionsPanel({
 							variant="unstyled"
 							autoFocus
 						/>
-					) : (
-						<Text
-							c="slate"
-							ta="center"
-							mt="lg"
-						>
-							No functions found
-						</Text>
 					)}
 
-					{search && filtered.length === 0 && (
-						<Text
-							c="slate"
-							ta="center"
-							mt="lg"
-						>
-							No functions matched
-						</Text>
-					)}
-
-					{filtered.map((f, i) => (
-						<Entry
-							key={i}
-							isActive={f.name === active}
-							onClick={() => onSelect(f.name)}
-							leftSection={<Icon path={iconFunction} />}
-							onContextMenu={showContextMenu([
-								{
-									key: "open",
-									title: "Edit function",
-									icon: <Icon path={iconFunction} />,
-									onClick: () => onSelect(f.name),
-								},
-								{
-									key: "duplicate",
-									title: "Duplicate function",
-									icon: <Icon path={iconCopy} />,
-									onClick: () => onDuplicate(f),
-								},
-								{
-									key: "remove",
-									title: "Remove function",
-									color: "pink.7",
-									icon: <Icon path={iconDelete} />,
-									onClick: () => onDelete(f.name),
-								},
-							])}
-						>
+					<Stack gap="sm">
+						{filtered.length === 0 && (
 							<Text
-								style={{
-									textOverflow: "ellipsis",
-									overflow: "hidden",
-								}}
+								c="slate"
+								ta="center"
+								mt="lg"
 							>
-								{f.name}
+								No functions {search ? "matched" : "defined"}
 							</Text>
-						</Entry>
-					))}
+						)}
+						{filtered.map((f, i) => {
+							if (f.type === "model") {
+								const mod = f.details as SchemaModel;
+
+								return (
+									<Entry
+										key={i}
+										isActive={mod.name === active}
+										onClick={() => onSelect(f)}
+										leftSection={<Icon path={iconModuleML} />}
+										onContextMenu={showContextMenu([
+											{
+												key: "open",
+												title: "Download model",
+												icon: <Icon path={iconDownload} />,
+												onClick: () => onDownload(mod),
+											},
+										])}
+									>
+										<Text
+											style={{
+												textOverflow: "ellipsis",
+												overflow: "hidden",
+											}}
+										>
+											{mod.name}
+										</Text>
+									</Entry>
+								);
+							}
+
+							return (
+								<Entry
+									key={i}
+									isActive={f.details.name === active}
+									onClick={() => onSelect(f)}
+									leftSection={<Icon path={iconFunction} />}
+									onContextMenu={showContextMenu([
+										{
+											key: "open",
+											title: "Edit function",
+											icon: <Icon path={iconFunction} />,
+											onClick: () => onSelect(f),
+										},
+										{
+											key: "duplicate",
+											title: "Duplicate function",
+											icon: <Icon path={iconCopy} />,
+											onClick: () => onDuplicate(f),
+										},
+										{
+											key: "remove",
+											title: "Remove function",
+											color: "pink.7",
+											icon: <Icon path={iconDelete} />,
+											onClick: () => onDelete(f),
+										},
+									])}
+								>
+									<Text
+										style={{
+											textOverflow: "ellipsis",
+											overflow: "hidden",
+										}}
+									>
+										{f.details.name}
+									</Text>
+								</Entry>
+							);
+						})}
+					</Stack>
 				</Stack>
 			</ScrollArea>
 		</ContentPane>
