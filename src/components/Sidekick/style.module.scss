@@ -1,16 +1,17 @@
-.input {
-	flex-grow: 1;
-
-	textarea {
-		padding-top: 12px;
-	}
-}
-
 .message {
-	user-select: text;
-	-webkit-user-select: text;
+	// user-select: text;
+	// -webkit-user-select: text;
 
-	li {
-		margin-bottom: var(--mantine-spacing-lg);
+	// li {
+	// 	margin-bottom: var(--mantine-spacing-lg);
+	// }
+
+	:global(.mantine-ActionIcon-root) {
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	&:hover :global(.mantine-ActionIcon-root) {
+		opacity: 1;
 	}
 }

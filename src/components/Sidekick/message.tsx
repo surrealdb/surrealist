@@ -3,7 +3,6 @@ import classes from "./style.module.scss";
 import {
 	Avatar,
 	Box,
-	Flex,
 	Group,
 	Image,
 	List,
@@ -13,12 +12,13 @@ import {
 	TypographyStylesProvider,
 } from "@mantine/core";
 
-import glowImg from "~/assets/images/glow.webp";
-import sidekickImg from "~/assets/images/icons/sidekick.webp";
-
 import { marked } from "marked";
-import { Link } from "~/components/Link";
 import type { CloudChatMessage, CloudProfile } from "~/types";
+import { ActionButton } from "../ActionButton";
+import { iconAccount, iconCopy, iconDotsVertical, iconSidekick } from "~/util/icons";
+import { Icon } from "../Icon";
+import { Link } from "~/components/Link";
+import { Spacer } from "../Spacer";
 
 export interface ChatMessageProps {
 	message: CloudChatMessage;
@@ -36,60 +36,96 @@ export function ChatMessage({
 	isLight,
 }: ChatMessageProps) {
 	return (
-		<Flex
-			justify={message.sender === "user" ? "end" : "start"}
-			direction={message.sender === "user" ? "row-reverse" : "row"}
-			gap="md"
-		>
-			{message.sender === "assistant" ? (
-				<SidekickAvatar completed={!message.loading} />
-			) : (
-				<Avatar
-					radius="md"
-					size={40}
-					name={profile.name}
-					src={profile.picture}
-				/>
-			)}
-			{message.loading ? (
-				<Group pos="relative">
-					<Loader
-						size={14}
-						color={isLight ? "slate.5" : "slate.4"}
-					/>
-					<Text
-						size="lg"
-						c={isLight ? "slate.5" : "slate.4"}
+		<Box className={classes.message}>
+			{message.sender === "user" ? (
+				<>
+					<Group
+						gap="xs"
+						mb="sm"
 					>
-						{message.thinking}
-					</Text>
-				</Group>
+						<Icon
+							path={iconAccount}
+							size="sm"
+						/>
+						<Text>{profile.name}</Text>
+						<Spacer />
+						<ActionButton
+							label={"Options"}
+							variant="subtle"
+							size="sm"
+						>
+							<Icon
+								path={iconDotsVertical}
+								size="sm"
+							/>
+						</ActionButton>
+						<ActionButton
+							label={"Copy"}
+							variant="subtle"
+							size="sm"
+						>
+							<Icon
+								path={iconCopy}
+								size="sm"
+							/>
+						</ActionButton>
+					</Group>
+					<Paper
+						p="md"
+						bg="slate.6"
+					>
+						<Group>
+							<Avatar
+								radius="xs"
+								size="sm"
+								name={profile.name}
+								src={profile.picture}
+							/>
+							<MessageContent message={message} />
+						</Group>
+					</Paper>
+				</>
 			) : (
-				<Paper
-					px="lg"
-					py="sm"
-					maw="80%"
-					pos="relative"
-					bg={
-						message.sender === "user"
-							? isLight
-								? "white"
-								: "slate.6"
-							: isLight
-								? "white"
-								: "slate.8"
-					}
-				>
-					<TypographyStylesProvider
-						fz="lg"
-						fw={400}
-						c="bright"
-						className={classes.message}
-						// biome-ignore lint/security/noDangerouslySetInnerHtml: Markdown response
-						dangerouslySetInnerHTML={{
-							__html: marked(message.content),
-						}}
-					/>
+				<Box>
+					<Group
+						gap="xs"
+						mb="sm"
+					>
+						{message.loading ? (
+							<Loader
+								size={14}
+								color={isLight ? "slate.5" : "slate.4"}
+							/>
+						) : (
+							<Icon
+								path={iconSidekick}
+								size="sm"
+							/>
+						)}
+						<Text>{message.loading ? message.thinking : "Sidekick"}</Text>
+						<Spacer />
+						<ActionButton
+							label={"Options"}
+							variant="subtle"
+							size="sm"
+						>
+							<Icon
+								path={iconDotsVertical}
+								size="sm"
+							/>
+						</ActionButton>
+						<ActionButton
+							label={"Copy"}
+							variant="subtle"
+							size="sm"
+						>
+							<Icon
+								path={iconCopy}
+								size="sm"
+							/>
+						</ActionButton>
+					</Group>
+					<MessageContent message={message} />
 					{message.sources && message.sources.links.length > 0 && (
 						<Paper
 							bg={isLight ? "slate.0" : "slate.7"}
@@ -141,32 +177,23 @@ export function ChatMessage({
 							</Link>
 						</Text>
 					)}
-				</Paper>
+				</Box>
 			)}
-		</Flex>
+		</Box>
 	);
 }
 
-interface SidekickAvatarProps {
-	completed: boolean;
-}
-
-function SidekickAvatar({ completed }: SidekickAvatarProps) {
+function MessageContent({ message }: { message: CloudChatMessage }) {
 	return (
-		<Box pos="relative">
-			<Image
-				pos="absolute"
-				src={glowImg}
-				inset={0}
-				opacity={completed ? 0.3 : 0}
-				style={{ transform: "scale(2)", transition: "opacity 0.3s ease" }}
-			/>
-			<Image
-				pos="relative"
-				src={sidekickImg}
-				w={52}
-				h={52}
-			/>
-		</Box>
+		<TypographyStylesProvider
+			fz="lg"
+			fw={400}
+			c="bright"
+			className={classes.message}
+			// biome-ignore lint/security/noDangerouslySetInnerHtml: Markdown response
+			dangerouslySetInnerHTML={{
+				__html: marked(message.content),
+			}}
+		/>
 	);
 }

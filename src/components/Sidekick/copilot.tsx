@@ -75,7 +75,7 @@ export function useCopilotMutation() {
 				content: "",
 				sender: "assistant",
 				loading: true,
-				thinking: "Thinking...",
+				thinking: "Sidekick is thinking...",
 			});
 
 			tagEvent("sidekick_question_asked", {

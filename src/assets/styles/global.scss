@@ -30,13 +30,23 @@ pre,
 code {
 	font-size: inherit;
 	background-color: var(--mantine-color-slate-7);
+	white-space: pre-wrap;
+	word-break: break-word;
+	overflow-x: auto;
+	max-width: 100%;
 
 	@include light {
 		background-color: var(--mantine-color-slate-0);
 	}
 }
 
+pre {
+	padding: var(--mantine-spacing-md);
+	border: 1px solid var(--surrealist-divider-color);
+}
+
 code {
+	padding: var(--mantine-spacing-xs);
 	font-size: var(--mantine-font-size-sm);
 }
 

@@ -162,3 +162,8 @@
 		color: var(--mantine-color-bright);
 	}
 }
+
+.sidekick-input textarea {
+	background-color: unset;
+	font-size: var(--mantine-font-size-lg);
+}
