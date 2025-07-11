@@ -273,6 +273,7 @@ export function FunctionPropertiesPanel({
 				<Box mt="sm">
 					{isCreating ? (
 						<Button
+							fullWidth
 							variant="gradient"
 							rightSection={<Icon path={iconPlus} />}
 							onClick={() => handle.save()}

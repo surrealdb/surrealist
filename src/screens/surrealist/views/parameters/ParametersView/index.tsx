@@ -21,11 +21,12 @@ import type { SchemaParameter } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronRight, iconOpen, iconPlus, iconVariable } from "~/util/icons";
 import { buildParameterDefinition, syncConnectionSchema } from "~/util/schema";
-import { EditorPanel } from "../EditorPanel";
+import { ParameterEditorPanel } from "../ParameterEditorPanel";
 import { ParametersPanel } from "../ParametersPanel";
+import { ParameterPropertiesPanel } from "../ParameterPropertiesPanel";
 
 const ParametersPanelLazy = memo(ParametersPanel);
-const EditorPanelLazy = memo(EditorPanel);
+const EditorPanelLazy = memo(ParameterEditorPanel);
 
 export function ParametersView() {
 	const isConnected = useIsConnected();
@@ -185,12 +186,10 @@ export function ParametersView() {
 					<Panel minSize={minSize}>
 						{details ? (
 							<EditorPanelLazy
-								handle={handle}
 								details={details}
 								error={error}
 								isCreating={isCreating}
 								onChange={setDetails as any}
-								onDelete={removeParameter}
 							/>
 						) : (
 							<Introduction
@@ -241,6 +240,24 @@ export function ParametersView() {
 							</Introduction>
 						)}
 					</Panel>
+					{details && (
+						<>
+							<PanelDragger />
+							<Panel
+								maxSize={55}
+								minSize={27}
+								defaultSize={27}
+							>
+								<ParameterPropertiesPanel
+									handle={handle}
+									details={details}
+									isCreating={isCreating}
+									onChange={setDetails as any}
+									onDelete={removeParameter}
+								/>
+							</Panel>
+						</>
+					)}
 				</PanelGroup>
 			</Box>
 

@@ -360,6 +360,7 @@ export function FunctionsView() {
 						<>
 							<PanelDragger />
 							<Panel
+								maxSize={55}
 								minSize={27}
 								defaultSize={27}
 							>
