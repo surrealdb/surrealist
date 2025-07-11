@@ -418,7 +418,7 @@ export function SidekickDrawer() {
 									</ActionIcon>
 								</Group>
 							</Paper>
-							<Text
+							{/* <Text
 								mt="sm"
 								ta="center"
 								c="slate"
@@ -426,7 +426,7 @@ export function SidekickDrawer() {
 							>
 								You are chatting with an AI assistant, please refrain from
 								submitting sensitive data.
-							</Text>
+							</Text> */}
 						</Box>
 					</>
 				)}
