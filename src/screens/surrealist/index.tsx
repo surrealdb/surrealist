@@ -15,7 +15,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
-import { ChatPage } from "./pages/Chat";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
@@ -38,11 +37,9 @@ import GraphqlView from "./views/graphql/GraphqlView";
 import ModelsView from "./views/models/ModelsView";
 import MonitorView from "./views/monitor/MonitorView";
 import QueryView from "./views/query/QueryView";
-import SidekickView from "./views/sidekick/SidekickView";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
-const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
@@ -69,7 +66,6 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	authentication: createHtmlPortalNode(PORTAL_OPTIONS),
 	functions: createHtmlPortalNode(PORTAL_OPTIONS),
 	models: createHtmlPortalNode(PORTAL_OPTIONS),
-	sidekick: createHtmlPortalNode(PORTAL_OPTIONS),
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
@@ -83,7 +79,6 @@ const VIEW_COMPONENTS: Record<ViewPage, FC> = {
 	authentication: memo(AuthenticationView),
 	functions: memo(FunctionsView),
 	models: memo(ModelsView),
-	sidekick: memo(SidekickView),
 	documentation: memo(DocumentationView),
 };
 
@@ -211,10 +206,6 @@ export function SurrealistScreen() {
 										{({ organization }) => (
 											<Redirect to={`/o/${organization}/instances`} />
 										)}
-									</Route>
-
-									<Route path="/chat">
-										<ChatPageLazy />
 									</Route>
 
 									<Route path="/referrals">

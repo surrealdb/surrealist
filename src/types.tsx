@@ -62,7 +62,6 @@ export type GlobalPage =
 	| "/overview"
 	| "/signin"
 	| "/organisations"
-	| "/chat"
 	| "/support"
 	| "/referrals"
 	| "/mini/new";
@@ -76,7 +75,6 @@ export type ViewPage =
 	| "authentication"
 	| "functions"
 	| "models"
-	| "sidekick"
 	| "documentation";
 
 export type AppMenuItemType =
