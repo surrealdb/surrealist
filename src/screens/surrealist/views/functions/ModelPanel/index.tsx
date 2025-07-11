@@ -1,10 +1,10 @@
 import { Button, Group, Text } from "@mantine/core";
-import { Icon } from "~/components/Icon";
-import type { SchemaModel } from "~/types";
-import { iconDownload, iconModuleML, iconOpen } from "~/util/icons";
-import { Introduction } from "~/components/Introduction";
 import { useMemo } from "react";
 import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
+import { Introduction } from "~/components/Introduction";
+import type { SchemaModel } from "~/types";
+import { iconDownload, iconModuleML, iconOpen } from "~/util/icons";
 
 export interface ModelPanelProps {
 	details: SchemaModel;

@@ -5,12 +5,13 @@ import {
 	Group,
 	Stack,
 	Text,
-	Textarea,
 	TextInput,
+	Textarea,
 } from "@mantine/core";
 import { Box, Flex, Paper, ScrollArea } from "@mantine/core";
 import { useState } from "react";
 import { Updater } from "use-immer";
+import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { FieldKindInput, PermissionInput } from "~/components/Inputs";
 import { Label } from "~/components/Label";
@@ -25,7 +26,6 @@ import { FunctionDetails, SchemaFunction } from "~/types";
 import { iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "~/util/icons";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
-import { ActionButton } from "~/components/ActionButton";
 
 export interface FunctionPropertiesPanelProps {
 	handle: SaveableHandle;

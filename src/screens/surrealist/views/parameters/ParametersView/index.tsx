@@ -22,8 +22,8 @@ import { showErrorNotification } from "~/util/helpers";
 import { iconChevronRight, iconOpen, iconPlus, iconVariable } from "~/util/icons";
 import { buildParameterDefinition, syncConnectionSchema } from "~/util/schema";
 import { ParameterEditorPanel } from "../ParameterEditorPanel";
-import { ParametersPanel } from "../ParametersPanel";
 import { ParameterPropertiesPanel } from "../ParameterPropertiesPanel";
+import { ParametersPanel } from "../ParametersPanel";
 
 const ParametersPanelLazy = memo(ParametersPanel);
 const EditorPanelLazy = memo(ParameterEditorPanel);

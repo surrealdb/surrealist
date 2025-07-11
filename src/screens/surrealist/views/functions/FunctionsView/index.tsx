@@ -18,16 +18,16 @@ import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { composeHttpConnection, executeQuery } from "~/screens/surrealist/connection/connection";
 import type { FunctionDetails, SchemaFunction, SchemaModel } from "~/types";
+import { tagEvent } from "~/util/analytics";
+import { createBaseAuthentication } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { buildFunctionDefinition, buildModelDefinition, syncConnectionSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 import { FunctionEditorPanel } from "../FunctionEditorPanel";
-import { FunctionsPanel } from "../FunctionsPanel";
-import { createBaseAuthentication } from "~/util/defaults";
-import { ModelPanel } from "../ModelPanel";
-import { tagEvent } from "~/util/analytics";
 import { FunctionPropertiesPanel } from "../FunctionPropertiesPanel";
+import { FunctionsPanel } from "../FunctionsPanel";
+import { ModelPanel } from "../ModelPanel";
 
 const SURML_FILTERS = [
 	{
