@@ -162,7 +162,10 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 									)
 								)}
 
-								<Paper p={42}>
+								<Paper
+									p={42}
+									withBorder={false}
+								>
 									<Slider
 										min={minimum}
 										max={maximum}
