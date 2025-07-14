@@ -10,7 +10,6 @@ import {
 	Text,
 	Textarea,
 	ScrollArea,
-	Menu,
 	ActionIcon,
 	Center,
 	Image,
@@ -19,7 +18,6 @@ import {
 } from "@mantine/core";
 
 import {
-	iconDotsVertical,
 	iconCursor,
 	iconReset,
 	iconHistory,
@@ -52,6 +50,7 @@ import { ChatMessage } from "../../Sidekick/message";
 import { shuffle } from "radash";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
+import { Spacer } from "~/components/Spacer";
 
 const QUESTIONS = [
 	{ icon: iconCreditCard, title: "How do I manage Cloud billing?" },
@@ -78,7 +77,7 @@ export function SidekickDrawer() {
 	});
 	const [width, setWidth] = useState(650);
 
-	const { pushChatMessage, clearChatSession } = useCloudStore.getState();
+	const { pushChatMessage } = useCloudStore.getState();
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [input, setInput] = useInputState("");
@@ -170,6 +169,28 @@ export function SidekickDrawer() {
 						/>
 					</Box>
 					<PrimaryTitle>Sidekick</PrimaryTitle>
+					<Spacer />
+					<Button
+						size="xs"
+						color="slate"
+						variant="light"
+						leftSection={<Icon path={iconHistory} />}
+						onClick={() => {
+							openHandle.close();
+						}}
+					>
+						History
+					</Button>
+					<Button
+						size="xs"
+						variant="gradient"
+						rightSection={<Icon path={iconPlus} />}
+						onClick={() => {
+							openHandle.close();
+						}}
+					>
+						New chat
+					</Button>
 				</Group>
 				<Divider />
 				<Box
@@ -186,8 +207,8 @@ export function SidekickDrawer() {
 							h="100%"
 						>
 							<Stack
-								p="xl"
-								pb={96}
+								p={36}
+								pb={125}
 								gap={38}
 							>
 								{conversation.map((message, i) => (
@@ -320,43 +341,58 @@ export function SidekickDrawer() {
 				{isAuthed && (
 					<>
 						<Box
-							px="md"
-							pb="md"
+							px="xl"
+							pb="xl"
 						>
 							<Paper
 								bg="slate.9"
 								p="md"
 							>
-								<Group
-									mb="xs"
-									justify="space-between"
-								>
-									<Group gap="xs">
-										<Button
-											leftSection={<Icon path={iconTable} />}
-											variant="light"
-											color="slate"
-											size="xs"
-										>
-											Attach schema
-										</Button>
-										<Button
-											leftSection={<Icon path={iconTable} />}
-											variant="light"
-											color="slate"
-											size="xs"
-										>
-											Attach table
-										</Button>
-										<Button
-											leftSection={<Icon path={iconRelation} />}
-											variant="light"
-											color="slate"
-											size="xs"
-										>
-											Attach relation
-										</Button>
-									</Group>
+								<Group mb="xs">
+									<Button
+										leftSection={<Icon path={iconTable} />}
+										variant="light"
+										color="slate"
+										size="xs"
+									>
+										Attach schema
+									</Button>
+									<Button
+										leftSection={<Icon path={iconTable} />}
+										variant="light"
+										color="slate"
+										size="xs"
+									>
+										Attach table
+									</Button>
+									<Button
+										leftSection={<Icon path={iconRelation} />}
+										variant="light"
+										color="slate"
+										size="xs"
+									>
+										Attach relation
+									</Button>
+									{/* <Spacer />
+									<Menu position="top">
+										<Menu.Target>
+											<ActionIcon
+												size="lg"
+												color="slate"
+												variant="subtle"
+											>
+												<Icon path={iconDotsVertical} />
+											</ActionIcon>
+										</Menu.Target>
+										<Menu.Dropdown>
+											<Menu.Item
+												leftSection={<Icon path={iconReset} />}
+												onClick={clearChatSession}
+											>
+												Clear chat
+											</Menu.Item>
+										</Menu.Dropdown>
+									</Menu> */}
 								</Group>
 								<Group
 									wrap="nowrap"
@@ -377,25 +413,6 @@ export function SidekickDrawer() {
 										rightSectionWidth={96}
 										variant="unstyled"
 									/>
-									<Menu position="top">
-										<Menu.Target>
-											<ActionIcon
-												size="lg"
-												color="slate"
-												variant="subtle"
-											>
-												<Icon path={iconDotsVertical} />
-											</ActionIcon>
-										</Menu.Target>
-										<Menu.Dropdown>
-											<Menu.Item
-												leftSection={<Icon path={iconReset} />}
-												onClick={clearChatSession}
-											>
-												Clear chat
-											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
 									<ActionIcon
 										size="lg"
 										type="submit"
