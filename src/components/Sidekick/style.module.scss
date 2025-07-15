@@ -14,4 +14,14 @@
 	&:hover :global(.mantine-ActionIcon-root) {
 		opacity: 1;
 	}
+
+	pre {
+		padding: var(--mantine-spacing-md);
+		border: 1px solid var(--surrealist-divider-color);
+	}
+
+	code {
+		padding: var(--mantine-spacing-xs);
+		font-size: var(--mantine-font-size-sm);
+	}
 }
