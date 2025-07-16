@@ -56,6 +56,7 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	}
 
 	let _ga = getCookie("_ga");
+
 	if (!_ga) {
 		_ga = generateGaCookieValue();
 		setCookie("_ga", _ga, 365);
@@ -68,6 +69,8 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	const uniqueId = (incrementalId++).toString();
 	const params = new URLSearchParams();
 	const { profile, userId } = useCloudStore.getState();
+
+	_ga = _ga.substring(6);
 
 	params.append("v", "2");
 	params.append("tid", import.meta.env.GTM_ID);
