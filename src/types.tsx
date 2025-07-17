@@ -45,6 +45,7 @@ export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
+export type TicketStateId = "submitted" | "in_progress" | "waiting_on_customer" | "resolved";
 
 export type InstanceState =
 	| "creating"
@@ -240,6 +241,7 @@ export interface SurrealistCloudSettings {
 	urlApiMgmtBase: string;
 	urlAuthBase: string;
 	urlNewsfeedBase: string;
+	urlApiTicketsBase: string;
 }
 
 export interface SurrealistGtmSettings {
@@ -826,6 +828,63 @@ export interface CloudDeployConfig {
 	startingData: StartingDataDetails;
 	storageCategory: StorageCategory;
 	storageAmount: number;
+}
+
+export interface CloudTicketState {
+	id: string;
+	category: TicketStateId;
+	label: string;
+}
+
+export interface CloudTicketType {
+	id: string;
+	name: string;
+}
+
+export interface CloudTicketContact {
+	id: string;
+	email: string;
+	name: string;
+	avatar?: string;
+}
+
+export interface CloudTicketUser {
+	type: "admin" | "user" | "bot";
+	id: string;
+	name: string;
+	avatar?: string;
+}
+
+export interface CloudTicketAdminAssignee {
+	name: string;
+	avatar?: string;
+}
+
+export interface CloudTicketPart {
+	id: string;
+	part_type: string;
+	ticket_state: string;
+	previous_ticket_state: string;
+	created_at: number;
+	updated_at: number;
+	attachments: any[];
+	assigned_to?: CloudTicketUser;
+	body?: string;
+	author?: CloudTicketUser;
+}
+
+export interface CloudTicket {
+	id: string;
+	title: string;
+	description: string;
+	state: CloudTicketState;
+	type: CloudTicketType;
+	created_at: number;
+	updated_at: number;
+	contacts: CloudTicketContact[];
+	assignee?: CloudTicketAdminAssignee;
+	parts: CloudTicketPart[];
+	open: boolean;
 }
 
 export interface AppMenu {

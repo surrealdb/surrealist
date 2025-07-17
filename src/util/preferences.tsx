@@ -49,28 +49,28 @@ export interface PreferenceSection {
  * A preference controller for a checkbox
  */
 export class CheckboxController {
-	constructor(public options: ReaderWriter<boolean>) {}
+	constructor(public options: ReaderWriter<boolean>) { }
 }
 
 /**
  * A preference controller for a number
  */
 export class NumberController {
-	constructor(public options: ReaderWriter<number>) {}
+	constructor(public options: ReaderWriter<number>) { }
 }
 
 /**
  * A preference controller for text inputs
  */
 export class TextController {
-	constructor(public options: ReaderWriter<string> & { placeholder?: string }) {}
+	constructor(public options: ReaderWriter<string> & { placeholder?: string }) { }
 }
 
 /**
  * A preference controller for a selection dropdown
  */
 export class SelectionController<T extends string> {
-	constructor(public options: ReaderWriter<T> & { options: Selectable<T>[] }) {}
+	constructor(public options: ReaderWriter<T> & { options: Selectable<T>[] }) { }
 }
 
 /**
@@ -84,7 +84,7 @@ export class FlagSetController<K extends string, T extends Flags<K>> {
 			default?: boolean;
 			minWidth?: string | number;
 		},
-	) {}
+	) { }
 }
 
 /**
@@ -552,6 +552,18 @@ export function useComputedPreferences(): PreferenceSection[] {
 							writer: (config, value) => {
 								config.settings.cloud.urlApiBase = value;
 								config.settings.cloud.urlApiMgmtBase = value;
+							},
+						}),
+					},
+					{
+						id: "tickets-base",
+						name: "Tickets base",
+						description: "The base URL for the tickets API",
+						controller: new TextController({
+							placeholder: "https://...",
+							reader: (config) => config.settings.cloud.urlApiTicketsBase,
+							writer: (config, value) => {
+								config.settings.cloud.urlApiTicketsBase = value;
 							},
 						}),
 					},

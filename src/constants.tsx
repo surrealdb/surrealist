@@ -29,6 +29,7 @@ import type {
 	SidebarMode,
 	SyntaxTheme,
 	TableVariant,
+	TicketStateId,
 	ViewPage,
 	ViewPageInfo,
 } from "./types";
@@ -234,7 +235,7 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/tickets",
 		name: "Tickets",
 		icon: iconTag,
-		aliases: ["/t/*"],
+		aliases: ["/t/*", "/tickets/*"],
 		disabled: ({ flags }) => !flags.cloud_enabled || !flags.tickets_enabled,
 	},
 	"/support": {
@@ -501,4 +502,26 @@ export const MONITOR_LOG_LEVEL_INFO: Record<string, [string, MantineColor, Monit
 	WARN: [iconWarning, "orange", "warning"],
 	ERROR: [iconErrorCircle, "red", "error"],
 	FATAL: [iconErrorCircle, "red", "error"],
+};
+
+export const TICKET_STATES: Record<TicketStateId, {
+	color: MantineColor;
+	label: string;
+}> = {
+	submitted: {
+		color: "green",
+		label: "Submitted",
+	},
+	in_progress: {
+		color: "blue",
+		label: "In Progress",
+	},
+	waiting_on_customer: {
+		color: "red",
+		label: "Waiting on Customer",
+	},
+	resolved: {
+		color: "violet",
+		label: "Resolved",
+	}
 };
