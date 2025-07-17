@@ -504,10 +504,13 @@ export const MONITOR_LOG_LEVEL_INFO: Record<string, [string, MantineColor, Monit
 	FATAL: [iconErrorCircle, "red", "error"],
 };
 
-export const TICKET_STATES: Record<TicketStateId, {
-	color: MantineColor;
-	label: string;
-}> = {
+export const TICKET_STATES: Record<
+	TicketStateId,
+	{
+		color: MantineColor;
+		label: string;
+	}
+> = {
 	submitted: {
 		color: "green",
 		label: "Submitted",
@@ -523,5 +526,5 @@ export const TICKET_STATES: Record<TicketStateId, {
 	resolved: {
 		color: "violet",
 		label: "Resolved",
-	}
+	},
 };

@@ -22,22 +22,21 @@ import {
 	iconChat,
 	iconClose,
 	iconCursor,
-	iconTarget,
 } from "~/util/icons";
 
 import { formatRelative, subDays } from "date-fns";
-import { useLocation, useParams } from "wouter";
+import { useLocation } from "wouter";
+import { useCloudTicketQuery } from "~/cloud/queries/tickets";
 import { AccountAvatar } from "~/components/AccountAvatar";
 import { AuthGuard } from "~/components/AuthGuard";
+import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { TICKET_STATES } from "~/constants";
 import { useCloudStore } from "~/stores/cloud";
 import classes from "./style.module.scss";
-import { CloudAdminGuard } from "~/components/CloudAdminGuard";
-import { useCloudTicketQuery } from "~/cloud/queries/tickets";
-import { TICKET_STATES } from "~/constants";
 
 export interface TicketPageProps {
 	id: string;
@@ -111,24 +110,27 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 													{profile.name}
 												</Text>
 												<Text c="slate">
-													{formatRelative(subDays(new Date(), 4), new Date())}
+													{formatRelative(
+														subDays(new Date(), 4),
+														new Date(),
+													)}
 												</Text>
 												<Text mt="md">Hi,</Text>
 												<br />
 												<Text>
-													Lorem ipsum dolor sit amet consectetur adipisicing elit.
-													Architecto, cum officia? Modi suscipit ullam excepturi,
-													adipisci facere illo sequi laboriosam quisquam corrupti.
-													Sunt enim, deserunt repellendus id non sapiente
-													mollitia.
+													Lorem ipsum dolor sit amet consectetur
+													adipisicing elit. Architecto, cum officia? Modi
+													suscipit ullam excepturi, adipisci facere illo
+													sequi laboriosam quisquam corrupti. Sunt enim,
+													deserunt repellendus id non sapiente mollitia.
 												</Text>
 												<br />
 												<Text>
-													Lorem ipsum dolor sit amet consectetur adipisicing elit.
-													Architecto, cum officia? Modi suscipit ullam excepturi,
-													adipisci facere illo sequi laboriosam quisquam corrupti.
-													Sunt enim, deserunt repellendus id non sapiente
-													mollitia.
+													Lorem ipsum dolor sit amet consectetur
+													adipisicing elit. Architecto, cum officia? Modi
+													suscipit ullam excepturi, adipisci facere illo
+													sequi laboriosam quisquam corrupti. Sunt enim,
+													deserunt repellendus id non sapiente mollitia.
 												</Text>
 												<br />
 												<Text>Thanks!</Text>
@@ -157,7 +159,14 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 													>
 														State
 													</Label>
-													<Text c="bright">{TICKET_STATES[ticket?.state.category ?? "submitted"].label}</Text>
+													<Text c="bright">
+														{
+															TICKET_STATES[
+																ticket?.state.category ??
+																	"submitted"
+															].label
+														}
+													</Text>
 												</Box>
 											</Group>
 											<Divider />
