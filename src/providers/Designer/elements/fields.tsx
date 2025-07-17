@@ -8,21 +8,25 @@ import { Lister } from "../lister";
 import classes from "../style.module.scss";
 
 export function FieldsElement({ data, setData }: ElementProps) {
-	const initField = useStable(() => ({
-		name: "",
-		assert: "",
-		flex: false,
-		readonly: false,
-		kind: "",
-		value: "",
-		default: "",
-		permissions: {
-			create: true,
-			select: true,
-			update: true,
-			delete: true,
-		},
-	}));
+	const initField = useStable(
+		() =>
+			({
+				name: "",
+				assert: "",
+				flex: false,
+				readonly: false,
+				default_always: true,
+				kind: "",
+				value: "",
+				default: "",
+				permissions: {
+					create: true,
+					select: true,
+					update: true,
+					delete: true,
+				},
+			}) satisfies SchemaField,
+	);
 
 	const renderField = useStable((field: SchemaField) => (
 		<Flex>
@@ -90,6 +94,15 @@ export function FieldsElement({ data, setData }: ElementProps) {
 								onChange={(e) =>
 									setField((draft) => {
 										draft.readonly = e.target.checked;
+									})
+								}
+							/>
+							<Checkbox
+								label="Default always"
+								checked={field.default_always}
+								onChange={(e) =>
+									setField((draft) => {
+										draft.default_always = e.target.checked;
 									})
 								}
 							/>
