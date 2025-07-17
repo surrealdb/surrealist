@@ -27,9 +27,10 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TICKET_STATES } from "~/constants";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { useStable } from "~/hooks/stable";
 import { iconFilter, iconSearch } from "~/util/icons";
 import classes from "./style.module.scss";
+import { openNewTicketModal } from "./NewTicketModal";
+import { formatRelativeDate } from "~/util/helpers";
 
 export interface OrganizationTicketsPageProps {
 	organization: string;
@@ -52,8 +53,6 @@ export function OrganizationTicketsPage({ organization }: OrganizationTicketsPag
 		pagination.setPageSize(10);
 		pagination.setTotal(tickets?.length ?? 0);
 	}, [pagination.setTotal, pagination.setPageSize, tickets?.length]);
-
-	const submitTicket = useStable(() => {});
 
 	if (!isAuthed) {
 		return <CloudSplash />;
@@ -114,6 +113,7 @@ export function OrganizationTicketsPage({ organization }: OrganizationTicketsPag
 						<Button
 							size="xs"
 							variant="gradient"
+							onClick={() => openNewTicketModal(organization)}
 						>
 							Create Ticket
 						</Button>
@@ -127,7 +127,7 @@ export function OrganizationTicketsPage({ organization }: OrganizationTicketsPag
 									<Table.Th>Title</Table.Th>
 									<Table.Th>Category</Table.Th>
 									<Table.Th>Contacts</Table.Th>
-									<Table.Th w={96}>Status</Table.Th>
+									<Table.Th>Status</Table.Th>
 								</Table.Tr>
 							</Table.Thead>
 							<Table.Tbody>
@@ -149,7 +149,7 @@ export function OrganizationTicketsPage({ organization }: OrganizationTicketsPag
 										key={ticket.id}
 										component={Table.Tr}
 										onClick={() => {
-											navigate(`t/${ticket.id}/o/${organization}`);
+											navigate(`/t/${ticket.id}/o/${organization}`);
 										}}
 									>
 										<Table.Td
@@ -160,12 +160,10 @@ export function OrganizationTicketsPage({ organization }: OrganizationTicketsPag
 											#{ticket.id}
 										</Table.Td>
 										<Table.Td>
-											<Stack>
-												<Text>{ticket.title}</Text>
-												<Text>
-													{dayjs(ticket.created_at).format(
-														"MMMM D, YYYY - HH:mm A",
-													)}
+											<Stack gap={0}>
+												<Text fz="lg" fw={700}>{ticket.title}</Text>
+												<Text fz="sm" c="slate.3">
+													{formatRelativeDate((ticket.updated_at ?? 0) * 1000)}
 												</Text>
 											</Stack>
 										</Table.Td>

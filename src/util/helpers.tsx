@@ -1,7 +1,7 @@
 import { Group, Stack, Text } from "@mantine/core";
 import { hideNotification, showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
-import { DateArg, DurationUnit, startOfDay, startOfHour, startOfMinute } from "date-fns";
+import { DateArg, DurationUnit, formatRelative, startOfDay, startOfHour, startOfMinute } from "date-fns";
 import escapeRegex from "escape-string-regexp";
 import { shake, uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
@@ -563,6 +563,16 @@ export function withSearchParams(
 	}
 
 	return url;
+}
+
+/**
+ * Format the given date as a relative date
+ *
+ * @param date The date to format
+ * @returns The formatted date
+ */
+export function formatRelativeDate(date: number): string {
+	return formatRelative(date, new Date()).charAt(0).toUpperCase() + formatRelative(date, new Date()).slice(1);
 }
 
 /**
