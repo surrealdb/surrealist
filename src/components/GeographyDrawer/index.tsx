@@ -1,4 +1,14 @@
-import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Drawer,
+	Group,
+	NumberInput,
+	Stack,
+	TextInput,
+	Tooltip,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
@@ -9,10 +19,11 @@ import { LoadingContainer } from "~/components/LoadingContainer";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconClose, iconMarker } from "~/util/icons";
+import { iconBook, iconClose, iconMarker } from "~/util/icons";
 import { formatValue } from "~/util/surrealql";
 import { CodeEditor } from "../CodeEditor";
 import type { GeographyInput } from "../GeographyMap";
+import { openGeometryLearnModal } from "~/modals/geometry-learn";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -23,14 +34,27 @@ export interface GeographyDrawerProps {
 }
 
 export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps) {
-	const [width, setWidth] = useState(650);
-	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
+	const [width, setWidth] = useState<number>(650);
+
+	const [longitude, setLongitude] = useState<number>(0);
+	const [latitude, setLatitude] = useState<number>(0);
 
 	useEffect(() => {
-		setGeoJSON(formatValue(data));
+		// setGeoJSON(formatValue(data));
+		const geo = formatValue(data);
+
+		// the geo value is formatted as follows: ( longitude, latitude ). Regex
+		const match = geo.match(/\((-?\d+\.\d+), (-?\d+\.\d+)\)/);
+
+		if (match) {
+			setLongitude(Number(match[1]));
+			setLatitude(Number(match[2]));
+		}
 	}, [data]);
 
-	const extensions = useMemo(() => [surrealql()], []);
+	const geoJSON = useMemo<string>(() => {
+		return `(${longitude}, ${latitude})`;
+	}, [longitude, latitude]);
 
 	return (
 		<Drawer
@@ -76,6 +100,16 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 				<Spacer />
 
 				<Group align="center">
+					<Tooltip label="Learn more about geometries">
+						<Button
+							variant="light"
+							size="xs"
+							leftSection={<Icon path={iconBook} />}
+							onClick={openGeometryLearnModal}
+						>
+							Learn more
+						</Button>
+					</Tooltip>
 					<ActionIcon
 						onClick={onClose}
 						aria-label="Close geography drawer"
@@ -96,20 +130,23 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 					</Suspense>
 				</Box>
 
-				<Label style={{ marginTop: "20px" }}>Contents</Label>
-
 				<Box
+					mt="xl"
 					flex={1}
 					pos="relative"
 				>
-					<CodeEditor
-						pos="absolute"
-						inset={0}
-						autoFocus
-						value={geoJSON}
-						onChange={setGeoJSON}
-						extensions={extensions}
-					/>
+					<Group grow>
+						<NumberInput
+							label="Longitude"
+							value={longitude}
+							onChange={(value) => setLongitude(Number(value))}
+						/>
+						<NumberInput
+							label="Latitude"
+							value={latitude}
+							onChange={(value) => setLatitude(Number(value))}
+						/>
+					</Group>
 				</Box>
 			</Stack>
 		</Drawer>
