@@ -213,8 +213,6 @@ export async function refreshAccess() {
 			throw new Error(`Invalid authentication response: ${result.error}`);
 		}
 
-		console.log(result.refresh_token);
-
 		localStorage.setItem(TOKEN_REFRESH_KEY, result.refresh_token);
 		localStorage.setItem(TOKEN_ACCESS_KEY, result.access_token);
 
@@ -231,8 +229,14 @@ export async function refreshAccess() {
  * Attempt to start a new session using the given access token
  */
 export async function acquireSession(accessToken: string, initial: boolean) {
-	const { setSessionToken, setAuthProvider, setUserId, setSessionExpired, setAuthError } =
-		useCloudStore.getState();
+	const {
+		setAccessToken,
+		setSessionToken,
+		setAuthProvider,
+		setUserId,
+		setSessionExpired,
+		setAuthError,
+	} = useCloudStore.getState();
 
 	try {
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
@@ -255,6 +259,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 			body: JSON.stringify(accessToken),
 		});
 
+		setAccessToken(accessToken);
 		setSessionToken(result.token);
 		setAuthProvider(result.provider);
 		setUserId(result.id);

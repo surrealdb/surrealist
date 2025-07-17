@@ -54,7 +54,8 @@ import { shuffle } from "radash";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Spacer } from "~/components/Spacer";
-import { CloudChatMessage } from "~/types";
+import { useSidekickConversations } from "~/hooks/sidekick";
+import { SidekickChatMessage } from "~/types";
 
 const QUESTIONS = [
 	{ icon: iconCreditCard, title: "How do I manage Cloud billing?" },
@@ -76,6 +77,8 @@ export function SidekickDrawer() {
 	const handleClose = useStable(() => {
 		openHandle.close();
 	});
+
+	// const conversation = useSidekickConversations(isOpen);
 
 	const [width, setWidth] = useState(650);
 	const [showHistory, setShowHistory] = useState(false);
@@ -206,7 +209,7 @@ export function SidekickDrawer() {
 }
 
 interface ChatConversationProps {
-	conversation: CloudChatMessage[];
+	conversation: SidekickChatMessage[];
 	isAuthed: boolean;
 }
 
@@ -230,11 +233,13 @@ function ChatConversation({ conversation, isAuthed }: ChatConversationProps) {
 		}
 
 		pushChatMessage({
-			id: Math.random().toString(36).slice(2),
+			// id: Math.random().toString(36).slice(2),
 			content: input,
-			sender: "user",
-			thinking: "",
-			loading: false,
+			// sender: "user",
+			// thinking: "",
+			// loading: false,
+			sent_at: new Date(),
+			type: "user",
 		});
 
 		inputRef.current?.focus();
@@ -485,7 +490,7 @@ function ChatConversation({ conversation, isAuthed }: ChatConversationProps) {
 }
 
 interface ChatHistoryProps {
-	conversation: CloudChatMessage[];
+	conversation: SidekickChatMessage[];
 }
 
 function ChatHistory({ conversation }: ChatHistoryProps) {

@@ -1,10 +1,10 @@
 import type {
 	AuthState,
 	CloudBillingCountry,
-	CloudChatMessage,
 	CloudInstanceType,
 	CloudProfile,
 	CloudRegion,
+	SidekickChatMessage,
 } from "~/types";
 
 import { create } from "zustand";
@@ -27,6 +27,7 @@ export const EMPTY_PROFILE: CloudProfile = {
 export type CloudStore = {
 	authState: AuthState;
 	authError: string;
+	accessToken: string;
 	sessionToken: string;
 	authProvider: string;
 	userId: string;
@@ -38,11 +39,12 @@ export type CloudStore = {
 	regions: CloudRegion[];
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
-	chatConversation: CloudChatMessage[];
+	chatConversation: SidekickChatMessage[];
 	chatLastResponse: string;
 
 	setLoading: () => void;
 	setAuthError: (error: string) => void;
+	setAccessToken: (token: string) => void;
 	setSessionToken: (token: string) => void;
 	setUserId: (id: string) => void;
 	setAuthProvider: (provider: string) => void;
@@ -53,9 +55,9 @@ export type CloudStore = {
 	setProfile: (profile: CloudProfile) => void;
 	setSessionExpired: (expired: boolean) => void;
 	clearSession: () => void;
-	pushChatMessage: (message: CloudChatMessage) => void;
+	pushChatMessage: (message: SidekickChatMessage) => void;
 	completeChatResponse: (id: string) => void;
-	updateChatMessage: (id: string, fn: (state: CloudChatMessage) => void) => void;
+	updateChatMessage: (id: string, fn: (state: SidekickChatMessage) => void) => void;
 	clearChatSession: () => void;
 };
 
@@ -63,6 +65,7 @@ export const useCloudStore = create<CloudStore>()(
 	immer((set) => ({
 		authState: "unknown",
 		authError: "",
+		accessToken: "",
 		sessionToken: "",
 		userId: "",
 		authProvider: "",
@@ -85,6 +88,11 @@ export const useCloudStore = create<CloudStore>()(
 		setAuthError: (error) =>
 			set({
 				authError: error,
+			}),
+
+		setAccessToken: (token) =>
+			set({
+				accessToken: token,
 			}),
 
 		setSessionToken: (token) =>
@@ -145,13 +153,13 @@ export const useCloudStore = create<CloudStore>()(
 				chatConversation: [...state.chatConversation, message],
 			})),
 
-		updateChatMessage: (id, updater) =>
+		updateChatMessage: (updater) =>
 			set((state) => {
-				const msgIndex = state.chatConversation.findLastIndex((m) => m.id === id);
+				// const msgIndex = state.chatConversation.findLastIndex((m) => m.id === id);
 
-				if (msgIndex >= 0) {
-					updater(state.chatConversation[msgIndex]);
-				}
+				// if (msgIndex >= 0) {
+				// 	updater(state.chatConversation[msgIndex]);
+				// }
 
 				return state;
 			}),
