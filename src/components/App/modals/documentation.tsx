@@ -103,6 +103,7 @@ export function DocumentationModal() {
 			transitionProps={{ transition: Y_SLIDE_TRANSITION }}
 			centered={false}
 			size="lg"
+			zIndex={1000}
 			onKeyDown={handleKeyDown}
 			classNames={{
 				content: classes.listingModal,

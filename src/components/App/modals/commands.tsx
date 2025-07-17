@@ -148,6 +148,7 @@ export function CommandPaletteModal() {
 			centered={false}
 			size="lg"
 			onKeyDown={handleKeyDown}
+			zIndex={1000}
 			classNames={{
 				content: classes.listingModal,
 				body: classes.listingBody,
