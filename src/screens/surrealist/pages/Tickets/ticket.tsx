@@ -1,6 +1,5 @@
-import surrealImg from "~/assets/images/surrealdb.png";
-
 import {
+	ActionIcon,
 	Avatar,
 	Badge,
 	Box,
@@ -10,9 +9,12 @@ import {
 	Paper,
 	ScrollArea,
 	Skeleton,
+	Space,
 	Stack,
 	Text,
+	Textarea,
 	ThemeIcon,
+	UnstyledButton,
 } from "@mantine/core";
 
 import {
@@ -22,179 +24,296 @@ import {
 	iconChat,
 	iconClose,
 	iconCursor,
+	iconFile,
+	iconFolderPlus,
+	iconSurreal,
 } from "~/util/icons";
 
-import { formatRelative, subDays } from "date-fns";
 import { useLocation } from "wouter";
 import { useCloudTicketQuery } from "~/cloud/queries/tickets";
-import { AccountAvatar } from "~/components/AccountAvatar";
-import { AuthGuard } from "~/components/AuthGuard";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TICKET_STATES } from "~/constants";
-import { useCloudStore } from "~/stores/cloud";
 import classes from "./style.module.scss";
+import { TicketPart } from "./TicketPart";
+import { formatRelativeDate, plural, showErrorNotification } from "~/util/helpers";
+import { useConfirmation } from "~/providers/Confirmation";
+import { useTicketCloseMutation, useTicketReplyMutation } from "~/cloud/mutations/tickets";
+import { CloudTicket } from "~/types";
+import { ActionButton } from "~/components/ActionButton";
+import { useInputState } from "@mantine/hooks";
+import { useBoolean } from "~/hooks/boolean";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
 export interface TicketPageProps {
 	id: string;
 	organization: string;
 }
 
+export interface TicketReplyBoxProps {
+	ticket: CloudTicket;
+	organization: string;
+	onClose: () => void;
+	recomputeHeight: () => void;
+}
+
+export const TicketReplyBox = forwardRef<HTMLDivElement, TicketReplyBoxProps>(
+	({ ticket, organization, onClose, recomputeHeight }, ref) => {
+		const replyMutation = useTicketReplyMutation(organization, ticket.id);
+		const [body, setBody] = useInputState("");
+
+		return (
+			<Paper p="lg" pos="absolute" bottom={0} left={0} right={0} mx="auto" maw={900} ref={ref}>
+				<Stack gap="xl">
+					<Group>
+						<Text fz="lg" fw={700}>Reply to ticket</Text>
+						<Spacer />
+						<ActionButton
+							size="lg"
+							label="Attach file"
+							c="white"
+							onClick={onClose}
+						>
+							<Icon size="md" path={iconClose} />
+						</ActionButton>
+					</Group>
+					<Textarea
+						placeholder="Reply to ticket"
+						minRows={4}
+						autosize
+						value={body}
+						onChange={(event) => {
+							setBody(event.target.value);
+							recomputeHeight();
+						}}
+					/>
+					<Group>
+						<Spacer />
+						<Button
+							variant="gradient"
+							disabled={!body}
+							loading={replyMutation.isPending}
+							onClick={async () => {
+								const result = await replyMutation.mutateAsync({
+									body: body
+								});
+
+								if (!result) {
+									showErrorNotification({
+										title: "Failed to send reply",
+										content: "Please try again later.",
+									});
+								}
+
+								onClose();
+								setBody("");
+							}}
+						>
+							Send
+						</Button>
+					</Group>
+				</Stack>
+			</Paper>
+		);
+	}
+);
+
 export function TicketPage({ id, organization }: TicketPageProps) {
 	const [, navigate] = useLocation();
-	const profile = useCloudStore((s) => s.profile);
 
 	if (id === "0") {
 		return <div />;
 	}
 
+	const [random, setRandom] = useState(0);
+	const [replyBoxHeight, setReplyBoxHeight] = useState(0);
+	const [replyBoxOpen, replyBoxHandle] = useBoolean(false);
+	const replyBoxRef = useRef<HTMLDivElement>(null);
+	const ticketCloseMutation = useTicketCloseMutation(organization, id);
+
+	const close = useConfirmation({
+		title: "Close ticket",
+		message: `Are you sure you want to close this ticket? Once closed, you will not be able to re-open it.`,
+		confirmText: "Close ticket",
+		confirmProps: {
+			loading: ticketCloseMutation.isPending,
+		},
+		onConfirm: async () => {
+			const result = await ticketCloseMutation.mutateAsync();
+
+			if (!result || result.open) {
+				showErrorNotification({
+					title: "Failed to close ticket",
+					content: "Please try again later.",
+				});
+			}
+		}
+	});
+
+	useEffect(() => {
+		setReplyBoxHeight(replyBoxRef.current?.getBoundingClientRect().height ?? 0);
+	}, [replyBoxOpen, random, replyBoxRef.current]);
+
 	const { data: ticket, isPending: ticketPending } = useCloudTicketQuery(organization, id);
 
 	return (
-		<AuthGuard>
-			<CloudAdminGuard organizationId={organization}>
-				<Skeleton visible={ticketPending}>
+		<CloudAdminGuard organizationId={organization}>
+			<Box
+				flex={1}
+				pos="relative"
+			>
+				<ScrollArea
+					pos="absolute"
+					scrollbars="y"
+					type="scroll"
+					inset={0}
+					className={classes.scrollArea}
+				>
 					<Box
-						flex={1}
-						pos="relative"
+						mx="auto"
+						maw={900}
+						pb={96}
 					>
-						<ScrollArea
-							pos="absolute"
-							scrollbars="y"
-							type="scroll"
-							inset={0}
-							className={classes.scrollArea}
-						>
-							<Box
-								mx="auto"
-								maw={900}
-								pb={96}
+						<Group wrap="nowrap">
+							<PrimaryTitle>Ticket #{ticket?.id}</PrimaryTitle>
+							<Spacer />
+							<Button
+								variant="light"
+								color="slate"
+								leftSection={<Icon path={iconArrowLeft} />}
+								onClick={() => navigate(`/tickets/${organization}`)}
+								size="xs"
 							>
-								<Group wrap="nowrap">
-									<PrimaryTitle>Ticket #{ticket?.id}</PrimaryTitle>
-									<Spacer />
-									<Button
-										variant="light"
-										color="slate"
-										leftSection={<Icon path={iconArrowLeft} />}
-										onClick={() => navigate(`/tickets/${organization}`)}
-										size="xs"
-									>
-										Back to overview
-									</Button>
-								</Group>
-								<Group
-									mt="md"
-									wrap="nowrap"
-									align="start"
+								Back to overview
+							</Button>
+						</Group>
+						<Group
+							mt="md"
+							wrap="nowrap"
+							align="start"
+						>
+							<Skeleton visible={ticketPending} flex={1}>
+								<Paper
+									p="lg"
 								>
-									<Paper
-										p="lg"
-										flex={1}
+									<Group
+										gap="xl"
+										wrap="nowrap"
+										align="start"
 									>
-										<Group
-											wrap="nowrap"
-											align="start"
-											gap="xl"
+										<Avatar
+											radius="md"
+											size={36}
+											name={ticket?.contacts[0]?.name}
+											src={ticket?.contacts[0]?.avatar}
+											component={UnstyledButton}
+											style={{
+												cursor: "default",
+											}}
 										>
-											<AccountAvatar />
-											<Box flex={1}>
-												<Text
-													fw="500"
-													c="bright"
-													fz="lg"
+										</Avatar>
+
+										<Stack>
+											<Stack gap={0}>
+												<Text c="bright" fz="lg" fw={700}>{ticket?.contacts[0]?.name}</Text>
+												<Text fz="sm" c="slate.3">{formatRelativeDate((ticket?.updated_at ?? 0) * 1000)}</Text>
+											</Stack>
+											<p>{ticket?.description}</p>
+										</Stack>
+									</Group>
+								</Paper>
+							</Skeleton>
+							<Skeleton visible={ticketPending} flex={1} maw={225}>
+								<Paper p="lg">
+									<Stack gap="lg">
+										<Group>
+											<ThemeIcon
+												size="lg"
+												variant="light"
+												color={
+													TICKET_STATES[
+														ticket?.state.category ??
+														"submitted"
+													].color
+												}
+											>
+												<Icon path={iconChat} />
+											</ThemeIcon>
+											<Box>
+												<Label
+													mb={0}
+													fz="xs"
+													c="slate.3"
 												>
-													{profile.name}
+													State
+												</Label>
+												<Text c="bright">
+													{
+														TICKET_STATES[
+															ticket?.state.category ??
+															"submitted"
+														].label
+													}
 												</Text>
-												<Text c="slate">
-													{formatRelative(
-														subDays(new Date(), 4),
-														new Date(),
-													)}
-												</Text>
-												<Text mt="md">Hi,</Text>
-												<br />
-												<Text>
-													Lorem ipsum dolor sit amet consectetur
-													adipisicing elit. Architecto, cum officia? Modi
-													suscipit ullam excepturi, adipisci facere illo
-													sequi laboriosam quisquam corrupti. Sunt enim,
-													deserunt repellendus id non sapiente mollitia.
-												</Text>
-												<br />
-												<Text>
-													Lorem ipsum dolor sit amet consectetur
-													adipisicing elit. Architecto, cum officia? Modi
-													suscipit ullam excepturi, adipisci facere illo
-													sequi laboriosam quisquam corrupti. Sunt enim,
-													deserunt repellendus id non sapiente mollitia.
-												</Text>
-												<br />
-												<Text>Thanks!</Text>
 											</Box>
 										</Group>
-									</Paper>
-									<Paper
-										p="lg"
-										flex={1}
-										maw={225}
-									>
-										<Stack gap="lg">
-											<Group>
-												<ThemeIcon
-													size="lg"
-													variant="light"
-													color="orange"
+										<Divider />
+										<Group>
+											<ThemeIcon
+												size="lg"
+												variant="light"
+												color="violet"
+											>
+												<Icon path={iconBullhorn} />
+											</ThemeIcon>
+											<Box>
+												<Label
+													mb={0}
+													fz="xs"
+													c="slate.3"
 												>
-													<Icon path={iconChat} />
-												</ThemeIcon>
-												<Box>
-													<Label
-														mb={0}
-														fz="xs"
-														c="slate.3"
-													>
-														State
-													</Label>
-													<Text c="bright">
-														{
-															TICKET_STATES[
-																ticket?.state.category ??
-																	"submitted"
-															].label
-														}
-													</Text>
-												</Box>
-											</Group>
-											<Divider />
-											<Group>
-												<ThemeIcon
-													size="lg"
-													variant="light"
+													Type
+												</Label>
+												<Text c="bright">{ticket?.type.name}</Text>
+											</Box>
+										</Group>
+										<Group wrap="nowrap">
+											<ThemeIcon
+												size="lg"
+												variant="light"
+												color="green"
+											>
+												<Icon path={iconAccount} />
+											</ThemeIcon>
+											<Box miw={0}>
+												<Label
+													mb={0}
+													fz="xs"
+													c="slate.3"
 												>
-													<Icon path={iconBullhorn} />
-												</ThemeIcon>
-												<Box>
-													<Label
-														mb={0}
-														fz="xs"
-														c="slate.3"
-													>
-														Type
-													</Label>
-													<Text c="bright">{ticket?.type.name}</Text>
-												</Box>
-											</Group>
+													Contacts
+												</Label>
+												<Text
+													c="bright"
+													truncate
+												>
+													{ticket?.contacts
+														.map((contact) => contact.name)
+														.join(", ")}
+												</Text>
+											</Box>
+										</Group>
+										{ticket?.assignee && (
 											<Group wrap="nowrap">
 												<ThemeIcon
 													size="lg"
 													variant="light"
-													color="green"
+													color="surreal"
 												>
-													<Icon path={iconAccount} />
+													<Icon path={iconSurreal} />
 												</ThemeIcon>
 												<Box miw={0}>
 													<Label
@@ -202,95 +321,79 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 														fz="xs"
 														c="slate.3"
 													>
-														Submitter
+														Assigned to
 													</Label>
 													<Text
 														c="bright"
 														truncate
 													>
-														{ticket?.contacts[0]?.name}
+														{ticket?.assignee?.name}
 													</Text>
 												</Box>
 											</Group>
-										</Stack>
-									</Paper>
-								</Group>
-
-								<PrimaryTitle mt="xl">1 Reply</PrimaryTitle>
-								<Divider mt="xs" />
-
-								<Paper
-									p="lg"
-									mt="xl"
-								>
-									<Group
-										wrap="nowrap"
-										align="start"
-										gap="xl"
-									>
-										<Avatar
-											radius="md"
-											size={36}
-											src={surrealImg}
-											bg="surreal.0"
-											name="John Doe"
-										/>
-										<Box flex={1}>
-											<Group gap="xs">
-												<Text
-													fw="500"
-													c="bright"
-													fz="lg"
-												>
-													SurrealDB Team
-												</Text>
-												<Badge
-													color="blue"
-													size="xs"
-													variant="light"
-												>
-													Support agent
-												</Badge>
-											</Group>
-											<Text c="slate">
-												{formatRelative(subDays(new Date(), 3), new Date())}
-											</Text>
-											<Text mt="md">Hello!</Text>
-										</Box>
-									</Group>
+										)}
+									</Stack>
 								</Paper>
+							</Skeleton>
+						</Group>
 
-								<Text
-									ta="center"
-									mt={42}
-								>
-									This ticket is open and our support team is working on it.
-								</Text>
+						<Skeleton visible={ticketPending} mt="xl">
+							<PrimaryTitle mt="xl">{ticket?.parts.length} {plural(ticket?.parts.length ?? 0, "Update", "Updates")}</PrimaryTitle>
 
-								<Group
-									mt="xl"
-									justify="center"
-								>
-									<Button
-										variant="gradient"
-										rightSection={<Icon path={iconCursor} />}
+							<Divider mt="xs" />
+
+							<Stack w="100%" mt="xl" gap="xl">
+								{ticket?.parts.map((part) => (
+									<TicketPart
+										key={part.id}
+										part={part}
+									/>
+								))}
+							</Stack>
+
+							{!ticket?.open && (
+								<Text ta="center" fz="lg" mt={40}>This ticket was closed. Please create a new ticket if you still need help.</Text>
+							)}
+
+							{(ticket?.open) && !replyBoxOpen && (
+								<>
+									<Group
+										mt="xl"
+										justify="center"
 									>
-										Send a reply
-									</Button>
-									<Button
-										variant="light"
-										color="slate"
-										rightSection={<Icon path={iconClose} />}
-									>
-										Close ticket
-									</Button>
-								</Group>
-							</Box>
-						</ScrollArea>
+										<Button
+											variant="gradient"
+											rightSection={<Icon path={iconCursor} />}
+											onClick={replyBoxHandle.open}
+										>
+											Send a reply
+										</Button>
+										<Button
+											variant="light"
+											color="slate"
+											rightSection={<Icon path={iconClose} />}
+											onClick={close}
+										>
+											Close ticket
+										</Button>
+									</Group>
+								</>
+							)}
+						</Skeleton>
 					</Box>
-				</Skeleton>
-			</CloudAdminGuard>
-		</AuthGuard>
+					<Space h={replyBoxHeight} />
+				</ScrollArea>
+				{replyBoxOpen && (
+					<TicketReplyBox
+						ref={replyBoxRef}
+						organization={organization}
+						ticket={ticket!}
+						onClose={replyBoxHandle.close}
+						recomputeHeight={() => setRandom(random + 1)}
+					/>
+				)}
+			</Box>
+		</CloudAdminGuard >
 	);
 }
 
