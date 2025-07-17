@@ -30,10 +30,12 @@ import { iconDotsVertical, iconExitToAp } from "~/util/icons";
 
 export interface OrganizationTileProps extends BoxProps {
 	organization: CloudOrganization;
+	url?: string;
 }
 
 export function OrganizationTile({
 	organization,
+	url,
 	children,
 	...other
 }: PropsWithChildren<OrganizationTileProps>) {
@@ -51,7 +53,7 @@ export function OrganizationTile({
 	}, [membersQuery.data, userId]);
 
 	const handleManage = useStable(() => {
-		navigate(`/o/${organization.id}`);
+		navigate(url ?? `/o/${organization.id}`);
 	});
 
 	const handleCopyID = useStable(() => {

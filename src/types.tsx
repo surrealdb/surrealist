@@ -41,6 +41,7 @@ export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticat
 export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
+export type TicketStateId = "submitted" | "in_progress" | "waiting_on_customer" | "resolved";
 
 export type InstanceState =
 	| "creating"
@@ -101,8 +102,8 @@ export type AppMenuItemType =
 	| "Command"
 	| "Custom"
 	| {
-			About: AboutMetadata | null;
-	  };
+		About: AboutMetadata | null;
+	};
 
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";
 
@@ -230,6 +231,7 @@ export interface SurrealistCloudSettings {
 	urlApiBase: string;
 	urlApiMgmtBase: string;
 	urlAuthBase: string;
+	urlApiTicketsBase: string;
 }
 
 export interface SurrealistGtmSettings {
@@ -307,13 +309,13 @@ export interface AccessJwt {
 		key: string;
 	};
 	verify:
-		| {
-				url: string;
-		  }
-		| {
-				alg: string;
-				key: string;
-		  };
+	| {
+		url: string;
+	}
+	| {
+		alg: string;
+		key: string;
+	};
 }
 
 export interface TableView {
@@ -409,16 +411,16 @@ export interface SchemaAccess {
 		token: Duration;
 	};
 	kind:
-		| {
-				kind: "JWT";
-				jwt: AccessJwt;
-		  }
-		| {
-				kind: "RECORD";
-				signin: string;
-				signup: string;
-				jwt: AccessJwt;
-		  };
+	| {
+		kind: "JWT";
+		jwt: AccessJwt;
+	}
+	| {
+		kind: "RECORD";
+		signin: string;
+		signup: string;
+		jwt: AccessJwt;
+	};
 }
 
 export interface SchemaParameter {
@@ -796,6 +798,63 @@ export interface CloudDeployConfig {
 	storageCategory: StorageCategory;
 	storageAmount: number;
 	dataset: boolean;
+}
+
+export interface CloudTicketState {
+	id: string;
+	category: TicketStateId;
+	label: string;
+}
+
+export interface CloudTicketType {
+	id: string;
+	name: string;
+}
+
+export interface CloudTicketContact {
+	id: string;
+	email: string;
+	name: string;
+	avatar?: string;
+}
+
+export interface CloudTicketUser {
+	type: "admin" | "user" | "bot";
+	id: string;
+	name: string;
+	avatar?: string;
+}
+
+export interface CloudTicketAdminAssignee {
+	name: string;
+	avatar?: string;
+}
+
+export interface CloudTicketPart {
+	id: string;
+	part_type: string;
+	ticket_state: string;
+	previous_ticket_state: string;
+	created_at: number;
+	updated_at: number;
+	attachments: any[];
+	assigned_to?: CloudTicketUser;
+	body?: string;
+	author?: CloudTicketUser;
+}
+
+export interface CloudTicket {
+	id: string;
+	title: string;
+	description: string;
+	state: CloudTicketState;
+	type: CloudTicketType;
+	created_at: number;
+	updated_at: number;
+	contacts: CloudTicketContact[];
+	assignee?: CloudTicketAdminAssignee;
+	parts: CloudTicketPart[];
+	open: boolean;
 }
 
 export interface AppMenu {

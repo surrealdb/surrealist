@@ -26,7 +26,7 @@ import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
-import TicketsPage from "./pages/Tickets";
+import TicketOrganizationsPage from "./pages/Tickets";
 import TicketPage from "./pages/Tickets/ticket";
 import { SurrealistSidebar } from "./sidebar";
 import { SurrealistToolbar } from "./toolbar";
@@ -41,6 +41,7 @@ import MonitorView from "./views/monitor/MonitorView";
 import ParametersView from "./views/parameters/ParametersView";
 import QueryView from "./views/query/QueryView";
 import SidekickView from "./views/sidekick/SidekickView";
+import OrganizationTicketsPage from "./pages/Tickets/tickets";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
@@ -49,7 +50,8 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
-const TicketsPageLazy = memo(TicketsPage);
+const OrganizationTicketsPageLazy = memo(OrganizationTicketsPage);
+const TicketOrganizationsPageLazy = memo(TicketOrganizationsPage);
 const TicketPageLazy = memo(TicketPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
@@ -218,11 +220,15 @@ export function SurrealistScreen() {
 									</Route>
 
 									<Route path="/tickets">
-										<TicketsPageLazy />
+										<TicketOrganizationsPageLazy />
 									</Route>
 
-									<Route path="/t/:ticket">
-										{({ ticket }) => <TicketPageLazy id={ticket} />}
+									<Route path="/tickets/:organization">
+										{({ organization }) => <OrganizationTicketsPageLazy organization={organization} />}
+									</Route>
+
+									<Route path="/t/:ticket/o/:organization">
+										{({ ticket, organization }) => <TicketPageLazy id={ticket} organization={organization} />}
 									</Route>
 
 									<Route path="/chat">
