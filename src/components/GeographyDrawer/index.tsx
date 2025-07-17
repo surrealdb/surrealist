@@ -1,27 +1,13 @@
-import {
-	ActionIcon,
-	Box,
-	Button,
-	Drawer,
-	Group,
-	NumberInput,
-	Stack,
-	TextInput,
-	Tooltip,
-} from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
-import { surrealql } from "@surrealdb/codemirror";
+import { ActionIcon, Box, Button, Drawer, Group, NumberInput, Stack, Tooltip } from "@mantine/core";
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconBook, iconClose, iconMarker } from "~/util/icons";
 import { formatValue } from "~/util/surrealql";
-import { CodeEditor } from "../CodeEditor";
 import type { GeographyInput } from "../GeographyMap";
 import { openGeometryLearnModal } from "~/modals/geometry-learn";
 
