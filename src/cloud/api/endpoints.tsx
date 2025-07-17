@@ -8,7 +8,8 @@ const CLOUD_API_MGMT_BASE = "https://api.cloud.surrealdb.com/management/v1";
 const CLOUD_API_TICKETS_BASE = "https://api.tickets.surrealdb.com";
 
 export function getCloudEndpoints() {
-	const { urlAuthBase, urlApiBase, urlApiMgmtBase, urlApiTicketsBase } = useConfigStore.getState().settings.cloud;
+	const { urlAuthBase, urlApiBase, urlApiMgmtBase, urlApiTicketsBase } =
+		useConfigStore.getState().settings.cloud;
 	const isCustom = featureFlags.get("cloud_endpoints") === "custom";
 
 	return {

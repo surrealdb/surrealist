@@ -48,28 +48,28 @@ export interface PreferenceSection {
  * A preference controller for a checkbox
  */
 export class CheckboxController {
-	constructor(public options: ReaderWriter<boolean>) { }
+	constructor(public options: ReaderWriter<boolean>) {}
 }
 
 /**
  * A preference controller for a number
  */
 export class NumberController {
-	constructor(public options: ReaderWriter<number>) { }
+	constructor(public options: ReaderWriter<number>) {}
 }
 
 /**
  * A preference controller for text inputs
  */
 export class TextController {
-	constructor(public options: ReaderWriter<string> & { placeholder?: string }) { }
+	constructor(public options: ReaderWriter<string> & { placeholder?: string }) {}
 }
 
 /**
  * A preference controller for a selection dropdown
  */
 export class SelectionController<T extends string> {
-	constructor(public options: ReaderWriter<T> & { options: Selectable<T>[] }) { }
+	constructor(public options: ReaderWriter<T> & { options: Selectable<T>[] }) {}
 }
 
 /**
@@ -83,7 +83,7 @@ export class FlagSetController<K extends string, T extends Flags<K>> {
 			default?: boolean;
 			minWidth?: string | number;
 		},
-	) { }
+	) {}
 }
 
 /**

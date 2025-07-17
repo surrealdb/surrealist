@@ -60,7 +60,12 @@ export function TicketOrganizationsPage() {
 							</PrimaryTitle>
 						</Box>
 
-						<PrimaryTitle fz={22} mt="xl">Select an organisation</PrimaryTitle>
+						<PrimaryTitle
+							fz={22}
+							mt="xl"
+						>
+							Select an organisation
+						</PrimaryTitle>
 
 						<SimpleGrid cols={GRID_COLUMNS}>
 							{isPending && <Skeleton h={112} />}
