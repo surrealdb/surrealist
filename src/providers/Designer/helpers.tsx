@@ -149,7 +149,13 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 		}
 
 		if (field.default) {
-			query += ` DEFAULT ${field.default}`;
+			query += " DEFAULT ";
+
+			if (field.default_always) {
+				query += " ALWAYS ";
+			}
+
+			query += field.default;
 		}
 
 		if (field.readonly) {
