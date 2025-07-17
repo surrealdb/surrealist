@@ -8,6 +8,7 @@ import {
 	iconPackageClosed,
 	iconProgressClock,
 	iconServer,
+	iconTag,
 } from "~/util/icons";
 
 import { Divider, Group, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
@@ -161,6 +162,16 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 														px="xl"
 													>
 														Usage
+													</Tabs.Tab>
+													<Tabs.Tab
+														value="tickets"
+														leftSection={
+															<Icon path={iconTag} />
+														}
+														onClick={() => navigate(`/tickets/${organization.id}`)}
+														px="xl"
+													>
+														Tickets
 													</Tabs.Tab>
 													<Tabs.Tab
 														value="settings"

@@ -502,7 +502,7 @@ export const TICKET_STATES: Record<
 	},
 	waiting_on_customer: {
 		color: "red",
-		label: "Waiting on Customer",
+		label: "Waiting on You",
 	},
 	resolved: {
 		color: "violet",

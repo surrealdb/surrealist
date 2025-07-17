@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudTicket } from "~/types";
+import { CloudTicket, CloudTicketType } from "~/types";
 import { fetchTicketsAPI } from "../api/tickets";
 
 /**
@@ -14,6 +14,21 @@ export function useCloudTicketsQuery(organization?: string) {
 		enabled: !!organization && authState === "authenticated",
 		queryFn: async () => {
 			return fetchTicketsAPI<CloudTicket[]>(`/organisations/${organization}/tickets`);
+		},
+	});
+}
+
+/**
+ * Fetch organization tickets list
+ */
+export function useCloudTicketTypesQuery(organization?: string) {
+	const authState = useCloudStore((state) => state.authState);
+
+	return useQuery({
+		queryKey: ["cloud", "ticket_types", organization],
+		enabled: !!organization && authState === "authenticated",
+		queryFn: async () => {
+			return fetchTicketsAPI<CloudTicketType[]>(`/organisations/${organization}/ticket_types`);
 		},
 	});
 }
