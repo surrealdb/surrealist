@@ -367,6 +367,7 @@ export interface SchemaField {
 	name: string;
 	flex: boolean;
 	readonly: boolean;
+	default_always: boolean;
 	kind?: string;
 	value?: string;
 	assert?: string;
