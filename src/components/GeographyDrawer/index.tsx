@@ -40,10 +40,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 	const [latitude, setLatitude] = useState<number>(0);
 
 	useEffect(() => {
-		// setGeoJSON(formatValue(data));
 		const geo = formatValue(data);
-
-		// the geo value is formatted as follows: ( longitude, latitude ). Regex
 		const match = geo.match(/\((-?\d+\.\d+), (-?\d+\.\d+)\)/);
 
 		if (match) {
