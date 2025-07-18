@@ -28,7 +28,9 @@ export function useCloudTicketTypesQuery(organization?: string) {
 		queryKey: ["cloud", "ticket_types", organization],
 		enabled: !!organization && authState === "authenticated",
 		queryFn: async () => {
-			return fetchTicketsAPI<CloudTicketType[]>(`/organisations/${organization}/ticket_types`);
+			return fetchTicketsAPI<CloudTicketType[]>(
+				`/organisations/${organization}/ticket_types`,
+			);
 		},
 	});
 }
