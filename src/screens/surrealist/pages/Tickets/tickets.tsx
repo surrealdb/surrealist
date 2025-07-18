@@ -13,7 +13,6 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import dayjs from "dayjs";
 import { useLayoutEffect } from "react";
 import { useLocation } from "wouter";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
@@ -27,10 +26,10 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TICKET_STATES } from "~/constants";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { iconFilter, iconSearch } from "~/util/icons";
-import classes from "./style.module.scss";
-import { openNewTicketModal } from "./NewTicketModal";
 import { formatRelativeDate } from "~/util/helpers";
+import { iconFilter, iconSearch } from "~/util/icons";
+import { openNewTicketModal } from "./NewTicketModal";
+import classes from "./style.module.scss";
 
 export interface OrganizationTicketsPageProps {
 	organization: string;
@@ -161,9 +160,19 @@ export function OrganizationTicketsPage({ organization }: OrganizationTicketsPag
 										</Table.Td>
 										<Table.Td>
 											<Stack gap={0}>
-												<Text fz="lg" fw={700}>{ticket.title}</Text>
-												<Text fz="sm" c="slate.3">
-													{formatRelativeDate((ticket.updated_at ?? 0) * 1000)}
+												<Text
+													fz="lg"
+													fw={700}
+												>
+													{ticket.title}
+												</Text>
+												<Text
+													fz="sm"
+													c="slate.3"
+												>
+													{formatRelativeDate(
+														(ticket.updated_at ?? 0) * 1000,
+													)}
 												</Text>
 											</Stack>
 										</Table.Td>
