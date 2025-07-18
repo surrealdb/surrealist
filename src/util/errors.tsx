@@ -26,6 +26,10 @@ export async function openErrorModal(
 	message?: string,
 	cause?: string,
 	trace?: string,
+	additionalInfo?: {
+		title: string;
+		content: string;
+	}[],
 ) {
 	return new Promise<void>((resolve) => {
 		openModal({
@@ -47,6 +51,20 @@ export async function openErrorModal(
 			),
 			children: (
 				<Stack gap="lg">
+					{additionalInfo && (
+						<Stack gap="lg">
+							{additionalInfo.map((info) => (
+								<Box key={info.title}>
+									<Title order={3}>{info.title}</Title>
+									<CodePreview
+										value={info.content}
+										withCopy
+									/>
+								</Box>
+							))}
+						</Stack>
+					)}
+
 					{message && (
 						<Box>
 							<Title order={3}>Message</Title>

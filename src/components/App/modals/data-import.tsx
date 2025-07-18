@@ -54,7 +54,7 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 			if (failed.length > 0) {
 				for (const fail of failed) {
 					showErrorNotification({
-						title: "Import failed",
+						title: "Query partially failed",
 						content: new Error(fail.result),
 					});
 				}
