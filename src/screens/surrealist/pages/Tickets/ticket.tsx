@@ -1,7 +1,5 @@
 import {
-	ActionIcon,
 	Avatar,
-	Badge,
 	Box,
 	Button,
 	Divider,
@@ -24,29 +22,27 @@ import {
 	iconChat,
 	iconClose,
 	iconCursor,
-	iconFile,
-	iconFolderPlus,
 	iconSurreal,
 } from "~/util/icons";
 
+import { useInputState } from "@mantine/hooks";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
+import { useTicketCloseMutation, useTicketReplyMutation } from "~/cloud/mutations/tickets";
 import { useCloudTicketQuery } from "~/cloud/queries/tickets";
+import { ActionButton } from "~/components/ActionButton";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { TICKET_STATES } from "~/constants";
-import classes from "./style.module.scss";
-import { TicketPart } from "./TicketPart";
-import { formatRelativeDate, plural, showErrorNotification } from "~/util/helpers";
-import { useConfirmation } from "~/providers/Confirmation";
-import { useTicketCloseMutation, useTicketReplyMutation } from "~/cloud/mutations/tickets";
-import { CloudTicket } from "~/types";
-import { ActionButton } from "~/components/ActionButton";
-import { useInputState } from "@mantine/hooks";
 import { useBoolean } from "~/hooks/boolean";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { useConfirmation } from "~/providers/Confirmation";
+import { CloudTicket } from "~/types";
+import { formatRelativeDate, plural, showErrorNotification } from "~/util/helpers";
+import { TicketPart } from "./TicketPart";
+import classes from "./style.module.scss";
 
 export interface TicketPageProps {
 	id: string;
@@ -66,10 +62,24 @@ export const TicketReplyBox = forwardRef<HTMLDivElement, TicketReplyBoxProps>(
 		const [body, setBody] = useInputState("");
 
 		return (
-			<Paper p="lg" pos="absolute" bottom={0} left={0} right={0} mx="auto" maw={900} ref={ref}>
+			<Paper
+				p="lg"
+				pos="absolute"
+				bottom={0}
+				left={0}
+				right={0}
+				mx="auto"
+				maw={900}
+				ref={ref}
+			>
 				<Stack gap="xl">
 					<Group>
-						<Text fz="lg" fw={700}>Reply to ticket</Text>
+						<Text
+							fz="lg"
+							fw={700}
+						>
+							Reply to ticket
+						</Text>
 						<Spacer />
 						<ActionButton
 							size="lg"
@@ -77,7 +87,10 @@ export const TicketReplyBox = forwardRef<HTMLDivElement, TicketReplyBoxProps>(
 							c="white"
 							onClick={onClose}
 						>
-							<Icon size="md" path={iconClose} />
+							<Icon
+								size="md"
+								path={iconClose}
+							/>
 						</ActionButton>
 					</Group>
 					<Textarea
@@ -98,7 +111,7 @@ export const TicketReplyBox = forwardRef<HTMLDivElement, TicketReplyBoxProps>(
 							loading={replyMutation.isPending}
 							onClick={async () => {
 								const result = await replyMutation.mutateAsync({
-									body: body
+									body: body,
 								});
 
 								if (!result) {
@@ -118,7 +131,7 @@ export const TicketReplyBox = forwardRef<HTMLDivElement, TicketReplyBoxProps>(
 				</Stack>
 			</Paper>
 		);
-	}
+	},
 );
 
 export function TicketPage({ id, organization }: TicketPageProps) {
@@ -150,7 +163,7 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 					content: "Please try again later.",
 				});
 			}
-		}
+		},
 	});
 
 	useEffect(() => {
@@ -195,10 +208,11 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 							wrap="nowrap"
 							align="start"
 						>
-							<Skeleton visible={ticketPending} flex={1}>
-								<Paper
-									p="lg"
-								>
+							<Skeleton
+								visible={ticketPending}
+								flex={1}
+							>
+								<Paper p="lg">
 									<Group
 										gap="xl"
 										wrap="nowrap"
@@ -213,20 +227,36 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 											style={{
 												cursor: "default",
 											}}
-										>
-										</Avatar>
+										></Avatar>
 
 										<Stack>
 											<Stack gap={0}>
-												<Text c="bright" fz="lg" fw={700}>{ticket?.contacts[0]?.name}</Text>
-												<Text fz="sm" c="slate.3">{formatRelativeDate((ticket?.updated_at ?? 0) * 1000)}</Text>
+												<Text
+													c="bright"
+													fz="lg"
+													fw={700}
+												>
+													{ticket?.contacts[0]?.name}
+												</Text>
+												<Text
+													fz="sm"
+													c="slate.3"
+												>
+													{formatRelativeDate(
+														(ticket?.updated_at ?? 0) * 1000,
+													)}
+												</Text>
 											</Stack>
 											<p>{ticket?.description}</p>
 										</Stack>
 									</Group>
 								</Paper>
 							</Skeleton>
-							<Skeleton visible={ticketPending} flex={1} maw={225}>
+							<Skeleton
+								visible={ticketPending}
+								flex={1}
+								maw={225}
+							>
 								<Paper p="lg">
 									<Stack gap="lg">
 										<Group>
@@ -235,8 +265,7 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 												variant="light"
 												color={
 													TICKET_STATES[
-														ticket?.state.category ??
-														"submitted"
+														ticket?.state.category ?? "submitted"
 													].color
 												}
 											>
@@ -253,8 +282,7 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 												<Text c="bright">
 													{
 														TICKET_STATES[
-															ticket?.state.category ??
-															"submitted"
+															ticket?.state.category ?? "submitted"
 														].label
 													}
 												</Text>
@@ -337,12 +365,22 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 							</Skeleton>
 						</Group>
 
-						<Skeleton visible={ticketPending} mt="xl">
-							<PrimaryTitle mt="xl">{ticket?.parts.length} {plural(ticket?.parts.length ?? 0, "Update", "Updates")}</PrimaryTitle>
+						<Skeleton
+							visible={ticketPending}
+							mt="xl"
+						>
+							<PrimaryTitle mt="xl">
+								{ticket?.parts.length}{" "}
+								{plural(ticket?.parts.length ?? 0, "Update", "Updates")}
+							</PrimaryTitle>
 
 							<Divider mt="xs" />
 
-							<Stack w="100%" mt="xl" gap="xl">
+							<Stack
+								w="100%"
+								mt="xl"
+								gap="xl"
+							>
 								{ticket?.parts.map((part) => (
 									<TicketPart
 										key={part.id}
@@ -352,10 +390,17 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 							</Stack>
 
 							{!ticket?.open && (
-								<Text ta="center" fz="lg" mt={40}>This ticket was closed. Please create a new ticket if you still need help.</Text>
+								<Text
+									ta="center"
+									fz="lg"
+									mt={40}
+								>
+									This ticket was closed. Please create a new ticket if you still
+									need help.
+								</Text>
 							)}
 
-							{(ticket?.open) && !replyBoxOpen && (
+							{ticket?.open && !replyBoxOpen && (
 								<>
 									<Group
 										mt="xl"
@@ -393,7 +438,7 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 					/>
 				)}
 			</Box>
-		</CloudAdminGuard >
+		</CloudAdminGuard>
 	);
 }
 

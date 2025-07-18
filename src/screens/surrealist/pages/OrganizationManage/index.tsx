@@ -165,10 +165,10 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 													</Tabs.Tab>
 													<Tabs.Tab
 														value="tickets"
-														leftSection={
-															<Icon path={iconTag} />
+														leftSection={<Icon path={iconTag} />}
+														onClick={() =>
+															navigate(`/tickets/${organization.id}`)
 														}
-														onClick={() => navigate(`/tickets/${organization.id}`)}
 														px="xl"
 													>
 														Tickets
