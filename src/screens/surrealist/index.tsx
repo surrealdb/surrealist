@@ -26,6 +26,9 @@ import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
+import TicketOrganizationsPage from "./pages/Tickets";
+import TicketPage from "./pages/Tickets/ticket";
+import OrganizationTicketsPage from "./pages/Tickets/tickets";
 import { SurrealistSidebar } from "./sidebar";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
@@ -47,6 +50,9 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
+const OrganizationTicketsPageLazy = memo(OrganizationTicketsPage);
+const TicketOrganizationsPageLazy = memo(TicketOrganizationsPage);
+const TicketPageLazy = memo(TicketPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
@@ -210,6 +216,27 @@ export function SurrealistScreen() {
 									<Route path="/o/:organization">
 										{({ organization }) => (
 											<Redirect to={`/o/${organization}/instances`} />
+										)}
+									</Route>
+
+									<Route path="/tickets">
+										<TicketOrganizationsPageLazy />
+									</Route>
+
+									<Route path="/tickets/:organization">
+										{({ organization }) => (
+											<OrganizationTicketsPageLazy
+												organization={organization}
+											/>
+										)}
+									</Route>
+
+									<Route path="/t/:ticket/o/:organization">
+										{({ ticket, organization }) => (
+											<TicketPageLazy
+												id={ticket}
+												organization={organization}
+											/>
 										)}
 									</Route>
 

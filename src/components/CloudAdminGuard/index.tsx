@@ -14,7 +14,7 @@ export function CloudAdminGuard({
 	organizationId,
 	children,
 }: PropsWithChildren<CloudAdminGuardProps>) {
-	const canManage = useHasOrganizationRole(organizationId, "admin");
+	const canManage = organizationId && useHasOrganizationRole(organizationId, "admin");
 
 	if (!canManage) {
 		return (
