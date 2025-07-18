@@ -54,8 +54,8 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 			if (failed.length > 0) {
 				for (const fail of failed) {
 					showErrorNotification({
-						title: "Import failed",
-						content: new Error(fail.result),
+						title: "Query partially failed",
+						content: new Error(fail.result)
 					});
 				}
 				return;
@@ -156,9 +156,9 @@ const extractColumnNames = (importedRows: any[], withHeader: boolean) => {
 const extractColumnType = (importedRows: any[], index: number, withHeader: boolean) => {
 	const values = withHeader
 		? importedRows.map((row: any) => {
-				const key = Object.keys(importedRows?.[0] ?? {})[index];
-				return row?.[key];
-			})
+			const key = Object.keys(importedRows?.[0] ?? {})[index];
+			return row?.[key];
+		})
 		: (importedRows as unknown[][]).map((row) => row[index]);
 
 	const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
@@ -308,7 +308,7 @@ const completeBatchImport = async (
 			});
 		} else {
 			showErrorNotification({
-				title: "Import failed",
+				title: "Import failed at 2",
 				content: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
 			});
 		}
@@ -646,7 +646,7 @@ const CsvImportForm = ({
 							const err = row.errors[0].message;
 
 							showErrorNotification({
-								title: "Import failed",
+								title: "Import failed at 3",
 								content: `There was an error importing the CSV file: ${err}`,
 							});
 
@@ -687,7 +687,7 @@ const CsvImportForm = ({
 								const err = results.errors[0];
 
 								showErrorNotification({
-									title: "Import failed",
+									title: "Import failed at 4",
 									content: err,
 								});
 
@@ -1090,7 +1090,7 @@ export function DataImportModal() {
 				await executeTransformAndImport(content);
 			} catch (err: any) {
 				showErrorNotification({
-					title: "Import failed",
+					title: "Import failed at 5",
 					content: err,
 				});
 			} finally {
