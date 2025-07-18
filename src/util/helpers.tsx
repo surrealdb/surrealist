@@ -60,7 +60,11 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showErrorNotification(info: { title: ReactNode; content: any; additionalInfo?: { title: string; content: string }[] }) {
+export function showErrorNotification(info: {
+	title: ReactNode;
+	content: any;
+	additionalInfo?: { title: string; content: string }[];
+}) {
 	if (info.content instanceof Error) {
 		showNotification({
 			color: "red",

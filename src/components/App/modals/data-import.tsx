@@ -55,7 +55,7 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 				for (const fail of failed) {
 					showErrorNotification({
 						title: "Query partially failed",
-						content: new Error(fail.result)
+						content: new Error(fail.result),
 					});
 				}
 				return;
@@ -156,9 +156,9 @@ const extractColumnNames = (importedRows: any[], withHeader: boolean) => {
 const extractColumnType = (importedRows: any[], index: number, withHeader: boolean) => {
 	const values = withHeader
 		? importedRows.map((row: any) => {
-			const key = Object.keys(importedRows?.[0] ?? {})[index];
-			return row?.[key];
-		})
+				const key = Object.keys(importedRows?.[0] ?? {})[index];
+				return row?.[key];
+			})
 		: (importedRows as unknown[][]).map((row) => row[index]);
 
 	const uniqueTypes = unique(values.map(extractSurrealType)).filter((t) => t !== "null");
