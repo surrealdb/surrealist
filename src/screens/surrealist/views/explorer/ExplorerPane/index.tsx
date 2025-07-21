@@ -453,6 +453,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					}}
 				>
 					<DataTable
+						schema={schema}
 						data={records}
 						sorting={sortMode}
 						selected={selected}
