@@ -12,10 +12,10 @@ import { Modal } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useSetting } from "~/hooks/config";
 import { useActiveKeys } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 import { isSimilar } from "~/util/helpers";
-import { useSetting } from "~/hooks/config";
 
 type DynamicNode<T> = ReactNode | ((value: T) => ReactNode);
 
