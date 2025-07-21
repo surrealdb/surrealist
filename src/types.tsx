@@ -179,6 +179,7 @@ export interface SurrealistBehaviorSettings {
 	tableSuggest: boolean;
 	variableSuggest: boolean;
 	queryErrorChecker: boolean;
+	enterConfirms: boolean;
 	querySelectionExecution: boolean;
 	querySelectionExecutionWarning: boolean;
 	windowPinned: boolean;
