@@ -548,7 +548,7 @@ export interface SidekickChat {
 	id: RecordId;
 	author: string;
 	title: string;
-	messages: SidekickChatMessage[];
+	message_count: number;
 }
 
 export interface CloudSignin {

@@ -11,6 +11,7 @@ import { ConfirmationProvider } from "~/providers/Confirmation";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { MANTINE_THEME } from "~/util/mantine";
 import { ScaffoldErrorHandler } from "./error";
+import { ContextProvider } from "~/providers/Context";
 
 const QUERY_CLIENT = new QueryClient();
 
@@ -39,7 +40,9 @@ export function Scaffold({ children }: PropsWithChildren) {
 						>
 							<ConfirmationProvider>
 								<ModalsProvider>
-									<CommandsProvider>{children}</CommandsProvider>
+									<CommandsProvider>
+										<ContextProvider>{children}</ContextProvider>
+									</CommandsProvider>
 								</ModalsProvider>
 							</ConfirmationProvider>
 						</ContextMenuProvider>

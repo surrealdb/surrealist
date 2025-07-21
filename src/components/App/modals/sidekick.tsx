@@ -46,16 +46,15 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudProfile, useIsAuthenticated } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
-import { useCopilotMutation } from "../../Sidekick/copilot";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { ChatMessage } from "../../Sidekick/message";
 import { shuffle } from "radash";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Spacer } from "~/components/Spacer";
-import { useSidekickConversations } from "~/hooks/sidekick";
 import { SidekickChatMessage } from "~/types";
+import { useSidekickChats } from "~/hooks/sidekick";
+import { RecordId } from "surrealdb";
 
 const QUESTIONS = [
 	{ icon: iconCreditCard, title: "How do I manage Cloud billing?" },
@@ -72,18 +71,36 @@ const QUESTIONS = [
 	{ icon: iconLive, title: "How do I listen to changes?" },
 ];
 
+interface ActiveMessage {
+	role: "user" | "assistant";
+	content: string;
+}
+
+interface ActiveChat {
+	id: RecordId | null;
+	title: string;
+	messages: ActiveMessage[];
+}
+
+function newActiveChat(): ActiveChat {
+	return {
+		id: null,
+		title: "New chat",
+		messages: [],
+	};
+}
+
 export function SidekickDrawer() {
 	const [isOpen, openHandle] = useDisclosure();
 	const handleClose = useStable(() => {
 		openHandle.close();
 	});
 
-	// const conversation = useSidekickConversations(isOpen);
-
+	const [activeChat, setActiveChat] = useState<ActiveChat>(newActiveChat());
 	const [width, setWidth] = useState(650);
 	const [showHistory, setShowHistory] = useState(false);
 	const isAuthed = useIsAuthenticated();
-	const conversation = useCloudStore((s) => s.chatConversation);
+	const conversation: SidekickChatMessage[] = [];
 
 	useIntent("open-sidekick", () => {
 		openHandle.open();
@@ -152,7 +169,7 @@ export function SidekickDrawer() {
 								variant="gradient"
 								rightSection={<Icon path={iconPlus} />}
 								onClick={() => {
-									// openHandle.close();
+									setActiveChat(newActiveChat());
 								}}
 							>
 								New chat
@@ -198,7 +215,7 @@ export function SidekickDrawer() {
 								style={styles}
 								p="xl"
 							>
-								<ChatHistory conversation={conversation} />
+								<ChatHistory />
 							</Paper>
 						)}
 					</Transition>
@@ -214,15 +231,15 @@ interface ChatConversationProps {
 }
 
 function ChatConversation({ conversation, isAuthed }: ChatConversationProps) {
-	const { pushChatMessage } = useCloudStore.getState();
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [input, setInput] = useInputState("");
 	const profile = useCloudProfile();
 	const lastResponse = useCloudStore((s) => s.chatLastResponse);
-	const { sendMessage, isResponding } = useCopilotMutation();
+	// const { sendMessage, isResponding } = useCopilotMutation();
 	const hasMessage = useMemo(() => input.trim() !== "", [input]);
-	const canSend = input && !isResponding && hasMessage;
+	// const canSend = input && !isResponding && hasMessage;
+	const canSend = true; // TODO
 
 	const submitMessage = useStable(() => {
 		if (!canSend) return;
@@ -232,18 +249,18 @@ function ChatConversation({ conversation, isAuthed }: ChatConversationProps) {
 			return;
 		}
 
-		pushChatMessage({
-			// id: Math.random().toString(36).slice(2),
-			content: input,
-			// sender: "user",
-			// thinking: "",
-			// loading: false,
-			sent_at: new Date(),
-			type: "user",
-		});
+		// pushChatMessage({
+		// id: Math.random().toString(36).slice(2),
+		// content: input,
+		// sender: "user",
+		// thinking: "",
+		// loading: false,
+		// 	sent_at: new Date(),
+		// 	type: "user",
+		// });
 
 		inputRef.current?.focus();
-		sendMessage(input);
+		// sendMessage(input);
 		setInput("");
 	});
 
@@ -287,7 +304,7 @@ function ChatConversation({ conversation, isAuthed }: ChatConversationProps) {
 							pb={96}
 							gap={38}
 						>
-							{conversation.map((message, i) => (
+							{/* {conversation.map((message, i) => (
 								<ChatMessage
 									message={message}
 									profile={profile}
@@ -296,7 +313,7 @@ function ChatConversation({ conversation, isAuthed }: ChatConversationProps) {
 									isLight={false}
 									key={i}
 								/>
-							))}
+							))} */}
 						</Stack>
 					</ScrollArea>
 				</Box>
@@ -468,7 +485,7 @@ function ChatConversation({ conversation, isAuthed }: ChatConversationProps) {
 							variant="gradient"
 							disabled={!canSend}
 							onClick={submitMessage}
-							loading={isResponding}
+							// loading={isResponding}
 							style={{
 								opacity: canSend ? 1 : 0.5,
 								border: "1px solid rgba(255, 255, 255, 0.3)",
@@ -489,22 +506,197 @@ function ChatConversation({ conversation, isAuthed }: ChatConversationProps) {
 	);
 }
 
-interface ChatHistoryProps {
-	conversation: SidekickChatMessage[];
-}
+function ChatHistory() {
+	const chatsQuery = useSidekickChats();
 
-function ChatHistory({ conversation }: ChatHistoryProps) {
 	return (
 		<Stack>
-			{/* {conversation.map((message) => (
-				<ChatMessage
-					message={message}
-					profile={profile}
-					lastResponse={lastResponse}
-					isResponding={isResponding}
-					isLight={false}
-				/>
-			))} */}
+			{chatsQuery.data?.map((chat) => (
+				<Button
+					color="slate"
+					key={chat.id.toString()}
+				>
+					{chat.title}
+				</Button>
+			))}
 		</Stack>
 	);
 }
+
+// export interface ChatMessageProps {
+// 	message: CloudChatMessage;
+// 	profile: CloudProfile;
+// 	lastResponse: string;
+// 	isResponding: boolean;
+// 	isLight: boolean;
+// }
+
+// export function ChatMessage({
+// 	message,
+// 	profile,
+// 	lastResponse,
+// 	isResponding,
+// 	isLight,
+// }: ChatMessageProps) {
+// 	return (
+// 		<Box className={classes.sidekickMessage}>
+// 			{message.sender === "user" ? (
+// 				<>
+// 					<Group
+// 						gap="xs"
+// 						mb="sm"
+// 					>
+// 						<Icon
+// 							path={iconAccount}
+// 							size="sm"
+// 						/>
+// 						<Text>{profile.name}</Text>
+// 						<Spacer />
+// 						<ActionButton
+// 							label={"Options"}
+// 							variant="subtle"
+// 							size="sm"
+// 						>
+// 							<Icon
+// 								path={iconDotsVertical}
+// 								size="sm"
+// 							/>
+// 						</ActionButton>
+// 						<ActionButton
+// 							label={"Copy"}
+// 							variant="subtle"
+// 							size="sm"
+// 						>
+// 							<Icon
+// 								path={iconCopy}
+// 								size="sm"
+// 							/>
+// 						</ActionButton>
+// 					</Group>
+// 					<Paper
+// 						p="md"
+// 						bg="slate.6"
+// 					>
+// 						<Group>
+// 							<Avatar
+// 								radius="xs"
+// 								size="sm"
+// 								name={profile.name}
+// 								src={profile.picture}
+// 							/>
+// 							<MessageContent message={message} />
+// 						</Group>
+// 					</Paper>
+// 				</>
+// 			) : (
+// 				<Box>
+// 					<Group
+// 						gap="xs"
+// 						mb="sm"
+// 					>
+// 						{message.loading ? (
+// 							<Loader
+// 								size={14}
+// 								color={isLight ? "slate.5" : "slate.4"}
+// 							/>
+// 						) : (
+// 							<Icon
+// 								path={iconSidekick}
+// 								size="sm"
+// 							/>
+// 						)}
+// 						<Text>{message.loading ? message.thinking : "Sidekick"}</Text>
+// 						<Spacer />
+// 						<ActionButton
+// 							label={"Options"}
+// 							variant="subtle"
+// 							size="sm"
+// 						>
+// 							<Icon
+// 								path={iconDotsVertical}
+// 								size="sm"
+// 							/>
+// 						</ActionButton>
+// 						<ActionButton
+// 							label={"Copy"}
+// 							variant="subtle"
+// 							size="sm"
+// 						>
+// 							<Icon
+// 								path={iconCopy}
+// 								size="sm"
+// 							/>
+// 						</ActionButton>
+// 					</Group>
+// 					<MessageContent message={message} />
+// 					{message.sources && message.sources.links.length > 0 && (
+// 						<Paper
+// 							bg={isLight ? "slate.0" : "slate.7"}
+// 							mt="xl"
+// 							p="md"
+// 						>
+// 							<Text
+// 								fz="lg"
+// 								fw={500}
+// 							>
+// 								{message.sources.header}
+// 							</Text>
+// 							<List mt="sm">
+// 								{message.sources.links.map((item, i) => (
+// 									<List.Item
+// 										key={i}
+// 										icon={
+// 											<Image
+// 												src={item.img_url}
+// 												radius={4}
+// 												w={18}
+// 												h={18}
+// 											/>
+// 										}
+// 									>
+// 										<Link
+// 											href={item.url}
+// 											c="bright"
+// 										>
+// 											{item.title}
+// 										</Link>
+// 									</List.Item>
+// 								))}
+// 							</List>
+// 						</Paper>
+// 					)}
+// 					{message.id === lastResponse && !isResponding && (
+// 						<Text
+// 							mt="md"
+// 							fz="xs"
+// 							c="slate"
+// 						>
+// 							This response may be incorrect. Help us improve the docs by{" "}
+// 							<Link
+// 								fz="xs"
+// 								href="https://github.com/surrealdb/docs.surrealdb.com"
+// 							>
+// 								clicking here
+// 							</Link>
+// 						</Text>
+// 					)}
+// 				</Box>
+// 			)}
+// 		</Box>
+// 	);
+// }
+
+// function MessageContent({ message }: { message: CloudChatMessage }) {
+// 	return (
+// 		<TypographyStylesProvider
+// 			fz="lg"
+// 			fw={400}
+// 			c="bright"
+// 			className={classes.message}
+// 			// biome-ignore lint/security/noDangerouslySetInnerHtml: Markdown response
+// 			dangerouslySetInnerHTML={{
+// 				__html: marked(message.content),
+// 			}}
+// 		/>
+// 	);
+// }

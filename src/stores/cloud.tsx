@@ -4,7 +4,6 @@ import type {
 	CloudInstanceType,
 	CloudProfile,
 	CloudRegion,
-	SidekickChatMessage,
 } from "~/types";
 
 import { create } from "zustand";
@@ -39,7 +38,6 @@ export type CloudStore = {
 	regions: CloudRegion[];
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
-	chatConversation: SidekickChatMessage[];
 	chatLastResponse: string;
 
 	setLoading: () => void;
@@ -55,10 +53,6 @@ export type CloudStore = {
 	setProfile: (profile: CloudProfile) => void;
 	setSessionExpired: (expired: boolean) => void;
 	clearSession: () => void;
-	pushChatMessage: (message: SidekickChatMessage) => void;
-	completeChatResponse: (id: string) => void;
-	updateChatMessage: (id: string, fn: (state: SidekickChatMessage) => void) => void;
-	clearChatSession: () => void;
 };
 
 export const useCloudStore = create<CloudStore>()(
@@ -146,33 +140,6 @@ export const useCloudStore = create<CloudStore>()(
 		setSessionExpired: (expired) =>
 			set({
 				sessionExpired: expired,
-			}),
-
-		pushChatMessage: (message) =>
-			set((state) => ({
-				chatConversation: [...state.chatConversation, message],
-			})),
-
-		updateChatMessage: (updater) =>
-			set((state) => {
-				// const msgIndex = state.chatConversation.findLastIndex((m) => m.id === id);
-
-				// if (msgIndex >= 0) {
-				// 	updater(state.chatConversation[msgIndex]);
-				// }
-
-				return state;
-			}),
-
-		completeChatResponse: (id) =>
-			set({
-				chatLastResponse: id,
-			}),
-
-		clearChatSession: () =>
-			set({
-				chatConversation: [],
-				chatLastResponse: "",
 			}),
 	})),
 );
