@@ -164,6 +164,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const removeRecord = useConfirmation<RecordId>({
 		title: "Delete record",
+		skippable: true,
 		message: (value) => (
 			<Box>
 				Are you sure you want to delete this record?
