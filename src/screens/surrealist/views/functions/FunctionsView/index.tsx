@@ -195,6 +195,7 @@ export function FunctionsView() {
 	const removeFunction = useConfirmation({
 		message: "You are about to remove this function. This action cannot be undone.",
 		confirmText: "Remove",
+		skippable: true,
 		onConfirm: async (func: FunctionDetails) => {
 			await executeQuery(`REMOVE FUNCTION fn::${func.details.name}`);
 			await syncConnectionSchema();

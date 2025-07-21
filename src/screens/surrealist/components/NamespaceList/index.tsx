@@ -44,6 +44,7 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 		title: "Remove namespace",
 		message: `Are you sure you want to remove the namespace "${value}"?`,
 		confirmText: "Remove",
+		skippable: true,
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(value)}`);
 

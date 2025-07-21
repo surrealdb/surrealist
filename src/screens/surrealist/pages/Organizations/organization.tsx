@@ -67,6 +67,7 @@ export function OrganizationTile({
 		title: "Leave organisation",
 		message: "Are you sure you want to leave this organisation?",
 		confirmText: "Leave",
+		skippable: true,
 		onConfirm: async () => {
 			await removeMutation.mutateAsync(userId);
 

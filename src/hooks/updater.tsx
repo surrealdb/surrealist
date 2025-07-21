@@ -70,6 +70,7 @@ export function useDesktopUpdater() {
 
 	const promptUpdate = useConfirmation({
 		title: "New major version",
+		skippable: true,
 		message: (
 			<>
 				The update you are about to install is a new major version of Surrealist. Are you

@@ -76,6 +76,7 @@ export function DesignDrawer({
 		message:
 			"You are about to remove this table and all data contained within it. This action cannot be undone.",
 		confirmText: "Remove",
+		skippable: true,
 		onConfirm: async () => {
 			onClose(true);
 

@@ -97,6 +97,7 @@ export function TablesPane({
 		message:
 			"You are about to remove this table and all data contained within it. This action cannot be undone.",
 		confirmText: "Remove",
+		skippable: true,
 		onConfirm: async (table: string) => {
 			await executeQuery(`REMOVE TABLE ${escapeIdent(table)}`);
 			await syncConnectionSchema({
@@ -112,6 +113,7 @@ export function TablesPane({
 	const clearTable = useConfirmation({
 		message: "You are about to clear all records in this table. This action cannot be undone.",
 		confirmText: "Clear",
+		skippable: true,
 		onConfirm: async (table: string) => {
 			await executeQuery(`DELETE ${escapeIdent(table)}`);
 			RecordsChangedEvent.dispatch(null);

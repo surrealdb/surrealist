@@ -63,6 +63,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 		title: "Leave organisation",
 		message: `Are you sure you want to leave ${organization.name}?`,
 		confirmText: "Leave",
+		skippable: true,
 		onConfirm: async () => {
 			navigate("/organisations");
 
