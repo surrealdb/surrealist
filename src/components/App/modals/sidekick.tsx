@@ -2,9 +2,9 @@ import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
+import { Sidekick } from "~/components/Sidekick";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { Sidekick } from "~/components/Sidekick";
 
 export function SidekickDrawer() {
 	const [isOpen, openHandle] = useDisclosure();

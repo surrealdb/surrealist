@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { RecordId, surql } from "surrealdb";
 import { useContextConnection } from "~/providers/Context";
 import { SidekickChat, SidekickChatMessage } from "~/types";
 
-export function useSidekickChats() {
+export function useSidekickChatsQuery() {
 	const [surreal, isAvailable] = useContextConnection();
 
 	return useQuery({
@@ -20,15 +20,13 @@ export function useSidekickChats() {
 	});
 }
 
-export function useSidekickChatMessages(chatId: RecordId) {
-	const [surreal, isAvailable] = useContextConnection();
+export function useSidekickMessagesMutation() {
+	const [surreal] = useContextConnection();
 
-	return useQuery({
-		queryKey: ["sidekick", "conversations", chatId],
-		enabled: isAvailable,
-		queryFn: async () => {
+	return useMutation({
+		mutationFn: async (chatId: RecordId) => {
 			const [{ messages }] = await surreal.query<[{ messages: SidekickChatMessage[] }]>(surql`
-				SELECT <-sent_in<-sidekick_message AS messages FROM ONLY ${chatId}
+				SELECT <-sent_in<-sidekick_message.* AS messages FROM ONLY ${chatId}
 			`);
 
 			return messages;

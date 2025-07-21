@@ -1,5 +1,9 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"javascript.preferences.quoteStyle": "double",
-	"editor.formatOnSave": true
+	"editor.formatOnSave": true,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports.biome": "explicit",
+		"source.fixAll.biome": "explicit"
+	}
 }

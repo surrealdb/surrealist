@@ -1,11 +1,9 @@
-import { RecordId } from "surrealdb";
-
 export type Sources = {
 	header: string;
 	links: { url: string; title: string; img_url: string }[];
 };
 
-export type StreamResponse =
+export type StreamEvent =
 	| { type: "error"; data: string }
 	| { type: "failure"; data: string }
 	| {
@@ -26,22 +24,4 @@ export interface ActiveMessage {
 	role: "user" | "assistant";
 	content: string;
 	sources?: Sources;
-}
-
-export interface ActiveChat {
-	id: RecordId | null;
-	title: string;
-	messages: ActiveMessage[];
-}
-
-export interface ChatConversationProps {
-	activeChat: ActiveChat;
-	setActiveChat: (chat: ActiveChat) => void;
-	isAuthed: boolean;
-}
-
-export interface ChatMessageProps {
-	message: ActiveMessage;
-	profile: any;
-	isResponding: boolean;
 }

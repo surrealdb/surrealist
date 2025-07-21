@@ -531,9 +531,10 @@ export interface Driver {
 }
 
 export interface SidekickChatMessage {
+	id: RecordId;
 	sent_at: Date;
 	content: string;
-	type: "user" | "assistant";
+	role: "user" | "assistant";
 	sources?: {
 		header: string;
 		links: {
