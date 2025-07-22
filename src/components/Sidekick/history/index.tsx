@@ -1,4 +1,5 @@
-import { Center, Loader, Stack, Text } from "@mantine/core";
+import { Button, Center, Group, Loader, Stack, Text, TextInput } from "@mantine/core";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -7,7 +8,7 @@ import { useSidekickChatsQuery, useSidekickMessagesMutation } from "~/hooks/side
 import { useStable } from "~/hooks/stable";
 import { useSidekickStore } from "~/stores/sidekick";
 import { SidekickChat } from "~/types";
-import { iconChevronRight, iconPlus } from "~/util/icons";
+import { iconChevronRight, iconPlus, iconSearch } from "~/util/icons";
 
 export interface SidekickHistoryProps {
 	onOpenChat: () => void;
@@ -58,8 +59,12 @@ function groupChatsByDate(chats: SidekickChat[]): GroupedChats {
 
 export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 	const { restoreChat, resetChat } = useSidekickStore.getState();
+	const [search, setSearch] = useInputState("");
 
-	const chatsQuery = useSidekickChatsQuery();
+	const [debouncedSearch] = useDebouncedValue(search, 500);
+
+	const activeId = useSidekickStore((state) => state.activeId);
+	const chatsQuery = useSidekickChatsQuery(debouncedSearch);
 	const messagesMutation = useSidekickMessagesMutation();
 
 	const loadChat = async (chat: SidekickChat) => {
@@ -100,7 +105,7 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 						color="slate"
 						key={chat.id.toString()}
 						onClick={() => loadChat(chat)}
-						variant="subtle"
+						variant={chat.id.equals(activeId) ? "light" : "subtle"}
 						justify="start"
 						rightSection={
 							<>
@@ -126,30 +131,37 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 	};
 
 	return (
-		<Stack gap="md">
-			<Entry
-				h={38}
-				mb="xl"
-				size="xs"
-				variant="gradient"
-				onClick={newChat}
-				leftSection={
-					<Icon
-						path={iconPlus}
-						c="white"
-					/>
-				}
-			>
-				Start new chat
-			</Entry>
+		<Stack gap={36}>
+			<Group>
+				<TextInput
+					flex={1}
+					autoFocus
+					value={search}
+					onChange={setSearch}
+					placeholder="Search chats"
+					leftSection={<Icon path={iconSearch} />}
+				/>
+				<Button
+					variant="gradient"
+					onClick={newChat}
+					rightSection={
+						<Icon
+							path={iconPlus}
+							c="white"
+						/>
+					}
+				>
+					New chat
+				</Button>
+			</Group>
 			{groupedChats ? (
-				<Stack gap={36}>
+				<>
 					{renderChatGroup("Today", groupedChats.today)}
 					{renderChatGroup("Yesterday", groupedChats.yesterday)}
 					{renderChatGroup("Past week", groupedChats.pastWeek)}
 					{renderChatGroup("Past month", groupedChats.pastMonth)}
 					{renderChatGroup("Older", groupedChats.older)}
-				</Stack>
+				</>
 			) : (
 				<Center>
 					<Loader />

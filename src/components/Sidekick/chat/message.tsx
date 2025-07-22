@@ -1,6 +1,7 @@
 import {
 	Avatar,
 	Box,
+	CopyButton,
 	Group,
 	List,
 	Loader,
@@ -11,127 +12,95 @@ import {
 import { marked } from "marked";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
+import { RelativeTime } from "~/components/RelativeTime";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
-import { CloudProfile, SidekickChatMessage } from "~/types";
-import { iconArrowLeft, iconCopy, iconDotsVertical, iconSidekick } from "~/util/icons";
+import { SidekickChatMessage } from "~/types";
+import { iconArrowLeft, iconCheck, iconCopy } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface SidekickMessageProps {
 	message: SidekickChatMessage;
-	profile: CloudProfile;
 	isResponding?: boolean;
 	thinkingText?: string;
 }
 
-export function SidekickMessage({
-	message,
-	profile,
-	thinkingText,
-	isResponding,
-}: SidekickMessageProps) {
+export function SidekickMessage({ message, thinkingText, isResponding }: SidekickMessageProps) {
 	const isLight = useIsLight();
 
+	const validSources = message.sources?.links.filter((link) => link.title && link.url) ?? [];
+
 	return (
-		<Box className={classes.sidekickMessage}>
+		<Box className={classes.message}>
 			{message.role === "user" ? (
 				<>
-					<Group
-						gap="xs"
-						mb="sm"
-					>
-						<Avatar
-							radius="xs"
-							size={22}
-							name={profile.name}
-							src={profile.picture}
-						/>
-						<Text>{profile.name}</Text>
-						<Spacer />
-						<ActionButton
-							label={"Options"}
-							variant="subtle"
-							size="sm"
-						>
-							<Icon
-								path={iconDotsVertical}
-								size="sm"
-							/>
-						</ActionButton>
-						<ActionButton
-							label={"Copy"}
-							variant="subtle"
-							size="sm"
-						>
-							<Icon
-								path={iconCopy}
-								size="sm"
-							/>
-						</ActionButton>
-					</Group>
 					<Paper
 						p="md"
 						bg="slate.6"
 					>
 						<MessageContent message={message} />
 					</Paper>
+					<Group
+						mt={2}
+						gap="xs"
+					>
+						<Spacer />
+						<Text
+							c="slate"
+							fz="sm"
+						>
+							<RelativeTime value={message.sent_at.valueOf()} />
+						</Text>
+						<CopyButton value={message.content}>
+							{({ copied, copy }) => (
+								<ActionButton
+									color="slate"
+									variant="transparent"
+									onClick={copy}
+									label={copied ? "Copied" : "Copy"}
+								>
+									<Icon
+										path={copied ? iconCheck : iconCopy}
+										size="sm"
+									/>
+								</ActionButton>
+							)}
+						</CopyButton>
+					</Group>
 				</>
 			) : (
-				<Box>
-					<Group
-						gap="xs"
-						mb="sm"
-					>
-						{isResponding ? (
+				<Box mb="xl">
+					{message.content ? (
+						<MessageContent message={message} />
+					) : (
+						<Group
+							gap="xs"
+							c="slate"
+						>
 							<Loader
 								size={14}
-								color={isLight ? "slate.5" : "slate.4"}
+								color="currentColor"
 							/>
-						) : (
-							<Icon
-								path={iconSidekick}
-								size="sm"
-							/>
-						)}
-						<Text>{isResponding ? thinkingText || "Thinking..." : "Sidekick"}</Text>
-						<Spacer />
-						<ActionButton
-							label="Options"
-							variant="subtle"
-							size="sm"
-						>
-							<Icon
-								path={iconDotsVertical}
-								size="sm"
-							/>
-						</ActionButton>
-						<ActionButton
-							label={"Copy"}
-							variant="subtle"
-							size="sm"
-						>
-							<Icon
-								path={iconCopy}
-								size="sm"
-							/>
-						</ActionButton>
-					</Group>
-					<MessageContent message={message} />
-					{message.sources && message.sources.links.length > 0 && (
+							<Text
+								fz="lg"
+								fw={400}
+								inherit
+							>
+								{thinkingText || "Thinking..."}
+							</Text>
+						</Group>
+					)}
+					{validSources.length > 0 && (
 						<Paper
 							bg={isLight ? "slate.0" : "slate.7"}
 							mt="xl"
 							p="md"
 						>
-							<Text
-								fz="lg"
-								fw={500}
-							>
-								{message.sources.header}
-							</Text>
+							<Label>{message.sources?.header ?? "Sources"}</Label>
 							<List mt="sm">
-								{message.sources.links.map((item, i) => (
+								{validSources.map((item, i) => (
 									<List.Item
 										key={i}
 										icon={
@@ -164,21 +133,35 @@ export function SidekickMessage({
 							</List>
 						</Paper>
 					)}
-					{/* {message.id === lastResponse && !isResponding && (
-						<Text
-							mt="md"
-							fz="xs"
-							c="slate"
+					{!isResponding && (
+						<Group
+							mt="xs"
+							gap="xs"
 						>
-							This response may be incorrect. Help us improve the docs by{" "}
-							<Link
-								fz="xs"
-								href="https://github.com/surrealdb/docs.surrealdb.com"
+							<CopyButton value={message.content}>
+								{({ copied, copy }) => (
+									<ActionButton
+										size="sm"
+										color="slate"
+										variant="transparent"
+										onClick={copy}
+										label={copied ? "Copied" : "Copy"}
+									>
+										<Icon
+											path={copied ? iconCheck : iconCopy}
+											size="sm"
+										/>
+									</ActionButton>
+								)}
+							</CopyButton>
+							<Text
+								c="slate"
+								fz="sm"
 							>
-								clicking here
-							</Link>
-						</Text>
-					)} */}
+								<RelativeTime value={message.sent_at.valueOf()} />
+							</Text>
+						</Group>
+					)}
 				</Box>
 			)}
 		</Box>

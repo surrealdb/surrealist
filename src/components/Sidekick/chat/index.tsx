@@ -20,7 +20,6 @@ import { adapter } from "~/adapter";
 import glowImg from "~/assets/images/glow.png";
 import sidekickImg from "~/assets/images/icons/sidekick.png";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { useCloudProfile } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useSidekickStore } from "~/stores/sidekick";
 import { iconChevronRight, iconCursor, iconOpen } from "~/util/icons";
@@ -48,14 +47,11 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const [input, setInput] = useInputState("");
-	const profile = useCloudProfile();
 	const hasMessage = useMemo(() => input.trim() !== "", [input]);
 
 	const canSend = !stream.isResponding && hasMessage;
 
-	const submitMessage = useStable(async () => {
-		if (!canSend) return;
-
+	const submitMessage = useStable(async (message: string) => {
 		if (!isAuthed) {
 			openCloudAuthentication();
 			return;
@@ -63,9 +59,9 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 
 		setInput("");
 		inputRef.current?.focus();
-		startRequest(input);
+		startRequest(message);
 
-		await stream.sendMessage(input, activeId?.id.toString());
+		await stream.sendMessage(message, activeId?.id.toString());
 
 		completeRequest();
 	});
@@ -73,7 +69,10 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 	const handleKeyDown = useStable((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			submitMessage();
+
+			if (canSend) {
+				submitMessage(input);
+			}
 		}
 	});
 
@@ -141,12 +140,9 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 										radius={100}
 										tabIndex={0}
 										variant="interactive"
+										onClick={() => submitMessage(question.title)}
 										style={{
 											alignSelf: "stretch",
-										}}
-										onClick={() => {
-											setInput(question.title);
-											inputRef.current?.focus();
 										}}
 									>
 										<Group
@@ -217,26 +213,18 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 						<Stack
 							p={36}
 							pb={96}
-							gap={38}
 						>
 							{activeHistory.map((message, i) => (
 								<SidekickMessage
 									key={i}
 									message={message}
-									profile={profile}
 									thinkingText={thinkingText}
 								/>
 							))}
-							{activeRequest && (
-								<SidekickMessage
-									message={activeRequest}
-									profile={profile}
-								/>
-							)}
+							{activeRequest && <SidekickMessage message={activeRequest} />}
 							{activeResponse && (
 								<SidekickMessage
 									message={activeResponse}
-									profile={profile}
 									isResponding={stream.isResponding}
 									thinkingText={thinkingText}
 								/>
@@ -303,7 +291,7 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 							type="submit"
 							variant="gradient"
 							disabled={!canSend}
-							onClick={submitMessage}
+							onClick={() => submitMessage(input)}
 							loading={stream.isResponding}
 							style={{
 								opacity: canSend ? 1 : 0.5,

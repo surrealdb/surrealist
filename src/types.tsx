@@ -549,7 +549,6 @@ export interface SidekickChat {
 	id: RecordId;
 	author: string;
 	title: string;
-	message_count: number;
 	last_activity: Date;
 }
 
