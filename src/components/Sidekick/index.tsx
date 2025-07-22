@@ -1,15 +1,4 @@
-import {
-	Box,
-	Button,
-	Divider,
-	Flex,
-	Group,
-	Image,
-	Paper,
-	Stack,
-	Text,
-	Transition,
-} from "@mantine/core";
+import { Box, Divider, Flex, Group, Image, Stack, Text, Transition } from "@mantine/core";
 import { memo, useEffect, useState } from "react";
 import glowImg from "~/assets/images/glow.webp";
 import sidekickImg from "~/assets/images/icons/sidekick.webp";
@@ -19,18 +8,20 @@ import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useSidekickStore } from "~/stores/sidekick";
-import { iconChat, iconHistory, iconPlus } from "~/util/icons";
+import { iconChat, iconChevronLeft, iconList } from "~/util/icons";
+import { ActionButton } from "../ActionButton";
 import { SidekickChat } from "./chat";
 import { SidekickHistory } from "./history";
 import { useSidekickStream } from "./stream";
+import classes from "./style.module.scss";
 
 const SidekickChatLazy = memo(SidekickChat);
 const SidekickHistoryLazy = memo(SidekickHistory);
 
 export function Sidekick() {
-	const { resetChat, applyEvent } = useSidekickStore.getState();
-	const stream = useSidekickStream(applyEvent);
+	const { applyEvent } = useSidekickStore.getState();
 
+	const stream = useSidekickStream(applyEvent);
 	const activeId = useSidekickStore((state) => state.activeId);
 	const activeTitle = useSidekickStore((state) => state.activeTitle);
 
@@ -85,27 +76,14 @@ export function Sidekick() {
 				</Box>
 				<Spacer />
 				{isAuthed && (
-					<>
-						<Button
-							size="xs"
-							color="slate"
-							variant="light"
-							style={{ flexShrink: 0 }}
-							leftSection={<Icon path={showHistory ? iconChat : iconHistory} />}
-							onClick={toggleHistory}
-						>
-							{showHistory ? "Show chat" : "Show history"}
-						</Button>
-						<Button
-							size="xs"
-							variant="gradient"
-							style={{ flexShrink: 0 }}
-							rightSection={<Icon path={iconPlus} />}
-							onClick={resetChat}
-						>
-							New chat
-						</Button>
-					</>
+					<ActionButton
+						label={showHistory ? "Return to chat" : "Show menu"}
+						icon={iconChat}
+						onClick={toggleHistory}
+						size="lg"
+					>
+						<Icon path={showHistory ? iconChevronLeft : iconList} />
+					</ActionButton>
 				)}
 			</Group>
 			<Divider />
@@ -114,40 +92,31 @@ export function Sidekick() {
 				pos="relative"
 				style={{ overflow: "hidden" }}
 			>
-				<Transition
-					mounted={!showHistory}
-					transition="fade-up"
+				<Flex
+					inset={0}
+					flex={1}
+					pos="absolute"
+					direction="column"
 				>
-					{(styles) => (
-						<Flex
-							inset={0}
-							flex={1}
-							pos="absolute"
-							direction="column"
-							style={styles}
-						>
-							<SidekickChatLazy
-								isAuthed={isAuthed}
-								stream={stream}
-							/>
-						</Flex>
-					)}
-				</Transition>
+					<SidekickChatLazy
+						isAuthed={isAuthed}
+						stream={stream}
+					/>
+				</Flex>
 				<Transition
 					mounted={showHistory}
 					transition="fade-down"
 				>
 					{(styles) => (
-						<Paper
+						<Box
 							inset={0}
 							pos="absolute"
-							withBorder={false}
-							bg="var(--mantine-color-body)"
+							className={classes.historyPanel}
 							style={styles}
 							p="xl"
 						>
-							<SidekickHistoryLazy onRestored={toggleHistory} />
-						</Paper>
+							<SidekickHistoryLazy onOpenChat={toggleHistory} />
+						</Box>
 					)}
 				</Transition>
 			</Box>
