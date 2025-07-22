@@ -76,18 +76,26 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 		}
 	});
 
+	const scrollToBottom = useStable((force: boolean) => {
+		if (!scrollRef.current) return;
+		const { scrollHeight, clientHeight, scrollTop } = scrollRef.current;
+
+		if (force || scrollHeight - clientHeight - scrollTop < 150) {
+			scrollRef.current?.scrollTo({
+				top: scrollHeight,
+				behavior: force ? "instant" : "smooth",
+			});
+		}
+	});
+
+	// Scroll down initially
+	useEffect(() => {
+		scrollToBottom(true);
+	}, []);
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Only want to scroll on conversation change
 	useEffect(() => {
-		if (scrollRef.current) {
-			const { scrollHeight, clientHeight, scrollTop } = scrollRef.current;
-
-			if (scrollHeight - clientHeight - scrollTop < 150) {
-				scrollRef.current?.scrollTo({
-					top: scrollHeight,
-					behavior: "smooth",
-				});
-			}
-		}
+		scrollToBottom(false);
 	}, [activeHistory, activeRequest, activeResponse]);
 
 	const questions = useMemo(() => shuffle(SIDEKICK_QUESTIONS).slice(0, 4), []);
