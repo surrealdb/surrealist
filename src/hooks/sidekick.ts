@@ -64,3 +64,25 @@ export function useSidekickRenameMutation() {
 		},
 	});
 }
+
+export function useSidekickDeleteMutation() {
+	const [surreal] = useContextConnection();
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (chatId: RecordId) => {
+			await surreal.query(surql`DELETE ${chatId}`);
+		},
+		onMutate: async (chatId) => {
+			await queryClient.cancelQueries({ queryKey: ["sidekick", "chats"] });
+
+			queryClient.setQueriesData<SidekickChat[]>(
+				{ queryKey: ["sidekick", "chats"] },
+				(old) => old?.filter((chat) => !chat.id.equals(chatId))
+			);
+		},
+		onSettled: () => {
+			queryClient.invalidateQueries({ queryKey: ["sidekick", "chats"] });
+		},
+	});
+}

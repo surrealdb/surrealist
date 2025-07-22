@@ -5,8 +5,9 @@ import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
-import { useSidekickRenameMutation } from "~/hooks/sidekick";
+import { useSidekickDeleteMutation, useSidekickRenameMutation } from "~/hooks/sidekick";
 import { useStable } from "~/hooks/stable";
+import { useSidekickStore } from "~/stores/sidekick";
 import { SidekickChat } from "~/types";
 import { iconArrowUpRight, iconChevronRight, iconDelete, iconText } from "~/util/icons";
 
@@ -17,12 +18,22 @@ export interface SidekickHistoryEntryProps {
 }
 
 export function SidekickHistoryEntry({ chat, isActive, onOpen }: SidekickHistoryEntryProps) {
+	const { resetChat } = useSidekickStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const [isRenaming, setIsRenaming] = useState(false);
 	const renameMutation = useSidekickRenameMutation();
+	const deleteMutation = useSidekickDeleteMutation();
 
 	const renameChat = useStable((newName: string) => {
 		renameMutation.mutate({ chatId: chat.id, newName });
+	});
+
+	const deleteChat = useStable(() => {
+		deleteMutation.mutate(chat.id);
+
+		if (isActive) {
+			resetChat();
+		}
 	});
 
 	const handleOpen = useStable(() => {
@@ -50,7 +61,7 @@ export function SidekickHistoryEntry({ chat, isActive, onOpen }: SidekickHistory
 			title: "Delete",
 			color: "pink.7",
 			icon: <Icon path={iconDelete} />,
-			onClick: handleOpen,
+			onClick: deleteChat,
 		},
 	]);
 
