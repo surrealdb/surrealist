@@ -88,12 +88,12 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 		}
 	});
 
-	// Scroll down initially
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Scroll down forcefully on conversation change
 	useEffect(() => {
 		scrollToBottom(true);
-	}, []);
+	}, [activeId]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Only want to scroll on conversation change
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Scroll down on message change
 	useEffect(() => {
 		scrollToBottom(false);
 	}, [activeHistory, activeRequest, activeResponse]);
