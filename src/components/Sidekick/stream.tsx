@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { StreamEvent } from "./types";
@@ -7,38 +7,37 @@ const SIDEKICK_ENDPOINT = "https://xzg2igifvha4rfi2w677skt7h40yrtsm.lambda-url.u
 
 export type StreamHandler = (message: StreamEvent) => void;
 
-export function useSidekickStream(handler: StreamHandler) {
-	const [isResponding, setIsResponding] = useState(false);
-	const [currentResponse, setCurrentResponse] = useState("");
+export interface SidekickStream {
+	isResponding: boolean;
+	sendMessage: (message: string, chatId?: string) => Promise<void>;
+	cancel: () => void;
+}
 
-	const sendMessage = useStable(async (message: string) => {
+export function useSidekickStream(handler: StreamHandler): SidekickStream {
+	const [isResponding, setIsResponding] = useState(false);
+	const controller = useRef<AbortController | null>(null);
+	const accessToken = useCloudStore((state) => state.accessToken);
+
+	const sendMessage = useStable(async (message: string, chatId?: string) => {
 		if (isResponding) {
 			throw new Error("Sidekick is already responding");
 		}
 
-		const { accessToken } = useCloudStore.getState();
-
 		setIsResponding(true);
-		setCurrentResponse("");
-
-		// Optimistically update the chat
-		// onUpdate((draft) => {
-		// 	draft.messages.push({
-		// 		role: "user",
-		// 		content: message,
-		// 	});
-		// });
 
 		try {
+			controller.current = new AbortController();
+
 			const response = await fetch(SIDEKICK_ENDPOINT, {
 				method: "POST",
+				signal: controller.current.signal,
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${accessToken}`,
 				},
 				body: JSON.stringify({
 					message,
-					// conversationId: currentChat.id?.id,
+					chatId,
 				}),
 			});
 
@@ -82,9 +81,12 @@ export function useSidekickStream(handler: StreamHandler) {
 			console.error("Failed to send message:", error);
 		} finally {
 			setIsResponding(false);
-			setCurrentResponse("");
 		}
 	});
 
-	return { sendMessage, isResponding, currentResponse };
+	const cancel = useStable(() => {
+		controller.current?.abort("Chat was cancelled");
+	});
+
+	return { sendMessage, isResponding, cancel };
 }

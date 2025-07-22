@@ -16,11 +16,6 @@ export function SidekickHistory({ onRestored }: SidekickHistoryProps) {
 	const loadChat = async (chat: SidekickChat) => {
 		const history = await messagesMutation.mutateAsync(chat.id);
 
-		console.log("Restoring", {
-			...chat,
-			history,
-		});
-
 		onRestored();
 		restoreChat({
 			...chat,

@@ -33,8 +33,6 @@ export function SidekickMessage({
 }: SidekickMessageProps) {
 	const isLight = useIsLight();
 
-	console.log(message);
-
 	return (
 		<Box className={classes.sidekickMessage}>
 			{message.role === "user" ? (

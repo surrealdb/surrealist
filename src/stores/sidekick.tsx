@@ -1,7 +1,7 @@
 import { RecordId } from "surrealdb";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { chatOf, messageOf, NEW_CHAT, NEW_MESSAGE } from "~/components/Sidekick/helpers";
+import { chatOf, messageOf } from "~/components/Sidekick/helpers";
 import { StreamEvent } from "~/components/Sidekick/types";
 import type { SidekickChat, SidekickChatMessage } from "~/types";
 
@@ -55,10 +55,9 @@ export const useSidekickStore = create<SidekickStore>()(
 
 		startRequest: (message) =>
 			set((draft) => {
-				draft.activeId = NEW_CHAT;
 				draft.thinkingText = "";
 				draft.activeRequest = {
-					id: NEW_MESSAGE,
+					id: null,
 					content: message,
 					role: "user",
 					sent_at: new Date(),

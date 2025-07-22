@@ -531,7 +531,7 @@ export interface Driver {
 }
 
 export interface SidekickChatMessage {
-	id: RecordId;
+	id: RecordId | null;
 	sent_at: Date;
 	content: string;
 	role: "user" | "assistant";
@@ -540,7 +540,7 @@ export interface SidekickChatMessage {
 		links: {
 			url: string;
 			title: string;
-			img_url: string;
+			img_url: string | null;
 		}[];
 	};
 }
@@ -550,6 +550,7 @@ export interface SidekickChat {
 	author: string;
 	title: string;
 	message_count: number;
+	last_activity: Date;
 }
 
 export interface CloudSignin {

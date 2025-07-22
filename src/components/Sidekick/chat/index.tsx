@@ -12,6 +12,7 @@ import {
 	Textarea,
 	ThemeIcon,
 } from "@mantine/core";
+
 import { useInputState } from "@mantine/hooks";
 import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
@@ -22,20 +23,21 @@ import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudProfile } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useSidekickStore } from "~/stores/sidekick";
-import { iconChevronRight, iconCursor, iconOpen, iconRelation, iconTable } from "~/util/icons";
+import { iconChevronRight, iconCursor, iconOpen } from "~/util/icons";
 import { Icon } from "../../Icon";
 import { PrimaryTitle } from "../../PrimaryTitle";
 import { SIDEKICK_QUESTIONS } from "../helpers";
-import { useSidekickStream } from "../stream";
+import { SidekickStream } from "../stream";
 import classes from "../style.module.scss";
 import { SidekickMessage } from "./message";
 
 export interface ChatConversationProps {
 	isAuthed: boolean;
+	stream: SidekickStream;
 }
 
-export function SidekickChat({ isAuthed }: ChatConversationProps) {
-	const { startRequest, completeRequest, applyEvent } = useSidekickStore.getState();
+export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
+	const { startRequest, completeRequest } = useSidekickStore.getState();
 
 	const activeId = useSidekickStore((state) => state.activeId);
 	const activeHistory = useSidekickStore((state) => state.activeHistory);
@@ -49,9 +51,7 @@ export function SidekickChat({ isAuthed }: ChatConversationProps) {
 	const profile = useCloudProfile();
 	const hasMessage = useMemo(() => input.trim() !== "", [input]);
 
-	const { sendMessage, isResponding } = useSidekickStream(applyEvent);
-
-	const canSend = input && !isResponding && hasMessage;
+	const canSend = !stream.isResponding && hasMessage;
 
 	const submitMessage = useStable(async () => {
 		if (!canSend) return;
@@ -65,7 +65,7 @@ export function SidekickChat({ isAuthed }: ChatConversationProps) {
 		inputRef.current?.focus();
 		startRequest(input);
 
-		await sendMessage(input);
+		await stream.sendMessage(input, activeId?.id.toString());
 
 		completeRequest();
 	});
@@ -92,50 +92,11 @@ export function SidekickChat({ isAuthed }: ChatConversationProps) {
 	}, [activeHistory, activeRequest, activeResponse]);
 
 	const questions = useMemo(() => shuffle(SIDEKICK_QUESTIONS).slice(0, 4), []);
+	const showPrompts = !activeRequest && !activeResponse && activeHistory.length === 0;
 
 	return (
 		<>
-			{activeId ? (
-				<Box
-					flex={1}
-					pos="relative"
-				>
-					<ScrollArea
-						pos="absolute"
-						viewportRef={scrollRef}
-						inset={0}
-					>
-						<Stack
-							p={36}
-							pb={96}
-							gap={38}
-						>
-							{activeHistory.map((message, i) => (
-								<SidekickMessage
-									key={i}
-									message={message}
-									profile={profile}
-									thinkingText={thinkingText}
-								/>
-							))}
-							{activeRequest && (
-								<SidekickMessage
-									message={activeRequest}
-									profile={profile}
-								/>
-							)}
-							{activeResponse && (
-								<SidekickMessage
-									message={activeResponse}
-									profile={profile}
-									isResponding={isResponding}
-									thinkingText={thinkingText}
-								/>
-							)}
-						</Stack>
-					</ScrollArea>
-				</Box>
-			) : (
+			{showPrompts ? (
 				<Center flex={1}>
 					<Stack
 						align="center"
@@ -243,6 +204,46 @@ export function SidekickChat({ isAuthed }: ChatConversationProps) {
 						</Stack>
 					</Stack>
 				</Center>
+			) : (
+				<Box
+					flex={1}
+					pos="relative"
+				>
+					<ScrollArea
+						pos="absolute"
+						viewportRef={scrollRef}
+						inset={0}
+					>
+						<Stack
+							p={36}
+							pb={96}
+							gap={38}
+						>
+							{activeHistory.map((message, i) => (
+								<SidekickMessage
+									key={i}
+									message={message}
+									profile={profile}
+									thinkingText={thinkingText}
+								/>
+							))}
+							{activeRequest && (
+								<SidekickMessage
+									message={activeRequest}
+									profile={profile}
+								/>
+							)}
+							{activeResponse && (
+								<SidekickMessage
+									message={activeResponse}
+									profile={profile}
+									isResponding={stream.isResponding}
+									thinkingText={thinkingText}
+								/>
+							)}
+						</Stack>
+					</ScrollArea>
+				</Box>
 			)}
 			<Box
 				px="xl"
@@ -252,7 +253,7 @@ export function SidekickChat({ isAuthed }: ChatConversationProps) {
 					bg="slate.9"
 					p="md"
 				>
-					<Group mb="xs">
+					{/* <Group mb="xs">
 						<Button
 							leftSection={<Icon path={iconTable} />}
 							variant="light"
@@ -277,7 +278,7 @@ export function SidekickChat({ isAuthed }: ChatConversationProps) {
 						>
 							Attach relation
 						</Button>
-					</Group>
+					</Group> */}
 					<Group
 						wrap="nowrap"
 						align="end"
@@ -303,7 +304,7 @@ export function SidekickChat({ isAuthed }: ChatConversationProps) {
 							variant="gradient"
 							disabled={!canSend}
 							onClick={submitMessage}
-							loading={isResponding}
+							loading={stream.isResponding}
 							style={{
 								opacity: canSend ? 1 : 0.5,
 								border: "1px solid rgba(255, 255, 255, 0.3)",

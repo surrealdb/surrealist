@@ -10,7 +10,7 @@ import {
 	Text,
 	Transition,
 } from "@mantine/core";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import glowImg from "~/assets/images/glow.webp";
 import sidekickImg from "~/assets/images/icons/sidekick.webp";
 import { Icon } from "~/components/Icon";
@@ -22,13 +22,16 @@ import { useSidekickStore } from "~/stores/sidekick";
 import { iconChat, iconHistory, iconPlus } from "~/util/icons";
 import { SidekickChat } from "./chat";
 import { SidekickHistory } from "./history";
+import { useSidekickStream } from "./stream";
 
 const SidekickChatLazy = memo(SidekickChat);
 const SidekickHistoryLazy = memo(SidekickHistory);
 
 export function Sidekick() {
-	const { resetChat } = useSidekickStore.getState();
+	const { resetChat, applyEvent } = useSidekickStore.getState();
+	const stream = useSidekickStream(applyEvent);
 
+	const activeId = useSidekickStore((state) => state.activeId);
 	const activeTitle = useSidekickStore((state) => state.activeTitle);
 
 	const [showHistory, setShowHistory] = useState(false);
@@ -37,6 +40,14 @@ export function Sidekick() {
 	const toggleHistory = useStable(() => {
 		setShowHistory((v) => !v);
 	});
+
+	useEffect(() => {
+		return () => {
+			if (activeId?.id) {
+				stream.cancel();
+			}
+		};
+	}, [activeId?.id, stream.cancel]);
 
 	return (
 		<Stack
@@ -115,7 +126,10 @@ export function Sidekick() {
 							direction="column"
 							style={styles}
 						>
-							<SidekickChatLazy isAuthed={isAuthed} />
+							<SidekickChatLazy
+								isAuthed={isAuthed}
+								stream={stream}
+							/>
 						</Flex>
 					)}
 				</Transition>

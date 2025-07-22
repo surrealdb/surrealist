@@ -12,7 +12,11 @@ export function useSidekickChatsQuery() {
 		refetchInterval: 30_000,
 		queryFn: async () => {
 			const [conversations] = await surreal.query<[SidekickChat[]]>(surql`
-				SELECT *, count(<-sent_in<-sidekick_message) AS message_count FROM sidekick_chat
+				SELECT
+					*,
+					count(<-sent_in<-sidekick_message) AS message_count
+				FROM sidekick_chat
+				ORDER BY last_activity DESC
 			`);
 
 			return conversations;
@@ -25,8 +29,8 @@ export function useSidekickMessagesMutation() {
 
 	return useMutation({
 		mutationFn: async (chatId: RecordId) => {
-			const [{ messages }] = await surreal.query<[{ messages: SidekickChatMessage[] }]>(surql`
-				SELECT <-sent_in<-sidekick_message.* AS messages FROM ONLY ${chatId}
+			const [messages] = await surreal.query<[SidekickChatMessage[]]>(surql`
+				SELECT * FROM ${chatId}<-sent_in<-sidekick_message ORDER BY id ASC;
 			`);
 
 			return messages;

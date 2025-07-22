@@ -14,9 +14,6 @@ import {
 	iconTransfer,
 } from "~/util/icons";
 
-export const NEW_CHAT = chatOf("__new__");
-export const NEW_MESSAGE = messageOf("__new__");
-
 export const SIDEKICK_QUESTIONS = [
 	{ icon: iconCreditCard, title: "How do I manage Cloud billing?" },
 	{ icon: iconPlus, title: "How do I create records?" },
