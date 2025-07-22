@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Button, Drawer, Group, NumberInput, Stack, Tooltip } from "@mantine/core";
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
@@ -10,6 +10,9 @@ import { iconBook, iconClose, iconMarker } from "~/util/icons";
 import { formatValue } from "~/util/surrealql";
 import type { GeographyInput } from "../GeographyMap";
 import { openGeometryLearnModal } from "~/modals/geometry-learn";
+import { useStable } from "~/hooks/stable";
+import { GeometryPoint } from "surrealdb";
+import { isGeometryPoint } from "./helpers";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -21,23 +24,58 @@ export interface GeographyDrawerProps {
 
 export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps) {
 	const [width, setWidth] = useState<number>(650);
+	const [initialData, setInitialData] = useState<GeographyInput>(data);
 
 	const [longitude, setLongitude] = useState<number>(0);
 	const [latitude, setLatitude] = useState<number>(0);
 
+	const setCoordinates = useStable((long: number, lati: number) => {
+		setLongitude(long);
+		setLatitude(lati);
+	});
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount
 	useEffect(() => {
-		const geo = formatValue(data);
-		const match = geo.match(/\((-?\d+\.\d+), (-?\d+\.\d+)\)/);
+		let geo: GeographyInput;
 
-		if (match) {
-			setLongitude(Number(match[1]));
-			setLatitude(Number(match[2]));
+		if (data instanceof GeometryPoint) {
+			setCoordinates(...data.coordinates);
+		} else {
+			console.error("Unsupported geography type", data);
 		}
-	}, [data]);
+	}, []);
 
-	const geoJSON = useMemo<string>(() => {
-		return `(${longitude}, ${latitude})`;
-	}, [longitude, latitude]);
+	const hasChanged = useMemo<boolean>(() => {
+		const updated = [longitude, latitude];
+
+		if (isGeometryPoint(initialData)) {
+			return updated.some((value, index) => value !== initialData.coordinates[index]);
+		}
+
+		return false;
+	}, [initialData, longitude, latitude]);
+
+	const revert = useStable(() => {
+		if (isGeometryPoint(initialData)) {
+			setCoordinates(...initialData.coordinates);
+		}
+	});
+
+	const apply = useStable(() => {
+		if (isGeometryPoint(initialData)) {
+			const updated = new GeometryPoint([longitude, latitude]);
+			setInitialData(updated);
+		}
+
+		// TODO: sync changes to the database
+	});
+
+	const save = useStable(() => {
+		if (isGeometryPoint(initialData)) {
+			const updated = new GeometryPoint([longitude, latitude]);
+			setInitialData(updated);
+		}
+	});
 
 	return (
 		<Drawer
@@ -87,6 +125,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 						<Button
 							variant="light"
 							size="xs"
+							radius="xs"
 							leftSection={<Icon path={iconBook} />}
 							onClick={openGeometryLearnModal}
 						>
@@ -109,10 +148,9 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 			>
 				<Box flex={1}>
 					<Suspense fallback={<LoadingContainer visible />}>
-						<GeographyMap value={geoJSON} />
+						<GeographyMap value={formatValue(initialData)} />
 					</Suspense>
 				</Box>
-
 				<Box
 					mt="xl"
 					flex={1}
@@ -131,6 +169,28 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 						/>
 					</Group>
 				</Box>
+
+				<Group>
+					<Button
+						disabled={!hasChanged}
+						onClick={revert}
+					>
+						Revert changes
+					</Button>
+					<Spacer />
+					<Button
+						disabled={!hasChanged}
+						onClick={apply}
+					>
+						Apply
+					</Button>
+					<Button
+						disabled={!hasChanged}
+						onClick={save}
+					>
+						Save
+					</Button>
+				</Group>
 			</Stack>
 		</Drawer>
 	);
