@@ -25,6 +25,7 @@ import { iconCreditCard } from "~/util/icons";
 import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { Spacer } from "../Spacer";
+import { tagEvent } from "~/util/analytics";
 
 export interface PaymentDetailsProps extends BoxProps {
 	organisation: CloudOrganization;
@@ -57,6 +58,8 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 	});
 
 	useWindowEvent("focus", async () => {
+		const hasPaymentInfo = organisation.payment_info;
+
 		if (!hasRequested.current) return;
 
 		await fetchAPI(`/organizations/${organisation.id}/payment`, {
@@ -72,6 +75,12 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 		client.invalidateQueries({
 			queryKey: ["cloud", "organizations"],
 		});
+
+		if (hasPaymentInfo) {
+			tagEvent("cloud_payment_details_updated", { organisation_id: organisation.id });
+		} else {
+			tagEvent("cloud_payment_details_added", { organisation_id: organisation.id });
+		}
 	});
 
 	const cardBrand = paymentQuery.data?.info?.card_brand ?? "";
