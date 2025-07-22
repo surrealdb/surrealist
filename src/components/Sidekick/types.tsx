@@ -1,3 +1,5 @@
+import { SidekickChat } from "~/types";
+
 export type Sources = {
 	header: string;
 	links: { url: string; title: string; img_url: string }[];
@@ -24,4 +26,12 @@ export interface ActiveMessage {
 	role: "user" | "assistant";
 	content: string;
 	sources?: Sources;
+}
+
+export interface GroupedChats {
+	today: SidekickChat[];
+	yesterday: SidekickChat[];
+	pastWeek: SidekickChat[];
+	pastMonth: SidekickChat[];
+	older: SidekickChat[];
 }

@@ -1,60 +1,17 @@
 import { Button, Center, Group, Loader, Stack, Text, TextInput } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
-import { RelativeTime } from "~/components/RelativeTime";
 import { useSidekickChatsQuery, useSidekickMessagesMutation } from "~/hooks/sidekick";
 import { useStable } from "~/hooks/stable";
 import { useSidekickStore } from "~/stores/sidekick";
 import { SidekickChat } from "~/types";
-import { iconChevronRight, iconPlus, iconSearch } from "~/util/icons";
+import { iconPlus, iconSearch } from "~/util/icons";
+import { groupChatsByDate } from "../helpers";
+import { SidekickHistoryEntry } from "./entry";
 
 export interface SidekickHistoryProps {
 	onOpenChat: () => void;
-}
-
-interface GroupedChats {
-	today: SidekickChat[];
-	yesterday: SidekickChat[];
-	pastWeek: SidekickChat[];
-	pastMonth: SidekickChat[];
-	older: SidekickChat[];
-}
-
-function groupChatsByDate(chats: SidekickChat[]): GroupedChats {
-	const now = new Date();
-	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-	const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
-	const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-	const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-	const grouped: GroupedChats = {
-		today: [],
-		yesterday: [],
-		pastWeek: [],
-		pastMonth: [],
-		older: [],
-	};
-
-	chats.forEach((chat) => {
-		const chatDate = new Date(chat.last_activity);
-		const chatDay = new Date(chatDate.getFullYear(), chatDate.getMonth(), chatDate.getDate());
-
-		if (chatDay.getTime() === today.getTime()) {
-			grouped.today.push(chat);
-		} else if (chatDay.getTime() === yesterday.getTime()) {
-			grouped.yesterday.push(chat);
-		} else if (chatDay >= weekAgo) {
-			grouped.pastWeek.push(chat);
-		} else if (chatDay >= monthAgo) {
-			grouped.pastMonth.push(chat);
-		} else {
-			grouped.older.push(chat);
-		}
-	});
-
-	return grouped;
 }
 
 export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
@@ -82,7 +39,8 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 		onOpenChat();
 	});
 
-	const groupedChats = chatsQuery.data ? groupChatsByDate(chatsQuery.data) : null;
+	const isEmpty = chatsQuery.isSuccess && chatsQuery.data?.length === 0;
+	const groupedChats = chatsQuery.isSuccess ? groupChatsByDate(chatsQuery.data) : null;
 
 	const renderChatGroup = (title: string, chats: SidekickChat[]) => {
 		if (chats.length === 0) return null;
@@ -100,31 +58,12 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 					{title}
 				</Label>
 				{chats.map((chat) => (
-					<Entry
-						h={32}
-						color="slate"
+					<SidekickHistoryEntry
 						key={chat.id.toString()}
-						onClick={() => loadChat(chat)}
-						variant={chat.id.equals(activeId) ? "light" : "subtle"}
-						justify="start"
-						rightSection={
-							<>
-								<Text mr="md">
-									<RelativeTime value={chat.last_activity.valueOf()} />
-								</Text>
-								<Icon path={iconChevronRight} />
-							</>
-						}
-					>
-						<Text
-							style={{
-								textOverflow: "ellipsis",
-								overflow: "hidden",
-							}}
-						>
-							{chat.title}
-						</Text>
-					</Entry>
+						chat={chat}
+						isActive={chat.id.equals(activeId)}
+						onOpen={loadChat}
+					/>
 				))}
 			</Stack>
 		);
@@ -142,6 +81,7 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 					leftSection={<Icon path={iconSearch} />}
 				/>
 				<Button
+					size="sm"
 					variant="gradient"
 					onClick={newChat}
 					rightSection={
@@ -154,7 +94,15 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 					New chat
 				</Button>
 			</Group>
-			{groupedChats ? (
+			{chatsQuery.isPending ? (
+				<Center>
+					<Loader />
+				</Center>
+			) : isEmpty ? (
+				<Center>
+					<Text>No chats found</Text>
+				</Center>
+			) : groupedChats ? (
 				<>
 					{renderChatGroup("Today", groupedChats.today)}
 					{renderChatGroup("Yesterday", groupedChats.yesterday)}
@@ -163,9 +111,7 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 					{renderChatGroup("Older", groupedChats.older)}
 				</>
 			) : (
-				<Center>
-					<Loader />
-				</Center>
+				<Center>{isEmpty ? <Text>No chats found</Text> : <Loader />}</Center>
 			)}
 		</Stack>
 	);
