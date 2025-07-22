@@ -91,6 +91,7 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Scroll down forcefully on conversation change
 	useEffect(() => {
 		scrollToBottom(true);
+		inputRef.current?.focus();
 	}, [activeId]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Scroll down on message change
@@ -216,6 +217,7 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 					<ScrollArea
 						pos="absolute"
 						viewportRef={scrollRef}
+						type="scroll"
 						inset={0}
 					>
 						<Stack
