@@ -222,7 +222,7 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 					>
 						<Stack
 							p={36}
-							pb={96}
+							pb={64}
 						>
 							{activeHistory.map((message, i) => (
 								<SidekickMessage
