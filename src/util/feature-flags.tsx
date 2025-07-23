@@ -33,9 +33,6 @@ export const schema = {
 	parameters_view: {
 		options: [false, true],
 	},
-	sidekick_view: {
-		options: [false, true],
-	},
 	apidocs_view: {
 		options: [false, true],
 	},
@@ -81,6 +78,9 @@ export const schema = {
 	organization_archiving: {
 		options: [false, true],
 	},
+	sidekick_ai: {
+		options: [false, true],
+	},
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
@@ -96,7 +96,6 @@ export const featureFlags = new FeatureFlags({
 			auth_view: true,
 			functions_view: true,
 			parameters_view: true,
-			sidekick_view: true,
 			apidocs_view: true,
 			newsfeed: true,
 			highlight_tool: true,
@@ -107,6 +106,7 @@ export const featureFlags = new FeatureFlags({
 			sidebar_customization: true,
 			gtm_debug: false,
 			organization_archiving: true,
+			sidekick_ai: true,
 		},
 		preview: {
 			query_view: true,
@@ -116,7 +116,6 @@ export const featureFlags = new FeatureFlags({
 			auth_view: true,
 			functions_view: true,
 			parameters_view: true,
-			sidekick_view: true,
 			apidocs_view: true,
 			changelog: "hidden",
 			cloud_enabled: true,
@@ -126,6 +125,7 @@ export const featureFlags = new FeatureFlags({
 			themes: true,
 			sidebar_customization: true,
 			gtm_debug: false,
+			sidekick_ai: true,
 		},
 		production: {
 			query_view: true,
@@ -135,7 +135,6 @@ export const featureFlags = new FeatureFlags({
 			auth_view: true,
 			functions_view: true,
 			parameters_view: true,
-			sidekick_view: true,
 			apidocs_view: true,
 			database_version_check: true,
 			cloud_enabled: true,
@@ -144,6 +143,7 @@ export const featureFlags = new FeatureFlags({
 			newsfeed: true,
 			themes: true,
 			gtm_debug: false,
+			sidekick_ai: true,
 		},
 	},
 	overrides: (flag) => {

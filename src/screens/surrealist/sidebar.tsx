@@ -32,7 +32,7 @@ import { dispatchIntent } from "~/util/intents";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
 	["/overview", "/organisations"],
-	["/chat", "/mini/new"],
+	["/mini/new"],
 	["/referrals", "/support"],
 ];
 
@@ -40,7 +40,7 @@ const VIEW_NAVIGATION: ViewPage[][] = [
 	["dashboard", "monitor"],
 	["query", "explorer", "graphql"],
 	["designer", "authentication", "parameters", "functions"],
-	["sidekick", "documentation"],
+	["documentation"],
 ];
 
 interface NavigationItem {

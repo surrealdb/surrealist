@@ -22,6 +22,7 @@ import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
+import { SidekickDrawer } from "./modals/sidekick";
 
 function Surrealist() {
 	return (
@@ -55,6 +56,7 @@ export function App() {
 			<RegisterUserModal />
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
+			<SidekickDrawer />
 			<CloudExpiredDialog />
 			<CloudUpdateRequiredDialog />
 			<FailedConnectDialog />

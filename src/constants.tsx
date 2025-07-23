@@ -61,7 +61,6 @@ import {
 	iconReferral,
 	iconRelation,
 	iconSearch,
-	iconSidekick,
 	iconTable,
 	iconTune,
 	iconVariable,
@@ -200,12 +199,6 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		aliases: ["/o/*"],
 		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
-	"/chat": {
-		id: "/chat",
-		name: "Sidekick",
-		icon: iconSidekick,
-		disabled: ({ flags }) => !flags.cloud_enabled,
-	},
 	"/referrals": {
 		id: "/referrals",
 		name: "Referrals",
@@ -282,12 +275,6 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		name: "Functions",
 		icon: iconFunction,
 		disabled: ({ flags }) => !flags.functions_view,
-	},
-	sidekick: {
-		id: "sidekick",
-		name: "Sidekick",
-		icon: iconSidekick,
-		disabled: ({ flags }) => !flags.sidekick_view,
 	},
 	documentation: {
 		id: "documentation",

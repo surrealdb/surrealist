@@ -1,17 +1,17 @@
 import classes from "./style.module.scss";
 
-import { Box } from "@mantine/core";
+import { Box, BoxProps } from "@mantine/core";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { clamp } from "~/util/helpers";
 
-export interface DrawerResizerProps {
+export interface DrawerResizerProps extends BoxProps {
 	minSize: number;
 	maxSize: number;
 	onResize: (width: number) => void;
 }
 
-export function DrawerResizer({ minSize, maxSize, onResize }: DrawerResizerProps) {
+export function DrawerResizer({ minSize, maxSize, onResize, ...props }: DrawerResizerProps) {
 	const [isResizing, setIsResizing] = useState(false);
 	const resizer = useRef<HTMLDivElement>(null);
 
@@ -56,6 +56,7 @@ export function DrawerResizer({ minSize, maxSize, onResize }: DrawerResizerProps
 			bottom={0}
 			pr={7}
 			className={clsx(classes.root, isResizing && classes.active)}
+			{...props}
 		>
 			<Box
 				w={3}

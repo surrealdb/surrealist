@@ -1,0 +1,32 @@
+.star-container {
+	position: relative;
+	display: inline-block;
+}
+
+.star {
+	position: absolute;
+	font-size: 0.75rem;
+	pointer-events: none;
+	z-index: 10;
+	animation: starFade 3s ease-out forwards;
+	transform: translate(-50%, -50%);
+}
+
+@keyframes starFade {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(0.5);
+		color: var(--mantine-color-surreal-6);
+	}
+
+	20% {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
+	}
+
+	100% {
+		opacity: 0;
+		transform: translate(-50%, -50%) scale(0.8);
+		color: var(--mantine-color-violet-6);
+	}
+}

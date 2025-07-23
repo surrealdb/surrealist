@@ -1,12 +1,12 @@
 import { useEffect, useMemo } from "react";
-import { PathPattern, matchRoute, useRouter, useSearch } from "wouter";
+import { matchRoute, PathPattern, useRouter, useSearch } from "wouter";
 import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
 import type { ViewPage } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import { IntentEvent } from "~/util/global-events";
-import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
+import { consumeIntent, type IntentPayload, type IntentType } from "~/util/intents";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
 
@@ -42,11 +42,11 @@ export function useRouteMatcher(match: string[]) {
  * Returns the active connection and view
  */
 export function useConnectionAndView() {
+	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
+
 	if (adapter instanceof MiniAdapter) {
 		return [SANDBOX, "query"] as const;
 	}
-
-	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
 
 	if (!match) {
 		return [null, null] as const;

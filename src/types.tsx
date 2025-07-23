@@ -1,6 +1,6 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import { AboutMetadata } from "@tauri-apps/api/menu";
-import type { AnyAuth, Duration, Token } from "surrealdb";
+import type { AnyAuth, Duration, RecordId, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
@@ -63,7 +63,6 @@ export type GlobalPage =
 	| "/overview"
 	| "/signin"
 	| "/organisations"
-	| "/chat"
 	| "/support"
 	| "/referrals"
 	| "/mini/new";
@@ -77,7 +76,6 @@ export type ViewPage =
 	| "authentication"
 	| "functions"
 	| "parameters"
-	| "sidekick"
 	| "documentation";
 
 export type AppMenuItemType =
@@ -547,6 +545,28 @@ export interface Driver {
 	link: string;
 }
 
+export interface SidekickChatMessage {
+	id: RecordId | null;
+	sent_at: Date;
+	content: string;
+	role: "user" | "assistant";
+	sources?: {
+		header: string;
+		links: {
+			url: string;
+			title: string;
+			img_url: string | null;
+		}[];
+	};
+}
+
+export interface SidekickChat {
+	id: RecordId;
+	author: string;
+	title: string;
+	last_activity: Date;
+}
+
 export interface CloudSignin {
 	id: string;
 	token: string;
@@ -689,22 +709,6 @@ export interface CloudPayment {
 export interface CloudBillingCountry {
 	name: string;
 	code: string;
-}
-
-export interface CloudChatMessage {
-	id: string;
-	content: string;
-	sender: "user" | "assistant";
-	loading: boolean;
-	thinking: string;
-	sources?: {
-		header: string;
-		links: {
-			url: string;
-			title: string;
-			img_url: string;
-		}[];
-	};
 }
 
 export interface CloudMeasurement {
