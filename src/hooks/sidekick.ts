@@ -14,7 +14,7 @@ export function useSidekickChatsQuery(search?: string) {
 			const [conversations] = await surreal.query<[SidekickChat[]]>(surql`
 					SELECT *
 					FROM sidekick_chat
-					WHERE !${search} || title ~ ${search} || <-sent_in<-sidekick_message.content ?= <regex>${search}
+					WHERE !${search} || title = <regex>${search} || <-sent_in<-sidekick_message.content ?= <regex>${search}
 					ORDER BY last_activity DESC
 				`);
 
