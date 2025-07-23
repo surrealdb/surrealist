@@ -328,6 +328,7 @@ export function invalidateSession() {
 	adapter.log("Cloud", "Invalidating active session");
 
 	localStorage.removeItem(TOKEN_REFRESH_KEY);
+	localStorage.removeItem(TOKEN_ACCESS_KEY);
 
 	clearSession();
 

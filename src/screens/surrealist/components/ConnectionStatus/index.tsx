@@ -56,8 +56,9 @@ export function ConnectionStatus() {
 
 	const noTables = schema.tables.length === 0;
 	const noFunctions = schema.functions.length === 0;
+	const noParams = schema.params.length === 0;
 	const noUsers = schema.users.length === 0;
-	const isSchemaEmpty = noTables && noFunctions && noUsers;
+	const isSchemaEmpty = noTables && noFunctions && noParams && noUsers;
 
 	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
 	const [showDatasets, showDatasetsHandle] = useBoolean();

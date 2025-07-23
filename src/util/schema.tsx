@@ -7,6 +7,7 @@ import type {
 	SchemaInfoNS,
 	SchemaInfoTB,
 	SchemaModel,
+	SchemaParameter,
 	TableInfo,
 	TableVariant,
 } from "~/types";
@@ -81,11 +82,12 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 	}
 
 	if (dbInfoTask.status === "fulfilled") {
-		const { accesses, models, users, functions, tables } = dbInfoTask.value;
+		const { accesses, models, users, functions, tables, params } = dbInfoTask.value;
 
 		schema.database.accesses = accesses ?? [];
 		schema.database.models = models;
 		schema.database.users = users;
+		schema.database.params = params;
 
 		// TODO Trim access queries
 
@@ -169,18 +171,39 @@ export function buildFunctionDefinition(func: SchemaFunction): string {
 
 	let query = `DEFINE FUNCTION OVERWRITE fn::${func.name}(${args})`;
 
-	if (func.returns) {
+	if (func.returns !== undefined) {
 		query += ` -> ${func.returns}`;
 	}
 
 	query += ` {\n${block}\n}`;
 
-	if (func.permissions) {
+	if (func.permissions !== undefined) {
 		query += ` PERMISSIONS ${displaySchemaPermission(func.permissions)}`;
 	}
 
-	if (func.comment) {
+	if (func.comment !== undefined) {
 		query += ` COMMENT "${func.comment}"`;
+	}
+
+	return query;
+}
+
+/**
+ * Build a parameter definition query
+ */
+export function buildParameterDefinition(param: SchemaParameter): string {
+	let query = `DEFINE PARAM OVERWRITE $${param.name}`;
+
+	if (param.permissions !== undefined) {
+		query += ` PERMISSIONS ${displaySchemaPermission(param.permissions)}`;
+	}
+
+	if (param.comment !== undefined) {
+		query += ` COMMENT "${param.comment}"`;
+	}
+
+	if (param.value !== undefined) {
+		query += ` VALUE ${param.value}`;
 	}
 
 	return query;

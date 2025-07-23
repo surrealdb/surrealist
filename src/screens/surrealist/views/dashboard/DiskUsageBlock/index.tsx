@@ -1,4 +1,5 @@
 import { Alert, Box, Button, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudMeasurement } from "~/types";
@@ -22,6 +23,7 @@ export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUs
 	const storageUsageMB = formatMemory(storageUsage);
 	const storageMaxMB = formatMemory(storageMax);
 	const storageColor = storageFrac > 80 ? "red" : "surreal";
+	const canManage = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 
 	const handleUpgrade = useStable(() => {
 		onUpgrade();
@@ -59,16 +61,20 @@ export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUs
 						</Text>
 						<Text>{storageFrac.toFixed(2)}% used</Text>
 					</Stack>
-					<Spacer />
-					<Button
-						c="surreal"
-						size="xs"
-						fz={13}
-						variant="subtle"
-						onClick={handleUpgrade}
-					>
-						Upgrade
-					</Button>
+					{canManage && (
+						<>
+							<Spacer />
+							<Button
+								c="surreal"
+								size="xs"
+								fz={13}
+								variant="subtle"
+								onClick={handleUpgrade}
+							>
+								Upgrade
+							</Button>
+						</>
+					)}
 				</Group>
 
 				{instance?.distributed_storage_specs ? (

@@ -47,8 +47,8 @@ export function LogActivityChart({ toTime, fromTime, lines }: LogActivityChartPr
 	// Determine the chart start and end times
 	const [startAt, endAt] = useMemo(() => {
 		return [
-			startOfDate(fromTime, resolution).getTime(),
-			startOfDate(toTime, resolution).getTime() - interval,
+			startOfDate(fromTime, resolution).getTime() + interval,
+			startOfDate(toTime, resolution).getTime(),
 		];
 	}, [fromTime, toTime, interval, resolution]);
 
@@ -80,7 +80,7 @@ export function LogActivityChart({ toTime, fromTime, lines }: LogActivityChartPr
 			const minute = momentIndex.get(lineTime);
 
 			if (!minute) {
-				throw new Error(`No moment found for timestamp ${lineTime}`);
+				continue;
 			}
 
 			minute[severity]++;

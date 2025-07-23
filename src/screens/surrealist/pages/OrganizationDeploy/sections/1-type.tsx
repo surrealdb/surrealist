@@ -13,7 +13,7 @@ import {
 
 import { closeModal, openModal } from "@mantine/modals";
 import { Fragment, ReactNode, useMemo } from "react";
-import { INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
+import { INSTANCE_PLAN_ARCHITECTURES, INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
@@ -174,13 +174,22 @@ interface IntanceTypeCardProps {
 
 function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	const estimatedCost = type.price_hour / 1000;
-	const isDistributed = details.plan === "enterprise" || type.category === "distributed";
+	const [archName, archKind] = INSTANCE_PLAN_ARCHITECTURES[details.plan];
 
 	const handleSelect = useStable(() => {
 		onChange(type);
 	});
 
 	const features: ReactNode[] = [
+		<Fragment key="cluster">
+			<Text
+				fw={500}
+				c="bright"
+			>
+				{archName}
+			</Text>
+			<Text c="slate.3">{archKind}</Text>
+		</Fragment>,
 		<Fragment key="cpu">
 			<Text
 				fw={500}

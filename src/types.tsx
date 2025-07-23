@@ -40,6 +40,7 @@ export type QueryType = "config" | "file";
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
 export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
+export type FunctionType = "function" | "model";
 
 export type InstanceState =
 	| "creating"
@@ -74,7 +75,7 @@ export type ViewPage =
 	| "designer"
 	| "authentication"
 	| "functions"
-	| "models"
+	| "parameters"
 	| "documentation";
 
 export type AppMenuItemType =
@@ -347,6 +348,7 @@ export interface DatabaseSchema {
 	accesses: SchemaAccess[];
 	tables: TableInfo[];
 	users: SchemaUser[];
+	params: SchemaParameter[];
 }
 
 export interface SchemaTable {
@@ -416,6 +418,13 @@ export interface SchemaAccess {
 		  };
 }
 
+export interface SchemaParameter {
+	name: string;
+	permissions: boolean | string;
+	value: string;
+	comment?: string;
+}
+
 export interface SchemaFunction {
 	name: string;
 	block: string;
@@ -431,6 +440,11 @@ export interface SchemaModel {
 	version: string;
 	permission: boolean | string;
 	comment: string;
+}
+
+export interface FunctionDetails {
+	type: FunctionType;
+	details: SchemaFunction | SchemaModel;
 }
 
 export interface TableInfo {
@@ -462,12 +476,12 @@ export interface SchemaInfoNS {
 
 export interface SchemaInfoDB {
 	functions: SchemaFunction[];
+	params: SchemaParameter[];
 	models: SchemaModel[];
 	accesses: SchemaAccess[];
 	tables: SchemaTable[];
 	users: SchemaUser[];
 	analyzers: any[]; // unused
-	params: any[]; // unused
 }
 
 export interface SchemaInfoTB {

@@ -74,8 +74,8 @@ export function ClusterStorageSection({ organisation, details, setDetails }: Dep
 							<Box>
 								<Label>Standard</Label>
 								<Text>
-									For small workloads. Allows you to scale up to 1 TB of data,
-									best suited for up to two SurrealDB Compute nodes.
+									Best suited for small workloads with lower compute requirements.
+									Allows you to scale up to 1 TB of data.
 								</Text>
 							</Box>
 						}
@@ -86,8 +86,8 @@ export function ClusterStorageSection({ organisation, details, setDetails }: Dep
 							<Box>
 								<Label>Advanced</Label>
 								<Text>
-									For larger workloads. Allows you to scale up to 6 TB of data,
-									best suited for up to ten SurrealDB Compute nodes.
+									Best suited for larger workloads with higher compute
+									requirements. Allows you to scale up to 6 TB of data.
 								</Text>
 							</Box>
 						}

@@ -20,7 +20,6 @@ import {
 } from "@mantine/core";
 
 import { Box, ScrollArea, Stack } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
 import { memo, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
@@ -86,7 +85,6 @@ export function DashboardView() {
 
 	const [upgrading, upgradingHandle] = useBoolean();
 	const [configuring, configuringHandle] = useBoolean();
-	const [metricsNodes, setMetricsNodes] = useInputState<string[]>([]);
 	const [billingRequiredOpened, setBillingRequiredOpened] = useState(false);
 
 	const [upgradeTab, setUpgradeTab] = useState("type");

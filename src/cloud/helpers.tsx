@@ -10,7 +10,7 @@ export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	version: "",
 	plan: "free",
 	storageCategory: "standard",
-	storageAmount: 0,
+	storageAmount: 100,
 	dataset: false,
 });
 
@@ -19,6 +19,13 @@ export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, string[]> = {
 	start: ["development", "production"],
 	scale: ["production-memory", "production-compute"],
 	enterprise: ["production-memory", "production-compute"],
+};
+
+export const INSTANCE_PLAN_ARCHITECTURES: Record<InstancePlan, [string, string]> = {
+	free: ["Single-node", "Instance"],
+	start: ["Single-node", "Instance"],
+	scale: ["Shared", "Cluster"],
+	enterprise: ["Dedicated", "Cluster"],
 };
 
 export const INSTANCE_CATEGORY_PLANS: Record<string, InstancePlan> = {
