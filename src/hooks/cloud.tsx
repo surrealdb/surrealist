@@ -56,6 +56,7 @@ export function usePauseInstance(instance: CloudInstance): () => void {
 		title: `Pause ${instance.name}`,
 		message:
 			"You can pause this instance to temporarily stop all resources and save costs, while data contained in this instance will be preserved.",
+		skippable: true,
 		confirmText: "Pause",
 		confirmProps: {
 			variant: "gradient",
@@ -97,6 +98,7 @@ export function useResumeInstance(instance: CloudInstance): () => void {
 	return useConfirmation({
 		title: `Resume ${instance.name}`,
 		message: "Resume your instance to restore all resources and allow access to your data",
+		skippable: true,
 		confirmText: "Resume",
 		confirmProps: {
 			variant: "gradient",

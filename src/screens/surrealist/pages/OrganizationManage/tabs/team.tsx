@@ -55,6 +55,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 
 	const requestRemove = useConfirmation<CloudMember>({
 		title: "Remove member",
+		skippable: true,
 		message: (member) => `Are you sure you want to remove ${member.name}?`,
 		onConfirm: (value) => removeMutation.mutate(value.user_id),
 	});
@@ -63,6 +64,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 		title: "Leave organisation",
 		message: `Are you sure you want to leave ${organization.name}?`,
 		confirmText: "Leave",
+		skippable: true,
 		onConfirm: async () => {
 			navigate("/organisations");
 

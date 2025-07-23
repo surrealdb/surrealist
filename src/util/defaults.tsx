@@ -41,6 +41,7 @@ export function createBaseSettings(): SurrealistSettings {
 			tableSuggest: true,
 			variableSuggest: true,
 			queryErrorChecker: true,
+			enterConfirms: false,
 			querySelectionExecution: true,
 			querySelectionExecutionWarning: true,
 			windowPinned: false,

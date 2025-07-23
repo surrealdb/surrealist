@@ -140,6 +140,7 @@ export function ParametersView() {
 	const removeParameter = useConfirmation({
 		message: "You are about to remove this parameter. This action cannot be undone.",
 		confirmText: "Remove",
+		skippable: true,
 		onConfirm: async (name: string) => {
 			await executeQuery(`REMOVE PARAM $${name}`);
 			await syncConnectionSchema();

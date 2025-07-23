@@ -1,10 +1,18 @@
-import { type PropsWithChildren, type ReactNode, createContext, useContext, useState } from "react";
+import {
+	type PropsWithChildren,
+	type ReactNode,
+	createContext,
+	useContext,
+	useRef,
+	useState,
+} from "react";
 
 import { Button, type ButtonProps, Divider, Group, Text, TextInput } from "@mantine/core";
 import { Modal } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useSetting } from "~/hooks/config";
 import { useActiveKeys } from "~/hooks/keys";
 import { useStable } from "~/hooks/stable";
 import { isSimilar } from "~/util/helpers";
@@ -59,6 +67,8 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 	const [value, setValue] = useState<any>();
 
 	const isShifting = useActiveKeys("Shift");
+	const confirmationRef = useRef<HTMLButtonElement>(null);
+	const [enterConfirms] = useSetting("behavior", "enterConfirms");
 
 	const setConfirmation = (value: any, options: ConfirmOptions<any>) => {
 		if (isConfirming) {
@@ -99,6 +109,15 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 				title={
 					<PrimaryTitle>{applyNode(options?.title ?? DEFAULT_TITLE, value)}</PrimaryTitle>
 				}
+				onKeyDown={(e) => {
+					if (
+						enterConfirms &&
+						e.key === "Enter" &&
+						(!options?.verification || isVerified)
+					) {
+						confirmationRef.current?.focus();
+					}
+				}}
 			>
 				<Text fz="lg">{applyNode(options?.message, value)}</Text>
 				{options?.verification && (
@@ -133,6 +152,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 					</Button>
 					<Spacer />
 					<Button
+						ref={confirmationRef}
 						color="red"
 						onClick={onConfirm}
 						disabled={!isVerified}

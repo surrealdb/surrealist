@@ -45,6 +45,7 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 		title: "Remove database",
 		message: `Are you sure you want to remove the database "${value}"?`,
 		confirmText: "Remove",
+		skippable: true,
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `REMOVE DATABASE ${escapeIdent(value)}`);
 

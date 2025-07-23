@@ -1,12 +1,12 @@
-import { Box, type BoxProps, Checkbox, Group, Text } from "@mantine/core";
+import { Box, type BoxProps, Checkbox, Group, Text, Tooltip } from "@mantine/core";
 import { ScrollArea, Table } from "@mantine/core";
 import { alphabetical, isObject } from "radash";
 import { type MouseEvent, useMemo } from "react";
 import { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
-import type { ColumnSort } from "~/types";
-import { iconChevronDown, iconChevronUp, iconWarning } from "~/util/icons";
+import type { ColumnSort, TableInfo } from "~/types";
+import { iconChevronDown, iconChevronUp, iconIndex, iconWarning } from "~/util/icons";
 import { Icon } from "../Icon";
 import { DataCell } from "./datatypes";
 import classes from "./style.module.scss";
@@ -17,6 +17,7 @@ function isRenderable(value: any) {
 
 interface DataTableProps extends BoxProps {
 	data: any;
+	schema?: TableInfo;
 	active?: string | null;
 	sorting?: ColumnSort | null;
 	headers?: string[];
@@ -32,6 +33,7 @@ export function DataTable(props: DataTableProps) {
 
 	const {
 		data,
+		schema,
 		active,
 		selected,
 		sorting,
@@ -106,29 +108,49 @@ export function DataTable(props: DataTableProps) {
 	}, [data, headers]);
 
 	const columnHeaders = useMemo(() => {
-		return keys.map((key, i) => (
-			<Table.Th key={key}>
-				<Text
-					span
-					fw={700}
-					onClick={() => handleSortClick(key)}
-					style={{
-						cursor: onSortingChange ? "pointer" : undefined,
-						userSelect: "none",
-						WebkitUserSelect: "none",
-					}}
-				>
-					{key}
-					{sorting?.[0] === key && (
-						<Icon
-							path={sorting[1] === "asc" ? iconChevronDown : iconChevronUp}
-							pos="absolute"
-						/>
-					)}
-				</Text>
-			</Table.Th>
-		));
-	}, [keys, sorting, onSortingChange]);
+		return keys.map((key, i) => {
+			const indexed = schema?.indexes.filter((index) => index.cols.includes(key));
+			const indexedName = indexed?.map((index) => index.name).join(", ");
+
+			return (
+				<Table.Th key={key}>
+					<Group
+						wrap="nowrap"
+						gap="xs"
+						style={{
+							cursor: "pointer",
+							userSelect: "none",
+							WebkitUserSelect: "none",
+						}}
+						onClick={() => handleSortClick(key)}
+					>
+						<Text
+							span
+							fw={700}
+						>
+							{key}
+						</Text>
+						{indexed && indexedName && (
+							<Tooltip label={`This column is indexed by ${indexedName}`}>
+								<div>
+									<Icon
+										path={iconIndex}
+										c="slate.3"
+									/>
+								</div>
+							</Tooltip>
+						)}
+						{sorting?.[0] === key && (
+							<Icon
+								path={sorting[1] === "asc" ? iconChevronDown : iconChevronUp}
+								c="slate.3"
+							/>
+						)}
+					</Group>
+				</Table.Th>
+			);
+		});
+	}, [keys, sorting, schema]);
 
 	const recordRows = useMemo(() => {
 		return values.map((value, i) => {

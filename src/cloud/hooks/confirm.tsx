@@ -13,6 +13,7 @@ export function useUpdateConfirmation<T>(callback: (value: T) => unknown) {
 		confirmProps: {
 			variant: "gradient",
 		},
+		skippable: true,
 		onConfirm: async (value) => {
 			try {
 				await callback(value);

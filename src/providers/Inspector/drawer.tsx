@@ -143,6 +143,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	const deleteRecord = useConfirmation({
 		message: "You are about to delete this record. This action cannot be undone.",
 		confirmText: "Delete",
+		skippable: true,
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `DELETE ${formatValue(history.current)}`);
 

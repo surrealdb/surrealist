@@ -27,7 +27,7 @@ import { Button, Group, HoverCard, Paper, ThemeIcon, Transition, rem } from "@ma
 import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { objectify, trim } from "radash";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
@@ -91,8 +91,9 @@ export function QueryPane({
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
 	const saveTasks = useRef<Map<string, any>>(new Map());
+	const [executionHidden, setExecutionHidden] = useState(false);
 	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
-	const [showSelectionExecutionWarning, setShowSelectionExecutionWarning] = useSetting(
+	const [showSelectionExecutionWarning] = useSetting(
 		"behavior",
 		"querySelectionExecutionWarning",
 	);
@@ -200,10 +201,6 @@ export function QueryPane({
 	});
 
 	const hasSelection = selection?.empty === false;
-
-	const handleHideSelectionWarning = useStable(() => {
-		setShowSelectionExecutionWarning(false);
-	});
 
 	const extensions = useMemo(
 		() => [
@@ -324,7 +321,12 @@ export function QueryPane({
 			/>
 			<Transition
 				transition="slide-up"
-				mounted={showSelectionExecutionWarning && allowSelectionExecution && hasSelection}
+				mounted={
+					showSelectionExecutionWarning &&
+					allowSelectionExecution &&
+					hasSelection &&
+					!executionHidden
+				}
 			>
 				{(style) => (
 					<Paper
@@ -343,6 +345,7 @@ export function QueryPane({
 							bottom: rem(12),
 							left: rem(12),
 							right: rem(12),
+							zIndex: 1,
 						}}
 					>
 						<Group>
@@ -353,9 +356,9 @@ export function QueryPane({
 								size="compact-sm"
 								variant="subtle"
 								color="violet"
-								onClick={handleHideSelectionWarning}
+								onClick={() => setExecutionHidden(true)}
 							>
-								Hide
+								Hide Temporarily
 							</Button>
 							<Button
 								size="compact-sm"

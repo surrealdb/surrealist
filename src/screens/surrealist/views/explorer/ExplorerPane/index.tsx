@@ -164,6 +164,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 	const removeRecord = useConfirmation<RecordId>({
 		title: "Delete record",
+		skippable: true,
 		message: (value) => (
 			<Box>
 				Are you sure you want to delete this record?
@@ -183,6 +184,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const removeSelectedRecords = useConfirmation({
 		title: "Bulk delete records",
 		message: `Are you sure you want to delete all ${selected.size} records?`,
+		skippable: true,
 		onConfirm: async () => {
 			const selectedRecords = Array.from(selected).map((it) => new StringRecordId(it));
 
@@ -452,6 +454,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					}}
 				>
 					<DataTable
+						schema={schema}
 						data={records}
 						sorting={sortMode}
 						selected={selected}

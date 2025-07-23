@@ -176,6 +176,23 @@ export function useComputedPreferences(): PreferenceSection[] {
 				],
 			},
 			{
+				id: "behavior",
+				name: "Behavior",
+				preferences: [
+					{
+						id: "enter-confirms",
+						name: "Enter to confirm",
+						description: "Use enter to confirm actions in confirmation modals",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.behavior.enterConfirms,
+							writer: (config, value) => {
+								config.settings.behavior.enterConfirms = value;
+							},
+						}),
+					},
+				],
+			},
+			{
 				id: "connection",
 				name: "Connection",
 				preferences: [
