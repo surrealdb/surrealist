@@ -67,11 +67,13 @@ export function SidekickHistoryEntry({ chat, isActive, onOpen }: SidekickHistory
 
 	return (
 		<Entry
-			h={32}
-			color="slate"
+			color="slate.5"
 			key={chat.id.toString()}
 			onClick={isRenaming ? undefined : handleOpen}
-			variant={isActive ? "light" : "subtle"}
+			variant="light"
+			style={{
+				border: "1px solid var(--surrealist-divider-color)",
+			}}
 			justify="start"
 			rightSection={
 				<>

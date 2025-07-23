@@ -48,15 +48,9 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 		return (
 			<Stack
 				key={title}
-				gap={2}
+				gap="xs"
 			>
-				<Label
-					ml={8}
-					c="surreal"
-					mb="xs"
-				>
-					{title}
-				</Label>
+				<Label mb="xs">{title}</Label>
 				{chats.map((chat) => (
 					<SidekickHistoryEntry
 						key={chat.id.toString()}
