@@ -1,21 +1,27 @@
 import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Sidekick } from "~/components/Sidekick";
+import { Sidekick, SidekickHandle } from "~/components/Sidekick";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 
 export function SidekickDrawer() {
+	const sidekickRef = useRef<SidekickHandle>(null);
 	const [isOpen, openHandle] = useDisclosure();
+	const [width, setWidth] = useState(650);
 	const handleClose = useStable(() => {
 		openHandle.close();
 	});
 
-	const [width, setWidth] = useState(650);
-
-	useIntent("open-sidekick", () => {
+	useIntent("open-sidekick", ({ search }) => {
 		openHandle.open();
+
+		if (search) {
+			setTimeout(() => {
+				sidekickRef.current?.sendMessage(search);
+			}, 100);
+		}
 	});
 
 	return (
@@ -40,7 +46,7 @@ export function SidekickDrawer() {
 				onResize={setWidth}
 				style={{ zIndex: 1000 }}
 			/>
-			<Sidekick />
+			<Sidekick ref={sidekickRef} />
 		</Drawer>
 	);
 }

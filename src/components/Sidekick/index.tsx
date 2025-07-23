@@ -1,7 +1,8 @@
 import { Box, Divider, Flex, Group, Image, Stack, Text, Transition } from "@mantine/core";
-import { memo, useEffect, useState } from "react";
+import { forwardRef, memo, useEffect, useImperativeHandle, useRef, useState } from "react";
 import glowImg from "~/assets/images/glow.webp";
 import sidekickImg from "~/assets/images/icons/sidekick.webp";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -18,8 +19,14 @@ import classes from "./style.module.scss";
 const SidekickChatLazy = memo(SidekickChat);
 const SidekickHistoryLazy = memo(SidekickHistory);
 
-export function Sidekick() {
-	const { applyEvent } = useSidekickStore.getState();
+export interface SidekickHandle {
+	sendMessage: (message: string) => Promise<void>;
+	element: HTMLDivElement | null;
+}
+
+export const Sidekick = forwardRef<SidekickHandle>((_, ref) => {
+	const { applyEvent, startRequest, completeRequest, resetChat } = useSidekickStore.getState();
+	const rootRef = useRef<HTMLDivElement>(null);
 
 	const stream = useSidekickStream(applyEvent);
 	const activeId = useSidekickStore((state) => state.activeId);
@@ -32,6 +39,23 @@ export function Sidekick() {
 		setShowHistory((v) => !v);
 	});
 
+	useImperativeHandle(ref, () => ({
+		sendMessage: async (message: string) => {
+			if (!isAuthed) {
+				openCloudAuthentication();
+				return;
+			}
+
+			resetChat();
+			startRequest(message);
+
+			await stream.sendMessage(message);
+
+			completeRequest();
+		},
+		element: rootRef.current,
+	}));
+
 	useEffect(() => {
 		return () => {
 			if (activeId?.id) {
@@ -42,6 +66,7 @@ export function Sidekick() {
 
 	return (
 		<Stack
+			ref={rootRef}
 			gap={0}
 			h="100%"
 			w="100%"
@@ -122,4 +147,4 @@ export function Sidekick() {
 			</Box>
 		</Stack>
 	);
-}
+});
