@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import { Drawer, Group, Tabs } from "@mantine/core";
 import { useState } from "react";
 import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
@@ -14,6 +12,7 @@ import { iconArrowDownFat, iconClose } from "~/util/icons";
 import { ConfigurationStorage } from "../UpgradeDrawer/configs/storage";
 import { ConfigurationInstanceType } from "../UpgradeDrawer/configs/type";
 import { ConfigurationNodes } from "./configs/nodes";
+import classes from "./style.module.scss";
 
 export interface UpgradeDrawerProps {
 	opened: boolean;
@@ -38,7 +37,7 @@ export function UpgradeDrawer({
 		onChangeTab("type");
 	});
 
-	const hideDisk = instance.distributed_storage_specs !== undefined;
+	const _hideDisk = instance.distributed_storage_specs !== undefined;
 	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
 
 	const isComputeNodesTabVisible = guessedPlan === "scale" || guessedPlan === "enterprise";

@@ -5,7 +5,7 @@ import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 import { useDocsTable } from "../../hooks/table";
 
 export function DocsTablesManageIndexes({ language, topic }: TopicProps) {
-	const table = useDocsTable();
+	const _table = useDocsTable();
 
 	const snippets = useMemo<Snippets>(
 		() => ({

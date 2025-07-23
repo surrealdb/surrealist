@@ -1,4 +1,4 @@
-import { type GraphQLSchema, buildClientSchema, getIntrospectionQuery } from "graphql";
+import { buildClientSchema, type GraphQLSchema, getIntrospectionQuery } from "graphql";
 import { useState } from "react";
 import { sendGraphqlRequest } from "~/screens/surrealist/connection/connection";
 import { useStable } from "./stable";

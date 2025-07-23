@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import { BarChart, ChartTooltip } from "@mantine/charts";
 import { DurationUnit, differenceInHours, format } from "date-fns";
 import { range } from "radash";
@@ -8,6 +6,7 @@ import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { CloudLogLine } from "~/types";
 import { startOfDate } from "~/util/helpers";
+import classes from "./style.module.scss";
 
 interface ChartMoment {
 	time: number;

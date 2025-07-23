@@ -1,5 +1,4 @@
-import { Box, Center, Divider, Group, Stack } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Box, Center, Divider, Group, Stack, Text } from "@mantine/core";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";

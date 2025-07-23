@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import {
 	Box,
 	Button,
@@ -11,9 +9,6 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-
-import { iconCircle, iconCloud, iconServer } from "~/util/icons";
-
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { Entry, type EntryProps } from "~/components/Entry";
@@ -26,7 +21,9 @@ import { useStable } from "~/hooks/stable";
 import type { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
+import { iconCircle, iconCloud, iconServer } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
+import classes from "../style.module.scss";
 
 export function ConnectionsModal() {
 	const [isOpen, openedHandle] = useBoolean();

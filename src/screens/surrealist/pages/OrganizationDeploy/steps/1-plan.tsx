@@ -1,6 +1,3 @@
-import clsx from "clsx";
-import classes from "../style.module.scss";
-
 import {
 	Box,
 	Button,
@@ -12,6 +9,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import clsx from "clsx";
 import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
 import { adapter } from "~/adapter";
@@ -25,6 +23,7 @@ import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { CURRENCY_FORMAT } from "~/util/helpers";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
+import classes from "../style.module.scss";
 import { StepProps } from "../types";
 
 export function PlanStep({ organisation, instances, setDetails, setStep }: StepProps) {

@@ -60,80 +60,78 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 	}
 
 	return (
-		<>
-			<Stack>
-				<Text size="lg">
-					You can connect to this instance using{" "}
-					<Link href="https://surrealdb.com/docs/surrealdb/integration/http">
-						HTTP requests
-					</Link>
-					. The following example demonstrates how to use cURL to communicate with this
-					instance.
-				</Text>
+		<Stack>
+			<Text size="lg">
+				You can connect to this instance using{" "}
+				<Link href="https://surrealdb.com/docs/surrealdb/integration/http">
+					HTTP requests
+				</Link>
+				. The following example demonstrates how to use cURL to communicate with this
+				instance.
+			</Text>
 
-				<Text
-					mt="xl"
-					fz="xl"
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					c="bright"
+			<Text
+				mt="xl"
+				fz="xl"
+				ff="mono"
+				tt="uppercase"
+				fw={600}
+				c="bright"
+			>
+				Authentication
+			</Text>
+
+			<Paper
+				bg={isLight ? "slate.0" : "slate.9"}
+				p="md"
+			>
+				<SimpleGrid
+					cols={2}
+					mb="md"
 				>
-					Authentication
-				</Text>
+					<TextInput
+						placeholder="Username"
+						size="xs"
+						value={username}
+						onChange={setUsername}
+					/>
 
-				<Paper
-					bg={isLight ? "slate.0" : "slate.9"}
-					p="md"
-				>
-					<SimpleGrid
-						cols={2}
-						mb="md"
-					>
-						<TextInput
-							placeholder="Username"
-							size="xs"
-							value={username}
-							onChange={setUsername}
-						/>
+					<TextInput
+						placeholder="Password"
+						size="xs"
+						value={password}
+						onChange={setPassword}
+					/>
+				</SimpleGrid>
 
-						<TextInput
-							placeholder="Password"
-							size="xs"
-							value={password}
-							onChange={setPassword}
-						/>
-					</SimpleGrid>
-
-					<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication">
-						Learn more about authentication
-					</LearnMore>
-				</Paper>
-
-				<Text
-					mt="xl"
-					fz="xl"
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					c="bright"
-				>
-					Execute HTTP request
-				</Text>
-
-				<CodePreview
-					language="bash"
-					withCopy
-					value={command}
-				/>
-
-				<LearnMore
-					mt="sm"
-					href="https://surrealdb.com/docs/surrealdb/integration/http"
-				>
-					Learn more about the HTTP protocol
+				<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication">
+					Learn more about authentication
 				</LearnMore>
-			</Stack>
-		</>
+			</Paper>
+
+			<Text
+				mt="xl"
+				fz="xl"
+				ff="mono"
+				tt="uppercase"
+				fw={600}
+				c="bright"
+			>
+				Execute HTTP request
+			</Text>
+
+			<CodePreview
+				language="bash"
+				withCopy
+				value={command}
+			/>
+
+			<LearnMore
+				mt="sm"
+				href="https://surrealdb.com/docs/surrealdb/integration/http"
+			>
+				Learn more about the HTTP protocol
+			</LearnMore>
+		</Stack>
 	);
 }

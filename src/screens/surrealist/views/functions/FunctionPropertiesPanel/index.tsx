@@ -1,14 +1,17 @@
 import {
 	ActionIcon,
+	Box,
 	Button,
 	CopyButton,
+	Flex,
 	Group,
+	Paper,
+	ScrollArea,
 	Stack,
 	Text,
-	TextInput,
 	Textarea,
+	TextInput,
 } from "@mantine/core";
-import { Box, Flex, Paper, ScrollArea } from "@mantine/core";
 import { useState } from "react";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";

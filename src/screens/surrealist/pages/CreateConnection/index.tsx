@@ -1,7 +1,3 @@
-import glowUrl from "~/assets/images/glow.webp";
-import cloudUrl from "~/assets/images/icons/cloud.webp";
-import classes from "./style.module.scss";
-
 import {
 	Box,
 	Button,
@@ -14,11 +10,12 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
-
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
+import glowUrl from "~/assets/images/glow.webp";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
 import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
 import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
 import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
@@ -37,6 +34,7 @@ import { createBaseConnection } from "~/util/defaults";
 import { iconChevronDown, iconChevronRight, iconHomePlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
+import classes from "./style.module.scss";
 
 export function CreateConnectionPage() {
 	const { settings, addConnection } = useConfigStore.getState();

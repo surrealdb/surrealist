@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 
-export function DocsAuthAccessUserData({ language, topic }: TopicProps) {
+export function DocsAuthAccessUserData({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `

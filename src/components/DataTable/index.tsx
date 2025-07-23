@@ -1,5 +1,14 @@
-import { Box, type BoxProps, Checkbox, Group, Text, Tooltip } from "@mantine/core";
-import { ScrollArea, Table } from "@mantine/core";
+import {
+	Box,
+	type BoxProps,
+	Checkbox,
+	Group,
+	ScrollArea,
+	Table,
+	Text,
+	Tooltip,
+} from "@mantine/core";
+import clsx from "clsx";
 import { alphabetical, isObject } from "radash";
 import { type MouseEvent, useMemo } from "react";
 import { RecordId } from "surrealdb";
@@ -108,7 +117,7 @@ export function DataTable(props: DataTableProps) {
 	}, [data, headers]);
 
 	const columnHeaders = useMemo(() => {
-		return keys.map((key, i) => {
+		return keys.map((key, _i) => {
 			const indexed = schema?.indexes.filter((index) => index.cols.includes(key));
 			const indexedName = indexed?.map((index) => index.name).join(", ");
 
@@ -218,7 +227,7 @@ export function DataTable(props: DataTableProps) {
 
 	return (
 		<ScrollArea
-			className={classes.root}
+			className={clsx(classes.root, className)}
 			styles={{
 				scrollbar: {
 					zIndex: 4,

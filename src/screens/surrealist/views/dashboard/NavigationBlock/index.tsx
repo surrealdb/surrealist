@@ -1,12 +1,10 @@
-import classes from "./style.module.scss";
-
-import { Box, Group, Paper, SimpleGrid, Skeleton, ThemeIcon } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Box, Group, Paper, SimpleGrid, Skeleton, Text, ThemeIcon } from "@mantine/core";
 import { Link } from "wouter";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { iconAuth, iconChevronRight, iconDesigner, iconExplorer, iconQuery } from "~/util/icons";
+import classes from "./style.module.scss";
 
 export interface NavigationBlockProps {
 	isLoading: boolean;

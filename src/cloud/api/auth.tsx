@@ -18,8 +18,8 @@ import {
 	TOKEN_REFRESH_KEY,
 	VERIFIER_KEY,
 } from "~/util/storage";
-import { ApiError, fetchAPI, updateCloudInformation } from ".";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
+import { ApiError, fetchAPI, updateCloudInformation } from ".";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
 

@@ -1,7 +1,4 @@
-import classes from "./style.module.scss";
-
 import { ActionIcon, Badge, Box, Group, Menu, ScrollArea, Stack, Text } from "@mantine/core";
-
 import { capitalize } from "radash";
 import { type ReactNode, useState } from "react";
 import { escapeIdent } from "surrealdb";
@@ -26,6 +23,7 @@ import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { AccessEditorModal } from "./models/access";
 import { UserEditorModal } from "./models/users";
+import classes from "./style.module.scss";
 
 interface DisabledState {
 	message: string;
@@ -285,7 +283,6 @@ function AuthList<T extends { name: string }>({
 	icon,
 	color,
 	onEdit,
-	onRemove,
 	onOptions,
 	onDetails,
 }: AuthListProps<T>) {

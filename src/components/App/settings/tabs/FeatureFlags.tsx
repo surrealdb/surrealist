@@ -1,5 +1,4 @@
-import { Group, ScrollArea, Select, Stack, TextInput } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Group, ScrollArea, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";

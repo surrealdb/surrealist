@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import { ActionIcon, Alert, Paper, Skeleton, Stack, Table } from "@mantine/core";
 import { Link } from "wouter";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
@@ -7,6 +5,7 @@ import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
 import { InvoiceStatus } from "~/types";
 import { iconHelp, iconOpen } from "~/util/icons";
+import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
 const INVOICE_STATUSES: Record<InvoiceStatus, { name: string; color: string }> = {

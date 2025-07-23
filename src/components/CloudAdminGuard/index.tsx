@@ -1,9 +1,7 @@
-import cloudImg from "~/assets/images/icons/cloud.webp";
-
-import { Button, Center, Group, Stack, Text } from "@mantine/core";
-import { Image } from "@mantine/core";
+import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
 import { PropsWithChildren } from "react";
 import { navigate } from "wouter/use-browser-location";
+import cloudImg from "~/assets/images/icons/cloud.webp";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 
 export interface CloudAdminGuardProps {

@@ -1,11 +1,9 @@
-import glow from "~/assets/images/glow.webp";
-import classes from "../style.module.scss";
-
-import { Box, Button, Image, Paper, Stack, Text } from "@mantine/core";
-import { BoxProps } from "@mantine/core";
+import { Box, BoxProps, Button, Image, Paper, Stack, Text } from "@mantine/core";
 import { PropsWithChildren } from "react";
+import glow from "~/assets/images/glow.webp";
 import { Icon } from "~/components/Icon";
 import { iconChevronRight } from "~/util/icons";
+import classes from "../style.module.scss";
 
 export interface StartCloudProps extends BoxProps {
 	action: string;

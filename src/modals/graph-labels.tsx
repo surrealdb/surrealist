@@ -1,5 +1,4 @@
-import { Button, Combobox, Group, Paper, TagsInput, Text, useCombobox } from "@mantine/core";
-import { Stack } from "@mantine/core";
+import { Button, Combobox, Group, Paper, Stack, TagsInput, Text, useCombobox } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
 import { useMemo } from "react";

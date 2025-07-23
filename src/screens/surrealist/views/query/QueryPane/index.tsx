@@ -1,30 +1,8 @@
-import classes from "./style.module.scss";
-
-import {
-	runQueryKeymap,
-	surqlCustomFunctionCompletion,
-	surqlLinting,
-	surqlRecordLinks,
-	surqlTableCompletion,
-	surqlVariableCompletion,
-} from "~/editor";
-
-import {
-	iconAutoFix,
-	iconChevronRight,
-	iconDollar,
-	iconServer,
-	iconStar,
-	iconText,
-	iconWarning,
-} from "~/util/icons";
-
 import { historyField } from "@codemirror/commands";
 import { syntaxTree } from "@codemirror/language";
 import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
-import { Button, Group, HoverCard, Paper, ThemeIcon, Transition, rem } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { objectify, trim } from "radash";
 import { useMemo, useRef, useState } from "react";
@@ -35,6 +13,14 @@ import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
+import {
+	runQueryKeymap,
+	surqlCustomFunctionCompletion,
+	surqlLinting,
+	surqlRecordLinks,
+	surqlTableCompletion,
+	surqlVariableCompletion,
+} from "~/editor";
 import { setEditorText } from "~/editor/helpers";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
@@ -47,9 +33,19 @@ import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { showErrorNotification, tryParseParams } from "~/util/helpers";
+import {
+	iconAutoFix,
+	iconChevronRight,
+	iconDollar,
+	iconServer,
+	iconStar,
+	iconText,
+	iconWarning,
+} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
 import { readQuery, writeQuery } from "../QueryView/strategy";
+import classes from "./style.module.scss";
 
 const SERIALIZE = {
 	history: historyField,

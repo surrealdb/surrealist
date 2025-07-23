@@ -7,10 +7,10 @@ import {
 	Menu,
 	Modal,
 	Stack,
+	Text,
 	TextInput,
 	UnstyledButton,
 } from "@mantine/core";
-import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";

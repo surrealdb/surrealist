@@ -1,5 +1,8 @@
+import { Value } from "@surrealdb/ql-wasm";
+import { compareVersions } from "compare-versions";
 import {
 	type AccessRecordAuth,
+	decodeCbor,
 	type ExportOptions,
 	QueryParameters,
 	type ScopeAuth,
@@ -8,19 +11,7 @@ import {
 	UnsupportedVersion,
 	Uuid,
 	VersionRetrievalFailure,
-	decodeCbor,
 } from "surrealdb";
-
-import {
-	buildAccessAuth,
-	composeAuthentication,
-	getReconnectInterval,
-	getVersionTimeout,
-	mapResults,
-} from "./helpers";
-
-import { Value } from "@surrealdb/ql-wasm";
-import { compareVersions } from "compare-versions";
 import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
 import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
@@ -38,6 +29,13 @@ import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util
 import { connectionUri, newId, showErrorNotification, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { getLiveQueries, parseIdent } from "~/util/surrealql";
+import {
+	buildAccessAuth,
+	composeAuthentication,
+	getReconnectInterval,
+	getVersionTimeout,
+	mapResults,
+} from "./helpers";
 import { createPlaceholder, createSurreal } from "./surreal";
 
 export interface ConnectOptions {

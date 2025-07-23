@@ -1,16 +1,3 @@
-import classes from "./style.module.scss";
-
-import {
-	iconAPI,
-	iconChevronLeft,
-	iconDelete,
-	iconPin,
-	iconPinOff,
-	iconPlus,
-	iconReset,
-	iconSearch,
-} from "~/util/icons";
-
 import { Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
@@ -36,7 +23,18 @@ import { useInterfaceStore } from "~/stores/interface";
 import { TableVariant } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { fuzzyMultiMatch } from "~/util/helpers";
+import {
+	iconAPI,
+	iconChevronLeft,
+	iconDelete,
+	iconPin,
+	iconPinOff,
+	iconPlus,
+	iconReset,
+	iconSearch,
+} from "~/util/icons";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";
+import classes from "./style.module.scss";
 
 const VARIANT_ORDER: TableVariant[] = ["normal", "view", "relation"];
 

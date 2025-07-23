@@ -1,7 +1,4 @@
-import classes from "./style.module.scss";
-
 import { Box, BoxProps, Center, Group, Loader, Paper, Stack, Text, Tooltip } from "@mantine/core";
-
 import { useDebouncedValue } from "@mantine/hooks";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { capitalize } from "radash";
@@ -22,6 +19,7 @@ import { iconChevronRight, iconHelp, iconList } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
 import { LogActivityChart } from "./chart";
+import classes from "./style.module.scss";
 
 export function LogPane({
 	info,

@@ -1,5 +1,4 @@
-import { Alert, Button, Checkbox, Divider, Modal, SimpleGrid, Stack } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Alert, Button, Checkbox, Divider, Modal, SimpleGrid, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { toggle } from "radash";
 import { useState } from "react";

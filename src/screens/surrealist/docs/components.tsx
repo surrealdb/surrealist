@@ -1,6 +1,5 @@
-import classes from "./style.module.scss";
-
 import { Badge, Box, Group, SimpleGrid, Title } from "@mantine/core";
+import classes from "./style.module.scss";
 
 export {
 	CodeSnippet as DocsPreview,
@@ -33,13 +32,7 @@ export function Article({ title, children }: ArticleProps) {
 	);
 }
 
-export function TableTitle({
-	title,
-	table,
-}: {
-	title: string;
-	table: string | undefined;
-}) {
+export function TableTitle({ title, table }: { title: string; table: string | undefined }) {
 	return (
 		<Group>
 			{title}

@@ -43,9 +43,7 @@ export function useSidekickRenameMutation() {
 
 	return useMutation({
 		mutationFn: async ({ chatId, newName }: { chatId: RecordId; newName: string }) => {
-			await surreal.query(
-				surql`UPDATE ${chatId} SET title = ${newName}`,
-			);
+			await surreal.query(surql`UPDATE ${chatId} SET title = ${newName}`);
 		},
 		onMutate: async ({ chatId, newName }) => {
 			await queryClient.cancelQueries({ queryKey: ["sidekick", "chats"] });
@@ -54,9 +52,9 @@ export function useSidekickRenameMutation() {
 				{ queryKey: ["sidekick", "chats"] },
 				(old) => {
 					return old?.map((chat) =>
-						chat.id.equals(chatId) ? { ...chat, title: newName } : chat
+						chat.id.equals(chatId) ? { ...chat, title: newName } : chat,
 					);
-				}
+				},
 			);
 		},
 		onSettled: () => {
@@ -76,9 +74,8 @@ export function useSidekickDeleteMutation() {
 		onMutate: async (chatId) => {
 			await queryClient.cancelQueries({ queryKey: ["sidekick", "chats"] });
 
-			queryClient.setQueriesData<SidekickChat[]>(
-				{ queryKey: ["sidekick", "chats"] },
-				(old) => old?.filter((chat) => !chat.id.equals(chatId))
+			queryClient.setQueriesData<SidekickChat[]>({ queryKey: ["sidekick", "chats"] }, (old) =>
+				old?.filter((chat) => !chat.id.equals(chatId)),
 			);
 		},
 		onSettled: () => {

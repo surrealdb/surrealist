@@ -1,25 +1,6 @@
-import classes from "./style.module.scss";
-
-import { Alert, Badge, Button, Group, Stack } from "@mantine/core";
-
-import {
-	graphqlParser,
-	graphqlSuggestions,
-	handleFillFields,
-	runGraphqlQueryKeymap,
-} from "~/editor";
-
-import {
-	iconAutoFix,
-	iconDollar,
-	iconGraphql,
-	iconOpen,
-	iconRefresh,
-	iconText,
-} from "~/util/icons";
-
 import { Prec } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
+import { Alert, Badge, Button, Group, Stack } from "@mantine/core";
 import { graphql, updateSchema } from "cm6-graphql";
 import { type GraphQLSchema, parse, print } from "graphql";
 import { useEffect, useMemo } from "react";
@@ -28,13 +9,28 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
+import {
+	graphqlParser,
+	graphqlSuggestions,
+	handleFillFields,
+	runGraphqlQueryKeymap,
+} from "~/editor";
 import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { showErrorNotification, showInfo, tryParseParams } from "~/util/helpers";
+import {
+	iconAutoFix,
+	iconDollar,
+	iconGraphql,
+	iconOpen,
+	iconRefresh,
+	iconText,
+} from "~/util/icons";
 import { formatValue } from "~/util/surrealql";
+import classes from "./style.module.scss";
 
 export interface QueryPaneProps {
 	showVariables: boolean;

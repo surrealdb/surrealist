@@ -1,5 +1,4 @@
-import { Group } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Group, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { iconBraces, iconRelation } from "~/util/icons";

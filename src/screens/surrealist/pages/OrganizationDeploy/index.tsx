@@ -1,16 +1,13 @@
-import classes from "./style.module.scss";
-
-import {
-	useCloudOrganizationQuery,
-	useCloudOrganizationsQuery,
-} from "~/cloud/queries/organizations";
-
 import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import { DEFAULT_DEPLOY_CONFIG, INSTANCE_PLAN_ARCHITECTURES } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import {
+	useCloudOrganizationQuery,
+	useCloudOrganizationsQuery,
+} from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
@@ -22,6 +19,7 @@ import { generateRandomName } from "~/util/random";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
 import { CheckoutStep } from "./steps/3-checkout";
+import classes from "./style.module.scss";
 
 export interface OrganizationDeployPageProps {
 	id: string;

@@ -1,11 +1,10 @@
-import classes from "../style.module.scss";
-
 import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
 import { PropsWithChildren, useRef } from "react";
 import { Link } from "wouter";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
 import { iconChevronRight } from "~/util/icons";
+import classes from "../style.module.scss";
 
 export interface StartCreatorProps extends BoxProps {
 	organization?: string;

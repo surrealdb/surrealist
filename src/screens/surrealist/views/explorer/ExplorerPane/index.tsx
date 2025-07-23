@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	Box,
 	Button,
@@ -12,25 +10,11 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-
-import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
-
-import {
-	iconChevronDown,
-	iconChevronRight,
-	iconCopy,
-	iconDelete,
-	iconFilter,
-	iconPlus,
-	iconRefresh,
-	iconServer,
-	iconTable,
-} from "~/util/icons";
-
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { RecordId, StringRecordId, escapeIdent } from "surrealdb";
+import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
+import { escapeIdent, RecordId, StringRecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
@@ -49,9 +33,21 @@ import { executeQuery, executeQueryFirst } from "~/screens/surrealist/connection
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { showInfo } from "~/util/helpers";
+import {
+	iconChevronDown,
+	iconChevronRight,
+	iconCopy,
+	iconDelete,
+	iconFilter,
+	iconPlus,
+	iconRefresh,
+	iconServer,
+	iconTable,
+} from "~/util/icons";
 import { getTableVariant } from "~/util/schema";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
+import classes from "./style.module.scss";
 
 export interface ExplorerPaneProps {
 	activeTable: string;

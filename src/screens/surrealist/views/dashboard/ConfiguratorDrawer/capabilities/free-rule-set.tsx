@@ -10,21 +10,13 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-
+import { useEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
-import {
-	BASE_STATUS,
-	BaseValue,
-	CapabilityBaseProps,
-	CapabilityField,
-	DynamicInputList,
-	RuleSetBase,
-	isWildcard,
-} from "./shared";
-
+import { plural } from "~/util/helpers";
 import {
 	iconCancel,
 	iconCheck,
@@ -33,10 +25,15 @@ import {
 	iconHelp,
 	iconWrench,
 } from "~/util/icons";
-
-import { useEffect, useMemo, useState } from "react";
-import { Label } from "~/components/Label";
-import { plural } from "~/util/helpers";
+import {
+	BASE_STATUS,
+	BaseValue,
+	CapabilityBaseProps,
+	CapabilityField,
+	DynamicInputList,
+	isWildcard,
+	RuleSetBase,
+} from "./shared";
 
 export interface FreeRuleSetCapabilityProps extends CapabilityBaseProps {
 	allowedField: CapabilityField;

@@ -1,3 +1,5 @@
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
 import type {
 	AuthState,
 	CloudBillingCountry,
@@ -5,9 +7,6 @@ import type {
 	CloudProfile,
 	CloudRegion,
 } from "~/types";
-
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
 
 interface CloudValues {
 	instanceVersions: string[];

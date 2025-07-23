@@ -1,6 +1,5 @@
 import { AreaChart } from "@mantine/charts";
-import { Group, StyleProp, Text, Tooltip } from "@mantine/core";
-import { Center, Paper, Skeleton, Stack } from "@mantine/core";
+import { Center, Group, Paper, Skeleton, Stack, StyleProp, Text, Tooltip } from "@mantine/core";
 import { format } from "date-fns";
 import { computeMetricRange } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";

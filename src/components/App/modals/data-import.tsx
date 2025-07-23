@@ -256,7 +256,7 @@ const applySingleBatchImport = async (items: any[], table: string, insertRelatio
 
 	let successImportCount = 0;
 	let errorImportCount = 0;
-	let errorMessage = undefined;
+	let errorMessage = "";
 
 	const [response] = await executeQuery(/* surql */ `${queryAction} INTO $table $content`, {
 		table: new Table(table),
@@ -278,7 +278,7 @@ const applyBatchImport = async (items: any[], table: string, insertRelation: boo
 
 	let successImportCount = 0;
 	let errorImportCount = 0;
-	let errorMessage = undefined;
+	let errorMessage = "";
 
 	for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
 		const batchedResponse = await applySingleBatchImport(batchedItems, table, insertRelation);
@@ -673,11 +673,15 @@ const CsvImportForm = ({
 			} else {
 				let successImportCount = 0;
 				let errorImportCount = 0;
-				let errorMessage: string | undefined = undefined;
+				let errorMessage: string | undefined;
 
 				await new Promise((resolve, reject) => {
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
-					papaparse.parse(importFile.current!.self as LocalFile, {
+					if (!importFile.current) {
+						reject();
+						return;
+					}
+
+					papaparse.parse(importFile.current.self as LocalFile, {
 						delimiter,
 						header,
 						skipEmptyLines: true,
@@ -729,7 +733,7 @@ const CsvImportForm = ({
 		confirmImport(execute);
 	};
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Extract on delimiter and header changes
 	useEffect(() => {
 		setColumnNames(extractColumnNames(importedRows, header));
 		setColumnTypes(extractColumnTypes(importedRows, header));

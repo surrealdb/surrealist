@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { isDesktop } from "~/adapter";
 import {
 	DESIGNER_ALGORITHMS,
 	DESIGNER_DIRECTIONS,
@@ -12,9 +14,6 @@ import {
 	THEMES,
 	VIEW_PAGES,
 } from "~/constants";
-
-import { useMemo } from "react";
-import { isDesktop } from "~/adapter";
 import { Flags, type Listable, Selectable, type SurrealistConfig } from "~/types";
 import { useFeatureFlags } from "./feature-flags";
 import { optional } from "./helpers";

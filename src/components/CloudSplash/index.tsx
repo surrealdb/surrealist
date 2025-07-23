@@ -1,9 +1,8 @@
+import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
+import { adapter } from "~/adapter";
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
 import cloudImg from "~/assets/images/icons/cloud.webp";
 import logoLightImg from "~/assets/images/light/cloud-logo.svg";
-
-import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
-import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";

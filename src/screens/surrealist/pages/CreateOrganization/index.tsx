@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import { Box, Button, Group, ScrollArea, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +13,7 @@ import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { iconOrganization } from "~/util/icons";
+import classes from "./style.module.scss";
 
 export function CreateOrganizationPage() {
 	const [, navigate] = useAbsoluteLocation();

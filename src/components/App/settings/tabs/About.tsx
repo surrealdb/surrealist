@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import { Button, Stack, Text } from "@mantine/core";
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
@@ -11,6 +9,7 @@ import { useVersionCopy } from "~/hooks/debug";
 import { useStable } from "~/hooks/stable";
 import { isDevelopment, isPreview } from "~/util/environment";
 import { iconCheck, iconReset, iconWrench } from "~/util/icons";
+import classes from "../style.module.scss";
 
 export function AboutTab() {
 	const currDate = new Date();

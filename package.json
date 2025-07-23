@@ -4,7 +4,9 @@
 	"version": "3.4.4",
 	"surreal": "2.0.0",
 	"type": "module",
-	"authors": ["SurrealDB"],
+	"authors": [
+		"SurrealDB"
+	],
 	"scripts": {
 		"build": "tsc && vite build",
 		"dev": "vite",

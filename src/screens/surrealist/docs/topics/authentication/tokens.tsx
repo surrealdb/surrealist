@@ -1,12 +1,9 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { useDatabaseSchema } from "~/hooks/schema";
 import { Article, DocsPreview } from "~/screens/surrealist/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/docs/types";
 
-export function DocsAuthTokens({ language, topic }: TopicProps) {
-	const schema = useDatabaseSchema();
-
+export function DocsAuthTokens({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `

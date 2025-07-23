@@ -1,7 +1,3 @@
-import classes from "./style.module.scss";
-
-import { iconChart, iconChevronLeft, iconEye, iconList } from "~/util/icons";
-
 import {
 	Box,
 	type BoxProps,
@@ -12,7 +8,6 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-
 import { group } from "radash";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
@@ -22,6 +17,8 @@ import { ContentPane } from "~/components/Pane";
 import { MONITORS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { Monitor } from "~/types";
+import { iconChart, iconChevronLeft, iconEye, iconList } from "~/util/icons";
+import classes from "./style.module.scss";
 
 interface ObservableEntryProps extends BoxProps, ElementProps<"button"> {
 	info: Monitor;
@@ -77,14 +74,12 @@ export function MonitorsPane({ active, onSidebarMinimize, onActivate }: Monitors
 			title="Monitors"
 			style={{ flexShrink: 0 }}
 			rightSection={
-				<>
-					<ActionButton
-						label="Hide monitors"
-						onClick={onSidebarMinimize}
-					>
-						<Icon path={iconChevronLeft} />
-					</ActionButton>
-				</>
+				<ActionButton
+					label="Hide monitors"
+					onClick={onSidebarMinimize}
+				>
+					<Icon path={iconChevronLeft} />
+				</ActionButton>
 			}
 		>
 			<ScrollArea

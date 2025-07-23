@@ -70,7 +70,7 @@ export function InstanceActions({ instance, children }: PropsWithChildren<Instan
 				title: "Copied",
 				subtitle: "Successfully copied auth token to clipboard",
 			});
-		} catch (error) {
+		} catch (_error) {
 			showErrorNotification({
 				title: "Failed to copy auth token",
 				content: "Unable to copy auth token to clipboard",

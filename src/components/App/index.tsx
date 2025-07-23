@@ -18,11 +18,11 @@ import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
+import { SidekickDrawer } from "./modals/sidekick";
 import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
 import { Settings } from "./settings";
-import { SidekickDrawer } from "./modals/sidekick";
 
 function Surrealist() {
 	return (

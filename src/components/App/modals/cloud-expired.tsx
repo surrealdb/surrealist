@@ -1,13 +1,12 @@
-import cloudUrl from "~/assets/images/icons/cloud.webp";
-import classes from "../style.module.scss";
-
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
 import type { MouseEvent } from "react";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { iconClose } from "~/util/icons";
+import classes from "../style.module.scss";
 
 export function CloudExpiredDialog() {
 	const { setSessionExpired } = useCloudStore.getState();

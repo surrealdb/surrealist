@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import {
 	Alert,
 	Box,
@@ -21,6 +19,7 @@ import { Link } from "~/components/Link";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { iconChevronRight, iconClock, iconHelp, iconWarning } from "~/util/icons";
+import classes from "../style.module.scss";
 
 export interface ConfigurationStorageProps {
 	instance: CloudInstance;

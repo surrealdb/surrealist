@@ -1,5 +1,4 @@
-import { Box, BoxProps, Button, Divider, Group, Paper, Skeleton, Stack } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Box, BoxProps, Button, Divider, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { openBillingDetails } from "~/cloud/modals/billing";
 import { useCloudBillingQuery } from "~/cloud/queries/billing";

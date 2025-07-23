@@ -1,15 +1,3 @@
-import classes from "./style.module.scss";
-
-import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import iconUrl from "~/assets/images/icon.webp";
-import logoLightUrl from "~/assets/images/light/logo.webp";
-
-import cloudUrl from "~/assets/images/icons/cloud.webp";
-import communityUrl from "~/assets/images/icons/community.webp";
-import sidekickUrl from "~/assets/images/icons/sidekick.webp";
-import databaseUrl from "~/assets/images/icons/surrealdb.webp";
-import universityUrl from "~/assets/images/icons/university.webp";
-
 import {
 	Box,
 	Button,
@@ -29,21 +17,18 @@ import {
 	TextInput,
 	Transition,
 } from "@mantine/core";
-
-import {
-	iconArrowLeft,
-	iconArrowUpRight,
-	iconCheck,
-	iconPlus,
-	iconReset,
-	iconSearch,
-	iconTune,
-} from "~/util/icons";
-
 import { useInputState } from "@mantine/hooks";
 import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
+import logoDarkUrl from "~/assets/images/dark/logo.webp";
+import iconUrl from "~/assets/images/icon.webp";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
+import communityUrl from "~/assets/images/icons/community.webp";
+import sidekickUrl from "~/assets/images/icons/sidekick.webp";
+import databaseUrl from "~/assets/images/icons/surrealdb.webp";
+import universityUrl from "~/assets/images/icons/university.webp";
+import logoLightUrl from "~/assets/images/light/logo.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
@@ -60,6 +45,15 @@ import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
+import {
+	iconArrowLeft,
+	iconArrowUpRight,
+	iconCheck,
+	iconPlus,
+	iconReset,
+	iconSearch,
+	iconTune,
+} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
 import { StartBlog } from "./content/blog";
@@ -68,6 +62,7 @@ import { StartConnection } from "./content/connection";
 import { StartCreator } from "./content/creator";
 import { StartInstance } from "./content/instance";
 import { StartResource } from "./content/resource";
+import classes from "./style.module.scss";
 
 const GRID_COLUMNS = {
 	xs: 1,
@@ -257,49 +252,43 @@ export function OverviewPage() {
 											);
 										})}
 										<Collapse in={selectedLabels.length > 0}>
-											<>
-												<Menu.Divider />
-												<Menu.Label mt="sm">Visibility</Menu.Label>
-												<Menu.Item
-													onClick={() => setLabelInclude(true)}
-													rightSection={
-														labelInclude && <Icon path={iconCheck} />
-													}
-												>
-													Show matching items
-												</Menu.Item>
-												<Menu.Item
-													onClick={() => setLabelInclude(false)}
-													rightSection={
-														!labelInclude && <Icon path={iconCheck} />
-													}
-												>
-													Hide matching items
-												</Menu.Item>
+											<Menu.Divider />
+											<Menu.Label mt="sm">Visibility</Menu.Label>
+											<Menu.Item
+												onClick={() => setLabelInclude(true)}
+												rightSection={
+													labelInclude && <Icon path={iconCheck} />
+												}
+											>
+												Show matching items
+											</Menu.Item>
+											<Menu.Item
+												onClick={() => setLabelInclude(false)}
+												rightSection={
+													!labelInclude && <Icon path={iconCheck} />
+												}
+											>
+												Hide matching items
+											</Menu.Item>
 
-												<Menu.Divider />
-												<Menu.Label mt="sm">Method</Menu.Label>
-												<Menu.Item
-													onClick={() => setLabelMode("any")}
-													rightSection={
-														labelMode === "any" && (
-															<Icon path={iconCheck} />
-														)
-													}
-												>
-													Any selected label
-												</Menu.Item>
-												<Menu.Item
-													onClick={() => setLabelMode("all")}
-													rightSection={
-														labelMode === "all" && (
-															<Icon path={iconCheck} />
-														)
-													}
-												>
-													All selected labels
-												</Menu.Item>
-											</>
+											<Menu.Divider />
+											<Menu.Label mt="sm">Method</Menu.Label>
+											<Menu.Item
+												onClick={() => setLabelMode("any")}
+												rightSection={
+													labelMode === "any" && <Icon path={iconCheck} />
+												}
+											>
+												Any selected label
+											</Menu.Item>
+											<Menu.Item
+												onClick={() => setLabelMode("all")}
+												rightSection={
+													labelMode === "all" && <Icon path={iconCheck} />
+												}
+											>
+												All selected labels
+											</Menu.Item>
 										</Collapse>
 									</Menu.Dropdown>
 								</Menu>

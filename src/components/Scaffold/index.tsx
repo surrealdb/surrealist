@@ -8,10 +8,10 @@ import { ErrorBoundary } from "react-error-boundary";
 import { useIsLight, useThemePreference } from "~/hooks/theme";
 import { CommandsProvider } from "~/providers/Commands";
 import { ConfirmationProvider } from "~/providers/Confirmation";
+import { ContextProvider } from "~/providers/Context";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
 import { MANTINE_THEME } from "~/util/mantine";
 import { ScaffoldErrorHandler } from "./error";
-import { ContextProvider } from "~/providers/Context";
 
 const QUERY_CLIENT = new QueryClient();
 

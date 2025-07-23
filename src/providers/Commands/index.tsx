@@ -1,7 +1,7 @@
 export * from "./types";
 
 import { noop } from "@mantine/core";
-import { type PropsWithChildren, createContext, useContext, useMemo } from "react";
+import { createContext, type PropsWithChildren, useContext, useMemo } from "react";
 import { adapter } from "~/adapter";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";

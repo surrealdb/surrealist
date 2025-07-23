@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import {
 	ActionIcon,
 	Badge,
@@ -23,6 +21,7 @@ import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconCloud, iconDotsVertical } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
+import classes from "../style.module.scss";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
@@ -108,6 +107,7 @@ export function StartInstance({
 							</Box>
 						</Group>
 					</Stack>
+					{/* biome-ignore lint/a11y/noStaticElementInteractions: Stop event propagation */}
 					<div
 						onClick={ON_STOP_PROPAGATION}
 						onKeyDown={ON_STOP_PROPAGATION}

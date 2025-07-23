@@ -1,5 +1,4 @@
-import { Table, Text } from "@mantine/core";
-import { Button, Group, Modal, PasswordInput, TextInput } from "@mantine/core";
+import { Button, Group, Modal, PasswordInput, Table, Text, TextInput } from "@mantine/core";
 import { parser } from "@surrealdb/lezer";
 import { useState } from "react";
 import { useImmer } from "use-immer";

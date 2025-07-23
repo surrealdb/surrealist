@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	type Edge,
 	type EdgeChange,
@@ -9,7 +7,8 @@ import {
 	type NodeChange,
 	type NodeTypes,
 } from "@xyflow/react";
-
+import { toBlob, toSvg } from "html-to-image";
+import { objectify } from "radash";
 import type {
 	DiagramAlgorithm,
 	DiagramDirection,
@@ -19,15 +18,13 @@ import type {
 	TableInfo,
 	TableVariant,
 } from "~/types";
-
-import { toBlob, toSvg } from "html-to-image";
-import { objectify } from "radash";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
 import { extractKindRecords } from "~/util/surrealql";
 import { ElkStepEdge } from "./edges/ElkEdge";
 import { NormalTableNode } from "./nodes/NormalTableNode";
 import { RelationTableNode } from "./nodes/RelationTableNode";
 import { ViewTableNode } from "./nodes/ViewTableNode";
+import classes from "./style.module.scss";
 
 type EdgeWarning = {
 	type: "edge";

@@ -1,15 +1,13 @@
+import { Button, type ButtonProps, Divider, Group, Modal, Text, TextInput } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
 import {
+	createContext,
 	type PropsWithChildren,
 	type ReactNode,
-	createContext,
 	useContext,
 	useRef,
 	useState,
 } from "react";
-
-import { Button, type ButtonProps, Divider, Group, Text, TextInput } from "@mantine/core";
-import { Modal } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useSetting } from "~/hooks/config";

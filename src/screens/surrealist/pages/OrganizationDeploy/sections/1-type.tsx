@@ -85,13 +85,11 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 		<Box>
 			<SimpleGrid cols={{ base: 1, xs: 2, md: 3 }}>
 				{selected && !isRecommended ? (
-					<>
-						<InstanceTypeCard
-							type={selected}
-							details={details}
-							onChange={handleUpdate}
-						/>
-					</>
+					<InstanceTypeCard
+						type={selected}
+						details={details}
+						onChange={handleUpdate}
+					/>
 				) : (
 					recommendations.map((type) => (
 						<Skeleton

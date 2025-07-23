@@ -1,19 +1,3 @@
-import classes from "./style.module.scss";
-
-import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
-import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
-import tier2DarkUrl from "~/assets/images/dark/referral-tier-2.png";
-import tier3DarkUrl from "~/assets/images/dark/referral-tier-3.png";
-import tier4DarkUrl from "~/assets/images/dark/referral-tier-4.png";
-import tier5DarkUrl from "~/assets/images/dark/referral-tier-5.png";
-
-import iconLightUrl from "~/assets/images/light/referral-icon.png";
-import tier1LightUrl from "~/assets/images/light/referral-tier-1.png";
-import tier2LightUrl from "~/assets/images/light/referral-tier-2.png";
-import tier3LightUrl from "~/assets/images/light/referral-tier-3.png";
-import tier4LightUrl from "~/assets/images/light/referral-tier-4.png";
-import tier5LightUrl from "~/assets/images/light/referral-tier-5.png";
-
 import {
 	ActionIcon,
 	Box,
@@ -32,8 +16,19 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
-
 import { ReactNode } from "react";
+import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
+import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
+import tier2DarkUrl from "~/assets/images/dark/referral-tier-2.png";
+import tier3DarkUrl from "~/assets/images/dark/referral-tier-3.png";
+import tier4DarkUrl from "~/assets/images/dark/referral-tier-4.png";
+import tier5DarkUrl from "~/assets/images/dark/referral-tier-5.png";
+import iconLightUrl from "~/assets/images/light/referral-icon.png";
+import tier1LightUrl from "~/assets/images/light/referral-tier-1.png";
+import tier2LightUrl from "~/assets/images/light/referral-tier-2.png";
+import tier3LightUrl from "~/assets/images/light/referral-tier-3.png";
+import tier4LightUrl from "~/assets/images/light/referral-tier-4.png";
+import tier5LightUrl from "~/assets/images/light/referral-tier-5.png";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
@@ -44,6 +39,7 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
+import classes from "./style.module.scss";
 
 const REWARDS = [1, 10, 25, 100, 500];
 

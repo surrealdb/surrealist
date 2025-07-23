@@ -1,3 +1,5 @@
+import { useLayoutEffect } from "react";
+import { adapter } from "~/adapter";
 import {
 	checkSessionExpiry,
 	invalidateSession,
@@ -5,9 +7,6 @@ import {
 	refreshAccess,
 	verifyAuthentication,
 } from "~/cloud/api/auth";
-
-import { useLayoutEffect } from "react";
-import { adapter } from "~/adapter";
 import { useIntent } from "~/hooks/routing";
 import { featureFlags } from "~/util/feature-flags";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";

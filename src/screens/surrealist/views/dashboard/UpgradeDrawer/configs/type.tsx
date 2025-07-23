@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
@@ -8,6 +6,7 @@ import { useUpdateInstanceTypeMutation } from "~/cloud/mutations/type";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudOrganization } from "~/types";
+import classes from "../style.module.scss";
 
 export interface ConfigurationInstanceTypeProps {
 	instance: CloudInstance;

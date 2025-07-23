@@ -1,7 +1,16 @@
-import classes from "../style.module.scss";
-
-import { ActionIcon, Badge, Menu, Text } from "@mantine/core";
-import { Box, BoxProps, Group, Paper, Stack, ThemeIcon, UnstyledButton } from "@mantine/core";
+import {
+	ActionIcon,
+	Badge,
+	Box,
+	BoxProps,
+	Group,
+	Menu,
+	Paper,
+	Stack,
+	Text,
+	ThemeIcon,
+	UnstyledButton,
+} from "@mantine/core";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
@@ -12,9 +21,10 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { ON_STOP_PROPAGATION, newId } from "~/util/helpers";
+import { newId, ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
+import classes from "../style.module.scss";
 
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;
@@ -135,6 +145,7 @@ export function StartConnection({
 						</Group>
 					</Stack>
 					{!isManaged && (
+						// biome-ignore lint/a11y/noStaticElementInteractions: Stop event propagation
 						<div
 							onClick={ON_STOP_PROPAGATION}
 							onKeyDown={ON_STOP_PROPAGATION}

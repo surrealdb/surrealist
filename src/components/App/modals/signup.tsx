@@ -31,7 +31,7 @@ export function AccessSignupModal() {
 	const [loading, loadingHandle] = useDisclosure();
 	const opened = useInterfaceStore((s) => s.showAccessSignup);
 
-	const [connectionId, authMode, accessFields] = useConnection((c) => [
+	const [connectionId, _authMode, accessFields] = useConnection((c) => [
 		c?.id ?? "",
 		c?.authentication.mode,
 		c?.authentication.accessFields ?? [],
