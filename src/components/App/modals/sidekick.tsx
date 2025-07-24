@@ -1,10 +1,13 @@
 import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useRef, useState } from "react";
+import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
+import { Icon } from "~/components/Icon";
 import { Sidekick, SidekickHandle } from "~/components/Sidekick";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { iconClose } from "~/util/icons";
 
 export function SidekickDrawer() {
 	const sidekickRef = useRef<SidekickHandle>(null);
@@ -46,7 +49,19 @@ export function SidekickDrawer() {
 				onResize={setWidth}
 				style={{ zIndex: 1000 }}
 			/>
-			<Sidekick ref={sidekickRef} />
+			<Sidekick
+				ref={sidekickRef}
+				rightSection={
+					<ActionButton
+						label="Hide Sidekick"
+						icon={iconClose}
+						onClick={handleClose}
+						size="lg"
+					>
+						<Icon path={iconClose} />
+					</ActionButton>
+				}
+			/>
 		</Drawer>
 	);
 }
