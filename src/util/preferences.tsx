@@ -3,6 +3,7 @@ import { isDesktop } from "~/adapter";
 import {
 	DESIGNER_ALGORITHMS,
 	DESIGNER_DIRECTIONS,
+	DESIGNER_HOVER_FOCUS,
 	DESIGNER_LINE_STYLES,
 	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
@@ -462,6 +463,18 @@ export function useComputedPreferences(): PreferenceSection[] {
 							reader: (config) => config.settings.appearance.defaultDiagramLinkMode,
 							writer: (config, value) => {
 								config.settings.appearance.defaultDiagramLinkMode = value;
+							},
+						}),
+					},
+					{
+						id: "default-relational-hover-focus",
+						name: "Default relational hover focus",
+						description: "The default dimming behaviour of relations when hovered",
+						controller: new SelectionController({
+							options: nodef(DESIGNER_HOVER_FOCUS),
+							reader: (config) => config.settings.appearance.defaultDiagramHoverFocus,
+							writer: (config, value) => {
+								config.settings.appearance.defaultDiagramHoverFocus = value;
 							},
 						}),
 					},

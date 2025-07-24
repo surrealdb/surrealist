@@ -7,6 +7,7 @@ import type {
 	Dataset,
 	DiagramAlgorithm,
 	DiagramDirection,
+	DiagramHoverFocus,
 	DiagramLineStyle,
 	DiagramLinks,
 	DiagramMode,
@@ -354,6 +355,14 @@ export const DESIGNER_ALGORITHMS: Selectable<DiagramAlgorithm>[] = [
 	{ label: "Default", value: "default" },
 	{ label: "Aligned", value: "aligned" },
 	{ label: "Spaced", value: "spaced" },
+];
+
+export const DESIGNER_HOVER_FOCUS: Selectable<DiagramHoverFocus>[] = [
+	{ label: "Default", value: "default" },
+	{ label: "None", value: "none" },
+	{ label: "Neighbours", value: "neighbours" },
+	{ label: "Chain", value: "chain" },
+	{ label: "Recursive", value: "recursive" },
 ];
 
 export const SCHEMA_MODES: Selectable<SchemaMode>[] = [
