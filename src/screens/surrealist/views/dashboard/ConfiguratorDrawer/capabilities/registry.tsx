@@ -34,7 +34,6 @@ export const RPC_TARGETS = selectable([
  * HTTP endpoints
  */
 export const ENDPOINT_TARGETS = [
-	{ label: "Status", value: "status" },
 	{ label: "Version", value: "version" },
 	{ label: "Import", value: "import" },
 	{ label: "Export", value: "export" },
