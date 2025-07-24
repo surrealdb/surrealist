@@ -7,20 +7,20 @@ import {
 	Menu,
 	Modal,
 	Stack,
+	Text,
 	TextInput,
-	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-import { Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";
 import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
 import { useBoolean } from "~/hooks/boolean";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
@@ -33,7 +33,7 @@ interface AccountFormProps {
 function AccountForm({ onClose }: AccountFormProps) {
 	const { setAccountProfile } = useCloudStore.getState();
 
-	const profile = useCloudStore((s) => s.profile);
+	const profile = useCloudProfile();
 	const provider = useCloudStore((s) => s.authProvider);
 	const [isLoading, setLoading] = useState(false);
 
@@ -53,9 +53,9 @@ function AccountForm({ onClose }: AccountFormProps) {
 			setAccountProfile(profile);
 			onClose();
 		} catch (err: any) {
-			showError({
+			showErrorNotification({
 				title: "Failed to save account",
-				subtitle: err.message,
+				content: err.message,
 			});
 		} finally {
 			setLoading(false);
@@ -103,7 +103,7 @@ function AccountForm({ onClose }: AccountFormProps) {
 export function CloudAccount() {
 	const [showSettings, settingsModal] = useBoolean();
 
-	const profile = useCloudStore((s) => s.profile);
+	const profile = useCloudProfile();
 	const state = useCloudStore((s) => s.authState);
 
 	if (state === "unauthenticated" || state === "unknown") {
@@ -140,7 +140,7 @@ export function CloudAccount() {
 						src={profile.picture}
 						component={UnstyledButton}
 					>
-						{state === "loading" && !profile.picture && (
+						{!profile.username && (
 							<Loader
 								size="sm"
 								color="slate.4"

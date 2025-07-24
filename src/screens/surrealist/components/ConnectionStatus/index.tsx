@@ -1,4 +1,29 @@
 import {
+	Box,
+	Button,
+	Group,
+	Indicator,
+	Loader,
+	Menu,
+	Modal,
+	Select,
+	Stack,
+	Text,
+} from "@mantine/core";
+import { useState } from "react";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { SANDBOX } from "~/constants";
+import { useBoolean } from "~/hooks/boolean";
+import { useConnection, useRequireDatabase } from "~/hooks/connection";
+import { useDatasets } from "~/hooks/dataset";
+import { useConnectionAndView } from "~/hooks/routing";
+import { useDatabaseSchema } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { openConnectionEditModal } from "~/modals/edit-connection";
+import { showNodeStatus } from "~/modals/node-status";
+import { useDatabaseStore } from "~/stores/database";
+import { getConnectionById } from "~/util/connection";
+import {
 	iconClose,
 	iconDownload,
 	iconEdit,
@@ -9,21 +34,6 @@ import {
 	iconTable,
 	iconUpload,
 } from "~/util/icons";
-
-import { Button, Group, Indicator, Menu, Modal, Select, Stack, Text } from "@mantine/core";
-import { useState } from "react";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { SANDBOX } from "~/constants";
-import { useBoolean } from "~/hooks/boolean";
-import { useConnection } from "~/hooks/connection";
-import { useDatasets } from "~/hooks/dataset";
-import { useConnectionAndView } from "~/hooks/routing";
-import { useDatabaseSchema } from "~/hooks/schema";
-import { useStable } from "~/hooks/stable";
-import { openConnectionEditModal } from "~/modals/edit-connection";
-import { showNodeStatus } from "~/modals/node-status";
-import { useDatabaseStore } from "~/stores/database";
-import { getConnectionById } from "~/util/connection";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
@@ -35,17 +45,19 @@ export function ConnectionStatus() {
 	const schema = useDatabaseSchema();
 
 	const [connection] = useConnectionAndView();
-	const [connectionId, name, icon, database] = useConnection((c) => [
+	const [connectionId, name, icon, _database, instance] = useConnection((c) => [
 		c?.id ?? "",
 		c?.name ?? "",
 		c?.icon ?? 0,
 		c?.lastDatabase,
+		c?.instance ?? false,
 	]);
 
 	const noTables = schema.tables.length === 0;
 	const noFunctions = schema.functions.length === 0;
+	const noParams = schema.params.length === 0;
 	const noUsers = schema.users.length === 0;
-	const isSchemaEmpty = noTables && noFunctions && noUsers;
+	const isSchemaEmpty = noTables && noFunctions && noParams && noUsers;
 
 	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
 	const [showDatasets, showDatasetsHandle] = useBoolean();
@@ -60,7 +72,7 @@ export function ConnectionStatus() {
 		setIsDropped(false);
 	});
 
-	const openDatasets = useStable(() => {
+	const _openDatasets = useStable(() => {
 		showDatasetsHandle.open();
 		setDataset("");
 	});
@@ -69,6 +81,14 @@ export function ConnectionStatus() {
 		await applyDataset(dataset);
 		showDatasetsHandle.close();
 	});
+
+	const syncSchema = useStable(() => {
+		syncConnectionSchema();
+	});
+
+	const openDatasets = useRequireDatabase(_openDatasets);
+	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"));
+	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
 
 	const openEditor = useStable(() => {
 		const connection = getConnectionById(connectionId);
@@ -79,15 +99,18 @@ export function ConnectionStatus() {
 	});
 
 	const isSandbox = connectionId === SANDBOX;
+	const isManaged = isSandbox || instance;
+	const isLoading = currentState === "connecting" || currentState === "retrying";
+	const pulse = currentState === "connected";
 
 	const statusInfo = {
-		disconnected: ["Disconnected", "red", false],
-		retrying: ["Retrying...", "red", true],
-		connecting: ["Connecting...", "yellow.6", true],
-		connected: [`SurrealDB ${remoteVersion}`, "green", false],
+		disconnected: ["Disconnected", "red"],
+		connected: [`SurrealDB ${remoteVersion}`, "green"],
+		retrying: ["Reconnecting...", ""],
+		connecting: ["Connecting...", ""],
 	} as const;
 
-	const [statusText, color, pulse] = statusInfo[currentState];
+	const [statusText, color] = statusInfo[currentState];
 
 	return (
 		<>
@@ -114,12 +137,20 @@ export function ConnectionStatus() {
 								)
 							}
 							rightSection={
-								<Indicator
-									processing={pulse}
-									color={color}
-									size={9}
-									ml="sm"
-								/>
+								isLoading ? (
+									<Loader
+										size={14}
+										ml={2}
+										mr={-7}
+									/>
+								) : (
+									<Indicator
+										processing={pulse}
+										color={color}
+										size={9}
+										ml="sm"
+									/>
+								)
 							}
 						>
 							<Text
@@ -133,14 +164,23 @@ export function ConnectionStatus() {
 							</Text>
 						</Button>
 					</Menu.Target>
-					<Menu.Dropdown miw={175}>
-						<Text
-							py={2}
-							px="sm"
-							c="slate"
-						>
-							{statusText}
-						</Text>
+					<Menu.Dropdown w={225}>
+						<Box p="sm">
+							<Text
+								fw={600}
+								c="bright"
+							>
+								Connection
+							</Text>
+							<Text
+								c="slate"
+								fz="sm"
+								truncate
+							>
+								{statusText}
+							</Text>
+						</Box>
+
 						<Menu.Divider />
 
 						{!isSandbox && (
@@ -165,9 +205,7 @@ export function ConnectionStatus() {
 						{!isSandbox && (
 							<Menu.Item
 								leftSection={<Icon path={iconTable} />}
-								disabled={
-									currentState !== "connected" || !isSchemaEmpty || !database
-								}
+								disabled={currentState !== "connected" || !isSchemaEmpty}
 								onClick={openDatasets}
 							>
 								Apply dataset
@@ -175,27 +213,27 @@ export function ConnectionStatus() {
 						)}
 						<Menu.Item
 							leftSection={<Icon path={iconRefresh} />}
-							disabled={currentState !== "connected" || !database}
-							onClick={() => syncConnectionSchema()}
+							disabled={currentState !== "connected"}
+							onClick={syncSchema}
 						>
 							Sync schema
 						</Menu.Item>
 						<Menu.Item
 							leftSection={<Icon path={iconUpload} />}
-							disabled={currentState !== "connected" || !database}
-							onClick={() => dispatchIntent("export-database")}
+							disabled={currentState !== "connected"}
+							onClick={exportDatabase}
 						>
 							Export database
 						</Menu.Item>
 						<Menu.Item
 							leftSection={<Icon path={iconDownload} />}
-							disabled={currentState !== "connected" || !database}
-							onClick={() => dispatchIntent("import-database")}
+							disabled={currentState !== "connected"}
+							onClick={importDatabase}
 						>
 							Import database
 						</Menu.Item>
 						<Menu.Label mt="sm">Manage</Menu.Label>
-						{!isSandbox && (
+						{!isManaged && (
 							<Menu.Item
 								leftSection={<Icon path={iconEdit} />}
 								onClick={openEditor}

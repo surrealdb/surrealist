@@ -4,7 +4,7 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { surqlRecordLinks } from "~/editor";
 import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
 import { useInspector } from "~/providers/Inspector";
-import { type PreviewProps, attemptFormat } from ".";
+import { attemptFormat, type PreviewProps } from ".";
 
 export function buildCombinedResult(
 	index: number,

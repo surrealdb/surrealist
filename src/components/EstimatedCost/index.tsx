@@ -1,45 +1,64 @@
-import { Box, Text } from "@mantine/core";
-import { Label } from "~/components/Label";
-import { useIsLight } from "~/hooks/theme";
-import type { CloudInstanceType } from "~/types";
+import { Box, BoxProps, Group, Text } from "@mantine/core";
+import { useMemo } from "react";
+import { useCloudEstimationQuery } from "~/cloud/queries/estimation";
+import type { CloudDeployConfig, CloudOrganization } from "~/types";
 
-export interface EstimatedCostProps {
-	type?: CloudInstanceType;
-	units?: number;
+export interface EstimatedCostProps extends BoxProps {
+	organisation: CloudOrganization;
+	config: CloudDeployConfig;
 }
 
-export function EstimatedCost({ type, units }: EstimatedCostProps) {
-	const isLight = useIsLight();
-	const hourlyPriceThousandth = type?.price_hour ?? 0;
-	const estimatedCost = (hourlyPriceThousandth / 1000) * (units ?? 0);
+export function EstimatedCost({ organisation, config, ...other }: EstimatedCostProps) {
+	const { data } = useCloudEstimationQuery(organisation, config);
+
+	const format = useMemo(() => {
+		return new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: data?.currency ?? "USD",
+			currencyDisplay: "narrowSymbol",
+			maximumFractionDigits: 3,
+		});
+	}, [data?.currency]);
 
 	return (
-		<Box style={{ WebkitUserSelect: "text", userSelect: "text" }}>
-			<Label>Estimated costs</Label>
-
-			<Text c={isLight ? "slate.6" : "slate.2"}>
-				<Text
-					span
-					fz={24}
-					fw={500}
-					c="bright"
-				>
-					${estimatedCost.toFixed(3)}
-				</Text>
-				/hour
+		<Box {...other}>
+			<Text
+				c="var(--mantine-color-indigo-light-color)"
+				fz="md"
+				fw={800}
+				tt="uppercase"
+				lts={1}
+			>
+				Billed monthly
 			</Text>
-
-			<Text c={isLight ? "slate.6" : "slate.2"}>
-				≈{" "}
+			<Group
+				gap="xs"
+				align="start"
+			>
+				{data ? (
+					<Text
+						fz={28}
+						fw={600}
+						c="bright"
+					>
+						{format.format(data.cost)}
+					</Text>
+				) : (
+					<Text
+						fz={28}
+						fw={600}
+					>
+						&mdash;
+					</Text>
+				)}
 				<Text
-					span
+					mt={12}
+					fz="xl"
 					fw={500}
-					c="bright"
 				>
-					${(estimatedCost * 24 * 30).toFixed(3)}
+					/ mo
 				</Text>
-				/month
-			</Text>
+			</Group>
 		</Box>
 	);
 }

@@ -7,10 +7,9 @@ import { CloudInstanceCapabilities, Selectable } from "~/types";
 import { iconCancel, iconCheck } from "~/util/icons";
 
 export type CapabilityField = keyof CloudInstanceCapabilities;
-export type BaseValue = "default" | "allowed" | "denied" | "granular";
+export type BaseValue = "allowed" | "denied" | "granular";
 
 export const BASE_STATUS: Record<BaseValue, string> = {
-	default: "Default",
 	allowed: "Allowed",
 	denied: "Denied",
 	granular: "Granular",

@@ -28,9 +28,14 @@ export interface SurrealistAdapter {
 	isUpdateCheckSupported: boolean;
 
 	/**
-	 * Whether the window has a native titlebar
+	 * Whether telemetry is enabled
 	 */
-	hasTitlebar: boolean;
+	isTelemetryEnabled: boolean;
+
+	/**
+	 * What the titlebar offset is if applicable
+	 */
+	titlebarOffset: number;
 
 	/**
 	 * The currently active platform

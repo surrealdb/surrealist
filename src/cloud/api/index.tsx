@@ -1,13 +1,6 @@
-import type {
-	CloudBillingCountry,
-	CloudInstanceType,
-	CloudOrganization,
-	CloudProfile,
-	CloudRegion,
-} from "~/types";
-
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
+import type { CloudBillingCountry, CloudInstanceType, CloudProfile, CloudRegion } from "~/types";
 import { getCloudEndpoints } from "./endpoints";
 
 export interface APIRequestInit extends RequestInit {
@@ -34,30 +27,34 @@ export async function fetchAPI<T = unknown>(
 		headers.Authorization = `Bearer ${sessionToken}`;
 	}
 
-	const response = await adapter.fetch(`${baseUrl}${path}`, {
-		headers: {
-			...headers,
-			...options?.headers,
-		},
-		...options,
-	});
+	try {
+		const response = await adapter.fetch(`${baseUrl}${path}`, {
+			headers: {
+				...headers,
+				...options?.headers,
+			},
+			...options,
+		});
 
-	if (!response.ok) {
-		const isJson =
-			response.headers.get("Content-Type")?.startsWith("application/json") ?? false;
+		if (!response.ok) {
+			const isJson =
+				response.headers.get("Content-Type")?.startsWith("application/json") ?? false;
 
-		let reason = response.statusText;
+			let reason = response.statusText;
 
-		if (isJson) {
-			const { message } = await response.json();
-			reason = message;
+			if (isJson) {
+				const { message } = await response.json();
+				reason = message;
+			}
+
+			throw new ApiError(response, reason);
 		}
 
-		throw new ApiError(response, reason);
-	}
-
-	if (response.headers.get("Content-Type")?.startsWith("application/json")) {
-		return await response.json();
+		if (response.headers.get("Content-Type")?.startsWith("application/json")) {
+			return await response.json();
+		}
+	} catch (err) {
+		throw new Error(`Failed API request to ${baseUrl}${path}: ${err}`);
 	}
 
 	return {} as T;
@@ -67,8 +64,7 @@ export async function fetchAPI<T = unknown>(
  * Fetch essential information from the API
  */
 export async function updateCloudInformation() {
-	const { selectedOrganization, setCloudValues, setProfile, setSelectedOrganization } =
-		useCloudStore.getState();
+	const { setCloudValues, setProfile } = useCloudStore.getState();
 
 	// Load essential information
 	const [instanceVersions, instanceTypes, regions, billingCountries] = await Promise.all([
@@ -78,17 +74,10 @@ export async function updateCloudInformation() {
 		fetchAPI<CloudBillingCountry[]>("/billingcountries"),
 	]);
 
-	const organizations = await fetchAPI<CloudOrganization[]>(`/organizations`);
-
-	if (!selectedOrganization && organizations.length > 0) {
-		setSelectedOrganization(organizations[0].id);
-	}
-
 	setCloudValues({
 		instanceVersions,
 		instanceTypes,
 		regions,
-		organizations,
 		billingCountries,
 	});
 
@@ -102,11 +91,13 @@ export async function updateCloudInformation() {
  * Error response from the API
  */
 export class ApiError extends Error {
+	public status: number;
 	public reason: string;
 
 	public constructor(response: Response, reason: string) {
 		super(`Request failed for "${response.url}" (${response.status}): ${reason}`);
 
+		this.status = response.status;
 		this.reason = reason;
 	}
 }

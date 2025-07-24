@@ -1,24 +1,17 @@
 import {
 	type BoxProps,
-	Button,
 	Checkbox,
-	Combobox,
 	Group,
-	Input,
-	Menu,
-	MultiSelect,
 	NumberInput,
 	Paper,
 	Select,
 	SimpleGrid,
-	Stack,
+	Switch,
 	Text,
 	TextInput,
 } from "@mantine/core";
-import { Switch } from "@mantine/core";
 import { isNumber } from "radash";
 import { useConfigStore } from "~/stores/config";
-import { iconChevronDown } from "~/util/icons";
 import {
 	CheckboxController,
 	FlagSetController,

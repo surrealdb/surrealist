@@ -1,5 +1,5 @@
+import type { EditorView } from "@codemirror/view";
 import {
-	ActionIcon,
 	Alert,
 	Badge,
 	Box,
@@ -12,10 +12,9 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-
-import type { EditorView } from "@codemirror/view";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
+import { omit } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { RecordId, StringRecordId, Table } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
@@ -34,17 +33,19 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
-import { extractEdgeRecords } from "~/util/schema";
+import { extractEdgeRecords, getTableVariant } from "~/util/schema";
+import { formatValue } from "~/util/surrealql";
 
-type EdgeInfo = [boolean, string[], string[]];
+type EdgeInfo = [string[], string[]];
 
 export interface CreatorDrawerProps {
 	opened: boolean;
 	table: string;
+	content?: any;
 	onClose: () => void;
 }
 
-export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
+export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawerProps) {
 	const [recordTable, setRecordTable] = useState("");
 	const [recordId, setRecordId] = useInputState("");
 	const [recordBody, setRecordBody] = useInputState("");
@@ -55,10 +56,9 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	const tables = useTableNames();
 
 	const tableInfo = useTables().find((t) => t.schema.name === recordTable);
+	const isRelation = tableInfo ? getTableVariant(tableInfo) === "relation" : false;
 
-	const [isRelation, fromTables, toTables]: EdgeInfo = tableInfo
-		? extractEdgeRecords(tableInfo)
-		: [false, [], []];
+	const [fromTables, toTables]: EdgeInfo = tableInfo ? extractEdgeRecords(tableInfo) : [[], []];
 
 	const handleSubmit = useStable(async () => {
 		if (!isValid) {
@@ -104,19 +104,29 @@ export function CreatorDrawer({ opened, table, onClose }: CreatorDrawerProps) {
 	});
 
 	const setCursor = useStable((view: EditorView) => {
-		view.dispatch({ selection: { anchor: 6, head: 6 } });
+		if (content) {
+			const length = view.state.doc.length;
+
+			view.dispatch({ selection: { anchor: length, head: length } });
+		} else {
+			view.dispatch({ selection: { anchor: 6, head: 6 } });
+		}
 	});
 
 	useLayoutEffect(() => {
 		if (opened) {
+			const bodyText = content
+				? formatValue(omit(content, ["id", "in", "out"]), true, true)
+				: "{\n    \n}";
+
 			setErrors([]);
 			setRecordTable(table);
 			setRecordId("");
-			setRecordBody("{\n    \n}");
+			setRecordBody(bodyText);
 			setRecordFrom("");
 			setRecordTo("");
 		}
-	}, [opened, table]);
+	}, [opened, table, content]);
 
 	const extensions = useMemo(() => [surrealql(), surqlLinting()], []);
 	const isFullyValid = isValid && (!isRelation || (recordFrom && recordTo));

@@ -1,18 +1,17 @@
-import { highlightCode } from "@lezer/highlight";
-import { adapter } from "~/adapter";
-import { createStyleHighlighter } from "~/editor";
-import type { CodeLang, ColorScheme, SyntaxTheme } from "~/types";
-
 import { StreamLanguage } from "@codemirror/language";
 import { csharp, java } from "@codemirror/legacy-modes/mode/clike";
 import { parser as bashParser } from "@fig/lezer-bash";
 import { parser as goParser } from "@lezer/go";
+import { highlightCode } from "@lezer/highlight";
 import { parser as htmlParser } from "@lezer/html";
 import { parser as jsParser } from "@lezer/javascript";
 import { parser as phpParser } from "@lezer/php";
 import { parser as pyParser } from "@lezer/python";
 import { parser as rustParser } from "@lezer/rust";
 import { parser as surqlParser } from "@surrealdb/lezer";
+import { adapter } from "~/adapter";
+import { createStyleHighlighter } from "~/editor";
+import type { ColorScheme, SyntaxTheme } from "~/types";
 
 type Parser = { parse: (code: string) => any };
 

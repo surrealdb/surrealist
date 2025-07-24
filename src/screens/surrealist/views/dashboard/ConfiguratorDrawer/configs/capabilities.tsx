@@ -1,24 +1,22 @@
+import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { compareVersions, satisfies } from "compare-versions";
 import equal from "fast-deep-equal";
-import classes from "../style.module.scss";
-
+import { useMemo, useState } from "react";
+import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
+import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
+import { useStable } from "~/hooks/stable";
+import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
+import { BooleanCapability } from "../capabilities/boolean";
+import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
+import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
 import {
 	ARBITRARY_QUERY_TARGETS,
 	ENDPOINT_TARGETS,
 	EXPERIMENT_TARGETS,
 	RPC_TARGETS,
 } from "../capabilities/registry";
-
-import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { compareVersions } from "compare-versions";
-import { useMemo, useState } from "react";
-import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
-import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
-import { useStable } from "~/hooks/stable";
-import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
-import { useFeatureFlags } from "~/util/feature-flags";
-import { BooleanCapability } from "../capabilities/boolean";
-import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
-import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
+import { SupportCapability } from "../capabilities/support";
+import classes from "../style.module.scss";
 
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;
@@ -26,12 +24,15 @@ export interface ConfigurationCapabilitiesProps {
 }
 
 export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCapabilitiesProps) {
-	const [{ network_access_caps }] = useFeatureFlags();
 	const [value, setValue] = useState<CloudInstanceCapabilities>(
 		parseCapabilities(instance.capabilities),
 	);
 
 	const hasArbitraryQuery = compareVersions(instance.version, "2.2.0") >= 0;
+	const hasNetworkCaps = satisfies(
+		instance.version,
+		">=2.1.8  <2.2.0 || >=2.2.6  <2.3.0 || >=2.3.6",
+	);
 
 	const { mutateAsync } = useUpdateInstanceCapabilitiesMutation(instance.id);
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
@@ -134,20 +135,26 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							topic="endpoints"
 						/>
 
-						{network_access_caps && (
-							<>
-								<Divider />
+						<Divider />
 
-								<FreeRuleSetCapability
-									name="Network access"
-									description="Configure outbound network access to specific targets"
-									value={value}
-									onChange={setValue}
-									allowedField="allowed_networks"
-									deniedField="denied_networks"
-									topic="network"
-								/>
-							</>
+						{hasNetworkCaps ? (
+							<FreeRuleSetCapability
+								name="Network access"
+								description="Configure outbound network access to specific targets"
+								value={value}
+								onChange={setValue}
+								disallowWildcard
+								allowedField="allowed_networks"
+								deniedField="denied_networks"
+								topic="network"
+							/>
+						) : (
+							<SupportCapability
+								name="Network access"
+								description="Configure outbound network access to specific targets"
+								value={value}
+								onChange={setValue}
+							/>
 						)}
 
 						<Divider />

@@ -1,5 +1,4 @@
-import { type ComboboxData, Group, Select, TextInput } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { type ComboboxData, Group, Select, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { type FocusEvent, type KeyboardEvent, useLayoutEffect } from "react";
 import { useStable } from "~/hooks/stable";
@@ -35,8 +34,14 @@ export function Pagination({ store, loading }: PaginationProps) {
 	});
 
 	useLayoutEffect(() => {
+		if (store.pageCount > 0 && store.currentPage > store.pageCount) {
+			store.setCurrentPage(store.pageCount);
+		} else if (store.currentPage < 1) {
+			store.setCurrentPage(1);
+		}
+
 		setCustomPage(store.currentPage.toString());
-	}, [store.currentPage]);
+	}, [store.setCurrentPage, store.currentPage, store.pageCount]);
 
 	return (
 		<>

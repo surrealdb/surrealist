@@ -1,6 +1,6 @@
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { type ChangeEvent, memo, useRef, useState } from "react";
+import { type ChangeEvent, memo, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
@@ -9,49 +9,90 @@ import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useIsConnected, useRequireDatabase } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useViewFocus } from "~/hooks/routing";
 import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
-import type { SchemaFunction } from "~/types";
-import { showError } from "~/util/helpers";
+import { composeHttpConnection, executeQuery } from "~/screens/surrealist/connection/connection";
+import type { FunctionDetails, SchemaFunction, SchemaModel } from "~/types";
+import { tagEvent } from "~/util/analytics";
+import { createBaseAuthentication } from "~/util/defaults";
+import { showErrorNotification } from "~/util/helpers";
 import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
-import { buildFunctionDefinition, syncConnectionSchema } from "~/util/schema";
+import { buildFunctionDefinition, buildModelDefinition, syncConnectionSchema } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
-import { EditorPanel } from "../EditorPanel";
+import { FunctionEditorPanel } from "../FunctionEditorPanel";
+import { FunctionPropertiesPanel } from "../FunctionPropertiesPanel";
 import { FunctionsPanel } from "../FunctionsPanel";
+import { ModelPanel } from "../ModelPanel";
+
+const SURML_FILTERS = [
+	{
+		name: "SurrealML Model",
+		extensions: ["surml", "surrealml"],
+	},
+];
 
 const FunctionsPanelLazy = memo(FunctionsPanel);
-const EditorPanelLazy = memo(EditorPanel);
 
 export function FunctionsView() {
 	const isConnected = useIsConnected();
-	const duplicationRef = useRef<SchemaFunction | null>(null);
+	const duplicationRef = useRef<FunctionDetails | null>(null);
 
-	const { functions } = useDatabaseSchema();
+	const [namespace, database, auth] = useConnection((c) => [
+		c?.lastNamespace ?? "",
+		c?.lastDatabase ?? "",
+		c?.authentication ?? createBaseAuthentication(),
+	]);
 
-	const [details, setDetails] = useImmer<SchemaFunction | null>(null);
+	const { functions, models } = useDatabaseSchema();
+
+	const [available, setAvailable] = useState<FunctionDetails[]>([]);
+	const [active, setActive] = useImmer<FunctionDetails | null>(null);
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [showCreator, showCreatorHandle] = useDisclosure();
 	const [createName, setCreateName] = useState("");
 
 	const [error, setError] = useState("");
 
-	const handle = useSaveable({
-		valid: !!details && details.args.every(([name, kind]) => name && kind),
+	useEffect(() => {
+		const availableFunctions: FunctionDetails[] = functions.map((f) => ({
+			type: "function",
+			details: f,
+		}));
+
+		const availableModels: FunctionDetails[] = models.map((m) => ({
+			type: "model",
+			details: m,
+		}));
+
+		const sorted = [...availableFunctions, ...availableModels].sort((a, b) =>
+			a.details.name.localeCompare(b.details.name),
+		);
+
+		setAvailable(sorted);
+	}, [functions, models]);
+
+	const handleSave = useSaveable({
+		valid: !!active && active.details.name != null,
 		track: {
-			details,
+			details: active,
 		},
 		onSave: async () => {
-			if (!details) return;
-
-			const query = buildFunctionDefinition(details);
+			if (!active) return;
 
 			try {
+				let query: string;
+
+				if (active.type === "model") {
+					query = buildModelDefinition(active.details as SchemaModel);
+				} else {
+					query = buildFunctionDefinition(active.details as SchemaFunction);
+				}
+
 				const res = await executeQuery(query);
 				const error = res[0].success
 					? ""
@@ -70,14 +111,14 @@ export function FunctionsView() {
 
 				isCreatingHandle.close();
 			} catch (err: any) {
-				showError({
+				showErrorNotification({
 					title: "Failed to apply schema",
-					subtitle: err.message,
+					content: err,
 				});
 			}
 		},
 		onRevert({ details }) {
-			setDetails(details);
+			setActive(details);
 			setError("");
 		},
 	});
@@ -94,67 +135,121 @@ export function FunctionsView() {
 		setCreateName("");
 	});
 
-	const editFunction = useStable((name: string) => {
+	const editFunction = useStable((func: FunctionDetails) => {
 		isCreatingHandle.close();
 
-		const selectedFunction = functions.find((f) => f.name === name) || null;
+		console.log(func);
 
-		if (!selectedFunction) {
-			showError({
-				title: "Function not found",
-				subtitle: "The selected function was not found",
+		if (func.type === "model") {
+			setActive({
+				type: "model",
+				details: func.details,
 			});
-			return;
+		} else {
+			const f = func.details as SchemaFunction;
+			const isInvalid = validateQuery(f.block);
+			const block = isInvalid ? f.block : formatQuery(f.block);
+
+			setActive({
+				type: "function",
+				details: {
+					...f,
+					block,
+				},
+			});
 		}
 
-		const isInvalid = validateQuery(selectedFunction.block);
-		const block = isInvalid ? selectedFunction.block : formatQuery(selectedFunction.block);
-
-		setDetails({
-			...selectedFunction,
-			block,
-		});
-
-		handle.track();
+		handleSave.track();
 	});
 
 	const createFunction = useStable(async () => {
-		const duplication = duplicationRef.current;
+		const duplication = duplicationRef.current?.details;
 
 		showCreatorHandle.close();
 		isCreatingHandle.open();
 
-		setDetails({
-			...(duplication || {
-				args: [],
-				comment: "",
-				block: "",
-				permissions: true,
-				returns: "",
-			}),
-			name: createName,
+		setActive({
+			type: "function",
+			details: {
+				...(duplication || {
+					args: [],
+					comment: "",
+					block: "",
+					permissions: true,
+					returns: "",
+				}),
+				name: createName,
+			},
 		});
 
 		duplicationRef.current = null;
-		handle.track();
+		handleSave.track();
 	});
 
-	const duplicateFunction = useStable((def: SchemaFunction) => {
+	const duplicate = useStable((det: FunctionDetails) => {
 		showCreatorHandle.open();
-		duplicationRef.current = def;
-		setCreateName(def.name);
+		duplicationRef.current = det;
+		setCreateName(det.details.name);
 	});
 
 	const removeFunction = useConfirmation({
 		message: "You are about to remove this function. This action cannot be undone.",
 		confirmText: "Remove",
-		onConfirm: async (name: string) => {
-			await executeQuery(`REMOVE FUNCTION fn::${name}`);
+		skippable: true,
+		onConfirm: async (func: FunctionDetails) => {
+			await executeQuery(`REMOVE FUNCTION fn::${func.details.name}`);
 			await syncConnectionSchema();
 
-			setDetails(null);
-			handle.track();
+			setActive(null);
+			handleSave.track();
 		},
+	});
+
+	const uploadModel = useRequireDatabase(async () => {
+		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
+		const { endpoint, headers } = composeHttpConnection(
+			auth,
+			namespace,
+			database,
+			"/ml/import",
+			{
+				Accept: "application/json",
+			},
+		);
+
+		for (const file of files) {
+			await fetch(endpoint, {
+				method: "POST",
+				headers,
+				body: file.content,
+			});
+
+			tagEvent("import", { extension: "surml" });
+		}
+
+		syncConnectionSchema();
+	});
+
+	const downloadModel = useStable(async (model: SchemaModel) => {
+		const { endpoint, headers } = composeHttpConnection(
+			auth,
+			namespace,
+			database,
+			`/ml/export/${model.name}/${model.version}`,
+		);
+
+		await adapter.saveFile(
+			"Save SurrealML model",
+			`${model.name}-${model.version}.surml`,
+			SURML_FILTERS,
+			() =>
+				fetch(endpoint, {
+					method: "GET",
+					headers,
+				}).then((res) => res.blob()),
+		);
+
+		tagEvent("export", { extension: "surml" });
 	});
 
 	useViewFocus("functions", () => {
@@ -168,6 +263,9 @@ export function FunctionsView() {
 			<Box
 				h="100%"
 				ref={ref}
+				pr="lg"
+				pb="lg"
+				pl={{ base: "lg", md: 0 }}
 			>
 				<PanelGroup
 					direction="horizontal"
@@ -179,25 +277,32 @@ export function FunctionsView() {
 						maxSize={35}
 					>
 						<FunctionsPanelLazy
-							active={details?.name || ""}
-							functions={functions}
+							active={active?.details.name || ""}
+							functions={available}
 							onCreate={openCreator}
+							onImport={uploadModel}
+							onDownload={downloadModel}
 							onDelete={removeFunction}
-							onDuplicate={duplicateFunction}
+							onDuplicate={duplicate}
 							onSelect={editFunction}
 						/>
 					</Panel>
 					<PanelDragger />
 					<Panel minSize={minSize}>
-						{details ? (
-							<EditorPanelLazy
-								handle={handle}
-								details={details}
-								error={error}
-								isCreating={isCreating}
-								onChange={setDetails as any}
-								onDelete={removeFunction}
-							/>
+						{active ? (
+							active.type === "function" ? (
+								<FunctionEditorPanel
+									details={active.details as SchemaFunction}
+									error={error}
+									isCreating={isCreating}
+									onChange={setActive as any}
+								/>
+							) : (
+								<ModelPanel
+									details={active.details as SchemaModel}
+									onDownload={downloadModel}
+								/>
+							)
 						) : (
 							<Introduction
 								title="Functions"
@@ -221,33 +326,53 @@ export function FunctionsView() {
 									be reused throughout your queries. This view allows you to
 									effortlessly create and manage your functions.
 								</Text>
-								<Group>
-									<Button
-										flex={1}
-										variant="gradient"
-										leftSection={<Icon path={iconPlus} />}
-										disabled={!isConnected}
-										onClick={openCreator}
-									>
-										Create function
-									</Button>
-									<Button
-										flex={1}
-										color="slate"
-										variant="light"
-										rightSection={<Icon path={iconOpen} />}
-										onClick={() =>
-											adapter.openUrl(
-												"https://surrealdb.com/docs/surrealql/statements/define/function",
-											)
-										}
-									>
-										Learn more
-									</Button>
-								</Group>
+								<Stack>
+									<Group>
+										<Button
+											flex={1}
+											variant="gradient"
+											leftSection={<Icon path={iconPlus} />}
+											disabled={!isConnected}
+											onClick={openCreator}
+										>
+											New function
+										</Button>
+										<Button
+											flex={1}
+											color="slate"
+											variant="light"
+											rightSection={<Icon path={iconOpen} />}
+											onClick={() =>
+												adapter.openUrl(
+													"https://surrealdb.com/docs/surrealql/statements/define/function",
+												)
+											}
+										>
+											Learn more
+										</Button>
+									</Group>
+								</Stack>
 							</Introduction>
 						)}
 					</Panel>
+					{active?.type === "function" && (
+						<>
+							<PanelDragger />
+							<Panel
+								maxSize={55}
+								minSize={27}
+								defaultSize={27}
+							>
+								<FunctionPropertiesPanel
+									handle={handleSave}
+									details={active.details as SchemaFunction}
+									isCreating={isCreating}
+									onChange={setActive as any}
+									onDelete={removeFunction}
+								/>
+							</Panel>
+						</>
+					)}
 				</PanelGroup>
 			</Box>
 

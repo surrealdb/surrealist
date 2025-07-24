@@ -1,13 +1,9 @@
-import classes from "./style.module.scss";
-
-import { Box, Group, SegmentedControl, Stack, noop } from "@mantine/core";
-
 import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
-import { Image } from "@mantine/core";
+import { Box, Group, Image, noop, SegmentedControl, Stack } from "@mantine/core";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
-import { InPortal, createHtmlPortalNode } from "react-reverse-portal";
+import { createHtmlPortalNode, InPortal } from "react-reverse-portal";
 import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import surrealistIcon from "~/assets/images/icon.webp";
@@ -27,6 +23,7 @@ import { SetQueryEvent } from "~/util/global-events";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
+import classes from "./style.module.scss";
 
 const switchPortal = createHtmlPortalNode();
 
@@ -97,14 +94,15 @@ export function MiniQueryView() {
 						<Link href="https://surrealdb.com/surrealist">
 							<Group>
 								<Image
-									h={16}
+									h={18}
+									w="auto"
 									src={surrealistIcon}
 								/>
 								<Image
 									src={logoUrl}
-									style={{ pointerEvents: "none" }}
-									height={20}
-									width={20}
+									// style={{ pointerEvents: "none" }}
+									h={18}
+									w="auto"
 								/>
 							</Group>
 						</Link>

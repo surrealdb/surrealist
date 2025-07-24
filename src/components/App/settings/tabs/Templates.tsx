@@ -1,12 +1,3 @@
-import {
-	iconCheck,
-	iconCopy,
-	iconDelete,
-	iconDotsVertical,
-	iconFile,
-	iconPlus,
-} from "~/util/icons";
-
 import { ActionIcon, Box, Button, Group, Menu, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { type HTMLAttributes, type MouseEvent, useState } from "react";
@@ -25,7 +16,8 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
-import { ON_STOP_PROPAGATION, newId, uniqueName } from "~/util/helpers";
+import { newId, ON_STOP_PROPAGATION, uniqueName } from "~/util/helpers";
+import { iconCopy, iconDelete, iconDotsVertical, iconPlus } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { SettingsSection } from "../utilities";
 

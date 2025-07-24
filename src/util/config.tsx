@@ -1,5 +1,6 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { klona } from "klona";
-import { assign, debounce, isEmpty, isEqual, pick } from "radash";
+import { assign, debounce, isEmpty, isEqual } from "radash";
 import type { StoreApi, UseBoundStore } from "zustand";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
@@ -53,6 +54,8 @@ export function getSetting<C extends Category, K extends keyof Settings<C>>(cate
 	return useConfigStore.getState().settings[category][key];
 }
 
+let skipConfigSave = false;
+
 /**
  * Start the config synchronization process
  */
@@ -70,24 +73,53 @@ export async function startConfigSync() {
 		return;
 	}
 
+	// Create save function
+	const scheduleSave = debounce(
+		{
+			delay: 250,
+		},
+		(state: SurrealistConfig) => {
+			adapter.saveConfig(state);
+		},
+	);
+
 	// Update the internal config state
 	useConfigStore.setState(config);
 
 	// Sync the config with the adapter
-	useConfigStore.subscribe(
-		debounce(
-			{
-				delay: 250,
-			},
-			(state) => {
-				adapter.saveConfig(state);
-			},
-		),
-	);
+	useConfigStore.subscribe(async (updated) => {
+		if (!skipConfigSave) {
+			scheduleSave(updated);
+
+			if (adapter instanceof DesktopAdapter) {
+				skipConfigSave = true;
+
+				await getCurrentWindow()
+					.emit("config-updated", updated)
+					.then(() => {
+						skipConfigSave = false;
+					});
+			}
+		}
+	});
 
 	// Prune removed query files
 	if (adapter instanceof DesktopAdapter) {
 		adapter.pruneQueryFiles();
+	}
+}
+
+/**
+ * Overwrite the config store without triggering a save
+ */
+export function overwriteConfig(config: SurrealistConfig) {
+	if (!skipConfigSave) {
+		try {
+			skipConfigSave = true;
+			useConfigStore.setState(config);
+		} finally {
+			skipConfigSave = false;
+		}
 	}
 }
 

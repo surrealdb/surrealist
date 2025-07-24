@@ -1,35 +1,20 @@
-import classes from "./style.module.scss";
-
 import {
 	Box,
 	Button,
 	Center,
 	Divider,
 	Group,
+	Menu,
 	ScrollArea,
 	Stack,
 	Text,
 	TextInput,
 } from "@mantine/core";
-
-import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
-
-import {
-	iconChevronRight,
-	iconCopy,
-	iconDelete,
-	iconFilter,
-	iconJSON,
-	iconPlus,
-	iconRefresh,
-	iconServer,
-	iconTable,
-} from "~/util/icons";
-
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { RecordId } from "surrealdb";
+import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
+import { escapeIdent, RecordId, StringRecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
 import { Icon } from "~/components/Icon";
@@ -41,17 +26,32 @@ import { RecordLink } from "~/components/RecordLink";
 import { useConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
+import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery, executeQueryFirst } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
+import { showInfo } from "~/util/helpers";
+import {
+	iconChevronDown,
+	iconChevronRight,
+	iconCopy,
+	iconDelete,
+	iconFilter,
+	iconPlus,
+	iconRefresh,
+	iconServer,
+	iconTable,
+} from "~/util/icons";
+import { getTableVariant } from "~/util/schema";
 import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
+import classes from "./style.module.scss";
 
 export interface ExplorerPaneProps {
 	activeTable: string;
-	onCreateRecord: () => void;
+	onCreateRecord: (table?: string, content?: any) => void;
 }
 
 export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
@@ -61,11 +61,15 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const pagination = usePagination();
 	const [connection] = useConnectionAndView();
 	const navigateConnection = useConnectionNavigator();
+	const schema = useTables().find((t) => t.schema.name === activeTable);
 
-	const [filtering, setFiltering] = useState(false);
+	const allowCreate = schema && getTableVariant(schema) !== "view";
+
+	const [sortMode, setSortMode] = useState<SortMode>(["id", "asc"]);
+
+	const [selected, setSelected] = useInputState(new Set<string>());
 	const [filter, setFilter] = useInputState("");
-	const [sortMode, setSortMode] = useState<SortMode>(null);
-
+	const [filtering, setFiltering] = useState(false);
 	const [showFilter] = useDebouncedValue(filtering, 250);
 	const [filterClause] = useDebouncedValue(filter, 500);
 
@@ -114,8 +118,49 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		paginationQuery.refetch();
 	});
 
+	const selectAllRecords = useStable(async () => {
+		let fetchQuery = `SELECT id FROM ${escapeIdent(activeTable)}`;
+
+		if (filter) {
+			fetchQuery += ` WHERE ${filter}`;
+		}
+
+		if (sortMode) {
+			fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
+		}
+
+		const allRecords = await executeQueryFirst(fetchQuery);
+		setSelected(new Set([...allRecords.map((r: any) => r.id.toString())]));
+	});
+
+	const invertSelection = useStable(async () => {
+		const allRecords = await executeQueryFirst(`SELECT id FROM ${escapeIdent(activeTable)}`);
+
+		const newSelected = allRecords
+			.map((it: any) => it.id.toString())
+			.filter((it: string) => !selected.has(it));
+
+		setSelected(new Set(newSelected));
+	});
+
+	const clearSelection = useStable(() => {
+		setSelected(new Set<string>());
+	});
+
+	const copySelectedRecords = useStable(() => {
+		navigator.clipboard.writeText(Array.from(selected).join("\n"));
+	});
+
+	const copySelectedRecordsJSON = useStable(async () => {
+		const records = Array.from(selected).map((id) => new StringRecordId(id));
+		const result = await executeQueryFirst("SELECT * FROM $records", { records });
+
+		navigator.clipboard.writeText(formatValue(result, true, true));
+	});
+
 	const removeRecord = useConfirmation<RecordId>({
 		title: "Delete record",
+		skippable: true,
 		message: (value) => (
 			<Box>
 				Are you sure you want to delete this record?
@@ -128,6 +173,20 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		),
 		onConfirm: async (id) => {
 			await executeQuery(`DELETE ${formatValue(id)}`);
+			refetch();
+		},
+	});
+
+	const removeSelectedRecords = useConfirmation({
+		title: "Bulk delete records",
+		message: `Are you sure you want to delete all ${selected.size} records?`,
+		skippable: true,
+		onConfirm: async () => {
+			const selectedRecords = Array.from(selected).map((it) => new StringRecordId(it));
+
+			await executeQuery("DELETE $selectedRecords", { selectedRecords });
+
+			setSelected(new Set<string>());
 			refetch();
 		},
 	});
@@ -145,44 +204,64 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 
 		showContextMenu([
 			{
-				key: "copy-id",
-				title: "Copy record id",
+				key: "duplicate",
+				title: "Duplicate record",
+				disabled: !allowCreate,
 				icon: <Icon path={iconCopy} />,
 				onClick: () => {
-					navigator.clipboard.writeText(formatValue(record.id));
-				},
-			},
-			{
-				key: "copy-json",
-				title: "Copy as JSON",
-				icon: <Icon path={iconJSON} />,
-				onClick: () => {
-					navigator.clipboard.writeText(formatValue(record, true, true));
+					onCreateRecord(undefined, record);
 				},
 			},
 			{
 				key: "divider-1",
 			},
 			{
-				key: "select",
-				title: "Use in SELECT query",
-				onClick: () => openQuery(record.id, "SELECT * FROM"),
+				key: "copy-id",
+				title: "Copy Record ID",
+				onClick: () => {
+					navigator.clipboard.writeText(formatValue(record.id));
+
+					showInfo({
+						title: "Record ID copied",
+						subtitle: `Copied ${formatValue(record.id)}`,
+					});
+				},
 			},
 			{
-				key: "select",
-				title: "Use in UPDATE query",
-				onClick: () => openQuery(record.id, "UPDATE"),
-			},
-			{
-				key: "select",
-				title: "Use in DELETE query",
-				onClick: () => openQuery(record.id, "DELETE"),
+				key: "copy-json",
+				title: "Copy as JSON",
+				onClick: () => {
+					navigator.clipboard.writeText(formatValue(record, true, true));
+
+					showInfo({
+						title: "Record contents copied",
+						subtitle: `Copied ${formatValue(record.id)}`,
+					});
+				},
 			},
 			{
 				key: "divider-2",
 			},
 			{
-				key: "delete",
+				key: "select-query",
+				title: "Use in SELECT query",
+				onClick: () => openQuery(record.id, "SELECT * FROM"),
+			},
+			{
+				key: "update-query",
+				title: "Use in UPDATE query",
+				onClick: () => openQuery(record.id, "UPDATE"),
+			},
+			{
+				key: "delete-query",
+				title: "Use in DELETE query",
+				onClick: () => openQuery(record.id, "DELETE"),
+			},
+			{
+				key: "divider-3",
+			},
+			{
+				key: "delete-record",
 				title: "Delete record",
 				color: "pink.7",
 				icon: <Icon path={iconDelete} />,
@@ -193,6 +272,34 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				},
 			},
 		])(e);
+	});
+
+	const onSelectionChangeAll = useStable((values: RecordId[], isSelected: boolean) => {
+		const selectedArray = Array.from(selected);
+
+		if (isSelected) {
+			const valueMap = values.map((rid) => rid.toString());
+
+			setSelected(new Set([...selectedArray, ...valueMap]));
+		} else {
+			setSelected(
+				new Set(
+					selectedArray.filter(
+						(id) => !values.some((v: RecordId) => v.toString() === id),
+					),
+				),
+			);
+		}
+	});
+
+	const onSelectionChange = useStable((record: RecordId, isSelected: boolean) => {
+		const selectedArray = Array.from(selected);
+
+		if (isSelected) {
+			setSelected(new Set([...selectedArray, record.toString()]));
+		} else {
+			setSelected(new Set(selectedArray.filter((id) => id !== record.toString())));
+		}
 	});
 
 	useLayoutEffect(() => {
@@ -227,12 +334,70 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			rightSection={
 				activeTable && (
 					<Group align="center">
-						<ActionButton
-							onClick={openCreator}
-							label="Create record"
-						>
-							<Icon path={iconPlus} />
-						</ActionButton>
+						{selected.size > 0 && (
+							<>
+								<Menu
+									position="bottom-start"
+									trigger="click"
+									transitionProps={{
+										transition: "scale-y",
+									}}
+								>
+									<Menu.Target>
+										<Button
+											size="xs"
+											color="violet"
+											variant="light"
+											rightSection={<Icon path={iconChevronDown} />}
+										>
+											{selected.size} selected
+										</Button>
+									</Menu.Target>
+
+									<Menu.Dropdown w={150}>
+										<Menu.Item onClick={selectAllRecords}>
+											Select all records
+										</Menu.Item>
+										<Menu.Item onClick={invertSelection}>
+											Invert selection
+										</Menu.Item>
+										<Menu.Item onClick={clearSelection}>
+											Clear selection
+										</Menu.Item>
+										<Menu.Divider />
+										<Menu.Item onClick={copySelectedRecords}>
+											Copy all Record IDs
+										</Menu.Item>
+										<Menu.Item onClick={copySelectedRecordsJSON}>
+											Copy all as JSON
+										</Menu.Item>
+										<Menu.Divider />
+										<Menu.Item
+											c="pink.7"
+											leftSection={
+												<Icon
+													color="pink.7"
+													path={iconDelete}
+												/>
+											}
+											onClick={removeSelectedRecords}
+										>
+											Delete records
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
+								<Divider orientation="vertical" />
+							</>
+						)}
+
+						{allowCreate && (
+							<ActionButton
+								onClick={openCreator}
+								label="Create record"
+							>
+								<Icon path={iconPlus} />
+							</ActionButton>
+						)}
 
 						<ActionButton
 							onClick={refetch}
@@ -285,9 +450,13 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					}}
 				>
 					<DataTable
+						schema={schema}
 						data={records}
 						sorting={sortMode}
+						selected={selected}
 						onSortingChange={setSortMode}
+						onSelectionChange={onSelectionChange}
+						onSelectionChangeAll={onSelectionChangeAll}
 						onRowContextMenu={onRecordContextMenu}
 						headers={headers}
 					/>
@@ -311,13 +480,15 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 							</Text>
 							<Text>This table contains no records</Text>
 						</Box>
-						<Button
-							variant="gradient"
-							leftSection={<Icon path={iconPlus} />}
-							onClick={openCreator}
-						>
-							Create record
-						</Button>
+						{allowCreate && (
+							<Button
+								variant="gradient"
+								leftSection={<Icon path={iconPlus} />}
+								onClick={openCreator}
+							>
+								Create record
+							</Button>
+						)}
 					</Stack>
 				</Center>
 			)}

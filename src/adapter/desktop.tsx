@@ -1,6 +1,6 @@
 import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
+import { Event, listen } from "@tauri-apps/api/event";
 import { basename } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -13,21 +13,22 @@ import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
 import { VIEW_PAGES } from "~/constants";
-import { useConfigStore } from "~/stores/config";
+import { CloudStore } from "~/stores/cloud";
+import { ConfigStore, useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
-import { getSetting, watchStore } from "~/util/config";
+import { startCloudSync, syncCloudStore } from "~/util/cloud";
+import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { NavigateViewEvent } from "~/util/global-events";
-import { showError, showInfo } from "~/util/helpers";
-import { handleIntentRequest } from "~/util/intents";
+import { showErrorNotification, showInfo } from "~/util/helpers";
+import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
 import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 const WAIT_DURATION = 1000;
-
 interface Resource {
 	File?: FileResource;
 	Link?: LinkResource;
@@ -52,7 +53,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public isServeSupported = true;
 	public isUpdateCheckSupported = true;
-	public hasTitlebar = false;
+	public isTelemetryEnabled = true;
+	public titlebarOffset = 0;
 	public platform: Platform = "windows";
 
 	#startTask: any;
@@ -60,9 +62,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	#system: string = type();
 
 	public constructor() {
-		this.hasTitlebar = this.#system === "windows" || this.#system === "linux";
-
 		this.initDatabaseEvents();
+		this.initWindowEvents();
 
 		document.addEventListener("DOMContentLoaded", () => {
 			setTimeout(() => {
@@ -79,11 +80,19 @@ export class DesktopAdapter implements SurrealistAdapter {
 			getHotkeyHandler([["mod+alt+i", () => invoke("toggle_devtools")]]),
 		);
 
-		listen("open-resource", () => {
+		getCurrentWindow().listen("config-updated", (event: Event<ConfigStore>) => {
+			overwriteConfig(event.payload);
+		});
+
+		getCurrentWindow().listen("cloud-updated", (event: Event<CloudStore>) => {
+			syncCloudStore(event.payload);
+		});
+
+		getCurrentWindow().listen("open-resource", () => {
 			this.queryOpenRequest();
 		});
 
-		listen("tauri://focus", () => {
+		getCurrentWindow().listen("tauri://focus", () => {
 			this.checkForUpdates();
 		});
 	}
@@ -93,6 +102,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		this.queryOpenRequest();
 		this.checkForUpdates();
+
+		if (this.platform === "darwin") {
+			this.titlebarOffset = 15;
+		} else {
+			this.titlebarOffset = 32;
+		}
 
 		watchStore({
 			initial: true,
@@ -106,10 +121,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 			store: useConfigStore,
 			select: (s) => s.settings.behavior.windowPinned,
 			then: (pinned) => {
-				console.log("pinned", pinned);
 				getCurrentWindow().setAlwaysOnTop(pinned);
 			},
 		});
+
+		startCloudSync();
 	}
 
 	public dumpDebug = () => ({
@@ -124,7 +140,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public async loadConfig() {
-		switch (await type()) {
+		switch (type()) {
 			case "windows": {
 				this.platform = "windows";
 				break;
@@ -388,11 +404,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 			useDatabaseStore.getState().stopServing();
 
-			showError({
+			showErrorNotification({
 				title: "Serving failed",
-				subtitle: msg,
+				content: msg,
 			});
 		});
+	}
+
+	private initWindowEvents() {
+		getCurrentWindow().listen("window:open_settings", (e) =>
+			dispatchIntent("open-settings", e.payload ? { tab: e.payload as string } : undefined),
+		);
 	}
 
 	private async queryOpenRequest() {
@@ -408,9 +430,9 @@ export class DesktopAdapter implements SurrealistAdapter {
 				const { success, name, path } = File;
 
 				if (!success) {
-					showError({
+					showErrorNotification({
 						title: `Failed to open "${name}"`,
-						subtitle: `File exceeds maximum size limit`,
+						content: `File exceeds maximum size limit`,
 					});
 
 					continue;
@@ -437,6 +459,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 				}
 
 				NavigateViewEvent.dispatch("query");
+				await invoke("clear_opened_resources");
 			} else if (Link) {
 				const { host, params } = Link;
 
@@ -459,6 +482,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 						});
 					}
 				}
+
+				await invoke("clear_opened_resources");
 			}
 		}
 	}
@@ -488,6 +513,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			});
 
 			for (const cookie of cookies) {
+				// biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API not supported enough yet
 				document.cookie = stripCookie(cookie);
 			}
 		} catch (err) {

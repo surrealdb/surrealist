@@ -16,14 +16,15 @@ import {
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { EditorState, type Extension } from "@codemirror/state";
 import {
-	EditorView,
 	crosshairCursor,
 	drawSelection,
 	dropCursor,
+	EditorView,
 	highlightActiveLineGutter,
 	highlightSpecialChars,
 	keymap,
 	rectangularSelection,
+	scrollPastEnd,
 } from "@codemirror/view";
 import { indentationMarkers } from "@replit/codemirror-indentation-markers";
 import { acceptWithTab } from "./keybinds";
@@ -45,6 +46,7 @@ export const editorBase = (): Extension => [
 	autocompletion(),
 	rectangularSelection(),
 	crosshairCursor(),
+	scrollPastEnd(),
 	indentationMarkers({
 		colors: {
 			light: "var(--surrealist-indent-color)",

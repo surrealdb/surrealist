@@ -1,5 +1,5 @@
 import { useWindowEvent } from "@mantine/hooks";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import type { Identified } from "~/types";
 import { useStable } from "./stable";
 
@@ -31,7 +31,7 @@ export function useActiveKeys(...keys: string[]): boolean {
 	return active.length > 0;
 }
 
-function getNavigationElement<T extends Identified>(cmd: T) {
+function _getNavigationElement<T extends Identified>(cmd: T) {
 	return document.querySelector(`[data-navigation-item-id="${cmd.id}"]`) as HTMLElement | null;
 }
 

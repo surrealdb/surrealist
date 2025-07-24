@@ -1,6 +1,6 @@
 import { Text, type TextProps } from "@mantine/core";
 import clsx from "clsx";
-import { type PropsWithChildren, forwardRef } from "react";
+import { forwardRef, type PropsWithChildren } from "react";
 import { adapter } from "~/adapter";
 import classes from "./style.module.scss";
 

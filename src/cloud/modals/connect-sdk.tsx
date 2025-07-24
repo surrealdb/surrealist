@@ -7,7 +7,6 @@ import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DRIVERS } from "~/constants";
-import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance, CodeLang, Snippets } from "~/types";
 import { iconXml } from "~/util/icons";
 
@@ -41,7 +40,6 @@ interface ConnectSdkModalProps {
 }
 
 function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps) {
-	const isLight = useIsLight();
 	const [lang, setLang] = useState<CodeLang>("rust");
 
 	const installation = useMemo<Snippets>(
@@ -195,76 +193,74 @@ from surrealdb import Surreal, RecordID
 	const driver = DRIVERS.find((d) => d.id === lang);
 
 	return (
-		<>
-			<Stack>
-				<Text size="lg">
-					You can connect to this instance with your preferred language using one of our
-					SurrealDB Client SDKs.
-				</Text>
+		<Stack>
+			<Text size="lg">
+				You can connect to this instance with your preferred language using one of our
+				SurrealDB Client SDKs.
+			</Text>
 
-				<Text
-					mt="xl"
-					fz="xl"
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					c="bright"
+			<Text
+				mt="xl"
+				fz="xl"
+				ff="mono"
+				tt="uppercase"
+				fw={600}
+				c="bright"
+			>
+				Select your desired language
+			</Text>
+
+			<DriverSelector
+				value={lang}
+				onChange={setLang}
+				exclude={["cli", "go", "c"]}
+				cols={{
+					base: 3,
+					xs: 6,
+				}}
+			/>
+
+			<Text
+				mt="xl"
+				fz="xl"
+				ff="mono"
+				tt="uppercase"
+				fw={600}
+				c="bright"
+			>
+				Install the SDK
+			</Text>
+
+			<CodeSnippet
+				language={lang}
+				values={installation}
+				editorLanguage="sh"
+			/>
+
+			<Text
+				mt="xl"
+				fz="xl"
+				ff="mono"
+				tt="uppercase"
+				fw={600}
+				c="bright"
+			>
+				Connect to your instance
+			</Text>
+
+			<CodeSnippet
+				language={lang}
+				values={snippets}
+			/>
+
+			{driver && (
+				<LearnMore
+					mt="sm"
+					href={driver.link}
 				>
-					Select your desired language
-				</Text>
-
-				<DriverSelector
-					value={lang}
-					onChange={setLang}
-					exclude={["cli", "go", "c"]}
-					cols={{
-						base: 3,
-						xs: 6,
-					}}
-				/>
-
-				<Text
-					mt="xl"
-					fz="xl"
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					c="bright"
-				>
-					Install the SDK
-				</Text>
-
-				<CodeSnippet
-					language={lang}
-					values={installation}
-					editorLanguage="sh"
-				/>
-
-				<Text
-					mt="xl"
-					fz="xl"
-					ff="mono"
-					tt="uppercase"
-					fw={600}
-					c="bright"
-				>
-					Connect to your instance
-				</Text>
-
-				<CodeSnippet
-					language={lang}
-					values={snippets}
-				/>
-
-				{driver && (
-					<LearnMore
-						mt="sm"
-						href={driver.link}
-					>
-						Learn more about the {driver.name} SDK
-					</LearnMore>
-				)}
-			</Stack>
-		</>
+					Learn more about the {driver.name} SDK
+				</LearnMore>
+			)}
+		</Stack>
 	);
 }

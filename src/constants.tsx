@@ -1,17 +1,6 @@
+import type { MantineColor, MantineColorScheme } from "@mantine/core";
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
-
-import {
-	CIcon,
-	DotNetIcon,
-	GoLangIcon,
-	JavaIcon,
-	JavaScriptIcon,
-	PhpIcon,
-	PythonIcon,
-	RustIcon,
-	SurrealIcon,
-} from "./util/drivers";
 
 import type {
 	AuthMode,
@@ -26,6 +15,8 @@ import type {
 	GlobalPage,
 	GlobalPageInfo,
 	Listable,
+	Monitor,
+	MonitorSeverity,
 	Orientation,
 	Protocol,
 	ResultFormat,
@@ -35,45 +26,47 @@ import type {
 	Selectable,
 	SidebarMode,
 	SyntaxTheme,
+	TableVariant,
 	ViewPage,
 	ViewPageInfo,
 } from "./types";
-
+import {
+	CIcon,
+	DotNetIcon,
+	GoLangIcon,
+	JavaIcon,
+	JavaScriptIcon,
+	PhpIcon,
+	PythonIcon,
+	RustIcon,
+	SurrealIcon,
+} from "./util/drivers";
 import {
 	iconAPI,
-	iconAccount,
 	iconAuth,
 	iconBraces,
-	iconCloud,
-	iconCog,
 	iconCombined,
-	iconCreditCard,
-	iconCursor,
-	iconDataTable,
 	iconDatabase,
+	iconDataTable,
 	iconDesigner,
-	iconEmail,
+	iconErrorCircle,
 	iconExplorer,
+	iconEye,
 	iconFunction,
 	iconGraphql,
 	iconHelp,
-	iconHomePlus,
 	iconLive,
-	iconModuleML,
-	iconPackageClosed,
-	iconPlus,
-	iconProgressClock,
+	iconOrganization,
 	iconQuery,
 	iconReferral,
 	iconRelation,
-	iconServer,
-	iconSidekick,
+	iconSearch,
+	iconTable,
 	iconTune,
-	iconUniversity,
+	iconVariable,
+	iconWarning,
 	iconXml,
 } from "./util/icons";
-
-import type { MantineColorScheme } from "@mantine/core";
 
 export type StructureTab = "graph" | "builder";
 export type ProtocolOption = Selectable<Protocol> & { remote: boolean };
@@ -82,11 +75,11 @@ export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_HISTORY_QUERY_LENGTH = 7500;
 export const MAX_LIVE_MESSAGES = 50;
-export const INSTANCE_CONFIG = "connections.json";
-export const INSTANCE_GROUP = "__instance";
+export const INSTANCE_CONFIG = "instance.json";
 export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
+export const CLOUD_ROLES = ["member", "admin", "owner"];
 
 export const DATASETS: Record<string, Dataset> = {
 	"surreal-deal-store": {
@@ -192,25 +185,23 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Overview",
 		icon: iconExplorer,
 	},
-	"/cloud": {
-		id: "/cloud",
-		name: "Surreal Cloud",
-		icon: iconCloud,
+	"/signin": {
+		id: "/signin",
+		name: "Authenticate",
+		icon: iconAuth,
 	},
-	"/billing": {
-		id: "/billing",
-		name: "Billing",
-		icon: iconCreditCard,
-	},
-	"/chat": {
-		id: "/chat",
-		name: "Sidekick",
-		icon: iconSidekick,
+	"/organisations": {
+		id: "/organisations",
+		name: "Organisations",
+		icon: iconOrganization,
+		aliases: ["/o/*"],
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/referrals": {
 		id: "/referrals",
 		name: "Referrals",
 		icon: iconReferral,
+		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/support": {
 		id: "/support",
@@ -222,21 +213,6 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Embed Surrealist",
 		icon: iconXml,
 	},
-	"/create/connection": {
-		id: "/create/connection",
-		name: "Connect to SurrealDB",
-		icon: iconPlus,
-	},
-	"/create/organization": {
-		id: "/create/organization",
-		name: "New organization",
-		icon: iconPlus,
-	},
-	"/create/instance": {
-		id: "/create/instance",
-		name: "Provision Instance",
-		icon: iconPlus,
-	},
 };
 
 export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
@@ -244,7 +220,13 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		id: "dashboard",
 		name: "Dashboard",
 		icon: iconTune,
-		disabled: ({ flags, isCloud }) => !flags.query_view || !isCloud,
+		disabled: ({ isCloud }) => !isCloud,
+	},
+	monitor: {
+		id: "monitor",
+		name: "Monitoring",
+		icon: iconEye,
+		disabled: ({ isCloud }) => !isCloud,
 	},
 	query: {
 		id: "query",
@@ -280,23 +262,17 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		anim: import("~/assets/animation/auth.json").then((x) => x.default),
 		disabled: ({ flags }) => !flags.auth_view,
 	},
+	parameters: {
+		id: "parameters",
+		name: "Parameters",
+		icon: iconVariable,
+		disabled: ({ flags }) => !flags.parameters_view,
+	},
 	functions: {
 		id: "functions",
 		name: "Functions",
 		icon: iconFunction,
 		disabled: ({ flags }) => !flags.functions_view,
-	},
-	models: {
-		id: "models",
-		name: "Models",
-		icon: iconModuleML,
-		disabled: ({ flags }) => !flags.models_view,
-	},
-	sidekick: {
-		id: "sidekick",
-		name: "Sidekick",
-		icon: iconSidekick,
-		disabled: ({ flags }) => !flags.sidekick_view,
 	},
 	documentation: {
 		id: "documentation",
@@ -399,6 +375,12 @@ export const REGION_FLAGS: Record<string, string> = {
 	"aws-use1": flagUS,
 };
 
+export const TABLE_VARIANT_ICONS: Record<TableVariant, string> = {
+	normal: iconTable,
+	relation: iconRelation,
+	view: iconSearch,
+};
+
 export const DRIVERS: Driver[] = [
 	{
 		id: "cli",
@@ -456,3 +438,33 @@ export const DRIVERS: Driver[] = [
 		link: "https://github.com/surrealdb/surrealdb.c",
 	},
 ];
+
+export const MONITORS: Record<string, Monitor> = {
+	system: {
+		id: "system",
+		type: "metrics",
+		name: "System",
+	},
+	connections: {
+		id: "connections",
+		type: "metrics",
+		name: "Connections",
+	},
+	network: {
+		id: "network",
+		type: "metrics",
+		name: "Network traffic",
+	},
+	surrealdb: {
+		id: "surrealdb",
+		type: "logs",
+		name: "SurrealDB",
+	},
+};
+
+export const MONITOR_LOG_LEVEL_INFO: Record<string, [string, MantineColor, MonitorSeverity]> = {
+	INFO: [iconHelp, "violet", "info"],
+	WARN: [iconWarning, "orange", "warning"],
+	ERROR: [iconErrorCircle, "red", "error"],
+	FATAL: [iconErrorCircle, "red", "error"],
+};

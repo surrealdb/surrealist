@@ -12,8 +12,11 @@ export interface SaveBoxProps {
 	handle: SaveableHandle;
 	inline?: boolean;
 	inlineProps?: GroupProps;
+	minimal?: boolean;
+	withApply?: boolean;
 	position?: "left" | "center" | "right";
 	saveText?: ReactNode;
+	applyText?: ReactNode;
 	revertText?: ReactNode;
 }
 
@@ -27,28 +30,47 @@ export function SaveBox({
 	inlineProps,
 	position,
 	saveText,
+	minimal,
+	withApply,
+	applyText,
 	revertText,
 }: SaveBoxProps) {
 	const saveButton = (
 		<Button
+			miw={100}
 			rightSection={<Icon path={iconCheck} />}
 			variant="gradient"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
-			onClick={handle.save}
+			onClick={() => handle.save(false)}
 		>
-			{saveText ?? "Save changes"}
+			{saveText ?? (minimal ? "Save changes" : "Save")}
+		</Button>
+	);
+
+	const applyButton = (
+		<Button
+			miw={100}
+			px="xl"
+			color="slate"
+			variant="light"
+			loading={handle.isSaving}
+			disabled={!handle.isSaveable}
+			onClick={() => handle.save(true)}
+		>
+			{applyText ?? "Apply"}
 		</Button>
 	);
 
 	const revertButton = (
 		<Button
+			px="xl"
 			disabled={!handle.isChanged}
 			onClick={handle.revert}
 			color="slate"
 			variant="light"
 		>
-			{revertText ?? "Revert"}
+			{revertText ?? (minimal ? "Revert" : "Revert changes")}
 		</Button>
 	);
 
@@ -56,12 +78,19 @@ export function SaveBox({
 		return (
 			<Group
 				gap={10}
-				align="center"
-				justify="apart"
 				{...inlineProps}
 			>
 				{revertButton}
-				{saveButton}
+				{!minimal && <Spacer />}
+
+				{(withApply || !minimal) && (
+					<>
+						{withApply && applyButton}
+						{saveButton}
+					</>
+				)}
+
+				{!withApply && minimal && saveButton}
 			</Group>
 		);
 	}
@@ -99,7 +128,11 @@ export function SaveBox({
 					There are unsaved changes
 					<Spacer />
 					{revertButton}
-					{saveButton}
+					<Spacer />
+					<Button.Group>
+						{withApply && applyButton}
+						{saveButton}
+					</Button.Group>
 				</Group>
 			</Notification>
 		</Portal>

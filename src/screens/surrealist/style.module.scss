@@ -73,11 +73,11 @@ $sidebar-wide: 215px;
 	}
 }
 
-.inner {
-	padding: var(--mantine-spacing-lg);
-	padding-top: calc(68px + var(--titlebar-offset));
+.sidebar-inner {
+	padding-top: calc(22px + var(--titlebar-offset));
+	height: 100%;
+}
 
-	@include md-and-up {
-		padding-left: 0;
-	}
+.page-content {
+	padding-top: calc(68px + var(--titlebar-offset));
 }

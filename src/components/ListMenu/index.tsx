@@ -1,9 +1,7 @@
-import { ScrollArea, Text, ThemeIcon, Tooltip } from "@mantine/core";
-import { Menu } from "@mantine/core";
+import { Menu, ScrollArea, Text, ThemeIcon } from "@mantine/core";
 import type { PropsWithChildren } from "react";
 import { useIsLight } from "~/hooks/theme";
 import type { Listable } from "~/types";
-import { iconCheck } from "~/util/icons";
 import { Icon } from "../Icon";
 
 export interface ListMenuProps<T extends string> {

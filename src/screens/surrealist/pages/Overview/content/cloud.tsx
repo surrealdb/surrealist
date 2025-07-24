@@ -1,64 +1,56 @@
-import cloudSplashUrl from "~/assets/images/cloud-splash.webp";
+import { Box, BoxProps, Button, Image, Paper, Stack, Text } from "@mantine/core";
+import { PropsWithChildren } from "react";
+import glow from "~/assets/images/glow.webp";
+import { Icon } from "~/components/Icon";
+import { iconChevronRight } from "~/util/icons";
 import classes from "../style.module.scss";
 
-import { Image, Text } from "@mantine/core";
-import { BoxProps, Group, Paper, Stack, UnstyledButton } from "@mantine/core";
-import clsx from "clsx";
-import { ReactNode, useRef } from "react";
-import { Faint } from "~/components/Faint";
-import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
-
 export interface StartCloudProps extends BoxProps {
-	title: ReactNode;
-	subtitle: ReactNode;
-	icon?: string;
+	action: string;
+	image: string;
 	onClick: () => void;
 }
 
-export function StartCloud({ title, subtitle, icon, onClick, ...other }: StartCloudProps) {
-	const containerRef = useRef<HTMLDivElement>(null);
-
+export function StartCloud({
+	onClick,
+	action,
+	image,
+	children,
+	...other
+}: PropsWithChildren<StartCloudProps>) {
 	return (
-		<UnstyledButton
-			onClick={onClick}
+		<Paper
+			p="xl"
+			pos="relative"
+			variant="gradient"
+			className={classes.startCloud}
 			{...other}
 		>
-			<Paper
-				p="xl"
-				pos="relative"
-				ref={containerRef}
-				className={clsx(classes.startBox, classes.startCloud)}
-				renderRoot={(props) => <Stack {...props} />}
-			>
-				<Group
-					wrap="nowrap"
-					align="start"
-					h="100%"
+			<Stack flex={1}>
+				<Text
+					maw={450}
+					fz="lg"
 				>
-					<Text
-						c="bright"
-						fw={600}
-						fz="xl"
+					{children}
+				</Text>
+				<Box mt="md">
+					<Button
+						variant="gradient"
+						rightSection={<Icon path={iconChevronRight} />}
+						onClick={onClick}
 					>
-						{title}
-					</Text>
-					<Spacer />
-					{icon && (
-						<Icon
-							className={classes.startCloudIcon}
-							path={icon}
-							size="xl"
-						/>
-					)}
-				</Group>
-				<Text maw={450}>{subtitle}</Text>
-				<Image
-					src={cloudSplashUrl}
-					className={classes.cloudImage}
-				/>
-				<Faint containerRef={containerRef} />
-			</Paper>
-		</UnstyledButton>
+						{action}
+					</Button>
+				</Box>
+			</Stack>
+			<Image
+				src={image}
+				className={classes.cloudImage}
+			/>
+			<Image
+				src={glow}
+				className={classes.cloudGlow}
+			/>
+		</Paper>
 	);
 }

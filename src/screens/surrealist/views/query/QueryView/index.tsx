@@ -1,19 +1,6 @@
-import classes from "./style.module.scss";
-
-import {
-	Box,
-	Button,
-	Group,
-	Modal,
-	SegmentedControl,
-	Stack,
-	TagsInput,
-	Text,
-	TextInput,
-} from "@mantine/core";
-
 import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { Box, Button, Group, Modal, Stack, TagsInput, Text, TextInput } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { memo, useState } from "react";
@@ -36,7 +23,7 @@ import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { SetQueryEvent } from "~/util/global-events";
-import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
+import { newId, ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { QueryPane } from "../QueryPane";
@@ -61,6 +48,7 @@ export function QueryView() {
 	const [showHistory, showHistoryHandle] = useDisclosure();
 	const [showSaved, showSavedHandle] = useDisclosure();
 
+	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
 	const [selection, setSelection] = useState<SelectionRange>();
 
 	const tags = useSavedQueryTags();
@@ -137,7 +125,7 @@ export function QueryView() {
 
 	useIntent("run-query", () => {
 		if (editor) {
-			executeEditorQuery(editor);
+			executeEditorQuery(editor, allowSelectionExecution);
 		}
 	});
 
@@ -213,16 +201,18 @@ export function QueryView() {
 	);
 
 	return (
-		<Stack
-			gap="md"
-			h="100%"
-		>
+		<>
 			<Box
-				flex={1}
+				h="100%"
 				ref={rootRef}
-				style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
+				pr="lg"
+				pb="lg"
+				pl={{ base: "lg", md: 0 }}
 			>
-				<PanelGroup direction="horizontal">
+				<PanelGroup
+					direction="horizontal"
+					style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
+				>
 					{queryTabList && (
 						<>
 							<Panel
@@ -331,7 +321,7 @@ export function QueryView() {
 					</Stack>
 				</Form>
 			</Modal>
-		</Stack>
+		</>
 	);
 }
 

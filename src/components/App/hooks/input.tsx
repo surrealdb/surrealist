@@ -41,7 +41,11 @@ export function useKeybindListener() {
 	const dispatch = useCommandDispatcher();
 
 	const hotkeys = Array.from(keybinds.entries()).map(([cmd, binding]) => {
-		return [translateBinding(binding), () => dispatch(cmd)] as HotkeyItem;
+		return [
+			translateBinding(binding),
+			() => dispatch(cmd),
+			{ preventDefault: true },
+		] as HotkeyItem;
 	});
 
 	useHotkeys(hotkeys, [], true);

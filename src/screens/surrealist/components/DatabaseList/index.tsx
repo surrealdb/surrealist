@@ -1,22 +1,20 @@
-import classes from "./style.module.scss";
-
 import {
 	Button,
 	type ButtonProps,
-	Divider,
 	Group,
+	Loader,
 	Menu,
 	ScrollArea,
 	Stack,
 	Text,
 } from "@mantine/core";
-
 import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useNamespaceSchema } from "~/hooks/schema";
@@ -28,6 +26,7 @@ import { createBaseAuthentication } from "~/util/defaults";
 import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
+import classes from "./style.module.scss";
 
 export interface DatabaseProps {
 	value: string;
@@ -44,6 +43,7 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 		title: "Remove database",
 		message: `Are you sure you want to remove the database "${value}"?`,
 		confirmText: "Remove",
+		skippable: true,
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `REMOVE DATABASE ${escapeIdent(value)}`);
 
@@ -114,12 +114,14 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 		return schema.databases.map((db) => parseIdent(db.name));
 	}, [schema, authentication]);
 
-	const openDatabase = useStable(async (db: string) => {
-		if (database !== db) {
-			await activateDatabase(namespace, db);
-		}
+	const { mutate, isPending } = useMutation({
+		mutationFn: async (db: string) => {
+			if (database !== db) {
+				await activateDatabase(namespace, db);
+			}
 
-		openHandle.close();
+			openHandle.close();
+		},
 	});
 
 	const openCreator = useStable(() => {
@@ -127,7 +129,8 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 		openHandle.close();
 	});
 
-	const willCreate = (level === "root" || level === "namespace") && databases.length === 0;
+	const willCreate =
+		(level === "root" || level === "namespace") && databases.length === 0 && !database;
 
 	return willCreate ? (
 		<Button
@@ -150,8 +153,8 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 		<Menu
 			opened={opened}
 			onChange={openHandle.set}
-			trigger="click"
-			position="bottom"
+			trigger="hover"
+			position="bottom-start"
 			transitionProps={{
 				transition: "scale-y",
 			}}
@@ -173,49 +176,57 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 					</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown w={250}>
-				<Stack
-					flex={1}
+			<Menu.Dropdown w={225}>
+				<Group
+					gap="sm"
 					p="sm"
 				>
-					<Group>
+					<Text
+						fw={600}
+						c="bright"
+					>
+						Databases
+					</Text>
+					{isPending && <Loader size={14} />}
+					<Spacer />
+					<ActionButton
+						color="slate"
+						variant="light"
+						disabled={!connected || (level !== "root" && level !== "namespace")}
+						label="Create database"
+						onClick={openCreator}
+					>
+						<Icon path={iconPlus} />
+					</ActionButton>
+				</Group>
+				<Menu.Divider />
+				<ScrollArea.Autosize mah={350}>
+					{databases.length === 0 ? (
 						<Text
-							flex={1}
-							fw={600}
-							c="bright"
+							c="slate"
+							py="md"
+							ta="center"
 						>
-							Databases
+							No databases defined
 						</Text>
-						<ActionButton
-							color="slate"
-							variant="light"
-							disabled={!connected || (level !== "root" && level !== "namespace")}
-							label="Create database"
-							onClick={openCreator}
+					) : (
+						<Stack
+							gap="xs"
+							p="xs"
 						>
-							<Icon path={iconPlus} />
-						</ActionButton>
-					</Group>
-					<Divider />
-					<ScrollArea.Autosize mah={250}>
-						{databases.length === 0 ? (
-							<Text c="slate">No databases defined</Text>
-						) : (
-							<Stack gap="xs">
-								{databases.map((db) => (
-									<Database
-										key={db}
-										value={db}
-										activeNamespace={namespace}
-										activeDatabase={database}
-										onOpen={() => openDatabase(db)}
-										onRemove={openHandle.close}
-									/>
-								))}
-							</Stack>
-						)}
-					</ScrollArea.Autosize>
-				</Stack>
+							{databases.map((db) => (
+								<Database
+									key={db}
+									value={db}
+									activeNamespace={namespace}
+									activeDatabase={database}
+									onOpen={mutate}
+									onRemove={openHandle.close}
+								/>
+							))}
+						</Stack>
+					)}
+				</ScrollArea.Autosize>
 			</Menu.Dropdown>
 		</Menu>
 	);

@@ -1,5 +1,18 @@
-import classes from "./style.module.scss";
-
+import { historyField } from "@codemirror/commands";
+import { syntaxTree } from "@codemirror/language";
+import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
+import { type EditorView, keymap } from "@codemirror/view";
+import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
+import { surrealql } from "@surrealdb/codemirror";
+import { objectify, trim } from "radash";
+import { useMemo, useRef, useState } from "react";
+import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
+import { ActionButton } from "~/components/ActionButton";
+import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
+import { Icon } from "~/components/Icon";
+import { ContentPane } from "~/components/Pane";
+import { Spacer } from "~/components/Spacer";
+import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import {
 	runQueryKeymap,
 	surqlCustomFunctionCompletion,
@@ -8,7 +21,18 @@ import {
 	surqlTableCompletion,
 	surqlVariableCompletion,
 } from "~/editor";
-
+import { setEditorText } from "~/editor/helpers";
+import { useSetting } from "~/hooks/config";
+import { useConnection } from "~/hooks/connection";
+import { useDatabaseVersionLinter } from "~/hooks/editor";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { useInspector } from "~/providers/Inspector";
+import { useConfigStore } from "~/stores/config";
+import { useQueryStore } from "~/stores/query";
+import type { QueryTab } from "~/types";
+import { showErrorNotification, tryParseParams } from "~/util/helpers";
 import {
 	iconAutoFix,
 	iconChevronRight,
@@ -18,34 +42,10 @@ import {
 	iconText,
 	iconWarning,
 } from "~/util/icons";
-
-import { historyField } from "@codemirror/commands";
-import { syntaxTree } from "@codemirror/language";
-import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
-import { type EditorView, keymap } from "@codemirror/view";
-import { Group, HoverCard, ThemeIcon } from "@mantine/core";
-import { Text } from "@mantine/core";
-import { surrealql } from "@surrealdb/codemirror";
-import { objectify, trim } from "radash";
-import { useMemo, useRef } from "react";
-import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { ActionButton } from "~/components/ActionButton";
-import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
-import { ContentPane } from "~/components/Pane";
-import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
-import { setEditorText } from "~/editor/helpers";
-import { useConnection } from "~/hooks/connection";
-import { useDatabaseVersionLinter } from "~/hooks/editor";
-import { useConnectionAndView, useIntent } from "~/hooks/routing";
-import { useStable } from "~/hooks/stable";
-import { useInspector } from "~/providers/Inspector";
-import { useConfigStore } from "~/stores/config";
-import { useQueryStore } from "~/stores/query";
-import type { QueryTab } from "~/types";
-import { showError, tryParseParams } from "~/util/helpers";
+import { dispatchIntent } from "~/util/intents";
 import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
 import { readQuery, writeQuery } from "../QueryView/strategy";
+import classes from "./style.module.scss";
 
 const SERIALIZE = {
 	history: historyField,
@@ -78,6 +78,7 @@ export function QueryPane({
 	onSelectionChange,
 	onEditorMounted,
 }: QueryPaneProps) {
+	const isLight = useIsLight();
 	const { updateQueryTab, updateConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
@@ -86,6 +87,12 @@ export function QueryPane({
 	const surqlVersion = useDatabaseVersionLinter(editor);
 	const queryStateMap = useQueryStore((s) => s.queryState);
 	const saveTasks = useRef<Map<string, any>>(new Map());
+	const [executionHidden, setExecutionHidden] = useState(false);
+	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
+	const [showSelectionExecutionWarning] = useSetting(
+		"behavior",
+		"querySelectionExecutionWarning",
+	);
 
 	// Retrieve a cached editor state, or compute when missing
 	const queryState = useMemo(() => {
@@ -145,9 +152,9 @@ export function QueryPane({
 
 			setEditorText(editor, formatted);
 		} catch {
-			showError({
+			showErrorNotification({
 				title: "Failed to format",
-				subtitle: "Your query must be valid to format it",
+				content: "Your query must be valid to format it",
 			});
 		}
 	});
@@ -308,6 +315,64 @@ export function QueryPane({
 				className={classes.editor}
 				mb={-9}
 			/>
+			<Transition
+				transition="slide-up"
+				mounted={
+					showSelectionExecutionWarning &&
+					allowSelectionExecution &&
+					hasSelection &&
+					!executionHidden
+				}
+			>
+				{(style) => (
+					<Paper
+						p="xs"
+						pl="md"
+						variant="gradient"
+						bg={
+							isLight
+								? "var(--mantine-color-slate-1)"
+								: "var(--mantine-color-slate-6)"
+						}
+						withBorder={false}
+						style={{
+							...style,
+							position: "absolute",
+							bottom: rem(12),
+							left: rem(12),
+							right: rem(12),
+							zIndex: 1,
+						}}
+					>
+						<Group>
+							<Icon path={iconWarning} />
+							<Text>Only the highlighted selection will execute</Text>
+							<Spacer />
+							<Button
+								size="compact-sm"
+								variant="subtle"
+								color="violet"
+								onClick={() => setExecutionHidden(true)}
+							>
+								Hide Temporarily
+							</Button>
+							<Button
+								size="compact-sm"
+								variant="subtle"
+								color="violet"
+								onClick={() => {
+									dispatchIntent("open-settings", {
+										tab: "preferences",
+										section: "query-selection-execution",
+									});
+								}}
+							>
+								Configure
+							</Button>
+						</Group>
+					</Paper>
+				)}
+			</Transition>
 		</ContentPane>
 	);
 }

@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import { isDesktop } from "~/adapter";
 import {
 	DESIGNER_ALGORITHMS,
 	DESIGNER_DIRECTIONS,
@@ -13,9 +15,6 @@ import {
 	THEMES,
 	VIEW_PAGES,
 } from "~/constants";
-
-import { useMemo } from "react";
-import { isDesktop } from "~/adapter";
 import { Flags, type Listable, Selectable, type SurrealistConfig } from "~/types";
 import { useFeatureFlags } from "./feature-flags";
 import { optional } from "./helpers";
@@ -33,12 +32,14 @@ export type PreferenceController =
 	| FlagSetController<any, any>;
 
 export interface Preference {
+	id: string;
 	name: string;
 	description: string;
 	controller: PreferenceController;
 }
 
 export interface PreferenceSection {
+	id: string;
 	name: string;
 	preferences: Preference[];
 }
@@ -97,9 +98,11 @@ export function useComputedPreferences(): PreferenceSection[] {
 
 		if (isDesktop) {
 			sections.push({
+				id: "window",
 				name: "Window",
 				preferences: [
 					{
+						id: "always-on-top",
 						name: "Always on top",
 						description: "Keep the window above all other windows",
 						controller: new CheckboxController({
@@ -110,6 +113,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "window-scale",
 						name: "Window scale",
 						description: "The zoom level of the window",
 						controller: new SelectionController({
@@ -126,10 +130,12 @@ export function useComputedPreferences(): PreferenceSection[] {
 
 		sections.push(
 			{
+				id: "appearance",
 				name: "Appearance",
 				preferences: [
 					...optional(
 						themes && {
+							id: "theme",
 							name: "Theme",
 							description: "The color scheme of the application",
 							controller: new SelectionController({
@@ -143,6 +149,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 					),
 					...optional(
 						syntax_themes && {
+							id: "syntax-theme",
 							name: "Syntax theme",
 							description: "The color scheme of highlighted code",
 							controller: new SelectionController({
@@ -155,6 +162,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						},
 					),
 					{
+						id: "editor-scale",
 						name: "Editor scale",
 						description: "The zoom level of all code editors",
 						controller: new SelectionController({
@@ -168,9 +176,28 @@ export function useComputedPreferences(): PreferenceSection[] {
 				],
 			},
 			{
+				id: "behavior",
+				name: "Behavior",
+				preferences: [
+					{
+						id: "enter-confirms",
+						name: "Enter to confirm",
+						description: "Use enter to confirm actions in confirmation modals",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.behavior.enterConfirms,
+							writer: (config, value) => {
+								config.settings.behavior.enterConfirms = value;
+							},
+						}),
+					},
+				],
+			},
+			{
+				id: "connection",
 				name: "Connection",
 				preferences: [
 					{
+						id: "version-check-timeout",
 						name: "Version check timeout",
 						description: "The maximum time to wait for a version check",
 						controller: new NumberController({
@@ -181,6 +208,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "reconnect-interval",
 						name: "Reconnect interval",
 						description: "The time to wait before reconnecting",
 						controller: new NumberController({
@@ -193,9 +221,11 @@ export function useComputedPreferences(): PreferenceSection[] {
 				],
 			},
 			{
+				id: "editors",
 				name: "Editors",
 				preferences: [
 					{
+						id: "suggest-table-names",
 						name: "Suggest table names",
 						description: "Automatically suggest table names",
 						controller: new CheckboxController({
@@ -206,6 +236,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "suggest-param-names",
 						name: "Suggest param names",
 						description: "Automatically suggest variable names",
 						controller: new CheckboxController({
@@ -218,9 +249,11 @@ export function useComputedPreferences(): PreferenceSection[] {
 				],
 			},
 			{
+				id: "line-numbers",
 				name: "Line numbers",
 				preferences: [
 					{
+						id: "query-editor",
 						name: "Query editor",
 						description: "Show line numbers in the query view editor",
 						controller: new CheckboxController({
@@ -231,6 +264,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "record-inspector",
 						name: "Record inspector",
 						description: "Show line numbers in the record inspector",
 						controller: new CheckboxController({
@@ -241,6 +275,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "function-editor",
 						name: "Function editor",
 						description: "Show line numbers in the functions view editor",
 						controller: new CheckboxController({
@@ -253,9 +288,11 @@ export function useComputedPreferences(): PreferenceSection[] {
 				],
 			},
 			{
+				id: "sidebar",
 				name: "Sidebar",
 				preferences: [
 					{
+						id: "sidebar-appearance",
 						name: "Sidebar appearance",
 						description: "Control the appearance of the sidebar",
 						controller: new SelectionController({
@@ -268,6 +305,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 					},
 					...optional<Preference>(
 						sidebar_customization && {
+							id: "customize-sidebar-views",
 							name: "Customise sidebar views",
 							description: "Show or hide individual views in the sidebar",
 							controller: new FlagSetController({
@@ -290,9 +328,11 @@ export function useComputedPreferences(): PreferenceSection[] {
 				],
 			},
 			{
+				id: "query-view",
 				name: "Query view",
 				preferences: [
 					{
+						id: "default-result-mode",
 						name: "Default result mode",
 						description: "The default result view mode for new queries",
 						controller: new SelectionController({
@@ -304,16 +344,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
-						name: "Query validation",
-						description: "Validate queries for potential issues",
-						controller: new CheckboxController({
-							reader: (config) => config.settings.behavior.queryErrorChecker,
-							writer: (config, value) => {
-								config.settings.behavior.queryErrorChecker = value;
-							},
-						}),
-					},
-					{
+						id: "orientation",
 						name: "Orientation",
 						description: "The orientation of the query and result panels",
 						controller: new SelectionController({
@@ -325,6 +356,41 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "query-selection-execution",
+						name: "Execute selection",
+						description: "Executing only the selected portion of a query",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.behavior.querySelectionExecution,
+							writer: (config, value) => {
+								config.settings.behavior.querySelectionExecution = value;
+							},
+						}),
+					},
+					{
+						id: "query-selection-execution-warning",
+						name: "Execute selection warning",
+						description: "Display a warning when selecting a portion of a query",
+						controller: new CheckboxController({
+							reader: (config) =>
+								config.settings.behavior.querySelectionExecutionWarning,
+							writer: (config, value) => {
+								config.settings.behavior.querySelectionExecutionWarning = value;
+							},
+						}),
+					},
+					{
+						id: "query-validation",
+						name: "Query validation",
+						description: "Validate queries for potential issues",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.behavior.queryErrorChecker,
+							writer: (config, value) => {
+								config.settings.behavior.queryErrorChecker = value;
+							},
+						}),
+					},
+					{
+						id: "quick-query-closing",
 						name: "Quick query closing",
 						description: "Display query close buttons on hover",
 						controller: new CheckboxController({
@@ -337,9 +403,11 @@ export function useComputedPreferences(): PreferenceSection[] {
 				],
 			},
 			{
+				id: "designer-view",
 				name: "Designer view",
 				preferences: [
 					{
+						id: "default-line-style",
 						name: "Default line style",
 						description: "The default appearance of relations",
 						controller: new SelectionController({
@@ -351,6 +419,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "default-algorithm",
 						name: "Default algorithm",
 						description: "The default layout algorithm",
 						controller: new SelectionController({
@@ -362,6 +431,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "default-table-appearance",
 						name: "Default table appearance",
 						description: "The default appearance of tables",
 						controller: new SelectionController({
@@ -373,6 +443,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "default-layout-direction",
 						name: "Default layout direction",
 						description: "The default diagram direction",
 						controller: new SelectionController({
@@ -384,6 +455,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "default-record-link-visibility",
 						name: "Default record link visibility",
 						description: "The default visibility of record links",
 						controller: new SelectionController({
@@ -411,9 +483,11 @@ export function useComputedPreferences(): PreferenceSection[] {
 
 		if (cloud_endpoints === "custom") {
 			sections.push({
+				id: "cloud-endpoints",
 				name: "Cloud endpoints",
 				preferences: [
 					{
+						id: "auth-base",
 						name: "Auth base",
 						description: "The base URL for cloud authentication",
 						controller: new TextController({
@@ -425,6 +499,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "api-base",
 						name: "API base",
 						description: "The base URL for the cloud API",
 						controller: new TextController({
@@ -442,17 +517,19 @@ export function useComputedPreferences(): PreferenceSection[] {
 
 		if (gtm_debug) {
 			sections.push({
+				id: "gtm-debug",
 				name: "GTM Debug",
 				preferences: [
 					{
+						id: "gtm-origin",
 						name: "Origin",
 						description:
 							"What host to use for the origin. Origin is only overridden in the desktop app",
 						controller: new SelectionController({
 							options: [
-								{ label: "Production", value: "surrealist.app" },
-								{ label: "Beta", value: "beta.surrealist.app" },
-								{ label: "Development", value: "dev.surrealist.app" },
+								{ label: "Production", value: "app.surrealdb.com" },
+								{ label: "Beta", value: "beta-app.surrealdb.com" },
+								{ label: "Development", value: "dev-app.surrealdb.com" },
 							] as const,
 							reader: (config) => config.settings.gtm.origin,
 							writer: (config, value) => {
@@ -461,6 +538,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "gtm-debug-mode",
 						name: "Debug Mode",
 						description: "Enable debug mode for GTM requests",
 						controller: new CheckboxController({
@@ -471,6 +549,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "gtm-preview-header",
 						name: "X-Gtm-Server-Preview",
 						description:
 							"Header value can be obtained inside the GTM preview application",

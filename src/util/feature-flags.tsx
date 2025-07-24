@@ -4,7 +4,7 @@ import {
 	type TFeatureFlags,
 } from "@theopensource-company/feature-flags";
 import { featureFlagsHookFactory } from "@theopensource-company/feature-flags/react";
-import { environment, isProduction } from "./environment";
+import { environment } from "./environment";
 
 // How to manage feature flag schema:
 // https://github.com/theopensource-company/feature-flags?tab=readme-ov-file#writing-a-schema
@@ -30,10 +30,7 @@ export const schema = {
 	functions_view: {
 		options: [false, true],
 	},
-	models_view: {
-		options: [false, true, "force"],
-	},
-	sidekick_view: {
+	parameters_view: {
 		options: [false, true],
 	},
 	apidocs_view: {
@@ -62,7 +59,6 @@ export const schema = {
 	},
 	cloud_endpoints: {
 		options: ["production", "custom"],
-		readonly: isProduction,
 	},
 	cloud_access: {
 		options: [false, true],
@@ -79,7 +75,10 @@ export const schema = {
 	gtm_debug: {
 		options: [false, true],
 	},
-	network_access_caps: {
+	organization_archiving: {
+		options: [false, true],
+	},
+	sidekick_ai: {
 		options: [false, true],
 	},
 } satisfies FeatureFlagSchema;
@@ -96,8 +95,7 @@ export const featureFlags = new FeatureFlags({
 			designer_view: true,
 			auth_view: true,
 			functions_view: true,
-			models_view: "force",
-			sidekick_view: true,
+			parameters_view: true,
 			apidocs_view: true,
 			newsfeed: true,
 			highlight_tool: true,
@@ -107,7 +105,8 @@ export const featureFlags = new FeatureFlags({
 			syntax_themes: true,
 			sidebar_customization: true,
 			gtm_debug: false,
-			network_access_caps: false,
+			organization_archiving: true,
+			sidekick_ai: true,
 		},
 		preview: {
 			query_view: true,
@@ -116,8 +115,7 @@ export const featureFlags = new FeatureFlags({
 			designer_view: true,
 			auth_view: true,
 			functions_view: true,
-			models_view: true,
-			sidekick_view: true,
+			parameters_view: true,
 			apidocs_view: true,
 			changelog: "hidden",
 			cloud_enabled: true,
@@ -127,7 +125,7 @@ export const featureFlags = new FeatureFlags({
 			themes: true,
 			sidebar_customization: true,
 			gtm_debug: false,
-			network_access_caps: false,
+			sidekick_ai: true,
 		},
 		production: {
 			query_view: true,
@@ -136,8 +134,7 @@ export const featureFlags = new FeatureFlags({
 			designer_view: true,
 			auth_view: true,
 			functions_view: true,
-			models_view: true,
-			sidekick_view: true,
+			parameters_view: true,
 			apidocs_view: true,
 			database_version_check: true,
 			cloud_enabled: true,
@@ -146,7 +143,7 @@ export const featureFlags = new FeatureFlags({
 			newsfeed: true,
 			themes: true,
 			gtm_debug: false,
-			network_access_caps: false,
+			sidekick_ai: true,
 		},
 	},
 	overrides: (flag) => {
@@ -154,10 +151,6 @@ export const featureFlags = new FeatureFlags({
 
 		if (value) {
 			return JSON.parse(value);
-		}
-
-		if (flag === "cloud_enabled") {
-			return import.meta.env.VITE_SURREALIST_INSTANCE !== "true";
 		}
 	},
 });

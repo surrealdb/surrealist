@@ -1,12 +1,3 @@
-import {
-	type DocsArticleTopic,
-	type DocsSectionTopic,
-	type DocsTopic,
-	isGroup,
-	isLink,
-	isSection,
-} from "~/screens/surrealist/docs/types";
-
 import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
 import { type RefObject, useMemo } from "react";
 import { Icon } from "~/components/Icon";
@@ -17,6 +8,14 @@ import { DRIVERS } from "~/constants";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import {
+	type DocsArticleTopic,
+	type DocsSectionTopic,
+	type DocsTopic,
+	isGroup,
+	isLink,
+	isSection,
+} from "~/screens/surrealist/docs/types";
 import type { CodeLang } from "~/types";
 import { iconCheck, iconList } from "~/util/icons";
 

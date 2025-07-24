@@ -1,21 +1,11 @@
-import {
-	Box,
-	Button,
-	Center,
-	Divider,
-	Group,
-	Paper,
-	Skeleton,
-	Stack,
-	Text,
-	Tooltip,
-} from "@mantine/core";
+import { Box, Button, Center, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { formatDistance } from "date-fns";
-import { useCloudBackupsQuery } from "~/cloud/queries/backups";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
+import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance } from "~/types";
-import { iconChevronRight, iconHistory } from "~/util/icons";
+import { tagEvent } from "~/util/analytics";
+import { iconChevronRight, iconKeyboardShift } from "~/util/icons";
 
 export interface BackupsBlockProps {
 	instance: CloudInstance | undefined;
@@ -26,84 +16,88 @@ export interface BackupsBlockProps {
 
 export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: BackupsBlockProps) {
 	const latest = backups?.[0];
+	const canUpgrade = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 	const unavailable = instance?.type.category === "free";
+
+	const handleUpgrade = useStable(() => {
+		onUpgrade();
+
+		if (instance) {
+			tagEvent("cloud_instance_upgrade_click", {
+				instance: instance.id,
+				region: instance.region,
+				version: instance.version,
+				instance_type: instance.type.slug,
+				storage_size: instance.storage_size,
+				organisation: instance.organization_id,
+			});
+		}
+	});
 
 	return (
 		<Skeleton visible={isLoading}>
 			<Paper
-				gap={0}
+				p="xl"
+				gap={15}
 				component={Stack}
+				variant="gradient"
 				pos="relative"
-				mih={202}
+				mih={168}
 			>
-				<Group p="xl">
-					<Icon
-						path={iconHistory}
-						size="lg"
-					/>
-					<Text
-						c="bright"
-						fw={700}
-						fz="xl"
-					>
-						Backups
-					</Text>
-				</Group>
-
-				<Divider />
-
-				<Stack
-					p="xl"
-					gap="xl"
-					flex={1}
+				<Text
+					c="bright"
+					fw={700}
+					fz="xl"
 				>
-					{unavailable ? (
-						<>
-							<Text flex={1}>
-								Automated backups are not available for free instances. Upgrade this
-								instance to enable automatic backups.
+					Backups
+				</Text>
+				{unavailable ? (
+					<>
+						<Text flex={1}>
+							Automated backups are not available for free instances. Upgrade this
+							instance to enable automatic backups.
+						</Text>
+						{canUpgrade && (
+							<Button
+								size="xs"
+								rightSection={<Icon path={iconKeyboardShift} />}
+								variant="gradient"
+								onClick={handleUpgrade}
+							>
+								Upgrade now
+							</Button>
+						)}
+					</>
+				) : latest ? (
+					<>
+						<Box flex={1}>
+							<Text>Latest backup</Text>
+							<Text
+								c="bright"
+								fz="lg"
+								fw={600}
+							>
+								{formatDistance(latest.snapshot_started_at, new Date(), {
+									addSuffix: true,
+								})}
 							</Text>
+						</Box>
+						<Tooltip label="This functionality will be available soon">
 							<Button
 								size="xs"
 								rightSection={<Icon path={iconChevronRight} />}
 								variant="gradient"
-								onClick={onUpgrade}
+								disabled
 							>
-								Upgrade instance
+								View available backups
 							</Button>
-						</>
-					) : latest ? (
-						<>
-							<Box flex={1}>
-								<Text>Latest backup</Text>
-								<Text
-									c="bright"
-									fz="xl"
-									fw={600}
-								>
-									{formatDistance(latest.snapshot_started_at, new Date(), {
-										addSuffix: true,
-									})}
-								</Text>
-							</Box>
-
-							<Tooltip label="This functionality will be available soon">
-								<Button
-									size="xs"
-									rightSection={<Icon path={iconChevronRight} />}
-									variant="gradient"
-									disabled
-								>
-									View available backups
-								</Button>
-							</Tooltip>
-						</>
-					) : (
-						<Center flex={1}>
-							<Text c="slate">Waiting for next backup...</Text>
-						</Center>
-					)}
-				</Stack>
+						</Tooltip>
+					</>
+				) : (
+					<Center flex={1}>
+						<Text c="slate">Waiting for next backup...</Text>
+					</Center>
+				)}
 			</Paper>
 		</Skeleton>
 	);

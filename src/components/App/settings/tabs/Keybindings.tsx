@@ -1,5 +1,3 @@
-import equal from "fast-deep-equal";
-
 import {
 	Box,
 	Button,
@@ -12,8 +10,8 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-
 import { useInputState } from "@mantine/hooks";
+import equal from "fast-deep-equal";
 import { Fragment, useMemo, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -29,7 +27,6 @@ import {
 	useCommandKeybinds,
 	useCommandRegistry,
 } from "~/providers/Commands";
-import { displayBinding, formatBinding } from "~/providers/Commands/keybindings";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconEdit, iconPlus, iconSearch } from "~/util/icons";

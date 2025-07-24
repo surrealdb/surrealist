@@ -3,20 +3,66 @@ import { useCloudStore } from "~/stores/cloud";
 import { getSetting } from "./config";
 import { isPreview, isProduction } from "./environment";
 import { featureFlags } from "./feature-flags";
-import { CLIENT_KEY } from "./storage";
 
 let incrementalId = 1;
 
 export const HOSTNAME = isProduction
-	? "surrealist.app"
+	? "app.surrealdb.com"
 	: isPreview
-		? "beta.surrealist.app"
-		: "dev.surrealist.app";
+		? "beta-app.surrealdb.com"
+		: "dev-app.surrealdb.com";
+
+function generateGaCookieValue() {
+	const randomNumber = Math.floor(Math.random() * 2147483647);
+	const timestamp = Math.floor(Date.now() / 1000);
+	const clientId = `${randomNumber}.${timestamp}`;
+	return `GA1.1.${clientId}`;
+}
+
+function getCookie(name: string) {
+	const nameEQ = `${name}=`;
+	const ca = document.cookie.split(";");
+
+	for (let i = 0; i < ca.length; i++) {
+		let c = ca[i];
+		while (c.charAt(0) === " ") {
+			c = c.substring(1, c.length);
+		}
+
+		if (c.indexOf(nameEQ) === 0) {
+			return decodeURIComponent(c.substring(nameEQ.length, c.length));
+		}
+	}
+
+	return null;
+}
+
+function setCookie(name: string, value: string, days: number) {
+	let expires = "";
+	if (days) {
+		const date = new Date();
+		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+		expires = `; expires=${date.toUTCString()}`;
+	}
+	// biome-ignore lint/suspicious/noDocumentCookie: The Cookie Store API is not supported enough yet
+	document.cookie = `${name}=${value || ""}${expires}; path=/`;
+}
 
 /**
  * Track analytics events
  */
 export async function tagEvent(name: string, payload: Record<string, unknown> = {}) {
+	if (!adapter.isTelemetryEnabled || !isProduction) {
+		return;
+	}
+
+	let _ga = getCookie("_ga");
+
+	if (!_ga) {
+		_ga = generateGaCookieValue();
+		setCookie("_ga", _ga, 365);
+	}
+
 	const { gtm_debug } = featureFlags.store;
 	const debug_origin = getSetting("gtm", "origin");
 	const debug_mode = getSetting("gtm", "debug_mode");
@@ -25,16 +71,11 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	const params = new URLSearchParams();
 	const { profile, userId } = useCloudStore.getState();
 
-	let client = localStorage.getItem(CLIENT_KEY);
-
-	if (!client) {
-		client = Math.random().toString(36).substring(0, 16);
-		localStorage.setItem(CLIENT_KEY, client);
-	}
+	_ga = _ga.substring(6);
 
 	params.append("v", "2");
 	params.append("tid", import.meta.env.GTM_ID);
-	params.append("cid", client);
+	params.append("cid", _ga);
 	params.append("en", name);
 	params.append("dl", window.location.href);
 	params.append("dt", document.title);
@@ -61,7 +102,7 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 		params.append("ep.email", profile.username);
 	}
 
-	params.append("ep.utk", client);
+	params.append("ep.utk", _ga);
 
 	try {
 		await adapter.trackEvent(`https://${hostname}/data/event/${btoa(params.toString())}`);

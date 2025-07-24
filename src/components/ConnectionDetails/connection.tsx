@@ -2,7 +2,6 @@ import { ActionIcon, Box, Group, Popover, SimpleGrid, TextInput, Tooltip } from 
 import { useDisclosure } from "@mantine/hooks";
 import { Updater } from "use-immer";
 import { Connection } from "~/types";
-import { iconServer } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { Icon } from "../Icon";
 
@@ -14,6 +13,8 @@ export interface ConnectionNameDetailsProps {
 export function ConnectionNameDetails({ value, onChange }: ConnectionNameDetailsProps) {
 	const [showIcons, showIconsHandle] = useDisclosure();
 
+	const isCloud = value.authentication.mode === "cloud";
+
 	const updateIcon = (index: number) => {
 		showIconsHandle.close();
 
@@ -23,7 +24,10 @@ export function ConnectionNameDetails({ value, onChange }: ConnectionNameDetails
 	};
 
 	return (
-		<Group gap="md">
+		<Group
+			gap="md"
+			maw={500}
+		>
 			<Box>
 				<Popover
 					opened={showIcons}
@@ -67,7 +71,9 @@ export function ConnectionNameDetails({ value, onChange }: ConnectionNameDetails
 			<TextInput
 				flex={1}
 				placeholder="Connection name"
+				disabled={isCloud}
 				value={value.name}
+				autoFocus
 				onChange={(e) =>
 					onChange((draft) => {
 						draft.name = e.currentTarget.value;

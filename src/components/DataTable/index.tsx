@@ -1,11 +1,21 @@
-import { Box, type BoxProps, Group, Text } from "@mantine/core";
-import { ScrollArea, Table } from "@mantine/core";
+import {
+	Box,
+	type BoxProps,
+	Checkbox,
+	Group,
+	ScrollArea,
+	Table,
+	Text,
+	Tooltip,
+} from "@mantine/core";
+import clsx from "clsx";
 import { alphabetical, isObject } from "radash";
 import { type MouseEvent, useMemo } from "react";
+import { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
-import type { ColumnSort } from "~/types";
-import { iconChevronDown, iconChevronUp, iconWarning } from "~/util/icons";
+import type { ColumnSort, TableInfo } from "~/types";
+import { iconChevronDown, iconChevronUp, iconIndex, iconWarning } from "~/util/icons";
 import { Icon } from "../Icon";
 import { DataCell } from "./datatypes";
 import classes from "./style.module.scss";
@@ -16,9 +26,13 @@ function isRenderable(value: any) {
 
 interface DataTableProps extends BoxProps {
 	data: any;
+	schema?: TableInfo;
 	active?: string | null;
 	sorting?: ColumnSort | null;
 	headers?: string[];
+	selected?: Set<string>;
+	onSelectionChange?: (id: RecordId, isSelected: boolean) => void;
+	onSelectionChangeAll?: (values: RecordId[], isSelected: boolean) => void;
 	onSortingChange?: (order: ColumnSort | null) => void;
 	onRowContextMenu?: (event: MouseEvent, row: any) => void;
 }
@@ -28,9 +42,13 @@ export function DataTable(props: DataTableProps) {
 
 	const {
 		data,
+		schema,
 		active,
+		selected,
 		sorting,
 		headers,
+		onSelectionChange,
+		onSelectionChangeAll,
 		onSortingChange,
 		onRowContextMenu,
 		className,
@@ -99,32 +117,49 @@ export function DataTable(props: DataTableProps) {
 	}, [data, headers]);
 
 	const columnHeaders = useMemo(() => {
-		return keys.map((key) => (
-			<Box
-				key={key}
-				component="th"
-			>
-				<Text
-					span
-					fw={700}
-					onClick={() => handleSortClick(key)}
-					style={{
-						cursor: onSortingChange ? "pointer" : undefined,
-						userSelect: "none",
-						WebkitUserSelect: "none",
-					}}
-				>
-					{key}
-					{sorting?.[0] === key && (
-						<Icon
-							path={sorting[1] === "asc" ? iconChevronDown : iconChevronUp}
-							pos="absolute"
-						/>
-					)}
-				</Text>
-			</Box>
-		));
-	}, [keys, sorting, onSortingChange]);
+		return keys.map((key, _i) => {
+			const indexed = schema?.indexes.filter((index) => index.cols.includes(key));
+			const indexedName = indexed?.map((index) => index.name).join(", ");
+
+			return (
+				<Table.Th key={key}>
+					<Group
+						wrap="nowrap"
+						gap="xs"
+						style={{
+							cursor: "pointer",
+							userSelect: "none",
+							WebkitUserSelect: "none",
+						}}
+						onClick={() => handleSortClick(key)}
+					>
+						<Text
+							span
+							fw={700}
+						>
+							{key}
+						</Text>
+						{indexed && indexedName && (
+							<Tooltip label={`This column is indexed by ${indexedName}`}>
+								<div>
+									<Icon
+										path={iconIndex}
+										c="slate.3"
+									/>
+								</div>
+							</Tooltip>
+						)}
+						{sorting?.[0] === key && (
+							<Icon
+								path={sorting[1] === "asc" ? iconChevronDown : iconChevronUp}
+								c="slate.3"
+							/>
+						)}
+					</Group>
+				</Table.Th>
+			);
+		});
+	}, [keys, sorting, schema]);
 
 	const recordRows = useMemo(() => {
 		return values.map((value, i) => {
@@ -132,14 +167,14 @@ export function DataTable(props: DataTableProps) {
 				const cellValue = value[key];
 
 				return (
-					<Box
+					<Table.Td
 						key={j}
-						component="td"
-						className={classes.tableValue}
 						h={37}
+						className={classes.tableValue}
+						onClick={() => value.id && inspect(value.id)}
 					>
 						<DataCell value={cellValue} />
-					</Box>
+					</Table.Td>
 				);
 			});
 
@@ -149,17 +184,42 @@ export function DataTable(props: DataTableProps) {
 				<Box
 					key={i}
 					component="tr"
-					onClick={() => value.id && inspect(value.id)}
 					onContextMenu={(e) => onRowContextMenu?.(e, value)}
 					style={{
 						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
 					}}
 				>
+					{onSelectionChange && (
+						<Table.Td
+							h={37}
+							w={1}
+							style={{ whiteSpace: "nowrap" }}
+							className={classes.tableValue}
+						>
+							<Checkbox
+								size="xs"
+								checked={selected?.has((value.id as RecordId).toString())}
+								styles={{
+									input: {
+										cursor: "pointer",
+									},
+									root: {
+										width: 16,
+									},
+								}}
+								onChange={(e) => {
+									if (!value.id) return;
+
+									onSelectionChange(value.id, e.currentTarget.checked);
+								}}
+							/>
+						</Table.Td>
+					)}
 					{columns}
 				</Box>
 			);
 		});
-	}, [keys, values, active, inspect, onRowContextMenu]);
+	}, [keys, values, active, selected, inspect, onRowContextMenu, onSelectionChange]);
 
 	if (!isRenderable(data)) {
 		return <Text c="slate">Result could not be displayed as a table.</Text>;
@@ -167,15 +227,59 @@ export function DataTable(props: DataTableProps) {
 
 	return (
 		<ScrollArea
-			className={classes.root}
+			className={clsx(classes.root, className)}
+			styles={{
+				scrollbar: {
+					zIndex: 4,
+				},
+			}}
 			scrollbars="xy"
 			{...rest}
 		>
 			<Table className={classes.table}>
-				<thead>
-					<tr>{columnHeaders}</tr>
-				</thead>
-				<tbody>{recordRows}</tbody>
+				<Table.Thead
+					style={{
+						position: "sticky",
+					}}
+				>
+					<Table.Tr>
+						{onSelectionChangeAll && (
+							<Table.Th
+								w={1}
+								style={{ whiteSpace: "nowrap" }}
+							>
+								<Checkbox
+									size="xs"
+									styles={{
+										input: {
+											cursor: "pointer",
+										},
+										root: {
+											width: 16,
+										},
+									}}
+									indeterminate={
+										values.some((v) => selected?.has(v.id.toString())) &&
+										!values.every((v) =>
+											selected?.has((v.id as RecordId).toString()),
+										)
+									}
+									checked={values.some((v) =>
+										selected?.has((v.id as RecordId).toString()),
+									)}
+									onChange={(e) => {
+										onSelectionChangeAll(
+											values.map((v) => v.id),
+											e.currentTarget.checked,
+										);
+									}}
+								/>
+							</Table.Th>
+						)}
+						{columnHeaders}
+					</Table.Tr>
+				</Table.Thead>
+				<Table.Tbody>{recordRows}</Table.Tbody>
 			</Table>
 			{truncated && (
 				<Group

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
 import { fetchAPI } from "../api";
 
@@ -7,7 +8,7 @@ import { fetchAPI } from "../api";
  */
 export function useCloudReferralQuery() {
 	const authState = useCloudStore((state) => state.authState);
-	const username = useCloudStore((state) => state.profile.username);
+	const { username } = useCloudProfile();
 
 	return useQuery({
 		queryKey: ["cloud", "referral", username],
@@ -27,7 +28,7 @@ export function useCloudReferralQuery() {
  */
 export function useCloudReferralCodeQuery() {
 	const authState = useCloudStore((state) => state.authState);
-	const username = useCloudStore((state) => state.profile.username);
+	const { username } = useCloudProfile();
 
 	return useQuery({
 		queryKey: ["cloud", "referral-code", username],

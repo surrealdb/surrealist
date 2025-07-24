@@ -30,12 +30,17 @@ pre,
 code {
 	font-size: inherit;
 	background-color: var(--mantine-color-slate-7);
+	white-space: pre-wrap;
+	word-break: break-word;
+	overflow-x: auto;
+	max-width: 100%;
 
 	@include light {
 		background-color: var(--mantine-color-slate-0);
 	}
 }
 
-code {
-	font-size: var(--mantine-font-size-sm);
+a {
+	text-decoration: none;
+	;
 }

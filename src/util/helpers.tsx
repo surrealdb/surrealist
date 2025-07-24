@@ -1,13 +1,15 @@
-import { Text } from "@mantine/core";
-import { Stack } from "@mantine/core";
-import { showNotification } from "@mantine/notifications";
+import { Group, Stack, Text } from "@mantine/core";
+import { hideNotification, showNotification } from "@mantine/notifications";
 import { Value } from "@surrealdb/ql-wasm";
+import { DateArg, DurationUnit, startOfDay, startOfHour, startOfMinute } from "date-fns";
 import escapeRegex from "escape-string-regexp";
-import { uid } from "radash";
+import { shake, uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
 import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
+import { Spacer } from "~/components/Spacer";
 import type { Authentication, Protocol, Selectable } from "~/types";
+import { openErrorModal } from "./errors";
 
 export const TRUNCATE_STYLE: CSSProperties = {
 	whiteSpace: "nowrap",
@@ -23,6 +25,15 @@ export const Y_SLIDE_TRANSITION = {
 };
 
 export const DATE_TIME_FORMAT = "E MMM dd yyyy HH:mm";
+
+export const EMAIL_REGEX = /^.+@.+$/;
+
+export const CURRENCY_FORMAT = new Intl.NumberFormat("en-US", {
+	style: "currency",
+	currency: "USD",
+	currencyDisplay: "narrowSymbol",
+	maximumFractionDigits: 3,
+});
 
 export const ON_STOP_PROPAGATION = (e: SyntheticEvent<any>) => {
 	e.stopPropagation();
@@ -47,12 +58,53 @@ export const ON_FOCUS_SELECT = (e: FocusEvent<HTMLElement>) => {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showError(info: { title: ReactNode; subtitle: ReactNode }) {
-	showNotification({
-		color: "red",
-		title: info.title,
-		message: info.subtitle,
-	});
+export function showErrorNotification(info: {
+	title: ReactNode;
+	content: any;
+	additionalInfo?: { title: string; content: string }[];
+}) {
+	if (info.content instanceof Error) {
+		showNotification({
+			color: "red",
+			autoClose: false,
+			message: (
+				<Group
+					style={{
+						cursor: "pointer",
+					}}
+					onClick={() => {
+						openErrorModal(
+							info.title,
+							info.content.message,
+							info.content.cause,
+							info.content.stack,
+							info.additionalInfo,
+						);
+					}}
+				>
+					<Stack gap={0}>
+						<Text
+							fw={600}
+							c="bright"
+						>
+							{info.title}
+						</Text>
+						<Text>Click here for more details</Text>
+					</Stack>
+					<Spacer />
+				</Group>
+			),
+			onClick: (e) => {
+				hideNotification(e.currentTarget.id);
+			},
+		});
+	} else {
+		showNotification({
+			color: "red",
+			title: info.title,
+			message: info.content,
+		});
+	}
 }
 
 /**
@@ -437,12 +489,18 @@ export function __throw(error: Error | string): never {
 /**
  * Format the given memory amount in MB to a human readable string
  */
-export function formatMemory(amountInMB: number) {
-	if (amountInMB < 1024) {
+export function formatMemory(amountInMB: number, rounded = false) {
+	const factor = rounded ? 1000 : 1024;
+
+	if (amountInMB < factor) {
 		return `${Number.parseFloat(amountInMB.toFixed(2))} MB`;
 	}
 
-	return `${Number.parseFloat((amountInMB / 1024).toFixed(2))} GB`;
+	if (amountInMB < factor * factor) {
+		return `${Number.parseFloat((amountInMB / factor).toFixed(2))} GB`;
+	}
+
+	return `${Number.parseFloat((amountInMB / (factor * factor)).toFixed(2))} TB`;
 }
 
 /**
@@ -478,4 +536,37 @@ export function plural(count: number, singular: string, plural = `${singular}s`)
  */
 export function selectable(values: string[]): Selectable[] {
 	return values.map((value) => ({ value, label: value }));
+}
+
+/**
+ * Optionally append search parameters to the given URL
+ */
+export function withSearchParams(
+	url: string,
+	params: Record<string, string | undefined> | URLSearchParams,
+) {
+	const search = params instanceof URLSearchParams ? params : new URLSearchParams(shake(params));
+	const value = search.toString();
+
+	if (value) {
+		return `${url}?${value}`;
+	}
+
+	return url;
+}
+
+/**
+ * Returns the start of the given date at the specified resolution.
+ */
+export function startOfDate(date: DateArg<Date>, resolution: DurationUnit): Date {
+	switch (resolution) {
+		case "minutes":
+			return startOfMinute(date);
+		case "hours":
+			return startOfHour(date);
+		case "days":
+			return startOfDay(date);
+		default:
+			throw new Error(`Unsupported resolution: ${resolution}`);
+	}
 }

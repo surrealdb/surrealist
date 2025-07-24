@@ -1,5 +1,6 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
-import type { AnyAuth, Duration, Token } from "surrealdb";
+import { AboutMetadata } from "@tauri-apps/api/menu";
+import type { AnyAuth, Duration, RecordId, Token } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
@@ -18,6 +19,7 @@ export type DiagramHoverFocus = "default" | "none" | "neighbours" | "chain" | "r
 export type DriverType = "file" | "surrealkv" | "memory" | "tikv";
 export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
+export type MetricsDuration = "hour" | "half" | "day" | "week" | "month";
 export type MiniAppearance = "normal" | "compact" | "plain";
 export type Orientation = "horizontal" | "vertical";
 export type Platform = "darwin" | "windows" | "linux";
@@ -27,14 +29,20 @@ export type ResultMode = "table" | "single" | "combined" | "graph" | "live";
 export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 export type SchemaMode = "schemaless" | "schemafull";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
+export type StorageCategory = "standard" | "advanced";
+export type InstancePlan = "free" | "start" | "scale" | "enterprise";
 export type SourceMode = "schema" | "infer";
 export type SyntaxTheme = "default" | "vivid";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
+export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
-
 export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+export type MonitorType = "metrics" | "logs";
+export type MonitorSeverity = "info" | "warning" | "error";
+export type FunctionType = "function" | "model";
+
 export type InstanceState =
 	| "creating"
 	| "updating"
@@ -54,26 +62,46 @@ export type AuthMode =
 	| "cloud";
 export type GlobalPage =
 	| "/overview"
-	| "/cloud"
-	| "/billing"
-	| "/chat"
+	| "/signin"
+	| "/organisations"
 	| "/support"
 	| "/referrals"
-	| "/mini/new"
-	| "/create/connection"
-	| "/create/organization"
-	| "/create/instance";
+	| "/mini/new";
 export type ViewPage =
 	| "dashboard"
+	| "monitor"
 	| "query"
 	| "explorer"
 	| "graphql"
 	| "designer"
 	| "authentication"
 	| "functions"
-	| "models"
-	| "sidekick"
+	| "parameters"
 	| "documentation";
+
+export type AppMenuItemType =
+	| "Separator"
+	| "Copy"
+	| "Cut"
+	| "Paste"
+	| "SelectAll"
+	| "Undo"
+	| "Redo"
+	| "Minimize"
+	| "Maximize"
+	| "Fullscreen"
+	| "Hide"
+	| "HideOthers"
+	| "ShowAll"
+	| "CloseWindow"
+	| "Quit"
+	| "Services"
+	| "Command"
+	| "Custom"
+	| {
+			About: AboutMetadata | null;
+	  };
+
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";
 
 export type OpenFn = (id: string | null) => void;
@@ -113,6 +141,7 @@ export interface Connection {
 	name: string;
 	icon: number;
 	labels?: string[];
+	instance?: boolean;
 	lastNamespace: string;
 	lastDatabase: string;
 	queries: QueryTab[];
@@ -150,6 +179,9 @@ export interface SurrealistBehaviorSettings {
 	tableSuggest: boolean;
 	variableSuggest: boolean;
 	queryErrorChecker: boolean;
+	enterConfirms: boolean;
+	querySelectionExecution: boolean;
+	querySelectionExecutionWarning: boolean;
 	windowPinned: boolean;
 	docsLanguage: CodeLang;
 	versionCheckTimeout: number;
@@ -203,7 +235,7 @@ export interface SurrealistCloudSettings {
 
 export interface SurrealistGtmSettings {
 	preview_header: string;
-	origin: "surrealist.app" | "beta.surrealist.app" | "dev.surrealist.app";
+	origin: "app.surrealdb.com" | "beta-app.surrealdb.com" | "dev-app.surrealdb.com";
 	debug_mode: boolean;
 }
 
@@ -320,6 +352,7 @@ export interface DatabaseSchema {
 	accesses: SchemaAccess[];
 	tables: TableInfo[];
 	users: SchemaUser[];
+	params: SchemaParameter[];
 }
 
 export interface SchemaTable {
@@ -389,6 +422,13 @@ export interface SchemaAccess {
 		  };
 }
 
+export interface SchemaParameter {
+	name: string;
+	permissions: boolean | string;
+	value: string;
+	comment?: string;
+}
+
 export interface SchemaFunction {
 	name: string;
 	block: string;
@@ -404,6 +444,11 @@ export interface SchemaModel {
 	version: string;
 	permission: boolean | string;
 	comment: string;
+}
+
+export interface FunctionDetails {
+	type: FunctionType;
+	details: SchemaFunction | SchemaModel;
 }
 
 export interface TableInfo {
@@ -435,12 +480,12 @@ export interface SchemaInfoNS {
 
 export interface SchemaInfoDB {
 	functions: SchemaFunction[];
+	params: SchemaParameter[];
 	models: SchemaModel[];
 	accesses: SchemaAccess[];
 	tables: SchemaTable[];
 	users: SchemaUser[];
 	analyzers: any[]; // unused
-	params: any[]; // unused
 }
 
 export interface SchemaInfoTB {
@@ -469,7 +514,12 @@ export interface GlobalPageInfo {
 	id: GlobalPage;
 	name: string;
 	icon: string;
-	anim?: any;
+	aliases?: string[];
+	disabled?: (condition: GlobalCondition) => boolean;
+}
+
+export interface GlobalCondition {
+	flags: FeatureFlagMap;
 }
 
 export interface ViewPageInfo {
@@ -498,6 +548,28 @@ export interface Driver {
 	link: string;
 }
 
+export interface SidekickChatMessage {
+	id: RecordId | null;
+	sent_at: Date;
+	content: string;
+	role: "user" | "assistant";
+	sources?: {
+		header: string;
+		links: {
+			url: string;
+			title: string;
+			img_url: string | null;
+		}[];
+	};
+}
+
+export interface SidekickChat {
+	id: RecordId;
+	author: string;
+	title: string;
+	last_activity: Date;
+}
+
 export interface CloudSignin {
 	id: string;
 	token: string;
@@ -508,8 +580,10 @@ export interface CloudSignin {
 export interface CloudProfile {
 	username: string;
 	name: string;
+	default_org: string;
 	picture?: string;
 	user_hmac?: string;
+	enabled_features: string[];
 }
 
 export interface CloudInstance {
@@ -518,6 +592,7 @@ export interface CloudInstance {
 	host: string;
 	region: string;
 	version: string;
+	organization_id: string;
 	available_versions: string[];
 	compute_units: number;
 	storage_size: number;
@@ -527,6 +602,7 @@ export interface CloudInstance {
 	capabilities: CloudInstanceCapabilities;
 	state: InstanceState;
 	type: CloudInstanceType;
+	distributed_storage_specs?: CloudDistributedStorageSpecs;
 }
 
 export interface CloudInstanceCapabilities {
@@ -547,8 +623,15 @@ export interface CloudInstanceCapabilities {
 	denied_arbitrary_query: string[];
 }
 
+export interface CloudDistributedStorageSpecs {
+	category: StorageCategory;
+	autoscaling: boolean;
+	max_compute_units: number;
+}
+
 export interface CloudInstanceType {
 	slug: string;
+	restricted?: boolean;
 	display_name: string;
 	description: string;
 	cpu: number;
@@ -586,6 +669,8 @@ export interface CloudOrganization {
 	payment_info: boolean;
 	plan: CloudPlan;
 	available_plans: CloudPlan[];
+	archived_at?: string;
+	member_count: number;
 }
 
 export interface CloudBanner {
@@ -629,22 +714,6 @@ export interface CloudBillingCountry {
 	code: string;
 }
 
-export interface CloudChatMessage {
-	id: string;
-	content: string;
-	sender: "user" | "assistant";
-	loading: boolean;
-	thinking: string;
-	sources?: {
-		header: string;
-		links: {
-			url: string;
-			title: string;
-			img_url: string;
-		}[];
-	};
-}
-
 export interface CloudMeasurement {
 	instance_id: string;
 	instance_type?: string;
@@ -660,8 +729,34 @@ export interface CloudMeasurement {
 	source?: string;
 }
 
+export interface CloudMetrics {
+	metric: string;
+	from_time: string;
+	to_time: string;
+	unit: string;
+	values: {
+		timestamps: string[];
+		metrics: {
+			labels: string;
+			values: (number | null)[];
+		}[];
+	};
+}
+
+export interface CloudLogLine {
+	timestamp: string;
+	pod: string;
+	level: string;
+	message: string;
+}
+
+export interface CloudLogs {
+	from_time: string;
+	to_time: string;
+	log_lines: CloudLogLine[];
+}
+
 export interface CloudCoupon {
-	id: string;
 	name: string;
 	amount: number;
 	amount_remaining: number;
@@ -671,4 +766,82 @@ export interface CloudCoupon {
 export interface CloudBackup {
 	snapshot_started_at: string;
 	snapshot_id: string;
+}
+
+export interface CloudMember {
+	user_id: string;
+	organization_id: string;
+	role: string;
+	name: string;
+	username: string;
+	profile_picture: string;
+}
+
+export interface CloudInvitation {
+	organization_id: string;
+	code: string;
+	role: string;
+	email: string;
+	status: string;
+}
+
+export interface CloudRole {
+	name: string;
+	permissions: {
+		resource: string;
+		action: string;
+	}[];
+}
+
+export interface CloudDeployConfig {
+	name: string;
+	version: string;
+	region: string;
+	type: string;
+	units: number;
+	plan: InstancePlan;
+	storageCategory: StorageCategory;
+	storageAmount: number;
+	dataset: boolean;
+}
+
+export interface AppMenu {
+	id: string;
+	name: string;
+	disabled?: boolean;
+	items: AppMenuItem[];
+}
+
+export interface AppMenuItem {
+	id: string;
+	type: AppMenuItemType;
+	name?: string;
+	data?: any;
+	disabled?: boolean;
+	binding?: string[];
+	action?: () => void;
+}
+
+export interface ObserverMetric {
+	id: string;
+	name: string;
+}
+
+export interface ObserverMetricCollection {
+	id: string;
+	name: string;
+	icon: string;
+	metrics: ObserverMetric[];
+}
+
+export interface ObserverLogFeed {
+	id: string;
+	name: string;
+	icon: string;
+}
+
+export interface Monitor {
+	id: string;
+	type: MonitorType;
+	name: string;
 }

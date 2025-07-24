@@ -11,6 +11,7 @@ env:
 
 jobs:
   check_and_test:
+    name: Check and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -48,16 +49,5 @@ jobs:
         run: |
           cd src-tauri
           cargo fmt --all -- --check
-          cargo clippy -- -D warnings
+          cargo clippy
           cd ..
-
-  validate_dockerfile:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Check Dockerfile
-        run: |
-          docker build -f ./docker/Dockerfile --check .

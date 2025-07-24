@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	type BoxProps,
 	Divider,
@@ -7,21 +5,18 @@ import {
 	Group,
 	Image,
 	ScrollArea,
-	Space,
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
-
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
 import iconUrl from "~/assets/images/icon.webp";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
-import { GLOBAL_PAGES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useAvailableViews } from "~/hooks/connection";
+import { useAvailablePages, useAvailableViews } from "~/hooks/connection";
 import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -31,24 +26,25 @@ import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
 import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
+import classes from "./style.module.scss";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
-	["/overview"],
-	["/chat", "/mini/new"],
-	["/billing", "/referrals", "/support"],
+	["/overview", "/organisations"],
+	["/mini/new"],
+	["/referrals", "/support"],
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
-	["dashboard"],
+	["dashboard", "monitor"],
 	["query", "explorer", "graphql"],
-	["designer", "authentication", "functions", "models"],
-	["sidekick", "documentation"],
+	["designer", "authentication", "parameters", "functions"],
+	["documentation"],
 ];
 
 interface NavigationItem {
 	name: string;
 	icon: string;
-	match: string;
+	match: string[];
 	navigate: () => void;
 }
 
@@ -64,6 +60,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const navigateConnection = useConnectionNavigator();
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
+	const pages = useAvailablePages();
 	const views = useAvailableViews();
 
 	const { setOverlaySidebar } = useInterfaceStore.getState();
@@ -77,20 +74,24 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const globalNavigation: NavigationItem[][] = useMemo(() => {
 		return GLOBAL_NAVIGATION.flatMap((row) => {
 			const items = row.flatMap((id) => {
-				const info = GLOBAL_PAGES[id];
+				const info = pages[id];
+
+				if (!info) {
+					return [];
+				}
 
 				return {
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
-					match: info.id,
+					match: [info.id, ...(info.aliases || [])],
 					navigate: () => setLocation(info.id),
 				};
 			});
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, []);
+	}, [pages]);
 
 	const viewNavigation: NavigationItem[][] = useMemo(() => {
 		if (!connection) {
@@ -109,7 +110,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					id: info.id,
 					name: info.name,
 					icon: info.icon,
-					match: `/c/*/${info.id}`,
+					match: [`/c/*/${info.id}`],
 					disabled: !connection,
 					navigate: () => {
 						hoverSidebarHandle.close();
@@ -152,12 +153,10 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 			{...other}
 		>
 			<Flex
+				className={classes.sidebarInner}
 				direction="column"
-				h="100%"
 				px={16}
-				pt={22}
 			>
-				<Space h="var(--titlebar-offset)" />
 				<UnstyledButton
 					onClick={() => {
 						setLocation("/overview");
@@ -192,7 +191,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					{connection && (
 						<>
 							<NavigationIcon
-								name="Back to overview"
+								name="Overview"
 								icon={iconArrowLeft}
 								onClick={() => setLocation("/overview")}
 								onMouseEnter={hoverSidebarHandle.open}
@@ -212,8 +211,8 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 								>
 									<NavigationIcon
 										name={info.name}
-										path={info.match}
 										icon={info.icon}
+										match={info.match}
 										onClick={info.navigate}
 										onMouseEnter={hoverSidebarHandle.open}
 										withTooltip={sidebarMode === "compact"}

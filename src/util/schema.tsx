@@ -1,5 +1,9 @@
 import equal from "fast-deep-equal";
-
+import { klona } from "klona";
+import { escapeIdent } from "surrealdb";
+import { adapter } from "~/adapter";
+import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
+import { useDatabaseStore } from "~/stores/database";
 import type {
 	SchemaFunction,
 	SchemaInfoDB,
@@ -7,24 +11,19 @@ import type {
 	SchemaInfoNS,
 	SchemaInfoTB,
 	SchemaModel,
+	SchemaParameter,
 	TableInfo,
+	TableVariant,
 } from "~/types";
-
-import { klona } from "klona";
-import { escapeIdent } from "surrealdb";
-import { adapter } from "~/adapter";
-import {
-	executeQuery,
-	executeQueryFirst,
-	executeQuerySingle,
-} from "~/screens/surrealist/connection/connection";
-import { useDatabaseStore } from "~/stores/database";
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";
 import { getStatementCount } from "./surrealql";
 
 export interface SchemaSyncOptions {
 	tables?: string[];
+	clearRoot?: boolean;
+	clearNamespace?: boolean;
+	clearDatabase?: boolean;
 }
 
 /**
@@ -33,13 +32,23 @@ export interface SchemaSyncOptions {
  * @param options Sync options
  */
 export async function syncConnectionSchema(options?: SchemaSyncOptions) {
-	const { currentState } = useDatabaseStore.getState();
+	const { currentState, connectionSchema, setDatabaseSchema } = useDatabaseStore.getState();
+	const { tables: onlyTables, clearRoot, clearNamespace, clearDatabase } = options ?? {};
+
+	if (clearRoot || clearNamespace || clearDatabase) {
+		const reset = createConnectionSchema();
+
+		setDatabaseSchema({
+			root: clearRoot ? reset.root : connectionSchema.root,
+			namespace: clearNamespace ? reset.namespace : connectionSchema.namespace,
+			database: clearDatabase ? reset.database : connectionSchema.database,
+		});
+	}
 
 	if (currentState !== "connected") {
 		return;
 	}
 
-	const { connectionSchema, setDatabaseSchema } = useDatabaseStore.getState();
 	const schema = createConnectionSchema();
 
 	adapter.log("Schema", "Synchronizing database schema");
@@ -71,11 +80,12 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 	}
 
 	if (dbInfoTask.status === "fulfilled") {
-		const { accesses, models, users, functions, tables } = dbInfoTask.value;
+		const { accesses, models, users, functions, tables, params } = dbInfoTask.value;
 
 		schema.database.accesses = accesses ?? [];
 		schema.database.models = models;
 		schema.database.users = users;
+		schema.database.params = params;
 
 		// TODO Trim access queries
 
@@ -95,8 +105,8 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 		}));
 
 		// Tables
-		const isLimited = Array.isArray(options?.tables);
-		const tablesToSync = isLimited ? (options.tables as string[]) : tables.map((t) => t.name);
+		const isLimited = Array.isArray(onlyTables);
+		const tablesToSync = isLimited ? onlyTables : tables.map((t) => t.name);
 
 		const tbInfoMap = await executeQuery(
 			tablesToSync
@@ -159,18 +169,39 @@ export function buildFunctionDefinition(func: SchemaFunction): string {
 
 	let query = `DEFINE FUNCTION OVERWRITE fn::${func.name}(${args})`;
 
-	if (func.returns) {
+	if (func.returns !== undefined) {
 		query += ` -> ${func.returns}`;
 	}
 
 	query += ` {\n${block}\n}`;
 
-	if (func.permissions) {
+	if (func.permissions !== undefined) {
 		query += ` PERMISSIONS ${displaySchemaPermission(func.permissions)}`;
 	}
 
-	if (func.comment) {
+	if (func.comment !== undefined) {
 		query += ` COMMENT "${func.comment}"`;
+	}
+
+	return query;
+}
+
+/**
+ * Build a parameter definition query
+ */
+export function buildParameterDefinition(param: SchemaParameter): string {
+	let query = `DEFINE PARAM OVERWRITE $${param.name}`;
+
+	if (param.permissions !== undefined) {
+		query += ` PERMISSIONS ${displaySchemaPermission(param.permissions)}`;
+	}
+
+	if (param.comment !== undefined) {
+		query += ` COMMENT "${param.comment}"`;
+	}
+
+	if (param.value !== undefined) {
+		query += ` VALUE ${param.value}`;
 	}
 
 	return query;
@@ -194,15 +225,14 @@ export function buildModelDefinition(func: SchemaModel): string {
 }
 
 /**
- * Returns true if the table is an edge table
- *
- * @param table The table to check
- * @returns True if the table is an edge table
+ * Returns the variant of a given table
  */
-export function extractEdgeRecords(table: TableInfo): [boolean, string[], string[]] {
-	const { kind } = table.schema;
+export function getTableVariant(table: TableInfo): TableVariant {
+	if (table.schema.view) {
+		return "view";
+	}
 
-	return [kind.kind === "RELATION", kind.in || [], kind.out || []];
+	return table.schema.kind.kind === "RELATION" ? "relation" : "normal";
 }
 
 /**
@@ -211,8 +241,10 @@ export function extractEdgeRecords(table: TableInfo): [boolean, string[], string
  * @param table The table to check
  * @returns True if the table is an edge table
  */
-export function isEdgeTable(table: TableInfo) {
-	return extractEdgeRecords(table)[0];
+export function extractEdgeRecords(table: TableInfo): [string[], string[]] {
+	const { kind } = table.schema;
+
+	return [kind.in || [], kind.out || []];
 }
 
 /**
@@ -231,7 +263,7 @@ export function displaySchemaPermission(permission: string | boolean) {
 export function readBlock(block: string | undefined) {
 	const hasBraces = block?.at(0) === "{" && block?.at(-1) === "}";
 	const hasParen = block?.at(0) === "(" && block?.at(-1) === ")";
-	const trimmed = hasBraces || hasParen ? block.slice(1, -1) : block ?? "";
+	const trimmed = hasBraces || hasParen ? block.slice(1, -1) : (block ?? "");
 
 	return dedent(trimmed);
 }

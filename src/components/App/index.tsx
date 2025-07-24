@@ -13,11 +13,12 @@ import { ConsoleDrawer } from "./modals/console";
 import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
 import { DocumentationModal } from "./modals/documentation";
-import { DownloadModal } from "./modals/download";
+import { FailedConnectDialog } from "./modals/failed-connect";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
+import { SidekickDrawer } from "./modals/sidekick";
 import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
 import { UpdaterDialog } from "./modals/updater";
@@ -46,7 +47,6 @@ export function App() {
 			<CommandPaletteModal />
 			<DocumentationModal />
 			<ChangelogModal />
-			<DownloadModal />
 			<SandboxModal />
 			<AccessSignupModal />
 			<TableCreatorModal />
@@ -56,8 +56,10 @@ export function App() {
 			<RegisterUserModal />
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
+			<SidekickDrawer />
 			<CloudExpiredDialog />
 			<CloudUpdateRequiredDialog />
+			<FailedConnectDialog />
 
 			{isDesktop && <UpdaterDialog />}
 		</Scaffold>

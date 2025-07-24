@@ -1,5 +1,4 @@
-import { Accordion, Group } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Accordion, Group, Text } from "@mantine/core";
 import { default as equals } from "fast-deep-equal";
 import { objectify } from "radash";
 import { escapeIdent } from "surrealdb";
@@ -166,7 +165,7 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 
 	for (const index of previous.indexes) {
 		if (!indexIndex[index.name]) {
-			queries.push(`REMOVE INDEX ${index.name} ON TABLE ${escapeIdent(name)}`);
+			queries.push(`REMOVE INDEX ${escapeIdent(index.name)} ON TABLE ${escapeIdent(name)}`);
 		}
 	}
 
@@ -177,14 +176,14 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 			query += " OVERWRITE";
 		}
 
-		query += ` ${index.name} ON TABLE ${escapeIdent(name)} FIELDS ${index.cols} ${index.index}`;
+		query += ` ${escapeIdent(index.name)} ON TABLE ${escapeIdent(name)} FIELDS ${index.cols} ${index.index}`;
 
 		queries.push(query);
 	}
 
 	for (const event of previous.events) {
 		if (!eventIndex[event.name]) {
-			queries.push(`REMOVE EVENT ${event.name} ON TABLE ${escapeIdent(name)}`);
+			queries.push(`REMOVE EVENT ${escapeIdent(event.name)} ON TABLE ${escapeIdent(name)}`);
 		}
 	}
 
@@ -195,7 +194,7 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 			query += " OVERWRITE";
 		}
 
-		query += ` ${event.name} ON TABLE ${escapeIdent(name)} WHEN ${event.when} THEN ${event.then.map((th) => `{${th}}`).join(", ")}`;
+		query += ` ${escapeIdent(event.name)} ON TABLE ${escapeIdent(name)} WHEN ${event.when} THEN ${event.then.map((th) => `{${th}}`).join(", ")}`;
 
 		queries.push(query);
 	}

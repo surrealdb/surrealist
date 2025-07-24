@@ -6,7 +6,7 @@ import { surqlRecordLinks } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import { useResultFormatter } from "~/hooks/surrealql";
 import { useInspector } from "~/providers/Inspector";
-import { type PreviewProps, attemptFormat } from ".";
+import { attemptFormat, type PreviewProps } from ".";
 
 export function IndividualPreview({ responses, selected }: PreviewProps) {
 	const [format] = useResultFormatter();

@@ -1,0 +1,8 @@
+.link {
+	color: var(--mantine-color-text);
+	transition: color 0.1s ease-in-out;
+
+	&:hover {
+		color: var(--mantine-color-surreal-text);
+	}
+}

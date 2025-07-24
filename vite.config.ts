@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
-import { type PluginOption, defineConfig } from "vite";
+import { defineConfig, type PluginOption } from "vite";
 import { compression } from "vite-plugin-compression2";
 import { ViteImageOptimizer as images } from "vite-plugin-image-optimizer";
 import { Mode, plugin as markdown } from "vite-plugin-markdown";
@@ -11,7 +11,7 @@ import { surreal, version } from "./package.json";
 
 const isTauri = !!process.env.TAURI_ENV_PLATFORM;
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
-const isInstance = process.env.VITE_SURREALIST_INSTANCE === "true";
+const isDocker = process.env.VITE_SURREALIST_DOCKER === "true";
 
 const ENTRYPOINTS = {
 	surrealist: "/index.html",
@@ -63,9 +63,9 @@ export default defineConfig(({ mode }) => {
 		plugins.push(
 			compression({
 				deleteOriginalAssets: true,
-				threshold: isInstance ? 100 : undefined,
-				filename: isInstance ? undefined : (id) => id,
-				include: isInstance
+				threshold: isDocker ? 100 : undefined,
+				filename: isDocker ? undefined : (id) => id,
+				include: isDocker
 					? /assets\/.+\.(html|xml|css|json|js|mjs|svg|wasm)$/
 					: /\.(wasm)$/,
 			}),

@@ -1,17 +1,4 @@
-import classes from "./style.module.scss";
-
-import {
-	ActionIcon,
-	Badge,
-	Box,
-	Group,
-	Menu,
-	ScrollArea,
-	Stack,
-	Text,
-	Tooltip,
-} from "@mantine/core";
-
+import { ActionIcon, Badge, Box, Group, Menu, ScrollArea, Stack, Text } from "@mantine/core";
 import { capitalize } from "radash";
 import { type ReactNode, useState } from "react";
 import { escapeIdent } from "surrealdb";
@@ -36,6 +23,7 @@ import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { AccessEditorModal } from "./models/access";
 import { UserEditorModal } from "./models/users";
+import classes from "./style.module.scss";
 
 interface DisabledState {
 	message: string;
@@ -83,6 +71,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 	const removeUser = useConfirmation<SchemaUser>({
 		title: "Remove system user",
 		message: `This will remove the user from ${level.toLocaleLowerCase()} authentication and reject any future sign-in attempts. Are you sure?`,
+		skippable: true,
 		onConfirm: async (value) => {
 			await executeQuery(`REMOVE USER ${escapeIdent(value.name)} ON ${level}`);
 			await syncConnectionSchema();
@@ -92,6 +81,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 	const removeAccess = useConfirmation<SchemaAccess>({
 		title: "Remove access method",
 		message: `This will remove the access method from ${level.toLocaleLowerCase()} authentication and prevent any future sign-in attempts using this method. Are you sure?`,
+		skippable: true,
 		onConfirm: async (value) => {
 			await executeQuery(`REMOVE ACCESS ${escapeIdent(value.name)} ON ${level}`);
 			await syncConnectionSchema();
@@ -293,7 +283,6 @@ function AuthList<T extends { name: string }>({
 	icon,
 	color,
 	onEdit,
-	onRemove,
 	onOptions,
 	onDetails,
 }: AuthListProps<T>) {

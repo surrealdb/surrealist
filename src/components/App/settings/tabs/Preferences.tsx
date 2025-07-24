@@ -1,14 +1,4 @@
-import {
-	Box,
-	Divider,
-	Flex,
-	Group,
-	Paper,
-	ScrollArea,
-	Stack,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { Box, Divider, Flex, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Fragment, useMemo } from "react";
 import { Icon } from "~/components/Icon";
@@ -16,12 +6,7 @@ import { PreferenceInput } from "~/components/Inputs/preference";
 import { Spacer } from "~/components/Spacer";
 import { fuzzyMatch } from "~/util/helpers";
 import { iconSearch } from "~/util/icons";
-import {
-	FlagSetController,
-	Preference,
-	PreferenceController,
-	useComputedPreferences,
-} from "~/util/preferences";
+import { FlagSetController, Preference, useComputedPreferences } from "~/util/preferences";
 
 function isTallInput(preference: Preference) {
 	return preference.controller instanceof FlagSetController;
@@ -85,7 +70,10 @@ export function PreferencesTab() {
 					</Text>
 				)}
 				{sections.map((section, i) => (
-					<Box key={i}>
+					<Box
+						key={i}
+						id={section.id}
+					>
 						<Text
 							fw={600}
 							fz={20}
@@ -103,6 +91,7 @@ export function PreferencesTab() {
 								return (
 									<Fragment key={j}>
 										<Flex
+											id={preference.id}
 											align={isTall ? "strech" : "center"}
 											direction={isTall ? "column" : "row"}
 											w="100%"

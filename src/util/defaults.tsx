@@ -41,6 +41,9 @@ export function createBaseSettings(): SurrealistSettings {
 			tableSuggest: true,
 			variableSuggest: true,
 			queryErrorChecker: true,
+			enterConfirms: false,
+			querySelectionExecution: true,
+			querySelectionExecutionWarning: true,
 			windowPinned: false,
 			docsLanguage: "cli",
 			versionCheckTimeout: 5,
@@ -144,15 +147,11 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	};
 }
 
-export function createBaseQuery(
-	settings: SurrealistSettings,
-	type: QueryType,
-	query?: string,
-): QueryTab {
+export function createBaseQuery(settings: SurrealistSettings, type: QueryType): QueryTab {
 	return {
 		id: newId(),
 		type,
-		query: query ?? "",
+		query: "",
 		name: "",
 		variables: "{}",
 		valid: true,
@@ -197,6 +196,7 @@ export function createConnectionSchema(): ConnectionSchema {
 			users: [],
 			functions: [],
 			models: [],
+			params: [],
 		},
 	};
 }

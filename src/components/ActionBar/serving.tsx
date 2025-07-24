@@ -68,6 +68,11 @@ export function DatabaseServing() {
 				onClick={handleToggle}
 				loading={isPending}
 				label={isServing ? "Stop serving" : "Start serving"}
+				tooltipProps={{
+					position: "bottom",
+					label: isServing ? "Stop serving" : "Start serving",
+					children: null,
+				}}
 				color={isServing ? "pink.7" : undefined}
 				aria-label={
 					isServing ? "Stop serving local database" : "Start serving local database"
@@ -86,6 +91,11 @@ export function DatabaseServing() {
 					h={36}
 					onClick={openConsole}
 					label="Open console"
+					tooltipProps={{
+						position: "bottom",
+						label: "Open console",
+						children: null,
+					}}
 					variant="subtle"
 				>
 					<Icon

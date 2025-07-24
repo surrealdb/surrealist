@@ -1,7 +1,6 @@
 import { Group, Skeleton, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { useQuery } from "@tanstack/react-query";
-import { fetchAPI } from "~/cloud/api";
+import { useEffect } from "react";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
@@ -9,6 +8,7 @@ import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import type { CloudInstance } from "~/types";
 import { iconConsole } from "~/util/icons";
+import { useCloudAuthTokenMutation } from "../mutations/auth";
 
 export function openConnectCli(instance: CloudInstance) {
 	openModal({
@@ -32,18 +32,15 @@ interface ConnectCliModalProps {
 }
 
 function ConnectCliModal({ instance }: ConnectCliModalProps) {
-	const { data, isPending } = useQuery({
-		queryKey: ["cloud", "cli"],
-		refetchInterval: 1000 * 60,
-		queryFn: async () => {
-			return fetchAPI<{ token: string }>(`/instances/${instance.id}/auth`).then(
-				(res) => res.token,
-			);
-		},
-	});
+	const { data, mutateAsync, isPending } = useCloudAuthTokenMutation(instance.id);
 
 	const endpoint = `wss://${instance.host}`;
 	const command = `surreal sql --endpoint ${endpoint} --token ${data}`;
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only trigger on mount
+	useEffect(() => {
+		mutateAsync();
+	}, []);
 
 	return (
 		<>

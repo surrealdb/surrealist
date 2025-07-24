@@ -1,14 +1,12 @@
 import { useEffect, useMemo } from "react";
-import { PathPattern, matchRoute, useRouter, useSearch } from "wouter";
+import { matchRoute, PathPattern, useRouter, useSearch } from "wouter";
 import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
-import { useConfigStore } from "~/stores/config";
 import type { ViewPage } from "~/types";
-import { getActiveConnection, getConnection, getConnectionById } from "~/util/connection";
+import { getConnectionById } from "~/util/connection";
 import { IntentEvent } from "~/util/global-events";
-import { type IntentPayload, type IntentType, consumeIntent } from "~/util/intents";
-import { useConnectionList } from "./connection";
+import { consumeIntent, type IntentPayload, type IntentType } from "~/util/intents";
 import { useEventSubscription } from "./event";
 import { useStable } from "./stable";
 
@@ -29,14 +27,26 @@ export function useAbsoluteRoute<RoutePath extends PathPattern = PathPattern>(pa
 }
 
 /**
+ * Returns whether any of the provided match patterns match the current route.
+ */
+export function useRouteMatcher(match: string[]) {
+	const parser = useRouter().parser;
+	const [location] = useAbsoluteLocation();
+
+	return match.some((m) => {
+		return matchRoute(parser, m, location)[0];
+	});
+}
+
+/**
  * Returns the active connection and view
  */
 export function useConnectionAndView() {
+	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
+
 	if (adapter instanceof MiniAdapter) {
 		return [SANDBOX, "query"] as const;
 	}
-
-	const [match, params] = useAbsoluteRoute("/c/:connection/:view");
 
 	if (!match) {
 		return [null, null] as const;

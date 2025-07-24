@@ -1,14 +1,3 @@
-import {
-	iconBroadcastOff,
-	iconBroadcastOn,
-	iconClose,
-	iconCopy,
-	iconDelete,
-	iconHammer,
-	iconHelp,
-	iconPlus,
-} from "~/util/icons";
-
 import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { surrealql } from "@surrealdb/codemirror";
@@ -25,7 +14,17 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import type { LiveMessage } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { type PreviewProps, attemptFormat } from ".";
+import {
+	iconBroadcastOff,
+	iconBroadcastOn,
+	iconClose,
+	iconCopy,
+	iconDelete,
+	iconHammer,
+	iconHelp,
+	iconPlus,
+} from "~/util/icons";
+import { attemptFormat, type PreviewProps } from ".";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],

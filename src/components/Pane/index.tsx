@@ -80,15 +80,17 @@ export function ContentPane({
 					)}
 				</>
 			)}
-			<Box
-				p="sm"
-				pt={0}
-				mt={withTopPadding === false || withDivider === false ? undefined : "sm"}
-				pos="relative"
-				className={classes.content}
-			>
-				{children}
-			</Box>
+			{children && (
+				<Box
+					p="sm"
+					pt={0}
+					mt={withTopPadding === false || withDivider === false ? undefined : "sm"}
+					pos="relative"
+					className={classes.content}
+				>
+					{children}
+				</Box>
+			)}
 		</Paper>
 	);
 }

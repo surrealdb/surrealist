@@ -1,8 +1,16 @@
-import classes from "../style.module.scss";
-
-import { ActionIcon, Badge, Menu, Text } from "@mantine/core";
-import { Box, BoxProps, Group, Paper, Stack, ThemeIcon, UnstyledButton } from "@mantine/core";
-import clsx from "clsx";
+import {
+	ActionIcon,
+	Badge,
+	Box,
+	BoxProps,
+	Group,
+	Menu,
+	Paper,
+	Stack,
+	Text,
+	ThemeIcon,
+	UnstyledButton,
+} from "@mantine/core";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
@@ -13,9 +21,10 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { ON_STOP_PROPAGATION, newId } from "~/util/helpers";
+import { newId, ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
+import classes from "../style.module.scss";
 
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;
@@ -33,6 +42,7 @@ export function StartConnection({
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isSandbox = connection.id === SANDBOX;
+	const isManaged = isSandbox || connection.instance;
 	const target = protocol === "mem" ? "In-Memory" : protocol === "indxdb" ? "IndexDB" : hostname;
 
 	const handleConnect = useStable(() => {
@@ -74,7 +84,7 @@ export function StartConnection({
 	const labels = connection?.labels?.map((label, i) => (
 		<Badge
 			key={i}
-			color="slate"
+			color="violet"
 			variant="light"
 		>
 			{label}
@@ -88,8 +98,10 @@ export function StartConnection({
 		>
 			<Paper
 				p="lg"
-				className={clsx(classes.startBox, classes.startConnection)}
 				ref={containerRef}
+				variant="interactive"
+				className={classes.startConnection}
+				withBorder
 			>
 				<Group
 					wrap="nowrap"
@@ -126,16 +138,14 @@ export function StartConnection({
 								>
 									{connection.name}
 								</Text>
-								<Text
-									mt={-4}
-									truncate
-								>
-									{isSandbox ? "Your personal playground" : target}
+								<Text truncate>
+									{isSandbox ? "Your personal offline playground" : target}
 								</Text>
 							</Box>
 						</Group>
 					</Stack>
-					{!isSandbox && (
+					{!isManaged && (
+						// biome-ignore lint/a11y/noStaticElementInteractions: Stop event propagation
 						<div
 							onClick={ON_STOP_PROPAGATION}
 							onKeyDown={ON_STOP_PROPAGATION}
@@ -185,9 +195,9 @@ export function StartConnection({
 						</div>
 					)}
 				</Group>
-				{isSandbox ? (
+				{isManaged ? (
 					<Badge
-						color="slate"
+						color="violet"
 						variant="subtle"
 						px={0}
 					>

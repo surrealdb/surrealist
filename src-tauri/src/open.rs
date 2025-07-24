@@ -4,11 +4,12 @@ use std::sync::Mutex;
 
 use log::info;
 use serde::Serialize;
-use tauri::{AppHandle, Emitter, Manager, State, Window};
+use tauri::{AppHandle, Manager, State, Window};
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_dialog::FilePath;
 
 use crate::whitelist::{append_allowed_file, read_allowed_files, write_allowed_files};
+use crate::window;
 
 const MAX_FILE_SIZE: u64 = 5 * 1024 * 1024;
 
@@ -91,6 +92,11 @@ pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResour
 }
 
 #[tauri::command]
+pub fn clear_opened_resources(state: State<OpenResourceState>) {
+    *state.0.lock().unwrap() = Vec::new();
+}
+
+#[tauri::command]
 pub fn read_query_file(path: String) -> Result<String, String> {
     let whitelist = read_allowed_files();
 
@@ -156,7 +162,7 @@ pub async fn open_query_file(app: AppHandle, window: Window) {
     info!("My paths: {:?}", urls);
 
     *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
-    app.emit("open-resource", ()).unwrap();
+    window::emit_last(&app, "open-resource", ());
 }
 
 #[tauri::command]

@@ -1,27 +1,30 @@
-import classes from "./style.module.scss";
-
 import { Box, Drawer, Flex, Group, Stack } from "@mantine/core";
-import { type FC, Suspense, memo } from "react";
-import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
+import { type FC, memo, Suspense, useLayoutEffect } from "react";
+import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
+import { AppTitleBar } from "~/components/AppTitleBar";
+import { TopGlow } from "~/components/TopGlow";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useAvailableViews } from "~/hooks/connection";
+import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
-import { BillingPage } from "./pages/Billing";
-import { ChatPage } from "./pages/Chat";
-import { CloudPage } from "./pages/Cloud";
 import { CreateConnectionPage } from "./pages/CreateConnection";
-import { CreateInstancePage } from "./pages/CreateInstance";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
+import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
+import { OrganizationManagePage } from "./pages/OrganizationManage";
+import { OrganizationsPage } from "./pages/Organizations";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
+import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
 import { SurrealistSidebar } from "./sidebar";
+import classes from "./style.module.scss";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DashboardView from "./views/dashboard/DashboardView";
@@ -30,21 +33,21 @@ import DocumentationView from "./views/documentation/DocumentationView";
 import ExplorerView from "./views/explorer/ExplorerView";
 import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
-import ModelsView from "./views/models/ModelsView";
+import MonitorView from "./views/monitor/MonitorView";
+import ParametersView from "./views/parameters/ParametersView";
 import QueryView from "./views/query/QueryView";
-import SidekickView from "./views/sidekick/SidekickView";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
-const CloudPageLazy = memo(CloudPage);
-const ChatPageLazy = memo(ChatPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
-const BillingPageLazy = memo(BillingPage);
+const OrganizationsPageLazy = memo(OrganizationsPage);
+const OrganizationManagePageLazy = memo(OrganizationManagePage);
+const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
 const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
-const CreateInstancePageLazy = memo(CreateInstancePage);
+const SigninPageLazy = memo(SigninPage);
 
 const PORTAL_OPTIONS = {
 	attributes: {
@@ -54,27 +57,27 @@ const PORTAL_OPTIONS = {
 
 const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	dashboard: createHtmlPortalNode(PORTAL_OPTIONS),
+	monitor: createHtmlPortalNode(PORTAL_OPTIONS),
 	query: createHtmlPortalNode(PORTAL_OPTIONS),
 	explorer: createHtmlPortalNode(PORTAL_OPTIONS),
 	graphql: createHtmlPortalNode(PORTAL_OPTIONS),
 	designer: createHtmlPortalNode(PORTAL_OPTIONS),
 	authentication: createHtmlPortalNode(PORTAL_OPTIONS),
 	functions: createHtmlPortalNode(PORTAL_OPTIONS),
-	models: createHtmlPortalNode(PORTAL_OPTIONS),
-	sidekick: createHtmlPortalNode(PORTAL_OPTIONS),
+	parameters: createHtmlPortalNode(PORTAL_OPTIONS),
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
 const VIEW_COMPONENTS: Record<ViewPage, FC> = {
 	dashboard: memo(DashboardView),
+	monitor: memo(MonitorView),
 	query: memo(QueryView),
 	explorer: memo(ExplorerView),
 	graphql: memo(GraphqlView),
 	designer: memo(DesignerView),
 	authentication: memo(AuthenticationView),
 	functions: memo(FunctionsView),
-	models: memo(ModelsView),
-	sidekick: memo(SidekickView),
+	parameters: memo(ParametersView),
 	documentation: memo(DocumentationView),
 };
 
@@ -82,29 +85,35 @@ export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const isLight = useIsLight();
+	const showCloud = useIsCloudEnabled();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 	const views = useAvailableViews();
 
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
-	const customTitlebar = adapter.platform === "darwin" && isDesktop;
+	const isMacos = adapter.platform === "darwin" && isDesktop;
+	const isOtherOS = adapter.platform !== "darwin" && isDesktop;
 
 	const onCloseSidebar = useStable(() => {
 		setOverlaySidebar(false);
 	});
 
+	const glowOffset = useGlowOffset();
 	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
-	const titlebarOffset = customTitlebar ? 15 : 0;
+
+	useLayoutEffect(() => {
+		const body = document.body;
+
+		body.style.setProperty("--sidebar-offset", `${sidebarOffset}px`);
+		body.style.setProperty("--titlebar-offset", `${adapter.titlebarOffset}px`);
+	}, [sidebarOffset]);
 
 	return (
 		<Box
 			className={classes.root}
 			bg={isLight ? "slate.0" : "slate.9"}
-			__vars={{
-				"--sidebar-offset": `${sidebarOffset}px`,
-				"--titlebar-offset": `${titlebarOffset}px`,
-			}}
 		>
+			{isOtherOS && <AppTitleBar />}
 			<Flex
 				direction="column"
 				flex={1}
@@ -116,7 +125,7 @@ export function SurrealistScreen() {
 				/>
 
 				<Box className={classes.wrapper}>
-					{customTitlebar && (
+					{isMacos && (
 						<Flex
 							data-tauri-drag-region
 							className={classes.titlebar}
@@ -129,9 +138,12 @@ export function SurrealistScreen() {
 
 					<Stack
 						flex={1}
+						className={classes.pageContent}
 						pos="relative"
 						gap="lg"
 					>
+						<TopGlow offset={glowOffset} />
+
 						<Group
 							gap="md"
 							pos="absolute"
@@ -152,41 +164,66 @@ export function SurrealistScreen() {
 								<OverviewPageLazy />
 							</Route>
 
-							<Route path="/cloud">
-								<CloudPageLazy />
-							</Route>
-
 							<Route path="/mini/new">
 								<NewEmbedPageLazy />
 							</Route>
 
-							<Route path="/chat">
-								<ChatPageLazy />
-							</Route>
-
-							<Route path="/billing">
-								<BillingPageLazy />
-							</Route>
-
-							<Route path="/referrals">
-								<ReferralPageLazy />
-							</Route>
-
-							<Route path="/create/connection">
+							<Route path="/connections/create">
 								<CreateConnectionPageLazy />
-							</Route>
-
-							<Route path="/create/organization">
-								<CreateOrganizationsPageLazy />
-							</Route>
-
-							<Route path="/create/instance">
-								<CreateInstancePageLazy />
 							</Route>
 
 							<Route path="/support">
 								<SupportPageLazy />
 							</Route>
+
+							{showCloud && (
+								<>
+									<Route path="/organisations/create">
+										<CreateOrganizationsPageLazy />
+									</Route>
+
+									<Route path="/organisations">
+										<OrganizationsPageLazy />
+									</Route>
+
+									<Route path="/o/:organization/deploy">
+										{({ organization }) => (
+											<OrganizationDeployPageLazy id={organization} />
+										)}
+									</Route>
+
+									<Route path="/o/:organization/:tab">
+										{({ organization, tab }) => (
+											<OrganizationManagePageLazy
+												id={organization}
+												tab={tab}
+											/>
+										)}
+									</Route>
+
+									<Route path="/o/:organization">
+										{({ organization }) => (
+											<Redirect to={`/o/${organization}/instances`} />
+										)}
+									</Route>
+
+									<Route path="/referrals">
+										<ReferralPageLazy />
+									</Route>
+
+									<Route path="/signin/:plan?">
+										{({ plan }) => <SigninPageLazy plan={plan} />}
+									</Route>
+
+									<Route path="/cloud">
+										<Redirect to="/signin" />
+									</Route>
+
+									<Route path="/billing">
+										<Redirect to="/organisations" />
+									</Route>
+								</>
+							)}
 
 							<Route path="/c/:connection/:view">
 								{({ view }) => {
@@ -212,7 +249,6 @@ export function SurrealistScreen() {
 
 											{portal ? (
 												<Stack
-													className={classes.inner}
 													flex={1}
 													gap={0}
 												>
@@ -244,42 +280,3 @@ export function SurrealistScreen() {
 		</Box>
 	);
 }
-
-// interface DatabaseSelectionProps {
-// 	info: ViewPageInfo;
-// }
-
-// function DatabaseSelection({ info }: DatabaseSelectionProps) {
-// 	const isConnected = useIsConnected();
-
-// 	return (
-// 		<Center flex={1}>
-// 			<Paper
-// 				radius="md"
-// 				p="xl"
-// 				w={500}
-// 			>
-// 				<PrimaryTitle>Before you continue...</PrimaryTitle>
-// 				<Text mt="md">
-// 					Please select a namespace and database before accessing the {info?.name} view.
-// 					You can use the buttons below to choose an existing namespace and database, or
-// 					create new ones.
-// 				</Text>
-// 				<SelectDatabase
-// 					withNamespace
-// 					withDatabase
-// 					mt="xl"
-// 				/>
-// 				{!isConnected && (
-// 					<Alert
-// 						mt="xl"
-// 						color="orange"
-// 						icon={<Icon path={iconWarning} />}
-// 					>
-// 						You must be connected before selecting a namespace and database
-// 					</Alert>
-// 				)}
-// 			</Paper>
-// 		</Center>
-// 	);
-// }

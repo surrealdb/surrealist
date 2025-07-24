@@ -20,22 +20,22 @@
 	}
 }
 
+.run-large {
+	display: none;
+}
+
 @container (width < 325px) {
 	.results {
 		display: none;
 	}
 }
 
-@container (width < 525px) {
-	.run {
-		padding-inline: 10px;
+@container (width > 525px) {
+	.run-large {
+		display: unset;
+	}
 
-		:global(.mantine-Button-label) {
-			display: none;
-		}
-
-		:global(.mantine-Button-section) {
-			margin: 0;
-		}
+	.run-small {
+		display: none;
 	}
 }

@@ -18,9 +18,7 @@ export const ProtocolSchema = v.union([
 ]);
 
 export const InstanceConfigSchema = v.object({
-	groupName: v.optional(v.string(), "Instance"),
-	groupCollapsed: v.optional(v.boolean(), false),
-	defaultConnection: v.optional(v.string()),
+	telemetry: v.optional(v.boolean(), true),
 	connections: v.optional(
 		v.array(
 			v.object({
@@ -28,16 +26,25 @@ export const InstanceConfigSchema = v.object({
 				name: v.string(),
 				defaultNamespace: v.optional(v.string()),
 				defaultDatabase: v.optional(v.string()),
-				authentication: v.object({
-					protocol: ProtocolSchema,
-					hostname: v.string(),
-					mode: AuthModeSchema,
-					namespace: v.optional(v.string()),
-					database: v.optional(v.string()),
-				}),
+				authentication: v.optional(
+					v.object({
+						protocol: ProtocolSchema,
+						hostname: v.string(),
+						mode: AuthModeSchema,
+						namespace: v.optional(v.string()),
+						database: v.optional(v.string()),
+					}),
+				),
 			}),
 		),
-		[], // defaults to empty array
+		[],
+	),
+	cloud: v.optional(
+		v.object({
+			enabled: v.optional(v.boolean(), false),
+			auth_endpoint: v.optional(v.string()),
+			api_endpoint: v.optional(v.string()),
+		}),
 	),
 });
 

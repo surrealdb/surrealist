@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	type BoxProps,
 	Center,
@@ -12,21 +10,6 @@ import {
 	ThemeIcon,
 	Title,
 } from "@mantine/core";
-
-import {
-	iconBalance,
-	iconChevronRight,
-	iconClose,
-	iconCommand,
-	iconDownload,
-	iconFlag,
-	iconHelp,
-	iconPlay,
-	iconServer,
-	iconTransfer,
-	iconTune,
-} from "~/util/icons";
-
 import { useState } from "react";
 import { isDesktop } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
@@ -41,6 +24,20 @@ import { useDesktopUpdater } from "~/hooks/updater";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Assign, FeatureCondition } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
+import {
+	iconBalance,
+	iconChevronRight,
+	iconClose,
+	iconCommand,
+	iconDownload,
+	iconFlag,
+	iconHelp,
+	iconPlay,
+	iconServer,
+	iconTransfer,
+	iconTune,
+} from "~/util/icons";
+import classes from "./style.module.scss";
 import { AboutTab } from "./tabs/About";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { KeybindingsTab } from "./tabs/Keybindings";
@@ -152,6 +149,7 @@ function SettingsSidebar({
 			>
 				<Image
 					h={36}
+					w="auto"
 					src={logoUrl}
 				/>
 			</Center>
@@ -241,7 +239,7 @@ export function Settings() {
 		setActiveTab(tab);
 	});
 
-	useIntent("open-settings", ({ tab }) => {
+	useIntent("open-settings", ({ tab, section }) => {
 		if (tab) {
 			setActiveTab(tab);
 
@@ -255,6 +253,16 @@ export function Settings() {
 		}
 
 		openHandle.open();
+
+		setTimeout(() => {
+			if (section) {
+				const element = document.getElementById(section);
+
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "start" });
+				}
+			}
+		}, 250);
 	});
 
 	// useKeymap([
@@ -269,80 +277,78 @@ export function Settings() {
 	const [overlaySidebar, overlaySidebarHandle] = useBoolean();
 
 	return (
-		<>
-			<Modal
-				opened={open}
-				onClose={openHandle.close}
-				padding={0}
-				size={1200}
+		<Modal
+			opened={open}
+			onClose={openHandle.close}
+			padding={0}
+			size={1200}
+		>
+			<Group
+				h="calc(100vh - 100px)"
+				mah={800}
+				gap="xs"
+				align="stretch"
+				wrap="nowrap"
+				pos="relative"
+				id="settings"
 			>
-				<Group
-					h="calc(100vh - 100px)"
-					mah={650}
-					gap="xs"
-					align="stretch"
-					wrap="nowrap"
-					pos="relative"
-					id="settings"
+				<SettingsSidebar
+					activeTab={activeTab}
+					categories={categories}
+					setActiveTab={updateActiveTab}
+					withBorder
+					visibleFrom="md"
+				/>
+				<Drawer
+					hiddenFrom="md"
+					opened={overlaySidebar}
+					onClose={overlaySidebarHandle.close}
+					portalProps={{ target: "#settings" }}
+					overlayProps={{ backgroundOpacity: 0.35 }}
+					padding={0}
+					size={250}
 				>
 					<SettingsSidebar
 						activeTab={activeTab}
 						categories={categories}
 						setActiveTab={updateActiveTab}
-						withBorder
-						visibleFrom="md"
+						w="100%"
+						h="100%"
 					/>
-					<Drawer
-						hiddenFrom="md"
-						opened={overlaySidebar}
-						onClose={overlaySidebarHandle.close}
-						portalProps={{ target: "#settings" }}
-						overlayProps={{ backgroundOpacity: 0.35 }}
-						padding={0}
-						size={250}
-					>
-						<SettingsSidebar
-							activeTab={activeTab}
-							categories={categories}
-							setActiveTab={updateActiveTab}
-							w="100%"
-							h="100%"
-						/>
-					</Drawer>
-					<Stack
-						pl="xl"
-						pt="xl"
-						gap={0}
-						flex={1}
-						miw={0}
-					>
-						<Group mb={26}>
-							<ActionButton
-								hiddenFrom="md"
-								label="Toggle sidebar"
-								onClick={overlaySidebarHandle.toggle}
-							>
-								<Icon path={iconChevronRight} />
-							</ActionButton>
-							<Title
-								size={26}
-								c="bright"
-							>
-								{activeCategory?.name ?? "Unknown"}
-							</Title>
-							<Spacer />
-							<ActionButton
-								mr="xl"
-								label="Close settings"
-								onClick={openHandle.close}
-							>
-								<Icon path={iconClose} />
-							</ActionButton>
-						</Group>
-						{Component && <Component />}
-					</Stack>
-				</Group>
-			</Modal>
-		</>
+				</Drawer>
+				<Stack
+					pl="xl"
+					pt="xl"
+					gap={0}
+					flex={1}
+					miw={0}
+				>
+					<Group mb={26}>
+						<ActionButton
+							hiddenFrom="md"
+							label="Toggle sidebar"
+							onClick={overlaySidebarHandle.toggle}
+						>
+							<Icon path={iconChevronRight} />
+						</ActionButton>
+						<Title
+							size={26}
+							c="bright"
+						>
+							{activeCategory?.name ?? "Unknown"}
+						</Title>
+						<Spacer />
+						<ActionButton
+							mr="xl"
+							label="Close settings"
+							onClick={openHandle.close}
+						>
+							<Icon path={iconClose} />
+						</ActionButton>
+					</Group>
+					{Component && <Component />}
+				</Stack>
+			</Group>
+		</Modal>
 	);
 }

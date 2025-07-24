@@ -1,15 +1,25 @@
 import { shutdown } from "@intercom/messenger-js-sdk";
+import { showNotification } from "@mantine/notifications";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudSignin } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
-import { showError } from "~/util/helpers";
-import { REFERRER_KEY, REFRESH_TOKEN_KEY, STATE_KEY, VERIFIER_KEY } from "~/util/storage";
-import { fetchAPI, updateCloudInformation } from ".";
+import { fastParseJwt, showErrorNotification } from "~/util/helpers";
+import { iconCheck } from "~/util/icons";
+import {
+	INVITATION_KEY,
+	REFERRER_KEY,
+	STATE_KEY,
+	TOKEN_ACCESS_KEY,
+	TOKEN_REFRESH_KEY,
+	VERIFIER_KEY,
+} from "~/util/storage";
 import { openTermsModal } from "../onboarding/terms-and-conditions";
+import { ApiError, fetchAPI, updateCloudInformation } from ".";
 import { getCloudEndpoints } from "./endpoints";
 import { isClientSupported } from "./version";
 
@@ -32,12 +42,18 @@ function getState() {
  * Open the cloud authentication page
  */
 export async function openCloudAuthentication() {
-	const { setIsSupported } = useCloudStore.getState();
+	const { setIsSupported, setFailedConnected } = useCloudStore.getState();
 	const { authBase } = getCloudEndpoints();
-	const isSupported = await isClientSupported();
+	const versionResponse = await isClientSupported();
+
+	if (versionResponse instanceof Error) {
+		console.error(`Failed to fetch Cloud Version: ${versionResponse.message}`);
+		setFailedConnected(true);
+		return;
+	}
 
 	// If the client is not supported, disable the cloud
-	if (!isSupported) {
+	if (!versionResponse) {
 		setIsSupported(false);
 		return;
 	}
@@ -123,16 +139,16 @@ export async function verifyAuthentication(code: string, state: string) {
 			throw new Error(`Invalid authentication response: ${result.error}`);
 		}
 
-		localStorage.setItem(REFRESH_TOKEN_KEY, result.refresh_token);
+		localStorage.setItem(TOKEN_REFRESH_KEY, result.refresh_token);
 
 		acquireSession(result.access_token, true);
 	} catch (err: any) {
 		console.error("Failed to verify authentication", err);
 
 		invalidateSession();
-		showError({
+		showErrorNotification({
 			title: "Authentication failed",
-			subtitle: "An error occurred while verifying the authentication details",
+			content: "Could not verify the authentication details",
 		});
 	}
 }
@@ -141,18 +157,27 @@ export async function verifyAuthentication(code: string, state: string) {
  * Refresh the current access token
  */
 export async function refreshAccess() {
-	const { setIsSupported, setLoading, setSessionExpired } = useCloudStore.getState();
+	const { setIsSupported, setFailedConnected, setLoading, setSessionExpired } =
+		useCloudStore.getState();
 	const { authBase } = getCloudEndpoints();
-	const isSupported = await isClientSupported();
+	const versionResponse = await isClientSupported();
 
-	if (!isSupported) {
+	if (versionResponse instanceof Error) {
+		console.error(`Failed to fetch Cloud Version: ${versionResponse.message}`);
+		setFailedConnected(true);
+		invalidateSession();
+		return;
+	}
+
+	if (!versionResponse) {
 		invalidateSession();
 		setIsSupported(false);
 		return;
 	}
 
 	try {
-		const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+		const refreshToken = localStorage.getItem(TOKEN_REFRESH_KEY);
+		const accessToken = localStorage.getItem(TOKEN_ACCESS_KEY);
 
 		adapter.log("Cloud", "Refreshing cloud access token");
 
@@ -162,6 +187,12 @@ export async function refreshAccess() {
 		}
 
 		setLoading();
+
+		if (accessToken && fastParseJwt(accessToken).exp > Date.now() / 1000) {
+			adapter.log("Cloud", "Access token is still valid, skipping refresh");
+			acquireSession(accessToken, false);
+			return;
+		}
 
 		const response = await adapter.fetch(`${authBase}/oauth/token`, {
 			method: "POST",
@@ -182,7 +213,8 @@ export async function refreshAccess() {
 			throw new Error(`Invalid authentication response: ${result.error}`);
 		}
 
-		localStorage.setItem(REFRESH_TOKEN_KEY, result.refresh_token);
+		localStorage.setItem(TOKEN_REFRESH_KEY, result.refresh_token);
+		localStorage.setItem(TOKEN_ACCESS_KEY, result.access_token);
 
 		acquireSession(result.access_token, false);
 	} catch (err: any) {
@@ -197,24 +229,37 @@ export async function refreshAccess() {
  * Attempt to start a new session using the given access token
  */
 export async function acquireSession(accessToken: string, initial: boolean) {
+	const {
+		setAccessToken,
+		setSessionToken,
+		setAuthProvider,
+		setUserId,
+		setSessionExpired,
+		setAuthError,
+	} = useCloudStore.getState();
+
 	try {
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
-		const { setSessionToken, setAuthProvider, setUserId, setSessionExpired } =
-			useCloudStore.getState();
+		const invitationCode = sessionStorage.getItem(INVITATION_KEY);
 
 		adapter.log("Cloud", "Acquiring cloud session");
 
-		let endpoint = "/signin";
+		const params = new URLSearchParams();
 
 		if (referralCode) {
-			endpoint += `?referral=${referralCode}`;
+			params.append("referral", referralCode);
 		}
 
-		const result = await fetchAPI<CloudSignin>(endpoint, {
+		if (invitationCode) {
+			params.append("invitation", invitationCode);
+		}
+
+		const result = await fetchAPI<CloudSignin>(`/signin?${params}`, {
 			method: "POST",
 			body: JSON.stringify(accessToken),
 		});
 
+		setAccessToken(accessToken);
 		setSessionToken(result.token);
 		setAuthProvider(result.provider);
 		setUserId(result.id);
@@ -222,9 +267,9 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		await updateCloudInformation();
 
 		adapter.log("Cloud", `Session acquired`);
-		sessionStorage.removeItem(REFERRER_KEY);
 		CloudAuthEvent.dispatch(null);
 
+		setAuthError("");
 		setSessionExpired(false);
 
 		const promptTerms = !result.terms_accepted_at;
@@ -241,14 +286,35 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 				first_signin: promptTerms,
 			});
 		}
+
+		if (invitationCode) {
+			showNotification({
+				color: "surreal",
+				title: "Invitation accepted",
+				message: "You have joined the organisation",
+				icon: <Icon path={iconCheck} />,
+			});
+		}
 	} catch (err: any) {
 		console.error("Failed to acquire session", err);
 
+		setAuthError(err.message);
 		invalidateSession();
-		showError({
-			title: "Failed to authenticate",
-			subtitle: "Please try signing into Surreal Cloud again",
-		});
+
+		if (err instanceof ApiError && err.status === 422) {
+			showErrorNotification({
+				title: "Already in organisation",
+				content: "You are already a member of this organisation",
+			});
+		} else {
+			showErrorNotification({
+				title: "Failed to authenticate",
+				content: "Please try signing into Surreal Cloud again",
+			});
+		}
+	} finally {
+		sessionStorage.removeItem(REFERRER_KEY);
+		sessionStorage.removeItem(INVITATION_KEY);
 	}
 }
 
@@ -257,11 +323,12 @@ export async function acquireSession(accessToken: string, initial: boolean) {
  */
 export function invalidateSession() {
 	const { clearSession } = useCloudStore.getState();
-	const wasAuthed = !!localStorage.getItem(REFRESH_TOKEN_KEY);
+	const wasAuthed = !!localStorage.getItem(TOKEN_REFRESH_KEY);
 
 	adapter.log("Cloud", "Invalidating active session");
 
-	localStorage.removeItem(REFRESH_TOKEN_KEY);
+	localStorage.removeItem(TOKEN_REFRESH_KEY);
+	localStorage.removeItem(TOKEN_ACCESS_KEY);
 
 	clearSession();
 

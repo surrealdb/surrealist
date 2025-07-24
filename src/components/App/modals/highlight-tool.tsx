@@ -1,7 +1,6 @@
-import { Button, Divider, Group, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
+import { Button, Divider, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { s } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { RadioSelect } from "~/components/RadioSelect";
@@ -20,7 +19,12 @@ function Render({
 	theme,
 	lang,
 	syntaxTheme,
-}: { value: string; theme: ColorScheme; lang: CodeLang; syntaxTheme: SyntaxTheme }) {
+}: {
+	value: string;
+	theme: ColorScheme;
+	lang: CodeLang;
+	syntaxTheme: SyntaxTheme;
+}) {
 	const render = useStable(() => {
 		const rendered = renderHighlighting(value, lang, theme, syntaxTheme);
 		const clipboardItem = new ClipboardItem({
@@ -78,65 +82,63 @@ export function HighlightToolModal() {
 	});
 
 	return (
-		<>
-			<Modal
-				opened={isOpen}
-				onClose={openedHandle.close}
-				trapFocus={false}
-				withCloseButton
-				size="xl"
-				title={
-					<>
-						<PrimaryTitle flex={1}>Highlight Tool</PrimaryTitle>
-						<Select
-							data={languages}
-							value={lang}
-							onChange={setLang as any}
-							mr="xl"
-						/>
-					</>
-				}
-				styles={{
-					title: {
-						flex: 1,
-						display: "flex",
-					},
-				}}
-			>
-				<Stack>
-					<CodeEditor
-						h="50%"
+		<Modal
+			opened={isOpen}
+			onClose={openedHandle.close}
+			trapFocus={false}
+			withCloseButton
+			size="xl"
+			title={
+				<>
+					<PrimaryTitle flex={1}>Highlight Tool</PrimaryTitle>
+					<Select
+						data={languages}
+						value={lang}
+						onChange={setLang as any}
+						mr="xl"
+					/>
+				</>
+			}
+			styles={{
+				title: {
+					flex: 1,
+					display: "flex",
+				},
+			}}
+		>
+			<Stack>
+				<CodeEditor
+					h="50%"
+					value={value}
+					onChange={onChange}
+					extensions={extensions}
+					autoFocus
+				/>
+				<Divider />
+				<RadioSelect
+					value={theme}
+					onChange={setTheme as any}
+					data={[
+						{ value: "dark", label: "Dark theme" },
+						{ value: "light", label: "Light theme" },
+					]}
+				/>
+				<SimpleGrid cols={2}>
+					<Button
+						onClick={format}
+						size="xs"
+						color="surreal"
+					>
+						Format
+					</Button>
+					<Render
 						value={value}
-						onChange={onChange}
-						extensions={extensions}
-						autoFocus
+						theme={theme}
+						lang={lang}
+						syntaxTheme={syntaxTheme}
 					/>
-					<Divider />
-					<RadioSelect
-						value={theme}
-						onChange={setTheme as any}
-						data={[
-							{ value: "dark", label: "Dark theme" },
-							{ value: "light", label: "Light theme" },
-						]}
-					/>
-					<SimpleGrid cols={2}>
-						<Button
-							onClick={format}
-							size="xs"
-							color="surreal"
-						>
-							Format
-						</Button>
-						<Render
-							value={value}
-							theme={theme}
-							lang={lang}
-							syntaxTheme={syntaxTheme}
-						/>
-					</SimpleGrid>
-				</Stack>
-			</Modal>
-		</>
+				</SimpleGrid>
+			</Stack>
+		</Modal>
 	);
 }

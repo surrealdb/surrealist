@@ -1,6 +1,5 @@
 import type { EditorView } from "@codemirror/view";
-import { ActionIcon, Button, Center, Group, Paper, Stack } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { ActionIcon, Button, Center, Group, Paper, Stack, Text } from "@mantine/core";
 import clsx from "clsx";
 import { memo, useMemo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -93,23 +92,19 @@ export function GraphqlView() {
 		[namespace, database],
 	);
 
-	useViewFocus(
-		"graphql",
-		() => {
-			if (isAvailable && isConnected) {
-				checkGraphqlSupport().then((supported) => {
-					setEnabled(supported);
+	useViewFocus("graphql", () => {
+		if (isAvailable && isConnected) {
+			checkGraphqlSupport().then((supported) => {
+				setEnabled(supported);
 
-					if (supported) {
-						introspectSchema();
-					}
-				});
-			} else {
-				setEnabled(true);
-			}
-		},
-		[id, isConnected],
-	);
+				if (supported) {
+					introspectSchema();
+				}
+			});
+		} else {
+			setEnabled(true);
+		}
+	}, [id, isConnected]);
 
 	useIntent("run-graphql-query", () => {});
 	useIntent("toggle-graphql-variables", () => setShowVariables(!showVariables));
@@ -118,6 +113,9 @@ export function GraphqlView() {
 		<Stack
 			gap="md"
 			h="100%"
+			pr="lg"
+			pb="lg"
+			pl={{ base: "lg", md: 0 }}
 		>
 			<PanelGroup direction="horizontal">
 				<Panel minSize={15}>

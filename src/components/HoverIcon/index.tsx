@@ -1,8 +1,8 @@
 import {
 	ActionIcon,
 	type ActionIconProps,
-	type MantineSize,
 	createPolymorphicComponent,
+	type MantineSize,
 } from "@mantine/core";
 import { forwardRef, useMemo } from "react";
 import { useHoverIcon } from "~/hooks/hover-icon";

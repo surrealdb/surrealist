@@ -1,9 +1,10 @@
 import { useConfirmation } from "~/providers/Confirmation";
+import { showErrorNotification } from "~/util/helpers";
 
 /**
  * Confirm the update of an instance.
  */
-export function useUpdateConfirmation<T>(callback: (value: T) => void) {
+export function useUpdateConfirmation<T>(callback: (value: T) => unknown) {
 	return useConfirmation<T>({
 		title: "Apply update?",
 		message:
@@ -12,6 +13,16 @@ export function useUpdateConfirmation<T>(callback: (value: T) => void) {
 		confirmProps: {
 			variant: "gradient",
 		},
-		onConfirm: callback,
+		skippable: true,
+		onConfirm: async (value) => {
+			try {
+				await callback(value);
+			} catch (err: any) {
+				showErrorNotification({
+					title: "Instance update failed",
+					content: err,
+				});
+			}
+		},
 	});
 }

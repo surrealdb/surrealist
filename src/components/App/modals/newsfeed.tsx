@@ -1,29 +1,26 @@
-import classes from "../style.module.scss";
-
 import {
 	Alert,
 	Badge,
 	Box,
-	Button,
 	Divider,
 	Drawer,
 	Flex,
+	Group,
 	Image,
 	Loader,
 	ScrollArea,
 	Stack,
+	Text,
 	Title,
 	Transition,
 	TypographyStylesProvider,
 	UnstyledButton,
 } from "@mantine/core";
-
-import { iconArrowUpRight, iconChevronLeft, iconChevronRight, iconClose } from "~/util/icons";
-
-import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { format } from "date-fns";
 import dayjs from "dayjs";
-import { Fragment, useState } from "react";
+import { marked } from "marked";
+import { Fragment, useMemo, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -32,6 +29,8 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { tagEvent } from "~/util/analytics";
+import { iconArrowLeft, iconArrowUpRight, iconClose } from "~/util/icons";
+import classes from "../style.module.scss";
 
 interface NewsItem {
 	id: string;
@@ -88,218 +87,228 @@ export function NewsFeedDrawer() {
 
 	const isEmpty = newsQuery.isFetched && newsQuery.data?.length === 0;
 
+	const content = useMemo<string>(() => {
+		return marked(reading?.content ?? "", { async: false });
+	}, [reading?.content]);
+
 	return (
-		<>
-			<Drawer
-				opened={isOpen}
-				onClose={handleClose}
-				position="right"
-				trapFocus={false}
-				size={isReading ? "lg" : "md"}
-				classNames={{
-					content: classes.newsDrawerContent,
-					body: classes.newsDrawerBody,
-				}}
+		<Drawer
+			opened={isOpen}
+			onClose={handleClose}
+			position="right"
+			trapFocus={false}
+			size={isReading ? "lg" : "md"}
+			classNames={{
+				content: classes.newsDrawerContent,
+				body: classes.newsDrawerBody,
+			}}
+		>
+			<Transition
+				mounted={isReading}
+				transition="fade"
 			>
-				<ActionButton
-					pos="absolute"
-					top={20}
-					right={20}
-					label="Close"
-					onClick={openHandle.close}
-					style={{ zIndex: 1 }}
-				>
-					<Icon path={iconClose} />
-				</ActionButton>
-
-				<Transition
-					mounted={isReading}
-					transition="fade"
-				>
-					{(styles) => (
-						<Box
-							pos="absolute"
-							style={styles}
-							inset={0}
-						>
-							{reading && (
-								<ScrollArea
-									pos="absolute"
-									style={{ width: "var(--drawer-size-lg)" }}
-									left={0}
-									bottom={0}
-									top={0}
-								>
-									<Box
-										w="100%"
-										h={250}
-										className={classes.newsPostHeader}
-										__vars={{
-											"--image-url": `url("${reading.thumbnail}")`,
-										}}
-									>
-										<Button
-											m="md"
-											pos="relative"
-											onClick={readingHandle.close}
-											leftSection={
-												<Icon
-													path={iconChevronLeft}
-													size="sm"
-												/>
-											}
-											className={classes.newsPostBack}
-											size="md"
-										>
-											Go back
-										</Button>
-									</Box>
-									<Box
-										p="xl"
-										pt="xs"
-										mt={-52}
-									>
-										<Text c="slate">{dayjs(reading.published).fromNow()}</Text>
-										<Title
-											fz={28}
-											c="bright"
-										>
-											{reading.title}
-										</Title>
-										<TypographyStylesProvider
-											mt="lg"
-											fz={14}
-											className={classes.newsPostContent}
-											// biome-ignore lint/security/noDangerouslySetInnerHtml: Replace with markdown
-											dangerouslySetInnerHTML={{
-												__html: reading.content,
-											}}
-										/>
-										{reading.link && (
-											<Alert
-												mt="xl"
-												color="surreal.2"
-												py={0}
-											>
-												<Link
-													my="lg"
-													display="block"
-													href={reading.link}
-												>
-													<Text
-														c="surreal"
-														fw={600}
-														fz={14}
-													>
-														Read on surrealdb.com
-														<Icon
-															path={iconArrowUpRight}
-															right
-														/>
-													</Text>
-												</Link>
-											</Alert>
-										)}
-									</Box>
-								</ScrollArea>
-							)}
-						</Box>
-					)}
-				</Transition>
-
-				<Transition
-					mounted={!isReading}
-					transition="fade"
-				>
-					{(styles) => (
-						<Box
-							pos="absolute"
-							style={styles}
-							inset={0}
-						>
-							<Title
-								fz={20}
-								c="bright"
-								m="xl"
-							>
-								Latest news
-							</Title>
+				{(styles) => (
+					<Box
+						pos="absolute"
+						style={styles}
+						inset={0}
+					>
+						{reading && (
 							<ScrollArea
+								className={classes.articleDrawer__scroll}
 								pos="absolute"
-								style={{ width: "var(--drawer-size-md)" }}
+								style={{ width: "var(--drawer-size-lg)" }}
 								left={0}
 								bottom={0}
-								top={64}
-								p="lg"
+								top={0}
 							>
-								{newsQuery.isPending ? (
-									<Loader
-										mt={32}
-										mx="auto"
-										display="block"
-									/>
-								) : isEmpty ? (
-									<Text
-										mt={68}
-										c="slate"
-										ta="center"
+								<Box
+									w="100%"
+									h={250}
+									pos="relative"
+									className={classes.newsPostHeader}
+									__vars={{
+										"--image-url": `url("${reading.thumbnail}")`,
+									}}
+								>
+									<ActionButton
+										pos="absolute"
+										size="lg"
+										top={20}
+										left={20}
+										label="All articles"
+										onClick={readingHandle.close}
+										style={{ zIndex: 1, backdropFilter: "blur(4px)" }}
 									>
-										No news items available
+										<Icon path={iconArrowLeft} />
+									</ActionButton>
+
+									<ActionButton
+										pos="absolute"
+										size="lg"
+										top={20}
+										right={20}
+										label="Close"
+										onClick={openHandle.close}
+										style={{ zIndex: 1, backdropFilter: "blur(4px)" }}
+									>
+										<Icon path={iconClose} />
+									</ActionButton>
+								</Box>
+								<Box
+									p="xl"
+									pt="xs"
+									mt={-42}
+								>
+									<Title
+										fz={28}
+										c="bright"
+										pos="relative"
+									>
+										{reading.title}
+									</Title>
+									<Text
+										mt="lg"
+										fz="lg"
+									>
+										{format(reading.published, "MMMM d, yyyy - h:mm a")}
 									</Text>
-								) : (
-									<Stack gap="xl">
-										{newsQuery.data?.map((item, i) => (
-											<Fragment key={i}>
-												<UnstyledButton onClick={() => readArticle(item)}>
-													<Image
-														src={item.thumbnail}
-														radius="lg"
-														mb="lg"
+									<Divider my="xl" />
+									<TypographyStylesProvider
+										fz={14}
+										className={classes.newsPostContent}
+										// biome-ignore lint/security/noDangerouslySetInnerHtml: Replace with markdown
+										dangerouslySetInnerHTML={{
+											__html: content,
+										}}
+									/>
+									{reading.link && (
+										<Alert
+											mt="xl"
+											color="surreal.2"
+											py={0}
+										>
+											<Link
+												my="lg"
+												display="block"
+												href={reading.link}
+											>
+												<Text
+													c="surreal"
+													fw={600}
+													fz={14}
+												>
+													Read on surrealdb.com
+													<Icon
+														path={iconArrowUpRight}
+														right
 													/>
-													<Flex align="center">
-														<Text c="slate">
-															{dayjs(item.published).fromNow()}
-														</Text>
-														{unread.includes(item.id) && (
-															<Badge
-																color="surreal"
-																size="xs"
-																ml="sm"
-																h={14}
-															>
-																New post
-															</Badge>
-														)}
-													</Flex>
-													<Title
-														fz={18}
-														c="bright"
-														mt={4}
-													>
-														{item.title}
-													</Title>
-													<Text py="sm">{item.description}</Text>
-													<Text
-														c="surreal"
-														fw={600}
-													>
-														Read more
-														<Icon
-															path={iconChevronRight}
-															right
-														/>
-													</Text>
-												</UnstyledButton>
-												{i < newsQuery.data?.length - 1 && <Divider />}
-											</Fragment>
-										))}
-									</Stack>
-								)}
+												</Text>
+											</Link>
+										</Alert>
+									)}
+								</Box>
 							</ScrollArea>
-						</Box>
-					)}
-				</Transition>
-			</Drawer>
-		</>
+						)}
+					</Box>
+				)}
+			</Transition>
+
+			<Transition
+				mounted={!isReading}
+				transition="fade"
+			>
+				{(styles) => (
+					<Box
+						pos="absolute"
+						style={styles}
+						inset={0}
+					>
+						<Title
+							fz={20}
+							c="bright"
+							m="xl"
+						>
+							Latest news
+						</Title>
+						<ScrollArea
+							pos="absolute"
+							style={{ width: "var(--drawer-size-md)" }}
+							left={0}
+							bottom={0}
+							top={64}
+							p="lg"
+						>
+							{newsQuery.isPending ? (
+								<Loader
+									mt={32}
+									mx="auto"
+									display="block"
+								/>
+							) : isEmpty ? (
+								<Text
+									mt={68}
+									c="slate"
+									ta="center"
+								>
+									No blog articles available
+								</Text>
+							) : (
+								<Stack gap="xl">
+									{newsQuery.data?.map((item, i) => (
+										<Fragment key={i}>
+											<UnstyledButton
+												onClick={() => readArticle(item)}
+												className={classes.newsItem}
+											>
+												<Image
+													src={item.thumbnail}
+													radius="lg"
+													mb="lg"
+												/>
+												<Flex align="center">
+													<Text py="xs">
+														{dayjs(item.published).fromNow()}
+													</Text>
+													{unread.includes(item.id) && (
+														<Badge
+															variant="light"
+															color="violet"
+															ml="sm"
+														>
+															New
+														</Badge>
+													)}
+												</Flex>
+												<Title
+													fz={18}
+													c="bright"
+													mt={4}
+												>
+													{item.title}
+												</Title>
+												<Text py="sm">{item.description}</Text>
+												<Group
+													mt="sm"
+													gap="xs"
+												>
+													<Text c="surreal">Read article</Text>
+													<Icon
+														className={classes.newsItemArrow}
+														path={iconArrowLeft}
+														c="surreal"
+													/>
+												</Group>
+											</UnstyledButton>
+											{i < newsQuery.data?.length - 1 && <Divider />}
+										</Fragment>
+									))}
+								</Stack>
+							)}
+						</ScrollArea>
+					</Box>
+				)}
+			</Transition>
+		</Drawer>
 	);
 }

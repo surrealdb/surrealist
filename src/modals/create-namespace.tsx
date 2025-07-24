@@ -39,7 +39,7 @@ function CreateNamespace() {
 		<Form onSubmit={mutateAsync}>
 			<Stack>
 				<Text>
-					Namespaces represent a layer of separation for each organization, department, or
+					Namespaces represent a layer of separation for each organisation, department, or
 					development team.
 				</Text>
 				<TextInput
@@ -69,6 +69,7 @@ function CreateNamespace() {
 						variant="gradient"
 						flex={1}
 						loading={isPending}
+						disabled={!namespaceName}
 						rightSection={<Icon path={iconPlus} />}
 					>
 						Create

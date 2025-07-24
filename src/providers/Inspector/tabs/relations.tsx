@@ -1,5 +1,4 @@
-import { Paper, Text } from "@mantine/core";
-import { Group, ScrollArea } from "@mantine/core";
+import { Group, Paper, ScrollArea, Text } from "@mantine/core";
 import type { RecordId } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
@@ -29,7 +28,7 @@ function RelationsList({ name, relations }: RelationsListProps) {
 				</Text>
 			)}
 
-			{relations.map((relation, i) => (
+			{relations.map((relation, _i) => (
 				<Group
 					key={relation.toString()}
 					gap="xs"

@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
-import { useCloudAuthentication } from "~/hooks/cloud";
+import { adapter } from "~/adapter";
+import { useCloudAuthentication } from "./hooks/cloud";
 import { useConnectionSwitch } from "./hooks/connection";
 import { useKeybindListener, useModKeyTracker } from "./hooks/input";
 import { useIntercom } from "./hooks/intercom";
+import { useNativeMenuBar } from "./hooks/menu";
 import { useGlobalModals } from "./hooks/modals";
 import { usePolicyAlert } from "./hooks/policy";
 import { useAppRouter } from "./hooks/routing";
@@ -22,6 +24,13 @@ export function Globals(): ReactNode {
 	useAppRouter();
 	useIntercom();
 	usePolicyAlert();
+
+	// While calling hooks conditionally is usually not a good idea,
+	// this is an exception since the adapter will never change.
+	if (adapter.id === "desktop" && adapter.platform === "darwin") {
+		// biome-ignore lint/correctness/useHookAtTopLevel: Adapters are never mutated
+		useNativeMenuBar();
+	}
 
 	return;
 }

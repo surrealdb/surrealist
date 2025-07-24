@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
 import type { MouseEvent } from "react";
-import cloudLogo from "~/assets/images/cloud-icon.webp";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
@@ -42,7 +42,7 @@ export function CloudExpiredDialog() {
 		>
 			<Group>
 				<Image
-					src={cloudLogo}
+					src={cloudUrl}
 					alt="Surreal Cloud"
 					w={48}
 				/>
@@ -51,9 +51,9 @@ export function CloudExpiredDialog() {
 						fw={600}
 						c="bright"
 					>
-						Your Surreal Cloud session has expired
+						Your session has expired
 					</Text>
-					<Text mt={4}>Click here to authenticate again</Text>
+					<Text mt={2}>Please click here to sign in again and renew your session.</Text>
 				</Box>
 				<ActionIcon
 					size="lg"

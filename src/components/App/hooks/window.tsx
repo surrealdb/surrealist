@@ -30,7 +30,7 @@ export function useWindowSettings() {
 		setWindowPinned(!windowPinned);
 	});
 
-	const openQueryFile = useStable(() => {
+	const _openQueryFile = useStable(() => {
 		if (adapter instanceof DesktopAdapter) {
 			adapter.openQueryFile();
 		}

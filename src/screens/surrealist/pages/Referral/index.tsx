@@ -1,29 +1,12 @@
-import cloudImg from "~/assets/images/cloud-icon.webp";
-import classes from "./style.module.scss";
-
-import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
-import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
-import tier2DarkUrl from "~/assets/images/dark/referral-tier-2.png";
-import tier3DarkUrl from "~/assets/images/dark/referral-tier-3.png";
-import tier4DarkUrl from "~/assets/images/dark/referral-tier-4.png";
-import tier5DarkUrl from "~/assets/images/dark/referral-tier-5.png";
-
-import iconLightUrl from "~/assets/images/light/referral-icon.png";
-import logoLightUrl from "~/assets/images/light/referral-logo.png";
-import tier1LightUrl from "~/assets/images/light/referral-tier-1.png";
-import tier2LightUrl from "~/assets/images/light/referral-tier-2.png";
-import tier3LightUrl from "~/assets/images/light/referral-tier-3.png";
-import tier4LightUrl from "~/assets/images/light/referral-tier-4.png";
-import tier5LightUrl from "~/assets/images/light/referral-tier-5.png";
-
 import {
 	ActionIcon,
 	Box,
 	Button,
-	Center,
 	CopyButton,
 	Group,
 	Image,
+	Paper,
+	PaperProps,
 	Progress,
 	ScrollArea,
 	SimpleGrid,
@@ -33,25 +16,34 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
-
 import { ReactNode } from "react";
-import { adapter } from "~/adapter";
-import { openCloudAuthentication } from "~/cloud/api/auth";
+import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
+import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
+import tier2DarkUrl from "~/assets/images/dark/referral-tier-2.png";
+import tier3DarkUrl from "~/assets/images/dark/referral-tier-3.png";
+import tier4DarkUrl from "~/assets/images/dark/referral-tier-4.png";
+import tier5DarkUrl from "~/assets/images/dark/referral-tier-5.png";
+import iconLightUrl from "~/assets/images/light/referral-icon.png";
+import tier1LightUrl from "~/assets/images/light/referral-tier-1.png";
+import tier2LightUrl from "~/assets/images/light/referral-tier-2.png";
+import tier3LightUrl from "~/assets/images/light/referral-tier-3.png";
+import tier4LightUrl from "~/assets/images/light/referral-tier-4.png";
+import tier5LightUrl from "~/assets/images/light/referral-tier-5.png";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { CloudSplash } from "~/components/CloudSplash";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Slab, SlabProps } from "~/components/Slab";
-import { TopGlow } from "~/components/TopGlow";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconCheck, iconChevronRight, iconCopy, iconHelp, iconOpen } from "~/util/icons";
+import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
+import classes from "./style.module.scss";
 
 const REWARDS = [1, 10, 25, 100, 500];
 
-interface RewardProps extends Omit<SlabProps, "title"> {
+interface RewardProps extends Omit<PaperProps, "title"> {
 	title: ReactNode;
 	description: ReactNode;
 	icon: string;
@@ -62,7 +54,10 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Slab {...other}>
+		<Paper
+			{...other}
+			variant="gradient"
+		>
 			<Box
 				p="xl"
 				c={!isLight && active ? "white" : undefined}
@@ -86,7 +81,7 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 				</Text>
 				<Box opacity={0.75}>{description}</Box>
 			</Box>
-		</Slab>
+		</Paper>
 	);
 }
 
@@ -96,7 +91,7 @@ export function ReferralPage() {
 	const isAuthed = useIsAuthenticated();
 	const isLight = useIsLight();
 
-	const referralLink = `https://surrealist.app/referral?code=${referralCodeQuery.data}`;
+	const referralLink = `https://app.surrealdb.com/referral?code=${referralCodeQuery.data}`;
 	const shareOptions = {
 		title: "Surreal Cloud",
 		text: "Use my referral link to get started today!",
@@ -116,8 +111,6 @@ export function ReferralPage() {
 			flex={1}
 			pos="relative"
 		>
-			<TopGlow offset={200} />
-
 			{isAuthed ? (
 				<ScrollArea
 					pos="absolute"
@@ -125,28 +118,32 @@ export function ReferralPage() {
 					type="scroll"
 					inset={0}
 					className={classes.scrollArea}
-					viewportProps={{
-						style: { paddingBlock: 75 },
-					}}
+					mt={18}
 				>
 					<Stack
-						w="100%"
-						maw={1100}
+						px="xl"
 						mx="auto"
-						gap={38}
-						pos="relative"
+						maw={1200}
+						pb={68}
 					>
 						<Box>
-							<PrimaryTitle fz={26}>Referral Program</PrimaryTitle>
-							<Text fz="xl">
-								Earn rewards for referring your friends and contacts
-							</Text>
+							<PageBreadcrumbs
+								items={[
+									{ label: "Surrealist", href: "/overview" },
+									{ label: "Referral Program" },
+								]}
+							/>
+							<PrimaryTitle
+								fz={32}
+								mt="sm"
+							>
+								Referral Program
+							</PrimaryTitle>
 						</Box>
 
-						<Slab
+						<Paper
 							p="xl"
-							shadow="md"
-							radius={28}
+							variant="gradient"
 						>
 							<Group gap={0}>
 								<Box style={{ alignSelf: "start" }}>
@@ -225,10 +222,10 @@ export function ReferralPage() {
 									</Box>
 								</Stack>
 							</Group>
-						</Slab>
+						</Paper>
 
-						<Box>
-							<PrimaryTitle>Progress</PrimaryTitle>
+						<Box mt={36}>
+							<PrimaryTitle fz={22}>Progress</PrimaryTitle>
 							<Text>
 								You have referred{" "}
 								<Text
@@ -253,7 +250,7 @@ export function ReferralPage() {
 								users to unlock the next reward.
 							</Text>
 							<Progress
-								mt="md"
+								mt="lg"
 								value={progress}
 								bg={isLight ? "slate.2" : "slate"}
 								styles={{
@@ -268,8 +265,8 @@ export function ReferralPage() {
 							/>
 						</Box>
 
-						<Box>
-							<PrimaryTitle>Rewards</PrimaryTitle>
+						<Box mt={36}>
+							<PrimaryTitle fz={22}>Unlockable rewards</PrimaryTitle>
 							<SimpleGrid
 								mt="sm"
 								cols={{ base: 1, xs: 3, sm: 2, md: 3, lg: 5 }}
@@ -332,8 +329,8 @@ export function ReferralPage() {
 							</SimpleGrid>
 						</Box>
 
-						<Box>
-							<PrimaryTitle>How does this work?</PrimaryTitle>
+						<Box mt={36}>
+							<PrimaryTitle fz={22}>How does this work?</PrimaryTitle>
 							<SimpleGrid
 								mt="sm"
 								cols={{
@@ -341,7 +338,10 @@ export function ReferralPage() {
 									md: 3,
 								}}
 							>
-								<Slab p="xl">
+								<Paper
+									p="xl"
+									variant="gradient"
+								>
 									<Text
 										fw={600}
 										fz={18}
@@ -354,8 +354,11 @@ export function ReferralPage() {
 										and share it with friends, family, or anyone you think would
 										benefit from our services.
 									</Text>
-								</Slab>
-								<Slab p="xl">
+								</Paper>
+								<Paper
+									p="xl"
+									variant="gradient"
+								>
 									<Text
 										fw={600}
 										fz={18}
@@ -367,8 +370,11 @@ export function ReferralPage() {
 										When someone uses your link to sign up, they'll get a
 										special reward or discount as a welcome gift.
 									</Text>
-								</Slab>
-								<Slab p="xl">
+								</Paper>
+								<Paper
+									p="xl"
+									variant="gradient"
+								>
 									<Text
 										fw={600}
 										fz={18}
@@ -381,7 +387,7 @@ export function ReferralPage() {
 										making a purchase or reaching a milestone), you'll receive
 										your reward too!
 									</Text>
-								</Slab>
+								</Paper>
 							</SimpleGrid>
 						</Box>
 					</Stack>

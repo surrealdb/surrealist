@@ -1,14 +1,3 @@
-import {
-	iconChevronRight,
-	iconDesigner,
-	iconDownload,
-	iconExplorer,
-	iconOpen,
-	iconPlus,
-	iconTable,
-	iconUpload,
-} from "~/util/icons";
-
 import { Box, Button, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { memo, useState } from "react";
@@ -27,7 +16,17 @@ import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { DisconnectedEvent } from "~/util/global-events";
+import { ActivateDatabaseEvent, DisconnectedEvent } from "~/util/global-events";
+import {
+	iconChevronRight,
+	iconDesigner,
+	iconDownload,
+	iconExplorer,
+	iconOpen,
+	iconPlus,
+	iconTable,
+	iconUpload,
+} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
@@ -45,13 +44,17 @@ export function ExplorerView() {
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
 	const [connection] = useConnectionAndView();
 	const openTableCreator = useRequireDatabase(_openTableCreator);
+	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
+	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"));
 
 	const [activeTable, setActiveTable] = useState<string>();
 	const [isCreating, isCreatingHandle] = useDisclosure();
 	const [creatorTable, setCreatorTable] = useState<string>();
+	const [creatorContent, setCreatorContent] = useState<any>();
 
-	const openCreator = useStable((table?: string) => {
+	const openCreator = useStable((table?: string, content?: any) => {
 		setCreatorTable(table || activeTable);
+		setCreatorContent(content);
 		isCreatingHandle.open();
 	});
 
@@ -85,10 +88,13 @@ export function ExplorerView() {
 		});
 	});
 
-	useEventSubscription(DisconnectedEvent, () => {
+	const resetTable = useStable(() => {
 		isCreatingHandle.close();
 		setActiveTable(undefined);
 	});
+
+	useEventSubscription(DisconnectedEvent, resetTable);
+	useEventSubscription(ActivateDatabaseEvent, resetTable);
 
 	useIntent("explore-table", ({ table }) => {
 		setActiveTable(table);
@@ -105,6 +111,9 @@ export function ExplorerView() {
 			<Box
 				h="100%"
 				ref={ref}
+				pr="lg"
+				pb="lg"
+				pl={{ base: "lg", md: 0 }}
 			>
 				<PanelGroup
 					direction="horizontal"
@@ -131,7 +140,7 @@ export function ExplorerView() {
 											<Entry
 												leftSection={<Icon path={iconUpload} />}
 												rightSection={<Icon path={iconChevronRight} />}
-												onClick={() => dispatchIntent("export-database")}
+												onClick={exportDatabase}
 												style={{ flexShrink: 0 }}
 												bg="transparent"
 											>
@@ -140,7 +149,7 @@ export function ExplorerView() {
 											<Entry
 												leftSection={<Icon path={iconDownload} />}
 												rightSection={<Icon path={iconChevronRight} />}
-												onClick={() => dispatchIntent("import-database")}
+												onClick={importDatabase}
 												style={{ flexShrink: 0 }}
 												bg="transparent"
 											>
@@ -216,6 +225,7 @@ export function ExplorerView() {
 			<CreatorDrawer
 				opened={isCreating}
 				table={creatorTable || ""}
+				content={creatorContent}
 				onClose={isCreatingHandle.close}
 			/>
 		</>

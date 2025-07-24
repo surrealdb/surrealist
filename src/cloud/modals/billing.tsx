@@ -9,14 +9,13 @@ import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useOrganization } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
 import { useCloudBillingQuery } from "../queries/billing";
 
-export async function openBillingDetails() {
+export async function openBillingDetails(organization: CloudOrganization) {
 	return new Promise<void>((resolve) => {
 		openModal({
 			modalId: "billing",
@@ -32,13 +31,16 @@ export async function openBillingDetails() {
 					<PrimaryTitle>Billing Details</PrimaryTitle>
 				</Group>
 			),
-			children: <BillingDetailsModal />,
+			children: <BillingDetailsModal organization={organization} />,
 		});
 	});
 }
 
-function BillingDetailsModal() {
-	const organization = useOrganization();
+interface BillingDetailsModalProps {
+	organization: CloudOrganization;
+}
+
+function BillingDetailsModal({ organization }: BillingDetailsModalProps) {
 	const details = useCloudBillingQuery(organization?.id);
 
 	return details.data && organization ? (
@@ -54,10 +56,23 @@ function BillingDetailsModal() {
 interface BillingFormProps {
 	organization: CloudOrganization;
 	details: CloudBilling;
+	callback?: () => void;
 }
 
-function BillingForm({ organization, details }: BillingFormProps) {
-	const [data, setData] = useImmer(details);
+function BillingForm({ organization, details, callback }: BillingFormProps) {
+	const [data, setData] = useImmer({
+		Name: details.Name || "",
+		Email: details.Email || "",
+		AddressLine1: details.AddressLine1 || "",
+		AddressLine2: details.AddressLine2 || "",
+		City: details.City || "",
+		Zipcode: details.Zipcode || "",
+		State: details.State || "",
+		Country: details.Country || "",
+		LegalName: details.LegalName || "",
+		TaxIdentificationNumber: details.TaxIdentificationNumber || "",
+		Phone: details.Phone || "",
+	});
 	const [isLoading, setLoading] = useState(false);
 	const queryClient = useQueryClient();
 
@@ -130,12 +145,20 @@ function BillingForm({ organization, details }: BillingFormProps) {
 			queryClient.invalidateQueries({
 				queryKey: ["cloud", "billing", organization.id],
 			});
+
+			queryClient.invalidateQueries({
+				queryKey: ["cloud", "organizations"],
+			});
 		} catch (err: any) {
 			if (err instanceof ApiError) {
 				setError(err.reason);
 			}
 		} finally {
 			setLoading(false);
+
+			if (callback) {
+				callback();
+			}
 		}
 	});
 
@@ -217,18 +240,18 @@ function BillingForm({ organization, details }: BillingFormProps) {
 								d.Phone = e.target.value;
 							})
 						}
-					/>
+					/>{" "}
 					<Select
 						label="Country"
 						required
 						searchable
 						data={countryList}
-						value={data.Country}
+						value={data.Country || ""}
 						onBlur={updateValidation}
 						data-1p-ignore
 						onChange={(v) =>
 							setData((d) => {
-								d.Country = v as string;
+								d.Country = v || "";
 							})
 						}
 					/>

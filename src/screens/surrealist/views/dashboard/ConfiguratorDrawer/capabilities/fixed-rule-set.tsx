@@ -18,15 +18,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
 import { Selectable } from "~/types";
 import { plural } from "~/util/helpers";
-import {
-	iconCancel,
-	iconCheck,
-	iconChevronDown,
-	iconChevronUp,
-	iconCloud,
-	iconHelp,
-	iconReset,
-} from "~/util/icons";
+import { iconCancel, iconCheck, iconChevronDown, iconChevronUp, iconHelp } from "~/util/icons";
 
 import {
 	BASE_STATUS,
@@ -34,8 +26,8 @@ import {
 	CapabilityBaseProps,
 	CapabilityField,
 	CheckboxGrid,
-	RuleSetBase,
 	isWildcard,
+	RuleSetBase,
 } from "./shared";
 
 export interface FixedRuleSetCapabilityProps extends CapabilityBaseProps {
@@ -64,15 +56,12 @@ export function FixedRuleSetCapability({
 	let defaultBase: BaseValue;
 	let defaultList: string[];
 
-	if (isWildcard(allowed) && !isWildcard(denied)) {
+	if (isWildcard(allowed)) {
 		defaultBase = "allowed";
 		defaultList = denied;
-	} else if (!isWildcard(allowed) && isWildcard(denied)) {
+	} else {
 		defaultBase = "denied";
 		defaultList = allowed;
-	} else {
-		defaultBase = "default";
-		defaultList = [];
 	}
 
 	const [base, setBase] = useState<BaseValue>(defaultBase);
@@ -83,13 +72,7 @@ export function FixedRuleSetCapability({
 		const dataValues = data.map((item) => item.value);
 		const enabled = dataValues.filter((item) => list.includes(item));
 
-		if (base === "default") {
-			onChange({
-				...value,
-				[allowedField]: [],
-				[deniedField]: [],
-			});
-		} else if (base === "allowed") {
+		if (base === "allowed") {
 			onChange({
 				...value,
 				[allowedField]: ["*"],
@@ -104,10 +87,8 @@ export function FixedRuleSetCapability({
 		}
 	}, [base, list, allowedField, deniedField]);
 
-	const listCount = base === "default" ? 0 : list.length;
-	const statusSuffix = listCount > 0 && ` (${listCount} ${plural(listCount, "exception")})`;
-
-	const noteIcon = base === "default" ? iconCloud : base === "allowed" ? iconCancel : iconCheck;
+	const statusSuffix = list.length > 0 && ` (${list.length} ${plural(list.length, "exception")})`;
+	const noteIcon = base === "allowed" ? iconCancel : iconCheck;
 
 	return (
 		<Box>
@@ -152,15 +133,7 @@ export function FixedRuleSetCapability({
 			</UnstyledButton>
 			<Collapse in={isExpanded}>
 				<Box pt="xs">
-					<SimpleGrid cols={3}>
-						<RuleSetBase
-							color="orange"
-							icon={iconReset}
-							active={base}
-							value="default"
-							title="Managed defaults"
-							onChange={setBase}
-						/>
+					<SimpleGrid cols={2}>
 						<RuleSetBase
 							color="green"
 							icon={iconCheck}
@@ -194,49 +167,28 @@ export function FixedRuleSetCapability({
 								<Icon path={noteIcon} />
 							</ThemeIcon>
 							<Box>
-								{base === "default" ? (
-									<>
-										<Text
-											fw={600}
-											c="bright"
-										>
-											Configuration managed by Surreal Cloud
-										</Text>
-										<Text>
-											Select another option to customize configuration
-										</Text>
-									</>
-								) : (
-									<>
-										<Text
-											fw={600}
-											c="bright"
-										>
-											Configure {base === "allowed" ? "denied" : "allowed"}{" "}
-											{topic}
-										</Text>
-										<Text>
-											Select individual {topic} to{" "}
-											{base === "allowed" ? "deny" : "allow"}
-										</Text>
-									</>
-								)}
+								<Text
+									fw={600}
+									c="bright"
+								>
+									Configure {base === "allowed" ? "denied" : "allowed"} {topic}
+								</Text>
+								<Text>
+									Select individual {topic} to{" "}
+									{base === "allowed" ? "deny" : "allow"}
+								</Text>
 							</Box>
 						</Group>
-						{base !== "default" && (
-							<>
-								<Divider my="md" />
-								<Box p={4}>
-									<CheckboxGrid
-										data={data}
-										columns={4}
-										value={list}
-										base={base}
-										onChange={setList}
-									/>
-								</Box>
-							</>
-						)}
+						<Divider my="md" />
+						<Box p={4}>
+							<CheckboxGrid
+								data={data}
+								columns={4}
+								value={list}
+								base={base}
+								onChange={setList}
+							/>
+						</Box>
 					</Paper>
 				</Box>
 			</Collapse>

@@ -1,15 +1,3 @@
-import classes from "./style.module.scss";
-
-import {
-	iconArrowLeftFat,
-	iconClose,
-	iconDelete,
-	iconJSON,
-	iconRefresh,
-	iconSearch,
-	iconTransfer,
-} from "~/util/icons";
-
 import { Center, Drawer, Group, Paper, Tabs, Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useEffect, useState } from "react";
@@ -26,8 +14,18 @@ import { useStable } from "~/hooks/stable";
 import { useValueValidator } from "~/hooks/surrealql";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
+import {
+	iconArrowLeftFat,
+	iconClose,
+	iconDelete,
+	iconJSON,
+	iconRefresh,
+	iconSearch,
+	iconTransfer,
+} from "~/util/icons";
 import { formatValue, parseValue } from "~/util/surrealql";
 import { useConfirmation } from "../Confirmation";
+import classes from "./style.module.scss";
 import { ContentTab } from "./tabs/content";
 import { RelationsTab } from "./tabs/relations";
 
@@ -73,7 +71,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			setRecordBody(original.recordBody);
 			setError("");
 		},
-		onSave: async () => {
+		onSave: async (_original, isApply) => {
 			const id = history.current;
 
 			const [{ success, result }] = await executeQuery(
@@ -90,7 +88,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			}
 
 			onRefresh();
-			onClose();
+
+			if (!isApply) {
+				onClose();
+			}
 		},
 	});
 
@@ -140,6 +141,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	const deleteRecord = useConfirmation({
 		message: "You are about to delete this record. This action cannot be undone.",
 		confirmText: "Delete",
+		skippable: true,
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `DELETE ${formatValue(history.current)}`);
 

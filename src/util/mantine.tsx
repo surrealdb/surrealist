@@ -2,6 +2,7 @@ import {
 	ActionIcon,
 	Alert,
 	Checkbox,
+	createTheme,
 	Drawer,
 	HoverCard,
 	Indicator,
@@ -10,6 +11,7 @@ import {
 	Paper,
 	Popover,
 	Radio,
+	rem,
 	Select,
 	Slider,
 	Switch,
@@ -17,8 +19,6 @@ import {
 	TagsInput,
 	TextInput,
 	Tooltip,
-	createTheme,
-	rem,
 } from "@mantine/core";
 
 export const PRIMARY_COLOR = "surreal.5";
@@ -242,17 +242,9 @@ export const MANTINE_THEME = createTheme({
 		Tooltip: Tooltip.extend({
 			defaultProps: {
 				transitionProps: { transition: "pop" },
+				withArrow: true,
+				arrowSize: 10,
 				radius: "xs",
-				p: "sm",
-			},
-			styles: {
-				tooltip: {
-					color: "white",
-					padding: 4,
-					backgroundColor: "rgba(0, 0, 0, 0.7)",
-					backdropFilter: "blur(4px)",
-					WebkitBackdropFilter: "blur(4px)",
-				},
 			},
 		}),
 		Drawer: Drawer.extend({

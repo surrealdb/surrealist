@@ -1,5 +1,10 @@
-import classes from "./style.module.scss";
-
+import { Box, Paper, SimpleGrid, Stack, Text, UnstyledButton } from "@mantine/core";
+import { closeAllModals } from "@mantine/modals";
+import type { PropsWithChildren } from "react";
+import { useLocation } from "wouter";
+import { adapter } from "~/adapter";
+import { openAccountSupport } from "~/cloud/modals/account-support";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import {
 	iconAPI,
 	iconBook,
@@ -14,33 +19,19 @@ import {
 	iconUniversity,
 	iconVideo,
 } from "~/util/icons";
-
-import { Box, SimpleGrid, Stack, UnstyledButton } from "@mantine/core";
-import { Text } from "@mantine/core";
-import { closeAllModals } from "@mantine/modals";
-import clsx from "clsx";
-import type { PropsWithChildren } from "react";
-import { useLocation } from "wouter";
-import { adapter } from "~/adapter";
-import { openAccountSupport } from "~/cloud/modals/account-support";
-import { useSurrealCloud } from "~/hooks/cloud";
-import { useIsLight } from "~/hooks/theme";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
+import classes from "./style.module.scss";
 
-export interface HelpCenterProps {
-	onBody?: boolean;
-}
-
-export function HelpCenter({ onBody }: HelpCenterProps) {
-	const showCloud = useSurrealCloud();
+export function HelpCenter() {
+	const showCloud = useIsCloudEnabled();
 	const [, navigate] = useLocation();
 
 	return (
 		<Stack
 			gap={32}
-			className={clsx(classes.root, onBody && classes.onBody)}
+			className={classes.root}
 		>
 			<HelpSection title="Community">
 				<HelpTile
@@ -162,42 +153,43 @@ interface HelpTileProps {
 }
 
 function HelpTile({ title, description, icon, noIconStroke, onClick }: HelpTileProps) {
-	const isLight = useIsLight();
-
 	return (
 		<UnstyledButton
-			p="lg"
-			bg={isLight ? "slate.0" : "slate.7"}
-			className={classes.helpTile}
 			onClick={() => {
 				closeAllModals();
 				onClick?.();
 			}}
 		>
-			<Icon
-				path={icon}
-				c="bright"
-				size="lg"
-				noStroke={noIconStroke}
-				mb="lg"
-				mr="md"
-			/>
-			<Box>
-				<Text
+			<Paper
+				variant="interactive"
+				className={classes.helpTile}
+				p="lg"
+			>
+				<Icon
+					path={icon}
 					c="bright"
-					fw={600}
-					fz="lg"
-					mt={1}
-				>
-					{title}
-				</Text>
-				<Text
-					fz="sm"
-					mt="xs"
-				>
-					{description}
-				</Text>
-			</Box>
+					size="lg"
+					noStroke={noIconStroke}
+					mb="lg"
+					mr="md"
+				/>
+				<Box>
+					<Text
+						c="bright"
+						fw={600}
+						fz="lg"
+						mt={1}
+					>
+						{title}
+					</Text>
+					<Text
+						fz="sm"
+						mt="xs"
+					>
+						{description}
+					</Text>
+				</Box>
+			</Paper>
 		</UnstyledButton>
 	);
 }

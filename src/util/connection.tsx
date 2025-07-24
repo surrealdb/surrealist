@@ -2,7 +2,7 @@ import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
-import type { AuthLevel, Authentication, CloudInstance } from "~/types";
+import type { Authentication, AuthLevel, CloudInstance } from "~/types";
 import { createBaseConnection } from "./defaults";
 import { connectionUri, fastParseJwt } from "./helpers";
 

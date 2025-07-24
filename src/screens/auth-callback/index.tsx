@@ -1,11 +1,10 @@
-import classes from "./style.module.scss";
-
 import { Button, List, MantineProvider, Paper, Stack, Text } from "@mantine/core";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { isDevelopment } from "~/util/environment";
 import { MANTINE_THEME } from "~/util/mantine";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
+import classes from "./style.module.scss";
 
 type Result = "redirect" | "launch" | "error" | "close" | "verify";
 
@@ -159,9 +158,7 @@ export function AuthCallbackScreen() {
 						</Text>
 						<Text c="slate">You can close this page once the app has opened</Text>
 					</>
-				) : (
-					<></>
-				)}
+				) : null}
 			</Stack>
 		</MantineProvider>
 	);

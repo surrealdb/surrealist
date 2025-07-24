@@ -1,17 +1,3 @@
-import classes from "./style.module.scss";
-
-import {
-	iconAPI,
-	iconChevronLeft,
-	iconDelete,
-	iconPin,
-	iconPinOff,
-	iconPlus,
-	iconRelation,
-	iconSearch,
-	iconTable,
-} from "~/util/icons";
-
 import { Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
@@ -23,6 +9,7 @@ import { Entry } from "~/components/Entry";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
+import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
@@ -33,8 +20,23 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { TableVariant } from "~/types";
+import { RecordsChangedEvent } from "~/util/global-events";
 import { fuzzyMultiMatch } from "~/util/helpers";
-import { extractEdgeRecords, syncConnectionSchema } from "~/util/schema";
+import {
+	iconAPI,
+	iconChevronLeft,
+	iconDelete,
+	iconPin,
+	iconPinOff,
+	iconPlus,
+	iconReset,
+	iconSearch,
+} from "~/util/icons";
+import { getTableVariant, syncConnectionSchema } from "~/util/schema";
+import classes from "./style.module.scss";
+
+const VARIANT_ORDER: TableVariant[] = ["normal", "view", "relation"];
 
 export interface TablesPaneProps {
 	icon?: string;
@@ -76,10 +78,10 @@ export function TablesPane({
 			: schema;
 
 		return sort(tables, (table) => {
-			const [isEdge] = extractEdgeRecords(table);
+			const variant = getTableVariant(table);
 			const pinned = pinnedTables.includes(table.schema.name);
 
-			return Number(isEdge) - (pinned ? 999 : 0);
+			return VARIANT_ORDER.indexOf(variant) - (pinned ? 999 : 0);
 		});
 	}, [pinnedTables, schema, search]);
 
@@ -93,6 +95,7 @@ export function TablesPane({
 		message:
 			"You are about to remove this table and all data contained within it. This action cannot be undone.",
 		confirmText: "Remove",
+		skippable: true,
 		onConfirm: async (table: string) => {
 			await executeQuery(`REMOVE TABLE ${escapeIdent(table)}`);
 			await syncConnectionSchema({
@@ -102,6 +105,16 @@ export function TablesPane({
 			if (activeTable === table) {
 				onTableSelect("");
 			}
+		},
+	});
+
+	const clearTable = useConfirmation({
+		message: "You are about to clear all records in this table. This action cannot be undone.",
+		confirmText: "Clear",
+		skippable: true,
+		onConfirm: async (table: string) => {
+			await executeQuery(`DELETE ${escapeIdent(table)}`);
+			RecordsChangedEvent.dispatch(null);
 		},
 	});
 
@@ -194,7 +207,7 @@ export function TablesPane({
 						{tablesFiltered.map((table) => {
 							const isActive = activeTable === table.schema.name;
 							const isPinned = pinnedTables.includes(table.schema.name);
-							const [isEdge] = extractEdgeRecords(table);
+							const variant = getTableVariant(table);
 
 							return (
 								<Entry
@@ -223,6 +236,13 @@ export function TablesPane({
 											key: "divider-2",
 										},
 										{
+											key: "clear",
+											title: "Clear table",
+											color: "pink.7",
+											icon: <Icon path={iconReset} />,
+											onClick: () => clearTable(table.schema.name),
+										},
+										{
 											key: "remove",
 											title: "Remove table",
 											color: "pink.7",
@@ -230,7 +250,7 @@ export function TablesPane({
 											onClick: () => removeTable(table.schema.name),
 										},
 									])}
-									leftSection={<Icon path={isEdge ? iconRelation : iconTable} />}
+									leftSection={<Icon path={TABLE_VARIANT_ICONS[variant]} />}
 									rightSection={
 										isPinned && (
 											<Icon

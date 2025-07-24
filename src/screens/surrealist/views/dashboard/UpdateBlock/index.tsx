@@ -1,4 +1,5 @@
 import { Alert, Box, Button, Group } from "@mantine/core";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
@@ -6,14 +7,16 @@ import { openSurrealChangelog } from "~/util/cloud";
 import { iconOpen, iconReset } from "~/util/icons";
 
 export interface UpdateBlockProps {
-	instance: CloudInstance | undefined;
+	instance: CloudInstance;
+	isLoading: boolean;
 	onUpdate: (version: string) => void;
+	onVersions: () => void;
 }
 
-export function UpdateBlock({ instance, onUpdate }: UpdateBlockProps) {
-	const versions = instance?.available_versions ?? [];
-	const latest = versions[0] ?? "";
-	const visible = latest && instance?.state === "ready";
+export function UpdateBlock({ instance, isLoading, onUpdate, onVersions }: UpdateBlockProps) {
+	const latest = instance.available_versions[0] ?? "";
+	const canUpdate = useHasOrganizationRole(instance.organization_id, "admin");
+	const visible = latest && instance.state === "ready" && !isLoading && canUpdate;
 
 	const handleUpdate = useStable(() => {
 		onUpdate(latest);
@@ -25,6 +28,7 @@ export function UpdateBlock({ instance, onUpdate }: UpdateBlockProps) {
 				color="violet"
 				title="Update available"
 				icon={<Icon path={iconReset} />}
+				mb={6}
 			>
 				<Box>Your instance can be updated to SurrealDB {latest}</Box>
 				<Group mt="md">
@@ -43,6 +47,14 @@ export function UpdateBlock({ instance, onUpdate }: UpdateBlockProps) {
 						onClick={() => openSurrealChangelog(latest)}
 					>
 						View changelog
+					</Button>
+					<Button
+						size="xs"
+						color="slate"
+						variant="light"
+						onClick={onVersions}
+					>
+						View all versions
 					</Button>
 				</Group>
 			</Alert>

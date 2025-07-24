@@ -28,7 +28,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
-import { showError, showInfo, showWarning } from "~/util/helpers";
+import { showErrorNotification, showInfo, showWarning } from "~/util/helpers";
 import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
@@ -49,14 +49,15 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 	const submit = () => {
 		const execute = async (content: string) => {
 			const result = await executeQuery(content);
-			const failed = result.some((result) => !result.success);
+			const failed = result.filter((result) => !result.success);
 
-			if (failed) {
-				showError({
-					title: "Import failed",
-					subtitle: "There was an error importing the database",
-				});
-
+			if (failed.length > 0) {
+				for (const fail of failed) {
+					showErrorNotification({
+						title: "Query partially failed",
+						content: new Error(fail.result),
+					});
+				}
 				return;
 			}
 
@@ -255,7 +256,7 @@ const applySingleBatchImport = async (items: any[], table: string, insertRelatio
 
 	let successImportCount = 0;
 	let errorImportCount = 0;
-	let errorMessage = undefined;
+	let errorMessage = "";
 
 	const [response] = await executeQuery(/* surql */ `${queryAction} INTO $table $content`, {
 		table: new Table(table),
@@ -277,7 +278,7 @@ const applyBatchImport = async (items: any[], table: string, insertRelation: boo
 
 	let successImportCount = 0;
 	let errorImportCount = 0;
-	let errorMessage = undefined;
+	let errorMessage = "";
 
 	for (const batchedItems of cluster(items, BATCH_CHUNK_SIZE)) {
 		const batchedResponse = await applySingleBatchImport(batchedItems, table, insertRelation);
@@ -306,9 +307,9 @@ const completeBatchImport = async (
 				subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
 			});
 		} else {
-			showError({
+			showErrorNotification({
 				title: "Import failed",
-				subtitle: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
+				content: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
 			});
 		}
 	} else {
@@ -644,9 +645,9 @@ const CsvImportForm = ({
 						if (row.errors.length > 0) {
 							const err = row.errors[0].message;
 
-							showError({
+							showErrorNotification({
 								title: "Import failed",
-								subtitle: `There was an error importing the CSV file: ${err}`,
+								content: `There was an error importing the CSV file: ${err}`,
 							});
 
 							isParserSuccess = false;
@@ -672,22 +673,26 @@ const CsvImportForm = ({
 			} else {
 				let successImportCount = 0;
 				let errorImportCount = 0;
-				let errorMessage: string | undefined = undefined;
+				let errorMessage: string | undefined;
 
 				await new Promise((resolve, reject) => {
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
-					papaparse.parse(importFile.current!.self as LocalFile, {
+					if (!importFile.current) {
+						reject();
+						return;
+					}
+
+					papaparse.parse(importFile.current.self as LocalFile, {
 						delimiter,
 						header,
 						skipEmptyLines: true,
 						chunkSize: 100 * 1_024,
 						chunk: async (results, parser) => {
 							if (results.errors.length > 0) {
-								const err = results.errors[0].message;
+								const err = results.errors[0];
 
-								showError({
+								showErrorNotification({
 									title: "Import failed",
-									subtitle: `There was an error importing the CSV file: ${err}`,
+									content: err,
 								});
 
 								parser.abort();
@@ -728,7 +733,7 @@ const CsvImportForm = ({
 		confirmImport(execute);
 	};
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Extract on delimiter and header changes
 	useEffect(() => {
 		setColumnNames(extractColumnNames(importedRows, header));
 		setColumnTypes(extractColumnTypes(importedRows, header));
@@ -1088,11 +1093,9 @@ export function DataImportModal() {
 
 				await executeTransformAndImport(content);
 			} catch (err: any) {
-				console.error(err);
-
-				showError({
+				showErrorNotification({
 					title: "Import failed",
-					subtitle: "There was an error importing the database",
+					content: err,
 				});
 			} finally {
 				setImporting(false);

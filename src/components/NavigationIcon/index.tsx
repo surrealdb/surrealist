@@ -1,10 +1,8 @@
-import { Box, Indicator, type IndicatorProps, Tooltip } from "@mantine/core";
+import { Box, Indicator, type IndicatorProps, Text, Tooltip } from "@mantine/core";
 import clsx from "clsx";
 import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
-import { useRoute } from "wouter";
-import { useHoverIcon } from "~/hooks/hover-icon";
-import { useAbsoluteRoute } from "~/hooks/routing";
+import { useRouteMatcher } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
 import { Entry, type EntryProps } from "../Entry";
@@ -15,7 +13,7 @@ export interface NavigationIconProps
 	extends EntryProps,
 		Omit<HTMLProps<HTMLButtonElement>, "name" | "color" | "size" | "style" | "type" | "ref"> {
 	name: ReactNode;
-	path?: string;
+	match?: string[];
 	indicator?: boolean | IndicatorProps;
 	icon: string | any;
 	withTooltip?: boolean;
@@ -24,7 +22,7 @@ export interface NavigationIconProps
 
 export function NavigationIcon({
 	name,
-	path,
+	match,
 	icon,
 	withTooltip,
 	onClick,
@@ -32,14 +30,13 @@ export function NavigationIcon({
 	...rest
 }: NavigationIconProps) {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
-	const [active] = useAbsoluteRoute(path || "");
-	const hasIcon = typeof icon === "string";
-	const isActive = active && !!path;
+	const active = useRouteMatcher(match || []);
+	const isActive = match && active && match?.length > 0;
 
-	const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
-		animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,
-		className: classes.animation,
-	});
+	// const { isLoading, ref, onMouseEnter, onMouseLeave } = useHoverIcon({
+	// 	animation: hasIcon ? { w: 0, h: 0, layers: [] } : icon,
+	// 	className: classes.animation,
+	// });
 
 	const handleClick = useStable(() => {
 		setOverlaySidebar(false);
@@ -56,32 +53,35 @@ export function NavigationIcon({
 		>
 			<Box
 				w="100%"
-				onMouseEnter={onMouseEnter}
-				onMouseLeave={onMouseLeave}
+				// onMouseEnter={onMouseEnter}
+				// onMouseLeave={onMouseLeave}
 			>
 				<Entry
 					className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
 					isActive={isActive}
-					style={{ opacity: isLoading ? 0 : 1 }}
+					// style={{ opacity: isLoading ? 0 : 1 }}
 					onClick={handleClick}
 					leftSection={
 						<Indicator
 							disabled={!indicator}
 							{...(isObject(indicator) ? indicator : {})}
 						>
-							{hasIcon ? (
-								<Icon
-									path={icon}
-									size="lg"
-								/>
-							) : (
-								<div ref={ref} />
-							)}
+							<Icon
+								path={icon}
+								size="lg"
+							/>
 						</Indicator>
 					}
 					{...rest}
 				>
-					{name}
+					<Text
+						truncate
+						inherit
+						span
+						lh="normal"
+					>
+						{name}
+					</Text>
 				</Entry>
 			</Box>
 		</Tooltip>

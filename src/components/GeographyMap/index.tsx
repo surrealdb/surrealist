@@ -1,7 +1,10 @@
 import "leaflet/dist/leaflet.css";
 
 import { Overlay, Paper } from "@mantine/core";
-import { type Map as GeoMap, type LatLng, geoJSON as createGeoJSON, latLng } from "leaflet";
+import { geoJSON as createGeoJSON, type Map as GeoMap, type LatLng, latLng } from "leaflet";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIcon2 from "leaflet/dist/images/marker-icon-2x.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { useEffect, useRef, useState } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import type {
@@ -15,11 +18,7 @@ import type {
 } from "surrealdb";
 import { parseValue } from "~/util/surrealql";
 
-import markerIcon2 from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-
-// biome-ignore lint/performance/noDelete: leaflet is a tragedy
+// leaflet is a tragedy
 delete (window.L.Icon.Default.prototype as any)._getIconUrl;
 
 window.L.Icon.Default.mergeOptions({

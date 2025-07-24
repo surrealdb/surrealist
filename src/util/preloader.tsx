@@ -1,3 +1,4 @@
+import glowUrl2 from "~/assets/images/glow.webp";
 import glowUrl from "~/assets/images/gradient-glow.webp";
 
 function preloadImage(url: string) {
@@ -7,4 +8,5 @@ function preloadImage(url: string) {
 
 export function preloadImages() {
 	preloadImage(glowUrl);
+	preloadImage(glowUrl2);
 }

@@ -1,12 +1,19 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-	"organizeImports": {
-		"enabled": true
+	"$schema": "https://biomejs.dev/schemas/2.1.2/schema.json",
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"a11y": {
+				"useSemanticElements": "off"
+			},
 			"suspicious": {
 				"noExplicitAny": "off",
 				"noThenProperty": "off",
@@ -22,27 +29,82 @@
 					"level": "error",
 					"options": {
 						"hooks": [
-							{ "name": "useInputState", "stableResult": [1] },
-							{ "name": "useDisclosure", "stableResult": [1] },
-							{ "name": "useBoolean", "stableResult": [1] },
-							{ "name": "useOnboarding", "stableResult": [1] },
-							{ "name": "useImmer", "stableResult": [1] },
-							{ "name": "useSetting", "stableResult": [1] },
-							{ "name": "useNodesState", "stableResult": [1, 2] },
-							{ "name": "useEdgesState", "stableResult": [1, 2] },
-							{ "name": "useToggleList", "stableResult": [2, 3] },
-							{ "name": "useDatasets", "stableResult": [1] },
-							{ "name": "useRoute", "stableResult": [1] },
-							{ "name": "useAbsoluteRoute", "stableResult": [1] },
-							{ "name": "useLocation", "stableResult": [1] },
-							{ "name": "useAbsoluteLocation", "stableResult": [1] },
-							{ "name": "useStable", "stableResult": true },
-							{ "name": "useReactFlow", "stableResult": true },
-							{ "name": "useQueryClient", "stableResult": true },
-							{ "name": "useConnectionNavigator", "stableResult": true }
+							{
+								"name": "useInputState",
+								"stableResult": [1]
+							},
+							{
+								"name": "useDisclosure",
+								"stableResult": [1]
+							},
+							{
+								"name": "useBoolean",
+								"stableResult": [1]
+							},
+							{
+								"name": "useOnboarding",
+								"stableResult": [1]
+							},
+							{
+								"name": "useImmer",
+								"stableResult": [1]
+							},
+							{
+								"name": "useSetting",
+								"stableResult": [1]
+							},
+							{
+								"name": "useNodesState",
+								"stableResult": [1, 2]
+							},
+							{
+								"name": "useEdgesState",
+								"stableResult": [1, 2]
+							},
+							{
+								"name": "useToggleList",
+								"stableResult": [2, 3]
+							},
+							{
+								"name": "useDatasets",
+								"stableResult": [1]
+							},
+							{
+								"name": "useRoute",
+								"stableResult": [1]
+							},
+							{
+								"name": "useAbsoluteRoute",
+								"stableResult": [1]
+							},
+							{
+								"name": "useLocation",
+								"stableResult": [1]
+							},
+							{
+								"name": "useAbsoluteLocation",
+								"stableResult": [1]
+							},
+							{
+								"name": "useStable",
+								"stableResult": true
+							},
+							{
+								"name": "useReactFlow",
+								"stableResult": true
+							},
+							{
+								"name": "useQueryClient",
+								"stableResult": true
+							},
+							{
+								"name": "useConnectionNavigator",
+								"stableResult": true
+							}
 						]
 					}
-				}
+				},
+				"noUnusedImports": "warn"
 			}
 		}
 	},
@@ -52,17 +114,18 @@
 		"indentStyle": "tab",
 		"lineWidth": 100,
 		"attributePosition": "multiline",
-		"ignore": ["src/util/icons.tsx"]
+		"includes": ["**", "!**/src/util/icons.tsx"]
 	},
 	"files": {
-		"ignore": [
-			".vscode",
-			".github",
-			"node_modules",
-			"src-tauri",
-			"dist",
-			"*.js",
-			"src/assets/data/license-report.json"
+		"includes": [
+			"**",
+			"!**/.vscode",
+			"!**/.github",
+			"!**/node_modules",
+			"!**/src-tauri",
+			"!**/dist",
+			"!**/*.js",
+			"!**/src/assets/data/license-report.json"
 		]
 	}
 }

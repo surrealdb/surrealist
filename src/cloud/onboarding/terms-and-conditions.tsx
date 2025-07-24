@@ -1,20 +1,19 @@
-import glowUrl from "~/assets/images/gradient-glow.webp";
-import classes from "../style.module.scss";
-
 import { Button, Checkbox, Group, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { Fragment, useState } from "react";
+import glowUrl from "~/assets/images/gradient-glow.webp";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useCheckbox } from "~/hooks/events";
 import { useStable } from "~/hooks/stable";
-import { showError } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import { fetchAPI } from "../api";
 import { invalidateSession } from "../api/auth";
-import { type Question, openAboutModal } from "./about-yourself";
+import classes from "../style.module.scss";
+import { openAboutModal, type Question } from "./about-yourself";
 
 interface Condition {
 	name: string;
@@ -75,9 +74,9 @@ function TermsModal({ conditions }: TermsModalProps) {
 			closeAllModals();
 			openAboutModal(questions);
 		} catch (err: any) {
-			showError({
+			showErrorNotification({
 				title: "Failed to accept terms",
-				subtitle: err.message,
+				content: err.message,
 			});
 		} finally {
 			setLoading(false);

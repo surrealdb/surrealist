@@ -1,0 +1,12 @@
+{
+	"telemetry": false,
+	"connections": [
+		{
+			"id": "example",
+			"name": "Example connection"
+		}
+	],
+	"cloud": {
+		"enabled": false
+	}
+}

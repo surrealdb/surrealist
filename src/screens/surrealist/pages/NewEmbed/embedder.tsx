@@ -5,13 +5,11 @@ import {
 	type MantineColorScheme,
 	Select,
 	Stack,
+	Text,
 	Tooltip,
 } from "@mantine/core";
-
-import { type PropsWithChildren, type ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
-
-import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { type PropsWithChildren, type ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
@@ -168,7 +166,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 
 		if (isProduction) {
 			url.protocol = "https:";
-			url.hostname = "surrealist.app";
+			url.hostname = "app.surrealdb.com";
 			url.port = "";
 		}
 

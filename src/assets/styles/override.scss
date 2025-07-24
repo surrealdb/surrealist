@@ -124,6 +124,15 @@ body.mod .cm-record-link:hover {
 	}
 }
 
+.mantine-ActionIcon-root {
+	box-sizing: border-box;
+	background-origin: border-box;
+
+	&[data-variant="gradient"]:not(:disabled) {
+		border: 1px solid rgba(255, 255, 255, 0.3) !important;
+	}
+}
+
 .mantine-Button-root {
 	box-sizing: border-box;
 	background-origin: border-box;
@@ -134,6 +143,21 @@ body.mod .cm-record-link:hover {
 
 	@include light {
 		border: unset !important;
+	}
+}
+
+.mantine-Tooltip-tooltip {
+	color: var(--tooltip-color, var(--mantine-color-text));
+	background-color: var(--tooltip-bg, var(--mantine-color-violet-8));
+	border: 1px solid var(--tooltip-bg, var(--mantine-color-violet-8));
+	box-shadow: var(--mantine-shadow-md);
+	padding-block: var(--mantine-spacing-xs);
+	padding-inline: var(--mantine-spacing-md);
+	color: white;
+
+	@include light {
+		background-color: var(--tooltip-bg, var(--mantine-color-violet-4));
+		border-color: var(--tooltip-bg, var(--mantine-color-violet-4));
 	}
 }
 
@@ -165,6 +189,7 @@ body.mod .cm-record-link:hover {
 
 .mantine-Tabs-tab {
 	border: 1px solid transparent;
+	justify-content: center;
 
 	&:hover {
 		background-color: var(--mantine-color-slate-7);
@@ -216,6 +241,10 @@ body.mod .cm-record-link:hover {
 		border-color: rgba(255, 255, 255, 0.3);
 	}
 
+	.mantine-Radio-label[data-disabled] {
+		color: unset;
+		opacity: 0.5;
+	}
 }
 
 .mantine-Input-input {
@@ -285,6 +314,7 @@ body.mod .cm-record-link:hover {
 .mantine-InputWrapper-description {
 	font-size: var(--mantine-font-size-sm);
 	color: var(--mantine-color-text);
+	margin-bottom: 6px;
 }
 
 .mantine-InputWrapper-label {
@@ -307,7 +337,7 @@ body.mod .cm-record-link:hover {
 	border-color: var(--mantine-color-slate-6);
 
 	@include light {
-		border-color: var(--mantine-color-slate-1);
+		border-color: var(--mantine-color-slate-2);
 	}
 }
 
@@ -427,6 +457,11 @@ body.mod .cm-record-link:hover {
 
 	.mantine-SegmentedControl-innerLabel {
 		transition: color .15s;
+		padding-block: 4px;
+	}
+
+	.mantine-SegmentedControl-label {
+		padding-block: 6px;
 	}
 
 	.mantine-SegmentedControl-control[data-active] .mantine-SegmentedControl-innerLabel {
@@ -454,4 +489,9 @@ body.mod .cm-record-link:hover {
 			color: white;
 		}
 	}
+}
+
+.mantine-Drawer-content {
+	margin-top: calc(var(--drawer-offset) + var(--titlebar-offset, 0px));
+	height: var(--drawer-height, calc(100% - var(--drawer-offset) * 2 - var(--titlebar-offset, 0px)));
 }

@@ -1,23 +1,9 @@
-import classes from "./style.module.scss";
-
-import { Button, Center, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
-
-import {
-	iconBroadcastOff,
-	iconCursor,
-	iconHelp,
-	iconList,
-	iconLive,
-	iconQuery,
-	iconUpload,
-} from "~/util/icons";
-
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
+import { Button, Center, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import { unparse } from "papaparse";
 import { isArray, isObject } from "radash";
-import { useMemo, useState } from "react";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useMemo, useState } from "react";
 import { isMini } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -25,6 +11,7 @@ import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
 import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/query";
+import { useSetting } from "~/hooks/config";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -34,12 +21,22 @@ import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { Listable, QueryResponse, QueryTab, ResultFormat, ResultMode } from "~/types";
+import {
+	iconBroadcastOff,
+	iconCursor,
+	iconHelp,
+	iconList,
+	iconLive,
+	iconQuery,
+	iconUpload,
+} from "~/util/icons";
 import type { PreviewProps } from "./previews";
 import { CombinedPreview } from "./previews/combined";
 import { GraphPreview } from "./previews/graph";
 import { IndividualPreview } from "./previews/individual";
 import { LivePreview } from "./previews/live";
 import { TablePreview } from "./previews/table";
+import classes from "./style.module.scss";
 
 function computeRowCount(response: QueryResponse) {
 	if (!response) {
@@ -79,6 +76,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const isQueryValid = useQueryStore((s) => s.isQueryValid);
 
 	const isLight = useIsLight();
+	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
 	const [resultTab, setResultTab] = useState<number>(1);
 	const selectedTab = resultTab - 1;
 	const resultMode = activeTab.resultMode;
@@ -108,7 +106,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const runQuery = useStable(() => {
 		if (editor) {
-			executeEditorQuery(editor);
+			executeEditorQuery(editor, allowSelectionExecution);
 		}
 	});
 
@@ -177,6 +175,8 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		document.body.removeChild(link);
 		URL.revokeObjectURL(url);
 	});
+
+	const runText = `Run ${selection && allowSelectionExecution ? "selection" : "query"}`;
 
 	return (
 		<ContentPane
@@ -316,13 +316,26 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 						color="slate"
 						variant={isQueryValid ? "gradient" : "light"}
 						style={{ border: "none" }}
-						className={classes.run}
+						className={classes.runLarge}
 						loading={isQuerying}
 						onClick={runQuery}
 						rightSection={<Icon path={iconCursor} />}
 					>
-						Run {selection ? "selection" : "query"}
+						{runText}
 					</Button>
+
+					<ActionButton
+						label={runText}
+						radius="xs"
+						size={30}
+						color="slate"
+						variant={isQueryValid ? "gradient" : "light"}
+						className={classes.runSmall}
+						loading={isQuerying}
+						onClick={runQuery}
+					>
+						<Icon path={iconCursor} />
+					</ActionButton>
 				</Group>
 			}
 		>

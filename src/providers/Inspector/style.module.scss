@@ -1,8 +1,5 @@
-.save-box > button {
-	flex: 1;
-}
-
-.tabs, .tabs > :global(.mantine-Tabs-panel) {
+.tabs,
+.tabs> :global(.mantine-Tabs-panel) {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
@@ -16,5 +13,4 @@
 .record-input {
 	font-family: "JetBrains Mono";
 	font-size: 14px;
-	height: 42px;
 }

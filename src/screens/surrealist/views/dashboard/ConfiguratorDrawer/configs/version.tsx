@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -8,6 +6,7 @@ import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { openSurrealChangelog } from "~/util/cloud";
 import { iconOpen } from "~/util/icons";
+import classes from "../style.module.scss";
 
 export interface ConfigurationVersionProps {
 	instance: CloudInstance;
@@ -64,40 +63,38 @@ export function ConfigurationVersion({ instance, onUpdate, onClose }: Configurat
 						</Box>
 
 						{instance.available_versions.length > 0 ? (
-							<>
-								{instance.available_versions.map((version) => (
-									<Tile
-										key={version}
-										p="lg"
-										withBorder={false}
-										isActive={selected === version}
-										onClick={() => setSelected(version)}
-									>
-										<Group>
-											<Text
-												c="bright"
-												fw={500}
-												fz="xl"
-												flex={1}
-											>
-												SurrealDB {version}
-											</Text>
-											<Button
-												size="xs"
-												color="slate"
-												variant="light"
-												rightSection={<Icon path={iconOpen} />}
-												onClick={(e) => {
-													openSurrealChangelog(version);
-													e.stopPropagation();
-												}}
-											>
-												View changelog
-											</Button>
-										</Group>
-									</Tile>
-								))}
-							</>
+							instance.available_versions.map((version) => (
+								<Tile
+									key={version}
+									p="lg"
+									withBorder={false}
+									isActive={selected === version}
+									onClick={() => setSelected(version)}
+								>
+									<Group>
+										<Text
+											c="bright"
+											fw={500}
+											fz="xl"
+											flex={1}
+										>
+											SurrealDB {version}
+										</Text>
+										<Button
+											size="xs"
+											color="slate"
+											variant="light"
+											rightSection={<Icon path={iconOpen} />}
+											onClick={(e) => {
+												openSurrealChangelog(version);
+												e.stopPropagation();
+											}}
+										>
+											View changelog
+										</Button>
+									</Group>
+								</Tile>
+							))
 						) : (
 							<Stack
 								flex={1}

@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import {
 	ActionIcon,
 	Badge,
@@ -12,8 +10,6 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
-
-import clsx from "clsx";
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { Icon } from "~/components/Icon";
@@ -25,6 +21,7 @@ import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconCloud, iconDotsVertical } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
+import classes from "../style.module.scss";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
@@ -45,6 +42,10 @@ export function StartInstance({
 	}, [connections, instance.id]);
 
 	const handleConnect = useStable(() => {
+		if (instance.state === "deleting") {
+			return;
+		}
+
 		onConnect(instance);
 	});
 
@@ -65,8 +66,10 @@ export function StartInstance({
 		>
 			<Paper
 				p="lg"
-				className={clsx(classes.startBox, classes.startInstance)}
+				variant="interactive"
+				className={classes.startInstance}
 				ref={containerRef}
+				withBorder
 			>
 				<Group
 					wrap="nowrap"
@@ -93,17 +96,18 @@ export function StartInstance({
 										fw={600}
 										fz="xl"
 									>
-										{connection?.name ?? instance.name}
+										{instance.name}
 									</Text>
 									<StateBadge
 										size={10}
 										state={instance.state}
 									/>
 								</Group>
-								<Text>ID: {instance.id}</Text>
+								<Text>SurrealDB {instance.version}</Text>
 							</Box>
 						</Group>
 					</Stack>
+					{/* biome-ignore lint/a11y/noStaticElementInteractions: Stop event propagation */}
 					<div
 						onClick={ON_STOP_PROPAGATION}
 						onKeyDown={ON_STOP_PROPAGATION}

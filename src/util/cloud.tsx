@@ -1,6 +1,9 @@
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { adapter } from "~/adapter";
-import { useCloudStore } from "~/stores/cloud";
-import { CloudMeasurement } from "~/types";
+import { CloudStore, useCloudStore } from "~/stores/cloud";
+import { CloudMeasurement, CloudOrganization } from "~/types";
+
+let skipCloudSync = false;
 
 /**
  * Measure the compute history
@@ -78,4 +81,81 @@ export function measureComputeCost(measurements: CloudMeasurement[]) {
  */
 export function openSurrealChangelog(version: string) {
 	adapter.openUrl(`https://surrealdb.com/releases#v${version.replaceAll(".", "-")}`);
+}
+
+/**
+ * Format the archive date for the given organization
+ */
+export function formatArchiveDate(organization: CloudOrganization) {
+	if (!organization.archived_at) {
+		return "";
+	}
+
+	return new Date(organization.archived_at).toLocaleDateString("en-US", {
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	});
+}
+
+/**
+ * Returns the display name for the given instance type category
+ */
+export function getTypeCategoryName(category: string) {
+	switch (category) {
+		case "free":
+			return "Free";
+		case "development":
+			return "Burstable";
+		case "production":
+			return "General purpose";
+		case "production-memory":
+			return "Memory intensive";
+		case "production-compute":
+			return "Compute intensive";
+		default:
+			return category;
+	}
+}
+
+export function getTypeCategoryDescription(category: string) {
+	switch (category) {
+		case "free":
+			return "Explore SurrealDB with a free instance";
+		case "development":
+			return "Burstable instances for development";
+		case "production":
+			return "General purpose instances for production workloads";
+		case "production-memory":
+			return "Distributed memory intensive instances for high throughput";
+		case "production-compute":
+			return "Distributed compute intensive instances for high performance";
+		default:
+			return category;
+	}
+}
+
+export function syncCloudStore(store: CloudStore) {
+	if (!skipCloudSync) {
+		try {
+			skipCloudSync = true;
+			useCloudStore.setState(store);
+		} finally {
+			skipCloudSync = false;
+		}
+	}
+}
+
+export function startCloudSync() {
+	useCloudStore.subscribe(async (state) => {
+		if (!skipCloudSync) {
+			skipCloudSync = true;
+
+			await getCurrentWindow()
+				.emit("cloud-updated", state)
+				.then(() => {
+					skipCloudSync = false;
+				});
+		}
+	});
 }

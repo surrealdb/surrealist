@@ -1,7 +1,26 @@
+import { invoke } from "@tauri-apps/api/core";
+import { dash } from "radash";
+import { useMemo } from "react";
+import { adapter, isDesktop } from "~/adapter";
+import type { DesktopAdapter } from "~/adapter/desktop";
+import { DRIVERS, SANDBOX } from "~/constants";
+import { useAvailableViews, useConnectionList } from "~/hooks/connection";
+import { useDatasets } from "~/hooks/dataset";
+import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
+import { showNodeStatus } from "~/modals/node-status";
 import {
-	iconAPI,
+	closeConnection,
+	openConnection,
+	resetConnection,
+} from "~/screens/surrealist/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { featureFlags } from "~/util/feature-flags";
+import { optional } from "~/util/helpers";
+import {
 	iconAccountPlus,
 	iconAccountSecure,
+	iconAPI,
 	iconAuth,
 	iconAutoFix,
 	iconBalance,
@@ -32,6 +51,7 @@ import {
 	iconSearch,
 	iconServer,
 	iconServerSecure,
+	iconSidekick,
 	iconStar,
 	iconStarPlus,
 	iconStop,
@@ -45,25 +65,6 @@ import {
 	iconUpload,
 	iconWrench,
 } from "~/util/icons";
-
-import { dash } from "radash";
-import { useMemo } from "react";
-import { adapter, isDesktop } from "~/adapter";
-import type { DesktopAdapter } from "~/adapter/desktop";
-import { DRIVERS, SANDBOX } from "~/constants";
-import { useAvailableViews, useConnectionList } from "~/hooks/connection";
-import { useDatasets } from "~/hooks/dataset";
-import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
-import { showNodeStatus } from "~/modals/node-status";
-import {
-	closeConnection,
-	openConnection,
-	resetConnection,
-} from "~/screens/surrealist/connection/connection";
-import { useConfigStore } from "~/stores/config";
-import { useDatabaseStore } from "~/stores/database";
-import { featureFlags } from "~/util/feature-flags";
-import { optional } from "~/util/helpers";
 import type { IntentPayload, IntentType } from "~/util/intents";
 import {
 	FlagSetController,
@@ -160,7 +161,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						name: "Create new connection",
 						icon: iconPlus,
 						binding: true,
-						action: intent("new-connection"),
+						action: navigate("/connections/create"),
 					},
 					{
 						id: "reconnect",
@@ -474,6 +475,21 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 					},
 				],
 			});
+
+			categories.push({
+				name: "Window",
+				commands: [
+					{
+						id: "new-window",
+						name: "Open a new window",
+						icon: iconPlus,
+						binding: ["mod", "shift", "n"],
+						action: launch(() => {
+							invoke("new_window");
+						}),
+					},
+				],
+			});
 		}
 
 		categories.push(
@@ -638,14 +654,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: navigate("/mini/new"),
 					},
 					{
-						id: "open-docs",
-						name: "Search documentation for:",
-						icon: iconBook,
-						binding: ["mod", "j"],
-						action: intent("open-documentation"),
-						forward: true,
-					},
-					{
 						id: "open-changelog",
 						name: "View release changelogs",
 						icon: iconStar,
@@ -688,7 +696,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 					},
 					{
 						id: "reset-tours",
-						name: "Reset tours",
+						name: "Reset guides",
 						icon: iconRoutes,
 						action: launch(resetOnboardings),
 					},
@@ -717,6 +725,27 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							action: intent("highlight-tool"),
 						},
 					),
+				],
+			},
+			{
+				name: "Search",
+				commands: [
+					{
+						id: "ask-sidekick",
+						name: "Ask Sidekick:",
+						icon: iconSidekick,
+						binding: ["mod", "b"],
+						action: intent("open-sidekick"),
+						forward: true,
+					},
+					{
+						id: "open-docs",
+						name: "Search documentation for:",
+						icon: iconBook,
+						binding: ["mod", "j"],
+						action: intent("open-documentation"),
+						forward: true,
+					},
 				],
 			},
 		);

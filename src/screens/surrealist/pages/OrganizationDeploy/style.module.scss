@@ -1,0 +1,49 @@
+.scroll-area :global(.mantine-ScrollArea-viewport)>div {
+	display: block !important;
+}
+
+.confirm-box,
+.free-box {
+	overflow: hidden;
+	position: relative;
+}
+
+.confirm-glow,
+.free-glow {
+	width: 900px;
+	height: 900px;
+	position: absolute;
+	z-index: 0;
+	opacity: 0.25;
+}
+
+.confirm-glow {
+	left: -400px;
+	bottom: -550px;
+	transform: rotate(45deg);
+}
+
+.free-glow {
+	right: -400px;
+	bottom: -450px;
+}
+
+.cloud-image {
+	width: 192px;
+	height: 192px;
+	position: absolute;
+	right: 0px;
+	opacity: 0.2;
+	bottom: -52px;
+	z-index: 1;
+	transition: bottom 0.5s ease;
+
+	@include sm-and-up {
+		opacity: 1;
+		right: 50px;
+	}
+}
+
+.plan-disabled {
+	opacity: 0.5;
+}

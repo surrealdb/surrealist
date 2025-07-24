@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	ActionIcon,
 	Box,
@@ -10,7 +8,6 @@ import {
 	ScrollArea,
 	Text,
 } from "@mantine/core";
-
 import clsx from "clsx";
 import { type ReactNode, useMemo } from "react";
 import { useIsLight, useTheme } from "~/hooks/theme";
@@ -19,6 +16,7 @@ import { dedent } from "~/util/dedent";
 import { renderHighlighting } from "~/util/highlighting";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
+import classes from "./style.module.scss";
 
 export interface CodePreviewProps extends PaperProps {
 	value: string;
@@ -92,7 +90,7 @@ export function CodePreview({
 					<CopyButton value={value}>
 						{({ copied, copy }) => (
 							<ActionIcon
-								variant={copied ? "gradient" : undefined}
+								variant="gradient"
 								pos="absolute"
 								size="lg"
 								top={9}

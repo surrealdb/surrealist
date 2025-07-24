@@ -5,7 +5,7 @@ on:
 
 env:
   CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
-  CLOUD_CALLBACK_URL: https://surrealist.app/cloud/callback
+  CLOUD_CALLBACK_URL: https://app.surrealdb.com/cloud/callback
   SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
   SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
   INTERCOM_APP_ID: xaac4vhr

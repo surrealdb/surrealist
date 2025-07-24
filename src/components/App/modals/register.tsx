@@ -1,5 +1,4 @@
-import { Table, Text } from "@mantine/core";
-import { Button, Group, Modal, PasswordInput, TextInput } from "@mantine/core";
+import { Button, Group, Modal, PasswordInput, Table, Text, TextInput } from "@mantine/core";
 import { parser } from "@surrealdb/lezer";
 import { useState } from "react";
 import { useImmer } from "use-immer";
@@ -17,7 +16,7 @@ import { useStable } from "~/hooks/stable";
 import { authenticate, register } from "~/screens/surrealist/connection/connection";
 import { composeAuthentication } from "~/screens/surrealist/connection/helpers";
 import type { AccessField, SchemaAccess } from "~/types";
-import { showError, showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
 import { parseVariables } from "~/util/surrealql";
 
@@ -64,9 +63,9 @@ export function RegisterUserModal() {
 			adapter.warn("Auth", `Failed to register user: ${err.message}`);
 			console.error(err);
 
-			showError({
+			showErrorNotification({
 				title: "Registration failed",
-				subtitle: err.message,
+				content: err,
 			});
 		} finally {
 			setLoading(false);

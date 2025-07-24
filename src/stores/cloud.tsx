@@ -1,78 +1,73 @@
+import { create } from "zustand";
+import { immer } from "zustand/middleware/immer";
 import type {
 	AuthState,
 	CloudBillingCountry,
-	CloudChatMessage,
-	CloudInstance,
 	CloudInstanceType,
-	CloudOrganization,
 	CloudProfile,
 	CloudRegion,
 } from "~/types";
-
-import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
-import { newId } from "~/util/helpers";
 
 interface CloudValues {
 	instanceVersions: string[];
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
-	organizations: CloudOrganization[];
 	billingCountries: CloudBillingCountry[];
 }
 
 export const EMPTY_PROFILE: CloudProfile = {
 	username: "",
 	name: "",
+	default_org: "",
+	enabled_features: [],
 };
 
 export type CloudStore = {
 	authState: AuthState;
+	authError: string;
+	accessToken: string;
 	sessionToken: string;
 	authProvider: string;
 	userId: string;
 	isSupported: boolean;
+	failedConnect: boolean;
 	profile: CloudProfile;
 	instanceVersions: string[];
 	instanceTypes: CloudInstanceType[];
 	regions: CloudRegion[];
-	organizations: CloudOrganization[];
-	selectedOrganization: string;
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
-	chatConversation: CloudChatMessage[];
 	chatLastResponse: string;
 
 	setLoading: () => void;
+	setAuthError: (error: string) => void;
+	setAccessToken: (token: string) => void;
 	setSessionToken: (token: string) => void;
 	setUserId: (id: string) => void;
 	setAuthProvider: (provider: string) => void;
 	setAccountProfile: (profile: CloudProfile) => void;
 	setIsSupported: (supported: boolean) => void;
+	setFailedConnected: (failed: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
 	setProfile: (profile: CloudProfile) => void;
-	setSelectedOrganization: (id: string) => void;
 	setSessionExpired: (expired: boolean) => void;
 	clearSession: () => void;
-	pushChatMessage: (message: CloudChatMessage) => void;
-	completeChatResponse: (id: string) => void;
-	updateChatMessage: (id: string, fn: (state: CloudChatMessage) => void) => void;
-	clearChatSession: () => void;
 };
 
 export const useCloudStore = create<CloudStore>()(
 	immer((set) => ({
 		authState: "unknown",
+		authError: "",
+		accessToken: "",
 		sessionToken: "",
 		userId: "",
 		authProvider: "",
 		isSupported: true,
+		failedConnect: false,
 		profile: EMPTY_PROFILE,
 		instanceTypes: [],
 		instanceVersions: [],
 		regions: [],
-		organizations: [],
-		selectedOrganization: "",
 		billingCountries: [],
 		sessionExpired: false,
 		isProvisioning: false,
@@ -82,6 +77,16 @@ export const useCloudStore = create<CloudStore>()(
 		chatLastResponse: "",
 
 		setLoading: () => set({ authState: "loading" }),
+
+		setAuthError: (error) =>
+			set({
+				authError: error,
+			}),
+
+		setAccessToken: (token) =>
+			set({
+				accessToken: token,
+			}),
 
 		setSessionToken: (token) =>
 			set({
@@ -114,14 +119,14 @@ export const useCloudStore = create<CloudStore>()(
 				...values,
 			}),
 
+		setFailedConnected: (failed) =>
+			set({
+				failedConnect: failed,
+			}),
+
 		setProfile: (profile) =>
 			set({
 				profile,
-			}),
-
-		setSelectedOrganization: (id) =>
-			set({
-				selectedOrganization: id,
 			}),
 
 		clearSession: () =>
@@ -134,31 +139,6 @@ export const useCloudStore = create<CloudStore>()(
 		setSessionExpired: (expired) =>
 			set({
 				sessionExpired: expired,
-			}),
-
-		pushChatMessage: (message) =>
-			set((state) => {
-				state.chatConversation.push(message);
-			}),
-
-		updateChatMessage: (id, updater) =>
-			set((state) => {
-				const msgIndex = state.chatConversation.findLastIndex((m) => m.id === id);
-
-				if (msgIndex >= 0) {
-					updater(state.chatConversation[msgIndex]);
-				}
-			}),
-
-		completeChatResponse: (id) =>
-			set({
-				chatLastResponse: id,
-			}),
-
-		clearChatSession: () =>
-			set({
-				chatConversation: [],
-				chatLastResponse: "",
 			}),
 	})),
 );
