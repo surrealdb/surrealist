@@ -20,12 +20,12 @@ import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { showErrorNotification } from "~/util/helpers";
 import { iconCreditCard } from "~/util/icons";
 import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { Spacer } from "../Spacer";
-import { tagEvent } from "~/util/analytics";
 
 export interface PaymentDetailsProps extends BoxProps {
 	organisation: CloudOrganization;
