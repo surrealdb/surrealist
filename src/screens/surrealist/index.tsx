@@ -1,8 +1,6 @@
-import classes from "./style.module.scss";
-
 import { Box, Drawer, Flex, Group, Stack } from "@mantine/core";
-import { type FC, Suspense, memo, useLayoutEffect } from "react";
-import { HtmlPortalNode, InPortal, OutPortal, createHtmlPortalNode } from "react-reverse-portal";
+import { type FC, memo, Suspense, useLayoutEffect } from "react";
+import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AppTitleBar } from "~/components/AppTitleBar";
@@ -26,6 +24,7 @@ import { ReferralPage } from "./pages/Referral";
 import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
 import { SurrealistSidebar } from "./sidebar";
+import classes from "./style.module.scss";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DashboardView from "./views/dashboard/DashboardView";

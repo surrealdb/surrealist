@@ -1,7 +1,3 @@
-import glow from "~/assets/images/glow.webp";
-import cloud from "~/assets/images/icons/cloud.webp";
-import classes from "../style.module.scss";
-
 import {
 	Alert,
 	Box,
@@ -13,36 +9,11 @@ import {
 	Paper,
 	SimpleGrid,
 	Stack,
+	Text,
 } from "@mantine/core";
-
-import {
-	iconArrowUpRight,
-	iconCreditCard,
-	iconDatabase,
-	iconHistory,
-	iconMarker,
-	iconMemory,
-	iconPackageClosed,
-	iconQuery,
-	iconRelation,
-	iconTag,
-} from "~/util/icons";
-
-import {
-	DatasetQuery,
-	QUERY_EIGHT,
-	QUERY_FIVE,
-	QUERY_FOUR,
-	QUERY_NINE,
-	QUERY_ONE,
-	QUERY_SEVEN,
-	QUERY_SIX,
-	QUERY_THREE,
-	QUERY_TWO,
-} from "~/util/dataset";
-
-import { Text } from "@mantine/core";
 import { navigate } from "wouter/use-browser-location";
+import glow from "~/assets/images/glow.webp";
+import cloud from "~/assets/images/icons/cloud.webp";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { BillingDetails } from "~/components/BillingDetails";
@@ -57,9 +28,34 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { getTypeCategoryName } from "~/util/cloud";
+import {
+	DatasetQuery,
+	QUERY_EIGHT,
+	QUERY_FIVE,
+	QUERY_FOUR,
+	QUERY_NINE,
+	QUERY_ONE,
+	QUERY_SEVEN,
+	QUERY_SIX,
+	QUERY_THREE,
+	QUERY_TWO,
+} from "~/util/dataset";
 import { createBaseQuery } from "~/util/defaults";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
+import {
+	iconArrowUpRight,
+	iconCreditCard,
+	iconDatabase,
+	iconHistory,
+	iconMarker,
+	iconMemory,
+	iconPackageClosed,
+	iconQuery,
+	iconRelation,
+	iconTag,
+} from "~/util/icons";
 import { APPLY_DATASET_KEY } from "~/util/storage";
+import classes from "../style.module.scss";
 import { StepProps } from "../types";
 
 const SAMPLE_QUERIES: DatasetQuery[] = [

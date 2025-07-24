@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	Accordion,
 	ActionIcon,
@@ -14,16 +12,6 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
-
-import {
-	iconCheck,
-	iconClose,
-	iconCopy,
-	iconDelete,
-	iconDesigner,
-	iconWarning,
-} from "~/util/icons";
-
 import { capitalize } from "radash";
 import { useState } from "react";
 import { escapeIdent } from "surrealdb";
@@ -41,6 +29,14 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import type { TableInfo } from "~/types";
+import {
+	iconCheck,
+	iconClose,
+	iconCopy,
+	iconDelete,
+	iconDesigner,
+	iconWarning,
+} from "~/util/icons";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";
 import { ChangefeedElement } from "./elements/changefeed";
 import { EventsElement } from "./elements/events";
@@ -48,6 +44,7 @@ import { FieldsElement } from "./elements/fields";
 import { GeneralElement } from "./elements/general";
 import { IndexesElement } from "./elements/indexes";
 import { PermissionsElement } from "./elements/permissions";
+import classes from "./style.module.scss";
 
 export interface SchemaDrawerProps {
 	opened: boolean;
@@ -68,7 +65,7 @@ export function DesignDrawer({
 }: SchemaDrawerProps) {
 	const { setOpenDesignerPanels } = useConfigStore.getState();
 
-	const isLight = useIsLight();
+	const _isLight = useIsLight();
 	const [width, setWidth] = useState(650);
 	const openDesignerPanels = useConfigStore((s) => s.openDesignerPanels);
 

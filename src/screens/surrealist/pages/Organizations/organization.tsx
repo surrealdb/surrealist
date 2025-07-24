@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	ActionIcon,
 	Badge,
@@ -13,7 +11,6 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
-
 import { PropsWithChildren, useMemo } from "react";
 import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
@@ -27,6 +24,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";
 import { iconDotsVertical, iconExitToAp } from "~/util/icons";
+import classes from "./style.module.scss";
 
 export interface OrganizationTileProps extends BoxProps {
 	organization: CloudOrganization;

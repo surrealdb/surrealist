@@ -1,3 +1,4 @@
+import type { EditorView } from "@codemirror/view";
 import {
 	Alert,
 	Badge,
@@ -11,8 +12,6 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-
-import type { EditorView } from "@codemirror/view";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { omit } from "radash";

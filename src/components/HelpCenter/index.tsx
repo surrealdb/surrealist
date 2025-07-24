@@ -1,5 +1,10 @@
-import classes from "./style.module.scss";
-
+import { Box, Paper, SimpleGrid, Stack, Text, UnstyledButton } from "@mantine/core";
+import { closeAllModals } from "@mantine/modals";
+import type { PropsWithChildren } from "react";
+import { useLocation } from "wouter";
+import { adapter } from "~/adapter";
+import { openAccountSupport } from "~/cloud/modals/account-support";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import {
 	iconAPI,
 	iconBook,
@@ -14,18 +19,10 @@ import {
 	iconUniversity,
 	iconVideo,
 } from "~/util/icons";
-
-import { Box, Paper, SimpleGrid, Stack, UnstyledButton } from "@mantine/core";
-import { Text } from "@mantine/core";
-import { closeAllModals } from "@mantine/modals";
-import type { PropsWithChildren } from "react";
-import { useLocation } from "wouter";
-import { adapter } from "~/adapter";
-import { openAccountSupport } from "~/cloud/modals/account-support";
-import { useIsCloudEnabled } from "~/hooks/cloud";
 import { dispatchIntent } from "~/util/intents";
 import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
+import classes from "./style.module.scss";
 
 export function HelpCenter() {
 	const showCloud = useIsCloudEnabled();

@@ -1,11 +1,5 @@
-import classes from "./style.module.scss";
-
-import cloudUrl from "~/assets/images/icons/cloud.webp";
-import communtyUrl from "~/assets/images/icons/community.webp";
-import documentationUrl from "~/assets/images/icons/document.webp";
-import tutorialsUrl from "~/assets/images/icons/tutorials.webp";
-
 import {
+	Box,
 	Button,
 	Center,
 	Group,
@@ -13,17 +7,21 @@ import {
 	Indicator,
 	Loader,
 	Paper,
+	ScrollArea,
 	SimpleGrid,
 	Skeleton,
+	Stack,
 	Text,
 	Tooltip,
 } from "@mantine/core";
-
-import { Box, ScrollArea, Stack } from "@mantine/core";
 import { memo, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
+import cloudUrl from "~/assets/images/icons/cloud.webp";
+import communtyUrl from "~/assets/images/icons/community.webp";
+import documentationUrl from "~/assets/images/icons/document.webp";
+import tutorialsUrl from "~/assets/images/icons/tutorials.webp";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
@@ -49,8 +47,8 @@ import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronDown, iconChevronRight } from "~/util/icons";
 import { APPLY_DATASET_KEY } from "~/util/storage";
-import { MetricActions } from "../../monitor/MetricPane/actions";
 import { MonitorMetricOptions } from "../../monitor/helpers";
+import { MetricActions } from "../../monitor/MetricPane/actions";
 import { BackupsBlock } from "../BackupsBlock";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
@@ -62,6 +60,7 @@ import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
 import { BillingRequiredModal } from "./BillingRequiredModal";
+import classes from "./style.module.scss";
 
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
@@ -209,7 +208,8 @@ export function DashboardView() {
 		configuringHandle.open();
 	});
 
-	const isLoading = detailsPending || backupsPending || instancePending || usagePending;
+	const isLoading =
+		detailsPending || backupsPending || instancePending || usagePending || organisationPending;
 
 	if (!isCloud) {
 		return <Redirect to="/query" />;

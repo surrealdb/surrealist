@@ -2,6 +2,8 @@ import classes from "./style.module.scss";
 
 // TODO Split into multiple files
 
+import { Compartment, EditorState, type Extension, Prec } from "@codemirror/state";
+import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
 import {
 	ActionIcon,
 	Autocomplete,
@@ -12,9 +14,12 @@ import {
 	Pill,
 	PillsInput,
 	type PillsInputProps,
+	Text,
 	TextInput,
 } from "@mantine/core";
-
+import { clamp, useInputState } from "@mantine/hooks";
+import { surrealql } from "@surrealdb/codemirror";
+import clsx from "clsx";
 import {
 	type FocusEvent,
 	type HTMLAttributes,
@@ -23,13 +28,6 @@ import {
 	useMemo,
 	useRef,
 } from "react";
-
-import { Compartment, EditorState, type Extension, Prec } from "@codemirror/state";
-import { EditorView, keymap, placeholder as ph } from "@codemirror/view";
-import { Text } from "@mantine/core";
-import { clamp, useInputState } from "@mantine/hooks";
-import { surrealql } from "@surrealdb/codemirror";
-import clsx from "clsx";
 import { Icon } from "~/components/Icon";
 import { acceptWithTab, editorTheme, inputBase } from "~/editor";
 import { useKindList } from "~/hooks/schema";

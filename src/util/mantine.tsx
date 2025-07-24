@@ -2,6 +2,7 @@ import {
 	ActionIcon,
 	Alert,
 	Checkbox,
+	createTheme,
 	Drawer,
 	HoverCard,
 	Indicator,
@@ -10,6 +11,7 @@ import {
 	Paper,
 	Popover,
 	Radio,
+	rem,
 	Select,
 	Slider,
 	Switch,
@@ -17,8 +19,6 @@ import {
 	TagsInput,
 	TextInput,
 	Tooltip,
-	createTheme,
-	rem,
 } from "@mantine/core";
 
 export const PRIMARY_COLOR = "surreal.5";

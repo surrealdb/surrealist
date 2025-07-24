@@ -1,23 +1,4 @@
-import classes from "./style.module.scss";
-
-import {
-	iconArrowUpRight,
-	iconChevronLeft,
-	iconChevronRight,
-	iconClose,
-	iconCopy,
-	iconFile,
-	iconHistory,
-	iconList,
-	iconPlus,
-	iconQuery,
-	iconSearch,
-	iconStar,
-	iconText,
-} from "~/util/icons";
-
 import { Badge, type BoxProps, Divider, type ElementProps, ScrollArea, Stack } from "@mantine/core";
-
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { useState } from "react";
@@ -41,6 +22,22 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab, QueryType } from "~/types";
 import { uniqueName } from "~/util/helpers";
+import {
+	iconArrowUpRight,
+	iconChevronLeft,
+	iconChevronRight,
+	iconClose,
+	iconCopy,
+	iconFile,
+	iconHistory,
+	iconList,
+	iconPlus,
+	iconQuery,
+	iconSearch,
+	iconStar,
+	iconText,
+} from "~/util/icons";
+import classes from "./style.module.scss";
 
 const TYPE_ICONS: Record<QueryType, string> = {
 	config: iconQuery,

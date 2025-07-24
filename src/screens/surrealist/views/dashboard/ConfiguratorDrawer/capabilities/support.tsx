@@ -13,9 +13,8 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
-import { CapabilityBaseProps } from "./shared";
-
 import { iconChevronDown, iconChevronUp, iconDownload, iconHelp } from "~/util/icons";
+import { CapabilityBaseProps } from "./shared";
 
 export function SupportCapability({ name, description }: CapabilityBaseProps) {
 	const isLight = useIsLight();

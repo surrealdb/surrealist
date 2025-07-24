@@ -1,5 +1,4 @@
-import { Box, Button, Group } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Box, Button, Group, Text } from "@mantine/core";
 import { ReactFlowProvider } from "@xyflow/react";
 import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";

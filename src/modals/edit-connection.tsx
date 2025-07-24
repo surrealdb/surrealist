@@ -1,5 +1,4 @@
-import { Box, Button, Group, Text } from "@mantine/core";
-import { Stack } from "@mantine/core";
+import { Box, Button, Group, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";

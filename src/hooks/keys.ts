@@ -31,7 +31,7 @@ export function useActiveKeys(...keys: string[]): boolean {
 	return active.length > 0;
 }
 
-function getNavigationElement<T extends Identified>(cmd: T) {
+function _getNavigationElement<T extends Identified>(cmd: T) {
 	return document.querySelector(`[data-navigation-item-id="${cmd.id}"]`) as HTMLElement | null;
 }
 

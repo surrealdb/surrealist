@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	Button,
 	type ButtonProps,
@@ -10,7 +8,6 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-
 import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
@@ -29,6 +26,7 @@ import { createBaseAuthentication } from "~/util/defaults";
 import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/surrealql";
 import { activateDatabase, executeQuery } from "../../connection/connection";
+import classes from "./style.module.scss";
 
 export interface NamespaceProps {
 	value: string;

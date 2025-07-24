@@ -1,17 +1,4 @@
-import classes from "./style.module.scss";
-
-import {
-	iconCog,
-	iconCreditCard,
-	iconDollar,
-	iconOrganization,
-	iconPackageClosed,
-	iconProgressClock,
-	iconServer,
-} from "~/util/icons";
-
-import { Divider, Group, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
-import { Box, ScrollArea, Stack } from "@mantine/core";
+import { Box, Divider, Group, ScrollArea, Stack, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
@@ -24,6 +11,16 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
+import {
+	iconCog,
+	iconCreditCard,
+	iconDollar,
+	iconOrganization,
+	iconPackageClosed,
+	iconProgressClock,
+	iconServer,
+} from "~/util/icons";
+import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
 import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationInvoicesTab } from "./tabs/invoices";

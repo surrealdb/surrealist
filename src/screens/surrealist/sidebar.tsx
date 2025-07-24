@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	type BoxProps,
 	Divider,
@@ -10,7 +8,6 @@ import {
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
-
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
 import iconUrl from "~/assets/images/icon.webp";
@@ -29,6 +26,7 @@ import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
 import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
+import classes from "./style.module.scss";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
 	["/overview", "/organisations"],

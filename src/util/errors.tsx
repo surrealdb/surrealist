@@ -1,5 +1,4 @@
-import { Box, Button, Divider, Group, Stack, Title } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Box, Button, Divider, Group, Stack, Text, Title } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { ReactNode } from "react";
 import { adapter } from "~/adapter";

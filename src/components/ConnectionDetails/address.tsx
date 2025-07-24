@@ -7,10 +7,10 @@ import {
 	Indicator,
 	Loader,
 	Select,
+	Text,
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
-import { Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { fork, sleep } from "radash";
 import { useMemo } from "react";

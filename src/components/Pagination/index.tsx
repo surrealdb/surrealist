@@ -1,5 +1,4 @@
-import { type ComboboxData, Group, Select, TextInput } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { type ComboboxData, Group, Select, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { type FocusEvent, type KeyboardEvent, useLayoutEffect } from "react";
 import { useStable } from "~/hooks/stable";

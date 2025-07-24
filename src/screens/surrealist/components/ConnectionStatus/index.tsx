@@ -1,16 +1,4 @@
 import {
-	iconClose,
-	iconDownload,
-	iconEdit,
-	iconRefresh,
-	iconRelation,
-	iconReset,
-	iconSandbox,
-	iconTable,
-	iconUpload,
-} from "~/util/icons";
-
-import {
 	Box,
 	Button,
 	Group,
@@ -35,6 +23,17 @@ import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnectionById } from "~/util/connection";
+import {
+	iconClose,
+	iconDownload,
+	iconEdit,
+	iconRefresh,
+	iconRelation,
+	iconReset,
+	iconSandbox,
+	iconTable,
+	iconUpload,
+} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
@@ -46,7 +45,7 @@ export function ConnectionStatus() {
 	const schema = useDatabaseSchema();
 
 	const [connection] = useConnectionAndView();
-	const [connectionId, name, icon, database, instance] = useConnection((c) => [
+	const [connectionId, name, icon, _database, instance] = useConnection((c) => [
 		c?.id ?? "",
 		c?.name ?? "",
 		c?.icon ?? 0,

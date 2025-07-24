@@ -1,5 +1,3 @@
-import { iconDatabaseSecure, iconFolderSecure, iconServerSecure } from "~/util/icons";
-
 import { Box } from "@mantine/core";
 import { memo, useMemo } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -7,6 +5,7 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { useConnection } from "~/hooks/connection";
 import { useViewFocus } from "~/hooks/routing";
 import { useDatabaseSchema, useNamespaceSchema, useRootSchema } from "~/hooks/schema";
+import { iconDatabaseSecure, iconFolderSecure, iconServerSecure } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { LevelPanel } from "../LevelPanel";
 

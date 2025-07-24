@@ -1,7 +1,4 @@
-import { Group, Text } from "@mantine/core";
-import classes from "../style.module.scss";
-
-import { Box, BoxProps, Paper, UnstyledButton } from "@mantine/core";
+import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
 import { format } from "date-fns";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -10,6 +7,7 @@ import { NewsPost } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { iconArrowLeft } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
+import classes from "../style.module.scss";
 
 export interface StartBlogProps extends BoxProps {
 	post: NewsPost;

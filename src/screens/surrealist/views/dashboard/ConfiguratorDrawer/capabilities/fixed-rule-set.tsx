@@ -26,8 +26,8 @@ import {
 	CapabilityBaseProps,
 	CapabilityField,
 	CheckboxGrid,
-	RuleSetBase,
 	isWildcard,
+	RuleSetBase,
 } from "./shared";
 
 export interface FixedRuleSetCapabilityProps extends CapabilityBaseProps {

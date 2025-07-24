@@ -37,7 +37,7 @@ import type { DocsTopic } from "./types";
  * @param schema The schema to build the documentation for.
  * @returns The structure of the documentation.
  */
-export function buildDocumentation(schema: ConnectionSchema): DocsTopic[] {
+export function buildDocumentation(_schema: ConnectionSchema): DocsTopic[] {
 	return [
 		{
 			id: newId(),

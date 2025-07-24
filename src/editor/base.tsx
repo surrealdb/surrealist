@@ -16,10 +16,10 @@ import {
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { EditorState, type Extension } from "@codemirror/state";
 import {
-	EditorView,
 	crosshairCursor,
 	drawSelection,
 	dropCursor,
+	EditorView,
 	highlightActiveLineGutter,
 	highlightSpecialChars,
 	keymap,

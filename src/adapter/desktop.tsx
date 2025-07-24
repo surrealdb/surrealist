@@ -513,6 +513,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			});
 
 			for (const cookie of cookies) {
+				// biome-ignore lint/suspicious/noDocumentCookie: Cookie Store API not supported enough yet
 				document.cookie = stripCookie(cookie);
 			}
 		} catch (err) {

@@ -1,11 +1,8 @@
 import { Link } from "~/components/Link";
-import { useDatabaseSchema } from "~/hooks/schema";
 import { Article } from "~/screens/surrealist/docs/components";
 import type { TopicProps } from "~/screens/surrealist/docs/types";
 
-export function DocsConceptsSurrealML({ language, topic }: TopicProps) {
-	const schema = useDatabaseSchema();
-
+export function DocsConceptsSurrealML(_: TopicProps) {
 	return (
 		<Article title="Surreal ML">
 			<div>
@@ -25,7 +22,6 @@ export function DocsConceptsSurrealML({ language, topic }: TopicProps) {
 						SurrealML in the documentation
 					</Link>
 				</p>
-				<p>{topic.extra?.table?.schema?.name}</p>
 			</div>
 		</Article>
 	);

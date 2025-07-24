@@ -1,14 +1,3 @@
-import {
-	iconChevronRight,
-	iconDesigner,
-	iconDownload,
-	iconExplorer,
-	iconOpen,
-	iconPlus,
-	iconTable,
-	iconUpload,
-} from "~/util/icons";
-
 import { Box, Button, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { memo, useState } from "react";
@@ -28,6 +17,16 @@ import { TablesPane } from "~/screens/surrealist/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { ActivateDatabaseEvent, DisconnectedEvent } from "~/util/global-events";
+import {
+	iconChevronRight,
+	iconDesigner,
+	iconDownload,
+	iconExplorer,
+	iconOpen,
+	iconPlus,
+	iconTable,
+	iconUpload,
+} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";

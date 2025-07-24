@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import {
 	ActionIcon,
 	Box,
@@ -15,7 +13,6 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
 import { useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
@@ -24,7 +21,8 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { dedent } from "~/util/dedent";
 import { iconCheck, iconClose, iconTransfer, iconXml } from "~/util/icons";
-import { DEFAULT_STATE, EmbedState, Embedder } from "./embedder";
+import { DEFAULT_STATE, Embedder, EmbedState } from "./embedder";
+import classes from "./style.module.scss";
 
 export function NewEmbedPage() {
 	const [url, setUrl] = useDebouncedState("", 250);

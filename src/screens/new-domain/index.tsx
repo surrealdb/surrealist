@@ -1,6 +1,9 @@
-import { Image } from "@mantine/core";
-import { Alert, Box, Button, Divider, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Alert, Box, Button, Divider, Image, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { useState } from "react";
 import { adapter } from "~/adapter";
+import logoDarkUrl from "~/assets/images/dark/logo.webp";
+import iconUrl from "~/assets/images/icon.webp";
+import logoLightUrl from "~/assets/images/light/logo.webp";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -11,11 +14,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { backupConfig } from "~/util/config";
 import { iconArrowUpRight, iconDownload } from "~/util/icons";
-
-import { useState } from "react";
-import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import iconUrl from "~/assets/images/icon.webp";
-import logoLightUrl from "~/assets/images/light/logo.webp";
 
 export function NewDomainScreen() {
 	const isLight = useIsLight();

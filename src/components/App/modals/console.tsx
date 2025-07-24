@@ -15,7 +15,11 @@ function ConsoleOutputEntry({
 	index,
 	message,
 	formatter,
-}: { index: number; message: string; formatter: AnsiToHtml }) {
+}: {
+	index: number;
+	message: string;
+	formatter: AnsiToHtml;
+}) {
 	return (
 		<Text
 			key={index}

@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import { Box, Group, Paper, Skeleton, Text, ThemeIcon } from "@mantine/core";
 import { openConnectCli } from "~/cloud/modals/connect-cli";
 import { openConnectCurl } from "~/cloud/modals/connect-curl";
@@ -8,6 +6,7 @@ import { Icon } from "~/components/Icon";
 import { useConnection } from "~/hooks/connection";
 import { CloudInstance } from "~/types";
 import { iconChevronRight, iconConsole, iconTransfer, iconXml } from "~/util/icons";
+import classes from "./style.module.scss";
 
 interface ConnectActionProps {
 	title: string;

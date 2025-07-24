@@ -9,10 +9,10 @@ import { useConnection } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useStable } from "~/hooks/stable";
 import { MonitorType } from "~/types";
+import { MonitorContentProps, MonitorLogOptions, MonitorMetricOptions } from "../helpers";
 import { LogPane } from "../LogPane";
 import { MetricPane } from "../MetricPane";
 import { MonitorsPane } from "../MonitorsPane";
-import { MonitorContentProps, MonitorLogOptions, MonitorMetricOptions } from "../helpers";
 
 const MONITOR_CONTENTS: Record<MonitorType, React.FC<MonitorContentProps>> = {
 	metrics: memo(MetricPane),
@@ -87,71 +87,69 @@ export default function MonitorView() {
 	}, [metricOptions.duration]);
 
 	return (
-		<>
-			<Box
-				h="100%"
-				ref={rootRef}
-				pr="lg"
-				pb="lg"
+		<Box
+			h="100%"
+			ref={rootRef}
+			pr="lg"
+			pb="lg"
+		>
+			<PanelGroup
+				direction="horizontal"
+				style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
 			>
-				<PanelGroup
-					direction="horizontal"
-					style={{ opacity: minSidebarSize === 0 ? 0 : 1 }}
+				{!sidebarMinimized && (
+					<>
+						<Panel
+							defaultSize={minSidebarSize}
+							minSize={minSidebarSize}
+							maxSize={35}
+							id="tabs"
+							order={1}
+						>
+							<MonitorsPane
+								active={activeMonitor}
+								onSidebarMinimize={() => {
+									setSidebarMinimized(true);
+								}}
+								onActivate={(observable) => {
+									setActiveMonitor(observable);
+								}}
+							/>
+						</Panel>
+						<PanelDragger />
+					</>
+				)}
+				<Panel
+					id="content"
+					order={2}
 				>
-					{!sidebarMinimized && (
-						<>
-							<Panel
-								defaultSize={minSidebarSize}
-								minSize={minSidebarSize}
-								maxSize={35}
-								id="tabs"
-								order={1}
-							>
-								<MonitorsPane
-									active={activeMonitor}
-									onSidebarMinimize={() => {
-										setSidebarMinimized(true);
-									}}
-									onActivate={(observable) => {
-										setActiveMonitor(observable);
-									}}
-								/>
-							</Panel>
-							<PanelDragger />
-						</>
-					)}
-					<Panel
-						id="content"
-						order={2}
-					>
-						<Content
-							info={monitorInfo}
-							instance={instanceId}
-							metricOptions={metricOptions}
-							logOptions={logOptions}
-							sidebarMinimized={sidebarMinimized}
-							onRevealSidebar={revealSidebar}
-							onChangeMetricsOptions={setMetricOptions}
-							onChangeLogOptions={setLogOptions}
-							onCalculateMetricsNodes={(metric) => {
-								const labels = metric.values.metrics.map((it) => it.labels);
+					<Content
+						info={monitorInfo}
+						instance={instanceId}
+						metricOptions={metricOptions}
+						logOptions={logOptions}
+						sidebarMinimized={sidebarMinimized}
+						onRevealSidebar={revealSidebar}
+						onChangeMetricsOptions={setMetricOptions}
+						onChangeLogOptions={setLogOptions}
+						onCalculateMetricsNodes={(metric) => {
+							const labels = metric.values.metrics.map((it) => it.labels);
 
-								if (metric.metric === "cpu") {
-									setCpuLabels(labels);
-								} else if (metric.metric === "memory") {
-									setMemoryLabels(labels);
-								} else if (metric.metric === "ingress") {
-									setNetworkIngressLabels(labels);
-								} else if (metric.metric === "egress") {
-									setNetworkEgressLabels(labels);
-								} else {
-									setActiveRPCLabels(labels);
-								}
-							}}
-						/>
-					</Panel>
-				</PanelGroup>
-			</Box>
-		</>
+							if (metric.metric === "cpu") {
+								setCpuLabels(labels);
+							} else if (metric.metric === "memory") {
+								setMemoryLabels(labels);
+							} else if (metric.metric === "ingress") {
+								setNetworkIngressLabels(labels);
+							} else if (metric.metric === "egress") {
+								setNetworkEgressLabels(labels);
+							} else {
+								setActiveRPCLabels(labels);
+							}
+						}}
+					/>
+				</Panel>
+			</PanelGroup>
+		</Box>
 	);
 }

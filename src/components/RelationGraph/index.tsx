@@ -1,16 +1,4 @@
 import {
-	iconAPI,
-	iconFullscreen,
-	iconImage,
-	iconMagnifyMinus,
-	iconMagnifyPlus,
-	iconPause,
-	iconPlay,
-	iconRelation,
-	iconReset,
-} from "~/util/icons";
-
-import {
 	Box,
 	BoxProps,
 	Center,
@@ -24,7 +12,6 @@ import {
 	Transition,
 	useMantineTheme,
 } from "@mantine/core";
-
 import { createEdgeCurveProgram } from "@sigma/edge-curve";
 import { createNodeBorderProgram } from "@sigma/node-border";
 import { MultiDirectedGraph } from "graphology";
@@ -37,6 +24,17 @@ import { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { getIsLight, useIsLight } from "~/hooks/theme";
 import { useInspector } from "~/providers/Inspector";
+import {
+	iconAPI,
+	iconFullscreen,
+	iconImage,
+	iconMagnifyMinus,
+	iconMagnifyPlus,
+	iconPause,
+	iconPlay,
+	iconRelation,
+	iconReset,
+} from "~/util/icons";
 import { ActionButton } from "../ActionButton";
 import { Icon } from "../Icon";
 import { NodeContextMenu } from "./context";
@@ -44,9 +42,9 @@ import { drawHover, drawLabel } from "./drawing";
 import {
 	GraphEdges,
 	GraphExpansion,
+	RelationalGraph,
 	RelationGraphEdge,
 	RelationGraphNode,
-	RelationalGraph,
 } from "./types";
 
 /**

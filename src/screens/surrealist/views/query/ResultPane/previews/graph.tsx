@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import {
 	Box,
 	Button,
@@ -13,17 +11,16 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-
 import { indexParallelEdgesIndex } from "@sigma/edge-curve";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { isArray, isNumber, isObject } from "radash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { Gap, PreparedQuery, RecordId, equals, escapeIdent } from "surrealdb";
+import { equals, escapeIdent, Gap, PreparedQuery, RecordId } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
-import { RelationGraph, newRelationalGraph } from "~/components/RelationGraph";
+import { newRelationalGraph, RelationGraph } from "~/components/RelationGraph";
 import { NodeCircle } from "~/components/RelationGraph/node";
 import { GraphExpansion } from "~/components/RelationGraph/types";
 import { useSetting } from "~/hooks/config";
@@ -39,6 +36,7 @@ import { useConfigStore } from "~/stores/config";
 import { plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
+import classes from "../style.module.scss";
 import { type PreviewProps } from ".";
 
 const CURVE_AMP = 3.5;
@@ -91,7 +89,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	const [tables, setTables] = useState<string[]>([]);
 	const [edges, setEdges] = useState<string[]>([]);
 	const [colors, setColors] = useState<Map<string, string>>(new Map());
-	const [aliases, setAliases] = useState<Map<string, string>>(new Map());
+	const [_aliases, setAliases] = useState<Map<string, string>>(new Map());
 
 	const { success, result } = responses[selected] ?? { result: null };
 	const textSize = Math.floor(15 * (editorScale / 100));

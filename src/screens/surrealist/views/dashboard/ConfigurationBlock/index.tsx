@@ -1,3 +1,13 @@
+import { Button, Paper, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
+import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { Icon } from "~/components/Icon";
+import { PropertyValue } from "~/components/PropertyValue";
+import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
+import { CloudInstance } from "~/types";
+import { tagEvent } from "~/util/analytics";
+import { getTypeCategoryName } from "~/util/cloud";
+import { formatMemory, plural } from "~/util/helpers";
 import {
 	iconArrowDownFat,
 	iconDatabase,
@@ -9,18 +19,6 @@ import {
 	iconRelation,
 	iconTag,
 } from "~/util/icons";
-
-import { Button, SimpleGrid, Skeleton } from "@mantine/core";
-import { Paper, Stack, Text } from "@mantine/core";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
-import { Icon } from "~/components/Icon";
-import { PropertyValue } from "~/components/PropertyValue";
-import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance } from "~/types";
-import { tagEvent } from "~/util/analytics";
-import { getTypeCategoryName } from "~/util/cloud";
-import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;

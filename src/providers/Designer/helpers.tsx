@@ -1,5 +1,4 @@
-import { Accordion, Group } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { Accordion, Group, Text } from "@mantine/core";
 import { default as equals } from "fast-deep-equal";
 import { objectify } from "radash";
 import { escapeIdent } from "surrealdb";

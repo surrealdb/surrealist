@@ -104,128 +104,126 @@ export function TableCreatorModal() {
 	}, [tableName, tableIn, tableOut, createType, tableView]);
 
 	return (
-		<>
-			<Modal
-				opened={opened}
-				onClose={closeTableCreator}
-				trapFocus={false}
-				size="md"
-				title={<PrimaryTitle>Create new table</PrimaryTitle>}
-			>
-				<SegmentedControl
-					fullWidth
-					variant="gradient"
-					data={[
-						{
-							value: "normal",
-							label: (
-								<Group
-									justify="center"
-									gap="xs"
-								>
-									<Icon path={iconTable} />
-									Table
-								</Group>
-							),
-						},
-						{
-							value: "relation",
-							label: (
-								<Group
-									justify="center"
-									gap="xs"
-								>
-									<Icon path={iconRelation} />
-									Relation
-								</Group>
-							),
-						},
-						{
-							value: "view",
-							label: (
-								<Group
-									justify="center"
-									gap="xs"
-								>
-									<Icon path={iconSearch} />
-									View
-								</Group>
-							),
-						},
-					]}
-					value={createType}
-					onChange={setCreateType as any}
-					mb={32}
-				/>
+		<Modal
+			opened={opened}
+			onClose={closeTableCreator}
+			trapFocus={false}
+			size="md"
+			title={<PrimaryTitle>Create new table</PrimaryTitle>}
+		>
+			<SegmentedControl
+				fullWidth
+				variant="gradient"
+				data={[
+					{
+						value: "normal",
+						label: (
+							<Group
+								justify="center"
+								gap="xs"
+							>
+								<Icon path={iconTable} />
+								Table
+							</Group>
+						),
+					},
+					{
+						value: "relation",
+						label: (
+							<Group
+								justify="center"
+								gap="xs"
+							>
+								<Icon path={iconRelation} />
+								Relation
+							</Group>
+						),
+					},
+					{
+						value: "view",
+						label: (
+							<Group
+								justify="center"
+								gap="xs"
+							>
+								<Icon path={iconSearch} />
+								View
+							</Group>
+						),
+					},
+				]}
+				value={createType}
+				onChange={setCreateType as any}
+				mb={32}
+			/>
 
-				<Form onSubmit={createTable}>
-					<Stack gap="xl">
-						<TextInput
-							label="Table name"
-							value={tableName}
-							spellCheck={false}
-							onChange={setTableName}
-							placeholder="my_table"
-							autoFocus
-						/>
-						<Select
-							data={SCHEMA_MODES}
-							value={mode}
-							onChange={setMode as any}
-							label="Schema mode"
-						/>
-						{createType === "relation" && (
-							<>
-								<MultiSelect
-									data={tables}
-									label="Incoming tables"
-									searchable
-									value={tableIn}
-									onChange={setTableIn}
-								/>
-
-								<MultiSelect
-									data={tables}
-									label="Outgoing tables"
-									searchable
-									value={tableOut}
-									onChange={setTableOut}
-								/>
-							</>
-						)}
-						{createType === "view" && (
-							<CodeInput
-								label="View query"
-								value={tableView}
-								onChange={setTableView}
-								placeholder="Write a SELECT query..."
-								multiline
-								height={84}
+			<Form onSubmit={createTable}>
+				<Stack gap="xl">
+					<TextInput
+						label="Table name"
+						value={tableName}
+						spellCheck={false}
+						onChange={setTableName}
+						placeholder="my_table"
+						autoFocus
+					/>
+					<Select
+						data={SCHEMA_MODES}
+						value={mode}
+						onChange={setMode as any}
+						label="Schema mode"
+					/>
+					{createType === "relation" && (
+						<>
+							<MultiSelect
+								data={tables}
+								label="Incoming tables"
+								searchable
+								value={tableIn}
+								onChange={setTableIn}
 							/>
-						)}
 
-						<Group mt="lg">
-							<Button
-								onClick={closeTableCreator}
-								color="slate"
-								variant="light"
-								flex={1}
-							>
-								Close
-							</Button>
-							<Button
-								type="submit"
-								variant="gradient"
-								flex={1}
-								disabled={!isValid}
-								rightSection={<Icon path={iconPlus} />}
-							>
-								Create
-							</Button>
-						</Group>
-					</Stack>
-				</Form>
-			</Modal>
-		</>
+							<MultiSelect
+								data={tables}
+								label="Outgoing tables"
+								searchable
+								value={tableOut}
+								onChange={setTableOut}
+							/>
+						</>
+					)}
+					{createType === "view" && (
+						<CodeInput
+							label="View query"
+							value={tableView}
+							onChange={setTableView}
+							placeholder="Write a SELECT query..."
+							multiline
+							height={84}
+						/>
+					)}
+
+					<Group mt="lg">
+						<Button
+							onClick={closeTableCreator}
+							color="slate"
+							variant="light"
+							flex={1}
+						>
+							Close
+						</Button>
+						<Button
+							type="submit"
+							variant="gradient"
+							flex={1}
+							disabled={!isValid}
+							rightSection={<Icon path={iconPlus} />}
+						>
+							Create
+						</Button>
+					</Group>
+				</Stack>
+			</Form>
+		</Modal>
 	);
 }

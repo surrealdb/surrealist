@@ -1,5 +1,4 @@
-import { Button, Divider, Group, ScrollArea, Text } from "@mantine/core";
-import { Box, Paper, Stack, Title } from "@mantine/core";
+import { Box, Button, Divider, Group, Paper, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import type { FallbackProps } from "react-error-boundary";
 import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";

@@ -1,13 +1,11 @@
-import { SortableContext, arrayMove } from "@dnd-kit/sortable";
-
 import {
+	closestCorners,
 	DndContext,
 	type DragEndEvent,
 	type PointerActivationConstraint,
-	closestCorners,
 } from "@dnd-kit/core";
-
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { arrayMove, SortableContext } from "@dnd-kit/sortable";
 import type { ReactNode } from "react";
 import { useStable } from "~/hooks/stable";
 import { SortableChild } from "./child";

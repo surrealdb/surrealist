@@ -1,5 +1,4 @@
-import { BoxProps, Group, ThemeIcon } from "@mantine/core";
-import { Text } from "@mantine/core";
+import { BoxProps, Group, Text, ThemeIcon } from "@mantine/core";
 import { ReactNode } from "react";
 import { Icon } from "../Icon";
 

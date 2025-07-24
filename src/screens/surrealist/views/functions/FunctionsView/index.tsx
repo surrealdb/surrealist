@@ -290,21 +290,19 @@ export function FunctionsView() {
 					<PanelDragger />
 					<Panel minSize={minSize}>
 						{active ? (
-							<>
-								{active.type === "function" ? (
-									<FunctionEditorPanel
-										details={active.details as SchemaFunction}
-										error={error}
-										isCreating={isCreating}
-										onChange={setActive as any}
-									/>
-								) : (
-									<ModelPanel
-										details={active.details as SchemaModel}
-										onDownload={downloadModel}
-									/>
-								)}
-							</>
+							active.type === "function" ? (
+								<FunctionEditorPanel
+									details={active.details as SchemaFunction}
+									error={error}
+									isCreating={isCreating}
+									onChange={setActive as any}
+								/>
+							) : (
+								<ModelPanel
+									details={active.details as SchemaModel}
+									onDownload={downloadModel}
+								/>
+							)
 						) : (
 							<Introduction
 								title="Functions"

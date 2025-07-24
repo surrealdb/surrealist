@@ -1,16 +1,15 @@
-import { ActionIcon, Divider, Group, Menu, Stack, Text, TextInput } from "@mantine/core";
-
-import {
-	iconClose,
-	iconDelete,
-	iconDotsVertical,
-	iconQuery,
-	iconSearch,
-	iconText,
-} from "~/util/icons";
-
 import { EditorView } from "@codemirror/view";
-import { Box, Drawer } from "@mantine/core";
+import {
+	ActionIcon,
+	Box,
+	Divider,
+	Drawer,
+	Group,
+	Menu,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import dayjs from "dayjs";
 import { capitalize } from "radash";
@@ -26,6 +25,14 @@ import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
+import {
+	iconClose,
+	iconDelete,
+	iconDotsVertical,
+	iconQuery,
+	iconSearch,
+	iconText,
+} from "~/util/icons";
 
 const MAX_PREVIEW_LENGTH = 500;
 

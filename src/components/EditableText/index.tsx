@@ -1,11 +1,10 @@
-import { useInputState, useUncontrolled } from "@mantine/hooks";
-import classes from "./style.module.scss";
-
 import { type ElementProps, Text, TextInput, type TextProps } from "@mantine/core";
+import { useInputState, useUncontrolled } from "@mantine/hooks";
 import clsx from "clsx";
 import { type MouseEvent, useLayoutEffect } from "react";
 import { useStable } from "~/hooks/stable";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
+import classes from "./style.module.scss";
 
 export interface EditableTextProps extends TextProps, ElementProps<"div", "onChange" | "color"> {
 	value: string;

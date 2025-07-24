@@ -5,13 +5,11 @@ import {
 	type MantineColorScheme,
 	Select,
 	Stack,
+	Text,
 	Tooltip,
 } from "@mantine/core";
-
-import { type PropsWithChildren, type ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
-
-import { Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { type PropsWithChildren, type ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";

@@ -1,9 +1,8 @@
-import classes from "./style.module.scss";
-
 import { Box, BoxProps } from "@mantine/core";
 import clsx from "clsx";
 import { useEffect, useRef, useState } from "react";
 import { clamp } from "~/util/helpers";
+import classes from "./style.module.scss";
 
 export interface DrawerResizerProps extends BoxProps {
 	minSize: number;

@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import {
 	Box,
 	Button,
@@ -12,7 +10,6 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
-
 import { useInputState } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
@@ -29,6 +26,7 @@ import { useIsLight } from "~/hooks/theme";
 import { CloudCoupon } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconOpen } from "~/util/icons";
+import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
@@ -53,7 +51,7 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 			client.invalidateQueries({
 				queryKey: ["cloud", "coupons"],
 			});
-		} catch (err: any) {
+		} catch (_err: any) {
 			showErrorNotification({
 				title: "Failed to apply discount code",
 				content: "The discount code is invalid or has already been applied",

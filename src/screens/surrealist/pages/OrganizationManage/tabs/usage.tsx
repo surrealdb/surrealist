@@ -1,11 +1,10 @@
-import classes from "../style.module.scss";
-
 import { Divider, LoadingOverlay, Paper, Table, Text } from "@mantine/core";
 import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { measureComputeCost } from "~/util/cloud";
+import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationUsageTab({ organization }: OrganizationTabProps) {

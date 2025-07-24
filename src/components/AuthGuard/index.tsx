@@ -1,5 +1,4 @@
-import { Center } from "@mantine/core";
-import { Loader } from "@mantine/core";
+import { Center, Loader } from "@mantine/core";
 import { PropsWithChildren, useEffect } from "react";
 import { Redirect } from "wouter";
 import { openCloudAuthentication } from "~/cloud/api/auth";

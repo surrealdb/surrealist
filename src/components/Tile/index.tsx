@@ -1,4 +1,4 @@
-import { Paper, type PaperProps, UnstyledButton, createPolymorphicComponent } from "@mantine/core";
+import { createPolymorphicComponent, Paper, type PaperProps, UnstyledButton } from "@mantine/core";
 import clsx from "clsx";
 import { forwardRef } from "react";
 import classes from "./style.module.scss";

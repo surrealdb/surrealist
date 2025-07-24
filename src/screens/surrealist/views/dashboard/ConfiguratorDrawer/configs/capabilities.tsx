@@ -1,15 +1,6 @@
-import equal from "fast-deep-equal";
-import classes from "../style.module.scss";
-
-import {
-	ARBITRARY_QUERY_TARGETS,
-	ENDPOINT_TARGETS,
-	EXPERIMENT_TARGETS,
-	RPC_TARGETS,
-} from "../capabilities/registry";
-
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { compareVersions, satisfies } from "compare-versions";
+import equal from "fast-deep-equal";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
@@ -18,7 +9,14 @@ import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
+import {
+	ARBITRARY_QUERY_TARGETS,
+	ENDPOINT_TARGETS,
+	EXPERIMENT_TARGETS,
+	RPC_TARGETS,
+} from "../capabilities/registry";
 import { SupportCapability } from "../capabilities/support";
+import classes from "../style.module.scss";
 
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;

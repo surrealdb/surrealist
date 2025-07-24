@@ -6,10 +6,10 @@ import {
 	Paper,
 	Select,
 	SimpleGrid,
+	Switch,
 	Text,
 	TextInput,
 } from "@mantine/core";
-import { Switch } from "@mantine/core";
 import { isNumber } from "radash";
 import { useConfigStore } from "~/stores/config";
 import {

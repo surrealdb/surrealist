@@ -1,5 +1,4 @@
-import { ScrollArea, Text, ThemeIcon } from "@mantine/core";
-import { Menu } from "@mantine/core";
+import { Menu, ScrollArea, Text, ThemeIcon } from "@mantine/core";
 import type { PropsWithChildren } from "react";
 import { useIsLight } from "~/hooks/theme";
 import type { Listable } from "~/types";

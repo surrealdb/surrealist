@@ -19,7 +19,7 @@ const GRID_COLUMNS = {
 };
 
 export function OrganizationInstancesTab({ organization }: OrganizationTabProps) {
-	const [, navigate] = useAbsoluteLocation();
+	const [, _navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 	const { data, isSuccess, isPending } = useCloudOrganizationInstancesQuery(organization.id);
 	const isAdmin = useHasOrganizationRole(organization.id, "admin");

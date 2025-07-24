@@ -1,7 +1,6 @@
-import { Box, Button, Group, Modal, Stack, TagsInput, Text, TextInput } from "@mantine/core";
-
 import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { Box, Button, Group, Modal, Stack, TagsInput, Text, TextInput } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { memo, useState } from "react";
@@ -24,7 +23,7 @@ import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { SetQueryEvent } from "~/util/global-events";
-import { ON_FOCUS_SELECT, newId } from "~/util/helpers";
+import { newId, ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { QueryPane } from "../QueryPane";

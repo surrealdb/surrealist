@@ -1,5 +1,9 @@
 import equal from "fast-deep-equal";
-
+import { klona } from "klona";
+import { escapeIdent } from "surrealdb";
+import { adapter } from "~/adapter";
+import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
+import { useDatabaseStore } from "~/stores/database";
 import type {
 	SchemaFunction,
 	SchemaInfoDB,
@@ -11,12 +15,6 @@ import type {
 	TableInfo,
 	TableVariant,
 } from "~/types";
-
-import { klona } from "klona";
-import { escapeIdent } from "surrealdb";
-import { adapter } from "~/adapter";
-import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
-import { useDatabaseStore } from "~/stores/database";
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";
 import { getStatementCount } from "./surrealql";
@@ -265,7 +263,7 @@ export function displaySchemaPermission(permission: string | boolean) {
 export function readBlock(block: string | undefined) {
 	const hasBraces = block?.at(0) === "{" && block?.at(-1) === "}";
 	const hasParen = block?.at(0) === "(" && block?.at(-1) === ")";
-	const trimmed = hasBraces || hasParen ? block.slice(1, -1) : block ?? "";
+	const trimmed = hasBraces || hasParen ? block.slice(1, -1) : (block ?? "");
 
 	return dedent(trimmed);
 }

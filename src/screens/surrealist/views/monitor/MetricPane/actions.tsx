@@ -1,5 +1,4 @@
-import { Stack, Text } from "@mantine/core";
-import { Checkbox, Group, Indicator, Menu, Select } from "@mantine/core";
+import { Checkbox, Group, Indicator, Menu, Select, Stack, Text } from "@mantine/core";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";

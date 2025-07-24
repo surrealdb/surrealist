@@ -1,7 +1,6 @@
-import classes from "../style.module.scss";
-
 import { Box, BoxProps, Flex, Paper, Text } from "@mantine/core";
 import { PropsWithChildren, ReactNode, useRef } from "react";
+import classes from "../style.module.scss";
 
 export interface StartPlaceholderProps extends BoxProps {
 	title: ReactNode;

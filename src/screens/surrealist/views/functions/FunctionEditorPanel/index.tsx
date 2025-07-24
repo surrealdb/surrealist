@@ -1,16 +1,5 @@
-import { Alert, Badge, Box, Group } from "@mantine/core";
-
-import { iconDownload, iconJSON, iconText, iconWarning } from "~/util/icons";
-
-import {
-	surqlCustomFunctionCompletion,
-	surqlLinting,
-	surqlTableCompletion,
-	surqlVariableCompletion,
-} from "~/editor";
-
 import type { EditorView } from "@codemirror/view";
-import { Stack } from "@mantine/core";
+import { Alert, Badge, Box, Group, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useMemo, useState } from "react";
 import type { Updater } from "use-immer";
@@ -20,11 +9,18 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { SURQL_FILTER } from "~/constants";
+import {
+	surqlCustomFunctionCompletion,
+	surqlLinting,
+	surqlTableCompletion,
+	surqlVariableCompletion,
+} from "~/editor";
 import { useSetting } from "~/hooks/config";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useStable } from "~/hooks/stable";
 import type { FunctionDetails, SchemaFunction } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
+import { iconDownload, iconJSON, iconText, iconWarning } from "~/util/icons";
 import { buildFunctionDefinition } from "~/util/schema";
 import { formatQuery, validateQuery } from "~/util/surrealql";
 

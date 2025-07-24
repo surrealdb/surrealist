@@ -1,10 +1,8 @@
-import classes from "./style.module.scss";
-
 import { Box, type BoxProps, type MantineColor, type MantineSize } from "@mantine/core";
 import clsx from "clsx";
-
 import { type HTMLAttributes, useMemo } from "react";
 import { getIconSize, themeColor } from "~/util/mantine";
+import classes from "./style.module.scss";
 
 export interface IconProps
 	extends Omit<BoxProps, "left" | "right">,

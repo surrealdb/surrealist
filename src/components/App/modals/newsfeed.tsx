@@ -1,5 +1,3 @@
-import classes from "../style.module.scss";
-
 import {
 	Alert,
 	Badge,
@@ -12,15 +10,12 @@ import {
 	Loader,
 	ScrollArea,
 	Stack,
+	Text,
 	Title,
 	Transition,
 	TypographyStylesProvider,
 	UnstyledButton,
 } from "@mantine/core";
-
-import { iconArrowLeft, iconArrowUpRight, iconClose } from "~/util/icons";
-
-import { Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { format } from "date-fns";
 import dayjs from "dayjs";
@@ -34,6 +29,8 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { tagEvent } from "~/util/analytics";
+import { iconArrowLeft, iconArrowUpRight, iconClose } from "~/util/icons";
+import classes from "../style.module.scss";
 
 interface NewsItem {
 	id: string;

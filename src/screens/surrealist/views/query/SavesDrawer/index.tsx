@@ -1,18 +1,14 @@
-import classes from "./style.module.scss";
-
-import {
-	iconClose,
-	iconDelete,
-	iconEdit,
-	iconPlus,
-	iconQuery,
-	iconSearch,
-	iconText,
-} from "~/util/icons";
-
 import { EditorView } from "@codemirror/view";
-import { Accordion, Badge, Button, ScrollArea, Text, TextInput } from "@mantine/core";
-import { Drawer, Group } from "@mantine/core";
+import {
+	Accordion,
+	Badge,
+	Button,
+	Drawer,
+	Group,
+	ScrollArea,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
@@ -28,6 +24,16 @@ import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
+import {
+	iconClose,
+	iconDelete,
+	iconEdit,
+	iconPlus,
+	iconQuery,
+	iconSearch,
+	iconText,
+} from "~/util/icons";
+import classes from "./style.module.scss";
 
 export interface SavesDrawerProps {
 	opened: boolean;

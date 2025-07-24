@@ -7,8 +7,8 @@ import {
 	Select,
 	Stack,
 	Tabs,
-	TextInput,
 	Textarea,
+	TextInput,
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";

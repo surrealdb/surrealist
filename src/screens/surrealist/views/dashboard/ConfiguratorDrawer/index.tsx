@@ -1,5 +1,3 @@
-import classes from "./style.module.scss";
-
 import { Drawer, Group, Tabs } from "@mantine/core";
 import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
@@ -11,6 +9,7 @@ import { CloudInstance } from "~/types";
 import { iconClose, iconTune } from "~/util/icons";
 import { ConfigurationCapabilities } from "./configs/capabilities";
 import { ConfigurationVersion } from "./configs/version";
+import classes from "./style.module.scss";
 
 export interface ConfiguratorDrawerProps {
 	opened: boolean;

@@ -28,6 +28,7 @@ export function Globals(): ReactNode {
 	// While calling hooks conditionally is usually not a good idea,
 	// this is an exception since the adapter will never change.
 	if (adapter.id === "desktop" && adapter.platform === "darwin") {
+		// biome-ignore lint/correctness/useHookAtTopLevel: Adapters are never mutated
 		useNativeMenuBar();
 	}
 

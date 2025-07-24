@@ -1,10 +1,8 @@
+import { BoxProps, Image, Paper, Stack, Text } from "@mantine/core";
+import { PropsWithChildren, ReactNode } from "react";
 import glowImage from "~/assets/images/glow.png";
 import cloudImage from "~/assets/images/icons/cloud.png";
 import classes from "./style.module.scss";
-
-import { Image, Paper, Stack, Text } from "@mantine/core";
-import { BoxProps } from "@mantine/core";
-import { PropsWithChildren, ReactNode } from "react";
 
 export interface BillingRequiredBlockProps extends BoxProps {
 	title: string;
