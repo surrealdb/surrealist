@@ -31,7 +31,7 @@ export function Introduction({
 			flex={1}
 		>
 			<Paper
-				w={450}
+				w={500}
 				style={{ overflow: "hidden" }}
 				shadow="md"
 			>

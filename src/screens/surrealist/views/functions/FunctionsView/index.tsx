@@ -322,9 +322,10 @@ export function FunctionsView() {
 								}}
 							>
 								<Text>
-									Schema functions allow you to define stored procedures that can
-									be reused throughout your queries. This view allows you to
-									effortlessly create and manage your functions.
+									Functions allow you to define stored procedures that can be
+									reused throughout your queries. This view allows you to
+									effortlessly create and manage your functions, or upload
+									SurrealML models to use in your queries.
 								</Text>
 								<Stack>
 									<Group>
