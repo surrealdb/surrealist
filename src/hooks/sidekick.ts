@@ -69,7 +69,9 @@ export function useSidekickDeleteMutation() {
 
 	return useMutation({
 		mutationFn: async (chatId: RecordId) => {
-			await surreal.query(surql`DELETE ${chatId}`);
+			await surreal.query(surql`
+				DELETE ${chatId}<-sent_in<-sidekick_message, ${chatId}
+			`);
 		},
 		onMutate: async (chatId) => {
 			await queryClient.cancelQueries({ queryKey: ["sidekick", "chats"] });
