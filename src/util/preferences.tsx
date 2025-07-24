@@ -467,6 +467,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "default-relational-hover-focus",
 						name: "Default relational hover focus",
 						description: "The default dimming behaviour of relations when hovered",
 						controller: new SelectionController({

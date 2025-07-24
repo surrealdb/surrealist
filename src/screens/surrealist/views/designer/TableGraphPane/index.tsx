@@ -41,6 +41,7 @@ import { ContentPane } from "~/components/Pane";
 import {
 	DESIGNER_ALGORITHMS,
 	DESIGNER_DIRECTIONS,
+	DESIGNER_HOVER_FOCUS,
 	DESIGNER_LINE_STYLES,
 	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
@@ -56,6 +57,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type {
 	DiagramAlgorithm,
 	DiagramDirection,
+	DiagramHoverFocus,
 	DiagramLineStyle,
 	DiagramLinks,
 	DiagramMode,
@@ -88,44 +90,6 @@ import {
 	NODE_TYPES,
 } from "./helpers";
 
-import {
-	DESIGNER_ALGORITHMS,
-	DESIGNER_DIRECTIONS,
-	DESIGNER_HOVER_FOCUS,
-	DESIGNER_LINE_STYLES,
-	DESIGNER_LINKS,
-	DESIGNER_NODE_MODES,
-} from "~/constants";
-
-import type {
-	DiagramAlgorithm,
-	DiagramDirection,
-	DiagramHoverFocus,
-	DiagramLineStyle,
-	DiagramLinks,
-	DiagramMode,
-	TableInfo,
-} from "~/types";
-
-import { useContextMenu } from "mantine-contextmenu";
-import { sleep } from "radash";
-import { adapter } from "~/adapter";
-import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
-import { Link } from "~/components/Link";
-import { ContentPane } from "~/components/Pane";
-import { useSetting } from "~/hooks/config";
-import { useConnection, useIsConnected } from "~/hooks/connection";
-import { useConnectionAndView, useIntent } from "~/hooks/routing";
-import { useDatabaseSchema } from "~/hooks/schema";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
-import { showInfo } from "~/util/helpers";
-import { themeColor } from "~/util/mantine";
-import { GraphWarningLine } from "./components";
 import classes from "./style.module.scss";
 
 export interface TableGraphPaneProps {
@@ -258,7 +222,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		setIsDragging(true);
 	});
 
-	const handleNodeDragStop = useStable((_: MouseEvent, node: Node) => {
+	const handleNodeDragStop = useStable(() => {
 		setIsDragging(false);
 	});
 
