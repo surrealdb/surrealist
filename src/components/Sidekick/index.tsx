@@ -24,7 +24,11 @@ export interface SidekickHandle {
 	element: HTMLDivElement | null;
 }
 
-export const Sidekick = forwardRef<SidekickHandle>((_, ref) => {
+export interface SidekickProps {
+	rightSection?: React.ReactNode;
+}
+
+export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(({ rightSection }, ref) => {
 	const { applyEvent, startRequest, completeRequest, resetChat } = useSidekickStore.getState();
 	const rootRef = useRef<HTMLDivElement>(null);
 
@@ -110,6 +114,7 @@ export const Sidekick = forwardRef<SidekickHandle>((_, ref) => {
 						<Icon path={showHistory ? iconChevronLeft : iconList} />
 					</ActionButton>
 				)}
+				{rightSection}
 			</Group>
 			<Divider />
 			<Box
