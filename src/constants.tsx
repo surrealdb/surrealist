@@ -45,13 +45,13 @@ import {
 	iconAPI,
 	iconAuth,
 	iconBraces,
+	iconChart,
 	iconCombined,
 	iconDatabase,
 	iconDataTable,
 	iconDesigner,
 	iconErrorCircle,
 	iconExplorer,
-	iconEye,
 	iconFunction,
 	iconGraphql,
 	iconHelp,
@@ -225,7 +225,7 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 	monitor: {
 		id: "monitor",
 		name: "Monitoring",
-		icon: iconEye,
+		icon: iconChart,
 		disabled: ({ isCloud }) => !isCloud,
 	},
 	query: {

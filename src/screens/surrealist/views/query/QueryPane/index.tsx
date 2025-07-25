@@ -1,7 +1,7 @@
 import { historyField } from "@codemirror/commands";
 import { syntaxTree } from "@codemirror/language";
 import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
-import { type EditorView, keymap } from "@codemirror/view";
+import { type EditorView, keymap, scrollPastEnd } from "@codemirror/view";
 import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { objectify, trim } from "radash";
@@ -208,6 +208,7 @@ export function QueryPane({
 			surqlVariableCompletion(resolveVariables),
 			surqlCustomFunctionCompletion(),
 			Prec.high(keymap.of(runQueryKeymap)),
+			scrollPastEnd(),
 		],
 		[inspect, surqlVersion],
 	);

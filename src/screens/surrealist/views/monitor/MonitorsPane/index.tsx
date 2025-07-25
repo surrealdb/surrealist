@@ -17,7 +17,7 @@ import { ContentPane } from "~/components/Pane";
 import { MONITORS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { Monitor } from "~/types";
-import { iconChart, iconChevronLeft, iconEye, iconList } from "~/util/icons";
+import { iconChart, iconChevronLeft, iconList } from "~/util/icons";
 import classes from "./style.module.scss";
 
 interface ObservableEntryProps extends BoxProps, ElementProps<"button"> {
@@ -70,7 +70,7 @@ export function MonitorsPane({ active, onSidebarMinimize, onActivate }: Monitors
 
 	return (
 		<ContentPane
-			icon={iconEye}
+			icon={iconList}
 			title="Monitors"
 			style={{ flexShrink: 0 }}
 			rightSection={
