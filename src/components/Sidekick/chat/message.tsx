@@ -9,11 +9,11 @@ import {
 	Text,
 	TypographyStylesProvider,
 } from "@mantine/core";
-import { marked } from "marked";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
+import Markdown from "~/components/Markdown";
 import { RelativeTime } from "~/components/RelativeTime";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
@@ -175,10 +175,17 @@ function MessageContent({ message }: { message: SidekickChatMessage }) {
 			fw={400}
 			c="bright"
 			className={classes.message}
-			// biome-ignore lint/security/noDangerouslySetInnerHtml: Markdown response
-			dangerouslySetInnerHTML={{
-				__html: marked(message.content),
-			}}
-		/>
+		>
+			<Markdown
+				content={message.content}
+				componentProps={{
+					link: {
+						c: "surreal",
+						fz: "lg",
+						fw: 400,
+					},
+				}}
+			/>
+		</TypographyStylesProvider>
 	);
 }
