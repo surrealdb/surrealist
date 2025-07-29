@@ -81,12 +81,20 @@ export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const CLOUD_ROLES = ["member", "admin", "owner"];
 
-export const DATASETS: Record<string, Dataset> = {
-	"surreal-deal-store": {
+export const DATASETS: Dataset[] = [
+	{
+		id: "surreal-deal-store",
 		name: "Surreal Deal Store",
+		description: "Made up of 12 tables using both graph relations and record links.",
+		path: "/surreal-deal-store.surql",
+	},
+	{
+		id: "surreal-deal-store-mini",
+		name: "Surreal Deal Store (mini)",
+		description: "A miniaturized version of the Surreal Deal Store dataset.",
 		path: "/surreal-deal-store-mini.surql",
 	},
-};
+];
 
 export const SCALE_STEPS: Selectable<ScaleStep>[] = [
 	{ label: "125%", value: "125" },
@@ -212,6 +220,11 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/mini/new",
 		name: "Embed Surrealist",
 		icon: iconXml,
+	},
+	"/sample-data": {
+		id: "/sample-data",
+		name: "Sample Data",
+		icon: iconDatabase,
 	},
 };
 

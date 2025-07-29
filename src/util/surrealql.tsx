@@ -178,7 +178,7 @@ export function compareIdents(a: string, b: string) {
  * @returns The dataset URL
  */
 export function parseDatasetURL(source: string) {
-	const path = source.startsWith("/") ? source : DATASETS[source]?.path;
+	const path = source.startsWith("/") ? source : DATASETS.find((d) => d.id === source)?.path;
 
 	if (!path) {
 		throw new Error("Invalid dataset source");

@@ -66,7 +66,8 @@ export type GlobalPage =
 	| "/organisations"
 	| "/support"
 	| "/referrals"
-	| "/mini/new";
+	| "/mini/new"
+	| "/sample-data";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -537,7 +538,9 @@ export interface ViewCondition {
 }
 
 export interface Dataset {
+	id: string;
 	name: string;
+	description: string;
 	path: string;
 }
 

@@ -82,7 +82,10 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 			const [instance, connection] = await deployMutation.mutateAsync();
 
 			if (details.dataset) {
-				sessionStorage.setItem(`${APPLY_DATASET_KEY}:${instance.id}`, "surreal-deal-store");
+				sessionStorage.setItem(
+					`${APPLY_DATASET_KEY}:${instance.id}`,
+					"surreal-deal-store-mini",
+				);
 
 				const queries = SAMPLE_QUERIES.map((query) => ({
 					...createBaseQuery(settings, "config"),

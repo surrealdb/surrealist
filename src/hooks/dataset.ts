@@ -15,14 +15,14 @@ export function useDatasets() {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const datasets = useMemo<Selectable[]>(() => {
-		return Object.entries(DATASETS).map(([id, info]) => ({
-			value: id,
-			label: info.name,
+		return DATASETS.map((ds) => ({
+			value: ds.id,
+			label: ds.name,
 		}));
 	}, []);
 
 	const applyDataset = useStable(async (id: string) => {
-		const info = DATASETS[id];
+		const info = DATASETS.find((ds) => ds.id === id);
 
 		if (!info) {
 			throw new Error("Dataset not found");

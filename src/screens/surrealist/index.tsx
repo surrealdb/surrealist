@@ -21,6 +21,7 @@ import { OrganizationManagePage } from "./pages/OrganizationManage";
 import { OrganizationsPage } from "./pages/Organizations";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
+import { SampleDataPage } from "./pages/SampleData";
 import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
 import { SurrealistSidebar } from "./sidebar";
@@ -40,6 +41,7 @@ import QueryView from "./views/query/QueryView";
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
+const SampleDataPageLazy = memo(SampleDataPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
@@ -166,6 +168,10 @@ export function SurrealistScreen() {
 
 							<Route path="/mini/new">
 								<NewEmbedPageLazy />
+							</Route>
+
+							<Route path="/sample-data">
+								<SampleDataPageLazy />
 							</Route>
 
 							<Route path="/connections/create">
