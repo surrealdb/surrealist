@@ -1,4 +1,4 @@
-import { Box, Button, Center, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
+import { Box, Button, Center, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { formatDistance } from "date-fns";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
@@ -12,9 +12,16 @@ export interface BackupsBlockProps {
 	backups: CloudBackup[] | undefined;
 	isLoading: boolean;
 	onUpgrade: () => void;
+	onOpenBackups: () => void;
 }
 
-export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: BackupsBlockProps) {
+export function BackupsBlock({
+	instance,
+	backups,
+	isLoading,
+	onUpgrade,
+	onOpenBackups,
+}: BackupsBlockProps) {
 	const latest = backups?.[0];
 	const canUpgrade = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
 	const unavailable = instance?.type.category === "free";
@@ -82,16 +89,14 @@ export function BackupsBlock({ instance, backups, isLoading, onUpgrade }: Backup
 								})}
 							</Text>
 						</Box>
-						<Tooltip label="This functionality will be available soon">
-							<Button
-								size="xs"
-								rightSection={<Icon path={iconChevronRight} />}
-								variant="gradient"
-								disabled
-							>
-								View available backups
-							</Button>
-						</Tooltip>
+						<Button
+							size="xs"
+							rightSection={<Icon path={iconChevronRight} />}
+							variant="gradient"
+							onClick={() => onOpenBackups()}
+						>
+							View available backups
+						</Button>
 					</>
 				) : (
 					<Center flex={1}>

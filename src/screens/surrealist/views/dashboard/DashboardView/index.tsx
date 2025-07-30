@@ -50,6 +50,7 @@ import { APPLY_DATASET_KEY } from "~/util/storage";
 import { MonitorMetricOptions } from "../../monitor/helpers";
 import { MetricActions } from "../../monitor/MetricPane/actions";
 import { BackupsBlock } from "../BackupsBlock";
+import { BackupsDrawer } from "../BackupsDrawer";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
@@ -70,6 +71,7 @@ const ComputeUsageBlockLazy = memo(ComputeHoursBlock);
 const DiskUsageBlockLazy = memo(DiskUsageBlock);
 const BackupsBlockLazy = memo(BackupsBlock);
 const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
+const BackupsDrawerLazy = memo(BackupsDrawer);
 const UpgradeDrawerLazy = memo(UpgradeDrawer);
 const MemoryUsageChartLazy = memo(MemoryUsageChart);
 const ComputeUsageChartLazy = memo(ComputeUsageChart);
@@ -84,6 +86,7 @@ export function DashboardView() {
 
 	const [upgrading, upgradingHandle] = useBoolean();
 	const [configuring, configuringHandle] = useBoolean();
+	const [backupsOpened, backupsHandle] = useBoolean();
 	const [billingRequiredOpened, setBillingRequiredOpened] = useState(false);
 
 	const [upgradeTab, setUpgradeTab] = useState("type");
@@ -440,6 +443,7 @@ export function DashboardView() {
 									backups={backups}
 									isLoading={isLoading}
 									onUpgrade={handleUpgradeType}
+									onOpenBackups={backupsHandle.open}
 								/>
 							</SimpleGrid>
 						</>
@@ -449,6 +453,12 @@ export function DashboardView() {
 
 			{details && organisation && (
 				<>
+					<BackupsDrawerLazy
+						opened={backupsOpened}
+						backups={backups}
+						instance={details}
+						onClose={backupsHandle.close}
+					/>
 					<ConfiguratorDrawerLazy
 						opened={configuring}
 						tab={configuratorTab}

@@ -1,5 +1,5 @@
 import { Button, Divider, Group } from "@mantine/core";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
@@ -9,7 +9,14 @@ import { ClusterStorageSection } from "../sections/2-cluster";
 import { DeploymentSection } from "../sections/3-instance";
 import { StepProps } from "../types";
 
-export function ConfigureStep({ organisation, details, setDetails, setStep }: StepProps) {
+export function ConfigureStep({
+	organisation,
+	details,
+	backups,
+	baseInstance,
+	setDetails,
+	setStep,
+}: StepProps) {
 	const showClusterStorage = details.plan === "scale" || details.plan === "enterprise";
 
 	const checkoutDisabled = useMemo(() => {
@@ -18,15 +25,30 @@ export function ConfigureStep({ organisation, details, setDetails, setStep }: St
 		if (!details.type) return true;
 		if (!details.version) return true;
 
+		if (details.backup && !details.baseInstance) return true;
 		if (details.type !== "free" && !details.units) return true;
 
 		return false;
 	}, [details]);
 
+	useEffect(() => {
+		if (baseInstance) {
+			setDetails((draft) => {
+				draft.region = baseInstance.region;
+				draft.type = baseInstance.type.slug;
+				draft.version = baseInstance.version;
+				draft.units = baseInstance.compute_units;
+				draft.storageAmount = baseInstance.storage_size;
+				draft.name = `${baseInstance.name} Copy`;
+			});
+		}
+	}, [baseInstance, setDetails]);
+
 	return (
 		<>
 			<InstanceTypeSection
 				organisation={organisation}
+				baseInstance={baseInstance}
 				details={details}
 				setDetails={setDetails}
 			/>
@@ -34,6 +56,7 @@ export function ConfigureStep({ organisation, details, setDetails, setStep }: St
 			{showClusterStorage && (
 				<ClusterStorageSection
 					organisation={organisation}
+					baseInstance={baseInstance}
 					details={details}
 					setDetails={setDetails}
 				/>
@@ -41,6 +64,8 @@ export function ConfigureStep({ organisation, details, setDetails, setStep }: St
 
 			<DeploymentSection
 				organisation={organisation}
+				backups={backups}
+				baseInstance={baseInstance}
 				details={details}
 				setDetails={setDetails}
 			/>
@@ -51,6 +76,7 @@ export function ConfigureStep({ organisation, details, setDetails, setStep }: St
 				<Button
 					color="slate"
 					variant="light"
+					disabled={baseInstance !== undefined}
 					onClick={() => setStep(0)}
 				>
 					Back

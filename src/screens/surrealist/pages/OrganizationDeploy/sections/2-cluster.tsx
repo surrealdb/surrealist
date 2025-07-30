@@ -8,7 +8,12 @@ import { StorageCategory } from "~/types";
 import { formatMemory } from "~/util/helpers";
 import { DeploySectionProps } from "../types";
 
-export function ClusterStorageSection({ organisation, details, setDetails }: DeploySectionProps) {
+export function ClusterStorageSection({
+	organisation,
+	details,
+	setDetails,
+	baseInstance,
+}: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 
 	const updateCategory = useStable((value: string) => {
@@ -70,6 +75,7 @@ export function ClusterStorageSection({ organisation, details, setDetails }: Dep
 				<Stack>
 					<Radio
 						value="standard"
+						disabled={baseInstance !== undefined}
 						label={
 							<Box>
 								<Label>Standard</Label>
@@ -82,6 +88,7 @@ export function ClusterStorageSection({ organisation, details, setDetails }: Dep
 					/>
 					<Radio
 						value="advanced"
+						disabled={baseInstance !== undefined}
 						label={
 							<Box>
 								<Label>Advanced</Label>
@@ -106,6 +113,7 @@ export function ClusterStorageSection({ organisation, details, setDetails }: Dep
 				min={storageMinimum}
 				max={storageMaximum}
 				step={100}
+				disabled={baseInstance !== undefined}
 				value={details.storageAmount}
 				onChange={updateAmount}
 				marks={storageMarks}
@@ -131,6 +139,7 @@ export function ClusterStorageSection({ organisation, details, setDetails }: Dep
 				min={computeMinimum}
 				max={computeMaximum}
 				step={1}
+				disabled={baseInstance !== undefined}
 				value={details.units}
 				onChange={updateUnits}
 				marks={computeMarks}

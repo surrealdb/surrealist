@@ -803,6 +803,8 @@ export interface CloudDeployConfig {
 	storageCategory: StorageCategory;
 	storageAmount: number;
 	dataset: boolean;
+	baseInstance?: string;
+	backup?: CloudBackup;
 }
 
 export interface AppMenu {

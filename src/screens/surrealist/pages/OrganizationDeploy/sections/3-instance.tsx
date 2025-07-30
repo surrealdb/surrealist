@@ -1,5 +1,5 @@
 import { Badge, Box, Checkbox, Group, Image, Select, Stack, TextInput } from "@mantine/core";
-
+import dayjs from "dayjs";
 import { ChangeEvent, useLayoutEffect } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -7,11 +7,18 @@ import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
+import { CloudBackup } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
-export function DeploymentSection({ organisation, details, setDetails }: DeploySectionProps) {
+export function DeploymentSection({
+	organisation,
+	backups,
+	details,
+	setDetails,
+	baseInstance,
+}: DeploySectionProps) {
 	const regions = useCloudStore((s) => s.regions);
 
 	const regionSet = new Set(organisation?.plan.regions ?? []);
@@ -55,6 +62,12 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 		});
 	});
 
+	const updateBackup = useStable((value: CloudBackup) => {
+		setDetails((draft) => {
+			draft.backup = value;
+		});
+	});
+
 	const toggleDataset = useStable(() => {
 		setDetails((draft) => {
 			draft.dataset = !draft.dataset;
@@ -94,6 +107,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 						placeholder="Loading regions..."
 						description="Select the region where your instance will be deployed"
 						data={regionList}
+						disabled={baseInstance !== undefined}
 						value={details.region}
 						onChange={updateRegion}
 						leftSection={
@@ -126,6 +140,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 						placeholder="Loading versions..."
 						description="Select the SurrealDB version for your instance"
 						data={versionList}
+						disabled={baseInstance !== undefined}
 						value={details.version}
 						onChange={updateVersion}
 						renderOption={(org) => (
@@ -150,6 +165,29 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 						)}
 					/>
 
+					{details.backup && (
+						<Select
+							label="Backup"
+							description="The backup that will be used to initialize the new instance"
+							data={backups?.map((backup) => ({
+								value: backup.snapshot_id,
+								label: dayjs(backup.snapshot_started_at).format(
+									"MMMM D, YYYY - h:mm A",
+								),
+							}))}
+							value={details.backup?.snapshot_id}
+							onChange={(value) => {
+								const backup = backups?.find(
+									(backup) => backup.snapshot_id === value,
+								);
+
+								if (backup) {
+									updateBackup(backup);
+								}
+							}}
+						/>
+					)}
+
 					<TextInput
 						label="Name"
 						placeholder="Instance name"
@@ -172,6 +210,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 				>
 					<Checkbox
 						label="Initialize with a sample dataset"
+						disabled={baseInstance !== undefined}
 						checked={details.dataset}
 						onChange={toggleDataset}
 					/>

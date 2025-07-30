@@ -26,7 +26,12 @@ import { CURRENCY_FORMAT, formatMemory, optional } from "~/util/helpers";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
-export function InstanceTypeSection({ organisation, details, setDetails }: DeploySectionProps) {
+export function InstanceTypeSection({
+	organisation,
+	details,
+	setDetails,
+	baseInstance,
+}: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 
 	const { isPending } = useCloudOrganizationInstancesQuery(organisation.id);
@@ -88,6 +93,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 					<InstanceTypeCard
 						type={selected}
 						details={details}
+						disabled={baseInstance !== undefined}
 						onChange={handleUpdate}
 					/>
 				) : (
@@ -99,6 +105,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 							<InstanceTypeCard
 								type={type}
 								details={details}
+								disabled={baseInstance !== undefined}
 								onChange={handleUpdate}
 							/>
 						</Skeleton>
@@ -126,6 +133,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 							size="xs"
 							variant="gradient"
 							onClick={openInstanceTypeSelector}
+							disabled={baseInstance !== undefined}
 							rightSection={
 								<Icon
 									path={iconArrowLeft}
@@ -139,6 +147,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 							size="xs"
 							color="slate"
 							variant="light"
+							disabled={baseInstance !== undefined}
 							onClick={handleReset}
 						>
 							View featured configurations
@@ -149,6 +158,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						size="xs"
 						variant="gradient"
 						onClick={openInstanceTypeSelector}
+						disabled={baseInstance !== undefined}
 						rightSection={
 							<Icon
 								path={iconArrowLeft}
@@ -167,10 +177,11 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 interface IntanceTypeCardProps {
 	type: CloudInstanceType;
 	details: CloudDeployConfig;
+	disabled: boolean;
 	onChange: (type: CloudInstanceType) => void;
 }
 
-function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
+function InstanceTypeCard({ type, details, disabled, onChange }: IntanceTypeCardProps) {
 	const estimatedCost = type.price_hour / 1000;
 	const [archName, archKind] = INSTANCE_PLAN_ARCHITECTURES[details.plan];
 
@@ -222,11 +233,14 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	return (
 		<Paper
 			p="xl"
-			variant={isActive ? "selected" : "interactive"}
-			onClick={handleSelect}
+			variant={isActive ? "selected" : disabled ? "disabled" : "interactive"}
+			onClick={disabled ? undefined : handleSelect}
 			aria-selected={isActive}
 			tabIndex={0}
 			role="radio"
+			style={{
+				cursor: disabled && !isActive ? "not-allowed" : "pointer",
+			}}
 		>
 			<Group>
 				<Box flex={1}>

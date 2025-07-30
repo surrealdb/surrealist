@@ -87,6 +87,13 @@ export function compileDeployConfig(
 		},
 	};
 
+	if (config.backup && config.baseInstance) {
+		configuration.restore_specs = {
+			backup_id: config.backup.snapshot_id,
+			instance_id: config.baseInstance,
+		};
+	}
+
 	if (config.plan === "scale" || config.plan === "enterprise") {
 		configuration.storage = config.storageAmount;
 		configuration.distributed_storage_specs = {

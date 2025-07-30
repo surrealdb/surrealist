@@ -37,7 +37,6 @@ export function UpgradeDrawer({
 		onChangeTab("type");
 	});
 
-	const _hideDisk = instance.distributed_storage_specs !== undefined;
 	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
 
 	const isComputeNodesTabVisible = guessedPlan === "scale" || guessedPlan === "enterprise";
