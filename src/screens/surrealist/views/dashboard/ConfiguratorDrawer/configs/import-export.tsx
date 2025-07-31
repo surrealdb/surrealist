@@ -6,11 +6,13 @@ import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabil
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { JSON_FILTER } from "~/constants";
+import { useConnection, useRequireDatabase } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { parseCapabilities, transformCapabilities } from "~/util/capabilities";
 import { showErrorNotification } from "~/util/helpers";
 import { iconDownload, iconUpload } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
 
 export interface ImportExportProps {
@@ -18,20 +20,54 @@ export interface ImportExportProps {
 	onClose: () => void;
 }
 
+interface ImportExportCardProps {
+	title: string;
+	description: string;
+	icon: string;
+	onClick: () => void;
+}
+
+function ImportExportCard({ title, description, icon, onClick }: ImportExportCardProps) {
+	return (
+		<Paper
+			variant="interactive"
+			p="md"
+			onClick={onClick}
+		>
+			<Group justify="space-between">
+				<PrimaryTitle fz="lg">{title}</PrimaryTitle>
+				<Icon path={icon} />
+			</Group>
+			<Text fz="sm">{description}</Text>
+		</Paper>
+	);
+}
+
 export function ImportExport({ instance, onClose }: ImportExportProps) {
 	const { mutateAsync } = useUpdateInstanceCapabilitiesMutation(instance.id);
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 
+	const [namespace, database] = useConnection((c) => [c?.lastNamespace, c?.lastDatabase]);
+
 	const [value, setValue] = useState<CloudInstanceCapabilities | undefined>(undefined);
 
-	const handleUpdate = useStable(() => {
+	const handleSchemaImport = useRequireDatabase(() => {
+		dispatchIntent("import-database");
+		onClose();
+	});
+	const handleSchemaExport = useRequireDatabase(() => {
+		dispatchIntent("export-database");
+		onClose();
+	});
+
+	const handleApply = useStable(() => {
 		if (!value) return;
 
 		confirmUpdate(transformCapabilities(value));
 		onClose();
 	});
 
-	const handleExport = useStable(() => {
+	const handleCapabilitiesExport = useStable(() => {
 		const capabilities = instance.capabilities;
 
 		adapter.saveFile(
@@ -44,7 +80,7 @@ export function ImportExport({ instance, onClose }: ImportExportProps) {
 		);
 	});
 
-	const handleImport = useStable(async () => {
+	const handleCapabilitiesImport = useStable(async () => {
 		try {
 			const files = await adapter.openTextFile(
 				"Import capabilities configuration",
@@ -107,46 +143,68 @@ export function ImportExport({ instance, onClose }: ImportExportProps) {
 								c="bright"
 								fw={600}
 							>
-								Capabilities importer and exporter
+								Capabilities
 							</Text>
 
 							<Text
 								mt="sm"
 								fz="lg"
 							>
-								Backup or restore your instance's capabilities configuration from a
+								Save or restore your instance's capabilities configuration from a
 								json file. This functionality is useful for duplicating your
 								instance's capability settings across multiple instances.
 							</Text>
 						</Box>
 						<Stack>
-							<Paper
-								variant="interactive"
-								p="md"
-								onClick={handleImport}
-							>
-								<Group justify="space-between">
-									<PrimaryTitle fz="lg">Import</PrimaryTitle>
-									<Icon path={iconUpload} />
-								</Group>
-								<Text fz="sm">
-									Import a capabilities configuration from a json file
-								</Text>
-							</Paper>
-							<Paper
-								variant="interactive"
-								p="md"
-								onClick={handleExport}
-							>
-								<Group justify="space-between">
-									<PrimaryTitle fz="lg">Export</PrimaryTitle>
-									<Icon path={iconDownload} />
-								</Group>
-								<Text fz="sm">
-									Export your instance's capabilities configuration to a json file
-								</Text>
-							</Paper>
+							<ImportExportCard
+								title="Import"
+								description="Import a capabilities configuration from a json file"
+								icon={iconUpload}
+								onClick={handleCapabilitiesImport}
+							/>
+							<ImportExportCard
+								title="Export"
+								description="Export your instance's capabilities configuration to a json file"
+								icon={iconDownload}
+								onClick={handleCapabilitiesExport}
+							/>
 						</Stack>
+						{namespace && database && (
+							<>
+								<Box mt={30}>
+									<Text
+										fz="xl"
+										c="bright"
+										fw={600}
+									>
+										Database ({database})
+									</Text>
+
+									<Text
+										mt="sm"
+										fz="lg"
+									>
+										Save or restore your instance's database from a surql file.
+										This only exports or imports data from or to the selected
+										namespace and database.
+									</Text>
+								</Box>
+								<Stack>
+									<ImportExportCard
+										title="Import"
+										description="Import the selected database from a surql file"
+										icon={iconUpload}
+										onClick={handleSchemaImport}
+									/>
+									<ImportExportCard
+										title="Export"
+										description="Export the selected database to a surql file"
+										icon={iconDownload}
+										onClick={handleSchemaExport}
+									/>
+								</Stack>
+							</>
+						)}
 					</Stack>
 				</ScrollArea>
 			</Box>
@@ -165,7 +223,7 @@ export function ImportExport({ instance, onClose }: ImportExportProps) {
 					type="submit"
 					variant="gradient"
 					disabled={!value}
-					onClick={handleUpdate}
+					onClick={handleApply}
 				>
 					Apply capabilities
 				</Button>
