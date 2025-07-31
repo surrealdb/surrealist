@@ -63,7 +63,7 @@ export function ConfiguratorDrawer({
 						path={iconTune}
 						size="sm"
 					/>
-					Configure instance
+					Manage instance
 				</PrimaryTitle>
 
 				<Spacer />
