@@ -31,6 +31,7 @@ const PARSER_MAP = new Map<string, Parser>([
 	["tsx", jsParser],
 	["javascript", jsParser],
 	["typescript", jsParser],
+	["sql", surqlParser],
 	["surql", surqlParser],
 	["surrealql", surqlParser],
 	["java", javaParser],

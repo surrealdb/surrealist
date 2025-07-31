@@ -1,10 +1,18 @@
 .root {
 	pre {
 		margin: 0;
+		padding: 0;
 		background-color: unset;
 		tab-size: 4ch;
 		user-select: text;
 		-webkit-user-select: text;
+		white-space: pre;
+		word-break: normal;
+	}
+
+	&[data-wrapping] pre {
+		white-space: pre-wrap;
+		word-break: break-word;
 	}
 }
 

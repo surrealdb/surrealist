@@ -11,7 +11,6 @@ import "../assets/styles/override.scss";
 import "../assets/styles/variants.scss";
 
 import "../adapter";
-import "../util/markdown";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
