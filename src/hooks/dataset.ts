@@ -2,7 +2,7 @@ import { sleep } from "radash";
 import { useMemo, useState } from "react";
 import { DATASETS } from "~/constants";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
-import type { Selectable } from "~/types";
+import type { DatasetType, Selectable } from "~/types";
 import { showInfo } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseDatasetURL } from "~/util/surrealql";
@@ -21,7 +21,7 @@ export function useDatasets() {
 		}));
 	}, []);
 
-	const applyDataset = useStable(async (id: string) => {
+	const applyDataset = useStable(async (id: DatasetType) => {
 		const info = DATASETS[id];
 
 		if (!info) {

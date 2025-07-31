@@ -22,6 +22,7 @@ import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
+import { DatasetType } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import {
 	iconClose,
@@ -61,7 +62,7 @@ export function ConnectionStatus() {
 
 	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
 	const [showDatasets, showDatasetsHandle] = useBoolean();
-	const [dataset, setDataset] = useState("");
+	const [dataset, setDataset] = useState<DatasetType | undefined>(undefined);
 
 	const currentState = useDatabaseStore((s) => s.currentState);
 	const latestError = useDatabaseStore((s) => s.latestError);
@@ -74,10 +75,12 @@ export function ConnectionStatus() {
 
 	const _openDatasets = useStable(() => {
 		showDatasetsHandle.open();
-		setDataset("");
+		setDataset(undefined);
 	});
 
 	const confirmDataset = useStable(async () => {
+		if (!dataset) return;
+
 		await applyDataset(dataset);
 		showDatasetsHandle.close();
 	});

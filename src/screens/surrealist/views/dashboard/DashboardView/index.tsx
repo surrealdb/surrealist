@@ -44,6 +44,7 @@ import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart"
 import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressChart";
 import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngressChart";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
+import { DatasetType } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronDown, iconChevronRight } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
@@ -147,7 +148,7 @@ export function DashboardView() {
 	const { mutateAsync } = useUpdateInstanceVersionMutation(details);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
-	const applyInitialDataset = useStable(async (dataset: string) => {
+	const applyInitialDataset = useStable(async (dataset: DatasetType) => {
 		try {
 			await executeQuery(
 				"DEFINE NAMESPACE demo; USE NS demo; DEFINE DATABASE surreal_deal_store;",
@@ -181,7 +182,7 @@ export function DashboardView() {
 			if (dataset) {
 				console.log("applying dataset");
 				sessionStorage.removeItem(`${APPLY_DATASET_KEY}:${details.id}`);
-				applyInitialDataset(dataset);
+				applyInitialDataset(dataset as DatasetType);
 			}
 
 			if (shouldApplyFile) {
