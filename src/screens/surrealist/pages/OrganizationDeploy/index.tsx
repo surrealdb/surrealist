@@ -1,4 +1,4 @@
-import { Alert, Box, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, ScrollArea, Stack, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
@@ -15,15 +15,12 @@ import {
 } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useSearchParams } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useTheme } from "~/hooks/theme";
 import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 import { clamp } from "~/util/helpers";
-import { iconHelp, iconWarning } from "~/util/icons";
 import { generateRandomName } from "~/util/random";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
@@ -61,10 +58,7 @@ interface PageContentProps {
 }
 
 function PageContent({ organisation, instances }: PageContentProps) {
-	const theme = useTheme();
 	const [step, setStep] = useState(0);
-	const [warnings, setWarnings] = useState<string[]>([]);
-	const [baseInstance, setBaseInstance] = useState<CloudInstance | undefined>(undefined);
 	const [details, setDetails] = useImmer<CloudDeployConfig>(() => ({
 		...DEFAULT_DEPLOY_CONFIG,
 		name: generateRandomName(),
@@ -72,11 +66,10 @@ function PageContent({ organisation, instances }: PageContentProps) {
 
 	const { instanceId, backupId } = useSearchParams();
 
+	const [baseInstance, setBaseInstance] = useState<CloudInstance | undefined>(undefined);
 	const updateStep = useStable((newStep: number) => {
 		setStep(clamp(newStep, 0, 2));
 	});
-
-	const { data: backups } = useCloudBackupsQuery(baseInstance?.id);
 
 	const stepTitles = useMemo(() => {
 		const [archName, archKind] = INSTANCE_PLAN_ARCHITECTURES[details.plan];
@@ -88,35 +81,54 @@ function PageContent({ organisation, instances }: PageContentProps) {
 		];
 	}, [details.plan]);
 
+	const { data: backups } = useCloudBackupsQuery(baseInstance?.id);
+
 	useEffect(() => {
-		setWarnings([]);
+		setBaseInstance(details.startingData.backupOptions?.instance);
+	}, [details.startingData.backupOptions?.instance]);
+
+	useEffect(() => {
+		console.log("Backups for instance", instanceId, backups);
 
 		if (instanceId) {
 			const foundInstance = instances.find((instance) => instance.id === instanceId);
 
 			if (!foundInstance) {
-				setWarnings((draft) => [...draft, "Unable to fetch base instance"]);
+				console.error("Instance not found");
+				return;
+			}
+
+			setBaseInstance(foundInstance);
+
+			const backup = backups?.find((backup) => backup.snapshot_id === backupId);
+
+			if (!backup) {
+				console.error("Backup not found");
 				return;
 			}
 
 			const guessedPlan = INSTANCE_CATEGORY_PLANS[foundInstance.type.category];
 
 			setDetails((draft) => {
+				draft.startingData = {
+					type: "restore",
+					backupOptions: {
+						backup: backup,
+						instance: foundInstance,
+					},
+				};
+
 				draft.plan = guessedPlan;
-				draft.dataset = false;
 				draft.region = foundInstance.region;
 				draft.type = foundInstance.type.slug;
 				draft.version = foundInstance.version;
 				draft.units = foundInstance.compute_units;
-				draft.storageAmount = foundInstance.storage_size;
 				draft.storageCategory =
 					foundInstance.distributed_storage_specs?.category ?? "standard";
+				draft.storageAmount = foundInstance.storage_size;
 				draft.name = `${foundInstance.name} Copy`;
-				draft.backup = backups?.find((backup) => backup.snapshot_id === backupId);
-				draft.baseInstance = foundInstance.id;
 			});
 
-			setBaseInstance(foundInstance);
 			setStep(1);
 		}
 	}, [instances, backups, instanceId, backupId]);
@@ -169,42 +181,6 @@ function PageContent({ organisation, instances }: PageContentProps) {
 										</Text>
 										{stepTitles[step]}
 									</PrimaryTitle>
-
-									{details.backup && (
-										<Alert
-											mt="sm"
-											color="violet"
-											icon={
-												<Icon
-													path={iconHelp}
-													c={theme === "dark" ? "violet.3" : "violet.7"}
-												/>
-											}
-										>
-											<Text
-												fz={13}
-												c={theme === "dark" ? "violet.1" : "violet.7"}
-											>
-												You are deploying a new instance from an existing
-												backup
-												{baseInstance?.name
-													? ` of "${baseInstance.name}"`
-													: ""}
-												. Some configuration options are disabled.
-											</Text>
-										</Alert>
-									)}
-
-									{warnings.map((warning) => (
-										<Alert
-											key={warning}
-											color="red"
-											mt="sm"
-											icon={<Icon path={iconWarning} />}
-										>
-											{warning}
-										</Alert>
-									))}
 								</Box>
 
 								<Box my="xl">
@@ -223,7 +199,6 @@ function PageContent({ organisation, instances }: PageContentProps) {
 											organisation={organisation}
 											backups={backups}
 											instances={instances}
-											baseInstance={baseInstance}
 											details={details}
 											setDetails={setDetails}
 											setStep={updateStep}
@@ -234,7 +209,6 @@ function PageContent({ organisation, instances }: PageContentProps) {
 										<CheckoutStep
 											organisation={organisation}
 											instances={instances}
-											baseInstance={baseInstance}
 											details={details}
 											setDetails={setDetails}
 											setStep={updateStep}

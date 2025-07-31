@@ -19,6 +19,7 @@ import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
@@ -26,12 +27,7 @@ import { CURRENCY_FORMAT, formatMemory, optional } from "~/util/helpers";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
-export function InstanceTypeSection({
-	organisation,
-	details,
-	setDetails,
-	baseInstance,
-}: DeploySectionProps) {
+export function InstanceTypeSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 
 	const { isPending } = useCloudOrganizationInstancesQuery(organisation.id);
@@ -39,7 +35,6 @@ export function InstanceTypeSection({
 	const recommendations = useMemo(() => {
 		return INSTANCE_PLAN_SUGGESTIONS[details.plan]
 			.slice(0, 3)
-			.reverse()
 			.flatMap((slug) => optional(instanceTypes.get(slug)));
 	}, [instanceTypes, details.plan]);
 
@@ -49,7 +44,10 @@ export function InstanceTypeSection({
 			draft.type = type.slug;
 
 			if (type.price_hour === 0) {
-				draft.dataset = true;
+				draft.startingData = {
+					type: "dataset",
+					dataset: "surreal-deal-store-mini",
+				};
 			}
 		});
 	});
@@ -93,7 +91,6 @@ export function InstanceTypeSection({
 					<InstanceTypeCard
 						type={selected}
 						details={details}
-						disabled={baseInstance !== undefined}
 						onChange={handleUpdate}
 					/>
 				) : (
@@ -105,7 +102,6 @@ export function InstanceTypeSection({
 							<InstanceTypeCard
 								type={type}
 								details={details}
-								disabled={baseInstance !== undefined}
 								onChange={handleUpdate}
 							/>
 						</Skeleton>
@@ -127,13 +123,13 @@ export function InstanceTypeSection({
 						View pricing information
 					</Button>
 				</a>
+				<Spacer />
 				{details.type && !isRecommended ? (
 					<>
 						<Button
 							size="xs"
 							variant="gradient"
 							onClick={openInstanceTypeSelector}
-							disabled={baseInstance !== undefined}
 							rightSection={
 								<Icon
 									path={iconArrowLeft}
@@ -147,7 +143,6 @@ export function InstanceTypeSection({
 							size="xs"
 							color="slate"
 							variant="light"
-							disabled={baseInstance !== undefined}
 							onClick={handleReset}
 						>
 							View featured configurations
@@ -158,7 +153,6 @@ export function InstanceTypeSection({
 						size="xs"
 						variant="gradient"
 						onClick={openInstanceTypeSelector}
-						disabled={baseInstance !== undefined}
 						rightSection={
 							<Icon
 								path={iconArrowLeft}
@@ -166,7 +160,7 @@ export function InstanceTypeSection({
 							/>
 						}
 					>
-						View all available configurations
+						View more configurations
 					</Button>
 				)}
 			</Group>
@@ -177,11 +171,10 @@ export function InstanceTypeSection({
 interface IntanceTypeCardProps {
 	type: CloudInstanceType;
 	details: CloudDeployConfig;
-	disabled: boolean;
 	onChange: (type: CloudInstanceType) => void;
 }
 
-function InstanceTypeCard({ type, details, disabled, onChange }: IntanceTypeCardProps) {
+function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	const estimatedCost = type.price_hour / 1000;
 	const [archName, archKind] = INSTANCE_PLAN_ARCHITECTURES[details.plan];
 
@@ -233,14 +226,11 @@ function InstanceTypeCard({ type, details, disabled, onChange }: IntanceTypeCard
 	return (
 		<Paper
 			p="xl"
-			variant={isActive ? "selected" : disabled ? "disabled" : "interactive"}
-			onClick={disabled ? undefined : handleSelect}
+			variant={isActive ? "selected" : "interactive"}
+			onClick={handleSelect}
 			aria-selected={isActive}
 			tabIndex={0}
 			role="radio"
-			style={{
-				cursor: disabled && !isActive ? "not-allowed" : "pointer",
-			}}
 		>
 			<Group>
 				<Box flex={1}>
@@ -280,6 +270,7 @@ function InstanceTypeCard({ type, details, disabled, onChange }: IntanceTypeCard
 						key={i}
 					>
 						<Checkbox
+							readOnly
 							checked
 							role="presentation"
 							tabIndex={-1}

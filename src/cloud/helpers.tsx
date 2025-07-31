@@ -11,7 +11,9 @@ export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	plan: "free",
 	storageCategory: "standard",
 	storageAmount: 100,
-	dataset: false,
+	startingData: {
+		type: "none",
+	},
 });
 
 export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, string[]> = {
@@ -87,10 +89,15 @@ export function compileDeployConfig(
 		},
 	};
 
-	if (config.backup && config.baseInstance) {
+	if (
+		config.startingData.type === "restore" &&
+		config.startingData.backupOptions &&
+		config.startingData.backupOptions.backup &&
+		config.startingData.backupOptions.instance
+	) {
 		configuration.restore_specs = {
-			backup_id: config.backup.snapshot_id,
-			instance_id: config.baseInstance,
+			backup_id: config.startingData.backupOptions.backup.snapshot_id,
+			instance_id: config.startingData.backupOptions.instance.id,
 		};
 	}
 
