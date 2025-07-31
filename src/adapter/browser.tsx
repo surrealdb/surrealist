@@ -107,11 +107,16 @@ export class BrowserAdapter implements SurrealistAdapter {
 		return true;
 	}
 
-	public async openTextFile(): Promise<OpenedTextFile[]> {
+	public async openTextFile(_: string, filters: any, __: boolean): Promise<OpenedTextFile[]> {
 		const el = document.createElement("input");
 
 		el.type = "file";
+		el.accept = filters
+			.map((f: any) => f.extensions.map((e: any) => `.${e}`).join(","))
+			.join(",");
 		el.style.display = "none";
+
+		console.log(el.accept);
 
 		el.click();
 
