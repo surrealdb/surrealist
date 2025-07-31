@@ -1,19 +1,9 @@
-import {
-	Avatar,
-	Box,
-	CopyButton,
-	Group,
-	List,
-	Loader,
-	Paper,
-	Text,
-	TypographyStylesProvider,
-} from "@mantine/core";
+import { Avatar, Box, CopyButton, Group, List, Loader, Paper, Text } from "@mantine/core";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
-import Markdown from "~/components/Markdown";
+import { MarkdownContent } from "~/components/MarkdownContent";
 import { RelativeTime } from "~/components/RelativeTime";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
@@ -40,7 +30,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 						p="md"
 						bg="slate.6"
 					>
-						<MessageContent message={message} />
+						<MarkdownContent fz="lg">{message.content}</MarkdownContent>
 					</Paper>
 					<Group
 						mt={2}
@@ -73,7 +63,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 			) : (
 				<Box mb="xl">
 					{message.content ? (
-						<MessageContent message={message} />
+						<MarkdownContent fz="lg">{message.content}</MarkdownContent>
 					) : (
 						<Group
 							gap="xs"
@@ -165,27 +155,5 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 				</Box>
 			)}
 		</Box>
-	);
-}
-
-function MessageContent({ message }: { message: SidekickChatMessage }) {
-	return (
-		<TypographyStylesProvider
-			fz="lg"
-			fw={400}
-			c="bright"
-			className={classes.message}
-		>
-			<Markdown
-				content={message.content}
-				componentProps={{
-					link: {
-						c: "surreal",
-						fz: "lg",
-						fw: 400,
-					},
-				}}
-			/>
-		</TypographyStylesProvider>
 	);
 }

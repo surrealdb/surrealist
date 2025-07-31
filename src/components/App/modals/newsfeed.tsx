@@ -13,17 +13,16 @@ import {
 	Text,
 	Title,
 	Transition,
-	TypographyStylesProvider,
 	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { format } from "date-fns";
 import dayjs from "dayjs";
-import { marked } from "marked";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
+import { MarkdownContent } from "~/components/MarkdownContent";
 import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -86,10 +85,6 @@ export function NewsFeedDrawer() {
 	});
 
 	const isEmpty = newsQuery.isFetched && newsQuery.data?.length === 0;
-
-	const content = useMemo<string>(() => {
-		return marked(reading?.content ?? "", { async: false });
-	}, [reading?.content]);
 
 	return (
 		<Drawer
@@ -174,14 +169,7 @@ export function NewsFeedDrawer() {
 										{format(reading.published, "MMMM d, yyyy - h:mm a")}
 									</Text>
 									<Divider my="xl" />
-									<TypographyStylesProvider
-										fz={14}
-										className={classes.newsPostContent}
-										// biome-ignore lint/security/noDangerouslySetInnerHtml: Replace with markdown
-										dangerouslySetInnerHTML={{
-											__html: content,
-										}}
-									/>
+									<MarkdownContent fz="lg">{reading.content}</MarkdownContent>
 									{reading.link && (
 										<Alert
 											mt="xl"

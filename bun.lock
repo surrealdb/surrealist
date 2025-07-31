@@ -76,7 +76,6 @@
         "leaflet": "^1.9.4",
         "lottie-web": "^5.12.2",
         "mantine-contextmenu": "^7.15.3",
-        "marked": "^15.0.0",
         "papaparse": "^5.4.1",
         "radash": "^11.0.0",
         "react": "^18.2.0",
@@ -1054,8 +1053,6 @@
     "mantine-contextmenu": ["mantine-contextmenu@7.17.1", "", { "peerDependencies": { "@mantine/core": ">=7.12", "@mantine/hooks": ">=7.12", "clsx": ">=2", "react": ">=18.2" } }, "sha512-+Xbo/IiIdrlIOw/0c5i7oNf7a55C+jxZArcf/dDrOyV7MOLbnqRe1oPjPki9LCaQhuG/7YPN6pJzVsu2b8JiHA=="],
 
     "markdown-it": ["markdown-it@12.3.2", "", { "dependencies": { "argparse": "^2.0.1", "entities": "~2.1.0", "linkify-it": "^3.0.1", "mdurl": "^1.0.1", "uc.micro": "^1.0.5" }, "bin": { "markdown-it": "bin/markdown-it.js" } }, "sha512-TchMembfxfNVpHkbtriWltGWc+m3xszaRD0CZup7GFFhzIgQqxIfn3eGj1yZpfuflzPvfkt611B2Q/Bsk1YnGg=="],
-
-    "marked": ["marked@15.0.7", "", { "bin": { "marked": "bin/marked.js" } }, "sha512-dgLIeKGLx5FwziAnsk4ONoGwHwGPJzselimvlVskE9XLN4Orv9u2VA3GWw/lYUqjfA0rUT/6fqKwfZJapP9BEg=="],
 
     "mdast-util-from-markdown": ["mdast-util-from-markdown@2.0.2", "", { "dependencies": { "@types/mdast": "^4.0.0", "@types/unist": "^3.0.0", "decode-named-character-reference": "^1.0.0", "devlop": "^1.0.0", "mdast-util-to-string": "^4.0.0", "micromark": "^4.0.0", "micromark-util-decode-numeric-character-reference": "^2.0.0", "micromark-util-decode-string": "^2.0.0", "micromark-util-normalize-identifier": "^2.0.0", "micromark-util-symbol": "^2.0.0", "micromark-util-types": "^2.0.0", "unist-util-stringify-position": "^4.0.0" } }, "sha512-uZhTV/8NBuw0WHkPTrCqDOl0zVe1BIng5ZtHoDk49ME1qqcjYmmLmOf0gELgcRMxN4w2iuIeVso5/6QymSrgmA=="],
 

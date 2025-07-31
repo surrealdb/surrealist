@@ -1,0 +1,21 @@
+.root {
+	user-select: text;
+	-webkit-user-select: text;
+
+	code {
+		padding: 2px 6px;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		color: var(--mantine-color-bright) !important;
+	}
+}
+
+.code-preview {
+	margin-block: calc(0.8 * var(--mantine-spacing-xl));
+}

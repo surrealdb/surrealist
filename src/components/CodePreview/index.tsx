@@ -14,6 +14,7 @@ import { type ReactNode, useMemo } from "react";
 import { useIsLight, useTheme } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { dedent } from "~/util/dedent";
+import { attr } from "~/util/helpers";
 import { renderHighlighting } from "~/util/highlighting";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
@@ -30,6 +31,7 @@ export interface CodePreviewProps extends PaperProps {
 	copyOffset?: number;
 	copySize?: MantineSize;
 	withDedent?: boolean;
+	withWrapping?: boolean;
 	padding?: MantineSpacing;
 }
 
@@ -45,6 +47,7 @@ export function CodePreview({
 	withDedent,
 	padding,
 	className,
+	withWrapping,
 	...rest
 }: CodePreviewProps) {
 	const isLight = useIsLight();
@@ -79,6 +82,7 @@ export function CodePreview({
 			<Paper
 				pos="relative"
 				className={clsx(classes.root, className)}
+				data-wrapping={attr(withWrapping)}
 				shadow="none"
 				bg={bg ?? (isLight ? "slate.0" : "slate.9")}
 				fz="lg"
