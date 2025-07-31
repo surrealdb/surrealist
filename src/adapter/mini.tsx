@@ -2,7 +2,13 @@ import type { MantineColorScheme } from "@mantine/core";
 import { Value } from "@surrealdb/ql-wasm";
 import { ORIENTATIONS, RESULT_MODES } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/connection";
-import type { MiniAppearance, Orientation, ResultMode, SurrealistConfig } from "~/types";
+import type {
+	DatasetType,
+	MiniAppearance,
+	Orientation,
+	ResultMode,
+	SurrealistConfig,
+} from "~/types";
 import { dedent } from "~/util/dedent";
 import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
@@ -103,7 +109,7 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Premade dataset loading
 		if (dataset) {
-			const datasetUrl = parseDatasetURL(dataset);
+			const datasetUrl = parseDatasetURL(dataset as DatasetType);
 
 			if (datasetUrl) {
 				this.#datasetQuery = await fetch(datasetUrl).then((res) => res.text());
