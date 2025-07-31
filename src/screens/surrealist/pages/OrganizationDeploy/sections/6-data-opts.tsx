@@ -1,10 +1,8 @@
-import { FileInput, Select, Stack } from "@mantine/core";
+import { Select, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DATASETS } from "~/constants";
 import { DatasetType } from "~/types";
-import { iconCloud, iconSurreal } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
 export function DataOptionsSection({
@@ -91,39 +89,8 @@ export function DataOptionsSection({
 	} else if (details.startingData.type === "upload") {
 		return (
 			<Stack gap="xl">
-				<PrimaryTitle>Upload options</PrimaryTitle>
-				<FileInput
-					label="Upload SurrealQL file"
-					placeholder="Upload file"
-					description="Upload a SurrealQL schema file to use for your instance"
-					accept=".surql"
-					leftSection={<Icon path={iconSurreal} />}
-					value={details.startingData.dataFile}
-					onChange={(value) => {
-						setDetails((draft) => {
-							draft.startingData = {
-								...draft.startingData,
-								dataFile: value ?? undefined,
-							};
-						});
-					}}
-				/>
-				<FileInput
-					label="Upload Surreal Cloud config (optional)"
-					placeholder="Upload file"
-					description="Automatically configure instance capabilities based on the selected config file"
-					accept=".json"
-					leftSection={<Icon path={iconCloud} />}
-					value={details.startingData.configFile}
-					onChange={(value) => {
-						setDetails((draft) => {
-							draft.startingData = {
-								...draft.startingData,
-								configFile: value ?? undefined,
-							};
-						});
-					}}
-				/>
+				<PrimaryTitle>Upload details</PrimaryTitle>
+				<Text>You will be prompted to upload a file once the instance is deployed</Text>
 			</Stack>
 		);
 	}

@@ -9,3 +9,4 @@ export const STATE_KEY = "surrealist:oauth_state";
 export const CONFIG_KEY = "surrealist:config";
 export const OVERVIEW_KEY = "surrealist:overview";
 export const APPLY_DATASET_KEY = "surrealist:apply_dataset";
+export const APPLY_DATA_FILE_KEY = "surrealist:apply_data_file";

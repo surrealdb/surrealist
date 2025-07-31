@@ -43,7 +43,7 @@ import {
 	iconRelation,
 	iconTag,
 } from "~/util/icons";
-import { APPLY_DATASET_KEY } from "~/util/storage";
+import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { STARTING_DATA } from "../constants";
 import classes from "../style.module.scss";
 import { StepProps } from "../types";
@@ -75,6 +75,8 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 					activeQuery: queries[0].id,
 					queries,
 				});
+			} else if (details.startingData.type === "upload") {
+				sessionStorage.setItem(`${APPLY_DATA_FILE_KEY}:${instance.id}`, "true");
 			}
 
 			navigateConnection(connection.id, "dashboard");

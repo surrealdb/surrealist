@@ -35,7 +35,7 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnection } from "~/hooks/connection";
+import { useConnection, useRequireDatabase } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
 import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
@@ -46,7 +46,8 @@ import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngress
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronDown, iconChevronRight } from "~/util/icons";
-import { APPLY_DATASET_KEY } from "~/util/storage";
+import { dispatchIntent } from "~/util/intents";
+import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { MonitorMetricOptions } from "../../monitor/helpers";
 import { MetricActions } from "../../monitor/MetricPane/actions";
 import { BackupsBlock } from "../BackupsBlock";
@@ -162,6 +163,8 @@ export function DashboardView() {
 		}
 	});
 
+	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset evert time the metrics duration changes
 	useEffect(() => {
 		setMetricOptions((draft) => {
@@ -173,13 +176,21 @@ export function DashboardView() {
 	useEffect(() => {
 		if (details?.state === "ready") {
 			const dataset = sessionStorage.getItem(`${APPLY_DATASET_KEY}:${details.id}`);
+			const shouldApplyFile = sessionStorage.getItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
 
 			if (dataset) {
+				console.log("applying dataset");
 				sessionStorage.removeItem(`${APPLY_DATASET_KEY}:${details.id}`);
 				applyInitialDataset(dataset);
 			}
+
+			if (shouldApplyFile) {
+				console.log("importing database");
+				sessionStorage.removeItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
+				importDatabase();
+			}
 		}
-	}, [details?.state, details?.id]);
+	}, [details?.state, details, importDatabase]);
 
 	const handleUpgradeType = useStable(() => {
 		setUpgradeTab("type");

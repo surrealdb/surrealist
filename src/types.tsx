@@ -798,8 +798,6 @@ export interface CloudRole {
 export interface StartingDataDetails {
 	type: StartingDataType;
 	dataset?: DatasetType;
-	dataFile?: File;
-	configFile?: File;
 	backupOptions?: {
 		instance?: CloudInstance;
 		backup?: CloudBackup;
