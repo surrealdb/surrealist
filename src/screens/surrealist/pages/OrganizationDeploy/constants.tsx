@@ -1,12 +1,12 @@
-import { iconDatabase, iconHistory, iconSandbox, iconUpload } from "~/util/icons";
+import { iconDatabase, iconHistory, iconPackageClosed, iconUpload } from "~/util/icons";
 import { StartingData } from "./types";
 
 export const STARTING_DATA: StartingData[] = [
 	{
 		id: "none",
-		title: "None",
+		title: "Empty",
 		description: "Start fresh with an entirely empty instance.",
-		icon: iconSandbox,
+		icon: iconPackageClosed,
 	},
 	{
 		id: "dataset",

@@ -93,12 +93,6 @@ export function ConfigureStep({
 				</WarningAlert>
 			)}
 
-			{restoreBlocked && (
-				<WarningAlert title="Restore unavailable">
-					You cannot restore from a backup using a free instance
-				</WarningAlert>
-			)}
-
 			<Box mt={36}>
 				<SimpleGrid
 					cols={2}

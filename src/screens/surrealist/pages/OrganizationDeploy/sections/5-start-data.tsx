@@ -1,4 +1,4 @@
-import { Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Badge, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -8,10 +8,11 @@ import { DeploySectionProps, StartingData } from "../types";
 
 export function StartingDataSection({ details, setDetails }: DeploySectionProps) {
 	const { instanceId } = useSearchParams();
+	const isFree = details.type === "free";
 
 	return (
 		<Stack gap="xl">
-			<PrimaryTitle>Starting data</PrimaryTitle>
+			<PrimaryTitle>Instance data</PrimaryTitle>
 			<SimpleGrid
 				cols={2}
 				spacing="lg"
@@ -25,6 +26,7 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 							data={data}
 							selected={details.startingData.type === data.id}
 							disabled={disabled}
+							upgradeRequired={data.id === "restore" && isFree}
 							onSelect={() => {
 								if (!disabled) {
 									setDetails((draft) => {
@@ -52,10 +54,17 @@ interface StartingDataCardProps {
 	data: StartingData;
 	selected?: boolean;
 	disabled?: boolean;
+	upgradeRequired?: boolean;
 	onSelect?: () => void;
 }
 
-function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCardProps) {
+function StartingDataCard({
+	data,
+	selected,
+	disabled,
+	upgradeRequired,
+	onSelect,
+}: StartingDataCardProps) {
 	return (
 		<Paper
 			p="lg"
@@ -64,10 +73,19 @@ function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCa
 			style={{
 				cursor: disabled ? "not-allowed" : "pointer",
 			}}
+			opacity={disabled ? 0.6 : 1}
 		>
 			<Stack>
 				<Group>
 					<PrimaryTitle fz={18}>{data.title}</PrimaryTitle>
+					{upgradeRequired && (
+						<Badge
+							color="violet"
+							variant="light"
+						>
+							Upgrade
+						</Badge>
+					)}
 					<Spacer />
 					<Icon
 						path={data.icon}

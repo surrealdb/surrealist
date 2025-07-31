@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 
 import { closeModal, openModal } from "@mantine/modals";
-import { Fragment, ReactNode, useMemo } from "react";
+import { Fragment, ReactNode, useEffect, useMemo } from "react";
 import { INSTANCE_PLAN_ARCHITECTURES, INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
@@ -35,6 +35,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 	const recommendations = useMemo(() => {
 		return INSTANCE_PLAN_SUGGESTIONS[details.plan]
 			.slice(0, 3)
+			.reverse()
 			.flatMap((slug) => optional(instanceTypes.get(slug)));
 	}, [instanceTypes, details.plan]);
 
@@ -83,6 +84,14 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	const isRecommended = recommendations.some((type) => type.slug === details.type);
 	const selected = instanceTypes.get(details.type);
+
+	useEffect(() => {
+		if (selected) {
+			setDetails((draft) => {
+				draft.storageAmount = selected.default_storage_size;
+			});
+		}
+	}, [selected, setDetails]);
 
 	return (
 		<Box>

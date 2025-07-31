@@ -83,10 +83,6 @@ export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const CLOUD_ROLES = ["member", "admin", "owner"];
 
 export const DATASETS: Record<DatasetType, Dataset> = {
-	"surreal-deal-store": {
-		name: "Surreal Deal Store",
-		path: "/surreal-deal-store.surql",
-	},
 	"surreal-deal-store-mini": {
 		name: "Surreal Deal Store (mini)",
 		path: "/surreal-deal-store-mini.surql",

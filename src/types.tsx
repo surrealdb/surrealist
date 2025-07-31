@@ -43,7 +43,7 @@ export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
 export type StartingDataType = "none" | "dataset" | "upload" | "restore";
-export type DatasetType = "surreal-deal-store" | "surreal-deal-store-mini";
+export type DatasetType = "surreal-deal-store-mini";
 
 export type InstanceState =
 	| "creating"
