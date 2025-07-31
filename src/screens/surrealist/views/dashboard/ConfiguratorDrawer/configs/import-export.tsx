@@ -192,7 +192,7 @@ export function ImportExport({ instance, onClose }: ImportExportProps) {
 								<Stack>
 									<ImportExportCard
 										title="Import"
-										description="Import the selected database from a surql file"
+										description="Import data into the selected database from a surql file"
 										icon={iconUpload}
 										onClick={handleSchemaImport}
 									/>
