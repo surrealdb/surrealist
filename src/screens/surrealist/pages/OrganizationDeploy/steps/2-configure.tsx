@@ -12,6 +12,20 @@ import { StartingDataSection } from "../sections/5-start-data";
 import { DataOptionsSection } from "../sections/6-data-opts";
 import { StepProps } from "../types";
 
+function WarningAlert({ title, children }: { title: string; children: React.ReactNode }) {
+	return (
+		<Alert
+			color="red"
+			mt="xl"
+			mb="-1.5rem"
+			title={title}
+			icon={<Icon path={iconWarning} />}
+		>
+			{children}
+		</Alert>
+	);
+}
+
 export function ConfigureStep({
 	organisation,
 	details,
@@ -20,7 +34,7 @@ export function ConfigureStep({
 	setDetails,
 	setStep,
 }: StepProps) {
-	const showStorageOptions = details.type !== "free";
+	const isNotFree = details.type !== "free";
 	const showClusterOptions = details.plan === "scale" || details.plan === "enterprise";
 	const regionMismatch =
 		details.startingData.type === "restore" &&
@@ -31,13 +45,15 @@ export function ConfigureStep({
 		details.startingData.backupOptions?.instance &&
 		details.storageAmount < details.startingData.backupOptions.instance.storage_size;
 
+	const restoreBlocked = !isNotFree && details.startingData.type === "restore";
+
 	const checkoutDisabled = useMemo(() => {
 		if (!details.name || details.name.length > 30) return true;
 		if (!details.region) return true;
 		if (!details.type) return true;
 		if (!details.version) return true;
 
-		if (details.type !== "free" && !details.units) return true;
+		if (isNotFree && !details.units) return true;
 
 		if (details.startingData.type === "restore") {
 			if (!details.startingData.backupOptions) return true;
@@ -46,12 +62,13 @@ export function ConfigureStep({
 
 			if (regionMismatch) return true;
 			if (storageMismatch) return true;
+			if (restoreBlocked) return true;
 		} else if (details.startingData.type === "dataset" && !details.startingData.dataset) {
 			return true;
 		}
 
 		return false;
-	}, [details, regionMismatch, storageMismatch]);
+	}, [details, isNotFree, regionMismatch, storageMismatch, restoreBlocked]);
 
 	return (
 		<>
@@ -63,29 +80,23 @@ export function ConfigureStep({
 			/>
 
 			{regionMismatch && (
-				<Alert
-					color="red"
-					mt="xl"
-					mb="-1.5rem"
-					title="Region mismatch"
-					icon={<Icon path={iconWarning} />}
-				>
+				<WarningAlert title="Region mismatch">
 					When restoring from a backup, the instance must be in the same region as the
 					backup
-				</Alert>
+				</WarningAlert>
 			)}
 
 			{storageMismatch && (
-				<Alert
-					color="red"
-					mt="xl"
-					mb="-1.5rem"
-					title="Too little storage"
-					icon={<Icon path={iconWarning} />}
-				>
+				<WarningAlert title="Too little storage">
 					You cannot have a smaller storage capacity than the instance you are restoring
 					from
-				</Alert>
+				</WarningAlert>
+			)}
+
+			{restoreBlocked && (
+				<WarningAlert title="Restore unavailable">
+					You cannot restore from a backup using a free instance
+				</WarningAlert>
 			)}
 
 			<Box mt={36}>
@@ -109,7 +120,7 @@ export function ConfigureStep({
 						setDetails={setDetails}
 					/>
 					<Stack gap="xl">
-						{showStorageOptions && (
+						{isNotFree && (
 							<StorageOptionsSection
 								organisation={organisation}
 								instances={instances}
