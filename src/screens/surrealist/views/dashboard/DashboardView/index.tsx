@@ -562,7 +562,7 @@ function LoadingScreen() {
 					title="Quick Start Tutorial"
 					description="Watch a quick tutorial to get started with Surreal Cloud."
 					image={tutorialsUrl}
-					href="https://www.youtube.com/watch?v=upm1lwaHmwU"
+					href="https://www.youtube.com/watch?v=S04qOKkVcmE"
 				/>
 			</SimpleGrid>
 		</>
