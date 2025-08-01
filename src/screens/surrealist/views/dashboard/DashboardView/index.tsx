@@ -470,6 +470,7 @@ export function DashboardView() {
 											backups={backups}
 											isLoading={isLoading}
 											onUpgrade={handleUpgradeType}
+											onOpenBackups={backupsHandle.open}
 										/>
 									</SimpleGrid>
 								</>
