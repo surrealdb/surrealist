@@ -1,4 +1,4 @@
-import { Alert, Button, Group, Select, Stack, Text } from "@mantine/core";
+import { Alert, Button, Checkbox, Group, Select, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -26,10 +26,25 @@ export function DataOptionsSection({
 						value: key,
 						label: value.name,
 					}))}
-					value={details.startingData.dataset}
+					value={details.startingData.datasetOptions?.id}
 					onChange={(value) => {
 						setDetails((draft) => {
-							draft.startingData.dataset = value as DatasetType | undefined;
+							draft.startingData.datasetOptions = {
+								id: value as DatasetType,
+								addQueries: true,
+							};
+						});
+					}}
+				/>
+				<Checkbox
+					label="Initialize with example queries"
+					checked={details.startingData.datasetOptions?.addQueries}
+					onChange={(event) => {
+						setDetails((draft) => {
+							draft.startingData.datasetOptions = {
+								id: details.startingData.datasetOptions?.id,
+								addQueries: event.currentTarget.checked,
+							};
 						});
 					}}
 				/>

@@ -30,6 +30,7 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 							onSelect={() => {
 								if (!disabled) {
 									setDetails((draft) => {
+										// Automatically select a dataset to use so its not empty
 										const dataset =
 											data.id === "dataset"
 												? "surreal-deal-store-mini"
@@ -37,7 +38,11 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 
 										draft.startingData = {
 											type: data.id,
-											dataset: dataset,
+											datasetOptions: {
+												id: dataset,
+												addQueries:
+													details.startingData.datasetOptions?.addQueries,
+											},
 										};
 									});
 								}

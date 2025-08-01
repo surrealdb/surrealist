@@ -47,7 +47,10 @@ export function useCloudPlansQuery() {
 						defaultType: plan.surrealist.defaultType,
 						startingData: {
 							type: plan.surrealist.dataset ? "dataset" : "none",
-							dataset: "surreal-deal-store-mini",
+							datasetOptions: {
+								id: "surreal-deal-store-mini",
+								addQueries: true,
+							},
 						},
 					}) as PlanConfig,
 			);

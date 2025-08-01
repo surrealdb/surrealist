@@ -47,7 +47,10 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 			if (type.price_hour === 0) {
 				draft.startingData = {
 					type: "dataset",
-					dataset: "surreal-deal-store-mini",
+					datasetOptions: {
+						id: "surreal-deal-store-mini",
+						addQueries: true,
+					},
 				};
 			}
 		});

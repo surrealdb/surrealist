@@ -88,8 +88,6 @@ function PageContent({ organisation, instances }: PageContentProps) {
 	}, [details.startingData.backupOptions?.instance]);
 
 	useEffect(() => {
-		console.log("Backups for instance", instanceId, backups);
-
 		if (instanceId) {
 			const foundInstance = instances.find((instance) => instance.id === instanceId);
 

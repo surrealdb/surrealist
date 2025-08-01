@@ -797,7 +797,10 @@ export interface CloudRole {
 
 export interface StartingDataDetails {
 	type: StartingDataType;
-	dataset?: DatasetType;
+	datasetOptions?: {
+		id?: DatasetType;
+		addQueries?: boolean;
+	};
 	backupOptions?: {
 		instance?: CloudInstance;
 		backup?: CloudBackup;
