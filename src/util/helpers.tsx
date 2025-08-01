@@ -480,6 +480,16 @@ export function optional<T>(value: T | T[] | false | undefined | null): T[] {
 }
 
 /**
+ * Convert the given value to an attribute string
+ *
+ * @param value The value to convert
+ * @returns The attribute string
+ */
+export function attr(value?: boolean): string | undefined {
+	return value ? "true" : undefined;
+}
+
+/**
  * Throw the passed error as part of an expression
  */
 export function __throw(error: Error | string): never {

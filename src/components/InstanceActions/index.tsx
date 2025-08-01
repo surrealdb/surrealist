@@ -1,26 +1,31 @@
 import { Menu } from "@mantine/core";
 import { PropsWithChildren, useMemo } from "react";
 import { Link } from "wouter";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 import { useDeleteInstance, usePauseInstance, useResumeInstance } from "~/hooks/cloud";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
-import { CloudInstance } from "~/types";
+import { CloudInstance, CloudOrganization } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { Icon } from "../Icon";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;
+	organisation: CloudOrganization;
 }
 
-export function InstanceActions({ instance, children }: PropsWithChildren<InstanceActionsProps>) {
+export function InstanceActions({
+	instance,
+	organisation,
+	children,
+}: PropsWithChildren<InstanceActionsProps>) {
 	const authTokenMutation = useCloudAuthTokenMutation(instance.id);
 	const connections = useConnectionList();
 
-	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "owner");
+	const canModify = hasOrganizationRole(organisation, "owner");
 
 	const connection = useMemo(() => {
 		return connections.find((c) => c.authentication.cloudInstance === instance.id);

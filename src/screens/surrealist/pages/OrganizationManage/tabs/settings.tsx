@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { useArchiveOrganizationMutation } from "~/cloud/mutations/archive";
 import { useUpdateOrganizationMutation } from "~/cloud/mutations/update";
 import { Icon } from "~/components/Icon";
@@ -19,7 +19,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 
 	const updateMutation = useUpdateOrganizationMutation(organization.id);
 	const archiveMutation = useArchiveOrganizationMutation(organization.id);
-	const isOwner = useHasOrganizationRole(organization.id, "owner");
+	const isOwner = hasOrganizationRole(organization, "owner");
 
 	const [, navigate] = useAbsoluteLocation();
 	const [name, setName] = useInputState(organization.name);

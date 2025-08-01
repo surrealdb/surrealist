@@ -1,5 +1,5 @@
 import { AreaChart } from "@mantine/charts";
-import { Center, Group, Paper, Skeleton, Stack, StyleProp, Text, Tooltip } from "@mantine/core";
+import { Box, Group, Paper, Stack, StyleProp, Text, Tooltip } from "@mantine/core";
 import { format } from "date-fns";
 import { computeMetricRange } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
@@ -50,73 +50,83 @@ export function BaseAreaChart({
 	const [startAt, endAt] = computeMetricRange(duration);
 
 	return (
-		<Skeleton visible={isLoading}>
-			<Paper
-				p="xl"
-				gap={24}
-				component={Stack}
-				variant="gradient"
-				pos="relative"
-				h={height ?? 280}
-			>
-				{values.length < 2 ? (
-					<Center flex={1}>
-						<Text c="slate">Recording data...</Text>
-					</Center>
-				) : (
-					<>
-						<Group gap="xs">
-							<Text
-								c="bright"
-								fw={700}
-								fz="xl"
-							>
-								{title}
-							</Text>
+		<Paper
+			p="xl"
+			gap={24}
+			component={Stack}
+			variant="gradient"
+			pos="relative"
+			h={height ?? 280}
+		>
+			<Group gap="xs">
+				<Text
+					c="bright"
+					fw={700}
+					fz="xl"
+				>
+					{title}
+				</Text>
 
-							{information && (
-								<Tooltip label={information}>
-									<div>
-										<Icon
-											path={iconHelp}
-											size="sm"
-										/>
-									</div>
-								</Tooltip>
-							)}
-						</Group>
-						<AreaChart
-							data={values}
-							withDots={false}
-							dataKey="time"
-							flex={1}
-							series={series}
-							tooltipProps={{
-								content: tooltip,
-							}}
-							yAxisProps={{
-								interval: 0,
-								unit: yAxisUnit,
-								domain: yAxisDomain,
-								tickCount: yAxisTicks,
-								tickFormatter: yAxisTickFormatter,
-							}}
-							xAxisProps={{
-								scale: "time",
-								type: "number",
-								interval: "equidistantPreserveStart",
-								minTickGap: 15,
-								domain: [startAt.valueOf(), endAt.valueOf()],
-								tickFormatter(value) {
-									return ["week", "month"].includes(duration)
-										? format(value as number, "M/d/yy")
-										: format(value as number, "hh:mm");
-								},
-							}}
-						/>
-					</>
+				{information && (
+					<Tooltip label={information}>
+						<div>
+							<Icon
+								path={iconHelp}
+								size="sm"
+							/>
+						</div>
+					</Tooltip>
 				)}
-			</Paper>
-		</Skeleton>
+			</Group>
+			<Box
+				flex={1}
+				opacity={isLoading ? 0 : 1}
+				style={{ transition: "opacity 0.1s ease-in-out" }}
+			>
+				{isLoading ? (
+					<Box />
+				) : values.length < 2 ? (
+					<Stack
+						h="100%"
+						justify="center"
+						align="center"
+						gap={0}
+					>
+						<Text>No data available</Text>
+						<Text c="slate">Please check back later</Text>
+					</Stack>
+				) : (
+					<AreaChart
+						data={values}
+						withDots={false}
+						dataKey="time"
+						h="100%"
+						series={series}
+						tooltipProps={{
+							content: tooltip,
+						}}
+						yAxisProps={{
+							interval: 0,
+							unit: yAxisUnit,
+							domain: yAxisDomain,
+							tickCount: yAxisTicks,
+							tickFormatter: yAxisTickFormatter,
+						}}
+						xAxisProps={{
+							scale: "time",
+							type: "number",
+							interval: "equidistantPreserveStart",
+							minTickGap: 15,
+							domain: [startAt.valueOf(), endAt.valueOf()],
+							tickFormatter(value) {
+								return ["week", "month"].includes(duration)
+									? format(value as number, "M/d/yy")
+									: format(value as number, "hh:mm");
+							},
+						}}
+					/>
+				)}
+			</Box>
+		</Paper>
 	);
 }

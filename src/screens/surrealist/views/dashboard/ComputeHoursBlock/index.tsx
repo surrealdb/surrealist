@@ -1,4 +1,4 @@
-import { Box, Center, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
+import { Box, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
 import { Spacer } from "~/components/Spacer";
 import { CloudMeasurement } from "~/types";
 import { measureComputeHistory, measureComputeTotal } from "~/util/cloud";
@@ -23,9 +23,15 @@ export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) 
 				mih={168}
 			>
 				{computeHistory.length === 0 ? (
-					<Center flex={1}>
-						<Text c="slate">Recording compute hours...</Text>
-					</Center>
+					<Stack
+						flex={1}
+						justify="center"
+						align="center"
+						gap={0}
+					>
+						<Text>No data available</Text>
+						<Text c="slate">Please check back later</Text>
+					</Stack>
 				) : (
 					<>
 						<Stack gap={0}>

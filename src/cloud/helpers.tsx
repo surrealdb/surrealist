@@ -1,4 +1,5 @@
 import { Duration, sub } from "date-fns";
+import { CLOUD_ROLES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { CloudDeployConfig, CloudOrganization, InstancePlan, MetricsDuration } from "~/types";
 
@@ -115,4 +116,17 @@ export function compileDeployConfig(
 
 export function isInstancePlan(plan: string): plan is InstancePlan {
 	return Object.keys(INSTANCE_PLAN_CATEGORIES).includes(plan);
+}
+
+export function hasOrganizationRole(organisation: CloudOrganization, role: string) {
+	const currentRole = organisation.user_role;
+
+	if (!currentRole) {
+		return false;
+	}
+
+	const required = CLOUD_ROLES.indexOf(role);
+	const current = CLOUD_ROLES.indexOf(currentRole ?? "");
+
+	return current >= required;
 }

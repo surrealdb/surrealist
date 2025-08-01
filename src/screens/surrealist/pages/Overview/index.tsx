@@ -392,6 +392,7 @@ export function OverviewPage() {
 													<StartInstance
 														key={instance.id}
 														instance={instance}
+														organisation={organization.info}
 														onConnect={activateInstance}
 													/>
 												))}

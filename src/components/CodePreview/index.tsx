@@ -2,6 +2,7 @@ import {
 	ActionIcon,
 	Box,
 	CopyButton,
+	MantineSize,
 	type MantineSpacing,
 	Paper,
 	type PaperProps,
@@ -13,6 +14,7 @@ import { type ReactNode, useMemo } from "react";
 import { useIsLight, useTheme } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { dedent } from "~/util/dedent";
+import { attr } from "~/util/helpers";
 import { renderHighlighting } from "~/util/highlighting";
 import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
@@ -22,10 +24,14 @@ export interface CodePreviewProps extends PaperProps {
 	value: string;
 	label?: string;
 	language?: string;
+	bg?: string;
 	leftSection?: ReactNode;
 	rightSection?: ReactNode;
 	withCopy?: boolean;
+	copyOffset?: number;
+	copySize?: MantineSize;
 	withDedent?: boolean;
+	withWrapping?: boolean;
 	padding?: MantineSpacing;
 }
 
@@ -33,11 +39,15 @@ export function CodePreview({
 	value,
 	label,
 	language,
+	bg,
 	withCopy,
+	copyOffset,
+	copySize,
 	rightSection,
 	withDedent,
 	padding,
 	className,
+	withWrapping,
 	...rest
 }: CodePreviewProps) {
 	const isLight = useIsLight();
@@ -72,8 +82,9 @@ export function CodePreview({
 			<Paper
 				pos="relative"
 				className={clsx(classes.root, className)}
+				data-wrapping={attr(withWrapping)}
 				shadow="none"
-				bg={isLight ? "slate.0" : "slate.9"}
+				bg={bg ?? (isLight ? "slate.0" : "slate.9")}
 				fz="lg"
 				{...rest}
 			>
@@ -92,9 +103,9 @@ export function CodePreview({
 							<ActionIcon
 								variant="gradient"
 								pos="absolute"
-								size="lg"
-								top={9}
-								right={9}
+								size={copySize ?? "lg"}
+								top={copyOffset ?? 9}
+								right={copyOffset ?? 9}
 								onClick={copy}
 								className={classes.copy}
 								aria-label="Copy code to clipboard"

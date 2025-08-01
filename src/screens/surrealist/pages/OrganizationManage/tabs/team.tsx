@@ -1,7 +1,7 @@
 import { Avatar, Badge, Box, Button, Group, Menu, Paper, Stack, Table, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
 import { openMemberRoleModal } from "~/cloud/modals/member-role";
 import { useRevocationMutation } from "~/cloud/mutations/invites";
@@ -37,8 +37,8 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const isArchived = !!organization.archived_at;
 	const userId = useCloudStore((s) => s.userId);
 
-	const isOwner = useHasOrganizationRole(organization.id, "owner");
-	const isAdmin = useHasOrganizationRole(organization.id, "admin");
+	const isOwner = hasOrganizationRole(organization, "owner");
+	const isAdmin = hasOrganizationRole(organization, "admin");
 
 	const [, navigate] = useAbsoluteLocation();
 

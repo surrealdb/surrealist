@@ -107,27 +107,6 @@
 	background-image: linear-gradient(to bottom, transparent, var(--mantine-color-body)), var(--image-url);
 }
 
-.news-post-content {
-	pre {
-		white-space: pre-wrap;
-		background-color: var(--mantine-color-slate-9);
-
-		@include light {
-			background-color: var(--mantine-color-slate-0);
-		}
-	}
-
-	code {
-		background-color: unset !important;
-		color: var(--mantine-color-bright) !important;
-		padding: 0;
-	}
-
-	a {
-		color: var(--mantine-color-surreal-5);
-	}
-}
-
 .provision-loader::after {
 	border: solid 3px transparent;
 	background-image: linear-gradient(var(--mantine-color-body), var(--mantine-color-body)), var(--surrealist-gradient);

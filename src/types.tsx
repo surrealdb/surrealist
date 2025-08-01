@@ -673,6 +673,7 @@ export interface CloudOrganization {
 	available_plans: CloudPlan[];
 	archived_at?: string;
 	member_count: number;
+	user_role: string;
 }
 
 export interface CloudBanner {
