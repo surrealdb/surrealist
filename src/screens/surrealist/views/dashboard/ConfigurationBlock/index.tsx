@@ -1,5 +1,5 @@
 import { Button, Paper, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
 import { PropertyValue } from "~/components/PropertyValue";
 import { useStable } from "~/hooks/stable";
@@ -54,7 +54,7 @@ export function ConfigurationBlock({
 	const nodeText = nodeCount === 1 ? "Single-node" : plural(nodeCount, `${nodeCount} Node`);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
-	const canModify = useHasOrganizationRole(organisation, "admin");
+	const canModify = hasOrganizationRole(organisation, "admin");
 
 	const handleUpgrade = useStable(() => {
 		onUpgrade();

@@ -1,6 +1,6 @@
 import { Box, Button, Center, Paper, Skeleton, Stack, Text, Tooltip } from "@mantine/core";
 import { formatDistance } from "date-fns";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance, CloudOrganization } from "~/types";
@@ -23,7 +23,7 @@ export function BackupsBlock({
 	onUpgrade,
 }: BackupsBlockProps) {
 	const latest = backups?.[0];
-	const canUpgrade = useHasOrganizationRole(organisation, "admin");
+	const canUpgrade = hasOrganizationRole(organisation, "admin");
 	const unavailable = instance?.type.category === "free";
 
 	const handleUpgrade = useStable(() => {

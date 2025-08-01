@@ -1,7 +1,7 @@
 import { Box, Divider, Group, ScrollArea, Stack, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudSplash } from "~/components/CloudSplash";
@@ -10,7 +10,6 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
-import { CloudOrganization } from "~/types";
 import { formatArchiveDate } from "~/util/cloud";
 import {
 	iconCog,
@@ -30,17 +29,18 @@ import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
 
 export interface OrganizationManagePageProps {
-	organisation: CloudOrganization;
+	id: string;
 	tab: string;
 }
 
-export function OrganizationManagePage({ organisation, tab }: OrganizationManagePageProps) {
+export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps) {
 	const isAuthed = useIsAuthenticated();
-	const isAdmin = useHasOrganizationRole(organisation, "admin");
-	const isOwner = useHasOrganizationRole(organisation, "owner");
 	const [, navigate] = useLocation();
 
-	const { data: organization, isSuccess } = useCloudOrganizationQuery(organisation.id);
+	const { data: organization, isSuccess } = useCloudOrganizationQuery(id);
+
+	const isAdmin = organization ? hasOrganizationRole(organization, "admin") : false;
+	const isOwner = organization ? hasOrganizationRole(organization, "owner") : false;
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {

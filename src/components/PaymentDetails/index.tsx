@@ -16,7 +16,7 @@ import { capitalize } from "radash";
 import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
 import { fetchAPI, updateCloudInformation } from "~/cloud/api";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
@@ -32,7 +32,7 @@ export interface PaymentDetailsProps extends BoxProps {
 }
 
 export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
-	const isOwner = useHasOrganizationRole(organisation, "owner");
+	const isOwner = hasOrganizationRole(organisation, "owner");
 	const paymentQuery = useCloudPaymentsQuery(organisation.id);
 	const client = useQueryClient();
 

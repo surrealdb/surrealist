@@ -1,5 +1,5 @@
 import { Alert, Box, Button, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudMeasurement, CloudOrganization } from "~/types";
@@ -30,7 +30,7 @@ export function DiskUsageBlock({
 	const storageUsageMB = formatMemory(storageUsage);
 	const storageMaxMB = formatMemory(storageMax);
 	const storageColor = storageFrac > 80 ? "red" : "surreal";
-	const canManage = useHasOrganizationRole(organisation, "admin");
+	const canManage = hasOrganizationRole(organisation, "admin");
 
 	const handleUpgrade = useStable(() => {
 		onUpgrade();

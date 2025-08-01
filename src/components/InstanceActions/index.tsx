@@ -1,7 +1,7 @@
 import { Menu } from "@mantine/core";
 import { PropsWithChildren, useMemo } from "react";
 import { Link } from "wouter";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { useCloudAuthTokenMutation } from "~/cloud/mutations/auth";
 import { useDeleteInstance, usePauseInstance, useResumeInstance } from "~/hooks/cloud";
 import { useConnectionList } from "~/hooks/connection";
@@ -25,7 +25,7 @@ export function InstanceActions({
 	const authTokenMutation = useCloudAuthTokenMutation(instance.id);
 	const connections = useConnectionList();
 
-	const canModify = useHasOrganizationRole(organisation, "owner");
+	const canModify = hasOrganizationRole(organisation, "owner");
 
 	const connection = useMemo(() => {
 		return connections.find((c) => c.authentication.cloudInstance === instance.id);
