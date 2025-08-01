@@ -262,11 +262,17 @@ export function DashboardView() {
 									/>
 								)}
 								{isLoading ? (
-									<Skeleton
-										mt="sm"
-										width={200}
-										h={50}
-									/>
+									<Group mt="sm">
+										<Skeleton
+											width={200}
+											h={50}
+										/>
+										<Spacer />
+										<Skeleton
+											width={145}
+											h={36}
+										/>
+									</Group>
 								) : (
 									<Group mt="sm">
 										<PrimaryTitle fz={32}>{details?.name}</PrimaryTitle>
@@ -297,7 +303,7 @@ export function DashboardView() {
 
 							<NavigationBlock isLoading={isLoading} />
 
-							{details && instance && organisation ? (
+							{!isLoading && details && instance && organisation ? (
 								<>
 									<Box mt={32}>
 										<PrimaryTitle>Your instance</PrimaryTitle>
@@ -453,7 +459,11 @@ export function DashboardView() {
 									</SimpleGrid>
 								</>
 							) : (
-								<Loader />
+								<Loader
+									mx="auto"
+									type="dots"
+									mt={96}
+								/>
 							)}
 						</>
 					)}
