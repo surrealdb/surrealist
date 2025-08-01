@@ -12,6 +12,7 @@ interface PlanResponse {
 	};
 	price: string | number;
 	features: string[];
+	coming_soon_features: boolean[];
 	resources: string[];
 }
 
@@ -20,7 +21,7 @@ export interface PlanConfig {
 	name: string;
 	description: string;
 	price: string | number;
-	features: string[];
+	features: { name: string; comingSoon: boolean }[];
 	resources: string[];
 	dataset: boolean;
 	defaultType?: string;
@@ -42,10 +43,13 @@ export function useCloudPlansQuery() {
 						name: plan.name,
 						description: plan.description,
 						price: plan.price,
-						features: plan.features,
 						resources: plan.resources,
 						dataset: plan.surrealist.dataset,
 						defaultType: plan.surrealist.defaultType,
+						features: plan.features.map((feature, i) => ({
+							name: feature,
+							comingSoon: plan.coming_soon_features?.[i] ?? false,
+						})),
 					}) as PlanConfig,
 			);
 		},
