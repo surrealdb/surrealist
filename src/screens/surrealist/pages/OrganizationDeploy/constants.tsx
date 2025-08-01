@@ -10,19 +10,19 @@ export const STARTING_DATA: StartingData[] = [
 	},
 	{
 		id: "dataset",
-		title: "Demo Dataset",
+		title: "Demo dataset",
 		description: "Explore Surreal Cloud with one of our demo datasets.",
 		icon: iconDatabase,
 	},
 	{
 		id: "upload",
-		title: "Upload",
-		description: "Get started by uploading a .surql file from your local device.",
+		title: "Upload from file",
+		description: "Get started by uploading a `.surql` file from your local device.",
 		icon: iconUpload,
 	},
 	{
 		id: "restore",
-		title: "Restore",
+		title: "Restore from backup",
 		description: "Restore from a backup of an existing Surreal Cloud instance.",
 		icon: iconHistory,
 	},

@@ -1,5 +1,6 @@
-import { Badge, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Group, Paper, SimpleGrid, Stack } from "@mantine/core";
 import { Icon } from "~/components/Icon";
+import { MarkdownContent } from "~/components/MarkdownContent";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useSearchParams } from "~/hooks/routing";
@@ -8,7 +9,6 @@ import { DeploySectionProps, StartingData } from "../types";
 
 export function StartingDataSection({ details, setDetails }: DeploySectionProps) {
 	const { instanceId } = useSearchParams();
-	const isFree = details.type === "free";
 
 	return (
 		<Stack gap="xl">
@@ -26,26 +26,23 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 							data={data}
 							selected={details.startingData.type === data.id}
 							disabled={disabled}
-							upgradeRequired={data.id === "restore" && isFree}
 							onSelect={() => {
-								if (!disabled) {
-									setDetails((draft) => {
-										// Automatically select a dataset to use so its not empty
-										const dataset =
-											data.id === "dataset"
-												? "surreal-deal-store-mini"
-												: undefined;
+								setDetails((draft) => {
+									// Automatically select a dataset to use so its not empty
+									const dataset =
+										data.id === "dataset"
+											? "surreal-deal-store-mini"
+											: undefined;
 
-										draft.startingData = {
-											type: data.id,
-											datasetOptions: {
-												id: dataset,
-												addQueries:
-													details.startingData.datasetOptions?.addQueries,
-											},
-										};
-									});
-								}
+									draft.startingData = {
+										type: data.id,
+										datasetOptions: {
+											id: dataset,
+											addQueries:
+												details.startingData.datasetOptions?.addQueries,
+										},
+									};
+								});
 							}}
 						/>
 					);
@@ -59,45 +56,30 @@ interface StartingDataCardProps {
 	data: StartingData;
 	selected?: boolean;
 	disabled?: boolean;
-	upgradeRequired?: boolean;
 	onSelect?: () => void;
 }
 
-function StartingDataCard({
-	data,
-	selected,
-	disabled,
-	upgradeRequired,
-	onSelect,
-}: StartingDataCardProps) {
+function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCardProps) {
 	return (
 		<Paper
 			p="lg"
 			variant={disabled ? "disabled" : selected ? "selected" : "interactive"}
-			onClick={onSelect}
+			onClick={disabled ? undefined : onSelect}
 			style={{
 				cursor: disabled ? "not-allowed" : "pointer",
 			}}
 			opacity={disabled ? 0.6 : 1}
 		>
-			<Stack>
+			<Stack gap="xs">
 				<Group>
 					<PrimaryTitle fz={18}>{data.title}</PrimaryTitle>
-					{upgradeRequired && (
-						<Badge
-							color="violet"
-							variant="light"
-						>
-							Upgrade
-						</Badge>
-					)}
 					<Spacer />
 					<Icon
 						path={data.icon}
 						c="slate"
 					/>
 				</Group>
-				<Text>{data.description}</Text>
+				<MarkdownContent>{data.description}</MarkdownContent>
 			</Stack>
 		</Paper>
 	);

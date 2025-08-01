@@ -103,23 +103,16 @@ export function ConfigureStep({
 					spacing={52}
 					verticalSpacing={28}
 				>
-					<DeploymentSection
-						organisation={organisation}
-						instances={instances}
-						backups={backups}
-						details={details}
-						setDetails={setDetails}
-						setStep={setStep}
-					/>
-					<StartingDataSection
-						organisation={organisation}
-						details={details}
-						instances={instances}
-						backups={backups}
-						setDetails={setDetails}
-						setStep={setStep}
-					/>
-					<Stack gap="xl">
+					<Stack gap={36}>
+						<DeploymentSection
+							organisation={organisation}
+							instances={instances}
+							backups={backups}
+							details={details}
+							setDetails={setDetails}
+							setStep={setStep}
+						/>
+
 						{isNotFree && (
 							<StorageOptionsSection
 								organisation={organisation}
@@ -140,14 +133,24 @@ export function ConfigureStep({
 							/>
 						)}
 					</Stack>
-					<DataOptionsSection
-						organisation={organisation}
-						backups={backups}
-						details={details}
-						instances={instances}
-						setDetails={setDetails}
-						setStep={setStep}
-					/>
+					<Stack gap={36}>
+						<StartingDataSection
+							organisation={organisation}
+							details={details}
+							instances={instances}
+							backups={backups}
+							setDetails={setDetails}
+							setStep={setStep}
+						/>
+						<DataOptionsSection
+							organisation={organisation}
+							backups={backups}
+							details={details}
+							instances={instances}
+							setDetails={setDetails}
+							setStep={setStep}
+						/>
+					</Stack>
 				</SimpleGrid>
 			</Box>
 
