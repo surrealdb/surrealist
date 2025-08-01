@@ -2,17 +2,18 @@ import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
 import { PropsWithChildren } from "react";
 import { navigate } from "wouter/use-browser-location";
 import cloudImg from "~/assets/images/icons/cloud.webp";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
+import { CloudOrganization } from "~/types";
 
 export interface CloudAdminGuardProps {
-	organizationId: string;
+	organisation: CloudOrganization;
 }
 
 export function CloudAdminGuard({
-	organizationId,
+	organisation,
 	children,
 }: PropsWithChildren<CloudAdminGuardProps>) {
-	const canManage = useHasOrganizationRole(organizationId, "admin");
+	const canManage = hasOrganizationRole(organisation, "admin");
 
 	if (!canManage) {
 		return (

@@ -16,7 +16,7 @@ import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { CloudInstance } from "~/types";
+import { CloudInstance, CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconCloud, iconDotsVertical } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
@@ -25,13 +25,14 @@ import classes from "../style.module.scss";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
+	organisation: CloudOrganization;
 	onConnect: (instance: CloudInstance) => void;
 }
 
 export function StartInstance({
 	instance,
+	organisation,
 	onConnect,
-	children,
 	...other
 }: PropsWithChildren<StartInstanceProps>) {
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -112,7 +113,10 @@ export function StartInstance({
 						onClick={ON_STOP_PROPAGATION}
 						onKeyDown={ON_STOP_PROPAGATION}
 					>
-						<InstanceActions instance={instance}>
+						<InstanceActions
+							instance={instance}
+							organisation={organisation}
+						>
 							<ActionIcon
 								color="slate"
 								variant="subtle"

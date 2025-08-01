@@ -1,10 +1,10 @@
 import { Button, Paper, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
 import { PropertyValue } from "~/components/PropertyValue";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance } from "~/types";
+import { CloudInstance, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
@@ -22,6 +22,7 @@ import {
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
+	organisation: CloudOrganization;
 	isLoading: boolean;
 	onUpgrade: () => void;
 	onConfigure: () => void;
@@ -29,6 +30,7 @@ export interface ConfigurationBlockProps {
 
 export function ConfigurationBlock({
 	instance,
+	organisation,
 	isLoading,
 	onUpgrade,
 	onConfigure,
@@ -52,7 +54,7 @@ export function ConfigurationBlock({
 	const nodeText = nodeCount === 1 ? "Single-node" : plural(nodeCount, `${nodeCount} Node`);
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
-	const canModify = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
+	const canModify = hasOrganizationRole(organisation, "admin");
 
 	const handleUpgrade = useStable(() => {
 		onUpgrade();

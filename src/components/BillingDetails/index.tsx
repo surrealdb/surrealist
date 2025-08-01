@@ -1,5 +1,5 @@
 import { Box, BoxProps, Button, Divider, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { openBillingDetails } from "~/cloud/modals/billing";
 import { useCloudBillingQuery } from "~/cloud/queries/billing";
 import { useStable } from "~/hooks/stable";
@@ -14,8 +14,9 @@ export interface BillingDetails extends BoxProps {
 }
 
 export function BillingDetails({ organisation, ...rest }: BillingDetails) {
-	const isOwner = useHasOrganizationRole(organisation.id, "owner");
 	const billingQuery = useCloudBillingQuery(organisation.id);
+
+	const isOwner = hasOrganizationRole(organisation, "owner");
 
 	const handleEditBilling = useStable(() => {
 		openBillingDetails(organisation);

@@ -73,7 +73,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 	}, [details.plan]);
 
 	return (
-		<CloudAdminGuard organizationId={organisation.id}>
+		<CloudAdminGuard organisation={organisation}>
 			<Box
 				flex={1}
 				pos="relative"

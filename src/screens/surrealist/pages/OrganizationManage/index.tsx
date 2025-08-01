@@ -1,7 +1,7 @@
 import { Box, Divider, Group, ScrollArea, Stack, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudSplash } from "~/components/CloudSplash";
@@ -35,11 +35,12 @@ export interface OrganizationManagePageProps {
 
 export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps) {
 	const isAuthed = useIsAuthenticated();
-	const isAdmin = useHasOrganizationRole(id, "admin");
-	const isOwner = useHasOrganizationRole(id, "owner");
 	const [, navigate] = useLocation();
 
 	const { data: organization, isSuccess } = useCloudOrganizationQuery(id);
+
+	const isAdmin = organization ? hasOrganizationRole(organization, "admin") : false;
+	const isOwner = organization ? hasOrganizationRole(organization, "owner") : false;
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {

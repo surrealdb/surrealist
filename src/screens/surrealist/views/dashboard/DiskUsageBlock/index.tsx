@@ -1,8 +1,8 @@
 import { Alert, Box, Button, Group, Paper, Progress, Skeleton, Stack, Text } from "@mantine/core";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { CloudInstance, CloudMeasurement } from "~/types";
+import { CloudInstance, CloudMeasurement, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { measureStorageUsage } from "~/util/cloud";
 import { formatMemory } from "~/util/helpers";
@@ -10,11 +10,18 @@ import { formatMemory } from "~/util/helpers";
 export interface DiskUsageBlockProps {
 	usage: CloudMeasurement[] | undefined;
 	instance: CloudInstance | undefined;
+	organisation: CloudOrganization;
 	isLoading: boolean;
 	onUpgrade: () => void;
 }
 
-export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUsageBlockProps) {
+export function DiskUsageBlock({
+	usage,
+	instance,
+	organisation,
+	isLoading,
+	onUpgrade,
+}: DiskUsageBlockProps) {
 	const storageUsage = measureStorageUsage(usage ?? []);
 	const storageMaxGB = instance?.storage_size ?? 0;
 	const storageMax = storageMaxGB * 1024;
@@ -23,7 +30,7 @@ export function DiskUsageBlock({ usage, instance, isLoading, onUpgrade }: DiskUs
 	const storageUsageMB = formatMemory(storageUsage);
 	const storageMaxMB = formatMemory(storageMax);
 	const storageColor = storageFrac > 80 ? "red" : "surreal";
-	const canManage = useHasOrganizationRole(instance?.organization_id ?? "", "admin");
+	const canManage = hasOrganizationRole(organisation, "admin");
 
 	const handleUpgrade = useStable(() => {
 		onUpgrade();

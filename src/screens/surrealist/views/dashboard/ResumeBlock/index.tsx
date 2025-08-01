@@ -1,17 +1,18 @@
 import { ActionIcon, Button, Center, Paper, Stack, Text, Tooltip } from "@mantine/core";
-import { useHasOrganizationRole } from "~/cloud/hooks/role";
+import { hasOrganizationRole } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useResumeInstance } from "~/hooks/cloud";
-import { CloudInstance } from "~/types";
+import { CloudInstance, CloudOrganization } from "~/types";
 import { iconPause, iconPlay } from "~/util/icons";
 
 export interface ResumelockProps {
 	instance: CloudInstance;
+	organisation: CloudOrganization;
 }
 
-export function ResumeBlock({ instance }: ResumelockProps) {
-	const canResume = useHasOrganizationRole(instance?.organization_id ?? "", "owner");
+export function ResumeBlock({ instance, organisation }: ResumelockProps) {
+	const canResume = hasOrganizationRole(organisation, "owner");
 	const resumeInstance = useResumeInstance(instance);
 
 	return (

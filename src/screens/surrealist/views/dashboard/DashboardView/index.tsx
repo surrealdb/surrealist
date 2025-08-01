@@ -262,11 +262,17 @@ export function DashboardView() {
 									/>
 								)}
 								{isLoading ? (
-									<Skeleton
-										mt="sm"
-										width={200}
-										h={50}
-									/>
+									<Group mt="sm">
+										<Skeleton
+											width={200}
+											h={50}
+										/>
+										<Spacer />
+										<Skeleton
+											width={145}
+											h={36}
+										/>
+									</Group>
 								) : (
 									<Group mt="sm">
 										<PrimaryTitle fz={32}>{details?.name}</PrimaryTitle>
@@ -277,8 +283,11 @@ export function DashboardView() {
 											/>
 										)}
 										<Spacer />
-										{details && (
-											<InstanceActions instance={details}>
+										{details && organisation && (
+											<InstanceActions
+												instance={details}
+												organisation={organisation}
+											>
 												<Button
 													color="violet"
 													variant="light"
@@ -294,67 +303,73 @@ export function DashboardView() {
 
 							<NavigationBlock isLoading={isLoading} />
 
-							<Box mt={32}>
-								<PrimaryTitle>Your instance</PrimaryTitle>
-								<Text>Customise and connect to your Surreal Cloud instance</Text>
-							</Box>
+							{!isLoading && details && instance && organisation ? (
+								<>
+									<Box mt={32}>
+										<PrimaryTitle>Your instance</PrimaryTitle>
+										<Text>
+											Customise and connect to your Surreal Cloud instance
+										</Text>
+									</Box>
 
-							{details && (
-								<UpdateBlockLazy
-									instance={details}
-									isLoading={isLoading}
-									onUpdate={handleUpdate}
-									onVersions={handleVersions}
-								/>
-							)}
-
-							<SimpleGrid
-								cols={2}
-								spacing="xl"
-							>
-								<ConfigurationBlockLazy
-									instance={details}
-									isLoading={isLoading}
-									onUpgrade={handleUpgradeType}
-									onConfigure={handleConfigure}
-								/>
-								{details && !isLoading && details.state === "paused" ? (
-									<ResumeBlockLazy instance={details} />
-								) : (
-									<ConnectBlockLazy
+									<UpdateBlockLazy
 										instance={details}
+										organisation={organisation}
 										isLoading={isLoading}
+										onUpdate={handleUpdate}
+										onVersions={handleVersions}
 									/>
-								)}
-							</SimpleGrid>
 
-							<Group mt={32}>
-								<Box>
-									<Group gap="lg">
-										<PrimaryTitle>Metrics</PrimaryTitle>
-										{!isLoading && instance?.state === "ready" && (
-											<Tooltip label="Metrics update live every 60 seconds">
-												<Indicator
-													processing={true}
-													size={10}
-												/>
-											</Tooltip>
+									<SimpleGrid
+										cols={2}
+										spacing="xl"
+									>
+										<ConfigurationBlockLazy
+											instance={details}
+											organisation={organisation}
+											isLoading={isLoading}
+											onUpgrade={handleUpgradeType}
+											onConfigure={handleConfigure}
+										/>
+
+										{!isLoading && details.state === "paused" ? (
+											<ResumeBlockLazy
+												instance={details}
+												organisation={organisation}
+											/>
+										) : (
+											<ConnectBlockLazy
+												instance={details}
+												isLoading={isLoading}
+											/>
 										)}
+									</SimpleGrid>
+
+									<Group mt={32}>
+										<Box>
+											<Group gap="lg">
+												<PrimaryTitle>Metrics</PrimaryTitle>
+												{!isLoading && instance?.state === "ready" && (
+													<Tooltip label="Metrics update live every 60 seconds">
+														<Indicator
+															processing={true}
+															size={10}
+														/>
+													</Tooltip>
+												)}
+											</Group>
+
+											<Text>View and track instance activity metrics</Text>
+										</Box>
+
+										<Spacer />
+
+										<MetricActions
+											options={metricOptions}
+											onChange={setMetricOptions}
+										/>
 									</Group>
 
-									<Text>View and track instance activity metrics</Text>
-								</Box>
-
-								<Spacer />
-
-								<MetricActions
-									options={metricOptions}
-									onChange={setMetricOptions}
-								/>
-							</Group>
-
-							{instance && (
-								<>
 									<SimpleGrid
 										cols={2}
 										spacing="xl"
@@ -413,35 +428,43 @@ export function DashboardView() {
 											View more
 										</Button>
 									</Group>
+
+									<Box mt={32}>
+										<PrimaryTitle>Resources</PrimaryTitle>
+										<Text>Monitor and explore instance resources</Text>
+									</Box>
+
+									<SimpleGrid
+										cols={3}
+										spacing="xl"
+									>
+										<ComputeUsageBlockLazy
+											usage={usage}
+											isLoading={isLoading}
+										/>
+										<DiskUsageBlockLazy
+											usage={usage}
+											instance={details}
+											organisation={organisation}
+											isLoading={isLoading}
+											onUpgrade={handleUpgradeStorage}
+										/>
+										<BackupsBlockLazy
+											instance={details}
+											organisation={organisation}
+											backups={backups}
+											isLoading={isLoading}
+											onUpgrade={handleUpgradeType}
+										/>
+									</SimpleGrid>
 								</>
+							) : (
+								<Loader
+									mx="auto"
+									type="dots"
+									mt={96}
+								/>
 							)}
-
-							<Box mt={32}>
-								<PrimaryTitle>Resources</PrimaryTitle>
-								<Text>Monitor and explore instance resources</Text>
-							</Box>
-
-							<SimpleGrid
-								cols={3}
-								spacing="xl"
-							>
-								<ComputeUsageBlockLazy
-									usage={usage}
-									isLoading={isLoading}
-								/>
-								<DiskUsageBlockLazy
-									usage={usage}
-									instance={details}
-									isLoading={isLoading}
-									onUpgrade={handleUpgradeStorage}
-								/>
-								<BackupsBlockLazy
-									instance={details}
-									backups={backups}
-									isLoading={isLoading}
-									onUpgrade={handleUpgradeType}
-								/>
-							</SimpleGrid>
 						</>
 					)}
 				</Stack>
