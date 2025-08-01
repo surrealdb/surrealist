@@ -77,6 +77,7 @@ export function ConfigureStep({
 				instances={instances}
 				details={details}
 				setDetails={setDetails}
+				setStep={setStep}
 			/>
 
 			{regionMismatch && (
@@ -105,6 +106,7 @@ export function ConfigureStep({
 						backups={backups}
 						details={details}
 						setDetails={setDetails}
+						setStep={setStep}
 					/>
 					<StartingDataSection
 						organisation={organisation}
@@ -112,6 +114,7 @@ export function ConfigureStep({
 						instances={instances}
 						backups={backups}
 						setDetails={setDetails}
+						setStep={setStep}
 					/>
 					<Stack gap="xl">
 						{isNotFree && (
@@ -120,6 +123,7 @@ export function ConfigureStep({
 								instances={instances}
 								details={details}
 								setDetails={setDetails}
+								setStep={setStep}
 							/>
 						)}
 
@@ -129,6 +133,7 @@ export function ConfigureStep({
 								instances={instances}
 								details={details}
 								setDetails={setDetails}
+								setStep={setStep}
 							/>
 						)}
 					</Stack>
@@ -138,6 +143,7 @@ export function ConfigureStep({
 						details={details}
 						instances={instances}
 						setDetails={setDetails}
+						setStep={setStep}
 					/>
 				</SimpleGrid>
 			</Box>

@@ -1,6 +1,5 @@
 import { Alert, Button, Group, Select, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
-import { INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DATASETS } from "~/constants";
@@ -13,6 +12,7 @@ export function DataOptionsSection({
 	instances,
 	backups,
 	setDetails,
+	setStep,
 }: DeploySectionProps) {
 	if (details.startingData.type === "dataset") {
 		return (
@@ -59,10 +59,7 @@ export function DataOptionsSection({
 									size="xs"
 									variant="gradient"
 									onClick={() => {
-										setDetails((draft) => {
-											draft.plan = "start";
-											draft.type = INSTANCE_PLAN_SUGGESTIONS.start[0];
-										});
+										setStep(0);
 									}}
 								>
 									Upgrade plan

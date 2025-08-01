@@ -23,6 +23,7 @@ export interface DeploySectionProps {
 	setDetails: Updater<CloudDeployConfig>;
 	backups?: CloudBackup[];
 	baseInstance?: CloudInstance;
+	setStep: (step: number) => void;
 }
 
 export interface StartingData {
