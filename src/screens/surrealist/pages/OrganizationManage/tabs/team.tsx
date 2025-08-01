@@ -37,8 +37,8 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const isArchived = !!organization.archived_at;
 	const userId = useCloudStore((s) => s.userId);
 
-	const isOwner = useHasOrganizationRole(organization.id, "owner");
-	const isAdmin = useHasOrganizationRole(organization.id, "admin");
+	const isOwner = useHasOrganizationRole(organization, "owner");
+	const isAdmin = useHasOrganizationRole(organization, "admin");
 
 	const [, navigate] = useAbsoluteLocation();
 

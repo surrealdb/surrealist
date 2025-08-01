@@ -19,7 +19,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 
 	const updateMutation = useUpdateOrganizationMutation(organization.id);
 	const archiveMutation = useArchiveOrganizationMutation(organization.id);
-	const isOwner = useHasOrganizationRole(organization.id, "owner");
+	const isOwner = useHasOrganizationRole(organization, "owner");
 
 	const [, navigate] = useAbsoluteLocation();
 	const [name, setName] = useInputState(organization.name);

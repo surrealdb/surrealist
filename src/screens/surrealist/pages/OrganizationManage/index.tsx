@@ -10,6 +10,7 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
+import { CloudOrganization } from "~/types";
 import { formatArchiveDate } from "~/util/cloud";
 import {
 	iconCog,
@@ -29,17 +30,17 @@ import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
 
 export interface OrganizationManagePageProps {
-	id: string;
+	organisation: CloudOrganization;
 	tab: string;
 }
 
-export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps) {
+export function OrganizationManagePage({ organisation, tab }: OrganizationManagePageProps) {
 	const isAuthed = useIsAuthenticated();
-	const isAdmin = useHasOrganizationRole(id, "admin");
-	const isOwner = useHasOrganizationRole(id, "owner");
+	const isAdmin = useHasOrganizationRole(organisation, "admin");
+	const isOwner = useHasOrganizationRole(organisation, "owner");
 	const [, navigate] = useLocation();
 
-	const { data: organization, isSuccess } = useCloudOrganizationQuery(id);
+	const { data: organization, isSuccess } = useCloudOrganizationQuery(organisation.id);
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {

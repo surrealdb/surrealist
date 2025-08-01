@@ -32,7 +32,7 @@ export interface PaymentDetailsProps extends BoxProps {
 }
 
 export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
-	const isOwner = useHasOrganizationRole(organisation.id, "owner");
+	const isOwner = useHasOrganizationRole(organisation, "owner");
 	const paymentQuery = useCloudPaymentsQuery(organisation.id);
 	const client = useQueryClient();
 

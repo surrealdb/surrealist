@@ -14,7 +14,7 @@ export interface BillingDetails extends BoxProps {
 }
 
 export function BillingDetails({ organisation, ...rest }: BillingDetails) {
-	const isOwner = useHasOrganizationRole(organisation.id, "owner");
+	const isOwner = useHasOrganizationRole(organisation, "owner");
 	const billingQuery = useCloudBillingQuery(organisation.id);
 
 	const handleEditBilling = useStable(() => {

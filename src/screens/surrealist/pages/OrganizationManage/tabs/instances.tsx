@@ -22,7 +22,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	const [, _navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 	const { data, isSuccess, isPending } = useCloudOrganizationInstancesQuery(organization.id);
-	const isAdmin = useHasOrganizationRole(organization.id, "admin");
+	const isAdmin = useHasOrganizationRole(organization, "admin");
 	const instances = isSuccess ? data : [];
 	const isArchived = !!organization.archived_at;
 	const canCreate = isSuccess && instances.length === 0 && !isArchived && isAdmin;

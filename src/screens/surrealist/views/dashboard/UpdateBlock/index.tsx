@@ -2,20 +2,27 @@ import { Alert, Box, Button, Group } from "@mantine/core";
 import { useHasOrganizationRole } from "~/cloud/hooks/role";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { CloudInstance } from "~/types";
+import { CloudInstance, CloudOrganization } from "~/types";
 import { openSurrealChangelog } from "~/util/cloud";
 import { iconOpen, iconReset } from "~/util/icons";
 
 export interface UpdateBlockProps {
 	instance: CloudInstance;
+	organisation: CloudOrganization;
 	isLoading: boolean;
 	onUpdate: (version: string) => void;
 	onVersions: () => void;
 }
 
-export function UpdateBlock({ instance, isLoading, onUpdate, onVersions }: UpdateBlockProps) {
+export function UpdateBlock({
+	instance,
+	organisation,
+	isLoading,
+	onUpdate,
+	onVersions,
+}: UpdateBlockProps) {
 	const latest = instance.available_versions[0] ?? "";
-	const canUpdate = useHasOrganizationRole(instance.organization_id, "admin");
+	const canUpdate = useHasOrganizationRole(organisation, "admin");
 	const visible = latest && instance.state === "ready" && !isLoading && canUpdate;
 
 	const handleUpdate = useStable(() => {
