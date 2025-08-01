@@ -1,6 +1,6 @@
 import { Box, Radio, Slider, Stack, Text } from "@mantine/core";
 import { list } from "radash";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -14,8 +14,8 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 	const isStandard = details.storageCategory === "standard";
 	const isEnterprise = details.plan === "enterprise";
 
-	const [storageMax, setStorageMax] = useState<number>(1);
-	const [storageMin, setStorageMin] = useState<number>(1);
+	const [storageMax, setStorageMax] = useState<number>(0);
+	const [storageMin, setStorageMin] = useState<number>(0);
 
 	const updateCategory = useStable((value: string) => {
 		setDetails((draft) => {
@@ -27,10 +27,21 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 		});
 	});
 
-	const marks = list(storageMin, storageMax, (i) => i, storageMax / 8).map((value) => ({
-		value,
-		label: formatMemory(value * 1000, true),
-	}));
+	const marks = useMemo(() => {
+		if (storageMin === 0 && storageMax === 0) {
+			return [];
+		}
+
+		return list(
+			storageMin,
+			storageMax,
+			(value) => ({
+				value,
+				label: formatMemory(value * 1000, true),
+			}),
+			(storageMax - storageMin) / 4,
+		);
+	}, [storageMin, storageMax]);
 
 	const updateAmount = useStable((value: number) => {
 		setDetails((draft) => {
@@ -54,9 +65,10 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 	return (
 		<>
 			{isEnterprise && (
-				<>
+				<Box>
 					<PrimaryTitle>Storage class</PrimaryTitle>
 					<Radio.Group
+						mt="xl"
 						value={details.storageCategory}
 						onChange={updateCategory}
 					>
@@ -87,32 +99,35 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 							/>
 						</Stack>
 					</Radio.Group>
-				</>
+				</Box>
 			)}
 
 			<Box>
-				<PrimaryTitle>Storage capacity</PrimaryTitle>
-				<Text>Choose the appropriate disk size for your instance</Text>
+				<Box>
+					<PrimaryTitle>Storage capacity</PrimaryTitle>
+					<Text>Choose the appropriate disk size for your instance</Text>
+				</Box>
+
+				<Slider
+					mt="xl"
+					h={40}
+					min={storageMin}
+					max={storageMax}
+					disabled={!details.type}
+					value={details.storageAmount}
+					onChange={updateAmount}
+					marks={marks}
+					label={(value) => formatMemory(value * 1000, true)}
+					color="slate"
+					styles={{
+						label: {
+							paddingInline: 10,
+							fontSize: "var(--mantine-font-size-md)",
+							fontWeight: 600,
+						},
+					}}
+				/>
 			</Box>
-			<Slider
-				mt="xs"
-				h={40}
-				min={storageMin}
-				max={storageMax}
-				disabled={!details.type}
-				value={details.storageAmount}
-				onChange={updateAmount}
-				marks={marks}
-				label={(value) => formatMemory(value * 1000, true)}
-				color="slate"
-				styles={{
-					label: {
-						paddingInline: 10,
-						fontSize: "var(--mantine-font-size-md)",
-						fontWeight: 600,
-					},
-				}}
-			/>
 		</>
 	);
 }

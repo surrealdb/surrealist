@@ -1,6 +1,5 @@
-import { Group, Paper, SimpleGrid, Stack } from "@mantine/core";
+import { Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Icon } from "~/components/Icon";
-import { MarkdownContent } from "~/components/MarkdownContent";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useSearchParams } from "~/hooks/routing";
@@ -79,7 +78,7 @@ function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCa
 						c="slate"
 					/>
 				</Group>
-				<MarkdownContent>{data.description}</MarkdownContent>
+				<Text>{data.description}</Text>
 			</Stack>
 		</Paper>
 	);

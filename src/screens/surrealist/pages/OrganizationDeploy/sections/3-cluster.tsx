@@ -1,5 +1,6 @@
 import { Box, Slider, Text } from "@mantine/core";
 import { list } from "radash";
+import { useMemo } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
@@ -15,31 +16,37 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 	});
 
 	const instanceType = instanceTypes.get(details.type);
-	const computeMinimum = instanceType?.compute_units.min ?? 1;
-	const computeMaximum = instanceType?.compute_units.max ?? 1;
-	const computeSegments = list(computeMinimum, computeMaximum);
+	const computeMin = instanceType?.compute_units.min ?? 0;
+	const computeMax = instanceType?.compute_units.max ?? 0;
 
-	const computeMarks = computeSegments.map((value) => ({
-		value,
-		label: `${value} nodes`,
-	}));
+	const marks = useMemo(() => {
+		if (computeMin === 0 && computeMax === 0) {
+			return [];
+		}
+
+		return list(computeMin, computeMax, (value) => ({
+			value,
+			label: `${value} nodes`,
+		}));
+	}, [computeMin, computeMax]);
 
 	return (
-		<>
+		<Box>
 			<Box>
 				<PrimaryTitle>Compute nodes</PrimaryTitle>
 				<Text>Select the number of compute nodes for your cluster.</Text>
 			</Box>
 
 			<Slider
-				mt="xs"
+				mt="xl"
 				h={40}
-				min={computeMinimum}
-				max={computeMaximum}
+				min={computeMin}
+				max={computeMax}
 				step={1}
+				disabled={computeMin === 0 && computeMax === 0}
 				value={details.units}
 				onChange={updateUnits}
-				marks={computeMarks}
+				marks={marks}
 				label={(value) => `${value} nodes`}
 				color="slate"
 				styles={{
@@ -50,6 +57,6 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 					},
 				}}
 			/>
-		</>
+		</Box>
 	);
 }

@@ -59,12 +59,12 @@ export function DataOptionsSection({
 					icon={
 						<Icon
 							path={iconArrowDownFat}
-							style={{ rotate: "180deg" }}
+							flip="vertical"
 						/>
 					}
 				>
 					<Stack gap={5}>
-						<Text>You must upgrade to a paid plan to restore from a backup</Text>
+						<Text>Backup restoring is only available on paid plans.</Text>
 						<Group mt="sm">
 							<Button
 								size="xs"
@@ -73,7 +73,7 @@ export function DataOptionsSection({
 									setStep(0);
 								}}
 							>
-								Upgrade plan
+								Change plan
 							</Button>
 						</Group>
 					</Stack>
