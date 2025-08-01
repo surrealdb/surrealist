@@ -110,6 +110,10 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 				)}
 			</SimpleGrid>
 
+			<Box mt="sm">
+				<Text c="slate">* Coming soon</Text>
+			</Box>
+
 			<Stack
 				align="center"
 				mt={36}
@@ -201,17 +205,26 @@ function PlanCard({ config, state, recommended, onConfigure }: PlanCardProps) {
 				<Text>{config.description}</Text>
 				<Label mt="xl">What you get</Label>
 				<Stack>
-					{config.features.map((feature) => (
+					{config.features.map(({ name, comingSoon }) => (
 						<Group
 							gap="sm"
 							c="bright"
-							key={feature}
+							key={name}
 						>
 							<Checkbox
 								checked
 								size="xs"
 							/>
-							{feature}
+							{name}
+							{comingSoon && (
+								<Text
+									fz={18}
+									c="slate"
+									lh={0}
+								>
+									*
+								</Text>
+							)}
 						</Group>
 					))}
 				</Stack>
