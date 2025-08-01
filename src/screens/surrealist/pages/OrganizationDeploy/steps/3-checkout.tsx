@@ -28,18 +28,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { getTypeCategoryName } from "~/util/cloud";
-import {
-	DatasetQuery,
-	QUERY_EIGHT,
-	QUERY_FIVE,
-	QUERY_FOUR,
-	QUERY_NINE,
-	QUERY_ONE,
-	QUERY_SEVEN,
-	QUERY_SIX,
-	QUERY_THREE,
-	QUERY_TWO,
-} from "~/util/dataset";
+import { SAMPLE_QUERIES } from "~/util/dataset";
 import { createBaseQuery } from "~/util/defaults";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
 import {
@@ -54,21 +43,10 @@ import {
 	iconRelation,
 	iconTag,
 } from "~/util/icons";
-import { APPLY_DATASET_KEY } from "~/util/storage";
+import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
+import { STARTING_DATA } from "../constants";
 import classes from "../style.module.scss";
 import { StepProps } from "../types";
-
-const SAMPLE_QUERIES: DatasetQuery[] = [
-	QUERY_ONE,
-	QUERY_TWO,
-	QUERY_THREE,
-	QUERY_FOUR,
-	QUERY_FIVE,
-	QUERY_SIX,
-	QUERY_SEVEN,
-	QUERY_EIGHT,
-	QUERY_NINE,
-];
 
 export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const navigateConnection = useConnectionNavigator();
@@ -81,20 +59,28 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 			const { settings, updateConnection } = useConfigStore.getState();
 			const [instance, connection] = await deployMutation.mutateAsync();
 
-			if (details.dataset) {
-				sessionStorage.setItem(`${APPLY_DATASET_KEY}:${instance.id}`, "surreal-deal-store");
+			if (details.startingData.type === "dataset") {
+				const dataset =
+					details.startingData.datasetOptions?.id ?? "surreal-deal-store-mini";
+				const addQueries = details.startingData.datasetOptions?.addQueries;
 
-				const queries = SAMPLE_QUERIES.map((query) => ({
-					...createBaseQuery(settings, "config"),
-					name: query.name,
-					query: query.query,
-				}));
+				sessionStorage.setItem(`${APPLY_DATASET_KEY}:${instance.id}`, dataset);
 
-				updateConnection({
-					id: connection.id,
-					activeQuery: queries[0].id,
-					queries,
-				});
+				if (addQueries) {
+					const queries = SAMPLE_QUERIES[dataset].map((query) => ({
+						...createBaseQuery(settings, "config"),
+						name: query.name,
+						query: query.query,
+					}));
+
+					updateConnection({
+						id: connection.id,
+						activeQuery: queries[0].id,
+						queries,
+					});
+				}
+			} else if (details.startingData.type === "upload") {
+				sessionStorage.setItem(`${APPLY_DATA_FILE_KEY}:${instance.id}`, "true");
 			}
 
 			navigateConnection(connection.id, "dashboard");
@@ -126,7 +112,8 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const nodeText = nodeCount === 1 ? "Single node" : plural(nodeCount, `${nodeCount} Node`);
-	const datasetText = details?.dataset ? "Yes" : "No";
+	const startingDataText =
+		STARTING_DATA.find((data) => data.id === details.startingData.type)?.title ?? "None";
 
 	return (
 		<>
@@ -214,9 +201,9 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 						/>
 
 						<PropertyValue
-							title="Dataset"
+							title="Starting data"
 							icon={iconDatabase}
-							value={datasetText}
+							value={startingDataText}
 						/>
 					</SimpleGrid>
 				</Flex>

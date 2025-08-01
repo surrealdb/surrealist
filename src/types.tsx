@@ -42,6 +42,8 @@ export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticat
 export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
+export type StartingDataType = "none" | "dataset" | "upload" | "restore";
+export type DatasetType = "surreal-deal-store-mini";
 
 export type InstanceState =
 	| "creating"
@@ -794,6 +796,18 @@ export interface CloudRole {
 	}[];
 }
 
+export interface StartingDataDetails {
+	type: StartingDataType;
+	datasetOptions?: {
+		id?: DatasetType;
+		addQueries?: boolean;
+	};
+	backupOptions?: {
+		instance?: CloudInstance;
+		backup?: CloudBackup;
+	};
+}
+
 export interface CloudDeployConfig {
 	name: string;
 	version: string;
@@ -801,9 +815,9 @@ export interface CloudDeployConfig {
 	type: string;
 	units: number;
 	plan: InstancePlan;
+	startingData: StartingDataDetails;
 	storageCategory: StorageCategory;
 	storageAmount: number;
-	dataset: boolean;
 }
 
 export interface AppMenu {

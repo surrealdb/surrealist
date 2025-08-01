@@ -15,6 +15,7 @@ import {
 } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
+import { DatasetType } from "~/types";
 import { featureFlags } from "~/util/feature-flags";
 import { optional } from "~/util/helpers";
 import {
@@ -446,7 +447,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							binding: true,
 							action: launch(() => {
 								if (isSandbox) {
-									applyDataset(value);
+									applyDataset(value as DatasetType);
 								}
 							}),
 						})),

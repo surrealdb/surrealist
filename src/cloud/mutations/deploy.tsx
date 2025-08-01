@@ -37,7 +37,7 @@ export function useInstanceDeployMutation(
 				instance_type: instance.type.slug,
 				storage_size: instance.storage_size,
 				organisation: organisation.id,
-				dataset: config.dataset,
+				dataset: config.startingData.datasetOptions?.id ?? "none",
 			});
 
 			return [instance, connection] as const;

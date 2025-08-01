@@ -38,7 +38,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 		setStep(1);
 		setDetails((details) => {
 			details.plan = config.plan;
-			details.dataset = config.dataset ?? false;
+			details.startingData = config.startingData;
 			details.type = config.defaultType ?? "";
 		});
 	});
@@ -212,6 +212,7 @@ function PlanCard({ config, state, recommended, onConfigure }: PlanCardProps) {
 							key={name}
 						>
 							<Checkbox
+								readOnly
 								checked
 								size="xs"
 							/>
@@ -237,6 +238,7 @@ function PlanCard({ config, state, recommended, onConfigure }: PlanCardProps) {
 							key={resource}
 						>
 							<Checkbox
+								readOnly
 								checked
 								size="xs"
 							/>

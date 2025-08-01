@@ -5,7 +5,8 @@ import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
 import { useStable } from "~/hooks/stable";
-import { CloudInstance, CloudInstanceCapabilities, Selectable } from "~/types";
+import { CloudInstance, CloudInstanceCapabilities } from "~/types";
+import { filterOptions, parseCapabilities, transformCapabilities } from "~/util/capabilities";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
@@ -223,52 +224,4 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 			</Group>
 		</Stack>
 	);
-}
-
-function transformCapabilities(capabilities: CloudInstanceCapabilities): CloudInstanceCapabilities {
-	const endpoints = new Set(capabilities.allowed_http_endpoints);
-	const functions = new Set(capabilities.allowed_functions);
-
-	if (!endpoints.has("*")) {
-		endpoints.add("health");
-		endpoints.add("rpc");
-	}
-
-	if (!functions.has("*")) {
-		functions.add("type::is::array");
-	}
-
-	return {
-		...capabilities,
-		allowed_http_endpoints: [...endpoints],
-		allowed_functions: [...functions],
-	};
-}
-
-function parseCapabilities(capabilities: CloudInstanceCapabilities): CloudInstanceCapabilities {
-	const endpoints = new Set(capabilities.allowed_http_endpoints);
-	const functions = new Set(capabilities.allowed_functions);
-
-	endpoints.delete("health");
-	endpoints.delete("rpc");
-
-	functions.delete("type::is::array");
-
-	return {
-		...capabilities,
-		allowed_http_endpoints: [...endpoints],
-		allowed_functions: [...functions],
-	};
-}
-
-type Option = Selectable & { since?: string };
-
-function filterOptions(options: Option[], version: string) {
-	return options.filter((option) => {
-		if (!option.since) {
-			return true;
-		}
-
-		return compareVersions(version, option.since) >= 0;
-	});
 }

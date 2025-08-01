@@ -246,12 +246,8 @@ export function FunctionPropertiesPanel({
 								onChange((draft) => {
 									const details = draft.details as SchemaFunction;
 
-									console.log("Set permissions to ", value);
-
 									details.permissions = value;
 									draft.details = details;
-
-									console.log("Updated permissions", draft.details);
 								})
 							}
 						/>

@@ -24,8 +24,6 @@ export function useCloudEstimationQuery(
 		enabled: organisation && config && authState === "authenticated",
 		placeholderData: keepPreviousData,
 		queryFn: async () => {
-			console.log("Fetching estimation for", organisation, config);
-
 			if (!organisation || !config || !config.type) {
 				return null;
 			}

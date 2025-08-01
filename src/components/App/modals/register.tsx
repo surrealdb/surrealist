@@ -46,8 +46,6 @@ export function RegisterUserModal() {
 		try {
 			setLoading(true);
 
-			console.log("Registering user with variables", variables);
-
 			await register({
 				access: access.name,
 				namespace,

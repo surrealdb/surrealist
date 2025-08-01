@@ -12,13 +12,14 @@ import {
 } from "@mantine/core";
 
 import { closeModal, openModal } from "@mantine/modals";
-import { Fragment, ReactNode, useMemo } from "react";
+import { Fragment, ReactNode, useEffect, useMemo } from "react";
 import { INSTANCE_PLAN_ARCHITECTURES, INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Icon } from "~/components/Icon";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
@@ -44,7 +45,13 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 			draft.type = type.slug;
 
 			if (type.price_hour === 0) {
-				draft.dataset = true;
+				draft.startingData = {
+					type: "dataset",
+					datasetOptions: {
+						id: "surreal-deal-store-mini",
+						addQueries: true,
+					},
+				};
 			}
 		});
 	});
@@ -80,6 +87,14 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	const isRecommended = recommendations.some((type) => type.slug === details.type);
 	const selected = instanceTypes.get(details.type);
+
+	useEffect(() => {
+		if (selected) {
+			setDetails((draft) => {
+				draft.storageAmount = selected.default_storage_size;
+			});
+		}
+	}, [selected, setDetails]);
 
 	return (
 		<Box>
@@ -120,6 +135,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						View pricing information
 					</Button>
 				</a>
+				<Spacer />
 				{details.type && !isRecommended ? (
 					<>
 						<Button
@@ -156,7 +172,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 							/>
 						}
 					>
-						View all available configurations
+						View more configurations
 					</Button>
 				)}
 			</Group>
@@ -266,6 +282,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 						key={i}
 					>
 						<Checkbox
+							readOnly
 							checked
 							role="presentation"
 							tabIndex={-1}

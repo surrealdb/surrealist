@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { objectify } from "radash";
-import { InstancePlan } from "~/types";
+import { InstancePlan, StartingDataDetails } from "~/types";
 
 interface PlanResponse {
 	name: string;
@@ -23,7 +23,7 @@ export interface PlanConfig {
 	price: string | number;
 	features: { name: string; comingSoon: boolean }[];
 	resources: string[];
-	dataset: boolean;
+	startingData: StartingDataDetails;
 	defaultType?: string;
 }
 
@@ -44,8 +44,14 @@ export function useCloudPlansQuery() {
 						description: plan.description,
 						price: plan.price,
 						resources: plan.resources,
-						dataset: plan.surrealist.dataset,
 						defaultType: plan.surrealist.defaultType,
+						startingData: {
+							type: plan.surrealist.dataset ? "dataset" : "none",
+							datasetOptions: {
+								id: "surreal-deal-store-mini",
+								addQueries: true,
+							},
+						},
 						features: plan.features.map((feature, i) => ({
 							name: feature,
 							comingSoon: plan.coming_soon_features?.[i] ?? false,

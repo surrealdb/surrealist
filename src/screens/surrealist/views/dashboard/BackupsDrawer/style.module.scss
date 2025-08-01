@@ -1,0 +1,15 @@
+.drawer-tabs {
+	display: flex;
+	flex-direction: column;
+
+	:global(.mantine-Tabs-panel) {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+}
+
+.scroll-area :global(.mantine-ScrollArea-viewport)>div {
+	display: block !important;
+	height: 100%;
+}

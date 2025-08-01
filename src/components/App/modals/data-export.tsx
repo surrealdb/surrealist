@@ -1,4 +1,14 @@
-import { Alert, Button, Checkbox, Divider, Modal, SimpleGrid, Stack, Text } from "@mantine/core";
+import {
+	Alert,
+	Button,
+	Checkbox,
+	Divider,
+	Group,
+	Modal,
+	SimpleGrid,
+	Stack,
+	Text,
+} from "@mantine/core";
 import dayjs from "dayjs";
 import { toggle } from "radash";
 import { useState } from "react";
@@ -212,17 +222,26 @@ export function DataExportModal() {
 					</>
 				)}
 
-				<Button
-					mt="xl"
-					fullWidth
-					onClick={handleExport}
-					loading={isExporting}
-					variant="gradient"
-					disabled={isEmpty}
-					rightSection={<Icon path={iconDownload} />}
-				>
-					Save export
-				</Button>
+				<Group>
+					<Button
+						flex={1}
+						color="slate"
+						variant="light"
+						onClick={openedHandle.close}
+					>
+						Cancel
+					</Button>
+					<Button
+						flex={1}
+						onClick={handleExport}
+						loading={isExporting}
+						variant="gradient"
+						disabled={isEmpty}
+						rightSection={<Icon path={iconDownload} />}
+					>
+						Save export
+					</Button>
+				</Group>
 			</Stack>
 		</Modal>
 	);
