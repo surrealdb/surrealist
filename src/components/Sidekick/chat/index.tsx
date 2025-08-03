@@ -21,6 +21,7 @@ import glowImg from "~/assets/images/glow.png";
 import sidekickImg from "~/assets/images/icons/sidekick.png";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useStable } from "~/hooks/stable";
+import { useTheme } from "~/hooks/theme";
 import { useSidekickStore } from "~/stores/sidekick";
 import { iconChevronRight, iconCursor, iconOpen } from "~/util/icons";
 import { Icon } from "../../Icon";
@@ -36,6 +37,7 @@ export interface ChatConversationProps {
 }
 
 export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
+	const theme = useTheme();
 	const { startRequest, completeRequest } = useSidekickStore.getState();
 
 	const activeId = useSidekickStore((state) => state.activeId);
@@ -248,7 +250,7 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 				pb="xl"
 			>
 				<Paper
-					bg="slate.9"
+					bg={theme === "dark" ? "slate.9" : "slate.0"}
 					p="md"
 				>
 					{/* <Group mb="xs">

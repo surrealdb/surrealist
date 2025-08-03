@@ -28,7 +28,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 				<>
 					<Paper
 						p="md"
-						bg="slate.6"
+						bg={isLight ? "slate.1" : "slate.6"}
 					>
 						<MarkdownContent fz="lg">{message.content}</MarkdownContent>
 					</Paper>
