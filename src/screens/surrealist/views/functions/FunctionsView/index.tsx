@@ -138,8 +138,6 @@ export function FunctionsView() {
 	const editFunction = useStable((func: FunctionDetails) => {
 		isCreatingHandle.close();
 
-		console.log(func);
-
 		if (func.type === "model") {
 			setActive({
 				type: "model",

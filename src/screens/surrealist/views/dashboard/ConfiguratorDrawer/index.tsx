@@ -8,6 +8,7 @@ import { Spacer } from "~/components/Spacer";
 import { CloudInstance } from "~/types";
 import { iconClose, iconTune } from "~/util/icons";
 import { ConfigurationCapabilities } from "./configs/capabilities";
+import { ImportExport } from "./configs/import-export";
 import { ConfigurationVersion } from "./configs/version";
 import classes from "./style.module.scss";
 
@@ -62,7 +63,7 @@ export function ConfiguratorDrawer({
 						path={iconTune}
 						size="sm"
 					/>
-					Configure instance
+					Manage instance
 				</PrimaryTitle>
 
 				<Spacer />
@@ -86,8 +87,24 @@ export function ConfiguratorDrawer({
 					mb="xl"
 					mx="xl"
 				>
-					<Tabs.Tab value="capabilities">Capabilities</Tabs.Tab>
-					<Tabs.Tab value="version">Version</Tabs.Tab>
+					<Tabs.Tab
+						flex={1}
+						value="capabilities"
+					>
+						Capabilities
+					</Tabs.Tab>
+					<Tabs.Tab
+						value="version"
+						flex={1}
+					>
+						Version
+					</Tabs.Tab>
+					<Tabs.Tab
+						value="import-export"
+						flex={1}
+					>
+						Import & Export
+					</Tabs.Tab>
 				</Tabs.List>
 
 				<Tabs.Panel value="capabilities">
@@ -101,6 +118,13 @@ export function ConfiguratorDrawer({
 					<ConfigurationVersion
 						instance={instance}
 						onUpdate={onUpdate}
+						onClose={onClose}
+					/>
+				</Tabs.Panel>
+
+				<Tabs.Panel value="import-export">
+					<ImportExport
+						instance={instance}
 						onClose={onClose}
 					/>
 				</Tabs.Panel>

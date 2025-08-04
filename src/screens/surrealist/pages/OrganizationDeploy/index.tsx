@@ -1,8 +1,13 @@
 import { Box, ScrollArea, Stack, Text } from "@mantine/core";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
-import { DEFAULT_DEPLOY_CONFIG, INSTANCE_PLAN_ARCHITECTURES } from "~/cloud/helpers";
+import {
+	DEFAULT_DEPLOY_CONFIG,
+	INSTANCE_CATEGORY_PLANS,
+	INSTANCE_PLAN_ARCHITECTURES,
+} from "~/cloud/helpers";
+import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import {
 	useCloudOrganizationQuery,
@@ -12,6 +17,7 @@ import { AuthGuard } from "~/components/AuthGuard";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useSearchParams } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 import { clamp } from "~/util/helpers";
@@ -58,6 +64,9 @@ function PageContent({ organisation, instances }: PageContentProps) {
 		name: generateRandomName(),
 	}));
 
+	const { instanceId, backupId } = useSearchParams();
+
+	const [baseInstance, setBaseInstance] = useState<CloudInstance | undefined>(undefined);
 	const updateStep = useStable((newStep: number) => {
 		setStep(clamp(newStep, 0, 2));
 	});
@@ -71,6 +80,56 @@ function PageContent({ organisation, instances }: PageContentProps) {
 			"Checkout",
 		];
 	}, [details.plan]);
+
+	const { data: backups } = useCloudBackupsQuery(baseInstance?.id);
+
+	useEffect(() => {
+		setBaseInstance(details.startingData.backupOptions?.instance);
+	}, [details.startingData.backupOptions?.instance]);
+
+	useEffect(() => {
+		if (instanceId) {
+			const foundInstance = instances.find((instance) => instance.id === instanceId);
+
+			if (!foundInstance) {
+				console.error("Instance not found");
+				return;
+			}
+
+			setBaseInstance(foundInstance);
+
+			const backup = backups?.find((backup) => backup.snapshot_id === backupId);
+
+			if (!backup) {
+				console.error("Backup not found");
+				return;
+			}
+
+			const guessedPlan = INSTANCE_CATEGORY_PLANS[foundInstance.type.category];
+
+			setDetails((draft) => {
+				draft.startingData = {
+					type: "restore",
+					backupOptions: {
+						backup: backup,
+						instance: foundInstance,
+					},
+				};
+
+				draft.plan = guessedPlan;
+				draft.region = foundInstance.region;
+				draft.type = foundInstance.type.slug;
+				draft.version = foundInstance.version;
+				draft.units = foundInstance.compute_units;
+				draft.storageCategory =
+					foundInstance.distributed_storage_specs?.category ?? "standard";
+				draft.storageAmount = foundInstance.storage_size;
+				draft.name = `${foundInstance.name} Copy`;
+			});
+
+			setStep(1);
+		}
+	}, [instances, backups, instanceId, backupId]);
 
 	return (
 		<CloudAdminGuard organisation={organisation}>
@@ -136,6 +195,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 									{step === 1 && (
 										<ConfigureStep
 											organisation={organisation}
+											backups={backups}
 											instances={instances}
 											details={details}
 											setDetails={setDetails}

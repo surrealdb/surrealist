@@ -29,7 +29,7 @@ import { useIsLight } from "~/hooks/theme";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification, showInfo, showWarning } from "~/util/helpers";
-import { iconDownload } from "~/util/icons";
+import { iconDownload, iconFile } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { parseValue } from "~/util/surrealql";
 
@@ -39,11 +39,18 @@ type ImportType = "sql" | DataFileFormat;
 type ExecuteTransformAndImportFn = (content: string) => Promise<void>;
 
 type SqlImportFormProps = {
+	fileName: string | undefined;
 	isImporting: boolean;
 	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
+	cancelImport: () => void;
 };
 
-const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
+const SqlImportForm = ({
+	fileName,
+	isImporting,
+	confirmImport,
+	cancelImport,
+}: SqlImportFormProps) => {
 	const isLight = useIsLight();
 
 	const submit = () => {
@@ -73,31 +80,42 @@ const SqlImportForm = ({ isImporting, confirmImport }: SqlImportFormProps) => {
 	};
 
 	return (
-		<Stack>
+		<Stack gap="xl">
 			<Text c={isLight ? "slate.7" : "slate.2"}>
 				Are you sure you want to import the selected file?
 			</Text>
 
-			<Text
-				mb="xl"
-				c={isLight ? "slate.7" : "slate.2"}
-			>
+			<Group c="surreal">
+				<Icon path={iconFile} />
+				<Text>{fileName}</Text>
+			</Group>
+
+			<Text c={isLight ? "slate.7" : "slate.2"}>
 				While existing data will be preserved, it may be overwritten by the imported data.
 			</Text>
 
-			<Button
-				mt="xl"
-				fullWidth
-				onClick={submit}
-				loading={isImporting}
-				variant="gradient"
-			>
-				Start import
-				<Icon
-					path={iconDownload}
-					right
-				/>
-			</Button>
+			<Group>
+				<Button
+					flex={1}
+					color="slate"
+					variant="light"
+					onClick={cancelImport}
+				>
+					Cancel
+				</Button>
+				<Button
+					flex={1}
+					onClick={submit}
+					loading={isImporting}
+					variant="gradient"
+				>
+					Start import
+					<Icon
+						path={iconDownload}
+						right
+					/>
+				</Button>
+			</Group>
 		</Stack>
 	);
 };
@@ -1116,8 +1134,10 @@ export function DataImportModal() {
 		>
 			{importType === "sql" ? (
 				<SqlImportForm
+					fileName={importFile.current?.name}
 					isImporting={isImporting}
 					confirmImport={confirmImport}
+					cancelImport={openedHandle.close}
 				/>
 			) : null}
 			{importType === "csv" ? (

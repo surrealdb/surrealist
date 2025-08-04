@@ -148,7 +148,7 @@ export function ConfigurationBlock({
 						my={-2}
 						fullWidth
 					>
-						Configure instance
+						Manage instance
 					</Button>
 					<Button
 						size="xs"

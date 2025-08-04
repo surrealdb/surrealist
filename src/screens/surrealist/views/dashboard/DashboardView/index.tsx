@@ -35,7 +35,7 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnection } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
 import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
@@ -44,12 +44,15 @@ import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart"
 import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressChart";
 import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngressChart";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
+import { DatasetType } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronDown, iconChevronRight } from "~/util/icons";
-import { APPLY_DATASET_KEY } from "~/util/storage";
+import { dispatchIntent } from "~/util/intents";
+import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { MonitorMetricOptions } from "../../monitor/helpers";
 import { MetricActions } from "../../monitor/MetricPane/actions";
 import { BackupsBlock } from "../BackupsBlock";
+import { BackupsDrawer } from "../BackupsDrawer";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
@@ -70,6 +73,7 @@ const ComputeUsageBlockLazy = memo(ComputeHoursBlock);
 const DiskUsageBlockLazy = memo(DiskUsageBlock);
 const BackupsBlockLazy = memo(BackupsBlock);
 const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
+const BackupsDrawerLazy = memo(BackupsDrawer);
 const UpgradeDrawerLazy = memo(UpgradeDrawer);
 const MemoryUsageChartLazy = memo(MemoryUsageChart);
 const ComputeUsageChartLazy = memo(ComputeUsageChart);
@@ -77,6 +81,7 @@ const NetworkIngressChartLazy = memo(NetworkIngressChart);
 const NetworkEgressChartLazy = memo(NetworkEgressChart);
 
 export function DashboardView() {
+	const isConnected = useIsConnected();
 	const [isCloud, instanceId] = useConnection((c) => [
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
@@ -84,6 +89,7 @@ export function DashboardView() {
 
 	const [upgrading, upgradingHandle] = useBoolean();
 	const [configuring, configuringHandle] = useBoolean();
+	const [backupsOpened, backupsHandle] = useBoolean();
 	const [billingRequiredOpened, setBillingRequiredOpened] = useState(false);
 
 	const [upgradeTab, setUpgradeTab] = useState("type");
@@ -143,7 +149,7 @@ export function DashboardView() {
 	const { mutateAsync } = useUpdateInstanceVersionMutation(details);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
-	const applyInitialDataset = useStable(async (dataset: string) => {
+	const applyInitialDataset = useStable(async (dataset: DatasetType) => {
 		try {
 			await executeQuery(
 				"DEFINE NAMESPACE demo; USE NS demo; DEFINE DATABASE surreal_deal_store;",
@@ -159,6 +165,8 @@ export function DashboardView() {
 		}
 	});
 
+	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset evert time the metrics duration changes
 	useEffect(() => {
 		setMetricOptions((draft) => {
@@ -168,15 +176,23 @@ export function DashboardView() {
 
 	// Apply dataset on load
 	useEffect(() => {
-		if (details?.state === "ready") {
+		if (details?.state === "ready" && isConnected) {
 			const dataset = sessionStorage.getItem(`${APPLY_DATASET_KEY}:${details.id}`);
+			const shouldApplyFile = sessionStorage.getItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
 
 			if (dataset) {
+				console.log("applying dataset");
 				sessionStorage.removeItem(`${APPLY_DATASET_KEY}:${details.id}`);
-				applyInitialDataset(dataset);
+				applyInitialDataset(dataset as DatasetType);
+			}
+
+			if (shouldApplyFile) {
+				console.log("importing database");
+				sessionStorage.removeItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
+				importDatabase();
 			}
 		}
-	}, [details?.state, details?.id]);
+	}, [details?.state, details, isConnected, importDatabase]);
 
 	const handleUpgradeType = useStable(() => {
 		setUpgradeTab("type");
@@ -455,6 +471,7 @@ export function DashboardView() {
 											backups={backups}
 											isLoading={isLoading}
 											onUpgrade={handleUpgradeType}
+											onOpenBackups={backupsHandle.open}
 										/>
 									</SimpleGrid>
 								</>
@@ -472,6 +489,12 @@ export function DashboardView() {
 
 			{details && organisation && (
 				<>
+					<BackupsDrawerLazy
+						opened={backupsOpened}
+						backups={backups}
+						instance={details}
+						onClose={backupsHandle.close}
+					/>
 					<ConfiguratorDrawerLazy
 						opened={configuring}
 						tab={configuratorTab}
@@ -564,7 +587,7 @@ function LoadingScreen() {
 					title="Quick Start Tutorial"
 					description="Watch a quick tutorial to get started with Surreal Cloud."
 					image={tutorialsUrl}
-					href="https://www.youtube.com/watch?v=upm1lwaHmwU"
+					href="https://www.youtube.com/watch?v=S04qOKkVcmE"
 				/>
 			</SimpleGrid>
 		</>

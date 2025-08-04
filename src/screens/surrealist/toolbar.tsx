@@ -15,6 +15,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
+import { DatasetType } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconReset, iconStar, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
@@ -153,7 +154,7 @@ export function SurrealistToolbar() {
 							{datasets.map(({ label, value }) => (
 								<Menu.Item
 									key={value}
-									onClick={() => applyDataset(value)}
+									onClick={() => applyDataset(value as DatasetType)}
 								>
 									{label}
 								</Menu.Item>

@@ -2,6 +2,7 @@ import { Tree } from "@lezer/common";
 import { SurrealQL, Value } from "@surrealdb/ql-wasm";
 import { decodeCbor, encodeCbor } from "surrealdb";
 import { DATASETS } from "~/constants";
+import { DatasetType } from "~/types";
 
 /**
  * Validate a query and return an error message if invalid
@@ -177,7 +178,7 @@ export function compareIdents(a: string, b: string) {
  * @param source A path to a dataset or known dataset identifier
  * @returns The dataset URL
  */
-export function parseDatasetURL(source: string) {
+export function parseDatasetURL(source: DatasetType) {
 	const path = source.startsWith("/") ? source : DATASETS[source]?.path;
 
 	if (!path) {
