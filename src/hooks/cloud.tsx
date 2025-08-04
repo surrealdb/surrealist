@@ -150,8 +150,8 @@ export function useDeleteInstance(instance: CloudInstance, connection?: Connecti
 					title="Important"
 					color="red"
 				>
-					Data stored within this instance will be permanently deleted and cannot be
-					recovered.
+					Data stored within this instance and all backups will be permanently deleted and
+					cannot be recovered.
 				</Alert>
 			</Stack>
 		),
