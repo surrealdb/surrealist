@@ -24,7 +24,7 @@ export function useSidekickChatsQuery(search?: string) {
 			} catch (error) {
 				showErrorNotification({
 					title: "Failed to fetch chat history",
-					content: error
+					content: error,
 				});
 
 				console.error(error);
@@ -43,7 +43,7 @@ export function useSidekickMessagesMutation() {
 				const [messages] = await surreal.query<[SidekickChatMessage[]]>(surql`
 					SELECT * FROM ${chatId}<-sent_in<-sidekick_message ORDER BY id ASC;
 				`);
-	
+
 				return messages;
 			} catch (error) {
 				showErrorNotification({
