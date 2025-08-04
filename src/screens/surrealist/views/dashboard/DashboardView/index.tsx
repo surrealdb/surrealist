@@ -35,7 +35,7 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useConnection, useRequireDatabase } from "~/hooks/connection";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
 import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
@@ -81,6 +81,7 @@ const NetworkIngressChartLazy = memo(NetworkIngressChart);
 const NetworkEgressChartLazy = memo(NetworkEgressChart);
 
 export function DashboardView() {
+	const isConnected = useIsConnected();
 	const [isCloud, instanceId] = useConnection((c) => [
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
@@ -175,7 +176,7 @@ export function DashboardView() {
 
 	// Apply dataset on load
 	useEffect(() => {
-		if (details?.state === "ready") {
+		if (details?.state === "ready" && isConnected) {
 			const dataset = sessionStorage.getItem(`${APPLY_DATASET_KEY}:${details.id}`);
 			const shouldApplyFile = sessionStorage.getItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
 
@@ -191,7 +192,7 @@ export function DashboardView() {
 				importDatabase();
 			}
 		}
-	}, [details?.state, details, importDatabase]);
+	}, [details?.state, details, isConnected, importDatabase]);
 
 	const handleUpgradeType = useStable(() => {
 		setUpgradeTab("type");
