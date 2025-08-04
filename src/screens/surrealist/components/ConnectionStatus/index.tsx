@@ -221,16 +221,16 @@ export function ConnectionStatus() {
 						<Menu.Item
 							leftSection={<Icon path={iconUpload} />}
 							disabled={currentState !== "connected"}
-							onClick={exportDatabase}
+							onClick={importDatabase}
 						>
-							Export database
+							Import database
 						</Menu.Item>
 						<Menu.Item
 							leftSection={<Icon path={iconDownload} />}
 							disabled={currentState !== "connected"}
-							onClick={importDatabase}
+							onClick={exportDatabase}
 						>
-							Import database
+							Export database
 						</Menu.Item>
 						<Menu.Label mt="sm">Manage</Menu.Label>
 						{!isManaged && (

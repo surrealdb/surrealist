@@ -140,20 +140,20 @@ export function ExplorerView() {
 											<Entry
 												leftSection={<Icon path={iconUpload} />}
 												rightSection={<Icon path={iconChevronRight} />}
-												onClick={exportDatabase}
-												style={{ flexShrink: 0 }}
-												bg="transparent"
-											>
-												Export database
-											</Entry>
-											<Entry
-												leftSection={<Icon path={iconDownload} />}
-												rightSection={<Icon path={iconChevronRight} />}
 												onClick={importDatabase}
 												style={{ flexShrink: 0 }}
 												bg="transparent"
 											>
 												Import database
+											</Entry>
+											<Entry
+												leftSection={<Icon path={iconDownload} />}
+												rightSection={<Icon path={iconChevronRight} />}
+												onClick={exportDatabase}
+												style={{ flexShrink: 0 }}
+												bg="transparent"
+											>
+												Export database
 											</Entry>
 										</>
 									}
