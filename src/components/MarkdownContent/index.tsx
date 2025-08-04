@@ -38,8 +38,8 @@ export function MarkdownContent({
 			pre: ({ children }) => {
 				const code = children as ReactElement<HTMLElement>;
 
-				if (code.type !== "code") {
-					return children;
+				if (code?.type !== "code" || !code.props.children) {
+					return "";
 				}
 
 				const [_, lang] = /language-(\w+)/.exec(code.props.className) ?? [];
