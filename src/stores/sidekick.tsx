@@ -13,10 +13,12 @@ export type SidekickStore = {
 	activeId: RecordId | null;
 	activeHistory: SidekickChatMessage[];
 	activeTitle: string;
+	historyOpened: boolean;
 	activeRequest: SidekickChatMessage | null;
 	activeResponse: SidekickChatMessage | null;
 	thinkingText: string;
 
+	toggleHistory: () => void;
 	resetChat: () => void;
 	restoreChat: (chat: SidekickChatWithHistory) => void;
 	startRequest: (message: string) => void;
@@ -29,15 +31,22 @@ export const useSidekickStore = create<SidekickStore>()(
 		activeId: null,
 		activeHistory: [],
 		activeTitle: "",
+		historyOpened: false,
 		activeRequest: null,
 		activeResponse: null,
 		thinkingText: "",
+
+		toggleHistory: () =>
+			set((draft) => {
+				draft.historyOpened = !draft.historyOpened;
+			}),
 
 		resetChat: () =>
 			set({
 				activeId: null,
 				activeHistory: [],
 				activeTitle: "",
+				historyOpened: false,
 				activeRequest: null,
 				activeResponse: null,
 				thinkingText: "",
@@ -48,6 +57,7 @@ export const useSidekickStore = create<SidekickStore>()(
 				activeId: chat.id,
 				activeHistory: chat.history,
 				activeTitle: chat.title,
+				historyOpened: false,
 				activeRequest: null,
 				activeResponse: null,
 				thinkingText: "",

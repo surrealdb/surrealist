@@ -10,6 +10,7 @@ import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { SidekickPanel } from "~/components/Sidekick/panel";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
 import { executeEditorQuery } from "~/editor/query";
@@ -236,6 +237,7 @@ export function QueryView() {
 					>
 						{queryEditor}
 					</Panel>
+					<SidekickPanel />
 				</PanelGroup>
 			</Box>
 
