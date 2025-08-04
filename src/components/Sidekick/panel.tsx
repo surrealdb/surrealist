@@ -19,7 +19,7 @@ export function SidekickPanel() {
 	const [sidekickPanel, setSidekickPanel] = useSetting("behavior", "sidekickPanel");
 
 	if (!sidekickPanel) {
-		return <></>;
+		return;
 	}
 
 	return (

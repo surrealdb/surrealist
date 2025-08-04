@@ -171,7 +171,7 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 								style={styles}
 								p="xl"
 							>
-								<SidekickHistoryLazy onOpenChat={toggleHistory} />
+								<SidekickHistoryLazy />
 							</Box>
 						)}
 					</Transition>
