@@ -25,7 +25,7 @@ export function useSidekickChatsQuery(search?: string) {
 				showErrorNotification({
 					title: "Failed to fetch chat history",
 					content: error
-				})
+				});
 
 				console.error(error);
 				return [];
@@ -48,8 +48,8 @@ export function useSidekickMessagesMutation() {
 			} catch (error) {
 				showErrorNotification({
 					title: "Failed to fetch chat messages",
-					content: error
-				})
+					content: error,
+				});
 
 				console.error(error);
 				return [];
@@ -97,8 +97,8 @@ export function useSidekickDeleteMutation() {
 			} catch (error) {
 				showErrorNotification({
 					title: "Failed to delete chat",
-					content: error
-				})
+					content: error,
+				});
 
 				console.error(error);
 			}
