@@ -192,6 +192,9 @@ export async function openConnection(options?: ConnectOptions) {
 					namespace: "sandbox",
 					database: "sandbox",
 				});
+
+				await instance.query("DEFINE NAMESPACE IF NOT EXISTS sandbox");
+				await instance.query("DEFINE DATABASE IF NOT EXISTS sandbox");
 			} else {
 				await activateDatabase(namespace, database);
 			}
