@@ -22,6 +22,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { AuthDetails, Authentication, CloudInstance, Connection, Protocol } from "~/types";
 import { tagEvent } from "~/util/analytics";
+import { getSetting } from "~/util/config";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
@@ -75,9 +76,10 @@ export async function openConnection(options?: ConnectOptions) {
 		throw new Error("No connection available");
 	}
 
+	const strict = getSetting("behavior", "strictSandbox");
 	const isRetry = hasFailed && options?.isRetry;
 	const newState = isRetry ? "retrying" : "connecting";
-	const surreal = await createSurreal();
+	const surreal = await createSurreal({ strict });
 
 	await _closeConnection(newState, false);
 
@@ -190,6 +192,9 @@ export async function openConnection(options?: ConnectOptions) {
 					namespace: "sandbox",
 					database: "sandbox",
 				});
+
+				await instance.query("DEFINE NAMESPACE IF NOT EXISTS sandbox");
+				await instance.query("DEFINE DATABASE IF NOT EXISTS sandbox");
 			} else {
 				await activateDatabase(namespace, database);
 			}

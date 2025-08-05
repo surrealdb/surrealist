@@ -480,6 +480,23 @@ export function useComputedPreferences(): PreferenceSection[] {
 					},
 				],
 			},
+			{
+				id: "sandbox",
+				name: "Sandbox",
+				preferences: [
+					{
+						id: "strict-sandbox",
+						name: "Strict mode",
+						description: "Enable strict sandbox mode",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.behavior.strictSandbox,
+							writer: (config, value) => {
+								config.settings.behavior.strictSandbox = value;
+							},
+						}),
+					},
+				],
+			},
 		);
 
 		if (cloud_endpoints === "custom") {
