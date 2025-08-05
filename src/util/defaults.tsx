@@ -49,6 +49,7 @@ export function createBaseSettings(): SurrealistSettings {
 			versionCheckTimeout: 5,
 			reconnectInterval: 3,
 			queryQuickClose: true,
+			strictSandbox: false,
 		},
 		appearance: {
 			colorScheme: "dark",

@@ -189,6 +189,7 @@ export interface SurrealistBehaviorSettings {
 	versionCheckTimeout: number;
 	reconnectInterval: number;
 	queryQuickClose: boolean;
+	strictSandbox: boolean;
 }
 
 export interface SurrealistAppearanceSettings {
