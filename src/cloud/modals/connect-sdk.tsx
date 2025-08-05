@@ -73,7 +73,8 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `
-				import { Surreal, RecordID } from "surrealdb";
+				import { Surreal, Table } from "surrealdb";
+
 				const db = new Surreal();
 
 				// Open a connection and authenticate
@@ -85,8 +86,9 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 						password: "",
 					}
 				});
+				
 				// Create record
-				await db.create(new RecordID("person"), {
+				await db.create(new Table("person"), {
 					first: "John",
 					last: "Doe",
 					marketing: true,
@@ -94,12 +96,11 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 				});
 
 				// Select all records in person table
-				console.log(await db.select("person"));
+				console.log(await db.select(new Table("person")));
 
 				await db.close();
 			`,
 			csharp: `
-
 				using SurrealDb.Net;
 				using SurrealDb.Net.Models;
 				using SurrealDb.Net.Models.Auth;
@@ -119,7 +120,7 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 				});
 			`,
 			py: `
-from surrealdb import Surreal, RecordID
+				from surrealdb import Surreal, RecordID
 
 				# Open a connection
 				with Surreal(url="wss://${instance.host}") as db:
