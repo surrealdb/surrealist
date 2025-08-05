@@ -102,8 +102,11 @@ export function compileDeployConfig(
 		};
 	}
 
-	if (config.plan === "scale" || config.plan === "enterprise") {
+	if (config.plan !== "free") {
 		configuration.storage = config.storageAmount;
+	}
+
+	if (config.plan === "scale" || config.plan === "enterprise") {
 		configuration.distributed_storage_specs = {
 			category: config.storageCategory,
 			autoscaling: false,
