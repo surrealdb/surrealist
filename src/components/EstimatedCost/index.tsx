@@ -1,4 +1,5 @@
 import { Box, BoxProps, Group, Text } from "@mantine/core";
+import { useDebouncedValue } from "@mantine/hooks";
 import { useMemo } from "react";
 import { useCloudEstimationQuery } from "~/cloud/queries/estimation";
 import type { CloudDeployConfig, CloudOrganization } from "~/types";
@@ -9,7 +10,8 @@ export interface EstimatedCostProps extends BoxProps {
 }
 
 export function EstimatedCost({ organisation, config, ...other }: EstimatedCostProps) {
-	const { data } = useCloudEstimationQuery(organisation, config);
+	const [cachedConfig] = useDebouncedValue(config, 150);
+	const { data } = useCloudEstimationQuery(organisation, cachedConfig);
 
 	const format = useMemo(() => {
 		return new Intl.NumberFormat("en-US", {
