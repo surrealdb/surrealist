@@ -34,9 +34,10 @@ import { SidekickMessage } from "./message";
 export interface ChatConversationProps {
 	isAuthed: boolean;
 	stream: SidekickStream;
+	padding?: number;
 }
 
-export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
+export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProps) {
 	const { startRequest, completeRequest } = useSidekickStore.getState();
 
 	const activeId = useSidekickStore((state) => state.activeId);
@@ -223,8 +224,8 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 						inset={0}
 					>
 						<Stack
-							p={36}
-							pb={64}
+							p={padding ?? "xl"}
+							pb={padding ? padding : "xl"}
 						>
 							{activeHistory.map((message, i) => (
 								<SidekickMessage
@@ -246,8 +247,8 @@ export function SidekickChat({ isAuthed, stream }: ChatConversationProps) {
 				</Box>
 			)}
 			<Box
-				px="xl"
-				pb="xl"
+				px={padding ?? "xl"}
+				pb={padding ?? "xl"}
 			>
 				<Paper
 					bg={isLight ? "slate.0" : "slate.9"}

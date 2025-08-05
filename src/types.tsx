@@ -189,6 +189,7 @@ export interface SurrealistBehaviorSettings {
 	versionCheckTimeout: number;
 	reconnectInterval: number;
 	queryQuickClose: boolean;
+	sidekickPanel: boolean;
 }
 
 export interface SurrealistAppearanceSettings {

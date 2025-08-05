@@ -1,5 +1,6 @@
-import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
+import { createContext, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
 import Surreal from "surrealdb";
+import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { __throw } from "~/util/helpers";
@@ -10,7 +11,6 @@ const ContextContext = createContext<{
 	surreal: Surreal;
 	connected: boolean;
 	authenticated: boolean;
-	initialize: () => void;
 } | null>(null);
 
 /**
@@ -18,11 +18,6 @@ const ContextContext = createContext<{
  */
 export function useContextConnection() {
 	const ctx = useContext(ContextContext) ?? __throw("Missing ContextProvider");
-
-	useEffect(() => {
-		ctx.initialize();
-	}, [ctx.initialize]);
-
 	return [ctx.surreal, ctx.connected && ctx.authenticated] as const;
 }
 
@@ -30,32 +25,43 @@ export function ContextProvider({ children }: PropsWithChildren) {
 	const accessToken = useCloudStore((s) => s.accessToken);
 
 	const [surreal] = useState(new Surreal());
-	const [initialized, setInitialized] = useState(false);
 	const [connected, setConnected] = useState(false);
 	const [authenticated, setAuthenticated] = useState(false);
+	const initializedRef = useRef(false);
 
 	const connect = useStable(() => {
+		console.log("Connecting to Surreal Cloud instance");
 		surreal.connect(CONTEXT_ENDPOINT, {
 			namespace: "surrealdb",
 			database: "cloud",
 		});
 	});
 
-	const initialize = useStable(() => {
-		if (initialized) return;
+	useEffect(() => {
+		if (initializedRef.current) return;
+
+		surreal.emitter.subscribe("connecting", () => {
+			adapter.log("Cloud", "Attempting to connect to Surreal Cloud instance");
+		});
 
 		surreal.emitter.subscribe("connected", () => {
+			adapter.log("Cloud", "Connected to Surreal Cloud instance");
 			setConnected(true);
 		});
 
 		surreal.emitter.subscribe("disconnected", () => {
+			adapter.log("Cloud", "Disconnected from Surreal Cloud instance");
 			setConnected(false);
 			setTimeout(connect, 3000);
 		});
 
-		setInitialized(true);
+		surreal.emitter.subscribe("error", (error) => {
+			console.error(error);
+		});
+
+		initializedRef.current = true;
 		connect();
-	});
+	}, [surreal]);
 
 	useEffect(() => {
 		if (!surreal || !connected) return;
@@ -72,7 +78,7 @@ export function ContextProvider({ children }: PropsWithChildren) {
 	}, [surreal, connected, accessToken]);
 
 	return (
-		<ContextContext.Provider value={{ surreal, connected, authenticated, initialize }}>
+		<ContextContext.Provider value={{ surreal, connected, authenticated }}>
 			{children}
 		</ContextContext.Provider>
 	);
