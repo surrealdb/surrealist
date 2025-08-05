@@ -88,15 +88,17 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 				});
 				
 				// Create record
-				await db.create(new Table("person"), {
-					first: "John",
-					last: "Doe",
-					marketing: true,
-					tags: ["python", "documentation"],
+				await db.create(new Table("project"), {
+					name: "SurrealDB Dashboard",
+					description: "A modern admin interface for SurrealDB",
+					status: "in_progress",
+					priority: "high",
+					tags: ["typescript", "react", "database"],
+					created_at: new Date(),
 				});
 
-				// Select all records in person table
-				console.log(await db.select(new Table("person")));
+				// Select all records in project table
+				console.log(await db.select(new Table("project")));
 
 				await db.close();
 			`,
@@ -106,21 +108,29 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 				using SurrealDb.Net.Models.Auth;
 				using System.Text.Json;
 				
-				const string TABLE = "person";
+				const string TABLE = "project";
 				
 				using var db = new SurrealDbClient("wss://${instance.host}/rpc");
 
 				// Select namespace and database
 				await db.Use("${namespace}", "${database}");
 				
-				var person = new Person
+				// Create record
+				var project = new Project
 				{
-					Username = "",
-					Password = "",
-				});
+					Name = "SurrealDB Dashboard",
+					Description = "A modern admin interface for SurrealDB",
+					Status = "in_progress",
+					Priority = "high",
+					Tags = new[] { "typescript", "react", "database" },
+					CreatedAt = DateTime.UtcNow,
+				};
+				
+				await db.Create(TABLE, project);
 			`,
 			py: `
 				from surrealdb import Surreal, RecordID
+				from datetime import datetime
 
 				# Open a connection
 				with Surreal(url="wss://${instance.host}") as db:
@@ -132,13 +142,17 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 					await db.sign_in(username="", password="")
 
 					# Create a record
-					db.create(RecordID("grocery", "1"), {
-						"name": "Banana",
-						"quantity": 10,
+					db.create(RecordID("project", "1"), {
+						"name": "SurrealDB Dashboard",
+						"description": "A modern admin interface for SurrealDB",
+						"status": "in_progress",
+						"priority": "high",
+						"tags": ["typescript", "react", "database"],
+						"created_at": datetime.utcnow(),
 					})
 
 					# Select a specific record
-					print(db.select(RecordID("grocery", "1")))
+					print(db.select(RecordID("project", "1")))
 			`,
 			php: `
 				$db = new \\Surreal\\Surreal();
@@ -154,12 +168,33 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 					"username" => "",
 					"password" => "",
 				]);
+
+				// Create a record
+				$db->create("project", [
+					"name" => "SurrealDB Dashboard",
+					"description" => "A modern admin interface for SurrealDB",
+					"status" => "in_progress",
+					"priority" => "high",
+					"tags" => ["typescript", "react", "database"],
+					"created_at" => new DateTime(),
+				]);
 			`,
 			rust: `
 				use serde::{Deserialize, Serialize};
 				use surrealdb::engine::any;
 				use surrealdb::opt::auth::Root;
 				use tokio;
+				use chrono::{DateTime, Utc};
+
+				#[derive(Serialize, Deserialize)]
+				struct Project {
+					name: String,
+					description: String,
+					status: String,
+					priority: String,
+					tags: Vec<String>,
+					created_at: DateTime<Utc>,
+				}
 
 				// Open a connection
 				let db = any::connect("wss://${instance.host}").await?;
@@ -172,6 +207,18 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 					username: "",
 					password: "",
 				}).await?;
+
+				// Create a record
+				let project = Project {
+					name: "SurrealDB Dashboard".to_string(),
+					description: "A modern admin interface for SurrealDB".to_string(),
+					status: "in_progress".to_string(),
+					priority: "high".to_string(),
+					tags: vec!["typescript".to_string(), "react".to_string(), "database".to_string()],
+					created_at: Utc::now(),
+				};
+
+				db.create("project").content(project).await?;
 			`,
 			java: `
 				try (final Surreal db = new Surreal()) {
@@ -184,6 +231,18 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 
 					// Authenticate
 					db.signin(new Root("", ""));
+
+					// Create a record
+					Map<String, Object> project = Map.of(
+						"name", "SurrealDB Dashboard",
+						"description", "A modern admin interface for SurrealDB",
+						"status", "in_progress",
+						"priority", "high",
+						"tags", List.of("typescript", "react", "database"),
+						"created_at", Instant.now()
+					);
+
+					db.create("project", project);
 
 				}
 			`,
