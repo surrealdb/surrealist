@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RecordId, surql } from "surrealdb";
 import { useContextConnection } from "~/providers/Context";
 import { SidekickChat, SidekickChatMessage } from "~/types";
+import { showErrorNotification } from "~/util/helpers";
 
 export function useSidekickChatsQuery(search?: string) {
 	const [surreal, isAvailable] = useContextConnection();
@@ -11,14 +12,24 @@ export function useSidekickChatsQuery(search?: string) {
 		enabled: isAvailable,
 		refetchInterval: 30_000,
 		queryFn: async () => {
-			const [conversations] = await surreal.query<[SidekickChat[]]>(surql`
+			try {
+				const [conversations] = await surreal.query<[SidekickChat[]]>(surql`
 					SELECT *
 					FROM sidekick_chat
 					WHERE !${search} || title = <regex>${search} || <-sent_in<-sidekick_message.content ?= <regex>${search}
 					ORDER BY last_activity DESC
 				`);
 
-			return conversations;
+				return conversations;
+			} catch (error) {
+				showErrorNotification({
+					title: "Failed to fetch chat history",
+					content: error,
+				});
+
+				console.error(error);
+				return [];
+			}
 		},
 	});
 }
@@ -28,11 +39,21 @@ export function useSidekickMessagesMutation() {
 
 	return useMutation({
 		mutationFn: async (chatId: RecordId) => {
-			const [messages] = await surreal.query<[SidekickChatMessage[]]>(surql`
-				SELECT * FROM ${chatId}<-sent_in<-sidekick_message ORDER BY id ASC;
-			`);
+			try {
+				const [messages] = await surreal.query<[SidekickChatMessage[]]>(surql`
+					SELECT * FROM ${chatId}<-sent_in<-sidekick_message ORDER BY id ASC;
+				`);
 
-			return messages;
+				return messages;
+			} catch (error) {
+				showErrorNotification({
+					title: "Failed to fetch chat messages",
+					content: error,
+				});
+
+				console.error(error);
+				return [];
+			}
 		},
 	});
 }
@@ -69,9 +90,18 @@ export function useSidekickDeleteMutation() {
 
 	return useMutation({
 		mutationFn: async (chatId: RecordId) => {
-			await surreal.query(surql`
-				DELETE ${chatId}<-sent_in<-sidekick_message, ${chatId}
-			`);
+			try {
+				await surreal.query(surql`
+					DELETE ${chatId}<-sent_in<-sidekick_message, ${chatId}
+				`);
+			} catch (error) {
+				showErrorNotification({
+					title: "Failed to delete chat",
+					content: error,
+				});
+
+				console.error(error);
+			}
 		},
 		onMutate: async (chatId) => {
 			await queryClient.cancelQueries({ queryKey: ["sidekick", "chats"] });

@@ -50,6 +50,7 @@ export function createBaseSettings(): SurrealistSettings {
 			reconnectInterval: 3,
 			queryQuickClose: true,
 			strictSandbox: false,
+			sidekickPanel: false,
 		},
 		appearance: {
 			colorScheme: "dark",

@@ -20,8 +20,11 @@ import { iconCheck, iconCopy } from "~/util/icons";
 import { Icon } from "../Icon";
 import classes from "./style.module.scss";
 
-export interface CodePreviewProps extends PaperProps {
+export interface CodeProps extends CodePreviewOptions {
 	value: string;
+}
+
+export interface CodePreviewOptions extends PaperProps {
 	label?: string;
 	language?: string;
 	bg?: string;
@@ -49,7 +52,7 @@ export function CodePreview({
 	className,
 	withWrapping,
 	...rest
-}: CodePreviewProps) {
+}: CodeProps) {
 	const isLight = useIsLight();
 
 	const colorScheme = useTheme();
@@ -97,7 +100,7 @@ export function CodePreview({
 					/>
 				</ScrollArea.Autosize>
 
-				{withCopy && value ? (
+				{!rightSection && withCopy && value ? (
 					<CopyButton value={value}>
 						{({ copied, copy }) => (
 							<ActionIcon
@@ -120,7 +123,6 @@ export function CodePreview({
 							pos="absolute"
 							top={6}
 							right={6}
-							style={{ zIndex: 1 }}
 						>
 							{rightSection}
 						</Box>

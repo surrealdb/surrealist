@@ -190,6 +190,7 @@ export interface SurrealistBehaviorSettings {
 	reconnectInterval: number;
 	queryQuickClose: boolean;
 	strictSandbox: boolean;
+	sidekickPanel: boolean;
 }
 
 export interface SurrealistAppearanceSettings {

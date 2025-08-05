@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import type { CodeLang, Snippets } from "~/types";
 import { dedent } from "~/util/dedent";
-import { CodePreview, type CodePreviewProps } from "../CodePreview";
+import { CodePreview, type CodePreviewOptions } from "../CodePreview";
 
-export interface CodeSnippetProps extends Omit<CodePreviewProps, "value"> {
+export interface CodeSnippetProps extends Omit<CodePreviewOptions, "value"> {
 	title?: string;
 	values: Snippets;
 	language: CodeLang;

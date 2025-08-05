@@ -27,6 +27,10 @@ export function SidekickDrawer() {
 		}
 	});
 
+	useIntent("close-sidekick", () => {
+		openHandle.close();
+	});
+
 	return (
 		<Drawer
 			opened={isOpen}

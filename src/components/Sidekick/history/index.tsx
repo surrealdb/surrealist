@@ -1,4 +1,14 @@
-import { Button, Center, Group, Loader, Stack, Text, TextInput } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Center,
+	Group,
+	Loader,
+	ScrollArea,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
@@ -10,11 +20,7 @@ import { iconPlus, iconSearch } from "~/util/icons";
 import { groupChatsByDate } from "../helpers";
 import { SidekickHistoryEntry } from "./entry";
 
-export interface SidekickHistoryProps {
-	onOpenChat: () => void;
-}
-
-export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
+export function SidekickHistory() {
 	const { restoreChat, resetChat } = useSidekickStore.getState();
 	const [search, setSearch] = useInputState("");
 
@@ -27,7 +33,6 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 	const loadChat = async (chat: SidekickChat) => {
 		const history = await messagesMutation.mutateAsync(chat.id);
 
-		onOpenChat();
 		restoreChat({
 			...chat,
 			history,
@@ -36,7 +41,6 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 
 	const newChat = useStable(() => {
 		resetChat();
-		onOpenChat();
 	});
 
 	const isEmpty = chatsQuery.isSuccess && chatsQuery.data?.length === 0;
@@ -64,7 +68,7 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 	};
 
 	return (
-		<Stack gap={36}>
+		<Stack h="100%">
 			<Group>
 				<TextInput
 					flex={1}
@@ -88,25 +92,39 @@ export function SidekickHistory({ onOpenChat }: SidekickHistoryProps) {
 					New chat
 				</Button>
 			</Group>
-			{chatsQuery.isPending ? (
-				<Center>
-					<Loader />
-				</Center>
-			) : isEmpty ? (
-				<Center>
-					<Text>No chats found</Text>
-				</Center>
-			) : groupedChats ? (
-				<>
-					{renderChatGroup("Today", groupedChats.today)}
-					{renderChatGroup("Yesterday", groupedChats.yesterday)}
-					{renderChatGroup("Past week", groupedChats.pastWeek)}
-					{renderChatGroup("Past month", groupedChats.pastMonth)}
-					{renderChatGroup("Older", groupedChats.older)}
-				</>
-			) : (
-				<Center>{isEmpty ? <Text>No chats found</Text> : <Loader />}</Center>
-			)}
+			<Box
+				mt="lg"
+				flex={1}
+				pos="relative"
+			>
+				<ScrollArea
+					h="100%"
+					w="100%"
+					pos="absolute"
+				>
+					<Stack gap={36}>
+						{chatsQuery.isPending ? (
+							<Center>
+								<Loader />
+							</Center>
+						) : isEmpty ? (
+							<Center>
+								<Text>No chats found</Text>
+							</Center>
+						) : groupedChats ? (
+							<>
+								{renderChatGroup("Today", groupedChats.today)}
+								{renderChatGroup("Yesterday", groupedChats.yesterday)}
+								{renderChatGroup("Past week", groupedChats.pastWeek)}
+								{renderChatGroup("Past month", groupedChats.pastMonth)}
+								{renderChatGroup("Older", groupedChats.older)}
+							</>
+						) : (
+							<Center>{isEmpty ? <Text>No chats found</Text> : <Loader />}</Center>
+						)}
+					</Stack>
+				</ScrollArea>
+			</Box>
 		</Stack>
 	);
 }

@@ -13,6 +13,7 @@ const INTENT_REGISTRY = {
 	"open-embedder": null,
 	"open-desktop-download": null,
 	"open-sidekick": null,
+	"close-sidekick": null,
 	"new-connection": null,
 	"new-table": null,
 	"toggle-serving": null,

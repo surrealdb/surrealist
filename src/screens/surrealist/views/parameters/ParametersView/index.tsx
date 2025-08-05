@@ -9,6 +9,7 @@ import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { SidekickPanel } from "~/components/Sidekick/panel";
 import { useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useViewFocus } from "~/hooks/routing";
@@ -259,6 +260,7 @@ export function ParametersView() {
 							</Panel>
 						</>
 					)}
+					<SidekickPanel />
 				</PanelGroup>
 			</Box>
 
