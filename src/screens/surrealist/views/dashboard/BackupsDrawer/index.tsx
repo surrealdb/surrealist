@@ -1,4 +1,14 @@
-import { Box, Button, Divider, Drawer, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Divider,
+	Drawer,
+	Group,
+	ScrollArea,
+	Stack,
+	Text,
+	Tooltip,
+} from "@mantine/core";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { navigate } from "wouter/use-browser-location";
@@ -173,15 +183,18 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 					>
 						Close
 					</Button>
-					<Button
-						flex={1}
-						type="submit"
-						variant="gradient"
-						disabled={!selected}
-						onClick={handleRestore}
-					>
-						Create from selected
-					</Button>
+					<Tooltip label="Restoring is currently unavailable">
+						<Button
+							flex={1}
+							type="submit"
+							variant="gradient"
+							// disabled={!selected}
+							disabled
+							onClick={handleRestore}
+						>
+							Create from selected
+						</Button>
+					</Tooltip>
 				</Group>
 			</Stack>
 		</Drawer>
