@@ -1,4 +1,4 @@
-import { Box, Radio, Slider, Stack, Text } from "@mantine/core";
+import { Box, Radio, Slider, Text, Tooltip } from "@mantine/core";
 import { list } from "radash";
 import { useEffect, useMemo, useState } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
@@ -68,36 +68,35 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 				<Box>
 					<PrimaryTitle>Storage class</PrimaryTitle>
 					<Radio.Group
-						mt="xl"
+						mt="lg"
 						value={details.storageCategory}
 						onChange={updateCategory}
 					>
-						<Stack gap="xl">
-							<Radio
-								value="standard"
-								label={
-									<Box>
-										<Label>Standard</Label>
-										<Text>
-											Best suited for small workloads with lower compute
-											requirements. Allows you to scale up to 1 TB of data.
-										</Text>
-									</Box>
-								}
-							/>
-							<Radio
-								value="advanced"
-								label={
-									<Box>
-										<Label>Advanced</Label>
-										<Text>
-											Best suited for larger workloads with higher compute
-											requirements. Allows you to scale up to 6 TB of data.
-										</Text>
-									</Box>
-								}
-							/>
-						</Stack>
+						<Radio
+							value="standard"
+							label={
+								<Box>
+									<Label>Standard</Label>
+									<Text>
+										Best suited for small workloads with lower compute
+										requirements. Allows you to scale up to 1 TB of data.
+									</Text>
+								</Box>
+							}
+						/>
+						<Radio
+							mt="md"
+							value="advanced"
+							label={
+								<Box>
+									<Label>Advanced</Label>
+									<Text>
+										Best suited for larger workloads with higher compute
+										requirements. Allows you to scale up to 6 TB of data.
+									</Text>
+								</Box>
+							}
+						/>
 					</Radio.Group>
 				</Box>
 			)}
@@ -108,25 +107,30 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 					<Text>Choose the appropriate disk size for your instance</Text>
 				</Box>
 
-				<Slider
-					mt="xl"
-					h={40}
-					min={storageMin}
-					max={storageMax}
-					disabled={!details.type}
-					value={details.storageAmount}
-					onChange={updateAmount}
-					marks={marks}
-					label={(value) => formatMemory(value * 1000, true)}
-					color="slate"
-					styles={{
-						label: {
-							paddingInline: 10,
-							fontSize: "var(--mantine-font-size-md)",
-							fontWeight: 600,
-						},
-					}}
-				/>
+				<Tooltip
+					label="You can select storage size after selecting an instance type"
+					disabled={!!details.type}
+				>
+					<Slider
+						mt="xl"
+						h={32}
+						min={storageMin}
+						max={storageMax}
+						disabled={!details.type}
+						value={details.storageAmount}
+						onChange={updateAmount}
+						marks={marks}
+						label={(value) => formatMemory(value * 1000, true)}
+						color="slate"
+						styles={{
+							label: {
+								paddingInline: 10,
+								fontSize: "var(--mantine-font-size-md)",
+								fontWeight: 600,
+							},
+						}}
+					/>
+				</Tooltip>
 			</Box>
 		</>
 	);

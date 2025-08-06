@@ -97,7 +97,10 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	return (
 		<Box>
-			<SimpleGrid cols={{ base: 1, xs: 2, md: 3 }}>
+			<SimpleGrid
+				cols={{ base: 1, xs: 2, md: 3 }}
+				spacing="xl"
+			>
 				{selected && !isRecommended ? (
 					<InstanceTypeCard
 						type={selected}

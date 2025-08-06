@@ -4,7 +4,7 @@ import {
 	CloudDeployConfig,
 	CloudInstance,
 	CloudOrganization,
-	StartingDataType,
+	StartingData,
 } from "~/types";
 
 export interface StepProps {
@@ -26,8 +26,8 @@ export interface DeploySectionProps {
 	setStep: (step: number) => void;
 }
 
-export interface StartingData {
-	id: StartingDataType;
+export interface StartingDataInfo {
+	id: StartingData;
 	title: string;
 	description: string;
 	icon: string;

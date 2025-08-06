@@ -112,8 +112,7 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const nodeText = nodeCount === 1 ? "Single node" : plural(nodeCount, `${nodeCount} Node`);
-	const startingDataText =
-		STARTING_DATA.find((data) => data.id === details.startingData.type)?.title ?? "None";
+	const startingDataText = STARTING_DATA[details.startingData.type].title;
 
 	return (
 		<>
