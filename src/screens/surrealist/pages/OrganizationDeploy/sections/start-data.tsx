@@ -1,4 +1,4 @@
-import { Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Group, Paper, SimpleGrid, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -52,12 +52,15 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 					disabled={instanceId !== undefined}
 					onSelect={handleSelect}
 				/>
-				<StartingDataCard
-					data={STARTING_DATA.restore}
-					selected={current === "restore"}
-					disabled={details.plan === "enterprise"}
-					onSelect={handleSelect}
-				/>
+				<Tooltip label="Restoring is currently unavailable">
+					<StartingDataCard
+						data={STARTING_DATA.restore}
+						selected={current === "restore"}
+						// disabled={details.plan === "enterprise"}
+						disabled
+						onSelect={handleSelect}
+					/>
+				</Tooltip>
 			</SimpleGrid>
 		</Stack>
 	);
