@@ -3,11 +3,29 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useSearchParams } from "~/hooks/routing";
+import { useStable } from "~/hooks/stable";
 import { STARTING_DATA } from "../constants";
-import { DeploySectionProps, StartingData } from "../types";
+import { DeploySectionProps, StartingDataInfo } from "../types";
 
 export function StartingDataSection({ details, setDetails }: DeploySectionProps) {
 	const { instanceId } = useSearchParams();
+
+	const handleSelect = useStable((data: StartingDataInfo) => {
+		setDetails((draft) => {
+			// Automatically select a dataset to use so its not empty
+			const dataset = data.id === "dataset" ? "surreal-deal-store-mini" : undefined;
+
+			draft.startingData = {
+				type: data.id,
+				datasetOptions: {
+					id: dataset,
+					addQueries: details.startingData.datasetOptions?.addQueries,
+				},
+			};
+		});
+	});
+
+	const current = details.startingData.type;
 
 	return (
 		<Stack gap="xl">
@@ -16,54 +34,53 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 				cols={2}
 				spacing="lg"
 			>
-				{STARTING_DATA.map((data) => {
-					const disabled = instanceId !== undefined && data.id !== "restore";
-
-					return (
-						<StartingDataCard
-							key={data.title}
-							data={data}
-							selected={details.startingData.type === data.id}
-							disabled={disabled}
-							onSelect={() => {
-								setDetails((draft) => {
-									// Automatically select a dataset to use so its not empty
-									const dataset =
-										data.id === "dataset"
-											? "surreal-deal-store-mini"
-											: undefined;
-
-									draft.startingData = {
-										type: data.id,
-										datasetOptions: {
-											id: dataset,
-											addQueries:
-												details.startingData.datasetOptions?.addQueries,
-										},
-									};
-								});
-							}}
-						/>
-					);
-				})}
+				<StartingDataCard
+					data={STARTING_DATA.none}
+					selected={current === "none"}
+					disabled={instanceId !== undefined}
+					onSelect={handleSelect}
+				/>
+				<StartingDataCard
+					data={STARTING_DATA.dataset}
+					selected={current === "dataset"}
+					disabled={instanceId !== undefined}
+					onSelect={handleSelect}
+				/>
+				<StartingDataCard
+					data={STARTING_DATA.upload}
+					selected={current === "upload"}
+					disabled={instanceId !== undefined}
+					onSelect={handleSelect}
+				/>
+				<StartingDataCard
+					data={STARTING_DATA.restore}
+					selected={current === "restore"}
+					disabled={details.plan === "enterprise"}
+					onSelect={handleSelect}
+				/>
 			</SimpleGrid>
 		</Stack>
 	);
 }
 
 interface StartingDataCardProps {
-	data: StartingData;
+	data: StartingDataInfo;
 	selected?: boolean;
 	disabled?: boolean;
-	onSelect?: () => void;
+	onSelect: (data: StartingDataInfo) => void;
 }
 
 function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCardProps) {
+	const handleSelect = useStable(() => {
+		if (disabled) return;
+		onSelect(data);
+	});
+
 	return (
 		<Paper
 			p="lg"
 			variant={disabled ? "disabled" : selected ? "selected" : "interactive"}
-			onClick={disabled ? undefined : onSelect}
+			onClick={disabled ? undefined : handleSelect}
 			style={{
 				cursor: disabled ? "not-allowed" : "pointer",
 			}}

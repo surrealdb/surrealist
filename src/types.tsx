@@ -42,7 +42,7 @@ export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticat
 export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
-export type StartingDataType = "none" | "dataset" | "upload" | "restore";
+export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
 
 export type InstanceState =
@@ -799,7 +799,7 @@ export interface CloudRole {
 }
 
 export interface StartingDataDetails {
-	type: StartingDataType;
+	type: StartingData;
 	datasetOptions?: {
 		id?: DatasetType;
 		addQueries?: boolean;
