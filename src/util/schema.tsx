@@ -169,7 +169,7 @@ export function buildFunctionDefinition(func: SchemaFunction): string {
 
 	let query = `DEFINE FUNCTION OVERWRITE fn::${func.name}(${args})`;
 
-	if (func.returns !== undefined) {
+	if (func.returns) {
 		query += ` -> ${func.returns}`;
 	}
 
