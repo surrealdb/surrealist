@@ -1,4 +1,4 @@
-import { Box, Slider, Text } from "@mantine/core";
+import { Box, Slider, Text, Tooltip } from "@mantine/core";
 import { list } from "radash";
 import { useMemo } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
@@ -30,6 +30,8 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 		}));
 	}, [computeMin, computeMax]);
 
+	const isZero = computeMin === 0 && computeMax === 0;
+
 	return (
 		<Box>
 			<Box>
@@ -37,26 +39,31 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 				<Text>Select the number of compute nodes for your cluster.</Text>
 			</Box>
 
-			<Slider
-				mt="xl"
-				h={40}
-				min={computeMin}
-				max={computeMax}
-				step={1}
-				disabled={computeMin === 0 && computeMax === 0}
-				value={details.units}
-				onChange={updateUnits}
-				marks={marks}
-				label={(value) => `${value} nodes`}
-				color="slate"
-				styles={{
-					label: {
-						paddingInline: 10,
-						fontSize: "var(--mantine-font-size-lg)",
-						fontWeight: 600,
-					},
-				}}
-			/>
+			<Tooltip
+				label="You can select compute nodes after selecting an instance type"
+				disabled={!isZero}
+			>
+				<Slider
+					mt="xl"
+					h={40}
+					min={computeMin}
+					max={computeMax}
+					step={1}
+					disabled={isZero}
+					value={details.units}
+					onChange={updateUnits}
+					marks={marks}
+					label={(value) => `${value} nodes`}
+					color="slate"
+					styles={{
+						label: {
+							paddingInline: 10,
+							fontSize: "var(--mantine-font-size-lg)",
+							fontWeight: 600,
+						},
+					}}
+				/>
+			</Tooltip>
 		</Box>
 	);
 }

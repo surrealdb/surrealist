@@ -1,4 +1,4 @@
-import { Box, Radio, Slider, Stack, Text } from "@mantine/core";
+import { Box, Radio, Slider, Stack, Text, Tooltip } from "@mantine/core";
 import { list } from "radash";
 import { useEffect, useMemo, useState } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
@@ -108,25 +108,30 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 					<Text>Choose the appropriate disk size for your instance</Text>
 				</Box>
 
-				<Slider
-					mt="xl"
-					h={40}
-					min={storageMin}
-					max={storageMax}
-					disabled={!details.type}
-					value={details.storageAmount}
-					onChange={updateAmount}
-					marks={marks}
-					label={(value) => formatMemory(value * 1000, true)}
-					color="slate"
-					styles={{
-						label: {
-							paddingInline: 10,
-							fontSize: "var(--mantine-font-size-md)",
-							fontWeight: 600,
-						},
-					}}
-				/>
+				<Tooltip
+					label="You can select storage size after selecting an instance type"
+					disabled={!!details.type}
+				>
+					<Slider
+						mt="xl"
+						h={40}
+						min={storageMin}
+						max={storageMax}
+						disabled={!details.type}
+						value={details.storageAmount}
+						onChange={updateAmount}
+						marks={marks}
+						label={(value) => formatMemory(value * 1000, true)}
+						color="slate"
+						styles={{
+							label: {
+								paddingInline: 10,
+								fontSize: "var(--mantine-font-size-md)",
+								fontWeight: 600,
+							},
+						}}
+					/>
+				</Tooltip>
 			</Box>
 		</>
 	);
