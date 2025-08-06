@@ -1,4 +1,4 @@
-import { Box, Radio, Slider, Stack, Text, Tooltip } from "@mantine/core";
+import { Box, Radio, Slider, Text, Tooltip } from "@mantine/core";
 import { list } from "radash";
 import { useEffect, useMemo, useState } from "react";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
@@ -68,36 +68,35 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 				<Box>
 					<PrimaryTitle>Storage class</PrimaryTitle>
 					<Radio.Group
-						mt="xl"
+						mt="lg"
 						value={details.storageCategory}
 						onChange={updateCategory}
 					>
-						<Stack gap="xl">
-							<Radio
-								value="standard"
-								label={
-									<Box>
-										<Label>Standard</Label>
-										<Text>
-											Best suited for small workloads with lower compute
-											requirements. Allows you to scale up to 1 TB of data.
-										</Text>
-									</Box>
-								}
-							/>
-							<Radio
-								value="advanced"
-								label={
-									<Box>
-										<Label>Advanced</Label>
-										<Text>
-											Best suited for larger workloads with higher compute
-											requirements. Allows you to scale up to 6 TB of data.
-										</Text>
-									</Box>
-								}
-							/>
-						</Stack>
+						<Radio
+							value="standard"
+							label={
+								<Box>
+									<Label>Standard</Label>
+									<Text>
+										Best suited for small workloads with lower compute
+										requirements. Allows you to scale up to 1 TB of data.
+									</Text>
+								</Box>
+							}
+						/>
+						<Radio
+							mt="md"
+							value="advanced"
+							label={
+								<Box>
+									<Label>Advanced</Label>
+									<Text>
+										Best suited for larger workloads with higher compute
+										requirements. Allows you to scale up to 6 TB of data.
+									</Text>
+								</Box>
+							}
+						/>
 					</Radio.Group>
 				</Box>
 			)}
@@ -114,7 +113,7 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 				>
 					<Slider
 						mt="xl"
-						h={40}
+						h={32}
 						min={storageMin}
 						max={storageMax}
 						disabled={!details.type}

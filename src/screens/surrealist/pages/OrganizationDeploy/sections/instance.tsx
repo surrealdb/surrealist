@@ -60,7 +60,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 	}, [details.version, versions, setDetails]);
 
 	return (
-		<Stack gap="xl">
+		<Stack gap="lg">
 			<PrimaryTitle>Instance details</PrimaryTitle>
 
 			<TextInput

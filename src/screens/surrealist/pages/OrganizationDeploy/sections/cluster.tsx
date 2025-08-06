@@ -45,7 +45,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 			>
 				<Slider
 					mt="xl"
-					h={40}
+					h={32}
 					min={computeMin}
 					max={computeMax}
 					step={1}

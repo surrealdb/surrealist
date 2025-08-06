@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Divider, Group, SimpleGrid, Stack } from "@mantine/core";
+import { Alert, AlertProps, Box, Button, Divider, Group, SimpleGrid, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
@@ -12,7 +12,11 @@ import { StorageOptionsSection } from "../sections/storage";
 import { InstanceTypeSection } from "../sections/type";
 import { StepProps } from "../types";
 
-function WarningAlert({ title, children }: { title: string; children: React.ReactNode }) {
+interface WarningAlertProps extends AlertProps {
+	title: string;
+}
+
+function WarningAlert({ title, children, ...other }: WarningAlertProps) {
 	return (
 		<Alert
 			color="red"
@@ -20,6 +24,7 @@ function WarningAlert({ title, children }: { title: string; children: React.Reac
 			mb="-1.5rem"
 			title={title}
 			icon={<Icon path={iconWarning} />}
+			{...other}
 		>
 			{children}
 		</Alert>
@@ -83,25 +88,32 @@ export function ConfigureStep({
 				setStep={setStep}
 			/>
 
+			<Divider my={36} />
+
 			{regionMismatch && (
-				<WarningAlert title="Region mismatch">
+				<WarningAlert
+					title="Region mismatch"
+					mb="xl"
+				>
 					When restoring from a backup, the instance must be in the same region as the
 					backup
 				</WarningAlert>
 			)}
 
 			{storageMismatch && (
-				<WarningAlert title="Too little storage">
+				<WarningAlert
+					title="Too little storage"
+					mb="xl"
+				>
 					You cannot have a smaller storage capacity than the instance you are restoring
 					from
 				</WarningAlert>
 			)}
 
-			<Box mt={36}>
+			<Box>
 				<SimpleGrid
-					cols={2}
-					spacing={52}
-					verticalSpacing={28}
+					spacing={{ base: 36, xl: 64 }}
+					cols={{ base: 1, xl: 2 }}
 				>
 					<Stack gap={36}>
 						<DeploymentSection
