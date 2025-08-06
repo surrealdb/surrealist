@@ -4,12 +4,12 @@ import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { iconChevronRight, iconWarning } from "~/util/icons";
-import { InstanceTypeSection } from "../sections/1-type";
-import { StorageOptionsSection } from "../sections/2-storage";
-import { ClusterOptionsSection } from "../sections/3-cluster";
-import { DeploymentSection } from "../sections/4-instance";
-import { StartingDataSection } from "../sections/5-start-data";
-import { DataOptionsSection } from "../sections/6-data-opts";
+import { ClusterOptionsSection } from "../sections/cluster";
+import { DataOptionsSection } from "../sections/data-opts";
+import { DeploymentSection } from "../sections/instance";
+import { StartingDataSection } from "../sections/start-data";
+import { StorageOptionsSection } from "../sections/storage";
+import { InstanceTypeSection } from "../sections/type";
 import { StepProps } from "../types";
 
 function WarningAlert({ title, children }: { title: string; children: React.ReactNode }) {
