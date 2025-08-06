@@ -121,10 +121,13 @@ function PageContent({ organisation, instances }: PageContentProps) {
 				draft.type = foundInstance.type.slug;
 				draft.version = foundInstance.version;
 				draft.units = foundInstance.compute_units;
+				draft.name = `${foundInstance.name} Copy`;
 				draft.storageCategory =
 					foundInstance.distributed_storage_specs?.category ?? "standard";
-				draft.storageAmount = foundInstance.storage_size;
-				draft.name = `${foundInstance.name} Copy`;
+				draft.storageAmount = Math.max(
+					foundInstance.type.default_storage_size,
+					foundInstance.storage_size,
+				);
 			});
 
 			setStep(1);
