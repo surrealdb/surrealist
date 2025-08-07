@@ -7,76 +7,68 @@ import {
 	Text,
 } from "@mantine/core";
 import { useState } from "react";
-import { GeometryLine, GeometryPoint } from "surrealdb";
+import { GeometryMultiPoint, GeometryPoint } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { iconCancel, iconClose, iconPlus } from "~/util/icons";
+import { iconClose, iconPlus } from "~/util/icons";
 
 interface Props {
-	value: GeometryLine;
-	onChange: (value: GeometryLine) => void;
+	value: GeometryMultiPoint;
+	onChange: (value: GeometryMultiPoint) => void;
 }
 
-export function GeometryLineEditor({ value, onChange }: Props) {
-	const [line, setLine] = useState<GeometryLine>(value);
+export function GeometryMultiPointEditor({ value, onChange }: Props) {
+	const [multiPoint, setMultiPoint] = useState<GeometryMultiPoint>(value);
 
-	// Update a single coordinate
-	const onChangeLine = useStable(
+	// Update a single point's coordinates
+	const onChangePoint = useStable(
 		(index: number, long: number, lati: number) => {
-			const newCoords = line.coordinates.map((coord, i) =>
+			const newCoords = multiPoint.coordinates.map((coord, i) =>
 				i === index ? [long, lati] : coord,
 			);
-
 			const newPoints = newCoords.map(
 				([lng, lat]) => new GeometryPoint([lng, lat]),
 			);
-
-			const updated = new GeometryLine(
-				newPoints as [GeometryPoint, GeometryPoint, ...GeometryPoint[]],
+			const updated = new GeometryMultiPoint(
+				newPoints as [GeometryPoint, ...GeometryPoint[]],
 			);
-
-			setLine(updated);
+			setMultiPoint(updated);
 			onChange(updated); // Pass class instance, not GeoJSON
 		},
 	);
 
-	// Add a new point (duplicate last or [0,0])
+	// Add a new point
 	const onAddPoint = useStable(() => {
-		const last = line.coordinates[line.coordinates.length - 1] || [0, 0];
-		const newCoords = [...line.coordinates, [...last]];
-
+		const newCoords = [...multiPoint.coordinates, [0, 0]];
 		const newPoints = newCoords.map(
 			([lng, lat]) => new GeometryPoint([lng, lat]),
 		);
-
-		const updated = new GeometryLine(
-			newPoints as [GeometryPoint, GeometryPoint, ...GeometryPoint[]],
+		const updated = new GeometryMultiPoint(
+			newPoints as [GeometryPoint, ...GeometryPoint[]],
 		);
-
-		setLine(updated);
+		setMultiPoint(updated);
 		onChange(updated);
 	});
 
 	// Remove a point
 	const onRemovePoint = useStable((index: number) => {
-		if (line.coordinates.length <= 2) return;
+		if (multiPoint.coordinates.length <= 1) return;
 
-		const newCoords = line.coordinates.filter((_, i) => i !== index);
+		const newCoords = multiPoint.coordinates.filter((_, i) => i !== index);
 		const newPoints = newCoords.map(
 			([lng, lat]) => new GeometryPoint([lng, lat]),
 		);
 
-		const updated = new GeometryLine(
-			newPoints as [GeometryPoint, GeometryPoint, ...GeometryPoint[]],
+		const updated = new GeometryMultiPoint(
+			newPoints as [GeometryPoint, ...GeometryPoint[]],
 		);
-
-		setLine(updated);
+		setMultiPoint(updated);
 		onChange(updated);
 	});
 
 	return (
 		<Stack>
-			{line.coordinates.map(([long, lati], i) => (
+			{multiPoint.coordinates.map(([long, lati], i) => (
 				<Group key={i} align="end" gap="xs">
 					<NumberInput
 						label={i === 0 ? "Longitude" : undefined}
@@ -84,7 +76,7 @@ export function GeometryLineEditor({ value, onChange }: Props) {
 						step={0.000001}
 						min={-180}
 						max={180}
-						onChange={(val) => onChangeLine(i, Number(val), lati)}
+						onChange={(val) => onChangePoint(i, Number(val), lati)}
 						flex={1}
 					/>
 					<NumberInput
@@ -93,10 +85,10 @@ export function GeometryLineEditor({ value, onChange }: Props) {
 						step={0.000001}
 						min={-90}
 						max={90}
-						onChange={(val) => onChangeLine(i, long, Number(val))}
+						onChange={(val) => onChangePoint(i, long, Number(val))}
 						flex={1}
 					/>
-					{line.coordinates.length > 2 && (
+					{multiPoint.coordinates.length > 1 && (
 						<ActionIcon
 							color="red"
 							onClick={() => onRemovePoint(i)}
@@ -112,13 +104,12 @@ export function GeometryLineEditor({ value, onChange }: Props) {
 			<Button
 				leftSection={<Icon path={iconPlus} />}
 				onClick={onAddPoint}
-				variant="light"
 				mt="sm"
 			>
 				Add point
 			</Button>
 			<Text size="xs" c="dimmed">
-				LineString requires at least 2 points.
+				MultiPoint requires at least 1 point.
 			</Text>
 		</Stack>
 	);

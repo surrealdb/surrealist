@@ -1,5 +1,13 @@
-import { ActionIcon, Box, Button, Drawer, Group, NumberInput, Stack, Tooltip } from "@mantine/core";
-import { Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	Drawer,
+	Group,
+	Stack,
+	Tooltip,
+} from "@mantine/core";
+import { Suspense, lazy, useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
@@ -11,8 +19,7 @@ import { formatValue } from "~/util/surrealql";
 import type { GeographyInput } from "../GeographyMap";
 import { openGeometryLearnModal } from "~/modals/geometry-learn";
 import { useStable } from "~/hooks/stable";
-import { GeometryPoint } from "surrealdb";
-import { isGeometryPoint } from "./helpers";
+import { GeographyDrawerEditor } from "./editor";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -22,60 +29,19 @@ export interface GeographyDrawerProps {
 	onClose: () => void;
 }
 
-export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps) {
+export function GeographyDrawer({
+	opened,
+	data,
+	onClose,
+}: GeographyDrawerProps) {
 	const [width, setWidth] = useState<number>(650);
 	const [initialData, setInitialData] = useState<GeographyInput>(data);
 
-	const [longitude, setLongitude] = useState<number>(0);
-	const [latitude, setLatitude] = useState<number>(0);
+	const save = useStable(() => {});
+	const revert = useStable(() => {});
+	const apply = useStable(() => {});
 
-	const setCoordinates = useStable((long: number, lati: number) => {
-		setLongitude(long);
-		setLatitude(lati);
-	});
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount
-	useEffect(() => {
-		let geo: GeographyInput;
-
-		if (data instanceof GeometryPoint) {
-			setCoordinates(...data.coordinates);
-		} else {
-			console.error("Unsupported geography type", data);
-		}
-	}, []);
-
-	const hasChanged = useMemo<boolean>(() => {
-		const updated = [longitude, latitude];
-
-		if (isGeometryPoint(initialData)) {
-			return updated.some((value, index) => value !== initialData.coordinates[index]);
-		}
-
-		return false;
-	}, [initialData, longitude, latitude]);
-
-	const revert = useStable(() => {
-		if (isGeometryPoint(initialData)) {
-			setCoordinates(...initialData.coordinates);
-		}
-	});
-
-	const apply = useStable(() => {
-		if (isGeometryPoint(initialData)) {
-			const updated = new GeometryPoint([longitude, latitude]);
-			setInitialData(updated);
-		}
-
-		// TODO: sync changes to the database
-	});
-
-	const save = useStable(() => {
-		if (isGeometryPoint(initialData)) {
-			const updated = new GeometryPoint([longitude, latitude]);
-			setInitialData(updated);
-		}
-	});
+	const hasChanged = false;
 
 	return (
 		<Drawer
@@ -93,16 +59,9 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 				},
 			}}
 		>
-			<DrawerResizer
-				minSize={500}
-				maxSize={1500}
-				onResize={setWidth}
-			/>
+			<DrawerResizer minSize={500} maxSize={1500} onResize={setWidth} />
 
-			<Group
-				mb="md"
-				gap="sm"
-			>
+			<Group mb="md" gap="sm">
 				<PrimaryTitle
 					style={{
 						display: "flex",
@@ -110,11 +69,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 						alignItems: "center",
 					}}
 				>
-					<Icon
-						left
-						path={iconMarker}
-						size="sm"
-					/>
+					<Icon left path={iconMarker} size="sm" />
 					Geography explorer
 				</PrimaryTitle>
 
@@ -124,6 +79,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 					<Tooltip label="Learn more about geometries">
 						<Button
 							variant="light"
+							color="slate"
 							size="xs"
 							radius="xs"
 							leftSection={<Icon path={iconBook} />}
@@ -132,62 +88,32 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 							Learn more
 						</Button>
 					</Tooltip>
-					<ActionIcon
-						onClick={onClose}
-						aria-label="Close geography drawer"
-					>
+					<ActionIcon onClick={onClose} aria-label="Close geography drawer">
 						<Icon path={iconClose} />
 					</ActionIcon>
 				</Group>
 			</Group>
-
-			<Stack
-				flex={1}
-				gap={6}
-				style={{ flexShrink: 1, flexBasis: 0 }}
-			>
-				<Box flex={1}>
+			<Stack flex={1} gap={6} style={{ flexShrink: 1, flexBasis: 0 }}>
+				<Box flex={1} style={{ minHeight: 350 }}>
 					<Suspense fallback={<LoadingContainer visible />}>
 						<GeographyMap value={formatValue(initialData)} />
 					</Suspense>
 				</Box>
-				<Box
-					mt="xl"
-					flex={1}
-					pos="relative"
-				>
-					<Group grow>
-						<NumberInput
-							label="Longitude"
-							value={longitude}
-							onChange={(value) => setLongitude(Number(value))}
-						/>
-						<NumberInput
-							label="Latitude"
-							value={latitude}
-							onChange={(value) => setLatitude(Number(value))}
-						/>
-					</Group>
+				<Box mt="xl" h="100%" flex={1} pos="relative">
+					<GeographyDrawerEditor
+						value={initialData}
+						onChange={setInitialData}
+					/>
 				</Box>
-
 				<Group>
-					<Button
-						disabled={!hasChanged}
-						onClick={revert}
-					>
+					<Button disabled={!hasChanged} onClick={revert}>
 						Revert changes
 					</Button>
 					<Spacer />
-					<Button
-						disabled={!hasChanged}
-						onClick={apply}
-					>
+					<Button disabled={!hasChanged} onClick={apply}>
 						Apply
 					</Button>
-					<Button
-						disabled={!hasChanged}
-						onClick={save}
-					>
+					<Button disabled={!hasChanged} onClick={save}>
 						Save
 					</Button>
 				</Group>
