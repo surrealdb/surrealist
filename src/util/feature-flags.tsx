@@ -69,6 +69,9 @@ export const schema = {
 	changelog: {
 		options: ["auto", "hidden", "read", "unread"],
 	},
+	newsfeed_base: {
+		options: ["production", "custom"],
+	},
 	sidebar_customization: {
 		options: [false, true],
 	},
