@@ -18,11 +18,11 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import dayjs from "dayjs";
 import { Fragment, useState } from "react";
-import { getNewsfeedEndpoint } from "~/cloud/api/endpoints";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
@@ -60,8 +60,8 @@ export function NewsFeedDrawer() {
 	const [isReading, readingHandle] = useDisclosure();
 	const [reading, setReading] = useState<NewsItem | null>(null);
 	const [pendingEvent, setPendingEvent] = useState<object>();
-	const [newsfeedBase, setNewsfeedBase] = useState(getNewsfeedEndpoint());
-	const [_, updateNewsfeed] = useSetting("cloud", "urlNewsfeedBase");
+	const [newsfeedCurrent, updateNewsfeed] = useSetting("cloud", "urlNewsfeedBase");
+	const [newsfeedBase, setNewsfeedBase] = useState(newsfeedCurrent);
 
 	const modifyBase = featureFlags.get("newsfeed_base") === "custom";
 
@@ -273,16 +273,25 @@ export function NewsFeedDrawer() {
 											placeholder="https://..."
 											value={newsfeedBase}
 											flex={1}
-											onChange={(e) => setNewsfeedBase(e.target.value)}
+											onChange={(e) => {
+												setNewsfeedBase(e.target.value);
+											}}
 										/>
 										<Button
 											size="sm"
 											variant="gradient"
-											disabled={!newsfeedBase}
+											disabled={
+												!newsfeedBase || newsfeedBase === newsfeedCurrent
+											}
 											onClick={() => {
 												updateNewsfeed(newsfeedBase);
 												client.invalidateQueries({
 													queryKey: ["newsfeed"],
+												});
+												showNotification({
+													title: "Newsfeed base updated",
+													message: "The newsfeed base has been updated",
+													color: "surreal",
 												});
 											}}
 										>
