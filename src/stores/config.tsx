@@ -14,7 +14,10 @@ import type {
 	SurrealistTemplateSettings,
 } from "~/types";
 
-import type { FeatureFlag, FeatureFlagOption } from "@theopensource-company/feature-flags";
+import type {
+	FeatureFlag,
+	FeatureFlagOption,
+} from "@theopensource-company/feature-flags";
 import { unique } from "radash";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
@@ -32,7 +35,11 @@ interface NewQueryTab {
 	variables?: string;
 }
 
-function modifyConnection(state: ConfigStore, connection: string, modifier: ConnectionUpdater) {
+function modifyConnection(
+	state: ConfigStore,
+	connection: string,
+	modifier: ConnectionUpdater,
+) {
 	if (connection === SANDBOX) {
 		return {
 			sandbox: {
@@ -45,13 +52,18 @@ function modifyConnection(state: ConfigStore, connection: string, modifier: Conn
 
 	return {
 		connections: state.connections.map((con) => {
-			return con.id === connection ? { ...con, ...modifier(con), id: con.id } : con;
+			return con.id === connection
+				? { ...con, ...modifier(con), id: con.id }
+				: con;
 		}),
 	};
 }
 
 export type ConfigStore = SurrealistConfig & {
-	applyPreference: <T>(updater: (state: ConfigStore, value: T) => void, value: T) => void;
+	applyPreference: <T>(
+		updater: (state: ConfigStore, value: T) => void,
+		value: T,
+	) => void;
 	addConnection: (connection: Connection) => void;
 	removeConnection: (connectionId: string) => void;
 	updateConnection: (connection: PartialId<Connection>) => void;
@@ -59,7 +71,10 @@ export type ConfigStore = SurrealistConfig & {
 	setActiveResource: (resource: string) => void;
 	addQueryTab: (connectionId: string, options: NewQueryTab) => void;
 	removeQueryTab: (connectionId: string, tabId: string) => void;
-	updateQueryTab: (connectionId: string, connection: PartialId<QueryTab>) => void;
+	updateQueryTab: (
+		connectionId: string,
+		connection: PartialId<QueryTab>,
+	) => void;
 	setActiveQueryTab: (connectionId: string, tabId: string) => void;
 	saveQuery: (query: SavedQuery) => void;
 	removeSavedQuery: (savedId: string) => void;
@@ -67,9 +82,15 @@ export type ConfigStore = SurrealistConfig & {
 	setLastPromptedVersion: (lastPromptedVersion: string) => void;
 	addHistoryEntry: (connectionId: string, entry: HistoryQuery) => void;
 	toggleTablePin: (connectionId: string, table: string) => void;
-	updateBehaviorSettings: (settings: Partial<SurrealistBehaviorSettings>) => void;
-	updateAppearanceSettings: (settings: Partial<SurrealistAppearanceSettings>) => void;
-	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
+	updateBehaviorSettings: (
+		settings: Partial<SurrealistBehaviorSettings>,
+	) => void;
+	updateAppearanceSettings: (
+		settings: Partial<SurrealistAppearanceSettings>,
+	) => void;
+	updateTemplateSettings: (
+		settings: Partial<SurrealistTemplateSettings>,
+	) => void;
 	updateServingSettings: (settings: Partial<SurrealistServingSettings>) => void;
 	updateCloudSettings: (settings: Partial<SurrealistCloudSettings>) => void;
 	updateGtmSettings: (settings: Partial<SurrealistGtmSettings>) => void;
@@ -144,7 +165,9 @@ export const useConfigStore = create<ConfigStore>()(
 		removeQueryTab: (connectionId, queryId) =>
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
-					const index = current.queries.findIndex((query) => query.id === queryId);
+					const index = current.queries.findIndex(
+						(query) => query.id === queryId,
+					);
 
 					if (index < 0) {
 						return {};
@@ -169,7 +192,9 @@ export const useConfigStore = create<ConfigStore>()(
 		updateQueryTab: (connectionId, connection) =>
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
-					const index = current.queries.findIndex((query) => query.id === connection.id);
+					const index = current.queries.findIndex(
+						(query) => query.id === connection.id,
+					);
 
 					if (index < 0) {
 						return {};
@@ -209,7 +234,9 @@ export const useConfigStore = create<ConfigStore>()(
 
 		removeSavedQuery: (savedId) =>
 			set((state) => ({
-				savedQueries: state.savedQueries.filter((entry) => entry.id !== savedId),
+				savedQueries: state.savedQueries.filter(
+					(entry) => entry.id !== savedId,
+				),
 			})),
 
 		setSavedQueries: (savedQueries) =>
@@ -217,7 +244,8 @@ export const useConfigStore = create<ConfigStore>()(
 				savedQueries,
 			})),
 
-		setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
+		setLastPromptedVersion: (lastPromptedVersion) =>
+			set(() => ({ lastPromptedVersion })),
 
 		addHistoryEntry: (connectionId, entry) =>
 			set((state) =>

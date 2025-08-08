@@ -1,7 +1,16 @@
 import { history } from "@codemirror/commands";
 import { forceLinting } from "@codemirror/lint";
-import { Compartment, EditorState, type Extension } from "@codemirror/state";
-import { EditorView, ViewUpdate, lineNumbers as renderLineNumbers } from "@codemirror/view";
+import {
+	Compartment,
+	EditorSelection,
+	EditorState,
+	type Extension,
+} from "@codemirror/state";
+import {
+	EditorView,
+	ViewUpdate,
+	lineNumbers as renderLineNumbers,
+} from "@codemirror/view";
 import { Box, type BoxProps } from "@mantine/core";
 import clsx from "clsx";
 import equal from "fast-deep-equal";
@@ -27,7 +36,11 @@ export interface CodeEditorProps extends BoxProps {
 	lineNumbers?: boolean;
 	serialize?: Record<string, any>;
 	onMount?: (editor: EditorView) => void;
-	onChange?: (value: string, snapshot: StateSnapshot, state: EditorState) => void;
+	onChange?: (
+		value: string,
+		snapshot: StateSnapshot,
+		state: EditorState,
+	) => void;
 }
 
 export function CodeEditor(props: CodeEditorProps) {
@@ -60,7 +73,11 @@ export function CodeEditor(props: CodeEditorProps) {
 	const handleChange = useStable((update: ViewUpdate) => {
 		// Only notify changes if initialization is complete AND we're not preventing notifications
 		if (initializedRef.current && !preventChangeNotificationsRef.current) {
-			onChange?.(update.state.doc.toString(), update.state.toJSON(serialize), update.state);
+			onChange?.(
+				update.state.doc.toString(),
+				update.state.toJSON(serialize),
+				update.state,
+			);
 		}
 	});
 
@@ -98,7 +115,8 @@ export function CodeEditor(props: CodeEditorProps) {
 		};
 	}, []);
 
-	// Update editor state when state prop changes
+	// Update editor state when state prop changes. Do not recreate state when only
+	// extensions change; those are handled by dedicated reconfigure effects.
 	useEffect(() => {
 		if (!editorRef.current) return;
 
@@ -118,9 +136,15 @@ export function CodeEditor(props: CodeEditorProps) {
 			externalCompartment.current.of(extensions ?? []),
 		];
 
+		// Preserve current doc and selection when recreating state without an
+		// external snapshot to avoid cursor jumps.
 		const newState = state
 			? EditorState.fromJSON(state, { extensions: combined }, serialize)
-			: EditorState.create({ extensions: combined });
+			: EditorState.create({
+					doc: editor.state.doc,
+					selection: editor.state.selection ?? EditorSelection.cursor(0),
+					extensions: combined,
+				});
 
 		editor.setState(newState);
 		forceLinting(editor);
@@ -129,7 +153,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		requestAnimationFrame(() => {
 			preventChangeNotificationsRef.current = false;
 		});
-	}, [state, internalExtensions, extensions, serialize]);
+	}, [state, serialize]);
 
 	// Update textual editor contents
 	useEffect(() => {

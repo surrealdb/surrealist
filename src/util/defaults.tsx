@@ -144,7 +144,10 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	};
 }
 
-export function createBaseQuery(settings: SurrealistSettings, type: QueryType): QueryTab {
+export function createBaseQuery(
+	settings: SurrealistSettings,
+	type: QueryType,
+): QueryTab {
 	return {
 		id: newId(),
 		type,
@@ -158,7 +161,9 @@ export function createBaseQuery(settings: SurrealistSettings, type: QueryType): 
 	};
 }
 
-export function createSandboxConnection(settings: SurrealistSettings): Connection {
+export function createSandboxConnection(
+	settings: SurrealistSettings,
+): Connection {
 	const base = createBaseConnection(settings);
 
 	return {

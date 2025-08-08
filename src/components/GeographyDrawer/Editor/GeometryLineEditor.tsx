@@ -5,6 +5,7 @@ import {
 	Stack,
 	ActionIcon,
 	Text,
+	Badge,
 } from "@mantine/core";
 import { useState } from "react";
 import { GeometryLine, GeometryPoint } from "surrealdb";
@@ -78,12 +79,17 @@ export function GeometryLineEditor({ value, onChange }: Props) {
 		<Stack>
 			{line.coordinates.map(([long, lati], i) => (
 				<Group key={i} align="end" gap="xs">
+					<Badge size="sm" variant="light" color="slate" radius="sm">
+						#{i + 1}
+					</Badge>
 					<NumberInput
 						label={i === 0 ? "Longitude" : undefined}
 						value={long}
 						step={0.000001}
 						min={-180}
 						max={180}
+						size="sm"
+						allowNegative
 						onChange={(val) => onChangeLine(i, Number(val), lati)}
 						flex={1}
 					/>
@@ -93,15 +99,18 @@ export function GeometryLineEditor({ value, onChange }: Props) {
 						step={0.000001}
 						min={-90}
 						max={90}
+						size="sm"
+						allowNegative
 						onChange={(val) => onChangeLine(i, long, Number(val))}
 						flex={1}
 					/>
 					{line.coordinates.length > 2 && (
 						<ActionIcon
-							color="red"
+							variant="subtle"
+							color="slate"
 							onClick={() => onRemovePoint(i)}
 							aria-label="Remove point"
-							size="lg"
+							size="md"
 							mt={-1}
 						>
 							<Icon path={iconClose} />
@@ -109,17 +118,19 @@ export function GeometryLineEditor({ value, onChange }: Props) {
 					)}
 				</Group>
 			))}
-			<Button
-				leftSection={<Icon path={iconPlus} />}
-				onClick={onAddPoint}
-				variant="light"
-				mt="sm"
-			>
-				Add point
-			</Button>
-			<Text size="xs" c="dimmed">
-				LineString requires at least 2 points.
-			</Text>
+			<Group justify="space-between" mt="xs">
+				<Text size="xs" c="slate">
+					LineString requires at least 2 points.
+				</Text>
+				<Button
+					leftSection={<Icon path={iconPlus} />}
+					onClick={onAddPoint}
+					variant="default"
+					size="xs"
+				>
+					Add point
+				</Button>
+			</Group>
 		</Stack>
 	);
 }

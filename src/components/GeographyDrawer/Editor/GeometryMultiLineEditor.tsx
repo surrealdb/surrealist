@@ -6,6 +6,8 @@ import {
 	ActionIcon,
 	Text,
 	Divider,
+	Badge,
+	Box,
 } from "@mantine/core";
 import { useState } from "react";
 import { GeometryMultiLine, GeometryLine, GeometryPoint } from "surrealdb";
@@ -153,12 +155,29 @@ export function GeometryMultiLineEditor({ value, onChange }: Props) {
 	return (
 		<Stack h="100%" flex={1} style={{ overflowY: "auto" }}>
 			{multiLine.coordinates.map((lineCoords, lineIdx) => (
-				<Stack key={lineIdx} p="sm">
-					<Group align="center" mb={4}>
-						<Text fw={600}>Line #{lineIdx + 1}</Text>
+				<Box
+					key={lineIdx}
+					pos="relative"
+					p="sm"
+					mt="xs"
+					style={{
+						border: "1px solid var(--mantine-color-slate-6, #2f3747)",
+						borderRadius: 8,
+					}}
+				>
+					<Badge
+						variant="light"
+						color="slate"
+						radius="sm"
+						style={{ position: "absolute", top: -10, left: 12 }}
+					>
+						Line #{lineIdx + 1}
+					</Badge>
+					<Group justify="flex-end" mb={4}>
 						{multiLine.coordinates.length > 1 && (
 							<ActionIcon
-								color="red"
+								variant="subtle"
+								color="slate"
 								onClick={() => onRemoveLine(lineIdx)}
 								aria-label="Remove line"
 								size="sm"
@@ -167,62 +186,79 @@ export function GeometryMultiLineEditor({ value, onChange }: Props) {
 							</ActionIcon>
 						)}
 					</Group>
-					{lineCoords.map(([lng, lat], coordIdx) => (
-						<Group key={coordIdx} align="end" gap="xs">
-							<NumberInput
-								label={coordIdx === 0 ? "Longitude" : undefined}
-								value={lng}
-								step={0.000001}
-								min={-180}
-								max={180}
-								onChange={(val) =>
-									onChangeCoordinate(lineIdx, coordIdx, Number(val), lat)
-								}
-								flex={1}
-							/>
-							<NumberInput
-								label={coordIdx === 0 ? "Latitude" : undefined}
-								value={lat}
-								step={0.000001}
-								min={-90}
-								max={90}
-								onChange={(val) =>
-									onChangeCoordinate(lineIdx, coordIdx, lng, Number(val))
-								}
-								flex={1}
-							/>
-							{lineCoords.length > 2 && (
-								<ActionIcon
-									color="red"
-									onClick={() => onRemovePoint(lineIdx, coordIdx)}
-									aria-label="Remove point"
-									size="lg"
-									mt={-1}
-								>
-									<Icon path={iconClose} />
-								</ActionIcon>
-							)}
-						</Group>
-					))}
-					<Button
-						leftSection={<Icon path={iconPlus} />}
-						onClick={() => onAddPoint(lineIdx)}
-						variant="light"
-						mt="sm"
-					>
-						Add point
-					</Button>
+					<Stack>
+						{lineCoords.map(([lng, lat], coordIdx) => (
+							<Group key={coordIdx} align="end" gap="xs">
+								<NumberInput
+									label={coordIdx === 0 ? "Longitude" : undefined}
+									value={lng}
+									step={0.000001}
+									min={-180}
+									max={180}
+									allowNegative
+									size="sm"
+									onChange={(val) =>
+										onChangeCoordinate(lineIdx, coordIdx, Number(val), lat)
+									}
+									flex={1}
+								/>
+								<NumberInput
+									label={coordIdx === 0 ? "Latitude" : undefined}
+									value={lat}
+									step={0.000001}
+									min={-90}
+									max={90}
+									allowNegative
+									size="sm"
+									onChange={(val) =>
+										onChangeCoordinate(lineIdx, coordIdx, lng, Number(val))
+									}
+									flex={1}
+								/>
+								{lineCoords.length > 2 && (
+									<ActionIcon
+										variant="subtle"
+										color="slate"
+										onClick={() => onRemovePoint(lineIdx, coordIdx)}
+										aria-label="Remove point"
+										size="md"
+										mt={-1}
+									>
+										<Icon path={iconClose} />
+									</ActionIcon>
+								)}
+							</Group>
+						))}
+					</Stack>
+					<Group justify="space-between" mt="md">
+						<Text size="xs" c="slate">
+							Each LineString requires at least 2 points.
+						</Text>
+						<Button
+							leftSection={<Icon path={iconPlus} />}
+							onClick={() => onAddPoint(lineIdx)}
+							variant="default"
+							size="xs"
+						>
+							Add point
+						</Button>
+					</Group>
 					{lineIdx < multiLine.coordinates.length - 1 && <Divider my="sm" />}
-				</Stack>
+				</Box>
 			))}
-			<Button
-				leftSection={<Icon path={iconPlus} />}
-				onClick={onAddLine}
-				variant="light"
-				mt="sm"
-			>
-				Add line
-			</Button>
+			<Group justify="space-between" mt="md">
+				<Text size="xs" c="slate">
+					Add additional LineStrings.
+				</Text>
+				<Button
+					leftSection={<Icon path={iconPlus} />}
+					onClick={onAddLine}
+					variant="default"
+					size="xs"
+				>
+					Add line
+				</Button>
+			</Group>
 			<Text size="xs" c="dimmed">
 				MultiLineString contains multiple LineStrings. Each LineString requires
 				at least 2 points.

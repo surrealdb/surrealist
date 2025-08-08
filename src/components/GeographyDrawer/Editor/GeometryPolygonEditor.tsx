@@ -6,6 +6,8 @@ import {
 	ActionIcon,
 	Text,
 	Divider,
+	Badge,
+	Box,
 } from "@mantine/core";
 import { useState } from "react";
 import { GeometryPolygon, GeometryLine, GeometryPoint } from "surrealdb";
@@ -158,78 +160,113 @@ export function GeometryPolygonEditor({ value, onChange }: Props) {
 	return (
 		<Stack h="100%" flex={1} style={{ overflowY: "auto" }}>
 			{polygon.polygon.map((line, ringIdx) => (
-				<Stack key={ringIdx} p="sm">
-					<Group align="center" mb={4}>
-						<Text fw={600}>
-							{ringIdx === 0 ? "Outer ring" : `Hole #${ringIdx}`}
-						</Text>
+				<Box
+					key={ringIdx}
+					pos="relative"
+					p="sm"
+					mt="xs"
+					style={{
+						border: "1px solid var(--mantine-color-slate-6, #2f3747)",
+						borderRadius: 8,
+					}}
+				>
+					<Badge
+						variant="light"
+						color="slate"
+						radius="sm"
+						style={{ position: "absolute", top: -10, left: 12 }}
+					>
+						{ringIdx === 0 ? "Outer" : "Inner"}
+					</Badge>
+					<Group justify="flex-end" mb={4}>
 						{polygon.polygon.length > 1 && (
 							<ActionIcon
-								color="red"
+								variant="subtle"
+								color="slate"
 								onClick={() => onRemoveRing(ringIdx)}
 								aria-label="Remove ring"
-								size="lg"
+								size="sm"
 							>
 								<Icon path={iconClose} />
 							</ActionIcon>
 						)}
 					</Group>
-					{line.coordinates.slice(0, -1).map(([lng, lat], ptIdx) => (
-						<Group key={ptIdx} align="end" gap="xs">
-							<NumberInput
-								label={ptIdx === 0 ? "Longitude" : undefined}
-								value={lng}
-								step={0.000001}
-								min={-180}
-								max={180}
-								onChange={(val) =>
-									onChangePoint(ringIdx, ptIdx, Number(val), lat)
-								}
-								flex={1}
-							/>
-							<NumberInput
-								label={ptIdx === 0 ? "Latitude" : undefined}
-								value={lat}
-								step={0.000001}
-								min={-90}
-								max={90}
-								onChange={(val) =>
-									onChangePoint(ringIdx, ptIdx, lng, Number(val))
-								}
-								flex={1}
-							/>
-							{line.coordinates.length > 4 && (
-								<ActionIcon
-									color="red"
-									onClick={() => onRemovePoint(ringIdx, ptIdx)}
-									aria-label="Remove point"
-									size="lg"
-									mt={-1}
-								>
-									<Icon path={iconClose} />
-								</ActionIcon>
-							)}
-						</Group>
-					))}
-					<Button
-						leftSection={<Icon path={iconPlus} />}
-						onClick={() => onAddPoint(ringIdx)}
-						variant="light"
-						mt="sm"
-					>
-						Add point
-					</Button>
+					<Stack>
+						{line.coordinates.slice(0, -1).map(([lng, lat], ptIdx) => (
+							<Group key={ptIdx} align="end" gap="xs">
+								<Badge size="sm" variant="light" color="slate" radius="sm">
+									#{ptIdx + 1}
+								</Badge>
+								<NumberInput
+									label={ptIdx === 0 ? "Longitude" : undefined}
+									value={lng}
+									step={0.000001}
+									min={-180}
+									max={180}
+									size="sm"
+									allowNegative
+									onChange={(val) =>
+										onChangePoint(ringIdx, ptIdx, Number(val), lat)
+									}
+									flex={1}
+								/>
+								<NumberInput
+									label={ptIdx === 0 ? "Latitude" : undefined}
+									value={lat}
+									step={0.000001}
+									min={-90}
+									max={90}
+									size="sm"
+									allowNegative
+									onChange={(val) =>
+										onChangePoint(ringIdx, ptIdx, lng, Number(val))
+									}
+									flex={1}
+								/>
+								{line.coordinates.length > 4 && (
+									<ActionIcon
+										variant="subtle"
+										color="slate"
+										onClick={() => onRemovePoint(ringIdx, ptIdx)}
+										aria-label="Remove point"
+										size="md"
+										mt={-1}
+									>
+										<Icon path={iconClose} />
+									</ActionIcon>
+								)}
+							</Group>
+						))}
+					</Stack>
+					<Group justify="space-between" mt="md">
+						<Text size="xs" c="slate">
+							Closed ring requires at least 4 points (first = last)
+						</Text>
+						<Button
+							leftSection={<Icon path={iconPlus} />}
+							onClick={() => onAddPoint(ringIdx)}
+							variant="default"
+							size="xs"
+						>
+							Add point
+						</Button>
+					</Group>
 					{ringIdx < polygon.polygon.length - 1 && <Divider my="sm" />}
-				</Stack>
+				</Box>
 			))}
-			<Button
-				leftSection={<Icon path={iconPlus} />}
-				onClick={onAddRing}
-				variant="light"
-				mt="sm"
-			>
-				Add ring (hole)
-			</Button>
+			<Group justify="space-between" mt="md">
+				<Text size="xs" c="slate">
+					Add holes to represent inner boundaries.
+				</Text>
+				<Button
+					leftSection={<Icon path={iconPlus} />}
+					onClick={onAddRing}
+					variant="default"
+					size="xs"
+				>
+					Add ring (hole)
+				</Button>
+			</Group>
 			<Text size="xs" c="dimmed">
 				Polygon requires at least 1 closed ring (4+ points, first = last).
 			</Text>

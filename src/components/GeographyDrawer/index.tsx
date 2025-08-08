@@ -4,10 +4,12 @@ import {
 	Button,
 	Drawer,
 	Group,
+	SegmentedControl,
 	Stack,
+	Title,
 	Tooltip,
 } from "@mantine/core";
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
@@ -15,11 +17,14 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconBook, iconClose, iconMarker } from "~/util/icons";
-import { formatValue } from "~/util/surrealql";
+import { formatValue, parseValue } from "~/util/surrealql";
 import type { GeographyInput } from "../GeographyMap";
 import { openGeometryLearnModal } from "~/modals/geometry-learn";
 import { useStable } from "~/hooks/stable";
 import { GeographyDrawerEditor } from "./editor";
+import { getGeometryTypeName, normalizeGeometry } from "./helpers";
+import { CodeEditor } from "~/components/CodeEditor";
+import { surrealql } from "@surrealdb/codemirror";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -36,12 +41,27 @@ export function GeographyDrawer({
 }: GeographyDrawerProps) {
 	const [width, setWidth] = useState<number>(650);
 	const [initialData, setInitialData] = useState<GeographyInput>(data);
+	const [hasChanges, setHasChanges] = useState<boolean>(false);
+	const [mode, setMode] = useState<"editor" | "code">("editor");
+	const [codeValue, setCodeValue] = useState<string>(
+		() => formatValue(data, false, true) as string,
+	);
 
 	const save = useStable(() => {});
+
 	const revert = useStable(() => {});
+
 	const apply = useStable(() => {});
 
-	const hasChanged = false;
+	// Keep code editor value in sync when visual editor changes.
+	// Avoid updating while in code mode to prevent cursor jumps and value thrashing.
+	useEffect(() => {
+		if (mode === "editor") {
+			setCodeValue(formatValue(initialData, false, true) as string);
+		}
+	}, [initialData, mode]);
+
+	const codeExtensions = useMemo(() => [surrealql()], []);
 
 	return (
 		<Drawer
@@ -99,21 +119,55 @@ export function GeographyDrawer({
 						<GeographyMap value={formatValue(initialData)} />
 					</Suspense>
 				</Box>
+				<Box mt="xl">
+					<Group justify="space-between" align="center">
+						<Title size={24}>{getGeometryTypeName(initialData)} editor</Title>
+						<SegmentedControl
+							size="xs"
+							radius="xs"
+							variant="gradient"
+							value={mode}
+							onChange={(v) => setMode(v as any)}
+							data={[
+								{ label: "Editor", value: "editor" },
+								{ label: "Code", value: "code" },
+							]}
+						/>
+					</Group>
+				</Box>
 				<Box mt="xl" h="100%" flex={1} pos="relative">
-					<GeographyDrawerEditor
-						value={initialData}
-						onChange={setInitialData}
-					/>
+					{mode === "editor" ? (
+						<GeographyDrawerEditor
+							value={initialData}
+							onChange={(val) => {
+								setInitialData(val);
+								setHasChanges(true);
+							}}
+						/>
+					) : (
+						<CodeEditor
+							value={codeValue}
+							onChange={(value) => {
+								setCodeValue(value);
+								setInitialData(parseValue(value));
+								setHasChanges(true);
+							}}
+							autoFocus
+							lineNumbers
+							extensions={codeExtensions}
+							style={{ height: "100%" }}
+						/>
+					)}
 				</Box>
 				<Group>
-					<Button disabled={!hasChanged} onClick={revert}>
+					<Button disabled={!hasChanges} onClick={revert}>
 						Revert changes
 					</Button>
 					<Spacer />
-					<Button disabled={!hasChanged} onClick={apply}>
+					<Button disabled={!hasChanges} onClick={apply}>
 						Apply
 					</Button>
-					<Button disabled={!hasChanged} onClick={save}>
+					<Button variant="gradient" disabled={!hasChanges} onClick={save}>
 						Save
 					</Button>
 				</Group>
