@@ -91,6 +91,7 @@ export function createBaseSettings(): SurrealistSettings {
 			urlAuthBase: "",
 			urlApiBase: "",
 			urlApiMgmtBase: "",
+			urlNewsfeedBase: "https://surrealdb.com",
 		},
 		gtm: {
 			origin: HOSTNAME,

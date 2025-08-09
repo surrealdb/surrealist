@@ -39,8 +39,6 @@ export function MarkdownContent({
 
 	const { settings, updateConnection } = useConfigStore.getState();
 
-	console.log(componentProps?.code);
-
 	const components = useMemo<Components>(
 		() => ({
 			a: ({ href, children }) => {
@@ -55,21 +53,21 @@ export function MarkdownContent({
 				);
 			},
 			pre: ({ children }) => {
-				const code = children as ReactElement<HTMLElement>;
+				const element = children as ReactElement<HTMLElement>;
+				const [_, lang] = /language-(\w+)/.exec(element.props.className) ?? [];
 
-				if (code?.type !== "code" || !code.props.children) {
+				if (element?.type !== "code" || !element.props.children || !lang) {
 					return "";
 				}
 
-				const [_, lang] = /language-(\w+)/.exec(code.props.className) ?? [];
-				const content = code.props.children.toString();
+				const content = element.props.children.toString();
 
 				if (lang.toLowerCase() === "surrealql") {
 					return (
 						<CodePreview
 							language={lang?.toLowerCase()}
 							className={classes.codePreview}
-							label={code.props.title}
+							label={element.props.title}
 							value={content}
 							{...componentProps?.code}
 							rightSection={
@@ -154,7 +152,7 @@ export function MarkdownContent({
 					<CodePreview
 						language={lang?.toLowerCase()}
 						className={classes.codePreview}
-						label={code.props.title}
+						label={element.props.title}
 						value={content}
 						withCopy
 						{...componentProps?.code}

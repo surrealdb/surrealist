@@ -5,9 +5,11 @@ import { parser as goParser } from "@lezer/go";
 import { highlightCode } from "@lezer/highlight";
 import { parser as htmlParser } from "@lezer/html";
 import { parser as jsParser } from "@lezer/javascript";
+import { parser as jsonParser } from "@lezer/json";
 import { parser as phpParser } from "@lezer/php";
 import { parser as pyParser } from "@lezer/python";
 import { parser as rustParser } from "@lezer/rust";
+import { parser as yamlParser } from "@lezer/yaml";
 import { parser as surqlParser } from "@surrealdb/lezer";
 import { adapter } from "~/adapter";
 import { createStyleHighlighter } from "~/editor";
@@ -34,6 +36,8 @@ const PARSER_MAP = new Map<string, Parser>([
 	["sql", surqlParser],
 	["surql", surqlParser],
 	["surrealql", surqlParser],
+	["json", jsonParser],
+	["yaml", yamlParser],
 	["java", javaParser],
 	["go", goParser],
 	["py", pyParser],

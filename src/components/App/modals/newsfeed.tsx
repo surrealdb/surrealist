@@ -2,6 +2,7 @@ import {
 	Alert,
 	Badge,
 	Box,
+	Button,
 	Divider,
 	Drawer,
 	Flex,
@@ -11,11 +12,14 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
+	TextInput,
 	Title,
 	Transition,
 	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import dayjs from "dayjs";
 import { Fragment, useState } from "react";
@@ -23,12 +27,15 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { MarkdownContent } from "~/components/MarkdownContent";
+import { Spacer } from "~/components/Spacer";
+import { useSetting } from "~/hooks/config";
 import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { tagEvent } from "~/util/analytics";
-import { iconArrowLeft, iconArrowUpRight, iconClose } from "~/util/icons";
+import { featureFlags } from "~/util/feature-flags";
+import { iconArrowLeft, iconArrowUpRight, iconClose, iconEdit } from "~/util/icons";
 import classes from "../style.module.scss";
 
 interface NewsItem {
@@ -45,12 +52,18 @@ export function NewsFeedDrawer() {
 	const { updateViewedNews } = useConfigStore.getState();
 	const newsQuery = useLatestNewsQuery();
 	const unread = useUnreadNewsPosts();
+	const client = useQueryClient();
 
 	const [isOpen, openHandle] = useDisclosure();
 
+	const [isModifying, setModifying] = useState(false);
 	const [isReading, readingHandle] = useDisclosure();
 	const [reading, setReading] = useState<NewsItem | null>(null);
 	const [pendingEvent, setPendingEvent] = useState<object>();
+	const [newsfeedCurrent, updateNewsfeed] = useSetting("cloud", "urlNewsfeedBase");
+	const [newsfeedBase, setNewsfeedBase] = useState(newsfeedCurrent);
+
+	const modifyBase = featureFlags.get("newsfeed_base") === "custom";
 
 	const readArticle = (item: NewsItem) => {
 		setReading(item);
@@ -212,13 +225,33 @@ export function NewsFeedDrawer() {
 						style={styles}
 						inset={0}
 					>
-						<Title
-							fz={20}
-							c="bright"
-							m="xl"
-						>
-							Latest news
-						</Title>
+						<Group>
+							<Title
+								fz={20}
+								c="bright"
+								m="xl"
+							>
+								Latest news
+							</Title>
+							<Spacer />
+							{modifyBase && (
+								<ActionButton
+									variant="light"
+									label="Edit feed base"
+									onClick={() => setModifying(!isModifying)}
+								>
+									<Icon path={iconEdit} />
+								</ActionButton>
+							)}
+							<ActionButton
+								variant="light"
+								label="Close"
+								mr="lg"
+								onClick={handleClose}
+							>
+								<Icon path={iconClose} />
+							</ActionButton>
+						</Group>
 						<ScrollArea
 							pos="absolute"
 							style={{ width: "var(--drawer-size-md)" }}
@@ -227,6 +260,46 @@ export function NewsFeedDrawer() {
 							top={64}
 							p="lg"
 						>
+							<Transition
+								mounted={isModifying}
+								transition="slide-down"
+							>
+								{(styles) => (
+									<Group
+										style={styles}
+										mb="md"
+									>
+										<TextInput
+											placeholder="https://..."
+											value={newsfeedBase}
+											flex={1}
+											onChange={(e) => {
+												setNewsfeedBase(e.target.value);
+											}}
+										/>
+										<Button
+											size="sm"
+											variant="gradient"
+											disabled={
+												!newsfeedBase || newsfeedBase === newsfeedCurrent
+											}
+											onClick={() => {
+												updateNewsfeed(newsfeedBase);
+												client.invalidateQueries({
+													queryKey: ["newsfeed"],
+												});
+												showNotification({
+													title: "Newsfeed base updated",
+													message: "The newsfeed base has been updated",
+													color: "surreal",
+												});
+											}}
+										>
+											Save
+										</Button>
+									</Group>
+								)}
+							</Transition>
 							{newsQuery.isPending ? (
 								<Loader
 									mt={32}

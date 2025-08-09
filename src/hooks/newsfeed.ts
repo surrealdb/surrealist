@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useConfigStore } from "~/stores/config";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { useSetting } from "./config";
 
 export interface NewsPost {
 	id: string;
@@ -16,10 +18,15 @@ export interface NewsPost {
  * Fetch the latest news from the SurrealDB blog.
  */
 export function useLatestNewsQuery() {
+	const [flags] = useFeatureFlags();
+	const [newsfeedSetting] = useSetting("cloud", "urlNewsfeedBase");
+	const isCustom = flags.newsfeed_base === "custom";
+	const newsfeedBase = isCustom ? newsfeedSetting : "https://surrealdb.com";
+
 	return useQuery<NewsPost[]>({
-		queryKey: ["newsfeed"],
+		queryKey: ["newsfeed", newsfeedBase],
 		queryFn: async () => {
-			const response = await fetch(`https://surrealdb.com/feed/surrealist.rss`);
+			const response = await fetch(`${newsfeedBase}/feed/surrealist.rss`);
 			const body = await response.text();
 			const result = new DOMParser().parseFromString(body, "text/xml");
 
