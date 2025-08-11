@@ -1,7 +1,6 @@
 import { Box, Paper, SimpleGrid, Stack, Text, UnstyledButton } from "@mantine/core";
 import { closeAllModals } from "@mantine/modals";
 import type { PropsWithChildren } from "react";
-import { useLocation } from "wouter";
 import { adapter } from "~/adapter";
 import { openAccountSupport } from "~/cloud/modals/account-support";
 import { useIsCloudEnabled } from "~/hooks/cloud";
@@ -26,7 +25,6 @@ import classes from "./style.module.scss";
 
 export function HelpCenter() {
 	const showCloud = useIsCloudEnabled();
-	const [, navigate] = useLocation();
 
 	return (
 		<Stack
@@ -109,7 +107,7 @@ export function HelpCenter() {
 						title="Sidekick"
 						description="Chat with and get support from your personal Surreal AI assistant"
 						icon={iconSidekick}
-						onClick={() => navigate("/cloud/chat")}
+						onClick={() => dispatchIntent("open-sidekick")}
 					/>
 					<HelpTile
 						title="Account"
