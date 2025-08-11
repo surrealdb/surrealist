@@ -12,6 +12,7 @@ export interface SidekickChatWithHistory extends SidekickChat {
 export type SidekickStore = {
 	activeId: RecordId | null;
 	activeHistory: SidekickChatMessage[];
+	currentPrompt: string;
 	activeTitle: string;
 	historyOpened: boolean;
 	activeRequest: SidekickChatMessage | null;
@@ -21,6 +22,7 @@ export type SidekickStore = {
 	toggleHistory: () => void;
 	resetChat: () => void;
 	restoreChat: (chat: SidekickChatWithHistory) => void;
+	updatePrompt: (prompt: string) => void;
 	startRequest: (message: string) => void;
 	applyEvent: (event: StreamEvent) => void;
 	completeRequest: () => void;
@@ -30,6 +32,7 @@ export const useSidekickStore = create<SidekickStore>()(
 	immer((set) => ({
 		activeId: null,
 		activeHistory: [],
+		currentPrompt: "",
 		activeTitle: "",
 		historyOpened: false,
 		activeRequest: null,
@@ -45,6 +48,7 @@ export const useSidekickStore = create<SidekickStore>()(
 			set({
 				activeId: null,
 				activeHistory: [],
+				currentPrompt: "",
 				activeTitle: "",
 				historyOpened: false,
 				activeRequest: null,
@@ -56,11 +60,17 @@ export const useSidekickStore = create<SidekickStore>()(
 			set({
 				activeId: chat.id,
 				activeHistory: chat.history,
+				currentPrompt: "",
 				activeTitle: chat.title,
 				historyOpened: false,
 				activeRequest: null,
 				activeResponse: null,
 				thinkingText: "",
+			}),
+
+		updatePrompt: (prompt) =>
+			set((draft) => {
+				draft.currentPrompt = prompt;
 			}),
 
 		startRequest: (message) =>
@@ -72,6 +82,7 @@ export const useSidekickStore = create<SidekickStore>()(
 					role: "user",
 					sent_at: new Date(),
 				};
+				draft.currentPrompt = "";
 			}),
 
 		applyEvent: (event) =>

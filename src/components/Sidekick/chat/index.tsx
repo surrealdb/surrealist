@@ -13,7 +13,6 @@ import {
 	ThemeIcon,
 } from "@mantine/core";
 
-import { useInputState } from "@mantine/hooks";
 import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
@@ -44,12 +43,14 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 	const activeHistory = useSidekickStore((state) => state.activeHistory);
 	const activeRequest = useSidekickStore((state) => state.activeRequest);
 	const activeResponse = useSidekickStore((state) => state.activeResponse);
+	const currentPrompt = useSidekickStore((state) => state.currentPrompt);
 	const thinkingText = useSidekickStore((state) => state.thinkingText);
+
+	const { updatePrompt } = useSidekickStore.getState();
 
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
-	const [input, setInput] = useInputState("");
-	const hasMessage = useMemo(() => input.trim() !== "", [input]);
+	const hasMessage = useMemo(() => currentPrompt.trim() !== "", [currentPrompt]);
 	const isLight = useIsLight();
 
 	const canSend = !stream.isResponding && hasMessage;
@@ -60,7 +61,6 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 			return;
 		}
 
-		setInput("");
 		inputRef.current?.focus();
 		startRequest(message);
 
@@ -74,7 +74,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 			e.preventDefault();
 
 			if (canSend) {
-				submitMessage(input);
+				submitMessage(currentPrompt);
 			}
 		}
 	});
@@ -293,9 +293,11 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 							className={classes.sidekickInput}
 							placeholder="Send a message..."
 							onKeyDown={handleKeyDown}
-							value={input}
+							value={currentPrompt}
 							autoFocus
-							onChange={setInput}
+							onChange={(e) => {
+								updatePrompt(e.target.value);
+							}}
 							rightSectionWidth={96}
 							variant="unstyled"
 						/>
@@ -304,7 +306,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 							type="submit"
 							variant="gradient"
 							disabled={!canSend}
-							onClick={() => submitMessage(input)}
+							onClick={() => submitMessage(currentPrompt)}
 							loading={stream.isResponding}
 							style={{
 								opacity: canSend ? 1 : 0.5,
