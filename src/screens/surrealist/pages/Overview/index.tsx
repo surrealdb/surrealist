@@ -39,7 +39,7 @@ import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { OVERVIEW, useSavepoint } from "~/hooks/overview";
-import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
+import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
@@ -76,7 +76,6 @@ export function OverviewPage() {
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
-	const [, navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 
 	const [search, setSearch] = useInputState("");
@@ -520,7 +519,7 @@ export function OverviewPage() {
 									title="Sidekick"
 									subtitle="Get support from your personal Surreal AI assistant"
 									image={sidekickUrl}
-									onClick={() => navigate("/chat")}
+									onClick={() => dispatchIntent("open-sidekick")}
 								/>
 							</SimpleGrid>
 
