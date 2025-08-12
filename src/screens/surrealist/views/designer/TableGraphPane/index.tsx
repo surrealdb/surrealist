@@ -402,6 +402,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			return;
 		}
 
+		const currentEdges = getEdges();
 		const relatedNodes = new Set<string>([hoveredNode]);
 
 		if (hoverFocus === "chain") {
@@ -415,7 +416,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				visited.add(nodeId);
 				relatedNodes.add(nodeId);
 
-				for (const edge of edges) {
+				for (const edge of currentEdges) {
 					if (isForward && edge.source === nodeId && !visited.has(edge.target)) {
 						traverseRelations(edge.target, visited, true);
 					}
@@ -433,7 +434,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				visited.add(nodeId);
 				relatedNodes.add(nodeId);
 
-				for (const edge of edges) {
+				for (const edge of currentEdges) {
 					if (edge.source === nodeId && !visited.has(edge.target)) {
 						traverseRelations(edge.target, visited);
 					}
@@ -444,7 +445,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			};
 			traverseRelations(hoveredNode, new Set<string>());
 		} else {
-			for (const edge of edges) {
+			for (const edge of currentEdges) {
 				if (edge.source === hoveredNode) {
 					relatedNodes.add(edge.target);
 				}
@@ -494,7 +495,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				};
 			}),
 		);
-	}, [hoveredNode, hoverFocus, edges, isDragging]);
+	}, [hoveredNode, hoverFocus, isDragging]);
 
 	useIntent("focus-table", ({ table }) => {
 		const node = getNodes().find((node) => node.id === table);
