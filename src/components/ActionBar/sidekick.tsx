@@ -71,7 +71,10 @@ export function SidekickAction() {
 					}}
 					onClick={handleOpen}
 				>
-					<Icon path={iconSidekick} size="lg" />
+					<Icon
+						path={iconSidekick}
+						size="lg"
+					/>
 				</ActionButton>
 				{stars.map((star) => (
 					<Box
