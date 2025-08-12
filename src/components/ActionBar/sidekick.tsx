@@ -64,12 +64,14 @@ export function SidekickAction() {
 					radius="md"
 					variant="subtle"
 					label="Sidekick AI"
+					tooltipProps={{
+						position: "bottom",
+						label: "Sidekick AI",
+						children: null,
+					}}
 					onClick={handleOpen}
 				>
-					<Icon
-						path={iconSidekick}
-						size="lg"
-					/>
+					<Icon path={iconSidekick} size="lg" />
 				</ActionButton>
 				{stars.map((star) => (
 					<Box
