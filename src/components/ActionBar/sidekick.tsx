@@ -64,6 +64,11 @@ export function SidekickAction() {
 					radius="md"
 					variant="subtle"
 					label="Sidekick AI"
+					tooltipProps={{
+						position: "bottom",
+						label: "Sidekick AI",
+						children: null,
+					}}
 					onClick={handleOpen}
 				>
 					<Icon
