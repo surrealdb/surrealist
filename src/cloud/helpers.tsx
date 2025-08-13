@@ -106,7 +106,7 @@ export function compileDeployConfig(
 		configuration.storage = config.storageAmount;
 	}
 
-	if (config.plan === "scale" || config.plan === "enterprise") {
+	if (isDistributedPlan(config.plan)) {
 		configuration.distributed_storage_specs = {
 			category: config.storageCategory,
 			autoscaling: false,
@@ -119,6 +119,10 @@ export function compileDeployConfig(
 
 export function isInstancePlan(plan: string): plan is InstancePlan {
 	return Object.keys(INSTANCE_PLAN_CATEGORIES).includes(plan);
+}
+
+export function isDistributedPlan(plan: InstancePlan): boolean {
+	return plan === "scale" || plan === "enterprise";
 }
 
 export function hasOrganizationRole(organisation: CloudOrganization, role: string) {

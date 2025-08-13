@@ -55,7 +55,6 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 				<StartingDataCard
 					data={STARTING_DATA.restore}
 					selected={current === "restore"}
-					disabled={details.plan === "enterprise"}
 					onSelect={handleSelect}
 				/>
 			</SimpleGrid>

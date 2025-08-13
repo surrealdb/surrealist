@@ -95,7 +95,7 @@ export function BackupsBlock({
 							size="xs"
 							rightSection={<Icon path={iconChevronRight} />}
 							variant="gradient"
-							onClick={() => onOpenBackups()}
+							onClick={onOpenBackups}
 						>
 							View available backups
 						</Button>
