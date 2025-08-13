@@ -46,17 +46,10 @@ export const GeographyLink = ({ value, text, ...rest }: GeographyLinkProps) => {
 				>
 					{text}
 				</Text>
-				<Icon
-					path={iconMarker}
-					right
-				/>
+				<Icon path={iconMarker} right />
 			</Group>
 
-			<GeographyDrawer
-				opened={opened}
-				data={value}
-				onClose={handleClose}
-			/>
+			<GeographyDrawer opened={opened} data={value} onClose={handleClose} />
 		</>
 	);
 };

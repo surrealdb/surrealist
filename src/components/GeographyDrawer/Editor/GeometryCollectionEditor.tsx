@@ -3,16 +3,22 @@ import {
 	Stack,
 	ActionIcon,
 	Text,
-	Divider,
 	Card,
-	Title,
-	Badge,
+	Select,
+	Button,
+	Tooltip,
+	Divider,
 } from "@mantine/core";
 import { useState } from "react";
 import { GeometryCollection } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
-import { iconClose } from "~/util/icons";
+import {
+	iconClose,
+	iconPlus,
+	iconChevronDown,
+	iconGeometryCollection,
+} from "~/util/icons";
 import { GeometryPointEditor } from "./GeometryPointEditor";
 import { GeometryLineEditor } from "./GeometryLineEditor";
 import { GeometryPolygonEditor } from "./GeometryPolygonEditor";
@@ -117,6 +123,8 @@ function InnerEditor({
 
 export function GeometryCollectionEditor({ value, onChange }: Props) {
 	const [collection, setCollection] = useState<GeometryCollection>(value);
+	const [selectedGeometryType, setSelectedGeometryType] =
+		useState<GeometryType | null>(null);
 
 	// Add a new geometry to the collection
 	const onAddGeometry = useStable((type: GeometryType) => {
@@ -173,51 +181,93 @@ export function GeometryCollectionEditor({ value, onChange }: Props) {
 
 	return (
 		<Stack gap="md">
-			{collection.geometries.map((geometry, index) => (
-				<Card key={index} withBorder bg="transparent" p="md">
-					<Group justify="space-between" mb="sm">
-						<Title order={6} size="sm">
-							{getGeometryTypeName(geometry)} #{index + 1}
-						</Title>
-						{collection.geometries.length > 1 && (
-							<ActionIcon
-								color="red"
-								onClick={() => onRemoveGeometry(index)}
-								aria-label="Remove geometry"
-								size="sm"
-							>
-								<Icon path={iconClose} />
-							</ActionIcon>
-						)}
+			<Card withBorder bg="#1E1B2E" p="md" radius="md">
+				<Group justify="space-between" mb="md">
+					<Group gap="xs">
+						<Icon path={iconGeometryCollection} size="sm" />
+						<Text size="sm" fw={500} c="bright">
+							GeometryCollection
+						</Text>
 					</Group>
-					<InnerEditor
-						geometry={geometry}
-						onUpdateGeometry={onUpdateGeometry}
-						index={index}
+					<Text size="xs" c="dimmed">
+						{collection.geometries.length} geometries
+					</Text>
+				</Group>
+
+				<Stack gap="md">
+					{collection.geometries.map((geometry, index) => (
+						<Card key={index} withBorder bg="#252138" p="md" radius="md">
+							<Group justify="space-between" mb="md">
+								<Group gap="xs">
+									<Text size="sm" fw={500} c="bright">
+										{getGeometryTypeName(geometry)}
+									</Text>
+									<Text size="xs" c="dimmed">
+										#{index + 1}
+									</Text>
+								</Group>
+								{collection.geometries.length > 1 && (
+									<Tooltip label="Remove geometry">
+										<ActionIcon
+											variant="subtle"
+											color="red"
+											onClick={() => onRemoveGeometry(index)}
+											aria-label="Remove geometry"
+											size="sm"
+										>
+											<Icon path={iconClose} size="xs" />
+										</ActionIcon>
+									</Tooltip>
+								)}
+							</Group>
+							<InnerEditor
+								geometry={geometry}
+								onUpdateGeometry={onUpdateGeometry}
+								index={index}
+							/>
+						</Card>
+					))}
+				</Stack>
+
+				<Divider my="md" />
+
+				<Group gap="sm" align="end">
+					<Select
+						label="Add geometry type"
+						placeholder="Select a type to add"
+						value={selectedGeometryType}
+						onChange={(value) => setSelectedGeometryType(value as GeometryType)}
+						data={GEOMETRY_TYPES.map((t) => ({
+							value: t.value,
+							label: t.label,
+						}))}
+						size="sm"
+						flex={1}
+						rightSection={<Icon path={iconChevronDown} size="xs" />}
+						rightSectionPointerEvents="none"
 					/>
-				</Card>
-			))}
-
-			<Divider />
-
-			<Group wrap="wrap" gap="xs">
-				{GEOMETRY_TYPES.map((t) => (
-					<Badge
-						key={t.value}
-						variant="light"
-						radius="sm"
-						styles={{ root: { cursor: "pointer" } }}
-						onClick={() => onAddGeometry(t.value)}
+					<Button
+						leftSection={<Icon path={iconPlus} size="xs" />}
+						onClick={() => {
+							if (selectedGeometryType) {
+								onAddGeometry(selectedGeometryType);
+								setSelectedGeometryType(null);
+							}
+						}}
+						disabled={!selectedGeometryType}
+						variant="default"
+						size="sm"
 					>
-						{t.label}
-					</Badge>
-				))}
-			</Group>
+						Add
+					</Button>
+				</Group>
 
-			<Text size="xs" c="dimmed">
-				GeometryCollection requires at least 1 geometry. You can add different
-				types of geometries to create complex spatial data.
-			</Text>
+				<Text size="xs" c="dimmed">
+					GeometryCollection can contain multiple different geometry types.
+					Choose a type from the dropdown and click Add to create complex
+					spatial data structures.
+				</Text>
+			</Card>
 		</Stack>
 	);
 }

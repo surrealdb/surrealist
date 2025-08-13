@@ -25,6 +25,10 @@ import { GeographyDrawerEditor } from "./editor";
 import { getGeometryTypeName, normalizeGeometry } from "./helpers";
 import { CodeEditor } from "~/components/CodeEditor";
 import { surrealql } from "@surrealdb/codemirror";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { RecordsChangedEvent, SetQueryEvent } from "~/util/global-events";
+import { showErrorNotification } from "~/util/helpers";
+import { StringRecordId } from "surrealdb";
 
 const GeographyMap = lazy(() => import("../GeographyMap"));
 
@@ -32,12 +36,21 @@ export interface GeographyDrawerProps {
 	opened: boolean;
 	data: GeographyInput;
 	onClose: () => void;
+	/** Optional: record to update, e.g. "table:id" */
+	recordId?: string;
+	/** Optional: field path to set on the record, e.g. "location" or "profile.location" */
+	field?: string;
+	/** Optional: invoked after a successful apply */
+	onApplied?: (value: GeographyInput) => void;
 }
 
 export function GeographyDrawer({
 	opened,
 	data,
 	onClose,
+	recordId,
+	field,
+	onApplied,
 }: GeographyDrawerProps) {
 	const [width, setWidth] = useState<number>(650);
 	const [initialData, setInitialData] = useState<GeographyInput>(data);
@@ -47,11 +60,63 @@ export function GeographyDrawer({
 		() => formatValue(data, false, true) as string,
 	);
 
-	const save = useStable(() => {});
+	const revert = useStable(() => {
+		setInitialData(data);
+		setCodeValue(formatValue(data, false, true) as string);
+		setHasChanges(false);
+	});
 
-	const revert = useStable(() => {});
+	const doPersist = useStable(async (closeAfter: boolean) => {
+		try {
+			const value = normalizeGeometry(initialData);
 
-	const apply = useStable(() => {});
+			if (recordId && field) {
+				const id = new StringRecordId(recordId);
+				const [{ success, result }] = await executeQuery(
+					/* surql */ `UPDATE $id SET ${field} = $value`,
+					{ id, value },
+				);
+
+				if (!success) {
+					showErrorNotification({
+						title: "Failed to apply geometry",
+						content: String(result).replace(
+							"There was a problem with the database: ",
+							"",
+						),
+					});
+					return;
+				}
+
+				RecordsChangedEvent.dispatch(null);
+				onApplied?.(value);
+				setHasChanges(false);
+
+				if (closeAfter) {
+					onClose();
+				}
+				return;
+			}
+
+			// Fallback: prefill active query editor with an UPDATE snippet
+			const formatted = formatValue(value) as string;
+			const query = `-- Set the target table:id and field before running\nUPDATE your_table:your_id SET your_field = ${formatted};`;
+			SetQueryEvent.dispatch(query);
+			setHasChanges(false);
+			if (closeAfter) {
+				onClose();
+			}
+		} catch (err: any) {
+			showErrorNotification({
+				title: "Failed to apply geometry",
+				content: err,
+			});
+		}
+	});
+
+	const apply = useStable(() => doPersist(false));
+
+	const save = useStable(() => doPersist(true));
 
 	// Keep code editor value in sync when visual editor changes.
 	// Avoid updating while in code mode to prevent cursor jumps and value thrashing.
@@ -159,7 +224,7 @@ export function GeographyDrawer({
 						/>
 					)}
 				</Box>
-				<Group>
+				<Group my="xl">
 					<Button disabled={!hasChanges} onClick={revert}>
 						Revert changes
 					</Button>

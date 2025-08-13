@@ -80,6 +80,7 @@ export function getGeometryTypeName(data: GeographyInput | GeoJSON): string {
 	if (isGeometryMultiPoint(data)) return "MultiPoint";
 	if (isGeometryMultiLine(data)) return "MultiLineString";
 	if (isGeometryMultiPolygon(data)) return "MultiPolygon";
+	if (isGeometryCollection(data)) return "GeometryCollection";
 	return "Unknown";
 }
 
