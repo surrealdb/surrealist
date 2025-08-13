@@ -20,7 +20,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useSearchParams } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
-import { clamp } from "~/util/helpers";
+import { clamp, showErrorNotification } from "~/util/helpers";
 import { generateRandomName } from "~/util/random";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
@@ -92,7 +92,10 @@ function PageContent({ organisation, instances }: PageContentProps) {
 			const foundInstance = instances.find((instance) => instance.id === instanceId);
 
 			if (!foundInstance) {
-				console.error("Instance not found");
+				showErrorNotification({
+					title: "Instance not found",
+					content: "The instance you selected could not be found.",
+				});
 				return;
 			}
 
@@ -101,7 +104,10 @@ function PageContent({ organisation, instances }: PageContentProps) {
 			const backup = backups?.find((backup) => backup.snapshot_id === backupId);
 
 			if (!backup) {
-				console.error("Backup not found");
+				showErrorNotification({
+					title: "Backup not found",
+					content: "The backup you selected could not be found.",
+				});
 				return;
 			}
 

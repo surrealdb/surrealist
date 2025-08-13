@@ -1,5 +1,6 @@
 import { Alert, Button, Checkbox, Group, Select, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
+import { isDistributedPlan } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
 import { DATASETS } from "~/constants";
 import { DatasetType } from "~/types";
@@ -13,6 +14,12 @@ export function DataOptionsSection({
 	setDetails,
 	setStep,
 }: DeploySectionProps) {
+	const isDistributed = isDistributedPlan(details.plan);
+
+	const restorableInstances = instances.filter((instance) => {
+		return !!instance.distributed_storage_specs === isDistributed;
+	});
+
 	switch (details.startingData.type) {
 		case "dataset":
 			return (
@@ -82,15 +89,16 @@ export function DataOptionsSection({
 				<Stack gap="xl">
 					<Select
 						label="Instance"
-						placeholder="Select an instance..."
-						description="Select the instance to restore from"
-						data={instances.map((it) => ({
+						placeholder="Make a selection..."
+						description="Select a supported instance to restore from"
+						value={details.startingData.backupOptions?.instance?.id}
+						nothingFoundMessage="No instances available"
+						data={restorableInstances.map((it) => ({
 							value: it.id,
 							label: it.name,
 						}))}
-						value={details.startingData.backupOptions?.instance?.id}
 						onChange={(value) => {
-							const instance = instances.find((it) => it.id === value);
+							const instance = restorableInstances.find((it) => it.id === value);
 
 							if (instance) {
 								setDetails((draft) => {
@@ -106,14 +114,15 @@ export function DataOptionsSection({
 						label="Backup"
 						placeholder="Select a backup..."
 						description="Select the backup you want to restore from"
+						disabled={!details.startingData.backupOptions?.instance}
+						value={details.startingData.backupOptions?.backup?.snapshot_id}
+						nothingFoundMessage="No backups available"
 						data={backups?.map((backup) => ({
 							value: backup.snapshot_id,
 							label: dayjs(backup.snapshot_started_at).format(
 								"MMMM D, YYYY - hh:mm A",
 							),
 						}))}
-						disabled={!details.startingData.backupOptions?.instance}
-						value={details.startingData.backupOptions?.backup?.snapshot_id}
 						onChange={(value) => {
 							const backup = backups?.find((backup) => backup.snapshot_id === value);
 
