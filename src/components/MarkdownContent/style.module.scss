@@ -20,3 +20,11 @@
 .code-preview {
 	margin-block: calc(0.8 * var(--mantine-spacing-xl));
 }
+
+.quote p::before {
+	content: "\201C";
+}
+
+.quote p::after {
+	content: "\201D";
+}

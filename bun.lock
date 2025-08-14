@@ -89,6 +89,7 @@
         "react-reverse-portal": "^2.1.1",
         "react-virtualized-auto-sizer": "^1.0.26",
         "react-window": "^1.8.11",
+        "remark-github-blockquote-alert": "^2.0.0",
         "rss-parser": "^3.13.0",
         "sigma": "^3.0.0",
         "surrealdb": "^1.2.0",
@@ -1241,6 +1242,8 @@
     "regjsgen": ["regjsgen@0.8.0", "", {}, "sha512-RvwtGe3d7LvWiDQXeQw8p5asZUmfU1G/l6WbUXeHta7Y2PEIvBTwH6E2EfmYUK8pxcxEdEmaomqyp0vZZ7C+3Q=="],
 
     "regjsparser": ["regjsparser@0.12.0", "", { "dependencies": { "jsesc": "~3.0.2" }, "bin": { "regjsparser": "bin/parser" } }, "sha512-cnE+y8bz4NhMjISKbgeVJtqNbtf5QpjZP+Bslo+UqkIt9QPnX9q095eiRRASJG1/tz6dlNr6Z5NsBiWYokp6EQ=="],
+
+    "remark-github-blockquote-alert": ["remark-github-blockquote-alert@2.0.0", "", { "dependencies": { "unist-util-visit": "^5.0.0" } }, "sha512-n05GsATsJJUm9INz6E9bMcjMdJva0iTQXBOgFqm/DqDOlztxkqpwplVOAqt/6MV/FE7G/Wqskgkbq333CJU3kg=="],
 
     "remark-parse": ["remark-parse@11.0.0", "", { "dependencies": { "@types/mdast": "^4.0.0", "mdast-util-from-markdown": "^2.0.0", "micromark-util-types": "^2.0.0", "unified": "^11.0.0" } }, "sha512-FCxlKLNGknS5ba/1lmpYijMUzX2esxW5xQqjWxw2eHFfS2MSdaHVINFmhjo+qN1WhZhNimq0dZATN9pH0IDrpA=="],
 
