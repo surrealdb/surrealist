@@ -35,11 +35,15 @@ export function useCreateTicketMutation(organization: string) {
 /**
  * Ticket reply mutation
  */
-export function useTicketReplyMutation(organization: string, ticketId: string) {
+export function useTicketReplyMutation(organization: string, ticketId?: string) {
 	const client = useQueryClient();
 
 	return useMutation({
 		mutationFn: async (body: IntercomTicketReplyRequest) => {
+			if (!ticketId) {
+				throw new Error("Ticket ID is required");
+			}
+
 			const result = await fetchTicketsAPI<CloudTicketPart>(
 				`/organisations/${organization}/tickets/${ticketId}/reply`,
 				{

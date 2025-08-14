@@ -19,6 +19,7 @@ export function TicketPartBody({ part }: TicketPartProps) {
 			>
 				<div
 					className={styles.intercomContainer}
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
 					dangerouslySetInnerHTML={{ __html: part.body ?? "" }}
 				/>
 			</TicketPartAuthorDetails>
@@ -27,7 +28,7 @@ export function TicketPartBody({ part }: TicketPartProps) {
 }
 
 export function TicketPart({ part }: TicketPartProps) {
-	const created = dayjs(part.created_at * 1000);
+	const _created = dayjs(part.created_at * 1000);
 
 	if (
 		part.part_type === "ticket_state_updated_by_admin" ||

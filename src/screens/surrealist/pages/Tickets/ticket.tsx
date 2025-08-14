@@ -14,21 +14,11 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
-
-import {
-	iconAccount,
-	iconArrowLeft,
-	iconBullhorn,
-	iconChat,
-	iconClose,
-	iconCursor,
-	iconSurreal,
-} from "~/util/icons";
-
 import { useInputState } from "@mantine/hooks";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { useTicketCloseMutation, useTicketReplyMutation } from "~/cloud/mutations/tickets";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudTicketQuery } from "~/cloud/queries/tickets";
 import { ActionButton } from "~/components/ActionButton";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
@@ -39,10 +29,19 @@ import { Spacer } from "~/components/Spacer";
 import { TICKET_STATES } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useConfirmation } from "~/providers/Confirmation";
-import { CloudTicket } from "~/types";
+import { CloudOrganization, CloudTicket } from "~/types";
 import { formatRelativeDate, plural, showErrorNotification } from "~/util/helpers";
-import { TicketPart } from "./TicketPart";
+import {
+	iconAccount,
+	iconArrowLeft,
+	iconBullhorn,
+	iconChat,
+	iconClose,
+	iconCursor,
+	iconSurreal,
+} from "~/util/icons";
 import classes from "./style.module.scss";
+import { TicketPart } from "./TicketPart";
 
 export interface TicketPageProps {
 	id: string;
@@ -50,7 +49,7 @@ export interface TicketPageProps {
 }
 
 export interface TicketReplyBoxProps {
-	ticket: CloudTicket;
+	ticket?: CloudTicket;
 	organization: string;
 	onClose: () => void;
 	recomputeHeight: () => void;
@@ -58,7 +57,7 @@ export interface TicketReplyBoxProps {
 
 export const TicketReplyBox = forwardRef<HTMLDivElement, TicketReplyBoxProps>(
 	({ ticket, organization, onClose, recomputeHeight }, ref) => {
-		const replyMutation = useTicketReplyMutation(organization, ticket.id);
+		const replyMutation = useTicketReplyMutation(organization, ticket?.id);
 		const [body, setBody] = useInputState("");
 
 		return (
@@ -137,10 +136,6 @@ export const TicketReplyBox = forwardRef<HTMLDivElement, TicketReplyBoxProps>(
 export function TicketPage({ id, organization }: TicketPageProps) {
 	const [, navigate] = useLocation();
 
-	if (id === "0") {
-		return <div />;
-	}
-
 	const [random, setRandom] = useState(0);
 	const [replyBoxHeight, setReplyBoxHeight] = useState(0);
 	const [replyBoxOpen, replyBoxHandle] = useBoolean(false);
@@ -168,12 +163,13 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 
 	useEffect(() => {
 		setReplyBoxHeight(replyBoxRef.current?.getBoundingClientRect().height ?? 0);
-	}, [replyBoxOpen, random, replyBoxRef.current]);
+	}, []);
 
+	const { data: organisation } = useCloudOrganizationQuery(id);
 	const { data: ticket, isPending: ticketPending } = useCloudTicketQuery(organization, id);
 
 	return (
-		<CloudAdminGuard organizationId={organization}>
+		<CloudAdminGuard organisation={organisation as CloudOrganization}>
 			<Box
 				flex={1}
 				pos="relative"
@@ -401,28 +397,26 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 							)}
 
 							{ticket?.open && !replyBoxOpen && (
-								<>
-									<Group
-										mt="xl"
-										justify="center"
+								<Group
+									mt="xl"
+									justify="center"
+								>
+									<Button
+										variant="gradient"
+										rightSection={<Icon path={iconCursor} />}
+										onClick={replyBoxHandle.open}
 									>
-										<Button
-											variant="gradient"
-											rightSection={<Icon path={iconCursor} />}
-											onClick={replyBoxHandle.open}
-										>
-											Send a reply
-										</Button>
-										<Button
-											variant="light"
-											color="slate"
-											rightSection={<Icon path={iconClose} />}
-											onClick={close}
-										>
-											Close ticket
-										</Button>
-									</Group>
-								</>
+										Send a reply
+									</Button>
+									<Button
+										variant="light"
+										color="slate"
+										rightSection={<Icon path={iconClose} />}
+										onClick={close}
+									>
+										Close ticket
+									</Button>
+								</Group>
 							)}
 						</Skeleton>
 					</Box>
@@ -432,7 +426,7 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 					<TicketReplyBox
 						ref={replyBoxRef}
 						organization={organization}
-						ticket={ticket!}
+						ticket={ticket}
 						onClose={replyBoxHandle.close}
 						recomputeHeight={() => setRandom(random + 1)}
 					/>
