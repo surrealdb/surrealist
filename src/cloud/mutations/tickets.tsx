@@ -16,7 +16,7 @@ export function useCreateTicketMutation(organization: string) {
 	return useMutation({
 		mutationFn: async (body: IntercomTicketCreateRequest) => {
 			const result = await fetchTicketsAPI<CloudTicket>(
-				`/organisations/${organization}/tickets`,
+				`/cloud/organisations/${organization}/tickets`,
 				{
 					method: "POST",
 					body: JSON.stringify(body),
@@ -45,7 +45,7 @@ export function useTicketReplyMutation(organization: string, ticketId?: string) 
 			}
 
 			const result = await fetchTicketsAPI<CloudTicketPart>(
-				`/organisations/${organization}/tickets/${ticketId}/reply`,
+				`/cloud/organisations/${organization}/tickets/${ticketId}/reply`,
 				{
 					method: "POST",
 					body: JSON.stringify(body),
@@ -70,7 +70,7 @@ export function useTicketCloseMutation(organization: string, ticketId: string) {
 	return useMutation({
 		mutationFn: async () => {
 			const result = await fetchTicketsAPI<CloudTicket>(
-				`/organisations/${organization}/tickets/${ticketId}/close`,
+				`/cloud/organisations/${organization}/tickets/${ticketId}/close`,
 				{
 					method: "POST",
 				},

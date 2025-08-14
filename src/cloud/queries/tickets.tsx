@@ -13,7 +13,7 @@ export function useCloudTicketsQuery(organization?: string) {
 		queryKey: ["cloud", "tickets", organization],
 		enabled: !!organization && authState === "authenticated",
 		queryFn: async () => {
-			return fetchTicketsAPI<CloudTicket[]>(`/organisations/${organization}/tickets`);
+			return fetchTicketsAPI<CloudTicket[]>(`/cloud/organisations/${organization}/tickets`);
 		},
 	});
 }
@@ -29,7 +29,7 @@ export function useCloudTicketTypesQuery(organization?: string) {
 		enabled: !!organization && authState === "authenticated",
 		queryFn: async () => {
 			return fetchTicketsAPI<CloudTicketType[]>(
-				`/organisations/${organization}/ticket_types`,
+				`/cloud/organisations/${organization}/ticket_types`,
 			);
 		},
 	});
@@ -46,7 +46,7 @@ export function useCloudTicketQuery(organization?: string, ticketId?: string) {
 		enabled: !!organization && !!ticketId && authState === "authenticated",
 		queryFn: async () => {
 			return fetchTicketsAPI<CloudTicket>(
-				`/organisations/${organization}/tickets/${ticketId}`,
+				`/cloud/organisations/${organization}/tickets/${ticketId}`,
 			);
 		},
 	});
