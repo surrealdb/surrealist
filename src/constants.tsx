@@ -64,7 +64,6 @@ import {
 	iconRelation,
 	iconSearch,
 	iconTable,
-	iconTag,
 	iconTune,
 	iconVariable,
 	iconWarning,
@@ -206,16 +205,10 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		icon: iconReferral,
 		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
-	"/tickets": {
-		id: "/tickets",
-		name: "Tickets",
-		icon: iconTag,
-		aliases: ["/t/*", "/tickets/*"],
-		disabled: ({ flags }) => !flags.cloud_enabled || !flags.tickets_enabled,
-	},
 	"/support": {
 		id: "/support",
 		name: "Support",
+		aliases: ["/tickets/*", "/t/*"],
 		icon: iconHelp,
 	},
 	"/mini/new": {
@@ -289,6 +282,12 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		name: "API Docs",
 		icon: iconAPI,
 		disabled: ({ flags }) => !flags.apidocs_view,
+	},
+	support: {
+		id: "support",
+		name: "Support",
+		icon: iconHelp,
+		disabled: ({ flags }) => !flags.support_view,
 	},
 };
 
