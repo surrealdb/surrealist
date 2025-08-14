@@ -9,7 +9,7 @@ import {
 	TypographyStylesProvider,
 } from "@mantine/core";
 import clsx from "clsx";
-import React, { PropsWithChildren, ReactElement, useMemo } from "react";
+import { PropsWithChildren, ReactElement, useMemo } from "react";
 import ReactMarkdown, { Components, Options } from "react-markdown";
 import { remarkAlert } from "remark-github-blockquote-alert";
 import { useConnection } from "~/hooks/connection";
@@ -22,6 +22,7 @@ import { ActionButton } from "../ActionButton";
 import { CodePreview, CodePreviewOptions } from "../CodePreview";
 import { Icon } from "../Icon";
 import { Link } from "../Link";
+import { extractAlertTitle, filterAlertTitle } from "./helpers";
 import classes from "./style.module.scss";
 
 interface MarkdownContentProps extends BoxProps {
@@ -31,74 +32,6 @@ interface MarkdownContentProps extends BoxProps {
 		link: TextProps;
 		code: CodePreviewOptions;
 	}>;
-}
-
-function extractAlertTitle(children: React.ReactNode): string | undefined {
-	if (!children) return undefined;
-
-	if (typeof children === "string") {
-		return children.trim() || undefined;
-	}
-
-	if (Array.isArray(children)) {
-		for (const child of children) {
-			const title = extractAlertTitle(child);
-			if (title) return title;
-		}
-		return undefined;
-	}
-
-	if (React.isValidElement(children)) {
-		const props = children.props as { className?: string; children?: React.ReactNode };
-		const { className, children: elementChildren } = props;
-
-		if (className?.includes("markdown-alert-title")) {
-			return extractTextFromNode(elementChildren);
-		}
-
-		if (children.type === "p" && elementChildren) {
-			const textContent = extractTextFromNode(elementChildren);
-			return textContent?.trim() || undefined;
-		}
-
-		return extractAlertTitle(elementChildren);
-	}
-
-	return undefined;
-}
-
-function extractTextFromNode(node: React.ReactNode): string {
-	if (typeof node === "string") return node;
-	if (Array.isArray(node)) return node.map(extractTextFromNode).join("");
-	if (React.isValidElement(node)) return extractTextFromNode(node.props?.children);
-	return "";
-}
-
-function filterAlertTitle(children: React.ReactNode): React.ReactNode {
-	if (!children) return children;
-
-	if (Array.isArray(children)) {
-		return children
-			.map((child) => {
-				if (React.isValidElement(child)) {
-					const props = child.props as { className?: string; children?: React.ReactNode };
-					const { className, children: elementChildren } = props;
-
-					if (className?.includes("markdown-alert-title")) {
-						return null;
-					}
-
-					const filteredChildren = filterAlertTitle(elementChildren);
-					return React.cloneElement(child as React.ReactElement<any>, {
-						children: filteredChildren,
-					});
-				}
-				return child;
-			})
-			.filter(Boolean);
-	}
-
-	return children;
 }
 
 export function MarkdownContent({
