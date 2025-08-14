@@ -133,14 +133,14 @@ export const TicketReplyBox = forwardRef<HTMLDivElement, TicketReplyBoxProps>(
 	},
 );
 
-export function TicketPage({ id, organization }: TicketPageProps) {
+export function TicketPage({ id, organization: orgId }: TicketPageProps) {
 	const [, navigate] = useLocation();
 
 	const [random, setRandom] = useState(0);
 	const [replyBoxHeight, setReplyBoxHeight] = useState(0);
 	const [replyBoxOpen, replyBoxHandle] = useBoolean(false);
 	const replyBoxRef = useRef<HTMLDivElement>(null);
-	const ticketCloseMutation = useTicketCloseMutation(organization, id);
+	const ticketCloseMutation = useTicketCloseMutation(orgId, id);
 
 	const close = useConfirmation({
 		title: "Close ticket",
@@ -165,8 +165,10 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 		setReplyBoxHeight(replyBoxRef.current?.getBoundingClientRect().height ?? 0);
 	}, []);
 
-	const { data: organisation } = useCloudOrganizationQuery(id);
-	const { data: ticket, isPending: ticketPending } = useCloudTicketQuery(organization, id);
+	const { data: organisation } = useCloudOrganizationQuery(orgId);
+	const { data: ticket, isPending: ticketPending } = useCloudTicketQuery(orgId, id);
+
+	console.log(organisation);
 
 	return (
 		<CloudAdminGuard organisation={organisation as CloudOrganization}>
@@ -193,7 +195,7 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 								variant="light"
 								color="slate"
 								leftSection={<Icon path={iconArrowLeft} />}
-								onClick={() => navigate(`/tickets/${organization}`)}
+								onClick={() => navigate(`/tickets/${orgId}`)}
 								size="xs"
 							>
 								Back to overview
@@ -425,7 +427,7 @@ export function TicketPage({ id, organization }: TicketPageProps) {
 				{replyBoxOpen && (
 					<TicketReplyBox
 						ref={replyBoxRef}
-						organization={organization}
+						organization={orgId}
 						ticket={ticket}
 						onClose={replyBoxHandle.close}
 						recomputeHeight={() => setRandom(random + 1)}
