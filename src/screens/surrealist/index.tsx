@@ -39,6 +39,7 @@ import GraphqlView from "./views/graphql/GraphqlView";
 import MonitorView from "./views/monitor/MonitorView";
 import ParametersView from "./views/parameters/ParametersView";
 import QueryView from "./views/query/QueryView";
+import SupportView from "./views/support";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
@@ -72,6 +73,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	functions: createHtmlPortalNode(PORTAL_OPTIONS),
 	parameters: createHtmlPortalNode(PORTAL_OPTIONS),
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
+	support: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
 const VIEW_COMPONENTS: Record<ViewPage, FC> = {
@@ -85,6 +87,7 @@ const VIEW_COMPONENTS: Record<ViewPage, FC> = {
 	functions: memo(FunctionsView),
 	parameters: memo(ParametersView),
 	documentation: memo(DocumentationView),
+	support: memo(SupportView),
 };
 
 export function SurrealistScreen() {
