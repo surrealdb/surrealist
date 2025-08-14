@@ -1,7 +1,4 @@
-import classes from "./style.module.scss";
-
 import { Box, ScrollArea, SimpleGrid, Skeleton, Stack } from "@mantine/core";
-
 import { fork } from "radash";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { CloudSplash } from "~/components/CloudSplash";
@@ -10,6 +7,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { ORGANIZATIONS, useSavepoint } from "~/hooks/overview";
 import { OrganizationTile } from "../Organizations/organization";
+import classes from "./style.module.scss";
 
 const GRID_COLUMNS = {
 	xs: 1,

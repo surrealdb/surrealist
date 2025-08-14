@@ -37,14 +37,14 @@ export interface OrganizationTicketsPageProps {
 
 export function OrganizationTicketsPage({ organization }: OrganizationTicketsPageProps) {
 	const isAuthed = useIsAuthenticated();
-	const [body, setBody] = useInputState("");
+	const [_body, _setBody] = useInputState("");
 	const [, navigate] = useLocation();
 
 	const pagination = usePagination();
 	const startAt = (pagination.currentPage - 1) * pagination.pageSize;
 
 	const { data: tickets, isPending: ticketsPending } = useCloudTicketsQuery(organization);
-	const { data: org, isPending: orgPending } = useCloudOrganizationQuery(organization);
+	const { data: org } = useCloudOrganizationQuery(organization);
 
 	const pageSlice = tickets?.slice(startAt, startAt + pagination.pageSize);
 

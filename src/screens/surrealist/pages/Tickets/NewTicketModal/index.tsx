@@ -1,4 +1,4 @@
-import { Button, Group, MultiSelect, Select, Stack, TextInput, Textarea } from "@mantine/core";
+import { Button, Group, MultiSelect, Select, Stack, Textarea, TextInput } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
 import { useState } from "react";
 import { navigate } from "wouter/use-browser-location";
