@@ -144,14 +144,7 @@ export function MarkdownContent({
 				if (className?.includes("markdown-alert")) {
 					const alertType = className?.split("markdown-alert-")[1];
 					const color = ALERT_COLOR[alertType as keyof typeof ALERT_COLOR];
-
-					// Debug: log the children structure
-					console.log("Alert children:", children);
-					console.log("Alert className:", className);
-
 					const extractedTitle = extractAlertTitle(children);
-					console.log("Extracted title:", extractedTitle);
-
 					const filteredChildren = filterAlertTitle(children);
 
 					return (
