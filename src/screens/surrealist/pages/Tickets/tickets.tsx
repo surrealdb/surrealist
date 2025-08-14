@@ -46,12 +46,13 @@ export function OrganizationTicketsPage({ organization }: OrganizationTicketsPag
 	const { data: tickets, isPending: ticketsPending } = useCloudTicketsQuery(organization);
 	const { data: org } = useCloudOrganizationQuery(organization);
 
-	const pageSlice = tickets?.slice(startAt, startAt + pagination.pageSize);
+	const ticketsArray = Array.isArray(tickets) ? tickets : [];
+	const pageSlice = ticketsArray.slice(startAt, startAt + pagination.pageSize);
 
 	useLayoutEffect(() => {
 		pagination.setPageSize(10);
-		pagination.setTotal(tickets?.length ?? 0);
-	}, [pagination.setTotal, pagination.setPageSize, tickets?.length]);
+		pagination.setTotal(ticketsArray.length);
+	}, [pagination.setTotal, pagination.setPageSize, ticketsArray.length]);
 
 	if (!isAuthed) {
 		return <CloudSplash />;

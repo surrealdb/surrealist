@@ -58,5 +58,6 @@ export async function fetchTicketsAPI<T = unknown>(
 		throw new Error(`Failed API request to ${ticketsBase}${path}: ${err}`);
 	}
 
-	return {} as T;
+	// If we reach here, the response was not JSON, which is unexpected
+	throw new Error(`Unexpected response format from ${ticketsBase}${path}`);
 }
