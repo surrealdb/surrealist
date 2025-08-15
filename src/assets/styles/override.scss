@@ -495,3 +495,11 @@ body.mod .cm-record-link:hover {
 	margin-top: calc(var(--drawer-offset) + var(--titlebar-offset, 0px));
 	height: var(--drawer-height, calc(100% - var(--drawer-offset) * 2 - var(--titlebar-offset, 0px)));
 }
+
+:where([data-mantine-color-scheme="dark"]) :where(table) {
+	--table-border-color: var(--mantine-color-slate-6);
+}
+
+:where([data-mantine-color-scheme="light"]) :where(table) {
+	--table-border-color: var(--mantine-color-slate-2);
+}
