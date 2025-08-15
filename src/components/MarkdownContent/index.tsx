@@ -11,6 +11,7 @@ import {
 import clsx from "clsx";
 import { PropsWithChildren, ReactElement, useMemo } from "react";
 import ReactMarkdown, { Components, Options } from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { remarkAlert } from "remark-github-blockquote-alert";
 import { useConnection } from "~/hooks/connection";
 import { useConnectionNavigator } from "~/hooks/routing";
@@ -264,6 +265,7 @@ export function MarkdownContent({
 							legacyTitle: true,
 						},
 					],
+					remarkGfm,
 				]}
 				{...markdownProps}
 			>

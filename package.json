@@ -107,6 +107,7 @@
 		"react-reverse-portal": "^2.1.1",
 		"react-virtualized-auto-sizer": "^1.0.26",
 		"react-window": "^1.8.11",
+		"remark-gfm": "^4.0.1",
 		"remark-github-blockquote-alert": "^2.0.0",
 		"rss-parser": "^3.13.0",
 		"sigma": "^3.0.0",
