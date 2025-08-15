@@ -36,9 +36,6 @@ export const schema = {
 	apidocs_view: {
 		options: [false, true],
 	},
-	support_view: {
-		options: [false, true],
-	},
 	themes: {
 		options: [false, true],
 	},
@@ -106,7 +103,6 @@ export const featureFlags = new FeatureFlags({
 			functions_view: true,
 			parameters_view: true,
 			apidocs_view: true,
-			support_view: true,
 			newsfeed: true,
 			highlight_tool: true,
 			cloud_enabled: true,
@@ -128,7 +124,6 @@ export const featureFlags = new FeatureFlags({
 			functions_view: true,
 			parameters_view: true,
 			apidocs_view: true,
-			support_view: true,
 			changelog: "hidden",
 			cloud_enabled: true,
 			cloud_killswitch: true,
@@ -149,7 +144,6 @@ export const featureFlags = new FeatureFlags({
 			functions_view: true,
 			parameters_view: true,
 			apidocs_view: true,
-			support_view: true,
 			database_version_check: true,
 			cloud_enabled: true,
 			cloud_killswitch: true,
