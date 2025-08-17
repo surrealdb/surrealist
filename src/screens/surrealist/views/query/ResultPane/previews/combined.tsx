@@ -1,3 +1,4 @@
+import { Box, Stack, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -16,15 +17,35 @@ export function buildCombinedResult(
 	return header + attemptFormat(format, result);
 }
 
-export function CombinedPreview({ responses }: PreviewProps) {
+export function CombinedPreview({ responses, query }: PreviewProps) {
 	const [format] = useResultFormatter();
 	const { inspect } = useInspector();
 
+	const noneResultMode = query.noneResultMode;
+
+	const noneResultCount = useMemo(() => {
+		return responses.filter((response) => response.success && response.result === undefined)
+			.length;
+	}, [responses]);
+
 	const contents = useMemo(() => {
+		if (noneResultMode === "hide") {
+			return responses
+				.reduce((acc, cur, i) => {
+					// Skip NONE results
+					if (cur.success && cur.result === undefined) {
+						return acc;
+					}
+					// Keep original index for displayed results
+					return acc + buildCombinedResult(i, cur, format);
+				}, "")
+				.trim();
+		}
+
 		return responses
 			.reduce((acc, cur, i) => acc + buildCombinedResult(i, cur, format), "")
 			.trim();
-	}, [responses, format]);
+	}, [responses, format, noneResultMode]);
 
 	const extensions = useMemo(
 		() => [surrealql("combined-results"), surqlRecordLinks(inspect)],
@@ -32,10 +53,24 @@ export function CombinedPreview({ responses }: PreviewProps) {
 	);
 
 	return (
-		<CodeEditor
-			value={contents}
-			readOnly
-			extensions={extensions}
-		/>
+		<Stack gap="sm">
+			{noneResultMode === "hide" && noneResultCount > 0 && (
+				<Box px="sm">
+					<Text
+						size="sm"
+						c="dimmed"
+					>
+						{noneResultCount} NONE {noneResultCount === 1 ? "result" : "results"} hidden
+						(Change in preferences to show)
+					</Text>
+				</Box>
+			)}
+
+			<CodeEditor
+				value={contents}
+				readOnly
+				extensions={extensions}
+			/>
+		</Stack>
 	);
 }
