@@ -48,6 +48,7 @@ import {
 	iconAuth,
 	iconBraces,
 	iconChart,
+	iconChevronUp,
 	iconCombined,
 	iconDatabase,
 	iconDataTable,
@@ -156,6 +157,12 @@ export const NONE_RESULT_MODES: Listable<NoneResultMode>[] = [
 		value: "hide",
 		icon: iconEyeOff,
 		description: "Hide NONE results",
+	},
+	{
+		label: "Collapse",
+		value: "collapse",
+		icon: iconChevronUp,
+		description: "Collapse NONE results",
 	},
 ];
 
