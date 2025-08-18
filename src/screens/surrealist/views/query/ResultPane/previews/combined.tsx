@@ -5,6 +5,7 @@ import { CodeEditor } from "~/components/CodeEditor";
 import { surqlRecordLinks } from "~/editor";
 import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
 import { useInspector } from "~/providers/Inspector";
+import classes from "../style.module.scss";
 import { attemptFormat, type PreviewProps } from ".";
 
 export function buildCombinedResult(
@@ -53,7 +54,10 @@ export function CombinedPreview({ responses, query }: PreviewProps) {
 	);
 
 	return (
-		<Stack gap="sm">
+		<Stack
+			gap="sm"
+			className={classes.combinedStack}
+		>
 			{noneResultMode === "hide" && noneResultCount > 0 && (
 				<Box px="sm">
 					<Text
@@ -70,6 +74,7 @@ export function CombinedPreview({ responses, query }: PreviewProps) {
 				value={contents}
 				readOnly
 				extensions={extensions}
+				className={classes.combinedEditor}
 			/>
 		</Stack>
 	);
