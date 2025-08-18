@@ -71,17 +71,12 @@ export function applyMigrations(config: any): SurrealistConfig {
 		}
 	});
 
-	// x.x.x -> x.x.x: Add currentFolderPath and queryFolders
+	// x.x.x -> x.x.x: Add order property to queries and folders
 
 	applyToConnections(config, (con) => {
 		con.currentFolderPath ??= [];
 		con.queryFolders ??= [];
-	});
 
-	// x.x.x -> x.x.x: Add order property to queries and folders
-
-	applyToConnections(config, (con) => {
-		// Add order property to existing queries
 		if (con.queries && isArray(con.queries)) {
 			con.queries.forEach((query: any, index: number) => {
 				if (query.order === undefined) {
@@ -90,7 +85,6 @@ export function applyMigrations(config: any): SurrealistConfig {
 			});
 		}
 
-		// Ensure folders have order property (should already be there, but just in case)
 		if (con.queryFolders && isArray(con.queryFolders)) {
 			con.queryFolders.forEach((folder: any, index: number) => {
 				if (folder.order === undefined) {
