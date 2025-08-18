@@ -50,6 +50,7 @@ import {
 	iconStar,
 	iconText,
 } from "~/util/icons";
+import { FileExplorer } from "../FileExplorer";
 import classes from "./style.module.scss";
 
 const TYPE_ICONS: Record<QueryType, string> = {
@@ -60,6 +61,7 @@ const TYPE_ICONS: Record<QueryType, string> = {
 interface QueryProps extends BoxProps, ElementProps<"button"> {
 	query: QueryTab;
 	queries: QueryTab[];
+	folders: QueryFolder[];
 	isActive: boolean;
 	isLive: boolean;
 	isDragging: boolean;
@@ -70,6 +72,7 @@ interface QueryProps extends BoxProps, ElementProps<"button"> {
 function Query({
 	query,
 	queries,
+	folders,
 	isActive,
 	isLive,
 	isDragging,
@@ -80,6 +83,7 @@ function Query({
 	const { addQueryTab, updateQueryTab } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const [isRenaming, setIsRenaming] = useState(false);
+	const [showFolderSelector, setShowFolderSelector] = useState(false);
 	const [queryQuickClose] = useSetting("behavior", "queryQuickClose");
 	const [connection] = useConnectionAndView();
 	const isLight = useIsLight();
@@ -115,10 +119,62 @@ function Query({
 		});
 	});
 
+	const moveQueryToFolder = useStable((queryId: string, folderId?: string) => {
+		if (!connection) return;
+
+		updateQueryTab(connection, {
+			id: queryId,
+			folderId: folderId,
+		});
+	});
+
+	// Build initial path for FileExplorer based on query's current folder
+	const getInitialPath = useStable(() => {
+		if (!query.folderId) return [];
+
+		const buildPathToFolder = (folderId: string): string[] => {
+			const folder = folders.find((f) => f.id === folderId);
+			if (!folder) return [];
+
+			const parentPath = folder.parentId ? buildPathToFolder(folder.parentId) : [];
+			return [...parentPath, folder.id];
+		};
+
+		return buildPathToFolder(query.folderId);
+	});
+
 	const handleQuickRemove = useStable((e: React.MouseEvent) => {
 		e.stopPropagation();
 		onRemoveQuery(query.id);
 	});
+
+	// Build move options dynamically
+	const moveOptions = [];
+
+	// Add "Move to Root" if query is currently in a folder
+	if (query.folderId !== undefined) {
+		moveOptions.push({
+			key: "move-to-root",
+			title: "Move to Root",
+			icon: <Icon path={iconHome} />,
+			onClick: () => moveQueryToFolder(query.id, undefined),
+		});
+	}
+
+	// Add "Move to Parent" if query is in a nested folder
+	const currentFolder = query.folderId ? folders.find((f) => f.id === query.folderId) : null;
+	const parentFolder = currentFolder?.parentId
+		? folders.find((f) => f.id === currentFolder.parentId)
+		: null;
+
+	if (currentFolder && currentFolder.parentId !== undefined) {
+		moveOptions.push({
+			key: "move-to-parent",
+			title: `Move to ${parentFolder ? parentFolder.name : "Root"}`,
+			icon: <Icon path={iconArrowLeft} />,
+			onClick: () => moveQueryToFolder(query.id, currentFolder.parentId),
+		});
+	}
 
 	const buildContextMenu = showContextMenu([
 		{
@@ -147,6 +203,13 @@ function Query({
 			title: "Rename",
 			icon: <Icon path={iconText} />,
 			onClick: () => setIsRenaming(true),
+		},
+		...moveOptions,
+		{
+			key: "move-to",
+			title: "Move to...",
+			icon: <Icon path={iconFolder} />,
+			onClick: () => setShowFolderSelector(true),
 		},
 		{
 			hidden: query.type !== "file",
@@ -191,71 +254,86 @@ function Query({
 	]);
 
 	return (
-		<Entry
-			key={query.id}
-			isActive={isActive}
-			onClick={handleActivate}
-			className={clsx(classes.query, isDragging && classes.queryDragging)}
-			onContextMenu={buildContextMenu}
-			leftSection={<Icon path={TYPE_ICONS[query.type]} />}
-			rightSection={
-				<>
-					{isLive && (
-						<LiveIndicator
-							className={classes.queryLive}
-							color={isActive ? "white" : "red"}
-							mr={-4}
-						/>
-					)}
-
-					{queryQuickClose && (
-						<ActionButton
-							size="sm"
-							variant="transparent"
-							component="div"
-							className={classes.queryClose}
-							onClick={handleQuickRemove}
-							color={isActive && isLight ? "white" : undefined}
-							label="Close query"
-						>
-							<Icon
-								path={iconClose}
-								size="sm"
+		<>
+			<Entry
+				key={query.id}
+				isActive={isActive}
+				onClick={handleActivate}
+				className={clsx(classes.query, isDragging && classes.queryDragging)}
+				onContextMenu={buildContextMenu}
+				leftSection={<Icon path={TYPE_ICONS[query.type]} />}
+				rightSection={
+					<>
+						{isLive && (
+							<LiveIndicator
+								className={classes.queryLive}
+								color={isActive ? "white" : "red"}
+								mr={-4}
 							/>
-						</ActionButton>
-					)}
-				</>
-			}
-			{...other}
-		>
-			<EditableText
-				value={query.name || ""}
-				onChange={(value) => renameQuery(query.id, value)}
-				activationMode="double-click"
-				editable={isRenaming}
-				onEditableChange={setIsRenaming}
-				withDecoration
-				style={{
-					outline: "none",
-					textOverflow: "ellipsis",
-					overflow: "hidden",
-				}}
+						)}
+
+						{queryQuickClose && (
+							<ActionButton
+								size="sm"
+								variant="transparent"
+								component="div"
+								className={classes.queryClose}
+								onClick={handleQuickRemove}
+								color={isActive && isLight ? "white" : undefined}
+								label="Close query"
+							>
+								<Icon
+									path={iconClose}
+									size="sm"
+								/>
+							</ActionButton>
+						)}
+					</>
+				}
+				{...other}
+			>
+				<EditableText
+					value={query.name || ""}
+					onChange={(value) => renameQuery(query.id, value)}
+					activationMode="double-click"
+					editable={isRenaming}
+					onEditableChange={setIsRenaming}
+					withDecoration
+					style={{
+						outline: "none",
+						textOverflow: "ellipsis",
+						overflow: "hidden",
+					}}
+				/>
+			</Entry>
+
+			<FileExplorer
+				opened={showFolderSelector}
+				onClose={() => setShowFolderSelector(false)}
+				title="Move Query"
+				description={`Browse to the folder where you want to move "${query.name || "Untitled"}":`}
+				folders={folders}
+				queries={queries.filter((q) => q.id !== query.id)}
+				initialPath={getInitialPath()}
+				onMove={(folderId) => moveQueryToFolder(query.id, folderId)}
 			/>
-		</Entry>
+		</>
 	);
 }
 
 interface FolderProps extends BoxProps, ElementProps<"button"> {
 	folder: QueryFolder;
 	folders: QueryFolder[];
+	queries: QueryTab[];
 	onNavigate: (folderId: string) => void;
 	onRemoveFolder: (folderId: string) => void;
 }
 
-function Folder({ folder, folders, onNavigate, onRemoveFolder, ...other }: FolderProps) {
+function Folder({ folder, folders, queries, onNavigate, onRemoveFolder, ...other }: FolderProps) {
 	const { updateQueryFolder } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const [isRenaming, setIsRenaming] = useState(false);
+	const [showFolderSelector, setShowFolderSelector] = useState(false);
 	const [connection] = useConnectionAndView();
 
 	const handleNavigate = useStable(() => {
@@ -274,6 +352,74 @@ function Folder({ folder, folders, onNavigate, onRemoveFolder, ...other }: Folde
 		});
 	});
 
+	const moveFolderTo = useStable((targetParentId?: string) => {
+		if (!connection) return;
+
+		updateQueryFolder(connection, {
+			id: folder.id,
+			parentId: targetParentId,
+		});
+	});
+
+	// Build initial path for FileExplorer based on folder's current parent
+	const getInitialPath = useStable(() => {
+		if (!folder.parentId) return [];
+
+		const buildPathToFolder = (folderId: string): string[] => {
+			const folder = folders.find((f) => f.id === folderId);
+			if (!folder) return [];
+
+			const parentPath = folder.parentId ? buildPathToFolder(folder.parentId) : [];
+			return [...parentPath, folder.id];
+		};
+
+		return buildPathToFolder(folder.parentId);
+	});
+
+	// Get excluded folder IDs (folder itself and all descendants)
+	const getExcludedFolderIds = useStable(() => {
+		const excludeFolderAndDescendants = (folderId: string): string[] => {
+			const result = [folderId];
+			const children = folders.filter((f) => f.parentId === folderId);
+			for (const child of children) {
+				result.push(...excludeFolderAndDescendants(child.id));
+			}
+			return result;
+		};
+
+		return excludeFolderAndDescendants(folder.id);
+	});
+
+	// Build move options dynamically for folder
+	const folderMoveOptions = [];
+
+	// Add "Move to Root" if folder is currently in a parent folder
+	if (folder.parentId !== undefined) {
+		folderMoveOptions.push({
+			key: "move-to-root",
+			title: "Move to Root",
+			icon: <Icon path={iconHome} />,
+			onClick: () => moveFolderTo(undefined),
+		});
+	}
+
+	// Add "Move to Parent" if folder is in a nested folder
+	const currentParentFolder = folder.parentId
+		? folders.find((f) => f.id === folder.parentId)
+		: null;
+	const grandParentFolder = currentParentFolder?.parentId
+		? folders.find((f) => f.id === currentParentFolder.parentId)
+		: null;
+
+	if (currentParentFolder && currentParentFolder.parentId !== undefined) {
+		folderMoveOptions.push({
+			key: "move-to-parent",
+			title: `Move to ${grandParentFolder ? grandParentFolder.name : "Root"}`,
+			icon: <Icon path={iconArrowLeft} />,
+			onClick: () => moveFolderTo(currentParentFolder.parentId),
+		});
+	}
+
 	const buildContextMenu = showContextMenu([
 		{
 			key: "open",
@@ -287,6 +433,16 @@ function Folder({ folder, folders, onNavigate, onRemoveFolder, ...other }: Folde
 			icon: <Icon path={iconText} />,
 			onClick: () => setIsRenaming(true),
 		},
+		...folderMoveOptions,
+		{
+			key: "move-to",
+			title: "Move to...",
+			icon: <Icon path={iconFolder} />,
+			onClick: () => setShowFolderSelector(true),
+		},
+		{
+			key: "delete-div",
+		},
 		{
 			key: "delete",
 			title: "Delete",
@@ -295,28 +451,42 @@ function Folder({ folder, folders, onNavigate, onRemoveFolder, ...other }: Folde
 	]);
 
 	return (
-		<Entry
-			key={folder.id}
-			onClick={isRenaming ? undefined : handleNavigate}
-			onContextMenu={buildContextMenu}
-			leftSection={<Icon path={iconFolder} />}
-			rightSection={<Icon path={iconChevronRight} />}
-			{...other}
-		>
-			<EditableText
-				value={folder.name}
-				onChange={(value) => renameFolder(folder.id, value)}
-				activationMode="double-click"
-				editable={isRenaming}
-				onEditableChange={setIsRenaming}
-				withDecoration
-				style={{
-					outline: "none",
-					textOverflow: "ellipsis",
-					overflow: "hidden",
-				}}
+		<>
+			<Entry
+				key={folder.id}
+				onClick={isRenaming ? undefined : handleNavigate}
+				onContextMenu={buildContextMenu}
+				leftSection={<Icon path={iconFolder} />}
+				rightSection={<Icon path={iconChevronRight} />}
+				{...other}
+			>
+				<EditableText
+					value={folder.name}
+					onChange={(value) => renameFolder(folder.id, value)}
+					activationMode="double-click"
+					editable={isRenaming}
+					onEditableChange={setIsRenaming}
+					withDecoration
+					style={{
+						outline: "none",
+						textOverflow: "ellipsis",
+						overflow: "hidden",
+					}}
+				/>
+			</Entry>
+
+			<FileExplorer
+				opened={showFolderSelector}
+				onClose={() => setShowFolderSelector(false)}
+				title="Move Folder"
+				description={`Browse to the location where you want to move "${folder.name}":`}
+				folders={folders}
+				queries={queries}
+				initialPath={getInitialPath()}
+				excludedFolderIds={getExcludedFolderIds()}
+				onMove={(folderId) => moveFolderTo(folderId)}
 			/>
-		</Entry>
+		</>
 	);
 }
 
@@ -719,7 +889,8 @@ export function TabsPane(props: TabsPaneProps) {
 											<Folder
 												key={folder.id}
 												folder={folder}
-												folders={currentFolders}
+												folders={queryFolders}
+												queries={queries}
 												onNavigate={handleNavigateToFolder}
 												onRemoveFolder={removeFolder}
 												{...handleProps}
@@ -736,6 +907,7 @@ export function TabsPane(props: TabsPaneProps) {
 												key={query.id}
 												query={query}
 												queries={currentQueries}
+												folders={queryFolders}
 												isActive={isActive}
 												isLive={isLive}
 												isDragging={isDragging}
