@@ -30,21 +30,16 @@ export function CombinedPreview({ responses, query }: PreviewProps) {
 	}, [responses]);
 
 	const contents = useMemo(() => {
-		if (noneResultMode === "hide") {
-			return responses
-				.reduce((acc, cur, i) => {
-					// Skip NONE results
+		return responses
+			.reduce((acc, cur, i) => {
+				if (noneResultMode === "hide") {
 					if (cur.success && cur.result === undefined) {
 						return acc;
 					}
-					// Keep original index for displayed results
 					return acc + buildCombinedResult(i, cur, format);
-				}, "")
-				.trim();
-		}
-
-		return responses
-			.reduce((acc, cur, i) => acc + buildCombinedResult(i, cur, format), "")
+				}
+				return acc + buildCombinedResult(i, cur, format);
+			}, "")
 			.trim();
 	}, [responses, format, noneResultMode]);
 
