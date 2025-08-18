@@ -129,7 +129,9 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 				name: "New query",
 			},
 		],
+		queryFolders: [],
 		activeQuery: baseTab.id,
+		currentFolderPath: [],
 		authentication: createBaseAuthentication(),
 		pinnedTables: [],
 		queryHistory: [],
@@ -161,6 +163,7 @@ export function createBaseQuery(settings: SurrealistSettings, type: QueryType): 
 		resultMode: settings.appearance.defaultResultMode,
 		resultFormat: settings.appearance.defaultResultFormat,
 		showVariables: false,
+		order: 0,
 	};
 }
 

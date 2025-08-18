@@ -7,6 +7,7 @@ import type {
 	Connection,
 	HistoryQuery,
 	PartialId,
+	QueryFolder,
 	QueryTab,
 	QueryType,
 	SavedQuery,
@@ -60,6 +61,12 @@ export type ConfigStore = SurrealistConfig & {
 	removeQueryTab: (connectionId: string, tabId: string) => void;
 	updateQueryTab: (connectionId: string, connection: PartialId<QueryTab>) => void;
 	setActiveQueryTab: (connectionId: string, tabId: string) => void;
+	addQueryFolder: (connectionId: string, name: string, parentId?: string) => void;
+	removeQueryFolder: (connectionId: string, folderId: string) => void;
+	updateQueryFolder: (connectionId: string, folder: PartialId<QueryFolder>) => void;
+	navigateToFolder: (connectionId: string, folderId: string) => void;
+	navigateToParentFolder: (connectionId: string) => void;
+	navigateToRoot: (connectionId: string) => void;
 	saveQuery: (query: SavedQuery) => void;
 	removeSavedQuery: (savedId: string) => void;
 	setSavedQueries: (queries: SavedQuery[]) => void;
@@ -124,6 +131,22 @@ export const useConfigStore = create<ConfigStore>()(
 					const existing = current.queries.map((query) => query.name ?? "");
 					const queryName = uniqueName(options?.name || "New query", existing);
 
+					// Set the folder ID to the current folder (last in path) or undefined for root
+					const currentFolderId =
+						current.currentFolderPath.length > 0
+							? current.currentFolderPath[current.currentFolderPath.length - 1]
+							: undefined;
+
+					// Calculate the next order number for items in this folder
+					const itemsInFolder = [
+						...current.queries.filter((q) => q.folderId === currentFolderId),
+						...current.queryFolders.filter((f) => f.parentId === currentFolderId),
+					];
+					const maxOrder = itemsInFolder.reduce(
+						(max, item) => Math.max(max, item.order),
+						-1,
+					);
+
 					return {
 						queries: [
 							...current.queries,
@@ -133,6 +156,8 @@ export const useConfigStore = create<ConfigStore>()(
 								variables: options?.variables || "{}",
 								name: queryName,
 								id: tabId,
+								folderId: currentFolderId,
+								order: maxOrder + 1,
 							},
 						],
 						activeQuery: tabId,
@@ -187,6 +212,130 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) =>
 				modifyConnection(state, connectionId, () => ({
 					activeQuery: tabId,
+				})),
+			),
+
+		addQueryFolder: (connectionId, name, parentId) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					const folderId = newId();
+					const maxOrder = current.queryFolders.reduce(
+						(max, folder) => Math.max(max, folder.order),
+						-1,
+					);
+
+					// If no parentId provided, use the current folder (last in path) or undefined for root
+					const folderParentId =
+						parentId !== undefined
+							? parentId
+							: current.currentFolderPath.length > 0
+								? current.currentFolderPath[current.currentFolderPath.length - 1]
+								: undefined;
+
+					const newFolder: QueryFolder = {
+						id: folderId,
+						name,
+						parentId: folderParentId,
+						order: maxOrder + 1,
+					};
+
+					return {
+						queryFolders: [...current.queryFolders, newFolder],
+					};
+				}),
+			),
+
+		removeQueryFolder: (connectionId, folderId) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					// Remove all child folders recursively
+					const removeChildFolders = (
+						folders: QueryFolder[],
+						parentId: string,
+					): QueryFolder[] => {
+						const childFolders = folders.filter((f) => f.parentId === parentId);
+						let filteredFolders = folders.filter((f) => f.parentId !== parentId);
+
+						for (const child of childFolders) {
+							filteredFolders = removeChildFolders(filteredFolders, child.id);
+						}
+
+						return filteredFolders;
+					};
+
+					const filteredFolders = removeChildFolders(current.queryFolders, folderId);
+					const finalFolders = filteredFolders.filter((folder) => folder.id !== folderId);
+
+					// Move queries out of deleted folders
+					const updatedQueries = current.queries.map((query) => {
+						if (
+							query.folderId === folderId ||
+							!finalFolders.some((f) => f.id === query.folderId)
+						) {
+							return { ...query, folderId: undefined };
+						}
+						return query;
+					});
+
+					return {
+						queryFolders: finalFolders,
+						queries: updatedQueries,
+					};
+				}),
+			),
+
+		updateQueryFolder: (connectionId, folder) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					const index = current.queryFolders.findIndex((f) => f.id === folder.id);
+
+					if (index < 0) {
+						return {};
+					}
+
+					return {
+						queryFolders: current.queryFolders.with(index, {
+							...current.queryFolders[index],
+							...folder,
+						}),
+					};
+				}),
+			),
+
+		navigateToFolder: (connectionId, folderId) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					// Verify the folder exists
+					const folder = current.queryFolders.find((f) => f.id === folderId);
+					if (!folder) return {};
+
+					// Build the new path by adding the folder ID
+					const newPath = [...current.currentFolderPath, folderId];
+
+					return {
+						currentFolderPath: newPath,
+					};
+				}),
+			),
+
+		navigateToParentFolder: (connectionId) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					if (current.currentFolderPath.length === 0) return {};
+
+					// Remove the last folder ID from the path
+					const newPath = current.currentFolderPath.slice(0, -1);
+
+					return {
+						currentFolderPath: newPath,
+					};
+				}),
+			),
+
+		navigateToRoot: (connectionId) =>
+			set((state) =>
+				modifyConnection(state, connectionId, () => ({
+					currentFolderPath: [],
 				})),
 			),
 

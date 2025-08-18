@@ -147,7 +147,9 @@ export interface Connection {
 	lastNamespace: string;
 	lastDatabase: string;
 	queries: QueryTab[];
+	queryFolders: QueryFolder[];
 	activeQuery: string;
+	currentFolderPath: string[]; // Array of folder IDs representing navigation path
 	queryHistory: HistoryQuery[];
 	authentication: Authentication;
 	pinnedTables: string[];
@@ -260,6 +262,15 @@ export interface QueryTab {
 	resultMode: ResultMode;
 	resultFormat: ResultFormat;
 	showVariables: boolean;
+	folderId?: string; // Optional folder ID for organizing tabs
+	order: number; // For sorting queries within folders
+}
+
+export interface QueryFolder {
+	id: string;
+	name: string;
+	parentId?: string; // For nested folders
+	order: number; // For sorting folders
 }
 
 export interface HistoryQuery {
