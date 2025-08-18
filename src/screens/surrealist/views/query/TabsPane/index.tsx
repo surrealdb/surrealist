@@ -313,8 +313,9 @@ function Query({
 				title="Move Query"
 				description={`Browse to the folder where you want to move "${query.name || "Untitled"}":`}
 				folders={folders}
-				queries={queries.filter((q) => q.id !== query.id)}
+				queries={queries}
 				initialPath={getInitialPath()}
+				movingQueryId={query.id}
 				onMove={(folderId) => moveQueryToFolder(query.id, folderId)}
 			/>
 		</>
@@ -484,6 +485,7 @@ function Folder({ folder, folders, queries, onNavigate, onRemoveFolder, ...other
 				queries={queries}
 				initialPath={getInitialPath()}
 				excludedFolderIds={getExcludedFolderIds()}
+				movingFolderId={folder.id}
 				onMove={(folderId) => moveFolderTo(folderId)}
 			/>
 		</>
@@ -906,7 +908,7 @@ export function TabsPane(props: TabsPaneProps) {
 											<Query
 												key={query.id}
 												query={query}
-												queries={currentQueries}
+												queries={queries}
 												folders={queryFolders}
 												isActive={isActive}
 												isLive={isLive}

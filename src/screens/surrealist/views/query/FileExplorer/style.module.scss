@@ -1,24 +1,43 @@
 .navigation {
     display: flex;
     align-items: center;
-    gap: var(--mantine-spacing-xs);
-    padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
-    background: var(--mantine-color-default);
-    border-radius: var(--mantine-radius-sm);
+    gap: var(--mantine-spacing-lg);
+    margin-bottom: var(--mantine-spacing-xs);
 }
 
-.breadcrumb {
+.navigation-buttons {
     display: flex;
     align-items: center;
     gap: var(--mantine-spacing-xs);
+    flex-shrink: 0;
+}
+
+.breadcrumb-path {
+    display: flex;
+    align-items: center;
+    gap: 0;
     font-size: var(--mantine-font-size-sm);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.breadcrumb-root {
     color: var(--mantine-color-dimmed);
+    white-space: nowrap;
 }
 
 .breadcrumb-item {
     display: flex;
     align-items: center;
-    gap: var(--mantine-spacing-xs);
+    white-space: nowrap;
+}
+
+.breadcrumb-separator {
+    color: var(--mantine-color-dimmed);
+    margin: 0 var(--mantine-spacing-xs);
+    font-size: var(--mantine-font-size-sm);
+    user-select: none;
 }
 
 .breadcrumb-link {
@@ -34,6 +53,7 @@
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
 
     &:hover {
         color: var(--mantine-color-surreal-text);
@@ -41,7 +61,7 @@
 }
 
 .content {
-    max-height: 300px;
+    max-height: 350px;
 }
 
 .folder-list {
@@ -71,8 +91,7 @@
 
 .actions {
     display: flex;
-    gap: var(--mantine-spacing-xs);
+    gap: var(--mantine-spacing-sm);
     justify-content: flex-end;
-    border-top: 1px solid var(--mantine-color-default-border);
-    padding-top: var(--mantine-spacing-md);
+    margin-top: var(--mantine-spacing-md);
 }

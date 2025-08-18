@@ -1,10 +1,15 @@
 import { Button, Modal, ScrollArea, Stack, Text } from "@mantine/core";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
-import type { QueryFolder, QueryTab } from "~/types";
-import { iconArrowLeft, iconFolder, iconHome } from "~/util/icons";
+import type { QueryFolder, QueryTab, QueryType } from "~/types";
+import { iconArrowLeft, iconFile, iconFolder, iconHome, iconQuery } from "~/util/icons";
 import classes from "./style.module.scss";
+
+const TYPE_ICONS: Record<QueryType, string> = {
+	config: iconQuery,
+	file: iconFile,
+};
 
 export interface FileExplorerProps {
 	opened: boolean;
@@ -15,6 +20,8 @@ export interface FileExplorerProps {
 	queries: QueryTab[];
 	initialPath?: string[];
 	excludedFolderIds?: string[];
+	movingQueryId?: string;
+	movingFolderId?: string;
 	onMove: (targetFolderId?: string) => void;
 }
 
@@ -27,16 +34,18 @@ export function FileExplorer({
 	queries,
 	initialPath = [],
 	excludedFolderIds = [],
+	movingQueryId,
+	movingFolderId,
 	onMove,
 }: FileExplorerProps) {
 	const [browserPath, setBrowserPath] = useState<string[]>(initialPath);
 
 	// Reset path when modal opens with new initial path
-	useState(() => {
+	useEffect(() => {
 		if (opened) {
 			setBrowserPath(initialPath);
 		}
-	});
+	}, [opened, initialPath]);
 
 	const handleClose = () => {
 		setBrowserPath([]);
@@ -54,9 +63,9 @@ export function FileExplorer({
 	const currentBrowserFolderId =
 		browserPath.length > 0 ? browserPath[browserPath.length - 1] : undefined;
 
-	// Get folders in current browser location (excluding excluded folders)
+	// Get folders in current browser location
 	const currentBrowserFolders = folders
-		.filter((f) => f.parentId === currentBrowserFolderId && !excludedFolderIds.includes(f.id))
+		.filter((f) => f.parentId === currentBrowserFolderId)
 		.sort((a, b) => a.order - b.order);
 
 	// Get queries in current browser location for context (greyed out)
@@ -101,39 +110,42 @@ export function FileExplorer({
 
 				{/* Browser Navigation */}
 				<div className={classes.navigation}>
-					{/* Back button */}
-					{browserPath.length > 0 && (
+					<div className={classes.navigationButtons}>
+						{/* Back button */}
+						{browserPath.length > 0 && (
+							<ActionButton
+								label="Back"
+								onClick={navigateBrowserBack}
+								size="md"
+							>
+								<Icon path={iconArrowLeft} />
+							</ActionButton>
+						)}
+
+						{/* Home button */}
 						<ActionButton
-							label="Back"
-							onClick={navigateBrowserBack}
-							size="sm"
+							label="Root"
+							onClick={() => setBrowserPath([])}
+							size="md"
 						>
-							<Icon path={iconArrowLeft} />
+							<Icon path={iconHome} />
 						</ActionButton>
-					)}
+					</div>
 
-					{/* Home button */}
-					<ActionButton
-						label="Root"
-						onClick={() => setBrowserPath([])}
-						size="sm"
-					>
-						<Icon path={iconHome} />
-					</ActionButton>
-
-					{/* Breadcrumb */}
-					<div className={classes.breadcrumb}>
-						<span>Root</span>
+					{/* Breadcrumb Path */}
+					<div className={classes.breadcrumbPath}>
+						<span className={classes.breadcrumbRoot}>Root</span>
 						{browserBreadcrumbs.map((folder, index) => (
 							<span
 								key={folder.id}
 								className={classes.breadcrumbItem}
 							>
-								<span>/</span>
+								<span className={classes.breadcrumbSeparator}>/</span>
 								<button
 									type="button"
 									onClick={() => navigateToBreadcrumb(index)}
 									className={classes.breadcrumbLink}
+									title={`Navigate to ${folder.name}`}
 								>
 									{folder.name}
 								</button>
@@ -146,34 +158,49 @@ export function FileExplorer({
 				<ScrollArea.Autosize className={classes.content}>
 					<Stack className={classes.folderList}>
 						{/* Folders */}
-						{currentBrowserFolders.map((folder) => (
-							<Button
-								key={folder.id}
-								variant="subtle"
-								leftSection={<Icon path={iconFolder} />}
-								fullWidth
-								justify="flex-start"
-								onClick={() => navigateToBrowserFolder(folder.id)}
-								className={classes.folderItem}
-							>
-								{folder.name}
-							</Button>
-						))}
+						{currentBrowserFolders.map((folder) => {
+							const isMovingFolder = movingFolderId === folder.id;
+							const isExcludedFolder = excludedFolderIds.includes(folder.id);
+							const isDisabled = isMovingFolder || isExcludedFolder;
+							return (
+								<Button
+									key={folder.id}
+									variant="subtle"
+									leftSection={<Icon path={iconFolder} />}
+									fullWidth
+									justify="flex-start"
+									onClick={
+										isDisabled
+											? undefined
+											: () => navigateToBrowserFolder(folder.id)
+									}
+									disabled={isDisabled}
+									className={classes.folderItem}
+								>
+									{folder.name}
+									{isMovingFolder && " (moving)"}
+								</Button>
+							);
+						})}
 
 						{/* Queries (greyed out for context) */}
-						{currentBrowserQueries.map((query) => (
-							<Button
-								key={query.id}
-								variant="subtle"
-								leftSection={<Icon path={query.type} />}
-								fullWidth
-								justify="flex-start"
-								disabled
-								className={classes.queryItem}
-							>
-								{query.name || "Untitled"}
-							</Button>
-						))}
+						{currentBrowserQueries.map((query) => {
+							const isMovingQuery = movingQueryId === query.id;
+							return (
+								<Button
+									key={query.id}
+									variant="subtle"
+									leftSection={<Icon path={TYPE_ICONS[query.type]} />}
+									fullWidth
+									justify="flex-start"
+									disabled
+									className={classes.queryItem}
+								>
+									{query.name || "Untitled"}
+									{isMovingQuery && " (moving)"}
+								</Button>
+							);
+						})}
 
 						{/* Empty state */}
 						{currentBrowserFolders.length === 0 &&

@@ -28,25 +28,25 @@
 .breadcrumb-container {
 	display: flex;
 	align-items: center;
-	gap: var(--mantine-spacing-md);
+	gap: var(--mantine-spacing-lg);
 	margin-bottom: var(--mantine-spacing-xs);
-	padding: var(--mantine-spacing-xs) 0;
 }
 
 .breadcrumb-buttons {
 	display: flex;
 	align-items: center;
-	gap: var(--mantine-spacing-sm);
+	gap: var(--mantine-spacing-xs);
 	flex-shrink: 0;
 }
 
 .breadcrumb-nav {
 	display: flex;
 	align-items: center;
-	gap: var(--mantine-spacing-sm);
+	gap: 0;
 	font-size: var(--mantine-font-size-sm);
 	flex: 1;
 	min-width: 0;
+	overflow: hidden;
 }
 
 .breadcrumb-link {
@@ -73,6 +73,5 @@
 	color: var(--mantine-color-dimmed);
 	margin: 0 var(--mantine-spacing-xs);
 	font-size: var(--mantine-font-size-sm);
-	font-weight: 400;
 	user-select: none;
 }
