@@ -61,6 +61,7 @@ export function createBaseSettings(): SurrealistSettings {
 			inspectorLineNumbers: true,
 			functionLineNumbers: true,
 			resultWordWrap: true,
+			autoCollapseDepth: 0,
 			defaultResultMode: "combined",
 			defaultNoneResultMode: "show",
 			defaultResultFormat: "sql",

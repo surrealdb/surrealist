@@ -247,6 +247,18 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "auto-collapse-depth",
+						name: "Auto-collapse depth",
+						description:
+							"Automatically collapse objects and arrays at the specified depth level (0 = disabled)",
+						controller: new NumberController({
+							reader: (config) => config.settings.appearance.autoCollapseDepth,
+							writer: (config, value) => {
+								config.settings.appearance.autoCollapseDepth = Math.max(0, value);
+							},
+						}),
+					},
 				],
 			},
 			{

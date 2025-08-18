@@ -203,6 +203,7 @@ export interface SurrealistAppearanceSettings {
 	inspectorLineNumbers: boolean;
 	functionLineNumbers: boolean;
 	resultWordWrap: boolean;
+	autoCollapseDepth: number;
 	defaultResultMode: ResultMode;
 	defaultResultFormat: ResultFormat;
 	defaultNoneResultMode: NoneResultMode;
