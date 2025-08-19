@@ -265,7 +265,7 @@ export interface QueryTab extends OrganizableItem {
 
 export interface Folder {
 	id: string;
-	name: string;
+	name?: string;
 	parentId?: string; // For nested folders
 	order: number; // For sorting folders
 }

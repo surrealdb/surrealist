@@ -7,7 +7,8 @@ import { useStable } from "~/hooks/stable";
 interface DeleteFolderModalProps {
 	folderName: string;
 	contentDescription: string;
-	onMoveToRoot: () => void;
+	currentDirectoryName?: string;
+	onMoveToCurrentDirectory: () => void;
 	onDeleteEverything: () => void;
 }
 
@@ -22,20 +23,26 @@ export function openDeleteFolderModal(props: DeleteFolderModalProps) {
 
 function DeleteFolderModal({
 	contentDescription,
-	onMoveToRoot,
+	currentDirectoryName,
+	onMoveToCurrentDirectory,
 	onDeleteEverything,
 }: DeleteFolderModalProps) {
 	const closeCreator = useStable(() => closeModal("delete-folder"));
 
-	const handleMoveToRoot = useStable(() => {
+	const handleMoveToCurrentDirectory = useStable(() => {
 		closeCreator();
-		onMoveToRoot();
+		onMoveToCurrentDirectory();
 	});
 
 	const handleDeleteEverything = useStable(() => {
 		closeCreator();
 		onDeleteEverything();
 	});
+
+	// Generate button text based on current directory
+	const moveButtonText = currentDirectoryName
+		? `Move to "${currentDirectoryName}"`
+		: "Move to root";
 
 	return (
 		<>
@@ -63,10 +70,10 @@ function DeleteFolderModal({
 				</Button>
 				<Spacer />
 				<Button
-					onClick={handleMoveToRoot}
+					onClick={handleMoveToCurrentDirectory}
 					variant="light"
 				>
-					Move to root
+					{moveButtonText}
 				</Button>
 				<Button
 					onClick={handleDeleteEverything}

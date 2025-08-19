@@ -318,7 +318,7 @@ function FolderComponent({
 				{...other}
 			>
 				<EditableText
-					value={folder.name}
+					value={folder.name || ""}
 					onChange={handleRename}
 					activationMode="double-click"
 					editable={isRenaming}
@@ -361,7 +361,6 @@ export function TabsPane(props: TabsPaneProps) {
 		setActiveQueryTab,
 		addQueryFolder,
 		removeQueryFolder,
-		removeQueryFolderToRoot,
 		removeQueryFolderCascade,
 		updateQueryFolder,
 		navigateToFolder,
@@ -440,17 +439,23 @@ export function TabsPane(props: TabsPaneProps) {
 		// Build content description
 		const contentDescription = buildFolderContentDescription(contents);
 
+		// Get current directory name for modal display
+		const currentDirectoryName = currentFolderId
+			? queryFolders.find((f) => f.id === currentFolderId)?.name
+			: undefined;
+
 		// Open the three-button modal
 		openDeleteFolderModal({
-			folderName: folder.name,
+			folderName: folder.name || "Untitled",
 			contentDescription,
-			onMoveToRoot: () => {
-				removeQueryFolderToRoot(connection, folderId);
+			currentDirectoryName,
+			onMoveToCurrentDirectory: () => {
+				removeQueryFolder(connection, folderId);
 			},
 			onDeleteEverything: () => {
 				const cascadeDescription = buildCascadeDescription(contents);
 				openDeleteFolderCascadeModal({
-					folderName: folder.name,
+					folderName: folder.name || "Untitled",
 					contentDescription: cascadeDescription,
 					onConfirm: () => {
 						removeQueryFolderCascade(connection, folderId);

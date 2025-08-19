@@ -63,7 +63,6 @@ export type ConfigStore = SurrealistConfig & {
 	setActiveQueryTab: (connectionId: string, tabId: string) => void;
 	addQueryFolder: (connectionId: string, name: string, parentId?: string) => void;
 	removeQueryFolder: (connectionId: string, folderId: string) => void;
-	removeQueryFolderToRoot: (connectionId: string, folderId: string) => void;
 	removeQueryFolderCascade: (connectionId: string, folderId: string) => void;
 	updateQueryFolder: (connectionId: string, folder: PartialId<Folder>) => void;
 	duplicateQueryFolder: (connectionId: string, folderId: string) => void;
@@ -245,7 +244,7 @@ export const useConfigStore = create<ConfigStore>()(
 					const folderName = uniqueNameInScope(
 						name,
 						current.queryFolders,
-						(f) => f.name,
+						(f) => f.name ?? "",
 						(f) => f.parentId === folderParentId,
 					);
 
@@ -265,93 +264,51 @@ export const useConfigStore = create<ConfigStore>()(
 		removeQueryFolder: (connectionId, folderId) =>
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
-					// Remove folder and move all contents to root
-					const removeChildFolders = (folders: Folder[], parentId: string): Folder[] => {
-						const childFolders = folders.filter((f) => f.parentId === parentId);
-						let filteredFolders = folders.filter((f) => f.parentId !== parentId);
+					// Get the current directory (last folder in path, or undefined for root)
+					const currentDirectoryId =
+						current.queryFolderPath.length > 0
+							? current.queryFolderPath[current.queryFolderPath.length - 1]
+							: undefined;
 
-						for (const child of childFolders) {
-							filteredFolders = removeChildFolders(filteredFolders, child.id);
-						}
-
-						return filteredFolders;
-					};
-
-					const filteredFolders = removeChildFolders(current.queryFolders, folderId);
-					const finalFolders = filteredFolders.filter((folder) => folder.id !== folderId);
-
-					// Move queries out of deleted folders to root with name conflict resolution
-					const updatedQueries = current.queries.map((query) => {
-						if (
-							query.folderId === folderId ||
-							!finalFolders.some((f) => f.id === query.folderId)
-						) {
-							// Resolve name conflicts when moving to root
-							const resolvedName = uniqueNameInScope(
-								query.name || "New query",
-								current.queries,
-								(q) => q.name ?? "",
-								(q) => q.folderId === undefined && q.id !== query.id,
-							);
-
-							return {
-								...query,
-								folderId: undefined,
-								...(resolvedName !== query.name && { name: resolvedName }),
-							};
-						}
-						return query;
-					});
-
-					return {
-						queryFolders: finalFolders,
-						queries: updatedQueries,
-					};
-				}),
-			),
-
-		removeQueryFolderToRoot: (connectionId, folderId) =>
-			set((state) =>
-				modifyConnection(state, connectionId, (current) => {
-					// Move to root: Only remove the target folder, move its contents to root
+					// Move to current directory: Only remove the target folder, move its contents to current directory
 					const finalFolders = current.queryFolders.filter(
 						(folder) => folder.id !== folderId,
 					);
 
-					// Move direct child folders to root with name conflict resolution
+					// Move direct child folders to current directory with name conflict resolution
 					const updatedFolders = finalFolders.map((folder) => {
 						if (folder.parentId === folderId) {
-							// Resolve name conflicts when moving to root
+							// Resolve name conflicts when moving to current directory
 							const resolvedName = uniqueNameInScope(
-								folder.name,
+								folder.name ?? "New folder",
 								finalFolders,
-								(f) => f.name,
-								(f) => f.parentId === undefined && f.id !== folder.id,
+								(f) => f.name ?? "",
+								(f) => f.parentId === currentDirectoryId && f.id !== folder.id,
 							);
 
 							return {
 								...folder,
-								parentId: undefined,
+								parentId: currentDirectoryId,
 								...(resolvedName !== folder.name && { name: resolvedName }),
 							};
 						}
 						return folder;
 					});
 
-					// Move queries that were directly in the deleted folder to root with name conflict resolution
+					// Move queries that were directly in the deleted folder to current directory with name conflict resolution
 					const updatedQueries = current.queries.map((query) => {
 						if (query.folderId === folderId) {
-							// Resolve name conflicts when moving to root
+							// Resolve name conflicts when moving to current directory
 							const resolvedName = uniqueNameInScope(
 								query.name || "New query",
 								current.queries,
 								(q) => q.name ?? "",
-								(q) => q.folderId === undefined && q.id !== query.id,
+								(q) => q.folderId === currentDirectoryId && q.id !== query.id,
 							);
 
 							return {
 								...query,
-								folderId: undefined,
+								folderId: currentDirectoryId,
 								...(resolvedName !== query.name && { name: resolvedName }),
 							};
 						}
@@ -454,9 +411,9 @@ export const useConfigStore = create<ConfigStore>()(
 
 						// Generate unique name for the duplicated folder
 						const folderName = uniqueNameInScope(
-							originalFolder.name,
+							originalFolder.name ?? "New folder",
 							current.queryFolders,
-							(f) => f.name,
+							(f) => f.name ?? "",
 							(f) => f.parentId === newParentId,
 						);
 
