@@ -131,7 +131,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		],
 		queryFolders: [],
 		activeQuery: baseTab.id,
-		currentFolderPath: [],
+		queryFolderPath: [],
 		authentication: createBaseAuthentication(),
 		pinnedTables: [],
 		queryHistory: [],

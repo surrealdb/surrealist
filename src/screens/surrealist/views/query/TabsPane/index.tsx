@@ -25,10 +25,11 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
+import { ItemExplorer } from "~/screens/surrealist/pages/ItemExplorer";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { QueryFolder, QueryTab, QueryType } from "~/types";
+import type { Folder, QueryTab, QueryType } from "~/types";
 import { uniqueName } from "~/util/helpers";
 import {
 	iconArrowLeft,
@@ -50,7 +51,6 @@ import {
 	iconStar,
 	iconText,
 } from "~/util/icons";
-import { FileExplorer } from "../FileExplorer";
 import classes from "./style.module.scss";
 
 const TYPE_ICONS: Record<QueryType, string> = {
@@ -61,7 +61,7 @@ const TYPE_ICONS: Record<QueryType, string> = {
 interface QueryProps extends BoxProps, ElementProps<"button"> {
 	query: QueryTab;
 	queries: QueryTab[];
-	folders: QueryFolder[];
+	folders: Folder[];
 	isActive: boolean;
 	isLive: boolean;
 	isDragging: boolean;
@@ -128,7 +128,7 @@ function Query({
 		});
 	});
 
-	// Build initial path for FileExplorer based on query's current folder
+	// Build initial path for ItemExplorer based on query's current folder
 	const getInitialPath = useStable(() => {
 		if (!query.folderId) return [];
 
@@ -307,30 +307,39 @@ function Query({
 				/>
 			</Entry>
 
-			<FileExplorer
+			<ItemExplorer
 				opened={showFolderSelector}
 				onClose={() => setShowFolderSelector(false)}
 				title="Move Query"
 				description={`Browse to the folder where you want to move "${query.name || "Untitled"}":`}
 				folders={folders}
-				queries={queries}
+				items={queries}
 				initialPath={getInitialPath()}
-				movingQueryId={query.id}
+				movingItemId={query.id}
 				onMove={(folderId) => moveQueryToFolder(query.id, folderId)}
+				getItemIcon={(item) => TYPE_ICONS[item.type]}
+				getItemName={(item) => item.name || "Untitled"}
 			/>
 		</>
 	);
 }
 
 interface FolderProps extends BoxProps, ElementProps<"button"> {
-	folder: QueryFolder;
-	folders: QueryFolder[];
+	folder: Folder;
+	folders: Folder[];
 	queries: QueryTab[];
 	onNavigate: (folderId: string) => void;
 	onRemoveFolder: (folderId: string) => void;
 }
 
-function Folder({ folder, folders, queries, onNavigate, onRemoveFolder, ...other }: FolderProps) {
+function FolderComponent({
+	folder,
+	folders,
+	queries,
+	onNavigate,
+	onRemoveFolder,
+	...other
+}: FolderProps) {
 	const { updateQueryFolder } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const [isRenaming, setIsRenaming] = useState(false);
@@ -362,7 +371,7 @@ function Folder({ folder, folders, queries, onNavigate, onRemoveFolder, ...other
 		});
 	});
 
-	// Build initial path for FileExplorer based on folder's current parent
+	// Build initial path for ItemExplorer based on folder's current parent
 	const getInitialPath = useStable(() => {
 		if (!folder.parentId) return [];
 
@@ -476,17 +485,19 @@ function Folder({ folder, folders, queries, onNavigate, onRemoveFolder, ...other
 				/>
 			</Entry>
 
-			<FileExplorer
+			<ItemExplorer
 				opened={showFolderSelector}
 				onClose={() => setShowFolderSelector(false)}
 				title="Move Folder"
 				description={`Browse to the location where you want to move "${folder.name}":`}
 				folders={folders}
-				queries={queries}
+				items={queries}
 				initialPath={getInitialPath()}
 				excludedFolderIds={getExcludedFolderIds()}
 				movingFolderId={folder.id}
 				onMove={(folderId) => moveFolderTo(folderId)}
+				getItemIcon={(item) => TYPE_ICONS[item.type]}
+				getItemName={(item) => item.name || "Untitled"}
 			/>
 		</>
 	);
@@ -514,11 +525,11 @@ export function TabsPane(props: TabsPaneProps) {
 	} = useConfigStore.getState();
 
 	const [connection] = useConnectionAndView();
-	const [activeQuery, queries, queryFolders, currentFolderPath] = useConnection((c) => [
+	const [activeQuery, queries, queryFolders, queryFolderPath] = useConnection((c) => [
 		c?.activeQuery ?? "",
 		c?.queries ?? [],
 		c?.queryFolders ?? [],
-		c?.currentFolderPath ?? [],
+		c?.queryFolderPath ?? [],
 	]);
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isLight = useIsLight();
@@ -575,7 +586,7 @@ export function TabsPane(props: TabsPaneProps) {
 		removeQueryFolder(connection, id);
 	});
 
-	const saveItemOrder = useStable((items: (QueryTab | QueryFolder)[]) => {
+	const saveItemOrder = useStable((items: (QueryTab | Folder)[]) => {
 		if (!connection) return;
 
 		// Update order property for each item
@@ -613,7 +624,7 @@ export function TabsPane(props: TabsPaneProps) {
 
 	// Get current folder ID (last in path) or undefined for root
 	const currentFolderId =
-		currentFolderPath.length > 0 ? currentFolderPath[currentFolderPath.length - 1] : undefined;
+		queryFolderPath.length > 0 ? queryFolderPath[queryFolderPath.length - 1] : undefined;
 
 	// Filter queries and folders for current context
 	const currentQueries = queries
@@ -624,12 +635,12 @@ export function TabsPane(props: TabsPaneProps) {
 		.sort((a, b) => a.order - b.order);
 
 	// Combine folders and queries for sortable list, sorted by order
-	const sortableItems: (QueryFolder | QueryTab)[] = [...currentFolders, ...currentQueries].sort(
+	const sortableItems: (Folder | QueryTab)[] = [...currentFolders, ...currentQueries].sort(
 		(a, b) => a.order - b.order,
 	);
 
 	// Build breadcrumb path
-	const breadcrumbPath = currentFolderPath.map((folderId) => {
+	const breadcrumbPath = queryFolderPath.map((folderId) => {
 		const folder = queryFolders.find((f) => f.id === folderId);
 		return { id: folderId, name: folder?.name || "Unknown" };
 	});
@@ -706,7 +717,7 @@ export function TabsPane(props: TabsPaneProps) {
 				gap={0}
 			>
 				{/* Navigation breadcrumb */}
-				{currentFolderPath.length > 0 && (
+				{queryFolderPath.length > 0 && (
 					<div className={classes.breadcrumbContainer}>
 						<div className={classes.breadcrumbButtons}>
 							<ActionButton
@@ -735,13 +746,13 @@ export function TabsPane(props: TabsPaneProps) {
 												className={classes.breadcrumbLink}
 												onClick={() => {
 													if (!connection) return;
-													const newPath = currentFolderPath.slice(
+													const newPath = queryFolderPath.slice(
 														0,
 														index + 1,
 													);
 													updateConnection({
 														id: connection,
-														currentFolderPath: newPath,
+														queryFolderPath: newPath,
 													});
 												}}
 												title={`Navigate to ${item.name}`}
@@ -786,13 +797,13 @@ export function TabsPane(props: TabsPaneProps) {
 																const actualIndex =
 																	1 + hiddenIndex + 1; // 1 (first item) + hiddenIndex + 1 (to include clicked item)
 																const newPath =
-																	currentFolderPath.slice(
+																	queryFolderPath.slice(
 																		0,
 																		actualIndex,
 																	);
 																updateConnection({
 																	id: connection,
-																	currentFolderPath: newPath,
+																	queryFolderPath: newPath,
 																});
 															}}
 														>
@@ -817,13 +828,13 @@ export function TabsPane(props: TabsPaneProps) {
 													className={classes.breadcrumbLink}
 													onClick={() => {
 														if (!connection) return;
-														const newPath = currentFolderPath.slice(
+														const newPath = queryFolderPath.slice(
 															0,
 															actualIndex,
 														);
 														updateConnection({
 															id: connection,
-															currentFolderPath: newPath,
+															queryFolderPath: newPath,
 														});
 													}}
 													title={`Navigate to ${item.name}`}
@@ -846,13 +857,10 @@ export function TabsPane(props: TabsPaneProps) {
 											className={classes.breadcrumbLink}
 											onClick={() => {
 												if (!connection) return;
-												const newPath = currentFolderPath.slice(
-													0,
-													index + 1,
-												);
+												const newPath = queryFolderPath.slice(0, index + 1);
 												updateConnection({
 													id: connection,
-													currentFolderPath: newPath,
+													queryFolderPath: newPath,
 												});
 											}}
 											title={`Navigate to ${item.name}`}
@@ -886,9 +894,9 @@ export function TabsPane(props: TabsPaneProps) {
 								{({ item, handleProps, isDragging }) => {
 									// Check if item is a folder
 									if ("parentId" in item) {
-										const folder = item as QueryFolder;
+										const folder = item as Folder;
 										return (
-											<Folder
+											<FolderComponent
 												key={folder.id}
 												folder={folder}
 												folders={queryFolders}
@@ -923,7 +931,7 @@ export function TabsPane(props: TabsPaneProps) {
 							</Sortable>
 						) : (
 							<div style={{ textAlign: "center", padding: "2rem", color: "gray" }}>
-								{currentFolderPath.length > 0
+								{queryFolderPath.length > 0
 									? "This folder is empty"
 									: "No queries or folders"}
 							</div>

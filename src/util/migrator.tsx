@@ -71,16 +71,20 @@ export function applyMigrations(config: any): SurrealistConfig {
 		}
 	});
 
-	// x.x.x -> x.x.x: Add order property to queries and folders
+	// x.x.x -> x.x.x: Add folder support and order property to queries and folders
 
 	applyToConnections(config, (con) => {
-		con.currentFolderPath ??= [];
 		con.queryFolders ??= [];
+		con.queryFolderPath ??= [];
 
 		if (con.queries && isArray(con.queries)) {
 			con.queries.forEach((query: any, index: number) => {
 				if (query.order === undefined) {
 					query.order = index;
+				}
+
+				if (!("folderId" in query)) {
+					query.folderId = undefined;
 				}
 			});
 		}

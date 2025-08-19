@@ -2,42 +2,49 @@ import { Button, Modal, ScrollArea, Stack, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
-import type { QueryFolder, QueryTab, QueryType } from "~/types";
-import { iconArrowLeft, iconFile, iconFolder, iconHome, iconQuery } from "~/util/icons";
+import type { Folder, OrganizableItem } from "~/types";
+import { iconArrowLeft, iconFolder, iconHome } from "~/util/icons";
 import classes from "./style.module.scss";
 
-const TYPE_ICONS: Record<QueryType, string> = {
-	config: iconQuery,
-	file: iconFile,
-};
-
-export interface FileExplorerProps {
+export interface ItemExplorerProps<
+	TFolder extends Folder = Folder,
+	TItem extends OrganizableItem = OrganizableItem,
+> {
 	opened: boolean;
 	onClose: () => void;
 	title: string;
 	description: string;
-	folders: QueryFolder[];
-	queries: QueryTab[];
+	folders: TFolder[];
+	items: TItem[];
 	initialPath?: string[];
 	excludedFolderIds?: string[];
-	movingQueryId?: string;
+	movingItemId?: string;
 	movingFolderId?: string;
 	onMove: (targetFolderId?: string) => void;
+	// Function to get the icon for an item
+	getItemIcon: (item: TItem) => string;
+	// Function to get the display name for an item
+	getItemName: (item: TItem) => string;
 }
 
-export function FileExplorer({
+export function ItemExplorer<
+	TFolder extends Folder = Folder,
+	TItem extends OrganizableItem = OrganizableItem,
+>({
 	opened,
 	onClose,
 	title,
 	description,
 	folders,
-	queries,
+	items,
 	initialPath = [],
 	excludedFolderIds = [],
-	movingQueryId,
+	movingItemId,
 	movingFolderId,
 	onMove,
-}: FileExplorerProps) {
+	getItemIcon,
+	getItemName,
+}: ItemExplorerProps<TFolder, TItem>) {
 	const [browserPath, setBrowserPath] = useState<string[]>(initialPath);
 
 	// Reset path when modal opens with new initial path
@@ -68,9 +75,9 @@ export function FileExplorer({
 		.filter((f) => f.parentId === currentBrowserFolderId)
 		.sort((a, b) => a.order - b.order);
 
-	// Get queries in current browser location for context (greyed out)
-	const currentBrowserQueries = queries
-		.filter((q) => q.folderId === currentBrowserFolderId)
+	// Get items in current browser location for context (greyed out)
+	const currentBrowserItems = items
+		.filter((item) => item.folderId === currentBrowserFolderId)
 		.sort((a, b) => a.order - b.order);
 
 	// Build breadcrumb path for browser
@@ -183,36 +190,35 @@ export function FileExplorer({
 							);
 						})}
 
-						{/* Queries (greyed out for context) */}
-						{currentBrowserQueries.map((query) => {
-							const isMovingQuery = movingQueryId === query.id;
+						{/* Items (greyed out for context) */}
+						{currentBrowserItems.map((item) => {
+							const isMovingItem = movingItemId === item.id;
 							return (
 								<Button
-									key={query.id}
+									key={item.id}
 									variant="subtle"
-									leftSection={<Icon path={TYPE_ICONS[query.type]} />}
+									leftSection={<Icon path={getItemIcon(item)} />}
 									fullWidth
 									justify="flex-start"
 									disabled
-									className={classes.queryItem}
+									className={classes.itemItem}
 								>
-									{query.name || "Untitled"}
-									{isMovingQuery && " (moving)"}
+									{getItemName(item)}
+									{isMovingItem && " (moving)"}
 								</Button>
 							);
 						})}
 
 						{/* Empty state */}
-						{currentBrowserFolders.length === 0 &&
-							currentBrowserQueries.length === 0 && (
-								<Text
-									size="sm"
-									c="dimmed"
-									className={classes.emptyState}
-								>
-									This location is empty
-								</Text>
-							)}
+						{currentBrowserFolders.length === 0 && currentBrowserItems.length === 0 && (
+							<Text
+								size="sm"
+								c="dimmed"
+								className={classes.emptyState}
+							>
+								This location is empty
+							</Text>
+						)}
 					</Stack>
 				</ScrollArea.Autosize>
 

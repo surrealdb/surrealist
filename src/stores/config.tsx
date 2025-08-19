@@ -5,9 +5,9 @@ import { immer } from "zustand/middleware/immer";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import type {
 	Connection,
+	Folder,
 	HistoryQuery,
 	PartialId,
-	QueryFolder,
 	QueryTab,
 	QueryType,
 	SavedQuery,
@@ -63,7 +63,7 @@ export type ConfigStore = SurrealistConfig & {
 	setActiveQueryTab: (connectionId: string, tabId: string) => void;
 	addQueryFolder: (connectionId: string, name: string, parentId?: string) => void;
 	removeQueryFolder: (connectionId: string, folderId: string) => void;
-	updateQueryFolder: (connectionId: string, folder: PartialId<QueryFolder>) => void;
+	updateQueryFolder: (connectionId: string, folder: PartialId<Folder>) => void;
 	navigateToFolder: (connectionId: string, folderId: string) => void;
 	navigateToParentFolder: (connectionId: string) => void;
 	navigateToRoot: (connectionId: string) => void;
@@ -133,8 +133,8 @@ export const useConfigStore = create<ConfigStore>()(
 
 					// Set the folder ID to the current folder (last in path) or undefined for root
 					const currentFolderId =
-						current.currentFolderPath.length > 0
-							? current.currentFolderPath[current.currentFolderPath.length - 1]
+						current.queryFolderPath.length > 0
+							? current.queryFolderPath[current.queryFolderPath.length - 1]
 							: undefined;
 
 					// Calculate the next order number for items in this folder
@@ -228,11 +228,11 @@ export const useConfigStore = create<ConfigStore>()(
 					const folderParentId =
 						parentId !== undefined
 							? parentId
-							: current.currentFolderPath.length > 0
-								? current.currentFolderPath[current.currentFolderPath.length - 1]
+							: current.queryFolderPath.length > 0
+								? current.queryFolderPath[current.queryFolderPath.length - 1]
 								: undefined;
 
-					const newFolder: QueryFolder = {
+					const newFolder: Folder = {
 						id: folderId,
 						name,
 						parentId: folderParentId,
@@ -249,10 +249,7 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
 					// Remove all child folders recursively
-					const removeChildFolders = (
-						folders: QueryFolder[],
-						parentId: string,
-					): QueryFolder[] => {
+					const removeChildFolders = (folders: Folder[], parentId: string): Folder[] => {
 						const childFolders = folders.filter((f) => f.parentId === parentId);
 						let filteredFolders = folders.filter((f) => f.parentId !== parentId);
 
@@ -310,10 +307,10 @@ export const useConfigStore = create<ConfigStore>()(
 					if (!folder) return {};
 
 					// Build the new path by adding the folder ID
-					const newPath = [...current.currentFolderPath, folderId];
+					const newPath = [...current.queryFolderPath, folderId];
 
 					return {
-						currentFolderPath: newPath,
+						queryFolderPath: newPath,
 					};
 				}),
 			),
@@ -321,13 +318,13 @@ export const useConfigStore = create<ConfigStore>()(
 		navigateToParentFolder: (connectionId) =>
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
-					if (current.currentFolderPath.length === 0) return {};
+					if (current.queryFolderPath.length === 0) return {};
 
 					// Remove the last folder ID from the path
-					const newPath = current.currentFolderPath.slice(0, -1);
+					const newPath = current.queryFolderPath.slice(0, -1);
 
 					return {
-						currentFolderPath: newPath,
+						queryFolderPath: newPath,
 					};
 				}),
 			),
@@ -335,7 +332,7 @@ export const useConfigStore = create<ConfigStore>()(
 		navigateToRoot: (connectionId) =>
 			set((state) =>
 				modifyConnection(state, connectionId, () => ({
-					currentFolderPath: [],
+					queryFolderPath: [],
 				})),
 			),
 
