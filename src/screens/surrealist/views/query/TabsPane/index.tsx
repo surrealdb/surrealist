@@ -262,7 +262,7 @@ function Query({
 			<Entry
 				key={query.id}
 				isActive={isActive}
-				onClick={handleActivate}
+				onClick={isRenaming ? undefined : handleActivate}
 				className={clsx(classes.query, isDragging && classes.queryDragging)}
 				onContextMenu={buildContextMenu}
 				leftSection={<Icon path={TYPE_ICONS[query.type]} />}
