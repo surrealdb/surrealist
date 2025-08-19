@@ -1,18 +1,4 @@
-.navigation {
-    display: flex;
-    align-items: center;
-    gap: var(--mantine-spacing-lg);
-    margin-bottom: var(--mantine-spacing-xs);
-}
-
-.navigation-buttons {
-    display: flex;
-    align-items: center;
-    gap: var(--mantine-spacing-xs);
-    flex-shrink: 0;
-}
-
-.breadcrumb-path {
+.breadcrumbPath {
     display: flex;
     align-items: center;
     gap: 0;
@@ -22,25 +8,25 @@
     overflow: hidden;
 }
 
-.breadcrumb-root {
+.breadcrumbRoot {
     color: var(--mantine-color-dimmed);
     white-space: nowrap;
 }
 
-.breadcrumb-item {
+.breadcrumbItem {
     display: flex;
     align-items: center;
     white-space: nowrap;
 }
 
-.breadcrumb-separator {
+.breadcrumbSeparator {
     color: var(--mantine-color-dimmed);
     margin: 0 var(--mantine-spacing-xs);
     font-size: var(--mantine-font-size-sm);
     user-select: none;
 }
 
-.breadcrumb-link {
+.breadcrumbLink {
     background: none;
     border: none;
     padding: 0;
@@ -64,17 +50,17 @@
     max-height: 350px;
 }
 
-.folder-list {
+.folderList {
     gap: var(--mantine-spacing-xs);
 }
 
-.folder-item {
+.folderItem {
     .mantine-Button-inner {
         justify-content: flex-start;
     }
 }
 
-.item-item {
+.itemItem {
     .mantine-Button-inner {
         justify-content: flex-start;
     }
@@ -84,14 +70,6 @@
     }
 }
 
-.empty-state {
-    text-align: center;
+.emptyState {
     padding: var(--mantine-spacing-md) 0;
-}
-
-.actions {
-    display: flex;
-    gap: var(--mantine-spacing-sm);
-    justify-content: flex-end;
-    margin-top: var(--mantine-spacing-md);
 }

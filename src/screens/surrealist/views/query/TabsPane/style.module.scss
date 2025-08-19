@@ -75,3 +75,14 @@
 	font-size: var(--mantine-font-size-sm);
 	user-select: none;
 }
+
+.emptyState {
+	text-align: center;
+	padding: var(--mantine-spacing-xl) var(--mantine-spacing-md);
+}
+
+.editableText {
+	outline: none;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}

@@ -1,15 +1,16 @@
 import {
 	Badge,
 	type BoxProps,
+	Center,
 	Divider,
 	type ElementProps,
 	Menu,
 	ScrollArea,
 	Stack,
+	Text,
 } from "@mantine/core";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { useState } from "react";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
 import { ActionButton } from "~/components/ActionButton";
@@ -26,41 +27,50 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { openDeleteFolderModal } from "~/modals/delete-folder";
 import { openDeleteFolderCascadeModal } from "~/modals/delete-folder-cascade";
-import { cancelLiveQueries, executeUserQuery } from "~/screens/surrealist/connection/connection";
+import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
 import { ItemExplorer } from "~/screens/surrealist/pages/ItemExplorer";
-import { readQuery } from "~/screens/surrealist/views/query/QueryView/strategy";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { Folder, QueryTab, QueryType } from "~/types";
-import { showInfo, uniqueNameInScope } from "~/util/helpers";
+import type { Folder, QueryTab } from "~/types";
 import {
 	iconArrowLeft,
-	iconArrowUpRight,
 	iconChevronLeft,
 	iconChevronRight,
 	iconClose,
-	iconCopy,
 	iconDotsHorizontal,
-	iconFile,
 	iconFolder,
 	iconFolderPlus,
 	iconHistory,
 	iconHome,
 	iconList,
-	iconPlay,
 	iconPlus,
-	iconQuery,
-	iconSearch,
 	iconStar,
-	iconText,
 } from "~/util/icons";
+import {
+	buildBreadcrumbPath,
+	buildCascadeDescription,
+	buildFolderContentDescription,
+	buildFolderContextMenuItems,
+	buildQueryContextMenuItems,
+	executeAllQueriesInFolder,
+	getFolderContents,
+	removeOthers,
+	TYPE_ICONS,
+	truncateBreadcrumbPath,
+} from "./helpers";
+import {
+	useExcludedFolderIds,
+	useFolderMove,
+	useFolderRename,
+	useFolderSelector,
+	useMoveOptions,
+	usePathBuilder,
+	useQueryMove,
+	useQueryRename,
+	useRenamingState,
+} from "./hooks";
 import classes from "./style.module.scss";
-
-const TYPE_ICONS: Record<QueryType, string> = {
-	config: iconQuery,
-	file: iconFile,
-};
 
 interface QueryProps extends BoxProps, ElementProps<"button"> {
 	query: QueryTab;
@@ -84,89 +94,32 @@ function Query({
 	onRemoveQuery,
 	...other
 }: QueryProps) {
-	const { addQueryTab, updateQueryTab } = useConfigStore.getState();
+	const { addQueryTab } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
-	const [isRenaming, setIsRenaming] = useState(false);
-	const [showFolderSelector, setShowFolderSelector] = useState(false);
+	const { isRenaming, startRenaming, setIsRenaming } = useRenamingState();
+	const { showFolderSelector, openFolderSelector, closeFolderSelector } = useFolderSelector();
 	const [queryQuickClose] = useSetting("behavior", "queryQuickClose");
 	const [connection] = useConnectionAndView();
 	const isLight = useIsLight();
 
-	const explorerName = adapter.platform === "darwin" ? "Finder" : "Explorer";
+	const renameQuery = useQueryRename(queries);
+	const moveQueryToFolder = useQueryMove(queries);
+	const getInitialPath = usePathBuilder(folders);
 
 	const handleActivate = useStable(() => {
 		onActivate(query.id);
 	});
 
-	const removeOthers = useStable((id: string, dir: number) => {
-		const index = queries.findIndex((q) => q.id === id);
-
-		for (const [i, query] of queries.entries()) {
-			if (
-				query.id !== id &&
-				(dir === 0 || (dir === -1 && i < index) || (dir === 1 && i > index))
-			) {
-				onRemoveQuery(query.id);
-			}
-		}
+	const handleRemoveOthers = useStable((direction: number) => {
+		removeOthers(queries, query.id, direction, onRemoveQuery);
 	});
 
-	const renameQuery = useStable((id: string, newName: string) => {
-		if (!connection) return;
-
-		// Find the query being renamed to get its current folder
-		const queryToRename = queries.find((q) => q.id === id);
-		const currentFolderId = queryToRename?.folderId;
-
-		// Use scoped naming - only check for conflicts within the same folder
-		const name = uniqueNameInScope(
-			newName || "New query",
-			queries,
-			(q) => q.name ?? "",
-			(q) => q.folderId === currentFolderId && q.id !== id,
-		);
-
-		updateQueryTab(connection, {
-			id,
-			name,
-		});
+	const handleRename = useStable((newName: string) => {
+		renameQuery(query.id, newName);
 	});
 
-	const moveQueryToFolder = useStable((queryId: string, folderId?: string) => {
-		if (!connection) return;
-
-		// Find the query being moved to check for naming conflicts in the target folder
-		const queryToMove = queries.find((q) => q.id === queryId);
-		if (!queryToMove) return;
-
-		// Check if the name would conflict in the target folder and resolve if needed
-		const resolvedName = uniqueNameInScope(
-			queryToMove.name || "New query",
-			queries,
-			(q) => q.name ?? "",
-			(q) => q.folderId === folderId && q.id !== queryId,
-		);
-
-		updateQueryTab(connection, {
-			id: queryId,
-			folderId: folderId,
-			...(resolvedName !== queryToMove.name && { name: resolvedName }),
-		});
-	});
-
-	// Build initial path for ItemExplorer based on query's current folder
-	const getInitialPath = useStable(() => {
-		if (!query.folderId) return [];
-
-		const buildPathToFolder = (folderId: string): string[] => {
-			const folder = folders.find((f) => f.id === folderId);
-			if (!folder) return [];
-
-			const parentPath = folder.parentId ? buildPathToFolder(folder.parentId) : [];
-			return [...parentPath, folder.id];
-		};
-
-		return buildPathToFolder(query.folderId);
+	const handleMove = useStable((folderId?: string) => {
+		moveQueryToFolder(query.id, folderId);
 	});
 
 	const handleQuickRemove = useStable((e: React.MouseEvent) => {
@@ -174,110 +127,44 @@ function Query({
 		onRemoveQuery(query.id);
 	});
 
-	// Build move options dynamically
-	const moveOptions = [];
+	const handleDuplicate = useStable(() => {
+		if (!connection) return;
 
-	// Add "Move to Root" if query is currently in a folder
-	if (query.folderId !== undefined) {
-		moveOptions.push({
-			key: "move-to-root",
-			title: "Move to Root",
-			icon: <Icon path={iconHome} />,
-			onClick: () => moveQueryToFolder(query.id, undefined),
+		addQueryTab(connection, {
+			type: "config",
+			name: query.name?.replace(/ \d+$/, ""),
+			query: query.query,
+			variables: query.variables,
 		});
-	}
+	});
 
-	// Add "Move to Parent" if query is in a nested folder
-	const currentFolder = query.folderId ? folders.find((f) => f.id === query.folderId) : null;
-	const parentFolder = currentFolder?.parentId
-		? folders.find((f) => f.id === currentFolder.parentId)
-		: null;
+	const moveOptions = useMoveOptions(
+		query,
+		folders,
+		() => handleMove(undefined),
+		() => {
+			const currentFolder = query.folderId
+				? folders.find((f) => f.id === query.folderId)
+				: null;
+			if (currentFolder) {
+				handleMove(currentFolder.parentId);
+			}
+		},
+	)();
 
-	if (currentFolder && currentFolder.parentId !== undefined) {
-		moveOptions.push({
-			key: "move-to-parent",
-			title: `Move to ${parentFolder ? parentFolder.name : "Root"}`,
-			icon: <Icon path={iconArrowLeft} />,
-			onClick: () => moveQueryToFolder(query.id, currentFolder.parentId),
-		});
-	}
+	const contextMenuItems = buildQueryContextMenuItems(
+		query,
+		queries,
+		handleActivate,
+		handleDuplicate,
+		startRenaming,
+		() => onRemoveQuery(query.id),
+		handleRemoveOthers,
+		moveOptions,
+		openFolderSelector,
+	);
 
-	const buildContextMenu = showContextMenu([
-		{
-			key: "open",
-			title: "Open",
-			icon: <Icon path={iconArrowUpRight} />,
-			onClick: handleActivate,
-		},
-		{
-			key: "duplicate",
-			title: "Duplicate",
-			icon: <Icon path={iconCopy} />,
-			onClick: () => {
-				if (!connection) return;
-
-				addQueryTab(connection, {
-					type: "config",
-					name: query.name?.replace(/ \d+$/, ""),
-					query: query.query,
-					variables: query.variables,
-				});
-			},
-		},
-		{
-			key: "rename",
-			title: "Rename",
-			icon: <Icon path={iconText} />,
-			onClick: () => setIsRenaming(true),
-		},
-		...moveOptions,
-		{
-			key: "move-to",
-			title: "Move to...",
-			icon: <Icon path={iconFolder} />,
-			onClick: () => setShowFolderSelector(true),
-		},
-		{
-			hidden: query.type !== "file",
-			key: "open-in-explorer",
-			title: `Reveal in ${explorerName}`,
-			icon: <Icon path={iconSearch} />,
-			onClick: () => {
-				if (adapter instanceof DesktopAdapter) {
-					adapter.openInExplorer(query);
-				}
-			},
-		},
-		{
-			key: "close-div",
-		},
-		{
-			key: "close",
-			title: "Close",
-			disabled: queries.length === 1,
-			onClick: () => onRemoveQuery(query.id),
-		},
-		{
-			key: "close-others",
-			title: "Close Others",
-			disabled: queries.length === 1,
-			onClick: () => removeOthers(query.id, 0),
-		},
-		{
-			key: "close-before",
-			title: "Close queries Before",
-			disabled: queries.length === 1 || queries.findIndex((q) => q.id === query.id) === 0,
-			onClick: () => removeOthers(query.id, -1),
-		},
-		{
-			key: "close-after",
-			title: "Close queries After",
-			disabled:
-				queries.length === 1 ||
-				queries.findIndex((q) => q.id === query.id) >= queries.length - 1,
-			onClick: () => removeOthers(query.id, 1),
-		},
-	]);
+	const buildContextMenu = showContextMenu(contextMenuItems);
 
 	return (
 		<>
@@ -320,99 +207,31 @@ function Query({
 			>
 				<EditableText
 					value={query.name || ""}
-					onChange={(value) => renameQuery(query.id, value)}
+					onChange={handleRename}
 					activationMode="double-click"
 					editable={isRenaming}
 					onEditableChange={setIsRenaming}
 					withDecoration
-					style={{
-						outline: "none",
-						textOverflow: "ellipsis",
-						overflow: "hidden",
-					}}
+					className={classes.editableText}
 				/>
 			</Entry>
 
 			<ItemExplorer
 				opened={showFolderSelector}
-				onClose={() => setShowFolderSelector(false)}
+				onClose={closeFolderSelector}
 				title="Move Query"
 				description={`Browse to the folder where you want to move "${query.name || "Untitled"}":`}
 				folders={folders}
 				items={queries}
-				initialPath={getInitialPath()}
+				initialPath={getInitialPath(query.folderId)}
 				movingItemId={query.id}
-				onMove={(folderId) => moveQueryToFolder(query.id, folderId)}
+				onMove={handleMove}
 				getItemIcon={(item) => TYPE_ICONS[item.type]}
 				getItemName={(item) => item.name || "Untitled"}
 			/>
 		</>
 	);
 }
-
-const executeAllQueriesInFolder = async (
-	folderId: string,
-	queries: QueryTab[],
-	queryFolders: Folder[],
-) => {
-	const folder = queryFolders.find((f) => f.id === folderId);
-	if (!folder) return;
-
-	// Find all queries in the folder (recursively)
-	const getAllQueriesInFolder = (targetFolderId: string): QueryTab[] => {
-		const directQueries = queries.filter((q) => q.folderId === targetFolderId);
-		const subfolders = queryFolders.filter((f) => f.parentId === targetFolderId);
-
-		let allQueries = [...directQueries];
-		for (const subfolder of subfolders) {
-			allQueries = allQueries.concat(getAllQueriesInFolder(subfolder.id));
-		}
-
-		return allQueries;
-	};
-
-	const folderQueries = getAllQueriesInFolder(folderId);
-
-	if (folderQueries.length === 0) {
-		showInfo({
-			title: "No queries found",
-			subtitle: `Folder "${folder.name}" contains no queries to execute`,
-		});
-		return;
-	}
-
-	// Combine all queries into one execution
-	const queryPromises = folderQueries.map(async (queryTab) => {
-		try {
-			const queryContent = await readQuery(queryTab);
-			return typeof queryContent === "string" ? queryContent : queryContent;
-		} catch (error) {
-			console.warn(`Failed to read query ${queryTab.name}:`, error);
-			return "";
-		}
-	});
-
-	const queryContents = await Promise.all(queryPromises);
-	const validQueries = queryContents.filter((content) => content.trim().length > 0);
-
-	if (validQueries.length === 0) {
-		showInfo({
-			title: "No valid queries",
-			subtitle: `All queries in folder "${folder.name}" are empty`,
-		});
-		return;
-	}
-
-	// Combine all queries with semicolons and execute
-	const combinedQuery = validQueries.join(";\n\n");
-
-	showInfo({
-		title: "Executing folder queries",
-		subtitle: `Running ${validQueries.length} quer${validQueries.length === 1 ? "y" : "ies"} from "${folder.name}"`,
-	});
-
-	executeUserQuery({ override: combinedQuery });
-};
 
 interface FolderProps extends BoxProps, ElementProps<"button"> {
 	folder: Folder;
@@ -430,152 +249,55 @@ function FolderComponent({
 	onRemoveFolder,
 	...other
 }: FolderProps) {
-	const { updateQueryFolder } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
-	const [isRenaming, setIsRenaming] = useState(false);
-	const [showFolderSelector, setShowFolderSelector] = useState(false);
-	const [connection] = useConnectionAndView();
+	const { isRenaming, startRenaming, setIsRenaming } = useRenamingState();
+	const { showFolderSelector, openFolderSelector, closeFolderSelector } = useFolderSelector();
+
+	const renameFolder = useFolderRename(folders);
+	const moveFolderTo = useFolderMove(folders);
+	const getInitialPath = usePathBuilder(folders);
+	const getExcludedFolderIds = useExcludedFolderIds(folders);
 
 	const handleNavigate = useStable(() => {
 		onNavigate(folder.id);
 	});
 
-	const renameFolder = useStable((id: string, newName: string) => {
-		if (!connection) return;
-
-		// Find the folder being renamed to get its current parent
-		const folderToRename = folders.find((f) => f.id === id);
-		const currentParentId = folderToRename?.parentId;
-
-		// Use scoped naming - only check for conflicts within the same parent folder
-		const name = uniqueNameInScope(
-			newName || "New folder",
-			folders,
-			(f) => f.name,
-			(f) => f.parentId === currentParentId && f.id !== id,
-		);
-
-		updateQueryFolder(connection, {
-			id,
-			name,
-		});
+	const handleRename = useStable((newName: string) => {
+		renameFolder(folder.id, newName);
 	});
 
-	const moveFolderTo = useStable((targetParentId?: string) => {
-		if (!connection) return;
-
-		// Check if the folder name would conflict in the target parent and resolve if needed
-		const resolvedName = uniqueNameInScope(
-			folder.name,
-			folders,
-			(f) => f.name,
-			(f) => f.parentId === targetParentId && f.id !== folder.id,
-		);
-
-		updateQueryFolder(connection, {
-			id: folder.id,
-			parentId: targetParentId,
-			...(resolvedName !== folder.name && { name: resolvedName }),
-		});
+	const handleMove = useStable((targetParentId?: string) => {
+		moveFolderTo(folder.id, targetParentId);
 	});
 
-	// Build initial path for ItemExplorer based on folder's current parent
-	const getInitialPath = useStable(() => {
-		if (!folder.parentId) return [];
-
-		const buildPathToFolder = (folderId: string): string[] => {
-			const folder = folders.find((f) => f.id === folderId);
-			if (!folder) return [];
-
-			const parentPath = folder.parentId ? buildPathToFolder(folder.parentId) : [];
-			return [...parentPath, folder.id];
-		};
-
-		return buildPathToFolder(folder.parentId);
+	const handleExecuteAll = useStable(() => {
+		executeAllQueriesInFolder(folder.id, queries, folders);
 	});
 
-	// Get excluded folder IDs (folder itself and all descendants)
-	const getExcludedFolderIds = useStable(() => {
-		const excludeFolderAndDescendants = (folderId: string): string[] => {
-			const result = [folderId];
-			const children = folders.filter((f) => f.parentId === folderId);
-			for (const child of children) {
-				result.push(...excludeFolderAndDescendants(child.id));
+	const moveOptions = useMoveOptions(
+		folder,
+		folders,
+		() => handleMove(undefined),
+		() => {
+			const currentParentFolder = folder.parentId
+				? folders.find((f) => f.id === folder.parentId)
+				: null;
+			if (currentParentFolder) {
+				handleMove(currentParentFolder.parentId);
 			}
-			return result;
-		};
+		},
+	)();
 
-		return excludeFolderAndDescendants(folder.id);
-	});
+	const contextMenuItems = buildFolderContextMenuItems(
+		handleNavigate,
+		startRenaming,
+		() => onRemoveFolder(folder.id),
+		handleExecuteAll,
+		moveOptions,
+		openFolderSelector,
+	);
 
-	// Build move options dynamically for folder
-	const folderMoveOptions = [];
-
-	// Add "Move to Root" if folder is currently in a parent folder
-	if (folder.parentId !== undefined) {
-		folderMoveOptions.push({
-			key: "move-to-root",
-			title: "Move to Root",
-			icon: <Icon path={iconHome} />,
-			onClick: () => moveFolderTo(undefined),
-		});
-	}
-
-	// Add "Move to Parent" if folder is in a nested folder
-	const currentParentFolder = folder.parentId
-		? folders.find((f) => f.id === folder.parentId)
-		: null;
-	const grandParentFolder = currentParentFolder?.parentId
-		? folders.find((f) => f.id === currentParentFolder.parentId)
-		: null;
-
-	if (currentParentFolder && currentParentFolder.parentId !== undefined) {
-		folderMoveOptions.push({
-			key: "move-to-parent",
-			title: `Move to ${grandParentFolder ? grandParentFolder.name : "Root"}`,
-			icon: <Icon path={iconArrowLeft} />,
-			onClick: () => moveFolderTo(currentParentFolder.parentId),
-		});
-	}
-
-	const buildContextMenu = showContextMenu([
-		{
-			key: "open",
-			title: "Open",
-			icon: <Icon path={iconArrowUpRight} />,
-			onClick: handleNavigate,
-		},
-		{
-			key: "rename",
-			title: "Rename",
-			icon: <Icon path={iconText} />,
-			onClick: () => setIsRenaming(true),
-		},
-		...folderMoveOptions,
-		{
-			key: "move-to",
-			title: "Move to...",
-			icon: <Icon path={iconFolder} />,
-			onClick: () => setShowFolderSelector(true),
-		},
-		{
-			key: "execute-div",
-		},
-		{
-			key: "execute-all",
-			title: "Execute all queries",
-			icon: <Icon path={iconPlay} />,
-			onClick: () => executeAllQueriesInFolder(folder.id, queries, folders),
-		},
-		{
-			key: "delete-div",
-		},
-		{
-			key: "delete",
-			title: "Delete folder",
-			onClick: () => onRemoveFolder(folder.id),
-		},
-	]);
+	const buildContextMenu = showContextMenu(contextMenuItems);
 
 	return (
 		<>
@@ -589,30 +311,26 @@ function FolderComponent({
 			>
 				<EditableText
 					value={folder.name}
-					onChange={(value) => renameFolder(folder.id, value)}
+					onChange={handleRename}
 					activationMode="double-click"
 					editable={isRenaming}
 					onEditableChange={setIsRenaming}
 					withDecoration
-					style={{
-						outline: "none",
-						textOverflow: "ellipsis",
-						overflow: "hidden",
-					}}
+					className={classes.editableText}
 				/>
 			</Entry>
 
 			<ItemExplorer
 				opened={showFolderSelector}
-				onClose={() => setShowFolderSelector(false)}
+				onClose={closeFolderSelector}
 				title="Move Folder"
 				description={`Browse to the location where you want to move "${folder.name}":`}
 				folders={folders}
 				items={queries}
-				initialPath={getInitialPath()}
-				excludedFolderIds={getExcludedFolderIds()}
+				initialPath={getInitialPath(folder.parentId)}
+				excludedFolderIds={getExcludedFolderIds(folder.id)}
 				movingFolderId={folder.id}
-				onMove={(folderId) => moveFolderTo(folderId)}
+				onMove={handleMove}
 				getItemIcon={(item) => TYPE_ICONS[item.type]}
 				getItemName={(item) => item.name || "Untitled"}
 			/>
@@ -699,36 +417,11 @@ export function TabsPane(props: TabsPaneProps) {
 		}
 	});
 
-	// Helper function to count folder contents recursively
-	const getFolderContents = useStable((folderId: string) => {
-		const getChildFolders = (parentId: string): Folder[] => {
-			const children = queryFolders.filter((f) => f.parentId === parentId);
-			let allChildren = [...children];
-			for (const child of children) {
-				allChildren = allChildren.concat(getChildFolders(child.id));
-			}
-			return allChildren;
-		};
-
-		const childFolders = getChildFolders(folderId);
-		const affectedFolderIds = [folderId, ...childFolders.map((f) => f.id)];
-		const queriesInFolders = queries.filter((q) =>
-			affectedFolderIds.includes(q.folderId || ""),
-		);
-
-		return {
-			subfolders: childFolders,
-			queries: queriesInFolders,
-			totalFolders: childFolders.length + 1, // +1 for the folder itself
-			totalQueries: queriesInFolders.length,
-		};
-	});
-
 	const removeFolder = useStable((folderId: string) => {
 		const folder = queryFolders.find((f) => f.id === folderId);
 		if (!folder || !connection) return;
 
-		const contents = getFolderContents(folderId);
+		const contents = getFolderContents(folderId, queries, queryFolders);
 
 		// If folder is empty, delete it directly
 		if (contents.totalQueries === 0 && contents.subfolders.length === 0) {
@@ -737,16 +430,7 @@ export function TabsPane(props: TabsPaneProps) {
 		}
 
 		// Build content description
-		const parts: string[] = [];
-		if (contents.subfolders.length > 0) {
-			parts.push(
-				`${contents.subfolders.length} subfolder${contents.subfolders.length === 1 ? "" : "s"}`,
-			);
-		}
-		if (contents.totalQueries > 0) {
-			parts.push(`${contents.totalQueries} quer${contents.totalQueries === 1 ? "y" : "ies"}`);
-		}
-		const contentDescription = `This folder contains ${parts.join(" and ")}.`;
+		const contentDescription = buildFolderContentDescription(contents);
 
 		// Open the three-button modal
 		openDeleteFolderModal({
@@ -756,7 +440,7 @@ export function TabsPane(props: TabsPaneProps) {
 				removeQueryFolderToRoot(connection, folderId);
 			},
 			onDeleteEverything: () => {
-				const cascadeDescription = `This will permanently delete the folder and all ${parts.join(" and ")}.`;
+				const cascadeDescription = buildCascadeDescription(contents);
 				openDeleteFolderCascadeModal({
 					folderName: folder.name,
 					contentDescription: cascadeDescription,
@@ -834,28 +518,9 @@ export function TabsPane(props: TabsPaneProps) {
 	);
 
 	// Build breadcrumb path
-	const breadcrumbPath = queryFolderPath.map((folderId) => {
-		const folder = queryFolders.find((f) => f.id === folderId);
-		return { id: folderId, name: folder?.name || "Unknown" };
-	});
-
-	// Truncate breadcrumb path - show max 2 folders + ellipsis
-	const MAX_VISIBLE_FOLDERS = 2;
-	const shouldTruncate = breadcrumbPath.length > MAX_VISIBLE_FOLDERS;
-
-	let visibleBreadcrumbs = breadcrumbPath;
-	let hiddenBreadcrumbs: typeof breadcrumbPath = [];
-
-	if (shouldTruncate) {
-		// Show first folder + ellipsis + last folder
-		const firstItem = breadcrumbPath.slice(0, 1);
-		const lastItem = breadcrumbPath.slice(-1);
-		hiddenBreadcrumbs = breadcrumbPath.slice(1, -1);
-		visibleBreadcrumbs = [...firstItem, ...lastItem];
-	}
-
-	// Total count for badge - only count queries, not folders
-	const totalCount = currentQueries.length;
+	const breadcrumbPath = buildBreadcrumbPath(queryFolderPath, queryFolders);
+	const { shouldTruncate, visibleBreadcrumbs, hiddenBreadcrumbs } =
+		truncateBreadcrumbPath(breadcrumbPath);
 
 	useIntent("new-query", newTab);
 
@@ -876,7 +541,7 @@ export function TabsPane(props: TabsPaneProps) {
 					radius="sm"
 					c="inherit"
 				>
-					{totalCount}
+					{currentQueries.length}
 				</Badge>
 			}
 			rightSection={
@@ -1124,11 +789,13 @@ export function TabsPane(props: TabsPaneProps) {
 								}}
 							</Sortable>
 						) : (
-							<div style={{ textAlign: "center", padding: "2rem", color: "gray" }}>
-								{queryFolderPath.length > 0
-									? "This folder is empty"
-									: "No queries or folders"}
-							</div>
+							<Center className={classes.emptyState}>
+								<Text c="slate">
+									{queryFolderPath.length > 0
+										? "This folder is empty"
+										: "No queries or folders"}
+								</Text>
+							</Center>
 						)}
 					</Stack>
 				</ScrollArea>

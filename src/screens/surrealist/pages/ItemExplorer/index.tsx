@@ -1,4 +1,4 @@
-import { Button, Modal, ScrollArea, Stack, Text } from "@mantine/core";
+import { Button, Center, Group, Modal, ScrollArea, Stack, Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
@@ -106,6 +106,7 @@ export function ItemExplorer<
 			onClose={handleClose}
 			title={title}
 			size="lg"
+			centered
 		>
 			<Stack gap="md">
 				<Text
@@ -116,8 +117,16 @@ export function ItemExplorer<
 				</Text>
 
 				{/* Browser Navigation */}
-				<div className={classes.navigation}>
-					<div className={classes.navigationButtons}>
+				<Group
+					className={classes.navigation}
+					gap="lg"
+					mb="xs"
+				>
+					<Group
+						className={classes.navigationButtons}
+						gap="xs"
+						style={{ flexShrink: 0 }}
+					>
 						{/* Back button */}
 						{browserPath.length > 0 && (
 							<ActionButton
@@ -137,7 +146,7 @@ export function ItemExplorer<
 						>
 							<Icon path={iconHome} />
 						</ActionButton>
-					</div>
+					</Group>
 
 					{/* Breadcrumb Path */}
 					<div className={classes.breadcrumbPath}>
@@ -159,7 +168,7 @@ export function ItemExplorer<
 							</span>
 						))}
 					</div>
-				</div>
+				</Group>
 
 				{/* Browser Content */}
 				<ScrollArea.Autosize className={classes.content}>
@@ -211,27 +220,37 @@ export function ItemExplorer<
 
 						{/* Empty state */}
 						{currentBrowserFolders.length === 0 && currentBrowserItems.length === 0 && (
-							<Text
-								size="sm"
-								c="dimmed"
-								className={classes.emptyState}
-							>
-								This location is empty
-							</Text>
+							<Center className={classes.emptyState}>
+								<Text
+									size="sm"
+									c="slate"
+								>
+									This location is empty
+								</Text>
+							</Center>
 						)}
 					</Stack>
 				</ScrollArea.Autosize>
 
 				{/* Action Buttons */}
-				<div className={classes.actions}>
+				<Group
+					justify="flex-end"
+					gap="sm"
+					mt="md"
+				>
 					<Button
 						variant="subtle"
 						onClick={handleClose}
 					>
 						Cancel
 					</Button>
-					<Button onClick={handleMove}>Move Here</Button>
-				</div>
+					<Button
+						variant="gradient"
+						onClick={handleMove}
+					>
+						Move Here
+					</Button>
+				</Group>
 			</Stack>
 		</Modal>
 	);
