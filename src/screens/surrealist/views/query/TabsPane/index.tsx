@@ -622,6 +622,18 @@ export function TabsPane(props: TabsPaneProps) {
 		setActiveQueryTab(connection, id);
 	});
 
+	const navigateToActiveQuery = useStable(() => {
+		if (!activeQuery || !connection) return;
+		const query = queries.find((q) => q.id === activeQuery);
+		if (query?.folderId) {
+			navigateToFolder(connection, query.folderId);
+		} else {
+			navigateToRoot(connection);
+		}
+	});
+
+	useIntent("navigate-to-active-query", navigateToActiveQuery);
+
 	// Get current folder ID (last in path) or undefined for root
 	const currentFolderId =
 		queryFolderPath.length > 0 ? queryFolderPath[queryFolderPath.length - 1] : undefined;
