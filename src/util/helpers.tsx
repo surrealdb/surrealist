@@ -339,6 +339,26 @@ export function uniqueName(baseName: string, existing: string[]) {
 }
 
 /**
+ * Compute a unique name within a filtered scope of existing names
+ *
+ * @param baseName The base name
+ * @param allItems All items to consider
+ * @param getName Function to extract the name from an item
+ * @param shouldInclude Function to determine if an item should be included in the uniqueness check
+ * @returns A unique name
+ */
+export function uniqueNameInScope<T>(
+	baseName: string,
+	allItems: T[],
+	getName: (item: T) => string,
+	shouldInclude: (item: T) => boolean,
+) {
+	const existing = allItems.filter(shouldInclude).map(getName);
+
+	return uniqueName(baseName, existing);
+}
+
+/**
  * Attempt to parse the given string as a valid params object
  * while silently handling any errors
  *

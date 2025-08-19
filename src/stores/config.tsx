@@ -21,7 +21,7 @@ import type {
 } from "~/types";
 import { createBaseConfig, createBaseQuery } from "~/util/defaults";
 import type { schema } from "~/util/feature-flags";
-import { newId, uniqueName } from "~/util/helpers";
+import { newId, uniqueNameInScope } from "~/util/helpers";
 
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
@@ -130,14 +130,20 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
 					const tabId = newId();
-					const existing = current.queries.map((query) => query.name ?? "");
-					const queryName = uniqueName(options?.name || "New query", existing);
 
 					// Set the folder ID to the current folder (last in path) or undefined for root
 					const currentFolderId =
 						current.queryFolderPath.length > 0
 							? current.queryFolderPath[current.queryFolderPath.length - 1]
 							: undefined;
+
+					// Use scoped naming - only check for conflicts within the current folder
+					const queryName = uniqueNameInScope(
+						options?.name || "New query",
+						current.queries,
+						(q) => q.name ?? "",
+						(q) => q.folderId === currentFolderId,
+					);
 
 					// Calculate the next order number for items in this folder
 					const itemsInFolder = [
@@ -234,9 +240,17 @@ export const useConfigStore = create<ConfigStore>()(
 								? current.queryFolderPath[current.queryFolderPath.length - 1]
 								: undefined;
 
+					// Use scoped naming - only check for conflicts within the parent folder
+					const folderName = uniqueNameInScope(
+						name,
+						current.queryFolders,
+						(f) => f.name,
+						(f) => f.parentId === folderParentId,
+					);
+
 					const newFolder: Folder = {
 						id: folderId,
-						name,
+						name: folderName,
 						parentId: folderParentId,
 						order: maxOrder + 1,
 					};
@@ -265,13 +279,25 @@ export const useConfigStore = create<ConfigStore>()(
 					const filteredFolders = removeChildFolders(current.queryFolders, folderId);
 					const finalFolders = filteredFolders.filter((folder) => folder.id !== folderId);
 
-					// Move queries out of deleted folders to root
+					// Move queries out of deleted folders to root with name conflict resolution
 					const updatedQueries = current.queries.map((query) => {
 						if (
 							query.folderId === folderId ||
 							!finalFolders.some((f) => f.id === query.folderId)
 						) {
-							return { ...query, folderId: undefined };
+							// Resolve name conflicts when moving to root
+							const resolvedName = uniqueNameInScope(
+								query.name || "New query",
+								current.queries,
+								(q) => q.name ?? "",
+								(q) => q.folderId === undefined && q.id !== query.id,
+							);
+
+							return {
+								...query,
+								folderId: undefined,
+								...(resolvedName !== query.name && { name: resolvedName }),
+							};
 						}
 						return query;
 					});
@@ -291,18 +317,42 @@ export const useConfigStore = create<ConfigStore>()(
 						(folder) => folder.id !== folderId,
 					);
 
-					// Move direct child folders to root (remove their parentId)
+					// Move direct child folders to root with name conflict resolution
 					const updatedFolders = finalFolders.map((folder) => {
 						if (folder.parentId === folderId) {
-							return { ...folder, parentId: undefined };
+							// Resolve name conflicts when moving to root
+							const resolvedName = uniqueNameInScope(
+								folder.name,
+								finalFolders,
+								(f) => f.name,
+								(f) => f.parentId === undefined && f.id !== folder.id,
+							);
+
+							return {
+								...folder,
+								parentId: undefined,
+								...(resolvedName !== folder.name && { name: resolvedName }),
+							};
 						}
 						return folder;
 					});
 
-					// Move queries that were directly in the deleted folder to root
+					// Move queries that were directly in the deleted folder to root with name conflict resolution
 					const updatedQueries = current.queries.map((query) => {
 						if (query.folderId === folderId) {
-							return { ...query, folderId: undefined };
+							// Resolve name conflicts when moving to root
+							const resolvedName = uniqueNameInScope(
+								query.name || "New query",
+								current.queries,
+								(q) => q.name ?? "",
+								(q) => q.folderId === undefined && q.id !== query.id,
+							);
+
+							return {
+								...query,
+								folderId: undefined,
+								...(resolvedName !== query.name && { name: resolvedName }),
+							};
 						}
 						return query;
 					});

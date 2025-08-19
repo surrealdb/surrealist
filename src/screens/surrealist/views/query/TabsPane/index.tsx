@@ -33,7 +33,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { Folder, QueryTab, QueryType } from "~/types";
-import { showInfo, uniqueName } from "~/util/helpers";
+import { showInfo, uniqueNameInScope } from "~/util/helpers";
 import {
 	iconArrowLeft,
 	iconArrowUpRight,
@@ -114,8 +114,17 @@ function Query({
 	const renameQuery = useStable((id: string, newName: string) => {
 		if (!connection) return;
 
-		const existing = queries.filter((q) => q.id !== id).map((q) => q.name ?? "");
-		const name = uniqueName(newName || "New query", existing);
+		// Find the query being renamed to get its current folder
+		const queryToRename = queries.find((q) => q.id === id);
+		const currentFolderId = queryToRename?.folderId;
+
+		// Use scoped naming - only check for conflicts within the same folder
+		const name = uniqueNameInScope(
+			newName || "New query",
+			queries,
+			(q) => q.name ?? "",
+			(q) => q.folderId === currentFolderId && q.id !== id,
+		);
 
 		updateQueryTab(connection, {
 			id,
@@ -126,9 +135,22 @@ function Query({
 	const moveQueryToFolder = useStable((queryId: string, folderId?: string) => {
 		if (!connection) return;
 
+		// Find the query being moved to check for naming conflicts in the target folder
+		const queryToMove = queries.find((q) => q.id === queryId);
+		if (!queryToMove) return;
+
+		// Check if the name would conflict in the target folder and resolve if needed
+		const resolvedName = uniqueNameInScope(
+			queryToMove.name || "New query",
+			queries,
+			(q) => q.name ?? "",
+			(q) => q.folderId === folderId && q.id !== queryId,
+		);
+
 		updateQueryTab(connection, {
 			id: queryId,
 			folderId: folderId,
+			...(resolvedName !== queryToMove.name && { name: resolvedName }),
 		});
 	});
 
@@ -421,8 +443,17 @@ function FolderComponent({
 	const renameFolder = useStable((id: string, newName: string) => {
 		if (!connection) return;
 
-		const existing = folders.filter((f) => f.id !== id).map((f) => f.name);
-		const name = uniqueName(newName || "New folder", existing);
+		// Find the folder being renamed to get its current parent
+		const folderToRename = folders.find((f) => f.id === id);
+		const currentParentId = folderToRename?.parentId;
+
+		// Use scoped naming - only check for conflicts within the same parent folder
+		const name = uniqueNameInScope(
+			newName || "New folder",
+			folders,
+			(f) => f.name,
+			(f) => f.parentId === currentParentId && f.id !== id,
+		);
 
 		updateQueryFolder(connection, {
 			id,
@@ -433,9 +464,18 @@ function FolderComponent({
 	const moveFolderTo = useStable((targetParentId?: string) => {
 		if (!connection) return;
 
+		// Check if the folder name would conflict in the target parent and resolve if needed
+		const resolvedName = uniqueNameInScope(
+			folder.name,
+			folders,
+			(f) => f.name,
+			(f) => f.parentId === targetParentId && f.id !== folder.id,
+		);
+
 		updateQueryFolder(connection, {
 			id: folder.id,
 			parentId: targetParentId,
+			...(resolvedName !== folder.name && { name: resolvedName }),
 		});
 	});
 
