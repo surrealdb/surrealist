@@ -249,9 +249,11 @@ function FolderComponent({
 	onRemoveFolder,
 	...other
 }: FolderProps) {
+	const { duplicateQueryFolder } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const { isRenaming, startRenaming, setIsRenaming } = useRenamingState();
 	const { showFolderSelector, openFolderSelector, closeFolderSelector } = useFolderSelector();
+	const [connection] = useConnectionAndView();
 
 	const renameFolder = useFolderRename(folders);
 	const moveFolderTo = useFolderMove(folders);
@@ -268,6 +270,11 @@ function FolderComponent({
 
 	const handleMove = useStable((targetParentId?: string) => {
 		moveFolderTo(folder.id, targetParentId);
+	});
+
+	const handleDuplicate = useStable(() => {
+		if (!connection) return;
+		duplicateQueryFolder(connection, folder.id);
 	});
 
 	const handleExecuteAll = useStable(() => {
@@ -293,6 +300,7 @@ function FolderComponent({
 		startRenaming,
 		() => onRemoveFolder(folder.id),
 		handleExecuteAll,
+		handleDuplicate,
 		moveOptions,
 		openFolderSelector,
 	);

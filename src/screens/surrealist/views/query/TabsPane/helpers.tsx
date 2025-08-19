@@ -324,6 +324,7 @@ export function buildFolderContextMenuItems(
 	onRename: () => void,
 	onRemove: () => void,
 	onExecuteAll: () => void,
+	onDuplicate: () => void,
 	moveOptions: Array<{ key: string; title: string; onClick: () => void }>,
 	onMoveToFolder: () => void,
 ) {
@@ -333,6 +334,12 @@ export function buildFolderContextMenuItems(
 			title: "Open",
 			icon: <Icon path={iconArrowUpRight} />,
 			onClick: onNavigate,
+		},
+		{
+			key: "duplicate",
+			title: "Duplicate",
+			icon: <Icon path={iconCopy} />,
+			onClick: onDuplicate,
 		},
 		{
 			key: "rename",

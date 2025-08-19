@@ -66,6 +66,7 @@ export type ConfigStore = SurrealistConfig & {
 	removeQueryFolderToRoot: (connectionId: string, folderId: string) => void;
 	removeQueryFolderCascade: (connectionId: string, folderId: string) => void;
 	updateQueryFolder: (connectionId: string, folder: PartialId<Folder>) => void;
+	duplicateQueryFolder: (connectionId: string, folderId: string) => void;
 	navigateToFolder: (connectionId: string, folderId: string) => void;
 	navigateToParentFolder: (connectionId: string) => void;
 	navigateToRoot: (connectionId: string) => void;
@@ -412,6 +413,114 @@ export const useConfigStore = create<ConfigStore>()(
 							...current.queryFolders[index],
 							...folder,
 						}),
+					};
+				}),
+			),
+
+		duplicateQueryFolder: (connectionId, folderId) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					const folderToDuplicate = current.queryFolders.find((f) => f.id === folderId);
+					if (!folderToDuplicate) return {};
+
+					// Helper function to recursively duplicate folders and get their new IDs
+					const duplicateFolderRecursive = (
+						originalFolderId: string,
+						newParentId?: string,
+					): {
+						newFolders: Folder[];
+						newQueries: QueryTab[];
+						idMapping: Map<string, string>;
+					} => {
+						const originalFolder = current.queryFolders.find(
+							(f) => f.id === originalFolderId,
+						);
+						if (!originalFolder)
+							return { newFolders: [], newQueries: [], idMapping: new Map() };
+
+						const newFolderId = newId();
+						const idMapping = new Map<string, string>();
+						idMapping.set(originalFolderId, newFolderId);
+
+						// Calculate the next order number for items in the target parent folder
+						const itemsInTargetFolder = [
+							...current.queryFolders.filter((f) => f.parentId === newParentId),
+							...current.queries.filter((q) => q.folderId === newParentId),
+						];
+						const maxOrder = itemsInTargetFolder.reduce(
+							(max, item) => Math.max(max, item.order),
+							-1,
+						);
+
+						// Generate unique name for the duplicated folder
+						const folderName = uniqueNameInScope(
+							originalFolder.name,
+							current.queryFolders,
+							(f) => f.name,
+							(f) => f.parentId === newParentId,
+						);
+
+						// Create the new folder
+						const newFolder: Folder = {
+							id: newFolderId,
+							name: folderName,
+							parentId: newParentId,
+							order: maxOrder + 1,
+						};
+
+						let allNewFolders = [newFolder];
+						let allNewQueries: QueryTab[] = [];
+
+						// Duplicate all queries directly in this folder
+						const queriesInFolder = current.queries.filter(
+							(q) => q.folderId === originalFolderId,
+						);
+						for (const [index, query] of queriesInFolder.entries()) {
+							const newQueryId = newId();
+							const queryName = uniqueNameInScope(
+								query.name || "New query",
+								current.queries,
+								(q) => q.name ?? "",
+								(q) => q.folderId === newFolderId,
+							);
+
+							const newQuery: QueryTab = {
+								...query,
+								id: newQueryId,
+								name: queryName,
+								folderId: newFolderId,
+								order: index,
+							};
+
+							allNewQueries.push(newQuery);
+						}
+
+						// Recursively duplicate child folders
+						const childFolders = current.queryFolders.filter(
+							(f) => f.parentId === originalFolderId,
+						);
+						for (const childFolder of childFolders) {
+							const childResult = duplicateFolderRecursive(
+								childFolder.id,
+								newFolderId,
+							);
+							allNewFolders = allNewFolders.concat(childResult.newFolders);
+							allNewQueries = allNewQueries.concat(childResult.newQueries);
+							// Merge ID mappings
+							for (const [oldId, newId] of childResult.idMapping.entries()) {
+								idMapping.set(oldId, newId);
+							}
+						}
+
+						return { newFolders: allNewFolders, newQueries: allNewQueries, idMapping };
+					};
+
+					// Duplicate the folder and all its contents
+					const result = duplicateFolderRecursive(folderId, folderToDuplicate.parentId);
+
+					return {
+						queryFolders: [...current.queryFolders, ...result.newFolders],
+						queries: [...current.queries, ...result.newQueries],
 					};
 				}),
 			),
