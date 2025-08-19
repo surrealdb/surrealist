@@ -26,13 +26,14 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { openDeleteFolderModal } from "~/modals/delete-folder";
 import { openDeleteFolderCascadeModal } from "~/modals/delete-folder-cascade";
-import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
+import { cancelLiveQueries, executeUserQuery } from "~/screens/surrealist/connection/connection";
 import { ItemExplorer } from "~/screens/surrealist/pages/ItemExplorer";
+import { readQuery } from "~/screens/surrealist/views/query/QueryView/strategy";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { Folder, QueryTab, QueryType } from "~/types";
-import { uniqueName } from "~/util/helpers";
+import { showInfo, uniqueName } from "~/util/helpers";
 import {
 	iconArrowLeft,
 	iconArrowUpRight,
@@ -47,6 +48,7 @@ import {
 	iconHistory,
 	iconHome,
 	iconList,
+	iconPlay,
 	iconPlus,
 	iconQuery,
 	iconSearch,
@@ -326,6 +328,70 @@ function Query({
 	);
 }
 
+const executeAllQueriesInFolder = async (
+	folderId: string,
+	queries: QueryTab[],
+	queryFolders: Folder[],
+) => {
+	const folder = queryFolders.find((f) => f.id === folderId);
+	if (!folder) return;
+
+	// Find all queries in the folder (recursively)
+	const getAllQueriesInFolder = (targetFolderId: string): QueryTab[] => {
+		const directQueries = queries.filter((q) => q.folderId === targetFolderId);
+		const subfolders = queryFolders.filter((f) => f.parentId === targetFolderId);
+
+		let allQueries = [...directQueries];
+		for (const subfolder of subfolders) {
+			allQueries = allQueries.concat(getAllQueriesInFolder(subfolder.id));
+		}
+
+		return allQueries;
+	};
+
+	const folderQueries = getAllQueriesInFolder(folderId);
+
+	if (folderQueries.length === 0) {
+		showInfo({
+			title: "No queries found",
+			subtitle: `Folder "${folder.name}" contains no queries to execute`,
+		});
+		return;
+	}
+
+	// Combine all queries into one execution
+	const queryPromises = folderQueries.map(async (queryTab) => {
+		try {
+			const queryContent = await readQuery(queryTab);
+			return typeof queryContent === "string" ? queryContent : queryContent;
+		} catch (error) {
+			console.warn(`Failed to read query ${queryTab.name}:`, error);
+			return "";
+		}
+	});
+
+	const queryContents = await Promise.all(queryPromises);
+	const validQueries = queryContents.filter((content) => content.trim().length > 0);
+
+	if (validQueries.length === 0) {
+		showInfo({
+			title: "No valid queries",
+			subtitle: `All queries in folder "${folder.name}" are empty`,
+		});
+		return;
+	}
+
+	// Combine all queries with semicolons and execute
+	const combinedQuery = validQueries.join(";\n\n");
+
+	showInfo({
+		title: "Executing folder queries",
+		subtitle: `Running ${validQueries.length} quer${validQueries.length === 1 ? "y" : "ies"} from "${folder.name}"`,
+	});
+
+	executeUserQuery({ override: combinedQuery });
+};
+
 interface FolderProps extends BoxProps, ElementProps<"button"> {
 	folder: Folder;
 	folders: Folder[];
@@ -451,6 +517,15 @@ function FolderComponent({
 			title: "Move to...",
 			icon: <Icon path={iconFolder} />,
 			onClick: () => setShowFolderSelector(true),
+		},
+		{
+			key: "execute-div",
+		},
+		{
+			key: "execute-all",
+			title: "Execute all queries",
+			icon: <Icon path={iconPlay} />,
+			onClick: () => executeAllQueriesInFolder(folder.id, queries, folders),
 		},
 		{
 			key: "delete-div",
