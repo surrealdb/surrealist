@@ -63,6 +63,8 @@ export type ConfigStore = SurrealistConfig & {
 	setActiveQueryTab: (connectionId: string, tabId: string) => void;
 	addQueryFolder: (connectionId: string, name: string, parentId?: string) => void;
 	removeQueryFolder: (connectionId: string, folderId: string) => void;
+	removeQueryFolderToRoot: (connectionId: string, folderId: string) => void;
+	removeQueryFolderCascade: (connectionId: string, folderId: string) => void;
 	updateQueryFolder: (connectionId: string, folder: PartialId<Folder>) => void;
 	navigateToFolder: (connectionId: string, folderId: string) => void;
 	navigateToParentFolder: (connectionId: string) => void;
@@ -248,7 +250,7 @@ export const useConfigStore = create<ConfigStore>()(
 		removeQueryFolder: (connectionId, folderId) =>
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
-					// Remove all child folders recursively
+					// Remove folder and move all contents to root
 					const removeChildFolders = (folders: Folder[], parentId: string): Folder[] => {
 						const childFolders = folders.filter((f) => f.parentId === parentId);
 						let filteredFolders = folders.filter((f) => f.parentId !== parentId);
@@ -263,7 +265,7 @@ export const useConfigStore = create<ConfigStore>()(
 					const filteredFolders = removeChildFolders(current.queryFolders, folderId);
 					const finalFolders = filteredFolders.filter((folder) => folder.id !== folderId);
 
-					// Move queries out of deleted folders
+					// Move queries out of deleted folders to root
 					const updatedQueries = current.queries.map((query) => {
 						if (
 							query.folderId === folderId ||
@@ -272,6 +274,71 @@ export const useConfigStore = create<ConfigStore>()(
 							return { ...query, folderId: undefined };
 						}
 						return query;
+					});
+
+					return {
+						queryFolders: finalFolders,
+						queries: updatedQueries,
+					};
+				}),
+			),
+
+		removeQueryFolderToRoot: (connectionId, folderId) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					// Move to root: Only remove the target folder, move its contents to root
+					const finalFolders = current.queryFolders.filter(
+						(folder) => folder.id !== folderId,
+					);
+
+					// Move direct child folders to root (remove their parentId)
+					const updatedFolders = finalFolders.map((folder) => {
+						if (folder.parentId === folderId) {
+							return { ...folder, parentId: undefined };
+						}
+						return folder;
+					});
+
+					// Move queries that were directly in the deleted folder to root
+					const updatedQueries = current.queries.map((query) => {
+						if (query.folderId === folderId) {
+							return { ...query, folderId: undefined };
+						}
+						return query;
+					});
+
+					return {
+						queryFolders: updatedFolders,
+						queries: updatedQueries,
+					};
+				}),
+			),
+
+		removeQueryFolderCascade: (connectionId, folderId) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					// Cascade delete: Remove folder and all its contents
+					const removeChildFolders = (folders: Folder[], parentId: string): Folder[] => {
+						const childFolders = folders.filter((f) => f.parentId === parentId);
+						let filteredFolders = folders.filter((f) => f.parentId !== parentId);
+
+						for (const child of childFolders) {
+							filteredFolders = removeChildFolders(filteredFolders, child.id);
+						}
+
+						return filteredFolders;
+					};
+
+					const filteredFolders = removeChildFolders(current.queryFolders, folderId);
+					const finalFolders = filteredFolders.filter((folder) => folder.id !== folderId);
+
+					// CASCADE DELETE: Remove all queries within deleted folders
+					const updatedQueries = current.queries.filter((query) => {
+						if (query.folderId === folderId) {
+							return false; // Delete queries in the main folder
+						}
+						// Delete queries in child folders that no longer exist
+						return finalFolders.some((f) => f.id === query.folderId) || !query.folderId;
 					});
 
 					return {

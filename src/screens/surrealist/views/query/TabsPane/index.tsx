@@ -24,6 +24,8 @@ import { useConnection } from "~/hooks/connection";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { openDeleteFolderModal } from "~/modals/delete-folder";
+import { openDeleteFolderCascadeModal } from "~/modals/delete-folder-cascade";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
 import { ItemExplorer } from "~/screens/surrealist/pages/ItemExplorer";
 import { useConfigStore } from "~/stores/config";
@@ -455,7 +457,7 @@ function FolderComponent({
 		},
 		{
 			key: "delete",
-			title: "Delete",
+			title: "Delete folder",
 			onClick: () => onRemoveFolder(folder.id),
 		},
 	]);
@@ -518,6 +520,8 @@ export function TabsPane(props: TabsPaneProps) {
 		setActiveQueryTab,
 		addQueryFolder,
 		removeQueryFolder,
+		removeQueryFolderToRoot,
+		removeQueryFolderCascade,
 		updateQueryFolder,
 		navigateToFolder,
 		navigateToParentFolder,
@@ -580,10 +584,73 @@ export function TabsPane(props: TabsPaneProps) {
 		}
 	});
 
-	const removeFolder = useStable((id: string) => {
-		if (!connection) return;
+	// Helper function to count folder contents recursively
+	const getFolderContents = useStable((folderId: string) => {
+		const getChildFolders = (parentId: string): Folder[] => {
+			const children = queryFolders.filter((f) => f.parentId === parentId);
+			let allChildren = [...children];
+			for (const child of children) {
+				allChildren = allChildren.concat(getChildFolders(child.id));
+			}
+			return allChildren;
+		};
 
-		removeQueryFolder(connection, id);
+		const childFolders = getChildFolders(folderId);
+		const affectedFolderIds = [folderId, ...childFolders.map((f) => f.id)];
+		const queriesInFolders = queries.filter((q) =>
+			affectedFolderIds.includes(q.folderId || ""),
+		);
+
+		return {
+			subfolders: childFolders,
+			queries: queriesInFolders,
+			totalFolders: childFolders.length + 1, // +1 for the folder itself
+			totalQueries: queriesInFolders.length,
+		};
+	});
+
+	const removeFolder = useStable((folderId: string) => {
+		const folder = queryFolders.find((f) => f.id === folderId);
+		if (!folder || !connection) return;
+
+		const contents = getFolderContents(folderId);
+
+		// If folder is empty, delete it directly
+		if (contents.totalQueries === 0 && contents.subfolders.length === 0) {
+			removeQueryFolder(connection, folderId);
+			return;
+		}
+
+		// Build content description
+		const parts: string[] = [];
+		if (contents.subfolders.length > 0) {
+			parts.push(
+				`${contents.subfolders.length} subfolder${contents.subfolders.length === 1 ? "" : "s"}`,
+			);
+		}
+		if (contents.totalQueries > 0) {
+			parts.push(`${contents.totalQueries} quer${contents.totalQueries === 1 ? "y" : "ies"}`);
+		}
+		const contentDescription = `This folder contains ${parts.join(" and ")}.`;
+
+		// Open the three-button modal
+		openDeleteFolderModal({
+			folderName: folder.name,
+			contentDescription,
+			onMoveToRoot: () => {
+				removeQueryFolderToRoot(connection, folderId);
+			},
+			onDeleteEverything: () => {
+				const cascadeDescription = `This will permanently delete the folder and all ${parts.join(" and ")}.`;
+				openDeleteFolderCascadeModal({
+					folderName: folder.name,
+					contentDescription: cascadeDescription,
+					onConfirm: () => {
+						removeQueryFolderCascade(connection, folderId);
+					},
+				});
+			},
+		});
 	});
 
 	const saveItemOrder = useStable((items: (QueryTab | Folder)[]) => {
