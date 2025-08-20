@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
+import { ActionIcon, Box, Drawer, Group, Stack, Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
@@ -10,7 +10,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconClose, iconMarker } from "~/util/icons";
-import { formatValue } from "~/util/surrealql";
+import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeEditor } from "../CodeEditor";
 import type { GeographyInput } from "../GeographyMap";
 
@@ -31,6 +31,40 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 	}, [data]);
 
 	const extensions = useMemo(() => [surrealql()], []);
+
+	// parses geoJSON and splits langitude and latitude and creates a fitting string with bail out if it doesn't fit
+	const coordLabel = useMemo(() => {
+		try {
+			const parsed: any = parseValue(geoJSON).toJSON();
+
+			const pickCoords = (obj: any): [number, number] | null => {
+				if (!obj) return null;
+				if (obj.type === "Point" && Array.isArray(obj.coordinates)) {
+					return obj.coordinates as [number, number];
+				}
+				if (obj.type === "Feature" && obj.geometry?.type === "Point") {
+					return obj.geometry.coordinates as [number, number];
+				}
+				if (obj.type === "FeatureCollection" && Array.isArray(obj.features)) {
+					const f = obj.features.find((x: any) => x?.geometry?.type === "Point");
+					if (f?.geometry?.coordinates) return f.geometry.coordinates as [number, number];
+				}
+				return null;
+			};
+
+			const coords = pickCoords(parsed);
+			if (!coords) return null;
+
+			const [lng, lat] = coords;
+			const fmt = (v: unknown, p = 4) => {
+				const n = typeof v === "number" ? v : Number(v);
+				return Number.isFinite(n) ? n.toFixed(p) : String(v);
+			};
+			return `Longitude: ${fmt(lng)}, Latitude: ${fmt(lat)}`;
+		} catch {
+			return null;
+		}
+	}, [geoJSON]);
 
 	return (
 		<Drawer
@@ -101,7 +135,11 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 				<Box
 					flex={1}
 					pos="relative"
-				>
+				>{coordLabel ? (
+					<Box c="cyan.4">
+						{coordLabel}
+					</Box>
+				) : (
 					<CodeEditor
 						pos="absolute"
 						inset={0}
@@ -109,7 +147,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 						value={geoJSON}
 						onChange={setGeoJSON}
 						extensions={extensions}
-					/>
+					/>)}
 				</Box>
 			</Stack>
 		</Drawer>
