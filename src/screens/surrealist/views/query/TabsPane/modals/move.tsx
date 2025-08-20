@@ -2,49 +2,39 @@ import { Button, Center, Group, Modal, ScrollArea, Stack, Text } from "@mantine/
 import { useEffect, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
-import type { Folder, OrganizableItem } from "~/types";
+import type { Folder, QueryTab } from "~/types";
+import { sortItemsByTimestamp } from "~/util/helpers";
 import { iconArrowLeft, iconFolder, iconHome } from "~/util/icons";
+import { TYPE_ICONS } from "../helpers";
 import classes from "./style.module.scss";
 
-export interface ItemExplorerProps<
-	TFolder extends Folder = Folder,
-	TItem extends OrganizableItem = OrganizableItem,
-> {
+export interface MoveModalProps {
 	opened: boolean;
 	onClose: () => void;
 	title: string;
 	description: string;
-	folders: TFolder[];
-	items: TItem[];
+	folders: Folder[];
+	queries: QueryTab[];
 	initialPath?: string[];
 	excludedFolderIds?: string[];
-	movingItemId?: string;
+	movingQueryId?: string;
 	movingFolderId?: string;
 	onMove: (targetFolderId?: string) => void;
-	// Function to get the icon for an item
-	getItemIcon: (item: TItem) => string;
-	// Function to get the display name for an item
-	getItemName: (item: TItem) => string;
 }
 
-export function ItemExplorer<
-	TFolder extends Folder = Folder,
-	TItem extends OrganizableItem = OrganizableItem,
->({
+export function MoveModal({
 	opened,
 	onClose,
 	title,
 	description,
 	folders,
-	items,
+	queries,
 	initialPath = [],
 	excludedFolderIds = [],
-	movingItemId,
+	movingQueryId,
 	movingFolderId,
 	onMove,
-	getItemIcon,
-	getItemName,
-}: ItemExplorerProps<TFolder, TItem>) {
+}: MoveModalProps) {
 	const [browserPath, setBrowserPath] = useState<string[]>(initialPath);
 
 	// Reset path when modal opens with new initial path
@@ -71,14 +61,14 @@ export function ItemExplorer<
 		browserPath.length > 0 ? browserPath[browserPath.length - 1] : undefined;
 
 	// Get folders in current browser location
-	const currentBrowserFolders = folders
-		.filter((f) => f.parentId === currentBrowserFolderId)
-		.sort((a, b) => a.order - b.order);
+	const currentBrowserFolders = sortItemsByTimestamp(
+		folders.filter((f) => f.parentId === currentBrowserFolderId),
+	);
 
-	// Get items in current browser location for context (greyed out)
-	const currentBrowserItems = items
-		.filter((item) => item.folderId === currentBrowserFolderId)
-		.sort((a, b) => a.order - b.order);
+	// Get queries in current browser location for context (greyed out)
+	const currentBrowserQueries = sortItemsByTimestamp(
+		queries.filter((query) => query.folderId === currentBrowserFolderId),
+	);
 
 	// Build breadcrumb path for browser
 	const browserBreadcrumbs = browserPath
@@ -199,36 +189,37 @@ export function ItemExplorer<
 							);
 						})}
 
-						{/* Items (greyed out for context) */}
-						{currentBrowserItems.map((item) => {
-							const isMovingItem = movingItemId === item.id;
+						{/* Queries (greyed out for context) */}
+						{currentBrowserQueries.map((query) => {
+							const isMovingQuery = movingQueryId === query.id;
 							return (
 								<Button
-									key={item.id}
+									key={query.id}
 									variant="subtle"
-									leftSection={<Icon path={getItemIcon(item)} />}
+									leftSection={<Icon path={TYPE_ICONS[query.type]} />}
 									fullWidth
 									justify="flex-start"
 									disabled
-									className={classes.itemItem}
+									className={classes.queryItem}
 								>
-									{getItemName(item)}
-									{isMovingItem && " (moving)"}
+									{query.name || "Untitled"}
+									{isMovingQuery && " (moving)"}
 								</Button>
 							);
 						})}
 
 						{/* Empty state */}
-						{currentBrowserFolders.length === 0 && currentBrowserItems.length === 0 && (
-							<Center className={classes.emptyState}>
-								<Text
-									size="sm"
-									c="slate"
-								>
-									This location is empty
-								</Text>
-							</Center>
-						)}
+						{currentBrowserFolders.length === 0 &&
+							currentBrowserQueries.length === 0 && (
+								<Center className={classes.emptyState}>
+									<Text
+										size="sm"
+										c="slate"
+									>
+										This location is empty
+									</Text>
+								</Center>
+							)}
 					</Stack>
 				</ScrollArea.Autosize>
 

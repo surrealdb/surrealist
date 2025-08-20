@@ -28,7 +28,6 @@ import { useIsLight } from "~/hooks/theme";
 import { openDeleteFolderModal } from "~/modals/delete-folder";
 
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
-import { ItemExplorer } from "~/screens/surrealist/pages/ItemExplorer";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
@@ -70,6 +69,7 @@ import {
 	useQueryRename,
 	useRenamingState,
 } from "./hooks";
+import { MoveModal } from "./modals/move";
 import classes from "./style.module.scss";
 
 interface QueryProps extends BoxProps, ElementProps<"button"> {
@@ -216,18 +216,16 @@ function Query({
 				/>
 			</Entry>
 
-			<ItemExplorer
+			<MoveModal
 				opened={showFolderSelector}
 				onClose={closeFolderSelector}
 				title="Move Query"
 				description={`Browse to the folder where you want to move "${query.name || "Untitled"}":`}
 				folders={folders}
-				items={queries}
+				queries={queries}
 				initialPath={getInitialPath(query.folderId)}
-				movingItemId={query.id}
+				movingQueryId={query.id}
 				onMove={handleMove}
-				getItemIcon={(item) => TYPE_ICONS[item.type]}
-				getItemName={(item) => item.name || "Untitled"}
 			/>
 		</>
 	);
@@ -328,19 +326,17 @@ function FolderComponent({
 				/>
 			</Entry>
 
-			<ItemExplorer
+			<MoveModal
 				opened={showFolderSelector}
 				onClose={closeFolderSelector}
 				title="Move Folder"
 				description={`Browse to the location where you want to move "${folder.name}":`}
 				folders={folders}
-				items={queries}
+				queries={queries}
 				initialPath={getInitialPath(folder.parentId)}
 				excludedFolderIds={getExcludedFolderIds(folder.id)}
 				movingFolderId={folder.id}
 				onMove={handleMove}
-				getItemIcon={(item) => TYPE_ICONS[item.type]}
-				getItemName={(item) => item.name || "Untitled"}
 			/>
 		</>
 	);

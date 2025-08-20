@@ -123,7 +123,7 @@ export function useFolderMove(folders: Folder[]) {
 }
 
 /**
- * Hook for building paths to folders for ItemExplorer navigation
+ * Hook for building paths to folders for MoveModal navigation
  */
 export function usePathBuilder(folders: Folder[]) {
 	return useStable((targetFolderId?: string) => {
