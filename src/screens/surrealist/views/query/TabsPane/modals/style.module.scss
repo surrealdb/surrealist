@@ -1,0 +1,75 @@
+.breadcrumbPath {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-size: var(--mantine-font-size-sm);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.breadcrumbRoot {
+    color: var(--mantine-color-dimmed);
+    white-space: nowrap;
+}
+
+.breadcrumbItem {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.breadcrumbSeparator {
+    color: var(--mantine-color-dimmed);
+    margin: 0 var(--mantine-spacing-xs);
+    font-size: var(--mantine-font-size-sm);
+    user-select: none;
+}
+
+.breadcrumbLink {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    font-size: inherit;
+    color: var(--mantine-color-text);
+    transition: color 0.15s ease-in-out;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+
+    &:hover {
+        color: var(--mantine-color-surreal-text);
+    }
+}
+
+.content {
+    max-height: 350px;
+}
+
+.folderList {
+    gap: var(--mantine-spacing-xs);
+}
+
+.folderItem {
+    .mantine-Button-inner {
+        justify-content: flex-start;
+    }
+}
+
+.queryItem {
+    .mantine-Button-inner {
+        justify-content: flex-start;
+    }
+
+    .mantine-Button-root {
+        opacity: 0.5;
+    }
+}
+
+.emptyState {
+    padding: var(--mantine-spacing-md) 0;
+}

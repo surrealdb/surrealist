@@ -147,7 +147,9 @@ export interface Connection {
 	lastNamespace: string;
 	lastDatabase: string;
 	queries: QueryTab[];
+	queryFolders: Folder[];
 	activeQuery: string;
+	queryFolderPath: string[];
 	queryHistory: HistoryQuery[];
 	authentication: Authentication;
 	pinnedTables: string[];
@@ -250,8 +252,7 @@ export interface QueryResponse {
 	result: any;
 }
 
-export interface QueryTab {
-	id: string;
+export interface QueryTab extends OrganizableItem {
 	type: QueryType;
 	query: string; // NOTE Query string for config type, path for file type
 	name?: string;
@@ -260,6 +261,22 @@ export interface QueryTab {
 	resultMode: ResultMode;
 	resultFormat: ResultFormat;
 	showVariables: boolean;
+}
+
+export interface Folder {
+	id: string;
+	name?: string;
+	parentId?: string;
+	createdAt: number;
+	movedAt?: number;
+}
+
+export interface OrganizableItem {
+	id: string;
+	name?: string;
+	folderId?: string;
+	createdAt: number;
+	movedAt?: number;
 }
 
 export interface HistoryQuery {
