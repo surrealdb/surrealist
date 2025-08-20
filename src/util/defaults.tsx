@@ -163,7 +163,7 @@ export function createBaseQuery(settings: SurrealistSettings, type: QueryType): 
 		resultMode: settings.appearance.defaultResultMode,
 		resultFormat: settings.appearance.defaultResultFormat,
 		showVariables: false,
-		order: 0,
+		createdAt: Date.now(),
 	};
 }
 
