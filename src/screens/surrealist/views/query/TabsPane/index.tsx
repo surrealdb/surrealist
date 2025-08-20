@@ -26,7 +26,7 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { openDeleteFolderModal } from "~/modals/delete-folder";
-import { openDeleteFolderCascadeModal } from "~/modals/delete-folder-cascade";
+
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
 import { ItemExplorer } from "~/screens/surrealist/pages/ItemExplorer";
 import { useConfigStore } from "~/stores/config";
@@ -49,7 +49,6 @@ import {
 } from "~/util/icons";
 import {
 	buildBreadcrumbPath,
-	buildCascadeDescription,
 	buildFolderContentDescription,
 	buildFolderContextMenuItems,
 	buildQueryContextMenuItems,
@@ -453,14 +452,7 @@ export function TabsPane(props: TabsPaneProps) {
 				removeQueryFolder(connection, folderId);
 			},
 			onDeleteEverything: () => {
-				const cascadeDescription = buildCascadeDescription(contents);
-				openDeleteFolderCascadeModal({
-					folderName: folder.name || "Untitled",
-					contentDescription: cascadeDescription,
-					onConfirm: () => {
-						removeQueryFolderCascade(connection, folderId);
-					},
-				});
+				removeQueryFolderCascade(connection, folderId);
 			},
 		});
 	});

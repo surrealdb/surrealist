@@ -135,22 +135,6 @@ export function buildFolderContentDescription(contents: ReturnType<typeof getFol
 }
 
 /**
- * Build cascade deletion description
- */
-export function buildCascadeDescription(contents: ReturnType<typeof getFolderContents>) {
-	const parts: string[] = [];
-	if (contents.subfolders.length > 0) {
-		parts.push(
-			`${contents.subfolders.length} subfolder${contents.subfolders.length === 1 ? "" : "s"}`,
-		);
-	}
-	if (contents.totalQueries > 0) {
-		parts.push(`${contents.totalQueries} quer${contents.totalQueries === 1 ? "y" : "ies"}`);
-	}
-	return `This will permanently delete the folder and all ${parts.join(" and ")}.`;
-}
-
-/**
  * Remove other queries based on direction
  */
 export function removeOthers(

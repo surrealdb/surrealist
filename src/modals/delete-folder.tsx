@@ -1,7 +1,6 @@
-import { Button, Group, Text } from "@mantine/core";
+import { Button, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 
 interface DeleteFolderModalProps {
@@ -15,7 +14,7 @@ interface DeleteFolderModalProps {
 export function openDeleteFolderModal(props: DeleteFolderModalProps) {
 	openModal({
 		modalId: "delete-folder",
-		title: <PrimaryTitle>Delete "{props.folderName}"?</PrimaryTitle>,
+		title: <PrimaryTitle>Delete Folder "{props.folderName}"?</PrimaryTitle>,
 		withCloseButton: true,
 		children: <DeleteFolderModal {...props} />,
 	});
@@ -45,43 +44,39 @@ function DeleteFolderModal({
 		: "Move to root";
 
 	return (
-		<>
+		<Stack gap="xl">
 			<Text
-				fz="lg"
-				mb="md"
+				fw={500}
+				c="dimmed"
 			>
 				{contentDescription}
 			</Text>
 
-			<Text
-				fw="bold"
-				mb="xs"
-			>
-				Choose an action:
-			</Text>
-
-			<Group mt="xl">
-				<Button
-					onClick={closeCreator}
-					variant="light"
-					color="slate"
-				>
-					Cancel
-				</Button>
-				<Spacer />
+			<Stack gap="sm">
 				<Button
 					onClick={handleMoveToCurrentDirectory}
 					variant="light"
+					size="sm"
 				>
 					{moveButtonText}
 				</Button>
 				<Button
 					onClick={handleDeleteEverything}
 					color="red"
+					variant="filled"
+					size="sm"
 				>
 					Delete everything
 				</Button>
-			</Group>
-		</>
+				<Button
+					onClick={closeCreator}
+					variant="subtle"
+					color="slate"
+					size="sm"
+				>
+					Cancel
+				</Button>
+			</Stack>
+		</Stack>
 	);
 }
