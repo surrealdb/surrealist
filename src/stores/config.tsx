@@ -145,16 +145,6 @@ export const useConfigStore = create<ConfigStore>()(
 						(q) => q.folderId === currentFolderId,
 					);
 
-					// Calculate the next order number for items in this folder
-					const itemsInFolder = [
-						...current.queries.filter((q) => q.folderId === currentFolderId),
-						...current.queryFolders.filter((f) => f.parentId === currentFolderId),
-					];
-					const maxOrder = itemsInFolder.reduce(
-						(max, item) => Math.max(max, item.order),
-						-1,
-					);
-
 					return {
 						queries: [
 							...current.queries,
@@ -165,7 +155,7 @@ export const useConfigStore = create<ConfigStore>()(
 								name: queryName,
 								id: tabId,
 								folderId: currentFolderId,
-								order: maxOrder + 1,
+								createdAt: Date.now(),
 							},
 						],
 						activeQuery: tabId,
@@ -176,12 +166,12 @@ export const useConfigStore = create<ConfigStore>()(
 		removeQueryTab: (connectionId, queryId) =>
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
-					const index = current.queries.findIndex((query) => query.id === queryId);
-
-					if (index < 0) {
+					const queryToRemove = current.queries.find((query) => query.id === queryId);
+					if (!queryToRemove) {
 						return {};
 					}
 
+					const index = current.queries.findIndex((query) => query.id === queryId);
 					let activeQuery = current.activeQuery;
 
 					if (current.activeQuery === queryId) {
@@ -192,7 +182,7 @@ export const useConfigStore = create<ConfigStore>()(
 					}
 
 					return {
-						queries: current.queries.toSpliced(index, 1),
+						queries: current.queries.filter((query) => query.id !== queryId),
 						activeQuery,
 					};
 				}),
@@ -227,10 +217,6 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
 					const folderId = newId();
-					const maxOrder = current.queryFolders.reduce(
-						(max, folder) => Math.max(max, folder.order),
-						-1,
-					);
 
 					// If no parentId provided, use the current folder (last in path) or undefined for root
 					const folderParentId =
@@ -252,7 +238,7 @@ export const useConfigStore = create<ConfigStore>()(
 						id: folderId,
 						name: folderName,
 						parentId: folderParentId,
-						order: maxOrder + 1,
+						createdAt: Date.now(),
 					};
 
 					return {
@@ -275,6 +261,8 @@ export const useConfigStore = create<ConfigStore>()(
 						(folder) => folder.id !== folderId,
 					);
 
+					const now = Date.now();
+
 					// Move direct child folders to current directory with name conflict resolution
 					const updatedFolders = finalFolders.map((folder) => {
 						if (folder.parentId === folderId) {
@@ -289,6 +277,7 @@ export const useConfigStore = create<ConfigStore>()(
 							return {
 								...folder,
 								parentId: currentDirectoryId,
+								movedAt: now,
 								...(resolvedName !== folder.name && { name: resolvedName }),
 							};
 						}
@@ -309,6 +298,7 @@ export const useConfigStore = create<ConfigStore>()(
 							return {
 								...query,
 								folderId: currentDirectoryId,
+								movedAt: now,
 								...(resolvedName !== query.name && { name: resolvedName }),
 							};
 						}
@@ -400,15 +390,6 @@ export const useConfigStore = create<ConfigStore>()(
 						idMapping.set(originalFolderId, newFolderId);
 
 						// Calculate the next order number for items in the target parent folder
-						const itemsInTargetFolder = [
-							...current.queryFolders.filter((f) => f.parentId === newParentId),
-							...current.queries.filter((q) => q.folderId === newParentId),
-						];
-						const maxOrder = itemsInTargetFolder.reduce(
-							(max, item) => Math.max(max, item.order),
-							-1,
-						);
-
 						// Generate unique name for the duplicated folder
 						const folderName = uniqueNameInScope(
 							originalFolder.name ?? "New folder",
@@ -422,7 +403,7 @@ export const useConfigStore = create<ConfigStore>()(
 							id: newFolderId,
 							name: folderName,
 							parentId: newParentId,
-							order: maxOrder + 1,
+							createdAt: Date.now(),
 						};
 
 						let allNewFolders = [newFolder];
@@ -432,7 +413,7 @@ export const useConfigStore = create<ConfigStore>()(
 						const queriesInFolder = current.queries.filter(
 							(q) => q.folderId === originalFolderId,
 						);
-						for (const [index, query] of queriesInFolder.entries()) {
+						for (const query of queriesInFolder) {
 							const newQueryId = newId();
 							const queryName = uniqueNameInScope(
 								query.name || "New query",
@@ -446,7 +427,7 @@ export const useConfigStore = create<ConfigStore>()(
 								id: newQueryId,
 								name: queryName,
 								folderId: newFolderId,
-								order: index,
+								createdAt: Date.now(),
 							};
 
 							allNewQueries.push(newQuery);

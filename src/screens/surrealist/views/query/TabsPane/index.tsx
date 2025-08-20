@@ -33,6 +33,7 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { Folder, QueryTab } from "~/types";
+import { sortItemsByTimestamp } from "~/util/helpers";
 import {
 	iconArrowLeft,
 	iconChevronLeft,
@@ -460,19 +461,23 @@ export function TabsPane(props: TabsPaneProps) {
 	const saveItemOrder = useStable((items: (QueryTab | Folder)[]) => {
 		if (!connection) return;
 
-		// Update order property for each item
+		// Update movedAt timestamp for each item to reflect new order
+		const now = Date.now();
 		items.forEach((item, index) => {
+			// Use small increments to preserve drag order
+			const movedAt = now + index;
+
 			if ("parentId" in item) {
-				// It's a QueryFolder - update its order
+				// It's a QueryFolder - update its timestamp
 				updateQueryFolder(connection, {
 					id: item.id,
-					order: index,
+					movedAt,
 				});
 			} else {
-				// It's a QueryTab - update its order
+				// It's a QueryTab - update its timestamp
 				updateQueryTab(connection, {
 					id: item.id,
-					order: index,
+					movedAt,
 				});
 			}
 		});
@@ -510,17 +515,14 @@ export function TabsPane(props: TabsPaneProps) {
 		queryFolderPath.length > 0 ? queryFolderPath[queryFolderPath.length - 1] : undefined;
 
 	// Filter queries and folders for current context
-	const currentQueries = queries
-		.filter((query) => query.folderId === currentFolderId)
-		.sort((a, b) => a.order - b.order);
-	const currentFolders = queryFolders
-		.filter((folder) => folder.parentId === currentFolderId)
-		.sort((a, b) => a.order - b.order);
+	const currentQueries = queries.filter((query) => query.folderId === currentFolderId);
+	const currentFolders = queryFolders.filter((folder) => folder.parentId === currentFolderId);
 
-	// Combine folders and queries for sortable list, sorted by order
-	const sortableItems: (Folder | QueryTab)[] = [...currentFolders, ...currentQueries].sort(
-		(a, b) => a.order - b.order,
-	);
+	// Combine folders and queries for sortable list, sorted by timestamp
+	const sortableItems: (Folder | QueryTab)[] = sortItemsByTimestamp([
+		...currentFolders,
+		...currentQueries,
+	]);
 
 	// Build breadcrumb path
 	const breadcrumbPath = buildBreadcrumbPath(queryFolderPath, queryFolders);

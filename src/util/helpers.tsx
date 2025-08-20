@@ -206,6 +206,23 @@ export function applyOrder<T>(items: T[], order: T[]) {
 }
 
 /**
+ * Sorts items by their creation/move timestamp
+ * Items are sorted by movedAt timestamp if present, otherwise by createdAt
+ *
+ * @param items Items to sort
+ * @returns Sorted items array
+ */
+export function sortItemsByTimestamp<T extends { createdAt: number; movedAt?: number }>(
+	items: T[],
+): T[] {
+	return items.sort((a, b) => {
+		const aTime = a.movedAt || a.createdAt;
+		const bTime = b.movedAt || b.createdAt;
+		return aTime - bTime;
+	});
+}
+
+/**
  * Wrap a promise in a timeout
  *
  * @param cb The callback providing the promise

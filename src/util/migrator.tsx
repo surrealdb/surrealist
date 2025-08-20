@@ -71,28 +71,35 @@ export function applyMigrations(config: any): SurrealistConfig {
 		}
 	});
 
-	// x.x.x -> x.x.x: Add folder support and order property to queries and folders
+	// x.x.x -> x.x.x: Add folder support and timestamp-based ordering
 
 	applyToConnections(config, (con) => {
 		con.queryFolders ??= [];
 		con.queryFolderPath ??= [];
 
+		const migrationTime = Date.now();
+
 		if (con.queries && isArray(con.queries)) {
 			con.queries.forEach((query: any, index: number) => {
-				if (query.order === undefined) {
-					query.order = index;
-				}
-
+				// Add folderId if missing
 				if (!("folderId" in query)) {
 					query.folderId = undefined;
+				}
+
+				// Set createdAt for existing queries - reverse iterate so newest items are in the past
+				if (!query.createdAt) {
+					const reverseIndex = con.queries.length - 1 - index;
+					query.createdAt = migrationTime - reverseIndex * 1000; // 1 second apart, going backwards
 				}
 			});
 		}
 
 		if (con.queryFolders && isArray(con.queryFolders)) {
 			con.queryFolders.forEach((folder: any, index: number) => {
-				if (folder.order === undefined) {
-					folder.order = index;
+				// Set createdAt for existing folders - reverse iterate so newest items are in the past
+				if (!folder.createdAt) {
+					const reverseIndex = con.queryFolders.length - 1 - index;
+					folder.createdAt = migrationTime - reverseIndex * 1000; // 1 second apart, going backwards
 				}
 			});
 		}

@@ -55,60 +55,37 @@ export function useFolderRename(folders: Folder[]) {
 }
 
 /**
- * Hook for managing item movement operations with conflict resolution
- */
-export function useItemMove<T extends { id: string; name?: string }>(
-	items: T[],
-	getTargetScope: (targetId?: string) => string | undefined,
-	updateItem: (connection: string, updates: Partial<T> & { id: string }) => void,
-	targetKey: keyof T,
-) {
-	const [connection] = useConnectionAndView();
-
-	return useStable((itemId: string, targetId?: string) => {
-		if (!connection) return;
-
-		// Find the item being moved to check for naming conflicts in the target scope
-		const itemToMove = items.find((item) => item.id === itemId);
-		if (!itemToMove) return;
-
-		const targetScope = getTargetScope(targetId);
-
-		// Check if the name would conflict in the target scope and resolve if needed
-		const resolvedName = uniqueNameInScope(
-			itemToMove.name || "New item",
-			items,
-			(item) => item.name ?? "",
-			(item) =>
-				getTargetScope(item[targetKey] as string | undefined) === targetScope &&
-				item.id !== itemId,
-		);
-
-		const updates: Partial<T> & { id: string } = {
-			id: itemId,
-			[targetKey]: targetId,
-		} as Partial<T> & { id: string };
-
-		if (resolvedName !== itemToMove.name) {
-			(updates as any).name = resolvedName;
-		}
-
-		updateItem(connection, updates);
-	});
-}
-
-/**
  * Hook for moving queries between folders
  */
 export function useQueryMove(queries: QueryTab[]) {
 	const { updateQueryTab } = useConfigStore.getState();
+	const [connection] = useConnectionAndView();
 
-	return useItemMove(
-		queries,
-		(folderId) => folderId,
-		updateQueryTab,
-		"folderId" as keyof QueryTab,
-	);
+	return useStable((itemId: string, targetFolderId?: string) => {
+		if (!connection) return;
+
+		// Find the query being moved
+		const queryToMove = queries.find((query) => query.id === itemId);
+		if (!queryToMove) return;
+
+		// Check if the name would conflict in the target folder and resolve if needed
+		const resolvedName = uniqueNameInScope(
+			queryToMove.name || "New query",
+			queries,
+			(query) => query.name ?? "",
+			(query) => query.folderId === targetFolderId && query.id !== itemId,
+		);
+
+		// Update the folder and set moved timestamp - it will naturally append to the end
+		const updates = {
+			id: itemId,
+			folderId: targetFolderId,
+			movedAt: Date.now(),
+			...(resolvedName !== queryToMove.name && { name: resolvedName }),
+		};
+
+		updateQueryTab(connection, updates);
+	});
 }
 
 /**
@@ -116,13 +93,33 @@ export function useQueryMove(queries: QueryTab[]) {
  */
 export function useFolderMove(folders: Folder[]) {
 	const { updateQueryFolder } = useConfigStore.getState();
+	const [connection] = useConnectionAndView();
 
-	return useItemMove(
-		folders,
-		(parentId) => parentId,
-		updateQueryFolder,
-		"parentId" as keyof Folder,
-	);
+	return useStable((itemId: string, targetParentId?: string) => {
+		if (!connection) return;
+
+		// Find the folder being moved
+		const folderToMove = folders.find((folder) => folder.id === itemId);
+		if (!folderToMove) return;
+
+		// Check if the name would conflict in the target parent and resolve if needed
+		const resolvedName = uniqueNameInScope(
+			folderToMove.name || "New folder",
+			folders,
+			(folder) => folder.name ?? "",
+			(folder) => folder.parentId === targetParentId && folder.id !== itemId,
+		);
+
+		// Update the parent and set moved timestamp - it will naturally append to the end
+		const updates = {
+			id: itemId,
+			parentId: targetParentId,
+			movedAt: Date.now(),
+			...(resolvedName !== folderToMove.name && { name: resolvedName }),
+		};
+
+		updateQueryFolder(connection, updates);
+	});
 }
 
 /**

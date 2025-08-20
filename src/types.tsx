@@ -266,15 +266,17 @@ export interface QueryTab extends OrganizableItem {
 export interface Folder {
 	id: string;
 	name?: string;
-	parentId?: string; // For nested folders
-	order: number; // For sorting folders
+	parentId?: string;
+	createdAt: number;
+	movedAt?: number;
 }
 
 export interface OrganizableItem {
 	id: string;
 	name?: string;
-	folderId?: string; // Optional folder ID for organizing items
-	order: number; // For sorting items within folders
+	folderId?: string;
+	createdAt: number;
+	movedAt?: number;
 }
 
 export interface HistoryQuery {
