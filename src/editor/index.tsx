@@ -1,4 +1,5 @@
 export * from "./base";
+export * from "./folding";
 export * from "./functions";
 export * from "./graphql";
 export * from "./icons";

@@ -39,3 +39,13 @@
 		display: none;
 	}
 }
+
+.combined-stack {
+	height: 100%;
+	min-height: 0;
+}
+
+.combined-editor {
+	flex: 1;
+	min-height: 0;
+}

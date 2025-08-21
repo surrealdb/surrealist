@@ -21,6 +21,7 @@ export type InvoiceStatus = "succeeded" | "pending" | "failed";
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 export type MetricsDuration = "hour" | "half" | "day" | "week" | "month";
 export type MiniAppearance = "normal" | "compact" | "plain";
+export type NoneResultMode = "default" | "show" | "hide" | "collapse";
 export type Orientation = "horizontal" | "vertical";
 export type Platform = "darwin" | "windows" | "linux";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
@@ -202,8 +203,10 @@ export interface SurrealistAppearanceSettings {
 	inspectorLineNumbers: boolean;
 	functionLineNumbers: boolean;
 	resultWordWrap: boolean;
+	autoCollapseDepth: number;
 	defaultResultMode: ResultMode;
 	defaultResultFormat: ResultFormat;
+	defaultNoneResultMode: NoneResultMode;
 	defaultDiagramAlgorithm: DiagramAlgorithm;
 	defaultDiagramDirection: DiagramDirection;
 	defaultDiagramLineStyle: DiagramLineStyle;
@@ -258,6 +261,7 @@ export interface QueryTab {
 	variables: string;
 	valid: boolean; // TODO Remove
 	resultMode: ResultMode;
+	noneResultMode: NoneResultMode;
 	resultFormat: ResultFormat;
 	showVariables: boolean;
 }
