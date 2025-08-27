@@ -129,6 +129,10 @@ function parseKindTree(obj: any, records: Set<string>) {
 		for (const record of obj.Record) {
 			records.add(record);
 		}
+	} else if (obj.Option.Record) {
+		for (const record of obj.Option.Record) {
+			records.add(record);
+		}
 	} else if (obj.Array) {
 		parseKindTree(obj.Array[0], records);
 	} else if (obj.Set) {
