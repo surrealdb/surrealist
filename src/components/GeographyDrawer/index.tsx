@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Drawer, Group, Stack, Text } from "@mantine/core";
+import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
@@ -135,19 +135,19 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 				<Box
 					flex={1}
 					pos="relative"
-				>{coordLabel ? (
-					<Box c="cyan.4">
-						{coordLabel}
-					</Box>
-				) : (
-					<CodeEditor
-						pos="absolute"
-						inset={0}
-						autoFocus
-						value={geoJSON}
-						onChange={setGeoJSON}
-						extensions={extensions}
-					/>)}
+				>
+					{coordLabel ? (
+						<Box c="cyan.4">{coordLabel}</Box>
+					) : (
+						<CodeEditor
+							pos="absolute"
+							inset={0}
+							autoFocus
+							value={geoJSON}
+							onChange={setGeoJSON}
+							extensions={extensions}
+						/>
+					)}
 				</Box>
 			</Stack>
 		</Drawer>
