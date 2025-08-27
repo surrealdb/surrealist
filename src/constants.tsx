@@ -15,6 +15,7 @@ import type {
 	Driver,
 	GlobalPage,
 	GlobalPageInfo,
+	IntercomTicketStateId,
 	Listable,
 	Monitor,
 	MonitorSeverity,
@@ -29,7 +30,6 @@ import type {
 	SidebarMode,
 	SyntaxTheme,
 	TableVariant,
-	TicketStateId,
 	ViewPage,
 	ViewPageInfo,
 } from "./types";
@@ -505,7 +505,7 @@ export const MONITOR_LOG_LEVEL_INFO: Record<string, [string, MantineColor, Monit
 };
 
 export const TICKET_STATES: Record<
-	TicketStateId,
+	IntercomTicketStateId,
 	{
 		color: MantineColor;
 		label: string;

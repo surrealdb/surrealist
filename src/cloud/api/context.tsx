@@ -7,7 +7,7 @@ import { getCloudEndpoints } from "./endpoints";
  * Execute a fetch request against the ticketsAPI and returns
  * the JSON response
  */
-export async function fetchTicketsAPI<T = unknown>(
+export async function fetchContextAPI<T = unknown>(
 	path: string,
 	options?: RequestInit | undefined,
 ): Promise<T> {

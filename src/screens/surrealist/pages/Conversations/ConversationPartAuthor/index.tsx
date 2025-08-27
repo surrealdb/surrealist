@@ -1,19 +1,19 @@
 import { Avatar, Badge, Group, Stack, Text, UnstyledButton } from "@mantine/core";
 import surrealImg from "~/assets/images/surrealdb.png";
-import { CloudTicketUser } from "~/types";
+import { IntercomUser } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
 
-export interface TicketPartAuthorDetailsProps {
-	user?: CloudTicketUser;
+export interface ConversationPartAuthorProps {
+	user?: IntercomUser;
 	updated_at: number;
 	children?: React.ReactNode;
 }
 
-export function TicketPartAuthorDetails({
+export function ConversationPartAuthor({
 	user,
 	updated_at,
 	children,
-}: TicketPartAuthorDetailsProps) {
+}: ConversationPartAuthorProps) {
 	return (
 		<Group
 			gap="xl"
@@ -53,7 +53,7 @@ export function TicketPartAuthorDetails({
 								variant="light"
 								color="surreal"
 							>
-								Support agent
+								Agent
 							</Badge>
 						)}
 						{user?.type === "bot" && (

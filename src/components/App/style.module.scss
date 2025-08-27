@@ -101,6 +101,14 @@
 	transform: scaleX(-1) translateX(-0.25rem);
 }
 
+.message-item:hover {
+	background-color: var(--mantine-color-slate-7);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
+}
+
 .news-post-header {
 	background-position: center;
 	background-size: cover;
@@ -122,6 +130,7 @@
 	transform: translateY(1px);
 }
 
+.messages-scroller :global(.mantine-ScrollArea-viewport)>div,
 .docs-scroller :global(.mantine-ScrollArea-viewport)>div,
 .article-drawer__scroll :global(.mantine-ScrollArea-viewport)>div {
 	display: unset !important;

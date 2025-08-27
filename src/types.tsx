@@ -45,7 +45,12 @@ export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
-export type TicketStateId = "submitted" | "in_progress" | "waiting_on_customer" | "resolved";
+export type IntercomTicketStateId =
+	| "submitted"
+	| "in_progress"
+	| "waiting_on_customer"
+	| "resolved";
+export type IntercomConversationStateId = "open" | "closed" | "snoozed";
 
 export type InstanceState =
 	| "creating"
@@ -830,37 +835,32 @@ export interface CloudDeployConfig {
 	storageAmount: number;
 }
 
-export interface CloudTicketState {
+export interface IntercomTicketState {
 	id: string;
-	category: TicketStateId;
+	category: IntercomTicketStateId;
 	label: string;
 }
 
-export interface CloudTicketType {
+export interface IntercomTicketType {
 	id: string;
 	name: string;
 }
 
-export interface CloudTicketContact {
+export interface IntercomContact {
 	id: string;
 	email: string;
 	name: string;
 	avatar?: string;
 }
 
-export interface CloudTicketUser {
+export interface IntercomUser {
 	type: "admin" | "user" | "bot";
 	id: string;
 	name: string;
 	avatar?: string;
 }
 
-export interface CloudTicketAdminAssignee {
-	name: string;
-	avatar?: string;
-}
-
-export interface CloudTicketPart {
+export interface IntercomTicketPart {
 	id: string;
 	part_type: string;
 	ticket_state: string;
@@ -868,22 +868,22 @@ export interface CloudTicketPart {
 	created_at: number;
 	updated_at: number;
 	attachments: any[];
-	assigned_to?: CloudTicketUser;
+	assigned_to?: IntercomUser;
 	body?: string;
-	author?: CloudTicketUser;
+	author?: IntercomUser;
 }
 
-export interface CloudTicket {
+export interface IntercomTicket {
 	id: string;
 	title: string;
 	description: string;
-	state: CloudTicketState;
-	type: CloudTicketType;
+	state: IntercomTicketState;
+	type: IntercomTicketType;
 	created_at: number;
 	updated_at: number;
-	contacts: CloudTicketContact[];
-	assignee?: CloudTicketAdminAssignee;
-	parts: CloudTicketPart[];
+	contacts: IntercomContact[];
+	assignee?: IntercomUser;
+	parts: IntercomTicketPart[];
 	open: boolean;
 }
 
@@ -894,9 +894,74 @@ export interface IntercomTicketCreateRequest {
 	contacts: string[];
 }
 
-export interface IntercomTicketReplyRequest {
+export interface IntercomConversationCreateRequest {
 	body: string;
-	attachment_urls?: string[];
+}
+
+export interface IntercomConversationReplyRequest {
+	body: string;
+	attachment_files?: {
+		content_type: string;
+		data: string;
+		filename: string;
+	}[];
+	reply_options?: {
+		text: string;
+		uuid: string;
+	}[];
+}
+
+export interface IntercomConversationStateRequest {
+	conversationId: string;
+	state: "read" | "unread";
+}
+
+export interface IntercomAttachment {
+	type: string;
+	name: string;
+	url: string;
+	content_type: string;
+	filesize: number;
+	width: number;
+	height: number;
+}
+
+export interface IntercomConversationAssignment {
+	type: "admin" | "team";
+	id: string;
+	name: string;
+	avatar?: string;
+}
+
+export interface IntercomConversationPart {
+	id: string;
+	part_type: string;
+	body: string;
+	created_at: number;
+	updated_at: number;
+	attachments: IntercomAttachment[];
+	assigned_to: IntercomConversationAssignment;
+	state: IntercomConversationStateId;
+	author: IntercomUser;
+}
+
+export interface IntercomConversation {
+	id: string;
+	title: string;
+	description: string;
+	state: IntercomConversationStateId;
+	created_at: number;
+	updated_at: number;
+	contacts: IntercomContact[];
+	assignee: IntercomUser;
+	last_response_author: IntercomUser;
+	parts: IntercomConversationPart[];
+	initial_part: IntercomConversationPart;
+	open: boolean;
+	read: boolean;
+	priority: boolean;
+	hasTicket: boolean;
+	ticketData?: IntercomTicket;
 }
 
 export interface IntercomTicketType {

@@ -1,19 +1,22 @@
 import { Group, Paper, Text } from "@mantine/core";
-import dayjs from "dayjs";
 import { TICKET_STATES } from "~/constants";
-import { CloudTicketPart, TicketStateId } from "~/types";
+import { IntercomConversation, IntercomConversationPart, IntercomTicketStateId } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
-import { TicketPartAuthorDetails } from "../TicketPartAuthorDetails";
+import { ConversationPartAuthor } from "../ConversationPartAuthor";
 import styles from "./style.module.scss";
 
-export interface TicketPartProps {
-	part: CloudTicketPart;
+export interface ConversationPartProps {
+	conversation: IntercomConversation;
+	part: IntercomConversationPart;
 }
 
-export function TicketPartBody({ part }: TicketPartProps) {
+export function ConversationPartBody({ part }: ConversationPartProps) {
 	return (
-		<Paper p="lg">
-			<TicketPartAuthorDetails
+		<Paper
+			p="lg"
+			bg="slate.7"
+		>
+			<ConversationPartAuthor
 				user={part.author}
 				updated_at={part.updated_at}
 			>
@@ -22,19 +25,23 @@ export function TicketPartBody({ part }: TicketPartProps) {
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
 					dangerouslySetInnerHTML={{ __html: part.body ?? "" }}
 				/>
-			</TicketPartAuthorDetails>
+			</ConversationPartAuthor>
 		</Paper>
 	);
 }
 
-export function TicketPart({ part }: TicketPartProps) {
-	const _created = dayjs(part.created_at * 1000);
-
+export function ConversationPart({ conversation, part }: ConversationPartProps) {
 	if (
 		part.part_type === "ticket_state_updated_by_admin" ||
 		part.part_type === "ticket_state_updated_by_user"
 	) {
-		const state = TICKET_STATES[part.ticket_state as TicketStateId];
+		const ticketPart = conversation.ticketData?.parts.find((it) => it.id === part.id);
+
+		if (!ticketPart) {
+			return undefined;
+		}
+
+		const state = TICKET_STATES[ticketPart.ticket_state as IntercomTicketStateId];
 
 		return (
 			<Group
@@ -73,7 +80,11 @@ export function TicketPart({ part }: TicketPartProps) {
 			</Group>
 		);
 	}
-	if (part.part_type === "assignment") {
+	if (part.part_type === "assignment" || part.part_type === "bulk_reassignment") {
+		if (part.assigned_to === null) {
+			return undefined;
+		}
+
 		return (
 			<Group
 				justify="center"
@@ -151,12 +162,22 @@ export function TicketPart({ part }: TicketPartProps) {
 						{formatRelativeDate(part.updated_at * 1000)}
 					</Text>
 				</Group>
-				{part.body && <TicketPartBody part={part} />}
+				{part.body && (
+					<ConversationPartBody
+						conversation={conversation}
+						part={part}
+					/>
+				)}
 			</>
 		);
 	}
-	if (part.part_type === "comment") {
-		return <TicketPartBody part={part} />;
+	if (part.part_type === "comment" || part.part_type === "initial") {
+		return (
+			<ConversationPartBody
+				conversation={conversation}
+				part={part}
+			/>
+		);
 	}
 
 	return undefined;

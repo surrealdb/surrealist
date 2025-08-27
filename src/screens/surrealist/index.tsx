@@ -13,6 +13,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
+import TicketOrganizationsPage from "./pages/Conversations";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
@@ -23,9 +24,8 @@ import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
-import TicketOrganizationsPage from "./pages/Tickets";
-import TicketPage from "./pages/Tickets/ticket";
-import OrganizationTicketsPage from "./pages/Tickets/tickets";
+// import TicketPage from "./pages/Tickets/ticket";
+// import OrganizationTicketsPage from "./pages/Tickets/tickets";
 import { SurrealistSidebar } from "./sidebar";
 import classes from "./style.module.scss";
 import { SurrealistToolbar } from "./toolbar";
@@ -46,9 +46,9 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
-const OrganizationTicketsPageLazy = memo(OrganizationTicketsPage);
+// const OrganizationTicketsPageLazy = memo(OrganizationTicketsPage);
 const TicketOrganizationsPageLazy = memo(TicketOrganizationsPage);
-const TicketPageLazy = memo(TicketPage);
+// const TicketPageLazy = memo(TicketPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
@@ -217,22 +217,22 @@ export function SurrealistScreen() {
 										<TicketOrganizationsPageLazy />
 									</Route>
 
-									<Route path="/tickets/:organization">
+									{/* <Route path="/tickets/:organization">
 										{({ organization }) => (
 											<OrganizationTicketsPageLazy
 												organization={organization}
 											/>
 										)}
-									</Route>
+									</Route> */}
 
-									<Route path="/t/:ticket/o/:organization">
+									{/* <Route path="/t/:ticket/o/:organization">
 										{({ ticket, organization }) => (
 											<TicketPageLazy
 												id={ticket}
 												organization={organization}
 											/>
 										)}
-									</Route>
+									</Route> */}
 
 									<Route path="/referrals">
 										<ReferralPageLazy />
