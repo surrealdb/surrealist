@@ -61,7 +61,9 @@ export function createBaseSettings(): SurrealistSettings {
 			inspectorLineNumbers: true,
 			functionLineNumbers: true,
 			resultWordWrap: true,
+			autoCollapseDepth: 0,
 			defaultResultMode: "combined",
+			defaultNoneResultMode: "show",
 			defaultResultFormat: "sql",
 			defaultDiagramAlgorithm: "aligned",
 			defaultDiagramDirection: "ltr",
@@ -162,6 +164,7 @@ export function createBaseQuery(settings: SurrealistSettings, type: QueryType): 
 		valid: true,
 		resultMode: settings.appearance.defaultResultMode,
 		resultFormat: settings.appearance.defaultResultFormat,
+		noneResultMode: settings.appearance.defaultNoneResultMode,
 		showVariables: false,
 		createdAt: Date.now(),
 	};

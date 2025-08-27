@@ -18,6 +18,7 @@ import type {
 	Listable,
 	Monitor,
 	MonitorSeverity,
+	NoneResultMode,
 	Orientation,
 	Protocol,
 	ResultFormat,
@@ -47,12 +48,15 @@ import {
 	iconAuth,
 	iconBraces,
 	iconChart,
+	iconChevronUp,
 	iconCombined,
 	iconDatabase,
 	iconDataTable,
 	iconDesigner,
 	iconErrorCircle,
 	iconExplorer,
+	iconEye,
+	iconEyeOff,
 	iconFunction,
 	iconGraphql,
 	iconHelp,
@@ -138,6 +142,27 @@ export const RESULT_MODES: Listable<ResultMode>[] = [
 		value: "live",
 		icon: iconLive,
 		description: "Subscribe to live query results",
+	},
+];
+
+export const NONE_RESULT_MODES: Listable<NoneResultMode>[] = [
+	{
+		label: "Show",
+		value: "show",
+		icon: iconEye,
+		description: "Show NONE results",
+	},
+	{
+		label: "Hide",
+		value: "hide",
+		icon: iconEyeOff,
+		description: "Hide NONE results",
+	},
+	{
+		label: "Collapse",
+		value: "collapse",
+		icon: iconChevronUp,
+		description: "Collapse NONE results",
 	},
 ];
 

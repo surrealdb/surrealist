@@ -9,7 +9,7 @@ import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
-import { RESULT_FORMATS, RESULT_MODES } from "~/constants";
+import { NONE_RESULT_MODES, RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/query";
 import { useSetting } from "~/hooks/config";
 import { useConnectionAndView } from "~/hooks/routing";
@@ -20,7 +20,14 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { Listable, QueryResponse, QueryTab, ResultFormat, ResultMode } from "~/types";
+import type {
+	Listable,
+	NoneResultMode,
+	QueryResponse,
+	QueryTab,
+	ResultFormat,
+	ResultMode,
+} from "~/types";
 import {
 	iconBroadcastOff,
 	iconCursor,
@@ -81,6 +88,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const selectedTab = resultTab - 1;
 	const resultMode = activeTab.resultMode;
 	const resultFormat = activeTab.resultFormat;
+	const noneResultsMode = activeTab.noneResultMode;
 	const responses = responseMap[activeTab.id] || [];
 	const responseCount = responses.length;
 
@@ -128,6 +136,15 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		});
 	};
 
+	const setNoneResultsMode = (mode: NoneResultMode) => {
+		if (!connection) return;
+
+		updateQueryTab(connection, {
+			id: activeTab.id,
+			noneResultMode: mode,
+		});
+	};
+
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset result tab when responses change
 	useLayoutEffect(() => {
 		setResultTab(1);
@@ -135,6 +152,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const activeMode = RESULT_MODES.find((r) => r.value === resultMode);
 	const activeFormat = RESULT_FORMATS.find((r) => r.value === resultFormat);
+	const activeNoneMode = NONE_RESULT_MODES.find((r) => r.value === noneResultsMode);
 
 	const panelTitle =
 		resultMode === "combined"
@@ -218,12 +236,29 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							</Button>
 						)
 					) : resultMode === "combined" ? (
-						<Text
-							c={isLight ? "slate.5" : "slate.2"}
-							className={classes.results}
+						<ListMenu
+							data={NONE_RESULT_MODES}
+							value={noneResultsMode}
+							onChange={setNoneResultsMode}
 						>
-							{responseCount} {responseCount === 1 ? "response" : "responses"}
-						</Text>
+							<Tooltip
+								label="Change NONE display"
+								openDelay={300}
+							>
+								<Button
+									size="xs"
+									radius="xs"
+									aria-label="Change NONE display"
+									variant="light"
+									color="slate"
+									leftSection={
+										activeNoneMode?.icon && <Icon path={activeNoneMode.icon} />
+									}
+								>
+									{responseCount} {responseCount === 1 ? "response" : "responses"}
+								</Button>
+							</Tooltip>
+						</ListMenu>
 					) : (
 						showQueries && (
 							<ListMenu
