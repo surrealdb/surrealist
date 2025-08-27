@@ -7,6 +7,7 @@ import {
 	DESIGNER_LINE_STYLES,
 	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
+	NONE_RESULT_MODES,
 	ORIENTATIONS,
 	RESULT_MODES,
 	SCALE_STEPS,
@@ -246,6 +247,18 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "auto-collapse-depth",
+						name: "Auto-collapse depth",
+						description:
+							"Automatically collapse objects and arrays at the specified depth level (0 = disabled)",
+						controller: new NumberController({
+							reader: (config) => config.settings.appearance.autoCollapseDepth,
+							writer: (config, value) => {
+								config.settings.appearance.autoCollapseDepth = Math.max(0, value);
+							},
+						}),
+					},
 				],
 			},
 			{
@@ -340,6 +353,19 @@ export function useComputedPreferences(): PreferenceSection[] {
 							reader: (config) => config.settings.appearance.defaultResultMode,
 							writer: (config, value) => {
 								config.settings.appearance.defaultResultMode = value;
+							},
+						}),
+					},
+					{
+						id: "none-results-mode",
+						name: "Default NONE display",
+						description:
+							"The default display mode for NONE results in the combined view",
+						controller: new SelectionController({
+							options: NONE_RESULT_MODES,
+							reader: (config) => config.settings.appearance.defaultNoneResultMode,
+							writer: (config, value) => {
+								config.settings.appearance.defaultNoneResultMode = value;
 							},
 						}),
 					},

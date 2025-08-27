@@ -6,7 +6,7 @@ import { Box, type BoxProps } from "@mantine/core";
 import clsx from "clsx";
 import equal from "fast-deep-equal";
 import { useEffect, useMemo, useRef } from "react";
-import { editorBase, editorTheme } from "~/editor";
+import { applyAutoFolding, editorBase, editorTheme } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
 import { useTheme } from "~/hooks/theme";
@@ -25,6 +25,7 @@ export interface CodeEditorProps extends BoxProps {
 	readOnly?: boolean;
 	autoFocus?: boolean;
 	lineNumbers?: boolean;
+	autoCollapseDepth?: number;
 	serialize?: Record<string, any>;
 	onMount?: (editor: EditorView) => void;
 	onChange?: (value: string, snapshot: StateSnapshot, state: EditorState) => void;
@@ -40,6 +41,7 @@ export function CodeEditor(props: CodeEditorProps) {
 		readOnly,
 		autoFocus,
 		lineNumbers,
+		autoCollapseDepth,
 		serialize,
 		onMount,
 		...rest
@@ -52,6 +54,8 @@ export function CodeEditor(props: CodeEditorProps) {
 	const initializedRef = useRef(false);
 	const preventChangeNotificationsRef = useRef(true);
 	const [editorScale] = useSetting("appearance", "editorScale");
+	const [defaultAutoCollapseDepth] = useSetting("appearance", "autoCollapseDepth");
+	const effectiveAutoCollapseDepth = autoCollapseDepth ?? defaultAutoCollapseDepth;
 	const textSize = Math.floor(15 * (editorScale / 100));
 
 	// Persistent extension compartment
@@ -206,13 +210,24 @@ export function CodeEditor(props: CodeEditorProps) {
 		}
 	}, [autoFocus]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: value is needed to trigger re-render
+	useEffect(() => {
+		if (!editorRef.current || !initializedRef.current) return;
+		applyAutoFolding(editorRef.current, effectiveAutoCollapseDepth);
+	}, [effectiveAutoCollapseDepth, value]);
+
 	// Complete one-time initialization
+	// biome-ignore lint/correctness/useExhaustiveDependencies: effectiveAutoCollapseDepth is only needed for the first render
 	useEffect(() => {
 		if (!editorRef.current || initializedRef.current) return;
 
 		const editor = editorRef.current;
 
 		onMount?.(editor);
+
+		// Apply initial auto-folding after mount
+		applyAutoFolding(editor, effectiveAutoCollapseDepth);
+
 		initializedRef.current = true;
 
 		// Allow change notifications after initialization is complete
