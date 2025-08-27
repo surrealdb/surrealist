@@ -137,13 +137,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 					pos="relative"
 				>
 					{coordLabel ? (
-						<CodeEditor
-							pos="absolute"
-							inset={0}
-							readOnly
-							value={coordLabel}
-							extensions={extensions}
-						/>
+						<Box c="cyan.4">{coordLabel}</Box>
 					) : (
 						<CodeEditor
 							pos="absolute"

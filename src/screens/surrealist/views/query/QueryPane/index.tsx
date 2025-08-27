@@ -315,6 +315,7 @@ export function QueryPane({
 				extensions={extensions}
 				className={classes.editor}
 				mb={-9}
+				autoCollapseDepth={0}
 			/>
 			<Transition
 				transition="slide-up"
