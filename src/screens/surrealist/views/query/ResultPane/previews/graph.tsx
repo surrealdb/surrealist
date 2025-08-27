@@ -783,7 +783,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			fz={textSize}
 			c="red"
 			ff="mono"
-			style={{ whiteSpace: "pre-wrap" }}
+			style={{ whiteSpace: "pre-wrap", userSelect: "text" }}
 		>
 			{result}
 		</Text>
