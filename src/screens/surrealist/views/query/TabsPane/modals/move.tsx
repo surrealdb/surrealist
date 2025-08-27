@@ -2,7 +2,7 @@ import { Button, Center, Group, Modal, ScrollArea, Stack, Text } from "@mantine/
 import { useEffect, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
-import type { Folder, QueryTab } from "~/types";
+import type { QueryFolder, QueryTab } from "~/types";
 import { sortItemsByTimestamp } from "~/util/helpers";
 import { iconArrowLeft, iconFolder, iconHome } from "~/util/icons";
 import { TYPE_ICONS } from "../helpers";
@@ -13,7 +13,7 @@ export interface MoveModalProps {
 	onClose: () => void;
 	title: string;
 	description: string;
-	folders: Folder[];
+	folders: QueryFolder[];
 	queries: QueryTab[];
 	initialPath?: string[];
 	excludedFolderIds?: string[];
@@ -67,7 +67,7 @@ export function MoveModal({
 
 	// Get queries in current browser location for context (greyed out)
 	const currentBrowserQueries = sortItemsByTimestamp(
-		queries.filter((query) => query.folderId === currentBrowserFolderId),
+		queries.filter((query) => query.parentId === currentBrowserFolderId),
 	);
 
 	// Build breadcrumb path for browser
@@ -196,7 +196,7 @@ export function MoveModal({
 								<Button
 									key={query.id}
 									variant="subtle"
-									leftSection={<Icon path={TYPE_ICONS[query.type]} />}
+									leftSection={<Icon path={TYPE_ICONS[query.queryType]} />}
 									fullWidth
 									justify="flex-start"
 									disabled

@@ -3,7 +3,7 @@ import { DesktopAdapter } from "~/adapter/desktop";
 import { Icon } from "~/components/Icon";
 import { executeUserQuery } from "~/screens/surrealist/connection/connection";
 import { readQuery } from "~/screens/surrealist/views/query/QueryView/strategy";
-import type { Folder, QueryTab, QueryType } from "~/types";
+import type { QueryFolder, QueryTab, QueryType } from "~/types";
 import { showInfo } from "~/util/helpers";
 import {
 	iconArrowLeft,
@@ -32,14 +32,14 @@ export const TYPE_ICONS: Record<QueryType, string> = {
 export async function executeAllQueriesInFolder(
 	folderId: string,
 	queries: QueryTab[],
-	queryFolders: Folder[],
+	queryFolders: QueryFolder[],
 ) {
 	const folder = queryFolders.find((f) => f.id === folderId);
 	if (!folder) return;
 
 	// Find all queries in the folder (recursively)
 	const getAllQueriesInFolder = (targetFolderId: string): QueryTab[] => {
-		const directQueries = queries.filter((q) => q.folderId === targetFolderId);
+		const directQueries = queries.filter((q) => q.parentId === targetFolderId);
 		const subfolders = queryFolders.filter((f) => f.parentId === targetFolderId);
 
 		let allQueries = [...directQueries];
@@ -96,8 +96,8 @@ export async function executeAllQueriesInFolder(
 /**
  * Helper function to count folder contents recursively
  */
-export function getFolderContents(folderId: string, queries: QueryTab[], queryFolders: Folder[]) {
-	const getChildFolders = (parentId: string): Folder[] => {
+export function getFolderContents(folderId: string, queries: QueryTab[], queryFolders: QueryFolder[]) {
+	const getChildFolders = (parentId: string): QueryFolder[] => {
 		const children = queryFolders.filter((f) => f.parentId === parentId);
 		let allChildren = [...children];
 		for (const child of children) {
@@ -108,7 +108,7 @@ export function getFolderContents(folderId: string, queries: QueryTab[], queryFo
 
 	const childFolders = getChildFolders(folderId);
 	const affectedFolderIds = [folderId, ...childFolders.map((f) => f.id)];
-	const queriesInFolders = queries.filter((q) => affectedFolderIds.includes(q.folderId || ""));
+	const queriesInFolders = queries.filter((q) => affectedFolderIds.includes(q.parentId || ""));
 
 	return {
 		subfolders: childFolders,
@@ -158,7 +158,7 @@ export function removeOthers(
 /**
  * Build breadcrumb path from folder path
  */
-export function buildBreadcrumbPath(queryFolderPath: string[], queryFolders: Folder[]) {
+export function buildBreadcrumbPath(queryFolderPath: string[], queryFolders: QueryFolder[]) {
 	return queryFolderPath.map((folderId) => {
 		const folder = queryFolders.find((f) => f.id === folderId);
 		return { id: folderId, name: folder?.name || "Unknown" };
@@ -262,7 +262,7 @@ export function buildQueryContextMenuItems(
 			onClick: onMoveToFolder,
 		},
 		{
-			hidden: query.type !== "file",
+			hidden: query.queryType !== "file",
 			key: "open-in-explorer",
 			title: `Reveal in ${explorerName}`,
 			icon: <Icon path={iconSearch} />,

@@ -4,12 +4,14 @@ import {
 	Center,
 	Divider,
 	type ElementProps,
+	Group,
 	Menu,
 	ScrollArea,
 	Stack,
 	Text,
 } from "@mantine/core";
 import clsx from "clsx";
+import { memo, useCallback, useMemo } from "react";
 import { useContextMenu } from "mantine-contextmenu";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
@@ -31,7 +33,7 @@ import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
-import type { Folder, QueryTab } from "~/types";
+import type { QueryFolder, QueryTab } from "~/types";
 import { sortItemsByTimestamp } from "~/util/helpers";
 import {
 	iconArrowLeft,
@@ -75,7 +77,7 @@ import classes from "./style.module.scss";
 interface QueryProps extends BoxProps, ElementProps<"button"> {
 	query: QueryTab;
 	queries: QueryTab[];
-	folders: Folder[];
+	folders: QueryFolder[];
 	isActive: boolean;
 	isLive: boolean;
 	isDragging: boolean;
@@ -83,7 +85,7 @@ interface QueryProps extends BoxProps, ElementProps<"button"> {
 	onRemoveQuery: (id: string) => void;
 }
 
-function Query({
+const Query = memo(function Query({
 	query,
 	queries,
 	folders,
@@ -143,8 +145,8 @@ function Query({
 		folders,
 		() => handleMove(undefined),
 		() => {
-			const currentFolder = query.folderId
-				? folders.find((f) => f.id === query.folderId)
+			const currentFolder = query.parentId
+				? folders.find((f) => f.id === query.parentId)
 				: null;
 			if (currentFolder) {
 				handleMove(currentFolder.parentId);
@@ -174,7 +176,7 @@ function Query({
 				onClick={isRenaming ? undefined : handleActivate}
 				className={clsx(classes.query, isDragging && classes.queryDragging)}
 				onContextMenu={buildContextMenu}
-				leftSection={<Icon path={TYPE_ICONS[query.type]} />}
+				leftSection={<Icon path={TYPE_ICONS[query.queryType]} />}
 				rightSection={
 					<>
 						{isLive && (
@@ -223,23 +225,23 @@ function Query({
 				description={`Browse to the folder where you want to move "${query.name || "Untitled"}":`}
 				folders={folders}
 				queries={queries}
-				initialPath={getInitialPath(query.folderId)}
+				initialPath={getInitialPath(query.parentId)}
 				movingQueryId={query.id}
 				onMove={handleMove}
 			/>
 		</>
 	);
-}
+});
 
 interface FolderProps extends BoxProps, ElementProps<"button"> {
-	folder: Folder;
-	folders: Folder[];
+	folder: QueryFolder;
+	folders: QueryFolder[];
 	queries: QueryTab[];
 	onNavigate: (folderId: string) => void;
 	onRemoveFolder: (folderId: string) => void;
 }
 
-function FolderComponent({
+const Folder = memo(function Folder({
 	folder,
 	folders,
 	queries,
@@ -340,14 +342,14 @@ function FolderComponent({
 			/>
 		</>
 	);
-}
+});
 
 export interface TabsPaneProps {
 	openHistory: () => void;
 	openSaved: () => void;
 }
 
-export function TabsPane(props: TabsPaneProps) {
+const TabsPane = memo(function TabsPane(props: TabsPaneProps) {
 	const { removeQueryState } = useQueryStore.getState();
 	const {
 		updateConnection,
@@ -376,31 +378,26 @@ export function TabsPane(props: TabsPaneProps) {
 
 	const newTab = useStable(() => {
 		if (!connection) return;
-
 		addQueryTab(connection, { type: "config" });
 	});
 
 	const newFolder = useStable(() => {
 		if (!connection) return;
-
 		addQueryFolder(connection, "New folder");
 	});
 
 	const handleNavigateToFolder = useStable((folderId: string) => {
 		if (!connection) return;
-
 		navigateToFolder(connection, folderId);
 	});
 
 	const handleNavigateBack = useStable(() => {
 		if (!connection) return;
-
 		navigateToParentFolder(connection);
 	});
 
 	const handleNavigateToRoot = useStable(() => {
 		if (!connection) return;
-
 		navigateToRoot(connection);
 	});
 
@@ -454,7 +451,7 @@ export function TabsPane(props: TabsPaneProps) {
 		});
 	});
 
-	const saveItemOrder = useStable((items: (QueryTab | Folder)[]) => {
+	const saveItemOrder = useStable((items: (QueryTab | QueryFolder)[]) => {
 		if (!connection) return;
 
 		// Update movedAt timestamp for each item to reflect new order
@@ -463,7 +460,7 @@ export function TabsPane(props: TabsPaneProps) {
 			// Use small increments to preserve drag order
 			const movedAt = now + index;
 
-			if ("parentId" in item) {
+			if (item.type === "folder") {
 				// It's a QueryFolder - update its timestamp
 				updateQueryFolder(connection, {
 					id: item.id,
@@ -481,7 +478,6 @@ export function TabsPane(props: TabsPaneProps) {
 
 	const closeQueryList = useStable(() => {
 		if (!connection) return;
-
 		updateConnection({
 			id: connection,
 			queryTabList: false,
@@ -490,15 +486,14 @@ export function TabsPane(props: TabsPaneProps) {
 
 	const handleActivate = useStable((id: string) => {
 		if (!connection) return;
-
 		setActiveQueryTab(connection, id);
 	});
 
 	const navigateToActiveQuery = useStable(() => {
 		if (!activeQuery || !connection) return;
 		const query = queries.find((q) => q.id === activeQuery);
-		if (query?.folderId) {
-			navigateToFolder(connection, query.folderId);
+		if (query?.parentId) {
+			navigateToFolder(connection, query.parentId);
 		} else {
 			navigateToRoot(connection);
 		}
@@ -507,23 +502,38 @@ export function TabsPane(props: TabsPaneProps) {
 	useIntent("navigate-to-active-query", navigateToActiveQuery);
 
 	// Get current folder ID (last in path) or undefined for root
-	const currentFolderId =
-		queryFolderPath.length > 0 ? queryFolderPath[queryFolderPath.length - 1] : undefined;
+	const currentFolderId = useMemo(() =>
+		queryFolderPath.length > 0 ? queryFolderPath[queryFolderPath.length - 1] : undefined,
+		[queryFolderPath]
+	);
 
 	// Filter queries and folders for current context
-	const currentQueries = queries.filter((query) => query.folderId === currentFolderId);
-	const currentFolders = queryFolders.filter((folder) => folder.parentId === currentFolderId);
+	const currentQueries = useMemo(() =>
+		queries.filter((query) => query.parentId === currentFolderId),
+		[queries, currentFolderId]
+	);
+
+	const currentFolders = useMemo(() =>
+		queryFolders.filter((folder) => folder.parentId === currentFolderId),
+		[queryFolders, currentFolderId]
+	);
 
 	// Combine folders and queries for sortable list, sorted by timestamp
-	const sortableItems: (Folder | QueryTab)[] = sortItemsByTimestamp([
-		...currentFolders,
-		...currentQueries,
-	]);
+	const sortableItems = useMemo((): (QueryFolder | QueryTab)[] =>
+		sortItemsByTimestamp([...currentFolders, ...currentQueries]),
+		[currentFolders, currentQueries]
+	);
 
 	// Build breadcrumb path
-	const breadcrumbPath = buildBreadcrumbPath(queryFolderPath, queryFolders);
-	const { shouldTruncate, visibleBreadcrumbs, hiddenBreadcrumbs } =
-		truncateBreadcrumbPath(breadcrumbPath);
+	const breadcrumbPath = useMemo(() =>
+		buildBreadcrumbPath(queryFolderPath, queryFolders),
+		[queryFolderPath, queryFolders]
+	);
+
+	const { shouldTruncate, visibleBreadcrumbs, hiddenBreadcrumbs } = useMemo(() =>
+		truncateBreadcrumbPath(breadcrumbPath),
+		[breadcrumbPath]
+	);
 
 	useIntent("new-query", newTab);
 
@@ -581,7 +591,7 @@ export function TabsPane(props: TabsPaneProps) {
 				{/* Navigation breadcrumb */}
 				{queryFolderPath.length > 0 && (
 					<div className={classes.breadcrumbContainer}>
-						<div className={classes.breadcrumbButtons}>
+						<Group gap="xs" className={classes.breadcrumbButtons}>
 							<ActionButton
 								label="Back"
 								onClick={handleNavigateBack}
@@ -595,7 +605,7 @@ export function TabsPane(props: TabsPaneProps) {
 							>
 								<Icon path={iconHome} />
 							</ActionButton>
-						</div>
+						</Group>
 
 						<div className={classes.breadcrumbNav}>
 							{shouldTruncate ? (
@@ -754,11 +764,11 @@ export function TabsPane(props: TabsPaneProps) {
 								onSorted={saveItemOrder}
 							>
 								{({ item, handleProps, isDragging }) => {
-									// Check if item is a folder
-									if ("parentId" in item) {
-										const folder = item as Folder;
+									// Check if item is a folder using type discriminator
+									if (item.type === "folder") {
+										const folder = item as QueryFolder;
 										return (
-											<FolderComponent
+											<Folder
 												key={folder.id}
 												folder={folder}
 												folders={queryFolders}
@@ -820,4 +830,6 @@ export function TabsPane(props: TabsPaneProps) {
 			</Stack>
 		</ContentPane>
 	);
-}
+});
+
+export { TabsPane };

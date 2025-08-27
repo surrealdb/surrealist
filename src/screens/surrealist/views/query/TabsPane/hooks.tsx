@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import type { Folder, QueryTab } from "~/types";
+import type { QueryFolder, OrganizableItemType, QueryTab } from "~/types";
 import { uniqueNameInScope } from "~/util/helpers";
 
 /**
@@ -42,13 +42,13 @@ export function useItemRename<T extends { id: string; name?: string }>(
 export function useQueryRename(queries: QueryTab[]) {
 	const { updateQueryTab } = useConfigStore.getState();
 
-	return useItemRename(queries, (query) => query.folderId, updateQueryTab);
+	return useItemRename(queries, (query) => query.parentId, updateQueryTab);
 }
 
 /**
  * Hook for managing folder renaming operations
  */
-export function useFolderRename(folders: Folder[]) {
+export function useFolderRename(folders: QueryFolder[]) {
 	const { updateQueryFolder } = useConfigStore.getState();
 
 	return useItemRename(folders, (folder) => folder.parentId, updateQueryFolder);
@@ -73,13 +73,13 @@ export function useQueryMove(queries: QueryTab[]) {
 			queryToMove.name || "New query",
 			queries,
 			(query) => query.name ?? "",
-			(query) => query.folderId === targetFolderId && query.id !== itemId,
+			(query) => query.parentId === targetFolderId && query.id !== itemId,
 		);
 
 		// Update the folder and set moved timestamp - it will naturally append to the end
 		const updates = {
 			id: itemId,
-			folderId: targetFolderId,
+			parentId: targetFolderId,
 			movedAt: Date.now(),
 			...(resolvedName !== queryToMove.name && { name: resolvedName }),
 		};
@@ -91,7 +91,7 @@ export function useQueryMove(queries: QueryTab[]) {
 /**
  * Hook for moving folders between parent folders
  */
-export function useFolderMove(folders: Folder[]) {
+export function useFolderMove(folders: QueryFolder[]) {
 	const { updateQueryFolder } = useConfigStore.getState();
 	const [connection] = useConnectionAndView();
 
@@ -125,7 +125,7 @@ export function useFolderMove(folders: Folder[]) {
 /**
  * Hook for building paths to folders for MoveModal navigation
  */
-export function usePathBuilder(folders: Folder[]) {
+export function usePathBuilder(folders: QueryFolder[]) {
 	return useStable((targetFolderId?: string) => {
 		if (!targetFolderId) return [];
 
@@ -144,7 +144,7 @@ export function usePathBuilder(folders: Folder[]) {
 /**
  * Hook for getting excluded folder IDs (folder itself and all descendants)
  */
-export function useExcludedFolderIds(folders: Folder[]) {
+export function useExcludedFolderIds(folders: QueryFolder[]) {
 	return useStable((folderId: string) => {
 		const excludeFolderAndDescendants = (targetFolderId: string): string[] => {
 			const result = [targetFolderId];
@@ -189,16 +189,12 @@ export function useRenamingState() {
 /**
  * Hook for building move options for context menus
  */
-export function useMoveOptions<T extends { id: string; parentId?: string; folderId?: string }>(
-	item: T,
-	folders: Folder[],
-	onMoveToRoot: () => void,
-	onMoveToParent: () => void,
-) {
+export function useMoveOptions<
+	T extends { id: string; parentId?: string; type: OrganizableItemType },
+>(item: T, folders: QueryFolder[], onMoveToRoot: () => void, onMoveToParent: () => void) {
 	return useStable(() => {
 		const moveOptions = [];
-		const isFolder = "parentId" in item;
-		const currentParentId = isFolder ? item.parentId : item.folderId;
+		const currentParentId = item.parentId;
 
 		// Add "Move to Root" if item is currently in a folder
 		if (currentParentId !== undefined) {

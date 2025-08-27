@@ -5,7 +5,7 @@ import { immer } from "zustand/middleware/immer";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import type {
 	Connection,
-	Folder,
+	QueryFolder,
 	HistoryQuery,
 	PartialId,
 	QueryTab,
@@ -64,7 +64,7 @@ export type ConfigStore = SurrealistConfig & {
 	addQueryFolder: (connectionId: string, name: string, parentId?: string) => void;
 	removeQueryFolder: (connectionId: string, folderId: string) => void;
 	removeQueryFolderCascade: (connectionId: string, folderId: string) => void;
-	updateQueryFolder: (connectionId: string, folder: PartialId<Folder>) => void;
+	updateQueryFolder: (connectionId: string, folder: PartialId<QueryFolder>) => void;
 	duplicateQueryFolder: (connectionId: string, folderId: string) => void;
 	navigateToFolder: (connectionId: string, folderId: string) => void;
 	navigateToParentFolder: (connectionId: string) => void;
@@ -142,7 +142,7 @@ export const useConfigStore = create<ConfigStore>()(
 						options?.name || "New query",
 						current.queries,
 						(q) => q.name ?? "",
-						(q) => q.folderId === currentFolderId,
+						(q) => q.parentId === currentFolderId,
 					);
 
 					return {
@@ -154,7 +154,9 @@ export const useConfigStore = create<ConfigStore>()(
 								variables: options?.variables || "{}",
 								name: queryName,
 								id: tabId,
-								folderId: currentFolderId,
+								type: "query" as const,
+								queryType: options?.type || "config",
+								parentId: currentFolderId,
 								createdAt: Date.now(),
 							},
 						],
@@ -234,10 +236,11 @@ export const useConfigStore = create<ConfigStore>()(
 						(f) => f.parentId === folderParentId,
 					);
 
-					const newFolder: Folder = {
+					const newFolder: QueryFolder = {
 						id: folderId,
 						name: folderName,
 						parentId: folderParentId,
+						type: "folder" as const,
 						createdAt: Date.now(),
 					};
 
@@ -286,18 +289,18 @@ export const useConfigStore = create<ConfigStore>()(
 
 					// Move queries that were directly in the deleted folder to current directory with name conflict resolution
 					const updatedQueries = current.queries.map((query) => {
-						if (query.folderId === folderId) {
+						if (query.parentId === folderId) {
 							// Resolve name conflicts when moving to current directory
 							const resolvedName = uniqueNameInScope(
 								query.name || "New query",
 								current.queries,
 								(q) => q.name ?? "",
-								(q) => q.folderId === currentDirectoryId && q.id !== query.id,
+								(q) => q.parentId === currentDirectoryId && q.id !== query.id,
 							);
 
 							return {
 								...query,
-								folderId: currentDirectoryId,
+								parentId: currentDirectoryId,
 								movedAt: now,
 								...(resolvedName !== query.name && { name: resolvedName }),
 							};
@@ -316,7 +319,7 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
 					// Cascade delete: Remove folder and all its contents
-					const removeChildFolders = (folders: Folder[], parentId: string): Folder[] => {
+					const removeChildFolders = (folders: QueryFolder[], parentId: string): QueryFolder[] => {
 						const childFolders = folders.filter((f) => f.parentId === parentId);
 						let filteredFolders = folders.filter((f) => f.parentId !== parentId);
 
@@ -332,11 +335,11 @@ export const useConfigStore = create<ConfigStore>()(
 
 					// CASCADE DELETE: Remove all queries within deleted folders
 					const updatedQueries = current.queries.filter((query) => {
-						if (query.folderId === folderId) {
+						if (query.parentId === folderId) {
 							return false; // Delete queries in the main folder
 						}
 						// Delete queries in child folders that no longer exist
-						return finalFolders.some((f) => f.id === query.folderId) || !query.folderId;
+						return finalFolders.some((f) => f.id === query.parentId) || !query.parentId;
 					});
 
 					return {
@@ -375,7 +378,7 @@ export const useConfigStore = create<ConfigStore>()(
 						originalFolderId: string,
 						newParentId?: string,
 					): {
-						newFolders: Folder[];
+						newFolders: QueryFolder[];
 						newQueries: QueryTab[];
 						idMapping: Map<string, string>;
 					} => {
@@ -399,10 +402,11 @@ export const useConfigStore = create<ConfigStore>()(
 						);
 
 						// Create the new folder
-						const newFolder: Folder = {
+						const newFolder: QueryFolder = {
 							id: newFolderId,
 							name: folderName,
 							parentId: newParentId,
+							type: "folder" as const,
 							createdAt: Date.now(),
 						};
 
@@ -411,7 +415,7 @@ export const useConfigStore = create<ConfigStore>()(
 
 						// Duplicate all queries directly in this folder
 						const queriesInFolder = current.queries.filter(
-							(q) => q.folderId === originalFolderId,
+							(q) => q.parentId === originalFolderId,
 						);
 						for (const query of queriesInFolder) {
 							const newQueryId = newId();
@@ -419,14 +423,14 @@ export const useConfigStore = create<ConfigStore>()(
 								query.name || "New query",
 								current.queries,
 								(q) => q.name ?? "",
-								(q) => q.folderId === newFolderId,
+								(q) => q.parentId === newFolderId,
 							);
 
 							const newQuery: QueryTab = {
 								...query,
 								id: newQueryId,
 								name: queryName,
-								folderId: newFolderId,
+								parentId: newFolderId,
 								createdAt: Date.now(),
 							};
 

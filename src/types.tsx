@@ -45,6 +45,7 @@ export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
+export type OrganizableItemType = "folder" | "query";
 
 export type InstanceState =
 	| "creating"
@@ -102,8 +103,8 @@ export type AppMenuItemType =
 	| "Command"
 	| "Custom"
 	| {
-			About: AboutMetadata | null;
-	  };
+		About: AboutMetadata | null;
+	};
 
 export type CodeLang = "cli" | "rust" | "js" | "go" | "py" | "csharp" | "java" | "php" | "c";
 
@@ -148,8 +149,8 @@ export interface Connection {
 	lastNamespace: string;
 	lastDatabase: string;
 	queries: QueryTab[];
-	queryFolders: Folder[];
 	activeQuery: string;
+	queryFolders: QueryFolder[];
 	queryFolderPath: string[];
 	queryHistory: HistoryQuery[];
 	authentication: Authentication;
@@ -255,10 +256,19 @@ export interface QueryResponse {
 	result: any;
 }
 
-export interface QueryTab extends OrganizableItem {
-	type: QueryType;
-	query: string; // NOTE Query string for config type, path for file type
+export interface OrganizableItem {
+	id: string;
 	name?: string;
+	parentId?: string;
+	createdAt: number;
+	movedAt?: number;
+	type: OrganizableItemType;
+}
+
+export interface QueryTab extends OrganizableItem {
+	type: "query";
+	queryType: QueryType;
+	query: string; // NOTE Query string for config type, path for file type
 	variables: string;
 	valid: boolean; // TODO Remove
 	resultMode: ResultMode;
@@ -267,20 +277,8 @@ export interface QueryTab extends OrganizableItem {
 	showVariables: boolean;
 }
 
-export interface Folder {
-	id: string;
-	name?: string;
-	parentId?: string;
-	createdAt: number;
-	movedAt?: number;
-}
-
-export interface OrganizableItem {
-	id: string;
-	name?: string;
-	folderId?: string;
-	createdAt: number;
-	movedAt?: number;
+export interface QueryFolder extends OrganizableItem {
+	type: "folder";
 }
 
 export interface HistoryQuery {
@@ -334,13 +332,13 @@ export interface AccessJwt {
 		key: string;
 	};
 	verify:
-		| {
-				url: string;
-		  }
-		| {
-				alg: string;
-				key: string;
-		  };
+	| {
+		url: string;
+	}
+	| {
+		alg: string;
+		key: string;
+	};
 }
 
 export interface TableView {
@@ -436,16 +434,16 @@ export interface SchemaAccess {
 		token: Duration;
 	};
 	kind:
-		| {
-				kind: "JWT";
-				jwt: AccessJwt;
-		  }
-		| {
-				kind: "RECORD";
-				signin: string;
-				signup: string;
-				jwt: AccessJwt;
-		  };
+	| {
+		kind: "JWT";
+		jwt: AccessJwt;
+	}
+	| {
+		kind: "RECORD";
+		signin: string;
+		signup: string;
+		jwt: AccessJwt;
+	};
 }
 
 export interface SchemaParameter {
