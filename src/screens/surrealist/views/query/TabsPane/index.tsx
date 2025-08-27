@@ -11,8 +11,8 @@ import {
 	Text,
 } from "@mantine/core";
 import clsx from "clsx";
-import { memo, useCallback, useMemo } from "react";
 import { useContextMenu } from "mantine-contextmenu";
+import { memo, useMemo } from "react";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
 import { ActionButton } from "~/components/ActionButton";
@@ -133,7 +133,7 @@ const Query = memo(function Query({
 		if (!connection) return;
 
 		addQueryTab(connection, {
-			type: "config",
+			queryType: "config",
 			name: query.name?.replace(/ \d+$/, ""),
 			query: query.query,
 			variables: query.variables,
@@ -378,7 +378,7 @@ const TabsPane = memo(function TabsPane(props: TabsPaneProps) {
 
 	const newTab = useStable(() => {
 		if (!connection) return;
-		addQueryTab(connection, { type: "config" });
+		addQueryTab(connection, { queryType: "config" });
 	});
 
 	const newFolder = useStable(() => {
@@ -502,37 +502,39 @@ const TabsPane = memo(function TabsPane(props: TabsPaneProps) {
 	useIntent("navigate-to-active-query", navigateToActiveQuery);
 
 	// Get current folder ID (last in path) or undefined for root
-	const currentFolderId = useMemo(() =>
-		queryFolderPath.length > 0 ? queryFolderPath[queryFolderPath.length - 1] : undefined,
-		[queryFolderPath]
+	const currentFolderId = useMemo(
+		() =>
+			queryFolderPath.length > 0 ? queryFolderPath[queryFolderPath.length - 1] : undefined,
+		[queryFolderPath],
 	);
 
 	// Filter queries and folders for current context
-	const currentQueries = useMemo(() =>
-		queries.filter((query) => query.parentId === currentFolderId),
-		[queries, currentFolderId]
+	const currentQueries = useMemo(
+		() => queries.filter((query) => query.parentId === currentFolderId),
+		[queries, currentFolderId],
 	);
 
-	const currentFolders = useMemo(() =>
-		queryFolders.filter((folder) => folder.parentId === currentFolderId),
-		[queryFolders, currentFolderId]
+	const currentFolders = useMemo(
+		() => queryFolders.filter((folder) => folder.parentId === currentFolderId),
+		[queryFolders, currentFolderId],
 	);
 
 	// Combine folders and queries for sortable list, sorted by timestamp
-	const sortableItems = useMemo((): (QueryFolder | QueryTab)[] =>
-		sortItemsByTimestamp([...currentFolders, ...currentQueries]),
-		[currentFolders, currentQueries]
+	const sortableItems = useMemo(
+		(): (QueryFolder | QueryTab)[] =>
+			sortItemsByTimestamp([...currentFolders, ...currentQueries]),
+		[currentFolders, currentQueries],
 	);
 
 	// Build breadcrumb path
-	const breadcrumbPath = useMemo(() =>
-		buildBreadcrumbPath(queryFolderPath, queryFolders),
-		[queryFolderPath, queryFolders]
+	const breadcrumbPath = useMemo(
+		() => buildBreadcrumbPath(queryFolderPath, queryFolders),
+		[queryFolderPath, queryFolders],
 	);
 
-	const { shouldTruncate, visibleBreadcrumbs, hiddenBreadcrumbs } = useMemo(() =>
-		truncateBreadcrumbPath(breadcrumbPath),
-		[breadcrumbPath]
+	const { shouldTruncate, visibleBreadcrumbs, hiddenBreadcrumbs } = useMemo(
+		() => truncateBreadcrumbPath(breadcrumbPath),
+		[breadcrumbPath],
 	);
 
 	useIntent("new-query", newTab);
@@ -591,7 +593,10 @@ const TabsPane = memo(function TabsPane(props: TabsPaneProps) {
 				{/* Navigation breadcrumb */}
 				{queryFolderPath.length > 0 && (
 					<div className={classes.breadcrumbContainer}>
-						<Group gap="xs" className={classes.breadcrumbButtons}>
+						<Group
+							gap="xs"
+							className={classes.breadcrumbButtons}
+						>
 							<ActionButton
 								label="Back"
 								onClick={handleNavigateBack}

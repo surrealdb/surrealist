@@ -341,7 +341,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		const { sandbox, connections } = useConfigStore.getState();
 		const paths = [sandbox, ...connections]
 			.flatMap((c) => c.queries)
-			.filter((q) => q.type === "file")
+			.filter((q) => q.queryType === "config")
 			.map((q) => q.query);
 
 		return invoke<void>("prune_allowed_files", { paths });
@@ -449,13 +449,13 @@ export class DesktopAdapter implements SurrealistAdapter {
 				}
 
 				const existing = connection.queries.find(
-					(q) => q.type === "file" && q.query === path,
+					(q) => q.queryType === "config" && q.query === path,
 				);
 
 				if (existing) {
 					setActiveQueryTab(connection.id, existing.id);
 				} else {
-					addQueryTab(connection.id, { type: "file", name: name, query: path });
+					addQueryTab(connection.id, { queryType: "config", name: name, query: path });
 				}
 
 				NavigateViewEvent.dispatch("query");

@@ -96,7 +96,11 @@ export async function executeAllQueriesInFolder(
 /**
  * Helper function to count folder contents recursively
  */
-export function getFolderContents(folderId: string, queries: QueryTab[], queryFolders: QueryFolder[]) {
+export function getFolderContents(
+	folderId: string,
+	queries: QueryTab[],
+	queryFolders: QueryFolder[],
+) {
 	const getChildFolders = (parentId: string): QueryFolder[] => {
 		const children = queryFolders.filter((f) => f.parentId === parentId);
 		let allChildren = [...children];

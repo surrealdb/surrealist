@@ -148,7 +148,7 @@ export function backupConfig({ stripSensitive, connections }: ConfigBackupOption
 
 	// Remove non-config queries
 	for (const connection of config.connections ?? []) {
-		connection.queries = connection.queries.filter((q) => q.type === "config");
+		connection.queries = connection.queries.filter((q) => q.queryType === "config");
 	}
 
 	// Remove sensitive data

@@ -197,7 +197,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		const openQuery = (id: RecordId, prefix: string) => {
 			navigateConnection(connection, "query");
 			addQueryTab(connection, {
-				type: "config",
+				queryType: "config",
 				query: `${prefix} ${formatValue(id)}`,
 			});
 		};

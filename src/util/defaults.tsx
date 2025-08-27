@@ -131,8 +131,8 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 				name: "New query",
 			},
 		],
-		queryFolders: [],
 		activeQuery: baseTab.id,
+		queryFolders: [],
 		queryFolderPath: [],
 		authentication: createBaseAuthentication(),
 		pinnedTables: [],
@@ -154,10 +154,11 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	};
 }
 
-export function createBaseQuery(settings: SurrealistSettings, type: QueryType): QueryTab {
+export function createBaseQuery(settings: SurrealistSettings, queryType: QueryType): QueryTab {
 	return {
 		id: newId(),
-		type,
+		type: "query",
+		queryType,
 		query: "",
 		name: "",
 		variables: "{}",

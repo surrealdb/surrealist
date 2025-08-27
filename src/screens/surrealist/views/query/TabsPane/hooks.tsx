@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
-import type { QueryFolder, OrganizableItemType, QueryTab } from "~/types";
+import type { OrganizableItemType, QueryFolder, QueryTab } from "~/types";
 import { uniqueNameInScope } from "~/util/helpers";
 
 /**

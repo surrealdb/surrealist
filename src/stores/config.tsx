@@ -5,9 +5,9 @@ import { immer } from "zustand/middleware/immer";
 import { MAX_HISTORY_SIZE, SANDBOX } from "~/constants";
 import type {
 	Connection,
-	QueryFolder,
 	HistoryQuery,
 	PartialId,
+	QueryFolder,
 	QueryTab,
 	QueryType,
 	SavedQuery,
@@ -26,7 +26,7 @@ import { newId, uniqueNameInScope } from "~/util/helpers";
 type ConnectionUpdater = (value: Connection) => Partial<Connection>;
 
 interface NewQueryTab {
-	type: QueryType;
+	queryType: QueryType;
 	query?: string;
 	name?: string;
 	variables?: string;
@@ -149,13 +149,13 @@ export const useConfigStore = create<ConfigStore>()(
 						queries: [
 							...current.queries,
 							{
-								...createBaseQuery(state.settings, options?.type),
+								...createBaseQuery(state.settings, options?.queryType),
 								query: options?.query || "",
 								variables: options?.variables || "{}",
 								name: queryName,
 								id: tabId,
 								type: "query" as const,
-								queryType: options?.type || "config",
+								queryType: options?.queryType || "config",
 								parentId: currentFolderId,
 								createdAt: Date.now(),
 							},
@@ -319,7 +319,10 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
 					// Cascade delete: Remove folder and all its contents
-					const removeChildFolders = (folders: QueryFolder[], parentId: string): QueryFolder[] => {
+					const removeChildFolders = (
+						folders: QueryFolder[],
+						parentId: string,
+					): QueryFolder[] => {
 						const childFolders = folders.filter((f) => f.parentId === parentId);
 						let filteredFolders = folders.filter((f) => f.parentId !== parentId);
 
