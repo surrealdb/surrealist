@@ -9,9 +9,10 @@ import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { Form } from "~/components/Form";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
+import { openConnection } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
-import { isConnectionValid } from "~/util/connection";
+import { getActiveConnection, isConnectionValid } from "~/util/connection";
 
 export function openConnectionEditModal(connection: Connection) {
 	openModal({
@@ -38,6 +39,7 @@ function ConnectionEditor({ value }: ConnectionEditorProps) {
 
 	const handleSave = useStable(() => {
 		updateConnection(connection);
+		if (getActiveConnection() === connection.id) openConnection({ connection });
 		closeModal("connection-edit");
 	});
 
