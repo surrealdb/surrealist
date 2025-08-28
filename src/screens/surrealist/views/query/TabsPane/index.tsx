@@ -28,7 +28,6 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { openDeleteFolderModal } from "~/modals/delete-folder";
-
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
@@ -54,6 +53,7 @@ import {
 	buildFolderContentDescription,
 	buildFolderContextMenuItems,
 	buildQueryContextMenuItems,
+	buildTabsPaneContextMenuItems,
 	executeAllQueriesInFolder,
 	getFolderContents,
 	removeOthers,
@@ -61,6 +61,8 @@ import {
 	truncateBreadcrumbPath,
 } from "./helpers";
 import {
+	useCloseQueryOptions,
+	useDeleteFolderOptions,
 	useExcludedFolderIds,
 	useFolderMove,
 	useFolderRename,
@@ -112,7 +114,11 @@ const Query = memo(function Query({
 		onActivate(query.id);
 	});
 
-	const handleRemoveOthers = useStable((direction: number) => {
+	const handleRemoveQuery = useStable((id: string) => {
+		onRemoveQuery(id);
+	});
+
+	const handleRemoveOthers = useStable((direction: "others" | "before" | "after") => {
 		removeOthers(queries, query.id, direction, onRemoveQuery);
 	});
 
@@ -154,16 +160,21 @@ const Query = memo(function Query({
 		},
 	)();
 
-	const contextMenuItems = buildQueryContextMenuItems(
+	const deleteOptions = useCloseQueryOptions(
 		query,
 		queries,
+		handleRemoveQuery,
+		handleRemoveOthers,
+	)();
+
+	const contextMenuItems = buildQueryContextMenuItems(
+		query,
 		handleActivate,
 		handleDuplicate,
 		startRenaming,
-		() => onRemoveQuery(query.id),
-		handleRemoveOthers,
-		moveOptions,
 		openFolderSelector,
+		moveOptions,
+		deleteOptions,
 	);
 
 	const buildContextMenu = showContextMenu(contextMenuItems);
@@ -295,14 +306,16 @@ const Folder = memo(function Folder({
 		},
 	)();
 
+	const deleteOptions = useDeleteFolderOptions(folder, () => onRemoveFolder(folder.id))();
+
 	const contextMenuItems = buildFolderContextMenuItems(
 		handleNavigate,
-		startRenaming,
-		() => onRemoveFolder(folder.id),
-		handleExecuteAll,
 		handleDuplicate,
-		moveOptions,
+		startRenaming,
 		openFolderSelector,
+		moveOptions,
+		handleExecuteAll,
+		deleteOptions,
 	);
 
 	const buildContextMenu = showContextMenu(contextMenuItems);
@@ -350,6 +363,7 @@ export interface TabsPaneProps {
 }
 
 const TabsPane = memo(function TabsPane(props: TabsPaneProps) {
+	const { showContextMenu } = useContextMenu();
 	const { removeQueryState } = useQueryStore.getState();
 	const {
 		updateConnection,
@@ -365,7 +379,6 @@ const TabsPane = memo(function TabsPane(props: TabsPaneProps) {
 		navigateToParentFolder,
 		navigateToRoot,
 	} = useConfigStore.getState();
-
 	const [connection] = useConnectionAndView();
 	const [activeQuery, queries, queryFolders, queryFolderPath] = useConnection((c) => [
 		c?.activeQuery ?? "",
@@ -544,12 +557,35 @@ const TabsPane = memo(function TabsPane(props: TabsPaneProps) {
 			removeTab(activeQuery);
 		}
 	});
+	// Build navigation options
+	const navigateOptions = useMemo(() => {
+		if (queryFolderPath.length === 0) return;
+		return [
+			{
+				key: "navigate-to-root",
+				icon: <Icon path={iconHome} />,
+				title: "Navigate to root",
+				onClick: handleNavigateToRoot,
+			},
+			{
+				key: "navigate-back",
+				icon: <Icon path={iconArrowLeft} />,
+				title: "Navigate back",
+				onClick: handleNavigateBack,
+			},
+		];
+	}, [queryFolderPath.length]);
+
+	const contextMenuItems = buildTabsPaneContextMenuItems(newTab, newFolder, navigateOptions);
+
+	const buildContextMenu = showContextMenu(contextMenuItems);
 
 	return (
 		<ContentPane
 			icon={iconList}
 			title="Queries"
 			style={{ flexShrink: 0 }}
+			onContextMenu={buildContextMenu}
 			infoSection={
 				<Badge
 					color={isLight ? "slate.0" : "slate.9"}

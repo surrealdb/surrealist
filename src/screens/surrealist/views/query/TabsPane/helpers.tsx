@@ -1,17 +1,16 @@
+import { ContextMenuContent, ContextMenuItemOptions } from "mantine-contextmenu";
 import { adapter } from "~/adapter";
 import { DesktopAdapter } from "~/adapter/desktop";
 import { Icon } from "~/components/Icon";
 import { executeUserQuery } from "~/screens/surrealist/connection/connection";
 import { readQuery } from "~/screens/surrealist/views/query/QueryView/strategy";
 import type { QueryFolder, QueryTab, QueryType } from "~/types";
-import { showInfo } from "~/util/helpers";
+import { showInfo, sortItemsByTimestamp } from "~/util/helpers";
 import {
-	iconArrowLeft,
 	iconArrowUpRight,
 	iconCopy,
 	iconFile,
 	iconFolder,
-	iconHome,
 	iconPlay,
 	iconQuery,
 	iconSearch,
@@ -139,20 +138,35 @@ export function buildFolderContentDescription(contents: ReturnType<typeof getFol
 }
 
 /**
- * Remove other queries based on direction
+ * Remove other queries based on direction, scoped to the current folder
  */
 export function removeOthers(
 	queries: QueryTab[],
 	targetId: string,
-	direction: number,
+	direction: "others" | "before" | "after",
 	onRemoveQuery: (id: string) => void,
 ) {
-	const index = queries.findIndex((q) => q.id === targetId);
+	const targetQuery = queries.find((q) => q.id === targetId);
+	if (!targetQuery) return;
 
-	for (const [i, query] of queries.entries()) {
+	// Get queries in the same folder as the target query
+	const folderQueries = queries.filter((q) => q.parentId === targetQuery.parentId);
+
+	// Sort folder queries by timestamp
+	const sortedFolderQueries = sortItemsByTimestamp(folderQueries);
+
+	// Find the index within the sorted folder queries
+	const folderIndex = sortedFolderQueries.findIndex((q) => q.id === targetId);
+
+	for (const query of folderQueries) {
+		if (query.id === targetId) continue;
+
+		const queryFolderIndex = sortedFolderQueries.findIndex((q) => q.id === query.id);
+
 		if (
-			query.id !== targetId &&
-			(direction === 0 || (direction === -1 && i < index) || (direction === 1 && i > index))
+			direction === "others" ||
+			(direction === "before" && queryFolderIndex < folderIndex) ||
+			(direction === "after" && queryFolderIndex > folderIndex)
 		) {
 			onRemoveQuery(query.id);
 		}
@@ -216,27 +230,32 @@ export function openInExplorer(query: QueryTab) {
 }
 
 /**
- * Build base context menu items for queries
+ * Build context menu items for a query
  */
 export function buildQueryContextMenuItems(
 	query: QueryTab,
-	queries: QueryTab[],
 	onActivate: () => void,
 	onDuplicate: () => void,
 	onRename: () => void,
-	onRemove: () => void,
-	onRemoveOthers: (direction: number) => void,
-	moveOptions: Array<{ key: string; title: string; onClick: () => void }>,
-	onMoveToFolder: () => void,
+	onMoveTo: () => void,
+	moveOptions: ContextMenuItemOptions[] | undefined,
+	deleteOptions: ContextMenuItemOptions[] | undefined,
 ) {
 	const explorerName = getExplorerName();
 
-	return [
+	const content: ContextMenuContent = [
 		{
 			key: "open",
 			title: "Open",
 			icon: <Icon path={iconArrowUpRight} />,
 			onClick: onActivate,
+		},
+		{
+			hidden: query.queryType !== "file",
+			key: "open-in-explorer",
+			title: `Reveal in ${explorerName}`,
+			icon: <Icon path={iconSearch} />,
+			onClick: () => openInExplorer(query),
 		},
 		{
 			key: "duplicate",
@@ -250,58 +269,30 @@ export function buildQueryContextMenuItems(
 			icon: <Icon path={iconText} />,
 			onClick: onRename,
 		},
-		...moveOptions.map((option) => ({
-			...option,
-			icon:
-				option.key === "move-to-root" ? (
-					<Icon path={iconHome} />
-				) : (
-					<Icon path={iconArrowLeft} />
-				),
-		})),
 		{
 			key: "move-to",
 			title: "Move to...",
 			icon: <Icon path={iconFolder} />,
-			onClick: onMoveToFolder,
-		},
-		{
-			hidden: query.queryType !== "file",
-			key: "open-in-explorer",
-			title: `Reveal in ${explorerName}`,
-			icon: <Icon path={iconSearch} />,
-			onClick: () => openInExplorer(query),
-		},
-		{
-			key: "close-div",
-		},
-		{
-			key: "close",
-			title: "Close",
-			disabled: queries.length === 1,
-			onClick: onRemove,
-		},
-		{
-			key: "close-others",
-			title: "Close Others",
-			disabled: queries.length === 1,
-			onClick: () => onRemoveOthers(0),
-		},
-		{
-			key: "close-before",
-			title: "Close queries Before",
-			disabled: queries.length === 1 || queries.findIndex((q) => q.id === query.id) === 0,
-			onClick: () => onRemoveOthers(-1),
-		},
-		{
-			key: "close-after",
-			title: "Close queries After",
-			disabled:
-				queries.length === 1 ||
-				queries.findIndex((q) => q.id === query.id) >= queries.length - 1,
-			onClick: () => onRemoveOthers(1),
+			onClick: onMoveTo,
 		},
 	];
+
+	// Add move options if they exist
+	if (moveOptions && moveOptions.length > 0) {
+		content.push(...moveOptions);
+	}
+
+	// Add delete options if they exist
+	if (deleteOptions && deleteOptions.length > 0) {
+		content.push(
+			{
+				key: "delete-div",
+			},
+			...deleteOptions,
+		);
+	}
+
+	return content;
 }
 
 /**
@@ -309,14 +300,14 @@ export function buildQueryContextMenuItems(
  */
 export function buildFolderContextMenuItems(
 	onNavigate: () => void,
-	onRename: () => void,
-	onRemove: () => void,
-	onExecuteAll: () => void,
 	onDuplicate: () => void,
-	moveOptions: Array<{ key: string; title: string; onClick: () => void }>,
-	onMoveToFolder: () => void,
+	onRename: () => void,
+	onMoveTo: () => void,
+	moveOptions: ContextMenuItemOptions[] | undefined,
+	onExecuteAll: () => void,
+	deleteOptions: ContextMenuItemOptions[] | undefined,
 ) {
-	return [
+	const content: ContextMenuContent = [
 		{
 			key: "open",
 			title: "Open",
@@ -335,21 +326,21 @@ export function buildFolderContextMenuItems(
 			icon: <Icon path={iconText} />,
 			onClick: onRename,
 		},
-		...moveOptions.map((option) => ({
-			...option,
-			icon:
-				option.key === "move-to-root" ? (
-					<Icon path={iconHome} />
-				) : (
-					<Icon path={iconArrowLeft} />
-				),
-		})),
 		{
 			key: "move-to",
 			title: "Move to...",
 			icon: <Icon path={iconFolder} />,
-			onClick: onMoveToFolder,
+			onClick: onMoveTo,
 		},
+	];
+
+	// Add move options if they exist
+	if (moveOptions && moveOptions.length > 0) {
+		content.push(...moveOptions);
+	}
+
+	// Add execute all queries option
+	content.push(
 		{
 			key: "execute-div",
 		},
@@ -359,13 +350,53 @@ export function buildFolderContextMenuItems(
 			icon: <Icon path={iconPlay} />,
 			onClick: onExecuteAll,
 		},
+	);
+
+	// Add delete options if they exist
+	if (deleteOptions && deleteOptions.length > 0) {
+		content.push(
+			{
+				key: "delete-div",
+			},
+			...deleteOptions,
+		);
+	}
+
+	return content;
+}
+
+/**
+ * Build context menu items for the tabs pane
+ */
+export function buildTabsPaneContextMenuItems(
+	onNewQuery: () => void,
+	onNewFolder: () => void,
+	navigateOptions: ContextMenuItemOptions[] | undefined,
+) {
+	const content: ContextMenuContent = [
 		{
-			key: "delete-div",
+			key: "new-query",
+			icon: <Icon path={iconQuery} />,
+			title: "New query",
+			onClick: onNewQuery,
 		},
 		{
-			key: "delete",
-			title: "Delete folder",
-			onClick: onRemove,
+			key: "new-folder",
+			icon: <Icon path={iconFolder} />,
+			title: "New folder",
+			onClick: onNewFolder,
 		},
 	];
+
+	// Add navigation options if they exist
+	if (navigateOptions && navigateOptions.length > 0) {
+		content.push(
+			{
+				key: "navigate-div",
+			},
+			...navigateOptions,
+		);
+	}
+
+	return content;
 }

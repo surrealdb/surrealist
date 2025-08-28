@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { Icon } from "~/components/Icon";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { OrganizableItemType, QueryFolder, QueryTab } from "~/types";
-import { uniqueNameInScope } from "~/util/helpers";
+import { sortItemsByTimestamp, uniqueNameInScope } from "~/util/helpers";
+import { iconArrowLeft, iconHome } from "~/util/icons";
 
 /**
  * Hook for managing item renaming operations (queries and folders)
@@ -200,6 +202,7 @@ export function useMoveOptions<
 		if (currentParentId !== undefined) {
 			moveOptions.push({
 				key: "move-to-root",
+				icon: <Icon path={iconHome} />,
 				title: "Move to Root",
 				onClick: onMoveToRoot,
 			});
@@ -216,11 +219,90 @@ export function useMoveOptions<
 		if (currentFolder && currentFolder.parentId !== undefined) {
 			moveOptions.push({
 				key: "move-to-parent",
+				icon: <Icon path={iconArrowLeft} />,
 				title: `Move to ${parentFolder ? parentFolder.name : "Root"}`,
 				onClick: onMoveToParent,
 			});
 		}
 
 		return moveOptions;
+	});
+}
+
+/**
+ * Hook for building close options for queries
+ */
+export function useCloseQueryOptions(
+	query: QueryTab,
+	queries: QueryTab[],
+	onClose: (id: string) => void,
+	onCloseOthers: (direction: "others" | "before" | "after") => void,
+) {
+	return useStable(() => {
+		// Don't show close options if there's only one query
+		if (queries.length === 1) return;
+
+		// Get queries in the same folder as the current query
+		const folderQueries = queries.filter((q) => q.parentId === query.parentId);
+
+		const options = [
+			{
+				key: "close",
+				title: "Close",
+				onClick: () => onClose(query.id),
+			},
+		];
+
+		// Only show "Close Others" if there are other queries in the same folder
+		if (folderQueries.length > 1) {
+			options.push({
+				key: "close-others",
+				title: "Close Others",
+				onClick: () => onCloseOthers("others"),
+			});
+		}
+
+		// Sort folder queries by timestamp
+		const sortedFolderQueries = sortItemsByTimestamp(folderQueries);
+
+		// Get the index within the sorted folder queries
+		const folderIndex = sortedFolderQueries.findIndex((q) => q.id === query.id);
+
+		// Add "Close Before" if not the first query in the folder
+		if (folderIndex > 0) {
+			options.push({
+				key: "close-before",
+				title: "Close queries Before",
+				onClick: () => onCloseOthers("before"),
+			});
+		}
+
+		// Add "Close After" if not the last query in the folder
+		if (folderIndex < sortedFolderQueries.length - 1) {
+			options.push({
+				key: "close-after",
+				title: "Close queries After",
+				onClick: () => onCloseOthers("after"),
+			});
+		}
+
+		return options;
+	});
+}
+
+/**
+ * Hook for building delete options for folders
+ */
+export function useDeleteFolderOptions(folder: QueryFolder, onRemove: (id: string) => void) {
+	return useStable(() => {
+		const options = [
+			{
+				key: "delete",
+				title: "Delete",
+				onClick: () => onRemove(folder.id),
+			},
+		];
+
+		return options;
 	});
 }
