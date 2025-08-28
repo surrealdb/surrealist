@@ -155,7 +155,6 @@ export const useConfigStore = create<ConfigStore>()(
 								name: queryName,
 								id: tabId,
 								type: "query" as const,
-								queryType: options?.queryType || "config",
 								parentId: currentFolderId,
 								createdAt: Date.now(),
 							},
@@ -168,12 +167,12 @@ export const useConfigStore = create<ConfigStore>()(
 		removeQueryTab: (connectionId, queryId) =>
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
-					const queryToRemove = current.queries.find((query) => query.id === queryId);
-					if (!queryToRemove) {
+					const index = current.queries.findIndex((query) => query.id === queryId);
+
+					if (index < 0) {
 						return {};
 					}
 
-					const index = current.queries.findIndex((query) => query.id === queryId);
 					let activeQuery = current.activeQuery;
 
 					if (current.activeQuery === queryId) {
@@ -184,7 +183,7 @@ export const useConfigStore = create<ConfigStore>()(
 					}
 
 					return {
-						queries: current.queries.filter((query) => query.id !== queryId),
+						queries: current.queries.toSpliced(index, 1),
 						activeQuery,
 					};
 				}),
@@ -236,16 +235,17 @@ export const useConfigStore = create<ConfigStore>()(
 						(f) => f.parentId === folderParentId,
 					);
 
-					const newFolder: QueryFolder = {
-						id: folderId,
-						name: folderName,
-						parentId: folderParentId,
-						type: "folder" as const,
-						createdAt: Date.now(),
-					};
-
 					return {
-						queryFolders: [...current.queryFolders, newFolder],
+						queryFolders: [
+							...current.queryFolders,
+							{
+								id: folderId,
+								type: "folder" as const,
+								name: folderName,
+								createdAt: Date.now(),
+								parentId: folderParentId,
+							},
+						],
 					};
 				}),
 			),
@@ -338,9 +338,9 @@ export const useConfigStore = create<ConfigStore>()(
 
 					// CASCADE DELETE: Remove all queries within deleted folders
 					const updatedQueries = current.queries.filter((query) => {
-						if (query.parentId === folderId) {
-							return false; // Delete queries in the main folder
-						}
+						// Delete queries in the main folder
+						if (query.parentId === folderId) return false;
+
 						// Delete queries in child folders that no longer exist
 						return finalFolders.some((f) => f.id === query.parentId) || !query.parentId;
 					});
@@ -356,10 +356,7 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) =>
 				modifyConnection(state, connectionId, (current) => {
 					const index = current.queryFolders.findIndex((f) => f.id === folder.id);
-
-					if (index < 0) {
-						return {};
-					}
+					if (index < 0) return {};
 
 					return {
 						queryFolders: current.queryFolders.with(index, {
@@ -407,10 +404,10 @@ export const useConfigStore = create<ConfigStore>()(
 						// Create the new folder
 						const newFolder: QueryFolder = {
 							id: newFolderId,
-							name: folderName,
-							parentId: newParentId,
 							type: "folder" as const,
+							name: folderName,
 							createdAt: Date.now(),
+							parentId: newParentId,
 						};
 
 						let allNewFolders = [newFolder];
@@ -429,15 +426,13 @@ export const useConfigStore = create<ConfigStore>()(
 								(q) => q.parentId === newFolderId,
 							);
 
-							const newQuery: QueryTab = {
+							allNewQueries.push({
 								...query,
 								id: newQueryId,
 								name: queryName,
 								parentId: newFolderId,
 								createdAt: Date.now(),
-							};
-
-							allNewQueries.push(newQuery);
+							});
 						}
 
 						// Recursively duplicate child folders
@@ -457,7 +452,11 @@ export const useConfigStore = create<ConfigStore>()(
 							}
 						}
 
-						return { newFolders: allNewFolders, newQueries: allNewQueries, idMapping };
+						return {
+							newFolders: allNewFolders,
+							newQueries: allNewQueries,
+							idMapping,
+						};
 					};
 
 					// Duplicate the folder and all its contents

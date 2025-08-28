@@ -258,11 +258,11 @@ export interface QueryResponse {
 
 export interface OrganizableItem {
 	id: string;
+	type: OrganizableItemType;
 	name?: string;
-	parentId?: string;
 	createdAt: number;
 	movedAt?: number;
-	type: OrganizableItemType;
+	parentId?: string;
 }
 
 export interface QueryTab extends OrganizableItem {

@@ -157,7 +157,6 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 export function createBaseQuery(settings: SurrealistSettings, queryType: QueryType): QueryTab {
 	return {
 		id: newId(),
-		type: "query",
 		queryType,
 		query: "",
 		name: "",
@@ -167,6 +166,7 @@ export function createBaseQuery(settings: SurrealistSettings, queryType: QueryTy
 		resultFormat: settings.appearance.defaultResultFormat,
 		noneResultMode: settings.appearance.defaultNoneResultMode,
 		showVariables: false,
+		type: "query" as const,
 		createdAt: Date.now(),
 	};
 }
