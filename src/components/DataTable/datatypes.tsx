@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { convert } from "geo-coordinates-parser";
 import {
 	Decimal,
+	Duration,
 	GeometryCollection,
 	GeometryLine,
 	GeometryMultiLine,
@@ -107,6 +108,10 @@ function DateTimeCell(props: { value: Date }) {
 			{date.toLocaleString()}
 		</Text>
 	);
+}
+
+function DurationCell(props: { value: Duration }) {
+	return <Text>{props.value.toString()}</Text>;
 }
 
 function ArrayCell(props: { value: any[] }) {
@@ -332,6 +337,10 @@ export const DataCell = ({ value }: { value: any }) => {
 
 	if (Array.isArray(value)) {
 		return <ArrayCell value={value} />;
+	}
+
+	if (value instanceof Duration) {
+		return <DurationCell value={value} />;
 	}
 
 	if (typeof value === "object") {
