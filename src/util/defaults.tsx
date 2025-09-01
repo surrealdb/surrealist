@@ -132,6 +132,8 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 			},
 		],
 		activeQuery: baseTab.id,
+		queryFolders: [],
+		queryFolderPath: [],
 		authentication: createBaseAuthentication(),
 		pinnedTables: [],
 		queryHistory: [],
@@ -152,10 +154,10 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 	};
 }
 
-export function createBaseQuery(settings: SurrealistSettings, type: QueryType): QueryTab {
+export function createBaseQuery(settings: SurrealistSettings, queryType: QueryType): QueryTab {
 	return {
 		id: newId(),
-		type,
+		queryType,
 		query: "",
 		name: "",
 		variables: "{}",
@@ -164,6 +166,8 @@ export function createBaseQuery(settings: SurrealistSettings, type: QueryType): 
 		resultFormat: settings.appearance.defaultResultFormat,
 		noneResultMode: settings.appearance.defaultNoneResultMode,
 		showVariables: false,
+		type: "query" as const,
+		createdAt: Date.now(),
 	};
 }
 

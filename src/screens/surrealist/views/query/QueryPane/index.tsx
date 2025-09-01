@@ -235,7 +235,7 @@ export function QueryPane({
 				)
 			}
 			infoSection={
-				activeTab.type === "file" && (
+				activeTab.queryType === "file" && (
 					<Text
 						c="slate"
 						truncate
