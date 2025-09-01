@@ -85,13 +85,15 @@ export function ConversationPart({ conversation, part }: ConversationPartProps) 
 			return undefined;
 		}
 
+		const selfAssigned = part.assigned_to.id === part.author.id;
+
 		return (
 			<Group
 				justify="center"
 				w="100%"
 				gap={4}
 			>
-				<Text fz="lg">Ticket assigned to</Text>
+				<Text fz="lg">Ticket {selfAssigned ? "self-" : ""}assigned to</Text>
 				<Text
 					fz="lg"
 					c="surreal"
@@ -99,14 +101,18 @@ export function ConversationPart({ conversation, part }: ConversationPartProps) 
 				>
 					{part.assigned_to?.name}
 				</Text>
-				<Text fz="lg">by</Text>
-				<Text
-					fz="lg"
-					c="surreal"
-					fw={600}
-				>
-					{part.author?.name ?? "SurrealDB Team"}
-				</Text>
+				{!selfAssigned && (
+					<>
+						<Text fz="lg">by</Text>
+						<Text
+							fz="lg"
+							c="surreal"
+							fw={600}
+						>
+							{part.author?.name ?? "SurrealDB Team"}
+						</Text>
+					</>
+				)}
 				<Text
 					fz="lg"
 					c="slate.4"

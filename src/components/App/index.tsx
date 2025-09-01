@@ -10,6 +10,7 @@ import { CloudUpdateRequiredDialog } from "./modals/cloud-update-required";
 import { CommandPaletteModal } from "./modals/commands";
 import { ConnectionsModal } from "./modals/connections";
 import { ConsoleDrawer } from "./modals/console";
+import { CreateMessageModal } from "./modals/create-message";
 import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
 import { DocumentationModal } from "./modals/documentation";
@@ -59,6 +60,7 @@ export function App() {
 			<NewsFeedDrawer />
 			<SidekickDrawer />
 			<MessagesDrawer />
+			<CreateMessageModal />
 			<CloudExpiredDialog />
 			<CloudUpdateRequiredDialog />
 			<FailedConnectDialog />

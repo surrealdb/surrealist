@@ -841,9 +841,36 @@ export interface IntercomTicketState {
 	label: string;
 }
 
-export interface IntercomTicketType {
+export interface IntercomTicketTypeMinimal {
 	id: string;
 	name: string;
+}
+
+export interface IntercomTicketType extends IntercomTicketTypeMinimal {
+	description: string;
+	attributes: IntercomTicketTypeAttribute[];
+}
+
+export interface IntercomTicketTypeAttributeListOption {
+	label: string;
+	archived: boolean;
+	id: string;
+	description?: string;
+}
+
+export interface IntercomTicketTypeAttribute {
+	id: string;
+	name: string;
+	description?: string;
+	order: number;
+	data_type: string;
+	input_options?: {
+		list_options?: IntercomTicketTypeAttributeListOption[];
+		multiline?: boolean;
+		allow_multiple_values?: boolean;
+	};
+	required: boolean;
+	visible_on_create: boolean;
 }
 
 export interface IntercomContact {
@@ -878,7 +905,7 @@ export interface IntercomTicket {
 	title: string;
 	description: string;
 	state: IntercomTicketState;
-	type: IntercomTicketType;
+	type: IntercomTicketTypeMinimal;
 	created_at: number;
 	updated_at: number;
 	contacts: IntercomContact[];
@@ -962,12 +989,6 @@ export interface IntercomConversation {
 	priority: boolean;
 	hasTicket: boolean;
 	ticketData?: IntercomTicket;
-}
-
-export interface IntercomTicketType {
-	id: string;
-	name: string;
-	description: string;
 }
 
 export interface AppMenu {

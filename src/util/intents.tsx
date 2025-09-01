@@ -9,6 +9,7 @@ const INTENT_REGISTRY = {
 	"open-help": null,
 	"open-news": null,
 	"open-messages": null,
+	"create-message": null,
 	"open-changelog": null,
 	"open-settings": null,
 	"open-embedder": null,

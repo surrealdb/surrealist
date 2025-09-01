@@ -1,6 +1,8 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: Intercom returns raw HTML */
 import {
+	ActionIcon,
 	Box,
+	Button,
 	Divider,
 	Drawer,
 	Group,
@@ -21,6 +23,7 @@ import { useConversationStateMutation } from "~/cloud/mutations/context";
 import { useConversationsQuery } from "~/cloud/queries/context";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -37,6 +40,7 @@ import {
 	iconPlus,
 	iconTag,
 } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
 
 export function MessagesDrawer() {
@@ -227,12 +231,36 @@ export function MessagesDrawer() {
 								Messages
 							</Title>
 							<Spacer />
-							<ActionButton
-								variant="light"
-								label="Create new"
+							<Menu
+								trigger="hover"
+								position="bottom"
 							>
-								<Icon path={iconPlus} />
-							</ActionButton>
+								<Menu.Target>
+									<ActionIcon variant="light">
+										<Icon path={iconPlus} />
+									</ActionIcon>
+								</Menu.Target>
+								<Menu.Dropdown>
+									<Menu.Item
+										leftSection={<Icon path={iconTag} />}
+										onClick={() => {
+											dispatchIntent("create-message", { type: "ticket" });
+										}}
+									>
+										Create support ticket
+									</Menu.Item>
+									<Menu.Item
+										leftSection={<Icon path={iconChat} />}
+										onClick={() => {
+											dispatchIntent("create-message", {
+												type: "conversation",
+											});
+										}}
+									>
+										Create conversation
+									</Menu.Item>
+								</Menu.Dropdown>
+							</Menu>
 							<ActionButton
 								variant="light"
 								label="Close"
@@ -256,13 +284,20 @@ export function MessagesDrawer() {
 									display="block"
 								/>
 							) : isEmpty ? (
-								<Text
+								<Stack
+									align="center"
+									gap={0}
 									mt={68}
-									c="slate"
-									ta="center"
 								>
-									No messages found
-								</Text>
+									<PrimaryTitle>You have no messages</PrimaryTitle>
+									<Text>Need to speak to our team?</Text>
+									<Button
+										mt="xl"
+										variant="gradient"
+									>
+										Message us
+									</Button>
+								</Stack>
 							) : (
 								<Stack gap={5}>
 									{conversationsQuery.data?.map((item, i) => (
