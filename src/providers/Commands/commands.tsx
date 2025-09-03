@@ -635,12 +635,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: intent("open-settings"),
 					},
 					{
-						id: "open-help",
-						name: "Open Help & Support",
-						icon: iconHelp,
-						action: intent("open-help"),
-					},
-					{
 						id: "open-news",
 						name: "Open latest news",
 						icon: iconNewspaper,

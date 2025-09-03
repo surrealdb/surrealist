@@ -68,7 +68,6 @@ import {
 	iconRelation,
 	iconSearch,
 	iconTable,
-	iconTag,
 	iconTune,
 	iconVariable,
 	iconWarning,
@@ -230,13 +229,6 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Referrals",
 		icon: iconReferral,
 		disabled: ({ flags }) => !flags.cloud_enabled,
-	},
-	"/tickets": {
-		id: "/tickets",
-		name: "Tickets",
-		icon: iconTag,
-		aliases: ["/t/*", "/tickets/*"],
-		disabled: ({ flags }) => !flags.cloud_enabled || !flags.tickets_enabled,
 	},
 	"/support": {
 		id: "/support",

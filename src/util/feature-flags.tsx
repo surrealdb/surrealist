@@ -66,9 +66,6 @@ export const schema = {
 	cloud_killswitch: {
 		options: [false, true],
 	},
-	tickets_enabled: {
-		options: [false, true],
-	},
 	changelog: {
 		options: ["auto", "hidden", "read", "unread"],
 	},
@@ -107,7 +104,6 @@ export const featureFlags = new FeatureFlags({
 			highlight_tool: true,
 			cloud_enabled: true,
 			cloud_access: true,
-			tickets_enabled: true,
 			themes: true,
 			syntax_themes: true,
 			sidebar_customization: true,
@@ -128,7 +124,6 @@ export const featureFlags = new FeatureFlags({
 			cloud_enabled: true,
 			cloud_killswitch: true,
 			cloud_access: true,
-			tickets_enabled: false,
 			newsfeed: true,
 			themes: true,
 			sidebar_customization: true,
@@ -148,7 +143,6 @@ export const featureFlags = new FeatureFlags({
 			cloud_enabled: true,
 			cloud_killswitch: true,
 			cloud_access: true,
-			tickets_enabled: false,
 			newsfeed: true,
 			themes: true,
 			gtm_debug: false,

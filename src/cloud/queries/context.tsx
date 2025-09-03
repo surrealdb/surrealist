@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import { IntercomConversation, IntercomTicketType } from "~/types";
+import {
+	IntercomConversation,
+	IntercomSupportArticle,
+	IntercomSupportCollection,
+	IntercomSupportCollectionShallow,
+	IntercomTicketType,
+} from "~/types";
 import { fetchContextAPI } from "../api/context";
 
 /**
@@ -44,6 +50,44 @@ export function useCloudConversationQuery(conversationId?: string) {
 		enabled: !!conversationId && authState === "authenticated",
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation>(`/cloud/conversations/${conversationId}`);
+		},
+	});
+}
+
+/**
+ * Get all help collections
+ */
+export function useSupportCollectionsQuery() {
+	return useQuery({
+		queryKey: ["cloud", "support_categories"],
+		queryFn: async () => {
+			return fetchContextAPI<IntercomSupportCollectionShallow[]>(`/help/collections`);
+		},
+	});
+}
+
+/**
+ * Get a single help collection
+ */
+export function useSupportCollectionQuery(collectionId?: string) {
+	return useQuery({
+		queryKey: ["cloud", "support_collections", collectionId],
+		enabled: !!collectionId,
+		queryFn: async () => {
+			return fetchContextAPI<IntercomSupportCollection>(`/help/collections/${collectionId}`);
+		},
+	});
+}
+
+/**
+ * Get a single support article
+ */
+export function useSupportArticleQuery(articleId?: string) {
+	return useQuery({
+		queryKey: ["cloud", "support_articles", articleId],
+		enabled: !!articleId,
+		queryFn: async () => {
+			return fetchContextAPI<IntercomSupportArticle>(`/help/articles/${articleId}`);
 		},
 	});
 }

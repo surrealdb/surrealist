@@ -27,7 +27,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { ConversationPart } from "~/screens/surrealist/pages/Conversations/ConversationPart";
+import { ConversationPart } from "~/screens/surrealist/pages/Support/ConversationPart";
 import { IntercomConversation } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
 import {

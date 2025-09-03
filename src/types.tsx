@@ -73,7 +73,6 @@ export type GlobalPage =
 	| "/overview"
 	| "/signin"
 	| "/organisations"
-	| "/tickets"
 	| "/support"
 	| "/referrals"
 	| "/mini/new";
@@ -989,6 +988,32 @@ export interface IntercomConversation {
 	priority: boolean;
 	hasTicket: boolean;
 	ticketData?: IntercomTicket;
+}
+
+export interface IntercomSupportArticle {
+	id: string;
+	title: string;
+	description: string;
+	body: string;
+	author: IntercomUser;
+	created_at: number;
+	updated_at: number;
+	url: string;
+	collection?: IntercomSupportCollectionShallow;
+}
+
+export interface IntercomSupportCollectionShallow {
+	id: string;
+	name: string;
+	description: string;
+	icon: string;
+	url: string;
+	image?: string;
+	order: number;
+}
+
+export interface IntercomSupportCollection extends IntercomSupportCollectionShallow {
+	articles: IntercomSupportArticle[];
 }
 
 export interface AppMenu {

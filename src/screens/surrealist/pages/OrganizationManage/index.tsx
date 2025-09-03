@@ -19,7 +19,6 @@ import {
 	iconPackageClosed,
 	iconProgressClock,
 	iconServer,
-	iconTag,
 } from "~/util/icons";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
@@ -160,16 +159,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 														px="xl"
 													>
 														Usage
-													</Tabs.Tab>
-													<Tabs.Tab
-														value="tickets"
-														leftSection={<Icon path={iconTag} />}
-														onClick={() =>
-															navigate(`/tickets/${organization.id}`)
-														}
-														px="xl"
-													>
-														Tickets
 													</Tabs.Tab>
 													<Tabs.Tab
 														value="settings"

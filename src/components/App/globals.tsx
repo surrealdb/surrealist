@@ -5,7 +5,6 @@ import { useConnectionSwitch } from "./hooks/connection";
 import { useKeybindListener, useModKeyTracker } from "./hooks/input";
 import { useIntercom } from "./hooks/intercom";
 import { useNativeMenuBar } from "./hooks/menu";
-import { useGlobalModals } from "./hooks/modals";
 import { usePolicyAlert } from "./hooks/policy";
 import { useAppRouter } from "./hooks/routing";
 import { useTitleSync } from "./hooks/title";
@@ -18,7 +17,6 @@ export function Globals(): ReactNode {
 	useWindowSettings();
 	useConnectionSwitch();
 	useCloudAuthentication();
-	useGlobalModals();
 	useTitleSync();
 	useViewSync();
 	useAppRouter();
