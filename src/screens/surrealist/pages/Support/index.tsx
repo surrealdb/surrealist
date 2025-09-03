@@ -1,24 +1,41 @@
-import { Box, Center, Loader, ScrollArea, SimpleGrid, Stack, TextInput } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Center,
+	Group,
+	Loader,
+	Paper,
+	ScrollArea,
+	SimpleGrid,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { adapter } from "~/adapter";
-import cloudImage from "~/assets/images/icons/cloud.webp";
+import chatImage from "~/assets/images/icons/chat.webp";
 import communityImage from "~/assets/images/icons/community.webp";
 import documentImage from "~/assets/images/icons/document.webp";
+import githubImage from "~/assets/images/icons/github.webp";
+import playImage from "~/assets/images/icons/play.webp";
 import sidekickImage from "~/assets/images/icons/sidekick.webp";
 import surrealdbImage from "~/assets/images/icons/surrealdb.webp";
-import tutorialsImage from "~/assets/images/icons/tutorials.webp";
 import universityImage from "~/assets/images/icons/university.webp";
-import { openSupportEmail } from "~/cloud/modals/account-support";
-import { useSupportCollectionsQuery } from "~/cloud/queries/context";
+import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import { iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
+import { ConversationCard } from "./ConversationCard";
 import { ResourceTile } from "./ResourceTile";
 import { SupportCollection } from "./SupportCollection";
 import classes from "./style.module.scss";
 
 export function SupportPage() {
+	const isAuthenticated = useIsAuthenticated();
 	const { data: collections, isLoading } = useSupportCollectionsQuery();
+	const { data: chats, isLoading: isChatsLoading } = useConversationsQuery();
 
 	return (
 		<Box
@@ -36,18 +53,70 @@ export function SupportPage() {
 				<Stack
 					px="xl"
 					mx="auto"
-					align="center"
 					maw={1000}
 					pb={68}
-					gap="lg"
+					gap="xl"
 				>
-					<PrimaryTitle fz={32}>Get help from SurrealDB</PrimaryTitle>
+					<PrimaryTitle
+						ta="center"
+						fz={32}
+					>
+						Get help from SurrealDB
+					</PrimaryTitle>
 					<TextInput
 						w="100%"
 						size="lg"
 						placeholder="Search for help"
 						leftSection={<Icon path={iconSearch} />}
 					/>
+
+					{isAuthenticated && (
+						<Paper p="xl">
+							<Group>
+								<Text
+									c="bright"
+									fw={600}
+									fz={20}
+									lh={1}
+								>
+									Recent support requests
+								</Text>
+								<Spacer />
+								<Button
+									variant="light"
+									size="sm"
+									color="slate"
+								>
+									View All
+								</Button>
+							</Group>
+
+							<Stack mt="md">
+								{!isChatsLoading &&
+									chats
+										?.sort((a, b) => b.updated_at - a.updated_at)
+										.slice(0, 3)
+										.map((chat) => (
+											<Paper
+												key={chat.id}
+												variant="transparent"
+												withBorder={false}
+												style={{
+													cursor: "pointer",
+												}}
+												className={classes.messageItem}
+											>
+												<ConversationCard conversation={chat} />
+											</Paper>
+										))}
+								{isChatsLoading && (
+									<Center my="xl">
+										<Loader />
+									</Center>
+								)}
+							</Stack>
+						</Paper>
+					)}
 
 					<Box
 						mt="xl"
@@ -100,7 +169,7 @@ export function SupportPage() {
 							<ResourceTile
 								name="SurrealDB YouTube"
 								description="Learn about SurrealDB through live streams and video tutorials"
-								image={tutorialsImage}
+								image={playImage}
 								onClick={() =>
 									adapter.openUrl("https://www.youtube.com/@SurrealDB")
 								}
@@ -149,16 +218,17 @@ export function SupportPage() {
 								onClick={() => dispatchIntent("open-sidekick")}
 							/>
 							<ResourceTile
-								name="Email us"
-								description="For account or billing related issues, email us"
-								image={cloudImage}
-								onClick={() => openSupportEmail()}
+								name="GitHub"
+								description="Report issues or submit feature requests"
+								image={githubImage}
+								onClick={() => adapter.openUrl("https://github.com/surrealdb")}
 							/>
 							<ResourceTile
+								badge="New"
 								name="Contact Support"
 								description="Chat with our team or create a support ticket directly in Surrealist"
-								image={cloudImage}
-								// onClick={() => dispatchIntent("open-help", { tab: "create-ticket" })}
+								image={chatImage}
+								onClick={() => dispatchIntent("open-messages")}
 							/>
 						</SimpleGrid>
 					</Box>

@@ -69,13 +69,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage =
-	| "/overview"
-	| "/signin"
-	| "/organisations"
-	| "/support"
-	| "/referrals"
-	| "/mini/new";
+export type GlobalPage = "/overview" | "/signin" | "/organisations" | "/referrals" | "/mini/new";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"

@@ -741,6 +741,14 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: intent("open-documentation"),
 						forward: true,
 					},
+					{
+						id: "open-help-center",
+						name: "Search help center for:",
+						icon: iconHelp,
+						binding: ["mod", "h"],
+						action: intent("open-help-center"),
+						forward: true,
+					},
 				],
 			},
 		);

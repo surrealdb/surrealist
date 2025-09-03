@@ -1,15 +1,13 @@
 import { adapter } from "~/adapter";
-import { useIsAuthenticated, useIsCloudEnabled } from "~/hooks/cloud";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { CloudAccount } from "./account";
-import { MessagesAction } from "./messages";
 import { NewsFeed } from "./newsfeed";
 import { DatabaseServing } from "./serving";
 import { SidekickAction } from "./sidekick";
 
 export function ActionBar() {
 	const [flags] = useFeatureFlags();
-	const authenticated = useIsAuthenticated();
 	const showCloud = useIsCloudEnabled();
 
 	return (
@@ -19,8 +17,6 @@ export function ActionBar() {
 			{adapter.isServeSupported && <DatabaseServing />}
 
 			{flags.newsfeed && <NewsFeed />}
-
-			{authenticated && <MessagesAction />}
 
 			{showCloud && flags.cloud_access && <CloudAccount />}
 		</>

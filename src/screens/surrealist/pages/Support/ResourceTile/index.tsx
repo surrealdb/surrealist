@@ -1,13 +1,14 @@
-import { Box, Group, Image, Paper, Text } from "@mantine/core";
+import { Badge, Box, Group, Image, Paper, Text } from "@mantine/core";
 
 export interface ResourceTileProps {
 	name: string;
 	description: string;
 	image: string;
+	badge?: string;
 	onClick?: () => void;
 }
 
-export function ResourceTile({ name, description, image, onClick }: ResourceTileProps) {
+export function ResourceTile({ name, description, image, badge, onClick }: ResourceTileProps) {
 	return (
 		<Paper
 			p="lg"
@@ -22,13 +23,24 @@ export function ResourceTile({ name, description, image, onClick }: ResourceTile
 					h={52}
 				/>
 				<Box>
-					<Text
-						c="bright"
-						fw={600}
-						fz="xl"
-					>
-						{name}
-					</Text>
+					<Group gap="xs">
+						<Text
+							c="bright"
+							fw={600}
+							fz="xl"
+						>
+							{name}
+						</Text>
+						{badge && (
+							<Badge
+								variant="gradient"
+								color="surreal"
+								size="sm"
+							>
+								{badge}
+							</Badge>
+						)}
+					</Group>
 					<Text mt="xs">{description}</Text>
 				</Box>
 			</Group>

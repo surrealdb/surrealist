@@ -91,3 +91,21 @@ export function useSupportArticleQuery(articleId?: string) {
 		},
 	});
 }
+
+/**
+ * Search help articles
+ */
+export function useSearchHelpArticlesQuery(query: string) {
+	return useQuery({
+		queryKey: ["cloud", "support_search"],
+		enabled: !!query && query.length > 0,
+		queryFn: async () => {
+			return fetchContextAPI<IntercomSupportArticle[]>(`/help/articles/search`, {
+				method: "POST",
+				body: JSON.stringify({
+					query: query,
+				}),
+			});
+		},
+	});
+}

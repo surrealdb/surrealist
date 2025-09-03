@@ -6,6 +6,7 @@ const INTENT_REGISTRY = {
 	"open-connection": null,
 	"open-connections": null,
 	"open-documentation": null,
+	"open-help-center": null,
 	"open-news": null,
 	"open-messages": null,
 	"create-message": null,

@@ -24,14 +24,14 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
-import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
+import { iconArrowLeft, iconCog, iconHelp, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
 	["/overview", "/organisations"],
-	["/referrals", "/mini/new"],
-	["/support"],
+	["/referrals"],
+	["/mini/new"],
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
@@ -226,6 +226,16 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					))}
 
 					<Spacer />
+
+					<NavigationIcon
+						name="Support"
+						icon={iconHelp}
+						match={["/support", "/support/*"]}
+						onClick={() => navigate("/support")}
+						onMouseEnter={hoverSidebarHandle.open}
+						withTooltip={sidebarMode === "compact"}
+						indicator={true}
+					/>
 
 					<NavigationIcon
 						name={

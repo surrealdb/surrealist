@@ -15,8 +15,8 @@ import { DataExportModal } from "./modals/data-export";
 import { DataImportModal } from "./modals/data-import";
 import { DocumentationModal } from "./modals/documentation";
 import { FailedConnectDialog } from "./modals/failed-connect";
+import { HelpSearchModal } from "./modals/help-center";
 import { HighlightToolModal } from "./modals/highlight-tool";
-import { MessagesDrawer } from "./modals/messages";
 import { NewsFeedDrawer } from "./modals/newsfeed";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
@@ -48,6 +48,7 @@ export function App() {
 			<ConnectionsModal />
 			<CommandPaletteModal />
 			<DocumentationModal />
+			<HelpSearchModal />
 			<ChangelogModal />
 			<SandboxModal />
 			<AccessSignupModal />
@@ -59,7 +60,6 @@ export function App() {
 			<ConsoleDrawer />
 			<NewsFeedDrawer />
 			<SidekickDrawer />
-			<MessagesDrawer />
 			<CreateMessageModal />
 			<CloudExpiredDialog />
 			<CloudUpdateRequiredDialog />

@@ -230,11 +230,6 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		icon: iconReferral,
 		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
-	"/support": {
-		id: "/support",
-		name: "Support",
-		icon: iconHelp,
-	},
 	"/mini/new": {
 		id: "/mini/new",
 		name: "Embed Surrealist",
