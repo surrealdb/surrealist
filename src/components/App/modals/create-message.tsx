@@ -31,7 +31,7 @@ import { iconBullhorn, iconChat, iconCursor, iconTag } from "~/util/icons";
 export function CreateMessageModal() {
 	const [isOpen, openedHandle] = useBoolean();
 	const [isTicket, setIsTicket] = useInputState(false);
-	const [organisation, setOrganisation] = useInputState<string | undefined>(undefined);
+	const [organisation, _setOrganisation] = useInputState<string | undefined>(undefined);
 	const [ticketType, setTicketType] = useInputState<string | null>(null);
 	const [availableAttributes, setAvailableAttributes] = useInputState<
 		IntercomTicketTypeAttribute[]
