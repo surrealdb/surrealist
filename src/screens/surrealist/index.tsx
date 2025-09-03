@@ -23,6 +23,8 @@ import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
+import { ArticlePage } from "./pages/Support/ArticlePage";
+import { CollectionPage } from "./pages/Support/CollectionPage";
 import { SurrealistSidebar } from "./sidebar";
 import classes from "./style.module.scss";
 import { SurrealistToolbar } from "./toolbar";
@@ -174,6 +176,14 @@ export function SurrealistScreen() {
 
 							<Route path="/support">
 								<SupportPageLazy />
+							</Route>
+
+							<Route path="/support/collections/:collection">
+								{({ collection }) => <CollectionPage id={collection} />}
+							</Route>
+
+							<Route path="/support/articles/:article">
+								{({ article }) => <ArticlePage id={article} />}
 							</Route>
 
 							{showCloud && (

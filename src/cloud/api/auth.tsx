@@ -140,6 +140,7 @@ export async function verifyAuthentication(code: string, state: string) {
 		}
 
 		localStorage.setItem(TOKEN_REFRESH_KEY, result.refresh_token);
+		localStorage.setItem(TOKEN_ACCESS_KEY, result.access_token);
 
 		acquireSession(result.access_token, true);
 	} catch (err: any) {
