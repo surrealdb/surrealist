@@ -12,6 +12,7 @@ import { EMAIL_REGEX, showErrorNotification } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
 import { useInvitationMutation } from "../mutations/invites";
 import { useCloudRolesQuery } from "../queries/roles";
+import { openBulkInvitationModal } from "./bulk-invite";
 
 export function openMemberInvitationModal(organization: CloudOrganization) {
 	openModal({
@@ -46,6 +47,11 @@ function InviteModal({ organization }: InviteModalProps) {
 		closeModal("invite-member");
 	});
 
+	const handleSwitchBulk = useStable(() => {
+		closeModal("invite-member");
+		openBulkInvitationModal(organization);
+	});
+
 	const handleSubmit = useStable(async () => {
 		try {
 			await inviteMutation.mutateAsync({
@@ -55,7 +61,7 @@ function InviteModal({ organization }: InviteModalProps) {
 		} catch {
 			showErrorNotification({
 				title: "Invitation failed",
-				content: "Failed to send an invitation to this user",
+				content: "Failed to send an invitation to this member",
 			});
 		} finally {
 			handleClose();
@@ -76,7 +82,7 @@ function InviteModal({ organization }: InviteModalProps) {
 		<Form onSubmit={handleSubmit}>
 			<Stack>
 				<Text size="lg">
-					Invite new members to your organisation by entering their email addresses below.
+					Invite a new member to your organisation by entering their email address below.
 				</Text>
 
 				<TextInput
@@ -95,6 +101,17 @@ function InviteModal({ organization }: InviteModalProps) {
 					value={role}
 					onChange={setRole as any}
 				/>
+
+				<Text
+					fz="sm"
+					c="surreal"
+					style={{
+						cursor: "pointer",
+					}}
+					onClick={handleSwitchBulk}
+				>
+					Click here to invite multiple members
+				</Text>
 
 				<Group mt="xl">
 					<Button
