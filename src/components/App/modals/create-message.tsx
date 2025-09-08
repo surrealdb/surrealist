@@ -15,6 +15,8 @@ import {
 import { DateTimePicker } from "@mantine/dates";
 import { useInputState } from "@mantine/hooks";
 import { useEffect } from "react";
+import { navigate } from "wouter/use-browser-location";
+import { useConversationCreateMutation, useCreateTicketMutation } from "~/cloud/mutations/context";
 import { useCloudTicketTypesQuery } from "~/cloud/queries/context";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
@@ -23,22 +25,27 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
+import { useCloudProfile } from "~/hooks/cloud";
 import { useIntent } from "~/hooks/routing";
 import { IntercomTicketTypeAttribute } from "~/types";
 import { EMAIL_REGEX } from "~/util/helpers";
 import { iconBullhorn, iconChat, iconCursor, iconTag } from "~/util/icons";
 
 export function CreateMessageModal() {
+	const profile = useCloudProfile();
 	const [isOpen, openedHandle] = useBoolean();
 	const [isTicket, setIsTicket] = useInputState(false);
-	const [organisation, _setOrganisation] = useInputState<string | undefined>(undefined);
+	const [organisation, setOrganisation] = useInputState<string | undefined>(undefined);
 	const [ticketType, setTicketType] = useInputState<string | null>(null);
 	const [availableAttributes, setAvailableAttributes] = useInputState<
 		IntercomTicketTypeAttribute[]
 	>([]);
 
-	const { data: organisations, isPending: organisationsPending } = useCloudOrganizationsQuery();
-	const { data: members, isPending: membersPending } = useCloudMembersQuery(organisation);
+	const { data: organisations } = useCloudOrganizationsQuery();
+	const { data: members } = useCloudMembersQuery(organisation);
+
+	const createTicketMutation = useCreateTicketMutation(organisation);
+	const createConversationMutation = useConversationCreateMutation();
 
 	const typesQuery = useCloudTicketTypesQuery();
 
@@ -54,7 +61,17 @@ export function CreateMessageModal() {
 		(additionalContacts.length === 0 || isContactsValid) &&
 		name &&
 		description &&
-		availableAttributes.filter((it) => it.required).every((it) => attributes[it.id]);
+		(!isTicket || (isTicket && organisation)) &&
+		(!isTicket || (isTicket && ticketType)) &&
+		availableAttributes
+			.filter(
+				(it) =>
+					it.required &&
+					!["organisation", "organization"].includes(it.name.toLowerCase()),
+			)
+			.every((it) => attributes[it.name]);
+
+	const isPending = createTicketMutation.isPending || createConversationMutation.isPending;
 
 	const handleClose = () => {
 		openedHandle.close();
@@ -86,6 +103,11 @@ export function CreateMessageModal() {
 		setIsContactsValid(additionalContacts.every((contact) => EMAIL_REGEX.test(contact)));
 	}, [additionalContacts]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Clear org contacts when organisation changes
+	useEffect(() => {
+		setOrgContacts([]);
+	}, [organisation]);
+
 	return (
 		<Modal
 			size="lg"
@@ -100,9 +122,29 @@ export function CreateMessageModal() {
 			onClose={handleClose}
 		>
 			<Form
-				onSubmit={() => {
-					if (canSubmit) {
-						// do submit
+				onSubmit={async () => {
+					if (!isPending && canSubmit) {
+						if (isTicket && ticketType) {
+							const result = await createTicketMutation.mutateAsync({
+								type: parseInt(ticketType),
+								name: name,
+								description: description,
+								org_contacts: orgContacts,
+								email_contacts: additionalContacts,
+								attributes: attributes,
+							});
+
+							handleClose();
+							navigate(`/support/conversations/${result.id}`);
+						} else if (!isTicket) {
+							const result = await createConversationMutation.mutateAsync({
+								body: description,
+								subject: name,
+							});
+
+							handleClose();
+							navigate(`/support/conversations/${result.id}`);
+						}
 					}
 				}}
 			>
@@ -123,6 +165,21 @@ export function CreateMessageModal() {
 					/>
 					{isTicket && (
 						<Select
+							required
+							data={
+								organisations?.map((it) => ({
+									value: it.id,
+									label: it.name,
+								})) || []
+							}
+							label="Organisation"
+							placeholder="Please select the associated organisation"
+							value={organisation}
+							onChange={setOrganisation}
+						/>
+					)}
+					{isTicket && (
+						<Select
 							data={
 								typesQuery.data?.map((it) => {
 									return {
@@ -140,56 +197,64 @@ export function CreateMessageModal() {
 							flex={1}
 						/>
 					)}
-					{organisation && members && members.length > 0 && (
+					{availableAttributes
+						.filter(
+							(attr) =>
+								attr.visible_on_create &&
+								!["organisation"].includes(attr.name.toLowerCase()),
+						)
+						.sort((a, b) => a.order - b.order)
+						.map((attr) => (
+							<TicketAttribute
+								key={attr.name}
+								attr={attr}
+								value={attributes[attr.name]}
+								onChange={(value) =>
+									setAttributes({ ...attributes, [attr.name]: value })
+								}
+							/>
+						))}
+					{isTicket && organisation && members && members.length > 0 && (
 						<MultiSelect
 							flex={1}
-							data={members.map((it) => ({
-								value: it.user_id,
-								label: `${it.name}`,
-							}))}
+							data={members
+								.filter((it) => it.username !== profile.username)
+								.map((it) => ({
+									value: it.user_id,
+									label: `${it.name}`,
+								}))}
 							label="Organisation contacts"
 							placeholder="Add additional contacts to this ticket from the associated organisation"
 							value={orgContacts}
 							onChange={setOrgContacts}
 						/>
 					)}
-					<TagsInput
-						label="Additional contacts"
-						placeholder="Add additional contacts by their emails"
-						error={
-							isContactsValid
-								? undefined
-								: "Only emails separated by a comma are allowed"
-						}
-						styles={{
-							pillsList: {
-								width: "100%",
-							},
-						}}
-						value={additionalContacts}
-						onChange={setAdditionalContacts}
-					/>
-					{availableAttributes
-						.filter((attr) => attr.visible_on_create)
-						.sort((a, b) => a.order - b.order)
-						.map((attr) => (
-							<TicketAttribute
-								key={attr.id}
-								attr={attr}
-								value={attributes[attr.id]}
-								onChange={(value) =>
-									setAttributes({ ...attributes, [attr.id]: value })
-								}
-							/>
-						))}
-					<Group mt="xl">
+					{isTicket && (
+						<TagsInput
+							label="Additional contacts"
+							placeholder="Add additional contacts by their emails"
+							error={
+								isContactsValid
+									? undefined
+									: "Only emails separated by a comma are allowed"
+							}
+							styles={{
+								pillsList: {
+									width: "100%",
+								},
+							}}
+							value={additionalContacts}
+							onChange={setAdditionalContacts}
+						/>
+					)}
+					<Group>
 						<Spacer />
 						<Button
+							loading={isPending}
 							type="submit"
 							variant="gradient"
 							rightSection={<Icon path={iconCursor} />}
-							// loading={ticketCreateMutation.isPending}
-							disabled={!canSubmit}
+							disabled={!canSubmit || isPending}
 						>
 							Submit
 						</Button>

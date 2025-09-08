@@ -4,6 +4,7 @@ import {
 	Center,
 	Group,
 	Loader,
+	Menu,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
@@ -26,7 +27,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { iconSearch } from "~/util/icons";
+import { iconChat, iconPlus, iconSearch, iconTag } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ConversationCard } from "./ConversationCard";
 import { ResourceTile } from "./ResourceTile";
@@ -91,6 +92,37 @@ export function SupportPage() {
 								>
 									View All
 								</Button>
+								<Menu>
+									<Menu.Target>
+										<Button
+											variant="gradient"
+											size="xs"
+											rightSection={<Icon path={iconPlus} />}
+										>
+											New request
+										</Button>
+									</Menu.Target>
+									<Menu.Dropdown>
+										<Menu.Item
+											leftSection={<Icon path={iconChat} />}
+											onClick={() =>
+												dispatchIntent("create-message", {
+													type: "conversation",
+												})
+											}
+										>
+											Conversation
+										</Menu.Item>
+										<Menu.Item
+											leftSection={<Icon path={iconTag} />}
+											onClick={() =>
+												dispatchIntent("create-message", { type: "ticket" })
+											}
+										>
+											Support ticket
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
 							</Group>
 
 							<Stack
@@ -238,7 +270,7 @@ export function SupportPage() {
 								name="Contact Support"
 								description="Chat with our team or create a support ticket directly in Surrealist"
 								image={chatImage}
-								onClick={() => dispatchIntent("open-messages")}
+								onClick={() => navigate("/support/requests")}
 							/>
 						</SimpleGrid>
 					</Box>

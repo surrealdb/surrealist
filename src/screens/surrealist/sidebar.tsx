@@ -11,6 +11,7 @@ import {
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
 import iconUrl from "~/assets/images/icon.webp";
+import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
@@ -62,6 +63,8 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
 	const pages = useAvailablePages();
 	const views = useAvailableViews();
+
+	const { data: unreadConversations } = useCloudUnreadConversationsQuery();
 
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
@@ -234,7 +237,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 						onClick={() => navigate("/support")}
 						onMouseEnter={hoverSidebarHandle.open}
 						withTooltip={sidebarMode === "compact"}
-						indicator={true}
+						indicator={unreadConversations}
 					/>
 
 					<NavigationIcon

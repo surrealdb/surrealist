@@ -55,6 +55,21 @@ export function useCloudConversationQuery(conversationId?: string) {
 }
 
 /**
+ * Check if the user has unread messages
+ */
+export function useCloudUnreadConversationsQuery() {
+	const authState = useCloudStore((state) => state.authState);
+
+	return useQuery({
+		queryKey: ["cloud", "unread_conversations"],
+		enabled: authState === "authenticated",
+		queryFn: async () => {
+			return fetchContextAPI<boolean>(`/cloud/conversations/has_unread`);
+		},
+	});
+}
+
+/**
  * Get all help collections
  */
 export function useSupportCollectionsQuery() {

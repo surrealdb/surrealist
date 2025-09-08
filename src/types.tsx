@@ -911,11 +911,14 @@ export interface IntercomTicketCreateRequest {
 	type: number;
 	name: string;
 	description: string;
-	contacts: string[];
+	org_contacts: string[];
+	email_contacts: string[];
+	attributes: Record<string, any>;
 }
 
 export interface IntercomConversationCreateRequest {
 	body: string;
+	subject: string;
 }
 
 export interface IntercomConversationReplyRequest {

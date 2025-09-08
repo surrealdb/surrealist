@@ -12,11 +12,15 @@ import { fetchContextAPI } from "../api/context";
 /**
  * Ticket creation mutation
  */
-export function useCreateTicketMutation(organization: string) {
+export function useCreateTicketMutation(organization?: string) {
 	const client = useQueryClient();
 
 	return useMutation({
 		mutationFn: async (body: IntercomTicketCreateRequest) => {
+			if (!organization) {
+				throw new Error("Organization is required");
+			}
+
 			const result = await fetchContextAPI<IntercomTicket>(
 				`/cloud/org/${organization}/tickets`,
 				{
