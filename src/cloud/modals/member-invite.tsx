@@ -82,7 +82,7 @@ function InviteModal({ organization }: InviteModalProps) {
 		<Form onSubmit={handleSubmit}>
 			<Stack>
 				<Text size="lg">
-					Invite new members to your organisation by entering their email addresses below.
+					Invite a new member to your organisation by entering their email address below.
 				</Text>
 
 				<TextInput
