@@ -12,6 +12,7 @@ import { EMAIL_REGEX, showErrorNotification } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
 import { useInvitationMutation } from "../mutations/invites";
 import { useCloudRolesQuery } from "../queries/roles";
+import { openBulkInvitationModal } from "./bulk-invite";
 
 export function openMemberInvitationModal(organization: CloudOrganization) {
 	openModal({
@@ -44,6 +45,11 @@ function InviteModal({ organization }: InviteModalProps) {
 
 	const handleClose = useStable(() => {
 		closeModal("invite-member");
+	});
+
+	const handleSwitchBulk = useStable(() => {
+		closeModal("invite-member");
+		openBulkInvitationModal(organization);
 	});
 
 	const handleSubmit = useStable(async () => {
@@ -95,6 +101,17 @@ function InviteModal({ organization }: InviteModalProps) {
 					value={role}
 					onChange={setRole as any}
 				/>
+
+				<Text
+					fz="sm"
+					c="surreal"
+					style={{
+						cursor: "pointer",
+					}}
+					onClick={handleSwitchBulk}
+				>
+					Looking to add multiple users? Click here
+				</Text>
 
 				<Group mt="xl">
 					<Button
