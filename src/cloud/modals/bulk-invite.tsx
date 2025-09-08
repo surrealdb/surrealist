@@ -67,7 +67,7 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 		} catch {
 			showErrorNotification({
 				title: "Invitations failed",
-				content: "Failed to send invitations to one or more users",
+				content: "Failed to send invitations to one or more members",
 			});
 		} finally {
 			handleClose();
@@ -176,7 +176,7 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 						onClick={() => setInvites(invites.concat({ email: "", role: "member" }))}
 					>
 						<Icon path={iconPlus} />
-						<Text>Add user</Text>
+						<Text>Add member</Text>
 					</Group>
 					<Spacer />
 					<Group

@@ -61,7 +61,7 @@ function InviteModal({ organization }: InviteModalProps) {
 		} catch {
 			showErrorNotification({
 				title: "Invitation failed",
-				content: "Failed to send an invitation to this user",
+				content: "Failed to send an invitation to this member",
 			});
 		} finally {
 			handleClose();
@@ -110,7 +110,7 @@ function InviteModal({ organization }: InviteModalProps) {
 					}}
 					onClick={handleSwitchBulk}
 				>
-					Looking to add multiple users? Click here
+					Click here to invite multiple members
 				</Text>
 
 				<Group mt="xl">
