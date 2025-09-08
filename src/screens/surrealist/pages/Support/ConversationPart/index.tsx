@@ -13,6 +13,7 @@ export interface ConversationPartProps {
 export function ConversationPartBody({ part }: ConversationPartProps) {
 	return (
 		<Paper
+			w="100%"
 			p="lg"
 			bg="slate.7"
 		>

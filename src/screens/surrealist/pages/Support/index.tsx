@@ -11,6 +11,7 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import chatImage from "~/assets/images/icons/chat.webp";
 import communityImage from "~/assets/images/icons/community.webp";
@@ -84,20 +85,26 @@ export function SupportPage() {
 								<Spacer />
 								<Button
 									variant="light"
-									size="sm"
+									size="xs"
 									color="slate"
+									onClick={() => navigate("/support/requests")}
 								>
 									View All
 								</Button>
 							</Group>
 
-							<Stack mt="md">
+							<Stack
+								ml="-xs"
+								mt="md"
+								gap={0}
+							>
 								{!isChatsLoading &&
 									chats
 										?.sort((a, b) => b.updated_at - a.updated_at)
 										.slice(0, 3)
 										.map((chat) => (
 											<Paper
+												p="xs"
 												key={chat.id}
 												variant="transparent"
 												withBorder={false}
@@ -105,6 +112,9 @@ export function SupportPage() {
 													cursor: "pointer",
 												}}
 												className={classes.messageItem}
+												onClick={() =>
+													navigate(`/support/conversations/${chat.id}`)
+												}
 											>
 												<ConversationCard conversation={chat} />
 											</Paper>
