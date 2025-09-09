@@ -124,7 +124,6 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 			adapter.log("Schema", `Updating table ${tableName}`);
 
 			const tableStruct = tbInfoMap[idx].result as SchemaInfoTB;
-
 			const tableInfo = tables.find((t) => t.name === tableName);
 			const existingIndex = schema.database.tables.findIndex(
 				(t) => t.schema.name === tableName,
