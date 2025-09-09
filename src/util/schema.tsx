@@ -1,5 +1,4 @@
 import equal from "fast-deep-equal";
-import { klona } from "klona";
 import { escapeIdent } from "surrealdb";
 import { adapter } from "~/adapter";
 import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
@@ -114,14 +113,13 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 				.join("\n"),
 		);
 
-		if (isLimited) {
-			schema.database.tables = klona(connectionSchema.database.tables);
-		}
+		adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
 
 		for (const [idx, tableName] of tablesToSync.entries()) {
 			adapter.log("Schema", `Updating table ${tableName}`);
 
 			const tableStruct = tbInfoMap[idx].result as SchemaInfoTB;
+
 			const tableInfo = tables.find((t) => t.name === tableName);
 			const existingIndex = schema.database.tables.findIndex(
 				(t) => t.schema.name === tableName,
