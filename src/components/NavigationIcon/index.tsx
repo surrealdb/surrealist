@@ -63,7 +63,7 @@ export function NavigationIcon({
 					onClick={handleClick}
 					leftSection={
 						<Indicator
-							disabled={!indicator}
+							disabled={!indicator || isActive}
 							{...(isObject(indicator) ? indicator : {})}
 						>
 							<Icon

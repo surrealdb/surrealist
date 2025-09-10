@@ -2,6 +2,7 @@ import "@xyflow/react/dist/style.css";
 import "@mantine/core/styles.layer.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/charts/styles.css";
+import "@mantine/dates/styles.css";
 import "mantine-contextmenu/styles.layer.css";
 
 import "../assets/styles/layers.scss";

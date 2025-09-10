@@ -555,6 +555,18 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "tickets-base",
+						name: "Tickets base",
+						description: "The base URL for the tickets API",
+						controller: new TextController({
+							placeholder: "https://...",
+							reader: (config) => config.settings.cloud.urlApiTicketsBase,
+							writer: (config, value) => {
+								config.settings.cloud.urlApiTicketsBase = value;
+							},
+						}),
+					},
 				],
 			});
 		}

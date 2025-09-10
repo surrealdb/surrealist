@@ -23,6 +23,10 @@ import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
+import { ArticlePage } from "./pages/Support/ArticlePage";
+import { CollectionPage } from "./pages/Support/CollectionPage";
+import { ConversationPage } from "./pages/Support/ConversationPage";
+import { RequestsPage } from "./pages/Support/RequestsPage";
 import { SurrealistSidebar } from "./sidebar";
 import classes from "./style.module.scss";
 import { SurrealistToolbar } from "./toolbar";
@@ -45,6 +49,7 @@ const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
+const RequestsPageLazy = memo(RequestsPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
 const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
 const SigninPageLazy = memo(SigninPage);
@@ -174,6 +179,22 @@ export function SurrealistScreen() {
 
 							<Route path="/support">
 								<SupportPageLazy />
+							</Route>
+
+							<Route path="/support/collections/:collection">
+								{({ collection }) => <CollectionPage id={collection} />}
+							</Route>
+
+							<Route path="/support/articles/:article">
+								{({ article }) => <ArticlePage id={article} />}
+							</Route>
+
+							<Route path="/support/requests">
+								<RequestsPageLazy />
+							</Route>
+
+							<Route path="/support/conversations/:conversation">
+								{({ conversation }) => <ConversationPage id={conversation} />}
 							</Route>
 
 							{showCloud && (
