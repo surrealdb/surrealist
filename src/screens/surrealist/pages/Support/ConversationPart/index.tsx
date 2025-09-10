@@ -1,6 +1,6 @@
 import { Group, Paper, Text } from "@mantine/core";
-import { TICKET_STATES } from "~/constants";
-import { IntercomConversation, IntercomConversationPart, IntercomTicketStateId } from "~/types";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { IntercomConversation, IntercomConversationPart } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
 import { ConversationPartAuthor } from "../ConversationPartAuthor";
 import styles from "./style.module.scss";
@@ -8,9 +8,10 @@ import styles from "./style.module.scss";
 export interface ConversationPartProps {
 	conversation: IntercomConversation;
 	part: IntercomConversationPart;
+	initial?: boolean;
 }
 
-export function ConversationPartBody({ part }: ConversationPartProps) {
+export function ConversationPartBody({ conversation, part, initial }: ConversationPartProps) {
 	return (
 		<Paper
 			w="100%"
@@ -26,12 +27,61 @@ export function ConversationPartBody({ part }: ConversationPartProps) {
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
 					dangerouslySetInnerHTML={{ __html: part.body ?? "" }}
 				/>
+				{initial &&
+					conversation.hasTicket &&
+					Object.entries(conversation.ticketData?.attributes ?? {}).map(
+						([name, value]) => (
+							<Group key={name}>
+								<PrimaryTitle
+									fz="lg"
+									fw={600}
+								>
+									{name}
+								</PrimaryTitle>
+								<Text>{value}</Text>
+							</Group>
+						),
+					)}
 			</ConversationPartAuthor>
 		</Paper>
 	);
 }
 
-export function ConversationPart({ conversation, part }: ConversationPartProps) {
+export function ConversationPart({ conversation, part, initial }: ConversationPartProps) {
+	if (
+		part.part_type === "conversation_attribute_updated_by_admin" ||
+		part.part_type === "conversation_attribute_updated_by_user"
+	) {
+		return (
+			<Group
+				justify="center"
+				w="100%"
+				gap={4}
+			>
+				<Text fz="lg">Conversation attributes updated by</Text>
+				<Text
+					fz="lg"
+					c="surreal"
+					fw={600}
+				>
+					{part.author?.name ?? "SurrealDB Team"}
+				</Text>
+				<Text
+					fz="lg"
+					c="slate.4"
+				>
+					&bull;
+				</Text>
+				<Text
+					fz="md"
+					c="slate.4"
+				>
+					{formatRelativeDate(part.updated_at * 1000)}
+				</Text>
+			</Group>
+		);
+	}
+
 	if (
 		part.part_type === "ticket_state_updated_by_admin" ||
 		part.part_type === "ticket_state_updated_by_user"
@@ -42,21 +92,19 @@ export function ConversationPart({ conversation, part }: ConversationPartProps) 
 			return undefined;
 		}
 
-		const state = TICKET_STATES[ticketPart.ticket_state as IntercomTicketStateId];
-
 		return (
 			<Group
 				justify="center"
 				w="100%"
 				gap={4}
 			>
-				<Text fz="lg">Ticket marked as</Text>
+				<Text fz="lg">Moved to</Text>
 				<Text
 					fz="lg"
 					fw={600}
-					c={state.color}
+					c="bright"
 				>
-					{state.label}
+					{ticketPart.state.label}
 				</Text>
 				<Text fz="lg">by</Text>
 				<Text
@@ -94,7 +142,7 @@ export function ConversationPart({ conversation, part }: ConversationPartProps) 
 				w="100%"
 				gap={4}
 			>
-				<Text fz="lg">Ticket {selfAssigned ? "self-" : ""}assigned to</Text>
+				<Text fz="lg">{selfAssigned ? "Self-" : ""}Assigned to</Text>
 				<Text
 					fz="lg"
 					c="surreal"
@@ -130,7 +178,7 @@ export function ConversationPart({ conversation, part }: ConversationPartProps) 
 		);
 	}
 	if (part.part_type === "open" || part.part_type === "close") {
-		const action = part.part_type === "open" ? "Re-opened" : "Closed";
+		const action = part.part_type === "open" ? "Open" : "Closed";
 		const color = part.part_type === "open" ? "green" : "red";
 
 		return (
@@ -140,7 +188,7 @@ export function ConversationPart({ conversation, part }: ConversationPartProps) 
 					w="100%"
 					gap={4}
 				>
-					<Text fz="lg">Ticket</Text>
+					<Text fz="lg">Marked as</Text>
 					<Text
 						fz="lg"
 						c={color}
@@ -183,6 +231,7 @@ export function ConversationPart({ conversation, part }: ConversationPartProps) 
 			<ConversationPartBody
 				conversation={conversation}
 				part={part}
+				initial={initial}
 			/>
 		);
 	}

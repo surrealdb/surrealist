@@ -292,6 +292,9 @@ export function ConversationPage({ id }: ConversationPageProps) {
 								<Stack
 									gap="md"
 									mb="lg"
+									style={{
+										userSelect: "text",
+									}}
 								>
 									<Group
 										gap="lg"
@@ -302,6 +305,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 										<ConversationPart
 											conversation={conversation}
 											part={conversation.initial_part}
+											initial
 										/>
 
 										<Paper
@@ -321,14 +325,6 @@ export function ConversationPage({ id }: ConversationPageProps) {
 												/>
 												<Divider />
 												<TicketData
-													title="Last updated"
-													subtitle={formatRelativeDate(
-														conversation.updated_at * 1000,
-													)}
-													color="green"
-													icon={iconClock}
-												/>
-												<TicketData
 													title="Type"
 													subtitle={
 														conversation.ticketData?.type.name ??
@@ -345,6 +341,14 @@ export function ConversationPage({ id }: ConversationPageProps) {
 														icon={iconSurreal}
 													/>
 												)}
+												<TicketData
+													title="Last updated"
+													subtitle={formatRelativeDate(
+														conversation.updated_at * 1000,
+													)}
+													color="green"
+													icon={iconClock}
+												/>
 											</Stack>
 										</Paper>
 									</Group>
@@ -355,11 +359,18 @@ export function ConversationPage({ id }: ConversationPageProps) {
 								</Stack>
 							)}
 
-							<Stack gap="lg">
-								<ConversationPart
-									conversation={conversation}
-									part={conversation.initial_part}
-								/>
+							<Stack
+								gap="lg"
+								style={{
+									userSelect: "text",
+								}}
+							>
+								{!conversation.hasTicket && (
+									<ConversationPart
+										conversation={conversation}
+										part={conversation.initial_part}
+									/>
+								)}
 								{conversation.parts.map((part) => (
 									<ConversationPart
 										key={part.id}

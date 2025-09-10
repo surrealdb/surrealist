@@ -1,14 +1,11 @@
 import {
 	Button,
 	Checkbox,
-	FileInput,
 	Group,
 	Modal,
-	MultiSelect,
 	NumberInput,
 	Select,
 	Stack,
-	TagsInput,
 	Textarea,
 	TextInput,
 } from "@mantine/core";
@@ -18,21 +15,17 @@ import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useConversationCreateMutation, useCreateTicketMutation } from "~/cloud/mutations/context";
 import { useCloudTicketTypesQuery } from "~/cloud/queries/context";
-import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
-import { useCloudProfile } from "~/hooks/cloud";
 import { useIntent } from "~/hooks/routing";
 import { IntercomTicketTypeAttribute } from "~/types";
-import { EMAIL_REGEX } from "~/util/helpers";
 import { iconBullhorn, iconChat, iconCursor, iconTag } from "~/util/icons";
 
 export function CreateMessageModal() {
-	const profile = useCloudProfile();
 	const [isOpen, openedHandle] = useBoolean();
 	const [isTicket, setIsTicket] = useInputState(false);
 	const [organisation, setOrganisation] = useInputState<string | undefined>(undefined);
@@ -42,23 +35,17 @@ export function CreateMessageModal() {
 	>([]);
 
 	const { data: organisations } = useCloudOrganizationsQuery();
-	const { data: members } = useCloudMembersQuery(organisation);
 
 	const createTicketMutation = useCreateTicketMutation(organisation);
 	const createConversationMutation = useConversationCreateMutation();
 
 	const typesQuery = useCloudTicketTypesQuery();
 
-	const [isContactsValid, setIsContactsValid] = useInputState(false);
-
 	const [name, setName] = useInputState<string>("");
 	const [description, setDescription] = useInputState<string>("");
-	const [orgContacts, setOrgContacts] = useInputState<string[]>([]);
-	const [additionalContacts, setAdditionalContacts] = useInputState<string[]>([]);
 	const [attributes, setAttributes] = useInputState<Record<string, any>>({});
 
 	const canSubmit =
-		(additionalContacts.length === 0 || isContactsValid) &&
 		name &&
 		description &&
 		(!isTicket || (isTicket && organisation)) &&
@@ -78,7 +65,6 @@ export function CreateMessageModal() {
 		setIsTicket(false);
 		setTicketType(null);
 		setAvailableAttributes([]);
-		setOrgContacts([]);
 	};
 
 	useIntent("create-message", ({ type }) => {
@@ -99,15 +85,6 @@ export function CreateMessageModal() {
 		}
 	}, [ticketType, typesQuery.data]);
 
-	useEffect(() => {
-		setIsContactsValid(additionalContacts.every((contact) => EMAIL_REGEX.test(contact)));
-	}, [additionalContacts]);
-
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Clear org contacts when organisation changes
-	useEffect(() => {
-		setOrgContacts([]);
-	}, [organisation]);
-
 	return (
 		<Modal
 			size="lg"
@@ -125,13 +102,51 @@ export function CreateMessageModal() {
 				onSubmit={async () => {
 					if (!isPending && canSubmit) {
 						if (isTicket && ticketType) {
+							// const fileEntries = Object.entries(attributes).filter(
+							// 	([_, value]) => value instanceof File,
+							// );
+
+							// const fileAttributes = await Promise.all(
+							// 	fileEntries.map(async ([key, value]) => {
+							// 		const reader = new FileReader();
+
+							// 		return new Promise<{ [key: string]: any }>((resolve) => {
+							// 			reader.onload = () => {
+							// 				resolve({
+							// 					[key]: [
+							// 						{
+							// 							content_type: value.type,
+							// 							name: value.name,
+							// 							data: reader.result,
+							// 						},
+							// 					],
+							// 				});
+							// 			};
+							// 			reader.readAsDataURL(value);
+							// 		});
+							// 	}),
+							// );
+
+							const nonFileAttributes = Object.entries(attributes)
+								.filter(([_, value]) => !(value instanceof File))
+								.reduce(
+									(acc, [key, value]) => {
+										acc[key] = value;
+										return acc;
+									},
+									{} as Record<string, any>,
+								);
+
 							const result = await createTicketMutation.mutateAsync({
 								type: parseInt(ticketType),
 								name: name,
 								description: description,
-								org_contacts: orgContacts,
-								email_contacts: additionalContacts,
-								attributes: attributes,
+								attributes: {
+									...nonFileAttributes,
+									// ...Object.fromEntries(
+									// 	fileAttributes.map((attr) => Object.entries(attr)[0]),
+									// ),
+								},
 							});
 
 							handleClose();
@@ -214,39 +229,6 @@ export function CreateMessageModal() {
 								}
 							/>
 						))}
-					{isTicket && organisation && members && members.length > 0 && (
-						<MultiSelect
-							flex={1}
-							data={members
-								.filter((it) => it.username !== profile.username)
-								.map((it) => ({
-									value: it.user_id,
-									label: `${it.name}`,
-								}))}
-							label="Organisation contacts"
-							placeholder="Add additional contacts to this ticket from the associated organisation"
-							value={orgContacts}
-							onChange={setOrgContacts}
-						/>
-					)}
-					{isTicket && (
-						<TagsInput
-							label="Additional contacts"
-							placeholder="Add additional contacts by their emails"
-							error={
-								isContactsValid
-									? undefined
-									: "Only emails separated by a comma are allowed"
-							}
-							styles={{
-								pillsList: {
-									width: "100%",
-								},
-							}}
-							value={additionalContacts}
-							onChange={setAdditionalContacts}
-						/>
-					)}
 					<Group>
 						<Spacer />
 						<Button
@@ -369,18 +351,19 @@ function TicketAttribute({ attr, value, onChange }: TicketAttributeProps) {
 		);
 	}
 
-	if (attr.data_type === "files") {
-		return (
-			<FileInput
-				label={attr.name}
-				description={attr.description}
-				required={attr.required}
-				value={value}
-				multiple={attr.input_options?.allow_multiple_values ?? false}
-				onChange={onChange}
-			/>
-		);
-	}
+	// NOTE: Intercom doesn't support files via the API yet for creation. Hide for now.
+	// if (attr.data_type === "files") {
+	// 	return (
+	// 		<FileInput
+	// 			label={attr.name}
+	// 			description={attr.description}
+	// 			required={attr.required}
+	// 			value={value}
+	// 			multiple={attr.input_options?.allow_multiple_values ?? false}
+	// 			onChange={onChange}
+	// 		/>
+	// 	);
+	// }
 
 	return undefined;
 }

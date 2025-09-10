@@ -15,7 +15,6 @@ import type {
 	Driver,
 	GlobalPage,
 	GlobalPageInfo,
-	IntercomTicketStateId,
 	Listable,
 	Monitor,
 	MonitorSeverity,
@@ -489,29 +488,4 @@ export const MONITOR_LOG_LEVEL_INFO: Record<string, [string, MantineColor, Monit
 	WARN: [iconWarning, "orange", "warning"],
 	ERROR: [iconErrorCircle, "red", "error"],
 	FATAL: [iconErrorCircle, "red", "error"],
-};
-
-export const TICKET_STATES: Record<
-	IntercomTicketStateId,
-	{
-		color: MantineColor;
-		label: string;
-	}
-> = {
-	submitted: {
-		color: "green",
-		label: "Submitted",
-	},
-	in_progress: {
-		color: "blue",
-		label: "In Progress",
-	},
-	waiting_on_customer: {
-		color: "red",
-		label: "Waiting on You",
-	},
-	resolved: {
-		color: "violet",
-		label: "Resolved",
-	},
 };

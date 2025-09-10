@@ -45,11 +45,6 @@ export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
-export type IntercomTicketStateId =
-	| "submitted"
-	| "in_progress"
-	| "waiting_on_customer"
-	| "resolved";
 export type IntercomConversationStateId = "open" | "closed" | "snoozed";
 
 export type InstanceState =
@@ -828,12 +823,6 @@ export interface CloudDeployConfig {
 	storageAmount: number;
 }
 
-export interface IntercomTicketState {
-	id: string;
-	category: IntercomTicketStateId;
-	label: string;
-}
-
 export interface IntercomTicketTypeMinimal {
 	id: string;
 	name: string;
@@ -880,10 +869,16 @@ export interface IntercomUser {
 	avatar?: string;
 }
 
+export interface IntercomTicketState {
+	id: string;
+	category: string;
+	label: string;
+}
+
 export interface IntercomTicketPart {
 	id: string;
 	part_type: string;
-	ticket_state: string;
+	state: IntercomTicketState;
 	previous_ticket_state: string;
 	created_at: number;
 	updated_at: number;
@@ -905,14 +900,13 @@ export interface IntercomTicket {
 	assignee?: IntercomUser;
 	parts: IntercomTicketPart[];
 	open: boolean;
+	attributes: Record<string, any>;
 }
 
 export interface IntercomTicketCreateRequest {
 	type: number;
 	name: string;
 	description: string;
-	org_contacts: string[];
-	email_contacts: string[];
 	attributes: Record<string, any>;
 }
 
