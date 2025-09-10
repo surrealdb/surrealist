@@ -17,6 +17,7 @@ import type {
 } from "~/types";
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";
+import { showErrorNotification } from "./helpers";
 import { getStatementCount } from "./surrealql";
 
 export interface SchemaSyncOptions {
@@ -114,12 +115,27 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 				.join("\n"),
 		);
 
+		adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
+
 		if (isLimited) {
 			schema.database.tables = klona(connectionSchema.database.tables);
 		}
 
+		let hasFailures = false;
+
 		for (const [idx, tableName] of tablesToSync.entries()) {
 			adapter.log("Schema", `Updating table ${tableName}`);
+
+			const response = tbInfoMap[idx];
+
+			if (!response.success) {
+				hasFailures = true;
+				adapter.log(
+					"Schema",
+					`Failed to get table structure for ${tableName}: ${response.result}`,
+				);
+				continue;
+			}
 
 			const tableStruct = tbInfoMap[idx].result as SchemaInfoTB;
 			const tableInfo = tables.find((t) => t.name === tableName);
@@ -147,6 +163,13 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 			} else {
 				schema.database.tables[existingIndex] = definition;
 			}
+		}
+
+		if (hasFailures) {
+			showErrorNotification({
+				title: "Some tables failed to sync",
+				content: "Check the debug console for more details",
+			});
 		}
 	}
 
