@@ -920,7 +920,7 @@ export interface IntercomConversationReplyRequest {
 	attachment_files?: {
 		content_type: string;
 		data: string;
-		filename: string;
+		name: string;
 	}[];
 	reply_options?: {
 		text: string;
@@ -956,7 +956,7 @@ export interface IntercomConversationPart {
 	body: string;
 	created_at: number;
 	updated_at: number;
-	attachments: IntercomAttachment[];
+	attachments?: IntercomAttachment[];
 	assigned_to: IntercomConversationAssignment;
 	state: IntercomConversationStateId;
 	author: IntercomUser;

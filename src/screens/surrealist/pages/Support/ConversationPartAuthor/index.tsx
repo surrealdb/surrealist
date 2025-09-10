@@ -35,7 +35,7 @@ export function ConversationPartAuthor({
 				style={{
 					cursor: "default",
 				}}
-			></Avatar>
+			/>
 
 			<Stack>
 				<Stack gap={0}>

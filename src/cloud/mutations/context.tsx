@@ -73,7 +73,7 @@ export function useConversationReplyMutation(conversationId?: string) {
 			}
 
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations/${conversationId}/${conversationId}/reply`,
+				`/cloud/conversations/${conversationId}/reply`,
 				{
 					method: "POST",
 					body: JSON.stringify(body),

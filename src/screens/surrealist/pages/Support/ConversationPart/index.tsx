@@ -1,7 +1,10 @@
-import { Group, Paper, Text } from "@mantine/core";
+import { Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
+import { adapter } from "~/adapter";
+import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { IntercomConversation, IntercomConversationPart } from "~/types";
-import { formatRelativeDate } from "~/util/helpers";
+import { formatFileSize, formatRelativeDate } from "~/util/helpers";
+import { iconFile } from "~/util/icons";
 import { ConversationPartAuthor } from "../ConversationPartAuthor";
 import styles from "./style.module.scss";
 
@@ -12,6 +15,7 @@ export interface ConversationPartProps {
 }
 
 export function ConversationPartBody({ conversation, part, initial }: ConversationPartProps) {
+	console.log(part.attachments);
 	return (
 		<Paper
 			w="100%"
@@ -22,6 +26,45 @@ export function ConversationPartBody({ conversation, part, initial }: Conversati
 				user={part.author}
 				updated_at={part.updated_at}
 			>
+				{part.attachments?.map((it) => (
+					<Paper
+						key={it.url}
+						p="sm"
+						bg="slate.8"
+						w="fit-content"
+						withBorder={false}
+						style={{
+							cursor: "pointer",
+						}}
+						onClick={() => {
+							adapter.openUrl(it.url);
+						}}
+					>
+						<Group>
+							<ThemeIcon
+								size="lg"
+								variant="light"
+								color="slate"
+							>
+								<Icon path={iconFile} />
+							</ThemeIcon>
+							<Stack gap={0}>
+								<Text
+									fw={600}
+									fz="md"
+								>
+									{it.name}
+								</Text>
+								<Text
+									fz="sm"
+									c="slate.4"
+								>
+									{formatFileSize(it.filesize)}
+								</Text>
+							</Stack>
+						</Group>
+					</Paper>
+				))}
 				<div
 					className={styles.intercomContainer}
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML

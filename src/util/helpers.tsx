@@ -521,6 +521,24 @@ export function formatMemory(amountInMB: number, rounded = false) {
 }
 
 /**
+ * Format the given file size in bytes to a human readable string
+ */
+export function formatFileSize(bytes: number) {
+	if (bytes < 1000) return `${bytes} B`;
+
+	const units = ["KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+	let i = 0;
+	let size = bytes / 1000;
+
+	while (size >= 1000 && i < units.length - 1) {
+		size /= 1000;
+		i++;
+	}
+
+	return `${size.toFixed(2)} ${units[i]}`;
+}
+
+/**
  * Returns whether the given hostname is considered localhost
  */
 export function isHostLocal(hostname: string) {
