@@ -81,7 +81,7 @@ export function SavesDrawer({
 
 		onClose();
 		addQueryTab(connection, {
-			type: "config",
+			queryType: "config",
 			query: entry.query,
 			name: entry.name,
 		});

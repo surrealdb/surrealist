@@ -71,6 +71,29 @@ export function applyMigrations(config: any): SurrealistConfig {
 		}
 	});
 
+	// x.x.x -> x.x.x: Add folder support and timestamp-based ordering
+
+	applyToConnections(config, (con) => {
+		con.queryFolders ??= [];
+		con.queryFolderPath ??= [];
+
+		const migrationTime = Date.now();
+
+		if (con.queries && isArray(con.queries)) {
+			con.queries.forEach((query: any, index: number) => {
+				query.queryType ??= query.type;
+				query.type = "query" as const;
+				query.parentId ??= undefined;
+
+				// Set createdAt for existing queries - reverse iterate so newest items are in the past
+				if (!query.createdAt) {
+					const reverseIndex = con.queries.length - 1 - index;
+					query.createdAt = migrationTime - reverseIndex * 1000; // 1 second apart, going backwards
+				}
+			});
+		}
+	});
+
 	return config;
 }
 
