@@ -22,6 +22,7 @@ import playImage from "~/assets/images/icons/play.webp";
 import sidekickImage from "~/assets/images/icons/sidekick.webp";
 import surrealdbImage from "~/assets/images/icons/surrealdb.webp";
 import universityImage from "~/assets/images/icons/university.webp";
+import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -29,6 +30,7 @@ import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { iconChat, iconPlus, iconSearch, iconTag } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
+import { StartCloud } from "../Overview/content/cloud";
 import { ConversationCard } from "./ConversationCard";
 import { ResourceTile } from "./ResourceTile";
 import { SupportCollection } from "./SupportCollection";
@@ -72,7 +74,7 @@ export function SupportPage() {
 						leftSection={<Icon path={iconSearch} />}
 					/>
 
-					{isAuthenticated && (
+					{isAuthenticated && chats && chats.length !== 0 && (
 						<Paper p="xl">
 							<Group>
 								<Text
@@ -158,6 +160,46 @@ export function SupportPage() {
 								)}
 							</Stack>
 						</Paper>
+					)}
+
+					{/* TODO: Check support plan */}
+					{isAuthenticated && (!chats || chats.length === 0) && (
+						<StartCloud
+							action="Submit a ticket"
+							image={chatImage}
+							onClick={() => {
+								dispatchIntent("create-message", { type: "ticket" });
+							}}
+						>
+							<Group>
+								<PrimaryTitle>No recent support requests</PrimaryTitle>
+								<Text>
+									Since you have purchased a Support Plan, you can create a
+									support ticket to get expedited support directly from the
+									SurrealDB team.
+								</Text>
+							</Group>
+						</StartCloud>
+					)}
+
+					{/* TODO: Check support plan */}
+					{!isAuthenticated && (
+						<StartCloud
+							action="Learn more"
+							image={chatImage}
+							onClick={() => {
+								openCloudAuthentication();
+							}}
+						>
+							<Group>
+								<PrimaryTitle>Need expert answers fast?</PrimaryTitle>
+								<Text>
+									Upgrade to a Support Plan to get expedited support directly from
+									the SurrealDB team, so you're never left hanging when it matters
+									the most.
+								</Text>
+							</Group>
+						</StartCloud>
 					)}
 
 					<Box
@@ -266,7 +308,6 @@ export function SupportPage() {
 								onClick={() => adapter.openUrl("https://github.com/surrealdb")}
 							/>
 							<ResourceTile
-								badge="New"
 								name="Contact Support"
 								description="Chat with our team or create a support ticket directly in Surrealist"
 								image={chatImage}

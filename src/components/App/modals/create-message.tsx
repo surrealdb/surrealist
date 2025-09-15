@@ -78,6 +78,10 @@ export function CreateMessageModal() {
 	});
 
 	useEffect(() => {
+		if (typesQuery.data && typesQuery.data.length === 1) {
+			setTicketType(typesQuery.data[0].id);
+		}
+
 		const ticket = typesQuery.data?.find((it) => it.id === ticketType);
 
 		if (ticket) {
@@ -102,31 +106,6 @@ export function CreateMessageModal() {
 				onSubmit={async () => {
 					if (!isPending && canSubmit) {
 						if (isTicket && ticketType) {
-							// const fileEntries = Object.entries(attributes).filter(
-							// 	([_, value]) => value instanceof File,
-							// );
-
-							// const fileAttributes = await Promise.all(
-							// 	fileEntries.map(async ([key, value]) => {
-							// 		const reader = new FileReader();
-
-							// 		return new Promise<{ [key: string]: any }>((resolve) => {
-							// 			reader.onload = () => {
-							// 				resolve({
-							// 					[key]: [
-							// 						{
-							// 							content_type: value.type,
-							// 							name: value.name,
-							// 							data: reader.result,
-							// 						},
-							// 					],
-							// 				});
-							// 			};
-							// 			reader.readAsDataURL(value);
-							// 		});
-							// 	}),
-							// );
-
 							const nonFileAttributes = Object.entries(attributes)
 								.filter(([_, value]) => !(value instanceof File))
 								.reduce(
@@ -143,9 +122,6 @@ export function CreateMessageModal() {
 								description: description,
 								attributes: {
 									...nonFileAttributes,
-									// ...Object.fromEntries(
-									// 	fileAttributes.map((attr) => Object.entries(attr)[0]),
-									// ),
 								},
 							});
 
@@ -182,10 +158,12 @@ export function CreateMessageModal() {
 						<Select
 							required
 							data={
-								organisations?.map((it) => ({
-									value: it.id,
-									label: it.name,
-								})) || []
+								organisations
+									?.filter((it) => ["admin", "owner"].includes(it.user_role))
+									?.map((it) => ({
+										value: it.id,
+										label: it.name,
+									})) || []
 							}
 							label="Organisation"
 							placeholder="Please select the associated organisation"
@@ -193,7 +171,7 @@ export function CreateMessageModal() {
 							onChange={setOrganisation}
 						/>
 					)}
-					{isTicket && (
+					{isTicket && typesQuery.data && typesQuery.data.length > 1 && (
 						<Select
 							data={
 								typesQuery.data?.map((it) => {
@@ -350,20 +328,6 @@ function TicketAttribute({ attr, value, onChange }: TicketAttributeProps) {
 			/>
 		);
 	}
-
-	// NOTE: Intercom doesn't support files via the API yet for creation. Hide for now.
-	// if (attr.data_type === "files") {
-	// 	return (
-	// 		<FileInput
-	// 			label={attr.name}
-	// 			description={attr.description}
-	// 			required={attr.required}
-	// 			value={value}
-	// 			multiple={attr.input_options?.allow_multiple_values ?? false}
-	// 			onChange={onChange}
-	// 		/>
-	// 	);
-	// }
 
 	return undefined;
 }

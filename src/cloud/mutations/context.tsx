@@ -90,6 +90,37 @@ export function useConversationReplyMutation(conversationId?: string) {
 }
 
 /**
+ * Conversation reopen mutation
+ */
+export function useConversationReopenMutation(conversationId?: string) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (message: string) => {
+			if (!conversationId) {
+				throw new Error("Conversation ID is required");
+			}
+
+			const result = await fetchContextAPI<IntercomConversation>(
+				`/cloud/conversations/${conversationId}/reopen`,
+				{
+					method: "POST",
+					body: JSON.stringify({
+						body: message,
+					}),
+				},
+			);
+
+			await client.invalidateQueries({
+				queryKey: ["cloud", "conversations", conversationId],
+			});
+
+			return result;
+		},
+	});
+}
+
+/**
  * Update a conversation's read state
  */
 export function useConversationStateMutation() {

@@ -1,6 +1,6 @@
 import { Avatar, Badge, Group, Stack, Text, UnstyledButton } from "@mantine/core";
 import surrealImg from "~/assets/images/surrealdb.png";
-import { IntercomUser } from "~/types";
+import { CloudOrganization, IntercomUser } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
 
 export interface ConversationPartAuthorProps {
@@ -15,27 +15,77 @@ export function ConversationPartAuthor({
 	children,
 }: ConversationPartAuthorProps) {
 	return (
+		<ConversationUser
+			name={user?.name ?? "SurrealDB Team"}
+			type={user?.type ?? "user"}
+			image={user?.avatar}
+			updated_at={updated_at}
+		>
+			{children}
+		</ConversationUser>
+	);
+}
+
+export interface ConversationOrganizationProps {
+	organization: CloudOrganization;
+	updated_at: number;
+	children?: React.ReactNode;
+}
+
+export function ConversationOrganization({
+	organization,
+	updated_at,
+	children,
+}: ConversationOrganizationProps) {
+	return (
+		<ConversationUser
+			name={organization.name}
+			type="organization"
+			updated_at={updated_at}
+		>
+			{children}
+		</ConversationUser>
+	);
+}
+
+export interface ConversationUserProps {
+	name: string;
+	type: "admin" | "user" | "bot" | "organization";
+	updated_at: number;
+	image?: string;
+	icon?: React.ReactNode;
+	children?: React.ReactNode;
+}
+
+export function ConversationUser({
+	name,
+	type,
+	image,
+	icon,
+	updated_at,
+	children,
+}: ConversationUserProps) {
+	return (
 		<Group
 			gap="xl"
 			wrap="nowrap"
 			align="start"
 		>
-			<Avatar
-				radius="md"
-				size={36}
-				name={user?.name ?? "SurrealDB Team"}
-				src={
-					user?.avatar ??
-					(!user || user?.type === "admin" || user.type === "bot"
-						? surrealImg
-						: undefined)
-				}
-				bg={!user || user.type === "admin" || user.type === "bot" ? "surreal.0" : undefined}
-				component={UnstyledButton}
-				style={{
-					cursor: "default",
-				}}
-			/>
+			{!icon && (
+				<Avatar
+					radius="md"
+					size={36}
+					name={name}
+					src={image ?? (type === "admin" || type === "bot" ? surrealImg : undefined)}
+					bg={type === "admin" || type === "bot" ? "surreal.0" : undefined}
+					component={UnstyledButton}
+					style={{
+						cursor: "default",
+					}}
+				/>
+			)}
+
+			{icon && icon}
 
 			<Stack>
 				<Stack gap={0}>
@@ -45,9 +95,18 @@ export function ConversationPartAuthor({
 							fz="lg"
 							fw={700}
 						>
-							{user?.name ?? "SurrealDB Team"}
+							{name}
 						</Text>
-						{user?.type === "admin" && (
+						{type === "organization" && (
+							<Badge
+								size="sm"
+								variant="light"
+								color="violet"
+							>
+								Org
+							</Badge>
+						)}
+						{type === "admin" && (
 							<Badge
 								size="sm"
 								variant="light"
@@ -56,11 +115,11 @@ export function ConversationPartAuthor({
 								Agent
 							</Badge>
 						)}
-						{user?.type === "bot" && (
+						{type === "bot" && (
 							<Badge
 								size="sm"
 								variant="light"
-								color="violet"
+								color="surreal"
 							>
 								Bot
 							</Badge>
