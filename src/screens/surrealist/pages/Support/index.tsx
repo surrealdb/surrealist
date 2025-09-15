@@ -10,7 +10,6 @@ import {
 	SimpleGrid,
 	Stack,
 	Text,
-	TextInput,
 } from "@mantine/core";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
@@ -28,7 +27,7 @@ import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { iconChat, iconPlus, iconSearch, iconTag } from "~/util/icons";
+import { iconChat, iconPlus, iconTag } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../Overview/content/cloud";
 import { ConversationCard } from "./ConversationCard";
@@ -65,16 +64,16 @@ export function SupportPage() {
 						ta="center"
 						fz={32}
 					>
-						Get help from SurrealDB
+						SurrealDB Help Center
 					</PrimaryTitle>
-					<TextInput
-						w="100%"
-						size="lg"
-						placeholder="Search for help"
-						leftSection={<Icon path={iconSearch} />}
-					/>
 
-					{isAuthenticated && chats && chats.length !== 0 && (
+					{isChatsLoading && (
+						<Center my="xl">
+							<Loader />
+						</Center>
+					)}
+
+					{isAuthenticated && chats && chats.length !== 0 && !isChatsLoading && (
 						<Paper p="xl">
 							<Group>
 								<Text
@@ -163,7 +162,7 @@ export function SupportPage() {
 					)}
 
 					{/* TODO: Check support plan */}
-					{isAuthenticated && (!chats || chats.length === 0) && (
+					{isAuthenticated && (!chats || chats.length === 0) && !isChatsLoading && (
 						<StartCloud
 							action="Submit a ticket"
 							image={chatImage}
@@ -183,7 +182,7 @@ export function SupportPage() {
 					)}
 
 					{/* TODO: Check support plan */}
-					{!isAuthenticated && (
+					{!isAuthenticated && !isChatsLoading && (
 						<StartCloud
 							action="Learn more"
 							image={chatImage}

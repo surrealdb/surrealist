@@ -51,7 +51,7 @@ const openReopenTicketModal = (id: string) => {
 	openModal({
 		withCloseButton: true,
 		modalId: "reopen-ticket",
-		title: <PrimaryTitle fz={18}>Reopen request</PrimaryTitle>,
+		title: <PrimaryTitle fz={18}>Reopen conversation</PrimaryTitle>,
 		children: <ReopenModalContent id={id} />,
 	});
 };
@@ -64,7 +64,7 @@ function ReopenModalContent({ id }: { id: string }) {
 	return (
 		<Stack gap="xl">
 			<Textarea
-				placeholder="What is your reason for reopening the ticket?"
+				placeholder="Please describe the reason for reopening the conversation"
 				minRows={4}
 				value={message}
 				onChange={setMessage}
@@ -674,17 +674,16 @@ export function ConversationPage({ id }: ConversationPageProps) {
 										mt="xl"
 									>
 										<Text fz="lg">
-											You cannot reply to this thread since the request was
-											closed
+											You cannot reply to this thread since the conversation
+											was closed
 										</Text>
 										<Button
-											size="xs"
 											variant="gradient"
 											onClick={() => {
 												openReopenTicketModal(conversation.id);
 											}}
 										>
-											Reopen
+											Reopen conversation
 										</Button>
 									</Stack>
 								)}
