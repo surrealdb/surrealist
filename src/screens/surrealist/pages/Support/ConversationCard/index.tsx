@@ -48,7 +48,9 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 					)}
 				</Group>
 				<Group gap="xs">
-					<Text c="surreal">{conversation.last_response_author?.name || "Unknown"}</Text>
+					<Text c={conversation.hasTicket ? "surreal" : "violet"}>
+						{conversation.last_response_author?.name || "Unknown"}
+					</Text>
 					<Text
 						c="slate.4"
 						fz={4}

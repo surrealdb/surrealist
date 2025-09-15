@@ -150,7 +150,6 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 				);
 			}
 
-			// Check if array contains objects with label/value structure
 			if (val.length > 0 && typeof val[0] === "object" && val[0] !== null) {
 				return (
 					<Group gap="xs">
@@ -161,7 +160,6 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 				);
 			}
 
-			// Handle simple arrays
 			return (
 				<Group gap="xs">
 					{val.map((item, index) => (
@@ -177,7 +175,6 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 			);
 		}
 
-		// Handle objects
 		if (typeof val === "object" && val !== null) {
 			if (val.content_type) {
 				return (
@@ -191,12 +188,10 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 				);
 			}
 
-			// Handle objects with value property
 			if (val.value !== undefined) {
 				return <Text>{String(val.value)}</Text>;
 			}
 
-			// Handle other object structures - display as formatted JSON
 			return (
 				<Text
 					component="pre"
