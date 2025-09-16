@@ -5,7 +5,8 @@ const NEWSFEED_BASE = "https://surrealdb.com";
 const CLOUD_AUTH_BASE = "https://auth.surrealdb.com";
 const CLOUD_API_BASE = "https://api.cloud.surrealdb.com/api/v1";
 const CLOUD_API_MGMT_BASE = "https://api.cloud.surrealdb.com/management/v1";
-const CLOUD_API_TICKETS_BASE = "https://api.tickets.surrealdb.com";
+const CLOUD_API_TICKETS_BASE =
+	"https://nlsmye6spqokxdxevwqramvqri0dtbto.lambda-url.us-east-1.on.aws";
 
 export function getCloudEndpoints() {
 	const { urlAuthBase, urlApiBase, urlApiMgmtBase, urlApiTicketsBase } =
