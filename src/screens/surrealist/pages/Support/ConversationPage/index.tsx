@@ -36,6 +36,7 @@ import { Spacer } from "~/components/Spacer";
 import { fileToBase64 } from "~/util/file";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
 import {
+	iconAccount,
 	iconArrowLeft,
 	iconBullhorn,
 	iconChat,
@@ -587,7 +588,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 														title="Assignee"
 														subtitle={conversation.assignee.name}
 														color="violet"
-														icon={iconSurreal}
+														icon={iconAccount}
 													/>
 												)}
 												<TicketData
