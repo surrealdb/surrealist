@@ -1,18 +1,31 @@
-import { Box, Button, Center, Group, Loader, Menu, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, Button, Center, Group, Loader, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useConversationsQuery } from "~/cloud/queries/context";
 import { AuthGuard } from "~/components/AuthGuard";
 import { Icon } from "~/components/Icon";
+import { ListMenu } from "~/components/ListMenu";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
+import { Pagination } from "~/components/Pagination";
+import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { iconArrowLeft, iconChat, iconPlus, iconTag } from "~/util/icons";
+import { SUPPORT_REQUEST_TYPES } from "~/constants";
+import { iconArrowLeft, iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ConversationCard } from "../ConversationCard";
 import classes from "../style.module.scss";
 
 export function RequestsPage() {
+	const pagination = usePagination();
 	const { data: requests, isLoading } = useConversationsQuery();
+
+	const startAt = (pagination.currentPage - 1) * pagination.pageSize;
+	const pageSlice = requests?.slice(startAt, startAt + pagination.pageSize) ?? [];
+
+	useEffect(() => {
+		pagination.setTotal(requests?.length || 0);
+	}, [pagination.setTotal, requests]);
 
 	return (
 		<AuthGuard>
@@ -67,7 +80,7 @@ export function RequestsPage() {
 						<Stack
 							px="xl"
 							mx="auto"
-							maw={1200}
+							maw={1000}
 							pb={68}
 						>
 							<Box>
@@ -86,64 +99,53 @@ export function RequestsPage() {
 										Support requests
 									</PrimaryTitle>
 									<Spacer />
-									<Menu>
-										<Menu.Target>
-											<Button
-												variant="gradient"
-												size="xs"
-												rightSection={<Icon path={iconPlus} />}
-											>
-												New request
-											</Button>
-										</Menu.Target>
-										<Menu.Dropdown>
-											<Menu.Item
-												leftSection={<Icon path={iconChat} />}
-												onClick={() =>
-													dispatchIntent("create-message", {
-														type: "conversation",
-													})
-												}
-											>
-												Conversation
-											</Menu.Item>
-											<Menu.Item
-												leftSection={<Icon path={iconTag} />}
-												onClick={() =>
-													dispatchIntent("create-message", {
-														type: "ticket",
-													})
-												}
-											>
-												Support ticket
-											</Menu.Item>
-										</Menu.Dropdown>
-									</Menu>
+
+									<ListMenu
+										data={SUPPORT_REQUEST_TYPES}
+										value={undefined}
+										onChange={(type) => {
+											dispatchIntent("create-message", { type });
+										}}
+									>
+										<Button
+											variant="gradient"
+											size="xs"
+											rightSection={<Icon path={iconPlus} />}
+										>
+											Raise new request
+										</Button>
+									</ListMenu>
 								</Group>
 							</Box>
 
-							<Stack
-								gap={5}
-								ml="-xs"
+							<Paper p="lg">
+								<Stack gap={5}>
+									{pageSlice
+										.sort((a, b) => b.updated_at - a.updated_at)
+										.map((request) => (
+											<Box
+												p="xs"
+												key={request.id}
+												style={{
+													cursor: "pointer",
+												}}
+												className={classes.messageItem}
+												onClick={() =>
+													navigate(`/support/conversations/${request.id}`)
+												}
+											>
+												<ConversationCard conversation={request} />
+											</Box>
+										))}
+								</Stack>
+							</Paper>
+
+							<Group
+								justify="center"
+								mt="xl"
 							>
-								{requests
-									.sort((a, b) => b.updated_at - a.updated_at)
-									.map((request) => (
-										<Box
-											p="xs"
-											key={request.id}
-											style={{
-												cursor: "pointer",
-											}}
-											className={classes.messageItem}
-											onClick={() =>
-												navigate(`/support/conversations/${request.id}`)
-											}
-										>
-											<ConversationCard conversation={request} />
-										</Box>
-									))}
-							</Stack>
+								<Pagination store={pagination} />
+							</Group>
 						</Stack>
 					</ScrollArea>
 				)}

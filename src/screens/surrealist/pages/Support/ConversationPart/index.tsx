@@ -4,7 +4,14 @@ import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { IntercomAttachment, IntercomConversation, IntercomConversationPart } from "~/types";
 import { formatFileSize, formatRelativeDate } from "~/util/helpers";
-import { iconFile } from "~/util/icons";
+import {
+	iconAccount,
+	iconClose,
+	iconFile,
+	iconPackageClosed,
+	iconPlay,
+	iconTextBox,
+} from "~/util/icons";
 import { ConversationPartAuthor } from "../ConversationPartAuthor";
 import styles from "./style.module.scss";
 
@@ -40,7 +47,7 @@ export function ConversationPartAttachment({ attachment }: { attachment: Interco
 				</ThemeIcon>
 				<Stack gap={0}>
 					<Text
-						fw={600}
+						fw={500}
 						fz="md"
 						maw="8rem"
 						truncate
@@ -96,15 +103,24 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 	) {
 		return (
 			<Group
-				justify="center"
 				w="100%"
 				gap={4}
 			>
+				<ThemeIcon
+					color="violet"
+					variant="light"
+					mr="sm"
+				>
+					<Icon
+						size="sm"
+						path={iconTextBox}
+					/>
+				</ThemeIcon>
 				<Text fz="lg">Conversation attributes updated by</Text>
 				<Text
 					fz="lg"
 					c="violet"
-					fw={600}
+					fw={500}
 				>
 					{part.author?.name ?? "Unknown"}
 				</Text>
@@ -136,15 +152,24 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 
 		return (
 			<Group
-				justify="center"
 				w="100%"
 				gap={4}
 			>
+				<ThemeIcon
+					color="violet"
+					variant="light"
+					mr="sm"
+				>
+					<Icon
+						size="sm"
+						path={iconPackageClosed}
+					/>
+				</ThemeIcon>
 				<Text fz="lg">Moved to</Text>
 				<Text
 					fz="lg"
-					fw={600}
-					c="violet"
+					fw={500}
+					c="bright"
 				>
 					{ticketPart.state.label}
 				</Text>
@@ -152,7 +177,7 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 				<Text
 					fz="lg"
 					c="violet"
-					fw={600}
+					fw={500}
 				>
 					{part.author?.name ?? "Unknown"}
 				</Text>
@@ -180,15 +205,24 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 
 		return (
 			<Group
-				justify="center"
 				w="100%"
 				gap={4}
 			>
+				<ThemeIcon
+					color="violet"
+					variant="light"
+					mr="sm"
+				>
+					<Icon
+						size="sm"
+						path={iconAccount}
+					/>
+				</ThemeIcon>
 				<Text fz="lg">{selfAssigned ? "Self-" : ""}Assigned to</Text>
 				<Text
 					fz="lg"
 					c="violet"
-					fw={600}
+					fw={500}
 				>
 					{part.assigned_to?.name}
 				</Text>
@@ -198,7 +232,7 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 						<Text
 							fz="lg"
 							c="violet"
-							fw={600}
+							fw={500}
 						>
 							{part.author?.name ?? "Unknown"}
 						</Text>
@@ -220,20 +254,30 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 		);
 	}
 	if (part.part_type === "open" || part.part_type === "close") {
-		const action = part.part_type === "open" ? "Open" : "Closed";
+		const isOpened = part.part_type === "open";
+		const action = isOpened ? "Open" : "Closed";
 
 		const content = (
 			<>
 				<Group
-					justify="center"
 					w="100%"
 					gap={4}
 				>
+					<ThemeIcon
+						color="violet"
+						variant="light"
+						mr="sm"
+					>
+						<Icon
+							size="sm"
+							path={isOpened ? iconPlay : iconClose}
+						/>
+					</ThemeIcon>
 					<Text fz="lg">Marked as</Text>
 					<Text
 						fz="lg"
-						c="violet"
-						fw={600}
+						c="bright"
+						fw={500}
 					>
 						{action}
 					</Text>
@@ -241,7 +285,7 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 					<Text
 						fz="lg"
 						c="violet"
-						fw={600}
+						fw={500}
 					>
 						{part.author?.name ?? "Unknown"}
 					</Text>

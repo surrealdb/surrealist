@@ -39,13 +39,43 @@ import {
 	iconArrowLeft,
 	iconBullhorn,
 	iconChat,
+	iconCheck,
 	iconClock,
 	iconFile,
+	iconPause,
 	iconPlus,
+	iconRefresh,
 	iconSurreal,
 } from "~/util/icons";
 import { ConversationPart } from "../ConversationPart";
 import classes from "../style.module.scss";
+
+const SUPPORT_STATES = [
+	{
+		label: "Resolved",
+		value: "resolved",
+		icon: iconCheck,
+		color: "green",
+	},
+	{
+		label: "Submitted",
+		value: "submitted",
+		icon: iconChat,
+		color: "blue",
+	},
+	{
+		label: "In progress",
+		value: "in_progress",
+		icon: iconRefresh,
+		color: "blue",
+	},
+	{
+		label: "Waiting on you",
+		value: "waiting_on_customer",
+		icon: iconPause,
+		color: "orange",
+	},
+];
 
 const openReopenTicketModal = (id: string) => {
 	openModal({
@@ -288,6 +318,10 @@ export function ConversationPage({ id }: ConversationPageProps) {
 
 	const isClosed = conversation?.state === "closed" || !conversation?.open;
 
+	const state = SUPPORT_STATES.find(
+		(state) => state.value === conversation?.ticketData?.state.category,
+	);
+
 	const sendReply = async () => {
 		const attachment_files = await Promise.all(
 			attachedFiles.map(async (file) => {
@@ -392,7 +426,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 						<Stack
 							px="xl"
 							mx="auto"
-							maw={1200}
+							maw={1000}
 							pb={68}
 						>
 							<Box>
@@ -405,11 +439,11 @@ export function ConversationPage({ id }: ConversationPageProps) {
 									]}
 								/>
 								<Group mt="sm">
-									<Stack gap={0}>
+									<Group>
 										<PrimaryTitle fz={32}>
 											{title ?? "Unnamed Conversation"}
 										</PrimaryTitle>
-									</Stack>
+									</Group>
 
 									<Spacer />
 
@@ -531,11 +565,12 @@ export function ConversationPage({ id }: ConversationPageProps) {
 												<TicketData
 													title="State"
 													subtitle={
+														state?.label ??
 														conversation.ticketData?.state.label ??
 														"Unknown"
 													}
-													color="blue"
-													icon={iconChat}
+													color={state?.color ?? "white"}
+													icon={state?.icon ?? iconChat}
 												/>
 												<Divider />
 												<TicketData
@@ -551,7 +586,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 													<TicketData
 														title="Assignee"
 														subtitle={conversation.assignee.name}
-														color="surreal"
+														color="violet"
 														icon={iconSurreal}
 													/>
 												)}
@@ -560,7 +595,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 													subtitle={formatRelativeDate(
 														conversation.updated_at * 1000,
 													)}
-													color="green"
+													color="violet"
 													icon={iconClock}
 												/>
 											</Stack>
@@ -668,6 +703,10 @@ export function ConversationPage({ id }: ConversationPageProps) {
 										align="center"
 										mt="xl"
 									>
+										<Divider
+											w="100%"
+											mb="md"
+										/>
 										<Text fz="lg">
 											You cannot reply to this thread since the conversation
 											was closed

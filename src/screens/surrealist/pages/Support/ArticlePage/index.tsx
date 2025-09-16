@@ -84,7 +84,7 @@ export function ArticlePage({ id }: ArticlePageProps) {
 					<Stack
 						px="xl"
 						mx="auto"
-						maw={1200}
+						maw={1000}
 						pb={68}
 					>
 						<Box>
@@ -169,6 +169,7 @@ export function ArticlePage({ id }: ArticlePageProps) {
 							<Spacer />
 							<Button
 								variant="light"
+								color="violet"
 								rightSection={<Icon path={iconOpen} />}
 								onClick={() => adapter.openUrl(article.url)}
 							>

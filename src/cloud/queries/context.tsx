@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
 import {
 	IntercomConversation,
@@ -112,8 +112,9 @@ export function useSupportArticleQuery(articleId?: string) {
  */
 export function useSearchHelpArticlesQuery(query: string) {
 	return useQuery({
-		queryKey: ["cloud", "support_search"],
+		queryKey: ["cloud", "support_search", query],
 		enabled: !!query && query.length > 0,
+		placeholderData: keepPreviousData,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomSupportArticle[]>(`/help/articles/search`, {
 				method: "POST",

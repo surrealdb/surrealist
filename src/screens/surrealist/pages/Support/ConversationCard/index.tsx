@@ -16,7 +16,7 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 				<ThemeIcon
 					size={40}
 					variant="light"
-					color="surreal"
+					color="orange"
 				>
 					<Icon path={iconTag} />
 				</ThemeIcon>
@@ -48,7 +48,7 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 					)}
 				</Group>
 				<Group gap="xs">
-					<Text c={conversation.hasTicket ? "surreal" : "violet"}>
+					<Text c={conversation.hasTicket ? "orange" : "violet"}>
 						{conversation.last_response_author?.name || "Unknown"}
 					</Text>
 					<Text

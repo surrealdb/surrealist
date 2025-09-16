@@ -101,7 +101,7 @@ export function ConversationUser({
 							<Badge
 								size="sm"
 								variant="light"
-								color="violet"
+								color="surreal"
 							>
 								Org
 							</Badge>
@@ -110,7 +110,7 @@ export function ConversationUser({
 							<Badge
 								size="sm"
 								variant="light"
-								color="surreal"
+								color="violet"
 							>
 								Agent
 							</Badge>
@@ -119,7 +119,7 @@ export function ConversationUser({
 							<Badge
 								size="sm"
 								variant="light"
-								color="surreal"
+								color="violet"
 							>
 								Bot
 							</Badge>

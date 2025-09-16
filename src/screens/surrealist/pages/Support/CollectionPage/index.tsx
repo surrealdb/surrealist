@@ -67,7 +67,7 @@ export function CollectionPage({ id }: CollectionPageProps) {
 					<Stack
 						px="xl"
 						mx="auto"
-						maw={1200}
+						maw={1000}
 						pb={68}
 					>
 						<Box>

@@ -4,13 +4,15 @@ import {
 	Center,
 	Group,
 	Loader,
-	Menu,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
 	Stack,
 	Text,
+	TextInput,
 } from "@mantine/core";
+import { useDebouncedState } from "@mantine/hooks";
+import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import chatImage from "~/assets/images/icons/chat.webp";
@@ -24,10 +26,12 @@ import universityImage from "~/assets/images/icons/university.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
 import { Icon } from "~/components/Icon";
+import { ListMenu } from "~/components/ListMenu";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { SUPPORT_REQUEST_TYPES } from "~/constants";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { iconChat, iconPlus, iconTag } from "~/util/icons";
+import { iconPlus, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../Overview/content/cloud";
 import { ConversationCard } from "./ConversationCard";
@@ -39,6 +43,14 @@ export function SupportPage() {
 	const isAuthenticated = useIsAuthenticated();
 	const { data: collections, isLoading } = useSupportCollectionsQuery();
 	const { data: chats, isLoading: isChatsLoading } = useConversationsQuery();
+
+	const [search, setSearch] = useDebouncedState("", 1000);
+
+	useEffect(() => {
+		if (search) {
+			dispatchIntent("open-help-center", { search });
+		}
+	}, [search]);
 
 	return (
 		<Box
@@ -67,6 +79,14 @@ export function SupportPage() {
 						SurrealDB Help Center
 					</PrimaryTitle>
 
+					<TextInput
+						placeholder="Search for a collection or article"
+						leftSection={<Icon path={iconSearch} />}
+						flex={1}
+						size="lg"
+						onChange={(e) => setSearch(e.target.value)}
+					/>
+
 					{isChatsLoading && (
 						<Center my="xl">
 							<Loader />
@@ -93,37 +113,21 @@ export function SupportPage() {
 								>
 									View All
 								</Button>
-								<Menu>
-									<Menu.Target>
-										<Button
-											variant="gradient"
-											size="xs"
-											rightSection={<Icon path={iconPlus} />}
-										>
-											New request
-										</Button>
-									</Menu.Target>
-									<Menu.Dropdown>
-										<Menu.Item
-											leftSection={<Icon path={iconChat} />}
-											onClick={() =>
-												dispatchIntent("create-message", {
-													type: "conversation",
-												})
-											}
-										>
-											Conversation
-										</Menu.Item>
-										<Menu.Item
-											leftSection={<Icon path={iconTag} />}
-											onClick={() =>
-												dispatchIntent("create-message", { type: "ticket" })
-											}
-										>
-											Support ticket
-										</Menu.Item>
-									</Menu.Dropdown>
-								</Menu>
+								<ListMenu
+									data={SUPPORT_REQUEST_TYPES}
+									value={undefined}
+									onChange={(type) => {
+										dispatchIntent("create-message", { type });
+									}}
+								>
+									<Button
+										variant="gradient"
+										size="xs"
+										rightSection={<Icon path={iconPlus} />}
+									>
+										Raise new request
+									</Button>
+								</ListMenu>
 							</Group>
 
 							<Stack

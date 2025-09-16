@@ -27,6 +27,7 @@ export type Platform = "darwin" | "windows" | "linux";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type ResultFormat = "json" | "sql";
 export type ResultMode = "table" | "single" | "combined" | "graph" | "live";
+export type SupportRequestType = "conversation" | "ticket";
 export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 export type SchemaMode = "schemaless" | "schemafull";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";

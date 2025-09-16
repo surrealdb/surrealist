@@ -27,6 +27,7 @@ import type {
 	SchemaMode,
 	Selectable,
 	SidebarMode,
+	SupportRequestType,
 	SyntaxTheme,
 	TableVariant,
 	ViewPage,
@@ -48,6 +49,7 @@ import {
 	iconAuth,
 	iconBraces,
 	iconChart,
+	iconChat,
 	iconChevronUp,
 	iconCombined,
 	iconDatabase,
@@ -67,6 +69,7 @@ import {
 	iconRelation,
 	iconSearch,
 	iconTable,
+	iconTag,
 	iconTune,
 	iconVariable,
 	iconWarning,
@@ -142,6 +145,21 @@ export const RESULT_MODES: Listable<ResultMode>[] = [
 		value: "live",
 		icon: iconLive,
 		description: "Subscribe to live query results",
+	},
+];
+
+export const SUPPORT_REQUEST_TYPES: Listable<SupportRequestType>[] = [
+	{
+		label: "Conversation",
+		value: "conversation",
+		icon: iconChat,
+		description: "Raise a question with the SurrealDB team",
+	},
+	{
+		label: "Ticket",
+		value: "ticket",
+		icon: iconTag,
+		description: "Create a support request (requires support plan)",
 	},
 ];
 
