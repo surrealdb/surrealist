@@ -125,7 +125,11 @@ export function isDistributedPlan(plan: InstancePlan): boolean {
 	return plan === "scale" || plan === "enterprise";
 }
 
-export function hasOrganizationRole(organisation: CloudOrganization, role: string) {
+export function hasOrganizationRole(organisation: CloudOrganization | undefined, role: string) {
+	if (!organisation) {
+		return false;
+	}
+
 	const currentRole = organisation.user_role;
 
 	if (!currentRole) {

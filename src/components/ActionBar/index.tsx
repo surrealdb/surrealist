@@ -5,7 +5,6 @@ import { CloudAccount } from "./account";
 import { NewsFeed } from "./newsfeed";
 import { DatabaseServing } from "./serving";
 import { SidekickAction } from "./sidekick";
-import { HelpAndSupport } from "./support";
 
 export function ActionBar() {
 	const [flags] = useFeatureFlags();
@@ -18,8 +17,6 @@ export function ActionBar() {
 			{adapter.isServeSupported && <DatabaseServing />}
 
 			{flags.newsfeed && <NewsFeed />}
-
-			<HelpAndSupport />
 
 			{showCloud && flags.cloud_access && <CloudAccount />}
 		</>

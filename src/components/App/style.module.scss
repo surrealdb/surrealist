@@ -122,7 +122,9 @@
 	transform: translateY(1px);
 }
 
+.messages-scroller :global(.mantine-ScrollArea-viewport)>div,
 .docs-scroller :global(.mantine-ScrollArea-viewport)>div,
+.help-scroller :global(.mantine-ScrollArea-viewport)>div,
 .article-drawer__scroll :global(.mantine-ScrollArea-viewport)>div {
 	display: unset !important;
 }

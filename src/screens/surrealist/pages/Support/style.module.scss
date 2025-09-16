@@ -1,3 +1,16 @@
 .scroll-area :global(.mantine-ScrollArea-viewport)>div {
 	height: 100%;
 }
+
+.message-item:hover {
+	background-color: var(--mantine-color-slate-7);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
+	}
+}
+
+.intercom-container img {
+	max-width: 100%;
+	border-radius: 12px;
+}
