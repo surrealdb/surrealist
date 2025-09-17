@@ -43,112 +43,108 @@ export function RequestsPage() {
 					</Center>
 				)}
 
-				{!isLoading && (!requests || requests.length === 0) && (
-					<Center
-						w="100%"
+				<ScrollArea
+					pos="absolute"
+					scrollbars="y"
+					type="scroll"
+					inset={0}
+					className={classes.scrollArea}
+					mt={18}
+				>
+					<Stack
+						px="xl"
 						h="100%"
-						flex={1}
+						mx="auto"
+						maw={1000}
+						pb={68}
 					>
-						<Stack
-							gap={0}
-							align="center"
-						>
-							<PrimaryTitle>No requests found</PrimaryTitle>
-							<Text>You have no current or previous support requests</Text>
-							<Button
-								mt="xl"
-								size="sm"
-								variant="gradient"
-								leftSection={<Icon path={iconArrowLeft} />}
-								onClick={() => navigate("/support")}
-							>
-								Back to Support
-							</Button>
-						</Stack>
-					</Center>
-				)}
+						<Box>
+							<PageBreadcrumbs
+								items={[
+									{ label: "Surrealist", href: "/overview" },
+									{ label: "Support", href: "/support" },
+									{ label: "Requests" },
+								]}
+							/>
+							<Group>
+								<PrimaryTitle
+									fz={32}
+									mt="sm"
+								>
+									Support requests
+								</PrimaryTitle>
+								<Spacer />
 
-				{!isLoading && requests && requests.length > 0 && (
-					<ScrollArea
-						pos="absolute"
-						scrollbars="y"
-						type="scroll"
-						inset={0}
-						className={classes.scrollArea}
-						mt={18}
-					>
-						<Stack
-							px="xl"
-							mx="auto"
-							maw={1000}
-							pb={68}
-						>
-							<Box>
-								<PageBreadcrumbs
-									items={[
-										{ label: "Surrealist", href: "/overview" },
-										{ label: "Support", href: "/support" },
-										{ label: "Requests" },
-									]}
-								/>
-								<Group>
-									<PrimaryTitle
-										fz={32}
-										mt="sm"
+								<ListMenu
+									data={SUPPORT_REQUEST_TYPES}
+									value={undefined}
+									onChange={(type) => {
+										dispatchIntent("create-message", { type });
+									}}
+								>
+									<Button
+										variant="gradient"
+										size="xs"
+										rightSection={<Icon path={iconPlus} />}
 									>
-										Support requests
-									</PrimaryTitle>
-									<Spacer />
-
-									<ListMenu
-										data={SUPPORT_REQUEST_TYPES}
-										value={undefined}
-										onChange={(type) => {
-											dispatchIntent("create-message", { type });
-										}}
-									>
-										<Button
-											variant="gradient"
-											size="xs"
-											rightSection={<Icon path={iconPlus} />}
-										>
-											Raise new request
-										</Button>
-									</ListMenu>
-								</Group>
-							</Box>
-
-							<Paper p="lg">
-								<Stack gap={5}>
-									{pageSlice
-										.sort((a, b) => b.updated_at - a.updated_at)
-										.map((request) => (
-											<Box
-												p="xs"
-												key={request.id}
-												style={{
-													cursor: "pointer",
-												}}
-												className={classes.messageItem}
-												onClick={() =>
-													navigate(`/support/conversations/${request.id}`)
-												}
-											>
-												<ConversationCard conversation={request} />
-											</Box>
-										))}
-								</Stack>
-							</Paper>
-
-							<Group
-								justify="center"
-								mt="xl"
-							>
-								<Pagination store={pagination} />
+										Raise new request
+									</Button>
+								</ListMenu>
 							</Group>
-						</Stack>
-					</ScrollArea>
-				)}
+						</Box>
+
+						{!isLoading && requests && requests.length > 0 && (
+							<>
+								<Paper p="lg">
+									<Stack gap={5}>
+										{pageSlice
+											.sort((a, b) => b.updated_at - a.updated_at)
+											.map((request) => (
+												<Box
+													p="xs"
+													key={request.id}
+													style={{
+														cursor: "pointer",
+													}}
+													className={classes.messageItem}
+													onClick={() =>
+														navigate(
+															`/support/conversations/${request.id}`,
+														)
+													}
+												>
+													<ConversationCard conversation={request} />
+												</Box>
+											))}
+									</Stack>
+								</Paper>
+
+								<Group
+									justify="center"
+									mt="xl"
+								>
+									<Pagination store={pagination} />
+								</Group>
+							</>
+						)}
+
+						{!isLoading && (!requests || requests.length === 0) && (
+							<Center
+								w="100%"
+								h="100%"
+								flex={1}
+							>
+								<Stack
+									gap={0}
+									align="center"
+								>
+									<PrimaryTitle>No requests found</PrimaryTitle>
+									<Text>You have no current or previous support requests</Text>
+								</Stack>
+							</Center>
+						)}
+					</Stack>
+				</ScrollArea>
 			</Box>
 		</AuthGuard>
 	);
