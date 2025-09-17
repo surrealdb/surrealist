@@ -884,7 +884,6 @@ export interface IntercomTicketPart {
 	created_at: number;
 	updated_at: number;
 	attachments: any[];
-	assigned_to?: IntercomUser;
 	body?: string;
 	author?: IntercomUser;
 }
@@ -898,7 +897,6 @@ export interface IntercomTicket {
 	created_at: number;
 	updated_at: number;
 	contacts: IntercomContact[];
-	assignee?: IntercomUser;
 	parts: IntercomTicketPart[];
 	open: boolean;
 	attributes: Record<string, any>;
@@ -944,13 +942,6 @@ export interface IntercomAttachment {
 	height: number;
 }
 
-export interface IntercomConversationAssignment {
-	type: "admin" | "team";
-	id: string;
-	name: string;
-	avatar?: string;
-}
-
 export interface IntercomConversationPart {
 	id: string;
 	part_type: string;
@@ -958,7 +949,6 @@ export interface IntercomConversationPart {
 	created_at: number;
 	updated_at: number;
 	attachments?: IntercomAttachment[];
-	assigned_to: IntercomConversationAssignment;
 	state: IntercomConversationStateId;
 	author: IntercomUser;
 }
@@ -971,7 +961,6 @@ export interface IntercomConversation {
 	created_at: number;
 	updated_at: number;
 	contacts: IntercomContact[];
-	assignee: IntercomUser;
 	last_response_author: IntercomUser;
 	parts: IntercomConversationPart[];
 	initial_part: IntercomConversationPart;

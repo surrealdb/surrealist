@@ -36,7 +36,6 @@ import { Spacer } from "~/components/Spacer";
 import { fileToBase64 } from "~/util/file";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
 import {
-	iconAccount,
 	iconArrowLeft,
 	iconBullhorn,
 	iconChat,
@@ -46,7 +45,6 @@ import {
 	iconPause,
 	iconPlus,
 	iconRefresh,
-	iconSurreal,
 } from "~/util/icons";
 import { ConversationPart } from "../ConversationPart";
 import classes from "../style.module.scss";
@@ -583,14 +581,6 @@ export function ConversationPage({ id }: ConversationPageProps) {
 													color="violet"
 													icon={iconBullhorn}
 												/>
-												{conversation.assignee && (
-													<TicketData
-														title="Assignee"
-														subtitle={conversation.assignee.name}
-														color="violet"
-														icon={iconAccount}
-													/>
-												)}
 												<TicketData
 													title="Last updated"
 													subtitle={formatRelativeDate(

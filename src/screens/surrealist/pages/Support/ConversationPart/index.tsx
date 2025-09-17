@@ -4,14 +4,7 @@ import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { IntercomAttachment, IntercomConversation, IntercomConversationPart } from "~/types";
 import { formatFileSize, formatRelativeDate } from "~/util/helpers";
-import {
-	iconAccount,
-	iconClose,
-	iconFile,
-	iconPackageClosed,
-	iconPlay,
-	iconTextBox,
-} from "~/util/icons";
+import { iconClose, iconFile, iconPackageClosed, iconPlay } from "~/util/icons";
 import { ConversationPartAuthor } from "../ConversationPartAuthor";
 import styles from "./style.module.scss";
 
@@ -98,49 +91,6 @@ export function ConversationPartBody({ part }: ConversationPartProps) {
 
 export function ConversationPart({ conversation, part, initial }: ConversationPartProps) {
 	if (
-		part.part_type === "conversation_attribute_updated_by_admin" ||
-		part.part_type === "conversation_attribute_updated_by_user"
-	) {
-		return (
-			<Group
-				w="100%"
-				gap={4}
-			>
-				<ThemeIcon
-					color="violet"
-					variant="light"
-					mr="sm"
-				>
-					<Icon
-						size="sm"
-						path={iconTextBox}
-					/>
-				</ThemeIcon>
-				<Text fz="lg">Conversation attributes updated by</Text>
-				<Text
-					fz="lg"
-					c="violet"
-					fw={500}
-				>
-					{part.author?.name ?? "Unknown"}
-				</Text>
-				<Text
-					fz="lg"
-					c="slate.4"
-				>
-					&bull;
-				</Text>
-				<Text
-					fz="md"
-					c="slate.4"
-				>
-					{formatRelativeDate(part.updated_at * 1000)}
-				</Text>
-			</Group>
-		);
-	}
-
-	if (
 		part.part_type === "ticket_state_updated_by_admin" ||
 		part.part_type === "ticket_state_updated_by_user"
 	) {
@@ -176,7 +126,7 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 				<Text fz="lg">by</Text>
 				<Text
 					fz="lg"
-					c="violet"
+					c={part.author.type === "user" ? "bright" : "violet"}
 					fw={500}
 				>
 					{part.author?.name ?? "Unknown"}
@@ -196,63 +146,7 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 			</Group>
 		);
 	}
-	if (part.part_type === "assignment" || part.part_type === "bulk_reassignment") {
-		if (part.assigned_to === null) {
-			return undefined;
-		}
 
-		const selfAssigned = part.assigned_to.id === part.author.id;
-
-		return (
-			<Group
-				w="100%"
-				gap={4}
-			>
-				<ThemeIcon
-					color="violet"
-					variant="light"
-					mr="sm"
-				>
-					<Icon
-						size="sm"
-						path={iconAccount}
-					/>
-				</ThemeIcon>
-				<Text fz="lg">{selfAssigned ? "Self-" : ""}Assigned to</Text>
-				<Text
-					fz="lg"
-					c="violet"
-					fw={500}
-				>
-					{part.assigned_to?.name}
-				</Text>
-				{!selfAssigned && (
-					<>
-						<Text fz="lg">by</Text>
-						<Text
-							fz="lg"
-							c="violet"
-							fw={500}
-						>
-							{part.author?.name ?? "Unknown"}
-						</Text>
-					</>
-				)}
-				<Text
-					fz="lg"
-					c="slate.4"
-				>
-					&bull;
-				</Text>
-				<Text
-					fz="md"
-					c="slate.4"
-				>
-					{formatRelativeDate(part.updated_at * 1000)}
-				</Text>
-			</Group>
-		);
-	}
 	if (part.part_type === "open" || part.part_type === "close") {
 		const isOpened = part.part_type === "open";
 		const action = isOpened ? "Open" : "Closed";
@@ -284,7 +178,7 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 					<Text fz="lg">by</Text>
 					<Text
 						fz="lg"
-						c="violet"
+						c={part.author.type === "user" ? "bright" : "violet"}
 						fw={500}
 					>
 						{part.author?.name ?? "Unknown"}
