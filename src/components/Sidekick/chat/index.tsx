@@ -323,6 +323,15 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 						</ActionIcon>
 					</Group>
 				</Paper>
+				<Text
+					opacity={0.8}
+					fz="sm"
+					mt="xs"
+					px="xs"
+				>
+					You are chatting with an AI assistant, responses may be inaccurate. Refrain from
+					submitting sensitive data.
+				</Text>
 			</Box>
 		</>
 	);
