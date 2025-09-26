@@ -378,6 +378,11 @@ export const JSON_FILTER = {
 	extensions: ["json"],
 };
 
+export const CSV_FILTER = {
+	name: "CSV File",
+	extensions: ["csv"],
+};
+
 export const ORIENTATIONS: Selectable<Orientation>[] = [
 	{ label: "Horizontal", value: "horizontal" },
 	{ label: "Vertical", value: "vertical" },
