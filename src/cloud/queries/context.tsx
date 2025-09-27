@@ -7,6 +7,7 @@ import {
 	IntercomSupportCollectionShallow,
 	IntercomTicketType,
 } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
 import { fetchContextAPI } from "../api/context";
 
 /**
@@ -14,10 +15,11 @@ import { fetchContextAPI } from "../api/context";
  */
 export function useConversationsQuery() {
 	const authState = useCloudStore((state) => state.authState);
+	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
 
 	return useQuery({
 		queryKey: ["cloud", "conversations"],
-		enabled: authState === "authenticated",
+		enabled: authState === "authenticated" && supportTicketsEnabled,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation[]>(`/cloud/conversations`);
 		},
@@ -29,10 +31,11 @@ export function useConversationsQuery() {
  */
 export function useCloudTicketTypesQuery() {
 	const authState = useCloudStore((state) => state.authState);
+	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
 
 	return useQuery({
 		queryKey: ["cloud", "ticket_types"],
-		enabled: authState === "authenticated",
+		enabled: authState === "authenticated" && supportTicketsEnabled,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomTicketType[]>(`/cloud/tickets/types`);
 		},
@@ -44,10 +47,11 @@ export function useCloudTicketTypesQuery() {
  */
 export function useCloudConversationQuery(conversationId?: string) {
 	const authState = useCloudStore((state) => state.authState);
+	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
 
 	return useQuery({
 		queryKey: ["cloud", "conversations", conversationId],
-		enabled: !!conversationId && authState === "authenticated",
+		enabled: !!conversationId && authState === "authenticated" && supportTicketsEnabled,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation>(`/cloud/conversations/${conversationId}`);
 		},
@@ -59,10 +63,11 @@ export function useCloudConversationQuery(conversationId?: string) {
  */
 export function useCloudUnreadConversationsQuery() {
 	const authState = useCloudStore((state) => state.authState);
+	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
 
 	return useQuery({
 		queryKey: ["cloud", "unread_conversations"],
-		enabled: authState === "authenticated",
+		enabled: authState === "authenticated" && supportTicketsEnabled,
 		queryFn: async () => {
 			return fetchContextAPI<boolean>(`/cloud/conversations/has_unread`);
 		},
