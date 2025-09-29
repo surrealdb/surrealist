@@ -11,11 +11,11 @@ import { iconCheck } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 export function DeploymentSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const versions = useAvailableInstanceVersions();
-	const regions = useCloudStore((s) => s.regions);
+	const allRegions = useCloudStore((s) => s.regions);
 	const regionSet = new Set(organisation?.plan.regions ?? []);
-	const supportedRegions = regions.filter((region) => regionSet.has(region.slug));
+	const supportedRegions = allRegions.filter((region) => regionSet.has(region.slug));
 
-	const regionList = regions.map((region) => ({
+	const regionList = supportedRegions.map((region) => ({
 		value: region.slug,
 		label: region.description,
 	}));
