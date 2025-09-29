@@ -27,6 +27,7 @@ export type Platform = "darwin" | "windows" | "linux";
 export type Protocol = "http" | "https" | "ws" | "wss" | "mem" | "indxdb";
 export type ResultFormat = "json" | "sql";
 export type ResultMode = "table" | "single" | "combined" | "graph" | "live";
+export type SupportRequestType = "conversation" | "ticket";
 export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 export type SchemaMode = "schemaless" | "schemafull";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
@@ -45,6 +46,7 @@ export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
+export type IntercomConversationStateId = "open" | "closed" | "snoozed";
 export type OrganizableItemType = "folder" | "query";
 
 export type InstanceState =
@@ -64,13 +66,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage =
-	| "/overview"
-	| "/signin"
-	| "/organisations"
-	| "/support"
-	| "/referrals"
-	| "/mini/new";
+export type GlobalPage = "/overview" | "/signin" | "/organisations" | "/referrals" | "/mini/new";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -242,6 +238,7 @@ export interface SurrealistCloudSettings {
 	urlApiMgmtBase: string;
 	urlAuthBase: string;
 	urlNewsfeedBase: string;
+	urlApiTicketsBase: string;
 }
 
 export interface SurrealistGtmSettings {
@@ -840,6 +837,179 @@ export interface CloudDeployConfig {
 	startingData: StartingDataDetails;
 	storageCategory: StorageCategory;
 	storageAmount: number;
+}
+
+export interface IntercomTicketTypeMinimal {
+	id: string;
+	name: string;
+}
+
+export interface IntercomTicketType extends IntercomTicketTypeMinimal {
+	description: string;
+	attributes: IntercomTicketTypeAttribute[];
+}
+
+export interface IntercomTicketTypeAttributeListOption {
+	label: string;
+	archived: boolean;
+	id: string;
+	description?: string;
+}
+
+export interface IntercomTicketTypeAttribute {
+	id: string;
+	name: string;
+	description?: string;
+	order: number;
+	data_type: string;
+	input_options?: {
+		list_options?: IntercomTicketTypeAttributeListOption[];
+		multiline?: boolean;
+		allow_multiple_values?: boolean;
+	};
+	required: boolean;
+	visible_on_create: boolean;
+}
+
+export interface IntercomContact {
+	id: string;
+	email: string;
+	name: string;
+	avatar?: string;
+}
+
+export interface IntercomUser {
+	type: "admin" | "user" | "bot";
+	id: string;
+	name: string;
+	avatar?: string;
+}
+
+export interface IntercomTicketState {
+	id: string;
+	category: string;
+	label: string;
+}
+
+export interface IntercomTicketPart {
+	id: string;
+	part_type: string;
+	state: IntercomTicketState;
+	previous_ticket_state: string;
+	created_at: number;
+	updated_at: number;
+	attachments: any[];
+	body?: string;
+	author?: IntercomUser;
+}
+
+export interface IntercomTicket {
+	id: string;
+	title: string;
+	description: string;
+	state: IntercomTicketState;
+	type: IntercomTicketTypeMinimal;
+	created_at: number;
+	updated_at: number;
+	contacts: IntercomContact[];
+	parts: IntercomTicketPart[];
+	open: boolean;
+	attributes: Record<string, any>;
+}
+
+export interface IntercomTicketCreateRequest {
+	type: number;
+	name: string;
+	description: string;
+	attributes: Record<string, any>;
+}
+
+export interface IntercomConversationCreateRequest {
+	body: string;
+	subject: string;
+}
+
+export interface IntercomConversationReplyRequest {
+	body: string;
+	attachment_files?: {
+		content_type: string;
+		data: string;
+		name: string;
+	}[];
+	reply_options?: {
+		text: string;
+		uuid: string;
+	}[];
+}
+
+export interface IntercomConversationStateRequest {
+	conversationId: string;
+	state: "read" | "unread";
+}
+
+export interface IntercomAttachment {
+	type: string;
+	name: string;
+	url: string;
+	content_type: string;
+	filesize: number;
+	width: number;
+	height: number;
+}
+
+export interface IntercomConversationPart {
+	id: string;
+	part_type: string;
+	body: string;
+	created_at: number;
+	updated_at: number;
+	attachments?: IntercomAttachment[];
+	state: IntercomConversationStateId;
+	author: IntercomUser;
+}
+
+export interface IntercomConversation {
+	id: string;
+	title: string;
+	description: string;
+	state: IntercomConversationStateId;
+	created_at: number;
+	updated_at: number;
+	contacts: IntercomContact[];
+	last_response_author: IntercomUser;
+	parts: IntercomConversationPart[];
+	initial_part: IntercomConversationPart;
+	open: boolean;
+	read: boolean;
+	priority: boolean;
+	hasTicket: boolean;
+	ticketData?: IntercomTicket;
+}
+
+export interface IntercomSupportArticle {
+	id: string;
+	title: string;
+	description: string;
+	body: string;
+	author: IntercomUser;
+	created_at: number;
+	updated_at: number;
+	url: string;
+	collection?: IntercomSupportCollectionShallow;
+}
+
+export interface IntercomSupportCollectionShallow {
+	id: string;
+	name: string;
+	description: string;
+	icon: string;
+	url: string;
+	image?: string;
+	order: number;
+}
+
+export interface IntercomSupportCollection extends IntercomSupportCollectionShallow {
+	articles: IntercomSupportArticle[];
 }
 
 export interface AppMenu {

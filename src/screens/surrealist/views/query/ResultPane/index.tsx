@@ -1,15 +1,16 @@
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 import { Button, Center, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import dayjs from "dayjs";
 import { unparse } from "papaparse";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
-import { isMini } from "~/adapter";
+import { adapter, isMini } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
-import { NONE_RESULT_MODES, RESULT_FORMATS, RESULT_MODES } from "~/constants";
+import { CSV_FILTER, NONE_RESULT_MODES, RESULT_FORMATS, RESULT_MODES } from "~/constants";
 import { executeEditorQuery } from "~/editor/query";
 import { useSetting } from "~/hooks/config";
 import { useConnectionAndView } from "~/hooks/routing";
@@ -28,6 +29,8 @@ import type {
 	ResultFormat,
 	ResultMode,
 } from "~/types";
+import { tagEvent } from "~/util/analytics";
+import { showInfo, slugify } from "~/util/helpers";
 import {
 	iconBroadcastOff,
 	iconCursor,
@@ -178,20 +181,25 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		);
 	}, [isExportVisible, selectedResponse.result]);
 
-	const exportAsCsv = useStable(() => {
+	const exportAsCsv = useStable(async () => {
 		const csvContent = unparse(selectedResponse.result);
+		const fileName = `${slugify(activeTab.name ?? "")}-${dayjs().format("YYYY-MM-DD")}.csv`;
 
-		const blob = new Blob([csvContent], { type: "text/csv" });
+		const success = await adapter.saveFile(
+			"Save CSV export",
+			fileName,
+			[CSV_FILTER],
+			() => new Blob([csvContent], { type: "text/csv" }),
+		);
 
-		const url = URL.createObjectURL(blob);
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = "export.csv";
+		if (success) {
+			showInfo({
+				title: "Export",
+				subtitle: "Results successfully exported",
+			});
 
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		URL.revokeObjectURL(url);
+			tagEvent("export", { extension: "csv" });
+		}
 	});
 
 	const runText = `Run ${selection && allowSelectionExecution ? "selection" : "query"}`;

@@ -6,7 +6,7 @@ import { Icon } from "../Icon";
 
 export interface ListMenuProps<T extends string> {
 	data: Listable<T>[];
-	value: T;
+	value: T | undefined;
 	onChange: (value: T) => void;
 }
 

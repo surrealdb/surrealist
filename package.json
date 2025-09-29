@@ -1,7 +1,7 @@
 {
 	"name": "surrealist",
 	"private": true,
-	"version": "3.5.3",
+	"version": "3.5.6",
 	"surreal": "2.0.0",
 	"type": "module",
 	"authors": [
@@ -48,6 +48,7 @@
 		"@lezer/yaml": "^1.0.3",
 		"@mantine/charts": "7.17.8",
 		"@mantine/core": "7.17.8",
+		"@mantine/dates": "7.17.8",
 		"@mantine/hooks": "7.17.8",
 		"@mantine/modals": "7.17.8",
 		"@mantine/notifications": "7.17.8",
@@ -71,6 +72,7 @@
 		"@tauri-apps/plugin-shell": "2.2.1",
 		"@tauri-apps/plugin-updater": "2.6.1",
 		"@theopensource-company/feature-flags": "^0.4.6",
+		"@types/turndown": "^5.0.5",
 		"@xyflow/react": "^12.3.2",
 		"ansi-to-html": "^0.7.2",
 		"clsx": "^2.1.0",
@@ -112,6 +114,7 @@
 		"rss-parser": "^3.13.0",
 		"sigma": "^3.0.0",
 		"surrealdb": "^1.2.0",
+		"turndown": "^7.2.1",
 		"use-immer": "^0.9.0",
 		"valibot": "^0.42.1",
 		"wouter": "^3.3.5",

@@ -11,6 +11,7 @@ import {
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
 import iconUrl from "~/assets/images/icon.webp";
+import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
@@ -24,14 +25,14 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
-import { iconArrowLeft, iconCog, iconSearch } from "~/util/icons";
+import { iconArrowLeft, iconCog, iconHelp, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 
 const GLOBAL_NAVIGATION: GlobalPage[][] = [
 	["/overview", "/organisations"],
+	["/referrals"],
 	["/mini/new"],
-	["/referrals", "/support"],
 ];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
@@ -62,6 +63,8 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
 	const pages = useAvailablePages();
 	const views = useAvailableViews();
+
+	const { data: unreadConversations } = useCloudUnreadConversationsQuery();
 
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
@@ -226,6 +229,16 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					))}
 
 					<Spacer />
+
+					<NavigationIcon
+						name="Support"
+						icon={iconHelp}
+						match={["/support", "/support/*"]}
+						onClick={() => navigate("/support")}
+						onMouseEnter={hoverSidebarHandle.open}
+						withTooltip={sidebarMode === "compact"}
+						indicator={unreadConversations}
+					/>
 
 					<NavigationIcon
 						name={

@@ -643,12 +643,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						action: intent("open-settings"),
 					},
 					{
-						id: "open-help",
-						name: "Open Help & Support",
-						icon: iconHelp,
-						action: intent("open-help"),
-					},
-					{
 						id: "open-news",
 						name: "Open latest news",
 						icon: iconNewspaper,
@@ -753,6 +747,14 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						icon: iconBook,
 						binding: ["mod", "j"],
 						action: intent("open-documentation"),
+						forward: true,
+					},
+					{
+						id: "open-help-center",
+						name: "Search help center for:",
+						icon: iconHelp,
+						binding: ["mod", "h"],
+						action: intent("open-help-center"),
 						forward: true,
 					},
 				],
