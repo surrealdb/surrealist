@@ -300,7 +300,6 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		console.error("Failed to acquire session", err);
 
 		setAuthError(err.message);
-		invalidateSession();
 
 		if (err instanceof ApiError && err.status === 422) {
 			showErrorNotification({
