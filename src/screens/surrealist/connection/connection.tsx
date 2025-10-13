@@ -282,15 +282,12 @@ export async function executeQuery(
 	query: string,
 	bindings?: Record<string, unknown>,
 ): Promise<QueryResponse[]> {
-	console.log("executeQuery", query, bindings);
 	try {
 		const results: QueryResponse[] = [];
-		const queryResponses: Map<number, any[]> = new Map();
+		const queryResponses: Map<number, any> = new Map();
 		const stream = instance.query(query, bindings).stream();
 
-		// TODO: Also incorporate upcoming frame.isSingle()
 		for await (const frame of stream) {
-			console.log("frame", frame);
 			if (frame.isValue<any>()) {
 				const newResults = queryResponses.get(frame.query) || [];
 
@@ -316,7 +313,7 @@ export async function executeQuery(
 
 		return results;
 	} catch (err: any) {
-		console.warn("executeQuery fail", err);
+		console.error("executeQuery fail", err);
 
 		return [
 			{
@@ -331,10 +328,7 @@ export async function executeQuery(
  * Execute a query against the active connection and
  * return the first response
  */
-export async function executeQueryFirst<T = any>(
-	query: string,
-	bindings?: Record<string, unknown>,
-): Promise<T> {
+export async function executeQueryFirst(query: string, bindings?: Record<string, unknown>) {
 	const results = await executeQuery(query, bindings);
 	const { success, result } = results[0];
 
@@ -349,9 +343,18 @@ export async function executeQueryFirst<T = any>(
  * Execute a query against the active connection and
  * return the first record of the first response
  */
-export async function executeQuerySingle<T = any>(query: string): Promise<T> {
-	const response = await executeQueryFirst(query);
-	return response.result[0];
+export async function executeQuerySingle<T = any>(
+	query: string,
+	bindings?: Record<string, unknown>,
+): Promise<T> {
+	const results = await executeQuery(query, bindings);
+	const { success, result } = results[0];
+
+	if (success) {
+		return Array.isArray(result) ? result[0] : result;
+	}
+
+	throw new Error(result);
 }
 
 /**
