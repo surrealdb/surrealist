@@ -1,5 +1,6 @@
 import { ActionIcon, Alert, Paper, Skeleton, Stack, Table } from "@mantine/core";
 import { Link } from "wouter";
+import { adapter } from "~/adapter";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
 import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
@@ -62,11 +63,11 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 											pr="md"
 											style={{ textWrap: "nowrap" }}
 										>
-											<Link href={invoice.url}>
-												<ActionIcon>
-													<Icon path={iconOpen} />
-												</ActionIcon>
-											</Link>
+											<ActionIcon
+												onClick={() => adapter.openUrl(invoice.url)}
+											>
+												<Icon path={iconOpen} />
+											</ActionIcon>
 										</Table.Td>
 									</Table.Tr>
 								);
