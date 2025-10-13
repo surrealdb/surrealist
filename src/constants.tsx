@@ -1,5 +1,6 @@
 import type { MantineColor, MantineColorScheme } from "@mantine/core";
 import flagIE from "flag-icons/flags/4x3/ie.svg";
+import flagIN from "flag-icons/flags/4x3/in.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 
 import type {
@@ -418,6 +419,7 @@ export const REGION_FLAGS: Record<string, string> = {
 	"aws-euw1": flagIE,
 	"aws-use1": flagUS,
 	"aws-usw2": flagUS,
+	"aws-aps1": flagIN,
 };
 
 export const TABLE_VARIANT_ICONS: Record<TableVariant, string> = {
