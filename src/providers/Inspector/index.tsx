@@ -43,7 +43,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 
 	const inspect = useStable((record: RecordId | string) => {
 		const recordId =
-			typeof record === "string" ? parseValue(record) : new RecordId(record.tb, record.id);
+			typeof record === "string" ? parseValue(record) : new RecordId(record.table, record.id);
 
 		if (!(recordId instanceof RecordId)) {
 			throw new TypeError("Invalid record id");

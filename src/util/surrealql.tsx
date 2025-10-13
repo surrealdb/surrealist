@@ -1,6 +1,6 @@
 import { Tree } from "@lezer/common";
 import { SurrealQL, Value } from "@surrealdb/ql-wasm";
-import { decodeCbor, encodeCbor } from "surrealdb";
+import { CborCodec } from "surrealdb";
 import { DATASETS } from "~/constants";
 import { DatasetType } from "~/types";
 
@@ -57,7 +57,8 @@ export function getStatementCount(sql: string): number {
  * @returns The formatted value
  */
 export function formatValue(value: any, json = false, pretty = false) {
-	const binary = new Uint8Array(encodeCbor(value));
+	const codec = new CborCodec({});
+	const binary = new Uint8Array(codec.encode(value));
 	const parsed = Value.from_cbor(binary);
 
 	return parsed[json ? "json" : "format"](pretty);
@@ -69,10 +70,13 @@ export function formatValue(value: any, json = false, pretty = false) {
  * @param value The value string
  * @returns The parsed value structure
  */
-export function parseValue(value: string) {
-	return decodeCbor(Value.from_string(value).to_cbor().buffer);
-}
+export function parseValue<T = unknown>(value: string) {
+	const codec = new CborCodec({});
+	const cborBuffer = Value.from_string(value).to_cbor().buffer;
+	const cborUint8 = new Uint8Array(cborBuffer);
 
+	return codec.decode<T>(cborUint8);
+}
 /**
  * Return the the indexes of the live query statements in the given query
  *

@@ -2,7 +2,7 @@ import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
 import { useMemo } from "react";
-import { decodeCbor } from "surrealdb";
+import { CborCodec } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
@@ -30,7 +30,9 @@ export function VariablesPane(props: VariablesPaneProps) {
 
 		try {
 			const json = content || "";
-			const parsed = decodeCbor(Value.from_string(json).to_cbor().buffer);
+			const codec = new CborCodec({});
+			const cbor = Value.from_string(json).to_cbor();
+			const parsed = codec.decode(new Uint8Array(cbor.buffer));
 
 			if (typeof parsed !== "object" || Array.isArray(parsed)) {
 				throw new TypeError("Must be object");

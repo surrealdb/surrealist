@@ -35,7 +35,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 	// parses geoJSON and splits langitude and latitude and creates a fitting string with bail out if it doesn't fit
 	const coordLabel = useMemo(() => {
 		try {
-			const parsed: any = parseValue(geoJSON).toJSON();
+			const parsed = parseValue<any>(geoJSON).toJSON();
 
 			const pickCoords = (obj: any): [number, number] | null => {
 				if (!obj) return null;

@@ -61,7 +61,7 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 
 	useEffect(() => {
 		try {
-			const data = parseValue(value).toJSON();
+			const data = parseValue<any>(value).toJSON();
 
 			const leafletGeoJson = createGeoJSON(data, {
 				coordsToLatLng: convertCoordsToLatLng,

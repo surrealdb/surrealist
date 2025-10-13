@@ -129,12 +129,14 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
 		}
 
-		const allRecords = await executeQueryFirst(fetchQuery);
+		const allRecords = await executeQueryFirst<[{ id: StringRecordId }]>(fetchQuery);
 		setSelected(new Set([...allRecords.map((r: any) => r.id.toString())]));
 	});
 
 	const invertSelection = useStable(async () => {
-		const allRecords = await executeQueryFirst(`SELECT id FROM ${escapeIdent(activeTable)}`);
+		const allRecords = await executeQueryFirst<[{ id: StringRecordId }]>(
+			`SELECT id FROM ${escapeIdent(activeTable)}`,
+		);
 
 		const newSelected = allRecords
 			.map((it: any) => it.id.toString())

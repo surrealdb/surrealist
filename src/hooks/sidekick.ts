@@ -13,12 +13,14 @@ export function useSidekickChatsQuery(search?: string) {
 		refetchInterval: 30_000,
 		queryFn: async () => {
 			try {
-				const [conversations] = await surreal.query<[SidekickChat[]]>(surql`
+				const [conversations] = await surreal
+					.query(surql`
 					SELECT *
 					FROM sidekick_chat
 					WHERE !${search} || title = <regex>${search} || <-sent_in<-sidekick_message.content ?= <regex>${search}
 					ORDER BY last_activity DESC
-				`);
+				`)
+					.collect<[SidekickChat[]]>();
 
 				return conversations;
 			} catch (error) {
@@ -40,9 +42,11 @@ export function useSidekickMessagesMutation() {
 	return useMutation({
 		mutationFn: async (chatId: RecordId) => {
 			try {
-				const [messages] = await surreal.query<[SidekickChatMessage[]]>(surql`
+				const [messages] = await surreal
+					.query(surql`
 					SELECT * FROM ${chatId}<-sent_in<-sidekick_message ORDER BY id ASC;
-				`);
+				`)
+					.collect<[SidekickChatMessage[]]>();
 
 				return messages;
 			} catch (error) {

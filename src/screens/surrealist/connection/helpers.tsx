@@ -1,13 +1,17 @@
 import { objectify } from "radash";
-import type { AccessRecordAuth, QueryResult } from "surrealdb";
+import type { AccessRecordAuth } from "surrealdb";
 import { fetchAPI } from "~/cloud/api";
-import type { AuthDetails, Authentication, QueryResponse } from "~/types";
+import type { AuthDetails, Authentication } from "~/types";
 import { getSetting } from "~/util/config";
 import { CloudError } from "~/util/errors";
 import { featureFlags } from "~/util/feature-flags";
 
-export async function composeAuthentication(connection: Authentication): Promise<AuthDetails> {
+export async function composeAuthentication(
+	connection: Authentication,
+): Promise<AuthDetails | undefined> {
 	const { mode, username, password, namespace, database, token, cloudInstance } = connection;
+
+	console.log("mode", mode);
 
 	switch (mode) {
 		case "root": {
@@ -27,7 +31,7 @@ export async function composeAuthentication(connection: Authentication): Promise
 		}
 		case "cloud": {
 			if (!cloudInstance) {
-				return undefined;
+				throw new Error("Connection is not a cloud instance");
 			}
 
 			try {
@@ -42,18 +46,13 @@ export async function composeAuthentication(connection: Authentication): Promise
 				});
 			}
 		}
-		default: {
+		case "none": {
 			return undefined;
 		}
+		default: {
+			throw new Error("Invalid connection mode");
+		}
 	}
-}
-
-export function mapResults(response: QueryResult<unknown>[]): QueryResponse[] {
-	return response.map((res) => ({
-		success: res.status === "OK",
-		result: res.result,
-		execution_time: res.time,
-	}));
 }
 
 export function buildAccessAuth(connection: Authentication): AccessRecordAuth {

@@ -244,10 +244,16 @@ export interface SurrealistGtmSettings {
 	debug_mode: boolean;
 }
 
+export interface GraphqlQuery {
+	query?: string;
+	variables?: Record<string, any>;
+	operationName?: string;
+}
+
 export interface QueryResponse {
-	execution_time: string;
 	success: boolean;
 	result: any;
+	duration?: Duration;
 }
 
 export interface QueryTab {

@@ -12,7 +12,7 @@ import {
 import dayjs from "dayjs";
 import { toggle } from "radash";
 import { useState } from "react";
-import type { ExportOptions as BaseExportOptions } from "surrealdb";
+import type { SqlExportOptions as BaseExportOptions } from "surrealdb";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
@@ -57,6 +57,7 @@ export function DataExportModal() {
 		users: true,
 		versions: false,
 		records: true,
+		sequences: true,
 		tables: [],
 	});
 

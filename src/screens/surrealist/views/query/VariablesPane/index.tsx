@@ -5,7 +5,7 @@ import { surrealql } from "@surrealdb/codemirror";
 import { Value } from "@surrealdb/ql-wasm";
 import { useEffect, useMemo, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { decodeCbor } from "surrealdb";
+import { CborCodec } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
@@ -55,7 +55,10 @@ export function VariablesPane({
 		});
 
 		try {
-			const parsed = decodeCbor(Value.from_string(json).to_cbor().buffer);
+			const codec = new CborCodec({});
+			const cborBuffer = Value.from_string(json).to_cbor().buffer;
+			const cborUint8 = new Uint8Array(cborBuffer);
+			const parsed = codec.decode(cborUint8);
 
 			if (typeof parsed !== "object" || Array.isArray(parsed)) {
 				throw new TypeError("Must be object");

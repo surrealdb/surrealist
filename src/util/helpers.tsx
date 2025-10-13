@@ -12,7 +12,7 @@ import {
 import escapeRegex from "escape-string-regexp";
 import { shake, uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
-import { decodeCbor } from "surrealdb";
+import { CborCodec } from "surrealdb";
 import { adapter } from "~/adapter";
 import { Spacer } from "~/components/Spacer";
 import type { Authentication, Protocol, Selectable } from "~/types";
@@ -356,7 +356,10 @@ export function tryParseParams(paramString: string) {
 	let params: any = {};
 
 	try {
-		const parsed = decodeCbor(Value.from_string(paramString).to_cbor().buffer);
+		const codec = new CborCodec({});
+		const cborBuffer = Value.from_string(paramString).to_cbor().buffer;
+		const cborUint8 = new Uint8Array(cborBuffer);
+		const parsed = codec.decode(cborUint8);
 
 		if (typeof parsed !== "object" || Array.isArray(parsed)) {
 			throw new TypeError("Must be object");

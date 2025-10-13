@@ -105,7 +105,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 			return {
 				label: `Query ${i + 1}`,
-				description: `${rowCount} ${rowCount === 1 ? "result" : "results"} in ${res.execution_time}`,
+				description: `${rowCount} ${rowCount === 1 ? "result" : "results"} in ${res.duration}`,
 				value: (i + 1).toString(),
 			};
 		});

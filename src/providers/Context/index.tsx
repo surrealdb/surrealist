@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
-import Surreal from "surrealdb";
+import { Surreal } from "surrealdb";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -25,7 +25,6 @@ export function ContextProvider({ children }: PropsWithChildren) {
 	const accessToken = useCloudStore((s) => s.accessToken);
 
 	const [surreal] = useState(new Surreal());
-	const [connected, setConnected] = useState(false);
 	const [authenticated, setAuthenticated] = useState(false);
 	const initializedRef = useRef(false);
 
@@ -34,28 +33,31 @@ export function ContextProvider({ children }: PropsWithChildren) {
 		surreal.connect(CONTEXT_ENDPOINT, {
 			namespace: "surrealdb",
 			database: "cloud",
+			reconnect: {
+				enabled: true,
+				attempts: -1,
+				retryDelayMultiplier: 1.2,
+				retryDelayJitter: 0,
+			},
 		});
 	});
 
 	useEffect(() => {
 		if (initializedRef.current) return;
 
-		surreal.emitter.subscribe("connecting", () => {
+		surreal.subscribe("connecting", () => {
 			adapter.log("Cloud", "Attempting to connect to Surreal Cloud instance");
 		});
 
-		surreal.emitter.subscribe("connected", () => {
+		surreal.subscribe("connected", () => {
 			adapter.log("Cloud", "Connected to Surreal Cloud instance");
-			setConnected(true);
 		});
 
-		surreal.emitter.subscribe("disconnected", () => {
+		surreal.subscribe("disconnected", () => {
 			adapter.log("Cloud", "Disconnected from Surreal Cloud instance");
-			setConnected(false);
-			setTimeout(connect, 3000);
 		});
 
-		surreal.emitter.subscribe("error", (error) => {
+		surreal.subscribe("error", (error) => {
 			console.error(error);
 		});
 
@@ -64,7 +66,7 @@ export function ContextProvider({ children }: PropsWithChildren) {
 	}, [surreal]);
 
 	useEffect(() => {
-		if (!surreal || !connected) return;
+		if (!surreal || surreal.status !== "connected") return;
 
 		if (accessToken) {
 			surreal.authenticate(accessToken).then(() => {
@@ -75,7 +77,9 @@ export function ContextProvider({ children }: PropsWithChildren) {
 				setAuthenticated(false);
 			});
 		}
-	}, [surreal, connected, accessToken]);
+	}, [surreal, accessToken]);
+
+	const connected = surreal.status === "connected";
 
 	return (
 		<ContextContext.Provider value={{ surreal, connected, authenticated }}>
