@@ -167,6 +167,15 @@ export async function openConnection(options?: ConnectOptions) {
 
 		instance.version().then((v) => {
 			const version = v.version.replace(/^surrealdb-/, "");
+			const isPreview = version.includes("-alpha") || version.includes("-beta");
+
+			if (isPreview) {
+				showWarning({
+					title: "Preview version detected",
+					subtitle:
+						"You are connected to a preview version of SurrealDB. Some features may not work as intended.",
+				});
+			}
 
 			setVersion(version);
 			adapter.log("DB", `Database version ${version ?? "unknown"}`);
@@ -311,7 +320,6 @@ export async function executeQuery(
 					queryResponses.set(frame.query, newResults);
 				}
 			} else if (frame.isDone()) {
-				console.log("isDone:", frame.query);
 				results.push({
 					success: true,
 					result: queryResponses.get(frame.query) ?? [],
@@ -325,8 +333,6 @@ export async function executeQuery(
 				});
 			}
 		}
-
-		console.log("executeQuery results", results);
 
 		return results;
 	} catch (err: any) {

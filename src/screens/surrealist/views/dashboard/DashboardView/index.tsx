@@ -181,13 +181,11 @@ export function DashboardView() {
 			const shouldApplyFile = sessionStorage.getItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
 
 			if (dataset) {
-				console.log("applying dataset");
 				sessionStorage.removeItem(`${APPLY_DATASET_KEY}:${details.id}`);
 				applyInitialDataset(dataset as DatasetType);
 			}
 
 			if (shouldApplyFile) {
-				console.log("importing database");
 				sessionStorage.removeItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
 				importDatabase();
 			}

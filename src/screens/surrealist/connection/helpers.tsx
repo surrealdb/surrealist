@@ -11,8 +11,6 @@ export async function composeAuthentication(
 ): Promise<AuthDetails | undefined> {
 	const { mode, username, password, namespace, database, token, cloudInstance } = connection;
 
-	console.log("mode", mode);
-
 	switch (mode) {
 		case "root": {
 			return { username, password };

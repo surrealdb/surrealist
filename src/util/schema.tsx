@@ -148,9 +148,6 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 				continue;
 			}
 
-			console.log("tableInfo", tableInfo);
-			console.log("tableStruct", tableStruct);
-
 			const definition: TableInfo = {
 				schema: tableInfo,
 				fields: Object.values(tableStruct.fields),

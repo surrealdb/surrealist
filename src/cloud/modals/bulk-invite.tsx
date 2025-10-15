@@ -118,8 +118,6 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 
 			const emails = result.data.slice(1);
 
-			console.log(emails);
-
 			if (file.name.endsWith(".csv")) {
 				setInvites([...invites, ...emails.map((it) => ({ email: it, role: "member" }))]);
 			}

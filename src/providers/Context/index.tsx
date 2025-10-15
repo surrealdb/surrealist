@@ -29,7 +29,7 @@ export function ContextProvider({ children }: PropsWithChildren) {
 	const initializedRef = useRef(false);
 
 	const connect = useStable(() => {
-		console.log("Connecting to SurrealDB Cloud instance");
+		adapter.log("Context", "Connecting to SurrealDB Cloud instance");
 		surreal.connect(CONTEXT_ENDPOINT, {
 			namespace: "surrealdb",
 			database: "cloud",
