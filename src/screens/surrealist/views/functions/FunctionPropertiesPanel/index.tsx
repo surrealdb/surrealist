@@ -177,7 +177,7 @@ export function FunctionPropertiesPanel({
 												onChange((draft) => {
 													(draft.details as SchemaFunction).args[
 														index
-													][1] = value.toLowerCase();
+													][1] = value;
 												})
 											}
 											styles={{
