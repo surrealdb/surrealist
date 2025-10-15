@@ -2,6 +2,7 @@ import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { convert } from "geo-coordinates-parser";
 import {
+	DateTime,
 	Decimal,
 	Duration,
 	FileRef,
@@ -95,8 +96,24 @@ function ThingCell(props: { value: RecordId }) {
 	return <RecordLink value={props.value} />;
 }
 
-function DateTimeCell(props: { value: Date }) {
-	const date = new Date(props.value);
+function DateTimeCell(props: { value: DateTime }) {
+	const date = props.value.toDate();
+	const relative = dayjs(date).fromNow();
+
+	return (
+		<Text title={`${date.toISOString()} (${relative})`}>
+			<Icon
+				path={iconClock}
+				left
+				mt={-3}
+			/>
+			{date.toLocaleString()}
+		</Text>
+	);
+}
+
+function DateCell(props: { value: Date }) {
+	const date = props.value;
 	const relative = dayjs(date).fromNow();
 
 	return (
@@ -280,8 +297,12 @@ function GeographyCollectionCell({ value }: { value: GeometryCollection }) {
 }
 
 export const DataCell = ({ value }: { value: any }) => {
-	if (value instanceof Date) {
+	if (value instanceof DateTime) {
 		return <DateTimeCell value={value} />;
+	}
+
+	if (value instanceof Date) {
+		return <DateCell value={value} />;
 	}
 
 	if (value === undefined || value === null) {
