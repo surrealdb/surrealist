@@ -39,7 +39,7 @@
         "@sigma/edge-curve": "^3.1.0",
         "@sigma/node-border": "^3.0.0",
         "@surrealdb/cbor": "^2.0.0-alpha.1",
-        "@surrealdb/codemirror": "1.0.0-beta.21",
+        "@surrealdb/codemirror": "1.0.0-beta.22",
         "@surrealdb/lezer": "1.0.0-beta.22",
         "@surrealdb/ql-wasm": "0.2.0-beta.10",
         "@surrealdb/wasm": "2.3.1",
@@ -596,7 +596,7 @@
 
     "@surrealdb/cbor": ["@surrealdb/cbor@2.0.0-alpha.1", "", {}, "sha512-QtahOKhxOZZJOFnIBs7dR7UO6hNT+5Wv2uqLEDUvm5hBYq3lV2BR3TY6mrkvi6/wABcTnuJmu1e3P3GqXE6ltA=="],
 
-    "@surrealdb/codemirror": ["@surrealdb/codemirror@1.0.0-beta.21", "", { "dependencies": { "@codemirror/language": "^6.10.3", "@codemirror/lint": "^6.8.2", "@lezer/common": "^1.2.3", "@lezer/javascript": "^1.4.19", "@surrealdb/lezer": "", "compare-versions": "^6.1.1" } }, "sha512-9zDQPTD9OuCDpJ+KvbqzXEE85LwOEXjh6ZaBWIP/eEbvw+fYtj7YIfxTUiTxlaqq+Igt7ACvfryNXTPX4KaVuw=="],
+    "@surrealdb/codemirror": ["@surrealdb/codemirror@1.0.0-beta.22", "", { "dependencies": { "@codemirror/language": "^6.10.3", "@codemirror/lint": "^6.8.2", "@lezer/common": "^1.2.3", "@lezer/javascript": "^1.4.19", "@surrealdb/lezer": "", "compare-versions": "^6.1.1" } }, "sha512-j/jm6mOiNdOOpuW0r/X4+wp2ZE67tYcGXw/06H6pV9ZaifbE7aXNGhaXtydTzF6uNT1t/TuTbbAuBnMq2OpZMA=="],
 
     "@surrealdb/lezer": ["@surrealdb/lezer@1.0.0-beta.22", "", { "dependencies": { "@lezer/common": "^1.2.3", "@lezer/highlight": "^1.2.1", "@lezer/lr": "^1.4.2" } }, "sha512-dbDhbktSgzLH2CkibzKOCmYQJGuG1QVQ/9VRUaT+KESZIHEwsrYIm1E/sjEJSOP1sD56xAhkiNMTUfXHh+7SOg=="],
 
@@ -1467,8 +1467,6 @@
     "@babel/preset-env/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
     "@parcel/watcher/detect-libc": ["detect-libc@1.0.3", "", { "bin": { "detect-libc": "./bin/detect-libc.js" } }, "sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg=="],
-
-    "@surrealdb/codemirror/@surrealdb/lezer": ["@surrealdb/lezer@1.0.0-beta.21", "", { "dependencies": { "@lezer/common": "^1.2.3", "@lezer/highlight": "^1.2.1", "@lezer/lr": "^1.4.2" } }, "sha512-8laD/9nCgIGqFFj3p1R2JZaEAzTAkjpyW6+zO4ZplIeC3DwbI9/JZQbaLzKZ2tFOd8wNZsniMxdAajWkenCSgQ=="],
 
     "@vue/compiler-core/entities": ["entities@4.5.0", "", {}, "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw=="],
 
