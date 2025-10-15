@@ -53,6 +53,7 @@ export interface GraphqlResponse {
 	errors?: any;
 }
 
+let retryTask: any;
 let openedConnection: Connection;
 let instance = new Surreal();
 
@@ -72,10 +73,11 @@ export async function openConnection(options?: ConnectOptions) {
 		throw new Error("No connection available");
 	}
 
+	const newState = options?.isRetry ? "retrying" : "connecting";
 	const strict = getSetting("behavior", "strictSandbox");
 	const surreal = await createSurreal({ strict });
 
-	await surreal.close();
+	_closeConnection(newState, false);
 
 	instance = surreal;
 	openedConnection = connection;
@@ -91,6 +93,11 @@ export async function openConnection(options?: ConnectOptions) {
 	clearSchema();
 
 	adapter.log("DB", `Opening connection to ${rpcEndpoint}`);
+
+	if (retryTask) {
+		clearTimeout(retryTask);
+		retryTask = null;
+	}
 
 	instance.subscribe("connecting", () => {
 		setCurrentState("connecting");
@@ -119,6 +126,7 @@ export async function openConnection(options?: ConnectOptions) {
 			const { authState } = useCloudStore.getState();
 
 			if (authState === "loading" || authState === "unknown") {
+				scheduleReconnect(1000);
 				return;
 			}
 
@@ -140,16 +148,20 @@ export async function openConnection(options?: ConnectOptions) {
 
 		const authentication = await composeAuthentication(connection.authentication);
 
-		await instance.connect(rpcEndpoint, {
-			versionCheck,
-			reconnect: {
-				enabled: true,
-				attempts: -1,
-				retryDelayMultiplier: 1.2,
-				retryDelayJitter: 0,
-			},
-			authentication,
-		});
+		try {
+			await instance.connect(rpcEndpoint, {
+				versionCheck,
+				reconnect: {
+					enabled: true,
+					attempts: -1,
+					retryDelayMultiplier: 1.2,
+					retryDelayJitter: 0,
+				},
+				authentication,
+			});
+		} catch (err: any) {
+			console.error("Connection failed", err);
+		}
 
 		adapter.log("DB", "Connection established");
 
@@ -181,6 +193,7 @@ export async function openConnection(options?: ConnectOptions) {
 			protocol: connection.authentication.protocol.toString(),
 		});
 	} catch (err: any) {
+		console.error("Connection failed", err);
 		instance.close();
 
 		setLatestError(err.message);
@@ -289,10 +302,14 @@ export async function executeQuery(
 
 		for await (const frame of stream) {
 			if (frame.isValue<any>()) {
-				const newResults = queryResponses.get(frame.query) || [];
+				if (frame.isSingle) {
+					queryResponses.set(frame.query, frame.value);
+				} else {
+					const newResults = queryResponses.get(frame.query) || [];
 
-				newResults.push(frame.value);
-				queryResponses.set(frame.query, newResults);
+					newResults.push(frame.value);
+					queryResponses.set(frame.query, newResults);
+				}
 			} else if (frame.isDone()) {
 				console.log("isDone:", frame.query);
 				results.push({
@@ -351,7 +368,7 @@ export async function executeQuerySingle<T = any>(
 	const { success, result } = results[0];
 
 	if (success) {
-		return Array.isArray(result) ? result[0] : result;
+		return result;
 	}
 
 	throw new Error(result);
@@ -776,6 +793,23 @@ export function getOpenConnection() {
  */
 export function getSurreal() {
 	return instance;
+}
+
+/**
+ * Schedule a reconnect attempt
+ */
+function scheduleReconnect(timeout: number) {
+	retryTask = setTimeout(() => {
+		const { currentState } = useDatabaseStore.getState();
+		const connection = getConnection();
+
+		if (currentState !== "connected" && connection) {
+			openConnection({
+				connection,
+				isRetry: true,
+			});
+		}
+	}, timeout);
 }
 
 async function isNamespaceValid(namespace: string) {

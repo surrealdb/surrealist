@@ -71,7 +71,3 @@ export function getVersionTimeout() {
 	const timeout = (getSetting("behavior", "versionCheckTimeout") ?? 5) * 1000;
 	return [enabled, timeout] as const;
 }
-
-export function getReconnectInterval() {
-	return (getSetting("behavior", "reconnectInterval") ?? 3) * 1000;
-}

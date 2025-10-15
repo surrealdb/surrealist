@@ -184,7 +184,6 @@ export interface SurrealistBehaviorSettings {
 	windowPinned: boolean;
 	docsLanguage: CodeLang;
 	versionCheckTimeout: number;
-	reconnectInterval: number;
 	queryQuickClose: boolean;
 	strictSandbox: boolean;
 	sidekickPanel: boolean;

@@ -4,6 +4,7 @@ import { convert } from "geo-coordinates-parser";
 import {
 	Decimal,
 	Duration,
+	FileRef,
 	GeometryCollection,
 	GeometryLine,
 	GeometryMultiLine,
@@ -111,6 +112,10 @@ function DateTimeCell(props: { value: Date }) {
 }
 
 function DurationCell(props: { value: Duration }) {
+	return <Text>{props.value.toString()}</Text>;
+}
+
+function FileCell(props: { value: FileRef }) {
 	return <Text>{props.value.toString()}</Text>;
 }
 
@@ -341,6 +346,10 @@ export const DataCell = ({ value }: { value: any }) => {
 
 	if (value instanceof Duration) {
 		return <DurationCell value={value} />;
+	}
+
+	if (value instanceof FileRef) {
+		return <FileCell value={value} />;
 	}
 
 	if (typeof value === "object") {

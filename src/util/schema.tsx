@@ -115,7 +115,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 				.join("\n"),
 		);
 
-		adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
+		// adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
 
 		if (isLimited) {
 			schema.database.tables = klona(connectionSchema.database.tables);
@@ -147,6 +147,9 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 				schema.database.tables.splice(existingIndex, 1);
 				continue;
 			}
+
+			console.log("tableInfo", tableInfo);
+			console.log("tableStruct", tableStruct);
 
 			const definition: TableInfo = {
 				schema: tableInfo,
