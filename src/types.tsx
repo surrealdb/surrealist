@@ -47,6 +47,7 @@ export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
 export type IntercomConversationStateId = "open" | "closed" | "snoozed";
+export type OrganizableItemType = "folder" | "query";
 
 export type InstanceState =
 	| "creating"
@@ -145,6 +146,8 @@ export interface Connection {
 	lastDatabase: string;
 	queries: QueryTab[];
 	activeQuery: string;
+	queryFolders: QueryFolder[];
+	queryFolderPath: string[];
 	queryHistory: HistoryQuery[];
 	authentication: Authentication;
 	pinnedTables: string[];
@@ -250,17 +253,29 @@ export interface QueryResponse {
 	result: any;
 }
 
-export interface QueryTab {
+export interface OrganizableItem {
 	id: string;
-	type: QueryType;
-	query: string; // NOTE Query string for config type, path for file type
+	type: OrganizableItemType;
 	name?: string;
+	createdAt: number;
+	movedAt?: number;
+	parentId?: string;
+}
+
+export interface QueryTab extends OrganizableItem {
+	type: "query";
+	queryType: QueryType;
+	query: string; // NOTE Query string for config type, path for file type
 	variables: string;
 	valid: boolean; // TODO Remove
 	resultMode: ResultMode;
 	noneResultMode: NoneResultMode;
 	resultFormat: ResultFormat;
 	showVariables: boolean;
+}
+
+export interface QueryFolder extends OrganizableItem {
+	type: "folder";
 }
 
 export interface HistoryQuery {

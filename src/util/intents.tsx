@@ -42,6 +42,7 @@ const INTENT_REGISTRY = {
 	"infer-variables": "query",
 	"open-saved-queries": "query",
 	"open-query-history": "query",
+	"navigate-to-active-query": "query",
 	"explore-table": "explorer",
 	"run-graphql-query": "graphql",
 	"format-graphql-query": "graphql",

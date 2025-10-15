@@ -213,6 +213,23 @@ export function applyOrder<T>(items: T[], order: T[]) {
 }
 
 /**
+ * Sorts items by their creation/move timestamp
+ * Items are sorted by movedAt timestamp if present, otherwise by createdAt
+ *
+ * @param items Items to sort
+ * @returns Sorted items array
+ */
+export function sortItemsByTimestamp<T extends { createdAt: number; movedAt?: number }>(
+	items: T[],
+): T[] {
+	return items.sort((a, b) => {
+		const aTime = a.movedAt || a.createdAt;
+		const bTime = b.movedAt || b.createdAt;
+		return aTime - bTime;
+	});
+}
+
+/**
  * Wrap a promise in a timeout
  *
  * @param cb The callback providing the promise
@@ -343,6 +360,26 @@ export function uniqueName(baseName: string, existing: string[]) {
 	} while (existing.includes(tempName));
 
 	return tempName;
+}
+
+/**
+ * Compute a unique name within a filtered scope of existing names
+ *
+ * @param baseName The base name
+ * @param allItems All items to consider
+ * @param getName Function to extract the name from an item
+ * @param shouldInclude Function to determine if an item should be included in the uniqueness check
+ * @returns A unique name
+ */
+export function uniqueNameInScope<T>(
+	baseName: string,
+	allItems: T[],
+	getName: (item: T) => string,
+	shouldInclude: (item: T) => boolean,
+) {
+	const existing = allItems.filter(shouldInclude).map(getName);
+
+	return uniqueName(baseName, existing);
 }
 
 /**

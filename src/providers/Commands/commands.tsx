@@ -291,6 +291,14 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							action: intent("open-query-history"),
 						},
 						{
+							id: "navigate-to-active-query",
+							name: "Navigate to active query in tab list",
+							icon: iconSearch,
+							binding: ["mod", "shift", "a"],
+							action: intent("navigate-to-active-query"),
+							disabled: !isQuery,
+						},
+						{
 							id: "new-query",
 							name: "Create new query",
 							icon: iconPlus,

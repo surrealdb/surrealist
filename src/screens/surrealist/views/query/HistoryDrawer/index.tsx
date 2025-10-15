@@ -52,7 +52,7 @@ function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 
 		onClose();
 		addQueryTab(connection, {
-			type: "config",
+			queryType: "config",
 			query: entry.query,
 		});
 	});

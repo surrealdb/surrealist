@@ -1,6 +1,6 @@
-.scroller > div {
+.scroller>div {
 	width: 100%;
-    table-layout: fixed;
+	table-layout: fixed;
 }
 
 .query {
@@ -14,7 +14,7 @@
 		.query-live {
 			display: none;
 		}
-	
+
 		.query-close {
 			display: flex;
 		}
@@ -23,4 +23,66 @@
 
 .query-close {
 	display: none;
+}
+
+.breadcrumb-container {
+	display: flex;
+	align-items: center;
+	gap: var(--mantine-spacing-lg);
+	margin-bottom: var(--mantine-spacing-xs);
+}
+
+.breadcrumb-buttons {
+	display: flex;
+	align-items: center;
+	gap: var(--mantine-spacing-xs);
+	flex-shrink: 0;
+}
+
+.breadcrumb-nav {
+	display: flex;
+	align-items: center;
+	gap: 0;
+	font-size: var(--mantine-font-size-sm);
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+}
+
+.breadcrumb-link {
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	font: inherit;
+	font-size: inherit;
+	color: var(--mantine-color-text);
+	transition: color 0.15s ease-in-out;
+	text-decoration: none;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	white-space: nowrap;
+
+	&:hover {
+		color: var(--mantine-color-surreal-text);
+	}
+}
+
+.breadcrumb-separator {
+	color: var(--mantine-color-dimmed);
+	margin: 0 var(--mantine-spacing-xs);
+	font-size: var(--mantine-font-size-sm);
+	user-select: none;
+}
+
+.emptyState {
+	text-align: center;
+	padding: var(--mantine-spacing-xl) var(--mantine-spacing-md);
+}
+
+.editableText {
+	outline: none;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
