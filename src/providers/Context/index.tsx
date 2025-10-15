@@ -25,36 +25,28 @@ export function ContextProvider({ children }: PropsWithChildren) {
 	const accessToken = useCloudStore((s) => s.accessToken);
 
 	const [surreal] = useState(new Surreal());
+	const [connected, setConnected] = useState(false);
 	const [authenticated, setAuthenticated] = useState(false);
 	const initializedRef = useRef(false);
 
-	const connect = useStable(() => {
-		adapter.log("Context", "Connecting to SurrealDB Cloud instance");
-		surreal.connect(CONTEXT_ENDPOINT, {
-			namespace: "surrealdb",
-			database: "cloud",
-			reconnect: {
-				enabled: true,
-				attempts: -1,
-				retryDelayMultiplier: 1.2,
-				retryDelayJitter: 0,
-			},
-		});
-	});
+	const connect = useStable(() => {});
 
 	useEffect(() => {
 		if (initializedRef.current) return;
 
 		surreal.subscribe("connecting", () => {
-			adapter.log("Cloud", "Attempting to connect to SurrealDB Cloud instance");
+			adapter.log("Context", "Attempting to connect to Surreal Cloud instance");
 		});
 
 		surreal.subscribe("connected", () => {
-			adapter.log("Cloud", "Connected to SurrealDB Cloud instance");
+			adapter.log("Context", "Connected to Surreal Cloud instance");
+			setConnected(true);
 		});
 
 		surreal.subscribe("disconnected", () => {
-			adapter.log("Cloud", "Disconnected from SurrealDB Cloud instance");
+			adapter.log("Context", "Disconnected from Surreal Cloud instance");
+			setConnected(false);
+			setTimeout(connect, 3000);
 		});
 
 		surreal.subscribe("error", (error) => {
@@ -62,11 +54,17 @@ export function ContextProvider({ children }: PropsWithChildren) {
 		});
 
 		initializedRef.current = true;
+
+		adapter.log("Context", "Connecting to Surreal Cloud instance");
+		surreal.connect(CONTEXT_ENDPOINT, {
+			namespace: "surrealdb",
+			database: "cloud",
+		});
 		connect();
 	}, [surreal]);
 
 	useEffect(() => {
-		if (!surreal || surreal.status !== "connected") return;
+		if (!surreal || !connected) return;
 
 		if (accessToken) {
 			surreal.authenticate(accessToken).then(() => {
@@ -77,9 +75,7 @@ export function ContextProvider({ children }: PropsWithChildren) {
 				setAuthenticated(false);
 			});
 		}
-	}, [surreal, accessToken]);
-
-	const connected = surreal.status === "connected";
+	}, [surreal, connected, accessToken]);
 
 	return (
 		<ContextContext.Provider value={{ surreal, connected, authenticated }}>
