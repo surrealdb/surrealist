@@ -93,7 +93,7 @@ export function ReferralPage() {
 
 	const referralLink = `https://app.surrealdb.com/referral?code=${referralCodeQuery.data}`;
 	const shareOptions = {
-		title: "Surreal Cloud",
+		title: "SurrealDB Cloud",
 		text: "Use my referral link to get started today!",
 		url: referralLink,
 	};
@@ -161,11 +161,11 @@ export function ReferralPage() {
 								>
 									<Box>
 										<PrimaryTitle>
-											Share Surreal Cloud and earn rewards
+											Share SurrealDB Cloud and earn rewards
 										</PrimaryTitle>
 										<Text mt={2}>
-											The Surreal Cloud referral program allows you to invite
-											a friend in exchange for benefits.
+											The SurrealDB Cloud referral program allows you to
+											invite a friend in exchange for benefits.
 										</Text>
 									</Box>
 

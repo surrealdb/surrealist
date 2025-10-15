@@ -86,7 +86,7 @@ function TermsModal({ conditions }: TermsModalProps) {
 	return (
 		<Stack>
 			<Text fz="lg">
-				Please accept our terms and conditions before getting started with Surreal Cloud.
+				Please accept our terms and conditions before getting started with SurrealDB Cloud.
 			</Text>
 			<Checkbox
 				mt="xl"

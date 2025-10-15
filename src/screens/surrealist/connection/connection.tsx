@@ -131,7 +131,7 @@ export async function openConnection(options?: ConnectOptions) {
 			}
 
 			if (authState === "unauthenticated") {
-				throw new CloudError("Not authenticated with Surreal Cloud");
+				throw new CloudError("Not authenticated with SurrealDB Cloud");
 			}
 
 			const instance = await fetchAPI<CloudInstance>(

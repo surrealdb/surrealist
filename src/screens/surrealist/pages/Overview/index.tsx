@@ -348,7 +348,7 @@ export function OverviewPage() {
 										<Box key={organization.info.id}>
 											<Group gap="xl">
 												<Box>
-													<Text>Surreal Cloud</Text>
+													<Text>SurrealDB Cloud</Text>
 													<Link href={`/o/${organization.info.id}`}>
 														<Group
 															gap="sm"
@@ -459,7 +459,7 @@ export function OverviewPage() {
 										mt={36}
 										fz={22}
 									>
-										Sign in to Surreal Cloud
+										Sign in to SurrealDB Cloud
 									</PrimaryTitle>
 									<StartCloud
 										action="Sign in"
@@ -471,7 +471,7 @@ export function OverviewPage() {
 											inherit
 											c="bright"
 										>
-											Surreal Cloud
+											SurrealDB Cloud
 										</Text>{" "}
 										redefines the database experience, offering the power and
 										flexibility of SurrealDB without the pain of managing

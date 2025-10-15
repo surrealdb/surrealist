@@ -44,7 +44,7 @@ Surrealist is a user interface for interacting with your [SurrealDB](https://sur
 - **Visual querying** using the Query View, with support for query syntax highlighting, saved queries, and graph visualization.
 - **Data exploration** using the Explorer View, where you can browse your tables, inspect records, and follow relationships.
 - **Schema designing** using the Designer View, which generates a visual diagram of your database schema.
-- **Surreal Cloud** management panel, allowing you to effortlessly provision and connect to your Cloud instances
+- **SurrealDB Cloud** management panel, allowing you to effortlessly provision and connect to your Cloud instances
 - **Ask Sidekick** - a powerful AI assistant that helps you write queries, explore your data, and design your schema.
 
 Learn more about Surrealist by visiting [the website](https://surrealdb.com/surrealist) or reading the [documentation](https://surrealdb.com/docs/surrealist).
@@ -56,7 +56,7 @@ Learn more about Surrealist by visiting [the website](https://surrealdb.com/surr
 - [Getting started](#Getting-started)
 	- [Using the Web App](#Using-the-Web-App)
 	- [Using the Desktop App](#Using-the-Desktop-App)
-- [Surreal Cloud](#surreal-cloud)
+- [SurrealDB Cloud](#surrealdb-cloud)
 - [Contributing](#contributing)
 - [Disclaimer](#disclaimer)
 - [License](#license)
@@ -75,7 +75,7 @@ Learn more about Surrealist by visiting [the website](https://surrealdb.com/surr
 - [x] Sandbox environment for testing and learning
 - [x] Command palette for quick navigation
 - [x] Integrated AI assistant for asking questions and writing queries
-- [x] Surreal Cloud management panel for provisioning instances
+- [x] SurrealDB Cloud management panel for provisioning instances
 
 <h2><img height="20" src=".github/images/icons/documentation.svg">&nbsp;&nbsp;Learn SurrealDB</h2>
 
@@ -93,18 +93,18 @@ Visit https://app.surrealdb.com/ to start using Surrealist in your browser.
 ### Using the Desktop App
 You can download the latest version of Surrealist Desktop [here](https://surrealdb.com/surrealist?download) or find a list of releases on the [GitHub](https://github.com/surrealdb/surrealist/releases) page. This version is the recommended way to interact with SurrealDB, as it supports additional features over the web app.
 
-<h2><img height="20" src=".github/images/icons/cloud.svg">&nbsp;&nbsp;Surreal Cloud</h2>
+<h2><img height="20" src=".github/images/icons/cloud.svg">&nbsp;&nbsp;SurrealDB Cloud</h2>
 
 <a href="https://surrealdb.com/cloud#gh-dark-mode-only" target="_blank">
-    <img width="100%" src=".github/images/cloud-light.png" alt="Surreal Cloud">
+    <img width="100%" src=".github/images/cloud-light.png" alt="SurrealDB Cloud">
 </a>
 <a href="https://surrealdb.com/cloud#gh-light-mode-only" target="_blank">
-    <img width="100%" src=".github/images/cloud-dark.png" alt="Surreal Cloud">
+    <img width="100%" src=".github/images/cloud-dark.png" alt="SurrealDB Cloud">
 </a>
 
-SurrealDB is available as a [hosted platform](https://app.surrealdb.app/signin). Forget about infrastructure operations, monitoring, backups or capacity planning. [Surreal Cloud](https://app.surrealdb.app/signin) allows you to focus on building great products using the power and flexibility of SurrealDB in just a few clicks. Grow from prototype to enterprise-scale. The Surreal Cloud scalable architecture allows your database to evolve as your application grows, ensuring you are always ahead of demand.
+SurrealDB is available as a [hosted platform](https://app.surrealdb.app/signin). Forget about infrastructure operations, monitoring, backups or capacity planning. [SurrealDB Cloud](https://app.surrealdb.app/signin) allows you to focus on building great products using the power and flexibility of SurrealDB in just a few clicks. Grow from prototype to enterprise-scale. The SurrealDB Cloud scalable architecture allows your database to evolve as your application grows, ensuring you are always ahead of demand.
 
-Surrealist features an integrated Surreal Cloud management panel, allowing you to effortlessly provision and connect to your Cloud instances, manage your billing, and monitor your usage. The Surreal Cloud panel is available in both the web and desktop apps.
+Surrealist features an integrated SurrealDB Cloud management panel, allowing you to effortlessly provision and connect to your Cloud instances, manage your billing, and monitor your usage. The SurrealDB Cloud panel is available in both the web and desktop apps.
 
 <h2><img height="20" src=".github/images/icons/contributing.svg">&nbsp;&nbsp;Contributing</h2>
 

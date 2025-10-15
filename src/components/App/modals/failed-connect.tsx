@@ -48,7 +48,7 @@ export function FailedConnectDialog() {
 						fw={600}
 						c="bright"
 					>
-						Failed to connect to Surreal Cloud
+						Failed to connect to SurrealDB Cloud
 					</Text>
 					<Text mt={4}>
 						<Text c="gray.5">

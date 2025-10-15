@@ -12,7 +12,7 @@ export const STARTING_DATA: Record<StartingData, StartingDataInfo> = {
 	dataset: {
 		id: "dataset",
 		title: "Demo dataset",
-		description: "Explore Surreal Cloud with one of our demo datasets.",
+		description: "Explore SurrealDB Cloud with one of our demo datasets.",
 		icon: iconRelation,
 	},
 	upload: {
@@ -24,7 +24,7 @@ export const STARTING_DATA: Record<StartingData, StartingDataInfo> = {
 	restore: {
 		id: "restore",
 		title: "Restore from backup",
-		description: "Restore from a backup of an existing Surreal Cloud instance.",
+		description: "Restore from a backup of an existing SurrealDB Cloud instance.",
 		icon: iconHistory,
 	},
 };
