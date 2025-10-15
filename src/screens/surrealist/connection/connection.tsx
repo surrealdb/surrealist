@@ -58,7 +58,7 @@ export interface GraphqlResponse {
 let retryTask: any;
 let openedConnection: Connection;
 let instance = new Surreal();
-let surrealql: SurrealQL | null;
+let surrealql: SurrealQL | null = null;
 
 const LQ_SUPPORTED = new Set<Protocol>(["ws", "wss", "mem", "indxdb"]);
 const LIVE_QUERIES = new Map<string, Set<Uuid>>();
@@ -340,12 +340,10 @@ export async function executeQuery(
 
 		return results;
 	} catch (err: any) {
-		console.error("executeQuery fail", err);
-
 		return [
 			{
 				success: false,
-				result: err.message,
+				result: typeof err === "string" ? err : err.message,
 			},
 		];
 	}
@@ -427,7 +425,6 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			liveIndexes = getSurrealQL().getLiveQueries(query);
 		} catch (err: any) {
 			adapter.warn("DB", `Failed to parse live queries: ${err.message}`);
-			console.error(err);
 			liveIndexes = [];
 		}
 
@@ -842,6 +839,10 @@ async function isDatabaseValid(database: string) {
 	} catch {
 		return true;
 	}
+}
+
+export function hasSurrealQL() {
+	return surrealql !== null;
 }
 
 export function getSurrealQL() {

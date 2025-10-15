@@ -2,7 +2,7 @@ import { syntaxTree } from "@codemirror/language";
 import { linter } from "@codemirror/lint";
 import type { Extension } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { getSurrealQL, hasSurrealQL } from "~/screens/surrealist/connection/connection";
 import { getSetting } from "~/util/config";
 
 const findStatement = (stack: any): [number, number] | null => {
@@ -57,7 +57,7 @@ export const surqlLinting = (onValidate?: (status: string) => void): Extension =
 			const isEnabled = getSetting("behavior", "queryErrorChecker");
 			const content = view.state.doc.toString();
 
-			if (!isEnabled || !content) {
+			if (!isEnabled || !content || !hasSurrealQL()) {
 				return [];
 			}
 
