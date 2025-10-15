@@ -29,7 +29,11 @@ import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery, executeQueryFirst } from "~/screens/surrealist/connection/connection";
+import {
+	executeQuery,
+	executeQueryFirst,
+	getSurrealQL,
+} from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { showInfo } from "~/util/helpers";
@@ -45,7 +49,6 @@ import {
 	iconTable,
 } from "~/util/icons";
 import { getTableVariant } from "~/util/schema";
-import { formatValue, validateWhere } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 import classes from "./style.module.scss";
 
@@ -74,7 +77,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const [filterClause] = useDebouncedValue(filter, 500);
 
 	const isFilterValid = useMemo(() => {
-		return !showFilter || !filter || !validateWhere(filter);
+		return !showFilter || !filter || !getSurrealQL().validateWhere(filter);
 	}, [showFilter, filter]);
 
 	const recordQuery = useRecordQuery({
@@ -155,7 +158,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		const records = Array.from(selected).map((id) => new StringRecordId(id));
 		const result = await executeQueryFirst("SELECT * FROM $records", { records });
 
-		navigator.clipboard.writeText(formatValue(result, true, true));
+		navigator.clipboard.writeText(getSurrealQL().formatValue(result, true, true));
 	});
 
 	const removeRecord = useConfirmation<RecordId>({
@@ -172,7 +175,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			</Box>
 		),
 		onConfirm: async (id) => {
-			await executeQuery(`DELETE ${formatValue(id)}`);
+			await executeQuery(`DELETE ${getSurrealQL().formatValue(id)}`);
 			refetch();
 		},
 	});
@@ -198,7 +201,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			navigateConnection(connection, "query");
 			addQueryTab(connection, {
 				type: "config",
-				query: `${prefix} ${formatValue(id)}`,
+				query: `${prefix} ${getSurrealQL().formatValue(id)}`,
 			});
 		};
 
@@ -219,11 +222,11 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				key: "copy-id",
 				title: "Copy Record ID",
 				onClick: () => {
-					navigator.clipboard.writeText(formatValue(record.id));
+					navigator.clipboard.writeText(getSurrealQL().formatValue(record.id));
 
 					showInfo({
 						title: "Record ID copied",
-						subtitle: `Copied ${formatValue(record.id)}`,
+						subtitle: `Copied ${getSurrealQL().formatValue(record.id)}`,
 					});
 				},
 			},
@@ -231,11 +234,11 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				key: "copy-json",
 				title: "Copy as JSON",
 				onClick: () => {
-					navigator.clipboard.writeText(formatValue(record, true, true));
+					navigator.clipboard.writeText(getSurrealQL().formatValue(record, true, true));
 
 					showInfo({
 						title: "Record contents copied",
-						subtitle: `Copied ${formatValue(record.id)}`,
+						subtitle: `Copied ${getSurrealQL().formatValue(record.id)}`,
 					});
 				},
 			},

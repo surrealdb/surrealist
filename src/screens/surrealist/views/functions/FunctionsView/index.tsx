@@ -17,14 +17,17 @@ import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { composeHttpConnection, executeQuery } from "~/screens/surrealist/connection/connection";
+import {
+	composeHttpConnection,
+	executeQuery,
+	getSurrealQL,
+} from "~/screens/surrealist/connection/connection";
 import type { FunctionDetails, SchemaFunction, SchemaModel } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { createBaseAuthentication } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { buildFunctionDefinition, buildModelDefinition, syncConnectionSchema } from "~/util/schema";
-import { formatQuery, validateQuery } from "~/util/surrealql";
 import { FunctionEditorPanel } from "../FunctionEditorPanel";
 import { FunctionPropertiesPanel } from "../FunctionPropertiesPanel";
 import { FunctionsPanel } from "../FunctionsPanel";
@@ -142,8 +145,8 @@ export function FunctionsView() {
 			});
 		} else {
 			const f = func.details as SchemaFunction;
-			const isInvalid = validateQuery(f.block);
-			const block = isInvalid ? f.block : formatQuery(f.block);
+			const isInvalid = getSurrealQL().validateQuery(f.block);
+			const block = isInvalid ? f.block : getSurrealQL().formatQuery(f.block);
 
 			setActive({
 				type: "function",

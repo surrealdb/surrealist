@@ -18,11 +18,11 @@ import {
 import { useSetting } from "~/hooks/config";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useStable } from "~/hooks/stable";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { FunctionDetails, SchemaFunction } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
 import { iconDownload, iconJSON, iconText, iconWarning } from "~/util/icons";
 import { buildFunctionDefinition } from "~/util/schema";
-import { formatQuery, validateQuery } from "~/util/surrealql";
 
 export interface FunctionEditorPanelProps {
 	details: SchemaFunction;
@@ -49,7 +49,7 @@ export function FunctionEditorPanel({
 	});
 
 	const formatFunction = useStable(() => {
-		const isFunctionBlockInvalid = validateQuery(details.block);
+		const isFunctionBlockInvalid = getSurrealQL().validateQuery(details.block);
 		if (isFunctionBlockInvalid) {
 			showErrorNotification({
 				title: "Failed to format",
@@ -57,7 +57,7 @@ export function FunctionEditorPanel({
 			});
 			return;
 		}
-		const formattedFunctionBlock = formatQuery(details.block);
+		const formattedFunctionBlock = getSurrealQL().formatQuery(details.block);
 		onChange((draft) => {
 			(draft.details as SchemaFunction).block = formattedFunctionBlock;
 		});

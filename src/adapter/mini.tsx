@@ -12,8 +12,8 @@ import type {
 import { dedent } from "~/util/dedent";
 import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
+import { parseDatasetURL } from "~/util/language";
 import { broadcastMessage } from "~/util/messaging";
-import { parseDatasetURL } from "~/util/surrealql";
 import { BrowserAdapter } from "./browser";
 
 const THEMES = new Set(["light", "dark", "auto"]);

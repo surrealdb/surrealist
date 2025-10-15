@@ -9,6 +9,7 @@ import {
 } from "@xyflow/react";
 import { toBlob, toSvg } from "html-to-image";
 import { objectify } from "radash";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type {
 	DiagramAlgorithm,
 	DiagramDirection,
@@ -19,7 +20,6 @@ import type {
 	TableVariant,
 } from "~/types";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
-import { extractKindRecords } from "~/util/surrealql";
 import { ElkStepEdge } from "./edges/ElkEdge";
 import { NormalTableNode } from "./nodes/NormalTableNode";
 import { RelationTableNode } from "./nodes/RelationTableNode";
@@ -215,7 +215,7 @@ export function buildFlowNodes(
 					continue;
 				}
 
-				const targets = extractKindRecords(field.kind);
+				const targets = getSurrealQL().extractKindRecords(field.kind);
 
 				for (const target of targets) {
 					if (

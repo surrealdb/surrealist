@@ -2,8 +2,8 @@ import { syntaxTree } from "@codemirror/language";
 import { linter } from "@codemirror/lint";
 import type { Extension } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { getSetting } from "~/util/config";
-import { validateQuery } from "~/util/surrealql";
 
 const findStatement = (stack: any): [number, number] | null => {
 	let last: any = null;
@@ -61,7 +61,7 @@ export const surqlLinting = (onValidate?: (status: string) => void): Extension =
 				return [];
 			}
 
-			const message = validateQuery(content) || "";
+			const message = getSurrealQL().validateQuery(content) || "";
 			const match = message.match(/^Parse error: (.+)?\s+-->\s+\[(\d+):(\d+)\]/i);
 
 			if (match) {

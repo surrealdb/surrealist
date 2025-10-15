@@ -18,7 +18,7 @@ import { composeAuthentication } from "~/screens/surrealist/connection/helpers";
 import type { AccessField, SchemaAccess } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconAccountPlus } from "~/util/icons";
-import { parseVariables } from "~/util/surrealql";
+import { parseVariables } from "~/util/language";
 
 export function RegisterUserModal() {
 	const schema = useDatabaseSchema();

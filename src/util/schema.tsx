@@ -18,7 +18,6 @@ import type {
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";
 import { showErrorNotification } from "./helpers";
-import { getStatementCount } from "./surrealql";
 
 export interface SchemaSyncOptions {
 	tables?: string[];
@@ -289,13 +288,4 @@ export function readBlock(block: string | undefined) {
 	const trimmed = hasBraces || hasParen ? block.slice(1, -1) : (block ?? "");
 
 	return dedent(trimmed);
-}
-
-/**
- * Wrap a block in braces or parenthesis
- */
-export function writeBlock(block: string) {
-	const [openSymbol, closeSymbol] = getStatementCount(block) > 1 ? ["{", "}"] : ["(", ")"];
-
-	return `${openSymbol}\n${block}\n${closeSymbol}`;
 }

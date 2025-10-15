@@ -32,9 +32,11 @@ import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
-import { connectionUri, newId, showErrorNotification, showWarning } from "~/util/helpers";
+import { __throw, connectionUri, newId, showErrorNotification, showWarning } from "~/util/helpers";
+import { parseIdent } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
-import { getLiveQueries, parseIdent } from "~/util/surrealql";
+import { createSurrealQL } from "~/util/surql";
+import { SurrealQL } from "~/util/surql/surrealql";
 import { composeAuthentication, getVersionTimeout } from "./helpers";
 import { createSurreal } from "./surreal";
 
@@ -56,6 +58,7 @@ export interface GraphqlResponse {
 let retryTask: any;
 let openedConnection: Connection;
 let instance = new Surreal();
+let surrealql: SurrealQL | null;
 
 const LQ_SUPPORTED = new Set<Protocol>(["ws", "wss", "mem", "indxdb"]);
 const LIVE_QUERIES = new Map<string, Set<Uuid>>();
@@ -165,22 +168,23 @@ export async function openConnection(options?: ConnectOptions) {
 
 		adapter.log("DB", "Connection established");
 
-		instance.version().then((v) => {
-			const version = v.version.replace(/^surrealdb-/, "");
-			const isPreview = version.includes("-alpha") || version.includes("-beta");
+		const v = await instance.version();
+		const version = v.version.replace(/^surrealdb-/, "");
+		const isPreview = version.includes("-alpha") || version.includes("-beta");
 
-			if (isPreview) {
-				showWarning({
-					title: "Preview version detected",
-					subtitle:
-						"You are connected to a preview version of SurrealDB. Some features may not work as intended.",
-				});
-			}
+		if (isPreview) {
+			showWarning({
+				title: "Preview version detected",
+				subtitle:
+					"You are connected to a preview version of SurrealDB. Some features may not work as intended.",
+			});
+		}
 
-			setVersion(version);
-			adapter.log("DB", `Database version ${version ?? "unknown"}`);
-		});
+		adapter.log("DB", `Database version ${version ?? "unknown"}`);
 
+		surrealql = createSurrealQL(version);
+
+		setVersion(version);
 		setCurrentState("connected");
 		setLatestError("");
 
@@ -420,7 +424,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		let liveIndexes: number[];
 
 		try {
-			liveIndexes = getLiveQueries(query);
+			liveIndexes = getSurrealQL().getLiveQueries(query);
 		} catch (err: any) {
 			adapter.warn("DB", `Failed to parse live queries: ${err.message}`);
 			console.error(err);
@@ -838,4 +842,8 @@ async function isDatabaseValid(database: string) {
 	} catch {
 		return true;
 	}
+}
+
+export function getSurrealQL() {
+	return surrealql ?? __throw("No SurrealQL instance available");
 }

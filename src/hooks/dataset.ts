@@ -4,8 +4,8 @@ import { DATASETS } from "~/constants";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { DatasetType, Selectable } from "~/types";
 import { showInfo } from "~/util/helpers";
+import { parseDatasetURL } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
-import { parseDatasetURL } from "~/util/surrealql";
 import { useStable } from "./stable";
 
 /**

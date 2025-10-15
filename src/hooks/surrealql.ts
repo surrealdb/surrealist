@@ -1,7 +1,7 @@
 import { useDebouncedValue } from "@mantine/hooks";
 import { useMemo } from "react";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { ResultFormat } from "~/types";
-import { formatValue, parseValue } from "~/util/surrealql";
 import { useActiveQuery } from "./connection";
 import { useStable } from "./stable";
 
@@ -15,7 +15,7 @@ export function useResultFormatter(): [Formatter, ResultFormat] {
 	const format = query?.resultFormat || "sql";
 
 	const formatter = useStable((value: any) => {
-		return formatValue(value, format === "json", true);
+		return getSurrealQL().formatValue(value, format === "json", true);
 	});
 
 	return [formatter, format];
@@ -32,7 +32,7 @@ export function useValueValidator(value: string, objectRoot?: boolean): [boolean
 
 	return useMemo(() => {
 		try {
-			const value = parseValue(bodyCache);
+			const value = getSurrealQL().parseValue(bodyCache);
 
 			if (objectRoot && typeof value !== "object" && !Array.isArray(value)) {
 				throw new Error("Invalid object root");

@@ -3,8 +3,8 @@ import type { MouseEvent } from "react";
 import type { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { iconArrowUpRight } from "~/util/icons";
-import { formatValue } from "~/util/surrealql";
 import { Icon } from "../Icon";
 
 export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {
@@ -14,7 +14,7 @@ export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {
 
 export function RecordLink({ value, withOpen, ...rest }: RecordLinkProps) {
 	const { inspect } = useInspector();
-	const recordText = formatValue(value);
+	const recordText = getSurrealQL().formatValue(value);
 
 	const handleOpen = useStable((e: MouseEvent) => {
 		e.stopPropagation();

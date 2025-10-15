@@ -8,9 +8,9 @@ import { Label } from "~/components/Label";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconClose, iconMarker } from "~/util/icons";
-import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeEditor } from "../CodeEditor";
 import type { GeographyInput } from "../GeographyMap";
 
@@ -24,10 +24,10 @@ export interface GeographyDrawerProps {
 
 export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps) {
 	const [width, setWidth] = useState(650);
-	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
+	const [geoJSON, setGeoJSON] = useInputState(getSurrealQL().formatValue(data));
 
 	useEffect(() => {
-		setGeoJSON(formatValue(data));
+		setGeoJSON(getSurrealQL().formatValue(data));
 	}, [data]);
 
 	const extensions = useMemo(() => [surrealql()], []);
@@ -35,7 +35,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 	// parses geoJSON and splits langitude and latitude and creates a fitting string with bail out if it doesn't fit
 	const coordLabel = useMemo(() => {
 		try {
-			const parsed = parseValue<any>(geoJSON).toJSON();
+			const parsed = getSurrealQL().parseValue<any>(geoJSON).toJSON();
 
 			const pickCoords = (obj: any): [number, number] | null => {
 				if (!obj) return null;

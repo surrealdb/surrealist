@@ -16,7 +16,7 @@ import type {
 	GeometryPoint,
 	GeometryPolygon,
 } from "surrealdb";
-import { parseValue } from "~/util/surrealql";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 
 // leaflet is a tragedy
 delete (window.L.Icon.Default.prototype as any)._getIconUrl;
@@ -61,7 +61,7 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 
 	useEffect(() => {
 		try {
-			const data = parseValue<any>(value).toJSON();
+			const data = getSurrealQL().parseValue<any>(value).toJSON();
 
 			const leafletGeoJson = createGeoJSON(data, {
 				coordsToLatLng: convertCoordsToLatLng,

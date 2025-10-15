@@ -16,9 +16,9 @@ import {
 	RecordId,
 	Uuid,
 } from "surrealdb";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { iconCheck, iconClock, iconClose } from "~/util/icons";
-import { formatValue } from "~/util/surrealql";
 import { GeographyLink } from "../GeographyLink";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
@@ -212,7 +212,7 @@ function ObjectCell(props: { value: any }) {
 						lineClamp={10}
 						className={classes.sourceCode}
 					>
-						{formatValue(props.value, false, true)}
+						{getSurrealQL().formatValue(props.value, false, true)}
 					</Text>
 				</HoverCard.Dropdown>
 			</HoverCard>

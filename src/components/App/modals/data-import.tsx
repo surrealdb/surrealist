@@ -26,12 +26,11 @@ import { useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification, showInfo, showWarning } from "~/util/helpers";
 import { iconDownload, iconFile } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
-import { parseValue } from "~/util/surrealql";
 
 type DataFileFormat = "csv" | "json" | "ndjson";
 type ImportType = "sql" | DataFileFormat;
@@ -210,7 +209,7 @@ const convertValueToType = (value: any, type: SurrealKind): any => {
 	switch (type) {
 		case "any":
 			try {
-				return parseValue(value);
+				return getSurrealQL().parseValue(value);
 			} catch {
 				return value;
 			}

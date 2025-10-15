@@ -6,12 +6,12 @@ import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { ON_STOP_PROPAGATION, simplifyKind } from "~/util/helpers";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { getTableVariant } from "~/util/schema";
-import { extractKindRecords } from "~/util/surrealql";
 import classes from "../style.module.scss";
 
 interface SummaryProps {
@@ -255,7 +255,9 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 								name="in"
 								value={
 									<Text ta="right">
-										{extractKindRecords(inField.kind ?? "").join(", ")}
+										{getSurrealQL()
+											.extractKindRecords(inField.kind ?? "")
+											.join(", ")}
 									</Text>
 								}
 							/>
@@ -264,7 +266,9 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 								name="out"
 								value={
 									<Text ta="right">
-										{extractKindRecords(outField.kind ?? "").join(", ")}
+										{getSurrealQL()
+											.extractKindRecords(outField.kind ?? "")
+											.join(", ")}
 									</Text>
 								}
 							/>

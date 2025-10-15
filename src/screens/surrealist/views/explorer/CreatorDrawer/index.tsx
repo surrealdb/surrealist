@@ -29,12 +29,11 @@ import { surqlLinting } from "~/editor";
 import { useTableNames, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useValueValidator } from "~/hooks/surrealql";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
-import { formatValue } from "~/util/surrealql";
 
 type EdgeInfo = [string[], string[]];
 
@@ -116,7 +115,7 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 	useLayoutEffect(() => {
 		if (opened) {
 			const bodyText = content
-				? formatValue(omit(content, ["id", "in", "out"]), true, true)
+				? getSurrealQL().formatValue(omit(content, ["id", "in", "out"]), true, true)
 				: "{\n    \n}";
 
 			setErrors([]);

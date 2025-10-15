@@ -29,6 +29,7 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInspector } from "~/providers/Inspector";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
@@ -43,7 +44,7 @@ import {
 	iconWarning,
 } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
+import { parseVariables } from "~/util/language";
 import { readQuery, writeQuery } from "../QueryView/strategy";
 import classes from "./style.module.scss";
 
@@ -146,9 +147,9 @@ export function QueryPane({
 			const document = editor.state.doc;
 			const formatted = hasSelection
 				? document.sliceString(0, selection.from) +
-					formatQuery(document.sliceString(selection.from, selection.to)) +
+					getSurrealQL().formatQuery(document.sliceString(selection.from, selection.to)) +
 					document.sliceString(selection.to)
-				: formatQuery(document.toString());
+				: getSurrealQL().formatQuery(document.toString());
 
 			setEditorText(editor, formatted);
 		} catch {
@@ -180,11 +181,11 @@ export function QueryPane({
 			...currentVars,
 			...newVars,
 		};
-
+-
 		setShowVariables(true);
 		updateQueryTab(connection, {
 			id: activeTab.id,
-			variables: formatValue(mergedVars, false, true),
+			variables: getSurrealQL().formatValue(mergedVars, false, true),
 		});
 	});
 

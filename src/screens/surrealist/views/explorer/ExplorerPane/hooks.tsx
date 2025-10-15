@@ -2,7 +2,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { escapeIdent } from "surrealdb";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { executeQueryFirst, executeQuerySingle } from "~/screens/surrealist/connection/connection";
-import { parseIdent } from "~/util/surrealql";
+import { parseIdent } from "~/util/language";
 
 export type SortMode = [string, "asc" | "desc"] | null;
 
