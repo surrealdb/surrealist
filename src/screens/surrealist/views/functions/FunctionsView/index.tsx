@@ -135,7 +135,7 @@ export function FunctionsView() {
 		setCreateName("");
 	});
 
-	const editFunction = useStable((func: FunctionDetails) => {
+	const editFunction = useStable(async (func: FunctionDetails) => {
 		isCreatingHandle.close();
 
 		if (func.type === "model") {
@@ -145,8 +145,8 @@ export function FunctionsView() {
 			});
 		} else {
 			const f = func.details as SchemaFunction;
-			const isInvalid = getSurrealQL().validateQuery(f.block);
-			const block = isInvalid ? f.block : getSurrealQL().formatQuery(f.block);
+			const isInvalid = await getSurrealQL().validateQuery(f.block);
+			const block = isInvalid ? f.block : await getSurrealQL().formatQuery(f.block);
 
 			setActive({
 				type: "function",

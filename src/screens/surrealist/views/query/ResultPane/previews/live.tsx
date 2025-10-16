@@ -2,12 +2,12 @@ import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@manti
 import { showNotification } from "@mantine/notifications";
 import { surrealql } from "@surrealdb/codemirror";
 import { useContextMenu } from "mantine-contextmenu";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
 import { surqlRecordLinks } from "~/editor";
-import { useResultFormatter } from "~/hooks/surrealql";
+import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
 import { useInspector } from "~/providers/Inspector";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
@@ -44,6 +44,43 @@ function killQuery(id: string) {
 		title: "Query killed",
 		message: "You will no longer receive messages",
 	});
+}
+
+function LiveMessageBody({
+	data,
+	format,
+	extensions,
+}: {
+	data: any;
+	format: Formatter;
+	extensions: any[];
+}) {
+	const [formatted, setFormatted] = useState("");
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const formatData = async () => {
+			const result = await attemptFormat(format, data);
+			if (!cancelled) {
+				setFormatted(result);
+			}
+		};
+
+		formatData();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [data, format]);
+
+	return (
+		<CodeEditor
+			value={formatted}
+			readOnly
+			extensions={extensions}
+		/>
+	);
 }
 
 export function LivePreview({ query, isLive }: PreviewProps) {
@@ -141,9 +178,9 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 									</Accordion.Control>
 									{hasBody(msg) && (
 										<Accordion.Panel>
-											<CodeEditor
-												value={attemptFormat(format, msg.data)}
-												readOnly
+											<LiveMessageBody
+												data={msg.data}
+												format={format}
 												extensions={extensions}
 											/>
 										</Accordion.Panel>

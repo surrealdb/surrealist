@@ -140,16 +140,18 @@ export function QueryPane({
 		});
 	});
 
-	const handleFormat = useStable(() => {
+	const handleFormat = useStable(async () => {
 		if (!editor) return;
 
 		try {
 			const document = editor.state.doc;
 			const formatted = hasSelection
 				? document.sliceString(0, selection.from) +
-					getSurrealQL().formatQuery(document.sliceString(selection.from, selection.to)) +
+					(await getSurrealQL().formatQuery(
+						document.sliceString(selection.from, selection.to),
+					)) +
 					document.sliceString(selection.to)
-				: getSurrealQL().formatQuery(document.toString());
+				: await getSurrealQL().formatQuery(document.toString());
 
 			setEditorText(editor, formatted);
 		} catch {
@@ -164,7 +166,7 @@ export function QueryPane({
 		setShowVariables(!showVariables);
 	});
 
-	const inferVariables = useStable(() => {
+	const inferVariables = useStable(async () => {
 		if (!activeTab || !connection) return;
 
 		const tree = syntaxTree(editor.state);
@@ -181,11 +183,10 @@ export function QueryPane({
 			...currentVars,
 			...newVars,
 		};
--
-		setShowVariables(true);
+		-setShowVariables(true);
 		updateQueryTab(connection, {
 			id: activeTab.id,
-			variables: getSurrealQL().formatValue(mergedVars, false, true),
+			variables: await getSurrealQL().formatValue(mergedVars, false, true),
 		});
 	});
 

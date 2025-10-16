@@ -3,57 +3,59 @@ import { CborCodec } from "surrealdb";
 import { SurrealQL } from "./surrealql";
 
 export class SurrealQLV3 implements SurrealQL {
-	validateQuery(sql: string): string | undefined {
+	validateQuery(sql: string): Promise<string | undefined> {
 		try {
 			Wasm.validate(sql);
-			return undefined;
+			return Promise.resolve(undefined);
 		} catch (err: any) {
-			return err;
+			return Promise.resolve(err);
 		}
 	}
 
-	validateWhere(where: string): string | undefined {
+	validateWhere(where: string): Promise<string | undefined> {
 		try {
 			(window as any).Wasm = Wasm;
 			Wasm.validate_where(where);
-			return undefined;
+			return Promise.resolve(undefined);
 		} catch (err: any) {
-			return err;
+			return Promise.resolve(err);
 		}
 	}
 
-	formatValue(value: any, json = false, pretty = false): string {
+	formatValue(value: any, json = false, pretty = false): Promise<string> {
 		const codec = new CborCodec({});
 		const binary = new Uint8Array(codec.encode(value));
 		const parsed = Value.from_cbor(binary);
 
-		return parsed[json ? "json" : "format"](pretty);
+		return Promise.resolve(parsed[json ? "json" : "format"](pretty));
 	}
 
-	parseValue<T = unknown>(value: string): T {
+	parseValue<T = unknown>(value: string): Promise<T> {
 		const codec = new CborCodec({});
 		const cborBuffer = Value.from_string(value).to_cbor().buffer;
 		const cborUint8 = new Uint8Array(cborBuffer);
 
-		return codec.decode<T>(cborUint8);
+		return Promise.resolve(codec.decode<T>(cborUint8));
 	}
-	getLiveQueries(query: string): number[] {
+	getLiveQueries(query: string): Promise<number[]> {
 		const tree: any[] = Wasm.parse(query);
 
-		return tree.reduce((acc: number[], stmt, idx) => {
+		const result = tree.reduce((acc: number[], stmt, idx) => {
 			if (stmt.Live) {
 				acc.push(idx);
 			}
 
 			return acc;
 		}, []);
+
+		return Promise.resolve(result);
 	}
 
-	formatQuery(query: string, pretty = true): string {
-		return Wasm.format(query, pretty);
+	formatQuery(query: string, pretty = true): Promise<string> {
+		return Promise.resolve(Wasm.format(query, pretty));
 	}
 
-	extractKindRecords(kind: string): string[] {
+	extractKindRecords(kind: string): Promise<string[]> {
 		try {
 			const ast = Wasm.parse(`DEFINE FIELD dummy ON dummy TYPE ${kind}`);
 			const root = ast[0].Define.Field.kind;
@@ -61,10 +63,10 @@ export class SurrealQLV3 implements SurrealQL {
 
 			this.#parseKindTree(root, records);
 
-			return [...records.values()];
+			return Promise.resolve([...records.values()]);
 		} catch (err: any) {
 			console.error(err);
-			return [];
+			return Promise.resolve([]);
 		}
 	}
 

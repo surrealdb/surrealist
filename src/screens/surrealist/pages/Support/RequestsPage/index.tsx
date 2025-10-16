@@ -11,7 +11,7 @@ import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SUPPORT_REQUEST_TYPES } from "~/constants";
-import { iconArrowLeft, iconPlus } from "~/util/icons";
+import { iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ConversationCard } from "../ConversationCard";
 import classes from "../style.module.scss";

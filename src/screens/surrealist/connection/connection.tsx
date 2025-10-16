@@ -422,7 +422,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		let liveIndexes: number[];
 
 		try {
-			liveIndexes = getSurrealQL().getLiveQueries(query);
+			liveIndexes = await getSurrealQL().getLiveQueries(query);
 		} catch (err: any) {
 			adapter.warn("DB", `Failed to parse live queries: ${err.message}`);
 			liveIndexes = [];

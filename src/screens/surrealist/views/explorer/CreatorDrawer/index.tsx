@@ -114,16 +114,24 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 
 	useLayoutEffect(() => {
 		if (opened) {
-			const bodyText = content
-				? getSurrealQL().formatValue(omit(content, ["id", "in", "out"]), true, true)
-				: "{\n    \n}";
+			const initializeBody = async () => {
+				const bodyText = content
+					? await getSurrealQL().formatValue(
+							omit(content, ["id", "in", "out"]),
+							true,
+							true,
+						)
+					: "{\n    \n}";
 
-			setErrors([]);
-			setRecordTable(table);
-			setRecordId("");
-			setRecordBody(bodyText);
-			setRecordFrom("");
-			setRecordTo("");
+				setErrors([]);
+				setRecordTable(table);
+				setRecordId("");
+				setRecordBody(bodyText);
+				setRecordFrom("");
+				setRecordTo("");
+			};
+
+			initializeBody();
 		}
 	}, [opened, table, content]);
 

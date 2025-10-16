@@ -100,7 +100,7 @@ export function QueryPane({
 		setShowVariables(!showVariables);
 	});
 
-	const inferVariables = useStable(() => {
+	const inferVariables = useStable(async () => {
 		if (!connection) return;
 
 		try {
@@ -137,7 +137,7 @@ export function QueryPane({
 			setShowVariables(true);
 			updateConnection({
 				id: connection,
-				graphqlVariables: getSurrealQL().formatValue(mergedVars, false, true),
+				graphqlVariables: await getSurrealQL().formatValue(mergedVars, false, true),
 			});
 		} catch {
 			showErrorNotification({

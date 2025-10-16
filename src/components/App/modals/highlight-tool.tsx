@@ -62,8 +62,8 @@ export function HighlightToolModal() {
 		}));
 	}, []);
 
-	const format = useCallback(() => {
-		onChange(getSurrealQL().formatQuery(value));
+	const format = useCallback(async () => {
+		onChange(await getSurrealQL().formatQuery(value));
 	}, [value]);
 
 	useEffect(() => {

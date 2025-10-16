@@ -48,8 +48,8 @@ export function FunctionEditorPanel({
 		);
 	});
 
-	const formatFunction = useStable(() => {
-		const isFunctionBlockInvalid = getSurrealQL().validateQuery(details.block);
+	const formatFunction = useStable(async () => {
+		const isFunctionBlockInvalid = await getSurrealQL().validateQuery(details.block);
 		if (isFunctionBlockInvalid) {
 			showErrorNotification({
 				title: "Failed to format",
@@ -57,7 +57,7 @@ export function FunctionEditorPanel({
 			});
 			return;
 		}
-		const formattedFunctionBlock = getSurrealQL().formatQuery(details.block);
+		const formattedFunctionBlock = await getSurrealQL().formatQuery(details.block);
 		onChange((draft) => {
 			(draft.details as SchemaFunction).block = formattedFunctionBlock;
 		});

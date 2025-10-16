@@ -104,10 +104,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			{ id },
 		);
 
-		const formatted = getSurrealQL().formatValue(content, false, true);
+		const formatted = await getSurrealQL().formatValue(content, false, true);
 
 		setError("");
-		setRecordId(getSurrealQL().formatValue(id));
+		setRecordId(await getSurrealQL().formatValue(id));
 		setCurrentRecord({
 			isEdge: !!content?.in && !!content?.out,
 			exists: !!content,
@@ -129,8 +129,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		}
 	});
 
-	const gotoRecord = useStable(() => {
-		const id = getSurrealQL().parseValue(recordId);
+	const gotoRecord = useStable(async () => {
+		const id = await getSurrealQL().parseValue(recordId);
 
 		if (id instanceof RecordId) {
 			history.push(id);
@@ -142,7 +142,9 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		confirmText: "Delete",
 		skippable: true,
 		onConfirm: async () => {
-			await executeQuery(/* surql */ `DELETE ${getSurrealQL().formatValue(history.current)}`);
+			await executeQuery(
+				/* surql */ `DELETE ${await getSurrealQL().formatValue(history.current)}`,
+			);
 
 			history.clear();
 

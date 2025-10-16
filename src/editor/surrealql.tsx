@@ -53,7 +53,7 @@ export const getQueryRange = (view: EditorView, head?: number): [number, number]
  */
 export const surqlLinting = (onValidate?: (status: string) => void): Extension =>
 	linter(
-		(view) => {
+		async (view) => {
 			const isEnabled = getSetting("behavior", "queryErrorChecker");
 			const content = view.state.doc.toString();
 
@@ -61,7 +61,7 @@ export const surqlLinting = (onValidate?: (status: string) => void): Extension =
 				return [];
 			}
 
-			const message = getSurrealQL().validateQuery(content) || "";
+			const message = (await getSurrealQL().validateQuery(content)) || "";
 			const match = message.match(/^Parse error: (.+)?\s+-->\s+\[(\d+):(\d+)\]/i);
 
 			if (match) {

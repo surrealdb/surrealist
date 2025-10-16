@@ -8,7 +8,7 @@ import { tagEvent } from "~/util/analytics";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { InspectorDrawer } from "./drawer";
 
-type InspectFunction = (record: RecordId | string) => void;
+type InspectFunction = (record: RecordId | string) => Promise<void>;
 type StopInspectFunction = () => void;
 
 const InspectorContext = createContext<{
@@ -26,7 +26,7 @@ export function useInspector() {
 	return (
 		ctx ?? {
 			history: [],
-			inspect: () => {},
+			inspect: async () => {},
 			stopInspect: () => {},
 		}
 	);
@@ -41,10 +41,10 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 		setHistory: setHistoryItems,
 	});
 
-	const inspect = useStable((record: RecordId | string) => {
+	const inspect = useStable(async (record: RecordId | string) => {
 		const recordId =
 			typeof record === "string"
-				? getSurrealQL().parseValue(record)
+				? await getSurrealQL().parseValue(record)
 				: new RecordId(record.table, record.id);
 
 		if (!(recordId instanceof RecordId)) {

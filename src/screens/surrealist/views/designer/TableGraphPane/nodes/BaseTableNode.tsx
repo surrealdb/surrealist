@@ -1,6 +1,6 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
 import { Handle, Position } from "@xyflow/react";
-import { type MouseEvent, type ReactNode, useRef } from "react";
+import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
@@ -191,6 +191,34 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
 
+	const [inRecords, setInRecords] = useState<string>("");
+	const [outRecords, setOutRecords] = useState<string>("");
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const loadRecords = async () => {
+			if (inField) {
+				const records = await getSurrealQL().extractKindRecords(inField.kind ?? "");
+				if (!cancelled) {
+					setInRecords(records.join(", "));
+				}
+			}
+			if (outField) {
+				const records = await getSurrealQL().extractKindRecords(outField.kind ?? "");
+				if (!cancelled) {
+					setOutRecords(records.join(", "));
+				}
+			}
+		};
+
+		loadRecords();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [inField, outField]);
+
 	return (
 		<>
 			<Handle
@@ -253,24 +281,12 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 							<Field
 								isLight={isLight}
 								name="in"
-								value={
-									<Text ta="right">
-										{getSurrealQL()
-											.extractKindRecords(inField.kind ?? "")
-											.join(", ")}
-									</Text>
-								}
+								value={<Text ta="right">{inRecords}</Text>}
 							/>
 							<Field
 								isLight={isLight}
 								name="out"
-								value={
-									<Text ta="right">
-										{getSurrealQL()
-											.extractKindRecords(outField.kind ?? "")
-											.join(", ")}
-									</Text>
-								}
+								value={<Text ta="right">{outRecords}</Text>}
 							/>
 						</Stack>
 					</>

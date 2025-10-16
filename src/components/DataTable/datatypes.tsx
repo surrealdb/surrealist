@@ -1,6 +1,7 @@
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { convert } from "geo-coordinates-parser";
+import { useEffect, useState } from "react";
 import {
 	DateTime,
 	Decimal,
@@ -188,6 +189,25 @@ function ArrayCell(props: { value: any[] }) {
 }
 
 function ObjectCell(props: { value: any }) {
+	const [formatted, setFormatted] = useState("");
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const format = async () => {
+			const result = await getSurrealQL().formatValue(props.value, false, true);
+			if (!cancelled) {
+				setFormatted(result);
+			}
+		};
+
+		format();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [props.value]);
+
 	return (
 		<div>
 			<HoverCard
@@ -212,7 +232,7 @@ function ObjectCell(props: { value: any }) {
 						lineClamp={10}
 						className={classes.sourceCode}
 					>
-						{getSurrealQL().formatValue(props.value, false, true)}
+						{formatted}
 					</Text>
 				</HoverCard.Dropdown>
 			</HoverCard>

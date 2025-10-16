@@ -1,5 +1,6 @@
 import { type BoxProps, type ElementProps, Group, Text } from "@mantine/core";
 import type { MouseEvent } from "react";
+import { useEffect, useState } from "react";
 import type { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
@@ -14,7 +15,24 @@ export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {
 
 export function RecordLink({ value, withOpen, ...rest }: RecordLinkProps) {
 	const { inspect } = useInspector();
-	const recordText = getSurrealQL().formatValue(value);
+	const [recordText, setRecordText] = useState("");
+
+	useEffect(() => {
+		let cancelled = false;
+
+		const format = async () => {
+			const result = await getSurrealQL().formatValue(value);
+			if (!cancelled) {
+				setRecordText(result);
+			}
+		};
+
+		format();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [value]);
 
 	const handleOpen = useStable((e: MouseEvent) => {
 		e.stopPropagation();
