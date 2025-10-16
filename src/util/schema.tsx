@@ -294,8 +294,9 @@ export function readBlock(block: string | undefined) {
 /**
  * Wrap a block in braces or parenthesis
  */
-export function writeBlock(block: string) {
-	const [openSymbol, closeSymbol] = getStatementCount(block) > 1 ? ["{", "}"] : ["(", ")"];
+export async function writeBlock(block: string): Promise<string> {
+	const [openSymbol, closeSymbol] =
+		(await getStatementCount(block)) > 1 ? ["{", "}"] : ["(", ")"];
 
 	return `${openSymbol}\n${block}\n${closeSymbol}`;
 }

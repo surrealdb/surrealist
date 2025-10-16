@@ -62,8 +62,8 @@ export function HighlightToolModal() {
 		}));
 	}, []);
 
-	const format = useCallback(() => {
-		onChange(formatQuery(value));
+	const format = useCallback(async () => {
+		onChange(await formatQuery(value));
 	}, [value]);
 
 	useEffect(() => {

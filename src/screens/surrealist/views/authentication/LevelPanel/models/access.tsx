@@ -124,11 +124,11 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 				query += ` RECORD`;
 
 				if (signupClause) {
-					query += ` SIGNUP ${writeBlock(signupClause)}`;
+					query += ` SIGNUP ${await writeBlock(signupClause)}`;
 				}
 
 				if (signinClause) {
-					query += ` SIGNIN ${writeBlock(signinClause)}`;
+					query += ` SIGNIN ${await writeBlock(signinClause)}`;
 				}
 
 				if (jwtIssuerKey || jwtVerifyKey || jwtVerifyUrl) {
@@ -155,7 +155,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			}
 
 			if (authClause) {
-				query += ` AUTHENTICATE ${writeBlock(authClause)}`;
+				query += ` AUTHENTICATE ${await writeBlock(authClause)}`;
 			}
 
 			const durations: string[] = [];

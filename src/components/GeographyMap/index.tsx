@@ -60,19 +60,33 @@ export const GeographyMap = ({ value }: GeographyMapProps) => {
 	const [bounds, setBounds] = useState<any>();
 
 	useEffect(() => {
-		try {
-			const data = parseValue(value).toJSON();
+		let cancelled = false;
 
-			const leafletGeoJson = createGeoJSON(data, {
-				coordsToLatLng: convertCoordsToLatLng,
-			});
+		const loadData = async () => {
+			try {
+				const data = (await parseValue(value)).toJSON();
 
-			setIsError(false);
-			setData(leafletGeoJson.toGeoJSON());
-			setBounds(leafletGeoJson.getBounds());
-		} catch {
-			setIsError(true);
-		}
+				if (cancelled) return;
+
+				const leafletGeoJson = createGeoJSON(data, {
+					coordsToLatLng: convertCoordsToLatLng,
+				});
+
+				setIsError(false);
+				setData(leafletGeoJson.toGeoJSON());
+				setBounds(leafletGeoJson.getBounds());
+			} catch {
+				if (!cancelled) {
+					setIsError(true);
+				}
+			}
+		};
+
+		loadData();
+
+		return () => {
+			cancelled = true;
+		};
 	}, [value]);
 
 	useEffect(() => {

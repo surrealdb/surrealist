@@ -177,7 +177,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [nodesInitialized, algorithm, direction]);
 
 	const renderGraph = useStable(async () => {
-		const [nodes, edges, warnings] = buildFlowNodes(
+		const [nodes, edges, warnings] = await buildFlowNodes(
 			props.tables,
 			nodeMode,
 			direction,

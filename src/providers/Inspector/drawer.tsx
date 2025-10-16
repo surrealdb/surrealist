@@ -105,10 +105,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			{ id },
 		);
 
-		const formatted = formatValue(content, false, true);
+		const formatted = await formatValue(content, false, true);
 
 		setError("");
-		setRecordId(formatValue(id));
+		setRecordId(await formatValue(id));
 		setCurrentRecord({
 			isEdge: !!content?.in && !!content?.out,
 			exists: !!content,
@@ -130,8 +130,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		}
 	});
 
-	const gotoRecord = useStable(() => {
-		const id = parseValue(recordId);
+	const gotoRecord = useStable(async () => {
+		const id = await parseValue(recordId);
 
 		if (id instanceof RecordId) {
 			history.push(id);
@@ -143,7 +143,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		confirmText: "Delete",
 		skippable: true,
 		onConfirm: async () => {
-			await executeQuery(/* surql */ `DELETE ${formatValue(history.current)}`);
+			await executeQuery(/* surql */ `DELETE ${await formatValue(history.current)}`);
 
 			history.clear();
 

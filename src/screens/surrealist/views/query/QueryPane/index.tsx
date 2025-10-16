@@ -139,16 +139,16 @@ export function QueryPane({
 		});
 	});
 
-	const handleFormat = useStable(() => {
+	const handleFormat = useStable(async () => {
 		if (!editor) return;
 
 		try {
 			const document = editor.state.doc;
 			const formatted = hasSelection
 				? document.sliceString(0, selection.from) +
-					formatQuery(document.sliceString(selection.from, selection.to)) +
+					(await formatQuery(document.sliceString(selection.from, selection.to))) +
 					document.sliceString(selection.to)
-				: formatQuery(document.toString());
+				: await formatQuery(document.toString());
 
 			setEditorText(editor, formatted);
 		} catch {
@@ -163,7 +163,7 @@ export function QueryPane({
 		setShowVariables(!showVariables);
 	});
 
-	const inferVariables = useStable(() => {
+	const inferVariables = useStable(async () => {
 		if (!activeTab || !connection) return;
 
 		const tree = syntaxTree(editor.state);
@@ -184,7 +184,7 @@ export function QueryPane({
 		setShowVariables(true);
 		updateQueryTab(connection, {
 			id: activeTab.id,
-			variables: formatValue(mergedVars, false, true),
+			variables: await formatValue(mergedVars, false, true),
 		});
 	});
 

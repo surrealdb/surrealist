@@ -136,7 +136,7 @@ export function FunctionsView() {
 		setCreateName("");
 	});
 
-	const editFunction = useStable((func: FunctionDetails) => {
+	const editFunction = useStable(async (func: FunctionDetails) => {
 		isCreatingHandle.close();
 
 		if (func.type === "model") {
@@ -146,8 +146,8 @@ export function FunctionsView() {
 			});
 		} else {
 			const f = func.details as SchemaFunction;
-			const isInvalid = validateQuery(f.block);
-			const block = isInvalid ? f.block : formatQuery(f.block);
+			const isInvalid = await validateQuery(f.block);
+			const block = isInvalid ? f.block : await formatQuery(f.block);
 
 			setActive({
 				type: "function",
