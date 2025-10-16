@@ -598,7 +598,7 @@ const CsvImportForm = ({
 				dynamicTyping: true,
 				transform(value) {
 					try {
-						return parseValue(value);
+						return getSurrealQL().parseValue(value);
 					} catch {
 						return value;
 					}
