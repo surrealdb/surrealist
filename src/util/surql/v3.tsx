@@ -12,15 +12,6 @@ export class SurrealQLV3 implements SurrealQL {
 		}
 	}
 
-	validateThing(thing: string): string | undefined {
-		try {
-			Wasm.validate_thing(thing);
-			return undefined;
-		} catch (err: any) {
-			return err;
-		}
-	}
-
 	validateWhere(where: string): string | undefined {
 		try {
 			(window as any).Wasm = Wasm;

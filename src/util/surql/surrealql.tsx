@@ -8,11 +8,6 @@ export interface SurrealQL {
 	validateQuery(sql: string): string | undefined;
 
 	/**
-	 * Validate a record id and return an error message if invalid
-	 */
-	validateThing(thing: string): string | undefined;
-
-	/**
 	 * Validate a where clause and return an error message if invalid
 	 */
 	validateWhere(where: string): string | undefined;
