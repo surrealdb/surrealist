@@ -19,7 +19,7 @@ import {
 } from "surrealdb";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { TRUNCATE_STYLE } from "~/util/helpers";
-import { iconCheck, iconClock, iconClose } from "~/util/icons";
+import { iconCheck, iconClock, iconClose, iconExplorer, iconFile, iconXml } from "~/util/icons";
 import { GeographyLink } from "../GeographyLink";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
@@ -88,6 +88,11 @@ function UuidCell(props: { value: Uuid }) {
 			ff="monospace"
 			c="bright"
 		>
+			<Icon
+				path={iconXml}
+				left
+				mt={-3}
+			/>
 			{props.value.toString()}
 		</Text>
 	);
@@ -104,7 +109,7 @@ function DateTimeCell(props: { value: DateTime }) {
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
 			<Icon
-				path={iconClock}
+				path={iconExplorer}
 				left
 				mt={-3}
 			/>
@@ -120,7 +125,7 @@ function DateCell(props: { value: Date }) {
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
 			<Icon
-				path={iconClock}
+				path={iconExplorer}
 				left
 				mt={-3}
 			/>
@@ -130,11 +135,29 @@ function DateCell(props: { value: Date }) {
 }
 
 function DurationCell(props: { value: Duration }) {
-	return <Text>{props.value.toString()}</Text>;
+	return (
+		<Text ff="monospace">
+			<Icon
+				path={iconClock}
+				left
+				mt={-3}
+			/>
+			{props.value.toString()}
+		</Text>
+	);
 }
 
 function FileCell(props: { value: FileRef }) {
-	return <Text>{props.value.toString()}</Text>;
+	return (
+		<Text ff="monospace">
+			<Icon
+				path={iconFile}
+				left
+				mt={-3}
+			/>
+			{props.value.toString()}
+		</Text>
+	);
 }
 
 function ArrayCell(props: { value: any[] }) {
