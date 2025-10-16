@@ -174,6 +174,7 @@ export async function openConnection(options?: ConnectOptions) {
 
 		if (isPreview) {
 			showWarning({
+				autoClose: 10_000,
 				title: "Preview version detected",
 				subtitle:
 					"You are connected to a preview version of SurrealDB. Some features may not work as intended.",

@@ -120,9 +120,14 @@ export function showErrorNotification(info: {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showWarning(info: { title: ReactNode; subtitle: ReactNode }) {
+export function showWarning(info: {
+	title: ReactNode;
+	subtitle: ReactNode;
+	autoClose?: boolean | number;
+}) {
 	showNotification({
 		color: "orange",
+		autoClose: info.autoClose,
 		message: (
 			<Stack gap={0}>
 				<Text
