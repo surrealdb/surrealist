@@ -1,5 +1,4 @@
 import { ActionIcon, Alert, Paper, Skeleton, Stack, Table } from "@mantine/core";
-import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
 import { Icon } from "~/components/Icon";

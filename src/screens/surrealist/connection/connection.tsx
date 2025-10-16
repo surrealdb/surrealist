@@ -414,7 +414,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 		let liveIndexes: number[];
 
 		try {
-			liveIndexes = getLiveQueries(query);
+			liveIndexes = await getLiveQueries(query);
 		} catch (err: any) {
 			adapter.warn("DB", `Failed to parse live queries: ${err.message}`);
 			console.error(err);

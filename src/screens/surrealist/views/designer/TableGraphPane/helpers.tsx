@@ -81,13 +81,13 @@ function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
 	});
 }
 
-export function buildFlowNodes(
+export async function buildFlowNodes(
 	tables: TableInfo[],
 	nodeMode: DiagramMode,
 	direction: DiagramDirection,
 	linkMode: DiagramLinks,
 	lineStyle: DiagramLineStyle,
-): [Node[], Edge[], GraphWarning[]] {
+): Promise<[Node[], Edge[], GraphWarning[]]> {
 	const items = normalizeTables(tables);
 	const nodeIndex: Record<string, Node> = {};
 	const edges: Edge[] = [];
@@ -215,7 +215,7 @@ export function buildFlowNodes(
 					continue;
 				}
 
-				const targets = extractKindRecords(field.kind);
+				const targets = await extractKindRecords(field.kind);
 
 				for (const target of targets) {
 					if (

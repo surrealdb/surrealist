@@ -8,7 +8,7 @@ import { RecordsChangedEvent } from "~/util/global-events";
 import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
 
-type InspectFunction = (record: RecordId | string) => void;
+type InspectFunction = (record: RecordId | string) => Promise<void>;
 type StopInspectFunction = () => void;
 
 const InspectorContext = createContext<{
@@ -26,7 +26,7 @@ export function useInspector() {
 	return (
 		ctx ?? {
 			history: [],
-			inspect: () => {},
+			inspect: async () => {},
 			stopInspect: () => {},
 		}
 	);
@@ -41,9 +41,11 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 		setHistory: setHistoryItems,
 	});
 
-	const inspect = useStable((record: RecordId | string) => {
+	const inspect = useStable(async (record: RecordId | string) => {
 		const recordId =
-			typeof record === "string" ? parseValue(record) : new RecordId(record.tb, record.id);
+			typeof record === "string"
+				? await parseValue(record)
+				: new RecordId(record.tb, record.id);
 
 		if (!(recordId instanceof RecordId)) {
 			throw new TypeError("Invalid record id");

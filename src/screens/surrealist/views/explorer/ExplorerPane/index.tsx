@@ -13,7 +13,7 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { type MouseEvent, useLayoutEffect, useMemo, useState } from "react";
+import { type MouseEvent, useEffect, useLayoutEffect, useState } from "react";
 import { escapeIdent, RecordId, StringRecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
@@ -72,9 +72,23 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const [filtering, setFiltering] = useState(false);
 	const [showFilter] = useDebouncedValue(filtering, 250);
 	const [filterClause] = useDebouncedValue(filter, 500);
+	const [isFilterValid, setIsFilterValid] = useState(true);
 
-	const isFilterValid = useMemo(() => {
-		return !showFilter || !filter || !validateWhere(filter);
+	useEffect(() => {
+		let cancelled = false;
+
+		const validate = async () => {
+			const result = !showFilter || !filter || !(await validateWhere(filter));
+			if (!cancelled) {
+				setIsFilterValid(result);
+			}
+		};
+
+		validate();
+
+		return () => {
+			cancelled = true;
+		};
 	}, [showFilter, filter]);
 
 	const recordQuery = useRecordQuery({
@@ -155,7 +169,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		const records = Array.from(selected).map((id) => new StringRecordId(id));
 		const result = await executeQueryFirst("SELECT * FROM $records", { records });
 
-		navigator.clipboard.writeText(formatValue(result, true, true));
+		navigator.clipboard.writeText(await formatValue(result, true, true));
 	});
 
 	const removeRecord = useConfirmation<RecordId>({
@@ -218,8 +232,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			{
 				key: "copy-id",
 				title: "Copy Record ID",
-				onClick: () => {
-					navigator.clipboard.writeText(formatValue(record.id));
+				onClick: async () => {
+					navigator.clipboard.writeText(await formatValue(record.id));
 
 					showInfo({
 						title: "Record ID copied",
@@ -230,8 +244,8 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			{
 				key: "copy-json",
 				title: "Copy as JSON",
-				onClick: () => {
-					navigator.clipboard.writeText(formatValue(record, true, true));
+				onClick: async () => {
+					navigator.clipboard.writeText(await formatValue(record, true, true));
 
 					showInfo({
 						title: "Record contents copied",

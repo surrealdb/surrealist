@@ -9,8 +9,8 @@ export interface PreviewProps {
 	isLive: boolean;
 }
 
-export function attemptFormat(format: Formatter, data: any) {
-	const [err, res] = tryit(format)(data);
+export async function attemptFormat(format: Formatter, data: any): Promise<string> {
+	const [err, res] = await tryit(format)(data);
 
 	return err ? `"Error: ${err.message}"` : res;
 }

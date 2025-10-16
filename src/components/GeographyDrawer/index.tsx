@@ -24,46 +24,69 @@ export interface GeographyDrawerProps {
 
 export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps) {
 	const [width, setWidth] = useState(650);
-	const [geoJSON, setGeoJSON] = useInputState(formatValue(data));
+	const [geoJSON, setGeoJSON] = useInputState("");
 
 	useEffect(() => {
-		setGeoJSON(formatValue(data));
+		const loadData = async () => {
+			setGeoJSON(await formatValue(data));
+		};
+		loadData();
 	}, [data]);
 
 	const extensions = useMemo(() => [surrealql()], []);
 
 	// parses geoJSON and splits langitude and latitude and creates a fitting string with bail out if it doesn't fit
-	const coordLabel = useMemo(() => {
-		try {
-			const parsed: any = parseValue(geoJSON).toJSON();
+	const [coordLabel, setCoordLabel] = useState<string | null>(null);
 
-			const pickCoords = (obj: any): [number, number] | null => {
-				if (!obj) return null;
-				if (obj.type === "Point" && Array.isArray(obj.coordinates)) {
-					return obj.coordinates as [number, number];
-				}
-				if (obj.type === "Feature" && obj.geometry?.type === "Point") {
-					return obj.geometry.coordinates as [number, number];
-				}
-				if (obj.type === "FeatureCollection" && Array.isArray(obj.features)) {
-					const f = obj.features.find((x: any) => x?.geometry?.type === "Point");
-					if (f?.geometry?.coordinates) return f.geometry.coordinates as [number, number];
-				}
-				return null;
-			};
+	useEffect(() => {
+		let cancelled = false;
 
-			const coords = pickCoords(parsed);
-			if (!coords) return null;
+		const parseCoords = async () => {
+			try {
+				const parsed: any = (await parseValue(geoJSON)).toJSON();
 
-			const [lng, lat] = coords;
-			const fmt = (v: unknown, p = 4) => {
-				const n = typeof v === "number" ? v : Number(v);
-				return Number.isFinite(n) ? n.toFixed(p) : String(v);
-			};
-			return `Longitude: ${fmt(lng)}, Latitude: ${fmt(lat)}`;
-		} catch {
-			return null;
-		}
+				if (cancelled) return;
+
+				const pickCoords = (obj: any): [number, number] | null => {
+					if (!obj) return null;
+					if (obj.type === "Point" && Array.isArray(obj.coordinates)) {
+						return obj.coordinates as [number, number];
+					}
+					if (obj.type === "Feature" && obj.geometry?.type === "Point") {
+						return obj.geometry.coordinates as [number, number];
+					}
+					if (obj.type === "FeatureCollection" && Array.isArray(obj.features)) {
+						const f = obj.features.find((x: any) => x?.geometry?.type === "Point");
+						if (f?.geometry?.coordinates)
+							return f.geometry.coordinates as [number, number];
+					}
+					return null;
+				};
+
+				const coords = pickCoords(parsed);
+				if (!coords) {
+					setCoordLabel(null);
+					return;
+				}
+
+				const [lng, lat] = coords;
+				const fmt = (v: unknown, p = 4) => {
+					const n = typeof v === "number" ? v : Number(v);
+					return Number.isFinite(n) ? n.toFixed(p) : String(v);
+				};
+				setCoordLabel(`Longitude: ${fmt(lng)}, Latitude: ${fmt(lat)}`);
+			} catch {
+				if (!cancelled) {
+					setCoordLabel(null);
+				}
+			}
+		};
+
+		parseCoords();
+
+		return () => {
+			cancelled = true;
+		};
 	}, [geoJSON]);
 
 	return (

@@ -7,7 +7,7 @@ import { DatasetType } from "~/types";
 /**
  * Validate a query and return an error message if invalid
  */
-export function validateQuery(sql: string): string | undefined {
+export async function validateQuery(sql: string): Promise<string | undefined> {
 	try {
 		SurrealQL.validate(sql);
 		return undefined;
@@ -19,7 +19,7 @@ export function validateQuery(sql: string): string | undefined {
 /**
  * Validate a record id and return an error message if invalid
  */
-export function validateThing(thing: string): string | undefined {
+export async function validateThing(thing: string): Promise<string | undefined> {
 	try {
 		SurrealQL.validate_thing(thing);
 		return undefined;
@@ -31,7 +31,7 @@ export function validateThing(thing: string): string | undefined {
 /**
  * Validate a where clause and return an error message if invalid
  */
-export function validateWhere(where: string): string | undefined {
+export async function validateWhere(where: string): Promise<string | undefined> {
 	try {
 		(window as any).SurrealQL = SurrealQL;
 		SurrealQL.validate_where(where);
@@ -44,7 +44,7 @@ export function validateWhere(where: string): string | undefined {
 /**
  * Returns the amount of statements in a query
  */
-export function getStatementCount(sql: string): number {
+export async function getStatementCount(sql: string): Promise<number> {
 	return SurrealQL.parse(sql).length;
 }
 
@@ -56,7 +56,7 @@ export function getStatementCount(sql: string): number {
  * @param pretty Optionally pretty print
  * @returns The formatted value
  */
-export function formatValue(value: any, json = false, pretty = false) {
+export async function formatValue(value: any, json = false, pretty = false): Promise<string> {
 	const binary = new Uint8Array(encodeCbor(value));
 	const parsed = Value.from_cbor(binary);
 
@@ -69,7 +69,7 @@ export function formatValue(value: any, json = false, pretty = false) {
  * @param value The value string
  * @returns The parsed value structure
  */
-export function parseValue(value: string) {
+export async function parseValue(value: string): Promise<any> {
 	return decodeCbor(Value.from_string(value).to_cbor().buffer);
 }
 
@@ -79,7 +79,7 @@ export function parseValue(value: string) {
  * @param query The query to parse
  * @returns The indexes of the live query statements
  */
-export function getLiveQueries(query: string): number[] {
+export async function getLiveQueries(query: string): Promise<number[]> {
 	const tree: any[] = SurrealQL.parse(query);
 
 	return tree.reduce((acc: number[], stmt, idx) => {
@@ -97,7 +97,7 @@ export function getLiveQueries(query: string): number[] {
  * @param query Query string
  * @returns Formatted query
  */
-export function formatQuery(query: string, pretty = true) {
+export async function formatQuery(query: string, pretty = true): Promise<string> {
 	return SurrealQL.format(query, pretty);
 }
 
@@ -107,7 +107,7 @@ export function formatQuery(query: string, pretty = true) {
  * @param kind The kind to extract records from
  * @returns The extracted records
  */
-export function extractKindRecords(kind: string) {
+export async function extractKindRecords(kind: string): Promise<string[]> {
 	try {
 		const ast = SurrealQL.parse(`DEFINE FIELD dummy ON dummy TYPE ${kind}`);
 		const root = ast[0].Define.Field.kind;

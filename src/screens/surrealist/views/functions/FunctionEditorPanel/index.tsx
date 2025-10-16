@@ -48,8 +48,8 @@ export function FunctionEditorPanel({
 		);
 	});
 
-	const formatFunction = useStable(() => {
-		const isFunctionBlockInvalid = validateQuery(details.block);
+	const formatFunction = useStable(async () => {
+		const isFunctionBlockInvalid = await validateQuery(details.block);
 		if (isFunctionBlockInvalid) {
 			showErrorNotification({
 				title: "Failed to format",
@@ -57,7 +57,7 @@ export function FunctionEditorPanel({
 			});
 			return;
 		}
-		const formattedFunctionBlock = formatQuery(details.block);
+		const formattedFunctionBlock = await formatQuery(details.block);
 		onChange((draft) => {
 			(draft.details as SchemaFunction).block = formattedFunctionBlock;
 		});

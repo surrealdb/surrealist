@@ -2,7 +2,7 @@ import { foldCode, unfoldCode } from "@codemirror/language";
 import type { EditorView } from "@codemirror/view";
 import { Box, Stack, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { surqlRecordLinks } from "~/editor";
 import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
@@ -64,13 +64,13 @@ function processCombinedNoneResultHeaders(
 	}
 }
 
-export function buildCombinedResult(
+export async function buildCombinedResult(
 	index: number,
 	{ result, execution_time }: any,
 	format: Formatter,
-): string {
+): Promise<string> {
 	const header = createCombinedQueryHeader(index, execution_time);
-	const formattedContent = attemptFormat(format, result);
+	const formattedContent = await attemptFormat(format, result);
 	return header + formattedContent;
 }
 
@@ -80,6 +80,7 @@ const combinedPreview = memo(function CombinedPreview({ responses, query }: Prev
 	const editorViewRef = useRef<EditorView | null>(null);
 	const previousModeRef = useRef<string | null>(null);
 	const noneResultMode = query.noneResultMode;
+	const [contents, setContents] = useState("");
 
 	const noneResultCount = useMemo(() => {
 		let count = 0;
@@ -91,21 +92,37 @@ const combinedPreview = memo(function CombinedPreview({ responses, query }: Prev
 		return count;
 	}, [responses]);
 
-	const contents = useMemo(() => {
-		const parts: string[] = [];
+	useEffect(() => {
+		let cancelled = false;
 
-		for (let i = 0; i < responses.length; i++) {
-			const response = responses[i];
+		const buildContents = async () => {
+			const parts: string[] = [];
 
-			// Skip hidden none results
-			if (noneResultMode === "hide" && response.success && response.result === undefined) {
-				continue;
+			for (let i = 0; i < responses.length; i++) {
+				const response = responses[i];
+
+				// Skip hidden none results
+				if (
+					noneResultMode === "hide" &&
+					response.success &&
+					response.result === undefined
+				) {
+					continue;
+				}
+
+				parts.push(await buildCombinedResult(i, response, format));
 			}
 
-			parts.push(buildCombinedResult(i, response, format));
-		}
+			if (!cancelled) {
+				setContents(parts.join("").trim());
+			}
+		};
 
-		return parts.join("").trim();
+		buildContents();
+
+		return () => {
+			cancelled = true;
+		};
 	}, [responses, format, noneResultMode]);
 
 	const extensions = useMemo(

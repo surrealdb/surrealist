@@ -202,7 +202,7 @@ const isValidColumnType = (type: string) => {
 	return (SURREAL_KINDS as readonly string[]).includes(type);
 };
 
-const convertValueToType = (value: any, type: SurrealKind): any => {
+const convertValueToType = async (value: any, type: SurrealKind): Promise<any> => {
 	if (value === undefined || value === null) {
 		return null;
 	}
@@ -210,7 +210,7 @@ const convertValueToType = (value: any, type: SurrealKind): any => {
 	switch (type) {
 		case "any":
 			try {
-				return parseValue(value);
+				return await parseValue(value);
 			} catch {
 				return value;
 			}
@@ -219,7 +219,7 @@ const convertValueToType = (value: any, type: SurrealKind): any => {
 		case "bool":
 			return !!JSON.parse(value);
 		case "bytes":
-			return new Uint8Array(convertValueToType(value, "array"));
+			return new Uint8Array(await convertValueToType(value, "array"));
 		case "datetime":
 			return new Date(value);
 		case "duration":
@@ -234,7 +234,7 @@ const convertValueToType = (value: any, type: SurrealKind): any => {
 		case "array":
 			return JSON.parse(value);
 		case "set":
-			return new Set(convertValueToType(value, "array"));
+			return new Set(await convertValueToType(value, "array"));
 		case "string":
 			return value;
 		case "uuid":
@@ -244,15 +244,20 @@ const convertValueToType = (value: any, type: SurrealKind): any => {
 	}
 };
 
-const createEntityId = (value: any, type: SurrealKind, table: string) => {
+const createEntityId = async (value: any, type: SurrealKind, table: string) => {
 	if (type === "record") {
-		return convertValueToType(value, type);
+		return await convertValueToType(value, type);
 	}
 
-	return new RecordId(table, convertValueToType(value, type));
+	return new RecordId(table, await convertValueToType(value, type));
 };
 
-const createEntity = (data: any, table: string, columnNames: string[], columnTypes: string[]) => {
+const createEntity = async (
+	data: any,
+	table: string,
+	columnNames: string[],
+	columnTypes: string[],
+) => {
 	const o: any = {};
 
 	for (const key of Object.keys(data)) {
@@ -260,9 +265,9 @@ const createEntity = (data: any, table: string, columnNames: string[], columnTyp
 		const type = columnTypes[columnNames.indexOf(key)] as SurrealKind;
 
 		if (key === "id") {
-			o[key] = createEntityId(value, type, table);
+			o[key] = await createEntityId(value, type, table);
 		} else {
-			o[key] = convertValueToType(value, type);
+			o[key] = await convertValueToType(value, type);
 		}
 	}
 
@@ -597,13 +602,6 @@ const CsvImportForm = ({
 				delimiter,
 				header,
 				dynamicTyping: true,
-				transform(value) {
-					try {
-						return parseValue(value);
-					} catch {
-						return value;
-					}
-				},
 				preview: 1_000,
 			});
 		}
@@ -631,7 +629,7 @@ const CsvImportForm = ({
 	});
 
 	const submit = () => {
-		const createEntityWithoutHeader = (data: unknown[]) => {
+		const createEntityWithoutHeader = async (data: unknown[]) => {
 			const o: any = {};
 
 			for (let i = 0; i < data.length; i++) {
@@ -640,9 +638,9 @@ const CsvImportForm = ({
 				const type = columnTypes[i] as SurrealKind;
 
 				if (key === "id") {
-					o[key] = createEntityId(value, type, table);
+					o[key] = await createEntityId(value, type, table);
 				} else {
-					o[key] = convertValueToType(value, type);
+					o[key] = await convertValueToType(value, type);
 				}
 			}
 
@@ -651,7 +649,7 @@ const CsvImportForm = ({
 
 		const execute = async (content: string) => {
 			if (!importFile.current?.self) {
-				const items: any[] = [];
+				const rawItems: any[] = [];
 
 				let isParserSuccess = true;
 
@@ -659,7 +657,7 @@ const CsvImportForm = ({
 					delimiter,
 					header,
 					skipEmptyLines: true,
-					step: async (row, parser) => {
+					step: (row, parser) => {
 						if (row.errors.length > 0) {
 							const err = row.errors[0].message;
 
@@ -673,17 +671,21 @@ const CsvImportForm = ({
 							return;
 						}
 
-						const content = header
-							? createEntity(row.data as any, table, columnNames, columnTypes)
-							: createEntityWithoutHeader(row.data as unknown[]);
-
-						items.push(content);
+						rawItems.push(row.data);
 					},
 				});
 
 				if (!isParserSuccess) {
 					return;
 				}
+
+				const items = await Promise.all(
+					rawItems.map((data) =>
+						header
+							? createEntity(data as any, table, columnNames, columnTypes)
+							: createEntityWithoutHeader(data as unknown[]),
+					),
+				);
 
 				const { errorImportCount, successImportCount, errorMessage } =
 					await applyBatchImport(items, table, insertRelation);
@@ -717,11 +719,18 @@ const CsvImportForm = ({
 								reject();
 							}
 
-							const items = results.data.map((row) => {
-								return header
-									? createEntity(row as any, table, columnNames, columnTypes)
-									: createEntityWithoutHeader(row as unknown[]);
-							});
+							const items = await Promise.all(
+								results.data.map(async (row) => {
+									return header
+										? await createEntity(
+												row as any,
+												table,
+												columnNames,
+												columnTypes,
+											)
+										: createEntityWithoutHeader(row as unknown[]);
+								}),
+							);
 
 							parser.pause();
 
@@ -868,8 +877,10 @@ const JsonImportForm = ({
 	const submit = () => {
 		const execute = async (content: string) => {
 			const value = JSON.parse(content);
-			const items = (isArray(value) ? value : [value]).map((data) =>
-				createEntity(data, table, columnNames, columnTypes),
+			const items = await Promise.all(
+				(isArray(value) ? value : [value]).map((data) =>
+					createEntity(data, table, columnNames, columnTypes),
+				),
 			);
 
 			const { errorImportCount, successImportCount, errorMessage } = await applyBatchImport(
@@ -979,8 +990,10 @@ const NdJsonImportForm = ({
 
 	const submit = () => {
 		const execute = async (content: string) => {
-			const items = extractItems(content).map((data) =>
-				createEntity(data, table, columnNames, columnTypes),
+			const items = await Promise.all(
+				extractItems(content).map((data) =>
+					createEntity(data, table, columnNames, columnTypes),
+				),
 			);
 
 			const { errorImportCount, successImportCount, errorMessage } = await applyBatchImport(
