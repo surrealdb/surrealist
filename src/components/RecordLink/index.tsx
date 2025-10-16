@@ -1,11 +1,10 @@
 import { type BoxProps, type ElementProps, Group, Text } from "@mantine/core";
 import type { MouseEvent } from "react";
-import { useEffect, useState } from "react";
 import type { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
+import { useFormatValue } from "~/hooks/surrealql";
 import { useInspector } from "~/providers/Inspector";
 import { iconArrowUpRight } from "~/util/icons";
-import { formatValue } from "~/util/surrealql";
 import { Icon } from "../Icon";
 
 export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {
@@ -15,24 +14,9 @@ export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {
 
 export function RecordLink({ value, withOpen, ...rest }: RecordLinkProps) {
 	const { inspect } = useInspector();
-	const [recordText, setRecordText] = useState("");
 
-	useEffect(() => {
-		let cancelled = false;
-
-		const format = async () => {
-			const result = await formatValue(value);
-			if (!cancelled) {
-				setRecordText(result);
-			}
-		};
-
-		format();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [value]);
+	// Use TanStack Query for formatting
+	const { data: recordText = "" } = useFormatValue(value, false, false);
 
 	const handleOpen = useStable((e: MouseEvent) => {
 		e.stopPropagation();

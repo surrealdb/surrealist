@@ -2,12 +2,12 @@ import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@manti
 import { showNotification } from "@mantine/notifications";
 import { surrealql } from "@surrealdb/codemirror";
 import { useContextMenu } from "mantine-contextmenu";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
 import { surqlRecordLinks } from "~/editor";
-import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
+import { type Formatter, useFormatResult, useResultFormatter } from "~/hooks/surrealql";
 import { useRefreshTimer } from "~/hooks/timer";
 import { useInspector } from "~/providers/Inspector";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
@@ -24,7 +24,7 @@ import {
 	iconHelp,
 	iconPlus,
 } from "~/util/icons";
-import { attemptFormat, type PreviewProps } from ".";
+import type { PreviewProps } from ".";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],
@@ -55,24 +55,8 @@ function LiveMessageBody({
 	format: Formatter;
 	extensions: any[];
 }) {
-	const [formatted, setFormatted] = useState("");
-
-	useEffect(() => {
-		let cancelled = false;
-
-		const formatData = async () => {
-			const result = await attemptFormat(format, data);
-			if (!cancelled) {
-				setFormatted(result);
-			}
-		};
-
-		formatData();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [data, format]);
+	// Use TanStack Query for formatting
+	const { data: formatted = "" } = useFormatResult(format, data);
 
 	return (
 		<CodeEditor

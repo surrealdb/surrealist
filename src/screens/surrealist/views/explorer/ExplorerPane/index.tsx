@@ -13,7 +13,7 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
-import { type MouseEvent, useEffect, useLayoutEffect, useState } from "react";
+import { type MouseEvent, useLayoutEffect, useState } from "react";
 import { escapeIdent, RecordId, StringRecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
@@ -28,6 +28,7 @@ import { useEventSubscription } from "~/hooks/event";
 import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
+import { useValidateWhere } from "~/hooks/surrealql";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery, executeQueryFirst } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
@@ -45,7 +46,7 @@ import {
 	iconTable,
 } from "~/util/icons";
 import { getTableVariant } from "~/util/schema";
-import { formatValue, validateWhere } from "~/util/surrealql";
+import { formatValue } from "~/util/surrealql";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 import classes from "./style.module.scss";
 
@@ -72,24 +73,10 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const [filtering, setFiltering] = useState(false);
 	const [showFilter] = useDebouncedValue(filtering, 250);
 	const [filterClause] = useDebouncedValue(filter, 500);
-	const [isFilterValid, setIsFilterValid] = useState(true);
 
-	useEffect(() => {
-		let cancelled = false;
-
-		const validate = async () => {
-			const result = !showFilter || !filter || !(await validateWhere(filter));
-			if (!cancelled) {
-				setIsFilterValid(result);
-			}
-		};
-
-		validate();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [showFilter, filter]);
+	// Use TanStack Query for filter validation
+	const { data: filterValidation } = useValidateWhere(filter, showFilter && !!filter);
+	const isFilterValid = !showFilter || !filter || (filterValidation?.isValid ?? true);
 
 	const recordQuery = useRecordQuery({
 		activeTable,

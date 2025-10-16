@@ -28,13 +28,12 @@ import { Spacer } from "~/components/Spacer";
 import { surqlLinting } from "~/editor";
 import { useTableNames, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useValueValidator } from "~/hooks/surrealql";
+import { useFormatValue, useValueValidator } from "~/hooks/surrealql";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
-import { formatValue } from "~/util/surrealql";
 
 type EdgeInfo = [string[], string[]];
 
@@ -113,24 +112,27 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 		}
 	});
 
+	// Format content using TanStack Query
+	const contentToFormat = content ? omit(content, ["id", "in", "out"]) : null;
+	const { data: formattedContent } = useFormatValue(
+		contentToFormat,
+		true,
+		true,
+		opened && !!content,
+	);
+
 	useLayoutEffect(() => {
 		if (opened) {
-			const initializeBody = async () => {
-				const bodyText = content
-					? await formatValue(omit(content, ["id", "in", "out"]), true, true)
-					: "{\n    \n}";
+			const bodyText = formattedContent || "{\n    \n}";
 
-				setErrors([]);
-				setRecordTable(table);
-				setRecordId("");
-				setRecordBody(bodyText);
-				setRecordFrom("");
-				setRecordTo("");
-			};
-
-			initializeBody();
+			setErrors([]);
+			setRecordTable(table);
+			setRecordId("");
+			setRecordBody(bodyText);
+			setRecordFrom("");
+			setRecordTo("");
 		}
-	}, [opened, table, content]);
+	}, [opened, table, formattedContent]);
 
 	const extensions = useMemo(() => [surrealql(), surqlLinting()], []);
 	const isFullyValid = isValid && (!isRelation || (recordFrom && recordTo));

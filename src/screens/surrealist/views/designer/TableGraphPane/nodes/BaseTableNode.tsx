@@ -1,17 +1,17 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
 import { Handle, Position } from "@xyflow/react";
-import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import { type MouseEvent, type ReactNode, useMemo, useRef } from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useStable } from "~/hooks/stable";
+import { useExtractKindRecords } from "~/hooks/surrealql";
 import { useIsLight } from "~/hooks/theme";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { ON_STOP_PROPAGATION, simplifyKind } from "~/util/helpers";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { getTableVariant } from "~/util/schema";
-import { extractKindRecords } from "~/util/surrealql";
 import classes from "../style.module.scss";
 
 interface SummaryProps {
@@ -191,33 +191,12 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
 
-	const [inRecords, setInRecords] = useState<string>("");
-	const [outRecords, setOutRecords] = useState<string>("");
+	// Use TanStack Query for extracting kind records
+	const { data: inRecordsData = [] } = useExtractKindRecords(inField?.kind);
+	const { data: outRecordsData = [] } = useExtractKindRecords(outField?.kind);
 
-	useEffect(() => {
-		let cancelled = false;
-
-		const loadRecords = async () => {
-			if (inField) {
-				const records = await extractKindRecords(inField.kind ?? "");
-				if (!cancelled) {
-					setInRecords(records.join(", "));
-				}
-			}
-			if (outField) {
-				const records = await extractKindRecords(outField.kind ?? "");
-				if (!cancelled) {
-					setOutRecords(records.join(", "));
-				}
-			}
-		};
-
-		loadRecords();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [inField, outField]);
+	const inRecords = useMemo(() => inRecordsData.join(", "), [inRecordsData]);
+	const outRecords = useMemo(() => outRecordsData.join(", "), [outRecordsData]);
 
 	return (
 		<>

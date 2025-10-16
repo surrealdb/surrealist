@@ -8,9 +8,9 @@ import { Label } from "~/components/Label";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useFormatValue, useParseValue } from "~/hooks/surrealql";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconClose, iconMarker } from "~/util/icons";
-import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeEditor } from "../CodeEditor";
 import type { GeographyInput } from "../GeographyMap";
 
@@ -26,68 +26,56 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 	const [width, setWidth] = useState(650);
 	const [geoJSON, setGeoJSON] = useInputState("");
 
+	// Format the initial data value
+	const { data: formattedData } = useFormatValue(data, false, false, opened);
+
+	// Update geoJSON when formatted data is available
 	useEffect(() => {
-		const loadData = async () => {
-			setGeoJSON(await formatValue(data));
-		};
-		loadData();
-	}, [data]);
+		if (formattedData) {
+			setGeoJSON(formattedData);
+		}
+	}, [formattedData]);
 
 	const extensions = useMemo(() => [surrealql()], []);
 
-	// parses geoJSON and splits langitude and latitude and creates a fitting string with bail out if it doesn't fit
-	const [coordLabel, setCoordLabel] = useState<string | null>(null);
+	// Parse geoJSON and extract coordinates
+	const { data: parsedGeoJSON } = useParseValue(geoJSON, !!geoJSON);
 
-	useEffect(() => {
-		let cancelled = false;
+	// Compute coordinate label from parsed data
+	const coordLabel = useMemo(() => {
+		if (!parsedGeoJSON) return null;
 
-		const parseCoords = async () => {
-			try {
-				const parsed: any = (await parseValue(geoJSON)).toJSON();
+		try {
+			const parsed: any = parsedGeoJSON.toJSON();
 
-				if (cancelled) return;
-
-				const pickCoords = (obj: any): [number, number] | null => {
-					if (!obj) return null;
-					if (obj.type === "Point" && Array.isArray(obj.coordinates)) {
-						return obj.coordinates as [number, number];
-					}
-					if (obj.type === "Feature" && obj.geometry?.type === "Point") {
-						return obj.geometry.coordinates as [number, number];
-					}
-					if (obj.type === "FeatureCollection" && Array.isArray(obj.features)) {
-						const f = obj.features.find((x: any) => x?.geometry?.type === "Point");
-						if (f?.geometry?.coordinates)
-							return f.geometry.coordinates as [number, number];
-					}
-					return null;
-				};
-
-				const coords = pickCoords(parsed);
-				if (!coords) {
-					setCoordLabel(null);
-					return;
+			const pickCoords = (obj: any): [number, number] | null => {
+				if (!obj) return null;
+				if (obj.type === "Point" && Array.isArray(obj.coordinates)) {
+					return obj.coordinates as [number, number];
 				}
-
-				const [lng, lat] = coords;
-				const fmt = (v: unknown, p = 4) => {
-					const n = typeof v === "number" ? v : Number(v);
-					return Number.isFinite(n) ? n.toFixed(p) : String(v);
-				};
-				setCoordLabel(`Longitude: ${fmt(lng)}, Latitude: ${fmt(lat)}`);
-			} catch {
-				if (!cancelled) {
-					setCoordLabel(null);
+				if (obj.type === "Feature" && obj.geometry?.type === "Point") {
+					return obj.geometry.coordinates as [number, number];
 				}
-			}
-		};
+				if (obj.type === "FeatureCollection" && Array.isArray(obj.features)) {
+					const f = obj.features.find((x: any) => x?.geometry?.type === "Point");
+					if (f?.geometry?.coordinates) return f.geometry.coordinates as [number, number];
+				}
+				return null;
+			};
 
-		parseCoords();
+			const coords = pickCoords(parsed);
+			if (!coords) return null;
 
-		return () => {
-			cancelled = true;
-		};
-	}, [geoJSON]);
+			const [lng, lat] = coords;
+			const fmt = (v: unknown, p = 4) => {
+				const n = typeof v === "number" ? v : Number(v);
+				return Number.isFinite(n) ? n.toFixed(p) : String(v);
+			};
+			return `Longitude: ${fmt(lng)}, Latitude: ${fmt(lat)}`;
+		} catch {
+			return null;
+		}
+	}, [parsedGeoJSON]);
 
 	return (
 		<Drawer

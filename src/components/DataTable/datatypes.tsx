@@ -1,7 +1,6 @@
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { convert } from "geo-coordinates-parser";
-import { useEffect, useState } from "react";
 import {
 	Decimal,
 	Duration,
@@ -15,9 +14,9 @@ import {
 	RecordId,
 	Uuid,
 } from "surrealdb";
+import { useFormatValue } from "~/hooks/surrealql";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { iconCheck, iconClock, iconClose } from "~/util/icons";
-import { formatValue } from "~/util/surrealql";
 import { GeographyLink } from "../GeographyLink";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
@@ -167,24 +166,8 @@ function ArrayCell(props: { value: any[] }) {
 }
 
 function ObjectCell(props: { value: any }) {
-	const [formatted, setFormatted] = useState("");
-
-	useEffect(() => {
-		let cancelled = false;
-
-		const format = async () => {
-			const result = await formatValue(props.value, false, true);
-			if (!cancelled) {
-				setFormatted(result);
-			}
-		};
-
-		format();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [props.value]);
+	// Use TanStack Query for formatting
+	const { data: formatted = "" } = useFormatValue(props.value, false, true);
 
 	return (
 		<div>

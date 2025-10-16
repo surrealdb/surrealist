@@ -5,7 +5,7 @@ import { geoJSON as createGeoJSON, type Map as GeoMap, type LatLng, latLng } fro
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2 from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { GeoJSON, MapContainer, TileLayer } from "react-leaflet";
 import type {
 	GeometryCollection,
@@ -16,7 +16,7 @@ import type {
 	GeometryPoint,
 	GeometryPolygon,
 } from "surrealdb";
-import { parseValue } from "~/util/surrealql";
+import { useParseValue } from "~/hooks/surrealql";
 
 // leaflet is a tragedy
 delete (window.L.Icon.Default.prototype as any)._getIconUrl;
@@ -55,42 +55,34 @@ export type GeographyMapProps = {
 export const GeographyMap = ({ value }: GeographyMapProps) => {
 	const ref = useRef<GeoMap>(null);
 
-	const [data, setData] = useState<any>(PLACEHOLDER);
-	const [isError, setIsError] = useState(false);
-	const [bounds, setBounds] = useState<any>();
+	// Parse the value using TanStack Query
+	const { data: parsedValue, isError } = useParseValue(value, !!value);
+
+	// Process the parsed data
+	const { data, bounds } = useMemo(() => {
+		if (!parsedValue) {
+			return { data: PLACEHOLDER, bounds: undefined };
+		}
+
+		try {
+			const jsonData = parsedValue.toJSON();
+			const leafletGeoJson = createGeoJSON(jsonData, {
+				coordsToLatLng: convertCoordsToLatLng,
+			});
+
+			return {
+				data: leafletGeoJson.toGeoJSON(),
+				bounds: leafletGeoJson.getBounds(),
+			};
+		} catch {
+			return { data: PLACEHOLDER, bounds: undefined };
+		}
+	}, [parsedValue]);
 
 	useEffect(() => {
-		let cancelled = false;
-
-		const loadData = async () => {
-			try {
-				const data = (await parseValue(value)).toJSON();
-
-				if (cancelled) return;
-
-				const leafletGeoJson = createGeoJSON(data, {
-					coordsToLatLng: convertCoordsToLatLng,
-				});
-
-				setIsError(false);
-				setData(leafletGeoJson.toGeoJSON());
-				setBounds(leafletGeoJson.getBounds());
-			} catch {
-				if (!cancelled) {
-					setIsError(true);
-				}
-			}
-		};
-
-		loadData();
-
-		return () => {
-			cancelled = true;
-		};
-	}, [value]);
-
-	useEffect(() => {
-		ref.current?.fitBounds(bounds);
+		if (bounds) {
+			ref.current?.fitBounds(bounds);
+		}
 	}, [bounds]);
 
 	const isPlaceholderData = data === PLACEHOLDER;
