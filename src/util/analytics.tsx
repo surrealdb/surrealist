@@ -98,8 +98,8 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 		params.append("ep.aid", userId);
 	}
 
-	if (name === "cloud_signin" || name === "cloud_signout") {
-		params.append("ep.email", profile.username);
+	if (name === "cloud_signin" || name === "cloud_signout" || name === "cloud_instance_created") {
+		params.append("ep.email", (payload.email as string) || profile.username);
 	}
 
 	params.append("ep.utk", _ga);

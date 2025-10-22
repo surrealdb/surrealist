@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCloudStore } from "~/stores/cloud";
 import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { resolveInstanceConnection } from "~/util/connection";
@@ -38,6 +39,7 @@ export function useInstanceDeployMutation(
 				storage_size: instance.storage_size,
 				organisation: organisation.id,
 				dataset: config.startingData.datasetOptions?.id ?? "none",
+				email: useCloudStore.getState().profile.username,
 			});
 
 			return [instance, connection] as const;
