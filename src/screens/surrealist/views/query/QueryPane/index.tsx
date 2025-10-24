@@ -171,7 +171,7 @@ export function QueryPane({
 
 		const tree = syntaxTree(editor.state);
 		const discovered = parseVariables(tree, (from, to) => editor.state.sliceDoc(from, to));
-		const currentVars = tryParseParams(activeTab.variables);
+		const currentVars = await tryParseParams(activeTab.variables);
 
 		const newVars = objectify(
 			discovered,
@@ -190,8 +190,8 @@ export function QueryPane({
 		});
 	});
 
-	const resolveVariables = useStable(() => {
-		return Object.keys(tryParseParams(activeTab.variables));
+	const resolveVariables = useStable(async () => {
+		return Object.keys(await tryParseParams(activeTab.variables));
 	});
 
 	const updateValid = useStable((status: string) => {

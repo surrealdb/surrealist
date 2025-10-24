@@ -1,3 +1,5 @@
+import { QueryResponse } from "~/types";
+
 /**
  * An interface providing SurrealQL functionality
  */
@@ -25,7 +27,7 @@ export interface SurrealQL {
 	/**
 	 * Return the the indexes of the live query statements in the given query
 	 */
-	getLiveQueries(query: string): Promise<number[]>;
+	getLiveQueries(query: string, responses: QueryResponse[]): Promise<number[]>;
 
 	/**
 	 * Format the given query

@@ -1,5 +1,6 @@
 import type { MantineColorScheme } from "@mantine/core";
-import { Value } from "@surrealdb/ql-wasm";
+import { createWasmEngines } from "@surrealdb/wasm";
+import { Surreal } from "surrealdb";
 import { ORIENTATIONS, RESULT_MODES } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/connection";
 import type {
@@ -14,6 +15,7 @@ import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/
 import { showErrorNotification } from "~/util/helpers";
 import { parseDatasetURL } from "~/util/language";
 import { broadcastMessage } from "~/util/messaging";
+import { createSurrealQL } from "~/util/surql";
 import { BrowserAdapter } from "./browser";
 
 const THEMES = new Set(["light", "dark", "auto"]);
@@ -35,6 +37,8 @@ export class MiniAdapter extends BrowserAdapter {
 		const settings = createBaseSettings();
 		const mainTab = createBaseQuery(settings, "config");
 		const params = new URL(document.location.toString()).searchParams;
+		const version = await this.#getEmbeddedVersion();
+		const surrealql = createSurrealQL(version);
 
 		const {
 			ref,
@@ -97,8 +101,8 @@ export class MiniAdapter extends BrowserAdapter {
 		// Initial variables
 		if (variables) {
 			try {
-				const parsed = Value.from_string(variables);
-				mainTab.variables = dedent(parsed.format(true));
+				const parsed = await surrealql.parseValue(variables);
+				mainTab.variables = await surrealql.formatValue(parsed, false, true);
 			} catch {
 				showErrorNotification({
 					title: "Startup error",
@@ -208,6 +212,18 @@ export class MiniAdapter extends BrowserAdapter {
 		}
 
 		broadcastMessage("ready", opts);
+	}
+
+	async #getEmbeddedVersion(): Promise<string> {
+		const surreal = new Surreal({
+			engines: createWasmEngines(),
+		});
+
+		try {
+			return (await surreal.version()).version.replace(/^surrealdb-/, "");
+		} finally {
+			await surreal.close();
+		}
 	}
 }
 

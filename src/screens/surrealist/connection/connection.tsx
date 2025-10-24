@@ -3,7 +3,6 @@ import {
 	type AccessRecordAuth,
 	SqlExportOptions,
 	Surreal,
-	SurrealError,
 	UnsupportedVersion,
 	Uuid,
 	VersionCheckFailure,
@@ -329,6 +328,7 @@ export async function executeQuery(
 					success: true,
 					result: queryResponses.get(frame.query) ?? [],
 					duration: frame.stats?.duration,
+					type: frame.type,
 				});
 			} else if (frame.isError()) {
 				results.push({
@@ -422,8 +422,11 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 		let liveIndexes: number[];
 
+		const variablesObject = await getSurrealQL().parseValue<Record<string, unknown>>(variables);
+		const response = await executeQuery(query, variablesObject);
+
 		try {
-			liveIndexes = await getSurrealQL().getLiveQueries(query);
+			liveIndexes = await getSurrealQL().getLiveQueries(query, response);
 		} catch (err: any) {
 			adapter.warn("DB", `Failed to parse live queries: ${err.message}`);
 			liveIndexes = [];
@@ -436,9 +439,6 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 					"Unfortunately live queries are not supported in the active connection protocol",
 			});
 		}
-
-		const variablesObject = JSON.parse(variables);
-		const response = await executeQuery(query, variablesObject);
 
 		const liveIds = liveIndexes.flatMap((idx) => {
 			const res = response[idx];
@@ -491,9 +491,10 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			});
 		}
 	} catch (err: any) {
-		if (err instanceof SurrealError) {
-			console.warn("executeUserQuery fail", err);
-		}
+		showErrorNotification({
+			title: "Failed to execute",
+			content: err,
+		});
 	} finally {
 		setQueryActive(false);
 	}

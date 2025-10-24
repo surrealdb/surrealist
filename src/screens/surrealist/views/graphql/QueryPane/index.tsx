@@ -117,7 +117,7 @@ export function QueryPane({
 				return acc;
 			}, [] as string[]);
 
-			const currentVars = tryParseParams(queryText);
+			const currentVars = await tryParseParams(queryText);
 			const currentKeys = Object.keys(currentVars);
 			const variables = variableNames.filter((v) => !currentKeys.includes(v));
 

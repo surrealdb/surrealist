@@ -1,8 +1,17 @@
-import { Value, SurrealQL as Wasm } from "@surrealdb/ql-wasm";
+import { Value, SurrealQL as Wasm } from "@surrealdb/ql-wasm-2";
+import * as SurrealDB from "surrealdb";
 import { CborCodec } from "surrealdb";
+import { adapter } from "~/adapter";
 import { SurrealQL } from "./surrealql";
 
 export class SurrealQLV2 implements SurrealQL {
+	constructor() {
+		adapter.log("SurrealQL", "Initializing SurrealQL V2");
+
+		(window as any).SurrealDB = SurrealDB;
+		(window as any).Wasm = this;
+	}
+
 	validateQuery(sql: string): Promise<string | undefined> {
 		try {
 			Wasm.validate(sql);
@@ -23,11 +32,17 @@ export class SurrealQLV2 implements SurrealQL {
 	}
 
 	formatValue(value: any, json = false, pretty = false): Promise<string> {
-		const codec = new CborCodec({});
-		const binary = new Uint8Array(codec.encode(value));
-		const parsed = Value.from_cbor(binary);
+		try {
+			const codec = new CborCodec({});
+			const binary = new Uint8Array(codec.encode(value));
 
-		return Promise.resolve(parsed[json ? "json" : "format"](pretty));
+			const parsed = Value.from_cbor(binary);
+
+			return Promise.resolve(parsed[json ? "json" : "format"](pretty));
+		} catch (err: any) {
+			console.error("Failed to format value", value, err);
+			return err;
+		}
 	}
 
 	parseValue<T = unknown>(value: string): Promise<T> {
@@ -37,6 +52,7 @@ export class SurrealQLV2 implements SurrealQL {
 
 		return Promise.resolve(codec.decode<T>(cborUint8));
 	}
+
 	getLiveQueries(query: string): Promise<number[]> {
 		const tree: any[] = Wasm.parse(query);
 
@@ -77,7 +93,7 @@ export class SurrealQLV2 implements SurrealQL {
 			for (const record of obj.Record) {
 				records.add(record);
 			}
-		} else if (obj.Option.Record) {
+		} else if (obj.Option?.Record) {
 			for (const record of obj.Option.Record) {
 				records.add(record);
 			}

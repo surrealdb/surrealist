@@ -2,10 +2,8 @@ import { Prec } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { Value } from "@surrealdb/ql-wasm";
 import { useEffect, useMemo, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
-import { CborCodec } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
@@ -16,6 +14,7 @@ import { useActiveQuery } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar, iconReset } from "~/util/icons";
 
@@ -44,7 +43,7 @@ export function VariablesPane({
 
 	const [variableEditor, setVariableEditor] = useState<EditorView | null>(null);
 
-	const setVariables = useDebouncedFunction((content: string | undefined) => {
+	const setVariables = useDebouncedFunction(async (content: string | undefined) => {
 		if (!activeTab || !connection) return;
 
 		const json = content || "";
@@ -55,10 +54,7 @@ export function VariablesPane({
 		});
 
 		try {
-			const codec = new CborCodec({});
-			const cborBuffer = Value.from_string(json).to_cbor().buffer;
-			const cborUint8 = new Uint8Array(cborBuffer);
-			const parsed = codec.decode(cborUint8);
+			const parsed = await getSurrealQL().parseValue(json);
 
 			if (typeof parsed !== "object" || Array.isArray(parsed)) {
 				throw new TypeError("Must be object");

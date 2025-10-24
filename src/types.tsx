@@ -253,6 +253,7 @@ export interface QueryResponse {
 	success: boolean;
 	result: any;
 	duration?: Duration;
+	type?: "live" | "kill" | "other";
 }
 
 export interface QueryTab {
@@ -369,7 +370,8 @@ export interface DatabaseSchema {
 export interface SchemaTable {
 	name: string;
 	drop: boolean;
-	full: boolean;
+	full: boolean; // 2.0
+	schemafull?: boolean; // 3.0
 	permissions: Permissions;
 	kind: Kind;
 	view?: string;

@@ -1,8 +1,14 @@
-import { Value, SurrealQL as Wasm } from "@surrealdb/ql-wasm";
+import { Value, SurrealQL as Wasm } from "@surrealdb/ql-wasm-3";
 import { CborCodec } from "surrealdb";
+import { adapter } from "~/adapter";
+import { QueryResponse } from "~/types";
 import { SurrealQL } from "./surrealql";
 
 export class SurrealQLV3 implements SurrealQL {
+	constructor() {
+		adapter.log("SurrealQL", "Initializing SurrealQL V3");
+	}
+
 	validateQuery(sql: string): Promise<string | undefined> {
 		try {
 			Wasm.validate(sql);
@@ -15,7 +21,7 @@ export class SurrealQLV3 implements SurrealQL {
 	validateWhere(where: string): Promise<string | undefined> {
 		try {
 			(window as any).Wasm = Wasm;
-			Wasm.validate_where(where);
+			Wasm.validate(`SELECT * FROM ${where}`);
 			return Promise.resolve(undefined);
 		} catch (err: any) {
 			return Promise.resolve(err);
@@ -37,18 +43,17 @@ export class SurrealQLV3 implements SurrealQL {
 
 		return Promise.resolve(codec.decode<T>(cborUint8));
 	}
-	getLiveQueries(query: string): Promise<number[]> {
-		const tree: any[] = Wasm.parse(query);
 
-		const result = tree.reduce((acc: number[], stmt, idx) => {
-			if (stmt.Live) {
-				acc.push(idx);
+	getLiveQueries(_query: string, responses: QueryResponse[]): Promise<number[]> {
+		const indexes: number[] = [];
+
+		for (const [idx, response] of responses.entries()) {
+			if (response.success && response.type === "live") {
+				indexes.push(idx);
 			}
+		}
 
-			return acc;
-		}, []);
-
-		return Promise.resolve(result);
+		return Promise.resolve(indexes);
 	}
 
 	formatQuery(query: string, pretty = true): Promise<string> {
@@ -57,38 +62,10 @@ export class SurrealQLV3 implements SurrealQL {
 
 	extractKindRecords(kind: string): Promise<string[]> {
 		try {
-			const ast = Wasm.parse(`DEFINE FIELD dummy ON dummy TYPE ${kind}`);
-			const root = ast[0].Define.Field.kind;
-			const records = new Set<string>();
-
-			this.#parseKindTree(root, records);
-
-			return Promise.resolve([...records.values()]);
+			return Promise.resolve(Wasm.extract_tables_from_kind(kind));
 		} catch (err: any) {
 			console.error(err);
 			return Promise.resolve([]);
-		}
-	}
-
-	#parseKindTree(obj: any, records: Set<string>) {
-		if (!obj) return;
-
-		if (obj.Record) {
-			for (const record of obj.Record) {
-				records.add(record);
-			}
-		} else if (obj.Option.Record) {
-			for (const record of obj.Option.Record) {
-				records.add(record);
-			}
-		} else if (obj.Array) {
-			this.#parseKindTree(obj.Array[0], records);
-		} else if (obj.Set) {
-			this.#parseKindTree(obj.Array[0], records);
-		} else if (obj.Either) {
-			for (const either of obj.Either) {
-				this.#parseKindTree(either, records);
-			}
 		}
 	}
 }

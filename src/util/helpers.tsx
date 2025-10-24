@@ -1,6 +1,5 @@
 import { Group, Stack, Text } from "@mantine/core";
 import { hideNotification, showNotification } from "@mantine/notifications";
-import { Value } from "@surrealdb/ql-wasm";
 import {
 	DateArg,
 	DurationUnit,
@@ -12,9 +11,9 @@ import {
 import escapeRegex from "escape-string-regexp";
 import { shake, uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
-import { CborCodec } from "surrealdb";
 import { adapter } from "~/adapter";
 import { Spacer } from "~/components/Spacer";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { Authentication, Protocol, Selectable } from "~/types";
 import { openErrorModal } from "./errors";
 
@@ -357,14 +356,11 @@ export function uniqueName(baseName: string, existing: string[]) {
  * @param paramString The string to parse
  * @returns The parsed params object
  */
-export function tryParseParams(paramString: string) {
+export async function tryParseParams(paramString: string) {
 	let params: any = {};
 
 	try {
-		const codec = new CborCodec({});
-		const cborBuffer = Value.from_string(paramString).to_cbor().buffer;
-		const cborUint8 = new Uint8Array(cborBuffer);
-		const parsed = codec.decode(cborUint8);
+		const parsed = await getSurrealQL().parseValue(paramString);
 
 		if (typeof parsed !== "object" || Array.isArray(parsed)) {
 			throw new TypeError("Must be object");

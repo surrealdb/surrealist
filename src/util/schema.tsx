@@ -148,7 +148,10 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 			}
 
 			const definition: TableInfo = {
-				schema: tableInfo,
+				schema: {
+					...tableInfo,
+					full: tableInfo.schemafull ?? tableInfo.full,
+				},
 				fields: Object.values(tableStruct.fields),
 				indexes: Object.values(tableStruct.indexes),
 				events: Object.values(tableStruct.events).map((ev) => ({
