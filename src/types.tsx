@@ -403,7 +403,6 @@ export interface SchemaEvent {
 
 export interface SchemaUser {
 	name: string;
-	base: string;
 	hash: string;
 	roles: string[];
 	comment?: string;
@@ -415,7 +414,6 @@ export interface SchemaUser {
 
 export interface SchemaAccess {
 	name: string;
-	base: string;
 	authenticate?: string;
 	comment?: string;
 	duration: {
