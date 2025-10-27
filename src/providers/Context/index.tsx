@@ -35,16 +35,16 @@ export function ContextProvider({ children }: PropsWithChildren) {
 		if (initializedRef.current) return;
 
 		surreal.subscribe("connecting", () => {
-			adapter.log("Context", "Attempting to connect to Surreal Cloud instance");
+			adapter.log("Context", "Attempting to connect to SurrealDB Cloud instance");
 		});
 
 		surreal.subscribe("connected", () => {
-			adapter.log("Context", "Connected to Surreal Cloud instance");
+			adapter.log("Context", "Connected to SurrealDB Cloud instance");
 			setConnected(true);
 		});
 
 		surreal.subscribe("disconnected", () => {
-			adapter.log("Context", "Disconnected from Surreal Cloud instance");
+			adapter.log("Context", "Disconnected from SurrealDB Cloud instance");
 			setConnected(false);
 			setTimeout(connect, 3000);
 		});
@@ -55,7 +55,7 @@ export function ContextProvider({ children }: PropsWithChildren) {
 
 		initializedRef.current = true;
 
-		adapter.log("Context", "Connecting to Surreal Cloud instance");
+		adapter.log("Context", "Connecting to SurrealDB Cloud instance");
 		surreal.connect(CONTEXT_ENDPOINT, {
 			namespace: "surrealdb",
 			database: "cloud",
