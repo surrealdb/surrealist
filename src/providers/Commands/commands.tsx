@@ -183,7 +183,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 					),
 					{
 						id: "diagnose",
-						name: "Diagnose connection",
+						name: "View connection diagnostics",
 						icon: iconWrench,
 						action: launch(openConnectionDiagnosticsModal),
 					},
