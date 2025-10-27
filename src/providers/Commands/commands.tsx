@@ -7,6 +7,7 @@ import { DRIVERS, SANDBOX } from "~/constants";
 import { useAvailableViews, useConnectionList } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
+import { openConnectionDiagnosticsModal } from "~/modals/connection-diagnostics";
 import { showNodeStatus } from "~/modals/node-status";
 import {
 	closeConnection,
@@ -180,6 +181,12 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 							action: launch(closeConnection),
 						},
 					),
+					{
+						id: "diagnose",
+						name: "Diagnose connection",
+						icon: iconWrench,
+						action: launch(openConnectionDiagnosticsModal),
+					},
 				],
 			},
 		);

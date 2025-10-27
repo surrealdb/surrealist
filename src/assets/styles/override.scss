@@ -261,7 +261,8 @@ body.mod .cm-record-link:hover {
 
 .mantine-TagsInput-option,
 .mantine-Combobox-option,
-.mantine-Select-option {
+.mantine-Select-option,
+.mantine-MultiSelect-option {
 	border-radius: var(--mantine-radius-xs);
 
 	&:hover {
@@ -294,6 +295,14 @@ body.mod .cm-record-link:hover {
 
 	@include light {
 		color: var(--mantine-color-slate-5);
+	}
+}
+
+.mantine-MultiSelect-pill {
+	background-color: var(--mantine-color-slate-6);
+
+	@include light {
+		background-color: var(--mantine-color-slate-1);
 	}
 }
 

@@ -208,6 +208,28 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "record-diagnostics",
+						name: "Record diagnostics",
+						description: "Record diagnostics for the connection",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.behavior.recordDiagnostics,
+							writer: (config, value) => {
+								config.settings.behavior.recordDiagnostics = value;
+							},
+						}),
+					},
+					{
+						id: "diagnostics-history-size",
+						name: "Diagnostics history size",
+						description: "The maximum number of diagnostics to store in history",
+						controller: new NumberController({
+							reader: (config) => config.settings.behavior.diagnosticsHistorySize,
+							writer: (config, value) => {
+								config.settings.behavior.diagnosticsHistorySize = value;
+							},
+						}),
+					},
 				],
 			},
 			{

@@ -19,6 +19,7 @@ import { useDatasets } from "~/hooks/dataset";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
+import { openConnectionDiagnosticsModal } from "~/modals/connection-diagnostics";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
@@ -34,6 +35,7 @@ import {
 	iconSandbox,
 	iconTable,
 	iconUpload,
+	iconWrench,
 } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
@@ -201,6 +203,13 @@ export function ConnectionStatus() {
 									onClick={() => closeConnection()}
 								>
 									Disconnect
+								</Menu.Item>
+								<Menu.Item
+									leftSection={<Icon path={iconWrench} />}
+									disabled={currentState !== "connected"}
+									onClick={() => openConnectionDiagnosticsModal()}
+								>
+									Diagnostics
 								</Menu.Item>
 							</>
 						)}
