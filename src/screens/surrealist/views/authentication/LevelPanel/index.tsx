@@ -91,10 +91,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 	const nameTitle = capitalize(level);
 	const nameLower = nameTitle.toLowerCase();
 
-	const userList = users.filter((user) => user.base === level);
-	const accessList = accesses.filter((access) => access.base === level);
-
-	const isEmpty = userList.length === 0 && accessList.length === 0;
+	const isEmpty = users.length === 0 && accesses.length === 0;
 
 	useIntent("create-user", (opts) => {
 		if (opts.level === level) {
@@ -174,10 +171,10 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 						}}
 					>
 						<Stack gap="xl">
-							{accessList.length > 0 && (
+							{accesses.length > 0 && (
 								<AuthList
 									name="Access Methods"
-									list={accessList}
+									list={accesses}
 									icon={iconKey}
 									color={color}
 									onEdit={editAccess}
@@ -208,10 +205,10 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 								/>
 							)}
 
-							{userList.length > 0 && (
+							{users.length > 0 && (
 								<AuthList
 									name="System Users"
-									list={userList}
+									list={users}
 									icon={iconAccount}
 									color={color}
 									onEdit={editUser}

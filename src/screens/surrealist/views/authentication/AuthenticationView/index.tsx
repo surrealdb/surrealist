@@ -22,15 +22,13 @@ export function AuthenticationView() {
 		c?.lastDatabase ?? "",
 	]);
 
-	const users = useMemo(
-		() => [...kvSchema.users, ...nsSchema.users, ...dbSchema.users],
-		[kvSchema.users, nsSchema.users, dbSchema.users],
-	);
+	const rootUsers = useMemo(() => kvSchema.users, [kvSchema.users]);
+	const namespaceUsers = useMemo(() => nsSchema.users, [nsSchema.users]);
+	const databaseUsers = useMemo(() => dbSchema.users, [dbSchema.users]);
 
-	const accesses = useMemo(
-		() => [...kvSchema.accesses, ...nsSchema.accesses, ...dbSchema.accesses],
-		[kvSchema.accesses, nsSchema.accesses, dbSchema.accesses],
-	);
+	const rootAccesses = useMemo(() => kvSchema.accesses, [kvSchema.accesses]);
+	const namespaceAccesses = useMemo(() => nsSchema.accesses, [nsSchema.accesses]);
+	const databaseAccesses = useMemo(() => dbSchema.accesses, [dbSchema.accesses]);
 
 	useViewFocus("authentication", () => {
 		syncConnectionSchema();
@@ -49,8 +47,8 @@ export function AuthenticationView() {
 						level="ROOT"
 						color="red"
 						icon={iconServerSecure}
-						users={users}
-						accesses={accesses}
+						users={rootUsers}
+						accesses={rootAccesses}
 					/>
 				</Panel>
 				<PanelDragger />
@@ -59,8 +57,8 @@ export function AuthenticationView() {
 						level="NAMESPACE"
 						color="blue"
 						icon={iconFolderSecure}
-						users={users}
-						accesses={accesses}
+						users={namespaceUsers}
+						accesses={namespaceAccesses}
 						disabled={
 							!namespace && {
 								message:
@@ -76,8 +74,8 @@ export function AuthenticationView() {
 						level="DATABASE"
 						color="orange"
 						icon={iconDatabaseSecure}
-						users={users}
-						accesses={accesses}
+						users={databaseUsers}
+						accesses={databaseAccesses}
 						disabled={
 							!database && {
 								message:
