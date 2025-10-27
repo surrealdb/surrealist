@@ -377,7 +377,7 @@ export async function executeQuerySingle<T = any>(
 	const { success, result } = results[0];
 
 	if (success) {
-		return result;
+		return Array.isArray(result) ? result[0] : result;
 	}
 
 	throw new Error(result);
