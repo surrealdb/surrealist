@@ -50,6 +50,8 @@ export function createBaseSettings(): SurrealistSettings {
 			queryQuickClose: true,
 			strictSandbox: false,
 			sidekickPanel: false,
+			recordDiagnostics: false,
+			diagnosticsHistorySize: 300,
 		},
 		appearance: {
 			colorScheme: "dark",

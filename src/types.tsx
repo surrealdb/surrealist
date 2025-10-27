@@ -187,6 +187,8 @@ export interface SurrealistBehaviorSettings {
 	queryQuickClose: boolean;
 	strictSandbox: boolean;
 	sidekickPanel: boolean;
+	recordDiagnostics: boolean;
+	diagnosticsHistorySize: number;
 }
 
 export interface SurrealistAppearanceSettings {

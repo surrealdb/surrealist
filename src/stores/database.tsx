@@ -1,10 +1,12 @@
 import { omit } from "radash";
+import { Diagnostic } from "surrealdb";
 import { create } from "zustand";
 import type { GraphqlResponse } from "~/screens/surrealist/connection/connection";
 import type { ConnectionSchema, QueryResponse } from "~/types";
 import { createConnectionSchema } from "~/util/defaults";
 
 export type State = "disconnected" | "connecting" | "retrying" | "connected";
+export type DiagnosticWithTime = Diagnostic & { timestamp: number };
 
 export type DatabaseStore = {
 	isServing: boolean;
@@ -18,6 +20,7 @@ export type DatabaseStore = {
 	version: string;
 	queryResponses: Record<string, QueryResponse[]>;
 	graphqlResponse: Record<string, GraphqlResponse>;
+	diagnostics: DiagnosticWithTime[];
 
 	setQueryActive: (isQueryActive: boolean) => void;
 	setGraphqlQueryActive: (isQueryActive: boolean) => void;
@@ -36,6 +39,7 @@ export type DatabaseStore = {
 	clearQueryResponse: (tab: string) => void;
 	setGraphqlResponse: (connection: string, response: GraphqlResponse) => void;
 	clearGraphqlResponse: (connection: string) => void;
+	pushDiagnostic: (diagnostic: Diagnostic, max: number) => void;
 };
 
 export const useDatabaseStore = create<DatabaseStore>((set) => ({
@@ -50,6 +54,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	version: "",
 	queryResponses: {},
 	graphqlResponse: {},
+	diagnostics: [],
 
 	setQueryActive: (isQueryActive) =>
 		set(() => ({
@@ -143,5 +148,12 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	clearGraphqlResponse: (connection) =>
 		set((state) => ({
 			graphqlResponse: omit(state.graphqlResponse, [connection]),
+		})),
+
+	pushDiagnostic: (diagnostic, max) =>
+		set((state) => ({
+			diagnostics: [...state.diagnostics, { ...diagnostic, timestamp: Date.now() }].slice(
+				-max,
+			),
 		})),
 }));

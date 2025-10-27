@@ -71,6 +71,11 @@ export function applyMigrations(config: any): SurrealistConfig {
 		}
 	});
 
+	// 3.5.8 -> 3.6.0: Add default diagnostics history size
+
+	config.settings.behavior.recordDiagnostics ??= false;
+	config.settings.behavior.diagnosticsHistorySize ??= 300;
+
 	return config;
 }
 
