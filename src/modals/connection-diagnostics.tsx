@@ -11,6 +11,7 @@ import {
 	Stack,
 	Text,
 	Timeline,
+	UnstyledButton,
 } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
 import { formatDistanceToNow } from "date-fns";
@@ -388,14 +389,15 @@ const DiagnosticEntry: FC<
 	const handleSelect = useStable(() => onSelect(entry));
 
 	return (
-		<Paper
-			bd="none"
-			bg={isLight ? "slate.4" : "slate.7"}
-			onClick={handleSelect}
-			{...rest}
-		>
-			<DiagnosticDetails entry={entry} />
-		</Paper>
+		<UnstyledButton onClick={handleSelect}>
+			<Paper
+				bd="none"
+				bg={isLight ? "slate.4" : "slate.7"}
+				{...rest}
+			>
+				<DiagnosticDetails entry={entry} />
+			</Paper>
+		</UnstyledButton>
 	);
 });
 
