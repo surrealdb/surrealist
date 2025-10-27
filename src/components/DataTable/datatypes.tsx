@@ -3,8 +3,10 @@ import dayjs from "dayjs";
 import { convert } from "geo-coordinates-parser";
 import { useEffect, useState } from "react";
 import {
+	DateTime,
 	Decimal,
 	Duration,
+	FileRef,
 	GeometryCollection,
 	GeometryLine,
 	GeometryMultiLine,
@@ -15,9 +17,9 @@ import {
 	RecordId,
 	Uuid,
 } from "surrealdb";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { TRUNCATE_STYLE } from "~/util/helpers";
-import { iconCheck, iconClock, iconClose } from "~/util/icons";
-import { formatValue } from "~/util/surrealql";
+import { iconCheck, iconClock, iconClose, iconExplorer, iconFile, iconXml } from "~/util/icons";
 import { GeographyLink } from "../GeographyLink";
 import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
@@ -86,6 +88,11 @@ function UuidCell(props: { value: Uuid }) {
 			ff="monospace"
 			c="bright"
 		>
+			<Icon
+				path={iconXml}
+				left
+				mt={-3}
+			/>
 			{props.value.toString()}
 		</Text>
 	);
@@ -95,14 +102,30 @@ function ThingCell(props: { value: RecordId }) {
 	return <RecordLink value={props.value} />;
 }
 
-function DateTimeCell(props: { value: Date }) {
-	const date = new Date(props.value);
+function DateTimeCell(props: { value: DateTime }) {
+	const date = props.value.toDate();
 	const relative = dayjs(date).fromNow();
 
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
 			<Icon
-				path={iconClock}
+				path={iconExplorer}
+				left
+				mt={-3}
+			/>
+			{date.toLocaleString()}
+		</Text>
+	);
+}
+
+function DateCell(props: { value: Date }) {
+	const date = props.value;
+	const relative = dayjs(date).fromNow();
+
+	return (
+		<Text title={`${date.toISOString()} (${relative})`}>
+			<Icon
+				path={iconExplorer}
 				left
 				mt={-3}
 			/>
@@ -112,7 +135,29 @@ function DateTimeCell(props: { value: Date }) {
 }
 
 function DurationCell(props: { value: Duration }) {
-	return <Text>{props.value.toString()}</Text>;
+	return (
+		<Text ff="monospace">
+			<Icon
+				path={iconClock}
+				left
+				mt={-3}
+			/>
+			{props.value.toString()}
+		</Text>
+	);
+}
+
+function FileCell(props: { value: FileRef }) {
+	return (
+		<Text ff="monospace">
+			<Icon
+				path={iconFile}
+				left
+				mt={-3}
+			/>
+			{props.value.toString()}
+		</Text>
+	);
 }
 
 function ArrayCell(props: { value: any[] }) {
@@ -173,7 +218,7 @@ function ObjectCell(props: { value: any }) {
 		let cancelled = false;
 
 		const format = async () => {
-			const result = await formatValue(props.value, false, true);
+			const result = await getSurrealQL().formatValue(props.value, false, true);
 			if (!cancelled) {
 				setFormatted(result);
 			}
@@ -295,8 +340,12 @@ function GeographyCollectionCell({ value }: { value: GeometryCollection }) {
 }
 
 export const DataCell = ({ value }: { value: any }) => {
-	if (value instanceof Date) {
+	if (value instanceof DateTime) {
 		return <DateTimeCell value={value} />;
+	}
+
+	if (value instanceof Date) {
+		return <DateCell value={value} />;
 	}
 
 	if (value === undefined || value === null) {
@@ -361,6 +410,10 @@ export const DataCell = ({ value }: { value: any }) => {
 
 	if (value instanceof Duration) {
 		return <DurationCell value={value} />;
+	}
+
+	if (value instanceof FileRef) {
+		return <FileCell value={value} />;
 	}
 
 	if (typeof value === "object") {

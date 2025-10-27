@@ -116,8 +116,6 @@ export class BrowserAdapter implements SurrealistAdapter {
 			.join(",");
 		el.style.display = "none";
 
-		console.log(el.accept);
-
 		el.click();
 
 		return new Promise((resolve, reject) => {

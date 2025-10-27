@@ -92,7 +92,7 @@ export function SurrealistToolbar() {
 					size="xs"
 					onClick={openCloudAuthentication}
 				>
-					Sign in to Surreal Cloud
+					Sign in to SurrealDB Cloud
 				</Button>
 			)}
 

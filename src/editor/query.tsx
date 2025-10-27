@@ -111,9 +111,9 @@ export const executeGraphqlEditorQuery: Command = () => {
 		return false;
 	}
 
-	const params = tryParseParams(connection.graphqlVariables);
-
-	executeGraphql(connection.graphqlQuery, params);
+	tryParseParams(connection.graphqlVariables).then((params) => {
+		executeGraphql(connection.graphqlQuery, params);
+	});
 
 	return true;
 };

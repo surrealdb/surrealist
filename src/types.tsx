@@ -184,7 +184,6 @@ export interface SurrealistBehaviorSettings {
 	windowPinned: boolean;
 	docsLanguage: CodeLang;
 	versionCheckTimeout: number;
-	reconnectInterval: number;
 	queryQuickClose: boolean;
 	strictSandbox: boolean;
 	sidekickPanel: boolean;
@@ -244,10 +243,17 @@ export interface SurrealistGtmSettings {
 	debug_mode: boolean;
 }
 
+export interface GraphqlQuery {
+	query?: string;
+	variables?: Record<string, any>;
+	operationName?: string;
+}
+
 export interface QueryResponse {
-	execution_time: string;
 	success: boolean;
 	result: any;
+	duration?: Duration;
+	type?: "live" | "kill" | "other";
 }
 
 export interface QueryTab {
@@ -364,7 +370,8 @@ export interface DatabaseSchema {
 export interface SchemaTable {
 	name: string;
 	drop: boolean;
-	full: boolean;
+	full: boolean; // 2.0
+	schemafull?: boolean; // 3.0
 	permissions: Permissions;
 	kind: Kind;
 	view?: string;

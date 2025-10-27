@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
-import Surreal from "surrealdb";
+import { Surreal } from "surrealdb";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -29,37 +29,37 @@ export function ContextProvider({ children }: PropsWithChildren) {
 	const [authenticated, setAuthenticated] = useState(false);
 	const initializedRef = useRef(false);
 
-	const connect = useStable(() => {
-		console.log("Connecting to Surreal Cloud instance");
-		surreal.connect(CONTEXT_ENDPOINT, {
-			namespace: "surrealdb",
-			database: "cloud",
-		});
-	});
+	const connect = useStable(() => {});
 
 	useEffect(() => {
 		if (initializedRef.current) return;
 
-		surreal.emitter.subscribe("connecting", () => {
-			adapter.log("Cloud", "Attempting to connect to Surreal Cloud instance");
+		surreal.subscribe("connecting", () => {
+			adapter.log("Context", "Attempting to connect to SurrealDB Cloud instance");
 		});
 
-		surreal.emitter.subscribe("connected", () => {
-			adapter.log("Cloud", "Connected to Surreal Cloud instance");
+		surreal.subscribe("connected", () => {
+			adapter.log("Context", "Connected to SurrealDB Cloud instance");
 			setConnected(true);
 		});
 
-		surreal.emitter.subscribe("disconnected", () => {
-			adapter.log("Cloud", "Disconnected from Surreal Cloud instance");
+		surreal.subscribe("disconnected", () => {
+			adapter.log("Context", "Disconnected from SurrealDB Cloud instance");
 			setConnected(false);
 			setTimeout(connect, 3000);
 		});
 
-		surreal.emitter.subscribe("error", (error) => {
+		surreal.subscribe("error", (error) => {
 			console.error(error);
 		});
 
 		initializedRef.current = true;
+
+		adapter.log("Context", "Connecting to SurrealDB Cloud instance");
+		surreal.connect(CONTEXT_ENDPOINT, {
+			namespace: "surrealdb",
+			database: "cloud",
+		});
 		connect();
 	}, [surreal]);
 

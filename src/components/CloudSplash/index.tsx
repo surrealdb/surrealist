@@ -30,7 +30,7 @@ export function CloudSplash() {
 				/>
 				<Image
 					src={logoImg}
-					alt="Surreal Cloud"
+					alt="SurrealDB Cloud"
 					maw={450}
 					my="xl"
 				/>
@@ -40,7 +40,7 @@ export function CloudSplash() {
 					maw={520}
 					ta="center"
 				>
-					Surreal Cloud redefines the database experience, offering the power and
+					SurrealDB Cloud redefines the database experience, offering the power and
 					flexibility of SurrealDB without the pain of managing infrastructure.
 				</Text>
 				<Group

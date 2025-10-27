@@ -34,10 +34,10 @@ export function StartCreator({ organization, ...other }: PropsWithChildren<Start
 								fw={600}
 								fz="lg"
 							>
-								Deploy a Surreal Cloud instance
+								Deploy a SurrealDB Cloud instance
 							</Text>
 							<Text mt="xs">
-								Click to configure and deploy a Surreal Cloud instance in this
+								Click to configure and deploy a SurrealDB Cloud instance in this
 								organisation.
 							</Text>
 						</Box>

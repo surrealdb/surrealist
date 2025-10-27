@@ -222,7 +222,7 @@ export function ConnectionsModal() {
 									path={iconCircle}
 									c="slate"
 								/>
-								<Text>Surreal Cloud</Text>
+								<Text>SurrealDB Cloud</Text>
 							</Group>
 							{org.instances.map((instance) => (
 								<InstanceEntry

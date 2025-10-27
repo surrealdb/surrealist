@@ -47,7 +47,6 @@ export function createBaseSettings(): SurrealistSettings {
 			windowPinned: false,
 			docsLanguage: "cli",
 			versionCheckTimeout: 5,
-			reconnectInterval: 3,
 			queryQuickClose: true,
 			strictSandbox: false,
 			sidekickPanel: false,

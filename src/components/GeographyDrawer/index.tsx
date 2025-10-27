@@ -8,9 +8,9 @@ import { Label } from "~/components/Label";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconClose, iconMarker } from "~/util/icons";
-import { formatValue, parseValue } from "~/util/surrealql";
 import { CodeEditor } from "../CodeEditor";
 import type { GeographyInput } from "../GeographyMap";
 
@@ -28,7 +28,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 
 	useEffect(() => {
 		const loadData = async () => {
-			setGeoJSON(await formatValue(data));
+			setGeoJSON(await getSurrealQL().formatValue(data));
 		};
 		loadData();
 	}, [data]);
@@ -43,7 +43,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 
 		const parseCoords = async () => {
 			try {
-				const parsed: any = (await parseValue(geoJSON)).toJSON();
+				const parsed = await getSurrealQL().parseValue<any>(geoJSON);
 
 				if (cancelled) return;
 

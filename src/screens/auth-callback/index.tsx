@@ -111,13 +111,13 @@ export function AuthCallbackScreen() {
 						<Stack maw={300}>
 							<PrimaryTitle>Verify your email</PrimaryTitle>
 							<Text>
-								Please verify your email before continuing to Surreal Cloud. If you
-								have not received an email, please check your spam folder.
+								Please verify your email before continuing to SurrealDB Cloud. If
+								you have not received an email, please check your spam folder.
 							</Text>
 							<List>
 								<List.Item>Open your email inbox and find the email</List.Item>
 								<List.Item>Press the button to verify your email</List.Item>
-								<List.Item>Return to Surrealist to enter Surreal Cloud</List.Item>
+								<List.Item>Return to Surrealist to enter SurrealDB Cloud</List.Item>
 							</List>
 							<Text
 								mt="md"
@@ -136,7 +136,7 @@ export function AuthCallbackScreen() {
 									location.href = `${REDIRECT_ENDPOINT}?intent=cloud-signin`;
 								}}
 							>
-								Continue to Surreal Cloud
+								Continue to SurrealDB Cloud
 							</Button>
 						</Stack>
 					</Paper>

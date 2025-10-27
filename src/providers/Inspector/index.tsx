@@ -3,9 +3,9 @@ import { createContext, type PropsWithChildren, useContext, useState } from "rea
 import { RecordId } from "surrealdb";
 import { type HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { parseValue } from "~/util/surrealql";
 import { InspectorDrawer } from "./drawer";
 
 type InspectFunction = (record: RecordId | string) => Promise<void>;
@@ -44,8 +44,8 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 	const inspect = useStable(async (record: RecordId | string) => {
 		const recordId =
 			typeof record === "string"
-				? await parseValue(record)
-				: new RecordId(record.tb, record.id);
+				? await getSurrealQL().parseValue(record)
+				: new RecordId(record.table, record.id);
 
 		if (!(recordId instanceof RecordId)) {
 			throw new TypeError("Invalid record id");

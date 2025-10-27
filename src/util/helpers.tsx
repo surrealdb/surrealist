@@ -1,6 +1,5 @@
 import { Group, Stack, Text } from "@mantine/core";
 import { hideNotification, showNotification } from "@mantine/notifications";
-import { Value } from "@surrealdb/ql-wasm";
 import {
 	DateArg,
 	DurationUnit,
@@ -12,9 +11,9 @@ import {
 import escapeRegex from "escape-string-regexp";
 import { shake, uid } from "radash";
 import type { CSSProperties, FocusEvent, ReactNode, SyntheticEvent } from "react";
-import { decodeCbor } from "surrealdb";
 import { adapter } from "~/adapter";
 import { Spacer } from "~/components/Spacer";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { Authentication, Protocol, Selectable } from "~/types";
 import { openErrorModal } from "./errors";
 
@@ -120,9 +119,14 @@ export function showErrorNotification(info: {
  * @param title The title message
  * @param subtitle The subtitle message
  */
-export function showWarning(info: { title: ReactNode; subtitle: ReactNode }) {
+export function showWarning(info: {
+	title: ReactNode;
+	subtitle: ReactNode;
+	autoClose?: boolean | number;
+}) {
 	showNotification({
 		color: "orange",
+		autoClose: info.autoClose,
 		message: (
 			<Stack gap={0}>
 				<Text
@@ -352,11 +356,11 @@ export function uniqueName(baseName: string, existing: string[]) {
  * @param paramString The string to parse
  * @returns The parsed params object
  */
-export function tryParseParams(paramString: string) {
+export async function tryParseParams(paramString: string) {
 	let params: any = {};
 
 	try {
-		const parsed = decodeCbor(Value.from_string(paramString).to_cbor().buffer);
+		const parsed = await getSurrealQL().parseValue(paramString);
 
 		if (typeof parsed !== "object" || Array.isArray(parsed)) {
 			throw new TypeError("Must be object");

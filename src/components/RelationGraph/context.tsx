@@ -2,9 +2,10 @@ import { Box, Group, Text } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
 import { unique } from "radash";
-import { Gap, PreparedQuery, RecordId } from "surrealdb";
+import { RecordId } from "surrealdb";
 import { useIsLight } from "~/hooks/theme";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { getSurreal } from "~/screens/surrealist/connection/connection";
+import { QueryResponse } from "~/types";
 import {
 	iconCopy,
 	iconEyeOff,
@@ -19,12 +20,6 @@ import { NodeCircle } from "./node";
 import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";
 
 type Edges = { from: string[]; to: string[] };
-
-const RECORD = new Gap<RecordId>();
-const QUERY = new PreparedQuery(
-	"SELECT (<-?).map(|$id| $id.tb()).distinct() AS from, (->?).map(|$id| $id.tb()).distinct() AS to FROM ONLY $record",
-	{ record: RECORD },
-);
 
 export interface NodeContextMenuProps {
 	node: RelationGraphNode;
@@ -52,7 +47,14 @@ export function NodeContextMenu({
 		enabled: true,
 		queryFn: async () => {
 			const { from: incoming, to: outgoing } = queryEdges(node.record);
-			const [result] = await executeQuery(QUERY, [RECORD.fill(node.record)]);
+
+			const [result] = await getSurreal()
+				.query(
+					"SELECT (<-?).map(|$id| $id.tb()).distinct() AS from, (->?).map(|$id| $id.tb()).distinct() AS to FROM ONLY $record",
+					{ record: node.record },
+				)
+				.collect<[QueryResponse]>();
+
 			const edges: Edges = result.success ? result.result : { from: [], to: [] };
 
 			return {

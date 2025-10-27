@@ -17,14 +17,17 @@ import { useSaveable } from "~/hooks/save";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
-import { composeHttpConnection, executeQuery } from "~/screens/surrealist/connection/connection";
+import {
+	composeHttpConnection,
+	executeQuery,
+	getSurrealQL,
+} from "~/screens/surrealist/connection/connection";
 import type { FunctionDetails, SchemaFunction, SchemaModel } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { createBaseAuthentication } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { buildFunctionDefinition, buildModelDefinition, syncConnectionSchema } from "~/util/schema";
-import { formatQuery, validateQuery } from "~/util/surrealql";
 import { FunctionEditorPanel } from "../FunctionEditorPanel";
 import { FunctionPropertiesPanel } from "../FunctionPropertiesPanel";
 import { FunctionsPanel } from "../FunctionsPanel";
@@ -43,11 +46,7 @@ export function FunctionsView() {
 	const isConnected = useIsConnected();
 	const duplicationRef = useRef<FunctionDetails | null>(null);
 
-	const [namespace, database, auth] = useConnection((c) => [
-		c?.lastNamespace ?? "",
-		c?.lastDatabase ?? "",
-		c?.authentication ?? createBaseAuthentication(),
-	]);
+	const [auth] = useConnection((c) => [c?.authentication ?? createBaseAuthentication()]);
 
 	const { functions, models } = useDatabaseSchema();
 
@@ -146,8 +145,8 @@ export function FunctionsView() {
 			});
 		} else {
 			const f = func.details as SchemaFunction;
-			const isInvalid = await validateQuery(f.block);
-			const block = isInvalid ? f.block : await formatQuery(f.block);
+			const isInvalid = await getSurrealQL().validateQuery(f.block);
+			const block = isInvalid ? f.block : await getSurrealQL().formatQuery(f.block);
 
 			setActive({
 				type: "function",
@@ -206,15 +205,9 @@ export function FunctionsView() {
 
 	const uploadModel = useRequireDatabase(async () => {
 		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
-		const { endpoint, headers } = composeHttpConnection(
-			auth,
-			namespace,
-			database,
-			"/ml/import",
-			{
-				Accept: "application/json",
-			},
-		);
+		const { endpoint, headers } = composeHttpConnection(auth, "/ml/import", {
+			Accept: "application/json",
+		});
 
 		for (const file of files) {
 			await fetch(endpoint, {
@@ -232,8 +225,6 @@ export function FunctionsView() {
 	const downloadModel = useStable(async (model: SchemaModel) => {
 		const { endpoint, headers } = composeHttpConnection(
 			auth,
-			namespace,
-			database,
 			`/ml/export/${model.name}/${model.version}`,
 		);
 

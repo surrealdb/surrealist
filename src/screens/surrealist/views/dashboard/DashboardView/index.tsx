@@ -181,13 +181,11 @@ export function DashboardView() {
 			const shouldApplyFile = sessionStorage.getItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
 
 			if (dataset) {
-				console.log("applying dataset");
 				sessionStorage.removeItem(`${APPLY_DATASET_KEY}:${details.id}`);
 				applyInitialDataset(dataset as DatasetType);
 			}
 
 			if (shouldApplyFile) {
-				console.log("importing database");
 				sessionStorage.removeItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
 				importDatabase();
 			}
@@ -324,7 +322,7 @@ export function DashboardView() {
 									<Box mt={32}>
 										<PrimaryTitle>Your instance</PrimaryTitle>
 										<Text>
-											Customise and connect to your Surreal Cloud instance
+											Customise and connect to your SurrealDB Cloud instance
 										</Text>
 									</Box>
 
@@ -555,13 +553,13 @@ function LoadingScreen() {
 				ta="center"
 				my={38}
 			>
-				<PrimaryTitle>Deploying your Surreal Cloud instance...</PrimaryTitle>
+				<PrimaryTitle>Deploying your SurrealDB Cloud instance...</PrimaryTitle>
 
 				<Text
 					fz="xl"
 					mt="sm"
 				>
-					While you wait, feel free to explore Surreal Cloud
+					While you wait, feel free to explore SurrealDB Cloud
 				</Text>
 			</Box>
 
@@ -573,7 +571,7 @@ function LoadingScreen() {
 			>
 				<GettingStartedLink
 					title="Cloud Documentation"
-					description="Learn more about Surreal Cloud features and capabilities."
+					description="Learn more about SurrealDB Cloud features and capabilities."
 					image={documentationUrl}
 					href="https://surrealdb.com/docs/cloud"
 				/>
@@ -585,7 +583,7 @@ function LoadingScreen() {
 				/>
 				<GettingStartedLink
 					title="Quick Start Tutorial"
-					description="Watch a quick tutorial to get started with Surreal Cloud."
+					description="Watch a quick tutorial to get started with SurrealDB Cloud."
 					image={tutorialsUrl}
 					href="https://www.youtube.com/watch?v=S04qOKkVcmE"
 				/>

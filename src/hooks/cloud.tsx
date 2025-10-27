@@ -17,7 +17,7 @@ export function useIsCloudEnabled() {
 }
 
 /**
- * Returns whether the user is authenticated to Surreal Cloud
+ * Returns whether the user is authenticated to SurrealDB Cloud
  */
 export function useIsAuthenticated() {
 	return useCloudStore((s) => s.authState === "authenticated");

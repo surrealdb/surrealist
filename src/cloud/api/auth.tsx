@@ -309,7 +309,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		} else {
 			showErrorNotification({
 				title: "Failed to authenticate",
-				content: "Please try signing into Surreal Cloud again",
+				content: "Please try signing into SurrealDB Cloud again",
 			});
 		}
 	} finally {

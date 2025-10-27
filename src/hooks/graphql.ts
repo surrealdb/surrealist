@@ -15,8 +15,8 @@ export function useGraphqlIntrospection() {
 			const query = getIntrospectionQuery();
 			const response = await sendGraphqlRequest(query, {});
 
-			if (!response.success) {
-				console.warn("Failed to introspect GraphQL schema", response.result);
+			if (!response.success || response.errors) {
+				console.warn("Failed to introspect GraphQL schema", response.errors);
 				setSchema(null);
 				return;
 			}

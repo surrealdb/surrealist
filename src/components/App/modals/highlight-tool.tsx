@@ -8,11 +8,11 @@ import { DRIVERS } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { CodeLang, type ColorScheme, type SyntaxTheme } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { renderHighlighting } from "~/util/highlighting";
-import { formatQuery } from "~/util/surrealql";
 
 function Render({
 	value,
@@ -63,7 +63,7 @@ export function HighlightToolModal() {
 	}, []);
 
 	const format = useCallback(async () => {
-		onChange(await formatQuery(value));
+		onChange(await getSurrealQL().formatQuery(value));
 	}, [value]);
 
 	useEffect(() => {

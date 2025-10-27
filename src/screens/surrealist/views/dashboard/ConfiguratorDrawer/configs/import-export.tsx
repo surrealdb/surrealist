@@ -97,8 +97,6 @@ export function ImportExport({ instance, onClose }: ImportExportProps) {
 			const text = await file.text();
 			const parsed = JSON.parse(text);
 
-			console.log(typeof parsed);
-
 			if (typeof parsed !== "object") {
 				showErrorNotification({
 					title: "Import failed",

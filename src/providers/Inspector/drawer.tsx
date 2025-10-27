@@ -13,7 +13,7 @@ import { useSaveable } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useValueValidator } from "~/hooks/surrealql";
 import { useIsLight } from "~/hooks/theme";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import {
 	iconArrowLeftFat,
 	iconClose,
@@ -23,7 +23,6 @@ import {
 	iconSearch,
 	iconTransfer,
 } from "~/util/icons";
-import { formatValue, parseValue } from "~/util/surrealql";
 import { useConfirmation } from "../Confirmation";
 import classes from "./style.module.scss";
 import { ContentTab } from "./tabs/content";
@@ -105,10 +104,10 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			{ id },
 		);
 
-		const formatted = await formatValue(content, false, true);
+		const formatted = await getSurrealQL().formatValue(content, false, true);
 
 		setError("");
-		setRecordId(await formatValue(id));
+		setRecordId(await getSurrealQL().formatValue(id));
 		setCurrentRecord({
 			isEdge: !!content?.in && !!content?.out,
 			exists: !!content,
@@ -131,7 +130,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	});
 
 	const gotoRecord = useStable(async () => {
-		const id = await parseValue(recordId);
+		const id = await getSurrealQL().parseValue(recordId);
 
 		if (id instanceof RecordId) {
 			history.push(id);
@@ -143,7 +142,9 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		confirmText: "Delete",
 		skippable: true,
 		onConfirm: async () => {
-			await executeQuery(/* surql */ `DELETE ${await formatValue(history.current)}`);
+			await executeQuery(
+				/* surql */ `DELETE ${await getSurrealQL().formatValue(history.current)}`,
+			);
 
 			history.clear();
 

@@ -1,7 +1,7 @@
 import { useDebouncedValue } from "@mantine/hooks";
 import { useEffect, useState } from "react";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { ResultFormat } from "~/types";
-import { formatValue, parseValue } from "~/util/surrealql";
 import { useActiveQuery } from "./connection";
 import { useStable } from "./stable";
 
@@ -15,7 +15,7 @@ export function useResultFormatter(): [Formatter, ResultFormat] {
 	const format = query?.resultFormat || "sql";
 
 	const formatter = useStable(async (value: any) => {
-		return await formatValue(value, format === "json", true);
+		return await getSurrealQL().formatValue(value, format === "json", true);
 	});
 
 	return [formatter, format];
@@ -39,7 +39,7 @@ export function useValueValidator(value: string, objectRoot?: boolean): [boolean
 		const validate = async () => {
 			setIsLoading(true);
 			try {
-				const value = await parseValue(bodyCache);
+				const value = await getSurrealQL().parseValue(bodyCache);
 
 				if (cancelled) return;
 

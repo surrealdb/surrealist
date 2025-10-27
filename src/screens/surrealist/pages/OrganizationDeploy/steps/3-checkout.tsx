@@ -232,7 +232,7 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 							mt="sm"
 							maw={400}
 						>
-							Your free Surreal Cloud instance is ready to deploy. Upgrades are
+							Your free SurrealDB Cloud instance is ready to deploy. Upgrades are
 							available at any time once you have deployed your instance.
 						</Box>
 					</Stack>

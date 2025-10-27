@@ -208,17 +208,6 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
-					{
-						id: "reconnect-interval",
-						name: "Reconnect interval",
-						description: "The time to wait before reconnecting",
-						controller: new NumberController({
-							reader: (config) => config.settings.behavior.reconnectInterval,
-							writer: (config, value) => {
-								config.settings.behavior.reconnectInterval = value;
-							},
-						}),
-					},
 				],
 			},
 			{

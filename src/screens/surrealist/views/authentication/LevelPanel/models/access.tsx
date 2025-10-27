@@ -25,7 +25,7 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { AccessType, Base, SchemaAccess } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
 import { iconPlus } from "~/util/icons";
-import { readBlock, syncConnectionSchema, writeBlock } from "~/util/schema";
+import { readBlock, syncConnectionSchema } from "~/util/schema";
 
 type VerifyMode = "url" | "keyalg";
 
@@ -124,11 +124,11 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 				query += ` RECORD`;
 
 				if (signupClause) {
-					query += ` SIGNUP ${await writeBlock(signupClause)}`;
+					query += ` SIGNUP { ${signupClause} }`;
 				}
 
 				if (signinClause) {
-					query += ` SIGNIN ${await writeBlock(signinClause)}`;
+					query += ` SIGNIN { ${signinClause} }`;
 				}
 
 				if (jwtIssuerKey || jwtVerifyKey || jwtVerifyUrl) {
@@ -155,7 +155,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			}
 
 			if (authClause) {
-				query += ` AUTHENTICATE ${await writeBlock(authClause)}`;
+				query += ` AUTHENTICATE { ${authClause} }`;
 			}
 
 			const durations: string[] = [];

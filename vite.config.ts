@@ -97,7 +97,12 @@ export default defineConfig(({ mode }) => {
 							"@replit/codemirror-indentation-markers",
 						],
 						mantime: ["@mantine/core", "@mantine/hooks", "@mantine/notifications"],
-						surreal: ["surrealdb", "@surrealdb/wasm", "@surrealdb/ql-wasm"],
+						surreal: [
+							"surrealdb",
+							"@surrealdb/wasm",
+							"@surrealdb/ql-wasm-2",
+							"@surrealdb/ql-wasm-3",
+						],
 					},
 				},
 			},
@@ -131,11 +136,15 @@ export default defineConfig(({ mode }) => {
 			"import.meta.env.GTM_ID": JSON.stringify("G-PVD8NEJ3Z2"),
 		},
 		optimizeDeps: {
-			exclude: ["@surrealdb/wasm", "@surrealdb/ql-wasm"],
+			exclude: ["@surrealdb/wasm", "@surrealdb/ql-wasm-2", "@surrealdb/ql-wasm-3"],
 			esbuildOptions: {
 				target: "esnext",
 			},
 		},
-		assetsInclude: ["**/@surrealdb/wasm/dist/*.wasm", "**/@surrealdb/ql-wasm/dist/*.wasm"],
+		assetsInclude: [
+			"**/@surrealdb/wasm/dist/*.wasm",
+			"**/@surrealdb/ql-wasm-2/dist/*.wasm",
+			"**/@surrealdb/ql-wasm-3/dist/*.wasm",
+		],
 	};
 });

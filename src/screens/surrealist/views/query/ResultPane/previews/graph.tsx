@@ -17,7 +17,7 @@ import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { isArray, isNumber, isObject } from "radash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { equals, escapeIdent, Gap, PreparedQuery, RecordId } from "surrealdb";
+import { equals, escapeIdent, RecordId } from "surrealdb";
 import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { newRelationalGraph, RelationGraph } from "~/components/RelationGraph";
@@ -31,7 +31,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
 import { openGraphLabelEditorModal } from "~/modals/graph-labels";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery, getSurreal } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
@@ -42,12 +42,6 @@ import { type PreviewProps } from ".";
 const CURVE_AMP = 3.5;
 const CURVE_SCALE = 0.15;
 const SURREAL_SPACE: ColorSpaceArray = [180, 10, 50, 100, 40, 100];
-
-const WIRE_RECORDS = new Gap<RecordId[]>();
-const WIRE_QUERY = new PreparedQuery(
-	"SELECT VALUE [in, id, out] FROM array::distinct(array::flatten($records<->(? WHERE out IN $records AND in IN $records))) WHERE __ == true",
-	{ records: WIRE_RECORDS },
-);
 
 function jitter(value?: number) {
 	return value !== undefined ? value + (Math.random() - 0.5) * 0.001 : value;
@@ -159,11 +153,11 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		const edges = new Set<string>();
 
 		universeGraph.forEachNode((_, attr) => {
-			tables.add(attr.record.tb);
+			tables.add(attr.record.table.name);
 		});
 
 		universeGraph.forEachEdge((_, attr) => {
-			edges.add(attr.record.tb);
+			edges.add(attr.record.table.name);
 		});
 
 		const tableList = Array.from(tables).sort();
@@ -204,12 +198,25 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 		const nodes = universeGraph.nodeEntries();
 		const records = Array.from(nodes).map((e) => e.attributes.record);
-		const [response] = await executeQuery(WIRE_QUERY, [WIRE_RECORDS.fill(records)]);
-		const relations = response.result as [RecordId, RecordId, RecordId][];
+
+		const version = await getSurreal().version();
+
+		let clause = "";
+
+		if (version.version.startsWith("3.")) {
+			clause = "WHERE record::is_edge(id)";
+		} else {
+			clause = "WHERE __ == true";
+		}
+
+		const [response] = await executeQuery(
+			"SELECT VALUE [in, id, out] FROM array::distinct(array::flatten($records<->(? WHERE out IN $records AND in IN $records))) WHERE $clause",
+			{ records: records, clause: clause },
+		);
 
 		universeGraph.clearEdges();
 
-		for (const [source, edge, target] of relations) {
+		for (const [source, edge, target] of response.result) {
 			const id = edge.toString();
 			const src = source.toString();
 			const tgt = target.toString();
@@ -221,7 +228,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				universeGraph.hasNode(tgt)
 			) {
 				universeGraph.addDirectedEdgeWithKey(id, src, tgt, {
-					weight: source.tb === target.tb ? 2 : 1,
+					weight: source.table.name === target.table.name ? 2 : 1,
 					record: edge,
 				});
 			}
@@ -240,7 +247,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		// Group nodes per table
 		for (const node of universeGraph.nodes()) {
 			const record = universeGraph.getNodeAttributes(node).record;
-			const table = record.tb;
+			const table = record.table.name;
 
 			if (!graphLabels[table]?.length) {
 				continue;
@@ -296,7 +303,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 		// Append or update nodes
 		for (const { node, attributes } of universeGraph.nodeEntries()) {
-			if (skipTables.has(attributes.record.tb)) {
+			if (skipTables.has(attributes.record.table.name)) {
 				if (displayGraph.hasNode(node)) {
 					displayGraph.dropNode(node);
 				}
@@ -307,7 +314,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			const data = {
 				record: attributes.record,
 				label: attributes.display || node,
-				color: colors.get(attributes.record.tb),
+				color: colors.get(attributes.record.table.name),
 			};
 
 			if (displayGraph.hasNode(node)) {
@@ -331,7 +338,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 		// Append or update edges
 		universeGraph.forEachEdge((edge, attr) => {
-			if (skipEdges.has(attr.record.tb)) {
+			if (skipEdges.has(attr.record.table.name)) {
 				if (displayGraph.hasEdge(edge)) {
 					displayGraph.dropEdge(edge);
 				}
@@ -349,7 +356,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 			const data = {
 				weight: attr.weight,
 				record: attr.record,
-				label: attr.record.tb,
+				label: attr.record.table.name,
 				type: straightEdges ? "straight" : "curved",
 			};
 
@@ -421,8 +428,11 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 		const { x, y } = displayGraph.getNodeAttributes(record.toString());
 		const [response] = await executeQuery(query, { current: record });
-		const result = response.result as RecordId[];
-		const expandables = result.filter((r) => !universeGraph.hasNode(r.toString()));
+
+		const expandables = response.result.filter(
+			(r: any) => !universeGraph.hasNode(r.toString()),
+		);
+
 		const toJitter = expandables.length > 1;
 
 		for (const node of expandables) {
@@ -452,8 +462,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		const outEdges = universeGraph.outEdges(node);
 
 		return {
-			from: new Set(inEdges.map((e) => universeGraph.getEdgeAttributes(e).record.tb)),
-			to: new Set(outEdges.map((e) => universeGraph.getEdgeAttributes(e).record.tb)),
+			from: new Set(inEdges.map((e) => universeGraph.getEdgeAttributes(e).record.table.name)),
+			to: new Set(outEdges.map((e) => universeGraph.getEdgeAttributes(e).record.table.name)),
 		};
 	});
 

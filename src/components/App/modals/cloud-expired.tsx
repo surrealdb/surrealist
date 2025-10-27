@@ -43,7 +43,7 @@ export function CloudExpiredDialog() {
 			<Group>
 				<Image
 					src={cloudUrl}
-					alt="Surreal Cloud"
+					alt="SurrealDB Cloud"
 					w={48}
 				/>
 				<Box flex="1">

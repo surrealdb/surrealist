@@ -18,7 +18,6 @@ import type {
 import { dedent } from "./dedent";
 import { createConnectionSchema } from "./defaults";
 import { showErrorNotification } from "./helpers";
-import { getStatementCount } from "./surrealql";
 
 export interface SchemaSyncOptions {
 	tables?: string[];
@@ -115,7 +114,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 				.join("\n"),
 		);
 
-		adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
+		// adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
 
 		if (isLimited) {
 			schema.database.tables = klona(connectionSchema.database.tables);
@@ -149,7 +148,10 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 			}
 
 			const definition: TableInfo = {
-				schema: tableInfo,
+				schema: {
+					...tableInfo,
+					full: tableInfo.schemafull ?? tableInfo.full,
+				},
 				fields: Object.values(tableStruct.fields),
 				indexes: Object.values(tableStruct.indexes),
 				events: Object.values(tableStruct.events).map((ev) => ({
@@ -289,14 +291,4 @@ export function readBlock(block: string | undefined) {
 	const trimmed = hasBraces || hasParen ? block.slice(1, -1) : (block ?? "");
 
 	return dedent(trimmed);
-}
-
-/**
- * Wrap a block in braces or parenthesis
- */
-export async function writeBlock(block: string): Promise<string> {
-	const [openSymbol, closeSymbol] =
-		(await getStatementCount(block)) > 1 ? ["{", "}"] : ["(", ")"];
-
-	return `${openSymbol}\n${block}\n${closeSymbol}`;
 }

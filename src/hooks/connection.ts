@@ -156,6 +156,15 @@ export function useSavedQueryTags() {
 }
 
 /**
+ * Returns whether the current database version is an alpha or beta version
+ */
+export function useIsAlphaOrBeta() {
+	const version = useDatabaseStore((s) => s.version);
+
+	return version.includes("-alpha") || version.includes("-beta");
+}
+
+/**
  * Returns whether the current database version is at least the minimum version
  */
 export function useMinimumVersion(minimum: string) {

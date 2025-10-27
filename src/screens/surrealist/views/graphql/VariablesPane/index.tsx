@@ -1,8 +1,6 @@
 import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { Value } from "@surrealdb/ql-wasm";
 import { useMemo } from "react";
-import { decodeCbor } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { Icon } from "~/components/Icon";
@@ -11,6 +9,7 @@ import { surqlLinting } from "~/editor";
 import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConnectionAndView } from "~/hooks/routing";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { iconClose, iconDollar } from "~/util/icons";
 
@@ -25,12 +24,12 @@ export function VariablesPane(props: VariablesPaneProps) {
 	const [connection] = useConnectionAndView();
 	const variablesText = useConnection((c) => c?.graphqlVariables ?? "");
 
-	const setVariables = useDebouncedFunction((content: string | undefined) => {
+	const setVariables = useDebouncedFunction(async (content: string | undefined) => {
 		if (!connection) return;
 
 		try {
 			const json = content || "";
-			const parsed = decodeCbor(Value.from_string(json).to_cbor().buffer);
+			const parsed = await getSurrealQL().parseValue(json);
 
 			if (typeof parsed !== "object" || Array.isArray(parsed)) {
 				throw new TypeError("Must be object");

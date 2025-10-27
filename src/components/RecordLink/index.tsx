@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import type { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { iconArrowUpRight } from "~/util/icons";
-import { formatValue } from "~/util/surrealql";
 import { Icon } from "../Icon";
 
 export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {
@@ -21,7 +21,7 @@ export function RecordLink({ value, withOpen, ...rest }: RecordLinkProps) {
 		let cancelled = false;
 
 		const format = async () => {
-			const result = await formatValue(value);
+			const result = await getSurrealQL().formatValue(value);
 			if (!cancelled) {
 				setRecordText(result);
 			}

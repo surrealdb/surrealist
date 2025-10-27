@@ -29,6 +29,7 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInspector } from "~/providers/Inspector";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
@@ -43,7 +44,7 @@ import {
 	iconWarning,
 } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { formatQuery, formatValue, parseVariables } from "~/util/surrealql";
+import { parseVariables } from "~/util/language";
 import { readQuery, writeQuery } from "../QueryView/strategy";
 import classes from "./style.module.scss";
 
@@ -146,9 +147,11 @@ export function QueryPane({
 			const document = editor.state.doc;
 			const formatted = hasSelection
 				? document.sliceString(0, selection.from) +
-					(await formatQuery(document.sliceString(selection.from, selection.to))) +
+					(await getSurrealQL().formatQuery(
+						document.sliceString(selection.from, selection.to),
+					)) +
 					document.sliceString(selection.to)
-				: await formatQuery(document.toString());
+				: await getSurrealQL().formatQuery(document.toString());
 
 			setEditorText(editor, formatted);
 		} catch {
@@ -168,7 +171,7 @@ export function QueryPane({
 
 		const tree = syntaxTree(editor.state);
 		const discovered = parseVariables(tree, (from, to) => editor.state.sliceDoc(from, to));
-		const currentVars = tryParseParams(activeTab.variables);
+		const currentVars = await tryParseParams(activeTab.variables);
 
 		const newVars = objectify(
 			discovered,
@@ -180,16 +183,15 @@ export function QueryPane({
 			...currentVars,
 			...newVars,
 		};
-
-		setShowVariables(true);
+		-setShowVariables(true);
 		updateQueryTab(connection, {
 			id: activeTab.id,
-			variables: await formatValue(mergedVars, false, true),
+			variables: await getSurrealQL().formatValue(mergedVars, false, true),
 		});
 	});
 
-	const resolveVariables = useStable(() => {
-		return Object.keys(tryParseParams(activeTab.variables));
+	const resolveVariables = useStable(async () => {
+		return Object.keys(await tryParseParams(activeTab.variables));
 	});
 
 	const updateValid = useStable((status: string) => {

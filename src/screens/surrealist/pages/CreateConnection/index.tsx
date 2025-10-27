@@ -251,7 +251,7 @@ export function CreateConnectionPage() {
 									inherit
 									c="bright"
 								>
-									Surreal Cloud
+									SurrealDB Cloud
 								</Text>{" "}
 								is the easiest way to deploy and manage your database—no
 								infrastructure setup or maintenance required.
