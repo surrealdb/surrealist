@@ -318,17 +318,25 @@ export async function executeQuery(
 				if (frame.isSingle) {
 					queryResponses.set(frame.query, frame.value);
 				} else {
-					const newResults = queryResponses.get(frame.query) || [];
+					let queryResults = queryResponses.get(frame.query);
 
-					newResults.push(frame.value);
-					queryResponses.set(frame.query, newResults);
+					if (!queryResults) {
+						queryResults = [];
+						queryResponses.set(frame.query, queryResults);
+					}
+
+					queryResults.push(frame.value);
 				}
 			} else if (frame.isDone()) {
+				const result = queryResponses.has(frame.query)
+					? queryResponses.get(frame.query)
+					: undefined;
+
 				results.push({
 					success: true,
-					result: queryResponses.get(frame.query) ?? [],
 					duration: frame.stats?.duration,
 					type: frame.type,
+					result,
 				});
 			} else if (frame.isError()) {
 				results.push({
@@ -338,6 +346,8 @@ export async function executeQuery(
 				});
 			}
 		}
+
+		console.log("R", results);
 
 		return results;
 	} catch (err: any) {
