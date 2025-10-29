@@ -347,8 +347,6 @@ export async function executeQuery(
 			}
 		}
 
-		console.log("R", results);
-
 		return results;
 	} catch (err: any) {
 		return [
