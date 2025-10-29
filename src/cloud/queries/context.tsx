@@ -5,6 +5,7 @@ import {
 	IntercomSupportArticle,
 	IntercomSupportCollection,
 	IntercomSupportCollectionShallow,
+	IntercomTicket,
 	IntercomTicketType,
 } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -22,6 +23,15 @@ export function useConversationsQuery() {
 		enabled: authState === "authenticated" && supportTicketsEnabled,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation[]>(`/cloud/conversations`);
+		},
+	});
+}
+export function useCloudOrganizationTicketsQuery(organizationId?: string) {
+	return useQuery({
+		queryKey: ["cloud", "organization_tickets", organizationId],
+		enabled: !!organizationId,
+		queryFn: async () => {
+			return fetchContextAPI<IntercomTicket[]>(`/cloud/org/${organizationId}/tickets`);
 		},
 	});
 }

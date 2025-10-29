@@ -12,6 +12,7 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
 import {
+	iconChat,
 	iconCog,
 	iconCreditCard,
 	iconDollar,
@@ -25,6 +26,7 @@ import { OrganizationBillingTab } from "./tabs/billing";
 import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationSettingsTab } from "./tabs/settings";
+import { OrganizationSupportTab } from "./tabs/support";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
 
@@ -152,6 +154,13 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											{isAdmin && (
 												<>
 													<Tabs.Tab
+														value="support"
+														leftSection={<Icon path={iconChat} />}
+														px="xl"
+													>
+														Support
+													</Tabs.Tab>
+													<Tabs.Tab
 														value="usage"
 														leftSection={
 															<Icon path={iconProgressClock} />
@@ -195,12 +204,17 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 													/>
 												</Tabs.Panel>
 
+												<Tabs.Panel value="support">
+													<OrganizationSupportTab
+														organization={organization}
+													/>
+												</Tabs.Panel>
+
 												<Tabs.Panel value="usage">
 													<OrganizationUsageTab
 														organization={organization}
 													/>
 												</Tabs.Panel>
-
 												<Tabs.Panel value="settings">
 													<OrganizationSettingsTab
 														organization={organization}
