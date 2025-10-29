@@ -41,10 +41,13 @@ export function useRecordQuery(input: RecordQueryInput) {
 				if (sortMode) {
 					const [sortField, sortDir] = sortMode;
 
-					fetchQuery += ` ORDER BY ${sortField} ${sortDir}`;
+					// Sorting defaults to id ascending
+					if (sortField !== "id" && sortDir !== "asc") {
+						fetchQuery += ` ORDER BY ${sortField} ${sortDir}`;
 
-					if (sortField !== "id") {
-						fetchQuery += `, id ${sortDir}`;
+						if (sortField !== "id") {
+							fetchQuery += `, id ${sortDir}`;
+						}
 					}
 				}
 
