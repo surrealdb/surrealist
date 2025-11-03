@@ -1,11 +1,13 @@
 import { compareVersions } from "compare-versions";
 import {
+	AccessAuth,
 	type AccessRecordAuth,
 	SqlExportOptions,
 	Surreal,
-	UnsupportedVersion,
+	SystemAuth,
+	Token,
+	UnsupportedVersionError,
 	Uuid,
-	VersionCheckFailure,
 } from "surrealdb";
 import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
@@ -101,6 +103,10 @@ export async function openConnection(options?: ConnectOptions) {
 		retryTask = null;
 	}
 
+	const authDetails = await composeAuthentication(connection.authentication);
+	const managedAuth = extractManagedAuth(authDetails);
+	const accessAuth = extractAccessAuth(authDetails);
+
 	instance.subscribe("connecting", () => {
 		setCurrentState("connecting");
 	});
@@ -119,6 +125,13 @@ export async function openConnection(options?: ConnectOptions) {
 	instance.subscribe("error", (err) => {
 		setLatestError(err.message);
 		console.dir(err);
+	});
+
+	instance.subscribe("auth", (state) => {
+		if (accessAuth && !state) {
+			adapter.log("DB", "Restoring access authentication");
+			instance.signin(accessAuth);
+		}
 	});
 
 	try {
@@ -148,8 +161,6 @@ export async function openConnection(options?: ConnectOptions) {
 		const namespace = getAuthNS(connection.authentication) || connection.lastNamespace;
 		const database = getAuthDB(connection.authentication) || connection.lastDatabase;
 
-		const authentication = await composeAuthentication(connection.authentication);
-
 		try {
 			await instance.connect(rpcEndpoint, {
 				versionCheck,
@@ -159,7 +170,7 @@ export async function openConnection(options?: ConnectOptions) {
 					retryDelayMultiplier: 1.2,
 					retryDelayJitter: 0,
 				},
-				authentication,
+				authentication: managedAuth,
 			});
 		} catch (err: any) {
 			console.error("Connection failed", err);
@@ -200,6 +211,10 @@ export async function openConnection(options?: ConnectOptions) {
 			await activateDatabase(namespace, database);
 		}
 
+		if (accessAuth) {
+			await instance.signin(accessAuth);
+		}
+
 		ConnectedEvent.dispatch(null);
 
 		tagEvent("connection_connected", {
@@ -211,16 +226,10 @@ export async function openConnection(options?: ConnectOptions) {
 
 		setLatestError(err.message);
 
-		if (err instanceof VersionCheckFailure) {
-			showWarning({
-				title: "Failed to query version",
-				subtitle:
-					"The database version could not be determined. Please ensure the database is running and accessible by Surrealist.",
-			});
-		} else if (err instanceof UnsupportedVersion) {
+		if (err instanceof UnsupportedVersionError) {
 			showErrorNotification({
 				title: "Unsupported version",
-				content: `The database version must be in range "${err.supportedRange}". The current version is ${err.version}`,
+				content: `The database version (${err.version}) must satisfy ">= ${err.minimum} < ${err.maximum}"`,
 			});
 		} else if (!(err instanceof CloudError)) {
 			console.error(err);
@@ -827,6 +836,32 @@ function scheduleReconnect(timeout: number) {
 			});
 		}
 	}, timeout);
+}
+
+/**
+ * Extract tokens or system users from the given authentication details
+ */
+function extractManagedAuth(authDetails: AuthDetails): string | SystemAuth | Token | undefined {
+	if (typeof authDetails === "string") {
+		return authDetails;
+	}
+
+	if (authDetails && !("access" in authDetails)) {
+		return authDetails;
+	}
+
+	return undefined;
+}
+
+/**
+ * Extract access authentication details from the given authentication details
+ */
+function extractAccessAuth(authDetails: AuthDetails): AccessAuth | undefined {
+	if (authDetails && typeof authDetails === "object" && "access" in authDetails) {
+		return authDetails;
+	}
+
+	return undefined;
 }
 
 async function isNamespaceValid(namespace: string) {
