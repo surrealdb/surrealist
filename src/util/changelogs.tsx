@@ -24,7 +24,11 @@ export function promptChangelog() {
 	const { previousVersion, setPreviousVersion } = useConfigStore.getState();
 	const { showChangelog } = useInterfaceStore.getState();
 
-	if (compareVersions(import.meta.env.VERSION, previousVersion) > 0) {
+	const hasVersion = changelogs.some(
+		(changelog) => changelog.version === import.meta.env.VERSION,
+	);
+
+	if (hasVersion && compareVersions(import.meta.env.VERSION, previousVersion) > 0) {
 		setPreviousVersion(import.meta.env.VERSION);
 		showChangelog();
 	}
