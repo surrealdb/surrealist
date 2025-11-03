@@ -1,9 +1,9 @@
 import { tryit } from "radash";
 import type { Formatter } from "~/hooks/surrealql";
-import type { QueryTab } from "~/types";
+import type { QueryResponse, QueryTab } from "~/types";
 
 export interface PreviewProps {
-	responses: any[];
+	responses: QueryResponse[];
 	selected: number;
 	query: QueryTab;
 	isLive: boolean;
