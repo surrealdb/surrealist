@@ -3,6 +3,7 @@ import type { EditorView } from "@codemirror/view";
 import { Box, Stack, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Duration } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { surqlRecordLinks } from "~/editor";
 import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
@@ -12,8 +13,8 @@ import classes from "../style.module.scss";
 import { attemptFormat, type PreviewProps } from ".";
 
 const COMBINED_QUERY_HEADER_REGEX = /-------- Query (\d+)(?:[^-]*)?--------/g;
-const createCombinedQueryHeader = (index: number, execution_time?: string): string =>
-	`\n\n-------- Query ${index + 1}${execution_time ? ` (${execution_time})` : ""} --------\n\n`;
+const createCombinedQueryHeader = (index: number, duration?: Duration): string =>
+	`\n\n-------- Query ${index + 1}${duration ? ` (${duration.toString() || "<100us"})` : ""} --------\n\n`;
 
 // Cached regex matches to avoid repeated execution
 const regexMatchCache = new Map<string, RegExpMatchArray[]>();
@@ -66,11 +67,11 @@ function processCombinedNoneResultHeaders(
 
 export async function buildCombinedResult(
 	index: number,
-	{ result, execution_time }: any,
+	response: QueryResponse,
 	format: Formatter,
 ): Promise<string> {
-	const header = createCombinedQueryHeader(index, execution_time);
-	const formattedContent = await attemptFormat(format, result);
+	const header = createCombinedQueryHeader(index, response.duration);
+	const formattedContent = await attemptFormat(format, response.result);
 	return header + formattedContent;
 }
 
