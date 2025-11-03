@@ -1,6 +1,6 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import { AboutMetadata } from "@tauri-apps/api/menu";
-import type { AnyAuth, Duration, RecordId, Token } from "surrealdb";
+import type { Duration, RecordId } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
@@ -114,7 +114,6 @@ export type Listable<T extends string = string> = Selectable<T> & {
 	icon?: string;
 };
 export type Snippets = Partial<Record<CodeLang, string>>;
-export type AuthDetails = AnyAuth | Token | undefined;
 export type Identified<T = object, I = string> = T & { id: I };
 export type PartialId<T extends { id: I }, I = string> = Pick<T, "id"> & Partial<T>;
 export type Assign<T, O extends object> = Omit<T, keyof O> & O;

@@ -1,14 +1,12 @@
 import { objectify } from "radash";
-import type { AccessRecordAuth } from "surrealdb";
+import type { AccessRecordAuth, ProvidedAuth } from "surrealdb";
 import { fetchAPI } from "~/cloud/api";
-import type { AuthDetails, Authentication } from "~/types";
+import type { Authentication } from "~/types";
 import { getSetting } from "~/util/config";
 import { CloudError } from "~/util/errors";
 import { featureFlags } from "~/util/feature-flags";
 
-export async function composeAuthentication(
-	connection: Authentication,
-): Promise<AuthDetails | undefined> {
+export async function composeAuthentication(connection: Authentication): Promise<ProvidedAuth> {
 	const { mode, username, password, namespace, database, token, cloudInstance } = connection;
 
 	switch (mode) {
@@ -22,7 +20,7 @@ export async function composeAuthentication(
 			return { namespace, database, username, password };
 		}
 		case "access": {
-			return buildAccessAuth(connection);
+			return buildAccessAuth(connection) as any; // TODO Horrible unforgivable temporary hack
 		}
 		case "token": {
 			return token;
@@ -45,7 +43,7 @@ export async function composeAuthentication(
 			}
 		}
 		case "none": {
-			return undefined;
+			return null;
 		}
 		default: {
 			throw new Error("Invalid connection mode");
