@@ -164,7 +164,7 @@ export async function openConnection(options?: ConnectOptions) {
 						return credentials as string | SystemAuth;
 					}
 
-					throw new Error("No authentication credentials provided");
+					return null;
 				},
 			});
 		} catch (err: any) {
