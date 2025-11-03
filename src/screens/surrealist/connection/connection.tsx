@@ -79,7 +79,7 @@ export async function openConnection(options?: ConnectOptions) {
 	const strict = getSetting("behavior", "strictSandbox");
 	const surreal = await createSurreal({ strict });
 
-	_closeConnection(newState, false);
+	await _closeConnection(newState, false);
 
 	instance = surreal;
 	openedConnection = connection;
@@ -235,13 +235,13 @@ export async function openConnection(options?: ConnectOptions) {
 async function _closeConnection(state: State, reconnect: boolean) {
 	const { setCurrentState, setVersion } = useDatabaseStore.getState();
 
-	instance.close();
+	await instance.close();
 
 	setCurrentState(state);
 	setVersion("");
 
 	if (reconnect) {
-		openConnection();
+		await openConnection();
 	}
 }
 
@@ -249,7 +249,7 @@ async function _closeConnection(state: State, reconnect: boolean) {
  * Close the active surreal connection
  */
 export async function closeConnection(reconnect: boolean = false) {
-	_closeConnection(reconnect ? "retrying" : "disconnected", reconnect);
+	await _closeConnection(reconnect ? "retrying" : "disconnected", reconnect);
 }
 
 /**
