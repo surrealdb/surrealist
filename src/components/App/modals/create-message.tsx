@@ -67,11 +67,15 @@ export function CreateMessageModal() {
 		setAvailableAttributes([]);
 	};
 
-	useIntent("create-message", ({ type }) => {
+	useIntent("create-message", ({ type, organisation }) => {
 		if (type === "ticket") {
 			setIsTicket(true);
 		} else {
 			setIsTicket(false);
+		}
+
+		if (organisation) {
+			setOrganisation(organisation);
 		}
 
 		openedHandle.open();

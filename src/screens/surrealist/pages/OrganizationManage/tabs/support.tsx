@@ -1,6 +1,8 @@
 import { Box, Button, Center, Group, Loader, Paper, Stack, Text } from "@mantine/core";
 import { useEffect } from "react";
+import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
+import chatImage from "~/assets/images/icons/chat.webp";
 import { useCloudOrganizationTicketsQuery } from "~/cloud/queries/context";
 import { useActiveSupportPlanQuery } from "~/cloud/queries/support";
 import { Icon } from "~/components/Icon";
@@ -9,7 +11,9 @@ import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useIsLight } from "~/hooks/theme";
-import { iconOpen } from "~/util/icons";
+import { iconOpen, iconPlus } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
+import { StartCloud } from "../../Overview/content/cloud";
 import { TicketCard } from "../../Support/TicketCard";
 import { OrganizationTabProps } from "../types";
 
@@ -21,6 +25,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 		organization.id,
 	);
 
+	const hasSupportPlan = activeSupportPlan?.support_plan !== undefined;
 	const startAt = (pagination.currentPage - 1) * pagination.pageSize;
 	const pageSlice = tickets?.slice(startAt, startAt + pagination.pageSize) ?? [];
 
@@ -43,41 +48,91 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 				/>
 			</Section>
 			<Section
-				title="Recent support requests"
-				description="The most recent support requests for this organisation"
+				title="Support Tickets"
+				description="All support tickets for this organisation"
+				rightSection={
+					hasSupportPlan && (
+						<Button
+							size="xs"
+							variant="gradient"
+							rightSection={<Icon path={iconPlus} />}
+							onClick={() => {
+								dispatchIntent("create-message", {
+									type: "ticket",
+									organisation: organization.id,
+								});
+							}}
+						>
+							New ticket
+						</Button>
+					)
+				}
 			>
-				<Stack>
-					{areTicketsLoading && (
-						<Center>
-							<Loader />
-						</Center>
-					)}
-					{!areTicketsLoading && pageSlice && pageSlice.length > 0 && (
-						<Paper p="lg">
-							{pageSlice
-								?.sort((a, b) => b.updated_at - a.updated_at)
-								.slice(0, 3)
-								.map((ticket) => (
-									<TicketCard
-										key={ticket.id}
-										ticket={ticket}
-									/>
-								))}
-						</Paper>
-					)}
-					{!areTicketsLoading && (!pageSlice || pageSlice.length === 0) && (
-						<Center>
-							<Text>No support requests found</Text>
-						</Center>
-					)}
-				</Stack>
+				{hasSupportPlan && (
+					<>
+						<Stack>
+							{areTicketsLoading && (
+								<Center>
+									<Loader />
+								</Center>
+							)}
+							{!areTicketsLoading && pageSlice && pageSlice.length > 0 && (
+								<Paper p="lg">
+									<Stack>
+										{pageSlice
+											?.sort((a, b) => b.updated_at - a.updated_at)
+											.slice(0, 3)
+											.map((ticket) => (
+												<Box
+													key={ticket.id}
+													style={{
+														cursor: "pointer",
+													}}
+													onClick={() =>
+														navigate(
+															`/support/conversations/${ticket.id}`,
+														)
+													}
+												>
+													<TicketCard ticket={ticket} />
+												</Box>
+											))}
+									</Stack>
+								</Paper>
+							)}
+							{!areTicketsLoading && (!pageSlice || pageSlice.length === 0) && (
+								<Center>
+									<Text>No support requests found</Text>
+								</Center>
+							)}
+						</Stack>
 
-				<Group
-					justify="center"
-					mt="xl"
-				>
-					<Pagination store={pagination} />
-				</Group>
+						<Group
+							justify="center"
+							mt="xl"
+						>
+							<Pagination store={pagination} />
+						</Group>
+					</>
+				)}
+				{!hasSupportPlan && (
+					<StartCloud
+						action="View plans"
+						image={chatImage}
+						onClick={() => {
+							adapter.openUrl("https://surrealdb.com/pricing");
+						}}
+					>
+						<Group>
+							<PrimaryTitle>Support Plan required</PrimaryTitle>
+							<Text>
+								Upgrade to a Support Plan to get expedited support directly from the
+								SurrealDB team, so you're never left hanging when it matters the
+								most.
+							</Text>
+						</Group>
+					</StartCloud>
+				)}
 			</Section>
 		</Stack>
 	);

@@ -42,6 +42,7 @@ import classes from "./style.module.scss";
 
 export function SupportPage() {
 	const isAuthenticated = useIsAuthenticated();
+
 	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
 	const { data: collections, isLoading } = useSupportCollectionsQuery();
 	const { data: chats, isLoading: isChatsLoading } = useConversationsQuery();
