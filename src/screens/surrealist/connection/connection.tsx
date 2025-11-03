@@ -1,11 +1,10 @@
 import { compareVersions } from "compare-versions";
 import {
-	AccessAuth,
 	type AccessRecordAuth,
+	ProvidedAuth,
 	SqlExportOptions,
 	Surreal,
 	SystemAuth,
-	Token,
 	UnsupportedVersionError,
 	Uuid,
 } from "surrealdb";
@@ -18,7 +17,6 @@ import { State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type {
-	AuthDetails,
 	Authentication,
 	CloudInstance,
 	Connection,
@@ -103,37 +101,6 @@ export async function openConnection(options?: ConnectOptions) {
 		retryTask = null;
 	}
 
-	const authDetails = await composeAuthentication(connection.authentication);
-	const managedAuth = extractManagedAuth(authDetails);
-	const accessAuth = extractAccessAuth(authDetails);
-
-	instance.subscribe("connecting", () => {
-		setCurrentState("connecting");
-	});
-
-	instance.subscribe("reconnecting", () => {
-		setCurrentState("retrying");
-	});
-
-	instance.subscribe("disconnected", () => {
-		DisconnectedEvent.dispatch(null);
-
-		setCurrentState("disconnected");
-		setVersion("");
-	});
-
-	instance.subscribe("error", (err) => {
-		setLatestError(err.message);
-		console.dir(err);
-	});
-
-	instance.subscribe("auth", (state) => {
-		if (accessAuth && !state) {
-			adapter.log("DB", "Restoring access authentication");
-			instance.signin(accessAuth);
-		}
-	});
-
 	try {
 		const [versionCheck] = getVersionTimeout();
 
@@ -161,6 +128,26 @@ export async function openConnection(options?: ConnectOptions) {
 		const namespace = getAuthNS(connection.authentication) || connection.lastNamespace;
 		const database = getAuthDB(connection.authentication) || connection.lastDatabase;
 
+		instance.subscribe("connecting", () => {
+			setCurrentState("connecting");
+		});
+
+		instance.subscribe("reconnecting", () => {
+			setCurrentState("retrying");
+		});
+
+		instance.subscribe("disconnected", () => {
+			DisconnectedEvent.dispatch(null);
+
+			setCurrentState("disconnected");
+			setVersion("");
+		});
+
+		instance.subscribe("error", (err) => {
+			setLatestError(err.message);
+			console.error(err);
+		});
+
 		try {
 			await instance.connect(rpcEndpoint, {
 				versionCheck,
@@ -170,7 +157,15 @@ export async function openConnection(options?: ConnectOptions) {
 					retryDelayMultiplier: 1.2,
 					retryDelayJitter: 0,
 				},
-				authentication: managedAuth,
+				authentication: async () => {
+					const credentials = await composeAuthentication(connection.authentication);
+
+					if (credentials) {
+						return credentials as string | SystemAuth;
+					}
+
+					throw new Error("No authentication credentials provided");
+				},
 			});
 		} catch (err: any) {
 			console.error("Connection failed", err);
@@ -209,10 +204,6 @@ export async function openConnection(options?: ConnectOptions) {
 			await instance.query("DEFINE DATABASE IF NOT EXISTS sandbox");
 		} else {
 			await activateDatabase(namespace, database);
-		}
-
-		if (accessAuth) {
-			await instance.signin(accessAuth);
 		}
 
 		ConnectedEvent.dispatch(null);
@@ -288,7 +279,7 @@ export async function register(auth: AccessRecordAuth, surreal?: Surreal) {
  * @param auth The authentication details
  * @param surreal The optional surreal instance
  */
-export async function authenticate(auth: AuthDetails, surreal?: Surreal) {
+export async function authenticate(auth: ProvidedAuth, surreal?: Surreal) {
 	const db = surreal ?? instance;
 
 	if (auth === undefined) {
@@ -836,32 +827,6 @@ function scheduleReconnect(timeout: number) {
 			});
 		}
 	}, timeout);
-}
-
-/**
- * Extract tokens or system users from the given authentication details
- */
-function extractManagedAuth(authDetails: AuthDetails): string | SystemAuth | Token | undefined {
-	if (typeof authDetails === "string") {
-		return authDetails;
-	}
-
-	if (authDetails && !("access" in authDetails)) {
-		return authDetails;
-	}
-
-	return undefined;
-}
-
-/**
- * Extract access authentication details from the given authentication details
- */
-function extractAccessAuth(authDetails: AuthDetails): AccessAuth | undefined {
-	if (authDetails && typeof authDetails === "object" && "access" in authDetails) {
-		return authDetails;
-	}
-
-	return undefined;
 }
 
 async function isNamespaceValid(namespace: string) {

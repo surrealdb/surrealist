@@ -115,7 +115,7 @@
 		"remark-github-blockquote-alert": "^2.0.0",
 		"rss-parser": "^3.13.0",
 		"sigma": "^3.0.0",
-		"surrealdb": "^2.0.0-alpha.11",
+		"surrealdb": "^2.0.0-alpha.12",
 		"turndown": "^7.2.1",
 		"use-immer": "^0.9.0",
 		"valibot": "^0.42.1",
