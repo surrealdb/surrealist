@@ -39,8 +39,8 @@
         "@sigma/edge-curve": "^3.1.0",
         "@sigma/node-border": "^3.0.0",
         "@surrealdb/cbor": "^2.0.0-alpha.1",
-        "@surrealdb/codemirror": "1.0.0-beta.22",
-        "@surrealdb/lezer": "1.0.0-beta.22",
+        "@surrealdb/codemirror": "1.0.0-beta.23",
+        "@surrealdb/lezer": "1.0.0-beta.23",
         "@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
         "@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.0",
         "@surrealdb/wasm": "^2.3.4",
@@ -597,9 +597,9 @@
 
     "@surrealdb/cbor": ["@surrealdb/cbor@2.0.0-alpha.1", "", {}, "sha512-QtahOKhxOZZJOFnIBs7dR7UO6hNT+5Wv2uqLEDUvm5hBYq3lV2BR3TY6mrkvi6/wABcTnuJmu1e3P3GqXE6ltA=="],
 
-    "@surrealdb/codemirror": ["@surrealdb/codemirror@1.0.0-beta.22", "", { "dependencies": { "@codemirror/language": "^6.10.3", "@codemirror/lint": "^6.8.2", "@lezer/common": "^1.2.3", "@lezer/javascript": "^1.4.19", "@surrealdb/lezer": "", "compare-versions": "^6.1.1" } }, "sha512-j/jm6mOiNdOOpuW0r/X4+wp2ZE67tYcGXw/06H6pV9ZaifbE7aXNGhaXtydTzF6uNT1t/TuTbbAuBnMq2OpZMA=="],
+    "@surrealdb/codemirror": ["@surrealdb/codemirror@1.0.0-beta.23", "", { "dependencies": { "@codemirror/language": "^6.10.3", "@codemirror/lint": "^6.8.2", "@lezer/common": "^1.2.3", "@lezer/javascript": "^1.4.19", "@surrealdb/lezer": "", "compare-versions": "^6.1.1" } }, "sha512-Q+wa3ZXRihHeKuDsXS2wjY8Ik1CrcITufIna4keTMweaJLZ9oWD/L24Y9UiJiW60vvHIuZmCuoegTqTlIoGcfw=="],
 
-    "@surrealdb/lezer": ["@surrealdb/lezer@1.0.0-beta.22", "", { "dependencies": { "@lezer/common": "^1.2.3", "@lezer/highlight": "^1.2.1", "@lezer/lr": "^1.4.2" } }, "sha512-dbDhbktSgzLH2CkibzKOCmYQJGuG1QVQ/9VRUaT+KESZIHEwsrYIm1E/sjEJSOP1sD56xAhkiNMTUfXHh+7SOg=="],
+    "@surrealdb/lezer": ["@surrealdb/lezer@1.0.0-beta.23", "", { "dependencies": { "@lezer/common": "^1.2.3", "@lezer/highlight": "^1.2.1", "@lezer/lr": "^1.4.2" } }, "sha512-TOF0ktFg5c6vA1G10DXVJdb2Cg+FwBf8KL2Tjl+CM662/MiXykhPmYvp8g+g7q+c2o705EymDg21vsht6nTBGw=="],
 
     "@surrealdb/ql-wasm-2": ["@surrealdb/ql-wasm@0.2.0-beta.11", "", {}, "sha512-7z9wpksZ8YxM46KiH66ZDBFj4DBfIbVJs80O20inFqqrHVDRqaEM++7LqxtIRpaRzqyhxhYFhyCO5n5+cqbJ4g=="],
 
