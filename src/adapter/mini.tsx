@@ -219,6 +219,8 @@ export class MiniAdapter extends BrowserAdapter {
 			engines: createWasmEngines(),
 		});
 
+		await surreal.connect("mem://");
+
 		try {
 			return (await surreal.version()).version.replace(/^surrealdb-/, "");
 		} finally {

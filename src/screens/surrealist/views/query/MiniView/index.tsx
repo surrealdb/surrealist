@@ -11,18 +11,20 @@ import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
+import { executeEditorQuery } from "~/editor/query";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
 import { useActiveQuery } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
 import { usePanelMinSize } from "~/hooks/panels";
-import { useConnectionAndView } from "~/hooks/routing";
+import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { SetQueryEvent } from "~/util/global-events";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
+import { Globals } from "./globals";
 import classes from "./style.module.scss";
 
 const switchPortal = createHtmlPortalNode();
@@ -64,6 +66,12 @@ export function MiniQueryView() {
 	const [hasLineNumbers] = useSetting("appearance", "queryLineNumbers");
 	const lineNumbers = adapter instanceof MiniAdapter ? adapter.linenumbers : hasLineNumbers;
 
+	useIntent("run-query", () => {
+		if (editor) {
+			executeEditorQuery(editor, true);
+		}
+	});
+
 	useEventSubscription(SetQueryEvent, (query) => {
 		if (editor) {
 			setEditorText(editor, query);
@@ -78,6 +86,8 @@ export function MiniQueryView() {
 				gap="md"
 				h="100%"
 			>
+				<Globals />
+
 				<InPortal node={switchPortal}>
 					<SegmentedControl
 						data={["Query", "Variables"]}

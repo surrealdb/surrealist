@@ -24,14 +24,14 @@ import { newRelationalGraph, RelationGraph } from "~/components/RelationGraph";
 import { NodeCircle } from "~/components/RelationGraph/node";
 import { GraphExpansion } from "~/components/RelationGraph/types";
 import { useSetting } from "~/hooks/config";
-import { useConnection } from "~/hooks/connection";
+import { useConnection, useMinimumVersion } from "~/hooks/connection";
 import { useLater } from "~/hooks/later";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useToggleList } from "~/hooks/toggle";
 import { openGraphLabelEditorModal } from "~/modals/graph-labels";
-import { executeQuery, getSurreal } from "~/screens/surrealist/connection/connection";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { plural } from "~/util/helpers";
 import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
@@ -192,6 +192,8 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		setEdges(edgeList);
 	});
 
+	const [useFunction] = useMinimumVersion("3.0.0-0");
+
 	// Relation wiring mutation
 	const rewireNodes = useStable(async () => {
 		setWiring(true);
@@ -199,24 +201,17 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 		const nodes = universeGraph.nodeEntries();
 		const records = Array.from(nodes).map((e) => e.attributes.record);
 
-		const version = await getSurreal().version();
+		const graphQuery = useFunction
+			? "SELECT VALUE [in, id, out] FROM array::distinct(array::flatten($records<->(? WHERE out IN $records AND in IN $records))) WHERE record::is_edge(id)"
+			: "SELECT VALUE [in, id, out] FROM array::distinct(array::flatten($records<->(? WHERE out IN $records AND in IN $records))) WHERE __ == true";
 
-		let clause = "";
-
-		if (version.version.startsWith("3.")) {
-			clause = "WHERE record::is_edge(id)";
-		} else {
-			clause = "WHERE __ == true";
-		}
-
-		const [response] = await executeQuery(
-			"SELECT VALUE [in, id, out] FROM array::distinct(array::flatten($records<->(? WHERE out IN $records AND in IN $records))) WHERE $clause",
-			{ records: records, clause: clause },
-		);
+		const [response] = await executeQuery(graphQuery, { records: records });
 
 		universeGraph.clearEdges();
 
-		for (const [source, edge, target] of response.result) {
+		const results = response.result ?? [];
+
+		for (const [source, edge, target] of results) {
 			const id = edge.toString();
 			const src = source.toString();
 			const tgt = target.toString();
