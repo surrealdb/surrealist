@@ -1,3 +1,4 @@
+import { noop } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { createContext, type PropsWithChildren, useContext, useState } from "react";
 import { RecordId } from "surrealdb";
@@ -26,8 +27,8 @@ export function useInspector() {
 	return (
 		ctx ?? {
 			history: [],
-			inspect: async () => {},
-			stopInspect: () => {},
+			inspect: noop,
+			stopInspect: noop,
 		}
 	);
 }

@@ -6,6 +6,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Duration } from "surrealdb";
 import { CodeEditor } from "~/components/CodeEditor";
 import { surqlRecordLinks } from "~/editor";
+import { useStable } from "~/hooks/stable";
 import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
 import { useInspector } from "~/providers/Inspector";
 import { QueryResponse } from "~/types";
@@ -126,10 +127,9 @@ const combinedPreview = memo(function CombinedPreview({ responses, query }: Prev
 		};
 	}, [responses, format, noneResultMode]);
 
-	const extensions = useMemo(
-		() => [surrealql("combined-results"), surqlRecordLinks(inspect)],
-		[inspect],
-	);
+	const extensions = useMemo(() => {
+		return [surrealql("combined-results"), surqlRecordLinks(inspect)];
+	}, [inspect]);
 
 	const applyFolding = useCallback(
 		(view: EditorView) => {
@@ -175,13 +175,10 @@ const combinedPreview = memo(function CombinedPreview({ responses, query }: Prev
 	}, [noneResultMode, noneResultCount]);
 
 	// Memoized mount handler
-	const handleMount = useCallback(
-		(view: EditorView) => {
-			editorViewRef.current = view;
-			applyFolding(view);
-		},
-		[applyFolding],
-	);
+	const handleMount = useStable((view: EditorView) => {
+		editorViewRef.current = view;
+		applyFolding(view);
+	});
 
 	return (
 		<Stack
