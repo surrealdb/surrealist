@@ -2,12 +2,15 @@ import {
 	type Edge,
 	type EdgeChange,
 	type EdgeTypes,
+	getViewportForBounds,
 	MarkerType,
 	type Node,
 	type NodeChange,
 	type NodeTypes,
+	Rect
 } from "@xyflow/react";
-import { toBlob, toSvg } from "html-to-image";
+import { toPng, toSvg } from "html-to-image";
+import { Options } from "html-to-image/lib/types";
 import { objectify } from "radash";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type {
@@ -161,7 +164,7 @@ export async function buildFlowNodes(
 					width: 14,
 					height: 14,
 					color: "#ffffff",
-				},
+				}
 			});
 
 			edgeIndex.set(`${fromTable}:${table.schema.name}`, true);
@@ -356,12 +359,22 @@ export async function applyNodeLayout(
  * @param type The type of output to create
  * @returns
  */
-export async function createSnapshot(el: HTMLElement, type: "png" | "svg") {
-	if (type === "png") {
-		return toBlob(el, { cacheBust: true });
-	}
+export async function createSnapshot(el: HTMLElement, type: "png" | "svg", nodesBounds: Rect) {
+	const padding = 24;
 
-	const dataUrl = await toSvg(el, { cacheBust: true });
+	const screenshotArgs: Options = {
+		width: nodesBounds.width + ( padding * 2 ),
+		height: nodesBounds.height + ( padding * 2 ),
+		style: {
+			// Clear the current transformation to screenshot the full bounds
+			transform: `translate(${padding}px, ${padding}px)`,
+		},
+		cacheBust: true
+	};
+
+	const dataUrl =
+		type === "svg" ? await toSvg(el, screenshotArgs) : await toPng(el, screenshotArgs);
+
 	const res = await fetch(dataUrl);
 
 	return await res.blob();
