@@ -2,15 +2,12 @@ import {
 	type Edge,
 	type EdgeChange,
 	type EdgeTypes,
-	getViewportForBounds,
 	MarkerType,
 	type Node,
 	type NodeChange,
 	type NodeTypes,
-	Rect
+	Rect,
 } from "@xyflow/react";
-import { toPng, toSvg } from "html-to-image";
-import { Options } from "html-to-image/lib/types";
 import { objectify } from "radash";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type {
@@ -164,7 +161,7 @@ export async function buildFlowNodes(
 					width: 14,
 					height: 14,
 					color: "#ffffff",
-				}
+				},
 			});
 
 			edgeIndex.set(`${fromTable}:${table.schema.name}`, true);
@@ -352,6 +349,8 @@ export async function applyNodeLayout(
 	return [nodeChanges, edgeChanges];
 }
 
+import { elementToSVG, inlineResources } from "dom-to-svg";
+
 /**
  * Create a snapshot of the given element
  *
@@ -362,22 +361,53 @@ export async function applyNodeLayout(
 export async function createSnapshot(el: HTMLElement, type: "png" | "svg", nodesBounds: Rect) {
 	const padding = 24;
 
-	const screenshotArgs: Options = {
-		width: nodesBounds.width + ( padding * 2 ),
-		height: nodesBounds.height + ( padding * 2 ),
-		style: {
-			// Clear the current transformation to screenshot the full bounds
-			transform: `translate(${padding}px, ${padding}px)`,
-		},
-		cacheBust: true
-	};
+	const oldTransform = el.style.transform;
+	el.style.width = `${nodesBounds.width + padding}px`;
+	el.style.height = `${nodesBounds.height + padding}px`;
+	el.style.transform = `translate(${padding}px, ${padding}px) scale(1)`;
 
-	const dataUrl =
-		type === "svg" ? await toSvg(el, screenshotArgs) : await toPng(el, screenshotArgs);
+	const svgDocument = elementToSVG(el);
+	await inlineResources(svgDocument.documentElement);
 
-	const res = await fetch(dataUrl);
+	// Restore the transformation
+	el.style.transform = oldTransform;
+	el.style.width = ``;
+	el.style.height = ``;
 
-	return await res.blob();
+	const svgString = new XMLSerializer().serializeToString(svgDocument);
+
+	const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+	if (type === "svg") {
+		return svgBlob;
+	} else if (type === "png") {
+		// For PNG we need to render the SVG onto a canvas.
+		const canvas = document.createElement("canvas");
+		const context = canvas.getContext("2d");
+
+		if (!context) {
+			return "";
+		}
+
+		canvas.width = nodesBounds.width + padding;
+		canvas.height = nodesBounds.height + padding;
+		canvas.style.width = `${canvas.width}px`;
+		canvas.style.height = `${canvas.height}px`;
+
+		const img = new Image();
+		const url = URL.createObjectURL(svgBlob);
+		img.src = url;
+
+		await new Promise<void>((resolve, reject) => {
+			img.onload = () => resolve();
+			img.onerror = (e) => reject(e);
+		});
+
+		context.drawImage(img, 0, 0);
+
+		const pngUrl = canvas.toDataURL("image/png");
+		return await fetch(pngUrl).then((res) => res.blob());
+	}
+	return "";
 }
 
 /**

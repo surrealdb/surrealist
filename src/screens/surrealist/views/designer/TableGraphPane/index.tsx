@@ -262,10 +262,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				fitView();
 
 				// Reactflow expects to use the viewport element for snapshotting.
-				const el = ref.current.querySelector<HTMLDivElement>('.react-flow__viewport');
+				const el = ref.current.querySelector<HTMLDivElement>(".react-flow__viewport");
 
 				if (!el) {
-					console.error("Failed to find the XYFlow viewport element for snapshotting", ref.current);
+					console.error(
+						"Failed to find the XYFlow viewport element for snapshotting",
+						ref.current,
+					);
 					return "";
 				}
 
@@ -679,7 +682,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					style={{
 						opacity: rendering ? 0 : 1,
 						transition: rendering ? undefined : "opacity .15s",
-						contain: "content"
+						contain: "content",
 					}}
 					onNodeClick={handleNodeClick}
 					onNodeDragStart={handleNodeDragStart}
