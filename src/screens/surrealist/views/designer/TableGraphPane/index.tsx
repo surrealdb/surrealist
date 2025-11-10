@@ -15,6 +15,7 @@ import {
 import {
 	Background,
 	type Edge,
+	getNodesBounds,
 	type Node,
 	ReactFlow,
 	useEdgesState,
@@ -240,6 +241,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const saveImage = useStable(async (type: "png" | "svg") => {
 		const viewport = getViewport();
+		const nodesBounds = getNodesBounds(getNodes());
 
 		const isSuccess = await adapter.saveFile(
 			"Save snapshot",
@@ -259,7 +261,18 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 				fitView();
 
-				return await createSnapshot(ref.current, type);
+				// Reactflow expects to use the viewport element for snapshotting.
+				const el = ref.current.querySelector<HTMLDivElement>(".react-flow__viewport");
+
+				if (!el) {
+					console.error(
+						"Failed to find the XYFlow viewport element for snapshotting",
+						ref.current,
+					);
+					return "";
+				}
+
+				return await createSnapshot(el, type, nodesBounds);
 			},
 		);
 
@@ -669,6 +682,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					style={{
 						opacity: rendering ? 0 : 1,
 						transition: rendering ? undefined : "opacity .15s",
+						contain: "content",
 					}}
 					onNodeClick={handleNodeClick}
 					onNodeDragStart={handleNodeDragStart}
