@@ -31,7 +31,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SUPPORT_REQUEST_TYPES } from "~/constants";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { iconPlus, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../Overview/content/cloud";
@@ -43,7 +42,6 @@ import classes from "./style.module.scss";
 export function SupportPage() {
 	const isAuthenticated = useIsAuthenticated();
 
-	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
 	const { data: collections, isLoading } = useSupportCollectionsQuery();
 	const { data: chats, isLoading: isChatsLoading } = useConversationsQuery();
 
@@ -90,128 +88,102 @@ export function SupportPage() {
 						onChange={(e) => setSearch(e.target.value)}
 					/>
 
-					{supportTicketsEnabled && isChatsLoading && (
+					{isChatsLoading && (
 						<Center my="xl">
 							<Loader />
 						</Center>
 					)}
 
-					{supportTicketsEnabled &&
-						isAuthenticated &&
-						chats &&
-						chats.length !== 0 &&
-						!isChatsLoading && (
-							<Paper p="xl">
-								<Group>
-									<Text
-										c="bright"
-										fw={600}
-										fz={20}
-										lh={1}
-									>
-										Recent support requests
-									</Text>
-									<Spacer />
-									<Button
-										variant="light"
-										size="xs"
-										color="slate"
-										onClick={() => navigate("/support/requests")}
-									>
-										View All
-									</Button>
-									<ListMenu
-										data={SUPPORT_REQUEST_TYPES}
-										value={undefined}
-										onChange={(type) => {
-											dispatchIntent("create-message", { type });
-										}}
-									>
-										<Button
-											variant="gradient"
-											size="xs"
-											rightSection={<Icon path={iconPlus} />}
-										>
-											Raise new request
-										</Button>
-									</ListMenu>
-								</Group>
-
-								<Stack
-									ml="-xs"
-									mt="md"
-									gap={0}
+					{isAuthenticated && chats && chats.length !== 0 && !isChatsLoading && (
+						<Paper p="xl">
+							<Group>
+								<Text
+									c="bright"
+									fw={600}
+									fz={20}
+									lh={1}
 								>
-									{!isChatsLoading &&
-										chats
-											?.sort((a, b) => b.updated_at - a.updated_at)
-											.slice(0, 3)
-											.map((chat) => (
-												<Paper
-													p="xs"
-													key={chat.id}
-													variant="transparent"
-													withBorder={false}
-													style={{
-														cursor: "pointer",
-													}}
-													className={classes.messageItem}
-													onClick={() =>
-														navigate(
-															`/support/conversations/${chat.id}`,
-														)
-													}
-												>
-													<ConversationCard conversation={chat} />
-												</Paper>
-											))}
-									{isChatsLoading && (
-										<Center my="xl">
-											<Loader />
-										</Center>
-									)}
-								</Stack>
-							</Paper>
-						)}
+									Recent support requests
+								</Text>
+								<Spacer />
+								<Button
+									variant="light"
+									size="xs"
+									color="slate"
+									onClick={() => navigate("/support/requests")}
+								>
+									View All
+								</Button>
+								<ListMenu
+									data={SUPPORT_REQUEST_TYPES}
+									value={undefined}
+									onChange={(type) => {
+										dispatchIntent("create-message", { type });
+									}}
+								>
+									<Button
+										variant="gradient"
+										size="xs"
+										rightSection={<Icon path={iconPlus} />}
+									>
+										Raise new request
+									</Button>
+								</ListMenu>
+							</Group>
 
-					{/* TODO: Check support plan */}
-					{supportTicketsEnabled &&
-						isAuthenticated &&
-						(!chats || chats.length === 0) &&
-						!isChatsLoading && (
-							<StartCloud
-								action="Submit a ticket"
-								image={chatImage}
-								onClick={() => {
-									dispatchIntent("create-message", { type: "ticket" });
-								}}
+							<Stack
+								ml="-xs"
+								mt="md"
+								gap={0}
 							>
-								<Group>
-									<PrimaryTitle>No recent support requests</PrimaryTitle>
-									<Text>
-										Since you have purchased a Support Plan, you can create a
-										support ticket to get expedited support directly from the
-										SurrealDB team.
-									</Text>
-								</Group>
-							</StartCloud>
-						)}
+								{!isChatsLoading &&
+									chats
+										?.sort((a, b) => b.updated_at - a.updated_at)
+										.slice(0, 3)
+										.map((chat) => (
+											<Paper
+												p="xs"
+												key={chat.id}
+												variant="transparent"
+												withBorder={false}
+												style={{
+													cursor: "pointer",
+												}}
+												className={classes.messageItem}
+												onClick={() =>
+													navigate(`/support/conversations/${chat.id}`)
+												}
+											>
+												<ConversationCard conversation={chat} />
+											</Paper>
+										))}
+								{isChatsLoading && (
+									<Center my="xl">
+										<Loader />
+									</Center>
+								)}
+							</Stack>
+						</Paper>
+					)}
 
-					{/* TODO: Check support plan */}
-					{supportTicketsEnabled && !isAuthenticated && !isChatsLoading && (
+					{!isChatsLoading && (!isAuthenticated || !chats || chats.length === 0) && (
 						<StartCloud
-							action="Learn more"
+							action={isAuthenticated ? "Explore plans" : "Sign in"}
 							image={chatImage}
 							onClick={() => {
-								openCloudAuthentication();
+								if (isAuthenticated) {
+									navigate("/organisations?destination=support-plans");
+								} else {
+									openCloudAuthentication();
+								}
 							}}
 						>
 							<Group>
 								<PrimaryTitle>Need expert answers fast?</PrimaryTitle>
 								<Text>
-									Upgrade to a Support Plan to get expedited support directly from
-									the SurrealDB team, so you're never left hanging when it matters
-									the most.
+									Upgrade your organisation's Support Plan to get expedited
+									support from the SurrealDB team, so you're never left stramded
+									when it matters the most.
 								</Text>
 							</Group>
 						</StartCloud>
@@ -323,17 +295,13 @@ export function SupportPage() {
 								onClick={() => adapter.openUrl("https://github.com/surrealdb")}
 							/>
 							<ResourceTile
-								name="Email us"
-								description="For account and billing issues, email our support team"
-								image={chatImage}
-								onClick={() => adapter.openUrl("mailto:support@surrealdb.com")}
-							/>
-							{/* <ResourceTile
 								name="Contact Support"
-								description="Chat with our team or create a support ticket directly in Surrealist"
+								description="For account and billing issues, raise a support request"
 								image={chatImage}
-								onClick={() => navigate("/support/requests")}
-							/> */}
+								onClick={() =>
+									dispatchIntent("create-message", { type: "conversation" })
+								}
+							/>
 						</SimpleGrid>
 					</Box>
 				</Stack>

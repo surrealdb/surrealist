@@ -1,4 +1,5 @@
 import { Group, Indicator, Stack, Text, ThemeIcon } from "@mantine/core";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { Icon } from "~/components/Icon";
 import { IntercomConversation } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
@@ -10,6 +11,10 @@ export interface ConversationCardProps {
 
 export function ConversationCard({ conversation }: ConversationCardProps) {
 	const htmlRegex = /(<([^>]+)>)/gi;
+	const ticketOrganization = conversation.ticketData?.attributes.Organisation;
+
+	const { data: organization } = useCloudOrganizationQuery(ticketOrganization);
+
 	return (
 		<Group gap="md">
 			{conversation.hasTicket && (
@@ -47,17 +52,19 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 						/>
 					)}
 				</Group>
-				<Group gap="xs">
+				<Group gap={4}>
 					<Text c={conversation.hasTicket ? "violet" : "pink"}>
 						{conversation.last_response_author?.name || "Unknown"}
 					</Text>
 					<Text
 						c="slate.4"
 						fz={4}
+						mx={2}
 					>
 						&#x2B24;
 					</Text>
 					<Text>{formatRelativeDate(conversation.updated_at * 1000)}</Text>
+					{conversation.hasTicket && <Text>in {organization?.name ?? "Unknown"}</Text>}
 				</Group>
 			</Stack>
 		</Group>

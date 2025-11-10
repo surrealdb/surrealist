@@ -40,6 +40,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 				description="The support plan for this organisation"
 			>
 				<SupportPlan
+					organization={organization.id}
 					name={activeSupportPlan?.support_plan.name ?? "Community"}
 					description={
 						activeSupportPlan?.support_plan.description ??
@@ -141,9 +142,10 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 interface SupportPlanProps {
 	name: string;
 	description: string;
+	organization: string;
 }
 
-function SupportPlan({ name, description }: SupportPlanProps) {
+function SupportPlan({ name, description, organization }: SupportPlanProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -156,7 +158,7 @@ function SupportPlan({ name, description }: SupportPlanProps) {
 				<Button
 					variant="gradient"
 					onClick={() => {
-						adapter.openUrl("https://surrealdb.com/pricing");
+						navigate(`/o/${organization}/support-plans`);
 					}}
 					rightSection={
 						<Icon

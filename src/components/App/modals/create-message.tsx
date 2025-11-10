@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Button,
 	Checkbox,
 	Group,
@@ -16,6 +17,7 @@ import { navigate } from "wouter/use-browser-location";
 import { useConversationCreateMutation, useCreateTicketMutation } from "~/cloud/mutations/context";
 import { useCloudTicketTypesQuery } from "~/cloud/queries/context";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import { useOrganisationsWithSupportPlanQuery } from "~/cloud/queries/support";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -23,7 +25,14 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
 import { IntercomTicketTypeAttribute } from "~/types";
-import { iconBullhorn, iconChat, iconCursor, iconTag } from "~/util/icons";
+import {
+	iconBullhorn,
+	iconChat,
+	iconComment,
+	iconCursor,
+	iconTag,
+	iconWarning,
+} from "~/util/icons";
 
 export function CreateMessageModal() {
 	const [isOpen, openedHandle] = useBoolean();
@@ -35,6 +44,12 @@ export function CreateMessageModal() {
 	>([]);
 
 	const { data: organisations } = useCloudOrganizationsQuery();
+	const { data: organisationsWithSupportPlan } = useOrganisationsWithSupportPlanQuery(
+		organisations,
+		true,
+	);
+
+	console.log(organisationsWithSupportPlan);
 
 	const createTicketMutation = useCreateTicketMutation(organisation);
 	const createConversationMutation = useConversationCreateMutation();
@@ -50,6 +65,10 @@ export function CreateMessageModal() {
 		description &&
 		(!isTicket || (isTicket && organisation)) &&
 		(!isTicket || (isTicket && ticketType)) &&
+		(!isTicket ||
+			(isTicket &&
+				organisationsWithSupportPlan &&
+				organisationsWithSupportPlan.length > 0)) &&
 		availableAttributes
 			.filter(
 				(it) =>
@@ -64,10 +83,14 @@ export function CreateMessageModal() {
 		openedHandle.close();
 		setIsTicket(false);
 		setTicketType(null);
+		setAttributes({});
+		setName("");
+		setDescription("");
+		setOrganisation(undefined);
 		setAvailableAttributes([]);
 	};
 
-	useIntent("create-message", ({ type, organisation }) => {
+	useIntent("create-message", ({ type, organisation, subject, message }) => {
 		if (type === "ticket") {
 			setIsTicket(true);
 		} else {
@@ -76,6 +99,14 @@ export function CreateMessageModal() {
 
 		if (organisation) {
 			setOrganisation(organisation);
+		}
+
+		if (subject) {
+			setName(subject);
+		}
+
+		if (message) {
+			setDescription(message);
 		}
 
 		openedHandle.open();
@@ -92,6 +123,16 @@ export function CreateMessageModal() {
 			setAvailableAttributes(ticket.attributes.filter((it) => it.visible_on_create));
 		}
 	}, [ticketType, typesQuery.data]);
+
+	useEffect(() => {
+		if (
+			organisations &&
+			organisationsWithSupportPlan &&
+			organisationsWithSupportPlan.length === 1
+		) {
+			setOrganisation(organisationsWithSupportPlan[0].id);
+		}
+	}, [organisations, organisationsWithSupportPlan]);
 
 	return (
 		<Modal
@@ -144,6 +185,28 @@ export function CreateMessageModal() {
 				}}
 			>
 				<Stack gap="xl">
+					{!isTicket && (
+						<Alert
+							title="Please note"
+							color="violet"
+							icon={<Icon path={iconComment} />}
+						>
+							Conversations should only be used for billing & account issues as well
+							as sales inquiries
+						</Alert>
+					)}
+					{isTicket &&
+						(!organisationsWithSupportPlan ||
+							organisationsWithSupportPlan.length === 0) && (
+							<Alert
+								title="You are unable to create a support ticket"
+								color="red"
+								icon={<Icon path={iconWarning} />}
+							>
+								You are not associated with any organisations that has a support
+								plan or you do not have admin access to one that does.
+							</Alert>
+						)}
 					<TextInput
 						required
 						label="Subject"
@@ -154,27 +217,27 @@ export function CreateMessageModal() {
 						autosize
 						required
 						minRows={5}
-						label="Describe your issue"
+						label="What is your reason for contacting us?"
 						value={description}
 						onChange={(e) => setDescription(e.target.value)}
 					/>
-					{isTicket && (
-						<Select
-							required
-							data={
-								organisations
-									?.filter((it) => ["admin", "owner"].includes(it.user_role))
-									?.map((it) => ({
+					{isTicket &&
+						organisationsWithSupportPlan &&
+						organisationsWithSupportPlan.length > 0 && (
+							<Select
+								required
+								data={
+									organisationsWithSupportPlan?.map((it) => ({
 										value: it.id,
 										label: it.name,
 									})) || []
-							}
-							label="Organisation"
-							placeholder="Please select the associated organisation"
-							value={organisation}
-							onChange={setOrganisation}
-						/>
-					)}
+								}
+								label="Organisation"
+								placeholder="Please select the associated organisation"
+								value={organisation}
+								onChange={setOrganisation}
+							/>
+						)}
 					{isTicket && typesQuery.data && typesQuery.data.length > 1 && (
 						<Select
 							data={

@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudSupportPlanResult } from "~/types";
+import { CloudOrganization, CloudSupportPlanResult } from "~/types";
 import { fetchAPI } from "../api";
+import { hasOrganizationRole } from "../helpers";
 
 export function useCloudSupportPlansQuery(organisation?: string) {
 	const authState = useCloudStore((state) => state.authState);
@@ -13,6 +14,36 @@ export function useCloudSupportPlansQuery(organisation?: string) {
 			return fetchAPI<CloudSupportPlanResult[]>(
 				`/organizations/${organisation}/support_plans`,
 			);
+		},
+	});
+}
+
+export function useOrganisationsWithSupportPlanQuery(
+	organisations?: CloudOrganization[],
+	requireAccess?: boolean,
+) {
+	return useQuery({
+		queryKey: ["cloud", "organisations", "with_support_plan"],
+		enabled: !!organisations,
+		queryFn: async () => {
+			const organisationsWithSupportPlan: CloudOrganization[] = [];
+
+			for (const organisation of organisations || []) {
+				const supportPlans = await fetchAPI<CloudSupportPlanResult[]>(
+					`/organizations/${organisation.id}/support_plans`,
+				);
+
+				if (supportPlans.length > 0 && getActiveSupportPlan(supportPlans) !== null) {
+					if (
+						(requireAccess && hasOrganizationRole(organisation, "admin")) ||
+						!requireAccess
+					) {
+						organisationsWithSupportPlan.push(organisation);
+					}
+				}
+			}
+
+			return organisationsWithSupportPlan;
 		},
 	});
 }

@@ -27,6 +27,7 @@ import { ArticlePage } from "./pages/Support/ArticlePage";
 import { CollectionPage } from "./pages/Support/CollectionPage";
 import { ConversationPage } from "./pages/Support/ConversationPage";
 import { RequestsPage } from "./pages/Support/RequestsPage";
+import { SupportPlansPage } from "./pages/SupportPlans";
 import { SurrealistSidebar } from "./sidebar";
 import classes from "./style.module.scss";
 import { SurrealistToolbar } from "./toolbar";
@@ -47,6 +48,7 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationsPageLazy = memo(OrganizationsPage);
 const OrganizationManagePageLazy = memo(OrganizationManagePage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
+const SupportPlansPageLazy = memo(SupportPlansPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
 const RequestsPageLazy = memo(RequestsPage);
@@ -210,6 +212,12 @@ export function SurrealistScreen() {
 									<Route path="/o/:organization/deploy">
 										{({ organization }) => (
 											<OrganizationDeployPageLazy id={organization} />
+										)}
+									</Route>
+
+									<Route path="/o/:organization/support-plans">
+										{({ organization }) => (
+											<SupportPlansPageLazy id={organization} />
 										)}
 									</Route>
 
