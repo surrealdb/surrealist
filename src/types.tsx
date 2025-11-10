@@ -806,10 +806,25 @@ export interface CloudRole {
 	}[];
 }
 
+export interface CloudSupportPlan {
+	id: string;
+	name: string;
+	description: string;
+}
+
+export interface CloudSupportPlanResult {
+	id: string;
+	support_plan: CloudSupportPlan;
+	enabled_at: string;
+	disabled_at?: string;
+}
+
 export interface StartingDataDetails {
 	type: StartingData;
 	datasetOptions?: {
-		id?: DatasetType;
+		id?: string;
+		size?: string;
+		version?: string;
 		addQueries?: boolean;
 	};
 	backupOptions?: {

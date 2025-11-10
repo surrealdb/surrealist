@@ -28,12 +28,12 @@ import classes from "./style.module.scss";
 
 export interface OrganizationTileProps extends BoxProps {
 	organization: CloudOrganization;
-	url?: string;
+	destination?: string | null;
 }
 
 export function OrganizationTile({
 	organization,
-	url,
+	destination,
 	children,
 	...other
 }: PropsWithChildren<OrganizationTileProps>) {
@@ -51,7 +51,7 @@ export function OrganizationTile({
 	}, [membersQuery.data, userId]);
 
 	const handleManage = useStable(() => {
-		navigate(url ?? `/o/${organization.id}`);
+		navigate(`/o/${organization.id}/${destination ?? ""}`);
 	});
 
 	const handleCopyID = useStable(() => {

@@ -1,15 +1,4 @@
-import {
-	Box,
-	Button,
-	Group,
-	Paper,
-	SimpleGrid,
-	Stack,
-	Table,
-	Text,
-	TextInput,
-	Tooltip,
-} from "@mantine/core";
+import { Button, Group, SimpleGrid, Stack, Table, Text, TextInput, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
@@ -17,15 +6,11 @@ import { fetchAPI } from "~/cloud/api";
 import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
 import { BillingDetails } from "~/components/BillingDetails";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PaymentDetails } from "~/components/PaymentDetails";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { CloudCoupon } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconOpen } from "~/util/icons";
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
@@ -78,17 +63,6 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 
 	return (
 		<Stack>
-			<Section
-				title="Support Plan"
-				description="The support plan for this organisation"
-			>
-				{/* <Skeleton visible={!organization?.plan}> */}
-				<SupportPlan
-					name="Community"
-					description="Receive help from community members on Discord and GitHub"
-				/>
-				{/* </Skeleton> */}
-			</Section>
 			<Section
 				title="Billing Information"
 				description="Manage organisation payment and billing information"
@@ -209,40 +183,6 @@ export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 				)}
 			</Section>
 		</Stack>
-	);
-}
-
-interface SupportPlanProps {
-	name: string;
-	description: string;
-}
-
-function SupportPlan({ name, description }: SupportPlanProps) {
-	const isLight = useIsLight();
-
-	return (
-		<Paper p="xl">
-			<Group>
-				<Box flex={1}>
-					<PrimaryTitle>{name}</PrimaryTitle>
-					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
-				</Box>
-				<Tooltip label="More support options coming soon">
-					<Button
-						variant="gradient"
-						disabled
-						rightSection={
-							<Icon
-								path={iconOpen}
-								size="md"
-							/>
-						}
-					>
-						Upgrade Plan
-					</Button>
-				</Tooltip>
-			</Group>
-		</Paper>
 	);
 }
 

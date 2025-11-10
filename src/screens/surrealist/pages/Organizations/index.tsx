@@ -1,6 +1,6 @@
 import { Box, Button, Group, ScrollArea, SimpleGrid, Skeleton, Stack } from "@mantine/core";
 import { fork } from "radash";
-import { Link } from "wouter";
+import { Link, useSearchParams } from "wouter";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
@@ -19,6 +19,7 @@ const GRID_COLUMNS = {
 
 export function OrganizationsPage() {
 	const isAuthed = useIsAuthenticated();
+	const [params, _] = useSearchParams();
 	const { data, isPending } = useCloudOrganizationsQuery();
 
 	useSavepoint(ORGANIZATIONS);
@@ -79,6 +80,7 @@ export function OrganizationsPage() {
 								<OrganizationTile
 									key={org.id}
 									organization={org}
+									destination={params.get("destination")}
 								/>
 							))}
 						</SimpleGrid>
@@ -97,6 +99,7 @@ export function OrganizationsPage() {
 										<OrganizationTile
 											key={org.id}
 											organization={org}
+											destination={params.get("destination")}
 										/>
 									))}
 								</SimpleGrid>
