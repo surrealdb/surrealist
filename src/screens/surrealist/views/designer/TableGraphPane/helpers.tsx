@@ -6,8 +6,8 @@ import {
 	type Node,
 	type NodeChange,
 	type NodeTypes,
+	Rect,
 } from "@xyflow/react";
-import { toBlob, toSvg } from "html-to-image";
 import { objectify } from "radash";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type {
@@ -349,6 +349,8 @@ export async function applyNodeLayout(
 	return [nodeChanges, edgeChanges];
 }
 
+import { elementToSVG, inlineResources } from "dom-to-svg";
+
 /**
  * Create a snapshot of the given element
  *
@@ -356,15 +358,56 @@ export async function applyNodeLayout(
  * @param type The type of output to create
  * @returns
  */
-export async function createSnapshot(el: HTMLElement, type: "png" | "svg") {
-	if (type === "png") {
-		return toBlob(el, { cacheBust: true });
+export async function createSnapshot(el: HTMLElement, type: "png" | "svg", nodesBounds: Rect) {
+	const padding = 24;
+
+	const oldTransform = el.style.transform;
+	el.style.width = `${nodesBounds.width + padding}px`;
+	el.style.height = `${nodesBounds.height + padding}px`;
+	el.style.transform = `translate(${padding}px, ${padding}px) scale(1)`;
+
+	const svgDocument = elementToSVG(el);
+	await inlineResources(svgDocument.documentElement);
+
+	// Restore the transformation
+	el.style.transform = oldTransform;
+	el.style.width = ``;
+	el.style.height = ``;
+
+	const svgString = new XMLSerializer().serializeToString(svgDocument);
+
+	const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+	if (type === "svg") {
+		return svgBlob;
+	} else if (type === "png") {
+		// For PNG we need to render the SVG onto a canvas.
+		const canvas = document.createElement("canvas");
+		const context = canvas.getContext("2d");
+
+		if (!context) {
+			return "";
+		}
+
+		canvas.width = nodesBounds.width + padding;
+		canvas.height = nodesBounds.height + padding;
+		canvas.style.width = `${canvas.width}px`;
+		canvas.style.height = `${canvas.height}px`;
+
+		const img = new Image();
+		const url = URL.createObjectURL(svgBlob);
+		img.src = url;
+
+		await new Promise<void>((resolve, reject) => {
+			img.onload = () => resolve();
+			img.onerror = (e) => reject(e);
+		});
+
+		context.drawImage(img, 0, 0);
+
+		const pngUrl = canvas.toDataURL("image/png");
+		return await fetch(pngUrl).then((res) => res.blob());
 	}
-
-	const dataUrl = await toSvg(el, { cacheBust: true });
-	const res = await fetch(dataUrl);
-
-	return await res.blob();
+	return "";
 }
 
 /**
