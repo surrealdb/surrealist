@@ -1,6 +1,4 @@
 import { Tree } from "@lezer/common";
-import { DATASETS } from "~/constants";
-import { DatasetType } from "~/types";
 
 /**
  * Parse an indent and strip any escape characters
@@ -32,22 +30,6 @@ export function parseIdent(ident: string) {
  */
 export function compareIdents(a: string, b: string) {
 	return parseIdent(a) === parseIdent(b);
-}
-
-/**
- * Parse a dataset URL from a source string
- *
- * @param source A path to a dataset or known dataset identifier
- * @returns The dataset URL
- */
-export function parseDatasetURL(source: DatasetType) {
-	const path = source.startsWith("/") ? source : DATASETS[source]?.path;
-
-	if (!path) {
-		throw new Error("Invalid dataset source");
-	}
-
-	return new URL(path, "https://datasets.surrealdb.com");
 }
 
 const RESERVED_VARIABLES = new Set([

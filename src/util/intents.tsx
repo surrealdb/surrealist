@@ -32,6 +32,7 @@ const INTENT_REGISTRY = {
 	"cloud-signin": null,
 	"cloud-signout": null,
 	"cloud-activate": null,
+	"apply-dataset": "query",
 	"new-query": "query",
 	"close-query": "query",
 	"run-query": "query",

@@ -4,6 +4,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useSearchParams } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { getDefaultDatasetOptions } from "~/util/datasets";
 import { STARTING_DATA } from "../constants";
 import { DeploySectionProps, StartingDataInfo } from "../types";
 
@@ -11,16 +12,15 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 	const { instanceId } = useSearchParams();
 
 	const handleSelect = useStable((data: StartingDataInfo) => {
-		setDetails((draft) => {
-			// Automatically select a dataset to use so its not empty
-			const dataset = data.id === "dataset" ? "surreal-deal-store-mini" : undefined;
+		setDetails(async (draft) => {
+			const options = await getDefaultDatasetOptions(
+				details.version,
+				details.startingData.datasetOptions?.addQueries ?? true,
+			);
 
 			draft.startingData = {
 				type: data.id,
-				datasetOptions: {
-					id: dataset,
-					addQueries: details.startingData.datasetOptions?.addQueries,
-				},
+				datasetOptions: details.startingData.type === "dataset" ? options : undefined,
 			};
 		});
 	});

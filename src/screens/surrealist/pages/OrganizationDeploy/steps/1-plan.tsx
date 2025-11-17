@@ -7,6 +7,7 @@ import { Icon } from "~/components/Icon";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { PricingCard } from "~/screens/surrealist/components/PricingCard";
+import { StartingDataDetails } from "~/types";
 import { iconArrowUpRight } from "~/util/icons";
 import { StepProps } from "../types";
 
@@ -23,18 +24,13 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 		setDetails((details) => {
 			details.plan = config.surrealist?.plan ?? "free";
 			details.startingData = config.dataset
-				? {
+				? ({
 						type: "dataset",
-						datasetOptions: {
-							id: config.dataset.id,
-							size: config.dataset.size,
-							version: config.dataset.version,
-							addQueries: true,
-						},
-					}
-				: {
+						datasetOptions: config.dataset,
+					} as StartingDataDetails)
+				: ({
 						type: "none",
-					};
+					} as StartingDataDetails);
 			details.type = config.surrealist?.defaultType ?? "";
 		});
 	});

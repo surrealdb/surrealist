@@ -15,7 +15,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
-import { useDatasets } from "~/hooks/dataset";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
@@ -23,8 +22,8 @@ import { openConnectionDiagnosticsModal } from "~/modals/connection-diagnostics"
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
-import { DatasetType } from "~/types";
 import { getConnectionById } from "~/util/connection";
+import { applyDatasetFile, useDatasetsQuery } from "~/util/datasets";
 import {
 	iconClose,
 	iconDownload,
@@ -62,9 +61,11 @@ export function ConnectionStatus() {
 	const noUsers = schema.users.length === 0;
 	const isSchemaEmpty = noTables && noFunctions && noParams && noUsers;
 
-	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
+	const { data: datasets } = useDatasetsQuery();
 	const [showDatasets, showDatasetsHandle] = useBoolean();
-	const [dataset, setDataset] = useState<DatasetType | undefined>(undefined);
+	const [dataset, setDataset] = useState<string | undefined>(undefined);
+	const [datasetSize, setDatasetSize] = useState<string | undefined>(undefined);
+	const [datasetVersion, setDatasetVersion] = useState<string | undefined>(undefined);
 
 	const currentState = useDatabaseStore((s) => s.currentState);
 	const latestError = useDatabaseStore((s) => s.latestError);
@@ -78,12 +79,14 @@ export function ConnectionStatus() {
 	const _openDatasets = useStable(() => {
 		showDatasetsHandle.open();
 		setDataset(undefined);
+		setDatasetSize(undefined);
+		setDatasetVersion(undefined);
 	});
 
 	const confirmDataset = useStable(async () => {
-		if (!dataset) return;
+		if (!dataset || !datasetVersion || !datasetSize) return;
 
-		await applyDataset(dataset);
+		await applyDatasetFile(dataset, datasetVersion, datasetSize);
 		showDatasetsHandle.close();
 	});
 
@@ -306,7 +309,43 @@ export function ConnectionStatus() {
 						placeholder="Select a dataset"
 						value={dataset}
 						onChange={setDataset as any}
-						data={datasets}
+						data={
+							datasets?.map((dataset) => ({
+								value: dataset.id,
+								label: dataset.label,
+							})) ?? []
+						}
+					/>
+
+					<Select
+						placeholder="Select a version"
+						disabled={!dataset}
+						value={datasetVersion}
+						onChange={setDatasetVersion as any}
+						data={
+							datasets
+								?.find((d) => d.id === dataset)
+								?.versions?.map((version) => ({
+									value: version.id,
+									label: version.id,
+								})) ?? []
+						}
+					/>
+
+					<Select
+						placeholder="Select a size"
+						disabled={!dataset || !datasetVersion}
+						value={datasetSize}
+						onChange={setDatasetSize as any}
+						data={
+							datasets
+								?.find((d) => d.id === dataset)
+								?.versions?.find((v) => v.id === datasetVersion)
+								?.sizes?.map((size) => ({
+									value: size.id,
+									label: size.id,
+								})) ?? []
+						}
 					/>
 
 					<Group>
@@ -322,9 +361,8 @@ export function ConnectionStatus() {
 							type="submit"
 							variant="gradient"
 							flex={1}
-							disabled={!dataset}
+							disabled={!dataset || !datasetVersion || !datasetSize}
 							onClick={confirmDataset}
-							loading={isDatasetLoading}
 						>
 							Apply dataset
 						</Button>

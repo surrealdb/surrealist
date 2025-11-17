@@ -1,9 +1,10 @@
 import { Alert, Button, Checkbox, Group, Select, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
+import { useEffect, useState } from "react";
 import { isDistributedPlan } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
-import { DATASETS } from "~/constants";
-import { DatasetType } from "~/types";
+import { DatasetSize, DatasetVersion } from "~/types";
+import { fetchLatestCompatibleVersion, useDatasetsQuery } from "~/util/datasets";
 import { iconArrowDownFat, iconHelp } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
@@ -20,6 +21,23 @@ export function DataOptionsSection({
 		return !!instance.distributed_storage_specs === isDistributed;
 	});
 
+	const { data: datasets } = useDatasetsQuery();
+
+	const shownDatasets = datasets?.filter((dataset) => dataset.showForDeploy) ?? [];
+
+	const [version, setVersion] = useState<DatasetVersion | undefined>(undefined);
+	const [size, setSize] = useState<DatasetSize | undefined>(undefined);
+
+	useEffect(() => {
+		fetchLatestCompatibleVersion(
+			details.startingData.datasetOptions?.id ?? "",
+			details.version,
+		).then((version) => {
+			setVersion(version);
+			setSize(version?.sizes?.[0]);
+		});
+	}, [details.startingData.datasetOptions?.id, details.version]);
+
 	switch (details.startingData.type) {
 		case "dataset":
 			return (
@@ -28,27 +46,34 @@ export function DataOptionsSection({
 						label="Dataset"
 						placeholder="Select a dataset..."
 						description="Select the dataset to use for your instance"
-						data={Object.entries(DATASETS).map(([key, value]) => ({
-							value: key,
-							label: value.name,
+						data={shownDatasets.map((dataset) => ({
+							value: dataset.id,
+							label: dataset.label,
 						}))}
 						value={details.startingData.datasetOptions?.id}
 						onChange={(value) => {
-							setDetails((draft) => {
-								draft.startingData.datasetOptions = {
-									id: value as DatasetType,
-									addQueries: true,
-								};
-							});
+							const dataset = shownDatasets.find((dataset) => dataset.id === value);
+
+							if (dataset) {
+								setDetails((draft) => {
+									draft.startingData.datasetOptions = {
+										id: dataset.id,
+										version: dataset.versions[0].id,
+										addQueries: true,
+									};
+								});
+							}
 						}}
 					/>
 					<Checkbox
 						label="Initialize with example queries"
 						checked={details.startingData.datasetOptions?.addQueries}
 						onChange={(event) => {
-							setDetails((draft) => {
+							setDetails(async (draft) => {
 								draft.startingData.datasetOptions = {
-									id: details.startingData.datasetOptions?.id,
+									id: details.startingData.datasetOptions?.id ?? "",
+									version: version?.id ?? "",
+									size: size?.id ?? "",
 									addQueries: event.currentTarget.checked,
 								};
 							});

@@ -14,13 +14,15 @@ import { useImmer } from "use-immer";
 import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { Spacer } from "~/components/Spacer";
-import { DATASETS, ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
+import { ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
 import type { ColorScheme, Orientation, ResultMode } from "~/types";
+import { getLatestCompatibleVersion, useDatasetsQuery } from "~/util/datasets";
 import { isDevelopment, isProduction } from "~/util/environment";
 import { iconHelp } from "~/util/icons";
 
 export const DEFAULT_STATE: EmbedState = {
 	dataset: "none",
+	datasetSize: "",
 	setup: "",
 	query: "",
 	theme: "auto",
@@ -31,14 +33,6 @@ export const DEFAULT_STATE: EmbedState = {
 	autorun: false,
 	resultmode: "combined",
 };
-
-const DATASET_OPTIONS = [
-	{ label: "None", value: "none" },
-	...Object.entries(DATASETS).map(([id, { name }]) => ({
-		label: name,
-		value: id,
-	})),
-];
 
 function SectionTitle({
 	children,
@@ -82,6 +76,7 @@ function SectionTitle({
 
 export interface EmbedState {
 	dataset: string;
+	datasetSize: string;
 	setup: string;
 	query: string;
 	variables: string;
@@ -100,6 +95,8 @@ export interface EmbedderProps {
 
 export function Embedder({ value, onChangeURL }: EmbedderProps) {
 	const [state, setState] = useImmer({ ...DEFAULT_STATE, ...value });
+
+	const { data: datasets } = useDatasetsQuery();
 
 	useEffect(() => {
 		if (value) {
@@ -235,11 +232,32 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 					Dataset
 				</SectionTitle>
 				<Select
-					data={DATASET_OPTIONS}
+					placeholder="Select a dataset"
+					data={datasets?.map((dataset) => ({
+						value: dataset.id,
+						label: dataset.label,
+					}))}
 					value={state.dataset}
 					onChange={(e) => {
 						setState((draft) => {
 							draft.dataset = e || "";
+						});
+					}}
+				/>
+				<Select
+					placeholder="Select a size"
+					disabled={!state.dataset}
+					data={getLatestCompatibleVersion(
+						datasets?.find((dataset) => dataset.id === state.dataset),
+						import.meta.env.SDB_VERSION,
+					)?.sizes?.map((size) => ({
+						value: size.id,
+						label: size.id,
+					}))}
+					value={state.datasetSize}
+					onChange={(e) => {
+						setState((draft) => {
+							draft.datasetSize = e || "";
 						});
 					}}
 				/>

@@ -36,7 +36,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
-import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
 import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
 import { ComputeUsageChart } from "~/screens/surrealist/metrics/ComputeUsageChart";
@@ -44,11 +43,16 @@ import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart"
 import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressChart";
 import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngressChart";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
-import { DatasetType } from "~/types";
+import { applyDatasetFile } from "~/util/datasets";
 import { showErrorNotification } from "~/util/helpers";
 import { iconChevronDown, iconChevronRight } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
-import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
+import {
+	APPLY_DATA_FILE_KEY,
+	APPLY_DATASET_ID_KEY,
+	APPLY_DATASET_SIZE_KEY,
+	APPLY_DATASET_VERSION_KEY,
+} from "~/util/storage";
 import { MonitorMetricOptions } from "../../monitor/helpers";
 import { MetricActions } from "../../monitor/MetricPane/actions";
 import { BackupsBlock } from "../BackupsBlock";
@@ -145,25 +149,26 @@ export function DashboardView() {
 		});
 	}, [metricOptions.duration]);
 
-	const [, applyDataset] = useDatasets();
 	const { mutateAsync } = useUpdateInstanceVersionMutation(details);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
-	const applyInitialDataset = useStable(async (dataset: DatasetType) => {
-		try {
-			await executeQuery(
-				"DEFINE NAMESPACE demo; USE NS demo; DEFINE DATABASE surreal_deal_store;",
-			);
+	const applyInitialDataset = useStable(
+		async (datasetId: string, versionId: string, sizeId: string) => {
+			try {
+				await executeQuery(
+					`DEFINE NAMESPACE dataset; USE NS demo; DEFINE DATABASE ${datasetId};`,
+				);
 
-			await activateDatabase("demo", "surreal_deal_store");
-			await applyDataset(dataset);
-		} catch (error) {
-			showErrorNotification({
-				title: "Failed to apply dataset",
-				content: error,
-			});
-		}
-	});
+				await activateDatabase("dataset", datasetId);
+				await applyDatasetFile(datasetId, versionId, sizeId);
+			} catch (error) {
+				showErrorNotification({
+					title: "Failed to apply dataset",
+					content: error,
+				});
+			}
+		},
+	);
 
 	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
 
@@ -177,12 +182,17 @@ export function DashboardView() {
 	// Apply dataset on load
 	useEffect(() => {
 		if (details?.state === "ready" && isConnected) {
-			const dataset = sessionStorage.getItem(`${APPLY_DATASET_KEY}:${details.id}`);
+			const datasetId = sessionStorage.getItem(`${APPLY_DATASET_ID_KEY}:${details.id}`);
+			const versionId = sessionStorage.getItem(`${APPLY_DATASET_VERSION_KEY}:${details.id}`);
+			const sizeId = sessionStorage.getItem(`${APPLY_DATASET_SIZE_KEY}:${details.id}`);
 			const shouldApplyFile = sessionStorage.getItem(`${APPLY_DATA_FILE_KEY}:${details.id}`);
 
-			if (dataset) {
-				sessionStorage.removeItem(`${APPLY_DATASET_KEY}:${details.id}`);
-				applyInitialDataset(dataset as DatasetType);
+			if (datasetId && versionId && sizeId) {
+				sessionStorage.removeItem(`${APPLY_DATASET_ID_KEY}:${details.id}`);
+				sessionStorage.removeItem(`${APPLY_DATASET_VERSION_KEY}:${details.id}`);
+				sessionStorage.removeItem(`${APPLY_DATASET_SIZE_KEY}:${details.id}`);
+
+				applyInitialDataset(datasetId, versionId, sizeId);
 			}
 
 			if (shouldApplyFile) {

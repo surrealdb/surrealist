@@ -5,8 +5,6 @@ import flagUS from "flag-icons/flags/4x3/us.svg";
 
 import type {
 	AuthMode,
-	Dataset,
-	DatasetType,
 	DiagramAlgorithm,
 	DiagramDirection,
 	DiagramHoverFocus,
@@ -89,13 +87,6 @@ export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const CLOUD_ROLES = ["member", "admin", "owner"];
-
-export const DATASETS: Record<DatasetType, Dataset> = {
-	"surreal-deal-store-mini": {
-		name: "Surreal Deal Store (mini)",
-		path: "/surreal-deal-store-mini.surql",
-	},
-};
 
 export const SCALE_STEPS: Selectable<ScaleStep>[] = [
 	{ label: "125%", value: "125" },

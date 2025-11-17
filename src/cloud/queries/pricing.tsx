@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { InstancePlan } from "~/types";
+import { InstancePlan, StartingDataDatasetOptions } from "~/types";
+import { getWebsiteBase } from "../api/endpoints";
 
 type PricingConfigCTA =
 	| {
@@ -45,12 +46,6 @@ interface PricingConfigSurrealist {
 	defaultType?: string;
 }
 
-export interface PricingConfigDataset {
-	id: string;
-	version?: string;
-	size?: string;
-}
-
 export interface PricingConfigFeature {
 	name: string;
 	comingSoon: true;
@@ -58,7 +53,7 @@ export interface PricingConfigFeature {
 
 export interface PricingConfigCloud extends PricingConfigBase {
 	resources: string[];
-	dataset: PricingConfigDataset | null;
+	dataset: StartingDataDatasetOptions | null;
 }
 
 export interface PricingResult {
@@ -71,10 +66,9 @@ export function useCloudPricingQuery() {
 	return useQuery({
 		queryKey: ["cloud", "pricing"],
 		queryFn: async () => {
-			const response = await fetch("http://localhost:4321/api/cloud/pricing.json");
+			const websiteBase = getWebsiteBase();
+			const response = await fetch(`${websiteBase}/api/cloud/pricing.json`);
 			const plans: PricingResult = await response.json();
-
-			console.log(plans);
 
 			return plans;
 		},

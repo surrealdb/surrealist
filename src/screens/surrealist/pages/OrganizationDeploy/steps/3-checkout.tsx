@@ -26,10 +26,8 @@ import { Spacer } from "~/components/Spacer";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import { getTypeCategoryName } from "~/util/cloud";
-import { SAMPLE_QUERIES } from "~/util/dataset";
-import { createBaseQuery } from "~/util/defaults";
+import { applyDatasetQueries, fetchDatasetFromId, scheduleApplyDatasetFile } from "~/util/datasets";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
 import {
 	iconArrowUpRight,
@@ -43,7 +41,7 @@ import {
 	iconRelation,
 	iconTag,
 } from "~/util/icons";
-import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
+import { APPLY_DATA_FILE_KEY } from "~/util/storage";
 import { STARTING_DATA } from "../constants";
 import classes from "../style.module.scss";
 import { StepProps } from "../types";
@@ -56,28 +54,28 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 
 	const handleDeploy = useStable(async () => {
 		try {
-			const { settings, updateConnection } = useConfigStore.getState();
 			const [instance, connection] = await deployMutation.mutateAsync();
+			const datasetOptions = details.startingData.datasetOptions;
 
-			if (details.startingData.type === "dataset") {
-				const dataset =
-					details.startingData.datasetOptions?.id ?? "surreal-deal-store-mini";
-				const addQueries = details.startingData.datasetOptions?.addQueries;
+			if (details.startingData.type === "dataset" && datasetOptions) {
+				const dataset = await fetchDatasetFromId(datasetOptions?.id);
+				const version = dataset?.versions?.find((v) => v.id === datasetOptions?.version);
 
-				sessionStorage.setItem(`${APPLY_DATASET_KEY}:${instance.id}`, dataset);
+				if (!version) {
+					throw new Error("Dataset does not have any versions");
+				}
 
-				if (addQueries) {
-					const queries = SAMPLE_QUERIES[dataset].map((query) => ({
-						...createBaseQuery(settings, "config"),
-						name: query.name,
-						query: query.query,
-					}));
+				if (!version.sizes?.length || version.sizes.length === 0 || !datasetOptions?.size) {
+					// A size is required on all datasets with data, so if no size is provided only apply the queries.
+					await applyDatasetQueries(version, connection);
+				} else {
+					const size = version.sizes.find((s) => s.id === datasetOptions?.size);
 
-					updateConnection({
-						id: connection.id,
-						activeQuery: queries[0].id,
-						queries,
-					});
+					if (!size) {
+						throw new Error("Size not found");
+					}
+
+					await scheduleApplyDatasetFile(instance.id, connection, datasetOptions);
 				}
 			} else if (details.startingData.type === "upload") {
 				sessionStorage.setItem(`${APPLY_DATA_FILE_KEY}:${instance.id}`, "true");

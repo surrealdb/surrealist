@@ -22,6 +22,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
+import { getDefaultDatasetOptions } from "~/util/datasets";
 import { CURRENCY_FORMAT, formatMemory, optional } from "~/util/helpers";
 import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { DeploySectionProps } from "../types";
@@ -40,16 +41,18 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	const handleUpdate = useStable((type: CloudInstanceType) => {
 		closeModal("instance-type");
-		setDetails((draft) => {
+		setDetails(async (draft) => {
 			draft.type = type.slug;
 
 			if (type.price_hour === 0) {
+				const options = await getDefaultDatasetOptions(
+					details.version,
+					details.startingData.datasetOptions?.addQueries ?? true,
+				);
+
 				draft.startingData = {
 					type: "dataset",
-					datasetOptions: {
-						id: "surreal-deal-store-mini",
-						addQueries: true,
-					},
+					datasetOptions: options,
 				};
 			}
 		});

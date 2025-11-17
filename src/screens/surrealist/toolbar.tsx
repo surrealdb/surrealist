@@ -1,4 +1,4 @@
-import { Badge, Button, Group, HoverCard, Menu, Modal, Text, TextInput } from "@mantine/core";
+import { Badge, Button, Group, HoverCard, Modal, Text, TextInput } from "@mantine/core";
 
 import { useState } from "react";
 import { openCloudAuthentication } from "~/cloud/api/auth";
@@ -9,13 +9,11 @@ import { Icon } from "~/components/Icon";
 import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
 import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
-import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { DatasetType } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconChevronRight, iconReset, iconStar, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
@@ -67,8 +65,6 @@ export function SurrealistToolbar() {
 		confirmProps: { variant: "gradient" },
 		onConfirm: resetConnection,
 	});
-
-	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
 
 	const openChangelog = useStable(() => {
 		dispatchIntent("open-changelog");
@@ -132,35 +128,14 @@ export function SurrealistToolbar() {
 					>
 						<Icon path={iconReset} />
 					</ActionButton>
-					<Menu
-						transitionProps={{
-							transition: "scale-y",
-						}}
+					<ActionButton
+						color="slate"
+						variant="subtle"
+						label="Apply dataset"
+						onClick={() => dispatchIntent("apply-dataset")}
 					>
-						<Menu.Target>
-							<div>
-								<ActionButton
-									color="slate"
-									variant="subtle"
-									label="Apply demo dataset"
-									loading={isDatasetLoading}
-								>
-									<Icon path={iconTable} />
-								</ActionButton>
-							</div>
-						</Menu.Target>
-						<Menu.Dropdown miw={200}>
-							<Menu.Label>Select a dataset</Menu.Label>
-							{datasets.map(({ label, value }) => (
-								<Menu.Item
-									key={value}
-									onClick={() => applyDataset(value as DatasetType)}
-								>
-									{label}
-								</Menu.Item>
-							))}
-						</Menu.Dropdown>
-					</Menu>
+						<Icon path={iconTable} />
+					</ActionButton>
 				</>
 			)}
 

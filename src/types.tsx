@@ -45,7 +45,6 @@ export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
-export type DatasetType = "surreal-deal-store-mini";
 export type IntercomConversationStateId = "open" | "closed" | "snoozed";
 
 export type InstanceState =
@@ -235,8 +234,8 @@ export interface SurrealistCloudSettings {
 	urlApiBase: string;
 	urlApiMgmtBase: string;
 	urlAuthBase: string;
-	urlNewsfeedBase: string;
 	urlApiTicketsBase: string;
+	urlWebsiteBase: string;
 }
 
 export interface SurrealistGtmSettings {
@@ -550,7 +549,40 @@ export interface ViewCondition {
 }
 
 export interface Dataset {
-	name: string;
+	id: string;
+	label: string;
+	description: string;
+	author: string;
+	hidden: boolean;
+	showForDeploy: boolean;
+	versions: DatasetVersion[];
+}
+
+export interface DatasetVersion {
+	id: string;
+	hidden: boolean;
+	minimumVersion: string;
+	sizes?: DatasetSize[];
+	sampleQueries?: DatasetQueryInfo[];
+}
+
+export interface DatasetQueryBase {
+	id: string;
+	label: string;
+}
+
+export interface DatasetQueryInfo extends DatasetQueryBase {
+	path: string;
+}
+
+export interface DatasetQuery extends DatasetQueryBase {
+	query: string;
+}
+
+export interface DatasetSize {
+	id: string;
+	hidden: boolean;
+	label: string;
 	path: string;
 }
 
@@ -820,14 +852,16 @@ export interface CloudSupportPlanResult {
 	disabled_at?: string;
 }
 
+export interface StartingDataDatasetOptions {
+	id: string;
+	version: string;
+	size?: string;
+	addQueries?: boolean;
+}
+
 export interface StartingDataDetails {
 	type: StartingData;
-	datasetOptions?: {
-		id?: string;
-		size?: string;
-		version?: string;
-		addQueries?: boolean;
-	};
+	datasetOptions?: StartingDataDatasetOptions;
 	backupOptions?: {
 		instance?: CloudInstance;
 		backup?: CloudBackup;
