@@ -330,7 +330,7 @@ export async function executeQuery(
 			} else if (frame.isDone()) {
 				const result = queryResponses.has(frame.query)
 					? queryResponses.get(frame.query)
-					: undefined;
+					: [];
 
 				results.push({
 					success: true,
