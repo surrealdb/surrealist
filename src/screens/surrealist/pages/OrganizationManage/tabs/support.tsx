@@ -1,6 +1,7 @@
 import { Box, Button, Center, Group, Loader, Paper, Stack, Text } from "@mantine/core";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
+import { adapter } from "~/adapter";
 import chatImage from "~/assets/images/icons/chat.webp";
 import { useCloudOrganizationTicketsQuery } from "~/cloud/queries/context";
 import { useActiveSupportPlanQuery } from "~/cloud/queries/support";
@@ -10,6 +11,7 @@ import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useIsLight } from "~/hooks/theme";
+import { useFeatureFlags } from "~/util/feature-flags";
 import { iconOpen, iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../../Overview/content/cloud";
@@ -23,6 +25,8 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 	const { data: tickets, isLoading: areTicketsLoading } = useCloudOrganizationTicketsQuery(
 		organization.id,
 	);
+
+	const [flags] = useFeatureFlags();
 
 	const hasSupportPlan = activeSupportPlan?.support_plan !== undefined;
 	const startAt = (pagination.currentPage - 1) * pagination.pageSize;
@@ -47,93 +51,95 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 					}
 				/>
 			</Section>
-			<Section
-				title="Support History"
-				description="All support tickets for this organisation"
-				rightSection={
-					hasSupportPlan && (
-						<Button
-							size="xs"
-							variant="gradient"
-							rightSection={<Icon path={iconPlus} />}
+			{flags.support_tickets && (
+				<Section
+					title="Support History"
+					description="All support tickets for this organisation"
+					rightSection={
+						hasSupportPlan && (
+							<Button
+								size="xs"
+								variant="gradient"
+								rightSection={<Icon path={iconPlus} />}
+								onClick={() => {
+									dispatchIntent("create-message", {
+										type: "ticket",
+										organisation: organization.id,
+									});
+								}}
+							>
+								New ticket
+							</Button>
+						)
+					}
+				>
+					{(hasSupportPlan || (tickets && tickets.length > 0)) && (
+						<>
+							<Stack>
+								{areTicketsLoading && (
+									<Center>
+										<Loader />
+									</Center>
+								)}
+								{!areTicketsLoading && pageSlice && pageSlice.length > 0 && (
+									<Paper p="lg">
+										<Stack>
+											{pageSlice
+												?.sort((a, b) => b.updated_at - a.updated_at)
+												.slice(0, 3)
+												.map((ticket) => (
+													<Box
+														key={ticket.id}
+														style={{
+															cursor: "pointer",
+														}}
+														onClick={() =>
+															navigate(
+																`/support/conversations/${ticket.id}`,
+															)
+														}
+													>
+														<TicketCard ticket={ticket} />
+													</Box>
+												))}
+										</Stack>
+									</Paper>
+								)}
+								{!areTicketsLoading && (!pageSlice || pageSlice.length === 0) && (
+									<Center>
+										<Text>No support requests found</Text>
+									</Center>
+								)}
+							</Stack>
+
+							<Group
+								justify="center"
+								mt="xl"
+							>
+								<Pagination store={pagination} />
+							</Group>
+						</>
+					)}
+					{!hasSupportPlan && (!tickets?.length || tickets?.length === 0) && (
+						<StartCloud
+							action="View plans"
+							image={chatImage}
 							onClick={() => {
-								dispatchIntent("create-message", {
-									type: "ticket",
-									organisation: organization.id,
-								});
+								navigate(`/o/${organization.id}/support-plans`);
 							}}
 						>
-							New ticket
-						</Button>
-					)
-				}
-			>
-				{(hasSupportPlan || (tickets && tickets.length > 0)) && (
-					<>
-						<Stack>
-							{areTicketsLoading && (
-								<Center>
-									<Loader />
-								</Center>
-							)}
-							{!areTicketsLoading && pageSlice && pageSlice.length > 0 && (
-								<Paper p="lg">
-									<Stack>
-										{pageSlice
-											?.sort((a, b) => b.updated_at - a.updated_at)
-											.slice(0, 3)
-											.map((ticket) => (
-												<Box
-													key={ticket.id}
-													style={{
-														cursor: "pointer",
-													}}
-													onClick={() =>
-														navigate(
-															`/support/conversations/${ticket.id}`,
-														)
-													}
-												>
-													<TicketCard ticket={ticket} />
-												</Box>
-											))}
-									</Stack>
-								</Paper>
-							)}
-							{!areTicketsLoading && (!pageSlice || pageSlice.length === 0) && (
-								<Center>
-									<Text>No support requests found</Text>
-								</Center>
-							)}
-						</Stack>
-
-						<Group
-							justify="center"
-							mt="xl"
-						>
-							<Pagination store={pagination} />
-						</Group>
-					</>
-				)}
-				{!hasSupportPlan && (!tickets?.length || tickets?.length === 0) && (
-					<StartCloud
-						action="View plans"
-						image={chatImage}
-						onClick={() => {
-							navigate(`/o/${organization.id}/support-plans`);
-						}}
-					>
-						<Group>
-							<PrimaryTitle>Support Plan required</PrimaryTitle>
-							<Text>
-								Upgrade to a Support Plan to get expedited support directly from the
-								SurrealDB team, so you're never left hanging when it matters the
-								most.
-							</Text>
-						</Group>
-					</StartCloud>
-				)}
-			</Section>
+							<Group>
+								<PrimaryTitle>Support Plan required</PrimaryTitle>
+								<Text>
+									Upgrade to a Support Plan to get expedited support directly from
+									the SurrealDB team, so you're never left hanging when it matters
+									the most.
+								</Text>
+							</Group>
+						</StartCloud>
+					)}
+				</Section>
+			)}
 		</Stack>
 	);
 }
@@ -145,6 +151,7 @@ interface SupportPlanProps {
 }
 
 function SupportPlan({ name, description, organization }: SupportPlanProps) {
+	const [flags] = useFeatureFlags();
 	const isLight = useIsLight();
 
 	return (
@@ -157,7 +164,11 @@ function SupportPlan({ name, description, organization }: SupportPlanProps) {
 				<Button
 					variant="gradient"
 					onClick={() => {
-						navigate(`/o/${organization}/support-plans`);
+						if (flags.support_tickets) {
+							navigate(`/o/${organization}/support-plans`);
+						} else {
+							adapter.openUrl("https://surrealdb.com/pricing#support");
+						}
 					}}
 					rightSection={
 						<Icon
