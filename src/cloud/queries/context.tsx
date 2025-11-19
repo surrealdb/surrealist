@@ -6,7 +6,6 @@ import {
 	IntercomSupportCollection,
 	IntercomSupportCollectionShallow,
 	IntercomTicket,
-	IntercomTicketType,
 } from "~/types";
 import { fetchContextAPI } from "../api/context";
 
@@ -34,21 +33,6 @@ export function useCloudOrganizationTicketsQuery(organizationId?: string) {
 		enabled: !!organizationId,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomTicket[]>(`/cloud/org/${organizationId}/tickets`);
-		},
-	});
-}
-
-/**
- * Fetch the ticket types that the user has access to
- */
-export function useCloudTicketTypesQuery() {
-	const authState = useCloudStore((state) => state.authState);
-
-	return useQuery({
-		queryKey: ["cloud", "ticket_types"],
-		enabled: authState === "authenticated",
-		queryFn: async () => {
-			return fetchContextAPI<IntercomTicketType[]>(`/cloud/tickets/types`);
 		},
 	});
 }

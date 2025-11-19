@@ -15,7 +15,6 @@ import { useInputState } from "@mantine/hooks";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useConversationCreateMutation, useCreateTicketMutation } from "~/cloud/mutations/context";
-import { useCloudTicketTypesQuery } from "~/cloud/queries/context";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { useOrganisationsWithSupportPlanQuery } from "~/cloud/queries/support";
 import { Form } from "~/components/Form";
@@ -25,20 +24,12 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
 import { IntercomTicketTypeAttribute } from "~/types";
-import {
-	iconBullhorn,
-	iconChat,
-	iconComment,
-	iconCursor,
-	iconTag,
-	iconWarning,
-} from "~/util/icons";
+import { iconChat, iconComment, iconCursor, iconTag, iconWarning } from "~/util/icons";
 
 export function CreateMessageModal() {
 	const [isOpen, openedHandle] = useBoolean();
 	const [isTicket, setIsTicket] = useInputState(false);
 	const [organisation, setOrganisation] = useInputState<string | undefined>(undefined);
-	const [ticketType, setTicketType] = useInputState<string | null>(null);
 	const [availableAttributes, setAvailableAttributes] = useInputState<
 		IntercomTicketTypeAttribute[]
 	>([]);
@@ -52,8 +43,6 @@ export function CreateMessageModal() {
 	const createTicketMutation = useCreateTicketMutation(organisation);
 	const createConversationMutation = useConversationCreateMutation();
 
-	const typesQuery = useCloudTicketTypesQuery();
-
 	const [name, setName] = useInputState<string>("");
 	const [description, setDescription] = useInputState<string>("");
 	const [attributes, setAttributes] = useInputState<Record<string, any>>({});
@@ -62,7 +51,6 @@ export function CreateMessageModal() {
 		name &&
 		description &&
 		(!isTicket || (isTicket && organisation)) &&
-		(!isTicket || (isTicket && ticketType)) &&
 		(!isTicket ||
 			(isTicket &&
 				organisationsWithSupportPlan &&
@@ -80,7 +68,6 @@ export function CreateMessageModal() {
 	const handleClose = () => {
 		openedHandle.close();
 		setIsTicket(false);
-		setTicketType(null);
 		setAttributes({});
 		setName("");
 		setDescription("");
@@ -111,18 +98,6 @@ export function CreateMessageModal() {
 	});
 
 	useEffect(() => {
-		if (typesQuery.data && typesQuery.data.length === 1) {
-			setTicketType(typesQuery.data[0].id);
-		}
-
-		const ticket = typesQuery.data?.find((it) => it.id === ticketType);
-
-		if (ticket) {
-			setAvailableAttributes(ticket.attributes.filter((it) => it.visible_on_create));
-		}
-	}, [ticketType, typesQuery.data]);
-
-	useEffect(() => {
 		if (
 			organisations &&
 			organisationsWithSupportPlan &&
@@ -148,7 +123,7 @@ export function CreateMessageModal() {
 			<Form
 				onSubmit={async () => {
 					if (!isPending && canSubmit) {
-						if (isTicket && ticketType) {
+						if (isTicket) {
 							const nonFileAttributes = Object.entries(attributes)
 								.filter(([_, value]) => !(value instanceof File))
 								.reduce(
@@ -160,7 +135,6 @@ export function CreateMessageModal() {
 								);
 
 							const result = await createTicketMutation.mutateAsync({
-								type: parseInt(ticketType),
 								name: name,
 								description: description,
 								attributes: {
@@ -170,7 +144,7 @@ export function CreateMessageModal() {
 
 							handleClose();
 							navigate(`/support/conversations/${result.id}`);
-						} else if (!isTicket) {
+						} else {
 							const result = await createConversationMutation.mutateAsync({
 								body: description,
 								subject: name,
@@ -236,25 +210,6 @@ export function CreateMessageModal() {
 								onChange={setOrganisation}
 							/>
 						)}
-					{isTicket && typesQuery.data && typesQuery.data.length > 1 && (
-						<Select
-							data={
-								typesQuery.data?.map((it) => {
-									return {
-										value: it.id,
-										label: it.name,
-									};
-								}) || []
-							}
-							required
-							label="Ticket type"
-							placeholder="Please select ticket type"
-							leftSection={<Icon path={iconBullhorn} />}
-							value={ticketType}
-							onChange={setTicketType}
-							flex={1}
-						/>
-					)}
 					{availableAttributes
 						.filter(
 							(attr) =>

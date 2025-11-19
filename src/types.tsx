@@ -919,7 +919,6 @@ export interface IntercomTicket {
 }
 
 export interface IntercomTicketCreateRequest {
-	type: number;
 	name: string;
 	description: string;
 	attributes: Record<string, any>;
