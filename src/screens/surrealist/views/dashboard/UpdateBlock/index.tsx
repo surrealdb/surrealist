@@ -1,5 +1,5 @@
 import { Alert, Box, Button, Group } from "@mantine/core";
-import { hasOrganizationRole } from "~/cloud/helpers";
+import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudOrganization } from "~/types";
@@ -22,7 +22,7 @@ export function UpdateBlock({
 	onVersions,
 }: UpdateBlockProps) {
 	const latest = instance.available_versions[0] ?? "";
-	const canUpdate = hasOrganizationRole(organisation, "admin");
+	const canUpdate = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);
 	const visible = latest && instance.state === "ready" && !isLoading && canUpdate;
 
 	const handleUpdate = useStable(() => {

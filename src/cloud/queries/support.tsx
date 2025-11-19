@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization, CloudSupportPlanResult } from "~/types";
 import { fetchAPI } from "../api";
-import { hasOrganizationRole } from "../helpers";
+import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "../helpers";
 
 export function useCloudSupportPlansQuery(organisation?: string) {
 	const authState = useCloudStore((state) => state.authState);
@@ -35,7 +35,7 @@ export function useOrganisationsWithSupportPlanQuery(
 
 				if (supportPlans.length > 0 && getActiveSupportPlan(supportPlans) !== null) {
 					if (
-						(requireAccess && hasOrganizationRole(organisation, "admin")) ||
+						(requireAccess && hasOrganizationRoles(organisation, ORG_ROLES_ADMIN)) ||
 						!requireAccess
 					) {
 						organisationsWithSupportPlan.push(organisation);

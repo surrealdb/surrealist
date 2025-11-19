@@ -1,7 +1,12 @@
 import { Box, Divider, Group, ScrollArea, Stack, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
-import { hasOrganizationRole } from "~/cloud/helpers";
+import {
+	hasOrganizationRoles,
+	ORG_ROLES_ADMIN,
+	ORG_ROLES_OWNER,
+	ORG_ROLES_SUPPORT,
+} from "~/cloud/helpers";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudSplash } from "~/components/CloudSplash";
@@ -41,8 +46,9 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 
 	const { data: organization, isSuccess } = useCloudOrganizationQuery(id);
 
-	const isAdmin = organization ? hasOrganizationRole(organization, "admin") : false;
-	const isOwner = organization ? hasOrganizationRole(organization, "owner") : false;
+	const isSupport = organization ? hasOrganizationRoles(organization, ORG_ROLES_SUPPORT) : false;
+	const isAdmin = organization ? hasOrganizationRoles(organization, ORG_ROLES_ADMIN) : false;
+	const isOwner = organization ? hasOrganizationRoles(organization, ORG_ROLES_OWNER) : false;
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {
@@ -151,15 +157,17 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 													</Tabs.Tab>
 												</>
 											)}
+											{isSupport && (
+												<Tabs.Tab
+													value="support"
+													leftSection={<Icon path={iconChat} />}
+													px="xl"
+												>
+													Support
+												</Tabs.Tab>
+											)}
 											{isAdmin && (
 												<>
-													<Tabs.Tab
-														value="support"
-														leftSection={<Icon path={iconChat} />}
-														px="xl"
-													>
-														Support
-													</Tabs.Tab>
 													<Tabs.Tab
 														value="usage"
 														leftSection={

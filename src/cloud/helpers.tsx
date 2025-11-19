@@ -3,6 +3,10 @@ import { CLOUD_ROLES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { CloudDeployConfig, CloudOrganization, InstancePlan, MetricsDuration } from "~/types";
 
+export const ORG_ROLES_OWNER = ["owner"];
+export const ORG_ROLES_ADMIN = ["admin", "owner"];
+export const ORG_ROLES_SUPPORT = ["support-member", "admin", "owner"];
+
 export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	name: "",
 	region: "",
@@ -125,9 +129,15 @@ export function isDistributedPlan(plan: InstancePlan): boolean {
 	return plan === "scale" || plan === "enterprise";
 }
 
-export function hasOrganizationRole(organisation: CloudOrganization | undefined, role: string) {
+export function hasOrganizationRoles(organisation: CloudOrganization | undefined, roles: string[]) {
 	if (!organisation) {
 		return false;
+	}
+
+	if (roles.some((role) => !CLOUD_ROLES.includes(role))) {
+		throw new Error(
+			`Tried to check org permissions, but one or more roles were invalid. Received: ${roles.join(", ")}`,
+		);
 	}
 
 	const currentRole = organisation.user_role;
@@ -136,8 +146,5 @@ export function hasOrganizationRole(organisation: CloudOrganization | undefined,
 		return false;
 	}
 
-	const required = CLOUD_ROLES.indexOf(role);
-	const current = CLOUD_ROLES.indexOf(currentRole ?? "");
-
-	return current >= required;
+	return roles.includes(currentRole);
 }
