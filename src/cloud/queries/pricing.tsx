@@ -1,5 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSetting } from "~/hooks/config";
 import { InstancePlan } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
 
 type PricingConfigCTA =
 	| {
@@ -68,10 +70,15 @@ export interface PricingResult {
 }
 
 export function useCloudPricingQuery() {
+	const [flags] = useFeatureFlags();
+	const [websiteSetting] = useSetting("cloud", "urlWebsiteBase");
+
 	return useQuery({
 		queryKey: ["cloud", "pricing"],
 		queryFn: async () => {
-			const response = await fetch("https://surrealdb.com/api/cloud/pricing.json");
+			const isCustom = flags.website_base === "custom";
+			const websiteBase = isCustom ? websiteSetting : "https://surrealdb.com";
+			const response = await fetch(`${websiteBase}/api/cloud/pricing.json`);
 			const plans: PricingResult = await response.json();
 
 			return plans;

@@ -235,7 +235,7 @@ export interface SurrealistCloudSettings {
 	urlApiBase: string;
 	urlApiMgmtBase: string;
 	urlAuthBase: string;
-	urlNewsfeedBase: string;
+	urlWebsiteBase: string;
 	urlApiTicketsBase: string;
 }
 
