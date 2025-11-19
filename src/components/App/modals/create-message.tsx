@@ -49,8 +49,6 @@ export function CreateMessageModal() {
 		true,
 	);
 
-	console.log(organisationsWithSupportPlan);
-
 	const createTicketMutation = useCreateTicketMutation(organisation);
 	const createConversationMutation = useConversationCreateMutation();
 

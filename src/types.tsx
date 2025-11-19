@@ -822,12 +822,6 @@ export interface CloudSupportPlanResult {
 
 export interface StartingDataDetails {
 	type: StartingData;
-	datasetOptions?: {
-		id?: string;
-		size?: string;
-		version?: string;
-		addQueries?: boolean;
-	};
 	backupOptions?: {
 		instance?: CloudInstance;
 		backup?: CloudBackup;

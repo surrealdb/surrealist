@@ -28,6 +28,13 @@ import type {
 import { tagEvent } from "~/util/analytics";
 import { getSetting } from "~/util/config";
 import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
+import {
+	SURREAL_START_BASICS,
+	SURREAL_START_GRAPH_V2,
+	SURREAL_START_GRAPH_V3,
+	SURREAL_START_VECTOR,
+} from "~/util/dataset";
+import { createBaseQuery } from "~/util/defaults";
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -68,8 +75,11 @@ const LIVE_QUERIES = new Map<string, Set<Uuid>>();
  * @param options Connection options
  */
 export async function openConnection(options?: ConnectOptions) {
+	const params = new URLSearchParams(location.search);
 	const currentConnection = getConnection();
 	const connection = options?.connection || currentConnection;
+
+	const { settings, updateConnection } = useConfigStore.getState();
 
 	if (!connection) {
 		throw new Error("No connection available");
@@ -196,6 +206,48 @@ export async function openConnection(options?: ConnectOptions) {
 
 			await instance.query("DEFINE NAMESPACE IF NOT EXISTS sandbox");
 			await instance.query("DEFINE DATABASE IF NOT EXISTS sandbox");
+
+			const queriesToApply = params.get("queries");
+
+			if (queriesToApply === "start") {
+				const queries = [SURREAL_START_BASICS];
+
+				const canUse30Queries = compareVersions(version, "3.0.0") >= 0;
+
+				if (canUse30Queries) {
+					queries.push(SURREAL_START_GRAPH_V3);
+				} else {
+					queries.push(SURREAL_START_GRAPH_V2);
+				}
+
+				queries.push(SURREAL_START_VECTOR);
+
+				const configs = queries.map((query) => ({
+					...createBaseQuery(settings, "config"),
+					name: query.name,
+					query: query.query,
+				}));
+
+				// Clear empty queries and existing sample queries
+				const existingQueries = connection.queries.filter(
+					(it) =>
+						it.query.length > 0 &&
+						![
+							SURREAL_START_BASICS.name,
+							SURREAL_START_GRAPH_V2.name,
+							SURREAL_START_GRAPH_V3.name,
+							SURREAL_START_VECTOR.name,
+						].includes(it.name ?? ""),
+				);
+
+				updateConnection({
+					id: connection.id,
+					activeQuery: configs[0].id,
+					queries: [...configs, ...existingQueries],
+				});
+
+				params.delete("queries");
+			}
 		} else {
 			await activateDatabase(namespace, database);
 		}

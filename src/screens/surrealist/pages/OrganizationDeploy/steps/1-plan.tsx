@@ -22,19 +22,9 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 		setStep(1);
 		setDetails((details) => {
 			details.plan = config.surrealist?.plan ?? "free";
-			details.startingData = config.dataset
-				? {
-						type: "dataset",
-						datasetOptions: {
-							id: config.dataset.id,
-							size: config.dataset.size,
-							version: config.dataset.version,
-							addQueries: true,
-						},
-					}
-				: {
-						type: "none",
-					};
+			details.startingData = {
+				type: details.plan === "free" ? "dataset" : "none",
+			};
 			details.type = config.surrealist?.defaultType ?? "";
 		});
 	});

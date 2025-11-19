@@ -15,6 +15,7 @@ type PricingConfigCTA =
 export interface PricingConfigBase {
 	id: string;
 	name: string;
+	dataset?: PricingConfigDataset;
 	description: string;
 	price: string | number | undefined;
 	features: PricingConfigFeature[];
@@ -58,7 +59,6 @@ export interface PricingConfigFeature {
 
 export interface PricingConfigCloud extends PricingConfigBase {
 	resources: string[];
-	dataset: PricingConfigDataset | null;
 }
 
 export interface PricingResult {
@@ -71,10 +71,8 @@ export function useCloudPricingQuery() {
 	return useQuery({
 		queryKey: ["cloud", "pricing"],
 		queryFn: async () => {
-			const response = await fetch("http://localhost:4321/api/cloud/pricing.json");
+			const response = await fetch("https://surrealdb.com/api/cloud/pricing.json");
 			const plans: PricingResult = await response.json();
-
-			console.log(plans);
 
 			return plans;
 		},
