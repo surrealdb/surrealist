@@ -47,6 +47,8 @@ export function CreateMessageModal() {
 	const [description, setDescription] = useInputState<string>("");
 	const [attributes, setAttributes] = useInputState<Record<string, any>>({});
 
+	const hasTicketsAccess =
+		organisationsWithSupportPlan && organisationsWithSupportPlan.length > 0;
 	const canSubmit =
 		name &&
 		description &&
@@ -167,32 +169,49 @@ export function CreateMessageModal() {
 							as sales inquiries
 						</Alert>
 					)}
-					{isTicket &&
-						(!organisationsWithSupportPlan ||
-							organisationsWithSupportPlan.length === 0) && (
-							<Alert
-								title="You are unable to create a support ticket"
-								color="red"
-								icon={<Icon path={iconWarning} />}
-							>
+					{isTicket && !hasTicketsAccess && (
+						<Alert
+							title="You are unable to create a support ticket"
+							color="red"
+							icon={<Icon path={iconWarning} />}
+						>
+							<Stack>
 								You are not associated with any organisations that has a support
 								plan or you do not have admin access to one that does.
-							</Alert>
-						)}
-					<TextInput
-						required
-						label="Subject"
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-					/>
-					<Textarea
-						autosize
-						required
-						minRows={5}
-						label="What is your reason for contacting us?"
-						value={description}
-						onChange={(e) => setDescription(e.target.value)}
-					/>
+								<div>
+									<Button
+										color="slate"
+										variant="light"
+										size="xs"
+										onClick={() => {
+											navigate("/organisations?destination=support-plans");
+											openedHandle.close();
+										}}
+									>
+										View plans
+									</Button>
+								</div>
+							</Stack>
+						</Alert>
+					)}
+					{(!isTicket || hasTicketsAccess) && (
+						<>
+							<TextInput
+								required
+								label="Subject"
+								value={name}
+								onChange={(e) => setName(e.target.value)}
+							/>
+							<Textarea
+								autosize
+								required
+								minRows={5}
+								label="What is your reason for contacting us?"
+								value={description}
+								onChange={(e) => setDescription(e.target.value)}
+							/>
+						</>
+					)}
 					{isTicket &&
 						organisationsWithSupportPlan &&
 						organisationsWithSupportPlan.length > 0 && (
@@ -227,18 +246,20 @@ export function CreateMessageModal() {
 								}
 							/>
 						))}
-					<Group>
-						<Spacer />
-						<Button
-							loading={isPending}
-							type="submit"
-							variant="gradient"
-							rightSection={<Icon path={iconCursor} />}
-							disabled={!canSubmit || isPending}
-						>
-							Submit
-						</Button>
-					</Group>
+					{(!isTicket || hasTicketsAccess) && (
+						<Group>
+							<Spacer />
+							<Button
+								loading={isPending}
+								type="submit"
+								variant="gradient"
+								rightSection={<Icon path={iconCursor} />}
+								disabled={!canSubmit || isPending}
+							>
+								Submit
+							</Button>
+						</Group>
+					)}
 				</Stack>
 			</Form>
 		</Modal>

@@ -115,6 +115,12 @@ export function SupportPage() {
 									View All
 								</Button>
 								<ListMenu
+									menuProps={{
+										position: "bottom-start",
+									}}
+									dropdownProps={{
+										w: 250,
+									}}
 									data={SUPPORT_REQUEST_TYPES}
 									value={undefined}
 									onChange={(type) => {

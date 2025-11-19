@@ -154,13 +154,13 @@ export const SUPPORT_REQUEST_TYPES: Listable<SupportRequestType>[] = [
 		label: "Conversation",
 		value: "conversation",
 		icon: iconChat,
-		description: "Raise a question with the SurrealDB team",
+		description: "Raise a sales or billing question",
 	},
 	{
 		label: "Ticket",
 		value: "ticket",
 		icon: iconTag,
-		description: "Create a support request (requires support plan)",
+		description: "Request expedited support",
 	},
 ];
 
