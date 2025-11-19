@@ -48,7 +48,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 				/>
 			</Section>
 			<Section
-				title="Support Tickets"
+				title="Support History"
 				description="All support tickets for this organisation"
 				rightSection={
 					hasSupportPlan && (
@@ -68,7 +68,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 					)
 				}
 			>
-				{hasSupportPlan && (
+				{(hasSupportPlan || (tickets && tickets.length > 0)) && (
 					<>
 						<Stack>
 							{areTicketsLoading && (
@@ -115,7 +115,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 						</Group>
 					</>
 				)}
-				{!hasSupportPlan && (
+				{!hasSupportPlan && (!tickets?.length || tickets?.length === 0) && (
 					<StartCloud
 						action="View plans"
 						image={chatImage}
