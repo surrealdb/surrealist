@@ -15,6 +15,8 @@ export function SupportPlansPage({ id }: SupportPlansPageProps) {
 	const pricingQuery = useCloudPricingQuery();
 	const { data: organisation } = useCloudOrganizationQuery(id);
 
+	const supportPlans = pricingQuery.data?.support ?? [];
+
 	return (
 		<Box
 			flex={1}
@@ -67,7 +69,7 @@ export function SupportPlansPage({ id }: SupportPlansPageProps) {
 										cols={{ base: 1, sm: 2, lg: 3 }}
 										spacing="xl"
 									>
-										{pricingQuery.data.support.map((support) => (
+										{supportPlans.map((support) => (
 											<PricingCard
 												key={support.id}
 												config={support}
