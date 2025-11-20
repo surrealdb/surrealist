@@ -181,17 +181,13 @@ export function mod(n: number, m: number) {
  * @returns The simplified kind
  */
 export function simplifyKind(kind: string): string {
-
 	if (kind.startsWith("option<")) {
 		return `${simplifyKind(kind.slice(7, -1))}?`;
-	}
-	else if (kind.startsWith("array<")) {
+	} else if (kind.startsWith("array<")) {
 		return `${simplifyKind(kind.slice(6, -1))}[]`;
-	}
-	else if (kind.startsWith("record<")) {
+	} else if (kind.startsWith("record<")) {
 		return `*${simplifyKind(kind.slice(7, -1))}`;
-	}
-	else {
+	} else {
 		const bracket = kind.indexOf("<");
 
 		if (bracket === -1) {
