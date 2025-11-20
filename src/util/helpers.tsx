@@ -180,14 +180,22 @@ export function mod(n: number, m: number) {
  * @param value The input kind string
  * @returns The simplified kind
  */
-export function simplifyKind(kind: string) {
-	const bracket = kind.indexOf("<");
+export function simplifyKind(kind: string): string {
+	if (kind.startsWith("option<")) {
+		return `${simplifyKind(kind.slice(7, -1))}?`;
+	} else if (kind.startsWith("array<")) {
+		return `${simplifyKind(kind.slice(6, -1))}[]`;
+	} else if (kind.startsWith("record<")) {
+		return `*${simplifyKind(kind.slice(7, -1))}`;
+	} else {
+		const bracket = kind.indexOf("<");
 
-	if (bracket === -1) {
-		return kind;
+		if (bracket === -1) {
+			return kind;
+		}
+
+		return kind.slice(0, bracket);
 	}
-
-	return kind.slice(0, bracket);
 }
 
 /**
