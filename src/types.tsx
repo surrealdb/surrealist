@@ -234,7 +234,7 @@ export interface SurrealistCloudSettings {
 	urlApiBase: string;
 	urlApiMgmtBase: string;
 	urlAuthBase: string;
-	urlNewsfeedBase: string;
+	urlWebsiteBase: string;
 	urlApiTicketsBase: string;
 }
 
@@ -806,12 +806,21 @@ export interface CloudRole {
 	}[];
 }
 
+export interface CloudSupportPlan {
+	id: string;
+	name: string;
+	description: string;
+}
+
+export interface CloudSupportPlanResult {
+	id: string;
+	support_plan: CloudSupportPlan;
+	enabled_at: string;
+	disabled_at?: string;
+}
+
 export interface StartingDataDetails {
 	type: StartingData;
-	datasetOptions?: {
-		id?: DatasetType;
-		addQueries?: boolean;
-	};
 	backupOptions?: {
 		instance?: CloudInstance;
 		backup?: CloudBackup;
@@ -909,7 +918,6 @@ export interface IntercomTicket {
 }
 
 export interface IntercomTicketCreateRequest {
-	type: number;
 	name: string;
 	description: string;
 	attributes: Record<string, any>;

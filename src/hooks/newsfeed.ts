@@ -19,9 +19,9 @@ export interface NewsPost {
  */
 export function useLatestNewsQuery() {
 	const [flags] = useFeatureFlags();
-	const [newsfeedSetting] = useSetting("cloud", "urlNewsfeedBase");
-	const isCustom = flags.newsfeed_base === "custom";
-	const newsfeedBase = isCustom ? newsfeedSetting : "https://surrealdb.com";
+	const [websiteSetting] = useSetting("cloud", "urlWebsiteBase");
+	const isCustom = flags.website_base === "custom";
+	const newsfeedBase = isCustom ? websiteSetting : "https://surrealdb.com";
 
 	return useQuery<NewsPost[]>({
 		queryKey: ["newsfeed", newsfeedBase],

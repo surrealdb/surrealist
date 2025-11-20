@@ -38,7 +38,8 @@ export function useInstanceDeployMutation(
 				instance_type: instance.type.slug,
 				storage_size: instance.storage_size,
 				organisation: organisation.id,
-				dataset: config.startingData.datasetOptions?.id ?? "none",
+				dataset:
+					config.startingData.type === "dataset" ? "surreal-deal-store-mini" : undefined,
 				email: useCloudStore.getState().profile.username,
 			});
 

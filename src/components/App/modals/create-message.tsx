@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Button,
 	Checkbox,
 	Group,
@@ -14,8 +15,8 @@ import { useInputState } from "@mantine/hooks";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useConversationCreateMutation, useCreateTicketMutation } from "~/cloud/mutations/context";
-import { useCloudTicketTypesQuery } from "~/cloud/queries/context";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import { useOrganisationsWithSupportPlanQuery } from "~/cloud/queries/support";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -23,33 +24,39 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
 import { IntercomTicketTypeAttribute } from "~/types";
-import { iconBullhorn, iconChat, iconCursor, iconTag } from "~/util/icons";
+import { iconChat, iconComment, iconCursor, iconTag, iconWarning } from "~/util/icons";
 
 export function CreateMessageModal() {
 	const [isOpen, openedHandle] = useBoolean();
 	const [isTicket, setIsTicket] = useInputState(false);
 	const [organisation, setOrganisation] = useInputState<string | undefined>(undefined);
-	const [ticketType, setTicketType] = useInputState<string | null>(null);
 	const [availableAttributes, setAvailableAttributes] = useInputState<
 		IntercomTicketTypeAttribute[]
 	>([]);
 
 	const { data: organisations } = useCloudOrganizationsQuery();
+	const { data: organisationsWithSupportPlan } = useOrganisationsWithSupportPlanQuery(
+		organisations,
+		true,
+	);
 
 	const createTicketMutation = useCreateTicketMutation(organisation);
 	const createConversationMutation = useConversationCreateMutation();
-
-	const typesQuery = useCloudTicketTypesQuery();
 
 	const [name, setName] = useInputState<string>("");
 	const [description, setDescription] = useInputState<string>("");
 	const [attributes, setAttributes] = useInputState<Record<string, any>>({});
 
+	const hasTicketsAccess =
+		organisationsWithSupportPlan && organisationsWithSupportPlan.length > 0;
 	const canSubmit =
 		name &&
 		description &&
 		(!isTicket || (isTicket && organisation)) &&
-		(!isTicket || (isTicket && ticketType)) &&
+		(!isTicket ||
+			(isTicket &&
+				organisationsWithSupportPlan &&
+				organisationsWithSupportPlan.length > 0)) &&
 		availableAttributes
 			.filter(
 				(it) =>
@@ -63,31 +70,44 @@ export function CreateMessageModal() {
 	const handleClose = () => {
 		openedHandle.close();
 		setIsTicket(false);
-		setTicketType(null);
+		setAttributes({});
+		setName("");
+		setDescription("");
+		setOrganisation(undefined);
 		setAvailableAttributes([]);
 	};
 
-	useIntent("create-message", ({ type }) => {
+	useIntent("create-message", ({ type, organisation, subject, message }) => {
 		if (type === "ticket") {
 			setIsTicket(true);
 		} else {
 			setIsTicket(false);
 		}
 
+		if (organisation) {
+			setOrganisation(organisation);
+		}
+
+		if (subject) {
+			setName(subject);
+		}
+
+		if (message) {
+			setDescription(message);
+		}
+
 		openedHandle.open();
 	});
 
 	useEffect(() => {
-		if (typesQuery.data && typesQuery.data.length === 1) {
-			setTicketType(typesQuery.data[0].id);
+		if (
+			organisations &&
+			organisationsWithSupportPlan &&
+			organisationsWithSupportPlan.length === 1
+		) {
+			setOrganisation(organisationsWithSupportPlan[0].id);
 		}
-
-		const ticket = typesQuery.data?.find((it) => it.id === ticketType);
-
-		if (ticket) {
-			setAvailableAttributes(ticket.attributes.filter((it) => it.visible_on_create));
-		}
-	}, [ticketType, typesQuery.data]);
+	}, [organisations, organisationsWithSupportPlan]);
 
 	return (
 		<Modal
@@ -105,7 +125,7 @@ export function CreateMessageModal() {
 			<Form
 				onSubmit={async () => {
 					if (!isPending && canSubmit) {
-						if (isTicket && ticketType) {
+						if (isTicket) {
 							const nonFileAttributes = Object.entries(attributes)
 								.filter(([_, value]) => !(value instanceof File))
 								.reduce(
@@ -117,7 +137,6 @@ export function CreateMessageModal() {
 								);
 
 							const result = await createTicketMutation.mutateAsync({
-								type: parseInt(ticketType),
 								name: name,
 								description: description,
 								attributes: {
@@ -127,7 +146,7 @@ export function CreateMessageModal() {
 
 							handleClose();
 							navigate(`/support/conversations/${result.id}`);
-						} else if (!isTicket) {
+						} else {
 							const result = await createConversationMutation.mutateAsync({
 								body: description,
 								subject: name,
@@ -140,56 +159,76 @@ export function CreateMessageModal() {
 				}}
 			>
 				<Stack gap="xl">
-					<TextInput
-						required
-						label="Subject"
-						value={name}
-						onChange={(e) => setName(e.target.value)}
-					/>
-					<Textarea
-						autosize
-						required
-						minRows={5}
-						label="Describe your issue"
-						value={description}
-						onChange={(e) => setDescription(e.target.value)}
-					/>
-					{isTicket && (
-						<Select
-							required
-							data={
-								organisations
-									?.filter((it) => ["admin", "owner"].includes(it.user_role))
-									?.map((it) => ({
+					{!isTicket && (
+						<Alert
+							title="Please note"
+							color="violet"
+							icon={<Icon path={iconComment} />}
+						>
+							Conversations should only be used for billing & account issues as well
+							as sales inquiries
+						</Alert>
+					)}
+					{isTicket && !hasTicketsAccess && (
+						<Alert
+							title="You are unable to create a support ticket"
+							color="red"
+							icon={<Icon path={iconWarning} />}
+						>
+							<Stack>
+								You are not associated with any organisations that has a support
+								plan or you do not have admin access to one that does.
+								<div>
+									<Button
+										color="slate"
+										variant="light"
+										size="xs"
+										onClick={() => {
+											navigate("/organisations?destination=support-plans");
+											openedHandle.close();
+										}}
+									>
+										View plans
+									</Button>
+								</div>
+							</Stack>
+						</Alert>
+					)}
+					{(!isTicket || hasTicketsAccess) && (
+						<>
+							<TextInput
+								required
+								label="Subject"
+								value={name}
+								onChange={(e) => setName(e.target.value)}
+							/>
+							<Textarea
+								autosize
+								required
+								minRows={5}
+								label="What is your reason for contacting us?"
+								value={description}
+								onChange={(e) => setDescription(e.target.value)}
+							/>
+						</>
+					)}
+					{isTicket &&
+						organisationsWithSupportPlan &&
+						organisationsWithSupportPlan.length > 0 && (
+							<Select
+								required
+								data={
+									organisationsWithSupportPlan?.map((it) => ({
 										value: it.id,
 										label: it.name,
 									})) || []
-							}
-							label="Organisation"
-							placeholder="Please select the associated organisation"
-							value={organisation}
-							onChange={setOrganisation}
-						/>
-					)}
-					{isTicket && typesQuery.data && typesQuery.data.length > 1 && (
-						<Select
-							data={
-								typesQuery.data?.map((it) => {
-									return {
-										value: it.id,
-										label: it.name,
-									};
-								}) || []
-							}
-							required
-							label="Ticket type"
-							placeholder="Please select ticket type"
-							leftSection={<Icon path={iconBullhorn} />}
-							value={ticketType}
-							onChange={setTicketType}
-							flex={1}
-						/>
-					)}
+								}
+								label="Organisation"
+								placeholder="Please select the associated organisation"
+								value={organisation}
+								onChange={setOrganisation}
+							/>
+						)}
 					{availableAttributes
 						.filter(
 							(attr) =>
@@ -207,18 +246,20 @@ export function CreateMessageModal() {
 								}
 							/>
 						))}
-					<Group>
-						<Spacer />
-						<Button
-							loading={isPending}
-							type="submit"
-							variant="gradient"
-							rightSection={<Icon path={iconCursor} />}
-							disabled={!canSubmit || isPending}
-						>
-							Submit
-						</Button>
-					</Group>
+					{(!isTicket || hasTicketsAccess) && (
+						<Group>
+							<Spacer />
+							<Button
+								loading={isPending}
+								type="submit"
+								variant="gradient"
+								rightSection={<Icon path={iconCursor} />}
+								disabled={!canSubmit || isPending}
+							>
+								Submit
+							</Button>
+						</Group>
+					)}
 				</Stack>
 			</Form>
 		</Modal>

@@ -91,8 +91,9 @@ export class FlagSetController<K extends string, T extends Flags<K>> {
  * Compute available preferences based on the current state
  */
 export function useComputedPreferences(): PreferenceSection[] {
-	const [{ themes, syntax_themes, cloud_endpoints, gtm_debug, sidebar_customization }] =
-		useFeatureFlags();
+	const [
+		{ themes, syntax_themes, cloud_endpoints, gtm_debug, sidebar_customization, website_base },
+	] = useFeatureFlags();
 
 	return useMemo(() => {
 		const sections: PreferenceSection[] = [];
@@ -580,6 +581,23 @@ export function useComputedPreferences(): PreferenceSection[] {
 					},
 				],
 			});
+
+			if (website_base === "custom") {
+				sections
+					.find((section) => section.id === "cloud-endpoints")
+					?.preferences.push({
+						id: "website-base",
+						name: "Website base",
+						description: "The base URL for the website",
+						controller: new TextController({
+							placeholder: "https://surrealdb.com",
+							reader: (config) => config.settings.cloud.urlWebsiteBase,
+							writer: (config, value) => {
+								config.settings.cloud.urlWebsiteBase = value;
+							},
+						}),
+					});
+			}
 		}
 
 		if (gtm_debug) {
@@ -632,7 +650,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 		}
 
 		return sections;
-	}, [cloud_endpoints, gtm_debug, sidebar_customization, syntax_themes, themes]);
+	}, [cloud_endpoints, website_base, gtm_debug, sidebar_customization, syntax_themes, themes]);
 }
 
 function nodef<T extends string>(items: Selectable<T>[]) {

@@ -68,11 +68,6 @@ export function ConfigureStep({
 			if (regionMismatch) return true;
 			if (storageMismatch) return true;
 			if (restoreBlocked) return true;
-		} else if (
-			details.startingData.type === "dataset" &&
-			!details.startingData.datasetOptions?.id
-		) {
-			return true;
 		}
 
 		return false;

@@ -69,8 +69,11 @@ export const schema = {
 	changelog: {
 		options: ["auto", "hidden", "read", "unread"],
 	},
-	newsfeed_base: {
+	website_base: {
 		options: ["production", "custom"],
+	},
+	support_tickets: {
+		options: [false, true],
 	},
 	sidebar_customization: {
 		options: [false, true],
@@ -82,9 +85,6 @@ export const schema = {
 		options: [false, true],
 	},
 	sidekick_ai: {
-		options: [false, true],
-	},
-	support_tickets: {
 		options: [false, true],
 	},
 } satisfies FeatureFlagSchema;

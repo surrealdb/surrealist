@@ -1,4 +1,4 @@
-import { Menu, ScrollArea, Text, ThemeIcon } from "@mantine/core";
+import { Menu, MenuDropdownProps, MenuProps, ScrollArea, Text, ThemeIcon } from "@mantine/core";
 import type { PropsWithChildren } from "react";
 import { useIsLight } from "~/hooks/theme";
 import type { Listable } from "~/types";
@@ -8,6 +8,8 @@ export interface ListMenuProps<T extends string> {
 	data: Listable<T>[];
 	value: T | undefined;
 	onChange: (value: T) => void;
+	menuProps?: MenuProps;
+	dropdownProps?: MenuDropdownProps;
 }
 
 export function ListMenu<T extends string>({
@@ -15,18 +17,21 @@ export function ListMenu<T extends string>({
 	value,
 	onChange,
 	children,
+	menuProps,
+	dropdownProps,
 }: PropsWithChildren<ListMenuProps<T>>) {
 	const isLight = useIsLight();
 
 	return (
 		<Menu
 			// position="bottom-end"
+			{...menuProps}
 			transitionProps={{
 				transition: "scale-y",
 			}}
 		>
 			<Menu.Target>{children}</Menu.Target>
-			<Menu.Dropdown>
+			<Menu.Dropdown {...dropdownProps}>
 				<ScrollArea.Autosize mah={250}>
 					{data.map(({ label, value: itemValue, icon, description }) => (
 						<Menu.Item

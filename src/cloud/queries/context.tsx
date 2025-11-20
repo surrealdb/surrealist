@@ -5,7 +5,7 @@ import {
 	IntercomSupportArticle,
 	IntercomSupportCollection,
 	IntercomSupportCollectionShallow,
-	IntercomTicketType,
+	IntercomTicket,
 } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { fetchContextAPI } from "../api/context";
@@ -15,11 +15,11 @@ import { fetchContextAPI } from "../api/context";
  */
 export function useConversationsQuery() {
 	const authState = useCloudStore((state) => state.authState);
-	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
+	const [flags] = useFeatureFlags();
 
 	return useQuery({
 		queryKey: ["cloud", "conversations"],
-		enabled: authState === "authenticated" && supportTicketsEnabled,
+		enabled: authState === "authenticated" && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation[]>(`/cloud/conversations`);
 		},
@@ -27,17 +27,15 @@ export function useConversationsQuery() {
 }
 
 /**
- * Fetch the ticket types that the user has access to
+ * Fetch a list of all tickets for an organization
  */
-export function useCloudTicketTypesQuery() {
-	const authState = useCloudStore((state) => state.authState);
-	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
-
+export function useCloudOrganizationTicketsQuery(organizationId?: string) {
+	const [flags] = useFeatureFlags();
 	return useQuery({
-		queryKey: ["cloud", "ticket_types"],
-		enabled: authState === "authenticated" && supportTicketsEnabled,
+		queryKey: ["cloud", "organization_tickets", organizationId],
+		enabled: !!organizationId && flags.support_tickets,
 		queryFn: async () => {
-			return fetchContextAPI<IntercomTicketType[]>(`/cloud/tickets/types`);
+			return fetchContextAPI<IntercomTicket[]>(`/cloud/org/${organizationId}/tickets`);
 		},
 	});
 }
@@ -46,12 +44,12 @@ export function useCloudTicketTypesQuery() {
  * Fetch a single conversation
  */
 export function useCloudConversationQuery(conversationId?: string) {
+	const [flags] = useFeatureFlags();
 	const authState = useCloudStore((state) => state.authState);
-	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
 
 	return useQuery({
 		queryKey: ["cloud", "conversations", conversationId],
-		enabled: !!conversationId && authState === "authenticated" && supportTicketsEnabled,
+		enabled: !!conversationId && authState === "authenticated" && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation>(`/cloud/conversations/${conversationId}`);
 		},
@@ -62,12 +60,12 @@ export function useCloudConversationQuery(conversationId?: string) {
  * Check if the user has unread messages
  */
 export function useCloudUnreadConversationsQuery() {
+	const [flags] = useFeatureFlags();
 	const authState = useCloudStore((state) => state.authState);
-	const [{ support_tickets: supportTicketsEnabled }] = useFeatureFlags();
 
 	return useQuery({
 		queryKey: ["cloud", "unread_conversations"],
-		enabled: authState === "authenticated" && supportTicketsEnabled,
+		enabled: authState === "authenticated" && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<boolean>(`/cloud/conversations/has_unread`);
 		},

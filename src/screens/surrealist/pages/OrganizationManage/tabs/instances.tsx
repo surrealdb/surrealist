@@ -1,6 +1,6 @@
 import { Button, SimpleGrid, Skeleton } from "@mantine/core";
 import { Link } from "wouter";
-import { hasOrganizationRole } from "~/cloud/helpers";
+import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Section } from "~/components/Section";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
@@ -22,7 +22,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	const [, _navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 	const { data, isSuccess, isPending } = useCloudOrganizationInstancesQuery(organization.id);
-	const isAdmin = hasOrganizationRole(organization, "admin");
+	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
 	const instances = isSuccess ? data : [];
 	const isArchived = !!organization.archived_at;
 	const canCreate = isSuccess && instances.length === 0 && !isArchived && isAdmin;

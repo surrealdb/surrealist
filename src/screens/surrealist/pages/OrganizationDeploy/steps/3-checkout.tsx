@@ -60,25 +60,21 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 			const [instance, connection] = await deployMutation.mutateAsync();
 
 			if (details.startingData.type === "dataset") {
-				const dataset =
-					details.startingData.datasetOptions?.id ?? "surreal-deal-store-mini";
-				const addQueries = details.startingData.datasetOptions?.addQueries;
+				const dataset = "surreal-deal-store-mini";
 
 				sessionStorage.setItem(`${APPLY_DATASET_KEY}:${instance.id}`, dataset);
 
-				if (addQueries) {
-					const queries = SAMPLE_QUERIES[dataset].map((query) => ({
-						...createBaseQuery(settings, "config"),
-						name: query.name,
-						query: query.query,
-					}));
+				const queries = SAMPLE_QUERIES[dataset].map((query) => ({
+					...createBaseQuery(settings, "config"),
+					name: query.name,
+					query: query.query,
+				}));
 
-					updateConnection({
-						id: connection.id,
-						activeQuery: queries[0].id,
-						queries,
-					});
-				}
+				updateConnection({
+					id: connection.id,
+					activeQuery: queries[0].id,
+					queries,
+				});
 			} else if (details.startingData.type === "upload") {
 				sessionStorage.setItem(`${APPLY_DATA_FILE_KEY}:${instance.id}`, "true");
 			}

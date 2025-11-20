@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 
 import { closeModal, openModal } from "@mantine/modals";
-import { Fragment, ReactNode, useEffect, useMemo } from "react";
+import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
 import { INSTANCE_PLAN_ARCHITECTURES, INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
@@ -46,10 +46,6 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 			if (type.price_hour === 0) {
 				draft.startingData = {
 					type: "dataset",
-					datasetOptions: {
-						id: "surreal-deal-store-mini",
-						addQueries: true,
-					},
 				};
 			}
 		});
@@ -94,6 +90,15 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 			});
 		}
 	}, [selected, setDetails]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Not necessary
+	useLayoutEffect(() => {
+		setDetails((draft) => {
+			if (!draft.type) {
+				draft.type = recommendations[recommendations.length - 1]?.slug ?? "";
+			}
+		});
+	}, [details.plan, setDetails]);
 
 	return (
 		<Box>

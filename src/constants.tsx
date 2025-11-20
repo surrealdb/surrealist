@@ -88,7 +88,7 @@ export const INSTANCE_CONFIG = "instance.json";
 export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
-export const CLOUD_ROLES = ["member", "admin", "owner"];
+export const CLOUD_ROLES = ["member", "support-member", "admin", "owner"];
 
 export const DATASETS: Record<DatasetType, Dataset> = {
 	"surreal-deal-store-mini": {
@@ -154,13 +154,13 @@ export const SUPPORT_REQUEST_TYPES: Listable<SupportRequestType>[] = [
 		label: "Conversation",
 		value: "conversation",
 		icon: iconChat,
-		description: "Raise a question with the SurrealDB team",
+		description: "Raise a sales or billing question",
 	},
 	{
 		label: "Ticket",
 		value: "ticket",
 		icon: iconTag,
-		description: "Create a support request (requires support plan)",
+		description: "Request expedited support",
 	},
 ];
 

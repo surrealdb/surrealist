@@ -1,7 +1,12 @@
 import { Box, Divider, Group, ScrollArea, Stack, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
-import { hasOrganizationRole } from "~/cloud/helpers";
+import {
+	hasOrganizationRoles,
+	ORG_ROLES_ADMIN,
+	ORG_ROLES_OWNER,
+	ORG_ROLES_SUPPORT,
+} from "~/cloud/helpers";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudSplash } from "~/components/CloudSplash";
@@ -12,6 +17,7 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { formatArchiveDate } from "~/util/cloud";
 import {
+	iconChat,
 	iconCog,
 	iconCreditCard,
 	iconDollar,
@@ -25,6 +31,7 @@ import { OrganizationBillingTab } from "./tabs/billing";
 import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationSettingsTab } from "./tabs/settings";
+import { OrganizationSupportTab } from "./tabs/support";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
 
@@ -39,8 +46,9 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 
 	const { data: organization, isSuccess } = useCloudOrganizationQuery(id);
 
-	const isAdmin = organization ? hasOrganizationRole(organization, "admin") : false;
-	const isOwner = organization ? hasOrganizationRole(organization, "owner") : false;
+	const isSupport = organization ? hasOrganizationRoles(organization, ORG_ROLES_SUPPORT) : false;
+	const isAdmin = organization ? hasOrganizationRoles(organization, ORG_ROLES_ADMIN) : false;
+	const isOwner = organization ? hasOrganizationRoles(organization, ORG_ROLES_OWNER) : false;
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {
@@ -149,6 +157,15 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 													</Tabs.Tab>
 												</>
 											)}
+											{isSupport && (
+												<Tabs.Tab
+													value="support"
+													leftSection={<Icon path={iconChat} />}
+													px="xl"
+												>
+													Support
+												</Tabs.Tab>
+											)}
 											{isAdmin && (
 												<>
 													<Tabs.Tab
@@ -195,12 +212,17 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 													/>
 												</Tabs.Panel>
 
+												<Tabs.Panel value="support">
+													<OrganizationSupportTab
+														organization={organization}
+													/>
+												</Tabs.Panel>
+
 												<Tabs.Panel value="usage">
 													<OrganizationUsageTab
 														organization={organization}
 													/>
 												</Tabs.Panel>
-
 												<Tabs.Panel value="settings">
 													<OrganizationSettingsTab
 														organization={organization}

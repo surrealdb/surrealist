@@ -12,15 +12,8 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 
 	const handleSelect = useStable((data: StartingDataInfo) => {
 		setDetails((draft) => {
-			// Automatically select a dataset to use so its not empty
-			const dataset = data.id === "dataset" ? "surreal-deal-store-mini" : undefined;
-
 			draft.startingData = {
 				type: data.id,
-				datasetOptions: {
-					id: dataset,
-					addQueries: details.startingData.datasetOptions?.addQueries,
-				},
 			};
 		});
 	});

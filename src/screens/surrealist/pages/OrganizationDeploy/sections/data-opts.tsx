@@ -1,9 +1,7 @@
-import { Alert, Button, Checkbox, Group, Select, Stack, Text } from "@mantine/core";
+import { Alert, Button, Group, Select, Stack, Text } from "@mantine/core";
 import dayjs from "dayjs";
 import { isDistributedPlan } from "~/cloud/helpers";
 import { Icon } from "~/components/Icon";
-import { DATASETS } from "~/constants";
-import { DatasetType } from "~/types";
 import { iconArrowDownFat, iconHelp } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
@@ -21,41 +19,41 @@ export function DataOptionsSection({
 	});
 
 	switch (details.startingData.type) {
-		case "dataset":
-			return (
-				<Stack gap="xl">
-					<Select
-						label="Dataset"
-						placeholder="Select a dataset..."
-						description="Select the dataset to use for your instance"
-						data={Object.entries(DATASETS).map(([key, value]) => ({
-							value: key,
-							label: value.name,
-						}))}
-						value={details.startingData.datasetOptions?.id}
-						onChange={(value) => {
-							setDetails((draft) => {
-								draft.startingData.datasetOptions = {
-									id: value as DatasetType,
-									addQueries: true,
-								};
-							});
-						}}
-					/>
-					<Checkbox
-						label="Initialize with example queries"
-						checked={details.startingData.datasetOptions?.addQueries}
-						onChange={(event) => {
-							setDetails((draft) => {
-								draft.startingData.datasetOptions = {
-									id: details.startingData.datasetOptions?.id,
-									addQueries: event.currentTarget.checked,
-								};
-							});
-						}}
-					/>
-				</Stack>
-			);
+		// case "dataset":
+		// 	return (
+		// 		<Stack gap="xl">
+		// 			<Select
+		// 				label="Dataset"
+		// 				placeholder="Select a dataset..."
+		// 				description="Select the dataset to use for your instance"
+		// 				data={Object.entries(DATASETS).map(([key, value]) => ({
+		// 					value: key,
+		// 					label: value.name,
+		// 				}))}
+		// 				value={details.startingData.datasetOptions?.id}
+		// 				onChange={(value) => {
+		// 					setDetails((draft) => {
+		// 						draft.startingData.datasetOptions = {
+		// 							id: value as DatasetType,
+		// 							addQueries: true,
+		// 						};
+		// 					});
+		// 				}}
+		// 			/>
+		// 			<Checkbox
+		// 				label="Initialize with example queries"
+		// 				checked={details.startingData.datasetOptions?.addQueries}
+		// 				onChange={(event) => {
+		// 					setDetails((draft) => {
+		// 						draft.startingData.datasetOptions = {
+		// 							id: details.startingData.datasetOptions?.id,
+		// 							addQueries: event.currentTarget.checked,
+		// 						};
+		// 					});
+		// 				}}
+		// 			/>
+		// 		</Stack>
+		// 	);
 		case "restore": {
 			const isFree = details.type === "free";
 
