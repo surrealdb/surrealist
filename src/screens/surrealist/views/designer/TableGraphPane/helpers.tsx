@@ -112,10 +112,25 @@ export async function buildFlowNodes(
 		}
 	}
 
+
+	// Height of an individual field row
+	const fieldHeight = 18.59;
+	// Gap between individual field rows
+	const fieldGap = 6;
+
+	// padding top + padding bottom + header gap + header height + header margin
+	const staticHeight = 12 + 12 + 9 + fieldHeight + 10;
+
 	// Define all nodes
 	for (const { table, variant } of items) {
 		const name = table.schema.name;
-		const node: any = {
+
+		const nodeHeight = nodeMode === "fields"
+			// field row height, plus the gaps between rows, plus static height.
+			? (Math.max(table.fields.length, 1) * fieldHeight) + ((Math.max(table.fields.length, 1) - 1) * fieldGap) + staticHeight
+			: undefined;
+
+		const node = {
 			id: name,
 			type: variant,
 			position: { x: 0, y: 0 },
@@ -126,6 +141,8 @@ export async function buildFlowNodes(
 				direction: direction,
 				mode: nodeMode,
 			} as SharedNodeData,
+			height: nodeHeight,
+			width: nodeMode === "fields" ? 250 : undefined
 		};
 
 		nodes.push(node);
