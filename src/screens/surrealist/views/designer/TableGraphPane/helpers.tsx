@@ -20,7 +20,6 @@ import type {
 	TableVariant,
 } from "~/types";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
-import { ElkStepEdge } from "./edges/ElkEdge";
 import { NormalTableNode } from "./nodes/NormalTableNode";
 import { RelationTableNode } from "./nodes/RelationTableNode";
 import { ViewTableNode } from "./nodes/ViewTableNode";
@@ -47,7 +46,6 @@ export const NODE_TYPES: NodeTypes = {
 };
 
 export const EDGE_TYPES: EdgeTypes = {
-	elk: ElkStepEdge,
 };
 
 export type InternalNode = Node & { width: number; height: number };
@@ -100,7 +98,7 @@ export async function buildFlowNodes(
 
 	switch (lineStyle) {
 		case "metro": {
-			baseEdge.type = "elk";
+			baseEdge.type = "smoothstep";
 			baseEdge.pathOptions = { borderRadius: 50 };
 			break;
 		}
