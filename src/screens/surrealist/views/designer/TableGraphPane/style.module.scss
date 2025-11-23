@@ -73,6 +73,7 @@
 	}
 	:global(.react-flow__viewport) {
 		will-change: transform;
+		transform-style: preserve-3d;
 	}
 	:global(.react-flow .react-flow__edges svg) {
 		contain: strict
