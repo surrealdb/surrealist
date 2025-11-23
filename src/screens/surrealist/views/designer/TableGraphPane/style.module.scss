@@ -68,6 +68,27 @@
 		stroke-dasharray: 5;
 	}
 
+	:global(.react-flow__node) {
+		contain: content;
+	}
+	:global(.react-flow__viewport) {
+		will-change: transform;
+	}
+	:global(.react-flow .react-flow__edges svg) {
+		contain: strict
+	}
+	:global(.react-flow__edges) {
+		left: 0;
+		top: 0;
+		width: 10000vw;
+		height: 10000vh;
+		contain: strict;
+	}
+
+	:global(.react-flow__nodes) {
+		contain: layout
+	}
+
 	:global(.react-flow__node),
 	:global(.react-flow__edge) :global(.react-flow__edge-text),
 	:global(.react-flow__edge)>path,

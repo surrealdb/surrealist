@@ -1,10 +1,11 @@
 import type { Node, NodeProps } from "@xyflow/react";
+import { memo } from "react";
 import type { SharedNodeData } from "../helpers";
 import { BaseTableNode } from "./BaseTableNode";
 
 export type ViewTableNode = Node<SharedNodeData, "view">;
 
-export function ViewTableNode({ data }: NodeProps<ViewTableNode>) {
+export const ViewTableNode = memo(({ data }: NodeProps<ViewTableNode>) => {
 	return (
 		<BaseTableNode
 			table={data.table}
@@ -13,4 +14,4 @@ export function ViewTableNode({ data }: NodeProps<ViewTableNode>) {
 			isSelected={data.isSelected}
 		/>
 	);
-}
+});

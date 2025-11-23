@@ -219,8 +219,6 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 		};
 	}, [inField, outField]);
 
-	console.log(table.schema)
-
 	return (
 		<>
 			<Handle
@@ -246,15 +244,17 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 				bg={
 					table.schema.drop
 						? `linear-gradient(-45deg, var(--diagonal-color-2) 12.5%, var(--diagonal-color-1) 12.5%, var(--diagonal-color-1) 50%, var(--diagonal-color-2) 50%, var(--diagonal-color-2) 62.5%, var(--diagonal-color-1) 62.5%, var(--diagonal-color-1) 100%) center / 8px 8px`
-						: isLight ? "white" : "slate.7"
+						: isLight
+							? "white"
+							: "slate.7"
 				}
 				shadow={`0 8px 12px rgba(0, 0, 0, ${isLight ? 0.075 : 0.2})`}
 				style={{
-					'--diagonal-color-1': `var(${isLight ? 'white' : '--mantine-color-slate-7'})`,
-					'--diagonal-color-2': `var(${isLight ? '--mantine-color-slate-1' : '--mantine-color-slate-6'})`,
+					"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-slate-7"})`,
+					"--diagonal-color-2": `var(${isLight ? "--mantine-color-slate-1" : "--mantine-color-slate-6"})`,
 					border: `${table.schema.full ? "2px solid" : "2px dashed"} ${themeColor(isSelected ? "surreal" : isLight ? "slate.2" : "slate.5")}`,
 					userSelect: "none",
-					backgroundSize: "8px 8px"
+					backgroundSize: "8px 8px",
 				}}
 			>
 				<Group
