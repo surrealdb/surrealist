@@ -89,7 +89,7 @@ export async function buildFlowNodes(
 	lineStyle: DiagramLineStyle,
 ): Promise<[Node[], Edge[], GraphWarning[]]> {
 	const items = normalizeTables(tables);
-	const nodeIndex: Record<string, Node> = {};
+	const nodeIndex = new Map<string, Node>();
 	const edges: Edge[] = [];
 	const nodes: Node[] = [];
 
@@ -131,17 +131,17 @@ export async function buildFlowNodes(
 		};
 
 		nodes.push(node);
-		nodeIndex[name] = node;
+		nodeIndex.set(name, node);
 	}
 
 	const edgeItems = items.filter((item) => item.variant === "relation");
 	const edgeIndex = new Map<string, boolean>();
 	const warnings: GraphWarning[] = [];
 
-	// Define all edges
+	// Define all edges (Relation Tables)
 	for (const { table, from, to } of edgeItems) {
 		for (const fromTable of from) {
-			if (!nodeIndex[fromTable]) {
+			if (!nodeIndex.has(fromTable)) {
 				warnings.push({
 					type: "edge",
 					table: table.schema.name,
@@ -169,7 +169,7 @@ export async function buildFlowNodes(
 		}
 
 		for (const toTable of to) {
-			if (!nodeIndex[toTable]) {
+			if (!nodeIndex.has(toTable)) {
 				warnings.push({
 					type: "edge",
 					table: table.schema.name,
@@ -199,7 +199,7 @@ export async function buildFlowNodes(
 
 	// Define all record links
 	if (linkMode === "visible") {
-		const uniqueLinks = new Set<string>();
+		const uniqueLinks = new Map<string, Edge>();
 		const linkColor = getComputedStyle(document.body).getPropertyValue(
 			"--mantine-color-slate-5",
 		);
@@ -218,15 +218,7 @@ export async function buildFlowNodes(
 				const targets = await getSurrealQL().extractKindRecords(field.kind);
 
 				for (const target of targets) {
-					if (
-						target === table.schema.name ||
-						edgeIndex.has(`${table.schema.name}:${target}`) ||
-						edgeIndex.has(`${target}:${table.schema.name}`)
-					) {
-						continue;
-					}
-
-					if (!nodeIndex[target]) {
+					if (!nodeIndex.has(target)) {
 						warnings.push({
 							type: "link",
 							table: table.schema.name,
@@ -236,39 +228,50 @@ export async function buildFlowNodes(
 						continue;
 					}
 
-					const existing =
-						uniqueLinks.has(`${table.schema.name}:${target}`) ||
-						uniqueLinks.has(`${target}:${table.schema.name}`);
-
-					if (existing) {
-						continue;
+					if (!uniqueLinks.has(`${table.schema.name}:${target}`)) {
+						const edge: Edge = {
+							...baseEdge,
+							id: `tb-${table.schema.name}-field-${field.name}:${target}`,
+							source: table.schema.name,
+							target,
+							className: classes.recordLink,
+							labelBgStyle: { fill: "var(--mantine-color-slate-8" },
+							labelStyle: { fill: "currentColor" },
+							label: field.name,
+							data: {
+								linkCount: 1,
+								fields: [field.name],
+							},
+							markerEnd: {
+								type: MarkerType.Arrow,
+								width: 14,
+								height: 14,
+								color: linkColor,
+							},
+						};
+						uniqueLinks.set(`${table.schema.name}:${target}`, edge);
+					} else {
+						// Update existing link count
+						const edge = uniqueLinks.get(`${table.schema.name}:${target}`);
+						if (edge) {
+							if (typeof edge.data?.linkCount === "number") {
+								edge.data.linkCount++;
+							}
+							(edge.data?.fields as string[])?.push(field.name);
+						}
 					}
-
-					const edge: Edge = {
-						...baseEdge,
-						id: `tb-${table.schema.name}-field-${field.name}:${target}`,
-						source: table.schema.name,
-						target,
-						className: classes.recordLink,
-						label: field.name,
-						labelBgStyle: { fill: "var(--mantine-color-slate-8" },
-						labelStyle: { fill: "currentColor" },
-						data: { linkCount: 1 },
-						markerEnd: {
-							type: MarkerType.Arrow,
-							width: 14,
-							height: 14,
-							color: linkColor,
-						},
-					};
-
-					uniqueLinks.add(`${table.schema.name}:${target}`);
-					uniqueLinks.add(`${target}:${table.schema.name}`);
-
-					edges.push(edge);
 				}
 			}
 		}
+
+		edges.push(
+			...Array.from(uniqueLinks.values()).map((edge) => {
+				if ((edge.data?.fields as string[]).length > 1) {
+					edge.label = `${edge.data?.linkCount} links`;
+				}
+				return edge;
+			}),
+		);
 	}
 
 	return [nodes, edges, warnings];
