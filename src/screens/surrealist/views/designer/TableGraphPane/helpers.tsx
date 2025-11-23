@@ -250,12 +250,11 @@ export async function buildFlowNodes(
 							},
 						};
 						uniqueLinks.set(`${table.schema.name}:${target}`, edge);
-					}
-					else {
+					} else {
 						// Update existing link count
 						const edge = uniqueLinks.get(`${table.schema.name}:${target}`);
 						if (edge) {
-							if (typeof edge.data?.linkCount === 'number') {
+							if (typeof edge.data?.linkCount === "number") {
 								edge.data.linkCount++;
 							}
 							(edge.data?.fields as string[])?.push(field.name);
@@ -265,12 +264,14 @@ export async function buildFlowNodes(
 			}
 		}
 
-		edges.push(...Array.from(uniqueLinks.values()).map((edge) => {
-			if ((edge.data?.fields as string[]).length > 1) {
-				edge.label = `${edge.data?.linkCount} links`;
-			}
-			return edge;
-		}));
+		edges.push(
+			...Array.from(uniqueLinks.values()).map((edge) => {
+				if ((edge.data?.fields as string[]).length > 1) {
+					edge.label = `${edge.data?.linkCount} links`;
+				}
+				return edge;
+			}),
+		);
 	}
 
 	return [nodes, edges, warnings];
