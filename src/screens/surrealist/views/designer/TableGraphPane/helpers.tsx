@@ -89,7 +89,7 @@ export async function buildFlowNodes(
 	lineStyle: DiagramLineStyle,
 ): Promise<[Node[], Edge[], GraphWarning[]]> {
 	const items = normalizeTables(tables);
-	const nodeIndex: Record<string, Node> = {};
+	const nodeIndex = new Map<string, Node>();
 	const edges: Edge[] = [];
 	const nodes: Node[] = [];
 
@@ -131,7 +131,7 @@ export async function buildFlowNodes(
 		};
 
 		nodes.push(node);
-		nodeIndex[name] = node;
+		nodeIndex.set(name, node);
 	}
 
 	const edgeItems = items.filter((item) => item.variant === "relation");
@@ -141,7 +141,7 @@ export async function buildFlowNodes(
 	// Define all edges
 	for (const { table, from, to } of edgeItems) {
 		for (const fromTable of from) {
-			if (!nodeIndex[fromTable]) {
+			if (!nodeIndex.has(fromTable)) {
 				warnings.push({
 					type: "edge",
 					table: table.schema.name,
@@ -169,7 +169,7 @@ export async function buildFlowNodes(
 		}
 
 		for (const toTable of to) {
-			if (!nodeIndex[toTable]) {
+			if (!nodeIndex.has(toTable)) {
 				warnings.push({
 					type: "edge",
 					table: table.schema.name,
@@ -226,7 +226,7 @@ export async function buildFlowNodes(
 						continue;
 					}
 
-					if (!nodeIndex[target]) {
+					if (!nodeIndex.has(target)) {
 						warnings.push({
 							type: "link",
 							table: table.schema.name,

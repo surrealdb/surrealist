@@ -53,6 +53,7 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { DiagramContext } from "~/screens/surrealist/views/designer/TableGraphPane/nodes/BaseTableNode";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type {
@@ -90,7 +91,6 @@ import {
 	type GraphWarning,
 	NODE_TYPES,
 } from "./helpers";
-
 import classes from "./style.module.scss";
 
 export interface TableGraphPaneProps {
@@ -522,309 +522,313 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	return (
-		<ContentPane
-			title="Table Graph"
-			icon={iconRelation}
-			style={{ overflow: "hidden" }}
-			withDivider={false}
-			leftSection={
-				!designerTableList && (
-					<ActionButton
-						label="Reveal tables"
-						mr="sm"
-						color="slate"
-						variant="light"
-						onClick={openTableList}
-					>
-						<Icon path={iconChevronRight} />
-					</ActionButton>
-				)
-			}
-			rightSection={
-				<Group wrap="nowrap">
-					{warnings.length > 0 && (
-						<HoverCard position="bottom-end">
-							<HoverCard.Target>
-								<Badge
-									variant="light"
-									color="orange"
-									h={26}
-								>
-									Encountered {warnings.length} warnings
-								</Badge>
-							</HoverCard.Target>
-							<HoverCard.Dropdown>
-								<Stack>
-									{warnings.map((warning, i) => (
-										<GraphWarningLine
-											key={i}
-											warning={warning}
-										/>
-									))}
-								</Stack>
-							</HoverCard.Dropdown>
-						</HoverCard>
-					)}
-					<ActionButton
-						label="New table"
-						disabled={!isConnected}
-						onClick={openTableCreator}
-					>
-						<Icon path={iconPlus} />
-					</ActionButton>
-					<Popover
-						position="bottom-end"
-						transitionProps={{ transition: "scale-y" }}
-						offset={{ crossAxis: -4, mainAxis: 8 }}
-						shadow="sm"
-					>
-						<Popover.Target>
-							<div>
-								<ActionButton label="Graph options">
-									<Icon path={iconCog} />
-								</ActionButton>
-							</div>
-						</Popover.Target>
-						<Popover.Dropdown maw={325}>
-							<Text
-								c="bright"
-								fw={500}
-								fz={15}
-							>
-								Table graph settings
-							</Text>
-							<Text fz="sm">Local to this connection</Text>
-							<SimpleGrid
-								my="xl"
-								cols={2}
-								style={{ alignItems: "center" }}
-								verticalSpacing="xs"
-							>
-								<Label>Line style</Label>
-								<Select
-									data={DESIGNER_LINE_STYLES}
-									value={diagramLineStyle}
-									onChange={setDiagramLineStyle as any}
-									comboboxProps={{ withinPortal: false }}
-								/>
-
-								<Label>Algorithm</Label>
-								<Select
-									data={DESIGNER_ALGORITHMS}
-									value={diagramAlgorithm}
-									onChange={setDiagramAlgorithm as any}
-									comboboxProps={{ withinPortal: false }}
-								/>
-
-								<Label>Appearance</Label>
-								<Select
-									data={DESIGNER_NODE_MODES}
-									value={diagramMode}
-									onChange={setDiagramMode as any}
-									comboboxProps={{ withinPortal: false }}
-								/>
-
-								<Label>Direction</Label>
-								<Select
-									data={DESIGNER_DIRECTIONS}
-									value={diagramDirection}
-									onChange={setDiagramDirection as any}
-									comboboxProps={{ withinPortal: false }}
-								/>
-
-								<Label>Record links</Label>
-								<Select
-									data={DESIGNER_LINKS}
-									value={diagramLinkMode}
-									onChange={setDiagramLinkMode as any}
-									comboboxProps={{ withinPortal: false }}
-								/>
-								<Label>Hover focus</Label>
-								<Select
-									data={DESIGNER_HOVER_FOCUS}
-									value={diagramHoverFocus}
-									onChange={setDiagramHoverFocus as any}
-									comboboxProps={{ withinPortal: false }}
-								/>
-							</SimpleGrid>
-							<Text fz="sm">
-								You can customise default values in the settings menu
-							</Text>
-						</Popover.Dropdown>
-					</Popover>
-					<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
-						<ActionButton label="Designer help">
-							<Icon path={iconHelp} />
-						</ActionButton>
-					</Link>
-				</Group>
-			}
-		>
-			<Paper
-				flex="1"
-				pos="relative"
-				bg={isLight ? "slate.1" : "slate.7"}
-			>
-				<ReactFlow
-					ref={ref}
-					fitView
-					nodes={nodes}
-					edges={edges}
-					minZoom={0.1}
-					nodeTypes={NODE_TYPES}
-					edgeTypes={EDGE_TYPES}
-					nodesConnectable={false}
-					edgesFocusable={false}
-					proOptions={{ hideAttribution: true }}
-					onNodesChange={onNodesChange}
-					onEdgesChange={onEdgesChange}
-					className={classes.diagram}
-					style={{
-						opacity: rendering ? 0 : 1,
-						transition: rendering ? undefined : "opacity .15s",
-						contain: "content",
-					}}
-					onNodeClick={handleNodeClick}
-					onNodeDragStart={handleNodeDragStart}
-					onNodeDragStop={handleNodeDragStop}
-					onNodeMouseEnter={handleNodeMouseEnter}
-					onNodeMouseLeave={handleNodeMouseLeave}
-					onContextMenu={showContextMenu([
-						{
-							key: "create",
-							icon: <Icon path={iconPlus} />,
-							title: "Create table",
-							onClick: openTableCreator,
-						},
-						{
-							key: "divider",
-						},
-						{
-							key: "zoom-in",
-							icon: <Icon path={iconMagnifyPlus} />,
-							title: "Zoom in",
-							onClick: handleZoomIn,
-						},
-						{
-							key: "zoom-out",
-							icon: <Icon path={iconMagnifyMinus} />,
-							title: "Zoom out",
-							onClick: handleZoomOut,
-						},
-						{
-							key: "view",
-							icon: <Icon path={iconFullscreen} />,
-							title: "Fit viewport",
-							onClick: handleResetZoom,
-						},
-						{
-							key: "refresh",
-							icon: <Icon path={iconRefresh} />,
-							title: "Reset graph",
-							onClick: renderGraph,
-						},
-						{ key: "divider" },
-						{
-							key: "download-png",
-							icon: <Icon path={iconImage} />,
-							title: "Export as PNG",
-							onClick: () => saveImage("png"),
-						},
-						{
-							key: "download-svg",
-							icon: <Icon path={iconAPI} />,
-							title: "Export as SVG",
-							onClick: () => saveImage("svg"),
-						},
-					])}
-				>
-					{!showBox && <Background color={themeColor(isLight ? "slate.3" : "slate.5")} />}
-				</ReactFlow>
-
-				<Paper
-					withBorder
-					pos="absolute"
-					right={12}
-					top={12}
-					shadow="sm"
-					p="xs"
-				>
-					<Stack gap="xs">
+		<DiagramContext.Provider value={{ warnings }}>
+			<ContentPane
+				title="Table Graph"
+				icon={iconRelation}
+				style={{ overflow: "hidden" }}
+				withDivider={false}
+				leftSection={
+					!designerTableList && (
 						<ActionButton
-							label="Zoom in"
-							onClick={handleZoomIn}
+							label="Reveal tables"
+							mr="sm"
+							color="slate"
+							variant="light"
+							onClick={openTableList}
 						>
-							<Icon path={iconMagnifyPlus} />
+							<Icon path={iconChevronRight} />
 						</ActionButton>
+					)
+				}
+				rightSection={
+					<Group wrap="nowrap">
+						{warnings.length > 0 && (
+							<HoverCard position="bottom-end">
+								<HoverCard.Target>
+									<Badge
+										variant="light"
+										color="orange"
+										h={26}
+									>
+										Encountered {warnings.length} warnings
+									</Badge>
+								</HoverCard.Target>
+								<HoverCard.Dropdown>
+									<Stack>
+										{warnings.map((warning, i) => (
+											<GraphWarningLine
+												key={i}
+												warning={warning}
+											/>
+										))}
+									</Stack>
+								</HoverCard.Dropdown>
+							</HoverCard>
+						)}
 						<ActionButton
-							label="Zoom out"
-							onClick={handleZoomOut}
-						>
-							<Icon path={iconMagnifyMinus} />
-						</ActionButton>
-						<ActionButton
-							label="Fit viewport"
-							onClick={handleResetZoom}
-						>
-							<Icon path={iconFullscreen} />
-						</ActionButton>
-						<ActionButton
-							label="Reset graph"
-							onClick={renderGraph}
-						>
-							<Icon path={iconReset} />
-						</ActionButton>
-					</Stack>
-				</Paper>
-
-				{isExporting && (
-					<Stack
-						inset={0}
-						pos="absolute"
-						align="center"
-						justify="center"
-						bg="var(--mantine-color-body)"
-						style={{ zIndex: 5 }}
-					>
-						<Loader />
-						<Text
-							fz="xl"
-							fw={600}
-						>
-							Exporting graph...
-						</Text>
-					</Stack>
-				)}
-
-				{showBox && (
-					<Stack
-						inset={0}
-						pos="absolute"
-						align="center"
-						justify="center"
-						gap="xl"
-					>
-						<Box ta="center">
-							<Text
-								fz="lg"
-								fw={600}
-								c="bright"
-							>
-								No tables defined
-							</Text>
-							<Text>Define tables to visualize them in the table graph</Text>
-						</Box>
-						<Button
-							variant="gradient"
-							leftSection={<Icon path={iconPlus} />}
+							label="New table"
 							disabled={!isConnected}
 							onClick={openTableCreator}
 						>
-							Create table
-						</Button>
-					</Stack>
-				)}
-			</Paper>
-		</ContentPane>
+							<Icon path={iconPlus} />
+						</ActionButton>
+						<Popover
+							position="bottom-end"
+							transitionProps={{ transition: "scale-y" }}
+							offset={{ crossAxis: -4, mainAxis: 8 }}
+							shadow="sm"
+						>
+							<Popover.Target>
+								<div>
+									<ActionButton label="Graph options">
+										<Icon path={iconCog} />
+									</ActionButton>
+								</div>
+							</Popover.Target>
+							<Popover.Dropdown maw={325}>
+								<Text
+									c="bright"
+									fw={500}
+									fz={15}
+								>
+									Table graph settings
+								</Text>
+								<Text fz="sm">Local to this connection</Text>
+								<SimpleGrid
+									my="xl"
+									cols={2}
+									style={{ alignItems: "center" }}
+									verticalSpacing="xs"
+								>
+									<Label>Line style</Label>
+									<Select
+										data={DESIGNER_LINE_STYLES}
+										value={diagramLineStyle}
+										onChange={setDiagramLineStyle as any}
+										comboboxProps={{ withinPortal: false }}
+									/>
+
+									<Label>Algorithm</Label>
+									<Select
+										data={DESIGNER_ALGORITHMS}
+										value={diagramAlgorithm}
+										onChange={setDiagramAlgorithm as any}
+										comboboxProps={{ withinPortal: false }}
+									/>
+
+									<Label>Appearance</Label>
+									<Select
+										data={DESIGNER_NODE_MODES}
+										value={diagramMode}
+										onChange={setDiagramMode as any}
+										comboboxProps={{ withinPortal: false }}
+									/>
+
+									<Label>Direction</Label>
+									<Select
+										data={DESIGNER_DIRECTIONS}
+										value={diagramDirection}
+										onChange={setDiagramDirection as any}
+										comboboxProps={{ withinPortal: false }}
+									/>
+
+									<Label>Record links</Label>
+									<Select
+										data={DESIGNER_LINKS}
+										value={diagramLinkMode}
+										onChange={setDiagramLinkMode as any}
+										comboboxProps={{ withinPortal: false }}
+									/>
+									<Label>Hover focus</Label>
+									<Select
+										data={DESIGNER_HOVER_FOCUS}
+										value={diagramHoverFocus}
+										onChange={setDiagramHoverFocus as any}
+										comboboxProps={{ withinPortal: false }}
+									/>
+								</SimpleGrid>
+								<Text fz="sm">
+									You can customise default values in the settings menu
+								</Text>
+							</Popover.Dropdown>
+						</Popover>
+						<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+							<ActionButton label="Designer help">
+								<Icon path={iconHelp} />
+							</ActionButton>
+						</Link>
+					</Group>
+				}
+			>
+				<Paper
+					flex="1"
+					pos="relative"
+					bg={isLight ? "slate.1" : "slate.7"}
+				>
+					<ReactFlow
+						ref={ref}
+						fitView
+						nodes={nodes}
+						edges={edges}
+						minZoom={0.1}
+						nodeTypes={NODE_TYPES}
+						edgeTypes={EDGE_TYPES}
+						nodesConnectable={false}
+						edgesFocusable={false}
+						proOptions={{ hideAttribution: true }}
+						onNodesChange={onNodesChange}
+						onEdgesChange={onEdgesChange}
+						className={classes.diagram}
+						style={{
+							opacity: rendering ? 0 : 1,
+							transition: rendering ? undefined : "opacity .15s",
+							contain: "content",
+						}}
+						onNodeClick={handleNodeClick}
+						onNodeDragStart={handleNodeDragStart}
+						onNodeDragStop={handleNodeDragStop}
+						onNodeMouseEnter={handleNodeMouseEnter}
+						onNodeMouseLeave={handleNodeMouseLeave}
+						onContextMenu={showContextMenu([
+							{
+								key: "create",
+								icon: <Icon path={iconPlus} />,
+								title: "Create table",
+								onClick: openTableCreator,
+							},
+							{
+								key: "divider",
+							},
+							{
+								key: "zoom-in",
+								icon: <Icon path={iconMagnifyPlus} />,
+								title: "Zoom in",
+								onClick: handleZoomIn,
+							},
+							{
+								key: "zoom-out",
+								icon: <Icon path={iconMagnifyMinus} />,
+								title: "Zoom out",
+								onClick: handleZoomOut,
+							},
+							{
+								key: "view",
+								icon: <Icon path={iconFullscreen} />,
+								title: "Fit viewport",
+								onClick: handleResetZoom,
+							},
+							{
+								key: "refresh",
+								icon: <Icon path={iconRefresh} />,
+								title: "Reset graph",
+								onClick: renderGraph,
+							},
+							{ key: "divider" },
+							{
+								key: "download-png",
+								icon: <Icon path={iconImage} />,
+								title: "Export as PNG",
+								onClick: () => saveImage("png"),
+							},
+							{
+								key: "download-svg",
+								icon: <Icon path={iconAPI} />,
+								title: "Export as SVG",
+								onClick: () => saveImage("svg"),
+							},
+						])}
+					>
+						{!showBox && (
+							<Background color={themeColor(isLight ? "slate.3" : "slate.5")} />
+						)}
+					</ReactFlow>
+
+					<Paper
+						withBorder
+						pos="absolute"
+						right={12}
+						top={12}
+						shadow="sm"
+						p="xs"
+					>
+						<Stack gap="xs">
+							<ActionButton
+								label="Zoom in"
+								onClick={handleZoomIn}
+							>
+								<Icon path={iconMagnifyPlus} />
+							</ActionButton>
+							<ActionButton
+								label="Zoom out"
+								onClick={handleZoomOut}
+							>
+								<Icon path={iconMagnifyMinus} />
+							</ActionButton>
+							<ActionButton
+								label="Fit viewport"
+								onClick={handleResetZoom}
+							>
+								<Icon path={iconFullscreen} />
+							</ActionButton>
+							<ActionButton
+								label="Reset graph"
+								onClick={renderGraph}
+							>
+								<Icon path={iconReset} />
+							</ActionButton>
+						</Stack>
+					</Paper>
+
+					{isExporting && (
+						<Stack
+							inset={0}
+							pos="absolute"
+							align="center"
+							justify="center"
+							bg="var(--mantine-color-body)"
+							style={{ zIndex: 5 }}
+						>
+							<Loader />
+							<Text
+								fz="xl"
+								fw={600}
+							>
+								Exporting graph...
+							</Text>
+						</Stack>
+					)}
+
+					{showBox && (
+						<Stack
+							inset={0}
+							pos="absolute"
+							align="center"
+							justify="center"
+							gap="xl"
+						>
+							<Box ta="center">
+								<Text
+									fz="lg"
+									fw={600}
+									c="bright"
+								>
+									No tables defined
+								</Text>
+								<Text>Define tables to visualize them in the table graph</Text>
+							</Box>
+							<Button
+								variant="gradient"
+								leftSection={<Icon path={iconPlus} />}
+								disabled={!isConnected}
+								onClick={openTableCreator}
+							>
+								Create table
+							</Button>
+						</Stack>
+					)}
+				</Paper>
+			</ContentPane>
+		</DiagramContext.Provider>
 	);
 }
