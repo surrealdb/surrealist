@@ -87,6 +87,9 @@ export const schema = {
 	sidekick_ai: {
 		options: [false, true],
 	},
+	v3_migration_tooling: {
+		options: [false, true],
+	},
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
@@ -114,6 +117,7 @@ export const featureFlags = new FeatureFlags({
 			organization_archiving: true,
 			sidekick_ai: true,
 			support_tickets: true,
+			v3_migration_tooling: true,
 		},
 		preview: {
 			query_view: true,
@@ -134,6 +138,7 @@ export const featureFlags = new FeatureFlags({
 			gtm_debug: false,
 			sidekick_ai: true,
 			support_tickets: true,
+			v3_migration_tooling: true,
 		},
 		production: {
 			query_view: true,
@@ -153,6 +158,7 @@ export const featureFlags = new FeatureFlags({
 			gtm_debug: false,
 			sidekick_ai: true,
 			support_tickets: false,
+			v3_migration_tooling: false,
 		},
 	},
 	overrides: (flag) => {

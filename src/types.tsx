@@ -76,7 +76,8 @@ export type ViewPage =
 	| "authentication"
 	| "functions"
 	| "parameters"
-	| "documentation";
+	| "documentation"
+	| "migrations";
 
 export type AppMenuItemType =
 	| "Separator"
@@ -545,6 +546,7 @@ export interface ViewPageInfo {
 export interface ViewCondition {
 	flags: FeatureFlagMap;
 	connection: string;
+	version: string | null;
 	isCloud: boolean;
 }
 

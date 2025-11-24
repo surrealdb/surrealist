@@ -38,6 +38,7 @@ import DocumentationView from "./views/documentation/DocumentationView";
 import ExplorerView from "./views/explorer/ExplorerView";
 import FunctionsView from "./views/functions/FunctionsView";
 import GraphqlView from "./views/graphql/GraphqlView";
+import MigrationView from "./views/migration/MigrationView";
 import MonitorView from "./views/monitor/MonitorView";
 import ParametersView from "./views/parameters/ParametersView";
 import QueryView from "./views/query/QueryView";
@@ -73,6 +74,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	functions: createHtmlPortalNode(PORTAL_OPTIONS),
 	parameters: createHtmlPortalNode(PORTAL_OPTIONS),
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
+	migrations: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
 const VIEW_COMPONENTS: Record<ViewPage, FC> = {
@@ -86,6 +88,7 @@ const VIEW_COMPONENTS: Record<ViewPage, FC> = {
 	functions: memo(FunctionsView),
 	parameters: memo(ParametersView),
 	documentation: memo(DocumentationView),
+	migrations: memo(MigrationView),
 };
 
 export function SurrealistScreen() {
