@@ -15,3 +15,13 @@ export function useOnboarding(onboarding: string) {
 
 	return [useConfigStore((s) => s.onboarding.includes(onboarding)), complete] as const;
 }
+
+/**
+ * Returns whether the onboarding step has been completed
+ *
+ * @param onboarding The onboarding step to check
+ * @returns A boolean indicating whether the onboarding step has been completed
+ */
+export function hasCompletedOnboarding(onboarding: string) {
+	return useConfigStore.getState().onboarding.includes(onboarding);
+}

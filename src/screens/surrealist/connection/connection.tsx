@@ -11,6 +11,7 @@ import {
 import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
 import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
+import { hasCompletedOnboarding } from "~/hooks/onboarding";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { State, useDatabaseStore } from "~/stores/database";
@@ -77,6 +78,7 @@ const LIVE_QUERIES = new Map<string, Set<Uuid>>();
 export async function openConnection(options?: ConnectOptions) {
 	const params = new URLSearchParams(location.search);
 	const currentConnection = getConnection();
+	const hasCompletedSandboxOnboarding = hasCompletedOnboarding("sandbox");
 	const connection = options?.connection || currentConnection;
 
 	const { settings, updateConnection } = useConfigStore.getState();
@@ -213,9 +215,7 @@ export async function openConnection(options?: ConnectOptions) {
 			await instance.query("DEFINE NAMESPACE IF NOT EXISTS sandbox");
 			await instance.query("DEFINE DATABASE IF NOT EXISTS sandbox");
 
-			const queriesToApply = params.get("queries");
-
-			if (queriesToApply === "start") {
+			if (!hasCompletedSandboxOnboarding) {
 				const queries = [SURREAL_START_BASICS];
 
 				const canUse30Queries = compareVersions(version, "3.0.0") >= 0;
