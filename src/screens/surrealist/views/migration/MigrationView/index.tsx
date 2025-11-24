@@ -1,10 +1,19 @@
-import { Button, Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { Box, Button, Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
+import { memo, useState } from "react";
+import { Panel, PanelGroup } from "react-resizable-panels";
 import { Icon } from "~/components/Icon";
+import { PanelDragger } from "~/components/Pane/dragger";
 import { useConnection } from "~/hooks/connection";
+import { usePanelMinSize } from "~/hooks/panels";
 import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult } from "~/types";
-import { iconRefresh, iconTransfer, iconWarning } from "~/util/icons";
+import { iconRefresh, iconTransfer } from "~/util/icons";
+import { DiagnosticDetailsPanel } from "../DiagnosticDetailsPanel";
+import { DiagnosticsListPanel } from "../DiagnosticsListPanel";
+
+const DiagnosticsListPanelLazy = memo(DiagnosticsListPanel);
+const DiagnosticDetailsPanelLazy = memo(DiagnosticDetailsPanel);
 
 export function MigrationView() {
 	const id = useConnection((c) => c?.id);
@@ -19,87 +28,107 @@ export function MigrationView() {
 		},
 	});
 
+	const diagnostics = data ?? [];
+
+	const [details, setDetails] = useState(true);
+
 	return (
-		<Center flex={1}>
+		<>
 			{isPending && (
-				<Paper
-					p="xl"
-					maw={500}
-					shadow="md"
-				>
-					<Stack>
-						<Group>
-							<Icon
-								path={iconTransfer}
-								size={1.35}
-							/>
-							<Title c="bright">Migration Diagnostics</Title>
-						</Group>
-						<Text>
-							This tool will help you check if your database is compatible with
-							SurrealDB 3.0, and helps you prepare for the migration.
-						</Text>
-						<Group mt="md">
+				<Center flex={1}>
+					<Paper
+						p="xl"
+						maw={500}
+						shadow="md"
+					>
+						<Stack>
+							<Group>
+								<Icon
+									path={iconTransfer}
+									size={1.35}
+								/>
+								<Title c="bright">Migration Diagnostics</Title>
+							</Group>
+							<Text>
+								This tool will help you check if your database is compatible with
+								SurrealDB 3.0, and helps you prepare for the migration.
+							</Text>
+							<Group mt="md">
+								<Button
+									variant="gradient"
+									onClick={() => refetch()}
+									loading={isFetching}
+								>
+									Start check
+								</Button>
+								<Button
+									variant="light"
+									color="slate"
+								>
+									Learn more
+								</Button>
+							</Group>
+						</Stack>
+					</Paper>
+				</Center>
+			)}
+			{!isPending && diagnostics.length === 0 && (
+				<Center flex={1}>
+					<Paper
+						p="xl"
+						maw={500}
+						shadow="md"
+					>
+						<Stack>
+							<Title c="bright">No migration issues found!</Title>
+							<Text>
+								You're all set! No migration issues were found for this database
+							</Text>
+
 							<Button
+								mt="md"
+								size="xs"
 								variant="gradient"
 								onClick={() => refetch()}
 								loading={isFetching}
+								rightSection={<Icon path={iconRefresh} />}
 							>
-								Start check
+								Check again
 							</Button>
-							<Button
-								variant="light"
-								color="slate"
-							>
-								Learn more
-							</Button>
-						</Group>
-					</Stack>
-				</Paper>
+						</Stack>
+					</Paper>
+				</Center>
 			)}
-			{!isPending && (!data || data.length === 0) && (
-				<Paper
-					p="xl"
-					maw={500}
-					shadow="md"
-				>
-					<Stack>
-						<Title c="bright">No migration issues found!</Title>
-						<Text>
-							You're all set! No migration issues were found for this database
-						</Text>
+			{!isPending && diagnostics.length > 0 && <Content />}
+		</>
+	);
+}
 
-						<Button
-							mt="md"
-							size="xs"
-							variant="gradient"
-							onClick={() => refetch()}
-							loading={isFetching}
-							rightSection={<Icon path={iconRefresh} />}
-						>
-							Check again
-						</Button>
-					</Stack>
-				</Paper>
-			)}
-			{!isPending && data && data.length > 0 && (
-				<Paper
-					p="xl"
-					maw={500}
-					shadow="md"
+function Content() {
+	const [minSize, ref] = usePanelMinSize(450);
+
+	return (
+		<Box
+			h="100%"
+			pr="lg"
+			pb="lg"
+			pl={{ base: "lg", md: 0 }}
+			ref={ref}
+		>
+			<PanelGroup direction="horizontal">
+				<Panel minSize={minSize}>
+					<DiagnosticsListPanelLazy />
+				</Panel>
+				<PanelDragger />
+				<Panel
+					defaultSize={minSize}
+					minSize={minSize}
+					maxSize={35}
 				>
-					{data.map((issue) => (
-						<Group
-							key={issue.error}
-							gap="xs"
-						>
-							<Icon path={iconWarning} />
-							<Text>{issue.error}</Text>
-						</Group>
-					))}
-				</Paper>
-			)}
-		</Center>
+					<DiagnosticDetailsPanelLazy />
+				</Panel>
+			</PanelGroup>
+		</Box>
 	);
 }
 

@@ -45,6 +45,7 @@ import {
 	RustIcon,
 	SurrealIcon,
 } from "./util/drivers";
+import { isDevelopment } from "./util/environment";
 import {
 	iconAPI,
 	iconAuth,
@@ -326,7 +327,8 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		name: "Migration Tools",
 		icon: iconTransfer,
 		disabled: ({ flags, version }) =>
-			!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.4.0 <3.0.0"),
+			!isDevelopment &&
+			(!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.4.0 <3.0.0")),
 	},
 };
 
