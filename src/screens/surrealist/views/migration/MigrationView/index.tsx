@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Icon } from "~/components/Icon";
 import { useConnection } from "~/hooks/connection";
 import { getSurreal } from "~/screens/surrealist/connection/connection";
-import { iconTransfer } from "~/util/icons";
+import { MigrationDiagnosticResult } from "~/types";
+import { iconRefresh, iconTransfer, iconWarning } from "~/util/icons";
 
 export function MigrationView() {
 	const id = useConnection((c) => c?.id);
@@ -14,13 +15,13 @@ export function MigrationView() {
 		queryFn: async () => {
 			const [diagnostics] = await getSurreal().query("migration::diagnose()").collect();
 			console.log("Diagnostics", diagnostics);
-			return diagnostics ?? [];
+			return (diagnostics ?? []) as MigrationDiagnosticResult[];
 		},
 	});
 
 	return (
 		<Center flex={1}>
-			{isPending ? (
+			{isPending && (
 				<Paper
 					p="xl"
 					maw={500}
@@ -55,8 +56,48 @@ export function MigrationView() {
 						</Group>
 					</Stack>
 				</Paper>
-			) : (
-				<div>Value = {JSON.stringify(data)}</div>
+			)}
+			{!isPending && (!data || data.length === 0) && (
+				<Paper
+					p="xl"
+					maw={500}
+					shadow="md"
+				>
+					<Stack>
+						<Title c="bright">No migration issues found!</Title>
+						<Text>
+							You're all set! No migration issues were found for this database
+						</Text>
+
+						<Button
+							mt="md"
+							size="xs"
+							variant="gradient"
+							onClick={() => refetch()}
+							loading={isFetching}
+							rightSection={<Icon path={iconRefresh} />}
+						>
+							Check again
+						</Button>
+					</Stack>
+				</Paper>
+			)}
+			{!isPending && data && data.length > 0 && (
+				<Paper
+					p="xl"
+					maw={500}
+					shadow="md"
+				>
+					{data.map((issue) => (
+						<Group
+							key={issue.error}
+							gap="xs"
+						>
+							<Icon path={iconWarning} />
+							<Text>{issue.error}</Text>
+						</Group>
+					))}
+				</Paper>
 			)}
 		</Center>
 	);

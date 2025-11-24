@@ -47,6 +47,9 @@ export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
 export type IntercomConversationStateId = "open" | "closed" | "snoozed";
+export type MigrationIssueSeverity = "might_break" | "will_break" | "breaking_resolution";
+export type MigrationIssueKind = "incompatible feature";
+export type MigrationIssueTruncation = "none" | "start" | "end" | "both";
 
 export type InstanceState =
 	| "creating"
@@ -1052,4 +1055,22 @@ export interface Monitor {
 	id: string;
 	type: MonitorType;
 	name: string;
+}
+
+export interface MigrationDiagnosticLocation {
+	column: number;
+	kind: string;
+	label: string;
+	length: number;
+	line: number;
+	source: string;
+	truncation: string;
+}
+
+export interface MigrationDiagnosticResult {
+	error: string;
+	kind: string;
+	location: MigrationDiagnosticLocation;
+	origin: string;
+	severity: string;
 }
