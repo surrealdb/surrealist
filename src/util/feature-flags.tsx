@@ -72,6 +72,9 @@ export const schema = {
 	website_base: {
 		options: ["production", "custom"],
 	},
+	support_tickets_endpoint: {
+		options: ["production", "staging"],
+	},
 	support_tickets: {
 		options: [false, true],
 	},
