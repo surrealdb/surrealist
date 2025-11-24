@@ -8,7 +8,7 @@ import {
 	type NodeTypes,
 	Rect,
 } from "@xyflow/react";
-import { objectify } from "radash";
+import { elementToSVG, inlineResources } from "dom-to-svg";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type {
 	DiagramAlgorithm,
@@ -16,6 +16,7 @@ import type {
 	DiagramLineStyle,
 	DiagramLinks,
 	DiagramMode,
+	DiagramStrategy,
 	TableInfo,
 	TableVariant,
 } from "~/types";
@@ -58,6 +59,7 @@ export type SharedNodeData = {
 	isSelected: boolean;
 	direction: DiagramDirection;
 	mode: DiagramMode;
+	links: number;
 };
 
 interface NormalizedTable {
@@ -87,11 +89,11 @@ export async function buildFlowNodes(
 	direction: DiagramDirection,
 	linkMode: DiagramLinks,
 	lineStyle: DiagramLineStyle,
-): Promise<[Node[], Edge[], GraphWarning[]]> {
+): Promise<[Node<SharedNodeData>[], Edge[], GraphWarning[]]> {
 	const items = normalizeTables(tables);
-	const nodeIndex: Record<string, Node> = {};
+	const nodeIndex = new Map<string, Node<SharedNodeData>>();
 	const edges: Edge[] = [];
-	const nodes: Node[] = [];
+	const nodes: Node<SharedNodeData>[] = [];
 
 	// Base edge options
 	const baseEdge: any = {
@@ -114,10 +116,25 @@ export async function buildFlowNodes(
 		}
 	}
 
+
+	// Height of an individual field row
+	const fieldHeight = 18.59;
+	// Gap between individual field rows
+	const fieldGap = 6;
+
+	// padding top + padding bottom + header gap + header height + header margin
+	const staticHeight = 12 + 12 + 9 + fieldHeight + 10;
+
 	// Define all nodes
 	for (const { table, variant } of items) {
 		const name = table.schema.name;
-		const node: any = {
+
+		const nodeHeight = nodeMode === "fields"
+			// field row height, plus the gaps between rows, plus static height.
+			? (Math.max(table.fields.length, 1) * fieldHeight) + ((Math.max(table.fields.length, 1) - 1) * fieldGap) + staticHeight
+			: undefined;
+
+		const node = {
 			id: name,
 			type: variant,
 			position: { x: 0, y: 0 },
@@ -127,21 +144,25 @@ export async function buildFlowNodes(
 				isSelected: false,
 				direction: direction,
 				mode: nodeMode,
+				links: 0
 			} as SharedNodeData,
+			height: nodeHeight ? nodeHeight + (variant === "relation" ? 20 : 0) : undefined,
+			width: nodeMode === "fields" ? 250 : undefined
 		};
 
 		nodes.push(node);
-		nodeIndex[name] = node;
+		nodeIndex.set(name, node);
 	}
 
 	const edgeItems = items.filter((item) => item.variant === "relation");
 	const edgeIndex = new Map<string, boolean>();
 	const warnings: GraphWarning[] = [];
+	const linkedNodes = new Set<string>();
 
-	// Define all edges
+	// Define all edges (Relation Tables)
 	for (const { table, from, to } of edgeItems) {
 		for (const fromTable of from) {
-			if (!nodeIndex[fromTable]) {
+			if (!nodeIndex.has(fromTable)) {
 				warnings.push({
 					type: "edge",
 					table: table.schema.name,
@@ -166,10 +187,21 @@ export async function buildFlowNodes(
 
 			edgeIndex.set(`${fromTable}:${table.schema.name}`, true);
 			edgeIndex.set(`${table.schema.name}:${fromTable}`, true);
+			linkedNodes.add(fromTable);
+			linkedNodes.add(table.schema.name);
+
+			const fromNode = nodeIndex.get(fromTable);
+			if (fromNode?.data) {
+				fromNode.data.links++;
+			}
+			const toNode = nodeIndex.get(table.schema.name);
+			if (toNode?.data) {
+				toNode.data.links++;
+			}
 		}
 
 		for (const toTable of to) {
-			if (!nodeIndex[toTable]) {
+			if (!nodeIndex.has(toTable)) {
 				warnings.push({
 					type: "edge",
 					table: table.schema.name,
@@ -194,12 +226,23 @@ export async function buildFlowNodes(
 
 			edgeIndex.set(`${toTable}:${table.schema.name}`, true);
 			edgeIndex.set(`${table.schema.name}:${toTable}`, true);
+			linkedNodes.add(toTable);
+			linkedNodes.add(table.schema.name);
+
+			const fromNode = nodeIndex.get(table.schema.name);
+			if (fromNode?.data) {
+				fromNode.data.links++;
+			}
+			const toNode = nodeIndex.get(toTable);
+			if (toNode?.data) {
+				toNode.data.links++;
+			}
 		}
 	}
 
 	// Define all record links
 	if (linkMode === "visible") {
-		const uniqueLinks = new Set<string>();
+		const uniqueLinks = new Map<string, Edge>();
 		const linkColor = getComputedStyle(document.body).getPropertyValue(
 			"--mantine-color-slate-5",
 		);
@@ -218,15 +261,7 @@ export async function buildFlowNodes(
 				const targets = await getSurrealQL().extractKindRecords(field.kind);
 
 				for (const target of targets) {
-					if (
-						target === table.schema.name ||
-						edgeIndex.has(`${table.schema.name}:${target}`) ||
-						edgeIndex.has(`${target}:${table.schema.name}`)
-					) {
-						continue;
-					}
-
-					if (!nodeIndex[target]) {
+					if (!nodeIndex.has(target)) {
 						warnings.push({
 							type: "link",
 							table: table.schema.name,
@@ -236,39 +271,61 @@ export async function buildFlowNodes(
 						continue;
 					}
 
-					const existing =
-						uniqueLinks.has(`${table.schema.name}:${target}`) ||
-						uniqueLinks.has(`${target}:${table.schema.name}`);
+					if (!uniqueLinks.has(`${table.schema.name}:${target}`)) {
+						const edge: Edge = {
+							...baseEdge,
+							id: `tb-${table.schema.name}-field-${field.name}:${target}`,
+							source: table.schema.name,
+							target,
+							className: classes.recordLink,
+							labelBgStyle: { fill: "var(--mantine-color-slate-8" },
+							labelStyle: { fill: "currentColor" },
+							label: field.name,
+							data: {
+								linkCount: 1,
+								fields: [field.name],
+							},
+							markerEnd: {
+								type: MarkerType.Arrow,
+								width: 14,
+								height: 14,
+								color: linkColor,
+							},
+						};
+						uniqueLinks.set(`${table.schema.name}:${target}`, edge);
+						linkedNodes.add(target);
+						linkedNodes.add(table.schema.name);
 
-					if (existing) {
-						continue;
+						const fromNode = nodeIndex.get(table.schema.name);
+						if (fromNode?.data) {
+							fromNode.data.links++;
+						}
+						const toNode = nodeIndex.get(target);
+						if (toNode?.data) {
+							toNode.data.links++;
+						}
+					} else {
+						// Update existing link count
+						const edge = uniqueLinks.get(`${table.schema.name}:${target}`);
+						if (edge) {
+							if (typeof edge.data?.linkCount === "number") {
+								edge.data.linkCount++;
+							}
+							(edge.data?.fields as string[])?.push(field.name);
+						}
 					}
-
-					const edge: Edge = {
-						...baseEdge,
-						id: `tb-${table.schema.name}-field-${field.name}:${target}`,
-						source: table.schema.name,
-						target,
-						className: classes.recordLink,
-						label: field.name,
-						labelBgStyle: { fill: "var(--mantine-color-slate-8" },
-						labelStyle: { fill: "currentColor" },
-						data: { linkCount: 1 },
-						markerEnd: {
-							type: MarkerType.Arrow,
-							width: 14,
-							height: 14,
-							color: linkColor,
-						},
-					};
-
-					uniqueLinks.add(`${table.schema.name}:${target}`);
-					uniqueLinks.add(`${target}:${table.schema.name}`);
-
-					edges.push(edge);
 				}
 			}
 		}
+
+		edges.push(
+			...Array.from(uniqueLinks.values()).map((edge) => {
+				if ((edge.data?.fields as string[]).length > 1) {
+					edge.label = `${edge.data?.linkCount} links`;
+				}
+				return edge;
+			}),
+		);
 	}
 
 	return [nodes, edges, warnings];
@@ -282,19 +339,24 @@ export async function buildFlowNodes(
  * @returns The changes to apply
  */
 export async function applyNodeLayout(
-	nodes: Node[],
+	nodes: Node<SharedNodeData>[],
 	edges: Edge[],
 	algorithm: DiagramAlgorithm,
 	direction: DiagramDirection,
+	strategy: DiagramStrategy = "NETWORK_SIMPLEX",
 ): Promise<[NodeChange[], EdgeChange[]]> {
 	const ELK = await import("elkjs/lib/elk.bundled");
 	const elk = new ELK.default();
 
-	const edgeIndex = objectify(edges, (e) => e.id);
+	const edgeIndex = new Map<string, Edge>();
+	edges.forEach((e) => edgeIndex.set(e.id, e));
 
-	const graph = {
+	const linkedNodes = nodes.filter(node => node.data.links > 0);
+	const orphanNodes = nodes.filter(node => node.data.links === 0);
+
+	const linkedGraph = {
 		id: "root",
-		children: nodes.map((node) => ({
+		children: linkedNodes.map((node) => ({
 			id: node.id,
 			width: node.measured?.width ?? node.width,
 			height: node.measured?.height ?? node.height,
@@ -306,31 +368,81 @@ export async function applyNodeLayout(
 		})),
 	};
 
-	const layout = await elk.layout(graph, {
+	const orphanGraph = {
+		id: "root_orphans",
+		children: orphanNodes.map((node) => ({
+			id: node.id,
+			width: node.measured?.width ?? node.width,
+			height: node.measured?.height ?? node.height,
+		})),
+		edges: [],
+	};
+
+	const nodeEdgeGap = "40";
+	const nodeNodeGap = "80";
+
+	const linkedLayout = await elk.layout(linkedGraph, {
 		layoutOptions: {
 			"elk.algorithm": algorithm === "spaced" ? "force" : "layered",
-			"elk.layered.spacing.nodeNodeBetweenLayers": "100",
-			"elk.spacing.nodeNode": "80",
 			"elk.direction": direction === "ltr" ? "RIGHT" : "LEFT",
+			"elk.layered.nodePlacement.strategy": strategy,
+
+			// minimum gap between nodes
+			"elk.spacing.nodeNode": nodeNodeGap,
+			"elk.layered.spacing.nodeNodeBetweenLayers": nodeNodeGap,
+			"elk.spacing.edgeNode": nodeEdgeGap,
+			"elk.layered.spacing.edgeEdgeBetweenLayers": nodeEdgeGap,
+			"elk.layered.spacing.edgeNodeBetweenLayers": nodeEdgeGap,
+			"elk.layered.wrapping.additionalEdgeSpacing": nodeEdgeGap,
+			"elk.spacing.nodeSelfLoop": nodeEdgeGap
 		},
 	});
 
-	const children = layout.children || [];
-	const layoutEdges = layout.edges || [];
+	const orphanLayout = await elk.layout(orphanGraph, {
+		layoutOptions: {
+			"elk.algorithm": "layered",
+			"elk.layered.spacing.nodeNodeBetweenLayers": nodeNodeGap,
+			"elk.spacing.nodeNode": nodeNodeGap,
+		},
+	});
 
-	const nodeChanges: NodeChange[] = children.map(({ id, x, y }) => {
+	const linkedChildren = linkedLayout.children || [];
+	const orphanChildren = orphanLayout.children || [];
+
+	const linkedEdges = linkedLayout.edges || [];
+
+	console.log("Linked layout", linkedLayout);
+	console.log("Orphan layout", orphanLayout);
+
+
+	const nodeChanges: NodeChange[] = linkedChildren.map(({ id, x, y }) => {
 		return {
 			id,
-			type: "position",
+			type: "position" as "position",
 			position: {
 				x: x ?? 0,
 				y: y ?? 0,
 			},
 		};
-	});
+	}).concat(orphanChildren.map(({ id, x, y }) => {
+		return {
+			id,
+			type: "position" as "position",
+			position: {
+				x: (x ?? 0) + (linkedLayout.width ?? 0) + parseInt(nodeEdgeGap),
+				y: (y ?? 0),
+			},
+		};
+	}));
 
-	const edgeChanges: EdgeChange[] = layoutEdges.map(({ id, sections }) => {
-		const current = edgeIndex[id];
+	const edgeChanges: EdgeChange[] = linkedEdges.map(({ id, sections }) => {
+		const current = edgeIndex.get(id);
+		if (!current) {
+			return {
+				id,
+				type: "remove",
+			};
+		}
 
 		return {
 			id,
@@ -349,7 +461,6 @@ export async function applyNodeLayout(
 	return [nodeChanges, edgeChanges];
 }
 
-import { elementToSVG, inlineResources } from "dom-to-svg";
 
 /**
  * Create a snapshot of the given element

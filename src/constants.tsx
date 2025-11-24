@@ -13,6 +13,7 @@ import type {
 	DiagramLineStyle,
 	DiagramLinks,
 	DiagramMode,
+	DiagramStrategy,
 	Driver,
 	GlobalPage,
 	GlobalPageInfo,
@@ -361,6 +362,12 @@ export const DESIGNER_DIRECTIONS: Selectable<DiagramDirection>[] = [
 	{ label: "Default", value: "default" },
 	{ label: "Left to right", value: "ltr" },
 	{ label: "Right to left", value: "rtl" },
+];
+
+export const DESIGNER_STRATEGIES: Selectable<DiagramStrategy>[] = [
+	{ label: "Network Simplex", value: "NETWORK_SIMPLEX" },
+	{ label: "Brandes Koepf", value: "BRANDES_KOEPF" },
+	{ label: "Linear Segments", value: "LINEAR_SEGMENTS" },
 ];
 
 export const DESIGNER_LINKS: Selectable<DiagramLinks>[] = [

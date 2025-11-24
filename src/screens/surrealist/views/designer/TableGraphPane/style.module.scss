@@ -68,6 +68,38 @@
 		stroke-dasharray: 5;
 	}
 
+	:global(.react-flow__node) {
+		// Contain the DOM of each node to reduce repaints
+		contain: content;
+	}
+
+	:global(.react-flow__viewport) {
+		transform-style: preserve-3d;
+	}
+
+	:global(.react-flow__pane.dragging .react-flow__viewport) {
+		// Render the viewport in its own layer (GPU) to improve transform performance
+		// Only done while dragging to reduce blurring of text due to rasterization
+		will-change: transform;
+	}
+
+	:global(.react-flow .react-flow__edges svg) {
+		contain: strict;
+	}
+
+	:global(.react-flow__edges) {
+		left: 0;
+		top: 0;
+		width: 10000vw;
+		height: 10000vh;
+		contain: strict;
+	}
+
+	:global(.react-flow__nodes) {
+		contain: layout;
+		text-rendering: optimizeLegibility;
+	}
+
 	:global(.react-flow__node),
 	:global(.react-flow__edge) :global(.react-flow__edge-text),
 	:global(.react-flow__edge)>path,
