@@ -116,7 +116,6 @@ export async function buildFlowNodes(
 		}
 	}
 
-
 	// Height of an individual field row
 	const fieldHeight = 18.59;
 	// Gap between individual field rows
@@ -129,10 +128,13 @@ export async function buildFlowNodes(
 	for (const { table, variant } of items) {
 		const name = table.schema.name;
 
-		const nodeHeight = nodeMode === "fields"
-			// field row height, plus the gaps between rows, plus static height.
-			? (Math.max(table.fields.length, 1) * fieldHeight) + ((Math.max(table.fields.length, 1) - 1) * fieldGap) + staticHeight
-			: undefined;
+		const nodeHeight =
+			nodeMode === "fields"
+				? // field row height, plus the gaps between rows, plus static height.
+					Math.max(table.fields.length, 1) * fieldHeight +
+					(Math.max(table.fields.length, 1) - 1) * fieldGap +
+					staticHeight
+				: undefined;
 
 		const node = {
 			id: name,
@@ -144,10 +146,10 @@ export async function buildFlowNodes(
 				isSelected: false,
 				direction: direction,
 				mode: nodeMode,
-				links: 0
+				links: 0,
 			} as SharedNodeData,
 			height: nodeHeight ? nodeHeight + (variant === "relation" ? 20 : 0) : undefined,
-			width: nodeMode === "fields" ? 250 : undefined
+			width: nodeMode === "fields" ? 250 : undefined,
 		};
 
 		nodes.push(node);
@@ -351,8 +353,8 @@ export async function applyNodeLayout(
 	const edgeIndex = new Map<string, Edge>();
 	edges.forEach((e) => edgeIndex.set(e.id, e));
 
-	const linkedNodes = nodes.filter(node => node.data.links > 0);
-	const orphanNodes = nodes.filter(node => node.data.links === 0);
+	const linkedNodes = nodes.filter((node) => node.data.links > 0);
+	const orphanNodes = nodes.filter((node) => node.data.links === 0);
 
 	const linkedGraph = {
 		id: "root",
@@ -394,7 +396,7 @@ export async function applyNodeLayout(
 			"elk.layered.spacing.edgeEdgeBetweenLayers": nodeEdgeGap,
 			"elk.layered.spacing.edgeNodeBetweenLayers": nodeEdgeGap,
 			"elk.layered.wrapping.additionalEdgeSpacing": nodeEdgeGap,
-			"elk.spacing.nodeSelfLoop": nodeEdgeGap
+			"elk.spacing.nodeSelfLoop": nodeEdgeGap,
 		},
 	});
 
@@ -414,26 +416,29 @@ export async function applyNodeLayout(
 	console.log("Linked layout", linkedLayout);
 	console.log("Orphan layout", orphanLayout);
 
-
-	const nodeChanges: NodeChange[] = linkedChildren.map(({ id, x, y }) => {
-		return {
-			id,
-			type: "position" as "position",
-			position: {
-				x: x ?? 0,
-				y: y ?? 0,
-			},
-		};
-	}).concat(orphanChildren.map(({ id, x, y }) => {
-		return {
-			id,
-			type: "position" as "position",
-			position: {
-				x: (x ?? 0) + (linkedLayout.width ?? 0) + parseInt(nodeEdgeGap),
-				y: (y ?? 0),
-			},
-		};
-	}));
+	const nodeChanges: NodeChange[] = linkedChildren
+		.map(({ id, x, y }) => {
+			return {
+				id,
+				type: "position" as "position",
+				position: {
+					x: x ?? 0,
+					y: y ?? 0,
+				},
+			};
+		})
+		.concat(
+			orphanChildren.map(({ id, x, y }) => {
+				return {
+					id,
+					type: "position" as "position",
+					position: {
+						x: (x ?? 0) + (linkedLayout.width ?? 0) + parseInt(nodeEdgeGap),
+						y: y ?? 0,
+					},
+				};
+			}),
+		);
 
 	const edgeChanges: EdgeChange[] = linkedEdges.map(({ id, sections }) => {
 		const current = edgeIndex.get(id);
@@ -460,7 +465,6 @@ export async function applyNodeLayout(
 
 	return [nodeChanges, edgeChanges];
 }
-
 
 /**
  * Create a snapshot of the given element

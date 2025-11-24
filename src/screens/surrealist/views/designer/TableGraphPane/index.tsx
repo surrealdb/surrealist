@@ -173,7 +173,13 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 		isLayedOut.current = true;
 
-		applyNodeLayout(getNodes() as Node<SharedNodeData>[], getEdges(), algorithm, direction, strategy)
+		applyNodeLayout(
+			getNodes() as Node<SharedNodeData>[],
+			getEdges(),
+			algorithm,
+			direction,
+			strategy,
+		)
 			.then(([nodes, edges]) => {
 				onNodesChange(nodes);
 				onEdgesChange(edges);
@@ -377,7 +383,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			setNodes([]);
 			setEdges([]);
 		}
-	}, [schema, isViewActive, isConnected, algorithm, direction, strategy, lineStyle, linkMode, nodeMode]);
+	}, [
+		schema,
+		isViewActive,
+		isConnected,
+		algorithm,
+		direction,
+		strategy,
+		lineStyle,
+		linkMode,
+		nodeMode,
+	]);
 
 	useEffect(() => {
 		setNodes((curr) => {

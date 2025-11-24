@@ -294,7 +294,7 @@ function Fields(props: FieldsProps) {
 	return (
 		<Box
 			display="flex"
-			mah={'100%'}
+			mah={"100%"}
 			style={{ cursor: "pointer" }}
 		>
 			<ScrollArea
@@ -417,7 +417,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 					userSelect: "none",
 					backgroundSize: "8px 8px",
 					overflow: "hidden",
-					height: '100%',
+					height: "100%",
 				}}
 			>
 				<Group
@@ -472,18 +472,19 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						/>
 
 						{mode === "fields" ? (
-							(table.fields.length > 0)
-								?
+							table.fields.length > 0 ? (
 								<Fields
 									isLight={isLight}
 									table={table}
 								/>
-								: <Text
+							) : (
+								<Text
 									c={isLight ? "slate.6" : "slate.4"}
 									mt={10}
 								>
 									No fields defined.
 								</Text>
+							)
 						) : (
 							<Stack
 								gap="xs"
