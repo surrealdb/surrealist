@@ -6,6 +6,7 @@ import {
 	IntercomSupportCollection,
 	IntercomSupportCollectionShallow,
 	IntercomTicket,
+	IntercomTicketTypeAttribute,
 } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { fetchContextAPI } from "../api/context";
@@ -40,6 +41,21 @@ export function useCloudOrganizationTicketsQuery(organizationId?: string) {
 	});
 }
 
+/**
+ * Get the ticket attributes that should be shown for tickets in a given organization
+ */
+export function useCloudOrganizationTicketAttributesQuery(organizationId?: string) {
+	const [flags] = useFeatureFlags();
+	return useQuery({
+		queryKey: ["cloud", "organization_ticket_attributes", organizationId],
+		enabled: !!organizationId && flags.support_tickets,
+		queryFn: async () => {
+			return fetchContextAPI<IntercomTicketTypeAttribute[]>(
+				`/cloud/org/${organizationId}/ticket_attributes`,
+			);
+		},
+	});
+}
 /**
  * Fetch a single conversation
  */
