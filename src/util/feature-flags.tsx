@@ -117,6 +117,7 @@ export const featureFlags = new FeatureFlags({
 			organization_archiving: true,
 			sidekick_ai: true,
 			support_tickets: true,
+			support_tickets_endpoint: "staging",
 		},
 		preview: {
 			query_view: true,
@@ -137,6 +138,7 @@ export const featureFlags = new FeatureFlags({
 			gtm_debug: false,
 			sidekick_ai: true,
 			support_tickets: true,
+			support_tickets_endpoint: "staging",
 		},
 		production: {
 			query_view: true,
@@ -156,6 +158,7 @@ export const featureFlags = new FeatureFlags({
 			gtm_debug: false,
 			sidekick_ai: true,
 			support_tickets: false,
+			support_tickets_endpoint: "production",
 		},
 	},
 	overrides: (flag) => {
