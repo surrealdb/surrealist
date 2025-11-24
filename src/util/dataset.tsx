@@ -113,7 +113,7 @@ export const SURREAL_START_BASICS = {
 		--  'Y8888P'   'Y88888 888     888      'Y8888  'Y888888 888 8888888P'  8888888P'
 		--
 		-- Welcome to SurrealDB, a multi-model database combining document, graph,
-		-- reltional, time-series and vector capabilities in one system, all powered
+		-- relational, time-series and vector capabilities in one system, all powered
 		-- by SurrealQL. Use it to build AI agents, real-time and event-driven systems,
 		-- knowledge graphs, as a backend, a BaaS, or embed it directly into your apps
 		-- One engine, every model.
@@ -194,6 +194,10 @@ export const SURREAL_START_GRAPH_V2 = {
 		SELECT *, <-has_tag<-document AS docs FROM tag;
 
 		"Container relations:";
+		-- Hint to visualize the graph:
+		-- 1. Select the query below
+		-- 2. Click "Run selection"
+		-- 3. Change "Combined" to "Graph"
 		SELECT *, <->stored_in AS relations FROM container FETCH relations;
 
 		"Related nodes by document:";
@@ -255,8 +259,8 @@ export const SURREAL_START_GRAPH_V2 = {
 						(->edge->a[?bool]);
 		};
 
-		// To learn more about graph queries go to Chapter 8 in Aeon's Surreal
-		// Renaissance book: https://surrealdb.com/learn/book/chapter-08
+		// To learn more about graph queries, go to the Using SurrealDB as a Graph Database page:
+		// https://surrealdb.com/docs/surrealdb/models/graph
 	`,
 };
 
@@ -295,6 +299,10 @@ export const SURREAL_START_GRAPH_V3 = {
 		SELECT *, <-has_tag<-document AS docs FROM tag;
 
 		"Container relations:";
+		-- Hint to visualize the graph:
+		-- 1. Select the query below
+		-- 2. Click "Run selection"
+		-- 3. Change "Combined" to "Graph"
 		SELECT *, <->stored_in AS relations FROM container FETCH relations;
 
 		"Related nodes by document:";
@@ -356,8 +364,8 @@ export const SURREAL_START_GRAPH_V3 = {
 						(->edge->a[?bool]);
 		};
 
-		// To learn more about graph queries go to Chapter 8 in Aeon's Surreal
-		// Renaissance book: https://surrealdb.com/learn/book/chapter-08
+		// To learn more about graph queries, go to the Using SurrealDB as a Graph Database page:
+		// https://surrealdb.com/docs/surrealdb/models/graph
 	`,
 };
 
@@ -372,7 +380,7 @@ export const SURREAL_START_VECTOR = {
 		};
 
 		-- Vector index
-		-- Reference: https://surrealdb.com/docs/surrealdb/reference-guide/vector-search
+		-- Reference: https://surrealdb.com/docs/surrealdb/models/vector
 		DEFINE INDEX IF NOT EXISTS documents_vec_index
 			ON TABLE documents
 			FIELDS embedding
