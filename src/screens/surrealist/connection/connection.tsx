@@ -206,7 +206,7 @@ export async function openConnection(options?: ConnectOptions) {
 		setCurrentState("connected");
 		setLatestError("");
 
-		if (connection.id === SANDBOX) {
+		if (connection.id === SANDBOX && connection.queries.length === 0) {
 			await instance.use({
 				namespace: "sandbox",
 				database: "sandbox",
