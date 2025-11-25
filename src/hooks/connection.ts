@@ -120,6 +120,7 @@ export function useAvailablePages(): Partial<Record<GlobalPage, GlobalPageInfo>>
  */
 export function useAvailableViews(): Partial<Record<ViewPage, ViewPageInfo>> {
 	const [flags] = useFeatureFlags();
+	const version = useDatabaseStore((s) => s.version) || null;
 
 	const [connection, isCloud] = useConnection((c) => [
 		c?.id ?? "",
@@ -132,6 +133,7 @@ export function useAvailableViews(): Partial<Record<ViewPage, ViewPageInfo>> {
 			connection,
 			flags,
 			isCloud,
+			version,
 		};
 
 		for (const { id, disabled } of Object.values(draft)) {
@@ -141,7 +143,7 @@ export function useAvailableViews(): Partial<Record<ViewPage, ViewPageInfo>> {
 		}
 
 		return draft;
-	}, [flags, connection, isCloud]);
+	}, [flags, connection, isCloud, version]);
 }
 
 /**

@@ -1,8 +1,8 @@
 import type { MantineColor, MantineColorScheme } from "@mantine/core";
+import { satisfies } from "compare-versions";
 import flagIE from "flag-icons/flags/4x3/ie.svg";
 import flagIN from "flag-icons/flags/4x3/in.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
-
 import type {
 	AuthMode,
 	Dataset,
@@ -71,6 +71,7 @@ import {
 	iconSearch,
 	iconTable,
 	iconTag,
+	iconTransfer,
 	iconTune,
 	iconVariable,
 	iconWarning,
@@ -319,6 +320,13 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		name: "API Docs",
 		icon: iconAPI,
 		disabled: ({ flags }) => !flags.apidocs_view,
+	},
+	migrations: {
+		id: "migrations",
+		name: "Migration Tools",
+		icon: iconTransfer,
+		disabled: ({ flags, version }) =>
+			!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.4.0 <3.0.0"),
 	},
 };
 

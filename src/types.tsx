@@ -47,6 +47,9 @@ export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
 export type DatasetType = "surreal-deal-store-mini";
 export type IntercomConversationStateId = "open" | "closed" | "snoozed";
+export type MigrationIssueSeverity = "might_break" | "will_break" | "breaking_resolution";
+export type MigrationIssueKind = "incompatible feature";
+export type MigrationIssueTruncation = "none" | "start" | "end" | "both";
 
 export type InstanceState =
 	| "creating"
@@ -76,7 +79,8 @@ export type ViewPage =
 	| "authentication"
 	| "functions"
 	| "parameters"
-	| "documentation";
+	| "documentation"
+	| "migrations";
 
 export type AppMenuItemType =
 	| "Separator"
@@ -545,6 +549,7 @@ export interface ViewPageInfo {
 export interface ViewCondition {
 	flags: FeatureFlagMap;
 	connection: string;
+	version: string | null;
 	isCloud: boolean;
 }
 
@@ -1050,4 +1055,28 @@ export interface Monitor {
 	id: string;
 	type: MonitorType;
 	name: string;
+}
+
+export interface MigrationDiagnosticLocation {
+	column: number;
+	kind: string;
+	label: string;
+	length: number;
+	line: number;
+	source: string;
+	truncation: string;
+}
+
+export type MigrationDiagnosticResolution = {
+	action: "ignore" | "fix";
+};
+
+export interface MigrationDiagnosticResult {
+	error: string;
+	details: string;
+	kind: "incompatible future";
+	origin: string;
+	severity: "might_break" | "will_break" | "breaking_resolution";
+	location?: MigrationDiagnosticLocation;
+	resolution?: MigrationDiagnosticResolution;
 }
