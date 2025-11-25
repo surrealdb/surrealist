@@ -327,8 +327,7 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		name: "Migration Tools",
 		icon: iconTransfer,
 		disabled: ({ flags, version }) =>
-			!isDevelopment &&
-			(!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.4.0 <3.0.0")),
+			!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.4.0 <3.0.0"),
 	},
 };
 
