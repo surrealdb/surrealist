@@ -45,7 +45,6 @@ import {
 	RustIcon,
 	SurrealIcon,
 } from "./util/drivers";
-import { isDevelopment } from "./util/environment";
 import {
 	iconAPI,
 	iconAuth,
