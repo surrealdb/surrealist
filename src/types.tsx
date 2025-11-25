@@ -1067,10 +1067,16 @@ export interface MigrationDiagnosticLocation {
 	truncation: string;
 }
 
+export type MigrationDiagnosticResolution = {
+	action: "ignore" | "fix";
+};
+
 export interface MigrationDiagnosticResult {
 	error: string;
-	kind: string;
-	location: MigrationDiagnosticLocation;
+	details: string;
+	kind: "incompatible future";
 	origin: string;
-	severity: string;
+	severity: "might_break" | "will_break" | "breaking_resolution";
+	location?: MigrationDiagnosticLocation;
+	resolution?: MigrationDiagnosticResolution;
 }

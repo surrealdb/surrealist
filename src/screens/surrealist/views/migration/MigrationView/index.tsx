@@ -1,11 +1,10 @@
 import { Box, Button, Center, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
-import { memo, useState } from "react";
-import { Panel, PanelGroup } from "react-resizable-panels";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/Icon";
-import { PanelDragger } from "~/components/Pane/dragger";
 import { useConnection } from "~/hooks/connection";
 import { usePanelMinSize } from "~/hooks/panels";
+import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult } from "~/types";
 import { iconRefresh, iconTransfer } from "~/util/icons";
@@ -13,14 +12,19 @@ import { DiagnosticDetailsPanel } from "../DiagnosticDetailsPanel";
 import { DiagnosticsListPanel } from "../DiagnosticsListPanel";
 
 const DiagnosticsListPanelLazy = memo(DiagnosticsListPanel);
-const DiagnosticDetailsPanelLazy = memo(DiagnosticDetailsPanel);
+const _DiagnosticDetailsPanelLazy = memo(DiagnosticDetailsPanel);
 
 export function MigrationView() {
 	const id = useConnection((c) => c?.id);
 
-	const { data, isPending, isFetching, refetch } = useQuery({
+	const [runVersion, setRunVersion] = useState(0);
+	const [completedOrigins, setCompletedOrigins] = useState<Record<string, number>>({});
+	const [selectedDiagnosticKey, setSelectedDiagnosticKey] = useState<string | null>(null);
+
+	const { data, isPending, isFetching, refetch } = useQuery<MigrationDiagnosticResult[]>({
 		queryKey: ["migration", "diagnostics", id],
 		enabled: false,
+		refetchOnWindowFocus: false,
 		queryFn: async () => {
 			const [diagnostics] = await getSurreal().query("migration::diagnose()").collect();
 			console.log("Diagnostics", diagnostics);
@@ -30,7 +34,98 @@ export function MigrationView() {
 
 	const diagnostics = data ?? [];
 
-	const [details, setDetails] = useState(true);
+	const visibleDiagnostics = useMemo(() => {
+		if (!diagnostics.length) {
+			return diagnostics;
+		}
+
+		return diagnostics.filter((diagnostic) => {
+			const completedAt = completedOrigins[diagnostic.origin];
+			return !completedAt || completedAt === runVersion;
+		});
+	}, [diagnostics, completedOrigins, runVersion]);
+
+	const completedOriginsThisRun = useMemo(() => {
+		return new Set(
+			Object.entries(completedOrigins)
+				.filter(([, version]) => version === runVersion)
+				.map(([origin]) => origin),
+		);
+	}, [completedOrigins, runVersion]);
+
+	useEffect(() => {
+		if (visibleDiagnostics.length === 0) {
+			setSelectedDiagnosticKey(null);
+			return;
+		}
+
+		setSelectedDiagnosticKey((current) => {
+			if (current) {
+				const stillExists = visibleDiagnostics.some(
+					(diagnostic) => getDiagnosticKey(diagnostic) === current,
+				);
+
+				if (stillExists) {
+					return current;
+				}
+			}
+
+			return getDiagnosticKey(visibleDiagnostics[0]);
+		});
+	}, [visibleDiagnostics]);
+
+	const selectedDiagnostic = useMemo(() => {
+		if (!visibleDiagnostics.length) {
+			return null;
+		}
+
+		if (!selectedDiagnosticKey) {
+			return visibleDiagnostics[0];
+		}
+
+		return (
+			visibleDiagnostics.find(
+				(diagnostic) => getDiagnosticKey(diagnostic) === selectedDiagnosticKey,
+			) ?? visibleDiagnostics[0]
+		);
+	}, [selectedDiagnosticKey, visibleDiagnostics]);
+
+	const handleRunDiagnostics = useStable(async () => {
+		const result = await refetch();
+
+		if (!result.error) {
+			setRunVersion((version) => version + 1);
+		}
+	});
+
+	const handleRefreshDiagnostics = useStable(async () => {
+		setRunVersion(0);
+		setCompletedOrigins({});
+		handleRunDiagnostics();
+	});
+
+	const handleSelectDiagnostic = useStable((diagnostic: MigrationDiagnosticResult) => {
+		setSelectedDiagnosticKey(getDiagnosticKey(diagnostic));
+	});
+
+	const handleToggleOrigin = useStable((origin: string) => {
+		setCompletedOrigins((current) => {
+			const existing = current[origin];
+
+			if (existing === runVersion) {
+				const { [origin]: _, ...rest } = current;
+				return rest;
+			}
+
+			return {
+				...current,
+				[origin]: runVersion,
+			};
+		});
+	});
+
+	const hasVisibleDiagnostics = visibleDiagnostics.length > 0;
+	const hasHiddenDiagnostics = !hasVisibleDiagnostics && diagnostics.length > 0;
 
 	return (
 		<>
@@ -56,7 +151,7 @@ export function MigrationView() {
 							<Group mt="md">
 								<Button
 									variant="gradient"
-									onClick={() => refetch()}
+									onClick={handleRunDiagnostics}
 									loading={isFetching}
 								>
 									Start check
@@ -72,7 +167,7 @@ export function MigrationView() {
 					</Paper>
 				</Center>
 			)}
-			{!isPending && diagnostics.length === 0 && (
+			{!isPending && !hasVisibleDiagnostics && (
 				<Center flex={1}>
 					<Paper
 						p="xl"
@@ -80,16 +175,22 @@ export function MigrationView() {
 						shadow="md"
 					>
 						<Stack>
-							<Title c="bright">No migration issues found!</Title>
+							<Title c="bright">
+								{hasHiddenDiagnostics
+									? "No pending migration issues"
+									: "No migration issues found!"}
+							</Title>
 							<Text>
-								You're all set! No migration issues were found for this database
+								{hasHiddenDiagnostics
+									? "Everything you've marked as completed has been hidden from this rerun. Re-run diagnostics whenever you're ready to check again."
+									: "You're all set! No migration issues were found for this database."}
 							</Text>
 
 							<Button
 								mt="md"
 								size="xs"
 								variant="gradient"
-								onClick={() => refetch()}
+								onClick={handleRefreshDiagnostics}
 								loading={isFetching}
 								rightSection={<Icon path={iconRefresh} />}
 							>
@@ -99,13 +200,41 @@ export function MigrationView() {
 					</Paper>
 				</Center>
 			)}
-			{!isPending && diagnostics.length > 0 && <Content />}
+			{!isPending && hasVisibleDiagnostics && (
+				<Content
+					diagnostics={visibleDiagnostics}
+					selectedDiagnostic={selectedDiagnostic}
+					completedOrigins={completedOriginsThisRun}
+					onSelectDiagnostic={handleSelectDiagnostic}
+					onToggleOrigin={handleToggleOrigin}
+					onRerun={handleRunDiagnostics}
+					isFetching={isFetching}
+				/>
+			)}
 		</>
 	);
 }
 
-function Content() {
-	const [minSize, ref] = usePanelMinSize(450);
+interface ContentProps {
+	diagnostics: MigrationDiagnosticResult[];
+	selectedDiagnostic: MigrationDiagnosticResult | null;
+	completedOrigins: Set<string>;
+	onSelectDiagnostic: (diagnostic: MigrationDiagnosticResult) => void;
+	onToggleOrigin: (origin: string) => void;
+	onRerun: () => void;
+	isFetching: boolean;
+}
+
+function Content({
+	diagnostics,
+	selectedDiagnostic,
+	completedOrigins,
+	onSelectDiagnostic,
+	onToggleOrigin,
+	onRerun,
+	isFetching,
+}: ContentProps) {
+	const [_minSize, ref] = usePanelMinSize(450);
 
 	return (
 		<Box
@@ -115,21 +244,37 @@ function Content() {
 			pl={{ base: "lg", md: 0 }}
 			ref={ref}
 		>
-			<PanelGroup direction="horizontal">
-				<Panel minSize={minSize}>
-					<DiagnosticsListPanelLazy />
-				</Panel>
+			{/* <PanelGroup direction="horizontal"> */}
+			{/* <Panel minSize={minSize}> */}
+			<DiagnosticsListPanelLazy
+				diagnostics={diagnostics}
+				selectedDiagnostic={selectedDiagnostic}
+				completedOrigins={completedOrigins}
+				onSelectDiagnostic={onSelectDiagnostic}
+				onToggleOrigin={onToggleOrigin}
+				onRerun={onRerun}
+				isFetching={isFetching}
+			/>
+			{/* </Panel>
 				<PanelDragger />
 				<Panel
 					defaultSize={minSize}
 					minSize={minSize}
 					maxSize={35}
 				>
-					<DiagnosticDetailsPanelLazy />
+					<DiagnosticDetailsPanelLazy diagnostic={selectedDiagnostic} />
 				</Panel>
-			</PanelGroup>
+			</PanelGroup> */}
 		</Box>
 	);
 }
 
 export default MigrationView;
+
+function getDiagnosticKey(diagnostic: MigrationDiagnosticResult) {
+	const location = diagnostic.location
+		? `${diagnostic.location.label}-${diagnostic.location.line}-${diagnostic.location.column}`
+		: "no-location";
+
+	return `${diagnostic.origin}|${diagnostic.error}|${diagnostic.details}|${location}`;
+}
