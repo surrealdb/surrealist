@@ -7,6 +7,7 @@ import {
 	NumberInput,
 	Select,
 	Stack,
+	Text,
 	Textarea,
 	TextInput,
 } from "@mantine/core";
@@ -15,6 +16,7 @@ import { useInputState } from "@mantine/hooks";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useConversationCreateMutation, useCreateTicketMutation } from "~/cloud/mutations/context";
+import { useCloudOrganizationTicketAttributesQuery } from "~/cloud/queries/context";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { useOrganisationsWithSupportPlanQuery } from "~/cloud/queries/support";
 import { Form } from "~/components/Form";
@@ -24,21 +26,19 @@ import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
 import { IntercomTicketTypeAttribute } from "~/types";
-import { iconChat, iconComment, iconCursor, iconTag, iconWarning } from "~/util/icons";
+import { iconChat, iconComment, iconCursor, iconHelp, iconTag, iconWarning } from "~/util/icons";
 
 export function CreateMessageModal() {
 	const [isOpen, openedHandle] = useBoolean();
 	const [isTicket, setIsTicket] = useInputState(false);
 	const [organisation, setOrganisation] = useInputState<string | undefined>(undefined);
-	const [availableAttributes, setAvailableAttributes] = useInputState<
-		IntercomTicketTypeAttribute[]
-	>([]);
 
 	const { data: organisations } = useCloudOrganizationsQuery();
 	const { data: organisationsWithSupportPlan } = useOrganisationsWithSupportPlanQuery(
 		organisations,
 		true,
 	);
+	const { data: ticketAttributes } = useCloudOrganizationTicketAttributesQuery(organisation);
 
 	const createTicketMutation = useCreateTicketMutation(organisation);
 	const createConversationMutation = useConversationCreateMutation();
@@ -57,8 +57,8 @@ export function CreateMessageModal() {
 			(isTicket &&
 				organisationsWithSupportPlan &&
 				organisationsWithSupportPlan.length > 0)) &&
-		availableAttributes
-			.filter(
+		ticketAttributes
+			?.filter(
 				(it) =>
 					it.required &&
 					!["organisation", "organization"].includes(it.name.toLowerCase()),
@@ -74,7 +74,6 @@ export function CreateMessageModal() {
 		setName("");
 		setDescription("");
 		setOrganisation(undefined);
-		setAvailableAttributes([]);
 	};
 
 	useIntent("create-message", ({ type, organisation, subject, message }) => {
@@ -126,22 +125,10 @@ export function CreateMessageModal() {
 				onSubmit={async () => {
 					if (!isPending && canSubmit) {
 						if (isTicket) {
-							const nonFileAttributes = Object.entries(attributes)
-								.filter(([_, value]) => !(value instanceof File))
-								.reduce(
-									(acc, [key, value]) => {
-										acc[key] = value;
-										return acc;
-									},
-									{} as Record<string, any>,
-								);
-
 							const result = await createTicketMutation.mutateAsync({
 								name: name,
 								description: description,
-								attributes: {
-									...nonFileAttributes,
-								},
+								attributes: attributes,
 							});
 
 							handleClose();
@@ -229,8 +216,8 @@ export function CreateMessageModal() {
 								onChange={setOrganisation}
 							/>
 						)}
-					{availableAttributes
-						.filter(
+					{ticketAttributes
+						?.filter(
 							(attr) =>
 								attr.visible_on_create &&
 								!["organisation"].includes(attr.name.toLowerCase()),
@@ -248,6 +235,13 @@ export function CreateMessageModal() {
 						))}
 					{(!isTicket || hasTicketsAccess) && (
 						<Group>
+							<Group
+								gap="xs"
+								wrap="nowrap"
+							>
+								<Icon path={iconHelp} />
+								<Text>Include attachments by sending a reply to this ticket</Text>
+							</Group>
 							<Spacer />
 							<Button
 								loading={isPending}

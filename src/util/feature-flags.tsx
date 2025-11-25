@@ -72,6 +72,9 @@ export const schema = {
 	website_base: {
 		options: ["production", "custom"],
 	},
+	support_tickets_endpoint: {
+		options: ["production", "staging"],
+	},
 	support_tickets: {
 		options: [false, true],
 	},
@@ -118,6 +121,7 @@ export const featureFlags = new FeatureFlags({
 			sidekick_ai: true,
 			support_tickets: true,
 			v3_migration_tooling: true,
+			support_tickets_endpoint: "staging",
 		},
 		preview: {
 			query_view: true,
@@ -139,6 +143,7 @@ export const featureFlags = new FeatureFlags({
 			sidekick_ai: true,
 			support_tickets: true,
 			v3_migration_tooling: true,
+			support_tickets_endpoint: "staging",
 		},
 		production: {
 			query_view: true,
@@ -159,6 +164,7 @@ export const featureFlags = new FeatureFlags({
 			sidekick_ai: true,
 			support_tickets: false,
 			v3_migration_tooling: false,
+			support_tickets_endpoint: "production",
 		},
 	},
 	overrides: (flag) => {

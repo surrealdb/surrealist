@@ -4,11 +4,12 @@ import { ApiError } from ".";
 import { getCloudEndpoints } from "./endpoints";
 
 /**
- * Execute a fetch request against the ticketsAPI and returns
- * the JSON response
+ * Execute a fetch request against the context API for the
+ * tickets bridge and returns the JSON response
  */
 export async function fetchContextAPI<T = unknown>(
 	path: string,
+	environment: "production" | "staging",
 	options?: RequestInit | undefined,
 ): Promise<T> {
 	const { ticketsBase } = getCloudEndpoints();
@@ -20,6 +21,7 @@ export async function fetchContextAPI<T = unknown>(
 
 	if (token) {
 		headers.Authorization = `Bearer ${token}`;
+		headers["X-SurrealDB-Cloud-Environment"] = environment;
 	}
 
 	try {
