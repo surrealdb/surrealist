@@ -33,6 +33,11 @@ export interface SurrealistAdapter {
 	isTelemetryEnabled: boolean;
 
 	/**
+	 * Whether the sample sandbox is enabled
+	 */
+	isSampleSandboxEnabled: boolean;
+
+	/**
 	 * What the titlebar offset is if applicable
 	 */
 	titlebarOffset: number;

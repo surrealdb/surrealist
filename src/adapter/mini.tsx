@@ -23,6 +23,7 @@ const THEMES = new Set(["light", "dark", "auto"]);
 export class MiniAdapter extends BrowserAdapter {
 	public readonly id: string = "mini";
 
+	public isSampleSandboxEnabled = false;
 	public appearance: MiniAppearance = "normal";
 	public corners: string | undefined = undefined;
 	public transparent = false;

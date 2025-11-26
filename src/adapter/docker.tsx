@@ -12,6 +12,7 @@ import { BrowserAdapter } from "./browser";
 export class DockerAdapter extends BrowserAdapter {
 	public readonly id: string = "docker";
 
+	public isSampleSandboxEnabled = false;
 	public cloudEnabled = false;
 	public cloudAuthEndpoint = "";
 	public cloudApiEndpoint = "";
