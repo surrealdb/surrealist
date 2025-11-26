@@ -1,18 +1,32 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
 import { Handle, Position } from "@xyflow/react";
-import { type MouseEvent, type ReactNode, useEffect, useRef, useState } from "react";
+import {
+	createContext,
+	type MouseEvent,
+	type ReactNode,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { GraphWarning } from "~/screens/surrealist/views/designer/TableGraphPane/helpers";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
-import { ON_STOP_PROPAGATION, simplifyKind } from "~/util/helpers";
+import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { getTableVariant } from "~/util/schema";
 import classes from "../style.module.scss";
+
+export type DiagramContextProps = {
+	warnings?: GraphWarning[];
+};
+export const DiagramContext = createContext<DiagramContextProps>({});
 
 interface SummaryProps {
 	isLight: boolean;
@@ -42,12 +56,156 @@ function Summary(props: SummaryProps) {
 	);
 }
 
+interface FieldSubKindProps {
+	kind: string;
+	groupIfComplex?: boolean;
+	warnings?: GraphWarning[];
+}
+
+function FieldSubKind({ kind, groupIfComplex, warnings = [] }: FieldSubKindProps) {
+	function isTargetTableValid(targetTable: string) {
+		return !warnings?.find((w) => w.foreign === targetTable);
+	}
+
+	if (kind.startsWith("option<")) {
+		return <span>{FieldSubKind({ kind: kind.slice(7, -1), groupIfComplex: true })}?</span>;
+	} else if (kind.startsWith("array<")) {
+		if (groupIfComplex) {
+			return <span>({FieldSubKind({ kind: kind.slice(6, -1) })})[]</span>;
+		} else {
+			return <span>{FieldSubKind({ kind: kind.slice(6, -1), groupIfComplex: true })}[]</span>;
+		}
+	} else if (kind.startsWith("record<")) {
+		let innerKind = kind.slice(7, -1);
+
+		function printRecordKind(recordKind: string, omitAsterisk = false) {
+			if (isTargetTableValid(recordKind)) {
+				return (
+					<span>
+						{omitAsterisk ? "" : "*"}
+						{recordKind}
+					</span>
+				);
+			} else {
+				return (
+					<Tooltip
+						position="top"
+						openDelay={0}
+						color="red"
+						label={
+							<Text
+								fw={600}
+								ff="monospace"
+								c="black"
+							>
+								Table {recordKind} could not be found!
+							</Text>
+						}
+					>
+						<Text display="inline">
+							{omitAsterisk ? "" : "*"}
+							{recordKind}⚠️
+						</Text>
+					</Tooltip>
+				);
+			}
+		}
+
+		const alterations = [];
+		for (let i = 0; i < innerKind.length; i++) {
+			const char = innerKind[i];
+			if (char === "`") {
+				// read until next unescaped backtick
+				const closingTick = innerKind.slice(i + 1).match(/[^\\]`/)?.index;
+				if (closingTick === undefined) {
+					throw new Error("Unclosed backtick in kind string");
+				}
+
+				i = closingTick + 2;
+			} else if (char === "|") {
+				alterations.push(innerKind.slice(0, i).trim());
+				innerKind = innerKind.slice(i + 1).trim();
+				i = -1;
+			}
+		}
+		alterations.push(innerKind.trim());
+
+		if (alterations.length > 1) {
+			return (
+				<span>
+					*(
+					{alterations.map((a, i) => (
+						<span key={i}>
+							{i > 0 ? "|" : ""}
+							{printRecordKind(a, true)}
+						</span>
+					))}
+					)
+				</span>
+			);
+		} else {
+			return printRecordKind(innerKind);
+		}
+	} else {
+		let depth = 0;
+		const alterations = [];
+		for (let i = 0; i < kind.length; i++) {
+			const char = kind[i];
+
+			if (char === "`") {
+				// read until next unescaped backtick
+				const closingTick = kind.slice(i + 1).match(/[^\\]`/)?.index;
+				if (closingTick === undefined) {
+					throw new Error("Unclosed backtick in kind string");
+				}
+
+				i = closingTick + 2;
+			} else if (char === "<") {
+				depth++;
+			} else if (char === ">") {
+				depth--;
+			} else if (char === "|" && depth === 0) {
+				alterations.push(kind.slice(0, i).trim());
+				kind = kind.slice(i + 1).trim();
+				i = -1;
+			}
+		}
+		alterations.push(kind.trim());
+
+		if (alterations.length > 1) {
+			if (groupIfComplex) {
+				return (
+					<span>
+						(
+						{alterations.map((k, i) => (
+							<span key={i}>
+								{i > 0 ? "|" : ""}
+								<FieldSubKind kind={k} />
+							</span>
+						))}
+						)
+					</span>
+				);
+			} else {
+				return alterations.map((k, i) => (
+					<span key={i}>
+						{i > 0 ? "|" : ""}
+						<FieldSubKind kind={k} />
+					</span>
+				));
+			}
+		} else {
+			return kind;
+		}
+	}
+}
+
 interface FieldKindProps {
 	kind: string;
 }
 
 function FieldKind({ kind }: FieldKindProps) {
-	const simpleKind = simplifyKind(kind);
+	const { warnings } = useContext(DiagramContext);
 
 	const value = (
 		<Text
@@ -56,11 +214,15 @@ function FieldKind({ kind }: FieldKindProps) {
 			maw="50%"
 			truncate
 		>
-			{simpleKind}
+			<FieldSubKind
+				kind={kind}
+				warnings={warnings}
+			/>
 		</Text>
 	);
 
-	if (kind === simpleKind) {
+	// TODO: When do we want to show this vs not?
+	if (!kind.includes("|") && kind.length < 30) {
 		return value;
 	}
 
@@ -132,11 +294,11 @@ function Fields(props: FieldsProps) {
 	return (
 		<Box
 			display="flex"
+			mah={"100%"}
 			style={{ cursor: "pointer" }}
 		>
 			<ScrollArea
 				flex={1}
-				mah={210}
 				onClickCapture={onClick}
 				onWheelCapture={ON_STOP_PROPAGATION}
 				onMouseDownCapture={ON_STOP_PROPAGATION}
@@ -239,13 +401,23 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 
 			<Paper
 				p="md"
-				w={250}
 				title={`Click to edit ${table.schema.name}`}
-				bg={isLight ? "white" : "slate.7"}
+				bg={
+					table.schema.drop
+						? `linear-gradient(-45deg, var(--diagonal-color-2) 12.5%, var(--diagonal-color-1) 12.5%, var(--diagonal-color-1) 50%, var(--diagonal-color-2) 50%, var(--diagonal-color-2) 62.5%, var(--diagonal-color-1) 62.5%, var(--diagonal-color-1) 100%) center / 8px 8px`
+						: isLight
+							? "white"
+							: "slate.7"
+				}
 				shadow={`0 8px 12px rgba(0, 0, 0, ${isLight ? 0.075 : 0.2})`}
 				style={{
-					border: `1px solid ${themeColor(isSelected ? "surreal" : isLight ? "slate.2" : "slate.5")}`,
+					"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-slate-7"})`,
+					"--diagonal-color-2": `var(${isLight ? "--mantine-color-slate-1" : "--mantine-color-slate-6"})`,
+					border: `${table.schema.full ? "2px solid" : "2px dashed"} ${themeColor(isSelected ? "surreal" : isLight ? "slate.2" : "slate.5")}`,
 					userSelect: "none",
+					backgroundSize: "8px 8px",
+					overflow: "hidden",
+					height: "100%",
 				}}
 			>
 				<Group
@@ -300,10 +472,19 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						/>
 
 						{mode === "fields" ? (
-							<Fields
-								isLight={isLight}
-								table={table}
-							/>
+							table.fields.length > 0 ? (
+								<Fields
+									isLight={isLight}
+									table={table}
+								/>
+							) : (
+								<Text
+									c={isLight ? "slate.6" : "slate.4"}
+									mt={10}
+								>
+									No fields defined.
+								</Text>
+							)
 						) : (
 							<Stack
 								gap="xs"

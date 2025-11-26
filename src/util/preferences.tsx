@@ -7,6 +7,7 @@ import {
 	DESIGNER_LINE_STYLES,
 	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
+	DESIGNER_STRATEGIES,
 	NONE_RESULT_MODES,
 	ORIENTATIONS,
 	RESULT_MODES,
@@ -489,6 +490,18 @@ export function useComputedPreferences(): PreferenceSection[] {
 							reader: (config) => config.settings.appearance.defaultDiagramDirection,
 							writer: (config, value) => {
 								config.settings.appearance.defaultDiagramDirection = value;
+							},
+						}),
+					},
+					{
+						id: "default-layout-strategy",
+						name: "Default layout strategy",
+						description: "The default diagram layout strategy",
+						controller: new SelectionController({
+							options: nodef(DESIGNER_STRATEGIES),
+							reader: (config) => config.settings.appearance.defaultDiagramStrategy,
+							writer: (config, value) => {
+								config.settings.appearance.defaultDiagramStrategy = value;
 							},
 						}),
 					},

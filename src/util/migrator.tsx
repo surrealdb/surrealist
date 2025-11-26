@@ -71,6 +71,11 @@ export function applyMigrations(config: any): SurrealistConfig {
 		}
 	});
 
+	// 3.6.6 -> 3.7.0: Add default designer strategy
+	applyToConnections(config, (con) => {
+		con.diagramStrategy ??= "NETWORK_SIMPLEX";
+	});
+
 	// 3.5.8 -> 3.6.0: Add default diagnostics history size
 
 	config.settings.behavior.recordDiagnostics ??= false;

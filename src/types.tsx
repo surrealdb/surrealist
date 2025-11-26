@@ -12,6 +12,7 @@ export type ColorScheme = "light" | "dark";
 export type DatabaseListMode = "list" | "grid";
 export type DiagramAlgorithm = "default" | "aligned" | "spaced";
 export type DiagramDirection = "default" | "ltr" | "rtl";
+export type DiagramStrategy = "NETWORK_SIMPLEX" | "BRANDES_KOEPF" | "LINEAR_SEGMENTS";
 export type DiagramLineStyle = "default" | "metro" | "straight" | "smooth";
 export type DiagramLinks = "default" | "hidden" | "visible";
 export type DiagramMode = "default" | "fields" | "summary" | "simple";
@@ -153,6 +154,7 @@ export interface Connection {
 	pinnedTables: string[];
 	diagramAlgorithm: DiagramAlgorithm;
 	diagramDirection: DiagramDirection;
+	diagramStrategy: DiagramStrategy;
 	diagramLineStyle: DiagramLineStyle;
 	diagramLinkMode: DiagramLinks;
 	diagramHoverFocus: DiagramHoverFocus;
@@ -209,6 +211,7 @@ export interface SurrealistAppearanceSettings {
 	defaultNoneResultMode: NoneResultMode;
 	defaultDiagramAlgorithm: DiagramAlgorithm;
 	defaultDiagramDirection: DiagramDirection;
+	defaultDiagramStrategy: DiagramStrategy;
 	defaultDiagramLineStyle: DiagramLineStyle;
 	defaultDiagramLinkMode: DiagramLinks;
 	defaultDiagramMode: DiagramMode;
