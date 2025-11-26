@@ -118,7 +118,7 @@
 		"surrealdb": "^2.0.0-alpha.12",
 		"turndown": "^7.2.1",
 		"use-immer": "^0.9.0",
-		"valibot": "^0.42.1",
+		"valibot": "^1.2.0",
 		"wouter": "^3.3.5",
 		"zustand": "^4.5.0"
 	},
