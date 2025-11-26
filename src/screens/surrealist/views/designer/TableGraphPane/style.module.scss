@@ -92,7 +92,7 @@
 		top: 0;
 		width: 10000vw;
 		height: 10000vh;
-		contain: strict;
+		contain: layout;
 	}
 
 	:global(.react-flow__nodes) {
