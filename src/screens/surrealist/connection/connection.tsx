@@ -215,7 +215,7 @@ export async function openConnection(options?: ConnectOptions) {
 			await instance.query("DEFINE NAMESPACE IF NOT EXISTS sandbox");
 			await instance.query("DEFINE DATABASE IF NOT EXISTS sandbox");
 
-			if (!hasCompletedSandboxOnboarding) {
+			if (!hasCompletedSandboxOnboarding && adapter.isSampleSandboxEnabled) {
 				const queries = [SURREAL_START_BASICS];
 
 				const canUse30Queries = compareVersions(version, "3.0.0") >= 0;
