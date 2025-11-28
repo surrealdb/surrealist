@@ -3,13 +3,13 @@ import { useAbsoluteLocation, useSearchParams } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import { tagEvent } from "~/util/analytics";
 import { handleIntentRequest } from "~/util/intents";
-import { INVITATION_KEY, REFERRER_KEY } from "~/util/storage";
+import { AWS_MARKETPLACE_KEY, INVITATION_KEY, REFERRER_KEY } from "~/util/storage";
 
 export function useAppRouter() {
 	const { setActiveResource } = useConfigStore.getState();
 
 	const [path, setPath] = useAbsoluteLocation();
-	const { intent, referrer, invitation } = useSearchParams();
+	const { intent, referrer, aws_token, invitation } = useSearchParams();
 	const resource = useConfigStore((s) => s.activeResource);
 
 	// Restore active resource
@@ -45,6 +45,13 @@ export function useAppRouter() {
 			sessionStorage.setItem(INVITATION_KEY, invitation);
 		}
 	}, [invitation]);
+
+	// Cloud AWS marketplace token
+	useLayoutEffect(() => {
+		if (aws_token) {
+			sessionStorage.setItem(AWS_MARKETPLACE_KEY, aws_token);
+		}
+	}, [aws_token]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Page views
 	useLayoutEffect(() => {
