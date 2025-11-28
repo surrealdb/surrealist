@@ -696,7 +696,6 @@ export interface CloudOrganization {
 	payment_info: boolean;
 	plan: CloudPlan;
 	available_plans: CloudPlan[];
-	archived_at?: string;
 	member_count: number;
 	user_role: string;
 }

@@ -1,6 +1,6 @@
 import { Button, SimpleGrid, Skeleton } from "@mantine/core";
 import { Link } from "wouter";
-import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
+import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Section } from "~/components/Section";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
@@ -23,9 +23,9 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	const navigateConnection = useConnectionNavigator();
 	const { data, isSuccess, isPending } = useCloudOrganizationInstancesQuery(organization.id);
 	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
+	const isRestricted = isOrganisationRestricted(organization);
 	const instances = isSuccess ? data : [];
-	const isArchived = !!organization.archived_at;
-	const canCreate = isSuccess && instances.length === 0 && !isArchived && isAdmin;
+	const canCreate = isSuccess && instances.length === 0 && !isRestricted && isAdmin;
 
 	const activateInstance = useStable((instance: CloudInstance) => {
 		navigateConnection(resolveInstanceConnection(instance).id);
@@ -40,7 +40,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 					<Link href={`/o/${organization.id}/deploy`}>
 						<Button
 							size="xs"
-							disabled={isArchived}
+							disabled={isRestricted}
 							variant="gradient"
 						>
 							Deploy instance

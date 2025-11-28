@@ -1,27 +1,14 @@
-import { Alert, Box, Button, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Button, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
-import { useArchiveOrganizationMutation } from "~/cloud/mutations/archive";
 import { useUpdateOrganizationMutation } from "~/cloud/mutations/update";
-import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
-import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useConfirmation } from "~/providers/Confirmation";
-import { formatArchiveDate } from "~/util/cloud";
-import { useFeatureFlags } from "~/util/feature-flags";
 import { showInfo } from "~/util/helpers";
-import { iconPackageClosed } from "~/util/icons";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationSettingsTab({ organization }: OrganizationTabProps) {
-	const [{ organization_archiving }] = useFeatureFlags();
-
 	const updateMutation = useUpdateOrganizationMutation(organization.id);
-	const archiveMutation = useArchiveOrganizationMutation(organization.id);
-	const isOwner = hasOrganizationRoles(organization, ORG_ROLES_OWNER);
 
-	const [, navigate] = useAbsoluteLocation();
 	const [name, setName] = useInputState(organization.name);
 
 	const handleSaveName = useStable(async () => {
@@ -35,31 +22,31 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 		});
 	});
 
-	const requestArchive = useConfirmation({
-		title: `Archive ${organization.name}`,
-		message: (
-			<Stack>
-				<Text>
-					Are you sure you want to archive this organisation? Instances will continue to
-					use resources and you will be billed for them.
-				</Text>
-				<Text c="bright">This action cannot be undone.</Text>
-			</Stack>
-		),
-		confirmText: "Archive",
-		verification: organization.name,
-		verifyText: "Type the organisation name to confirm",
-		onConfirm: async () => {
-			navigate("/organisations");
+	// const requestArchive = useConfirmation({
+	// 	title: `Archive ${organization.name}`,
+	// 	message: (
+	// 		<Stack>
+	// 			<Text>
+	// 				Are you sure you want to archive this organisation? Instances will continue to
+	// 				use resources and you will be billed for them.
+	// 			</Text>
+	// 			<Text c="bright">This action cannot be undone.</Text>
+	// 		</Stack>
+	// 	),
+	// 	confirmText: "Archive",
+	// 	verification: organization.name,
+	// 	verifyText: "Type the organisation name to confirm",
+	// 	onConfirm: async () => {
+	// 		navigate("/organisations");
 
-			await archiveMutation.mutateAsync();
+	// 		await archiveMutation.mutateAsync();
 
-			showInfo({
-				title: "Organisation archived",
-				subtitle: `${organization.name} has been archived`,
-			});
-		},
-	});
+	// 		showInfo({
+	// 			title: "Organisation archived",
+	// 			subtitle: `${organization.name} has been archived`,
+	// 		});
+	// 	},
+	// });
 
 	return (
 		<Stack>
@@ -84,7 +71,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 				</Box>
 			</Section>
 
-			{organization_archiving && isOwner && (
+			{/* {organization_archiving && isOwner && (
 				<Section
 					title="Archive organisation"
 					description="Mark this organisation as archived. This will hide it from the list of organisations."
@@ -123,7 +110,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 						</Alert>
 					)}
 				</Section>
-			)}
+			)} */}
 		</Stack>
 	);
 }

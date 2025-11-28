@@ -179,3 +179,16 @@ export function isOrganisationBillable(organisation: CloudOrganization): boolean
 export function getBillingProviderName(organisation: CloudOrganization): string {
 	return BILLING_PROVIDER_NAMES[organisation.billing_provider] ?? "[unknown provider]";
 }
+
+export function isOrganisationRestricted(organisation: CloudOrganization): boolean {
+	return (
+		organisation.state === "freezing" ||
+		organisation.state === "frozen" ||
+		organisation.state === "terminating" ||
+		organisation.state === "terminated"
+	);
+}
+
+export function isOrganisationTerminated(organisation: CloudOrganization): boolean {
+	return organisation.state === "terminating" || organisation.state === "terminated";
+}

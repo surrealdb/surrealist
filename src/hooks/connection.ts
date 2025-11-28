@@ -2,6 +2,7 @@ import { compareVersions } from "compare-versions";
 import { unique } from "radash";
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
+import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudInstanceList } from "~/cloud/hooks/instances";
 import { GLOBAL_PAGES, SANDBOX, VIEW_PAGES } from "~/constants";
 import { openRequiredDatabaseModal } from "~/modals/require-database";
@@ -241,7 +242,7 @@ export function useConnectionOverview({
 		const [sandbox] = filterConnections([sandboxInfo], search, labels, labelMode, labelInclude);
 
 		for (const entry of entries) {
-			if (entry.organization.archived_at) {
+			if (isOrganisationTerminated(entry.organization)) {
 				continue;
 			}
 
