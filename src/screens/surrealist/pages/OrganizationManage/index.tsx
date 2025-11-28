@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import {
 	hasOrganizationRoles,
+	isBillingManaged,
 	ORG_ROLES_ADMIN,
 	ORG_ROLES_OWNER,
 	ORG_ROLES_SUPPORT,
@@ -48,7 +49,11 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 
 	const isSupport = organization ? hasOrganizationRoles(organization, ORG_ROLES_SUPPORT) : false;
 	const isAdmin = organization ? hasOrganizationRoles(organization, ORG_ROLES_ADMIN) : false;
-	const isOwner = organization ? hasOrganizationRoles(organization, ORG_ROLES_OWNER) : false;
+	const isOwner = organization
+		? hasOrganizationRoles(organization, ORG_ROLES_OWNER, true)
+		: false;
+
+	const isManagedBilling = organization ? isBillingManaged(organization) : false;
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {
@@ -138,7 +143,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											>
 												Team
 											</Tabs.Tab>
-											{isOwner && (
+											{isOwner && !isManagedBilling && (
 												<>
 													<Tabs.Tab
 														value="invoices"
@@ -198,7 +203,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											<OrganizationTeamTab organization={organization} />
 										</Tabs.Panel>
 
-										{isAdmin && (
+										{isOwner && !isManagedBilling && (
 											<>
 												<Tabs.Panel value="invoices">
 													<OrganizationInvoicesTab
@@ -211,13 +216,17 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 														organization={organization}
 													/>
 												</Tabs.Panel>
-
-												<Tabs.Panel value="support">
-													<OrganizationSupportTab
-														organization={organization}
-													/>
-												</Tabs.Panel>
-
+											</>
+										)}
+										{isSupport && (
+											<Tabs.Panel value="support">
+												<OrganizationSupportTab
+													organization={organization}
+												/>
+											</Tabs.Panel>
+										)}
+										{isAdmin && (
+											<>
 												<Tabs.Panel value="usage">
 													<OrganizationUsageTab
 														organization={organization}

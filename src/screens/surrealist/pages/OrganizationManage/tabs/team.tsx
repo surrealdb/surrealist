@@ -46,6 +46,10 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 		openMemberInvitationModal(organization);
 	});
 
+	const sanitizeRole = useStable((role: string) => {
+		return role.replace("restricted_", "");
+	});
+
 	const invitations = useMemo(() => {
 		return invitesQuery.data?.filter((invite) => invite.status !== "accepted") || [];
 	}, [invitesQuery.data]);
@@ -122,7 +126,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 															variant="light"
 															size="sm"
 														>
-															{member.role}
+															{sanitizeRole(member.role)}
 														</Badge>
 														{isSelf && (
 															<Badge

@@ -50,6 +50,14 @@ export type IntercomConversationStateId = "open" | "closed" | "snoozed";
 export type MigrationIssueSeverity = "might_break" | "will_break" | "breaking_resolution";
 export type MigrationIssueKind = "incompatible feature";
 export type MigrationIssueTruncation = "none" | "start" | "end" | "both";
+export type OrganisationState =
+	| "created"
+	| "onboarded"
+	| "freezing"
+	| "frozen"
+	| "terminating"
+	| "terminated";
+export type OrganisationBillingProvider = "stripe" | "aws_marketplace";
 
 export type InstanceState =
 	| "creating"
@@ -680,6 +688,8 @@ export interface CloudPlan {
 export interface CloudOrganization {
 	id: string;
 	name: string;
+	state: OrganisationState;
+	billing_provider: OrganisationBillingProvider;
 	max_free_instances: number;
 	max_paid_instances: number;
 	billing_info: boolean;

@@ -1,11 +1,17 @@
 import { Duration, sub } from "date-fns";
 import { CLOUD_ROLES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
-import { CloudDeployConfig, CloudOrganization, InstancePlan, MetricsDuration } from "~/types";
+import {
+	CloudDeployConfig,
+	CloudOrganization,
+	InstancePlan,
+	MetricsDuration,
+	OrganisationBillingProvider,
+} from "~/types";
 
 export const ORG_ROLES_OWNER = ["owner"];
 export const ORG_ROLES_ADMIN = ["admin", "owner"];
-export const ORG_ROLES_SUPPORT = ["support-member", "admin", "owner"];
+export const ORG_ROLES_SUPPORT = ["support_member", "admin", "owner"];
 
 export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	name: "",
@@ -48,6 +54,11 @@ export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	start: ["small-dev", "medium", "xlarge"],
 	scale: ["medium-compute", "large-compute", "xlarge-memory"],
 	enterprise: ["medium-compute", "large-compute", "xlarge-memory"],
+};
+
+export const BILLING_PROVIDER_NAMES: Record<OrganisationBillingProvider, string> = {
+	stripe: "Stripe",
+	aws_marketplace: "AWS Marketplace",
 };
 
 export function clearCachedConnections() {
@@ -129,7 +140,11 @@ export function isDistributedPlan(plan: InstancePlan): boolean {
 	return plan === "scale" || plan === "enterprise";
 }
 
-export function hasOrganizationRoles(organisation: CloudOrganization | undefined, roles: string[]) {
+export function hasOrganizationRoles(
+	organisation: CloudOrganization | undefined,
+	roles: string[],
+	allowRestricted?: boolean,
+) {
 	if (!organisation) {
 		return false;
 	}
@@ -140,11 +155,27 @@ export function hasOrganizationRoles(organisation: CloudOrganization | undefined
 		);
 	}
 
-	const currentRole = organisation.user_role;
+	let currentRole = organisation.user_role;
 
 	if (!currentRole) {
 		return false;
 	}
 
+	if (allowRestricted) {
+		currentRole = currentRole.replace("restricted_", "");
+	}
+
 	return roles.includes(currentRole);
+}
+
+export function isBillingManaged(organisation: CloudOrganization): boolean {
+	return organisation.billing_provider !== "stripe";
+}
+
+export function isOrganisationBillable(organisation: CloudOrganization): boolean {
+	return organisation.state === "onboarded";
+}
+
+export function getBillingProviderName(organisation: CloudOrganization): string {
+	return BILLING_PROVIDER_NAMES[organisation.billing_provider] ?? "[unknown provider]";
 }
