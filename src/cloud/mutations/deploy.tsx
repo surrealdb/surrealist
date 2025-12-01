@@ -13,14 +13,15 @@ export interface OrganizationUpdate {
 /**
  * Instance deploy mutation
  */
-export function useInstanceDeployMutation(
-	organisation: CloudOrganization,
-	config: CloudDeployConfig,
-) {
+export function useInstanceDeployMutation(organisation?: CloudOrganization) {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: async () => {
+		mutationFn: async (config: CloudDeployConfig) => {
+			if (!organisation) {
+				throw new Error("Organization is required");
+			}
+
 			const configuration = compileDeployConfig(organisation, config);
 			const instance = await fetchAPI<CloudInstance>("/instances", {
 				method: "POST",
