@@ -107,7 +107,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 								)}
 								{!areTicketsLoading && (!pageSlice || pageSlice.length === 0) && (
 									<Center>
-										<Text>No support requests found</Text>
+										<Text>No support tickets found</Text>
 									</Center>
 								)}
 							</Stack>

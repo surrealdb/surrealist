@@ -434,14 +434,12 @@ export function ConversationPage({ id }: ConversationPageProps) {
 										{ label: "Surrealist", href: "/overview" },
 										{ label: "Support", href: "/support" },
 										{ label: "Requests", href: "/support/requests" },
-										{ label: title ?? "Unnamed Conversation" },
+										{ label: title ?? "Unnamed" },
 									]}
 								/>
 								<Group mt="sm">
 									<Group>
-										<PrimaryTitle fz={32}>
-											{title ?? "Unnamed Conversation"}
-										</PrimaryTitle>
+										<PrimaryTitle fz={32}>{title ?? "Unnamed"}</PrimaryTitle>
 									</Group>
 
 									<Spacer />
@@ -452,7 +450,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 										leftSection={<Icon path={iconArrowLeft} />}
 										onClick={() => navigate(`/support/requests`)}
 									>
-										All requests
+										All tickets
 									</Button>
 								</Group>
 							</Box>
@@ -629,7 +627,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 													fw={700}
 													c="bright"
 												>
-													Add a comment
+													Submit
 												</Text>
 											</Group>
 											<PillGroup>

@@ -26,10 +26,8 @@ import universityImage from "~/assets/images/icons/university.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
 import { Icon } from "~/components/Icon";
-import { ListMenu } from "~/components/ListMenu";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { SUPPORT_REQUEST_TYPES } from "~/constants";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { iconPlus, iconSearch } from "~/util/icons";
@@ -107,7 +105,7 @@ export function SupportPage() {
 											fz={20}
 											lh={1}
 										>
-											Recent support requests
+											Recent support tickets
 										</Text>
 										<Spacer />
 										<Button
@@ -118,27 +116,19 @@ export function SupportPage() {
 										>
 											View All
 										</Button>
-										<ListMenu
-											menuProps={{
-												position: "bottom-start",
-											}}
-											dropdownProps={{
-												w: 250,
-											}}
-											data={SUPPORT_REQUEST_TYPES}
-											value={undefined}
-											onChange={(type) => {
-												dispatchIntent("create-message", { type });
+
+										<Button
+											variant="gradient"
+											size="xs"
+											rightSection={<Icon path={iconPlus} />}
+											onClick={() => {
+												dispatchIntent("create-message", {
+													type: "ticket",
+												});
 											}}
 										>
-											<Button
-												variant="gradient"
-												size="xs"
-												rightSection={<Icon path={iconPlus} />}
-											>
-												Raise new request
-											</Button>
-										</ListMenu>
+											Create new ticket
+										</Button>
 									</Group>
 
 									<Stack
@@ -311,20 +301,27 @@ export function SupportPage() {
 								image={githubImage}
 								onClick={() => adapter.openUrl("https://github.com/surrealdb")}
 							/>
-							{/* <ResourceTile
-								name="Contact Support"
-								description="For account and billing issues, raise a support request"
-								image={chatImage}
-								onClick={() =>
-									dispatchIntent("create-message", { type: "conversation" })
-								}
-							/> */}
-							<ResourceTile
-								name="Contact Support"
-								description="For account and billing issues, email support"
-								image={chatImage}
-								onClick={() => adapter.openUrl("mailto:support@surrealdb.com")}
-							/>
+							{flags.support_tickets && (
+								<ResourceTile
+									name="Account Support"
+									description="Contact us for account and billing issues"
+									image={chatImage}
+									onClick={() =>
+										dispatchIntent("create-message", {
+											type: "conversation",
+											conversationType: "general",
+										})
+									}
+								/>
+							)}
+							{!flags.support_tickets && (
+								<ResourceTile
+									name="Contact Support"
+									description="For account and billing issues, email support"
+									image={chatImage}
+									onClick={() => adapter.openUrl("mailto:support@surrealdb.com")}
+								/>
+							)}
 						</SimpleGrid>
 					</Box>
 				</Stack>

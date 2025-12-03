@@ -78,8 +78,9 @@ export function SupportPlansPage({ id }: SupportPlansPageProps) {
 													dispatchIntent("create-message", {
 														type: "conversation",
 														organisation: organisation.id,
-														subject: "Support plan inquiry",
+														subject: "Support plan enquiry",
 														message: `Hello! I was interested in learning more about the ${config.name} support plan for my organisation (ID: ${organisation.id}). Could you provide me with more information about the plan? Thanks!`,
+														conversationType: "sales-enquiry",
 													});
 												}}
 											/>

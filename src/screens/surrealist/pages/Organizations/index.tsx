@@ -58,7 +58,9 @@ export function OrganizationsPage() {
 								fz={32}
 								mt="sm"
 							>
-								Organisations
+								{params.get("destination")
+									? "Select an Organisation"
+									: "Organisations"}
 							</PrimaryTitle>
 						</Box>
 

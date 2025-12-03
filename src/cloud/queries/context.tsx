@@ -23,6 +23,7 @@ export function useConversationsQuery() {
 
 	return useQuery({
 		queryKey: ["cloud", "conversations"],
+		refetchInterval: 30_000,
 		enabled: authState === "authenticated" && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation[]>(`/cloud/conversations`, env);
@@ -39,6 +40,7 @@ export function useCloudOrganizationTicketsQuery(organizationId?: string) {
 
 	return useQuery({
 		queryKey: ["cloud", "organization_tickets", organizationId],
+		refetchInterval: 30_000,
 		enabled: !!organizationId && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomTicket[]>(`/cloud/org/${organizationId}/tickets`, env);
@@ -74,6 +76,7 @@ export function useCloudConversationQuery(conversationId?: string) {
 
 	return useQuery({
 		queryKey: ["cloud", "conversations", conversationId],
+		refetchInterval: 30_000,
 		enabled: !!conversationId && authState === "authenticated" && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation>(
@@ -94,6 +97,7 @@ export function useCloudUnreadConversationsQuery() {
 
 	return useQuery({
 		queryKey: ["cloud", "unread_conversations"],
+		refetchInterval: 30_000,
 		enabled: authState === "authenticated" && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<boolean>(`/cloud/conversations/has_unread`, env);

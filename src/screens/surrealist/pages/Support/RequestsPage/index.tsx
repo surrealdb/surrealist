@@ -4,13 +4,11 @@ import { navigate } from "wouter/use-browser-location";
 import { useConversationsQuery } from "~/cloud/queries/context";
 import { AuthGuard } from "~/components/AuthGuard";
 import { Icon } from "~/components/Icon";
-import { ListMenu } from "~/components/ListMenu";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { SUPPORT_REQUEST_TYPES } from "~/constants";
 import { iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ConversationCard } from "../ConversationCard";
@@ -71,25 +69,20 @@ export function RequestsPage() {
 									fz={32}
 									mt="sm"
 								>
-									Support requests
+									Support tickets
 								</PrimaryTitle>
 								<Spacer />
 
-								<ListMenu
-									data={SUPPORT_REQUEST_TYPES}
-									value={undefined}
-									onChange={(type) => {
-										dispatchIntent("create-message", { type });
+								<Button
+									variant="gradient"
+									size="xs"
+									rightSection={<Icon path={iconPlus} />}
+									onClick={() => {
+										dispatchIntent("create-message", { type: "ticket" });
 									}}
 								>
-									<Button
-										variant="gradient"
-										size="xs"
-										rightSection={<Icon path={iconPlus} />}
-									>
-										Raise new request
-									</Button>
-								</ListMenu>
+									Create new ticket
+								</Button>
 							</Group>
 						</Box>
 
@@ -121,7 +114,7 @@ export function RequestsPage() {
 
 								<Group
 									justify="center"
-									mt="xl"
+									py="xl"
 								>
 									<Pagination store={pagination} />
 								</Group>
@@ -138,8 +131,8 @@ export function RequestsPage() {
 									gap={0}
 									align="center"
 								>
-									<PrimaryTitle>No requests found</PrimaryTitle>
-									<Text>You have no current or previous support requests</Text>
+									<PrimaryTitle>No tickets found</PrimaryTitle>
+									<Text>You have no current or previous support tickets</Text>
 								</Stack>
 							</Center>
 						)}
