@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "surrealist",
@@ -43,7 +44,7 @@
         "@surrealdb/lezer": "1.0.0-beta.23",
         "@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
         "@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.0",
-        "@surrealdb/wasm": "^2.3.4",
+        "@surrealdb/wasm": "^2.4.0",
         "@tanstack/react-query": "^5.37.1",
         "@tauri-apps/api": "2.4.0",
         "@tauri-apps/plugin-deep-link": "2.2.0",
@@ -605,7 +606,7 @@
 
     "@surrealdb/ql-wasm-3": ["@surrealdb/ql-wasm@0.3.0", "", {}, "sha512-wzwW05k54P28cQ24hqVomk0pPjs6P88hl4IZZJHnMr8jwdqYltO088u2Rj0S9AKjJx3ZmL4+jW6YqyF2aOuX0A=="],
 
-    "@surrealdb/wasm": ["@surrealdb/wasm@2.3.4", "", { "peerDependencies": { "surrealdb": "^2.0.0-0" } }, "sha512-BoFMx89GaV0/3T5BqycS+57O0agChbnTQ+PXNpNAMmxIWIr/x3j0EVd+lgUlkKulbbNIuBULSYXf+4boaJ0k/A=="],
+    "@surrealdb/wasm": ["@surrealdb/wasm@2.4.0", "", { "peerDependencies": { "surrealdb": "^2.0.0-0" } }, "sha512-qqyZx95YdEQ9G8ZCYL8EOJPKsiCOm0H0r1UgQtLghsTEE2CnztNqRXpo7+DdOSqRXW6vysGdSoSw3nEDfAtPsw=="],
 
     "@szmarczak/http-timer": ["@szmarczak/http-timer@5.0.1", "", { "dependencies": { "defer-to-connect": "^2.0.1" } }, "sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw=="],
 
