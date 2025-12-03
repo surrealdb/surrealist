@@ -486,22 +486,23 @@ export function SurrealistToolbar() {
 														};
 
 														if (!hasBilling && !allowFree) {
-															openBillingRequiredModal({
-																organization:
-																	organization ?? undefined,
-																onClose: () => {
-																	setIsDeploying(false);
+															if (organization) {
+																openBillingRequiredModal({
+																	organization,
+																	onClose: () => {
+																		setIsDeploying(false);
 
-																	showErrorNotification({
-																		title: "Deployment failed",
-																		content:
-																			"Fields are missing or invalid.",
-																	});
-																},
-																onContinue: () => {
-																	deployInstance();
-																},
-															});
+																		showErrorNotification({
+																			title: "Deployment failed",
+																			content:
+																				"Fields are missing or invalid.",
+																		});
+																	},
+																	onContinue: () => {
+																		deployInstance();
+																	},
+																});
+															}
 														} else {
 															deployInstance();
 														}
