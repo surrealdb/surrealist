@@ -14,6 +14,7 @@ import {
 import { navigate } from "wouter/use-browser-location";
 import glow from "~/assets/images/glow.webp";
 import cloud from "~/assets/images/icons/cloud.webp";
+import { getBillingProviderName, isBillingManaged, isOrganisationBillable } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { BillingDetails } from "~/components/BillingDetails";
@@ -88,9 +89,10 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 		}
 	});
 
-	const requireBilling = instanceType?.category !== "free";
-	const hasBilling = !!organisation?.billing_info && !!organisation?.payment_info;
-	const deployDisabled = !organisation || (requireBilling && !hasBilling);
+	const isFree = instanceType?.category === "free";
+	const isManaged = isBillingManaged(organisation);
+	const isBillable = isOrganisationBillable(organisation);
+	const isBlocked = !isFree && !isBillable;
 
 	const regions = useCloudStore((s) => s.regions);
 	const regionName =
@@ -103,7 +105,6 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const typeCategory = instanceType?.category ?? "";
 	const nodeCount = details?.units ?? 0;
 
-	const isFree = instanceType?.category === "free";
 	const backupText = isFree ? "Upgrade required" : "Available";
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
@@ -209,7 +210,7 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 				<Text>{organisation.name}</Text>
 			</Box>
 
-			{!requireBilling ? (
+			{isFree ? (
 				<Paper
 					className={classes.freeBox}
 					variant="gradient"
@@ -241,7 +242,33 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 						className={classes.freeGlow}
 					/>
 				</Paper>
-			) : hasBilling ? (
+			) : isBlocked ? (
+				<>
+					<Alert
+						mt="md"
+						color="orange"
+						icon={<Icon path={iconCreditCard} />}
+						title="Billing & payment information required"
+					>
+						{isManaged
+							? `You must configure billing and payment information in ${getBillingProviderName(organisation)} to deploy this instance. Once configured, you can continue to deploy your instance.`
+							: `You must provide billing and payment details to deploy this instance. This information will be remembered for future deployments in this organisation.`}
+					</Alert>
+					{!isManaged && (
+						<SimpleGrid
+							mt="xl"
+							spacing="xl"
+							cols={{
+								xs: 1,
+								md: 2,
+							}}
+						>
+							<BillingDetails organisation={organisation} />
+							<PaymentDetails organisation={organisation} />
+						</SimpleGrid>
+					)}
+				</>
+			) : (
 				<Paper
 					variant="gradient"
 					mt="md"
@@ -264,10 +291,24 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 								Your billing and payment information is already set up for this
 								organisation.
 							</Text>
+							{!isManaged && (
+								<Button
+									mt="md"
+									size="xs"
+									hiddenFrom="sm"
+									color="slate"
+									variant="light"
+									rightSection={<Icon path={iconArrowUpRight} />}
+									onClick={() => navigate(`/o/${organisation.id}/billing`)}
+								>
+									Update billing details
+								</Button>
+							)}
+						</Alert>
+						{!isManaged && (
 							<Button
-								mt="md"
 								size="xs"
-								hiddenFrom="sm"
+								visibleFrom="sm"
 								color="slate"
 								variant="light"
 								rightSection={<Icon path={iconArrowUpRight} />}
@@ -275,43 +316,9 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 							>
 								Update billing details
 							</Button>
-						</Alert>
-						<Button
-							size="xs"
-							visibleFrom="sm"
-							color="slate"
-							variant="light"
-							rightSection={<Icon path={iconArrowUpRight} />}
-							onClick={() => navigate(`/o/${organisation.id}/billing`)}
-						>
-							Update billing details
-						</Button>
+						)}
 					</Flex>
 				</Paper>
-			) : (
-				<Alert
-					mt="md"
-					color="orange"
-					icon={<Icon path={iconCreditCard} />}
-					title="Billing & payment information required"
-				>
-					You must provide billing and payment details to deploy this instance. This
-					information will be remembered for future deployments in this organisation.
-				</Alert>
-			)}
-
-			{requireBilling && !hasBilling && (
-				<SimpleGrid
-					mt="xl"
-					spacing="xl"
-					cols={{
-						xs: 1,
-						md: 2,
-					}}
-				>
-					<BillingDetails organisation={organisation} />
-					<PaymentDetails organisation={organisation} />
-				</SimpleGrid>
 			)}
 
 			<Divider my={36} />
@@ -327,7 +334,7 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 				<Button
 					type="submit"
 					variant="gradient"
-					disabled={deployDisabled}
+					disabled={isBlocked}
 					loading={deployMutation.isPending}
 					onClick={handleDeploy}
 				>

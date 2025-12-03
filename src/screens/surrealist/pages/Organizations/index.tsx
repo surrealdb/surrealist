@@ -1,6 +1,7 @@
 import { Box, Button, Group, ScrollArea, SimpleGrid, Skeleton, Stack } from "@mantine/core";
 import { fork } from "radash";
 import { Link, useSearchParams } from "wouter";
+import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
@@ -24,7 +25,7 @@ export function OrganizationsPage() {
 
 	useSavepoint(ORGANIZATIONS);
 
-	const [active, archived] = fork(data || [], (org) => org.archived_at === undefined);
+	const [active, archived] = fork(data || [], (org) => !isOrganisationTerminated(org));
 
 	return (
 		<Box

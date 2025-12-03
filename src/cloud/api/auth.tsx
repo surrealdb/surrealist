@@ -11,6 +11,7 @@ import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { fastParseJwt, showErrorNotification } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
 import {
+	AWS_MARKETPLACE_KEY,
 	INVITATION_KEY,
 	REFERRER_KEY,
 	STATE_KEY,
@@ -242,6 +243,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 	try {
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
 		const invitationCode = sessionStorage.getItem(INVITATION_KEY);
+		const awsMarketplaceCode = sessionStorage.getItem(AWS_MARKETPLACE_KEY);
 
 		adapter.log("Cloud", "Acquiring cloud session");
 
@@ -253,6 +255,10 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 
 		if (invitationCode) {
 			params.append("invitation", invitationCode);
+		}
+
+		if (awsMarketplaceCode) {
+			params.append("aws_token", awsMarketplaceCode);
 		}
 
 		const result = await fetchAPI<CloudSignin>(`/signin?${params}`, {
@@ -315,6 +321,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 	} finally {
 		sessionStorage.removeItem(REFERRER_KEY);
 		sessionStorage.removeItem(INVITATION_KEY);
+		sessionStorage.removeItem(AWS_MARKETPLACE_KEY);
 	}
 }
 

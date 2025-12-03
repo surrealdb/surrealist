@@ -89,7 +89,16 @@ export const INSTANCE_CONFIG = "instance.json";
 export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
-export const CLOUD_ROLES = ["member", "support-member", "admin", "owner"];
+export const CLOUD_ROLES = [
+	"restricted_member",
+	"member",
+	"restricted_support_member",
+	"support_member",
+	"restricted_admin",
+	"admin",
+	"restricted_owner",
+	"owner",
+];
 
 export const DATASETS: Record<DatasetType, Dataset> = {
 	"surreal-deal-store-mini": {

@@ -84,9 +84,6 @@ export const schema = {
 	gtm_debug: {
 		options: [false, true],
 	},
-	organization_archiving: {
-		options: [false, true],
-	},
 	sidekick_ai: {
 		options: [false, true],
 	},
@@ -117,7 +114,6 @@ export const featureFlags = new FeatureFlags({
 			syntax_themes: true,
 			sidebar_customization: true,
 			gtm_debug: false,
-			organization_archiving: true,
 			sidekick_ai: true,
 			support_tickets: true,
 			v3_migration_tooling: true,

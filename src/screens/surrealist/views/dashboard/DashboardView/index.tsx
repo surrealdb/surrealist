@@ -22,6 +22,7 @@ import cloudUrl from "~/assets/images/icons/cloud.webp";
 import communtyUrl from "~/assets/images/icons/community.webp";
 import documentationUrl from "~/assets/images/icons/document.webp";
 import tutorialsUrl from "~/assets/images/icons/tutorials.webp";
+import { isOrganisationBillable } from "~/cloud/helpers";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
@@ -193,9 +194,11 @@ export function DashboardView() {
 	}, [details?.state, details, isConnected, importDatabase]);
 
 	const handleUpgradeType = useStable(() => {
+		if (!organisation) return;
+
 		setUpgradeTab("type");
 
-		if (organisation?.billing_info && organisation?.payment_info) {
+		if (isOrganisationBillable(organisation)) {
 			upgradingHandle.open();
 		} else {
 			setBillingRequiredOpened(true);
@@ -203,9 +206,11 @@ export function DashboardView() {
 	});
 
 	const handleUpgradeStorage = useStable(() => {
+		if (!organisation) return;
+
 		setUpgradeTab("disk");
 
-		if (organisation?.billing_info && organisation?.payment_info) {
+		if (isOrganisationBillable(organisation)) {
 			upgradingHandle.open();
 		} else {
 			setBillingRequiredOpened(true);

@@ -1,8 +1,11 @@
-import { Box, Divider, Group, ScrollArea, Stack, Tabs, ThemeIcon, Tooltip } from "@mantine/core";
+import { Alert, Box, Divider, ScrollArea, Stack, Tabs } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import {
 	hasOrganizationRoles,
+	isBillingManaged,
+	isOrganisationRestricted,
+	isOrganisationTerminated,
 	ORG_ROLES_ADMIN,
 	ORG_ROLES_OWNER,
 	ORG_ROLES_SUPPORT,
@@ -15,16 +18,15 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
-import { formatArchiveDate } from "~/util/cloud";
 import {
 	iconChat,
 	iconCog,
 	iconCreditCard,
 	iconDollar,
 	iconOrganization,
-	iconPackageClosed,
 	iconProgressClock,
 	iconServer,
+	iconWarning,
 } from "~/util/icons";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
@@ -48,7 +50,13 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 
 	const isSupport = organization ? hasOrganizationRoles(organization, ORG_ROLES_SUPPORT) : false;
 	const isAdmin = organization ? hasOrganizationRoles(organization, ORG_ROLES_ADMIN) : false;
-	const isOwner = organization ? hasOrganizationRoles(organization, ORG_ROLES_OWNER) : false;
+	const isOwner = organization
+		? hasOrganizationRoles(organization, ORG_ROLES_OWNER, true)
+		: false;
+
+	const isRestricted = organization ? isOrganisationRestricted(organization) : false;
+	const isTerminated = organization ? isOrganisationTerminated(organization) : false;
+	const isManagedBilling = organization ? isBillingManaged(organization) : false;
 
 	const savepoint = useMemo<Savepoint>(() => {
 		if (organization) {
@@ -95,25 +103,32 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 												{ label: organization.name },
 											]}
 										/>
-										<Group mt="sm">
-											<PrimaryTitle fz={32}>{organization.name}</PrimaryTitle>
-											{organization?.archived_at && (
-												<Tooltip
-													label={`Organisation was archived on ${formatArchiveDate(organization)}`}
-												>
-													<ThemeIcon
-														color="orange"
-														variant="transparent"
-													>
-														<Icon
-															path={iconPackageClosed}
-															size="xl"
-														/>
-													</ThemeIcon>
-												</Tooltip>
-											)}
-										</Group>
+										<PrimaryTitle
+											mt="sm"
+											fz={32}
+										>
+											{organization.name}
+										</PrimaryTitle>
 									</Box>
+									{isTerminated ? (
+										<Alert
+											color="slate"
+											title="Organisation terminated"
+										>
+											This organisation has been terminated and is no longer
+											available for provisioning new instances.
+										</Alert>
+									) : isRestricted ? (
+										<Alert
+											color="red"
+											title="Organisation restricted"
+											icon={<Icon path={iconWarning} />}
+										>
+											This organisation is currently restricted and access to
+											it has been limited. Please contact support to regain
+											access.
+										</Alert>
+									) : null}
 									<Tabs
 										mt="xl"
 										value={tab}
@@ -138,7 +153,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											>
 												Team
 											</Tabs.Tab>
-											{isOwner && (
+											{isOwner && !isManagedBilling && (
 												<>
 													<Tabs.Tab
 														value="invoices"
@@ -198,7 +213,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											<OrganizationTeamTab organization={organization} />
 										</Tabs.Panel>
 
-										{isAdmin && (
+										{isOwner && !isManagedBilling && (
 											<>
 												<Tabs.Panel value="invoices">
 													<OrganizationInvoicesTab
@@ -211,13 +226,17 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 														organization={organization}
 													/>
 												</Tabs.Panel>
-
-												<Tabs.Panel value="support">
-													<OrganizationSupportTab
-														organization={organization}
-													/>
-												</Tabs.Panel>
-
+											</>
+										)}
+										{isSupport && (
+											<Tabs.Panel value="support">
+												<OrganizationSupportTab
+													organization={organization}
+												/>
+											</Tabs.Panel>
+										)}
+										{isAdmin && (
+											<>
 												<Tabs.Panel value="usage">
 													<OrganizationUsageTab
 														organization={organization}

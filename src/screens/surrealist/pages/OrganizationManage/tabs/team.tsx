@@ -1,7 +1,12 @@
 import { Avatar, Badge, Box, Button, Group, Menu, Paper, Stack, Table, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { hasOrganizationRoles, ORG_ROLES_ADMIN, ORG_ROLES_OWNER } from "~/cloud/helpers";
+import {
+	hasOrganizationRoles,
+	isOrganisationRestricted,
+	ORG_ROLES_ADMIN,
+	ORG_ROLES_OWNER,
+} from "~/cloud/helpers";
 import { openMemberInvitationModal } from "~/cloud/modals/member-invite";
 import { openMemberRoleModal } from "~/cloud/modals/member-role";
 import { useRevocationMutation } from "~/cloud/mutations/invites";
@@ -34,9 +39,9 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
-	const isArchived = !!organization.archived_at;
 	const userId = useCloudStore((s) => s.userId);
 
+	const isRestricted = isOrganisationRestricted(organization);
 	const isOwner = hasOrganizationRoles(organization, ORG_ROLES_OWNER);
 	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
 
@@ -44,6 +49,10 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 
 	const handleInvite = useStable(() => {
 		openMemberInvitationModal(organization);
+	});
+
+	const sanitizeRole = useStable((role: string) => {
+		return role.replace("restricted_", "");
 	});
 
 	const invitations = useMemo(() => {
@@ -88,7 +97,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Button
 							size="xs"
 							variant="gradient"
-							disabled={isArchived}
+							disabled={isRestricted}
 							leftSection={<Icon path={iconAccountPlus} />}
 							onClick={handleInvite}
 						>
@@ -122,7 +131,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 															variant="light"
 															size="sm"
 														>
-															{member.role}
+															{sanitizeRole(member.role)}
 														</Badge>
 														{isSelf && (
 															<Badge
