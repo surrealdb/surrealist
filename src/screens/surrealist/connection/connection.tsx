@@ -133,6 +133,7 @@ export async function openConnection(options?: ConnectOptions) {
 			);
 
 			if (!instance || instance.state !== "ready") {
+				scheduleReconnect(1000);
 				return;
 			}
 		}
