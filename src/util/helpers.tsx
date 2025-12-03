@@ -175,30 +175,6 @@ export function mod(n: number, m: number) {
 }
 
 /**
- * Simplify the given field kind
- *
- * @param value The input kind string
- * @returns The simplified kind
- */
-export function simplifyKind(kind: string): string {
-	if (kind.startsWith("option<")) {
-		return `${simplifyKind(kind.slice(7, -1))}?`;
-	} else if (kind.startsWith("array<")) {
-		return `${simplifyKind(kind.slice(6, -1))}[]`;
-	} else if (kind.startsWith("record<")) {
-		return `*${simplifyKind(kind.slice(7, -1))}`;
-	} else {
-		const bracket = kind.indexOf("<");
-
-		if (bracket === -1) {
-			return kind;
-		}
-
-		return kind.slice(0, bracket);
-	}
-}
-
-/**
  * Create a new unique id
  */
 export function newId() {
