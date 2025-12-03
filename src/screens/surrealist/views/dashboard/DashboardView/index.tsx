@@ -156,7 +156,7 @@ export function DashboardView() {
 		try {
 			showNotification({
 				title: "Importing data",
-				message: "Importing datataset file",
+				message: "Importing datataset file...",
 			});
 
 			await executeQuery(
@@ -177,7 +177,7 @@ export function DashboardView() {
 		try {
 			showNotification({
 				title: "Importing data",
-				message: "Importing data from the data file",
+				message: "Importing data from the data file...",
 			});
 
 			await executeQuery("DEFINE NAMESPACE main; USE NS main; DEFINE DATABASE main;");
