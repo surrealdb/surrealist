@@ -85,7 +85,8 @@ const NetworkEgressChartLazy = memo(NetworkEgressChart);
 
 export function DashboardView() {
 	const isConnected = useIsConnected();
-	const [isCloud, instanceId] = useConnection((c) => [
+	const [conn, isCloud, instanceId] = useConnection((c) => [
+		c,
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
 	]);
@@ -243,7 +244,7 @@ export function DashboardView() {
 				importDatabase();
 			}
 
-			if (data && deployConnectionId === details.id) {
+			if (data && deployConnectionId === conn?.id) {
 				applyInitialDataFile();
 			}
 
