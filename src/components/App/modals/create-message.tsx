@@ -23,10 +23,24 @@ import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { SALES_ENQUIRY_TAG } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
 import { IntercomTicketTypeAttribute } from "~/types";
 import { iconChat, iconComment, iconCursor, iconHelp, iconTag, iconWarning } from "~/util/icons";
+
+const CONVERSATION_TYPES = [
+	{
+		id: "sales-enquiry",
+		header: "Sales enquiry",
+		tags: [SALES_ENQUIRY_TAG],
+	},
+	{
+		id: "general",
+		header: "Account / billing enquiry",
+		tags: [],
+	},
+];
 
 export function CreateMessageModal() {
 	const [isOpen, openedHandle] = useBoolean();
@@ -46,6 +60,7 @@ export function CreateMessageModal() {
 	const [name, setName] = useInputState<string>("");
 	const [description, setDescription] = useInputState<string>("");
 	const [attributes, setAttributes] = useInputState<Record<string, any>>({});
+	const [conversationType, setConversationType] = useInputState<string>("general");
 
 	const hasTicketsAccess =
 		organisationsWithSupportPlan && organisationsWithSupportPlan.length > 0;
@@ -57,13 +72,14 @@ export function CreateMessageModal() {
 			(isTicket &&
 				organisationsWithSupportPlan &&
 				organisationsWithSupportPlan.length > 0)) &&
-		ticketAttributes
-			?.filter(
-				(it) =>
-					it.required &&
-					!["organisation", "organization"].includes(it.name.toLowerCase()),
-			)
-			.every((it) => attributes[it.name]);
+		(!isTicket ||
+			ticketAttributes
+				?.filter(
+					(it) =>
+						it.required &&
+						!["organisation", "organization"].includes(it.name.toLowerCase()),
+				)
+				.every((it) => attributes[it.name]));
 
 	const isPending = createTicketMutation.isPending || createConversationMutation.isPending;
 
@@ -73,10 +89,10 @@ export function CreateMessageModal() {
 		setAttributes({});
 		setName("");
 		setDescription("");
-		setOrganisation(undefined);
+		setConversationType("general");
 	};
 
-	useIntent("create-message", ({ type, organisation, subject, message }) => {
+	useIntent("create-message", ({ type, organisation, subject, message, conversationType }) => {
 		if (type === "ticket") {
 			setIsTicket(true);
 		} else {
@@ -93,6 +109,10 @@ export function CreateMessageModal() {
 
 		if (message) {
 			setDescription(message);
+		}
+
+		if (conversationType) {
+			setConversationType(conversationType);
 		}
 
 		openedHandle.open();
@@ -116,7 +136,12 @@ export function CreateMessageModal() {
 			title={
 				<Group>
 					<Icon path={isTicket ? iconTag : iconChat} />
-					<PrimaryTitle>Create new {isTicket ? "ticket" : "conversation"}</PrimaryTitle>
+					<PrimaryTitle>
+						{isTicket
+							? "Create new ticket"
+							: (CONVERSATION_TYPES.find((it) => it.id === conversationType)
+									?.header ?? "General enquiry")}
+					</PrimaryTitle>
 				</Group>
 			}
 			onClose={handleClose}
@@ -131,13 +156,20 @@ export function CreateMessageModal() {
 								attributes: attributes,
 							});
 
+							console.log(result);
+
 							handleClose();
 							navigate(`/support/conversations/${result.id}`);
 						} else {
 							const result = await createConversationMutation.mutateAsync({
 								body: description,
 								subject: name,
+								tags:
+									CONVERSATION_TYPES.find((it) => it.id === conversationType)
+										?.tags ?? [],
 							});
+
+							console.log(result);
 
 							handleClose();
 							navigate(`/support/conversations/${result.id}`);
@@ -146,20 +178,19 @@ export function CreateMessageModal() {
 				}}
 			>
 				<Stack gap="xl">
-					{!isTicket && (
+					{(!isTicket || hasTicketsAccess) && (
 						<Alert
 							title="Please note"
 							color="violet"
 							icon={<Icon path={iconComment} />}
 						>
-							Conversations should only be used for billing & account issues as well
-							as sales inquiries
+							Replies will be sent here and to your email address.
 						</Alert>
 					)}
 					{isTicket && !hasTicketsAccess && (
 						<Alert
 							title="You are unable to create a support ticket"
-							color="red"
+							color="violet"
 							icon={<Icon path={iconWarning} />}
 						>
 							<Stack>
@@ -167,7 +198,7 @@ export function CreateMessageModal() {
 								plan or you do not have admin access to one that does.
 								<div>
 									<Button
-										color="slate"
+										color="violet"
 										variant="light"
 										size="xs"
 										onClick={() => {

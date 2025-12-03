@@ -50,7 +50,10 @@ export function PricingCard({
 					if (onClick) {
 						onClick(config);
 					} else {
-						dispatchIntent("create-message");
+						dispatchIntent("create-message", {
+							type: "conversation",
+							conversationType: "sales-enquiry",
+						});
 					}
 				}
 			}}

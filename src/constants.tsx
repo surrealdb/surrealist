@@ -86,6 +86,7 @@ export const SANDBOX = "sandbox";
 export const MAX_HISTORY_SIZE = 50;
 export const MAX_HISTORY_QUERY_LENGTH = 7500;
 export const MAX_LIVE_MESSAGES = 50;
+export const SALES_ENQUIRY_TAG = "11403616";
 export const INSTANCE_CONFIG = "instance.json";
 export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);

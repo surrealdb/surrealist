@@ -943,6 +943,7 @@ export interface IntercomTicketCreateRequest {
 export interface IntercomConversationCreateRequest {
 	body: string;
 	subject: string;
+	tags?: string[];
 }
 
 export interface IntercomConversationReplyRequest {
