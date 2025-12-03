@@ -1,6 +1,5 @@
 import * as v from "valibot";
 
-// only "root" mode to be used as of now
 export const AuthModeSchema = v.union([
 	v.literal("none"),
 	v.literal("root"),
@@ -33,6 +32,8 @@ export const InstanceConfigSchema = v.object({
 						mode: AuthModeSchema,
 						namespace: v.optional(v.string()),
 						database: v.optional(v.string()),
+						username: v.optional(v.string()),
+						password: v.optional(v.string()),
 					}),
 				),
 			}),
