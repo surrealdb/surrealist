@@ -15,12 +15,22 @@ export type PricingCardState = "available" | "future" | "contact";
 export interface PricingCardProps {
 	config?: PricingConfigBase;
 	state: PricingCardState;
+	actionText?: string;
 	recommended?: boolean;
+	disabled?: boolean;
 	ctaText?: string;
 	onClick?: (config: PricingConfigBase) => void;
 }
 
-export function PricingCard({ config, state, recommended, ctaText, onClick }: PricingCardProps) {
+export function PricingCard({
+	config,
+	state,
+	recommended,
+	actionText,
+	ctaText,
+	onClick,
+	disabled,
+}: PricingCardProps) {
 	if (!config) {
 		return null;
 	}
@@ -30,16 +40,18 @@ export function PricingCard({ config, state, recommended, ctaText, onClick }: Pr
 			p="xl"
 			role="button"
 			tabIndex={0}
-			variant={state === "future" ? "gradient" : "interactive"}
+			variant={disabled ? "disabled" : state === "future" ? "gradient" : "interactive"}
 			className={clsx(
 				recommended && classes.planRecommended,
 				state === "future" && classes.planDisabled,
 			)}
 			onClick={() => {
-				if (onClick) {
-					onClick(config);
-				} else {
-					dispatchIntent("create-message");
+				if (!disabled) {
+					if (onClick) {
+						onClick(config);
+					} else {
+						dispatchIntent("create-message");
+					}
 				}
 			}}
 		>
@@ -133,14 +145,15 @@ export function PricingCard({ config, state, recommended, ctaText, onClick }: Pr
 					mt="md"
 					gap="xs"
 					justify="end"
-					c={state === "future" ? "slate" : "surreal"}
+					c={disabled ? "slate" : state === "future" ? "slate" : "surreal"}
 				>
 					<Text inherit>
-						{state === "available"
-							? ctaText
-							: state === "future"
-								? "Coming soon"
-								: "Contact us"}
+						{actionText ??
+							(state === "available"
+								? ctaText
+								: state === "future"
+									? "Coming soon"
+									: "Contact us")}
 					</Text>
 					<Icon
 						className={classes.startBlogArrow}

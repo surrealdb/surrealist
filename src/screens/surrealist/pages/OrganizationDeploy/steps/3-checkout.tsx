@@ -51,14 +51,14 @@ import { StepProps } from "../types";
 
 export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const navigateConnection = useConnectionNavigator();
-	const deployMutation = useInstanceDeployMutation(organisation, details);
+	const deployMutation = useInstanceDeployMutation(organisation);
 	const instanceTypes = useInstanceTypeRegistry(organisation);
 	const instanceType = instanceTypes.get(details.type);
 
 	const handleDeploy = useStable(async () => {
 		try {
 			const { settings, updateConnection } = useConfigStore.getState();
-			const [instance, connection] = await deployMutation.mutateAsync();
+			const [instance, connection] = await deployMutation.mutateAsync(details);
 
 			if (details.startingData.type === "dataset") {
 				const dataset = "surreal-deal-store-mini";

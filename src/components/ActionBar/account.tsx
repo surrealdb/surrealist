@@ -126,7 +126,7 @@ export function CloudAccount() {
 						<AccountAvatar />
 					</div>
 				</Menu.Target>
-				<Menu.Dropdown w={200}>
+				<Menu.Dropdown miw={200}>
 					<Box
 						p="sm"
 						style={{ userSelect: "text", WebkitUserSelect: "text" }}
