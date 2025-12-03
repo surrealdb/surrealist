@@ -193,19 +193,11 @@ export function DashboardView() {
 				return;
 			}
 
-			const result = await executeQuery(content);
-
-			if (result.some((r) => !r.success)) {
-				showErrorNotification({
-					title: "Failed to import data",
-					content: "The data file contains invalid queries",
-				});
-				return;
-			}
+			await executeQuery(content);
 
 			showInfo({
-				title: "Data imported",
-				subtitle: "The data file has been imported successfully",
+				title: "Import finished",
+				subtitle: "The data file has finished importing",
 			});
 
 			setData(null);
