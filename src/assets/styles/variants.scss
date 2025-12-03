@@ -9,6 +9,11 @@
 
 }
 
+.mantine-Paper-root[data-variant=disabled] {
+	cursor: not-allowed;
+	opacity: 0.70;
+}
+
 .mantine-Paper-root[data-variant=interactive] {
 	transition: all 0.2s ease;
 	cursor: pointer;
