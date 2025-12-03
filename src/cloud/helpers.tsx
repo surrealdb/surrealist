@@ -172,7 +172,9 @@ export function isBillingManaged(organisation: CloudOrganization): boolean {
 	return organisation.billing_provider !== "stripe";
 }
 
-export function isOrganisationBillable(organisation: CloudOrganization): boolean {
+export function isOrganisationBillable(organisation?: CloudOrganization): boolean {
+	if (!organisation) return false;
+
 	return organisation.state === "onboarded";
 }
 

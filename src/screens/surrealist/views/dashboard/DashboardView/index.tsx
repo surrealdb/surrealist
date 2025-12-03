@@ -85,7 +85,8 @@ const NetworkEgressChartLazy = memo(NetworkEgressChart);
 
 export function DashboardView() {
 	const isConnected = useIsConnected();
-	const [isCloud, instanceId] = useConnection((c) => [
+	const [conn, isCloud, instanceId] = useConnection((c) => [
+		c,
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
 	]);
@@ -151,7 +152,8 @@ export function DashboardView() {
 	const { mutateAsync } = useUpdateInstanceVersionMutation(details);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
-	const { data, setIsDeploying, setData } = useDeployStore();
+	const { data, deployConnectionId, setIsDeploying, setData, setDeployConnectionId } =
+		useDeployStore();
 	const applyInitialDataset = useStable(async (dataset: DatasetType) => {
 		try {
 			showNotification({
@@ -190,6 +192,9 @@ export function DashboardView() {
 					title: "Failed to import data",
 					content: "The data file was not found",
 				});
+
+				setData(null);
+				setDeployConnectionId(null);
 				return;
 			}
 
@@ -201,11 +206,15 @@ export function DashboardView() {
 			});
 
 			setData(null);
+			setDeployConnectionId(null);
 		} catch (error) {
 			showErrorNotification({
 				title: "Failed to import data",
 				content: error,
 			});
+
+			setData(null);
+			setDeployConnectionId(null);
 		}
 	});
 
@@ -235,7 +244,7 @@ export function DashboardView() {
 				importDatabase();
 			}
 
-			if (data) {
+			if (data && deployConnectionId === conn?.id) {
 				applyInitialDataFile();
 			}
 

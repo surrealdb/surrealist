@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
+import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
@@ -85,6 +85,7 @@ export function SurrealistToolbar() {
 		setOrganization,
 		setRegion,
 		isDeploying,
+		setDeployConnectionId,
 		setIsDeploying,
 		setData,
 	} = useDeployStore();
@@ -96,7 +97,7 @@ export function SurrealistToolbar() {
 	const deployMutation = useInstanceDeployMutation(organization ?? undefined);
 	const instanceTypes = useInstanceTypeRegistry(organization ?? undefined);
 	const freeCount = instances.filter((instance) => instance.type.price_hour === 0).length;
-	const hasBilling = !!organization?.billing_info && !!organization?.payment_info;
+	const isBillable = isOrganisationBillable(organization ?? undefined);
 	const allowFree = freeCount < (organization?.max_free_instances ?? 0);
 
 	// Find the cheapest possible plan available to the user
@@ -404,14 +405,16 @@ export function SurrealistToolbar() {
 														}
 
 														const deployInstance = async () => {
-															if (!hasBilling && !allowFree) {
+															if (!isBillable && !allowFree) {
 																showErrorNotification({
 																	title: "Deployment cancelled",
 																	content:
 																		"Billing information is required to deploy a paid instance.",
 																});
 
+																setDeployConnectionId(null);
 																setIsDeploying(false);
+																setData(null);
 																return;
 															} else if (
 																!organization ||
@@ -425,6 +428,8 @@ export function SurrealistToolbar() {
 																});
 
 																setIsDeploying(false);
+																setData(null);
+																setDeployConnectionId(null);
 																return;
 															}
 
@@ -470,6 +475,7 @@ export function SurrealistToolbar() {
 																	queries: sandbox.queries,
 																});
 
+																setDeployConnectionId(conn.id);
 																setIsDeploying(false);
 																setOrganization(null);
 																setRegion(null);
@@ -485,17 +491,19 @@ export function SurrealistToolbar() {
 															}
 														};
 
-														if (!hasBilling && !allowFree) {
+														if (!isBillable && !allowFree) {
 															if (organization) {
 																openBillingRequiredModal({
 																	organization,
 																	onClose: () => {
 																		setIsDeploying(false);
+																		setData(null);
+																		setDeployConnectionId(null);
 
 																		showErrorNotification({
 																			title: "Deployment failed",
 																			content:
-																				"Fields are missing or invalid.",
+																				"Payment information is required",
 																		});
 																	},
 																	onContinue: () => {
