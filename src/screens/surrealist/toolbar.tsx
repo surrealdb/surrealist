@@ -100,7 +100,9 @@ export function SurrealistToolbar() {
 	const allowFree = freeCount < (organization?.max_free_instances ?? 0);
 
 	// Find the cheapest possible plan available to the user
-	const type = allowFree ? instanceTypes.get("free")?.slug : INSTANCE_PLAN_SUGGESTIONS.start[0];
+	const type = allowFree
+		? instanceTypes.get("free")
+		: instanceTypes.get(INSTANCE_PLAN_SUGGESTIONS.start[0]);
 
 	const regionSet = new Set(organization?.plan?.regions ?? []);
 	const supportedRegions = allRegions.filter((region) => regionSet.has(region.slug));
@@ -431,13 +433,14 @@ export function SurrealistToolbar() {
 																	name: generateRandomName(),
 																	version: versions[0],
 																	region: region?.slug ?? "",
-																	type: type ?? "",
+																	type: type.slug ?? "",
 																	units: 1,
 																	plan: allowFree
 																		? "free"
 																		: "start",
 																	storageCategory: "standard",
-																	storageAmount: 1024,
+																	storageAmount:
+																		type.default_storage_size,
 																	startingData: { type: "none" },
 																};
 
