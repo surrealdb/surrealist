@@ -82,7 +82,6 @@ export function SurrealistToolbar() {
 	const {
 		organization,
 		region,
-		data,
 		setOrganization,
 		setRegion,
 		isDeploying,
@@ -390,9 +389,7 @@ export function SurrealistToolbar() {
 															type: "text/plain",
 														});
 
-														setData(file);
-
-														if (!data) {
+														if (!file) {
 															showErrorNotification({
 																title: "Failed to deploy to cloud",
 																content:
@@ -401,11 +398,7 @@ export function SurrealistToolbar() {
 															setIsDeploying(false);
 															return;
 														} else {
-															showInfo({
-																title: "Deploying to cloud",
-																subtitle:
-																	"Sucessfully stored data file",
-															});
+															setData(file);
 														}
 
 														const deployInstance = async () => {

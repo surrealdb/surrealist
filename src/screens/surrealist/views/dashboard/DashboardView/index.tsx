@@ -14,6 +14,7 @@ import {
 	Text,
 	Tooltip,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { memo, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
@@ -48,7 +49,7 @@ import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngress
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { useDeployStore } from "~/stores/deploy";
 import { DatasetType } from "~/types";
-import { showErrorNotification } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconChevronDown, iconChevronRight } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
@@ -153,6 +154,11 @@ export function DashboardView() {
 	const { data, setIsDeploying, setData } = useDeployStore();
 	const applyInitialDataset = useStable(async (dataset: DatasetType) => {
 		try {
+			showNotification({
+				title: "Importing data",
+				message: "Importing datataset file",
+			});
+
 			await executeQuery(
 				"DEFINE NAMESPACE demo; USE NS demo; DEFINE DATABASE surreal_deal_store;",
 			);
@@ -169,6 +175,11 @@ export function DashboardView() {
 
 	const applyInitialDataFile = useStable(async () => {
 		try {
+			showNotification({
+				title: "Importing data",
+				message: "Importing data from the data file",
+			});
+
 			await executeQuery("DEFINE NAMESPACE main; USE NS main; DEFINE DATABASE main;");
 
 			await activateDatabase("main", "main");
@@ -182,7 +193,21 @@ export function DashboardView() {
 				return;
 			}
 
-			await executeQuery(content);
+			const result = await executeQuery(content);
+
+			if (result.some((r) => !r.success)) {
+				showErrorNotification({
+					title: "Failed to import data",
+					content: "The data file contains invalid queries",
+				});
+				return;
+			}
+
+			showInfo({
+				title: "Data imported",
+				subtitle: "The data file has been imported successfully",
+			});
+
 			setData(null);
 		} catch (error) {
 			showErrorNotification({
