@@ -48,7 +48,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 	return (
 		<>
 			<SimpleGrid
-				cols={{ base: 1, sm: 2, lg: showFree ? 4 : 3 }}
+				cols={{ base: 1, sm: 2, lg: showFree ? 3 : 2 }}
 				spacing="xl"
 			>
 				{showFree &&
