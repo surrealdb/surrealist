@@ -51,7 +51,7 @@ export function SupportPage() {
 
 	useEffect(() => {
 		if (search) {
-			dispatchIntent("open-help-center", { search });
+			dispatchIntent("open-help-centre", { search });
 		}
 	}, [search]);
 
@@ -79,7 +79,7 @@ export function SupportPage() {
 						ta="center"
 						fz={32}
 					>
-						SurrealDB Help Center
+						SurrealDB Help Centre
 					</PrimaryTitle>
 
 					<TextInput
