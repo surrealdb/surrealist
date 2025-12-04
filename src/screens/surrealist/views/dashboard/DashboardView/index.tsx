@@ -183,38 +183,34 @@ export function DashboardView() {
 			});
 
 			await executeQuery("DEFINE NAMESPACE main; USE NS main; DEFINE DATABASE main;");
-
 			await activateDatabase("main", "main");
-			const content = await data?.text();
 
-			if (!content) {
+			if (!data) {
 				showErrorNotification({
 					title: "Failed to import data",
 					content: "The data file was not found",
 				});
 
-				setData(null);
+				setData("");
 				setDeployConnectionId(null);
 				return;
 			}
 
-			await executeQuery(content);
+			await executeQuery(data);
 
+			setData("");
+			setDeployConnectionId(null);
 			showInfo({
 				title: "Import finished",
 				subtitle: "The data file has finished importing",
 			});
-
-			setData(null);
-			setDeployConnectionId(null);
 		} catch (error) {
+			setData("");
+			setDeployConnectionId(null);
 			showErrorNotification({
 				title: "Failed to import data",
 				content: error,
 			});
-
-			setData(null);
-			setDeployConnectionId(null);
 		}
 	});
 

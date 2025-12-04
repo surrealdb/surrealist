@@ -31,7 +31,6 @@ import { useAvailableInstanceVersions, useIsAuthenticated } from "~/hooks/cloud"
 import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useConnectionNavigator } from "~/hooks/routing";
-import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { openBillingRequiredModal } from "~/modals/billing-required";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -42,7 +41,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { CloudDeployConfig, DatasetType } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { showErrorNotification, showInfo } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import {
 	iconCheck,
 	iconChevronRight,
@@ -130,8 +129,6 @@ export function SurrealistToolbar() {
 		setEditingTab(null);
 	});
 
-	const tables = useTableNames();
-
 	const saveTabName = useStable(() => {
 		if (!editingTab) return;
 
@@ -151,6 +148,146 @@ export function SurrealistToolbar() {
 		confirmText: "Reset",
 		confirmProps: { variant: "gradient" },
 		onConfirm: resetConnection,
+	});
+
+	const handleDeploy = useStable(async () => {
+		openHandle.close();
+		setIsDeploying(true);
+
+		try {
+			const blob = await requestDatabaseExport({
+				accesses: true,
+				analyzers: true,
+				functions: true,
+				params: true,
+				users: true,
+				versions: false,
+				records: true,
+				sequences: true,
+				tables: true,
+			});
+
+			const result = await blob.text();
+
+			if (!result) {
+				showErrorNotification({
+					title: "Failed to deploy to cloud",
+					content: "The database export was empty",
+				});
+				setIsDeploying(false);
+				return;
+			}
+
+			if (!result) {
+				showErrorNotification({
+					title: "Failed to deploy to cloud",
+					content: "The data file was not stored",
+				});
+				setIsDeploying(false);
+				return;
+			} else {
+				setData(result);
+			}
+
+			const deployInstance = async () => {
+				if (!isBillable && !allowFree) {
+					showErrorNotification({
+						title: "Deployment cancelled",
+						content: "Billing information is required to deploy a paid instance.",
+					});
+
+					setDeployConnectionId(null);
+					setIsDeploying(false);
+					setData("");
+					return;
+				} else if (!organization || !region || !type) {
+					showErrorNotification({
+						title: "Deployment cancelled",
+						content:
+							"Organization, region, and type are required to deploy an instance.",
+					});
+
+					setIsDeploying(false);
+					setDeployConnectionId(null);
+					setData("");
+					return;
+				}
+
+				try {
+					const config: CloudDeployConfig = {
+						name: generateRandomName(),
+						version: versions[0],
+						region: region?.slug ?? "",
+						type: type.slug ?? "",
+						units: 1,
+						plan: allowFree ? "free" : "start",
+						storageCategory: "standard",
+						storageAmount: type.default_storage_size,
+						startingData: { type: "none" },
+					};
+
+					const sandbox = getConnectionById(SANDBOX);
+
+					if (!sandbox) {
+						showErrorNotification({
+							title: "Deployment failed",
+							content: "Sandbox connection not found",
+						});
+
+						setIsDeploying(false);
+						return;
+					}
+
+					const [_, conn] = await deployMutation.mutateAsync(config);
+
+					updateConnection({
+						id: conn.id,
+						activeQuery: sandbox.activeQuery,
+						queries: sandbox.queries,
+					});
+
+					setDeployConnectionId(conn.id);
+					setIsDeploying(false);
+					setOrganization(null);
+					setRegion(null);
+					navigateConnection(conn.id, "dashboard");
+				} catch (error) {
+					showErrorNotification({
+						title: "Deployment failed",
+						content: error,
+					});
+				}
+			};
+
+			if (!isBillable && !allowFree) {
+				if (organization) {
+					openBillingRequiredModal({
+						organization,
+						onClose: () => {
+							setIsDeploying(false);
+							setDeployConnectionId(null);
+							setData("");
+
+							showErrorNotification({
+								title: "Deployment failed",
+								content: "Payment information is required",
+							});
+						},
+						onContinue: () => {
+							deployInstance();
+						},
+					});
+				}
+			} else {
+				deployInstance();
+			}
+		} catch (error) {
+			showErrorNotification({
+				title: "Deployment failed",
+				content: error,
+			});
+			setIsDeploying(false);
+		}
 	});
 
 	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
@@ -247,299 +384,133 @@ export function SurrealistToolbar() {
 						</Menu.Dropdown>
 					</Menu>
 
-					<StarSparkles>
-						{isAuthenticated && (
-							<Menu
-								disabled={isDeploying}
-								opened={opened}
-								onChange={openHandle.set}
-								transitionProps={{
-									transition: "scale-y",
-								}}
-								closeOnItemClick={false}
-								clickOutsideEvents={[]}
-								trigger="click"
-							>
-								<Menu.Target>
-									<Button
-										variant="gradient"
-										size="xs"
-										loading={isDeploying}
-									>
-										Deploy to Cloud
-									</Button>
-								</Menu.Target>
-								<Menu.Dropdown p="md">
-									<Stack gap="md">
-										{organizations.length > 1 && (
-											<Select
-												label="Select organization"
-												placeholder="Loading organizations..."
-												description="Select the organization to deploy to"
-												data={organizations.map((org) => ({
-													label: org.name,
-													value: org.id,
-												}))}
-												value={organization?.id}
-												onChange={(value) =>
-													setOrganization(
-														value
-															? (organizations.find(
-																	(org) => org.id === value,
-																) ?? null)
-															: null,
-													)
-												}
-											/>
-										)}
-
-										<Select
-											label="Region"
-											placeholder="Loading regions..."
-											description="Select the region where your instance will be deployed"
-											data={regionList}
-											value={region?.slug}
-											onChange={(value) => {
-												const foundRegion = supportedRegions.find(
-													(r) => r.slug === value,
-												);
-
-												if (foundRegion) {
-													setRegion(foundRegion);
-												}
-											}}
-											leftSection={
-												region && (
-													<Image
-														src={REGION_FLAGS[region.slug]}
-														w={18}
-													/>
-												)
-											}
-											disabled={!organization}
-											renderOption={(org) => (
-												<Group>
-													<Image
-														src={REGION_FLAGS[org.option.value]}
-														w={24}
-													/>
-													{org.option.label}
-													{org.checked && (
-														<Icon
-															path={iconCheck}
-															c="bright"
-														/>
-													)}
-												</Group>
+					{flags.sandbox_deploy && (
+						<StarSparkles>
+							{isAuthenticated && (
+								<Menu
+									disabled={isDeploying}
+									opened={opened}
+									onChange={openHandle.set}
+									transitionProps={{
+										transition: "scale-y",
+									}}
+									closeOnItemClick={false}
+									clickOutsideEvents={[]}
+									trigger="click"
+								>
+									<Menu.Target>
+										<Button
+											variant="gradient"
+											size="xs"
+											loading={isDeploying}
+										>
+											Deploy to Cloud
+										</Button>
+									</Menu.Target>
+									<Menu.Dropdown p="md">
+										<Stack gap="md">
+											{organizations.length > 1 && (
+												<Select
+													label="Select organization"
+													placeholder="Loading organizations..."
+													description="Select the organization to deploy to"
+													data={organizations.map((org) => ({
+														label: org.name,
+														value: org.id,
+													}))}
+													value={organization?.id}
+													onChange={(value) =>
+														setOrganization(
+															value
+																? (organizations.find(
+																		(org) => org.id === value,
+																	) ?? null)
+																: null,
+														)
+													}
+												/>
 											)}
-										/>
 
-										<Group gap="md">
-											<Button
-												flex={1}
-												color="slate"
-												variant="light"
-												size="xs"
-												onClick={() => {
-													openHandle.close();
-												}}
-											>
-												Close
-											</Button>
-											<Button
-												flex={1}
-												variant="gradient"
-												size="xs"
-												disabled={!organization || !region}
-												loading={isDeploying}
-												rightSection={<Icon path={iconCloud} />}
-												onClick={async () => {
-													openHandle.close();
+											<Select
+												label="Region"
+												placeholder="Loading regions..."
+												description="Select the region where your instance will be deployed"
+												data={regionList}
+												value={region?.slug}
+												onChange={(value) => {
+													const foundRegion = supportedRegions.find(
+														(r) => r.slug === value,
+													);
 
-													setIsDeploying(true);
-
-													showInfo({
-														title: "Deploying to cloud",
-														subtitle: "Exporting database...",
-													});
-
-													try {
-														const blob = await requestDatabaseExport({
-															accesses: true,
-															analyzers: true,
-															functions: true,
-															params: true,
-															users: true,
-															versions: false,
-															records: true,
-															sequences: true,
-															tables,
-														});
-
-														const result = await blob.text();
-
-														if (!result) {
-															showErrorNotification({
-																title: "Failed to deploy to cloud",
-																content:
-																	"The database export was empty",
-															});
-															setIsDeploying(false);
-															return;
-														}
-
-														const file = new File([result], "", {
-															type: "text/plain",
-														});
-
-														if (!file) {
-															showErrorNotification({
-																title: "Failed to deploy to cloud",
-																content:
-																	"The data file was not stored",
-															});
-															setIsDeploying(false);
-															return;
-														} else {
-															setData(file);
-														}
-
-														const deployInstance = async () => {
-															if (!isBillable && !allowFree) {
-																showErrorNotification({
-																	title: "Deployment cancelled",
-																	content:
-																		"Billing information is required to deploy a paid instance.",
-																});
-
-																setDeployConnectionId(null);
-																setIsDeploying(false);
-																setData(null);
-																return;
-															} else if (
-																!organization ||
-																!region ||
-																!type
-															) {
-																showErrorNotification({
-																	title: "Deployment cancelled",
-																	content:
-																		"Organization, region, and type are required to deploy an instance.",
-																});
-
-																setIsDeploying(false);
-																setData(null);
-																setDeployConnectionId(null);
-																return;
-															}
-
-															try {
-																const config: CloudDeployConfig = {
-																	name: generateRandomName(),
-																	version: versions[0],
-																	region: region?.slug ?? "",
-																	type: type.slug ?? "",
-																	units: 1,
-																	plan: allowFree
-																		? "free"
-																		: "start",
-																	storageCategory: "standard",
-																	storageAmount:
-																		type.default_storage_size,
-																	startingData: { type: "none" },
-																};
-
-																const sandbox =
-																	getConnectionById(SANDBOX);
-
-																if (!sandbox) {
-																	showErrorNotification({
-																		title: "Deployment failed",
-																		content:
-																			"Sandbox connection not found",
-																	});
-
-																	setIsDeploying(false);
-																	return;
-																}
-
-																const [_, conn] =
-																	await deployMutation.mutateAsync(
-																		config,
-																	);
-
-																updateConnection({
-																	id: conn.id,
-																	activeQuery:
-																		sandbox.activeQuery,
-																	queries: sandbox.queries,
-																});
-
-																setDeployConnectionId(conn.id);
-																setIsDeploying(false);
-																setOrganization(null);
-																setRegion(null);
-																navigateConnection(
-																	conn.id,
-																	"dashboard",
-																);
-															} catch (error) {
-																showErrorNotification({
-																	title: "Deployment failed",
-																	content: error,
-																});
-															}
-														};
-
-														if (!isBillable && !allowFree) {
-															if (organization) {
-																openBillingRequiredModal({
-																	organization,
-																	onClose: () => {
-																		setIsDeploying(false);
-																		setData(null);
-																		setDeployConnectionId(null);
-
-																		showErrorNotification({
-																			title: "Deployment failed",
-																			content:
-																				"Payment information is required",
-																		});
-																	},
-																	onContinue: () => {
-																		deployInstance();
-																	},
-																});
-															}
-														} else {
-															deployInstance();
-														}
-													} catch (error) {
-														showErrorNotification({
-															title: "Deployment failed",
-															content: error,
-														});
-														setIsDeploying(false);
+													if (foundRegion) {
+														setRegion(foundRegion);
 													}
 												}}
-											>
-												Deploy
-											</Button>
-										</Group>
-									</Stack>
-								</Menu.Dropdown>
-							</Menu>
-						)}
-						{!isAuthenticated && (
-							<Button
-								variant="gradient"
-								size="xs"
-								onClick={openCloudAuthentication}
-							>
-								Deploy to Cloud
-							</Button>
-						)}
-					</StarSparkles>
+												leftSection={
+													region && (
+														<Image
+															src={REGION_FLAGS[region.slug]}
+															w={18}
+														/>
+													)
+												}
+												disabled={!organization}
+												renderOption={(org) => (
+													<Group>
+														<Image
+															src={REGION_FLAGS[org.option.value]}
+															w={24}
+														/>
+														{org.option.label}
+														{org.checked && (
+															<Icon
+																path={iconCheck}
+																c="bright"
+															/>
+														)}
+													</Group>
+												)}
+											/>
+
+											<Group gap="md">
+												<Button
+													flex={1}
+													color="slate"
+													variant="light"
+													size="xs"
+													onClick={() => {
+														openHandle.close();
+													}}
+												>
+													Close
+												</Button>
+												<Button
+													flex={1}
+													variant="gradient"
+													size="xs"
+													disabled={!organization || !region}
+													loading={isDeploying}
+													rightSection={<Icon path={iconCloud} />}
+													onClick={handleDeploy}
+												>
+													Deploy
+												</Button>
+											</Group>
+										</Stack>
+									</Menu.Dropdown>
+								</Menu>
+							)}
+							{!isAuthenticated && (
+								<Button
+									variant="gradient"
+									size="xs"
+									onClick={openCloudAuthentication}
+								>
+									Deploy to Cloud
+								</Button>
+							)}
+						</StarSparkles>
+					)}
 				</>
 			)}
 
