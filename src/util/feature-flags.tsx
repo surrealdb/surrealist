@@ -90,6 +90,9 @@ export const schema = {
 	v3_migration_tooling: {
 		options: [false, true],
 	},
+	sandbox_deploy: {
+		options: [false, true],
+	},
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
@@ -118,6 +121,7 @@ export const featureFlags = new FeatureFlags({
 			support_tickets: true,
 			v3_migration_tooling: true,
 			support_tickets_endpoint: "staging",
+			sandbox_deploy: true,
 		},
 		preview: {
 			query_view: true,
@@ -140,6 +144,7 @@ export const featureFlags = new FeatureFlags({
 			support_tickets: true,
 			v3_migration_tooling: true,
 			support_tickets_endpoint: "staging",
+			sandbox_deploy: true,
 		},
 		production: {
 			query_view: true,
@@ -161,6 +166,7 @@ export const featureFlags = new FeatureFlags({
 			support_tickets: false,
 			v3_migration_tooling: false,
 			support_tickets_endpoint: "production",
+			sandbox_deploy: true,
 		},
 	},
 	overrides: (flag) => {

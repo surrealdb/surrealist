@@ -41,7 +41,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { CloudDeployConfig, DatasetType } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { showErrorNotification, showInfo } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import {
 	iconCheck,
 	iconChevronRight,
@@ -148,6 +148,146 @@ export function SurrealistToolbar() {
 		confirmText: "Reset",
 		confirmProps: { variant: "gradient" },
 		onConfirm: resetConnection,
+	});
+
+	const handleDeploy = useStable(async () => {
+		openHandle.close();
+		setIsDeploying(true);
+
+		try {
+			const blob = await requestDatabaseExport({
+				accesses: true,
+				analyzers: true,
+				functions: true,
+				params: true,
+				users: true,
+				versions: false,
+				records: true,
+				sequences: true,
+				tables: true,
+			});
+
+			const result = await blob.text();
+
+			if (!result) {
+				showErrorNotification({
+					title: "Failed to deploy to cloud",
+					content: "The database export was empty",
+				});
+				setIsDeploying(false);
+				return;
+			}
+
+			if (!result) {
+				showErrorNotification({
+					title: "Failed to deploy to cloud",
+					content: "The data file was not stored",
+				});
+				setIsDeploying(false);
+				return;
+			} else {
+				setData(result);
+			}
+
+			const deployInstance = async () => {
+				if (!isBillable && !allowFree) {
+					showErrorNotification({
+						title: "Deployment cancelled",
+						content: "Billing information is required to deploy a paid instance.",
+					});
+
+					setDeployConnectionId(null);
+					setIsDeploying(false);
+					setData("");
+					return;
+				} else if (!organization || !region || !type) {
+					showErrorNotification({
+						title: "Deployment cancelled",
+						content:
+							"Organization, region, and type are required to deploy an instance.",
+					});
+
+					setIsDeploying(false);
+					setDeployConnectionId(null);
+					setData("");
+					return;
+				}
+
+				try {
+					const config: CloudDeployConfig = {
+						name: generateRandomName(),
+						version: versions[0],
+						region: region?.slug ?? "",
+						type: type.slug ?? "",
+						units: 1,
+						plan: allowFree ? "free" : "start",
+						storageCategory: "standard",
+						storageAmount: type.default_storage_size,
+						startingData: { type: "none" },
+					};
+
+					const sandbox = getConnectionById(SANDBOX);
+
+					if (!sandbox) {
+						showErrorNotification({
+							title: "Deployment failed",
+							content: "Sandbox connection not found",
+						});
+
+						setIsDeploying(false);
+						return;
+					}
+
+					const [_, conn] = await deployMutation.mutateAsync(config);
+
+					updateConnection({
+						id: conn.id,
+						activeQuery: sandbox.activeQuery,
+						queries: sandbox.queries,
+					});
+
+					setDeployConnectionId(conn.id);
+					setIsDeploying(false);
+					setOrganization(null);
+					setRegion(null);
+					navigateConnection(conn.id, "dashboard");
+				} catch (error) {
+					showErrorNotification({
+						title: "Deployment failed",
+						content: error,
+					});
+				}
+			};
+
+			if (!isBillable && !allowFree) {
+				if (organization) {
+					openBillingRequiredModal({
+						organization,
+						onClose: () => {
+							setIsDeploying(false);
+							setDeployConnectionId(null);
+							setData("");
+
+							showErrorNotification({
+								title: "Deployment failed",
+								content: "Payment information is required",
+							});
+						},
+						onContinue: () => {
+							deployInstance();
+						},
+					});
+				}
+			} else {
+				deployInstance();
+			}
+		} catch (error) {
+			showErrorNotification({
+				title: "Deployment failed",
+				content: error,
+			});
+			setIsDeploying(false);
+		}
 	});
 
 	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
@@ -350,169 +490,7 @@ export function SurrealistToolbar() {
 												disabled={!organization || !region}
 												loading={isDeploying}
 												rightSection={<Icon path={iconCloud} />}
-												onClick={async () => {
-													openHandle.close();
-													setIsDeploying(true);
-
-													try {
-														const blob = await requestDatabaseExport({
-															accesses: true,
-															analyzers: true,
-															functions: true,
-															params: true,
-															users: true,
-															versions: false,
-															records: true,
-															sequences: true,
-															tables: true,
-														});
-
-														const result = await blob.text();
-
-														if (!result) {
-															showErrorNotification({
-																title: "Failed to deploy to cloud",
-																content:
-																	"The database export was empty",
-															});
-															setIsDeploying(false);
-															return;
-														}
-
-														const file = new File([result], "", {
-															type: "text/plain",
-														});
-
-														if (!file) {
-															showErrorNotification({
-																title: "Failed to deploy to cloud",
-																content:
-																	"The data file was not stored",
-															});
-															setIsDeploying(false);
-															return;
-														} else {
-															setData(file);
-														}
-
-														const deployInstance = async () => {
-															if (!isBillable && !allowFree) {
-																showErrorNotification({
-																	title: "Deployment cancelled",
-																	content:
-																		"Billing information is required to deploy a paid instance.",
-																});
-
-																setDeployConnectionId(null);
-																setIsDeploying(false);
-																setData(null);
-																return;
-															} else if (
-																!organization ||
-																!region ||
-																!type
-															) {
-																showErrorNotification({
-																	title: "Deployment cancelled",
-																	content:
-																		"Organization, region, and type are required to deploy an instance.",
-																});
-
-																setIsDeploying(false);
-																setData(null);
-																setDeployConnectionId(null);
-																return;
-															}
-
-															try {
-																const config: CloudDeployConfig = {
-																	name: generateRandomName(),
-																	version: versions[0],
-																	region: region?.slug ?? "",
-																	type: type.slug ?? "",
-																	units: 1,
-																	plan: allowFree
-																		? "free"
-																		: "start",
-																	storageCategory: "standard",
-																	storageAmount:
-																		type.default_storage_size,
-																	startingData: { type: "none" },
-																};
-
-																const sandbox =
-																	getConnectionById(SANDBOX);
-
-																if (!sandbox) {
-																	showErrorNotification({
-																		title: "Deployment failed",
-																		content:
-																			"Sandbox connection not found",
-																	});
-
-																	setIsDeploying(false);
-																	return;
-																}
-
-																const [_, conn] =
-																	await deployMutation.mutateAsync(
-																		config,
-																	);
-
-																updateConnection({
-																	id: conn.id,
-																	activeQuery:
-																		sandbox.activeQuery,
-																	queries: sandbox.queries,
-																});
-
-																setDeployConnectionId(conn.id);
-																setIsDeploying(false);
-																setOrganization(null);
-																setRegion(null);
-																navigateConnection(
-																	conn.id,
-																	"dashboard",
-																);
-															} catch (error) {
-																showErrorNotification({
-																	title: "Deployment failed",
-																	content: error,
-																});
-															}
-														};
-
-														if (!isBillable && !allowFree) {
-															if (organization) {
-																openBillingRequiredModal({
-																	organization,
-																	onClose: () => {
-																		setIsDeploying(false);
-																		setData(null);
-																		setDeployConnectionId(null);
-
-																		showErrorNotification({
-																			title: "Deployment failed",
-																			content:
-																				"Payment information is required",
-																		});
-																	},
-																	onContinue: () => {
-																		deployInstance();
-																	},
-																});
-															}
-														} else {
-															deployInstance();
-														}
-													} catch (error) {
-														showErrorNotification({
-															title: "Deployment failed",
-															content: error,
-														});
-														setIsDeploying(false);
-													}
-												}}
+												onClick={handleDeploy}
 											>
 												Deploy
 											</Button>
