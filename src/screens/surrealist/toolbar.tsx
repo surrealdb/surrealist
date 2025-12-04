@@ -352,13 +352,7 @@ export function SurrealistToolbar() {
 												rightSection={<Icon path={iconCloud} />}
 												onClick={async () => {
 													openHandle.close();
-
 													setIsDeploying(true);
-
-													showInfo({
-														title: "Deploying to cloud",
-														subtitle: "Exporting database...",
-													});
 
 													try {
 														const blob = await requestDatabaseExport({
