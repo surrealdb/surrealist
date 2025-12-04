@@ -31,7 +31,6 @@ import { useAvailableInstanceVersions, useIsAuthenticated } from "~/hooks/cloud"
 import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useConnectionNavigator } from "~/hooks/routing";
-import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { openBillingRequiredModal } from "~/modals/billing-required";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -129,8 +128,6 @@ export function SurrealistToolbar() {
 	const closeEditingTab = useStable(() => {
 		setEditingTab(null);
 	});
-
-	const tables = useTableNames();
 
 	const saveTabName = useStable(() => {
 		if (!editingTab) return;
@@ -373,7 +370,7 @@ export function SurrealistToolbar() {
 															versions: false,
 															records: true,
 															sequences: true,
-															tables,
+															tables: true,
 														});
 
 														const result = await blob.text();
