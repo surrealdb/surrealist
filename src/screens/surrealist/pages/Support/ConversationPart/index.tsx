@@ -219,7 +219,11 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 
 		return content;
 	}
-	if (part.part_type === "comment" || part.part_type === "initial") {
+	if (
+		part.part_type === "comment" ||
+		part.part_type === "initial" ||
+		(part.part_type === "assignment" && part.body)
+	) {
 		return (
 			<ConversationPartBody
 				conversation={conversation}
