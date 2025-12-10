@@ -1,25 +1,10 @@
-import {
-	Alert,
-	Box,
-	Button,
-	Divider,
-	Group,
-	Paper,
-	ScrollArea,
-	Slider,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Box, Button, Divider, Group, Paper, ScrollArea, Slider, Stack, Text } from "@mantine/core";
 import { useState } from "react";
-import { navigate } from "wouter/use-browser-location";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceNodeMutation } from "~/cloud/mutations/node";
-import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
-import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
-import { plural, showErrorNotification } from "~/util/helpers";
-import { iconAuth } from "~/util/icons";
+import { plural } from "~/util/helpers";
 import classes from "../style.module.scss";
 
 export interface ConfigurationNodesProps {
@@ -29,9 +14,6 @@ export interface ConfigurationNodesProps {
 
 export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProps) {
 	const { compute_units } = instance;
-	const { data: organisation } = useCloudOrganizationQuery(instance.organization_id);
-
-	const isResourcesLocked = organisation?.resources_locked ?? false;
 	const [value, setValue] = useState<number>(compute_units);
 
 	const minimum = instance.type.compute_units.min ?? 1;
@@ -52,16 +34,8 @@ export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProp
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 
 	const handleUpdate = useStable(() => {
-		if (!isResourcesLocked) {
-			onClose();
-			confirmUpdate(value);
-		} else {
-			showErrorNotification({
-				title: "Node configuration restricted",
-				content:
-					"Resource configurations within Surrealist are restricted for this organisation. In order to modify the number of compute nodes, please contact support.",
-			});
-		}
+		onClose();
+		confirmUpdate(value);
 	});
 
 	return (
@@ -84,32 +58,6 @@ export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProp
 						p="xl"
 						mih="100%"
 					>
-						{isResourcesLocked && (
-							<Alert
-								mb="md"
-								color="violet"
-								title="Node configuration restricted"
-								icon={<Icon path={iconAuth} />}
-							>
-								<Stack>
-									Resource configurations within Surrealist are restricted for
-									this organisation. In order to modify the number of compute
-									nodes, please contact support.
-									<Group>
-										<Button
-											size="xs"
-											color="violet"
-											variant="light"
-											onClick={() => {
-												navigate("/support");
-											}}
-										>
-											Contact support
-										</Button>
-									</Group>
-								</Stack>
-							</Alert>
-						)}
 						<Box mb="xl">
 							<Text
 								fz="xl"
@@ -139,7 +87,6 @@ export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProp
 								min={minimum}
 								max={maximum}
 								step={1}
-								disabled={isResourcesLocked}
 								value={value}
 								onChange={setValue}
 								marks={marks}
@@ -171,7 +118,7 @@ export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProp
 					variant="gradient"
 					onClick={handleUpdate}
 					flex={1}
-					disabled={!hasChanged || isResourcesLocked}
+					disabled={!hasChanged}
 				>
 					Apply compute units
 				</Button>

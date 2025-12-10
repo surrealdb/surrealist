@@ -121,12 +121,14 @@ export function InstanceActions({
 						{isReady ? (
 							<>
 								<Menu.Item
+									disabled={organisation.resources_locked}
 									leftSection={<Icon path={iconPause} />}
 									onClick={pauseInstance}
 								>
 									Pause instance
 								</Menu.Item>
 								<Menu.Item
+									disabled={organisation.resources_locked}
 									leftSection={
 										<Icon
 											path={iconDelete}
@@ -142,6 +144,7 @@ export function InstanceActions({
 						) : (
 							isPaused && (
 								<Menu.Item
+									disabled={organisation.resources_locked}
 									leftSection={<Icon path={iconPlay} />}
 									onClick={resumeInstance}
 								>
