@@ -310,6 +310,7 @@ export function SupportPage() {
 										dispatchIntent("create-message", {
 											type: "conversation",
 											conversationType: "general",
+											subject: "Account / billing enquiry",
 										})
 									}
 								/>
