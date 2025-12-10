@@ -33,6 +33,7 @@ import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { useCloudProfile } from "~/hooks/cloud";
 import { fileToBase64 } from "~/util/file";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
 import {
@@ -305,6 +306,7 @@ export interface ConversationPageProps {
 
 export function ConversationPage({ id }: ConversationPageProps) {
 	const htmlRegex = /(<([^>]+)>)/gi;
+	const profile = useCloudProfile();
 	const { data: conversation, isLoading } = useCloudConversationQuery(id);
 
 	const conversationStateMutation = useConversationStateMutation();
@@ -627,7 +629,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 													fw={700}
 													c="bright"
 												>
-													Submit
+													{profile.name}
 												</Text>
 											</Group>
 											<PillGroup>
@@ -680,7 +682,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 														await sendReply();
 													}}
 												>
-													Send comment
+													Submit
 												</Button>
 											</Group>
 										</Stack>

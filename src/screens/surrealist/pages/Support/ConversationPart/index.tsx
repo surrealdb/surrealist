@@ -115,21 +115,13 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 						path={iconPackageClosed}
 					/>
 				</ThemeIcon>
-				<Text fz="lg">Moved to</Text>
+				<Text fz="lg">Ticket state updated to</Text>
 				<Text
 					fz="lg"
 					fw={500}
 					c="bright"
 				>
 					{ticketPart.state.label}
-				</Text>
-				<Text fz="lg">by</Text>
-				<Text
-					fz="lg"
-					c={part.author.type === "user" ? "bright" : "violet"}
-					fw={500}
-				>
-					{part.author?.name ?? "Unknown"}
 				</Text>
 				<Text
 					fz="lg"
@@ -167,21 +159,13 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 							path={isOpened ? iconPlay : iconClose}
 						/>
 					</ThemeIcon>
-					<Text fz="lg">Marked as</Text>
+					<Text fz="lg">Conversation marked as</Text>
 					<Text
 						fz="lg"
 						c="bright"
 						fw={500}
 					>
 						{action}
-					</Text>
-					<Text fz="lg">by</Text>
-					<Text
-						fz="lg"
-						c={part.author.type === "user" ? "bright" : "violet"}
-						fw={500}
-					>
-						{part.author?.name ?? "Unknown"}
 					</Text>
 					<Text
 						fz="lg"
@@ -219,7 +203,11 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 
 		return content;
 	}
-	if (part.part_type === "comment" || part.part_type === "initial") {
+	if (
+		part.part_type === "comment" ||
+		part.part_type === "initial" ||
+		(part.part_type === "assignment" && part.body)
+	) {
 		return (
 			<ConversationPartBody
 				conversation={conversation}
