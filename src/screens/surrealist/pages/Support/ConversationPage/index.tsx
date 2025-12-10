@@ -312,7 +312,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 	const conversationStateMutation = useConversationStateMutation();
 	const replyMutation = useConversationReplyMutation(id);
 
-	const title = conversation?.title.replace(htmlRegex, "");
+	const title = conversation?.title.replace(htmlRegex, "") || `Conversation #${id}`;
 
 	const [replyBody, setReplyBody] = useInputState("");
 	const [attachedFiles, setAttachedFiles] = useInputState<File[]>([]);
