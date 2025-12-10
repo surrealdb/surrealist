@@ -247,23 +247,24 @@ export function CreateMessageModal() {
 								onChange={setOrganisation}
 							/>
 						)}
-					{ticketAttributes
-						?.filter(
-							(attr) =>
-								attr.visible_on_create &&
-								!["organisation"].includes(attr.name.toLowerCase()),
-						)
-						.sort((a, b) => a.order - b.order)
-						.map((attr) => (
-							<TicketAttribute
-								key={attr.name}
-								attr={attr}
-								value={attributes[attr.name]}
-								onChange={(value) =>
-									setAttributes({ ...attributes, [attr.name]: value })
-								}
-							/>
-						))}
+					{isTicket &&
+						ticketAttributes
+							?.filter(
+								(attr) =>
+									attr.visible_on_create &&
+									!["organisation"].includes(attr.name.toLowerCase()),
+							)
+							.sort((a, b) => a.order - b.order)
+							.map((attr) => (
+								<TicketAttribute
+									key={attr.name}
+									attr={attr}
+									value={attributes[attr.name]}
+									onChange={(value) =>
+										setAttributes({ ...attributes, [attr.name]: value })
+									}
+								/>
+							))}
 					{(!isTicket || hasTicketsAccess) && (
 						<Group>
 							<Group
