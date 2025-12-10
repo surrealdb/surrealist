@@ -701,6 +701,7 @@ export interface CloudOrganization {
 	available_plans: CloudPlan[];
 	member_count: number;
 	user_role: string;
+	resources_locked: boolean;
 }
 
 export interface CloudBanner {
