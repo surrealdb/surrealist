@@ -24,9 +24,15 @@ RUN mkdir html
 WORKDIR /
 
 RUN rm /etc/nginx/conf.d/default.conf
+RUN addgroup -S surrealist && adduser -S -D -H -s /sbin/nologin -G surrealist surrealist
+RUN mkdir -p /var/cache/nginx /var/run/nginx /var/log/nginx \
+    && chown -R surrealist:surrealist /var/cache/nginx /var/run/nginx /var/log/nginx
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY ./docker/nginx/nginx.conf /etc/nginx
+RUN chown -R surrealist:surrealist /usr/share/nginx/html /etc/nginx
+
+USER surrealist
 
 EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

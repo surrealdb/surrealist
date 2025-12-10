@@ -55,6 +55,8 @@ jobs:
         with:
           push: true
           file: docker/Dockerfile
+          provenance: mode=max
+          sbom: true
           tags: |
             surrealdb/surrealist:latest
             surrealdb/surrealist:${{ needs.version.outputs.version }}
