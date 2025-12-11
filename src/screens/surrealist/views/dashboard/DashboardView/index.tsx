@@ -30,6 +30,7 @@ import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
+import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
 import { Link } from "~/components/Link";
@@ -253,16 +254,20 @@ export function DashboardView() {
 
 		setUpgradeTab("type");
 
-		if (isOrganisationBillable(organisation)) {
-			upgradingHandle.open();
+		if (organisation.resources_locked) {
+			openResourcesLockedModal(organisation);
 		} else {
-			openBillingRequiredModal({
-				organization: organisation,
-				onClose: () => {},
-				onContinue: () => {
-					upgradingHandle.open();
-				},
-			});
+			if (isOrganisationBillable(organisation)) {
+				upgradingHandle.open();
+			} else {
+				openBillingRequiredModal({
+					organization: organisation,
+					onClose: () => {},
+					onContinue: () => {
+						upgradingHandle.open();
+					},
+				});
+			}
 		}
 	});
 
@@ -271,16 +276,20 @@ export function DashboardView() {
 
 		setUpgradeTab("disk");
 
-		if (isOrganisationBillable(organisation)) {
-			upgradingHandle.open();
+		if (organisation.resources_locked) {
+			openResourcesLockedModal(organisation);
 		} else {
-			openBillingRequiredModal({
-				organization: organisation,
-				onClose: () => {},
-				onContinue: () => {
-					upgradingHandle.open();
-				},
-			});
+			if (isOrganisationBillable(organisation)) {
+				upgradingHandle.open();
+			} else {
+				openBillingRequiredModal({
+					organization: organisation,
+					onClose: () => {},
+					onContinue: () => {
+						upgradingHandle.open();
+					},
+				});
+			}
 		}
 	});
 

@@ -1,5 +1,6 @@
 import { ActionIcon, Button, Center, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
+import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useResumeInstance } from "~/hooks/cloud";
@@ -43,7 +44,13 @@ export function ResumeBlock({ instance, organisation }: ResumelockProps) {
 							variant="gradient"
 							disabled={!canResume}
 							rightSection={<Icon path={iconPlay} />}
-							onClick={resumeInstance}
+							onClick={() => {
+								if (organisation.resources_locked) {
+									openResourcesLockedModal(organisation);
+								} else {
+									resumeInstance();
+								}
+							}}
 						>
 							Resume instance
 						</Button>

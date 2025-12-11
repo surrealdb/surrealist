@@ -10,6 +10,7 @@ import { openConnectionEditModal } from "~/modals/edit-connection";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
+import { openResourcesLockedModal } from "../App/modals/resources-locked";
 import { Icon } from "../Icon";
 
 export interface InstanceActionsProps {
@@ -122,7 +123,13 @@ export function InstanceActions({
 							<>
 								<Menu.Item
 									leftSection={<Icon path={iconPause} />}
-									onClick={pauseInstance}
+									onClick={() => {
+										if (organisation.resources_locked) {
+											openResourcesLockedModal(organisation);
+										} else {
+											pauseInstance();
+										}
+									}}
 								>
 									Pause instance
 								</Menu.Item>
@@ -133,7 +140,13 @@ export function InstanceActions({
 											c="red"
 										/>
 									}
-									onClick={deleteInstance}
+									onClick={() => {
+										if (organisation.resources_locked) {
+											openResourcesLockedModal(organisation);
+										} else {
+											deleteInstance();
+										}
+									}}
 									c="red"
 								>
 									Delete instance
@@ -143,7 +156,13 @@ export function InstanceActions({
 							isPaused && (
 								<Menu.Item
 									leftSection={<Icon path={iconPlay} />}
-									onClick={resumeInstance}
+									onClick={() => {
+										if (organisation.resources_locked) {
+											openResourcesLockedModal(organisation);
+										} else {
+											resumeInstance();
+										}
+									}}
 								>
 									Resume instance
 								</Menu.Item>
