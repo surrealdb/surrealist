@@ -32,6 +32,7 @@ import logoLightUrl from "~/assets/images/light/logo.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
+import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -374,14 +375,30 @@ export function OverviewPage() {
 													flex={1}
 													className={classes.connectionSpacer}
 												/>
-												<Link href={`/o/${organization.info.id}/deploy`}>
+												{organization.info.resources_locked ? (
 													<Button
 														size="xs"
 														variant="gradient"
+														onClick={() =>
+															openResourcesLockedModal(
+																organization.info,
+															)
+														}
 													>
 														Deploy instance
 													</Button>
-												</Link>
+												) : (
+													<Link
+														href={`/o/${organization.info.id}/deploy`}
+													>
+														<Button
+															size="xs"
+															variant="gradient"
+														>
+															Deploy instance
+														</Button>
+													</Link>
+												)}
 											</Group>
 											<SimpleGrid
 												cols={GRID_COLUMNS}
