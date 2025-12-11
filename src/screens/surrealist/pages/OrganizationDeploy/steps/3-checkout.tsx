@@ -17,6 +17,7 @@ import cloud from "~/assets/images/icons/cloud.webp";
 import { getBillingProviderName, isBillingManaged, isOrganisationBillable } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
+import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { BillingDetails } from "~/components/BillingDetails";
 import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
@@ -336,7 +337,13 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 					variant="gradient"
 					disabled={isBlocked}
 					loading={deployMutation.isPending}
-					onClick={handleDeploy}
+					onClick={() => {
+						if (organisation.resources_locked) {
+							openResourcesLockedModal(organisation);
+						} else {
+							handleDeploy();
+						}
+					}}
 				>
 					Deploy instance
 				</Button>
