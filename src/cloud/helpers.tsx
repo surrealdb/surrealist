@@ -140,6 +140,10 @@ export function isDistributedPlan(plan: InstancePlan): boolean {
 	return plan === "scale" || plan === "enterprise";
 }
 
+export function normalizeRole(role: string): string {
+	return role.replace("restricted_", "");
+}
+
 export function hasOrganizationRoles(
 	organisation: CloudOrganization | undefined,
 	roles: string[],
@@ -162,7 +166,7 @@ export function hasOrganizationRoles(
 	}
 
 	if (allowRestricted) {
-		currentRole = currentRole.replace("restricted_", "");
+		currentRole = normalizeRole(currentRole);
 	}
 
 	return roles.includes(currentRole);

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import {
 	hasOrganizationRoles,
 	isOrganisationRestricted,
+	normalizeRole,
 	ORG_ROLES_ADMIN,
 	ORG_ROLES_OWNER,
 } from "~/cloud/helpers";
@@ -111,8 +112,8 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Table.Tbody>
 							{membersQuery.data?.map((member) => {
 								const isSelf = member.user_id === userId;
-								const showLeave = member.role !== "owner" && isSelf;
-								const showActions = member.role !== "owner" && isOwner;
+								const showLeave = normalizeRole(member.role) !== "owner" && isSelf;
+								const showOpts = normalizeRole(member.role) !== "owner" && isOwner;
 
 								return (
 									<Table.Tr key={member.user_id}>
@@ -166,7 +167,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 													<Icon path={iconExitToAp} />
 												</ActionButton>
 											) : (
-												showActions && (
+												showOpts && (
 													<Menu>
 														<Menu.Target>
 															<ActionButton label="Member actions">
