@@ -163,7 +163,7 @@ export const featureFlags = new FeatureFlags({
 			themes: true,
 			gtm_debug: false,
 			sidekick_ai: true,
-			support_tickets: false,
+			support_tickets: true,
 			v3_migration_tooling: false,
 			support_tickets_endpoint: "production",
 			sandbox_deploy: true,
