@@ -3,22 +3,17 @@ import { useCloudStore } from "~/stores/cloud";
 import type { CloudBillingCountry, CloudInstanceType, CloudProfile, CloudRegion } from "~/types";
 import { getCloudEndpoints } from "./endpoints";
 
-export interface APIRequestInit extends RequestInit {
-	management?: boolean;
-}
-
 /**
  * Execute a fetch request against the API and returns
  * the JSON response
  */
 export async function fetchAPI<T = unknown>(
 	path: string,
-	options?: APIRequestInit | undefined,
+	options?: RequestInit | undefined,
 ): Promise<T> {
 	const { sessionToken } = useCloudStore.getState();
-	const { apiBase, mgmtBase } = getCloudEndpoints();
+	const { apiBase } = getCloudEndpoints();
 
-	const baseUrl = options?.management ? mgmtBase : apiBase;
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
 	};
@@ -28,7 +23,7 @@ export async function fetchAPI<T = unknown>(
 	}
 
 	try {
-		const response = await adapter.fetch(`${baseUrl}${path}`, {
+		const response = await adapter.fetch(`${apiBase}${path}`, {
 			headers: {
 				...headers,
 				...options?.headers,
@@ -54,7 +49,7 @@ export async function fetchAPI<T = unknown>(
 			return await response.json();
 		}
 	} catch (err) {
-		throw new Error(`Failed API request to ${baseUrl}${path}: ${err}`);
+		throw new Error(`Failed API request to ${apiBase}${path}: ${err}`);
 	}
 
 	return {} as T;

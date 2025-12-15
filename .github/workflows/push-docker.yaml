@@ -6,6 +6,10 @@ on:
 env:
   CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
   CLOUD_CALLBACK_URL: https://app.surrealdb.com/cloud/callback
+  CLOUD_AUTH_BASE: https://auth.surrealdb.com
+  CLOUD_API_BASE: https://api.cloud.surrealdb.com/api/v1
+  CLOUD_API_TICKETS_BASE: https://nlsmye6spqokxdxevwqramvqri0dtbto.lambda-url.us-east-1.on.aws
+  SURREALIST_WEBSITE_BASE: https://surrealdb.com
   SCOUT_COPILOT_ID: copilot_cm3gcpzxw00020cs66takkem5
   SCOUT_WORKFLOW_ID: wf_cm3gbr8vk00010ds6b1g0vnvv
   INTERCOM_APP_ID: xaac4vhr
@@ -49,6 +53,10 @@ jobs:
         env:
           VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
           VITE_CLOUD_CALLBACK_URL: ${{ env.CLOUD_CALLBACK_URL }}
+          VITE_CLOUD_AUTH_BASE: ${{ env.CLOUD_AUTH_BASE }}
+          VITE_CLOUD_API_BASE: ${{ env.CLOUD_API_BASE }}
+          VITE_CLOUD_API_TICKETS_BASE: ${{ env.CLOUD_API_TICKETS_BASE }}
+          VITE_SURREALIST_WEBSITE_BASE: ${{ env.SURREALIST_WEBSITE_BASE }}
           VITE_SCOUT_COPILOT_ID: ${{ env.SCOUT_COPILOT_ID }}
           VITE_SCOUT_WORKFLOW_ID: ${{ env.SCOUT_WORKFLOW_ID }}
           VITE_INTERCOM_APP_ID: ${{ env.INTERCOM_APP_ID }}

@@ -553,7 +553,7 @@ export function useComputedPreferences(): PreferenceSection[] {
 		if (cloud_endpoints === "custom") {
 			sections.push({
 				id: "cloud-endpoints",
-				name: "Cloud endpoints",
+				name: "Custom Cloud endpoints",
 				preferences: [
 					{
 						id: "auth-base",
@@ -576,7 +576,6 @@ export function useComputedPreferences(): PreferenceSection[] {
 							reader: (config) => config.settings.cloud.urlApiBase,
 							writer: (config, value) => {
 								config.settings.cloud.urlApiBase = value;
-								config.settings.cloud.urlApiMgmtBase = value;
 							},
 						}),
 					},
@@ -618,23 +617,6 @@ export function useComputedPreferences(): PreferenceSection[] {
 				id: "gtm-debug",
 				name: "GTM Debug",
 				preferences: [
-					{
-						id: "gtm-origin",
-						name: "Origin",
-						description:
-							"What host to use for the origin. Origin is only overridden in the desktop app",
-						controller: new SelectionController({
-							options: [
-								{ label: "Production", value: "app.surrealdb.com" },
-								{ label: "Beta", value: "beta-app.surrealdb.com" },
-								{ label: "Development", value: "dev-app.surrealdb.com" },
-							] as const,
-							reader: (config) => config.settings.gtm.origin,
-							writer: (config, value) => {
-								config.settings.gtm.origin = value;
-							},
-						}),
-					},
 					{
 						id: "gtm-debug-mode",
 						name: "Debug Mode",

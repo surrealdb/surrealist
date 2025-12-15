@@ -26,7 +26,6 @@ import {
 	iconOrganization,
 	iconProgressClock,
 	iconServer,
-	iconWarning,
 } from "~/util/icons";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
@@ -122,11 +121,11 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 										<Alert
 											color="red"
 											title="Organisation restricted"
-											icon={<Icon path={iconWarning} />}
+											icon={<Icon path={iconCreditCard} />}
 										>
-											This organisation is currently restricted and access to
-											it has been limited. Please contact support to regain
-											access.
+											This organisation has been restricted due to failed
+											payments. Please update your billing and payment
+											information to restore access.
 										</Alert>
 									) : null}
 									<Tabs

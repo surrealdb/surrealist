@@ -58,7 +58,7 @@ export const schema = {
 		options: [false, true],
 	},
 	cloud_endpoints: {
-		options: ["production", "custom"],
+		options: ["default", "custom"],
 	},
 	cloud_access: {
 		options: [false, true],

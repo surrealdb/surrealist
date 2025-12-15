@@ -30,6 +30,7 @@ import databaseUrl from "~/assets/images/icons/surrealdb.webp";
 import universityUrl from "~/assets/images/icons/university.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
+import { isOrganisationRestricted } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
@@ -54,6 +55,7 @@ import {
 	iconReset,
 	iconSearch,
 	iconTune,
+	iconWarning,
 } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
@@ -362,8 +364,17 @@ export function OverviewPage() {
 															>
 																{organization.info.name}
 															</PrimaryTitle>
+															{isOrganisationRestricted(
+																organization.info,
+															) && (
+																<Icon
+																	path={iconWarning}
+																	c="red"
+																/>
+															)}
 															<Icon
 																path={iconArrowUpRight}
+																className={classes.organisationLink}
 																c="bright"
 																size="sm"
 																mb={-4}

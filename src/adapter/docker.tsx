@@ -113,8 +113,7 @@ export class DockerAdapter extends BrowserAdapter {
 		config.settings.cloud.urlApiBase = this.cloudApiEndpoint;
 
 		config.featureFlags.cloud_enabled = this.cloudEnabled;
-		config.featureFlags.cloud_endpoints =
-			auth_endpoint && api_endpoint ? "custom" : "production";
+		config.featureFlags.cloud_endpoints = auth_endpoint && api_endpoint ? "custom" : "default";
 
 		return config;
 	}

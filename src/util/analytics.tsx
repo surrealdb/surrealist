@@ -1,16 +1,12 @@
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import { getSetting } from "./config";
-import { isPreview, isProduction } from "./environment";
+import { isProduction } from "./environment";
 import { featureFlags } from "./feature-flags";
 
 let incrementalId = 1;
 
-export const HOSTNAME = isProduction
-	? "app.surrealdb.com"
-	: isPreview
-		? "beta-app.surrealdb.com"
-		: "dev-app.surrealdb.com";
+export const HOSTNAME = "app.surrealdb.com";
 
 function generateGaCookieValue() {
 	const randomNumber = Math.floor(Math.random() * 2147483647);
