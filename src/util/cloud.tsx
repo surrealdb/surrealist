@@ -95,7 +95,7 @@ export function getTypeCategoryName(category: string) {
 		case "production":
 			return "General purpose";
 		case "production-memory":
-			return "Memory intensive";
+			return "Distributed general purpose";
 		case "production-compute":
 			return "Compute intensive";
 		default:
@@ -112,7 +112,7 @@ export function getTypeCategoryDescription(category: string) {
 		case "production":
 			return "General purpose instances for production workloads";
 		case "production-memory":
-			return "Distributed memory intensive instances for high throughput";
+			return "Distributed general purpose instances for high performance workloads";
 		case "production-compute":
 			return "Distributed compute intensive instances for high performance";
 		default:

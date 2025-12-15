@@ -53,7 +53,7 @@ export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	free: ["free", "small-dev", "medium"],
 	start: ["small-dev", "medium", "xlarge"],
 	scale: ["medium-compute", "large-compute", "xlarge-memory"],
-	enterprise: ["medium-compute", "large-compute", "xlarge-memory"],
+	enterprise: ["medium-memory", "large-memory", "xlarge-memory"],
 };
 
 export const BILLING_PROVIDER_NAMES: Record<OrganisationBillingProvider, string> = {
