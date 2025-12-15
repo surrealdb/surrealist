@@ -42,7 +42,8 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 						fw={conversation.read ? 400 : 600}
 						c="bright"
 					>
-						{conversation.title.replace(htmlRegex, "")}
+						{conversation.title?.replace(htmlRegex, "") ||
+							`Conversation #${conversation.id}`}
 					</Text>
 					{!conversation.read && (
 						<Indicator
