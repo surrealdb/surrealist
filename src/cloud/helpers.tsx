@@ -183,12 +183,7 @@ export function getBillingProviderName(organisation: CloudOrganization): string 
 }
 
 export function isOrganisationRestricted(organisation: CloudOrganization): boolean {
-	return (
-		organisation.state === "freezing" ||
-		organisation.state === "frozen" ||
-		organisation.state === "terminating" ||
-		organisation.state === "terminated"
-	);
+	return organisation.state === "freezing" || organisation.state === "frozen";
 }
 
 export function isOrganisationTerminated(organisation: CloudOrganization): boolean {

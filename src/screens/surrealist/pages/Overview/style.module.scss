@@ -4,12 +4,12 @@
 }
 
 .organisation-name {
-	svg {
+	.organisation-link {
 		opacity: 0.6;
 		transition: opacity 0.2s;
 	}
 
-	&:hover svg {
+	&:hover .organisation-link {
 		opacity: 1;
 	}
 }
