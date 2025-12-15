@@ -58,7 +58,7 @@ export const schema = {
 		options: [false, true],
 	},
 	cloud_endpoints: {
-		options: ["production", "custom"],
+		options: ["default", "custom"],
 	},
 	cloud_access: {
 		options: [false, true],
@@ -112,6 +112,7 @@ export const featureFlags = new FeatureFlags({
 			newsfeed: true,
 			highlight_tool: true,
 			cloud_enabled: true,
+			cloud_endpoints: "custom",
 			cloud_access: true,
 			themes: true,
 			syntax_themes: true,
@@ -134,6 +135,7 @@ export const featureFlags = new FeatureFlags({
 			apidocs_view: true,
 			changelog: "hidden",
 			cloud_enabled: true,
+			cloud_endpoints: "custom",
 			cloud_killswitch: true,
 			cloud_access: true,
 			newsfeed: true,
@@ -157,6 +159,7 @@ export const featureFlags = new FeatureFlags({
 			apidocs_view: true,
 			database_version_check: true,
 			cloud_enabled: true,
+			cloud_endpoints: "default",
 			cloud_killswitch: true,
 			cloud_access: true,
 			newsfeed: true,

@@ -94,7 +94,6 @@ export function createBaseSettings(): SurrealistSettings {
 			databaseListMode: "grid",
 			urlAuthBase: "",
 			urlApiBase: "",
-			urlApiMgmtBase: "",
 			urlWebsiteBase: "https://surrealdb.com",
 			urlApiTicketsBase: "",
 		},
