@@ -10,6 +10,7 @@ import { Mode, plugin as markdown } from "vite-plugin-markdown";
 import { surreal, version } from "./package.json";
 
 const isTauri = !!process.env.TAURI_ENV_PLATFORM;
+const isCompress = process.env.VITE_SURREALIST_COMPRESS !== "false";
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
 const isDocker = process.env.VITE_SURREALIST_DOCKER === "true";
 
@@ -59,7 +60,8 @@ export default defineConfig(({ mode }) => {
 	];
 
 	// Configure compression for web builds
-	if (!isTauri) {
+	if (!isTauri && isCompress) {
+		console.log("Compressing assets...");
 		plugins.push(
 			compression({
 				deleteOriginalAssets: true,
@@ -70,6 +72,8 @@ export default defineConfig(({ mode }) => {
 					: /\.(wasm)$/,
 			}),
 		);
+	} else {
+		console.log("Skipping compression for build");
 	}
 
 	return {
