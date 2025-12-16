@@ -221,8 +221,9 @@ export function SurrealistToolbar() {
 						computeType: type.slug ?? "",
 						computeUnits: 1,
 						plan: allowFree ? "free" : "start",
-						storageCategory: "standard",
 						storageAmount: type.default_storage_size,
+						storageType: "",
+						storageUnits: 3,
 						startingData: { type: "none" },
 					};
 
