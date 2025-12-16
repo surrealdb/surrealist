@@ -1,5 +1,5 @@
 [build]
-command = "bun run build"
+command = "export VITE_CLOUD_CALLBACK_URL=\"$DEPLOY_PRIME_URL/cloud/callback\" && bun run build"
 publish = "dist"
 
 [[redirects]]
