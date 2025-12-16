@@ -55,7 +55,7 @@ export function DataOptionsSection({
 		// 		</Stack>
 		// 	);
 		case "restore": {
-			const isFree = details.type === "free";
+			const isFree = details.computeType === "free";
 
 			return isFree ? (
 				<Alert

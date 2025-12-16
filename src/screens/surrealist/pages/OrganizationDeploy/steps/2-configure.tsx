@@ -39,8 +39,8 @@ export function ConfigureStep({
 	setDetails,
 	setStep,
 }: StepProps) {
-	const isNotFree = details.type !== "free";
-	const showClusterOptions = details.plan === "scale" || details.plan === "enterprise";
+	const isNotFree = details.computeType !== "free";
+	const isDedicated = details.plan === "enterprise";
 	const regionMismatch =
 		details.startingData.type === "restore" &&
 		details.startingData.backupOptions?.instance &&
@@ -55,10 +55,10 @@ export function ConfigureStep({
 	const checkoutDisabled = useMemo(() => {
 		if (!details.name || details.name.length > 30) return true;
 		if (!details.region) return true;
-		if (!details.type) return true;
+		if (!details.computeType) return true;
 		if (!details.version) return true;
 
-		if (isNotFree && !details.units) return true;
+		if (isNotFree && !details.computeUnits) return true;
 
 		if (details.startingData.type === "restore") {
 			if (!details.startingData.backupOptions) return true;
@@ -70,18 +70,35 @@ export function ConfigureStep({
 			if (restoreBlocked) return true;
 		}
 
+		if (details.plan === "enterprise") {
+			if (!details.computeUnits) return true;
+			if (!details.storageType) return true;
+			if (!details.storageUnits) return true;
+			if (!details.storageAmount) return true;
+		}
+
 		return false;
 	}, [details, isNotFree, regionMismatch, storageMismatch, restoreBlocked]);
 
 	return (
 		<>
-			<InstanceTypeSection
-				organisation={organisation}
-				instances={instances}
-				details={details}
-				setDetails={setDetails}
-				setStep={setStep}
-			/>
+			{isDedicated ? (
+				<ClusterOptionsSection
+					organisation={organisation}
+					instances={instances}
+					details={details}
+					setDetails={setDetails}
+					setStep={setStep}
+				/>
+			) : (
+				<InstanceTypeSection
+					organisation={organisation}
+					instances={instances}
+					details={details}
+					setDetails={setDetails}
+					setStep={setStep}
+				/>
+			)}
 
 			<Divider my={36} />
 
@@ -120,18 +137,8 @@ export function ConfigureStep({
 							setStep={setStep}
 						/>
 
-						{isNotFree && (
+						{isNotFree && !isDedicated && (
 							<StorageOptionsSection
-								organisation={organisation}
-								instances={instances}
-								details={details}
-								setDetails={setDetails}
-								setStep={setStep}
-							/>
-						)}
-
-						{showClusterOptions && (
-							<ClusterOptionsSection
 								organisation={organisation}
 								instances={instances}
 								details={details}
@@ -181,11 +188,13 @@ export function ConfigureStep({
 					Continue to checkout
 				</Button>
 				<Spacer />
-				<EstimatedCost
-					ta="right"
-					organisation={organisation}
-					config={details}
-				/>
+				{!isDedicated && (
+					<EstimatedCost
+						ta="right"
+						organisation={organisation}
+						config={details}
+					/>
+				)}
 			</Group>
 		</>
 	);

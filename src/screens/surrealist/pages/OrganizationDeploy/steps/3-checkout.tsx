@@ -52,9 +52,10 @@ import { StepProps } from "../types";
 
 export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const navigateConnection = useConnectionNavigator();
+	const isDedicated = details.plan === "enterprise";
 	const deployMutation = useInstanceDeployMutation(organisation);
 	const instanceTypes = useInstanceTypeRegistry(organisation);
-	const instanceType = instanceTypes.get(details.type);
+	const instanceType = instanceTypes.get(details.computeType);
 
 	const handleDeploy = useStable(async () => {
 		try {
@@ -104,7 +105,7 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const computeMax = instanceType?.compute_units.max ?? 0;
 	const typeName = instanceType?.display_name ?? "";
 	const typeCategory = instanceType?.category ?? "";
-	const nodeCount = details?.units ?? 0;
+	const nodeCount = details?.computeUnits ?? 0;
 
 	const backupText = isFree ? "Upgrade required" : "Available";
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
@@ -128,7 +129,10 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 					align="stretch"
 					direction={{ base: "column", md: "row" }}
 				>
-					<Box flex={1}>
+					<Box
+						flex={1}
+						miw={250}
+					>
 						<PrimaryTitle>We're nearly there!</PrimaryTitle>
 						<Text mt="xs">
 							Please confirm whether the presented details are correct.
@@ -348,11 +352,13 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 					Deploy instance
 				</Button>
 				<Spacer />
-				<EstimatedCost
-					ta="right"
-					organisation={organisation}
-					config={details}
-				/>
+				{!isDedicated && (
+					<EstimatedCost
+						ta="right"
+						organisation={organisation}
+						config={details}
+					/>
+				)}
 			</Group>
 		</>
 	);

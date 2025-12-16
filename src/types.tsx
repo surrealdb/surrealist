@@ -32,7 +32,6 @@ export type SupportRequestType = "conversation" | "ticket";
 export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 export type SchemaMode = "schemaless" | "schemafull";
 export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
-export type StorageCategory = "standard" | "advanced";
 export type InstancePlan = "free" | "start" | "scale" | "enterprise";
 export type SourceMode = "schema" | "infer";
 export type SyntaxTheme = "default" | "vivid";
@@ -651,7 +650,8 @@ export interface CloudInstanceCapabilities {
 }
 
 export interface CloudDistributedStorageSpecs {
-	category: StorageCategory;
+	slug: string;
+	units: number;
 	autoscaling: boolean;
 	max_compute_units: number;
 }
@@ -685,6 +685,7 @@ export interface CloudPlan {
 	description: string;
 	regions: string[];
 	instance_types: CloudInstanceType[];
+	storage_instance_types: CloudInstanceType[];
 }
 
 export interface CloudOrganization {
@@ -848,12 +849,18 @@ export interface CloudDeployConfig {
 	name: string;
 	version: string;
 	region: string;
-	type: string;
-	units: number;
-	plan: InstancePlan;
-	startingData: StartingDataDetails;
-	storageCategory: StorageCategory;
+	computeType: string;
+	storageType: string;
+	computeUnits: number;
+	storageUnits: number;
 	storageAmount: number;
+	startingData: StartingDataDetails;
+	plan: InstancePlan;
+}
+
+export interface CloudPlanCategories {
+	compute: string[];
+	storage: string[];
 }
 
 export interface IntercomTicketTypeMinimal {

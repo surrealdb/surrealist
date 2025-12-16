@@ -124,12 +124,12 @@ function PageContent({ organisation, instances }: PageContentProps) {
 
 				draft.plan = guessedPlan;
 				draft.region = foundInstance.region;
-				draft.type = foundInstance.type.slug;
+				draft.computeType = foundInstance.type.slug;
+				draft.computeUnits = foundInstance.compute_units;
+				draft.storageType = foundInstance.type.slug;
+				draft.storageUnits = foundInstance.distributed_storage_specs?.units ?? 0;
 				draft.version = foundInstance.version;
-				draft.units = foundInstance.compute_units;
 				draft.name = `${foundInstance.name} Copy`;
-				draft.storageCategory =
-					foundInstance.distributed_storage_specs?.category ?? "standard";
 				draft.storageAmount = Math.max(
 					foundInstance.type.default_storage_size,
 					foundInstance.storage_size,
