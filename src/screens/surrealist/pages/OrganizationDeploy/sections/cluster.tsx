@@ -158,7 +158,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 							/>
 						</Group>
 						<Group>
-							<Label flex={1}>Compute units</Label>
+							<Label flex={1}>Compute nodes</Label>
 							<IntegerInput
 								min={1}
 								max={10}
@@ -205,7 +205,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 							/>
 						</Group>
 						<Group>
-							<Label flex={1}>Storage x Units</Label>
+							<Label flex={1}>Storage x Nodes</Label>
 							<IntegerInput
 								min={100}
 								max={6000}
@@ -220,9 +220,9 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 							/>
 							<Select
 								data={[
-									{ label: "3 Units", value: "3" },
-									{ label: "6 Units", value: "6" },
-									{ label: "9 Units", value: "9" },
+									{ label: "3 Nodes", value: "3" },
+									{ label: "6 Nodes", value: "6" },
+									{ label: "9 Nodes", value: "9" },
 								]}
 								value={details.storageUnits.toString()}
 								onChange={(value) => updateStorageUnits(Number(value))}
