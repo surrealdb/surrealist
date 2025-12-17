@@ -31,21 +31,26 @@ export const Icon = ({
 }: IconProps): JSX.Element | null => {
 	const svgStyle = useMemo(() => {
 		const iconSize = getIconSize(size) * 1.5;
+		const iconStyle = style || {};
 
-		return Object.assign({}, style || {}, {
+		const styleMarginRight = "marginRight" in iconStyle ? iconStyle.marginRight : undefined;
+		const styleMarginLeft = "marginLeft" in iconStyle ? iconStyle.marginLeft : undefined;
+		const styleTransform = "transform" in iconStyle ? iconStyle.transform : undefined;
+
+		return Object.assign({}, iconStyle, {
 			color: color ? themeColor(color) : undefined,
 			width: `${iconSize}em`,
 			height: `${iconSize}em`,
 			verticalAlign: "middle",
-			marginRight: left ? "0.5em" : undefined,
-			marginLeft: right ? "0.5em" : undefined,
+			marginRight: left ? "0.5em" : styleMarginRight,
+			marginLeft: right ? "0.5em" : styleMarginLeft,
 			flexShrink: 0,
 			transform:
 				flip === "horizontal"
 					? "scaleX(-1)"
 					: flip === "vertical"
 						? "scaleY(-1)"
-						: undefined,
+						: styleTransform,
 		});
 	}, [color, left, right, size, style, flip]);
 

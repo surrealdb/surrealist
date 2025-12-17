@@ -41,7 +41,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 	const handleUpdate = useStable((type: CloudInstanceType) => {
 		closeModal("instance-type");
 		setDetails((draft) => {
-			draft.type = type.slug;
+			draft.computeType = type.slug;
 
 			if (type.price_hour === 0) {
 				draft.startingData = {
@@ -53,11 +53,11 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	const handleReset = useStable(() => {
 		setDetails((draft) => {
-			draft.type = "";
+			draft.computeType = "";
 		});
 	});
 
-	const openInstanceTypeSelector = useStable(() => {
+	const openComputeInstanceTypeSelector = useStable(() => {
 		openModal({
 			modalId: "instance-type",
 			title: <PrimaryTitle>Available configurations</PrimaryTitle>,
@@ -70,8 +70,9 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 					</Text>
 					<Divider my="xl" />
 					<InstanceTypes
+						variant="compute"
 						organization={organisation}
-						value={details.type}
+						value={details.computeType}
 						onChange={handleUpdate}
 						plan={details.plan}
 					/>
@@ -80,8 +81,8 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 		});
 	});
 
-	const isRecommended = recommendations.some((type) => type.slug === details.type);
-	const selected = instanceTypes.get(details.type);
+	const isRecommended = recommendations.some((type) => type.slug === details.computeType);
+	const selected = instanceTypes.get(details.computeType);
 
 	useEffect(() => {
 		if (selected) {
@@ -94,8 +95,8 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Not necessary
 	useLayoutEffect(() => {
 		setDetails((draft) => {
-			if (!draft.type) {
-				draft.type = recommendations[recommendations.length - 1]?.slug ?? "";
+			if (!draft.computeType) {
+				draft.computeType = recommendations[recommendations.length - 1]?.slug ?? "";
 			}
 		});
 	}, [details.plan, setDetails]);
@@ -128,12 +129,12 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 				)}
 			</SimpleGrid>
 			<Group mt={28}>
-				{details.type && !isRecommended ? (
+				{details.computeType && !isRecommended ? (
 					<>
 						<Button
 							size="xs"
 							variant="gradient"
-							onClick={openInstanceTypeSelector}
+							onClick={openComputeInstanceTypeSelector}
 							rightSection={
 								<Icon
 									path={iconArrowLeft}
@@ -156,7 +157,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 					<Button
 						size="xs"
 						variant="gradient"
-						onClick={openInstanceTypeSelector}
+						onClick={openComputeInstanceTypeSelector}
 						rightSection={
 							<Icon
 								path={iconArrowLeft}
@@ -239,7 +240,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 		</Fragment>,
 	];
 
-	const isActive = details.type === type.slug;
+	const isActive = details.computeType === type.slug;
 
 	return (
 		<Paper

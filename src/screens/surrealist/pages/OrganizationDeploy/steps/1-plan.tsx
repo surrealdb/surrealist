@@ -25,7 +25,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 			details.startingData = {
 				type: details.plan === "free" ? "dataset" : "none",
 			};
-			details.type = config.surrealist?.defaultType ?? "";
+			details.computeType = config.surrealist?.defaultType ?? "";
 		});
 	});
 

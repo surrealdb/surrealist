@@ -1,7 +1,7 @@
 import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
 import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
-import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { TypeVariant, useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
@@ -13,16 +13,26 @@ import { PrimaryTitle } from "../PrimaryTitle";
 const CATEGORIES = ["free", "development", "production", "production-compute", "production-memory"];
 
 export interface InstanceTypesProps {
+	variant?: TypeVariant;
 	value?: string;
 	active?: string;
 	plan: InstancePlan;
 	organization: CloudOrganization;
+	withPrices?: boolean;
 	onChange: (value: CloudInstanceType) => void;
 }
 
-export function InstanceTypes({ value, active, plan, organization, onChange }: InstanceTypesProps) {
-	const instanceTypes = useInstanceTypeRegistry(organization);
-	const available = INSTANCE_PLAN_CATEGORIES[plan];
+export function InstanceTypes({
+	variant,
+	value,
+	active,
+	plan,
+	organization,
+	withPrices,
+	onChange,
+}: InstanceTypesProps) {
+	const instanceTypes = useInstanceTypeRegistry(organization, variant);
+	const available = INSTANCE_PLAN_CATEGORIES[plan][variant ?? "compute"];
 
 	const categories = useMemo(() => {
 		const typeList = [...instanceTypes.values()];
@@ -64,6 +74,7 @@ export function InstanceTypes({ value, active, plan, organization, onChange }: I
 								limited={false}
 								restricted={false}
 								instanceType={type}
+								withPrices={withPrices}
 								onSelect={onChange}
 							/>
 						))}
@@ -80,6 +91,7 @@ interface InstanceTypeRowProps {
 	limited: boolean;
 	restricted: boolean;
 	instanceType: CloudInstanceType;
+	withPrices?: boolean;
 	onSelect: (slug: CloudInstanceType) => void;
 }
 
@@ -89,6 +101,7 @@ function InstanceTypeRow({
 	limited,
 	restricted,
 	instanceType,
+	withPrices,
 	onSelect,
 }: InstanceTypeRowProps) {
 	const hourlyPriceThousandth = instanceType?.price_hour ?? 0;
@@ -128,16 +141,17 @@ function InstanceTypeRow({
 							)
 						)}
 					</Group>
-					{estimatedCost > 0 ? (
-						<Text mt={2}>{CURRENCY_FORMAT.format(estimatedCost)} per hour</Text>
-					) : (
-						<Text
-							fz="sm"
-							mt={2}
-						>
-							No usage costs
-						</Text>
-					)}
+					{withPrices !== false &&
+						(estimatedCost > 0 ? (
+							<Text mt={2}>{CURRENCY_FORMAT.format(estimatedCost)} per hour</Text>
+						) : (
+							<Text
+								fz="sm"
+								mt={2}
+							>
+								No usage costs
+							</Text>
+						))}
 				</Box>
 				<Box
 					w={96}

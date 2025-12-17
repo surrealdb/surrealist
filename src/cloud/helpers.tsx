@@ -4,6 +4,7 @@ import { useConfigStore } from "~/stores/config";
 import {
 	CloudDeployConfig,
 	CloudOrganization,
+	CloudPlanCategories,
 	InstancePlan,
 	MetricsDuration,
 	OrganisationBillingProvider,
@@ -16,22 +17,29 @@ export const ORG_ROLES_SUPPORT = ["support_member", "admin", "owner"];
 export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	name: "",
 	region: "",
-	type: "",
-	units: 1,
+	computeType: "",
+	computeUnits: 1,
+	storageType: "",
+	storageUnits: 3,
+	storageAmount: 100,
 	version: "",
 	plan: "free",
-	storageCategory: "standard",
-	storageAmount: 100,
 	startingData: {
 		type: "none",
 	},
 });
 
-export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, string[]> = {
-	free: ["free", "development", "production"],
-	start: ["development", "production"],
-	scale: ["production-memory", "production-compute"],
-	enterprise: ["production-memory", "production-compute"],
+export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, CloudPlanCategories> = {
+	free: { compute: ["free", "development", "production"], storage: [] },
+	start: { compute: ["development", "production"], storage: [] },
+	scale: {
+		compute: ["production-memory", "production-compute"],
+		storage: [],
+	},
+	enterprise: {
+		compute: ["production-memory"],
+		storage: ["production"],
+	},
 };
 
 export const INSTANCE_PLAN_ARCHITECTURES: Record<InstancePlan, [string, string]> = {
@@ -90,7 +98,7 @@ export function compileDeployConfig(
 	organisation: CloudOrganization,
 	config: CloudDeployConfig,
 ): object {
-	if (!config.type) {
+	if (!config.computeType) {
 		throw new Error("Deployment type is required to compile configuration.");
 	}
 
@@ -99,9 +107,9 @@ export function compileDeployConfig(
 		org: organisation.id,
 		region: config.region,
 		specs: {
-			slug: config.type,
+			slug: config.computeType,
 			version: config.version,
-			compute_units: config.type === "free" ? undefined : config.units,
+			compute_units: config.computeType === "free" ? undefined : config.computeUnits,
 		},
 	};
 
@@ -122,10 +130,12 @@ export function compileDeployConfig(
 	}
 
 	if (isDistributedPlan(config.plan)) {
+		configuration.storage = (config.storageAmount * config.storageUnits) / 3;
 		configuration.distributed_storage_specs = {
-			category: config.storageCategory,
+			slug: config.storageType,
+			units: config.storageUnits,
 			autoscaling: false,
-			max_compute_units: config.units,
+			max_compute_units: config.computeUnits,
 		};
 	}
 

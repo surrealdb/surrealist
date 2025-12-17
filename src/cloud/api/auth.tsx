@@ -87,6 +87,8 @@ export async function openCloudAuthentication() {
 		audience: "https://surrealdb.us.auth0.com/api/v2/",
 	});
 
+	adapter.log("Cloud", `Opening cloud authentication page (re: ${CALLBACK_ENDPOINT})`);
+
 	adapter.openUrl(`${authBase}/authorize?${params.toString()}`, "internal");
 }
 
