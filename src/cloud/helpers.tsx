@@ -131,8 +131,8 @@ export function compileDeployConfig(
 
 	if (isDistributedPlan(config.plan)) {
 		configuration.distributed_storage_specs = {
-			slug: "",
-			units: 0,
+			slug: config.storageType,
+			units: config.storageUnits,
 			autoscaling: false,
 			max_compute_units: config.computeUnits,
 		};

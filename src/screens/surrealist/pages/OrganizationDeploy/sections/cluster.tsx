@@ -12,6 +12,7 @@ import {
 	Text,
 } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { Icon } from "~/components/Icon";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { Label } from "~/components/Label";
@@ -23,6 +24,12 @@ import { iconChevronY, iconDatabase, iconMemory, iconPlus } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
 export function ClusterOptionsSection({ organisation, details, setDetails }: DeploySectionProps) {
+	const computeTypes = useInstanceTypeRegistry(organisation, "compute");
+	const storageTypes = useInstanceTypeRegistry(organisation, "storage");
+
+	const computeType = computeTypes.get(details.computeType);
+	const storageType = storageTypes.get(details.storageType);
+
 	const updateComputeUnits = useStable((value: string | number) => {
 		setDetails((draft) => {
 			draft.computeUnits = Number(value);
@@ -140,7 +147,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 							<Input
 								readOnly
 								placeholder="Select type..."
-								value={details.computeType}
+								value={computeType?.display_name}
 								onClick={openComputeTypeSelector}
 								rightSection={
 									<Icon
@@ -183,11 +190,11 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 					<Divider my="md" />
 					<Stack>
 						<Group>
-							<Label flex={1}>Storage type</Label>
+							<Label flex={1}>Instance type</Label>
 							<Input
 								readOnly
 								placeholder="Select type..."
-								value={details.storageType}
+								value={storageType?.display_name}
 								onClick={openStorageTypeSelector}
 								rightSection={
 									<Icon
