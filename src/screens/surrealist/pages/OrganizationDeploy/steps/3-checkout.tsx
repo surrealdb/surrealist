@@ -105,12 +105,11 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const computeMax = instanceType?.compute_units.max ?? 0;
 	const typeName = instanceType?.display_name ?? "";
 	const typeCategory = instanceType?.category ?? "";
-	const nodeCount = details?.computeUnits ?? 0;
 
 	const backupText = isFree ? "Upgrade required" : "Available";
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
-	const nodeText = nodeCount === 1 ? "Single node" : plural(nodeCount, `${nodeCount} Node`);
+	const nodeText = isDedicated ? "Dedicated" : "Single-node";
 	const startingDataText = STARTING_DATA[details.startingData.type].title;
 
 	return (

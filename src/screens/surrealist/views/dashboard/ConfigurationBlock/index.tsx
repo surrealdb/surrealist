@@ -44,14 +44,13 @@ export function ConfigurationBlock({
 	const cpuCount = instance?.type.cpu ?? 0;
 	const typeName = instance?.type.display_name ?? "";
 	const typeCategory = instance?.type.category ?? "";
-	const nodeCount = instance?.compute_units ?? 0;
 
 	const isFree = instance?.type.category === "free";
 	const backupText = isFree ? "Upgrade required" : "Active";
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${cpuCount} ${plural(cpuCount, "vCPU")}`;
 	const storageText = formatMemory(storageSize * 1000, true);
-	const nodeText = nodeCount === 1 ? "Single-node" : plural(nodeCount, `${nodeCount} Node`);
+	const nodeText = instance?.distributed_storage_specs ? "Dedicated" : "Single-node";
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);
