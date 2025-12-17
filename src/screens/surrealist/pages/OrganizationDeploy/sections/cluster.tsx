@@ -120,6 +120,8 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 		});
 	});
 
+	const expectedStorage = (details.storageUnits * details.storageAmount) / 3;
+
 	return (
 		<Box>
 			<SimpleGrid cols={{ base: 1, xl: 2 }}>
@@ -204,7 +206,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 								}
 							/>
 						</Group>
-						<Group>
+						<Group gap="xs">
 							<Label flex={1}>Storage x Nodes</Label>
 							<IntegerInput
 								min={100}
@@ -227,6 +229,13 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 								value={details.storageUnits.toString()}
 								onChange={(value) => updateStorageUnits(Number(value))}
 							/>
+						</Group>
+						<Group>
+							<Label flex={1}>Total capacity</Label>
+							<Text>
+								This configuration will be able to store {expectedStorage} GB of
+								data
+							</Text>
 						</Group>
 					</Stack>
 				</Paper>
