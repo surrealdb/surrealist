@@ -163,7 +163,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 								min={1}
 								max={10}
 								step={1}
-								suffix={` ${plural(details.computeUnits, "Unit")}`}
+								suffix={` ${plural(details.computeUnits, "Node")}`}
 								value={details.computeUnits}
 								onChange={updateComputeUnits}
 							/>
