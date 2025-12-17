@@ -46,15 +46,15 @@ export function PricingCard({
 				state === "future" && classes.planDisabled,
 			)}
 			onClick={() => {
-				if (!disabled) {
-					if (onClick) {
-						onClick(config);
-					} else {
-						dispatchIntent("create-message", {
-							type: "conversation",
-							conversationType: "sales-enquiry",
-						});
-					}
+				if (state === "contact") {
+					dispatchIntent("create-message", {
+						type: "conversation",
+						conversationType: "sales-enquiry",
+						subject: "Pricing enquiry",
+						message: `Hello! I was interested in learning more about the ${config.name} plan. Could you provide me with more information? Thanks!`,
+					});
+				} else if (!disabled && state === "available" && onClick) {
+					onClick(config);
 				}
 			}}
 		>
