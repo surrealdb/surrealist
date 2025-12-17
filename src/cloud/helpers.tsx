@@ -130,6 +130,7 @@ export function compileDeployConfig(
 	}
 
 	if (isDistributedPlan(config.plan)) {
+		configuration.storage = (config.storageAmount * config.storageUnits) / 3;
 		configuration.distributed_storage_specs = {
 			slug: config.storageType,
 			units: config.storageUnits,
