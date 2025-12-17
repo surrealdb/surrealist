@@ -20,7 +20,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType } from "~/types";
 import { plural } from "~/util/helpers";
-import { iconChevronY, iconDatabase, iconMemory, iconPlus } from "~/util/icons";
+import { iconChevronY, iconDatabase, iconMemory } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
 export function ClusterOptionsSection({ organisation, details, setDetails }: DeploySectionProps) {
@@ -120,7 +120,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 		});
 	});
 
-	const expectedStorage = (details.storageUnits * details.storageAmount) / 3;
+	const expectedStorage = details.storageAmount / details.storageUnits;
 
 	return (
 		<Box>
@@ -143,7 +143,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 						</Text>
 					</Group>
 					<Divider my="md" />
-					<Stack>
+					<Stack gap="xs">
 						<Group>
 							<Label flex={1}>Instance type</Label>
 							<Input
@@ -190,7 +190,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 						</Text>
 					</Group>
 					<Divider my="md" />
-					<Stack>
+					<Stack gap="xs">
 						<Group>
 							<Label flex={1}>Instance type</Label>
 							<Input
@@ -207,7 +207,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 							/>
 						</Group>
 						<Group gap="xs">
-							<Label flex={1}>Storage x Nodes</Label>
+							<Label flex={1}>Total capacity</Label>
 							<IntegerInput
 								min={100}
 								max={6000}
@@ -216,10 +216,9 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 								value={details.storageAmount}
 								onChange={updateStorageAmount}
 							/>
-							<Icon
-								path={iconPlus}
-								style={{ transform: "rotate(45deg)" }}
-							/>
+						</Group>
+						<Group gap="xs">
+							<Label flex={1}>Storage nodes</Label>
 							<Select
 								data={[
 									{ label: "3 Nodes", value: "3" },
@@ -231,10 +230,9 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 							/>
 						</Group>
 						<Group>
-							<Label flex={1}>Total capacity</Label>
-							<Text>
-								This configuration will be able to store {expectedStorage} GB of
-								data
+							<Label flex={1}>Storage breakdown</Label>
+							<Text py="sm">
+								Each node will be able to store {expectedStorage} GB of data
 							</Text>
 						</Group>
 					</Stack>
@@ -279,21 +277,21 @@ export function IntegerInput({ value, min, max, step, suffix, onChange }: Intege
 			leftSection={
 				<ActionIcon
 					disabled={value <= min}
-					variant="subtle"
+					variant="transparent"
 					color="slate"
 					onClick={() => onChange(Math.max(min, round(value - step, step)))}
 				>
-					<Text>-</Text>
+					<Text fz="xl">-</Text>
 				</ActionIcon>
 			}
 			rightSection={
 				<ActionIcon
 					disabled={value >= max}
-					variant="subtle"
+					variant="transparent"
 					color="slate"
 					onClick={() => onChange(Math.min(max, round(value + step, step)))}
 				>
-					<Text>+</Text>
+					<Text fz="xl">+</Text>
 				</ActionIcon>
 			}
 		/>
