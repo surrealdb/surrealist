@@ -14,7 +14,11 @@ import {
 import { navigate } from "wouter/use-browser-location";
 import glow from "~/assets/images/glow.webp";
 import cloud from "~/assets/images/icons/cloud.webp";
-import { getBillingProviderName, isBillingManaged, isOrganisationBillable } from "~/cloud/helpers";
+import {
+	getBillingProviderAction,
+	isBillingManaged,
+	isOrganisationBillable,
+} from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
@@ -307,9 +311,7 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 						icon={<Icon path={iconCreditCard} />}
 						title="Billing & payment information required"
 					>
-						{isManaged
-							? `You must configure billing and payment information in ${getBillingProviderName(organisation)} to deploy this instance. Once configured, you can continue to deploy your instance.`
-							: `You must provide billing and payment details to deploy this instance. This information will be remembered for future deployments in this organisation.`}
+						{getBillingProviderAction(organisation)}
 					</Alert>
 					{!isManaged && (
 						<SimpleGrid
@@ -344,10 +346,17 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 							icon={<Icon path={iconCreditCard} />}
 							title="Billing & payment information available"
 						>
-							<Text>
-								Your billing and payment information is already set up for this
-								organisation.
-							</Text>
+							{organisation.billing_provider === "bank_transfer" ? (
+								<Text>
+									Your organisation is configured to use bank transfer billing and
+									payments for this instance.
+								</Text>
+							) : (
+								<Text>
+									Your billing and payment information is already set up for this
+									organisation.
+								</Text>
+							)}
 							{!isManaged && (
 								<Button
 									mt="md"
