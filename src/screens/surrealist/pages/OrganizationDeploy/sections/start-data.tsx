@@ -1,9 +1,11 @@
 import { Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { compareVersions } from "compare-versions";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useSearchParams } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { SDB_3_0_0 } from "~/util/versions";
 import { STARTING_DATA } from "../constants";
 import { DeploySectionProps, StartingDataInfo } from "../types";
 
@@ -17,6 +19,8 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 			};
 		});
 	});
+
+	const isV3 = details.version ? compareVersions(details.version, SDB_3_0_0) >= 0 : false;
 
 	const current = details.startingData.type;
 
@@ -36,7 +40,7 @@ export function StartingDataSection({ details, setDetails }: DeploySectionProps)
 				<StartingDataCard
 					data={STARTING_DATA.dataset}
 					selected={current === "dataset"}
-					disabled={instanceId !== undefined}
+					disabled={instanceId !== undefined || isV3}
 					onSelect={handleSelect}
 				/>
 				<StartingDataCard

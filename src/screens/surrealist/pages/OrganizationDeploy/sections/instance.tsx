@@ -1,4 +1,5 @@
 import { Badge, Group, Image, Select, Stack, TextInput } from "@mantine/core";
+import { compareVersions } from "compare-versions";
 import { ChangeEvent, useLayoutEffect } from "react";
 import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -8,6 +9,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import { iconCheck } from "~/util/icons";
+import { SDB_3_0_0 } from "~/util/versions";
 import { DeploySectionProps } from "../types";
 export function DeploymentSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const versions = useAvailableInstanceVersions();
@@ -41,6 +43,18 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 		setDetails((draft) => {
 			draft.version = value ?? "";
 		});
+
+		if (value) {
+			const isV3 = compareVersions(value, SDB_3_0_0) >= 0;
+
+			if (isV3 && details.startingData.type === "dataset") {
+				setDetails((draft) => {
+					draft.startingData = {
+						type: "none",
+					};
+				});
+			}
+		}
 	});
 
 	useLayoutEffect(() => {
