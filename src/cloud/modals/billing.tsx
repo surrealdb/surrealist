@@ -279,6 +279,7 @@ function BillingForm({ organization, details, callback }: BillingFormProps) {
 					/>
 					<TextInput
 						label="Address Line 2"
+						required
 						value={data.AddressLine2}
 						onBlur={updateValidation}
 						onChange={(e) =>
