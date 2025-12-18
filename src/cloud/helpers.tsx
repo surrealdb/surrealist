@@ -67,6 +67,7 @@ export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 export const BILLING_PROVIDER_NAMES: Record<OrganisationBillingProvider, string> = {
 	stripe: "Stripe",
 	aws_marketplace: "AWS Marketplace",
+	bank_transfer: "Bank Transfer",
 };
 
 export function clearCachedConnections() {
