@@ -54,8 +54,10 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const navigateConnection = useConnectionNavigator();
 	const isDedicated = details.plan === "enterprise";
 	const deployMutation = useInstanceDeployMutation(organisation);
-	const instanceTypes = useInstanceTypeRegistry(organisation);
-	const instanceType = instanceTypes.get(details.computeType);
+	const computeTypes = useInstanceTypeRegistry(organisation, "compute");
+	const storageTypes = useInstanceTypeRegistry(organisation, "storage");
+	const instanceType = computeTypes.get(details.computeType);
+	const storageType = storageTypes.get(details.storageType);
 
 	const handleDeploy = useStable(async () => {
 		try {
@@ -92,6 +94,7 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	});
 
 	const isFree = instanceType?.category === "free";
+	const isDistributed = details.plan === "enterprise";
 	const isManaged = isBillingManaged(organisation);
 	const isBillable = isOrganisationBillable(organisation);
 	const isBlocked = !isFree && !isBillable;
@@ -103,13 +106,19 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const memoryMax = instanceType?.memory ?? 0;
 	const computeCores = instanceType?.cpu ?? 0;
 	const computeMax = instanceType?.compute_units.max ?? 0;
-	const typeName = instanceType?.display_name ?? "";
-	const typeCategory = instanceType?.category ?? "";
+	const computeTypeName = instanceType?.display_name ?? "";
+	const computeTypeCategory = instanceType?.category ?? "";
+	const storageTypeName = storageType?.display_name ?? "";
+	const storageTypeCategory = storageType?.category ?? "";
 
 	const backupText = isFree ? "Upgrade required" : "Available";
-	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
+	const computeTypeText = isFree
+		? "Free"
+		: `${computeTypeName} (${getTypeCategoryName(computeTypeCategory)})`;
+	const storageTypeText = `${storageTypeName} (${getTypeCategoryName(storageTypeCategory)})`;
 	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
-	const nodeText = isDedicated ? "Dedicated" : "Single-node";
+	const computeNodesText = isDedicated ? details.computeUnits : "Single-node";
+	const storageNodesText = `${formatMemory(details.storageAmount * 1000, true)} x ${details.storageUnits} Nodes`;
 	const startingDataText = STARTING_DATA[details.startingData.type].title;
 
 	return (
@@ -155,57 +164,101 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 						orientation="vertical"
 						visibleFrom="md"
 					/>
-					<SimpleGrid
-						cols={{ base: 1, sm: 2, xl: 3 }}
-						spacing="xl"
-						verticalSpacing="xs"
-					>
-						<PropertyValue
-							title="Type"
-							icon={iconPackageClosed}
-							value={typeText}
-						/>
+					{isDistributed ? (
+						<SimpleGrid
+							cols={{ base: 1, sm: 2 }}
+							spacing="xl"
+							verticalSpacing="xs"
+						>
+							<PropertyValue
+								title="Compute Type"
+								icon={iconQuery}
+								value={computeTypeText}
+							/>
 
-						<PropertyValue
-							title="Region"
-							icon={iconMarker}
-							value={regionName}
-						/>
+							<PropertyValue
+								title="Storage Type"
+								icon={iconQuery}
+								value={storageTypeText}
+							/>
 
-						<PropertyValue
-							title="Version"
-							icon={iconTag}
-							value={`SurrealDB ${details?.version}`}
-						/>
-						<PropertyValue
-							title="Backups"
-							icon={iconHistory}
-							value={<Text c={isFree ? "orange" : undefined}>{backupText}</Text>}
-						/>
-						<PropertyValue
-							title="Memory"
-							icon={iconMemory}
-							value={formatMemory(memoryMax)}
-						/>
+							<PropertyValue
+								title="Compute Nodes"
+								icon={iconMemory}
+								value={computeNodesText}
+							/>
 
-						<PropertyValue
-							title="Compute"
-							icon={iconQuery}
-							value={computeText}
-						/>
+							<PropertyValue
+								title="Storage Nodes"
+								icon={iconMemory}
+								value={storageNodesText}
+							/>
 
-						<PropertyValue
-							title="Nodes"
-							icon={iconRelation}
-							value={nodeText}
-						/>
+							<PropertyValue
+								title="Region"
+								icon={iconMarker}
+								value={regionName}
+							/>
 
-						<PropertyValue
-							title="Starting data"
-							icon={iconDatabase}
-							value={startingDataText}
-						/>
-					</SimpleGrid>
+							<PropertyValue
+								title="Version"
+								icon={iconTag}
+								value={`SurrealDB ${details?.version}`}
+							/>
+						</SimpleGrid>
+					) : (
+						<SimpleGrid
+							cols={{ base: 1, sm: 2, xl: 3 }}
+							spacing="xl"
+							verticalSpacing="xs"
+						>
+							<PropertyValue
+								title="Type"
+								icon={iconPackageClosed}
+								value={computeTypeText}
+							/>
+
+							<PropertyValue
+								title="Region"
+								icon={iconMarker}
+								value={regionName}
+							/>
+
+							<PropertyValue
+								title="Version"
+								icon={iconTag}
+								value={`SurrealDB ${details?.version}`}
+							/>
+							<PropertyValue
+								title="Backups"
+								icon={iconHistory}
+								value={<Text c={isFree ? "orange" : undefined}>{backupText}</Text>}
+							/>
+							<PropertyValue
+								title="Memory"
+								icon={iconMemory}
+								value={formatMemory(memoryMax)}
+							/>
+
+							<PropertyValue
+								title="Compute"
+								icon={iconQuery}
+								value={computeText}
+							/>
+
+							<PropertyValue
+								title="Nodes"
+								icon={iconRelation}
+								value={computeNodesText}
+							/>
+
+							<PropertyValue
+								title="Starting data"
+								icon={iconDatabase}
+								value={startingDataText}
+							/>
+						</SimpleGrid>
+					)}
 				</Flex>
 			</Paper>
 
