@@ -346,17 +346,10 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 							icon={<Icon path={iconCreditCard} />}
 							title="Billing & payment information available"
 						>
-							{organisation.billing_provider === "bank_transfer" ? (
-								<Text>
-									Your organisation is configured to use bank transfer billing and
-									payments for this instance.
-								</Text>
-							) : (
-								<Text>
-									Your billing and payment information is already set up for this
-									organisation.
-								</Text>
-							)}
+							<Text>
+								Your billing and payment information is already set up for this
+								organisation.
+							</Text>
 							{!isManaged && (
 								<Button
 									mt="md"
