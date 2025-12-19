@@ -1,7 +1,11 @@
 import { Group, SimpleGrid, Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
 import { useEffect } from "react";
-import { getBillingProviderName, isBillingManaged, isOrganisationBillable } from "~/cloud/helpers";
+import {
+	getBillingProviderAction,
+	isBillingManaged,
+	isOrganisationBillable,
+} from "~/cloud/helpers";
 import { BillingDetails } from "~/components/BillingDetails";
 import { Icon } from "~/components/Icon";
 import { PaymentDetails } from "~/components/PaymentDetails";
@@ -49,13 +53,7 @@ export function openBillingRequiredModal({
 				<Stack gap="xl">
 					<BillingRequiredBlock
 						title="You're almost there!"
-						subtitle={
-							<Text maw="72%">
-								{isManaged
-									? `Please configure billing and payment details in ${getBillingProviderName(organization)} to proceed.`
-									: `Please provide billing and payment details to proceed. This information will be remembered for future upgrades and deployments within this organization.`}
-							</Text>
-						}
+						subtitle={<Text maw="72%">{getBillingProviderAction(organization)}</Text>}
 					/>
 					{!isManaged && (
 						<SimpleGrid

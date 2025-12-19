@@ -57,7 +57,7 @@ export type OrganisationState =
 	| "frozen"
 	| "terminating"
 	| "terminated";
-export type OrganisationBillingProvider = "stripe" | "aws_marketplace";
+export type OrganisationBillingProvider = "stripe" | "aws_marketplace" | "bank_transfer";
 
 export type InstanceState =
 	| "creating"
