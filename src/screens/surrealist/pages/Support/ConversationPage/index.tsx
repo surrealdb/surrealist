@@ -355,7 +355,8 @@ export function ConversationPage({ id }: ConversationPageProps) {
 	const attachFile = () => {
 		const fileInput = document.createElement("input");
 		fileInput.type = "file";
-		fileInput.accept = "image/*,application/pdf";
+		fileInput.accept =
+			"image/*,application/pdf,text/csv,text/plain,application/json,.yaml,.toml,.sh,.sql,.surql,.surrealql,.surql,.tar,.zip";
 		fileInput.multiple = true;
 		fileInput.onchange = (e) => {
 			const target = e.target as HTMLInputElement;
