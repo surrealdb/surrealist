@@ -29,7 +29,7 @@ import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { Template } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { isConnectionValid } from "~/util/connection";
+import { getConnectionVariant, isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
 import { iconChevronDown, iconChevronRight, iconHomePlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
@@ -52,6 +52,7 @@ export function CreateConnectionPage() {
 
 		tagEvent("connection_created", {
 			protocol: connection.authentication.protocol.toString(),
+			variant: getConnectionVariant(connection),
 			is_local: connection.authentication.hostname.includes("localhost"),
 		});
 	});

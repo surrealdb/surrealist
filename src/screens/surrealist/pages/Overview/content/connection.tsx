@@ -21,6 +21,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
 import { tagEvent } from "~/util/analytics";
+import { getConnectionVariant } from "~/util/connection";
 import { newId, ON_STOP_PROPAGATION } from "~/util/helpers";
 import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
@@ -63,6 +64,7 @@ export function StartConnection({
 
 		tagEvent("connection_duplicated", {
 			protocol: connection.authentication.protocol.toString(),
+			variant: getConnectionVariant(connection),
 			is_local: connection.authentication.hostname.includes("localhost"),
 		});
 	});
@@ -76,6 +78,7 @@ export function StartConnection({
 
 			tagEvent("connection_deleted", {
 				protocol: connection.authentication.protocol.toString(),
+				variant: getConnectionVariant(connection),
 				is_local: connection.authentication.hostname.includes("localhost"),
 			});
 		},

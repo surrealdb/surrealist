@@ -28,7 +28,13 @@ import type {
 } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getSetting } from "~/util/config";
-import { getActiveConnection, getAuthDB, getAuthNS, getConnection } from "~/util/connection";
+import {
+	getActiveConnection,
+	getAuthDB,
+	getAuthNS,
+	getConnection,
+	getConnectionVariant,
+} from "~/util/connection";
 import {
 	SURREAL_START_BASICS,
 	SURREAL_START_GRAPH_V2,
@@ -263,6 +269,7 @@ export async function openConnection(options?: ConnectOptions) {
 
 		tagEvent("connection_connected", {
 			protocol: connection.authentication.protocol.toString(),
+			variant: getConnectionVariant(connection),
 		});
 	} catch (err: any) {
 		console.error("Connection failed", err);

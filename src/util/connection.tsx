@@ -2,7 +2,7 @@ import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
-import type { Authentication, AuthLevel, CloudInstance } from "~/types";
+import type { Authentication, AuthLevel, CloudInstance, Connection } from "~/types";
 import { createBaseConnection } from "./defaults";
 import { connectionUri, fastParseJwt } from "./helpers";
 
@@ -212,4 +212,27 @@ export function resolveInstanceConnection(instance: CloudInstance) {
 	});
 
 	return base;
+}
+
+export type ConnectionVariant = "browser" | "localhost" | "cloud" | "remote";
+
+/**
+ * Returns the variant of the specified connection
+ */
+export function getConnectionVariant(connection: Connection) {
+	const { mode, protocol, hostname } = connection.authentication;
+
+	if (mode === "cloud") {
+		return "cloud";
+	}
+
+	if (protocol === "mem" || protocol === "indxdb") {
+		return "browser";
+	}
+
+	if (hostname === "localhost" || hostname === "127.0.0.1") {
+		return "localhost";
+	}
+
+	return "remote";
 }
