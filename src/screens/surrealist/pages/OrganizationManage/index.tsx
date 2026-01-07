@@ -1,4 +1,4 @@
-import { Alert, Box, Divider, ScrollArea, Stack, Tabs } from "@mantine/core";
+import { Alert, Box, Button, Divider, ScrollArea, Stack, Tabs } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import {
@@ -27,6 +27,7 @@ import {
 	iconProgressClock,
 	iconServer,
 } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
 import { OrganizationInstancesTab } from "./tabs/instances";
@@ -125,7 +126,27 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 										>
 											This organisation has been restricted due to failed
 											payments. Please update your billing and payment
-											information to restore access.
+											information to restore access. If you believe this is a
+											mistake or need assistance, please use the button below
+											to contact support.
+											<div>
+												<Button
+													mt="md"
+													color="red"
+													variant="light"
+													size="xs"
+													onClick={() => {
+														dispatchIntent("create-message", {
+															type: "conversation",
+															conversationType: "general",
+															subject: "Organisation restricted",
+															message: `My organisation (ID: ${organization.id}) was frozen. Can you please help me restore access?`,
+														});
+													}}
+												>
+													Contact support
+												</Button>
+											</div>
 										</Alert>
 									) : null}
 									<Tabs
