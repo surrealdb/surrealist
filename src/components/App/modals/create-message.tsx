@@ -272,7 +272,7 @@ export function CreateMessageModal() {
 								wrap="nowrap"
 							>
 								<Icon path={iconHelp} />
-								<Text>Include attachments by sending a reply to this ticket</Text>
+								<Text>Include attachments by sending a reply to this thread</Text>
 							</Group>
 							<Spacer />
 							<Button
