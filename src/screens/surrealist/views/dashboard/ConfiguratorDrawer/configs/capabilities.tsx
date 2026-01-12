@@ -128,7 +128,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 								<Divider />
 
 								<BooleanCapability
-									name="Insecure closures"
+									name="Insecure storable closures"
 									description="Allow closures to be stored in records insecurely"
 									value={value}
 									onChange={setValue}
