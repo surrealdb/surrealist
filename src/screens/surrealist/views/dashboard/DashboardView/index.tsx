@@ -424,7 +424,7 @@ export function DashboardView() {
 													bg={
 														copied
 															? "var(--mantine-color-violet-light)"
-															: "rgba(255, 255, 255, 0.05)"
+															: "var(--mantine-color-slate-light)"
 													}
 													withBorder={false}
 													p={8}
