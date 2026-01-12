@@ -64,9 +64,12 @@ export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	enterprise: ["medium-memory", "large-memory", "xlarge-memory"],
 };
 
-export const BILLING_PROVIDER_NAMES: Record<OrganisationBillingProvider, string> = {
-	stripe: "Stripe",
-	aws_marketplace: "AWS Marketplace",
+export const BILLING_PROVIDER_ACTIONS: Record<OrganisationBillingProvider, string> = {
+	stripe: "You must provide billing and payment details to deploy this instance. This information will be remembered for future deployments in this organisation.",
+	aws_marketplace:
+		"Please configure your billing and payment information in the AWS Marketplace.",
+	bank_transfer:
+		"Please contact support to configure billing and payment information for your organisation.",
 };
 
 export function clearCachedConnections() {
@@ -192,8 +195,8 @@ export function isOrganisationBillable(organisation?: CloudOrganization): boolea
 	return organisation.state === "onboarded";
 }
 
-export function getBillingProviderName(organisation: CloudOrganization): string {
-	return BILLING_PROVIDER_NAMES[organisation.billing_provider] ?? "[unknown provider]";
+export function getBillingProviderAction(organisation: CloudOrganization): string {
+	return BILLING_PROVIDER_ACTIONS[organisation.billing_provider] ?? "";
 }
 
 export function isOrganisationRestricted(organisation: CloudOrganization): boolean {

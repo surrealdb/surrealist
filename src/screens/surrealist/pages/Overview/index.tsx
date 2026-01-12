@@ -496,6 +496,7 @@ export function OverviewPage() {
 									>
 										<Text
 											span
+											fw={500}
 											inherit
 											c="bright"
 										>
