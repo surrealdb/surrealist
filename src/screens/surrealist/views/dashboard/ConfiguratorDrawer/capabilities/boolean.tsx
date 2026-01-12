@@ -16,6 +16,7 @@ export function BooleanCapability({
 	description,
 	value,
 	onChange,
+	rightSection,
 	field,
 }: BooleanCapabilityProps) {
 	const checked = !!value[field];
@@ -47,6 +48,7 @@ export function BooleanCapability({
 				</Tooltip>
 			)}
 			<Spacer />
+			{rightSection}
 			<Switch
 				checked={checked}
 				disabled={disabled}

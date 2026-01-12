@@ -24,6 +24,7 @@ export interface CapabilityBaseProps {
 	disabled?: boolean;
 	description?: ReactNode;
 	value: CloudInstanceCapabilities;
+	rightSection?: ReactNode;
 	onChange: (value: CloudInstanceCapabilities) => void;
 }
 
