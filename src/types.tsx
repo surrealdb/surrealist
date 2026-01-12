@@ -635,6 +635,7 @@ export interface CloudInstanceCapabilities {
 	allow_scripting: boolean;
 	allow_guests: boolean;
 	allow_graphql: boolean;
+	allow_insecure_storable_closures: boolean;
 	allowed_rpc_methods: string[];
 	denied_rpc_methods: string[];
 	allowed_http_endpoints: string[];
