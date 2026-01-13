@@ -656,6 +656,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 												))}
 											</PillGroup>
 											<Textarea
+												spellCheck={true}
 												placeholder="Reply to this conversation"
 												minRows={4}
 												autosize
