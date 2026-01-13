@@ -224,6 +224,7 @@ export function CreateMessageModal() {
 								autosize
 								required
 								minRows={5}
+								spellCheck={true}
 								label="What is your reason for contacting us?"
 								value={description}
 								onChange={(e) => setDescription(e.target.value)}
