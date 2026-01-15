@@ -2,6 +2,7 @@ import {
 	Box,
 	Button,
 	Center,
+	CopyButton,
 	Group,
 	Image,
 	Indicator,
@@ -13,6 +14,7 @@ import {
 	Stack,
 	Text,
 	Tooltip,
+	UnstyledButton,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { memo, useEffect, useState } from "react";
@@ -51,7 +53,7 @@ import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { useDeployStore } from "~/stores/deploy";
 import { DatasetType } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconChevronDown, iconChevronRight } from "~/util/icons";
+import { iconCheck, iconChevronDown, iconChevronRight, iconCopy } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { MonitorMetricOptions } from "../../monitor/helpers";
@@ -414,6 +416,51 @@ export function DashboardView() {
 										onUpdate={handleUpdate}
 										onVersions={handleVersions}
 									/>
+
+									<CopyButton value={`https://${details.host}/`}>
+										{({ copied, copy }) => (
+											<UnstyledButton onClick={copy}>
+												<Paper
+													bg={
+														copied
+															? "var(--mantine-color-violet-light)"
+															: "var(--mantine-color-slate-light)"
+													}
+													withBorder={false}
+													p={8}
+												>
+													<Group
+														gap={8}
+														wrap="nowrap"
+													>
+														<Icon
+															path={copied ? iconCheck : iconCopy}
+															opacity={0.66}
+														/>
+														<Text>
+															<Text span>https://</Text>
+															<Text
+																span
+																c="bright"
+															>
+																{details.host}
+															</Text>
+															<Text span>/</Text>
+														</Text>
+
+														{copied && (
+															<Text
+																c="bright"
+																opacity={0.66}
+															>
+																Copied!
+															</Text>
+														)}
+													</Group>
+												</Paper>
+											</UnstyledButton>
+										)}
+									</CopyButton>
 
 									<SimpleGrid
 										cols={2}

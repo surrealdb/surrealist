@@ -1,12 +1,24 @@
-import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Divider,
+	Group,
+	ScrollArea,
+	Stack,
+	Text,
+	ThemeIcon,
+	Tooltip,
+} from "@mantine/core";
 import { compareVersions, satisfies } from "compare-versions";
 import equal from "fast-deep-equal";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
+import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { filterOptions, parseCapabilities, transformCapabilities } from "~/util/capabilities";
+import { iconWarning } from "~/util/icons";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
@@ -29,6 +41,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 		parseCapabilities(instance.capabilities),
 	);
 
+	const hasClosureCap = compareVersions(instance.version, "2.5.0") >= 0;
 	const hasArbitraryQuery = compareVersions(instance.version, "2.2.0") >= 0;
 	const hasNetworkCaps = satisfies(
 		instance.version,
@@ -110,15 +123,43 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 							field="allow_guests"
 						/>
 
-						<Divider />
+						{hasClosureCap && (
+							<>
+								<Divider />
 
-						<BooleanCapability
-							name="Insecure closures"
-							description="Allow closures to be stored in records insecurely"
-							value={value}
-							onChange={setValue}
-							field="allow_insecure_storable_closures"
-						/>
+								<BooleanCapability
+									name="Insecure storable closures"
+									description="Allow closures to be stored in records insecurely"
+									value={value}
+									onChange={setValue}
+									field="allow_insecure_storable_closures"
+									rightSection={
+										value.allow_insecure_storable_closures && (
+											<Tooltip
+												label={
+													<Text
+														w={250}
+														style={{ textWrap: "pretty" }}
+													>
+														Storing closures insecurely can lead to
+														security vulnerabilities. We recommend
+														leaving this option disabled.
+													</Text>
+												}
+											>
+												<ThemeIcon
+													color="orange"
+													variant="subtle"
+													size="sm"
+												>
+													<Icon path={iconWarning} />
+												</ThemeIcon>
+											</Tooltip>
+										)
+									}
+								/>
+							</>
+						)}
 
 						<Divider />
 

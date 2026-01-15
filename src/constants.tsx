@@ -443,6 +443,7 @@ export const SCHEMA_MODES: Selectable<SchemaMode>[] = [
 export const REGION_FLAGS: Record<string, string> = {
 	"aws-euw1": flagIE,
 	"aws-use1": flagUS,
+	"aws-use2": flagUS,
 	"aws-usw2": flagUS,
 	"aws-aps1": flagIN,
 };
