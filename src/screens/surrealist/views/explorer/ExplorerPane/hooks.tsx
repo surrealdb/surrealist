@@ -21,55 +21,52 @@ export function useRecordQuery(input: RecordQueryInput) {
 	return useQuery<{ records: any[]; headers: string[] }>({
 		queryKey: ["explorer", "records", input],
 		placeholderData: keepPreviousData,
+		retryDelay: 500,
 		queryFn: async () => {
 			const { activeTable, currentPage, pageSize, sortMode, isFilterValid, filter } = input;
 
-			try {
-				if (!activeTable || !isFilterValid) {
-					throw new Error("Invalid query input");
-				}
-
-				const limitBy = pageSize;
-				const startAt = (currentPage - 1) * pageSize;
-
-				let fetchQuery = `SELECT * FROM ${escapeIdent(activeTable)}`;
-
-				if (filter) {
-					fetchQuery += ` WHERE ${filter}`;
-				}
-
-				if (sortMode) {
-					const [sortField, sortDir] = sortMode;
-
-					fetchQuery += ` ORDER BY ${sortField} ${sortDir}`;
-
-					if (sortField !== "id") {
-						fetchQuery += `, id ${sortDir}`;
-					}
-				} else if (filter) {
-					fetchQuery += ` ORDER BY id ASC`;
-				}
-
-				fetchQuery += ` LIMIT ${limitBy}`;
-
-				if (startAt > 0) {
-					fetchQuery += ` START ${startAt}`;
-				}
-
-				const records = (await executeQueryFirst(fetchQuery)) || [];
-				const table = schema.tables.find((t) => t.schema.name === activeTable);
-				const fields = table?.fields || [];
-				const headers = fields
-					.filter((f) => !f.name.includes("[*]") && !f.name.includes("."))
-					.map((f) => parseIdent(f.name));
-
-				return {
-					records,
-					headers,
-				};
-			} catch {
-				return { records: [], headers: [] };
+			if (!activeTable || !isFilterValid) {
+				throw new Error("Invalid query input");
 			}
+
+			const limitBy = pageSize;
+			const startAt = (currentPage - 1) * pageSize;
+
+			let fetchQuery = `SELECT * FROM ${escapeIdent(activeTable)}`;
+
+			if (filter) {
+				fetchQuery += ` WHERE ${filter}`;
+			}
+
+			if (sortMode) {
+				const [sortField, sortDir] = sortMode;
+
+				fetchQuery += ` ORDER BY ${sortField} ${sortDir}`;
+
+				if (sortField !== "id") {
+					fetchQuery += `, id ${sortDir}`;
+				}
+			} else if (filter) {
+				fetchQuery += ` ORDER BY id ASC`;
+			}
+
+			fetchQuery += ` LIMIT ${limitBy}`;
+
+			if (startAt > 0) {
+				fetchQuery += ` START ${startAt}`;
+			}
+
+			const records = (await executeQueryFirst(fetchQuery)) || [];
+			const table = schema.tables.find((t) => t.schema.name === activeTable);
+			const fields = table?.fields || [];
+			const headers = fields
+				.filter((f) => !f.name.includes("[*]") && !f.name.includes("."))
+				.map((f) => parseIdent(f.name));
+
+			return {
+				records,
+				headers,
+			};
 		},
 	});
 }

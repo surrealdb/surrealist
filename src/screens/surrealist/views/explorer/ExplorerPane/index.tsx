@@ -4,6 +4,7 @@ import {
 	Center,
 	Divider,
 	Group,
+	Loader,
 	Menu,
 	ScrollArea,
 	Stack,
@@ -458,7 +459,48 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					className={clsx(!isFilterValid && classes.filterInvalid)}
 				/>
 			)}
-			{recordQuery.isLoading ? null : records.length > 0 ? (
+			{recordQuery.error ? (
+				<Center flex={1}>
+					<Stack
+						align="center"
+						justify="center"
+						gap="xl"
+					>
+						<Box ta="center">
+							<Text
+								fz="lg"
+								fw={600}
+								c="bright"
+							>
+								Failed to display records
+							</Text>
+							<Text>An error occurred while fetching records.</Text>
+							<Text
+								mt="md"
+								c="red"
+								ff="monospace"
+								maw={500}
+							>
+								{recordQuery.error.message}
+							</Text>
+						</Box>
+						{allowCreate && (
+							<Button
+								variant="gradient"
+								leftSection={<Icon path={iconRefresh} />}
+								onClick={() => recordQuery.refetch()}
+								loading={recordQuery.isFetching}
+							>
+								Try again
+							</Button>
+						)}
+					</Stack>
+				</Center>
+			) : recordQuery.isPending ? (
+				<Center flex={1}>
+					<Loader />
+				</Center>
+			) : records.length > 0 ? (
 				<ScrollArea
 					style={{
 						position: "absolute",
