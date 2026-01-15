@@ -1,6 +1,6 @@
 import equal from "fast-deep-equal";
 import { klona } from "klona";
-import { escapeIdent } from "surrealdb";
+import { escapeIdent, Table } from "surrealdb";
 import { adapter } from "~/adapter";
 import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
@@ -260,6 +260,14 @@ export function getTableVariant(table: TableInfo): TableVariant {
 	return table.schema.kind.kind === "RELATION" ? "relation" : "normal";
 }
 
+function parseTable(input: unknown): string {
+	if (input instanceof Table) {
+		return input.name;
+	}
+
+	return input as string;
+}
+
 /**
  * Returns true if the table is an edge table
  *
@@ -268,8 +276,10 @@ export function getTableVariant(table: TableInfo): TableVariant {
  */
 export function extractEdgeRecords(table: TableInfo): [string[], string[]] {
 	const { kind } = table.schema;
+	const inputs = kind.in?.map(parseTable) ?? [];
+	const outputs = kind.out?.map(parseTable) ?? [];
 
-	return [kind.in || [], kind.out || []];
+	return [inputs, outputs];
 }
 
 /**
