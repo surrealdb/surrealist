@@ -1,5 +1,4 @@
 import { Value, SurrealQL as Wasm } from "@surrealdb/ql-wasm-2";
-import * as SurrealDB from "surrealdb";
 import { CborCodec } from "surrealdb";
 import { adapter } from "~/adapter";
 import { SurrealQL } from "./surrealql";
@@ -7,9 +6,7 @@ import { SurrealQL } from "./surrealql";
 export class SurrealQLV2 implements SurrealQL {
 	constructor() {
 		adapter.log("SurrealQL", "Initializing SurrealQL V2");
-
-		(window as any).SurrealDB = SurrealDB;
-		(window as any).Wasm = this;
+		(window as any).SurrealQL = this;
 	}
 
 	validateQuery(sql: string): Promise<string | undefined> {
