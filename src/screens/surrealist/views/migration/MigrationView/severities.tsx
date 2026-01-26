@@ -1,8 +1,8 @@
-import { MigrationDiagnosticResult } from "~/types";
-import { iconBug, iconErrorCircle, iconWarning } from "~/util/icons";
+import { MigrationSeverity } from "~/types";
+import { iconErrorCircle, iconHelp, iconWarning } from "~/util/icons";
 
 export const severityMeta: Record<
-	MigrationDiagnosticResult["severity"],
+	MigrationSeverity,
 	{
 		color: string;
 		label: string;
@@ -10,22 +10,22 @@ export const severityMeta: Record<
 		description: string;
 	}
 > = {
-	might_break: {
-		color: "yellow",
-		label: "Might break",
+	unlikely_break: {
+		color: "blue",
+		label: "Note",
+		icon: iconHelp,
+		description: "A change unlikely to break the database. Review before upgrading.",
+	},
+	can_break: {
+		color: "orange",
+		label: "Potential issue",
 		icon: iconWarning,
 		description: "Changes might cause runtime issues. Review before upgrading.",
 	},
 	will_break: {
 		color: "red",
-		label: "Will break",
+		label: "Breaking issue",
 		icon: iconErrorCircle,
 		description: "The upgrade will fail unless this issue is resolved.",
-	},
-	breaking_resolution: {
-		color: "violet",
-		label: "Needs resolution",
-		icon: iconBug,
-		description: "The migration can only continue after resolving this issue.",
 	},
 };
