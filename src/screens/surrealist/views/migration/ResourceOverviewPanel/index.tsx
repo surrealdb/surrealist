@@ -19,6 +19,7 @@ import { MigrationResourceType } from "~/types";
 import { iconRefresh, iconTransfer } from "~/util/icons";
 import { DiagnosticResource, ResourceMap } from "../MigrationView/organizer";
 import { resourceTypeMeta } from "../MigrationView/types";
+import { UnresolvedBadge } from "../MigrationView/unresolved";
 import classes from "./styles.module.scss";
 
 function countUnresolvedEntries(resource: DiagnosticResource, resolvedIds: Set<string>): number {
@@ -239,13 +240,10 @@ function ResourceCard({ type, resource, resolvedIds, onSelect }: ResourceCardPro
 							>
 								{resource.path}
 							</Text>
-							<Badge
-								color="orange"
-								variant="light"
+							<UnresolvedBadge
 								size="xs"
-							>
-								{unresolvedCount} unresolved
-							</Badge>
+								count={unresolvedCount}
+							/>
 						</Group>
 					</Box>
 				</Group>

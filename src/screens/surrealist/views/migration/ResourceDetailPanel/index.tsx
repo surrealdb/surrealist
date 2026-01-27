@@ -1,18 +1,61 @@
 import { Badge, Box, Button, Divider, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { useMemo } from "react";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { CodePreview } from "~/components/CodePreview";
 import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
 import { Spacer } from "~/components/Spacer";
+import { SURQL_FILTER } from "~/constants";
 import { useIsLight } from "~/hooks/theme";
-import { MigrationResourceType } from "~/types";
-import { iconArrowLeft, iconArrowUpRight, iconBook, iconCheck } from "~/util/icons";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { MigrationKind, MigrationResourceType, MigrationSeverity } from "~/types";
+import { plural } from "~/util/helpers";
+import { iconArrowLeft, iconArrowUpRight, iconBook, iconCheck, iconDownload } from "~/util/icons";
 import { kindMeta } from "../MigrationView/kinds";
 import { DiagnosticEntry, DiagnosticResource } from "../MigrationView/organizer";
 import { severityMeta } from "../MigrationView/severities";
 import { resourceTypeMeta } from "../MigrationView/types";
+import { UnresolvedBadge } from "../MigrationView/unresolved";
 import classes from "./styles.module.scss";
+
+const SEVERITY_ORDER: MigrationSeverity[] = ["will_break", "can_break", "unlikely_break"];
+
+interface GroupedKindEntry {
+	kind: MigrationKind;
+	entries: DiagnosticEntry[];
+	worstSeverity: MigrationSeverity;
+}
+
+function groupEntriesByKind(entries: DiagnosticEntry[]): GroupedKindEntry[] {
+	const kindMap = new Map<MigrationKind, GroupedKindEntry>();
+
+	for (const entry of entries) {
+		const kind = entry.source.kind;
+
+		if (!kindMap.has(kind)) {
+			kindMap.set(kind, {
+				kind,
+				entries: [],
+				worstSeverity: "unlikely_break",
+			});
+		}
+
+		const group = kindMap.get(kind);
+
+		if (group) {
+			group.entries.push(entry);
+
+			const severity = entry.source.severity;
+
+			if (SEVERITY_ORDER.indexOf(severity) < SEVERITY_ORDER.indexOf(group.worstSeverity)) {
+				group.worstSeverity = severity;
+			}
+		}
+	}
+
+	return Array.from(kindMap.values());
+}
 
 export interface ResourceDetailPanelProps {
 	type: MigrationResourceType;
@@ -30,9 +73,24 @@ export function ResourceDetailPanel({
 	onToggleResolved,
 }: ResourceDetailPanelProps) {
 	const isLight = useIsLight();
+	const isRecordType = type === "db-tb-record";
 
 	const meta = resourceTypeMeta[type];
 	const unresolvedCount = resource.entries.filter((e) => !resolvedIds.has(e.id)).length;
+
+	// Group entries by kind for record types
+	const groupedByKind = useMemo(() => {
+		if (!isRecordType) return null;
+		return groupEntriesByKind(resource.entries);
+	}, [isRecordType, resource.entries]);
+
+	const handleToggleAllInGroup = (entries: DiagnosticEntry[]) => {
+		for (const entry of entries) {
+			if (!resolvedIds.has(entry.id)) {
+				onToggleResolved(entry.id);
+			}
+		}
+	};
 
 	return (
 		<Stack h="100%">
@@ -64,14 +122,7 @@ export function ResourceDetailPanel({
 					>
 						{resource.name}
 					</Text>
-					<Badge
-						color="orange"
-						variant="light"
-						ml="sm"
-						size="sm"
-					>
-						{unresolvedCount} unresolved
-					</Badge>
+					<UnresolvedBadge count={unresolvedCount} />
 				</Group>
 			</Paper>
 			<Box
@@ -86,15 +137,25 @@ export function ResourceDetailPanel({
 						gap="sm"
 						pb="md"
 					>
-						{resource.entries.map((entry, index) => (
-							<EntryCard
-								key={entry.id}
-								index={index}
-								entry={entry}
-								isResolved={resolvedIds.has(entry.id)}
-								onToggleResolved={() => onToggleResolved(entry.id)}
-							/>
-						))}
+						{isRecordType && groupedByKind
+							? groupedByKind.map((group, index) => (
+									<GroupedKindCard
+										key={group.kind}
+										index={index}
+										group={group}
+										resolvedIds={resolvedIds}
+										onToggleAll={() => handleToggleAllInGroup(group.entries)}
+									/>
+								))
+							: resource.entries.map((entry, index) => (
+									<EntryCard
+										key={entry.id}
+										index={index}
+										entry={entry}
+										isResolved={resolvedIds.has(entry.id)}
+										onToggleResolved={() => onToggleResolved(entry.id)}
+									/>
+								))}
 					</Stack>
 				</ScrollArea>
 			</Box>
@@ -211,32 +272,6 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 
 					{/* Location info if present */}
 					{source.location && (
-						// <Box
-						// 	p="xs"
-						// 	style={{
-						// 		backgroundColor: "var(--mantine-color-slate-8)",
-						// 		borderRadius: "var(--mantine-radius-sm)",
-						// 	}}
-						// >
-						// 	<Text
-						// 		size="xs"
-						// 		c="slate"
-						// 		mb={4}
-						// 	>
-						// 		{source.location.label} · Line {source.location.line}, Column{" "}
-						// 		{source.location.column}
-						// 	</Text>
-						// 	{source.location.source && (
-						// 		<Text
-						// 			size="xs"
-						// 			ff="monospace"
-						// 			c="bright"
-						// 			style={{ whiteSpace: "pre-wrap", wordBreak: "break-all" }}
-						// 		>
-						// 			{source.location.source}
-						// 		</Text>
-						// 	)}
-						// </Box>
 						<CodePreview
 							value={source.location.source}
 							language="surrealql"
@@ -246,6 +281,132 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 							padding="sm"
 						/>
 					)}
+				</Stack>
+			</Paper>
+		</Box>
+	);
+}
+
+interface GroupedKindCardProps {
+	index: number;
+	group: GroupedKindEntry;
+	resolvedIds: Set<string>;
+	onToggleAll: () => void;
+}
+
+function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKindCardProps) {
+	const kind = kindMeta[group.kind];
+	const severity = severityMeta[group.worstSeverity];
+	const unresolvedCount = group.entries.filter((e) => !resolvedIds.has(e.id)).length;
+	const allResolved = unresolvedCount === 0;
+
+	const handleOpenDocs = () => {
+		if (kind?.documentationUrl) {
+			adapter.openUrl(kind.documentationUrl);
+		}
+	};
+
+	const handleDownloadRecords = async () => {
+		const recordIds = group.entries.map((entry) => entry.record).filter(Boolean);
+		const surql = await getSurrealQL().formatValue(recordIds, false, true);
+		const kindSlug = group.kind.replace(/\s+/g, "-").toLowerCase();
+
+		adapter.saveFile(
+			"Save affected records",
+			`${kindSlug}-affected-records.surql`,
+			[SURQL_FILTER],
+			() => surql,
+		);
+	};
+
+	return (
+		<Box
+			className={classes.entryCard}
+			data-resolved={allResolved || undefined}
+		>
+			<Paper
+				p="md"
+				radius="md"
+				withBorder={false}
+			>
+				<Stack gap="sm">
+					{/* Header with kind and count */}
+					<Group gap="xs">
+						<Text
+							fw={800}
+							c="bright"
+							size="md"
+						>
+							{index + 1}.
+						</Text>
+						<Text
+							fw={600}
+							c="bright"
+							fz={13}
+						>
+							{kind.label}
+						</Text>
+						<Badge
+							color={severity.color}
+							variant="light"
+							size="sm"
+						>
+							{severity.label}
+						</Badge>
+						<Badge
+							color="slate"
+							variant="light"
+							size="sm"
+						>
+							{group.entries.length}{" "}
+							{group.entries.length === 1 ? "record" : "records"}
+						</Badge>
+						<Spacer />
+						{kind?.documentationUrl && (
+							<Button
+								size="xs"
+								color="slate"
+								variant="light"
+								leftSection={<Icon path={iconBook} />}
+								rightSection={<Icon path={iconArrowUpRight} />}
+								onClick={handleOpenDocs}
+							>
+								Learn more
+							</Button>
+						)}
+						<Button
+							size="xs"
+							variant="gradient"
+							disabled={allResolved}
+							rightSection={<Icon path={iconCheck} />}
+							onClick={onToggleAll}
+						>
+							{allResolved ? "Resolved" : `Mark all as resolved`}
+						</Button>
+					</Group>
+
+					{/* Description */}
+					<Box>
+						<Text
+							fw={600}
+							size="sm"
+						>
+							{group.entries.length} {plural(group.entries.length, "record")} in this
+							table {plural(group.entries.length, "has", "have")} issues related to{" "}
+							{kind.label.toLowerCase()}.
+						</Text>
+						<Group mt="md">
+							<Button
+								size="xs"
+								color="slate"
+								variant="light"
+								onClick={handleDownloadRecords}
+								rightSection={<Icon path={iconDownload} />}
+							>
+								Download affected record IDs
+							</Button>
+						</Group>
+					</Box>
 				</Stack>
 			</Paper>
 		</Box>
