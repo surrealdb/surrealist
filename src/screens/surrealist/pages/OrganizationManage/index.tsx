@@ -2,6 +2,7 @@ import { Alert, Box, Button, Divider, ScrollArea, Stack, Tabs } from "@mantine/c
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import {
+	getBillingProviderAction,
 	hasOrganizationRoles,
 	isBillingManaged,
 	isOrganisationRestricted,
@@ -233,6 +234,21 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											<OrganizationTeamTab organization={organization} />
 										</Tabs.Panel>
 
+										{isOwner && isManagedBilling && (
+											<Tabs.Panel value="billing">
+												<Alert
+													title="Billing managed externally"
+													color="violet"
+													mb="xl"
+													icon={<Icon path={iconCreditCard} />}
+												>
+													The billing for this organisation is managed
+													externally.{" "}
+													{getBillingProviderAction(organization)}.
+												</Alert>
+											</Tabs.Panel>
+										)}
+
 										{isOwner && !isManagedBilling && (
 											<>
 												<Tabs.Panel value="invoices">
@@ -240,7 +256,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 														organization={organization}
 													/>
 												</Tabs.Panel>
-
 												<Tabs.Panel value="billing">
 													<OrganizationBillingTab
 														organization={organization}
