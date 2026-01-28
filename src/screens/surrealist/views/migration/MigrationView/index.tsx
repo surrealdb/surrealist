@@ -8,6 +8,7 @@ import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
+import { tagEvent } from "~/util/analytics";
 import { showInfo } from "~/util/helpers";
 import { iconCheck, iconDownload, iconTransfer } from "~/util/icons";
 import { ResourceDetailPanel } from "../ResourceDetailPanel";
@@ -62,6 +63,8 @@ export function MigrationView() {
 				title: "Database export",
 				subtitle: "The database has been exported successfully",
 			});
+
+			tagEvent("migration_export");
 		},
 	});
 
