@@ -16,7 +16,7 @@ import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { MigrationResourceType } from "~/types";
-import { iconRefresh, iconTransfer } from "~/util/icons";
+import { iconRefresh, iconReset, iconTransfer } from "~/util/icons";
 import { DiagnosticResource, ResourceMap } from "../MigrationView/organizer";
 import { resourceTypeMeta } from "../MigrationView/types";
 import { UnresolvedBadge } from "../MigrationView/unresolved";
@@ -32,6 +32,7 @@ export interface ResourceOverviewPanelProps {
 	openedTypes: string[];
 	onSelectResource: (type: MigrationResourceType, resource: DiagnosticResource) => void;
 	onChangeOpenedTypes: (types: string[]) => void;
+	onRestart: () => void;
 	onRerun: () => void;
 	isFetching: boolean;
 }
@@ -42,6 +43,7 @@ export function ResourceOverviewPanel({
 	openedTypes,
 	onChangeOpenedTypes,
 	onSelectResource,
+	onRestart,
 	onRerun,
 	isFetching,
 }: ResourceOverviewPanelProps) {
@@ -96,13 +98,23 @@ export function ResourceOverviewPanel({
 					</Badge>
 					<Spacer />
 					<Button
+						variant="light"
+						color="slate"
+						size="xs"
+						onClick={onRestart}
+						loading={isFetching}
+						rightSection={<Icon path={iconReset} />}
+					>
+						Start over & check again
+					</Button>
+					<Button
 						variant="gradient"
 						size="xs"
 						onClick={onRerun}
 						loading={isFetching}
 						rightSection={<Icon path={iconRefresh} />}
 					>
-						Re-run
+						Check again
 					</Button>
 				</Group>
 			</Paper>
