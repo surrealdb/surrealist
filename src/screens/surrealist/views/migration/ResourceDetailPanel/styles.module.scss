@@ -1,0 +1,7 @@
+.entry-card[data-resolved] :global(.mantine-Paper-root) {
+	opacity: 0.5;
+}
+
+.resolve-button {
+	transition: opacity 0.15s ease;
+}
