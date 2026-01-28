@@ -183,6 +183,7 @@ export function SurrealistToolbar() {
 				records: true,
 				sequences: true,
 				tables: true,
+				v3: false,
 			});
 
 			const result = await blob.text();
