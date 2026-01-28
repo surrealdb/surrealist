@@ -11,7 +11,14 @@ import { useIsLight } from "~/hooks/theme";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { MigrationKind, MigrationResourceType, MigrationSeverity } from "~/types";
 import { plural } from "~/util/helpers";
-import { iconArrowLeft, iconArrowUpRight, iconBook, iconCheck, iconDownload } from "~/util/icons";
+import {
+	iconArrowLeft,
+	iconArrowUpRight,
+	iconBook,
+	iconCheck,
+	iconClose,
+	iconDownload,
+} from "~/util/icons";
 import { kindMeta } from "../MigrationView/kinds";
 import { DiagnosticEntry, DiagnosticResource } from "../MigrationView/organizer";
 import { severityMeta } from "../MigrationView/severities";
@@ -222,7 +229,7 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 							<Button
 								size="xs"
 								color="slate"
-								variant="light"
+								variant="filled"
 								leftSection={<Icon path={iconBook} />}
 								rightSection={<Icon path={iconArrowUpRight} />}
 								onClick={handleOpenDocs}
@@ -230,15 +237,26 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 								Learn more
 							</Button>
 						)}
-						<Button
-							size="xs"
-							variant="gradient"
-							disabled={isResolved}
-							rightSection={<Icon path={iconCheck} />}
-							onClick={onToggleResolved}
-						>
-							Mark as resolved
-						</Button>
+						{isResolved ? (
+							<Button
+								size="xs"
+								color="slate"
+								variant="light"
+								rightSection={<Icon path={iconClose} />}
+								onClick={onToggleResolved}
+							>
+								Mark as unresolved
+							</Button>
+						) : (
+							<Button
+								size="xs"
+								variant="gradient"
+								rightSection={<Icon path={iconCheck} />}
+								onClick={onToggleResolved}
+							>
+								Mark as resolved
+							</Button>
+						)}
 					</Group>
 
 					{/* Error message */}
@@ -374,15 +392,26 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 								Learn more
 							</Button>
 						)}
-						<Button
-							size="xs"
-							variant="gradient"
-							disabled={allResolved}
-							rightSection={<Icon path={iconCheck} />}
-							onClick={onToggleAll}
-						>
-							{allResolved ? "Resolved" : `Mark all as resolved`}
-						</Button>
+						{allResolved ? (
+							<Button
+								size="xs"
+								color="slate"
+								variant="light"
+								rightSection={<Icon path={iconClose} />}
+								onClick={onToggleAll}
+							>
+								Mark all as unresolved
+							</Button>
+						) : (
+							<Button
+								size="xs"
+								variant="gradient"
+								rightSection={<Icon path={iconCheck} />}
+								onClick={onToggleAll}
+							>
+								Mark all as resolved
+							</Button>
+						)}
 					</Group>
 
 					{/* Description */}
