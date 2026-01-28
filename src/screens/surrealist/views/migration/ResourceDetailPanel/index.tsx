@@ -1,4 +1,15 @@
-import { Badge, Box, Button, Divider, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import {
+	Badge,
+	Box,
+	Button,
+	Divider,
+	Group,
+	Paper,
+	ScrollArea,
+	Stack,
+	Text,
+	Transition,
+} from "@mantine/core";
 import { useMemo } from "react";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
@@ -16,6 +27,7 @@ import {
 	iconArrowUpRight,
 	iconBook,
 	iconCheck,
+	iconChevronLeft,
 	iconClose,
 	iconDownload,
 } from "~/util/icons";
@@ -92,12 +104,24 @@ export function ResourceDetailPanel({
 	}, [isRecordType, resource.entries]);
 
 	const handleToggleAllInGroup = (entries: DiagnosticEntry[]) => {
+		const allResolved = entries.every((entry) => resolvedIds.has(entry.id));
+
 		for (const entry of entries) {
-			if (!resolvedIds.has(entry.id)) {
-				onToggleResolved(entry.id);
+			if (allResolved) {
+				if (resolvedIds.has(entry.id)) {
+					onToggleResolved(entry.id);
+				}
+			} else {
+				if (!resolvedIds.has(entry.id)) {
+					onToggleResolved(entry.id);
+				}
 			}
 		}
 	};
+
+	const allResolved = useMemo(() => {
+		return resource.entries.every((entry) => resolvedIds.has(entry.id));
+	}, [resource.entries, resolvedIds]);
 
 	return (
 		<Stack h="100%">
@@ -163,6 +187,25 @@ export function ResourceDetailPanel({
 										onToggleResolved={() => onToggleResolved(entry.id)}
 									/>
 								))}
+
+						<Transition mounted={allResolved}>
+							{(styles) => (
+								<Stack
+									mt="xl"
+									align="center"
+									style={styles}
+								>
+									<Text>All issues for this resource have been resolved.</Text>
+									<Button
+										variant="gradient"
+										leftSection={<Icon path={iconChevronLeft} />}
+										onClick={onBack}
+									>
+										Back to overview
+									</Button>
+								</Stack>
+							)}
+						</Transition>
 					</Stack>
 				</ScrollArea>
 			</Box>

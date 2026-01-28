@@ -59,6 +59,11 @@ export function organizeDiagnostics(diagnostics: MigrationDiagnosticResult[]): R
 			continue;
 		}
 
+		// skip bugged duplicates
+		if (diagnostic.origin[4] === "function" && diagnostic.origin[6] === "function") {
+			continue;
+		}
+
 		const bucket = resources[info.type];
 		const existing = bucket.find((resource) => resource.id === info.id);
 		const entry = {

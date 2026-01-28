@@ -1,12 +1,15 @@
 import { Box, Button, Center, Group, Paper, Stack, Text, ThemeIcon, Title } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { adapter } from "~/adapter";
 import { Icon } from "~/components/Icon";
+import { SURQL_FILTER } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
-import { iconCheck, iconRefresh, iconTransfer } from "~/util/icons";
+import { showInfo } from "~/util/helpers";
+import { iconCheck, iconDownload, iconTransfer } from "~/util/icons";
 import { ResourceDetailPanel } from "../ResourceDetailPanel";
 import { ResourceOverviewPanel } from "../ResourceOverviewPanel";
 import { DiagnosticResource, organizeDiagnostics, ResourceMap } from "./organizer";
@@ -36,6 +39,29 @@ export function MigrationView() {
 				.collect<[MigrationDiagnosticResult[]]>();
 
 			return organizeDiagnostics(diagnostics ?? []);
+		},
+	});
+
+	const exportMutation = useMutation({
+		mutationFn: async () => {
+			const backup = new Blob([
+				await getSurreal().export({
+					versions: true,
+					v3: true,
+				}),
+			]);
+
+			await adapter.saveFile(
+				"Save database export",
+				"v3-export.surql",
+				[SURQL_FILTER],
+				() => backup,
+			);
+
+			showInfo({
+				title: "Database export",
+				subtitle: "The database has been exported successfully",
+			});
 		},
 	});
 
@@ -156,7 +182,7 @@ export function MigrationView() {
 						<ThemeIcon
 							size={64}
 							radius="xl"
-							color="green"
+							color="slate"
 							variant="light"
 						>
 							<Icon
@@ -172,7 +198,7 @@ export function MigrationView() {
 								? "All issues resolved!"
 								: "No migration issues found!"}
 						</Title>
-						<Text c="dimmed">
+						<Text>
 							{hasResolvedIssues
 								? "You have addressed all migration issues. Your database is ready to be upgraded to SurrealDB 3.0."
 								: "Your database is already compatible with SurrealDB 3.0. No changes are required."}
@@ -180,11 +206,11 @@ export function MigrationView() {
 						<Button
 							mt="md"
 							variant="gradient"
-							onClick={handleRefreshDiagnostics}
-							loading={isFetching}
-							rightSection={<Icon path={iconRefresh} />}
+							onClick={() => exportMutation.mutate()}
+							loading={exportMutation.isPending}
+							rightSection={<Icon path={iconDownload} />}
 						>
-							Check again
+							Export database
 						</Button>
 					</Stack>
 				</Paper>
