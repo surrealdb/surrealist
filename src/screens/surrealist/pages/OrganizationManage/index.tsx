@@ -2,7 +2,6 @@ import { Alert, Box, Button, Divider, ScrollArea, Stack, Tabs } from "@mantine/c
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import {
-	getBillingProviderAction,
 	hasOrganizationRoles,
 	isBillingManaged,
 	isOrganisationRestricted,
@@ -175,23 +174,22 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 												Team
 											</Tabs.Tab>
 											{isOwner && !isManagedBilling && (
-												<>
-													<Tabs.Tab
-														value="invoices"
-														leftSection={<Icon path={iconDollar} />}
-														px="xl"
-													>
-														Invoices
-													</Tabs.Tab>
-
-													<Tabs.Tab
-														value="billing"
-														leftSection={<Icon path={iconCreditCard} />}
-														px="xl"
-													>
-														Billing
-													</Tabs.Tab>
-												</>
+												<Tabs.Tab
+													value="invoices"
+													leftSection={<Icon path={iconDollar} />}
+													px="xl"
+												>
+													Invoices
+												</Tabs.Tab>
+											)}
+											{isOwner && (
+												<Tabs.Tab
+													value="billing"
+													leftSection={<Icon path={iconCreditCard} />}
+													px="xl"
+												>
+													Billing
+												</Tabs.Tab>
 											)}
 											{isSupport && (
 												<Tabs.Tab
@@ -234,34 +232,19 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											<OrganizationTeamTab organization={organization} />
 										</Tabs.Panel>
 
-										{isOwner && isManagedBilling && (
-											<Tabs.Panel value="billing">
-												<Alert
-													title="Billing managed externally"
-													color="violet"
-													mb="xl"
-													icon={<Icon path={iconCreditCard} />}
-												>
-													The billing for this organisation is managed
-													externally.{" "}
-													{getBillingProviderAction(organization)}.
-												</Alert>
+										{isOwner && !isManagedBilling && (
+											<Tabs.Panel value="invoices">
+												<OrganizationInvoicesTab
+													organization={organization}
+												/>
 											</Tabs.Panel>
 										)}
-
-										{isOwner && !isManagedBilling && (
-											<>
-												<Tabs.Panel value="invoices">
-													<OrganizationInvoicesTab
-														organization={organization}
-													/>
-												</Tabs.Panel>
-												<Tabs.Panel value="billing">
-													<OrganizationBillingTab
-														organization={organization}
-													/>
-												</Tabs.Panel>
-											</>
+										{isOwner && (
+											<Tabs.Panel value="billing">
+												<OrganizationBillingTab
+													organization={organization}
+												/>
+											</Tabs.Panel>
 										)}
 										{isSupport && (
 											<Tabs.Panel value="support">
