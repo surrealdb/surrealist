@@ -65,9 +65,13 @@ export function MigrationView() {
 	});
 
 	const handleRefreshDiagnostics = useStable(async () => {
-		setResolvedIds(new Set());
 		setSelectedResource(null);
 		await refetch();
+	});
+
+	const handleRestartDiagnostics = useStable(async () => {
+		setResolvedIds(new Set());
+		await handleRefreshDiagnostics();
 	});
 
 	const handleSelectResource = useStable(
@@ -212,6 +216,7 @@ export function MigrationView() {
 						openedTypes={openedTypes}
 						onChangeOpenedTypes={setOpenedTypes}
 						onSelectResource={handleSelectResource}
+						onRestart={handleRestartDiagnostics}
 						onRerun={handleRefreshDiagnostics}
 						isFetching={isFetching}
 					/>
