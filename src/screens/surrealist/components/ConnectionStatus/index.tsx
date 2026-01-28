@@ -1,29 +1,13 @@
-import {
-	Box,
-	Button,
-	Group,
-	Indicator,
-	Loader,
-	Menu,
-	Modal,
-	Select,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Box, Button, Indicator, Loader, Menu, Text } from "@mantine/core";
 import { useState } from "react";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SANDBOX } from "~/constants";
-import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
-import { useDatasets } from "~/hooks/dataset";
 import { useConnectionAndView } from "~/hooks/routing";
-import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { openConnectionDiagnosticsModal } from "~/modals/connection-diagnostics";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
-import { DatasetType } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import {
 	iconClose,
@@ -33,7 +17,6 @@ import {
 	iconRelation,
 	iconReset,
 	iconSandbox,
-	iconTable,
 	iconUpload,
 	iconWrench,
 } from "~/util/icons";
@@ -45,7 +28,6 @@ import { closeConnection, openConnection } from "../../connection/connection";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);
-	const schema = useDatabaseSchema();
 
 	const [connection] = useConnectionAndView();
 	const [connectionId, name, icon, _database, instance] = useConnection((c) => [
@@ -56,16 +38,6 @@ export function ConnectionStatus() {
 		c?.instance ?? false,
 	]);
 
-	const noTables = schema.tables.length === 0;
-	const noFunctions = schema.functions.length === 0;
-	const noParams = schema.params.length === 0;
-	const noUsers = schema.users.length === 0;
-	const isSchemaEmpty = noTables && noFunctions && noParams && noUsers;
-
-	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
-	const [showDatasets, showDatasetsHandle] = useBoolean();
-	const [dataset, setDataset] = useState<DatasetType | undefined>(undefined);
-
 	const currentState = useDatabaseStore((s) => s.currentState);
 	const latestError = useDatabaseStore((s) => s.latestError);
 	const remoteVersion = useDatabaseStore((s) => s.version);
@@ -75,23 +47,10 @@ export function ConnectionStatus() {
 		setIsDropped(false);
 	});
 
-	const _openDatasets = useStable(() => {
-		showDatasetsHandle.open();
-		setDataset(undefined);
-	});
-
-	const confirmDataset = useStable(async () => {
-		if (!dataset) return;
-
-		await applyDataset(dataset);
-		showDatasetsHandle.close();
-	});
-
 	const syncSchema = useStable(() => {
 		syncConnectionSchema();
 	});
 
-	const openDatasets = useRequireDatabase(_openDatasets);
 	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"));
 	const importDatabase = useRequireDatabase(() => dispatchIntent("import-database"));
 
@@ -214,15 +173,6 @@ export function ConnectionStatus() {
 							</>
 						)}
 						<Menu.Label mt="sm">Database</Menu.Label>
-						{!isSandbox && (
-							<Menu.Item
-								leftSection={<Icon path={iconTable} />}
-								disabled={currentState !== "connected" || !isSchemaEmpty}
-								onClick={openDatasets}
-							>
-								Apply dataset
-							</Menu.Item>
-						)}
 						<Menu.Item
 							leftSection={<Icon path={iconRefresh} />}
 							disabled={currentState !== "connected"}
@@ -282,55 +232,6 @@ export function ConnectionStatus() {
 					</Menu.Dropdown>
 				</Menu>
 			)}
-
-			<Modal
-				opened={showDatasets}
-				onClose={showDatasetsHandle.close}
-				title={
-					<Group>
-						<Icon
-							path={iconTable}
-							size="lg"
-						/>
-						<PrimaryTitle>Apply dataset</PrimaryTitle>
-					</Group>
-				}
-			>
-				<Stack gap="xl">
-					<Text>
-						You can initialize your empty database with an official dataset to provide a
-						starting point for your project.
-					</Text>
-
-					<Select
-						placeholder="Select a dataset"
-						value={dataset}
-						onChange={setDataset as any}
-						data={datasets}
-					/>
-
-					<Group>
-						<Button
-							onClick={showDatasetsHandle.close}
-							color="slate"
-							variant="light"
-							flex={1}
-						>
-							Close
-						</Button>
-						<Button
-							type="submit"
-							variant="gradient"
-							flex={1}
-							disabled={!dataset}
-							onClick={confirmDataset}
-							loading={isDatasetLoading}
-						>
-							Apply dataset
-						</Button>
-					</Group>
-				</Stack>
-			</Modal>
 		</>
 	);
 }
