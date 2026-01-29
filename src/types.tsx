@@ -45,7 +45,6 @@ export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
 export type StartingData = "none" | "dataset" | "upload" | "restore";
-export type DatasetType = "surreal-deal-store-mini";
 export type IntercomConversationStateId = "open" | "closed" | "snoozed";
 export type MigrationIssueSeverity = "might_break" | "will_break" | "breaking_resolution";
 export type MigrationIssueKind = "incompatible feature";

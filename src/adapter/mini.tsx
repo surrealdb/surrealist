@@ -3,17 +3,11 @@ import { createWasmEngines } from "@surrealdb/wasm";
 import { Surreal } from "surrealdb";
 import { ORIENTATIONS, RESULT_MODES } from "~/constants";
 import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/connection";
-import type {
-	DatasetType,
-	MiniAppearance,
-	Orientation,
-	ResultMode,
-	SurrealistConfig,
-} from "~/types";
+import type { MiniAppearance, Orientation, ResultMode, SurrealistConfig } from "~/types";
 import { dedent } from "~/util/dedent";
 import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
-import { parseDatasetURL } from "~/util/language";
+import { getDatasetURL } from "~/util/language";
 import { broadcastMessage } from "~/util/messaging";
 import { createSurrealQL } from "~/util/surql";
 import { BrowserAdapter } from "./browser";
@@ -114,7 +108,7 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Premade dataset loading
 		if (dataset) {
-			const datasetUrl = parseDatasetURL(dataset as DatasetType);
+			const datasetUrl = getDatasetURL(version);
 
 			if (datasetUrl) {
 				this.#datasetQuery = await fetch(datasetUrl).then((res) => res.text());

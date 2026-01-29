@@ -1,6 +1,6 @@
 import { Tree } from "@lezer/common";
-import { DATASETS } from "~/constants";
-import { DatasetType } from "~/types";
+import { compareVersions } from "compare-versions";
+import { SDB_3_0_0 } from "./versions";
 
 /**
  * Parse an indent and strip any escape characters
@@ -35,19 +35,18 @@ export function compareIdents(a: string, b: string) {
 }
 
 /**
- * Parse a dataset URL from a source string
- *
- * @param source A path to a dataset or known dataset identifier
- * @returns The dataset URL
+ * This is hard coded to the deal-store dataset and bad,
+ * but will be replaced in Surrealist 4.0 with a fully dynamic system
  */
-export function parseDatasetURL(source: DatasetType) {
-	const path = source.startsWith("/") ? source : DATASETS[source]?.path;
+export function getDatasetURL(version: string) {
+	const base = `https://datasets.surrealdb.com/datasets/surreal-deal-store`;
+	const isV3 = compareVersions(version, SDB_3_0_0) >= 0;
 
-	if (!path) {
-		throw new Error("Invalid dataset source");
+	if (isV3) {
+		return `${base}/mini-v3.surql`;
 	}
 
-	return new URL(path, "https://datasets.surrealdb.com");
+	return `${base}/mini-v2.surql`;
 }
 
 const RESERVED_VARIABLES = new Set([

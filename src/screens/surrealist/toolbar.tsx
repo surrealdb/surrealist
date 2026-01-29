@@ -31,6 +31,7 @@ import { useAvailableInstanceVersions, useIsAuthenticated } from "~/hooks/cloud"
 import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useConnectionNavigator } from "~/hooks/routing";
+import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { openBillingRequiredModal } from "~/modals/billing-required";
 import { useConfirmation } from "~/providers/Confirmation";
@@ -38,7 +39,7 @@ import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { useDeployStore } from "~/stores/deploy";
 import { useInterfaceStore } from "~/stores/interface";
-import { CloudDeployConfig, DatasetType } from "~/types";
+import { CloudDeployConfig } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
@@ -110,6 +111,13 @@ export function SurrealistToolbar() {
 		value: region.slug,
 		label: region.description,
 	}));
+
+	const schema = useDatabaseSchema();
+	const noTables = schema.tables.length === 0;
+	const noFunctions = schema.functions.length === 0;
+	const noParams = schema.params.length === 0;
+	const noUsers = schema.users.length === 0;
+	const isSchemaEmpty = noTables && noFunctions && noParams && noUsers;
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Not necessary
 	useEffect(() => {
@@ -291,7 +299,7 @@ export function SurrealistToolbar() {
 		}
 	});
 
-	const [datasets, applyDataset, isDatasetLoading] = useDatasets();
+	const [applyDataset, isDatasetLoading] = useDatasets();
 
 	const openChangelog = useStable(() => {
 		dispatchIntent("open-changelog");
@@ -346,173 +354,154 @@ export function SurrealistToolbar() {
 			)}
 
 			{isConnected && isSandbox && (
-				<>
-					<ActionButton
-						color="slate"
-						variant="subtle"
-						label="Reset sandbox environment"
-						onClick={resetSandbox}
-					>
-						<Icon path={iconReset} />
-					</ActionButton>
-					<Menu
-						transitionProps={{
-							transition: "scale-y",
-						}}
-					>
-						<Menu.Target>
-							<div>
-								<ActionButton
-									color="slate"
-									variant="subtle"
-									label="Apply demo dataset"
-									loading={isDatasetLoading}
-								>
-									<Icon path={iconTable} />
-								</ActionButton>
-							</div>
-						</Menu.Target>
-						<Menu.Dropdown miw={200}>
-							<Menu.Label>Select a dataset</Menu.Label>
-							{datasets.map(({ label, value }) => (
-								<Menu.Item
-									key={value}
-									onClick={() => applyDataset(value as DatasetType)}
-								>
-									{label}
-								</Menu.Item>
-							))}
-						</Menu.Dropdown>
-					</Menu>
+				<ActionButton
+					color="slate"
+					variant="subtle"
+					label="Reset sandbox environment"
+					onClick={resetSandbox}
+				>
+					<Icon path={iconReset} />
+				</ActionButton>
+			)}
 
-					{flags.sandbox_deploy && (
-						<StarSparkles>
-							{isAuthenticated && (
-								<Menu
-									disabled={isDeploying}
-									opened={opened}
-									onChange={openHandle.set}
-									transitionProps={{
-										transition: "scale-y",
-									}}
-									closeOnItemClick={false}
-									clickOutsideEvents={[]}
-									trigger="click"
-								>
-									<Menu.Target>
-										<Button
-											variant="gradient"
-											size="xs"
-											loading={isDeploying}
-										>
-											Deploy to Cloud
-										</Button>
-									</Menu.Target>
-									<Menu.Dropdown p="md">
-										<Stack gap="md">
-											{organizations.length > 1 && (
-												<Select
-													label="Select organization"
-													placeholder="Loading organizations..."
-													description="Select the organization to deploy to"
-													data={organizations.map((org) => ({
-														label: org.name,
-														value: org.id,
-													}))}
-													value={organization?.id}
-													onChange={(value) =>
-														setOrganization(
-															value
-																? (organizations.find(
-																		(org) => org.id === value,
-																	) ?? null)
-																: null,
-														)
-													}
-												/>
-											)}
+			{isConnected && isSchemaEmpty && (
+				<ActionButton
+					color="slate"
+					variant="subtle"
+					label="Apply demo dataset"
+					loading={isDatasetLoading}
+					onClick={() => applyDataset(version)}
+				>
+					<Icon path={iconTable} />
+				</ActionButton>
+			)}
 
-											<Select
-												label="Region"
-												placeholder="Loading regions..."
-												description="Select the region where your instance will be deployed"
-												data={regionList}
-												value={region?.slug}
-												onChange={(value) => {
-													const foundRegion = supportedRegions.find(
-														(r) => r.slug === value,
-													);
-
-													if (foundRegion) {
-														setRegion(foundRegion);
-													}
-												}}
-												leftSection={
-													region && (
-														<Image
-															src={REGION_FLAGS[region.slug]}
-															w={18}
-														/>
-													)
-												}
-												disabled={!organization}
-												renderOption={(org) => (
-													<Group>
-														<Image
-															src={REGION_FLAGS[org.option.value]}
-															w={24}
-														/>
-														{org.option.label}
-														{org.checked && (
-															<Icon
-																path={iconCheck}
-																c="bright"
-															/>
-														)}
-													</Group>
-												)}
-											/>
-
-											<Group gap="md">
-												<Button
-													flex={1}
-													color="slate"
-													variant="light"
-													size="xs"
-													onClick={() => {
-														openHandle.close();
-													}}
-												>
-													Close
-												</Button>
-												<Button
-													flex={1}
-													variant="gradient"
-													size="xs"
-													disabled={!organization || !region}
-													loading={isDeploying}
-													rightSection={<Icon path={iconCloud} />}
-													onClick={handleDeploy}
-												>
-													Deploy
-												</Button>
-											</Group>
-										</Stack>
-									</Menu.Dropdown>
-								</Menu>
-							)}
-							{!isAuthenticated && (
+			{isConnected && isSandbox && flags.sandbox_deploy && (
+				<StarSparkles>
+					{isAuthenticated && (
+						<Menu
+							disabled={isDeploying}
+							opened={opened}
+							onChange={openHandle.set}
+							transitionProps={{
+								transition: "scale-y",
+							}}
+							closeOnItemClick={false}
+							clickOutsideEvents={[]}
+							trigger="click"
+						>
+							<Menu.Target>
 								<Button
 									variant="gradient"
 									size="xs"
-									onClick={openCloudAuthentication}
+									loading={isDeploying}
 								>
 									Deploy to Cloud
 								</Button>
-							)}
-						</StarSparkles>
+							</Menu.Target>
+							<Menu.Dropdown p="md">
+								<Stack gap="md">
+									{organizations.length > 1 && (
+										<Select
+											label="Select organization"
+											placeholder="Loading organizations..."
+											description="Select the organization to deploy to"
+											data={organizations.map((org) => ({
+												label: org.name,
+												value: org.id,
+											}))}
+											value={organization?.id}
+											onChange={(value) =>
+												setOrganization(
+													value
+														? (organizations.find(
+																(org) => org.id === value,
+															) ?? null)
+														: null,
+												)
+											}
+										/>
+									)}
+
+									<Select
+										label="Region"
+										placeholder="Loading regions..."
+										description="Select the region where your instance will be deployed"
+										data={regionList}
+										value={region?.slug}
+										onChange={(value) => {
+											const foundRegion = supportedRegions.find(
+												(r) => r.slug === value,
+											);
+
+											if (foundRegion) {
+												setRegion(foundRegion);
+											}
+										}}
+										leftSection={
+											region && (
+												<Image
+													src={REGION_FLAGS[region.slug]}
+													w={18}
+												/>
+											)
+										}
+										disabled={!organization}
+										renderOption={(org) => (
+											<Group>
+												<Image
+													src={REGION_FLAGS[org.option.value]}
+													w={24}
+												/>
+												{org.option.label}
+												{org.checked && (
+													<Icon
+														path={iconCheck}
+														c="bright"
+													/>
+												)}
+											</Group>
+										)}
+									/>
+
+									<Group gap="md">
+										<Button
+											flex={1}
+											color="slate"
+											variant="light"
+											size="xs"
+											onClick={() => {
+												openHandle.close();
+											}}
+										>
+											Close
+										</Button>
+										<Button
+											flex={1}
+											variant="gradient"
+											size="xs"
+											disabled={!organization || !region}
+											loading={isDeploying}
+											rightSection={<Icon path={iconCloud} />}
+											onClick={handleDeploy}
+										>
+											Deploy
+										</Button>
+									</Group>
+								</Stack>
+							</Menu.Dropdown>
+						</Menu>
 					)}
-				</>
+					{!isAuthenticated && (
+						<Button
+							variant="gradient"
+							size="xs"
+							onClick={openCloudAuthentication}
+						>
+							Deploy to Cloud
+						</Button>
+					)}
+				</StarSparkles>
 			)}
 
 			{isConnected && !isSupported && (

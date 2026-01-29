@@ -5,7 +5,6 @@ import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
 import { DRIVERS, SANDBOX } from "~/constants";
 import { useAvailableViews, useConnectionList } from "~/hooks/connection";
-import { useDatasets } from "~/hooks/dataset";
 import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { openConnectionDiagnosticsModal } from "~/modals/connection-diagnostics";
 import { showNodeStatus } from "~/modals/node-status";
@@ -16,7 +15,6 @@ import {
 } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
-import { DatasetType } from "~/types";
 import { featureFlags } from "~/util/feature-flags";
 import { optional } from "~/util/helpers";
 import {
@@ -58,7 +56,6 @@ import {
 	iconStarPlus,
 	iconStop,
 	iconSurrealist,
-	iconTable,
 	iconText,
 	iconTextBoxMinus,
 	iconTextBoxPlus,
@@ -107,7 +104,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 	const navigateConnection = useConnectionNavigator();
 	const views = useAvailableViews();
 
-	const [datasets, applyDataset] = useDatasets();
 	const [connection, view] = useConnectionAndView();
 
 	const isSandbox = connection === SANDBOX;
@@ -446,18 +442,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 								}
 							}),
 						},
-						...datasets.map(({ label, value }) => ({
-							id: `apply-dataset-${value}`,
-							name: `Apply dataset ${label}`,
-							unlisted: !isSandbox,
-							icon: iconTable,
-							binding: true,
-							action: launch(() => {
-								if (isSandbox) {
-									applyDataset(value as DatasetType);
-								}
-							}),
-						})),
 					],
 				},
 			);
@@ -766,7 +750,6 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		view,
 		connections,
 		connectionSchema,
-		datasets,
 		commandHistory,
 		canDisconnect,
 		isSandbox,

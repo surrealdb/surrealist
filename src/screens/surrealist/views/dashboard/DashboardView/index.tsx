@@ -50,8 +50,8 @@ import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart"
 import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressChart";
 import { NetworkIngressChart } from "~/screens/surrealist/metrics/NetworkIngressChart";
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
+import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
-import { DatasetType } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconCheck, iconChevronDown, iconChevronRight, iconCopy } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
@@ -151,13 +151,15 @@ export function DashboardView() {
 		});
 	}, [metricOptions.duration]);
 
-	const [, applyDataset] = useDatasets();
+	const version = useDatabaseStore((s) => s.version);
+	const [applyDataset] = useDatasets();
 	const { mutateAsync } = useUpdateInstanceVersionMutation(details);
 	const handleUpdate = useUpdateConfirmation(mutateAsync);
 
 	const { data, deployConnectionId, setIsDeploying, setData, setDeployConnectionId } =
 		useDeployStore();
-	const applyInitialDataset = useStable(async (dataset: DatasetType) => {
+
+	const applyInitialDataset = useStable(async () => {
 		try {
 			showNotification({
 				title: "Importing data",
@@ -169,7 +171,7 @@ export function DashboardView() {
 			);
 
 			await activateDatabase("demo", "surreal_deal_store");
-			await applyDataset(dataset);
+			await applyDataset(version);
 		} catch (error) {
 			showErrorNotification({
 				title: "Failed to apply dataset",
@@ -235,7 +237,7 @@ export function DashboardView() {
 
 			if (dataset) {
 				sessionStorage.removeItem(`${APPLY_DATASET_KEY}:${details.id}`);
-				applyInitialDataset(dataset as DatasetType);
+				applyInitialDataset();
 			}
 
 			if (shouldApplyFile) {

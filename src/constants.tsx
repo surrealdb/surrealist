@@ -5,8 +5,6 @@ import flagIN from "flag-icons/flags/4x3/in.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 import type {
 	AuthMode,
-	Dataset,
-	DatasetType,
 	DiagramAlgorithm,
 	DiagramDirection,
 	DiagramHoverFocus,
@@ -101,13 +99,6 @@ export const CLOUD_ROLES = [
 	"restricted_owner",
 	"owner",
 ];
-
-export const DATASETS: Record<DatasetType, Dataset> = {
-	"surreal-deal-store-mini": {
-		name: "Surreal Deal Store (mini)",
-		path: "/surreal-deal-store-mini.surql",
-	},
-};
 
 export const SCALE_STEPS: Selectable<ScaleStep>[] = [
 	{ label: "125%", value: "125" },
