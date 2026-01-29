@@ -7,6 +7,7 @@ import { SurrealQL } from "./surrealql";
 export class SurrealQLV3 implements SurrealQL {
 	constructor() {
 		adapter.log("SurrealQL", "Initializing SurrealQL V3");
+		(window as any).SurrealQL = this;
 	}
 
 	validateQuery(sql: string): Promise<string | undefined> {
