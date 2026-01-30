@@ -1,15 +1,16 @@
-import { Box, Button, Group, Menu, Modal, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Button, Group, Menu, Modal, Paper, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";
 import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
 import { useBoolean } from "~/hooks/boolean";
 import { useCloudProfile } from "~/hooks/cloud";
+import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconAccount, iconChevronRight, iconExitToAp } from "~/util/icons";
+import { iconChevronRight, iconCog, iconExitToAp, iconOrganization } from "~/util/icons";
 import { AccountAvatar } from "../AccountAvatar";
 import { Form } from "../Form";
 import { Icon } from "../Icon";
@@ -94,6 +95,7 @@ export function CloudAccount() {
 
 	const profile = useCloudProfile();
 	const state = useCloudStore((s) => s.authState);
+	const [, navigate] = useAbsoluteLocation();
 
 	if (state === "unauthenticated" || state === "unknown") {
 		return (
@@ -127,38 +129,56 @@ export function CloudAccount() {
 					</div>
 				</Menu.Target>
 				<Menu.Dropdown miw={200}>
-					<Box
+					<Paper
 						p="sm"
+						mb="xs"
+						bg="slate.8"
+						radius="xs"
 						style={{ userSelect: "text", WebkitUserSelect: "text" }}
 					>
-						<Text
-							fz="md"
-							fw={500}
-							c="bright"
-						>
-							{name}
-						</Text>
-						<Text
-							fz="sm"
-							c="slate"
-							mt={-3}
-						>
-							{profile.username}
-						</Text>
-					</Box>
-					<Menu.Divider />
+						<Group>
+							<AccountAvatar />
+							<Box>
+								<Text
+									fz="md"
+									fw={500}
+									c="bright"
+								>
+									{name}
+								</Text>
+								<Text
+									fz="sm"
+									c="slate"
+									mt={-3}
+								>
+									{profile.username}
+								</Text>
+							</Box>
+						</Group>
+					</Paper>
+					{/* <Stack gap="xs"> */}
 					<Menu.Item
-						leftSection={<Icon path={iconAccount} />}
+						leftSection={<Icon path={iconCog} />}
 						onClick={settingsModal.open}
 					>
-						Account
+						Account settings
 					</Menu.Item>
+					<Menu.Item
+						leftSection={<Icon path={iconOrganization} />}
+						onClick={() => {
+							navigate("/organisations");
+						}}
+					>
+						Organisations
+					</Menu.Item>
+					<Menu.Divider />
 					<Menu.Item
 						leftSection={<Icon path={iconExitToAp} />}
 						onClick={destroySession}
 					>
 						Sign out
 					</Menu.Item>
+					{/* </Stack> */}
 				</Menu.Dropdown>
 			</Menu>
 
