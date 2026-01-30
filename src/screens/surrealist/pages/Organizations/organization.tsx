@@ -124,38 +124,52 @@ export function OrganizationTile({
 							)}
 						</Group>
 						<Spacer />
-						{isOrganisationTerminated(organization) ? (
-							<Badge
-								color="orange"
-								variant="transparent"
-								px={0}
-							>
-								Terminated
-							</Badge>
-						) : isOrganisationRestricted(organization) ? (
-							<Badge
-								color="red"
-								variant="light"
-								leftSection={
-									<Icon
-										path={iconWarning}
-										size="sm"
-										left
-									/>
-								}
-							>
-								Restricted
-							</Badge>
-						) : (
-							<Badge
-								color="violet"
-								variant="transparent"
-								px={0}
-							>
-								{organization.member_count}{" "}
-								{plural(organization.member_count, "member")}
-							</Badge>
-						)}
+						<Group>
+							{isOrganisationTerminated(organization) ? (
+								<Badge
+									color="orange"
+									variant="transparent"
+									px={0}
+								>
+									Terminated
+								</Badge>
+							) : isOrganisationRestricted(organization) ? (
+								<Badge
+									color="red"
+									variant="light"
+									leftSection={
+										<Icon
+											path={iconWarning}
+											size="sm"
+											left
+										/>
+									}
+								>
+									Restricted
+								</Badge>
+							) : (
+								<Badge
+									color="violet"
+									variant="transparent"
+									px={0}
+								>
+									{organization.member_count}{" "}
+									{plural(organization.member_count, "member")}
+								</Badge>
+							)}
+							<Spacer />
+							{organization.billing_provider === "aws_marketplace" && (
+								<Tooltip label="This organisation is managed through AWS Marketplace">
+									<Badge
+										color="slate"
+										variant="light"
+										mr={-42}
+									>
+										AWS Marketplace
+									</Badge>
+								</Tooltip>
+							)}
+						</Group>
 					</Stack>
 					<Stack
 						gap={0}
