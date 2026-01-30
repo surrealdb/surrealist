@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Divider, ScrollArea, Stack, Tabs } from "@mantine/core";
+import { Alert, Box, Button, Divider, Group, ScrollArea, Stack, Tabs, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import {
@@ -20,6 +20,7 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import {
 	iconChat,
+	iconChevronRight,
 	iconCog,
 	iconCreditCard,
 	iconDollar,
@@ -109,6 +110,23 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 										>
 											{organization.name}
 										</PrimaryTitle>
+										{organization.billing_provider === "aws_marketplace" && (
+											<Group gap="xs">
+												<Icon
+													path={iconChevronRight}
+													size="sm"
+												/>
+												<Text>
+													This organisation is managed by{" "}
+													<Text
+														span
+														fw="bold"
+													>
+														AWS Marketplace
+													</Text>
+												</Text>
+											</Group>
+										)}
 									</Box>
 									{isTerminated ? (
 										<Alert
