@@ -159,7 +159,7 @@ export function OrganizationTile({
 							)}
 							<Spacer />
 							{organization.billing_provider === "aws_marketplace" && (
-								<Tooltip label="This organisation is managed through AWS Marketplace">
+								<Tooltip label="This organisation is managed by AWS Marketplace">
 									<Badge
 										color="slate"
 										variant="light"
