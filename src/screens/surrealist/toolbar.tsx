@@ -22,13 +22,19 @@ import { ActionBar } from "~/components/ActionBar";
 import { ActionButton } from "~/components/ActionButton";
 import { Form } from "~/components/Form";
 import { Icon } from "~/components/Icon";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
 import { StarSparkles } from "~/components/StarSparkles";
 import { REGION_FLAGS, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions, useIsAuthenticated } from "~/hooks/cloud";
-import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
+import {
+	useConnection,
+	useIsConnected,
+	useMinimumVersion,
+	useRequireDatabase,
+} from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
@@ -70,9 +76,10 @@ export function SurrealistToolbar() {
 	const authState = useCloudStore((s) => s.authState);
 	const isConnected = useIsConnected();
 
-	const [id, namespace, authMode] = useConnection((c) => [
+	const [id, namespace, database, authMode] = useConnection((c) => [
 		c?.id,
 		c?.lastNamespace,
+		c?.lastDatabase,
 		c?.authentication.mode,
 	]);
 
@@ -130,6 +137,7 @@ export function SurrealistToolbar() {
 		}
 	}, [organization, region, organizations, supportedRegions]);
 
+	const [datasetModalOpen, datasetModalOpenHandle] = useBoolean();
 	const [editingTab, setEditingTab] = useState<string | null>(null);
 	const [tabName, setTabName] = useState("");
 
@@ -311,6 +319,8 @@ export function SurrealistToolbar() {
 	const showNS = !isSandbox && id && isConnected;
 	const showDB = showNS && namespace;
 
+	const selectDataset = useRequireDatabase(() => datasetModalOpenHandle.open());
+
 	return (
 		<>
 			<SidebarToggle />
@@ -364,16 +374,17 @@ export function SurrealistToolbar() {
 				</ActionButton>
 			)}
 
-			{isConnected && isSchemaEmpty && (
-				<ActionButton
+			{isConnected && isSchemaEmpty && namespace && database && (
+				<Button
+					size="xs"
 					color="slate"
-					variant="subtle"
-					label="Apply demo dataset"
+					variant="light"
 					loading={isDatasetLoading}
-					onClick={() => applyDataset(version)}
+					onClick={selectDataset}
+					leftSection={<Icon path={iconTable} />}
 				>
-					<Icon path={iconTable} />
-				</ActionButton>
+					Apply dataset
+				</Button>
 			)}
 
 			{isConnected && isSandbox && flags.sandbox_deploy && (
@@ -584,6 +595,61 @@ export function SurrealistToolbar() {
 						<Button type="submit">Rename</Button>
 					</Group>
 				</Form>
+			</Modal>
+
+			<Modal
+				opened={datasetModalOpen}
+				onClose={datasetModalOpenHandle.close}
+				title={
+					<Group>
+						<Icon
+							path={iconTable}
+							size="lg"
+						/>
+						<PrimaryTitle>Apply dataset</PrimaryTitle>
+					</Group>
+				}
+			>
+				<Stack gap="xl">
+					<Text>
+						You can initialize your empty database with an official dataset to provide a
+						starting point for your project.
+					</Text>
+
+					<Select
+						placeholder="Select a dataset"
+						value="surreal-deal-store-mini"
+						data={[
+							{
+								label: "Surreal Deal Store (Mini)",
+								value: "surreal-deal-store-mini",
+							},
+						]}
+					/>
+
+					<Group>
+						<Button
+							onClick={datasetModalOpenHandle.close}
+							color="slate"
+							variant="light"
+							flex={1}
+						>
+							Close
+						</Button>
+						<Button
+							type="submit"
+							variant="gradient"
+							flex={1}
+							onClick={async () => {
+								await applyDataset(version);
+								datasetModalOpenHandle.close();
+							}}
+							loading={isDatasetLoading}
+						>
+							Apply dataset
+						</Button>
+					</Group>
+				</Stack>
 			</Modal>
 		</>
 	);
