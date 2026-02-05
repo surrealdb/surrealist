@@ -13,6 +13,7 @@ export type DatabaseStore = {
 	servePending: boolean;
 	currentState: State;
 	latestError: string;
+	isSyncingSchema: boolean;
 	isQueryActive: boolean;
 	isGraphqlQueryActive: boolean;
 	consoleOutput: string[];
@@ -31,6 +32,7 @@ export type DatabaseStore = {
 	cancelServe: () => void;
 	pushConsoleLine: (line: string, max: number) => void;
 	clearConsole: () => void;
+	setIsSyncingSchema: (isSyncingSchema: boolean) => void;
 	setDatabaseSchema: (databaseSchema: ConnectionSchema) => void;
 	setCurrentState: (currentState: State) => void;
 	setLatestError: (latestError: string) => void;
@@ -47,6 +49,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	servePending: false,
 	currentState: "disconnected",
 	latestError: "",
+	isSyncingSchema: false,
 	isQueryActive: false,
 	isGraphqlQueryActive: false,
 	consoleOutput: [],
@@ -102,6 +105,11 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	clearConsole: () =>
 		set(() => ({
 			consoleOutput: [],
+		})),
+
+	setIsSyncingSchema: (isSyncingSchema) =>
+		set(() => ({
+			isSyncingSchema,
 		})),
 
 	setDatabaseSchema: (databaseSchema) =>

@@ -43,6 +43,7 @@ import { openBillingRequiredModal } from "~/modals/billing-required";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
 import { useInterfaceStore } from "~/stores/interface";
 import { CloudDeployConfig } from "~/types";
@@ -73,6 +74,7 @@ export function SurrealistToolbar() {
 	const isAuthenticated = useIsAuthenticated();
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
+	const isSyncingSchema = useDatabaseStore((s) => s.isSyncingSchema);
 	const authState = useCloudStore((s) => s.authState);
 	const isConnected = useIsConnected();
 
@@ -181,6 +183,7 @@ export function SurrealistToolbar() {
 				records: true,
 				sequences: true,
 				tables: true,
+				v3: false,
 			});
 
 			const result = await blob.text();
@@ -374,7 +377,7 @@ export function SurrealistToolbar() {
 				</ActionButton>
 			)}
 
-			{isConnected && isSchemaEmpty && namespace && database && (
+			{isConnected && isSchemaEmpty && namespace && database && !isSyncingSchema && (
 				<Button
 					size="xs"
 					color="slate"
