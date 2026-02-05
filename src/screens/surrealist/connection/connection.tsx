@@ -710,12 +710,15 @@ export function cancelLiveQueries(tab: string) {
  */
 export async function activateDatabase(namespace: string, database: string) {
 	const { updateConnection } = useConfigStore.getState();
+	const { setIsSyncingSchema } = useDatabaseStore.getState();
 	const connection = getActiveConnection();
 	let invalidNS = false;
 
 	if (!connection) {
 		return;
 	}
+
+	setIsSyncingSchema(true);
 
 	// Select a namespace only
 	if (namespace) {

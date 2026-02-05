@@ -32,10 +32,13 @@ export interface SchemaSyncOptions {
  * @param options Sync options
  */
 export async function syncConnectionSchema(options?: SchemaSyncOptions) {
-	const { currentState, connectionSchema, setDatabaseSchema } = useDatabaseStore.getState();
 	const { tables: onlyTables, clearRoot, clearNamespace, clearDatabase } = options ?? {};
+	const { currentState, connectionSchema, setDatabaseSchema, setIsSyncingSchema } =
+		useDatabaseStore.getState();
 
-	if (clearRoot || clearNamespace || clearDatabase) {
+	const invalidateSchema = clearRoot || clearNamespace || clearDatabase;
+
+	if (invalidateSchema) {
 		const reset = createConnectionSchema();
 
 		setDatabaseSchema({
@@ -53,132 +56,138 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 
 	adapter.log("Schema", "Synchronizing database schema");
 
-	const [kvInfoTask, nsInfoTask, dbInfoTask] = await Promise.allSettled([
-		executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE"),
-		executeQuerySingle<SchemaInfoNS>("INFO FOR NS STRUCTURE"),
-		executeQuerySingle<SchemaInfoDB>("INFO FOR DB STRUCTURE"),
-	]);
+	setIsSyncingSchema(true);
 
-	if (kvInfoTask.status === "fulfilled") {
-		const { namespaces, accesses, users } = kvInfoTask.value;
+	try {
+		const [kvInfoTask, nsInfoTask, dbInfoTask] = await Promise.allSettled([
+			executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE"),
+			executeQuerySingle<SchemaInfoNS>("INFO FOR NS STRUCTURE"),
+			executeQuerySingle<SchemaInfoDB>("INFO FOR DB STRUCTURE"),
+		]);
 
-		schema.root.namespaces = namespaces;
-		schema.root.accesses = accesses ?? [];
-		schema.root.users = users;
+		if (kvInfoTask.status === "fulfilled") {
+			const { namespaces, accesses, users } = kvInfoTask.value;
 
-		// TODO Trim access queries
-	}
+			schema.root.namespaces = namespaces;
+			schema.root.accesses = accesses ?? [];
+			schema.root.users = users;
 
-	if (nsInfoTask.status === "fulfilled") {
-		const { databases, accesses, users } = nsInfoTask.value;
-
-		schema.namespace.databases = databases;
-		schema.namespace.accesses = accesses ?? [];
-		schema.namespace.users = users;
-
-		// TODO Trim access queries
-	}
-
-	if (dbInfoTask.status === "fulfilled") {
-		const { accesses, models, users, functions, tables, params } = dbInfoTask.value;
-
-		schema.database.accesses = accesses ?? [];
-		schema.database.models = models;
-		schema.database.users = users;
-		schema.database.params = params;
-
-		// TODO Trim access queries
-
-		// schema.database.accesses = (schema.database.accesses || []).map((sc) => ({
-		// 	...sc,
-		// 	signin: sc?.signin?.slice(1, -1),
-		// 	signup: sc?.signup?.slice(1, -1),
-		// }));
-
-		// Schema functions
-		schema.database.functions = functions.map((info) => ({
-			...info,
-			name: info.name.replaceAll("`", ""),
-			block: readBlock(info.block),
-			comment: info.comment || "",
-			returns: info.returns || "",
-		}));
-
-		// Tables
-		const isLimited = Array.isArray(onlyTables);
-		const tablesToSync = isLimited ? onlyTables : tables.map((t) => t.name);
-
-		const tbInfoMap = await executeQuery(
-			tablesToSync
-				.map((table) => `INFO FOR TABLE ${escapeIdent(table)} STRUCTURE;`)
-				.join("\n"),
-		);
-
-		// adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
-
-		if (isLimited) {
-			schema.database.tables = klona(connectionSchema.database.tables);
+			// TODO Trim access queries
 		}
 
-		let hasFailures = false;
+		if (nsInfoTask.status === "fulfilled") {
+			const { databases, accesses, users } = nsInfoTask.value;
 
-		for (const [idx, tableName] of tablesToSync.entries()) {
-			adapter.log("Schema", `Updating table ${tableName}`);
+			schema.namespace.databases = databases;
+			schema.namespace.accesses = accesses ?? [];
+			schema.namespace.users = users;
 
-			const response = tbInfoMap[idx];
+			// TODO Trim access queries
+		}
 
-			if (!response.success) {
-				hasFailures = true;
-				adapter.log(
-					"Schema",
-					`Failed to get table structure for ${tableName}: ${response.result}`,
-				);
-				continue;
-			}
+		if (dbInfoTask.status === "fulfilled") {
+			const { accesses, models, users, functions, tables, params } = dbInfoTask.value;
 
-			const tableStruct = tbInfoMap[idx].result as SchemaInfoTB;
-			const tableInfo = tables.find((t) => t.name === tableName);
-			const existingIndex = schema.database.tables.findIndex(
-				(t) => t.schema.name === tableName,
+			schema.database.accesses = accesses ?? [];
+			schema.database.models = models;
+			schema.database.users = users;
+			schema.database.params = params;
+
+			// TODO Trim access queries
+
+			// schema.database.accesses = (schema.database.accesses || []).map((sc) => ({
+			// 	...sc,
+			// 	signin: sc?.signin?.slice(1, -1),
+			// 	signup: sc?.signup?.slice(1, -1),
+			// }));
+
+			// Schema functions
+			schema.database.functions = functions.map((info) => ({
+				...info,
+				name: info.name.replaceAll("`", ""),
+				block: readBlock(info.block),
+				comment: info.comment || "",
+				returns: info.returns || "",
+			}));
+
+			// Tables
+			const isLimited = Array.isArray(onlyTables);
+			const tablesToSync = isLimited ? onlyTables : tables.map((t) => t.name);
+
+			const tbInfoMap = await executeQuery(
+				tablesToSync
+					.map((table) => `INFO FOR TABLE ${escapeIdent(table)} STRUCTURE;`)
+					.join("\n"),
 			);
 
-			if (!tableInfo) {
-				schema.database.tables.splice(existingIndex, 1);
-				continue;
+			// adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
+
+			if (isLimited) {
+				schema.database.tables = klona(connectionSchema.database.tables);
 			}
 
-			const definition: TableInfo = {
-				schema: {
-					...tableInfo,
-					full: tableInfo.schemafull ?? tableInfo.full,
-				},
-				fields: Object.values(tableStruct.fields),
-				indexes: Object.values(tableStruct.indexes),
-				events: Object.values(tableStruct.events).map((ev) => ({
-					...ev,
-					then: ev.then.map(readBlock),
-				})),
-			};
+			let hasFailures = false;
 
-			if (!isLimited || existingIndex === -1) {
-				schema.database.tables.push(definition);
-			} else {
-				schema.database.tables[existingIndex] = definition;
+			for (const [idx, tableName] of tablesToSync.entries()) {
+				adapter.log("Schema", `Updating table ${tableName}`);
+
+				const response = tbInfoMap[idx];
+
+				if (!response.success) {
+					hasFailures = true;
+					adapter.log(
+						"Schema",
+						`Failed to get table structure for ${tableName}: ${response.result}`,
+					);
+					continue;
+				}
+
+				const tableStruct = tbInfoMap[idx].result as SchemaInfoTB;
+				const tableInfo = tables.find((t) => t.name === tableName);
+				const existingIndex = schema.database.tables.findIndex(
+					(t) => t.schema.name === tableName,
+				);
+
+				if (!tableInfo) {
+					schema.database.tables.splice(existingIndex, 1);
+					continue;
+				}
+
+				const definition: TableInfo = {
+					schema: {
+						...tableInfo,
+						full: tableInfo.schemafull ?? tableInfo.full,
+					},
+					fields: Object.values(tableStruct.fields),
+					indexes: Object.values(tableStruct.indexes),
+					events: Object.values(tableStruct.events).map((ev) => ({
+						...ev,
+						then: ev.then.map(readBlock),
+					})),
+				};
+
+				if (!isLimited || existingIndex === -1) {
+					schema.database.tables.push(definition);
+				} else {
+					schema.database.tables[existingIndex] = definition;
+				}
+			}
+
+			if (hasFailures) {
+				showErrorNotification({
+					title: "Some tables failed to sync",
+					content: "Check the debug console for more details",
+				});
 			}
 		}
 
-		if (hasFailures) {
-			showErrorNotification({
-				title: "Some tables failed to sync",
-				content: "Check the debug console for more details",
-			});
+		// Update the schema
+		if (invalidateSchema || !equal(schema, connectionSchema)) {
+			console.debug("Updated schema:", schema);
+			setDatabaseSchema(schema);
 		}
-	}
-
-	// Update the schema
-	if (!equal(schema, connectionSchema)) {
-		console.debug("Updated schema:", schema);
-		setDatabaseSchema(schema);
+	} finally {
+		setIsSyncingSchema(false);
 	}
 }
 
