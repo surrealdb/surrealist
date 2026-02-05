@@ -59,4 +59,20 @@ export const kindMeta: Record<
 		label: "Search index",
 		documentationUrl: "https://surrealdb.com/docs/migrations/search-index",
 	},
+	"analyze statement": {
+		label: "Analyze statement",
+		documentationUrl: "https://surrealdb.com/docs/migrations/search-index",
+	},
+	"record references": {
+		label: "Record references",
+		documentationUrl: "https://surrealdb.com/docs/migrations/record-references",
+	},
+	"like operator": {
+		label: "Like operator removal",
+		documentationUrl: "https://surrealdb.com/docs/migrations/like-operator",
+	},
+	"mtree index": {
+		label: "Mtree index removal",
+		documentationUrl: "https://surrealdb.com/docs/migrations/mtree-index",
+	},
 };

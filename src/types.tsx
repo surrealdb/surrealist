@@ -1104,7 +1104,11 @@ export type MigrationKind =
 	| "mock value"
 	| "number key ordering"
 	| "id field"
-	| "search index";
+	| "search index"
+	| "analyze statement"
+	| "record references"
+	| "like operator"
+	| "mtree index";
 
 export type MigrationSeverity = "unlikely_break" | "can_break" | "will_break";
 
