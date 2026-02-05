@@ -1,5 +1,5 @@
 import { Box, ScrollArea, Stack, Text } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import {
@@ -66,7 +66,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 
 	const { instanceId, backupId } = useSearchParams();
 
-	const [baseInstance, setBaseInstance] = useState<CloudInstance | undefined>(undefined);
+	// const [baseInstance, setBaseInstance] = useState<CloudInstance | undefined>(undefined);
 	const updateStep = useStable((newStep: number) => {
 		setStep(clamp(newStep, 0, 2));
 	});
@@ -81,14 +81,16 @@ function PageContent({ organisation, instances }: PageContentProps) {
 		];
 	}, [details.plan]);
 
-	const { data: backups } = useCloudBackupsQuery(baseInstance?.id);
+	const { data: backups, isSuccess: isBackupsSuccess } = useCloudBackupsQuery(
+		details.startingData.backupOptions?.instance?.id ?? instanceId,
+	);
+
+	const backupLoadedRef = useRef(false);
 
 	useEffect(() => {
-		setBaseInstance(details.startingData.backupOptions?.instance);
-	}, [details.startingData.backupOptions?.instance]);
+		if (isBackupsSuccess && instanceId && !backupLoadedRef.current) {
+			backupLoadedRef.current = true;
 
-	useEffect(() => {
-		if (instanceId) {
 			const foundInstance = instances.find((instance) => instance.id === instanceId);
 
 			if (!foundInstance) {
@@ -98,8 +100,6 @@ function PageContent({ organisation, instances }: PageContentProps) {
 				});
 				return;
 			}
-
-			setBaseInstance(foundInstance);
 
 			const backup = backups?.find((backup) => backup.snapshot_id === backupId);
 
@@ -138,7 +138,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 
 			setStep(1);
 		}
-	}, [instances, backups, instanceId, backupId]);
+	}, [isBackupsSuccess, instances, backups, instanceId, backupId]);
 
 	return (
 		<CloudAdminGuard organisation={organisation}>
