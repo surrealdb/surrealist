@@ -59,7 +59,6 @@ export function DataExportModal() {
 		records: true,
 		sequences: true,
 		tables: [],
-		v3: false,
 	});
 
 	const fileName = `${slugify(name)}-${dayjs().format("YYYY-MM-DD")}.surql`;
