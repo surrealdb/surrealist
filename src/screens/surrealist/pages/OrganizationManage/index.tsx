@@ -192,23 +192,22 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 												Team
 											</Tabs.Tab>
 											{isOwner && !isManagedBilling && (
-												<>
-													<Tabs.Tab
-														value="invoices"
-														leftSection={<Icon path={iconDollar} />}
-														px="xl"
-													>
-														Invoices
-													</Tabs.Tab>
-
-													<Tabs.Tab
-														value="billing"
-														leftSection={<Icon path={iconCreditCard} />}
-														px="xl"
-													>
-														Billing
-													</Tabs.Tab>
-												</>
+												<Tabs.Tab
+													value="invoices"
+													leftSection={<Icon path={iconDollar} />}
+													px="xl"
+												>
+													Invoices
+												</Tabs.Tab>
+											)}
+											{isOwner && (
+												<Tabs.Tab
+													value="billing"
+													leftSection={<Icon path={iconCreditCard} />}
+													px="xl"
+												>
+													Billing
+												</Tabs.Tab>
 											)}
 											{isSupport && (
 												<Tabs.Tab
@@ -252,19 +251,18 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 										</Tabs.Panel>
 
 										{isOwner && !isManagedBilling && (
-											<>
-												<Tabs.Panel value="invoices">
-													<OrganizationInvoicesTab
-														organization={organization}
-													/>
-												</Tabs.Panel>
-
-												<Tabs.Panel value="billing">
-													<OrganizationBillingTab
-														organization={organization}
-													/>
-												</Tabs.Panel>
-											</>
+											<Tabs.Panel value="invoices">
+												<OrganizationInvoicesTab
+													organization={organization}
+												/>
+											</Tabs.Panel>
+										)}
+										{isOwner && (
+											<Tabs.Panel value="billing">
+												<OrganizationBillingTab
+													organization={organization}
+												/>
+											</Tabs.Panel>
 										)}
 										{isSupport && (
 											<Tabs.Panel value="support">
