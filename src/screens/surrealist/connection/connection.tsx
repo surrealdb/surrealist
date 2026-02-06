@@ -1,8 +1,6 @@
 import { compareVersions } from "compare-versions";
 import {
 	type AccessRecordAuth,
-	NamespaceDatabase,
-	Nullable,
 	ProvidedAuth,
 	SqlExportOptions,
 	Surreal,
@@ -773,18 +771,15 @@ export async function activateDatabase(namespace: string, database: string) {
 		}
 	}
 
+	// Select the default namespace and database
 	if (invalidNS || !namespace) {
-		const defaults = await getDefaults();
+		const { namespace, database } = await instance.use({});
 
-		if (defaults.namespace) {
-			await instance.use({});
-
-			updateConnection({
-				id: connection,
-				lastNamespace: defaults.namespace,
-				lastDatabase: defaults.database ?? "",
-			});
-		}
+		updateConnection({
+			id: connection,
+			lastNamespace: namespace,
+			lastDatabase: database,
+		});
 	}
 
 	try {
@@ -927,15 +922,6 @@ async function isDatabaseValid(database: string) {
 		return databases.includes(database);
 	} catch {
 		return true;
-	}
-}
-
-async function getDefaults(): Promise<Nullable<NamespaceDatabase>> {
-	try {
-		const [result] = await instance.query("INFO FOR ROOT").collect<[SchemaInfoKV]>();
-		return result.defaults ?? {};
-	} catch {
-		return {};
 	}
 }
 
