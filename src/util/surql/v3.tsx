@@ -7,7 +7,6 @@ import { SurrealQL } from "./surrealql";
 export class SurrealQLV3 implements SurrealQL {
 	constructor() {
 		adapter.log("SurrealQL", "Initializing SurrealQL V3");
-		(window as any).SurrealQL = this;
 	}
 
 	validateQuery(sql: string): Promise<string | undefined> {
@@ -21,7 +20,6 @@ export class SurrealQLV3 implements SurrealQL {
 
 	validateWhere(where: string): Promise<string | undefined> {
 		try {
-			(window as any).Wasm = Wasm;
 			Wasm.validate(`SELECT * FROM ${where}`);
 			return Promise.resolve(undefined);
 		} catch (err: any) {

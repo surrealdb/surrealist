@@ -45,7 +45,14 @@ import { createBaseQuery } from "~/util/defaults";
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
-import { __throw, connectionUri, newId, showErrorNotification, showWarning } from "~/util/helpers";
+import {
+	__throw,
+	connectionUri,
+	exposeDebug,
+	newId,
+	showErrorNotification,
+	showWarning,
+} from "~/util/helpers";
 import { parseIdent } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
 import { createSurrealQL } from "~/util/surql";
@@ -101,6 +108,8 @@ export async function openConnection(options?: ConnectOptions) {
 
 	instance = surreal;
 	openedConnection = connection;
+
+	exposeDebug({ surreal, surrealql });
 
 	const { setCurrentState, setVersion, setLatestError, clearSchema } =
 		useDatabaseStore.getState();
@@ -773,7 +782,12 @@ export async function activateDatabase(namespace: string, database: string) {
 
 	// Select the default namespace and database
 	if (invalidNS || !namespace) {
+		console.log("Selecting default namespace and database");
+
 		const { namespace, database } = await instance.use({});
+
+		console.log("namespace", namespace);
+		console.log("database", database);
 
 		updateConnection({
 			id: connection,
