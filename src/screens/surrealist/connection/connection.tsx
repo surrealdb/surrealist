@@ -264,7 +264,7 @@ export async function openConnection(options?: ConnectOptions) {
 				params.delete("queries");
 			}
 		} else {
-			await activateDatabase(version, namespace, database);
+			await activateDatabase(namespace, database);
 		}
 
 		ConnectedEvent.dispatch(null);
@@ -710,7 +710,7 @@ export function cancelLiveQueries(tab: string) {
 /**
  * Activate the given database within the specified namespace
  */
-export async function activateDatabase(version: string, namespace: string, database: string) {
+export async function activateDatabase(namespace: string, database: string) {
 	const { updateConnection } = useConfigStore.getState();
 	const { setIsSyncingSchema } = useDatabaseStore.getState();
 	const connection = getActiveConnection();
