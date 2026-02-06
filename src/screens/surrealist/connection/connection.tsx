@@ -1,6 +1,8 @@
-import { compareVersions } from "compare-versions";
+import { compareVersions, satisfies } from "compare-versions";
 import {
 	type AccessRecordAuth,
+	NamespaceDatabase,
+	Nullable,
 	ProvidedAuth,
 	SqlExportOptions,
 	Surreal,
@@ -262,7 +264,7 @@ export async function openConnection(options?: ConnectOptions) {
 				params.delete("queries");
 			}
 		} else {
-			await activateDatabase(namespace, database);
+			await activateDatabase(version, namespace, database);
 		}
 
 		ConnectedEvent.dispatch(null);
@@ -708,7 +710,7 @@ export function cancelLiveQueries(tab: string) {
 /**
  * Activate the given database within the specified namespace
  */
-export async function activateDatabase(namespace: string, database: string) {
+export async function activateDatabase(version: string, namespace: string, database: string) {
 	const { updateConnection } = useConfigStore.getState();
 	const { setIsSyncingSchema } = useDatabaseStore.getState();
 	const connection = getActiveConnection();
@@ -767,6 +769,20 @@ export async function activateDatabase(namespace: string, database: string) {
 			updateConnection({
 				id: connection,
 				lastDatabase: "",
+			});
+		}
+	}
+
+	if (invalidNS || !namespace) {
+		const defaults = await getDefaults();
+
+		if (defaults.namespace) {
+			await instance.use({});
+
+			updateConnection({
+				id: connection,
+				lastNamespace: defaults.namespace,
+				lastDatabase: defaults.database ?? "",
 			});
 		}
 	}
@@ -911,6 +927,15 @@ async function isDatabaseValid(database: string) {
 		return databases.includes(database);
 	} catch {
 		return true;
+	}
+}
+
+async function getDefaults(): Promise<Nullable<NamespaceDatabase>> {
+	try {
+		const [result] = await instance.query("INFO FOR ROOT").collect<[SchemaInfoKV]>();
+		return result.defaults ?? {};
+	} catch {
+		return {};
 	}
 }
 
