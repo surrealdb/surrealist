@@ -1,4 +1,4 @@
-import { compareVersions, satisfies } from "compare-versions";
+import { compareVersions } from "compare-versions";
 import {
 	type AccessRecordAuth,
 	NamespaceDatabase,
