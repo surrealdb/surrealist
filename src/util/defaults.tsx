@@ -191,6 +191,7 @@ export function createConnectionSchema(): ConnectionSchema {
 	return {
 		root: {
 			namespaces: [],
+			defaults: {},
 			accesses: [],
 			users: [],
 		},

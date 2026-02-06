@@ -771,6 +771,17 @@ export async function activateDatabase(namespace: string, database: string) {
 		}
 	}
 
+	// Select the default namespace and database
+	if (invalidNS || !namespace) {
+		const { namespace, database } = await instance.use({});
+
+		updateConnection({
+			id: connection,
+			lastNamespace: namespace,
+			lastDatabase: database,
+		});
+	}
+
 	try {
 		ActivateDatabaseEvent.dispatch(null);
 
