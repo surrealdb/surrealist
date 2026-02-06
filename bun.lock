@@ -44,7 +44,7 @@
         "@surrealdb/lezer": "1.0.3",
         "@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
         "@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.1",
-        "@surrealdb/wasm": "^2.6.0",
+        "@surrealdb/wasm": "^2.6.1",
         "@tanstack/react-query": "^5.37.1",
         "@tauri-apps/api": "2.4.0",
         "@tauri-apps/plugin-deep-link": "2.2.0",
@@ -619,7 +619,7 @@
 
     "@surrealdb/ql-wasm-3": ["@surrealdb/ql-wasm@0.3.1", "", {}, "sha512-0fRDqhibbbzSrSIw4ertFsN7xgOI8nBx0CipDnMeCYN8Vb9Sc5/ZMahpS2ZTQt1po+k1TmayjlH5CHtx41Iegw=="],
 
-    "@surrealdb/wasm": ["@surrealdb/wasm@2.6.0", "", { "peerDependencies": { "surrealdb": "^2.0.0-0" } }, "sha512-3GmwuS50C3G4bXq+2YeletgmisqXUGiAOKcRgIcU8iLsz0jtNwmmPZdXGj5j/KdHBfCWPC6IvrtJKs/3Si08BA=="],
+    "@surrealdb/wasm": ["@surrealdb/wasm@2.6.1", "", { "peerDependencies": { "surrealdb": "^2.0.0-0" } }, "sha512-pBxgOX/wZ+aBvMIJbDv6UtUDCT0RjhpPqa31NMUmAZuTx9WfZb1PQan4vCBH9rcSPDR6BC8zJ4pFQUuliFQUEQ=="],
 
     "@tanstack/query-core": ["@tanstack/query-core@5.90.20", "", {}, "sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg=="],
 
