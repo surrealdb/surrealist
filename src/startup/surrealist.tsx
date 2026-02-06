@@ -20,6 +20,7 @@ import { invalidateSession } from "~/cloud/api/auth";
 import { clearCachedConnections } from "~/cloud/helpers";
 import { NewDomainScreen } from "~/screens/new-domain";
 import { startConfigSync } from "~/util/config";
+import { exposeDebug } from "~/util/helpers";
 import { preloadImages } from "~/util/preloader";
 import { adapter } from "../adapter";
 import { App } from "../components/App";
@@ -60,8 +61,8 @@ import { promptChangelog } from "../util/changelogs";
 	preloadImages();
 
 	// Expose debugging tools
-	(window as any).Surrealist = {
+	exposeDebug({
 		invalidateSession,
 		clearCachedConnections,
-	};
+	});
 })();

@@ -606,3 +606,10 @@ export function startOfDate(date: DateArg<Date>, resolution: DurationUnit): Date
 			throw new Error(`Unsupported resolution: ${resolution}`);
 	}
 }
+
+export function exposeDebug(tools: Record<string, unknown>) {
+	(window as any).Surrealist = {
+		...(window as any).Surrealist,
+		...tools,
+	};
+}
