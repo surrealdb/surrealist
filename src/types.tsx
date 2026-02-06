@@ -495,7 +495,7 @@ export interface SchemaInfoKV {
 	defaults: {
 		namespace?: string;
 		database?: string;
-	}
+	};
 	accesses: SchemaAccess[];
 	users: SchemaUser[];
 }
