@@ -1,4 +1,3 @@
-import { Button } from "@mantine/core";
 import { Duration, sub } from "date-fns";
 import { CLOUD_ROLES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
@@ -81,8 +80,6 @@ export function clearCachedConnections() {
 	useConfigStore.setState((s) => {
 		s.connections = pruned;
 	});
-
-	Button;
 }
 
 const METRIC_DURATION_MAP: Record<MetricsDuration, Duration> = {
