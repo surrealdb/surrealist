@@ -265,10 +265,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 		}
 
 		const files: string[] = Array.isArray(result) ? result : [result];
-		const tasks = files.map(async (path) => ({
-			name: await basename(path),
-			content: new Blob([await readFile(path)]),
-		}));
+		const tasks = files.map(async (path) => {
+			const data = await readFile(path);
+
+			return {
+				name: await basename(path),
+				content: new Blob([new Uint8Array(data)]),
+			};
+		});
 
 		return Promise.all(tasks);
 	}

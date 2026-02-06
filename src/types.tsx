@@ -1095,12 +1095,47 @@ export type MigrationDiagnosticResolution = {
 	action: "ignore" | "fix";
 };
 
+export type MigrationKind =
+	| "incompatible future"
+	| "stored closure"
+	| "all idiom"
+	| "field idiom followed"
+	| "function logical_and"
+	| "function logical_or"
+	| "function math::sqrt"
+	| "function math::min"
+	| "function math::max"
+	| "mock value"
+	| "number key ordering"
+	| "id field"
+	| "search index"
+	| "analyze statement"
+	| "record references"
+	| "like operator"
+	| "mtree index";
+
+export type MigrationSeverity = "unlikely_break" | "can_break" | "will_break";
+
+export type MigrationResourceType =
+	| "kv-user"
+	| "kv-access"
+	| "ns-user"
+	| "ns-access"
+	| "db-user"
+	| "db-api"
+	| "db-access"
+	| "db-param"
+	| "db-function"
+	| "db-tb-event"
+	| "db-tb-index"
+	| "db-tb-record";
+
 export interface MigrationDiagnosticResult {
 	error: string;
 	details: string;
-	kind: "incompatible future";
-	origin: string;
-	severity: "might_break" | "will_break" | "breaking_resolution";
+	kind: MigrationKind;
+	origin: string[];
+	severity: MigrationSeverity;
 	location?: MigrationDiagnosticLocation;
 	resolution?: MigrationDiagnosticResolution;
 }
