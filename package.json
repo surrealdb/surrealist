@@ -61,7 +61,7 @@
 		"@surrealdb/lezer": "1.0.3",
 		"@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
 		"@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.1",
-		"@surrealdb/wasm": "^2.6.0",
+		"@surrealdb/wasm": "^2.6.1",
 		"@tanstack/react-query": "^5.37.1",
 		"@tauri-apps/api": "2.4.0",
 		"@tauri-apps/plugin-deep-link": "2.2.0",
