@@ -1,8 +1,22 @@
-import { Box, Button, Center, Group, Paper, Stack, Text, ThemeIcon, Title } from "@mantine/core";
+import {
+	Anchor,
+	Box,
+	Button,
+	Center,
+	Group,
+	Image,
+	Paper,
+	Stack,
+	Text,
+	Title,
+} from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
+import surrealUrl from "~/assets/images/icons/surrealdb.webp";
 import { Icon } from "~/components/Icon";
+import { Spacer } from "~/components/Spacer";
+import { StarSparkles } from "~/components/StarSparkles";
 import { SURQL_FILTER } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
@@ -10,7 +24,7 @@ import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showInfo } from "~/util/helpers";
-import { iconCheck, iconDownload, iconTransfer } from "~/util/icons";
+import { iconDownload, iconReset, iconTransfer } from "~/util/icons";
 import { ResourceDetailPanel } from "../ResourceDetailPanel";
 import { ResourceOverviewPanel } from "../ResourceOverviewPanel";
 import { DiagnosticResource, organizeDiagnostics, ResourceMap } from "./organizer";
@@ -131,7 +145,7 @@ export function MigrationView() {
 			<Center flex={1}>
 				<Paper
 					p="xl"
-					maw={500}
+					w={500}
 					shadow="md"
 				>
 					<Stack>
@@ -140,11 +154,11 @@ export function MigrationView() {
 								path={iconTransfer}
 								size={1.35}
 							/>
-							<Title c="bright">Migration Diagnostics</Title>
+							<Title c="bright">Migrate to SurrealDB 3.0</Title>
 						</Group>
-						<Text>
-							This tool will help you check if your database is compatible with
-							SurrealDB 3.0, and helps you prepare for the migration.
+						<Text mt="sm">
+							To ensure a smooth migration to SurrealDB 3.0, this tool will help you
+							diagnose any issues with your database and ensure a smooth upgrade.
 						</Text>
 						<Group mt="md">
 							<Button
@@ -152,14 +166,16 @@ export function MigrationView() {
 								onClick={handleRunDiagnostics}
 								loading={isFetching}
 							>
-								Start check
+								Check compatibility
 							</Button>
-							<Button
-								variant="light"
-								color="slate"
-							>
-								Learn more
-							</Button>
+							<Anchor href="https://surrealdb.com/docs/surrealdb/installation/upgrading/migrating-data-to-3x">
+								<Button
+									variant="light"
+									color="slate"
+								>
+									Learn more
+								</Button>
+							</Anchor>
 						</Group>
 					</Stack>
 				</Paper>
@@ -175,46 +191,70 @@ export function MigrationView() {
 			<Center flex={1}>
 				<Paper
 					p="xl"
-					maw={500}
+					w={500}
 					shadow="md"
 				>
-					<Stack
-						align="center"
-						ta="center"
-					>
-						<ThemeIcon
-							size={64}
-							radius="xl"
-							color="slate"
-							variant="light"
+					<Stack>
+						<Stack
+							justify="center"
+							gap={0}
+							mb="md"
 						>
-							<Icon
-								path={iconCheck}
-								size={1.5}
-							/>
-						</ThemeIcon>
-						<Title
-							c="bright"
-							order={2}
-						>
-							{hasResolvedIssues
-								? "All issues resolved!"
-								: "No migration issues found!"}
-						</Title>
-						<Text>
-							{hasResolvedIssues
-								? "You have addressed all migration issues. Your database is ready to be upgraded to SurrealDB 3.0."
-								: "Your database is already compatible with SurrealDB 3.0. No changes are required."}
+							<Box mx="auto">
+								<StarSparkles
+									offsetBase={0}
+									offsetModifier={0}
+								>
+									<Image
+										src={surrealUrl}
+										alt="SurrealDB"
+										w={74}
+									/>
+								</StarSparkles>
+							</Box>
+							<Title
+								ta="center"
+								c="bright"
+								order={1}
+								fz={26}
+							>
+								You're all set!
+							</Title>
+						</Stack>
+						{hasResolvedIssues ? (
+							<Text fz="lg">
+								You have addressed all migration issues. Your database is ready to
+								be upgraded to SurrealDB 3.0.
+							</Text>
+						) : (
+							<Text fz="lg">
+								Your database is already compatible with SurrealDB 3.0, no changes
+								are required to upgrade.
+							</Text>
+						)}
+						<Text fz="lg">
+							Press the button below to create an export of your database which can be
+							restored in a SurrealDB 3.0 instance.
 						</Text>
-						<Button
-							mt="md"
-							variant="gradient"
-							onClick={() => exportMutation.mutate()}
-							loading={exportMutation.isPending}
-							rightSection={<Icon path={iconDownload} />}
-						>
-							Export database
-						</Button>
+						<Group mt="md">
+							<Button
+								variant="gradient"
+								onClick={() => exportMutation.mutate()}
+								loading={exportMutation.isPending}
+								rightSection={<Icon path={iconDownload} />}
+							>
+								Export database
+							</Button>
+							<Spacer />
+							<Button
+								variant="light"
+								color="slate"
+								onClick={handleRestartDiagnostics}
+								rightSection={<Icon path={iconReset} />}
+							>
+								Restart check
+							</Button>
+						</Group>
 					</Stack>
 				</Paper>
 			</Center>
