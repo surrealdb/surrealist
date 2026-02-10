@@ -80,6 +80,7 @@ export interface ResourceDetailPanelProps {
 	type: MigrationResourceType;
 	resource: DiagnosticResource;
 	resolvedIds: Set<string>;
+	unresolvedIssues: number;
 	onBack: () => void;
 	onToggleResolved: (entryId: string) => void;
 }
@@ -88,6 +89,7 @@ export function ResourceDetailPanel({
 	type,
 	resource,
 	resolvedIds,
+	unresolvedIssues,
 	onBack,
 	onToggleResolved,
 }: ResourceDetailPanelProps) {
@@ -198,10 +200,20 @@ export function ResourceDetailPanel({
 									<Text>All issues for this resource have been resolved.</Text>
 									<Button
 										variant="gradient"
-										leftSection={<Icon path={iconChevronLeft} />}
+										leftSection={
+											<Icon
+												path={
+													unresolvedIssues > 0
+														? iconChevronLeft
+														: iconCheck
+												}
+											/>
+										}
 										onClick={onBack}
 									>
-										Back to overview
+										{unresolvedIssues > 0
+											? "Back to overview"
+											: "Complete migration"}
 									</Button>
 								</Stack>
 							)}

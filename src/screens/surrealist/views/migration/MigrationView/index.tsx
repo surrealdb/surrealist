@@ -184,7 +184,7 @@ export function MigrationView() {
 	}
 
 	// All issues resolved - show success screen
-	if (data && unresolvedIssues === 0) {
+	if (data && unresolvedIssues === 0 && !selectedResource) {
 		const hasResolvedIssues = totalIssues > 0;
 
 		return (
@@ -274,6 +274,7 @@ export function MigrationView() {
 					type={selectedResource.type}
 					resource={selectedResource.resource}
 					resolvedIds={resolvedIds}
+					unresolvedIssues={unresolvedIssues}
 					onBack={handleBack}
 					onToggleResolved={handleToggleResolved}
 				/>
