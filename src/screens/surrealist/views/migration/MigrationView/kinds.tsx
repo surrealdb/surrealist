@@ -59,11 +59,13 @@ export const kindMeta: Record<
 	},
 	"number key ordering": {
 		label: "Number key ordering",
-		documentationUrl: "#",
+		documentationUrl:
+			"https://surrealdb.com/docs/surrealdb/installation/upgrading/migrating-data-to-3x/#20-numeric-record-id-ordering",
 	},
 	"id field": {
 		label: "ID field",
-		documentationUrl: "#",
+		documentationUrl:
+			"https://surrealdb.com/docs/surrealdb/installation/upgrading/migrating-data-to-3x/#26-id-field-special-behavior",
 	},
 	"search index": {
 		label: "Search index",
