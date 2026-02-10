@@ -67,7 +67,7 @@ export function organizeDiagnostics(diagnostics: MigrationDiagnosticResult[]): R
 		const bucket = resources[info.type];
 		const existing = bucket.find((resource) => resource.id === info.id);
 		const entry = {
-			id: diagnostic.origin.join("/"),
+			id: `${diagnostic.origin.join("/")}:${diagnostic.kind}:${diagnostic.severity}`,
 			source: diagnostic,
 			record: info.record,
 		};
@@ -83,6 +83,8 @@ export function organizeDiagnostics(diagnostics: MigrationDiagnosticResult[]): R
 			});
 		}
 	}
+
+	console.log(resources);
 
 	return resources;
 }
