@@ -216,6 +216,7 @@ interface ResourceCardProps {
 
 function ResourceCard({ type, resource, resolvedIds, onSelect }: ResourceCardProps) {
 	const unresolvedCount = countUnresolvedEntries(resource, resolvedIds);
+	const typeMeta = resourceTypeMeta[type];
 
 	return (
 		<UnstyledButton
@@ -235,26 +236,28 @@ function ResourceCard({ type, resource, resolvedIds, onSelect }: ResourceCardPro
 						color="slate"
 						variant="light"
 					>
-						<Icon path={resourceTypeMeta[type].icon} />
+						<Icon path={typeMeta.icon} />
 					</ThemeIcon>
 					<Box style={{ flex: 1 }}>
-						<Text
-							fw={500}
-							c="bright"
-							fz="lg"
-						>
-							{resource.name}
-						</Text>
+						{typeMeta.resource && resource.entries[0] && (
+							<Text
+								fw={500}
+								fz="sm"
+							>
+								{typeMeta.resource(resource.entries[0].source)}
+							</Text>
+						)}
 						<Group>
-							<UnresolvedBadge
-								size="xs"
-								count={unresolvedCount}
-								variant="subtle"
-								px={0}
-								ml={0}
-							/>
+							<Text
+								fw={500}
+								c="bright"
+								fz="lg"
+							>
+								{resource.name}
+							</Text>
 						</Group>
 					</Box>
+					<UnresolvedBadge count={unresolvedCount} />
 				</Group>
 			</Paper>
 		</UnstyledButton>

@@ -1,4 +1,5 @@
-import { MigrationResourceType } from "~/types";
+import { ReactNode } from "react";
+import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
 import {
 	iconAPI,
 	iconAuth,
@@ -10,7 +11,13 @@ import {
 	iconTable,
 } from "~/util/icons";
 
-export const resourceTypeMeta: Record<MigrationResourceType, { label: string; icon: string }> = {
+type ResourceTypeMeta = {
+	label: string;
+	icon: string;
+	resource?: (source: MigrationDiagnosticResult) => ReactNode;
+};
+
+export const resourceTypeMeta: Record<MigrationResourceType, ResourceTypeMeta> = {
 	"kv-user": { label: "Root Users", icon: iconAuth },
 	"kv-access": { label: "Root Access Methods", icon: iconAuth },
 	"ns-user": { label: "Namespace Users", icon: iconAuth },
@@ -20,8 +27,20 @@ export const resourceTypeMeta: Record<MigrationResourceType, { label: string; ic
 	"db-access": { label: "Database Access Methods", icon: iconAuth },
 	"db-param": { label: "Parameters", icon: iconBraces },
 	"db-function": { label: "Functions", icon: iconFunction },
-	"db-tb-event": { label: "Table Events", icon: iconBullhorn },
-	"db-tb-index": { label: "Table Indexes", icon: iconIndex },
-	"db-tb-field": { label: "Table Fields", icon: iconJSON },
 	"db-tb-record": { label: "Table Records", icon: iconTable },
+	"db-tb-event": {
+		label: "Table Events",
+		icon: iconBullhorn,
+		resource: (source) => source.origin[5],
+	},
+	"db-tb-index": {
+		label: "Table Indexes",
+		icon: iconIndex,
+		resource: (source) => source.origin[5],
+	},
+	"db-tb-field": {
+		label: "Table Fields",
+		icon: iconJSON,
+		resource: (source) => source.origin[5],
+	},
 };
