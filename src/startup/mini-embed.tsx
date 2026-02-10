@@ -1,5 +1,7 @@
 import "@mantine/core/styles.layer.css";
 import "@mantine/notifications/styles.css";
+import "@surrealdb/ui/styles.css";
+import "@surrealdb/ui/fonts.css";
 
 import "../assets/styles/layers.scss";
 import "../assets/styles/fonts.scss";

@@ -4,6 +4,8 @@ import "@mantine/notifications/styles.css";
 import "@mantine/charts/styles.css";
 import "@mantine/dates/styles.css";
 import "mantine-contextmenu/styles.layer.css";
+import "@surrealdb/ui/styles.css";
+import "@surrealdb/ui/fonts.css";
 
 import "../assets/styles/layers.scss";
 import "../assets/styles/fonts.scss";
