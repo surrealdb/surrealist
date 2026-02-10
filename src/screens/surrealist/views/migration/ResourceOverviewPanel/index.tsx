@@ -245,16 +245,13 @@ function ResourceCard({ type, resource, resolvedIds, onSelect }: ResourceCardPro
 						>
 							{resource.name}
 						</Text>
-						<Group gap="xs">
-							<Text
-								fw={500}
-								c="slate.3"
-							>
-								{resource.path}
-							</Text>
+						<Group>
 							<UnresolvedBadge
 								size="xs"
 								count={unresolvedCount}
+								variant="subtle"
+								px={0}
+								ml={0}
 							/>
 						</Group>
 					</Box>
