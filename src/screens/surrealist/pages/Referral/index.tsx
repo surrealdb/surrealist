@@ -16,7 +16,7 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck, iconCopy, iconHelp } from "@surrealdb/ui";
 import { ReactNode } from "react";
 import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
 import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
@@ -38,7 +38,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
 import classes from "./style.module.scss";
 
 const REWARDS = [1, 10, 25, 100, 500];

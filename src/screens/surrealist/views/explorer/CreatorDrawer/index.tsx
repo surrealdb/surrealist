@@ -14,7 +14,7 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose, iconPlus, iconWarning } from "@surrealdb/ui";
 import { omit } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { RecordId, StringRecordId, Table } from "surrealdb";
@@ -32,7 +32,6 @@ import { useValueValidator } from "~/hooks/surrealql";
 import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
 
 type EdgeInfo = [string[], string[]];

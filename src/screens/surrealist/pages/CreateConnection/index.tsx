@@ -10,7 +10,7 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronDown, iconChevronRight, iconHomePlus } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
@@ -31,7 +31,6 @@ import { Template } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getConnectionVariant, isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
-import { iconChevronDown, iconChevronRight, iconHomePlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 import classes from "./style.module.scss";

@@ -17,7 +17,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck, iconChevronDown, iconChevronRight, iconCopy } from "@surrealdb/ui";
 import { memo, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
@@ -53,7 +53,6 @@ import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconCheck, iconChevronDown, iconChevronRight, iconCopy } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { MonitorMetricOptions } from "../../monitor/helpers";

@@ -1,5 +1,5 @@
 import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck, iconList } from "@surrealdb/ui";
 import { type RefObject, useMemo } from "react";
 import { ContentPane } from "~/components/Pane";
 import { ScrollFader } from "~/components/ScrollFader";
@@ -17,7 +17,6 @@ import {
 	isSection,
 } from "~/screens/surrealist/docs/types";
 import type { CodeLang } from "~/types";
-import { iconCheck, iconList } from "~/util/icons";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 

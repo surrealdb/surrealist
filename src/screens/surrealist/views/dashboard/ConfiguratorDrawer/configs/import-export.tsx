@@ -1,5 +1,5 @@
 import { Box, Button, Divider, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconDownload, iconUpload } from "@surrealdb/ui";
 import { useState } from "react";
 import { adapter } from "~/adapter";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
@@ -11,7 +11,6 @@ import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { parseCapabilities, transformCapabilities } from "~/util/capabilities";
 import { showErrorNotification } from "~/util/helpers";
-import { iconDownload, iconUpload } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
 

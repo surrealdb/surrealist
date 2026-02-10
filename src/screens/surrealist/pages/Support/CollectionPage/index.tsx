@@ -1,10 +1,9 @@
 import { Box, Button, Center, Loader, ScrollArea, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowLeft } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { useSupportCollectionQuery } from "~/cloud/queries/context";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { iconArrowLeft } from "~/util/icons";
 import { ArticleCard } from "../ArticleCard";
 import classes from "../style.module.scss";
 

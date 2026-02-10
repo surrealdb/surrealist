@@ -10,7 +10,7 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCloud, iconDotsVertical } from "@surrealdb/ui";
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { InstanceActions } from "~/components/InstanceActions";
@@ -18,7 +18,6 @@ import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconCloud, iconDotsVertical } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
 import classes from "../style.module.scss";

@@ -1,14 +1,13 @@
 import { Group, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconTransfer } from "@surrealdb/ui";
 import { CodePreview } from "~/components/CodePreview";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance } from "~/types";
-import { iconTransfer } from "~/util/icons";
 
 export function openConnectCurl(instance: CloudInstance, namespace: string, database: string) {
 	openModal({

@@ -1,7 +1,7 @@
 import { ActionIcon, Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose, iconOrganization, iconPlus, iconUpload } from "@surrealdb/ui";
 import Papa from "papaparse";
 import { capitalize } from "radash";
 import { useMemo, useRef } from "react";
@@ -13,7 +13,6 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { EMAIL_REGEX, showErrorNotification } from "~/util/helpers";
-import { iconClose, iconOrganization, iconPlus, iconUpload } from "~/util/icons";
 import { useInvitationMutation } from "../mutations/invites";
 import { useCloudRolesQuery } from "../queries/roles";
 

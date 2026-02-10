@@ -10,7 +10,20 @@ import {
 	ThemeIcon,
 	Title,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconBalance,
+	iconChevronRight,
+	iconClose,
+	iconCommand,
+	iconDownload,
+	iconFlag,
+	iconHelp,
+	iconPlay,
+	iconServer,
+	iconTransfer,
+	iconTune,
+} from "@surrealdb/ui";
 import { useState } from "react";
 import { isDesktop } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
@@ -24,19 +37,6 @@ import { useDesktopUpdater } from "~/hooks/updater";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Assign, FeatureCondition } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
-import {
-	iconBalance,
-	iconChevronRight,
-	iconClose,
-	iconCommand,
-	iconDownload,
-	iconFlag,
-	iconHelp,
-	iconPlay,
-	iconServer,
-	iconTransfer,
-	iconTune,
-} from "~/util/icons";
 import classes from "./style.module.scss";
 import { AboutTab } from "./tabs/About";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";

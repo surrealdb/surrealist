@@ -1,5 +1,13 @@
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconCheck,
+	iconClock,
+	iconClose,
+	iconExplorer,
+	iconFile,
+	iconXml,
+} from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { convert } from "geo-coordinates-parser";
 import { useEffect, useState } from "react";
@@ -20,7 +28,6 @@ import {
 } from "surrealdb";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { TRUNCATE_STYLE } from "~/util/helpers";
-import { iconCheck, iconClock, iconClose, iconExplorer, iconFile, iconXml } from "~/util/icons";
 import { GeographyLink } from "../GeographyLink";
 import { RecordLink } from "../RecordLink";
 import classes from "./style.module.scss";

@@ -17,7 +17,18 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconArrowLeft,
+	iconBullhorn,
+	iconChat,
+	iconCheck,
+	iconClock,
+	iconFile,
+	iconPause,
+	iconPlus,
+	iconRefresh,
+} from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
@@ -36,17 +47,6 @@ import { Spacer } from "~/components/Spacer";
 import { useCloudProfile } from "~/hooks/cloud";
 import { fileToBase64 } from "~/util/file";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
-import {
-	iconArrowLeft,
-	iconBullhorn,
-	iconChat,
-	iconCheck,
-	iconClock,
-	iconFile,
-	iconPause,
-	iconPlus,
-	iconRefresh,
-} from "~/util/icons";
 import { ConversationPart } from "../ConversationPart";
 import classes from "../style.module.scss";
 

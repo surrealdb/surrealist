@@ -18,7 +18,17 @@ import {
 	Transition,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconArrowLeft,
+	iconArrowUpRight,
+	iconCheck,
+	iconPlus,
+	iconReset,
+	iconSearch,
+	iconTune,
+	iconWarning,
+} from "@surrealdb/ui";
 import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
@@ -47,16 +57,6 @@ import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
-import {
-	iconArrowLeft,
-	iconArrowUpRight,
-	iconCheck,
-	iconPlus,
-	iconReset,
-	iconSearch,
-	iconTune,
-	iconWarning,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
 import { StartBlog } from "./content/blog";

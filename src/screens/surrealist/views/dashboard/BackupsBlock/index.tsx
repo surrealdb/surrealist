@@ -1,11 +1,10 @@
 import { Box, Button, Center, Paper, Skeleton, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconKeyboardShift } from "@surrealdb/ui";
 import { formatDistance } from "date-fns";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconChevronRight, iconKeyboardShift } from "~/util/icons";
 
 export interface BackupsBlockProps {
 	instance: CloudInstance | undefined;

@@ -10,7 +10,7 @@ import {
 	Text,
 	Textarea,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "@surrealdb/ui";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { PermissionInput } from "~/components/Inputs";
@@ -20,7 +20,6 @@ import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
 import { useIsLight } from "~/hooks/theme";
 import { SchemaParameter } from "~/types";
-import { iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface ParameterPropertiesPanelProps {

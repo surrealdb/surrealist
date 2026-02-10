@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconPlus } from "@surrealdb/ui";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
@@ -24,7 +24,6 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { AccessType, Base, SchemaAccess } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconPlus } from "~/util/icons";
 import { readBlock, syncConnectionSchema } from "~/util/schema";
 
 type VerifyMode = "url" | "keyalg";

@@ -12,7 +12,7 @@ import {
 	Textarea,
 	TextInput,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "@surrealdb/ui";
 import { useState } from "react";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
@@ -26,7 +26,6 @@ import { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { FunctionDetails, SchemaFunction } from "~/types";
-import { iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "~/util/icons";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
 

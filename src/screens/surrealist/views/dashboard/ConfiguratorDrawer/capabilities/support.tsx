@@ -8,12 +8,10 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronDown, iconChevronUp, iconDownload, iconHelp } from "@surrealdb/ui";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
-import { iconChevronDown, iconChevronUp, iconDownload, iconHelp } from "~/util/icons";
 import { CapabilityBaseProps } from "./shared";
 
 export function SupportCapability({ name, description }: CapabilityBaseProps) {

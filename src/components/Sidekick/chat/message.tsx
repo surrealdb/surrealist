@@ -11,7 +11,14 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconArrowLeft,
+	iconCheck,
+	iconChevronDown,
+	iconChevronUp,
+	iconCopy,
+} from "@surrealdb/ui";
 import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Link } from "~/components/Link";
@@ -20,7 +27,6 @@ import { RelativeTime } from "~/components/RelativeTime";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { SidekickChatMessage } from "~/types";
-import { iconArrowLeft, iconCheck, iconChevronDown, iconChevronUp, iconCopy } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface SidekickMessageProps {

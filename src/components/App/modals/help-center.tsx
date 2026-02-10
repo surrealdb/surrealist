@@ -10,7 +10,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconHelp } from "@surrealdb/ui";
 import clsx from "clsx";
 import { navigate } from "wouter/use-browser-location";
 import { useSearchHelpArticlesQuery } from "~/cloud/queries/context";
@@ -22,7 +22,6 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { IntercomSupportArticle } from "~/types";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
-import { iconHelp } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export function HelpSearchModal() {

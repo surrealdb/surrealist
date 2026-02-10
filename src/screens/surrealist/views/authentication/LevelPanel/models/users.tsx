@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck, iconPlus } from "@surrealdb/ui";
 import { useLayoutEffect, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
@@ -23,7 +23,6 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { Base, SchemaUser } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconCheck, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 const ROLES = [

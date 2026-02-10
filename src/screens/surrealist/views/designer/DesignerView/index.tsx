@@ -1,5 +1,5 @@
 import { Box, Button, Group, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconDesigner, iconEye, iconOpen, iconPlus } from "@surrealdb/ui";
 import { ReactFlowProvider } from "@xyflow/react";
 import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -16,7 +16,6 @@ import { useDesigner } from "~/providers/Designer";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
-import { iconDesigner, iconEye, iconOpen, iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { TableGraphPane } from "../TableGraphPane";

@@ -10,7 +10,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconBook } from "@surrealdb/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { adapter } from "~/adapter";
@@ -22,7 +22,6 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { tagEvent } from "~/util/analytics";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
-import { iconBook } from "~/util/icons";
 import classes from "../style.module.scss";
 
 const ENDPOINT = "https://surrealdb.com/api/docs/search";

@@ -14,7 +14,18 @@ import {
 } from "@mantine/core";
 import { createEdgeCurveProgram } from "@sigma/edge-curve";
 import { createNodeBorderProgram } from "@sigma/node-border";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconAPI,
+	iconFullscreen,
+	iconImage,
+	iconMagnifyMinus,
+	iconMagnifyPlus,
+	iconPause,
+	iconPlay,
+	iconRelation,
+	iconReset,
+} from "@surrealdb/ui";
 import { MultiDirectedGraph } from "graphology";
 import { useContextMenu } from "mantine-contextmenu";
 import { MouseEvent, useEffect, useRef } from "react";
@@ -25,17 +36,6 @@ import { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { getIsLight, useIsLight } from "~/hooks/theme";
 import { useInspector } from "~/providers/Inspector";
-import {
-	iconAPI,
-	iconFullscreen,
-	iconImage,
-	iconMagnifyMinus,
-	iconMagnifyPlus,
-	iconPause,
-	iconPlay,
-	iconRelation,
-	iconReset,
-} from "~/util/icons";
 import { ActionButton } from "../ActionButton";
 import { NodeContextMenu } from "./context";
 import { drawHover, drawLabel } from "./drawing";

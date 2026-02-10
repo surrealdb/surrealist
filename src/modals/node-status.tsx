@@ -1,12 +1,11 @@
 import { Box, Group, Paper, Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCircleFilled } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import type { Uuid } from "surrealdb";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { executeQuerySingle } from "~/screens/surrealist/connection/connection";
 import { showErrorNotification } from "~/util/helpers";
-import { iconCircleFilled } from "~/util/icons";
 
 interface Node {
 	seen: number;

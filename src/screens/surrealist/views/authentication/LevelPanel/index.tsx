@@ -1,5 +1,5 @@
 import { ActionIcon, Badge, Box, Group, Menu, ScrollArea, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconAccount, iconDotsVertical, iconKey, iconPlus } from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { type ReactNode, useState } from "react";
 import { escapeIdent } from "surrealdb";
@@ -19,7 +19,6 @@ import {
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { Base, SchemaAccess, SchemaUser } from "~/types";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { AccessEditorModal } from "./models/access";
 import { UserEditorModal } from "./models/users";

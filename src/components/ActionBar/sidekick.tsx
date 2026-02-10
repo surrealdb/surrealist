@@ -1,8 +1,7 @@
 import { Indicator } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconSidekick } from "@surrealdb/ui";
 import { useOnboarding } from "~/hooks/onboarding";
 import { useStable } from "~/hooks/stable";
-import { iconSidekick } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
 import { StarSparkles } from "../StarSparkles";

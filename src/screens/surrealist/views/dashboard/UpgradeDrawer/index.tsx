@@ -1,5 +1,5 @@
 import { Drawer, Group, Tabs } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowDownFat, iconClose } from "@surrealdb/ui";
 import { useState } from "react";
 import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
 import { ActionButton } from "~/components/ActionButton";
@@ -8,7 +8,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudOrganization } from "~/types";
-import { iconArrowDownFat, iconClose } from "~/util/icons";
 import { ConfigurationStorage } from "../UpgradeDrawer/configs/storage";
 import { ConfigurationInstanceType } from "../UpgradeDrawer/configs/type";
 import { ConfigurationNodes } from "./configs/nodes";

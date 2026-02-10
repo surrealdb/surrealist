@@ -9,7 +9,7 @@ import {
 	ScrollArea,
 	Text,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck, iconCopy } from "@surrealdb/ui";
 import clsx from "clsx";
 import { type ReactNode, useMemo } from "react";
 import { useIsLight, useTheme } from "~/hooks/theme";
@@ -17,7 +17,6 @@ import { useConfigStore } from "~/stores/config";
 import { dedent } from "~/util/dedent";
 import { attr } from "~/util/helpers";
 import { renderHighlighting } from "~/util/highlighting";
-import { iconCheck, iconCopy } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface CodeProps extends CodePreviewOptions {

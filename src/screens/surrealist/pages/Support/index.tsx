@@ -12,7 +12,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconPlus, iconSearch } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
@@ -30,7 +30,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { iconPlus, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../Overview/content/cloud";
 import { ConversationCard } from "./ConversationCard";

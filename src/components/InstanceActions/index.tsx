@@ -1,5 +1,13 @@
 import { Menu } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconBug,
+	iconDelete,
+	iconEdit,
+	iconOrganization,
+	iconPause,
+	iconPlay,
+} from "@surrealdb/ui";
 import { PropsWithChildren, useMemo } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
@@ -10,7 +18,6 @@ import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconBug, iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { openResourcesLockedModal } from "../App/modals/resources-locked";
 

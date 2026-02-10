@@ -1,6 +1,6 @@
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconOpen, iconPlus, iconVariable } from "@surrealdb/ui";
 import { type ChangeEvent, memo, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { useImmer } from "use-immer";
@@ -20,7 +20,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { SchemaParameter } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconChevronRight, iconOpen, iconPlus, iconVariable } from "~/util/icons";
 import { buildParameterDefinition, syncConnectionSchema } from "~/util/schema";
 import { ParameterEditorPanel } from "../ParameterEditorPanel";
 import { ParameterPropertiesPanel } from "../ParameterPropertiesPanel";

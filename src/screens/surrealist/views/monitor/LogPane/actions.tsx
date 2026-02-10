@@ -1,9 +1,8 @@
 import { Group, Select, TextInput } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronDown, iconClock, iconRefresh, iconSearch } from "@surrealdb/ui";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { MetricsDuration } from "~/types";
-import { iconChevronDown, iconClock, iconRefresh, iconSearch } from "~/util/icons";
 import { MonitorLogOptions } from "../helpers";
 
 export interface LogActionsProps {

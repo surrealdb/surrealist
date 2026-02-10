@@ -1,5 +1,13 @@
 import { Avatar, Badge, Box, Button, Group, Menu, Paper, Stack, Table, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconAccountPlus,
+	iconClose,
+	iconDelete,
+	iconDotsVertical,
+	iconExitToAp,
+	iconServerSecure,
+} from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import {
@@ -23,14 +31,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudMember } from "~/types";
 import { showInfo } from "~/util/helpers";
-import {
-	iconAccountPlus,
-	iconClose,
-	iconDelete,
-	iconDotsVertical,
-	iconExitToAp,
-	iconServerSecure,
-} from "~/util/icons";
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 

@@ -1,8 +1,7 @@
 import { Box, BoxProps, Button, Image, Paper, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight } from "@surrealdb/ui";
 import { PropsWithChildren } from "react";
 import glow from "~/assets/images/glow.webp";
-import { iconChevronRight } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface StartCloudProps extends BoxProps {

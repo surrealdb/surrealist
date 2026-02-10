@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose } from "@surrealdb/ui";
 import { type MouseEvent, useMemo } from "react";
 import { isDesktop } from "~/adapter";
 import cloudUrl from "~/assets/images/icons/cloud.webp";
@@ -7,7 +7,6 @@ import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useCloudStore } from "~/stores/cloud";
 import { useInterfaceStore } from "~/stores/interface";
-import { iconClose } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export function CloudUpdateRequiredDialog() {

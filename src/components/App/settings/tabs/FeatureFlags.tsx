@@ -1,12 +1,11 @@
 import { Group, ScrollArea, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconReset, iconSearch } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Spacer } from "~/components/Spacer";
 import { featureFlags, schema, useFeatureFlags } from "~/util/feature-flags";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconReset, iconSearch } from "~/util/icons";
 
 export function FeatureFlagsTab() {
 	const [flags, setFlags] = useFeatureFlags();

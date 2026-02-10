@@ -1,11 +1,10 @@
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose } from "@surrealdb/ui";
 import type { MouseEvent } from "react";
 import cloudUrl from "~/assets/images/icons/cloud.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import { iconClose } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export function CloudExpiredDialog() {

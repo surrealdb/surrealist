@@ -1,9 +1,8 @@
 import { Checkbox, Group, Indicator, Menu, Select, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronDown, iconClock, iconFilter } from "@surrealdb/ui";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { MetricsDuration } from "~/types";
-import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
 import { MonitorMetricOptions } from "../helpers";
 
 export interface MetricActionsProps {

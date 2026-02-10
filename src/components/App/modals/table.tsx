@@ -9,7 +9,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconPlus, iconRelation, iconSearch, iconTable } from "@surrealdb/ui";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
@@ -23,7 +23,6 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { type SchemaMode, TableVariant } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 

@@ -11,7 +11,7 @@ import {
 	Text,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowLeft, iconOpen } from "@surrealdb/ui";
 import TurndownService from "turndown";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
@@ -21,7 +21,6 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { formatRelativeDate } from "~/util/helpers";
-import { iconArrowLeft, iconOpen } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface ArticlePageProps {

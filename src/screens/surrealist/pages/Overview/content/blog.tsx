@@ -1,11 +1,10 @@
 import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowLeft } from "@surrealdb/ui";
 import { format } from "date-fns";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { NewsPost } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
-import { iconArrowLeft } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
 

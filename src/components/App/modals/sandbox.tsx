@@ -1,5 +1,5 @@
 import { Button, Divider, Image, Modal, Paper, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconClose } from "@surrealdb/ui";
 import { useEffect } from "react";
 import banner from "~/assets/images/sandbox.webp";
 import { ActionButton } from "~/components/ActionButton";
@@ -7,7 +7,6 @@ import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useOnboarding } from "~/hooks/onboarding";
 import { useConnectionAndView } from "~/hooks/routing";
-import { iconChevronRight, iconClose } from "~/util/icons";
 
 export function SandboxModal() {
 	const [isOpen, openHandle] = useBoolean();

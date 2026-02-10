@@ -1,6 +1,6 @@
 import { Box, Button, Group, Menu, Modal, Paper, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconCog, iconExitToAp, iconOrganization } from "@surrealdb/ui";
 import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";
 import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
@@ -11,7 +11,6 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconChevronRight, iconCog, iconExitToAp, iconOrganization } from "~/util/icons";
 import { AccountAvatar } from "../AccountAvatar";
 import { Form } from "../Form";
 import { PrimaryTitle } from "../PrimaryTitle";

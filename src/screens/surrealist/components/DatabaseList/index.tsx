@@ -8,7 +8,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose, iconDatabase, iconPlus } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
@@ -23,7 +23,6 @@ import { openCreateDatabaseModal } from "~/modals/create-database";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
-import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/language";
 import { activateDatabase, executeQuery } from "../../connection/connection";
 import classes from "./style.module.scss";

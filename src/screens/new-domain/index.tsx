@@ -1,5 +1,5 @@
 import { Alert, Box, Button, Divider, Image, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowUpRight, iconDownload } from "@surrealdb/ui";
 import { useState } from "react";
 import { adapter } from "~/adapter";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
@@ -13,7 +13,6 @@ import { JSON_FILTER } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { backupConfig } from "~/util/config";
-import { iconArrowUpRight, iconDownload } from "~/util/icons";
 
 export function NewDomainScreen() {
 	const isLight = useIsLight();

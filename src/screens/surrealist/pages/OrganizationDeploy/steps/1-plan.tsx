@@ -1,5 +1,5 @@
 import { Box, Button, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowUpRight } from "@surrealdb/ui";
 import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
 import { isInstancePlan } from "~/cloud/helpers";
@@ -7,7 +7,6 @@ import { PricingConfigCloud, useCloudPricingQuery } from "~/cloud/queries/pricin
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { PricingCard } from "~/screens/surrealist/components/PricingCard";
-import { iconArrowUpRight } from "~/util/icons";
 import { StepProps } from "../types";
 
 export function PlanStep({ organisation, instances, setDetails, setStep }: StepProps) {

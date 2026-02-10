@@ -19,7 +19,7 @@ import {
 } from "@mantine/core";
 import { clamp, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCancel, iconCheck } from "@surrealdb/ui";
 import clsx from "clsx";
 import {
 	type FocusEvent,
@@ -34,7 +34,6 @@ import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight, useTheme } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
-import { iconCancel, iconCheck } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
 
 export interface CodeInputProps

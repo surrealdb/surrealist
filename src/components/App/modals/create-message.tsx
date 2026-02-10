@@ -13,7 +13,15 @@ import {
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconChat,
+	iconComment,
+	iconCursor,
+	iconHelp,
+	iconTag,
+	iconWarning,
+} from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useConversationCreateMutation, useCreateTicketMutation } from "~/cloud/mutations/context";
@@ -27,7 +35,6 @@ import { SALES_ENQUIRY_TAG } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
 import { IntercomTicketTypeAttribute } from "~/types";
-import { iconChat, iconComment, iconCursor, iconHelp, iconTag, iconWarning } from "~/util/icons";
 
 const CONVERSATION_TYPES = [
 	{

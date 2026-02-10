@@ -9,7 +9,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconDownload } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { toggle } from "radash";
 import { useState } from "react";
@@ -26,7 +26,6 @@ import { useStable } from "~/hooks/stable";
 import { requestDatabaseExport } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification, showInfo, slugify } from "~/util/helpers";
-import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 export type ExportOptions = BaseExportOptions & { tables: string[] };

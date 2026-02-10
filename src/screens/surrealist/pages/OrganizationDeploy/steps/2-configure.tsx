@@ -1,9 +1,8 @@
 import { Alert, AlertProps, Box, Button, Divider, Group, SimpleGrid, Stack } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconWarning } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { EstimatedCost } from "~/components/EstimatedCost";
 import { Spacer } from "~/components/Spacer";
-import { iconChevronRight, iconWarning } from "~/util/icons";
 import { ClusterOptionsSection } from "../sections/cluster";
 import { DataOptionsSection } from "../sections/data-opts";
 import { DeploymentSection } from "../sections/instance";

@@ -1,6 +1,16 @@
 import { Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconAPI,
+	iconChevronLeft,
+	iconDelete,
+	iconPin,
+	iconPinOff,
+	iconPlus,
+	iconReset,
+	iconSearch,
+} from "@surrealdb/ui";
 import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
 import { sort } from "radash";
 import { useMemo } from "react";
@@ -23,16 +33,6 @@ import { useInterfaceStore } from "~/stores/interface";
 import { TableVariant } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { fuzzyMultiMatch } from "~/util/helpers";
-import {
-	iconAPI,
-	iconChevronLeft,
-	iconDelete,
-	iconPin,
-	iconPinOff,
-	iconPlus,
-	iconReset,
-	iconSearch,
-} from "~/util/icons";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";
 import classes from "./style.module.scss";
 

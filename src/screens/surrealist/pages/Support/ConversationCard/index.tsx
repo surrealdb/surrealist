@@ -1,9 +1,8 @@
 import { Group, Indicator, Stack, Text, ThemeIcon } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChat, iconTag } from "@surrealdb/ui";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { IntercomConversation } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
-import { iconChat, iconTag } from "~/util/icons";
 
 export interface ConversationCardProps {
 	conversation: IntercomConversation;

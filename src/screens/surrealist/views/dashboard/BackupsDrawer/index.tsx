@@ -1,5 +1,5 @@
 import { Box, Button, Divider, Drawer, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose, iconHistory } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { navigate } from "wouter/use-browser-location";
@@ -9,7 +9,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance } from "~/types";
-import { iconClose, iconHistory } from "~/util/icons";
 import { InstanceBackup } from "./InstanceBackup";
 import classes from "./style.module.scss";
 

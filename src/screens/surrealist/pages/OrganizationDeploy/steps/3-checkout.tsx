@@ -12,7 +12,19 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconArrowUpRight,
+	iconCreditCard,
+	iconDatabase,
+	iconHistory,
+	iconMarker,
+	iconMemory,
+	iconPackageClosed,
+	iconQuery,
+	iconRelation,
+	iconTag,
+} from "@surrealdb/ui";
 import { ChangeEvent } from "react";
 import { navigate } from "wouter/use-browser-location";
 import glow from "~/assets/images/glow.webp";
@@ -41,18 +53,6 @@ import { getTypeCategoryName } from "~/util/cloud";
 import { SAMPLE_QUERIES } from "~/util/dataset";
 import { createBaseQuery } from "~/util/defaults";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
-import {
-	iconArrowUpRight,
-	iconCreditCard,
-	iconDatabase,
-	iconHistory,
-	iconMarker,
-	iconMemory,
-	iconPackageClosed,
-	iconQuery,
-	iconRelation,
-	iconTag,
-} from "~/util/icons";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { STARTING_DATA } from "../constants";
 import classes from "../style.module.scss";

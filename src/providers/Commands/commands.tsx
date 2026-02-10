@@ -1,22 +1,3 @@
-import { invoke } from "@tauri-apps/api/core";
-import { dash } from "radash";
-import { useMemo } from "react";
-import { adapter, isDesktop } from "~/adapter";
-import type { DesktopAdapter } from "~/adapter/desktop";
-import { DRIVERS, SANDBOX } from "~/constants";
-import { useAvailableViews, useConnectionList } from "~/hooks/connection";
-import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
-import { openConnectionDiagnosticsModal } from "~/modals/connection-diagnostics";
-import { showNodeStatus } from "~/modals/node-status";
-import {
-	closeConnection,
-	openConnection,
-	resetConnection,
-} from "~/screens/surrealist/connection/connection";
-import { useConfigStore } from "~/stores/config";
-import { useDatabaseStore } from "~/stores/database";
-import { featureFlags } from "~/util/feature-flags";
-import { optional } from "~/util/helpers";
 import {
 	iconAccountPlus,
 	iconAccountSecure,
@@ -63,7 +44,26 @@ import {
 	iconTune,
 	iconUpload,
 	iconWrench,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { invoke } from "@tauri-apps/api/core";
+import { dash } from "radash";
+import { useMemo } from "react";
+import { adapter, isDesktop } from "~/adapter";
+import type { DesktopAdapter } from "~/adapter/desktop";
+import { DRIVERS, SANDBOX } from "~/constants";
+import { useAvailableViews, useConnectionList } from "~/hooks/connection";
+import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
+import { openConnectionDiagnosticsModal } from "~/modals/connection-diagnostics";
+import { showNodeStatus } from "~/modals/node-status";
+import {
+	closeConnection,
+	openConnection,
+	resetConnection,
+} from "~/screens/surrealist/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useDatabaseStore } from "~/stores/database";
+import { featureFlags } from "~/util/feature-flags";
+import { optional } from "~/util/helpers";
 import type { IntentPayload, IntentType } from "~/util/intents";
 import {
 	FlagSetController,

@@ -16,7 +16,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowLeft, iconArrowUpRight, iconClose } from "@surrealdb/ui";
 import { format } from "date-fns";
 import dayjs from "dayjs";
 import { Fragment, useState } from "react";
@@ -29,7 +29,6 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { tagEvent } from "~/util/analytics";
-import { iconArrowLeft, iconArrowUpRight, iconClose } from "~/util/icons";
 import classes from "../style.module.scss";
 
 interface NewsItem {

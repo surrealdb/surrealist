@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose, iconPlus, iconWarning } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { Updater } from "use-immer";
@@ -20,7 +20,6 @@ import { AUTH_MODES, SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { AuthMode, Connection } from "~/types";
 import { fastParseJwt } from "~/util/helpers";
-import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
 import { PrimaryTitle } from "../PrimaryTitle";
 

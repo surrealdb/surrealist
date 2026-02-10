@@ -1,6 +1,15 @@
 import { Center, Drawer, Group, Paper, Tabs, Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconArrowLeftFat,
+	iconClose,
+	iconDelete,
+	iconJSON,
+	iconRefresh,
+	iconSearch,
+	iconTransfer,
+} from "@surrealdb/ui";
 import { useEffect, useState } from "react";
 import { RecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
@@ -14,15 +23,6 @@ import { useStable } from "~/hooks/stable";
 import { useValueValidator } from "~/hooks/surrealql";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
-import {
-	iconArrowLeftFat,
-	iconClose,
-	iconDelete,
-	iconJSON,
-	iconRefresh,
-	iconSearch,
-	iconTransfer,
-} from "~/util/icons";
 import { useConfirmation } from "../Confirmation";
 import classes from "./style.module.scss";
 import { ContentTab } from "./tabs/content";

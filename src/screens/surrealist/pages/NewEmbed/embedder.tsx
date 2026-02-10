@@ -9,7 +9,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconHelp } from "@surrealdb/ui";
 import { type PropsWithChildren, type ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
 import { useImmer } from "use-immer";
 import { CodeInput } from "~/components/Inputs";
@@ -17,7 +17,6 @@ import { Spacer } from "~/components/Spacer";
 import { ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
 import type { ColorScheme, Orientation, ResultMode } from "~/types";
 import { isDevelopment, isProduction } from "~/util/environment";
-import { iconHelp } from "~/util/icons";
 
 export const DEFAULT_STATE: EmbedState = {
 	dataset: "none",

@@ -11,12 +11,11 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconRefresh, iconReset, iconTransfer } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { MigrationResourceType } from "~/types";
-import { iconRefresh, iconReset, iconTransfer } from "~/util/icons";
 import { DiagnosticResource, ResourceMap } from "../MigrationView/organizer";
 import { resourceTypeMeta } from "../MigrationView/types";
 import { UnresolvedBadge } from "../MigrationView/unresolved";

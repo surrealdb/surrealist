@@ -1,7 +1,7 @@
 import { EditorView } from "@codemirror/view";
 import { Alert, Badge, Box, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconTune, iconWarning } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
 import type { Updater } from "use-immer";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -11,7 +11,6 @@ import { surqlTableCompletion } from "~/editor/tables";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
 import { useStable } from "~/hooks/stable";
 import type { SchemaParameter } from "~/types";
-import { iconTune, iconWarning } from "~/util/icons";
 
 export interface ParameterEditorPanelProps {
 	details: SchemaParameter;

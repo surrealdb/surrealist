@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
 import {
 	iconAPI,
 	iconAuth,
@@ -9,7 +7,9 @@ import {
 	iconIndex,
 	iconJSON,
 	iconTable,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { ReactNode } from "react";
+import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
 
 type ResourceTypeMeta = {
 	label: string;

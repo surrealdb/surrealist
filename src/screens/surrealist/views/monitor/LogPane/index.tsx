@@ -1,6 +1,6 @@
 import { Box, BoxProps, Center, Group, Loader, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconHelp, iconList } from "@surrealdb/ui";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { capitalize } from "radash";
 import { useEffect, useMemo, useRef } from "react";
@@ -15,7 +15,6 @@ import { useConnection } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import { CloudLogLine } from "~/types";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconChevronRight, iconHelp, iconList } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
 import { LogActivityChart } from "./chart";

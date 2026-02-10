@@ -1,7 +1,17 @@
 import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { surrealql } from "@surrealdb/codemirror";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconBroadcastOff,
+	iconBroadcastOn,
+	iconClose,
+	iconCopy,
+	iconDelete,
+	iconHammer,
+	iconHelp,
+	iconPlus,
+} from "@surrealdb/ui";
 import { useContextMenu } from "mantine-contextmenu";
 import { useEffect, useMemo, useState } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -14,16 +24,6 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import type { LiveMessage } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import {
-	iconBroadcastOff,
-	iconBroadcastOn,
-	iconClose,
-	iconCopy,
-	iconDelete,
-	iconHammer,
-	iconHelp,
-	iconPlus,
-} from "~/util/icons";
 import { attemptFormat, type PreviewProps } from ".";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {

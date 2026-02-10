@@ -11,7 +11,7 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "@surrealdb/ui";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
 import { SANDBOX } from "~/constants";
@@ -23,7 +23,6 @@ import { Connection } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getConnectionVariant } from "~/util/connection";
 import { newId, ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import classes from "../style.module.scss";
 

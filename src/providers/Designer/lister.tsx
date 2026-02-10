@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCircle, iconClose, iconPlus } from "@surrealdb/ui";
 import { klona } from "klona";
 import { replace } from "radash";
 import { type ReactNode, useState } from "react";
@@ -8,7 +8,6 @@ import { Form } from "~/components/Form";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
-import { iconCircle, iconClose, iconPlus } from "~/util/icons";
 
 export interface ListerProps<T> {
 	name: string;

@@ -1,13 +1,12 @@
 import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose } from "@surrealdb/ui";
 import { useRef, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Sidekick, SidekickHandle } from "~/components/Sidekick";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { iconClose } from "~/util/icons";
 
 export function SidekickDrawer() {
 	const sidekickRef = useRef<SidekickHandle>(null);

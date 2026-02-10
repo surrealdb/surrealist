@@ -1,9 +1,8 @@
 import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight } from "@surrealdb/ui";
 import { PropsWithChildren, useRef } from "react";
 import { Link } from "wouter";
 import { Faint } from "~/components/Faint";
-import { iconChevronRight } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface StartCreatorProps extends BoxProps {

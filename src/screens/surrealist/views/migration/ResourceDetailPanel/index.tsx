@@ -10,7 +10,16 @@ import {
 	Text,
 	Transition,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconArrowLeft,
+	iconArrowUpRight,
+	iconBook,
+	iconCheck,
+	iconChevronLeft,
+	iconClose,
+	iconDownload,
+} from "@surrealdb/ui";
 import { useMemo } from "react";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
@@ -21,15 +30,6 @@ import { SURQL_FILTER } from "~/constants";
 import { useIsLight } from "~/hooks/theme";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { MigrationKind, MigrationResourceType, MigrationSeverity } from "~/types";
-import {
-	iconArrowLeft,
-	iconArrowUpRight,
-	iconBook,
-	iconCheck,
-	iconChevronLeft,
-	iconClose,
-	iconDownload,
-} from "~/util/icons";
 import { kindMeta } from "../MigrationView/kinds";
 import { DiagnosticEntry, DiagnosticResource } from "../MigrationView/organizer";
 import { severityMeta } from "../MigrationView/severities";

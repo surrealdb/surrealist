@@ -1,9 +1,8 @@
 import { Paper, ScrollArea, Stack } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChart, iconChevronRight } from "@surrealdb/ui";
 import { ActionButton } from "~/components/ActionButton";
 import { ContentPane } from "~/components/Pane";
 import { CloudMetrics } from "~/types";
-import { iconChart, iconChevronRight } from "~/util/icons";
 import { MonitorContentProps, MonitorMetricOptions } from "../helpers";
 import { MetricActions } from "./actions";
 import { ConnectionsPanel } from "./metrics/connections";

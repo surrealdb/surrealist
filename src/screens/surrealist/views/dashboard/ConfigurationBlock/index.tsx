@@ -1,14 +1,6 @@
 import { Button, Paper, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
-import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { PropertyValue } from "~/components/PropertyValue";
-import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance, CloudOrganization } from "~/types";
-import { tagEvent } from "~/util/analytics";
-import { getTypeCategoryName } from "~/util/cloud";
-import { formatMemory, plural } from "~/util/helpers";
 import {
+	Icon,
 	iconArrowDownFat,
 	iconDatabase,
 	iconHistory,
@@ -18,7 +10,15 @@ import {
 	iconQuery,
 	iconRelation,
 	iconTag,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
+import { PropertyValue } from "~/components/PropertyValue";
+import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
+import { CloudInstance, CloudOrganization } from "~/types";
+import { tagEvent } from "~/util/analytics";
+import { getTypeCategoryName } from "~/util/cloud";
+import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;

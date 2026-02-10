@@ -8,6 +8,7 @@ import {
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
+import { iconArrowLeft, iconCog, iconHelp, iconSearch } from "@surrealdb/ui";
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
 import iconUrl from "~/assets/images/icon.webp";
@@ -25,7 +26,6 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
-import { iconArrowLeft, iconCog, iconHelp, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 

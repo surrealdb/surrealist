@@ -1,5 +1,5 @@
 import { Box, Divider, Flex, Group, Image, Stack, Text, Transition } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChat, iconChevronLeft, iconList, iconPin, iconPinOff } from "@surrealdb/ui";
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
 import glowImg from "~/assets/images/glow.webp";
 import sidekickImg from "~/assets/images/icons/sidekick.webp";
@@ -9,7 +9,6 @@ import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useSidekickStore } from "~/stores/sidekick";
-import { iconChat, iconChevronLeft, iconList, iconPin, iconPinOff } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
 import { SidekickChat } from "./chat";

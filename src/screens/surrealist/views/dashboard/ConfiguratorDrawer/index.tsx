@@ -1,12 +1,11 @@
 import { Drawer, Group, Tabs } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose, iconTune } from "@surrealdb/ui";
 import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance } from "~/types";
-import { iconClose, iconTune } from "~/util/icons";
 import { ConfigurationCapabilities } from "./configs/capabilities";
 import { ImportExport } from "./configs/import-export";
 import { ConfigurationVersion } from "./configs/version";

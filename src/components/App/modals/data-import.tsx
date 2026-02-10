@@ -10,7 +10,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconDownload, iconFile } from "@surrealdb/ui";
 import papaparse, { LocalFile } from "papaparse";
 import { cluster, isArray, isObject, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
@@ -29,7 +29,6 @@ import { useIsLight } from "~/hooks/theme";
 import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification, showInfo, showWarning } from "~/util/helpers";
-import { iconDownload, iconFile } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 type DataFileFormat = "csv" | "json" | "ndjson";

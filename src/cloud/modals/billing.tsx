@@ -1,6 +1,6 @@
 import { Alert, Button, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconAccount } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { shake } from "radash";
 import { useState } from "react";
@@ -12,7 +12,6 @@ import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
-import { iconAccount } from "~/util/icons";
 import { useCloudBillingQuery } from "../queries/billing";
 
 export async function openBillingDetails(organization: CloudOrganization) {

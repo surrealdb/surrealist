@@ -1,6 +1,6 @@
 import { shutdown } from "@intercom/messenger-js-sdk";
 import { showNotification } from "@mantine/notifications";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck } from "@surrealdb/ui";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
@@ -9,7 +9,6 @@ import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { fastParseJwt, showErrorNotification } from "~/util/helpers";
-import { iconCheck } from "~/util/icons";
 import {
 	AWS_MARKETPLACE_KEY,
 	INVITATION_KEY,

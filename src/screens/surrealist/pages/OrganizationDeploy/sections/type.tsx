@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 
 import { closeModal, openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowLeft, iconArrowUpRight } from "@surrealdb/ui";
 import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
 import { INSTANCE_PLAN_ARCHITECTURES, INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
@@ -23,7 +23,6 @@ import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory, optional } from "~/util/helpers";
-import { iconArrowLeft, iconArrowUpRight } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
 export function InstanceTypeSection({ organisation, details, setDetails }: DeploySectionProps) {

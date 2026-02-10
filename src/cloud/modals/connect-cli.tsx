@@ -1,13 +1,12 @@
 import { Group, Skeleton, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconConsole } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { CodePreview } from "~/components/CodePreview";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import type { CloudInstance } from "~/types";
-import { iconConsole } from "~/util/icons";
 import { useCloudAuthTokenMutation } from "../mutations/auth";
 
 export function openConnectCli(instance: CloudInstance) {

@@ -1,5 +1,15 @@
 import { Alert, Box, Button, Divider, Group, ScrollArea, Stack, Tabs, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconChat,
+	iconChevronRight,
+	iconCog,
+	iconCreditCard,
+	iconDollar,
+	iconOrganization,
+	iconProgressClock,
+	iconServer,
+} from "@surrealdb/ui";
 import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import {
@@ -18,16 +28,6 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
-import {
-	iconChat,
-	iconChevronRight,
-	iconCog,
-	iconCreditCard,
-	iconDollar,
-	iconOrganization,
-	iconProgressClock,
-	iconServer,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";

@@ -10,7 +10,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconClock, iconHelp, iconWarning } from "@surrealdb/ui";
 import { add, formatDistance } from "date-fns";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
@@ -18,7 +18,6 @@ import { useUpdateInstanceStorageMutation } from "~/cloud/mutations/storage";
 import { Link } from "~/components/Link";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
-import { iconChevronRight, iconClock, iconHelp, iconWarning } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface ConfigurationStorageProps {

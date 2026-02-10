@@ -1,7 +1,7 @@
 import { Button, Combobox, Group, Paper, Stack, TagsInput, Text, useCombobox } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose, iconPlus, iconSearch, iconTable } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -12,7 +12,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconClose, iconPlus, iconSearch, iconTable } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 export async function openGraphLabelEditorModal(callback: () => void) {

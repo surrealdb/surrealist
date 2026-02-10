@@ -1,14 +1,14 @@
 import { Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
-import { capitalize } from "radash";
-import { Fragment } from "react/jsx-runtime";
-import { adapter } from "~/adapter";
 import {
+	Icon,
 	iconCommand,
 	iconKeyboardControl,
 	iconKeyboardOption,
 	iconKeyboardShift,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { capitalize } from "radash";
+import { Fragment } from "react/jsx-runtime";
+import { adapter } from "~/adapter";
 
 const MODIFIER_KEYS = ["shift", "alt", "meta", "mod", "ctrl"];
 

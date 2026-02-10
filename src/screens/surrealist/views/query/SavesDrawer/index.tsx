@@ -10,7 +10,16 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconClose,
+	iconDelete,
+	iconEdit,
+	iconPlus,
+	iconQuery,
+	iconSearch,
+	iconText,
+} from "@surrealdb/ui";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -24,15 +33,6 @@ import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
-import {
-	iconClose,
-	iconDelete,
-	iconEdit,
-	iconPlus,
-	iconQuery,
-	iconSearch,
-	iconText,
-} from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface SavesDrawerProps {

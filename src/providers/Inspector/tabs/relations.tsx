@@ -1,9 +1,8 @@
 import { Group, Paper, ScrollArea, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCircle } from "@surrealdb/ui";
 import type { RecordId } from "surrealdb";
 import { RecordLink } from "~/components/RecordLink";
 import { useIsLight } from "~/hooks/theme";
-import { iconCircle } from "~/util/icons";
 
 interface RelationsListProps {
 	name: string;

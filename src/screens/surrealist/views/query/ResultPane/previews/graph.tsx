@@ -12,7 +12,7 @@ import {
 	Text,
 } from "@mantine/core";
 import { indexParallelEdgesIndex } from "@sigma/edge-curve";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconBraces, iconFilter, iconRelation, iconTag } from "@surrealdb/ui";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
@@ -34,7 +34,6 @@ import { openGraphLabelEditorModal } from "~/modals/graph-labels";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { plural } from "~/util/helpers";
-import { iconBraces, iconFilter, iconRelation, iconTag } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import classes from "../style.module.scss";
 import { type PreviewProps } from ".";

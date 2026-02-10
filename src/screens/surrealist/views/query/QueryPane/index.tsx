@@ -4,7 +4,16 @@ import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap, scrollPastEnd } from "@codemirror/view";
 import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconAutoFix,
+	iconChevronRight,
+	iconDollar,
+	iconServer,
+	iconStar,
+	iconText,
+	iconWarning,
+} from "@surrealdb/ui";
 import { objectify, trim } from "radash";
 import { useMemo, useRef, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
@@ -34,15 +43,6 @@ import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { showErrorNotification, tryParseParams } from "~/util/helpers";
-import {
-	iconAutoFix,
-	iconChevronRight,
-	iconDollar,
-	iconServer,
-	iconStar,
-	iconText,
-	iconWarning,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { parseVariables } from "~/util/language";
 import { readQuery, writeQuery } from "../QueryView/strategy";

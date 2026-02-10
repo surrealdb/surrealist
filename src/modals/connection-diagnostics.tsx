@@ -14,7 +14,17 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconArrowLeft,
+	iconAuth,
+	iconDownload,
+	iconFilter,
+	iconQuery,
+	iconServer,
+	iconTransfer,
+	iconWrench,
+} from "@surrealdb/ui";
 import { formatDistanceToNow } from "date-fns";
 import { FC, memo, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
@@ -28,16 +38,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { DiagnosticWithTime, useDatabaseStore } from "~/stores/database";
 import { showInfo } from "~/util/helpers";
-import {
-	iconArrowLeft,
-	iconAuth,
-	iconDownload,
-	iconFilter,
-	iconQuery,
-	iconServer,
-	iconTransfer,
-	iconWrench,
-} from "~/util/icons";
 
 interface DiagnosticEntry {
 	id: string;

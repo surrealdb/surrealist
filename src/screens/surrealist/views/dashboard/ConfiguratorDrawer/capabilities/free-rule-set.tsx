@@ -10,21 +10,21 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
-import { useEffect, useMemo, useState } from "react";
-import { Label } from "~/components/Label";
-import { Spacer } from "~/components/Spacer";
-import { useBoolean } from "~/hooks/boolean";
-import { useIsLight } from "~/hooks/theme";
-import { plural } from "~/util/helpers";
 import {
+	Icon,
 	iconCancel,
 	iconCheck,
 	iconChevronDown,
 	iconChevronUp,
 	iconHelp,
 	iconWrench,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { useEffect, useMemo, useState } from "react";
+import { Label } from "~/components/Label";
+import { Spacer } from "~/components/Spacer";
+import { useBoolean } from "~/hooks/boolean";
+import { useIsLight } from "~/hooks/theme";
+import { plural } from "~/util/helpers";
 import {
 	BASE_STATUS,
 	BaseValue,

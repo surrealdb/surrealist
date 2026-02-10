@@ -1,10 +1,9 @@
 import { Alert, Box, Button, Group } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconOpen, iconReset } from "@surrealdb/ui";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { openSurrealChangelog } from "~/util/cloud";
-import { iconOpen, iconReset } from "~/util/icons";
 
 export interface UpdateBlockProps {
 	instance: CloudInstance;

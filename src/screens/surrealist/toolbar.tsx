@@ -11,7 +11,15 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconCheck,
+	iconChevronRight,
+	iconCloud,
+	iconReset,
+	iconStar,
+	iconTable,
+} from "@surrealdb/ui";
 import { useEffect, useState } from "react";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
@@ -50,14 +58,6 @@ import { CloudDeployConfig } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
-import {
-	iconCheck,
-	iconChevronRight,
-	iconCloud,
-	iconReset,
-	iconStar,
-	iconTable,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { generateRandomName } from "~/util/random";
 import { ConnectionStatus } from "./components/ConnectionStatus";

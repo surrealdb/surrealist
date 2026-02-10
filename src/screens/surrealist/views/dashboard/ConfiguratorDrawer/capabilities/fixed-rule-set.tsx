@@ -10,14 +10,20 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconCancel,
+	iconCheck,
+	iconChevronDown,
+	iconChevronUp,
+	iconHelp,
+} from "@surrealdb/ui";
 import { useEffect, useState } from "react";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
 import { Selectable } from "~/types";
 import { plural } from "~/util/helpers";
-import { iconCancel, iconCheck, iconChevronDown, iconChevronUp, iconHelp } from "~/util/icons";
 
 import {
 	BASE_STATUS,

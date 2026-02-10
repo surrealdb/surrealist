@@ -10,7 +10,7 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconDownload, iconReset, iconTransfer } from "@surrealdb/ui";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
@@ -24,7 +24,6 @@ import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showInfo } from "~/util/helpers";
-import { iconDownload, iconReset, iconTransfer } from "~/util/icons";
 import { ResourceDetailPanel } from "../ResourceDetailPanel";
 import { ResourceOverviewPanel } from "../ResourceOverviewPanel";
 import { DiagnosticResource, organizeDiagnostics, ResourceMap } from "./organizer";

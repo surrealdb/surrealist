@@ -1,5 +1,16 @@
 import { Box, Button, Indicator, Loader, Menu, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconClose,
+	iconDownload,
+	iconEdit,
+	iconRefresh,
+	iconRelation,
+	iconReset,
+	iconSandbox,
+	iconUpload,
+	iconWrench,
+} from "@surrealdb/ui";
 import { useState } from "react";
 import { SANDBOX } from "~/constants";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
@@ -10,17 +21,6 @@ import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnectionById } from "~/util/connection";
-import {
-	iconClose,
-	iconDownload,
-	iconEdit,
-	iconRefresh,
-	iconRelation,
-	iconReset,
-	iconSandbox,
-	iconUpload,
-	iconWrench,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";

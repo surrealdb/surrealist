@@ -1,5 +1,5 @@
 import { Box, Button, Center, Group, Loader, Paper, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconOpen, iconPlus } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
@@ -12,7 +12,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useIsLight } from "~/hooks/theme";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { iconOpen, iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../../Overview/content/cloud";
 import { TicketCard } from "../../Support/TicketCard";

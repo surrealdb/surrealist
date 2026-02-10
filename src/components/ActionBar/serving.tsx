@@ -1,4 +1,4 @@
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconConsole, iconPlay, iconStop } from "@surrealdb/ui";
 import { useEffect, useState } from "react";
 import { adapter } from "~/adapter";
 import { useIntent } from "~/hooks/routing";
@@ -8,7 +8,6 @@ import { useDatabaseStore } from "~/stores/database";
 import { tagEvent } from "~/util/analytics";
 import { getConnection } from "~/util/connection";
 import { isHostLocal } from "~/util/helpers";
-import { iconConsole, iconPlay, iconStop } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
 

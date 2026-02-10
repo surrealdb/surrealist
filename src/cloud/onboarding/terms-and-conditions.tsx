@@ -1,6 +1,6 @@
 import { Button, Checkbox, Group, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck } from "@surrealdb/ui";
 import { Fragment, useState } from "react";
 import glowUrl from "~/assets/images/gradient-glow.webp";
 import { Link } from "~/components/Link";
@@ -9,7 +9,6 @@ import { Spacer } from "~/components/Spacer";
 import { useCheckbox } from "~/hooks/events";
 import { useStable } from "~/hooks/stable";
 import { showErrorNotification } from "~/util/helpers";
-import { iconCheck } from "~/util/icons";
 import { fetchAPI } from "../api";
 import { invalidateSession } from "../api/auth";
 import classes from "../style.module.scss";

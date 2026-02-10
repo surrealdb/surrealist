@@ -10,7 +10,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCreditCard } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
 import { fetchAPI } from "~/cloud/api";
@@ -23,7 +23,6 @@ import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
 import { CloudCoupon } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconCreditCard } from "~/util/icons";
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 

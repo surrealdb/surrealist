@@ -1,12 +1,11 @@
 import { Box, Center, Divider, Group, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconTable } from "@surrealdb/ui";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { useSetting } from "~/hooks/config";
-import { iconTable } from "~/util/icons";
 import type { PreviewProps } from ".";
 
 export function TablePreview({ responses, selected }: PreviewProps) {

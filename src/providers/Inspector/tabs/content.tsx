@@ -1,13 +1,12 @@
 import { Alert, Paper } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconWarning } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { SaveBox } from "~/components/SaveBox";
 import { surqlLinting, surqlRecordLinks } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import type { SaveableHandle } from "~/hooks/save";
-import { iconWarning } from "~/util/icons";
 import { useInspector } from "..";
 
 export interface ContentTabProps {

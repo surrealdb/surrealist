@@ -1,6 +1,6 @@
 import { Badge, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCopy, iconDelete, iconPlus, iconSearch, iconVariable } from "@surrealdb/ui";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
@@ -9,7 +9,6 @@ import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";
 import type { SchemaParameter } from "~/types";
-import { iconCopy, iconDelete, iconPlus, iconSearch, iconVariable } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface ParametersPanelProps {

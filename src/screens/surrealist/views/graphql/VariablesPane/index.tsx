@@ -1,6 +1,6 @@
 import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconClose, iconDollar } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -11,7 +11,6 @@ import { useDebouncedFunction } from "~/hooks/debounce";
 import { useConnectionAndView } from "~/hooks/routing";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
-import { iconClose, iconDollar } from "~/util/icons";
 
 export interface VariablesPaneProps {
 	isValid: boolean;

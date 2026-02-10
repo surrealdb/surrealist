@@ -1,5 +1,5 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconBullhorn, iconIndex, iconJSON } from "@surrealdb/ui";
 import { Handle, Position } from "@xyflow/react";
 import {
 	createContext,
@@ -18,7 +18,6 @@ import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { GraphWarning } from "~/screens/surrealist/views/designer/TableGraphPane/helpers";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { getTableVariant } from "~/util/schema";
 import classes from "../style.module.scss";

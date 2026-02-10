@@ -1,5 +1,5 @@
 import { Box, Button, Checkbox, Group, MultiSelect, ScrollArea, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCheck, iconDownload, iconUpload } from "@surrealdb/ui";
 import { assign } from "radash";
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
@@ -10,7 +10,6 @@ import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { backupConfig } from "~/util/config";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconCheck, iconDownload, iconUpload } from "~/util/icons";
 import { applyMigrations } from "~/util/migrator";
 
 export function ManageDataTab() {

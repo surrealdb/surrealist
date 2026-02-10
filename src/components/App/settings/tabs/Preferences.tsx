@@ -1,11 +1,10 @@
 import { Box, Divider, Flex, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconSearch } from "@surrealdb/ui";
 import { Fragment, useMemo } from "react";
 import { PreferenceInput } from "~/components/Inputs/preference";
 import { Spacer } from "~/components/Spacer";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconSearch } from "~/util/icons";
 import { FlagSetController, Preference, useComputedPreferences } from "~/util/preferences";
 
 function isTallInput(preference: Preference) {

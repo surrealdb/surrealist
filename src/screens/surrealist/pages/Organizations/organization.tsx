@@ -10,7 +10,7 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconDotsVertical, iconExitToAp, iconWarning } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useMemo } from "react";
 import { isOrganisationRestricted, isOrganisationTerminated } from "~/cloud/helpers";
@@ -24,7 +24,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";
-import { iconDotsVertical, iconExitToAp, iconWarning } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface OrganizationTileProps extends BoxProps {
@@ -141,7 +140,6 @@ export function OrganizationTile({
 										<Icon
 											path={iconWarning}
 											size="sm"
-											left
 										/>
 									}
 								>

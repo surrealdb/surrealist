@@ -1,10 +1,9 @@
 import { Button, Checkbox, CheckboxProps, MantineColor, SimpleGrid } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCancel, iconCheck } from "@surrealdb/ui";
 import { ReactNode } from "react";
 import { CodeInput, CodeInputProps } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceCapabilities, Selectable } from "~/types";
-import { iconCancel, iconCheck } from "~/util/icons";
 
 export type CapabilityField = keyof CloudInstanceCapabilities;
 export type BaseValue = "allowed" | "denied" | "granular";

@@ -8,7 +8,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChart, iconChevronLeft, iconList } from "@surrealdb/ui";
 import { group } from "radash";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
@@ -17,7 +17,6 @@ import { ContentPane } from "~/components/Pane";
 import { MONITORS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { Monitor } from "~/types";
-import { iconChart, iconChevronLeft, iconList } from "~/util/icons";
 import classes from "./style.module.scss";
 
 interface ObservableEntryProps extends BoxProps, ElementProps<"button"> {

@@ -1,8 +1,7 @@
 import { Alert, Button, Group, Select, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconArrowDownFat, iconHelp } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { isDistributedPlan } from "~/cloud/helpers";
-import { iconArrowDownFat, iconHelp } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
 export function DataOptionsSection({

@@ -12,7 +12,15 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconCheck,
+	iconClose,
+	iconCopy,
+	iconDelete,
+	iconDesigner,
+	iconWarning,
+} from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { useState } from "react";
 import { escapeIdent } from "surrealdb";
@@ -29,14 +37,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import type { TableInfo } from "~/types";
-import {
-	iconCheck,
-	iconClose,
-	iconCopy,
-	iconDelete,
-	iconDesigner,
-	iconWarning,
-} from "~/util/icons";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";
 import { ChangefeedElement } from "./elements/changefeed";
 import { EventsElement } from "./elements/events";

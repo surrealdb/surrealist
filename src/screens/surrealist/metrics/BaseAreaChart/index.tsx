@@ -1,10 +1,9 @@
 import { AreaChart } from "@mantine/charts";
 import { Box, Group, Paper, Stack, StyleProp, Text, Tooltip } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconHelp } from "@surrealdb/ui";
 import { format } from "date-fns";
 import { computeMetricRange } from "~/cloud/helpers";
 import { CloudMetrics, MetricsDuration } from "~/types";
-import { iconHelp } from "~/util/icons";
 
 export interface BaseAreaChartProps {
 	title: string;

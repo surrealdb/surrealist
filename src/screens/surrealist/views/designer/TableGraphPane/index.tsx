@@ -12,7 +12,21 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconAPI,
+	iconChevronRight,
+	iconCog,
+	iconFullscreen,
+	iconHelp,
+	iconImage,
+	iconMagnifyMinus,
+	iconMagnifyPlus,
+	iconPlus,
+	iconRefresh,
+	iconRelation,
+	iconReset,
+} from "@surrealdb/ui";
 import {
 	Background,
 	type Edge,
@@ -68,20 +82,6 @@ import type {
 	TableInfo,
 } from "~/types";
 import { showInfo } from "~/util/helpers";
-import {
-	iconAPI,
-	iconChevronRight,
-	iconCog,
-	iconFullscreen,
-	iconHelp,
-	iconImage,
-	iconMagnifyMinus,
-	iconMagnifyPlus,
-	iconPlus,
-	iconRefresh,
-	iconRelation,
-	iconReset,
-} from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
 import {

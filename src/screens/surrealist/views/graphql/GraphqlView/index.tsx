@@ -1,6 +1,6 @@
 import type { EditorView } from "@codemirror/view";
 import { ActionIcon, Button, Center, Group, Paper, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconCursor, iconGraphql, iconOpen, iconWarning } from "@surrealdb/ui";
 import clsx from "clsx";
 import { memo, useMemo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -19,7 +19,6 @@ import { checkGraphqlSupport } from "~/screens/surrealist/connection/connection"
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { createBaseAuthentication } from "~/util/defaults";
-import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";

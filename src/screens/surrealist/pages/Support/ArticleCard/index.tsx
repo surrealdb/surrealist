@@ -1,10 +1,9 @@
 import { Group, Paper, Stack, Text } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconChevronRight } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { IntercomSupportArticle } from "~/types";
-import { iconChevronRight } from "~/util/icons";
 
 export interface ArticleCardProps {
 	article: IntercomSupportArticle;

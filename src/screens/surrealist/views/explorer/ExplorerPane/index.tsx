@@ -12,7 +12,18 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconChevronDown,
+	iconChevronRight,
+	iconCopy,
+	iconDelete,
+	iconFilter,
+	iconPlus,
+	iconRefresh,
+	iconServer,
+	iconTable,
+} from "@surrealdb/ui";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { type MouseEvent, useEffect, useLayoutEffect, useState } from "react";
@@ -38,17 +49,6 @@ import {
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { showInfo } from "~/util/helpers";
-import {
-	iconChevronDown,
-	iconChevronRight,
-	iconCopy,
-	iconDelete,
-	iconFilter,
-	iconPlus,
-	iconRefresh,
-	iconServer,
-	iconTable,
-} from "~/util/icons";
 import { getTableVariant } from "~/util/schema";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 import classes from "./style.module.scss";

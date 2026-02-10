@@ -1,7 +1,16 @@
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 import { Button, Center, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import {
+	Icon,
+	iconBroadcastOff,
+	iconCursor,
+	iconHelp,
+	iconList,
+	iconLive,
+	iconQuery,
+	iconUpload,
+} from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { unparse } from "papaparse";
 import { isArray, isObject } from "radash";
@@ -31,15 +40,6 @@ import type {
 } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showInfo, slugify } from "~/util/helpers";
-import {
-	iconBroadcastOff,
-	iconCursor,
-	iconHelp,
-	iconList,
-	iconLive,
-	iconQuery,
-	iconUpload,
-} from "~/util/icons";
 import type { PreviewProps } from "./previews";
 import { CombinedPreview } from "./previews/combined";
 import { GraphPreview } from "./previews/graph";

@@ -9,7 +9,7 @@ import {
 	ThemeIcon,
 	Tooltip,
 } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconWarning } from "@surrealdb/ui";
 import { compareVersions, satisfies } from "compare-versions";
 import equal from "fast-deep-equal";
 import { useMemo, useState } from "react";
@@ -18,7 +18,6 @@ import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabil
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { filterOptions, parseCapabilities, transformCapabilities } from "~/util/capabilities";
-import { iconWarning } from "~/util/icons";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";

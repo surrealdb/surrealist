@@ -1,6 +1,6 @@
 import { Box, Button, Group, ScrollArea, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon } from "@surrealdb/ui";
+import { Icon, iconOrganization } from "@surrealdb/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
@@ -12,7 +12,6 @@ import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconOrganization } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export function CreateOrganizationPage() {
