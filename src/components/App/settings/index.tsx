@@ -300,6 +300,7 @@ export function Settings() {
 					visibleFrom="md"
 				/>
 				<Drawer
+					withCloseButton={false}
 					hiddenFrom="md"
 					opened={overlaySidebar}
 					onClose={overlaySidebarHandle.close}

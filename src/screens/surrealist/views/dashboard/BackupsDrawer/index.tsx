@@ -43,6 +43,7 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={handleClose}
 			position="right"

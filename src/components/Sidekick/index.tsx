@@ -1,8 +1,15 @@
 import { Box, Divider, Flex, Group, Image, Stack, Text, Transition } from "@mantine/core";
-import { Icon, iconChat, iconChevronLeft, iconList, iconPin, iconPinOff } from "@surrealdb/ui";
+import {
+	Icon,
+	iconChat,
+	iconChevronLeft,
+	iconList,
+	iconPin,
+	iconPinOff,
+	pictoSidekick,
+} from "@surrealdb/ui";
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
 import glowImg from "~/assets/images/glow.webp";
-import sidekickImg from "~/assets/images/icons/sidekick.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -98,7 +105,7 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 								/>
 								<Image
 									pos="relative"
-									src={sidekickImg}
+									src={pictoSidekick}
 									w={52}
 									h={52}
 								/>

@@ -184,6 +184,7 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"

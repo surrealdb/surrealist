@@ -101,9 +101,7 @@ export function StartConnection({
 			<Paper
 				p="lg"
 				ref={containerRef}
-				variant="interactive"
 				className={classes.startConnection}
-				withBorder
 			>
 				<Group
 					wrap="nowrap"

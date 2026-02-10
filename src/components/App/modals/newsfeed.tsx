@@ -88,6 +88,7 @@ export function NewsFeedDrawer() {
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={isOpen}
 			onClose={handleClose}
 			position="right"

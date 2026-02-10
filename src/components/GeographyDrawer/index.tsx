@@ -90,6 +90,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"

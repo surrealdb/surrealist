@@ -28,17 +28,17 @@ import {
 	iconSearch,
 	iconTune,
 	iconWarning,
+	pictoHandsOn,
+	pictoSDBCloud,
+	pictoSidekick,
+	pictoSurrealDB,
+	pictoUniversity,
 } from "@surrealdb/ui";
 import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import iconUrl from "~/assets/images/icon.webp";
-import cloudUrl from "~/assets/images/icons/cloud.webp";
-import communityUrl from "~/assets/images/icons/community.webp";
-import sidekickUrl from "~/assets/images/icons/sidekick.webp";
-import databaseUrl from "~/assets/images/icons/surrealdb.webp";
-import universityUrl from "~/assets/images/icons/university.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { isOrganisationRestricted } from "~/cloud/helpers";
@@ -491,7 +491,7 @@ export function OverviewPage() {
 									</PrimaryTitle>
 									<StartCloud
 										action="Sign in"
-										image={cloudUrl}
+										image={pictoSDBCloud}
 										onClick={openCloudAuthentication}
 									>
 										<Text
@@ -525,7 +525,7 @@ export function OverviewPage() {
 								<StartResource
 									title="Documentation"
 									subtitle="Explore the SurrealDB documentation"
-									image={databaseUrl}
+									image={pictoSurrealDB}
 									onClick={() =>
 										adapter.openUrl("https://surrealdb.com/docs/surrealdb")
 									}
@@ -533,7 +533,7 @@ export function OverviewPage() {
 								<StartResource
 									title="Community"
 									subtitle="Join the discussion on Discord"
-									image={communityUrl}
+									image={pictoHandsOn}
 									onClick={() =>
 										adapter.openUrl("https://discord.com/invite/surrealdb")
 									}
@@ -541,13 +541,13 @@ export function OverviewPage() {
 								<StartResource
 									title="University"
 									subtitle="Learn the SurrealDB fundamentals in 3 hours"
-									image={universityUrl}
+									image={pictoUniversity}
 									onClick={() => adapter.openUrl("https://surrealdb.com/learn")}
 								/>
 								<StartResource
 									title="Sidekick"
 									subtitle="Get support from your personal Surreal AI assistant"
-									image={sidekickUrl}
+									image={pictoSidekick}
 									onClick={() => dispatchIntent("open-sidekick")}
 								/>
 							</SimpleGrid>

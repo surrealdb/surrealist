@@ -88,6 +88,7 @@ export function DesignDrawer({
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"

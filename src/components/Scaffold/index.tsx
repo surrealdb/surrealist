@@ -10,7 +10,7 @@ import { CommandsProvider } from "~/providers/Commands";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 import { ContextProvider } from "~/providers/Context";
 import { FeatureFlagsProvider } from "~/providers/FeatureFlags";
-import { MANTINE_THEME } from "~/util/mantine";
+import { SURREALIST_THEME } from "~/util/mantine";
 import { ScaffoldErrorHandler } from "./error";
 
 const QUERY_CLIENT = new QueryClient();
@@ -24,7 +24,7 @@ export function Scaffold({ children }: PropsWithChildren) {
 			<QueryClientProvider client={QUERY_CLIENT}>
 				<MantineProvider
 					withCssVariables
-					theme={MANTINE_THEME}
+					theme={SURREALIST_THEME}
 					forceColorScheme={colorScheme}
 				>
 					<Notifications containerWidth={400} />

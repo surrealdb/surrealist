@@ -163,6 +163,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"

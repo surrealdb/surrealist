@@ -1,6 +1,6 @@
 import { Box, Group, Image, Paper, Text } from "@mantine/core";
+import { pictoSurrealDB } from "@surrealdb/ui";
 import { Link } from "wouter";
-import surrealdbGlass from "~/assets/images/icons/document.webp";
 import { IntercomSupportCollectionShallow } from "~/types";
 
 export interface SupportCollectionProps {
@@ -23,7 +23,7 @@ export function SupportCollection({ collection }: SupportCollectionProps) {
 				<Group wrap="nowrap">
 					<Image
 						mx="sm"
-						src={collection.image ?? surrealdbGlass}
+						src={collection.image ?? pictoSurrealDB}
 						w={35}
 						h={35}
 					/>

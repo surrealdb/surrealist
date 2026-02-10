@@ -24,11 +24,11 @@ import {
 	iconQuery,
 	iconRelation,
 	iconTag,
+	pictoSDBCloud,
 } from "@surrealdb/ui";
 import { ChangeEvent } from "react";
 import { navigate } from "wouter/use-browser-location";
 import glow from "~/assets/images/glow.webp";
-import cloud from "~/assets/images/icons/cloud.webp";
 import {
 	getBillingProviderAction,
 	isBillingManaged,
@@ -306,7 +306,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						</Box>
 					</Stack>
 					<Image
-						src={cloud}
+						src={pictoSDBCloud}
 						className={classes.cloudImage}
 					/>
 					<Image

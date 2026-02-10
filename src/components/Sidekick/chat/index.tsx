@@ -12,12 +12,11 @@ import {
 	Textarea,
 	ThemeIcon,
 } from "@mantine/core";
-import { Icon, iconChevronRight, iconCursor, iconOpen } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconCursor, iconOpen, pictoSidekick } from "@surrealdb/ui";
 import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import glowImg from "~/assets/images/glow.png";
-import sidekickImg from "~/assets/images/icons/sidekick.png";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -124,7 +123,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 							/>
 							<Image
 								pos="relative"
-								src={sidekickImg}
+								src={pictoSidekick}
 								w={132}
 								h={132}
 							/>

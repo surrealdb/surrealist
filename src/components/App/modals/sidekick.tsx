@@ -32,6 +32,7 @@ export function SidekickDrawer() {
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={isOpen}
 			onClose={handleClose}
 			position="right"

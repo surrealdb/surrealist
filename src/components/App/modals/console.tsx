@@ -68,6 +68,7 @@ export function ConsoleDrawer() {
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={isOpen}
 			onClose={openHandle.close}
 			position="bottom"

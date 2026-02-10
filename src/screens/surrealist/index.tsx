@@ -121,7 +121,7 @@ export function SurrealistScreen() {
 	return (
 		<Box
 			className={classes.root}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "obsidian.0" : "obsidian.9"}
 		>
 			{isOtherOS && <AppTitleBar />}
 			<Flex
@@ -303,6 +303,7 @@ export function SurrealistScreen() {
 			</Flex>
 
 			<Drawer
+				withCloseButton={false}
 				opened={overlaySidebar}
 				onClose={onCloseSidebar}
 				size={215}

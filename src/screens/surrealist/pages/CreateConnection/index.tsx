@@ -10,13 +10,18 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
-import { Icon, iconChevronDown, iconChevronRight, iconHomePlus } from "@surrealdb/ui";
+import {
+	Icon,
+	iconChevronDown,
+	iconChevronRight,
+	iconHomePlus,
+	pictoSDBCloud,
+} from "@surrealdb/ui";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import glowUrl from "~/assets/images/glow.webp";
-import cloudUrl from "~/assets/images/icons/cloud.webp";
 import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
 import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
 import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
@@ -278,7 +283,7 @@ export function CreateConnectionPage() {
 							</Group>
 						</Stack>
 						<Image
-							src={cloudUrl}
+							src={pictoSDBCloud}
 							className={classes.cloudImage}
 						/>
 						<Image

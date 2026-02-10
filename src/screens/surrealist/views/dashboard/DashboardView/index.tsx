@@ -17,15 +17,21 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { Icon, iconCheck, iconChevronDown, iconChevronRight, iconCopy } from "@surrealdb/ui";
+import {
+	Icon,
+	iconCheck,
+	iconChevronDown,
+	iconChevronRight,
+	iconCopy,
+	pictoDocument,
+	pictoHandsOn,
+	pictoPlay,
+	pictoSDBCloud,
+} from "@surrealdb/ui";
 import { memo, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
-import cloudUrl from "~/assets/images/icons/cloud.webp";
-import communtyUrl from "~/assets/images/icons/community.webp";
-import documentationUrl from "~/assets/images/icons/document.webp";
-import tutorialsUrl from "~/assets/images/icons/tutorials.webp";
 import { isOrganisationBillable } from "~/cloud/helpers";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
@@ -670,7 +676,7 @@ function LoadingScreen() {
 				/>
 				<Image
 					className={classes.provisionIcon}
-					src={cloudUrl}
+					src={pictoSDBCloud}
 					w={82}
 					h={82}
 					mt={-8}
@@ -700,19 +706,19 @@ function LoadingScreen() {
 				<GettingStartedLink
 					title="Cloud Documentation"
 					description="Learn more about SurrealDB Cloud features and capabilities."
-					image={documentationUrl}
+					image={pictoDocument}
 					href="https://surrealdb.com/docs/cloud"
 				/>
 				<GettingStartedLink
 					title="Join the Community"
 					description="Get help from the community and share your experiences."
-					image={communtyUrl}
+					image={pictoHandsOn}
 					href="https://surrealdb.com/community"
 				/>
 				<GettingStartedLink
 					title="Quick Start Tutorial"
 					description="Watch a quick tutorial to get started with SurrealDB Cloud."
-					image={tutorialsUrl}
+					image={pictoPlay}
 					href="https://www.youtube.com/watch?v=S04qOKkVcmE"
 				/>
 			</SimpleGrid>

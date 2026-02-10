@@ -140,6 +140,7 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"

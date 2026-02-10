@@ -32,6 +32,7 @@ export function ConfiguratorDrawer({
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"
