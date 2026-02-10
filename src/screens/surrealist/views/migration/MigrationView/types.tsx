@@ -3,9 +3,10 @@ import {
 	iconAPI,
 	iconAuth,
 	iconBraces,
-	iconBroadcastOn,
+	iconBullhorn,
 	iconFunction,
 	iconIndex,
+	iconJSON,
 	iconTable,
 } from "~/util/icons";
 
@@ -19,7 +20,8 @@ export const resourceTypeMeta: Record<MigrationResourceType, { label: string; ic
 	"db-access": { label: "Database Access Methods", icon: iconAuth },
 	"db-param": { label: "Parameters", icon: iconBraces },
 	"db-function": { label: "Functions", icon: iconFunction },
-	"db-tb-event": { label: "Table Events", icon: iconBroadcastOn },
+	"db-tb-event": { label: "Table Events", icon: iconBullhorn },
 	"db-tb-index": { label: "Table Indexes", icon: iconIndex },
-	"db-tb-record": { label: "Tables", icon: iconTable },
+	"db-tb-field": { label: "Table Fields", icon: iconJSON },
+	"db-tb-record": { label: "Table Records", icon: iconTable },
 };

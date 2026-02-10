@@ -49,6 +49,7 @@ export function organizeDiagnostics(diagnostics: MigrationDiagnosticResult[]): R
 		"db-function": [],
 		"db-tb-event": [],
 		"db-tb-index": [],
+		"db-tb-field": [],
 		"db-tb-record": [],
 	};
 
@@ -180,7 +181,13 @@ function resolveResource(origin: MigrationDiagnosticResult["origin"]): ResourceI
 					return { type: "db-tb-index", id, name, path };
 				}
 
+				if (tableLabel === "field") {
+					return { type: "db-tb-field", id, name, path };
+				}
+
 				if (tableLabel === "record") {
+					console.log(origin);
+
 					return {
 						type: "db-tb-record",
 						id: key.slice(0, 6).join("/"),
