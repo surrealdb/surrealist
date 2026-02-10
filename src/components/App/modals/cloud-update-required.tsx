@@ -1,8 +1,8 @@
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { type MouseEvent, useMemo } from "react";
 import { isDesktop } from "~/adapter";
 import cloudUrl from "~/assets/images/icons/cloud.webp";
-import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useCloudStore } from "~/stores/cloud";

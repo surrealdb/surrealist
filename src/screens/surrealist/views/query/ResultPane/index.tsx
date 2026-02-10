@@ -1,13 +1,13 @@
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 import { Button, Center, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { unparse } from "papaparse";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { adapter, isMini } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
 import { CSV_FILTER, NONE_RESULT_MODES, RESULT_FORMATS, RESULT_MODES } from "~/constants";

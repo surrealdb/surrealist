@@ -1,9 +1,9 @@
 import { Drawer, Group, Tabs } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useState } from "react";
 import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";

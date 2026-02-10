@@ -1,6 +1,6 @@
 import { Box, Group, Paper, SimpleGrid, Skeleton, Text, ThemeIcon } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { Link } from "wouter";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { iconAuth, iconChevronRight, iconDesigner, iconExplorer, iconQuery } from "~/util/icons";

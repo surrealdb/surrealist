@@ -1,6 +1,6 @@
 import { Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import { useIsLight } from "~/hooks/theme";
 import { IntercomAttachment, IntercomConversation, IntercomConversationPart } from "~/types";
 import { formatFileSize, formatRelativeDate } from "~/util/helpers";

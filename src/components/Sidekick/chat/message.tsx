@@ -11,9 +11,9 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { MarkdownContent } from "~/components/MarkdownContent";
 import { RelativeTime } from "~/components/RelativeTime";

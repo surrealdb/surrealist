@@ -1,10 +1,10 @@
 import { Box, Button, Divider, Drawer, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";

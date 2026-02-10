@@ -12,13 +12,13 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { type MouseEvent, useEffect, useLayoutEffect, useState } from "react";
 import { escapeIdent, RecordId, StringRecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
-import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";

@@ -9,13 +9,13 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { toggle } from "radash";
 import { useState } from "react";
 import type { SqlExportOptions as BaseExportOptions } from "surrealdb";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";

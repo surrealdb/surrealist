@@ -1,9 +1,9 @@
 import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { useState } from "react";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";

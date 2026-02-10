@@ -12,6 +12,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import {
 	Background,
 	type Edge,
@@ -35,7 +36,6 @@ import {
 } from "react";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";

@@ -12,6 +12,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
@@ -25,7 +26,6 @@ import surrealdbImage from "~/assets/images/icons/surrealdb.webp";
 import universityImage from "~/assets/images/icons/university.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";

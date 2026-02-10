@@ -1,8 +1,8 @@
 import { Group, Skeleton, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";

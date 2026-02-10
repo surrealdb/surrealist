@@ -1,4 +1,5 @@
 import { Avatar, Badge, Box, Button, Group, Menu, Paper, Stack, Table, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import {
@@ -15,7 +16,6 @@ import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudInvitationsQuery } from "~/cloud/queries/invitations";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";

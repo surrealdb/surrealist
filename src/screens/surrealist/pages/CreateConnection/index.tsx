@@ -10,6 +10,7 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
@@ -20,7 +21,6 @@ import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address
 import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
 import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
 import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useLastSavepoint } from "~/hooks/overview";

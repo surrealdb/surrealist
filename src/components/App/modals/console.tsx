@@ -1,8 +1,8 @@
 import { Badge, Center, Drawer, Group, Paper, ScrollArea, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import AnsiToHtml from "ansi-to-html";
 import { useEffect, useMemo, useRef } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";

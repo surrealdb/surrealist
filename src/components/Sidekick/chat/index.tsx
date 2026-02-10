@@ -12,7 +12,7 @@ import {
 	Textarea,
 	ThemeIcon,
 } from "@mantine/core";
-
+import { Icon } from "@surrealdb/ui";
 import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
@@ -23,7 +23,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useSidekickStore } from "~/stores/sidekick";
 import { iconChevronRight, iconCursor, iconOpen } from "~/util/icons";
-import { Icon } from "../../Icon";
 import { PrimaryTitle } from "../../PrimaryTitle";
 import { SIDEKICK_QUESTIONS } from "../helpers";
 import { SidekickStream } from "../stream";

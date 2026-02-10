@@ -9,10 +9,10 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SCHEMA_MODES } from "~/constants";

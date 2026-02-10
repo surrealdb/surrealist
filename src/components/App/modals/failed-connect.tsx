@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Dialog, Group, Text, ThemeIcon } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Icon } from "@surrealdb/ui";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { iconClose, iconWarning } from "~/util/icons";

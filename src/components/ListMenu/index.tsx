@@ -1,8 +1,8 @@
 import { Menu, MenuDropdownProps, MenuProps, ScrollArea, Text, ThemeIcon } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import type { PropsWithChildren } from "react";
 import { useIsLight } from "~/hooks/theme";
 import type { Listable } from "~/types";
-import { Icon } from "../Icon";
 
 export interface ListMenuProps<T extends string> {
 	data: Listable<T>[];

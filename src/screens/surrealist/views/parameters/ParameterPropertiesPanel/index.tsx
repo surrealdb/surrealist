@@ -10,9 +10,9 @@ import {
 	Text,
 	Textarea,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { PermissionInput } from "~/components/Inputs";
 import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";

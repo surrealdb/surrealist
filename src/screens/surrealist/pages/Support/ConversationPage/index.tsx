@@ -17,6 +17,7 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
@@ -29,7 +30,6 @@ import { useCloudConversationQuery } from "~/cloud/queries/context";
 import { AccountAvatar } from "~/components/AccountAvatar";
 import { ActionButton } from "~/components/ActionButton";
 import { AuthGuard } from "~/components/AuthGuard";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";

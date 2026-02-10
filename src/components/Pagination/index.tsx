@@ -1,10 +1,10 @@
 import { type ComboboxData, Group, Select, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { type FocusEvent, type KeyboardEvent, useLayoutEffect } from "react";
 import { useStable } from "~/hooks/stable";
 import { iconChevronLeft, iconChevronRight } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 import type { PaginationStore } from "./hook";
 
 const PAGE_SIZES: ComboboxData = [

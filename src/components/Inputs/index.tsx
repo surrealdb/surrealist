@@ -19,6 +19,7 @@ import {
 } from "@mantine/core";
 import { clamp, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import {
 	type FocusEvent,
@@ -28,7 +29,6 @@ import {
 	useMemo,
 	useRef,
 } from "react";
-import { Icon } from "~/components/Icon";
 import { acceptWithTab, editorTheme, inputBase } from "~/editor";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";

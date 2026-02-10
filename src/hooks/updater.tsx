@@ -1,8 +1,8 @@
 import { Alert, Group } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { invoke } from "@tauri-apps/api/core";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { useState } from "react";
-import { Icon } from "~/components/Icon";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";

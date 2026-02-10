@@ -8,10 +8,10 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { group } from "radash";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { ContentPane } from "~/components/Pane";
 import { MONITORS } from "~/constants";

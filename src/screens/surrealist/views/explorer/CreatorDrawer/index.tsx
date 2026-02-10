@@ -14,13 +14,13 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon } from "@surrealdb/ui";
 import { omit } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { RecordId, StringRecordId, Table } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";

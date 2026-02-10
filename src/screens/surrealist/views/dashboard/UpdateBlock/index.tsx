@@ -1,6 +1,6 @@
 import { Alert, Box, Button, Group } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { openSurrealChangelog } from "~/util/cloud";

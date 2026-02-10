@@ -1,13 +1,13 @@
 import { ActionIcon, Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import Papa from "papaparse";
 import { capitalize } from "radash";
 import { useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import { OpenedTextFile } from "~/adapter/base";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";

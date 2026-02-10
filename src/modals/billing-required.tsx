@@ -1,5 +1,6 @@
 import { Group, SimpleGrid, Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { useEffect } from "react";
 import {
 	getBillingProviderAction,
@@ -7,7 +8,6 @@ import {
 	isOrganisationBillable,
 } from "~/cloud/helpers";
 import { BillingDetails } from "~/components/BillingDetails";
-import { Icon } from "~/components/Icon";
 import { PaymentDetails } from "~/components/PaymentDetails";
 import { CloudOrganization } from "~/types";
 import { iconCreditCard } from "~/util/icons";

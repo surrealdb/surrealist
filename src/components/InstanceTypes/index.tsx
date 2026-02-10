@@ -1,4 +1,5 @@
 import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
 import { TypeVariant, useInstanceTypeRegistry } from "~/cloud/hooks/types";
@@ -6,7 +7,6 @@ import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { iconAuth } from "~/util/icons";
-import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
 

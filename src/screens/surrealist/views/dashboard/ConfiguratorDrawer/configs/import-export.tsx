@@ -1,9 +1,9 @@
 import { Box, Button, Divider, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useState } from "react";
 import { adapter } from "~/adapter";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { JSON_FILTER } from "~/constants";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";

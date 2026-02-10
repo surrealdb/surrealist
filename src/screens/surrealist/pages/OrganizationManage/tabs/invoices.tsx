@@ -1,7 +1,7 @@
 import { ActionIcon, Alert, Paper, Skeleton, Stack, Table } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
-import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
 import { InvoiceStatus } from "~/types";
 import { iconHelp, iconOpen } from "~/util/icons";

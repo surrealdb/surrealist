@@ -1,6 +1,6 @@
 import { Alert, Group, Select, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
-import { Icon } from "~/components/Icon";
 import { useTableNames } from "~/hooks/schema";
 import { useInterfaceStore } from "~/stores/interface";
 import { iconWarning } from "~/util/icons";

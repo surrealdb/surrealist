@@ -1,10 +1,10 @@
 import { Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { useMemo, useState } from "react";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";

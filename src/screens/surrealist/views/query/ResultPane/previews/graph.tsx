@@ -12,13 +12,13 @@ import {
 	Text,
 } from "@mantine/core";
 import { indexParallelEdgesIndex } from "@sigma/edge-curve";
+import { Icon } from "@surrealdb/ui";
 import { inferSettings } from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import iwanthue, { ColorSpaceArray } from "iwanthue";
 import { isArray, isNumber, isObject } from "radash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { equals, escapeIdent, RecordId } from "surrealdb";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { newRelationalGraph, RelationGraph } from "~/components/RelationGraph";
 import { NodeCircle } from "~/components/RelationGraph/node";

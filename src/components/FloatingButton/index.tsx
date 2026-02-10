@@ -1,6 +1,6 @@
 import { ActionIcon, type ActionIconProps, Affix } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
-import { Icon } from "../Icon";
 import classes from "./style.module.scss";
 
 export interface FloatingButtonProps extends ActionIconProps {

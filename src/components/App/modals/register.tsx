@@ -1,10 +1,10 @@
 import { Button, Group, Modal, PasswordInput, Table, Text, TextInput } from "@mantine/core";
 import { parser } from "@surrealdb/lezer";
+import { Icon } from "@surrealdb/ui";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SENSITIVE_ACCESS_FIELDS } from "~/constants";

@@ -1,8 +1,8 @@
 import { Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { Fragment } from "react/jsx-runtime";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import {
 	iconCommand,
 	iconKeyboardControl,

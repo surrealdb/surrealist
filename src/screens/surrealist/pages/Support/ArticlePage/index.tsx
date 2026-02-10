@@ -11,11 +11,11 @@ import {
 	Text,
 	UnstyledButton,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import TurndownService from "turndown";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { useSupportArticleQuery } from "~/cloud/queries/context";
-import { Icon } from "~/components/Icon";
 import { MarkdownContent } from "~/components/MarkdownContent";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";

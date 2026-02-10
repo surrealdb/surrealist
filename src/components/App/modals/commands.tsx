@@ -1,9 +1,9 @@
 import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import { type KeyboardEvent, useMemo, useRef } from "react";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { PreferenceInput } from "~/components/Inputs/preference";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";

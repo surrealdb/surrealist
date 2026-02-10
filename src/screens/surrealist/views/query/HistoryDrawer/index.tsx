@@ -11,12 +11,12 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { capitalize } from "radash";
 import { memo, useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";

@@ -10,12 +10,12 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { PropsWithChildren, useMemo } from "react";
 import { isOrganisationRestricted, isOrganisationTerminated } from "~/cloud/helpers";
 import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useCloudProfile } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";

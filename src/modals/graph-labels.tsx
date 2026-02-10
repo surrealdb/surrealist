@@ -1,9 +1,9 @@
 import { Button, Combobox, Group, Paper, Stack, TagsInput, Text, useCombobox } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useConnection } from "~/hooks/connection";
 import { useConnectionAndView } from "~/hooks/routing";

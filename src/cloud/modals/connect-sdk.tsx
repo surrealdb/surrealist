@@ -1,9 +1,9 @@
 import { Group, Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
 import { CodeSnippet } from "~/components/CodeSnippet";
 import { DriverSelector } from "~/components/DriverSelector";
-import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { DRIVERS } from "~/constants";

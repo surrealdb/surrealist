@@ -1,12 +1,12 @@
 import { Prec } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { Alert, Badge, Button, Group, Stack } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { graphql, updateSchema } from "cm6-graphql";
 import { type GraphQLSchema, parse, print } from "graphql";
 import { useEffect, useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import {

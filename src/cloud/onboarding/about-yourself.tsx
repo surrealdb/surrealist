@@ -1,9 +1,9 @@
 import { Alert, Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useImmer } from "use-immer";
 import glowUrl from "~/assets/images/gradient-glow.webp";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";

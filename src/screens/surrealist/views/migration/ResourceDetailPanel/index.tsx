@@ -10,11 +10,11 @@ import {
 	Text,
 	Transition,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
 import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";

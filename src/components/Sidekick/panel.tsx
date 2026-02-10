@@ -1,10 +1,10 @@
+import { Icon } from "@surrealdb/ui";
 import { Panel } from "react-resizable-panels";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useSidekickStore } from "~/stores/sidekick";
 import { iconChat, iconChevronLeft, iconClose, iconList, iconSidekick } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 import { ContentPane } from "../Pane";
 import { PanelDragger } from "../Pane/dragger";
 import { Sidekick } from ".";

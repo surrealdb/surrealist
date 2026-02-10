@@ -1,9 +1,9 @@
 import { Box, Divider, Flex, Group, Image, Stack, Text, Transition } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
 import glowImg from "~/assets/images/glow.webp";
 import sidekickImg from "~/assets/images/icons/sidekick.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";

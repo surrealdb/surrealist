@@ -1,6 +1,6 @@
 import { Group, Switch, Text, Tooltip } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { ChangeEvent } from "react";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { iconHelp } from "~/util/icons";

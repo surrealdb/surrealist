@@ -1,6 +1,6 @@
 import { Group, Paper, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { IntercomSupportArticle } from "~/types";

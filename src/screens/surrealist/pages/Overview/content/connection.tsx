@@ -11,9 +11,9 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { PropsWithChildren, useRef } from "react";
 import { Faint } from "~/components/Faint";
-import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";

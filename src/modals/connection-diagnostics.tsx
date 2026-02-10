@@ -14,11 +14,11 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { formatDistanceToNow } from "date-fns";
 import { FC, memo, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";

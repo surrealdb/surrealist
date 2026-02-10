@@ -10,11 +10,11 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import surrealUrl from "~/assets/images/icons/surrealdb.webp";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { StarSparkles } from "~/components/StarSparkles";
 import { SURQL_FILTER } from "~/constants";

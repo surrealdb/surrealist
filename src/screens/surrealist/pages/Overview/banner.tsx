@@ -1,5 +1,5 @@
 import { Alert, MantineColor } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Icon } from "@surrealdb/ui";
 import { BannerType, CloudBanner } from "~/types";
 import { iconBullhorn, iconWarning } from "~/util/icons";
 

@@ -1,5 +1,5 @@
 import { type BoxProps, Group } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Icon } from "@surrealdb/ui";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { iconChevronRight } from "~/util/icons";
 import { DatabaseList } from "../DatabaseList";

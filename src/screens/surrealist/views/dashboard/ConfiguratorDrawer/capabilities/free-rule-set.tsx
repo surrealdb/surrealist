@@ -10,8 +10,8 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useEffect, useMemo, useState } from "react";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";

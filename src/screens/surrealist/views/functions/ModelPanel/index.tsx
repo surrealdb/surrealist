@@ -1,7 +1,7 @@
 import { Button, Group, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import type { SchemaModel } from "~/types";
 import { iconDownload, iconModuleML, iconOpen } from "~/util/icons";

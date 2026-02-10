@@ -1,6 +1,6 @@
 import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { format } from "date-fns";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { NewsPost } from "~/hooks/newsfeed";

@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { createEdgeCurveProgram } from "@sigma/edge-curve";
 import { createNodeBorderProgram } from "@sigma/node-border";
+import { Icon } from "@surrealdb/ui";
 import { MultiDirectedGraph } from "graphology";
 import { useContextMenu } from "mantine-contextmenu";
 import { MouseEvent, useEffect, useRef } from "react";
@@ -36,7 +37,6 @@ import {
 	iconReset,
 } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 import { NodeContextMenu } from "./context";
 import { drawHover, drawLabel } from "./drawing";
 import {

@@ -1,9 +1,9 @@
 import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { useRef, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { Sidekick, SidekickHandle } from "~/components/Sidekick";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";

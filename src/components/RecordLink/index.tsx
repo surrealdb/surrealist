@@ -1,4 +1,5 @@
 import { type BoxProps, type ElementProps, Group, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import type { MouseEvent } from "react";
 import { useEffect, useState } from "react";
 import type { RecordId } from "surrealdb";
@@ -6,7 +7,6 @@ import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { iconArrowUpRight } from "~/util/icons";
-import { Icon } from "../Icon";
 
 export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {
 	value: RecordId;

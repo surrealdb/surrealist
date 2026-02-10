@@ -1,7 +1,7 @@
 import { Box, Center, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import type { PropsWithChildren, ReactNode } from "react";
 import { CodePreview } from "../CodePreview";
-import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 
 export interface IntroductionProps {

@@ -1,9 +1,9 @@
 import { Box, Button, Center, Group, Loader, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useConversationsQuery } from "~/cloud/queries/context";
 import { AuthGuard } from "~/components/AuthGuard";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";

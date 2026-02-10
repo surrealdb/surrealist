@@ -11,10 +11,10 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import equal from "fast-deep-equal";
 import { Fragment, useMemo, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { KeybindInput } from "~/components/Inputs/keybinding";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Shortcut } from "~/components/Shortcut";

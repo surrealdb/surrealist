@@ -9,7 +9,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 
-import { Icon } from "~/components/Icon";
+import { Icon } from "@surrealdb/ui";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";

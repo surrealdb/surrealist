@@ -1,8 +1,8 @@
 import { Box, Group, Paper, Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import type { Uuid } from "surrealdb";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { executeQuerySingle } from "~/screens/surrealist/connection/connection";
 import { showErrorNotification } from "~/util/helpers";

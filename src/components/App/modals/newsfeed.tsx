@@ -16,11 +16,11 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { format } from "date-fns";
 import dayjs from "dayjs";
 import { Fragment, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { MarkdownContent } from "~/components/MarkdownContent";
 import { Spacer } from "~/components/Spacer";

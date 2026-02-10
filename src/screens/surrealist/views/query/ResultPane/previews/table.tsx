@@ -1,8 +1,8 @@
 import { Box, Center, Divider, Group, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo } from "react";
 import { DataTable } from "~/components/DataTable";
-import { Icon } from "~/components/Icon";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { useSetting } from "~/hooks/config";

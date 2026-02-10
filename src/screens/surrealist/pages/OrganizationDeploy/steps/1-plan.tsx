@@ -1,9 +1,9 @@
 import { Box, Button, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
 import { isInstancePlan } from "~/cloud/helpers";
 import { PricingConfigCloud, useCloudPricingQuery } from "~/cloud/queries/pricing";
-import { Icon } from "~/components/Icon";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { PricingCard } from "~/screens/surrealist/components/PricingCard";

@@ -1,11 +1,11 @@
 import { Box, Button, Center, Group, Loader, Paper, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import chatImage from "~/assets/images/icons/chat.webp";
 import { useCloudOrganizationTicketsQuery } from "~/cloud/queries/context";
 import { useActiveSupportPlanQuery } from "~/cloud/queries/support";
-import { Icon } from "~/components/Icon";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";

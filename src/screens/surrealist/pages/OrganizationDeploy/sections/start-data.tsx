@@ -1,5 +1,5 @@
 import { Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Icon } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useSearchParams } from "~/hooks/routing";

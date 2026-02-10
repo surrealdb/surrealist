@@ -1,10 +1,10 @@
 import { ActionIcon, Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { klona } from "klona";
 import { replace } from "radash";
 import { type ReactNode, useState } from "react";
 import { type Updater, useImmer } from "use-immer";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";

@@ -9,12 +9,12 @@ import {
 	ThemeIcon,
 	Tooltip,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { compareVersions, satisfies } from "compare-versions";
 import equal from "fast-deep-equal";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
-import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { filterOptions, parseCapabilities, transformCapabilities } from "~/util/capabilities";

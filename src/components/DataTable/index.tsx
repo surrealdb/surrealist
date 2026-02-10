@@ -8,6 +8,7 @@ import {
 	Text,
 	Tooltip,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import { alphabetical, isObject } from "radash";
 import { type MouseEvent, useMemo } from "react";
@@ -16,7 +17,6 @@ import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
 import type { ColumnSort, TableInfo } from "~/types";
 import { iconChevronDown, iconChevronUp, iconIndex, iconWarning } from "~/util/icons";
-import { Icon } from "../Icon";
 import { DataCell } from "./datatypes";
 import classes from "./style.module.scss";
 

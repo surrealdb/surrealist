@@ -1,9 +1,9 @@
 import { Box, Button, Divider, Group, Stack, Text, Title } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { ReactNode } from "react";
 import { adapter } from "~/adapter";
 import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { iconBug, iconWarning } from "./icons";
 

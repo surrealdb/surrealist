@@ -1,5 +1,6 @@
 import { Box, BoxProps, Center, Group, Loader, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { capitalize } from "radash";
 import { useEffect, useMemo, useRef } from "react";
@@ -8,7 +9,6 @@ import { FixedSizeList } from "react-window";
 import { computeMetricRange } from "~/cloud/helpers";
 import { useCloudLogsQuery } from "~/cloud/queries/logs";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
 import { useConnection } from "~/hooks/connection";

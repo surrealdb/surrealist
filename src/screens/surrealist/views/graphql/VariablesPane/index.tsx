@@ -1,9 +1,9 @@
 import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { surqlLinting } from "~/editor";
 import { useConnection } from "~/hooks/connection";

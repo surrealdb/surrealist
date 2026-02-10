@@ -11,8 +11,8 @@ import {
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { useLayoutEffect, useState } from "react";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SENSITIVE_ACCESS_FIELDS } from "~/constants";

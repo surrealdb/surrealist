@@ -1,6 +1,6 @@
 import { Button, Paper, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { Icon } from "~/components/Icon";
 import { PropertyValue } from "~/components/PropertyValue";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";

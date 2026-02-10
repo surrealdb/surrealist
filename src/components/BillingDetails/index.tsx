@@ -1,11 +1,11 @@
 import { Box, BoxProps, Button, Divider, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
 import { openBillingDetails } from "~/cloud/modals/billing";
 import { useCloudBillingQuery } from "~/cloud/queries/billing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { iconAccount } from "~/util/icons";
-import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { Spacer } from "../Spacer";
 

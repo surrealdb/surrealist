@@ -10,9 +10,9 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { Faint } from "~/components/Faint";
-import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";

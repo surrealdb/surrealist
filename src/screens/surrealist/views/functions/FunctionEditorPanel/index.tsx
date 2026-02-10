@@ -1,12 +1,12 @@
 import type { EditorView } from "@codemirror/view";
 import { Alert, Badge, Box, Group, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { SURQL_FILTER } from "~/constants";
 import {

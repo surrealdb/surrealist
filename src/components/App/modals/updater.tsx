@@ -1,6 +1,6 @@
 import { ActionIcon, Box, Dialog, Group, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import type { MouseEvent } from "react";
-import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useInterfaceStore } from "~/stores/interface";

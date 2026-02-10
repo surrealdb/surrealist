@@ -1,7 +1,7 @@
 import { Box, Button, Paper, Text, Title } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import { DriverSelector } from "~/components/DriverSelector";
-import { Icon } from "~/components/Icon";
 import { DRIVERS } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { Article } from "~/screens/surrealist/docs/components";

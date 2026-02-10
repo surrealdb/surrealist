@@ -1,11 +1,11 @@
 import { Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import type { ComponentPropsWithoutRef, MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";
 import { iconMarker } from "~/util/icons";
 import { GeographyDrawer } from "../GeographyDrawer";
 import type { GeographyInput } from "../GeographyMap";
-import { Icon } from "../Icon";
 
 export interface GeographyLinkProps extends ComponentPropsWithoutRef<"div"> {
 	value: GeographyInput;

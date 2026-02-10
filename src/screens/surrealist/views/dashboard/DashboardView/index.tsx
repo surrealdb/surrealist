@@ -17,6 +17,7 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { Icon } from "@surrealdb/ui";
 import { memo, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
@@ -33,7 +34,6 @@ import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
-import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
 import { Link } from "~/components/Link";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";

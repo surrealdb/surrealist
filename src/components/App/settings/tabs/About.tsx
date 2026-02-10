@@ -1,9 +1,9 @@
 import { Button, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
-import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { useVersionCopy } from "~/hooks/debug";
 import { useStable } from "~/hooks/stable";

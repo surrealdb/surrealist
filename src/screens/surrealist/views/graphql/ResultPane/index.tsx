@@ -1,8 +1,8 @@
 import { Center, Stack, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useDatabaseStore } from "~/stores/database";

@@ -11,8 +11,8 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useMemo } from "react";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { MigrationResourceType } from "~/types";

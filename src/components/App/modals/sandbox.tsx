@@ -1,8 +1,8 @@
 import { Button, Divider, Image, Modal, Paper, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useEffect } from "react";
 import banner from "~/assets/images/sandbox.webp";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useOnboarding } from "~/hooks/onboarding";

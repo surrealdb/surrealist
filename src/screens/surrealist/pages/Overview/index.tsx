@@ -18,6 +18,7 @@ import {
 	Transition,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
@@ -34,7 +35,6 @@ import { isOrganisationRestricted } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsCloudEnabled } from "~/hooks/cloud";

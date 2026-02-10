@@ -1,7 +1,7 @@
 import { Box, Button, Center, Loader, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { useSupportCollectionQuery } from "~/cloud/queries/context";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { iconArrowLeft } from "~/util/icons";

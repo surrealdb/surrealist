@@ -1,9 +1,9 @@
 import { Indicator } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { iconNewspaper } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 
 export function NewsFeed() {
 	const unread = useUnreadNewsPosts();

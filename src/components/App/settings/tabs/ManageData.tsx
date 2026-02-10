@@ -1,9 +1,8 @@
 import { Box, Button, Checkbox, Group, MultiSelect, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { assign } from "radash";
-
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import { JSON_FILTER } from "~/constants";
 import { useConnectionList } from "~/hooks/connection";
 import { useCheckbox } from "~/hooks/events";

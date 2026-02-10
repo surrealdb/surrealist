@@ -1,6 +1,6 @@
 import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { type RefObject, useMemo } from "react";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { ScrollFader } from "~/components/ScrollFader";
 import { Spacer } from "~/components/Spacer";

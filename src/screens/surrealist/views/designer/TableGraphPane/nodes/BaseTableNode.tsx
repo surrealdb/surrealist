@@ -1,4 +1,5 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { Handle, Position } from "@xyflow/react";
 import {
 	createContext,
@@ -9,7 +10,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useStable } from "~/hooks/stable";

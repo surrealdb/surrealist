@@ -1,6 +1,6 @@
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useState } from "react";
-import { Icon } from "~/components/Icon";
 import { Tile } from "~/components/Tile";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";

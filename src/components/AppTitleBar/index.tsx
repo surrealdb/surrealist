@@ -1,8 +1,8 @@
 import { Box, Group, Image, Menu, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
 import icon from "~/assets/images/icon.webp";
-import { Icon } from "~/components/Icon";
 import {
 	Command,
 	useCommandCategories,

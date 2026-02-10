@@ -1,6 +1,6 @@
 import { Group, Indicator, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
-import { Icon } from "~/components/Icon";
 import { IntercomConversation } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
 import { iconChat, iconTag } from "~/util/icons";

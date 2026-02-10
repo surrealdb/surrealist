@@ -1,9 +1,9 @@
 import { Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useContextMenu } from "mantine-contextmenu";
 import { useState } from "react";
 import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
 import { useSidekickDeleteMutation, useSidekickRenameMutation } from "~/hooks/sidekick";
 import { useStable } from "~/hooks/stable";

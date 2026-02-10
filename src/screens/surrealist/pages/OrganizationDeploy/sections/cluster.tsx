@@ -12,8 +12,8 @@ import {
 	Text,
 } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon } from "@surrealdb/ui";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
-import { Icon } from "~/components/Icon";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";

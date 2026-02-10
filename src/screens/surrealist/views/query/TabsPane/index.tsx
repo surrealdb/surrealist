@@ -1,4 +1,5 @@
 import { Badge, type BoxProps, Divider, type ElementProps, ScrollArea, Stack } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { useState } from "react";
@@ -7,7 +8,6 @@ import { DesktopAdapter } from "~/adapter/desktop";
 import { ActionButton } from "~/components/ActionButton";
 import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { LiveIndicator } from "~/components/LiveIndicator";
 import { ContentPane } from "~/components/Pane";
 import { Sortable } from "~/components/Sortable";

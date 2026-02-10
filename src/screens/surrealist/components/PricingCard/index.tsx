@@ -1,7 +1,7 @@
 import { Box, Checkbox, Group, Paper, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import { PricingConfigBase, PricingConfigCloud } from "~/cloud/queries/pricing";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";

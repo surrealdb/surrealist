@@ -12,10 +12,10 @@ import {
 	Textarea,
 	TextInput,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useState } from "react";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { FieldKindInput, PermissionInput } from "~/components/Inputs";
 import { Label } from "~/components/Label";
 import { ContentPane } from "~/components/Pane";

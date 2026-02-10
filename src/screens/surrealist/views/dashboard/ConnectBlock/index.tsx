@@ -1,8 +1,8 @@
 import { Box, Group, Paper, Skeleton, Text, ThemeIcon } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { openConnectCli } from "~/cloud/modals/connect-cli";
 import { openConnectCurl } from "~/cloud/modals/connect-curl";
 import { openConnectSdk } from "~/cloud/modals/connect-sdk";
-import { Icon } from "~/components/Icon";
 import { useConnection } from "~/hooks/connection";
 import { CloudInstance } from "~/types";
 import { iconChevronRight, iconConsole, iconTransfer, iconXml } from "~/util/icons";

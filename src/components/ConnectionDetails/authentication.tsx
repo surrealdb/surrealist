@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { Updater } from "use-immer";
@@ -21,7 +22,6 @@ import { AuthMode, Connection } from "~/types";
 import { fastParseJwt } from "~/util/helpers";
 import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
 
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);

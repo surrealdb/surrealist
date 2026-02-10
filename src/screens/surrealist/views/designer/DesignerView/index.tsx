@@ -1,9 +1,9 @@
 import { Box, Button, Group, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { ReactFlowProvider } from "@xyflow/react";
 import { memo, useEffect } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { SidekickPanel } from "~/components/Sidekick/panel";

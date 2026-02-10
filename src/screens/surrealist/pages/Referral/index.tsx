@@ -16,6 +16,7 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { ReactNode } from "react";
 import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
 import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
@@ -31,7 +32,6 @@ import tier4LightUrl from "~/assets/images/light/referral-tier-4.png";
 import tier5LightUrl from "~/assets/images/light/referral-tier-5.png";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { CloudSplash } from "~/components/CloudSplash";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";

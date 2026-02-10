@@ -1,6 +1,6 @@
 import { Badge, Group, Image, Select, Stack, TextInput } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { ChangeEvent, useLayoutEffect } from "react";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";

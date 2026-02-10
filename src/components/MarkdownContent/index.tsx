@@ -8,6 +8,7 @@ import {
 	TextProps,
 	TypographyStylesProvider,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import { PropsWithChildren, ReactElement, useMemo } from "react";
 import ReactMarkdown, { Components, Options } from "react-markdown";
@@ -21,7 +22,6 @@ import { createBaseQuery } from "~/util/defaults";
 import { iconCopy, iconDotsVertical, iconQuery } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
 import { CodePreview, CodePreviewOptions } from "../CodePreview";
-import { Icon } from "../Icon";
 import { Link } from "../Link";
 import { extractAlertTitle, filterAlertTitle } from "./helpers";
 import classes from "./style.module.scss";

@@ -1,6 +1,6 @@
 import { Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { Icon } from "~/components/Icon";
 import { CloudBackup } from "~/types";
 import { iconFile } from "~/util/icons";
 

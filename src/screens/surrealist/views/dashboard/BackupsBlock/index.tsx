@@ -1,7 +1,7 @@
 import { Box, Button, Center, Paper, Skeleton, Stack, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { formatDistance } from "date-fns";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";

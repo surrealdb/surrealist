@@ -1,6 +1,6 @@
 import { Button, Group, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
-import { Icon } from "~/components/Icon";
+import { Icon } from "@surrealdb/ui";
 import { Spacer } from "~/components/Spacer";
 import { CloudOrganization } from "~/types";
 import { iconAuth } from "~/util/icons";

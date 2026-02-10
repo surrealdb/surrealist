@@ -1,6 +1,6 @@
 import { Button, Checkbox, CheckboxProps, MantineColor, SimpleGrid } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { ReactNode } from "react";
-import { Icon } from "~/components/Icon";
 import { CodeInput, CodeInputProps } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceCapabilities, Selectable } from "~/types";

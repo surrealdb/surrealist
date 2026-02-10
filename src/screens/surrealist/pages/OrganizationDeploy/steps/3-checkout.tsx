@@ -12,6 +12,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { ChangeEvent } from "react";
 import { navigate } from "wouter/use-browser-location";
 import glow from "~/assets/images/glow.webp";
@@ -26,7 +27,6 @@ import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { BillingDetails } from "~/components/BillingDetails";
 import { EstimatedCost } from "~/components/EstimatedCost";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { LearnMore } from "~/components/LearnMore";
 import { PaymentDetails } from "~/components/PaymentDetails";

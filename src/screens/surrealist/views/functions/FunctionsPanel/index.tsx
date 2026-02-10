@@ -1,10 +1,10 @@
 import { Badge, Group, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
 import { useIsLight } from "~/hooks/theme";

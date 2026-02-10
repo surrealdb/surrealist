@@ -12,13 +12,13 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { useState } from "react";
 import { escapeIdent } from "surrealdb";
 import type { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";

@@ -1,4 +1,5 @@
 import { Menu } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { PropsWithChildren, useMemo } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
@@ -12,7 +13,6 @@ import { showErrorNotification, showInfo } from "~/util/helpers";
 import { iconBug, iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { openResourcesLockedModal } from "../App/modals/resources-locked";
-import { Icon } from "../Icon";
 
 export interface InstanceActionsProps {
 	instance: CloudInstance;

@@ -10,7 +10,7 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { Icon } from "~/components/Icon";
+import { Icon } from "@surrealdb/ui";
 import { Label } from "~/components/Label";
 import { useSidekickChatsQuery, useSidekickMessagesMutation } from "~/hooks/sidekick";
 import { useStable } from "~/hooks/stable";

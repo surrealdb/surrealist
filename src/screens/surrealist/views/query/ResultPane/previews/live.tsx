@@ -1,10 +1,10 @@
 import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon } from "@surrealdb/ui";
 import { useContextMenu } from "mantine-contextmenu";
 import { useEffect, useMemo, useState } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
 import { surqlRecordLinks } from "~/editor";
 import { type Formatter, useResultFormatter } from "~/hooks/surrealql";

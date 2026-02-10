@@ -1,8 +1,8 @@
 import { Box, Divider, Group, Paper, type PaperProps, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
 

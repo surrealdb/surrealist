@@ -1,4 +1,5 @@
 import { Box, Button, Indicator, Loader, Menu, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { useState } from "react";
 import { SANDBOX } from "~/constants";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
@@ -23,7 +24,6 @@ import {
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
-import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
 
 export function ConnectionStatus() {
