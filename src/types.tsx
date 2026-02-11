@@ -1128,6 +1128,7 @@ export type MigrationResourceType =
 	| "db-function"
 	| "db-tb-event"
 	| "db-tb-index"
+	| "db-tb-field"
 	| "db-tb-record";
 
 export interface MigrationDiagnosticResult {

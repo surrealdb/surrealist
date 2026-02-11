@@ -13,9 +13,17 @@ export interface StarSparkleProps {
 	ref?: React.RefObject<any>;
 	hidden?: boolean;
 	inset?: number;
+	offsetBase?: number;
+	offsetModifier?: number;
 }
 
-export function StarSparkles({ hidden, children, inset = 0 }: StarSparkleProps) {
+export function StarSparkles({
+	hidden,
+	children,
+	inset = 0,
+	offsetBase = 8,
+	offsetModifier = 4,
+}: StarSparkleProps) {
 	const ref = useRef<HTMLDivElement>(null);
 	const [stars, setStars] = useState<Star[]>([]);
 	const [starId, setStarId] = useState(0);
@@ -29,7 +37,7 @@ export function StarSparkles({ hidden, children, inset = 0 }: StarSparkleProps) 
 			const width = ref.current.offsetWidth;
 			const height = ref.current.offsetHeight;
 
-			const baseOffset = 8 + Math.random() * 4;
+			const baseOffset = offsetBase + Math.random() * offsetModifier;
 			const edge = Math.floor(Math.random() * 4);
 			let x: number, y: number;
 
@@ -62,7 +70,7 @@ export function StarSparkles({ hidden, children, inset = 0 }: StarSparkleProps) 
 		}, 800);
 
 		return () => clearInterval(interval);
-	}, [starId, hidden, inset]);
+	}, [starId, hidden, inset, offsetBase, offsetModifier]);
 
 	return (
 		<div

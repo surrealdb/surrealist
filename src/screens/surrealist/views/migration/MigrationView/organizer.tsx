@@ -49,6 +49,7 @@ export function organizeDiagnostics(diagnostics: MigrationDiagnosticResult[]): R
 		"db-function": [],
 		"db-tb-event": [],
 		"db-tb-index": [],
+		"db-tb-field": [],
 		"db-tb-record": [],
 	};
 
@@ -67,7 +68,7 @@ export function organizeDiagnostics(diagnostics: MigrationDiagnosticResult[]): R
 		const bucket = resources[info.type];
 		const existing = bucket.find((resource) => resource.id === info.id);
 		const entry = {
-			id: diagnostic.origin.join("/"),
+			id: `${diagnostic.origin.join("/")}:${diagnostic.kind}:${diagnostic.severity}`,
 			source: diagnostic,
 			record: info.record,
 		};
@@ -83,6 +84,8 @@ export function organizeDiagnostics(diagnostics: MigrationDiagnosticResult[]): R
 			});
 		}
 	}
+
+	console.log(resources);
 
 	return resources;
 }
@@ -178,7 +181,13 @@ function resolveResource(origin: MigrationDiagnosticResult["origin"]): ResourceI
 					return { type: "db-tb-index", id, name, path };
 				}
 
+				if (tableLabel === "field") {
+					return { type: "db-tb-field", id, name, path };
+				}
+
 				if (tableLabel === "record") {
+					console.log(origin);
+
 					return {
 						type: "db-tb-record",
 						id: key.slice(0, 6).join("/"),

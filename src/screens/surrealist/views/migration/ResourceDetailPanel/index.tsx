@@ -21,7 +21,6 @@ import { SURQL_FILTER } from "~/constants";
 import { useIsLight } from "~/hooks/theme";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { MigrationKind, MigrationResourceType, MigrationSeverity } from "~/types";
-import { plural } from "~/util/helpers";
 import {
 	iconArrowLeft,
 	iconArrowUpRight,
@@ -80,6 +79,7 @@ export interface ResourceDetailPanelProps {
 	type: MigrationResourceType;
 	resource: DiagnosticResource;
 	resolvedIds: Set<string>;
+	unresolvedIssues: number;
 	onBack: () => void;
 	onToggleResolved: (entryId: string) => void;
 }
@@ -88,6 +88,7 @@ export function ResourceDetailPanel({
 	type,
 	resource,
 	resolvedIds,
+	unresolvedIssues,
 	onBack,
 	onToggleResolved,
 }: ResourceDetailPanelProps) {
@@ -198,10 +199,20 @@ export function ResourceDetailPanel({
 									<Text>All issues for this resource have been resolved.</Text>
 									<Button
 										variant="gradient"
-										leftSection={<Icon path={iconChevronLeft} />}
+										leftSection={
+											<Icon
+												path={
+													unresolvedIssues > 0
+														? iconChevronLeft
+														: iconCheck
+												}
+											/>
+										}
 										onClick={onBack}
 									>
-										Back to overview
+										{unresolvedIssues > 0
+											? "Back to overview"
+											: "Complete migration"}
 									</Button>
 								</Stack>
 							)}
@@ -457,27 +468,36 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 						)}
 					</Group>
 
-					{/* Description */}
-					<Box>
-						<Text
-							fw={600}
-							size="sm"
-						>
-							{group.entries.length} {plural(group.entries.length, "record")} in this
-							table {plural(group.entries.length, "has", "have")} issues related to{" "}
-							{kind.label.toLowerCase()}.
-						</Text>
-						<Group mt="md">
-							<Button
-								size="xs"
-								color="slate"
-								variant="light"
-								onClick={handleDownloadRecords}
-								rightSection={<Icon path={iconDownload} />}
+					{/* Error message */}
+					{group.entries[0] && (
+						<Box>
+							<Text
+								fw={600}
+								size="sm"
 							>
-								Download affected record IDs
-							</Button>
-						</Group>
+								{group.entries[0].source.error}
+							</Text>
+							<Text
+								c="dimmed"
+								size="sm"
+								mt={4}
+							>
+								{group.entries[0].source.details}
+							</Text>
+						</Box>
+					)}
+
+					{/* Download */}
+					<Box>
+						<Button
+							size="xs"
+							color="violet"
+							variant="light"
+							onClick={handleDownloadRecords}
+							rightSection={<Icon path={iconDownload} />}
+						>
+							Download affected record IDs
+						</Button>
 					</Box>
 				</Stack>
 			</Paper>
