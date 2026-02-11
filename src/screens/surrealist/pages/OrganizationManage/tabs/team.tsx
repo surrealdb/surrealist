@@ -107,8 +107,14 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 					)
 				}
 			>
-				<Paper p="md">
-					<Table className={classes.table}>
+				<Paper
+					p="md"
+					withBorder
+				>
+					<Table
+						className={classes.table}
+						verticalSpacing="md"
+					>
 						<Table.Tbody>
 							{membersQuery.data?.map((member) => {
 								const isSelf = member.user_id === userId;
@@ -117,18 +123,21 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 
 								return (
 									<Table.Tr key={member.user_id}>
-										<Table.Td c="bright">
+										<Table.Td>
 											<Group>
 												<Avatar
 													src={member.profile_picture}
 													name={member.name}
-													radius="sm"
 												/>
 												<Box>
 													<Group gap="sm">
-														<Text fw={500}>{member.name}</Text>
+														<Text
+															fw={500}
+															c="bright"
+														>
+															{member.name}
+														</Text>
 														<Badge
-															color="slate"
 															variant="light"
 															size="sm"
 														>
@@ -221,7 +230,6 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Group gap="sm">
 							Pending invitations
 							<Badge
-								color="slate"
 								variant="light"
 								size="sm"
 							>
@@ -231,16 +239,23 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 					}
 					description="Sent invitations awaiting acceptance"
 				>
-					<Paper p="md">
+					<Paper
+						p="md"
+						withBorder
+					>
 						<Table className={classes.table}>
 							<Table.Tbody>
 								{invitations.map((invite) => (
 									<Table.Tr key={invite.code}>
 										<Table.Td c="bright">
 											<Group gap="sm">
-												<Text fw={500}>{invite.email}</Text>
+												<Text
+													fw={500}
+													c="bright"
+												>
+													{invite.email}
+												</Text>
 												<Badge
-													color="slate"
 													variant="light"
 													size="sm"
 												>

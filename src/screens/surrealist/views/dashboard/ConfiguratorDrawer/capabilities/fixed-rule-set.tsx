@@ -159,17 +159,20 @@ export function FixedRuleSetCapability({
 
 					<Paper
 						my="xl"
-						bg={isLight ? "slate.0" : "slate.7"}
+						bg={isLight ? "obsidian.0" : "obsidian.8"}
 						p="md"
+						withBorder
 					>
 						<Group>
 							<ThemeIcon
-								radius="xs"
 								size="lg"
 								color="slate"
 								variant="light"
 							>
-								<Icon path={noteIcon} />
+								<Icon
+									path={noteIcon}
+									size="sm"
+								/>
 							</ThemeIcon>
 							<Box>
 								<Text

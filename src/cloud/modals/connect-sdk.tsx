@@ -293,7 +293,7 @@ function ConnectSdkModal({ instance, namespace, database }: ConnectSdkModalProps
 			<CodeSnippet
 				language={lang}
 				values={installation}
-				editorLanguage="sh"
+				editorLanguage="cli"
 			/>
 
 			<Text

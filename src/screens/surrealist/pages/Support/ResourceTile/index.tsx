@@ -1,4 +1,4 @@
-import { Badge, Box, Group, Image, Paper, Text } from "@mantine/core";
+import { Anchor, Badge, Box, Group, Image, Paper, Text } from "@mantine/core";
 
 export interface ResourceTileProps {
 	name: string;
@@ -10,40 +10,52 @@ export interface ResourceTileProps {
 
 export function ResourceTile({ name, description, image, badge, onClick }: ResourceTileProps) {
 	return (
-		<Paper
-			p="lg"
-			radius="md"
-			variant="interactive"
+		<Anchor
+			variant="glow"
 			onClick={onClick}
 		>
-			<Group wrap="nowrap">
-				<Image
-					src={image}
-					w={52}
-					h={52}
-				/>
-				<Box>
-					<Group gap="xs">
-						<Text
-							c="bright"
-							fw={600}
-							fz="xl"
-						>
-							{name}
-						</Text>
-						{badge && (
-							<Badge
-								variant="gradient"
-								color="surreal"
-								size="sm"
+			<Paper
+				p="lg"
+				radius="md"
+				withBorder
+			>
+				<Group
+					wrap="nowrap"
+					gap="lg"
+				>
+					<Image
+						src={image}
+						w={38}
+						h={38}
+					/>
+					<Box>
+						<Group gap="xs">
+							<Text
+								c="bright"
+								fw={600}
+								fz="lg"
 							>
-								{badge}
-							</Badge>
-						)}
-					</Group>
-					<Text mt="xs">{description}</Text>
-				</Box>
-			</Group>
-		</Paper>
+								{name}
+							</Text>
+							{badge && (
+								<Badge
+									variant="gradient"
+									color="violet"
+									size="sm"
+								>
+									{badge}
+								</Badge>
+							)}
+						</Group>
+						<Text
+							mt="xs"
+							fz="xs"
+						>
+							{description}
+						</Text>
+					</Box>
+				</Group>
+			</Paper>
+		</Anchor>
 	);
 }

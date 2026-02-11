@@ -12,6 +12,7 @@ import "../assets/styles/fonts.scss";
 import "../assets/styles/global.scss";
 import "../assets/styles/override.scss";
 import "../assets/styles/variants.scss";
+import "../assets/styles/markdown.scss";
 
 import "../adapter";
 

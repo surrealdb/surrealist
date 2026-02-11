@@ -148,7 +148,6 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 											>
 												<ThemeIcon
 													color="orange"
-													variant="subtle"
 													size="sm"
 												>
 													<Icon path={iconWarning} />
@@ -256,7 +255,6 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
 					variant="light"
 					flex={1}
 				>

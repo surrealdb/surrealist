@@ -175,7 +175,7 @@ export function DocumentationModal() {
 							>
 								<Box p={4}>
 									<PrimaryTitle>{doc.title}</PrimaryTitle>
-									<Text c="surreal">{doc.url}</Text>
+									<Text c="violet">{doc.url}</Text>
 									<Text
 										style={{
 											textWrap: "wrap",

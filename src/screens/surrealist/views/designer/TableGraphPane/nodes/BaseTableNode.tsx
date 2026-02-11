@@ -208,7 +208,7 @@ function FieldKind({ kind }: FieldKindProps) {
 
 	const value = (
 		<Text
-			c="surreal.6"
+			c="violet.6"
 			ff="mono"
 			maw="50%"
 			truncate

@@ -28,7 +28,7 @@ import {
 } from "@surrealdb/ui";
 import { ChangeEvent } from "react";
 import { navigate } from "wouter/use-browser-location";
-import glow from "~/assets/images/glow.webp";
+import glow from "~/assets/images/glow.png";
 import {
 	getBillingProviderAction,
 	isBillingManaged,
@@ -140,8 +140,8 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 		<>
 			<Paper
 				className={classes.confirmBox}
-				variant="gradient"
 				p="xl"
+				withBorder
 			>
 				<Image
 					src={glow}
@@ -157,7 +157,10 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						miw={250}
 					>
 						<PrimaryTitle>We're nearly there!</PrimaryTitle>
-						<Text mt="xs">
+						<Text
+							mt="xs"
+							fz="sm"
+						>
 							Please confirm whether the presented details are correct.
 						</Text>
 						<Button
@@ -285,9 +288,9 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 			{isFree ? (
 				<Paper
 					className={classes.freeBox}
-					variant="gradient"
 					mt="md"
 					p="xl"
+					withBorder
 				>
 					<Stack gap={0}>
 						<Text
@@ -340,53 +343,54 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 				</>
 			) : (
 				<Paper
-					variant="gradient"
 					mt="md"
 					p={4}
 					pr="xl"
+					withBorder
 				>
 					<Flex
 						wrap="nowrap"
 						direction={{ base: "column", sm: "row" }}
 						align={{ base: "start", sm: "center" }}
 					>
-						<Alert
-							flex={1}
-							color="slate"
-							variant="subtle"
-							icon={<Icon path={iconCreditCard} />}
-							title="Billing & payment information available"
+						<Group
+							w="100%"
+							p="md"
+							gap="lg"
+							align="start"
 						>
-							<Text>
-								Your billing and payment information is already set up for this
-								organisation.
-							</Text>
+							<Icon path={iconCreditCard} />
+							<Stack gap="xs">
+								<Text
+									fw={600}
+									c="bright"
+								>
+									Billing & payment information available
+								</Text>
+								<Text fz="xs">
+									Your billing and payment information is already set up for this
+									organisation.
+								</Text>
+							</Stack>
+							<Spacer />
 							{!isManaged && (
 								<Button
 									mt="md"
 									size="xs"
-									hiddenFrom="sm"
 									color="slate"
 									variant="light"
-									rightSection={<Icon path={iconArrowUpRight} />}
+									rightSection={
+										<Icon
+											size="sm"
+											path={iconArrowUpRight}
+										/>
+									}
 									onClick={() => navigate(`/o/${organisation.id}/billing`)}
 								>
 									Update billing details
 								</Button>
 							)}
-						</Alert>
-						{!isManaged && (
-							<Button
-								size="xs"
-								visibleFrom="sm"
-								color="slate"
-								variant="light"
-								rightSection={<Icon path={iconArrowUpRight} />}
-								onClick={() => navigate(`/o/${organisation.id}/billing`)}
-							>
-								Update billing details
-							</Button>
-						)}
+						</Group>
 					</Flex>
 				</Paper>
 			)}

@@ -7,6 +7,7 @@ import { PricingConfigCloud, useCloudPricingQuery } from "~/cloud/queries/pricin
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { PricingCard } from "~/screens/surrealist/components/PricingCard";
+import classes from "../style.module.scss";
 import { StepProps } from "../types";
 
 export function PlanStep({ organisation, instances, setDetails, setStep }: StepProps) {
@@ -49,6 +50,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 			<SimpleGrid
 				cols={{ base: 1, sm: 2, lg: 3 }}
 				spacing="xl"
+				className={classes.content}
 			>
 				{showFree &&
 					(pricingQuery.isSuccess ? (

@@ -9,7 +9,7 @@ export function SurrealIcon(props: ElementProps<"svg">) {
 		>
 			<title>Surreal icon</title>
 			<linearGradient
-				id="surreal"
+				id="violet"
 				x1="1"
 				y1="6"
 				x2="127"

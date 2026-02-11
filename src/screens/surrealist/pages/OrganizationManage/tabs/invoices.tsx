@@ -21,7 +21,10 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 			title="Invoices"
 			description="View and download invoices of service charges"
 		>
-			<Paper p="md">
+			<Paper
+				p="md"
+				withBorder
+			>
 				{invoiceQuery.isPending ? (
 					<Stack>
 						<Skeleton height={40} />
@@ -30,14 +33,6 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 					</Stack>
 				) : invoiceQuery.data?.length ? (
 					<Table className={classes.table}>
-						{/* <Table.Thead>
-				<Table.Tr>
-					<Table.Th>Invoice date</Table.Th>
-					<Table.Th>Status</Table.Th>
-					<Table.Th>Amount</Table.Th>
-					<Table.Th w={0}>Actions</Table.Th>
-				</Table.Tr>
-			</Table.Thead> */}
 						<Table.Tbody>
 							{invoiceQuery.data?.map((invoice) => {
 								const status = INVOICE_STATUSES[invoice.status];

@@ -45,7 +45,7 @@ export function RecordLink({ value, withOpen, ...rest }: RecordLinkProps) {
 		<Group
 			{...rest}
 			wrap="nowrap"
-			c="surreal.5"
+			c="violet.5"
 			gap={0}
 			onClick={handleOpen}
 			style={{

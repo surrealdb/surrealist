@@ -91,7 +91,7 @@ export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProp
 								onChange={setValue}
 								marks={marks}
 								label={labelize}
-								color="slate"
+								color="violet"
 								styles={{
 									label: {
 										paddingInline: 10,

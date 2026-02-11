@@ -131,8 +131,7 @@ export function CloudAccount() {
 					<Paper
 						p="sm"
 						mb="xs"
-						bg="slate.8"
-						radius="xs"
+						bg="obsidian.8"
 						style={{ userSelect: "text", WebkitUserSelect: "text" }}
 					>
 						<Group>

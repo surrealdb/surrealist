@@ -9,6 +9,7 @@ import { DeploymentSection } from "../sections/instance";
 import { StartingDataSection } from "../sections/start-data";
 import { StorageOptionsSection } from "../sections/storage";
 import { InstanceTypeSection } from "../sections/type";
+import classes from "../style.module.scss";
 import { StepProps } from "../types";
 
 interface WarningAlertProps extends AlertProps {
@@ -125,6 +126,7 @@ export function ConfigureStep({
 				<SimpleGrid
 					spacing={{ base: 36, xl: 64 }}
 					cols={{ base: 1, xl: 2 }}
+					className={classes.content}
 				>
 					<Stack gap={36}>
 						<DeploymentSection

@@ -28,7 +28,7 @@ export const GeographyLink = ({ value, text, ...rest }: GeographyLinkProps) => {
 			<Group
 				{...rest}
 				wrap="nowrap"
-				c="surreal.5"
+				c="violet.5"
 				gap={0}
 				onClick={handleOpen}
 				style={{

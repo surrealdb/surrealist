@@ -53,9 +53,9 @@ export function BaseAreaChart({
 			p="xl"
 			gap={24}
 			component={Stack}
-			variant="gradient"
 			pos="relative"
 			h={height ?? 280}
+			withBorder
 		>
 			<Group gap="xs">
 				<Text

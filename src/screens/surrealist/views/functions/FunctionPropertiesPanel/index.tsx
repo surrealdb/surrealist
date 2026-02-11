@@ -92,7 +92,7 @@ export function FunctionPropertiesPanel({
 								<Flex>
 									<Text
 										fz={15}
-										c="surreal"
+										c="violet"
 										ff="mono"
 									>
 										fn::

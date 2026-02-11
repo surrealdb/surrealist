@@ -8,6 +8,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { JSON_FILTER } from "~/constants";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { parseCapabilities, transformCapabilities } from "~/util/capabilities";
 import { showErrorNotification } from "~/util/helpers";
@@ -27,10 +28,13 @@ interface ImportExportCardProps {
 }
 
 function ImportExportCard({ title, description, icon, onClick }: ImportExportCardProps) {
+	const isLight = useIsLight();
+
 	return (
 		<Paper
-			variant="interactive"
 			p="md"
+			bg={isLight ? "obsidian.0" : "obsidian.8"}
+			withBorder
 			onClick={onClick}
 		>
 			<Group justify="space-between">
@@ -209,7 +213,6 @@ export function ImportExport({ instance, onClose }: ImportExportProps) {
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
 					variant="light"
 					flex={1}
 				>

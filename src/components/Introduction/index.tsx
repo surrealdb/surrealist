@@ -1,7 +1,6 @@
-import { Box, Center, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
-import { Icon } from "@surrealdb/ui";
+import { Box, Center, Divider, Group, Paper, Stack, Text } from "@mantine/core";
+import { CodeBlock, Icon } from "@surrealdb/ui";
 import type { PropsWithChildren, ReactNode } from "react";
-import { CodePreview } from "../CodePreview";
 import { Spacer } from "../Spacer";
 
 export interface IntroductionProps {
@@ -41,11 +40,14 @@ export function Introduction({
 					gap="xl"
 				>
 					<Group>
-						<Icon
-							path={icon}
-							size={1.35}
-						/>
-						<Title c="bright">{title}</Title>
+						<Icon path={icon} />
+						<Text
+							c="bright"
+							fz="xl"
+							fw={600}
+						>
+							{title}
+						</Text>
 						<Spacer />
 						{rightSection}
 					</Group>
@@ -63,11 +65,9 @@ export function Introduction({
 							>
 								{snippet.title ?? "Example"}
 							</Text>
-							<CodePreview
-								withCopy
+							<CodeBlock
 								value={snippet.code}
-								language={snippet.language}
-								withDedent={snippet.dedent !== false}
+								lang={snippet.language}
 							/>
 						</Box>
 					</>

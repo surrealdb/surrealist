@@ -1,5 +1,4 @@
-import { Box, Checkbox, Group, Paper, Stack, Text } from "@mantine/core";
-import { Icon, iconArrowLeft } from "@surrealdb/ui";
+import { Anchor, Box, Button, Checkbox, Group, Paper, Stack, Text } from "@mantine/core";
 import clsx from "clsx";
 import { PricingConfigBase, PricingConfigCloud } from "~/cloud/queries/pricing";
 import { Label } from "~/components/Label";
@@ -35,15 +34,9 @@ export function PricingCard({
 	}
 
 	return (
-		<Paper
-			p="xl"
-			role="button"
-			tabIndex={0}
-			variant={disabled ? "disabled" : state === "future" ? "gradient" : "interactive"}
-			className={clsx(
-				recommended && classes.planRecommended,
-				state === "future" && classes.planDisabled,
-			)}
+		<Anchor
+			h="100%"
+			variant={!disabled && state !== "future" ? "glow" : undefined}
 			onClick={() => {
 				if (state === "contact") {
 					dispatchIntent("create-message", {
@@ -56,115 +49,162 @@ export function PricingCard({
 					onClick(config);
 				}
 			}}
+			style={{
+				cursor: disabled ? "not-allowed" : state === "future" ? "default" : "pointer",
+			}}
 		>
-			<Stack h="100%">
-				<Box>
-					<Text fz={22}>{config.name}</Text>
-					{state === "contact" ? (
-						<PrimaryTitle fz={22}>Contact us</PrimaryTitle>
-					) : state === "future" ? (
-						<PrimaryTitle fz={22}>Coming soon</PrimaryTitle>
-					) : config.price === 0 ? (
-						<PrimaryTitle fz={22}>Free</PrimaryTitle>
-					) : typeof config.price === "string" ? (
-						<PrimaryTitle fz={22}>{config.price}</PrimaryTitle>
-					) : (
-						<Box>
-							<Group
-								align="end"
-								gap="xs"
-							>
-								<Text
-									size="md"
-									lh={2.25}
-								>
-									Starts at
-								</Text>
-								<PrimaryTitle fz={22}>
-									{CURRENCY_FORMAT.format(config.price ?? 0)}
-								</PrimaryTitle>
-								<Text
-									size="md"
-									lh={2.25}
-								>
-									/ per hour
-								</Text>
-							</Group>
-						</Box>
-					)}
-				</Box>
-				<Text>{config.description}</Text>
-				<Label mt="xl">What you get</Label>
-				<Stack>
-					{config.features.map((feat) => (
-						<Group
-							gap="sm"
-							c="bright"
-							key={feat.name}
-						>
-							<Checkbox
-								readOnly
-								checked
-								size="xs"
-							/>
-							{feat.name}
-							{feat.comingSoon && (
-								<Text
-									fz={18}
-									c="slate"
-									lh={0}
-									ml="-xs"
-								>
-									*
-								</Text>
-							)}
-						</Group>
-					))}
-				</Stack>
-				{isCloudConfig(config) && (
-					<>
-						<Label mt="xl">Resources</Label>
-						<Stack>
-							{config.resources.map((resource) => (
-								<Group
-									gap="sm"
-									c="bright"
-									key={resource}
-								>
-									<Checkbox
-										readOnly
-										checked
-										size="xs"
-									/>
-									{resource}
-								</Group>
-							))}
-						</Stack>
-					</>
+			<Paper
+				h="100%"
+				p="xl"
+				role="button"
+				tabIndex={0}
+				className={clsx(
+					recommended && classes.planRecommended,
+					state === "future" && classes.planDisabled,
 				)}
-				<Spacer />
-				<Group
-					mt="md"
-					gap="xs"
-					justify="end"
-					c={disabled ? "slate" : state === "future" ? "slate" : "surreal"}
-				>
-					<Text inherit>
+			>
+				<Stack h="100%">
+					<Box>
+						<Text
+							fz={22}
+							c="violet"
+						>
+							{config.name}
+						</Text>
+						{state === "contact" ? (
+							<Text
+								fz={22}
+								fw={600}
+								variant="gradient"
+							>
+								Contact us
+							</Text>
+						) : state === "future" ? (
+							<Text
+								fz={22}
+								fw={600}
+								variant="gradient"
+							>
+								Coming soon
+							</Text>
+						) : config.price === 0 ? (
+							<Text
+								fz={22}
+								fw={600}
+								c="bright"
+							>
+								Free
+							</Text>
+						) : typeof config.price === "string" ? (
+							<Text
+								fz={22}
+								fw={600}
+								c="bright"
+							>
+								{config.price}
+							</Text>
+						) : (
+							<Box>
+								<Group
+									align="end"
+									gap="xs"
+								>
+									<Text
+										size="md"
+										lh={2.25}
+									>
+										Starts at
+									</Text>
+									<PrimaryTitle fz={22}>
+										{CURRENCY_FORMAT.format(config.price ?? 0)}
+									</PrimaryTitle>
+									<Text
+										size="md"
+										lh={2.25}
+									>
+										/ per hour
+									</Text>
+								</Group>
+							</Box>
+						)}
+					</Box>
+					<Text>{config.description}</Text>
+					<Label mt="xl">What you get</Label>
+					<Stack>
+						{config.features.map((feat) => (
+							<Group
+								gap="sm"
+								c="bright"
+								key={feat.name}
+							>
+								<Checkbox
+									readOnly
+									checked
+									size="sm"
+									variant="gradient"
+									styles={{
+										icon: {
+											width: 9,
+										},
+									}}
+								/>
+								{feat.name}
+								{feat.comingSoon && (
+									<Text
+										fz={18}
+										c="slate"
+										lh={0}
+										ml="-xs"
+									>
+										*
+									</Text>
+								)}
+							</Group>
+						))}
+					</Stack>
+					{isCloudConfig(config) && (
+						<>
+							<Label mt="xl">Resources</Label>
+							<Stack>
+								{config.resources.map((resource) => (
+									<Group
+										gap="sm"
+										c="bright"
+										key={resource}
+									>
+										<Checkbox
+											readOnly
+											checked
+											size="sm"
+											variant="gradient"
+											styles={{
+												icon: {
+													width: 9,
+												},
+											}}
+										/>
+										{resource}
+									</Group>
+								))}
+							</Stack>
+						</>
+					)}
+					<Spacer />
+					<Button
+						size="lg"
+						fullWidth
+						disabled={disabled || state === "future"}
+					>
 						{actionText ??
 							(state === "available"
 								? ctaText
 								: state === "future"
 									? "Coming soon"
 									: "Contact us")}
-					</Text>
-					<Icon
-						className={classes.startBlogArrow}
-						path={iconArrowLeft}
-						flip="horizontal"
-					/>
-				</Group>
-			</Stack>
-		</Paper>
+					</Button>
+				</Stack>
+			</Paper>
+		</Anchor>
 	);
 }
 

@@ -101,7 +101,7 @@ export function ConversationUser({
 							<Badge
 								size="sm"
 								variant="light"
-								color="surreal"
+								color="violet"
 							>
 								Org
 							</Badge>

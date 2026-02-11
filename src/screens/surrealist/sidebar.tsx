@@ -8,10 +8,9 @@ import {
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
-import { iconArrowLeft, iconCog, iconHelp, iconSearch } from "@surrealdb/ui";
+import { iconArrowLeft, iconCog, iconHelp, iconSearch, pictoSurrealist } from "@surrealdb/ui";
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
-import iconUrl from "~/assets/images/icon.webp";
 import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
@@ -144,7 +143,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 			top={0}
 			left={0}
 			bottom={0}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "obsidian.0" : "obsidian.9"}
 			onMouseEnter={hoverSidebarHandle.open}
 			className={clsx(
 				classes.sidebar,
@@ -172,14 +171,13 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 						style={{ flexShrink: 0 }}
 					>
 						<Image
-							src={iconUrl}
-							w={42}
-							className={classes.hat}
+							src={pictoSurrealist}
+							w={45}
 						/>
 						<Image
 							src={logoUrl}
 							style={{ flexShrink: 0 }}
-							w={118}
+							w={128}
 							ml={14}
 						/>
 					</Flex>
@@ -200,7 +198,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 								onMouseEnter={hoverSidebarHandle.open}
 								withTooltip={sidebarMode === "compact"}
 							/>
-							<Divider color={isLight ? "slate.2" : "slate.7"} />
+							<Divider color={isLight ? "obsidian.2" : "obsidian.7"} />
 						</>
 					)}
 
@@ -223,7 +221,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 								</Group>
 							))}
 							{i < navigation.length - 1 && (
-								<Divider color={isLight ? "slate.2" : "slate.7"} />
+								<Divider color={isLight ? "obsidian.2" : "obsidian.7"} />
 							)}
 						</Fragment>
 					))}

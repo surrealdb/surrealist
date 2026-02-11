@@ -10,5 +10,31 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 				withCloseButton: false,
 			},
 		},
+		Title: {
+			defaultProps: {
+				fz: "xl",
+				c: "bright",
+			},
+		},
 	},
 };
+
+/**
+ * Returns the variable for a Mantine color
+ *
+ * @param name The name of the color, with optional shade
+ * @returns The variable name
+ */
+export function themeColor(name: string) {
+	let value: string;
+
+	if (name === "white" || name === "black") {
+		value = name;
+	} else if (name.includes(".")) {
+		value = name.replace(".", "-");
+	} else {
+		value = `${name}-6`;
+	}
+
+	return `var(--mantine-color-${value})`;
+}

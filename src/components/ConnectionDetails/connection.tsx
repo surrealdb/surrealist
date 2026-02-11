@@ -42,10 +42,7 @@ export function ConnectionNameDetails({ value, onChange }: ConnectionNameDetails
 								aria-label="Customize icon"
 								size="lg"
 							>
-								<Icon
-									path={USER_ICONS[value.icon]}
-									size="lg"
-								/>
+								<Icon path={USER_ICONS[value.icon]} />
 							</ActionIcon>
 						</Tooltip>
 					</Popover.Target>

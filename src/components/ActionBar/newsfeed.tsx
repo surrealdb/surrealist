@@ -12,7 +12,6 @@ export function NewsFeed() {
 			<ActionButton
 				w={36}
 				h={36}
-				radius="md"
 				variant="subtle"
 				label="Latest news"
 				tooltipProps={{

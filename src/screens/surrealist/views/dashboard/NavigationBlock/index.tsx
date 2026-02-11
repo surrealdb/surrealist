@@ -1,4 +1,4 @@
-import { Box, Group, Paper, SimpleGrid, Skeleton, Text, ThemeIcon } from "@mantine/core";
+import { Anchor, Box, Group, Paper, SimpleGrid, Skeleton, Text, ThemeIcon } from "@mantine/core";
 import {
 	Icon,
 	iconAuth,
@@ -9,7 +9,6 @@ import {
 } from "@surrealdb/ui";
 import { Link } from "wouter";
 import { Spacer } from "~/components/Spacer";
-import { useIsLight } from "~/hooks/theme";
 import classes from "./style.module.scss";
 
 export interface NavigationBlockProps {
@@ -25,7 +24,7 @@ export function NavigationBlock({ isLoading }: NavigationBlockProps) {
 			<Link href="query">
 				<NavigationBox
 					icon={iconQuery}
-					color="surreal"
+					color="violet"
 					title="Run queries"
 					description="Query your database"
 					isLoading={isLoading}
@@ -71,43 +70,46 @@ interface NavigationBoxProps {
 }
 
 function NavigationBox({ icon, color, title, description, isLoading }: NavigationBoxProps) {
-	const isLight = useIsLight();
-
 	return (
 		<Skeleton visible={isLoading}>
-			<Paper
-				p="md"
-				variant="interactive"
-				className={classes.navigationBox}
-			>
-				<Group wrap="nowrap">
-					<ThemeIcon
-						variant="light"
-						bg={isLight ? undefined : "slate"}
-						radius="xs"
-						color={color}
-						size={38}
-					>
-						<Icon
-							path={icon}
-							size="xl"
-						/>
-					</ThemeIcon>
-					<Box>
-						<Text
-							c="bright"
-							fw={600}
-							fz="xl"
-							lh={1}
+			<Anchor variant="glow">
+				<Paper
+					p="md"
+					withBorder
+					className={classes.navigationBox}
+				>
+					<Group wrap="nowrap">
+						<ThemeIcon
+							variant="light"
+							color={color}
+							size={38}
 						>
-							{title}
-						</Text>
-						<Text mt="xs">{description}</Text>
-					</Box>
-					<Spacer />
-					<Icon path={iconChevronRight} />
-				</Group>
-			</Paper>
+							<Icon
+								path={icon}
+								size="lg"
+							/>
+						</ThemeIcon>
+						<Box>
+							<Text
+								c="bright"
+								fw={700}
+								fz="md"
+								lh={1}
+							>
+								{title}
+							</Text>
+							<Text
+								mt="xs"
+								fz="xs"
+							>
+								{description}
+							</Text>
+						</Box>
+						<Spacer />
+						<Icon path={iconChevronRight} />
+					</Group>
+				</Paper>
+			</Anchor>
 		</Skeleton>
 	);
 }

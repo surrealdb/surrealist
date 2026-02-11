@@ -80,7 +80,10 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 									</Center>
 								)}
 								{!areTicketsLoading && pageSlice && pageSlice.length > 0 && (
-									<Paper p="lg">
+									<Paper
+										p="lg"
+										withBorder
+									>
 										<Stack>
 											{pageSlice
 												?.sort((a, b) => b.updated_at - a.updated_at)
@@ -153,7 +156,10 @@ function SupportPlan({ name, description, organization }: SupportPlanProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Paper p="xl">
+		<Paper
+			p="xl"
+			withBorder
+		>
 			<Group>
 				<Box flex={1}>
 					<PrimaryTitle>{name}</PrimaryTitle>

@@ -1,6 +1,5 @@
-import { Box, Group, Image, Paper, Text } from "@mantine/core";
+import { Anchor, Box, Group, Image, Paper, Text } from "@mantine/core";
 import { pictoSurrealDB } from "@surrealdb/ui";
-import { Link } from "wouter";
 import { IntercomSupportCollectionShallow } from "~/types";
 
 export interface SupportCollectionProps {
@@ -9,20 +8,20 @@ export interface SupportCollectionProps {
 
 export function SupportCollection({ collection }: SupportCollectionProps) {
 	return (
-		<Link
+		<Anchor
 			href={`/support/collections/${collection.id}`}
-			style={{
-				color: "unset",
-			}}
+			variant="glow"
 		>
 			<Paper
 				p="lg"
 				radius="md"
-				variant="interactive"
+				withBorder
 			>
-				<Group wrap="nowrap">
+				<Group
+					wrap="nowrap"
+					gap="lg"
+				>
 					<Image
-						mx="sm"
 						src={collection.image ?? pictoSurrealDB}
 						w={35}
 						h={35}
@@ -31,14 +30,20 @@ export function SupportCollection({ collection }: SupportCollectionProps) {
 						<Text
 							c="bright"
 							fw={600}
-							fz="xl"
+							fz="lg"
 						>
 							{collection.name}
 						</Text>
-						<Text mt="xs">{collection.description}</Text>
+						<Text
+							c="dimmed"
+							mt="xs"
+							fz="xs"
+						>
+							{collection.description}
+						</Text>
 					</Box>
 				</Group>
 			</Paper>
-		</Link>
+		</Anchor>
 	);
 }

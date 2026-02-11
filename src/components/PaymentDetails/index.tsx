@@ -89,13 +89,13 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 	return (
 		<Paper
 			p="xl"
-			variant="gradient"
+			withBorder
 			{...rest}
 		>
 			<Group>
 				<Icon
 					path={iconCreditCard}
-					size="xl"
+					size="lg"
 				/>
 				<Text
 					fz="xl"

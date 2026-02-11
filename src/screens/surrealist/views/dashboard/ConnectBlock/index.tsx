@@ -1,4 +1,4 @@
-import { Box, Group, Paper, Skeleton, Text, ThemeIcon } from "@mantine/core";
+import { Anchor, Box, Group, Paper, Skeleton, Stack, Text, ThemeIcon } from "@mantine/core";
 import { Icon, iconChevronRight, iconConsole, iconTransfer, iconXml } from "@surrealdb/ui";
 import { openConnectCli } from "~/cloud/modals/connect-cli";
 import { openConnectCurl } from "~/cloud/modals/connect-curl";
@@ -21,44 +21,46 @@ function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectAct
 			visible={isLoading}
 			display="grid"
 		>
-			<Paper
-				className={classes.action}
-				onClick={onClick}
-				variant="interactive"
+			<Anchor
 				component="button"
 				type="button"
+				variant="glow"
+				onClick={onClick}
+				className={classes.action}
 			>
-				<Group
-					wrap="nowrap"
-					h="100%"
-					px="xs"
+				<Paper
+					withBorder
+					p="md"
 				>
-					<ThemeIcon
-						color="slate"
-						variant="light"
-						size={40}
+					<Group
+						wrap="nowrap"
+						h="100%"
+						px="xs"
 					>
-						<Icon
-							path={icon}
-							size="lg"
-						/>
-					</ThemeIcon>
-					<Box flex={1}>
-						<Text
-							c="bright"
-							fw={600}
-							fz="xl"
+						<ThemeIcon
+							color="slate"
+							variant="light"
+							size={40}
 						>
-							{title}
-						</Text>
-						<Text>{subtitle}</Text>
-					</Box>
-					<Icon
-						path={iconChevronRight}
-						ml="md"
-					/>
-				</Group>
-			</Paper>
+							<Icon path={icon} />
+						</ThemeIcon>
+						<Box flex={1}>
+							<Text
+								c="bright"
+								fw={600}
+								fz="xl"
+							>
+								{title}
+							</Text>
+							<Text>{subtitle}</Text>
+						</Box>
+						<Icon
+							path={iconChevronRight}
+							ml="md"
+						/>
+					</Group>
+				</Paper>
+			</Anchor>
 		</Skeleton>
 	);
 }
@@ -75,12 +77,7 @@ export function ConnectBlock({ instance, isLoading }: ConnectBlockProps) {
 	]);
 
 	return (
-		<Box
-			style={{
-				display: "grid",
-				gap: "var(--mantine-spacing-xl)",
-			}}
-		>
+		<Stack gap="xl">
 			<ConnectAction
 				title="Connect with Surreal CLI"
 				subtitle="For commandline environments"
@@ -102,6 +99,6 @@ export function ConnectBlock({ instance, isLoading }: ConnectBlockProps) {
 				isLoading={isLoading}
 				onClick={() => instance && openConnectCurl(instance, namespace, database)}
 			/>
-		</Box>
+		</Stack>
 	);
 }

@@ -16,10 +16,9 @@ import { Icon, iconChevronRight, iconCursor, iconOpen, pictoSidekick } from "@su
 import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
-import glowImg from "~/assets/images/glow.png";
+import glowImg from "~/assets/images/radial-glow.png";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useSidekickStore } from "~/stores/sidekick";
 import { PrimaryTitle } from "../../PrimaryTitle";
 import { SIDEKICK_QUESTIONS } from "../helpers";
@@ -48,7 +47,6 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
 	const hasMessage = useMemo(() => currentPrompt.trim() !== "", [currentPrompt]);
-	const isLight = useIsLight();
 
 	const canSend = !stream.isResponding && hasMessage;
 
@@ -115,17 +113,17 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 								pos="absolute"
 								src={glowImg}
 								inset={0}
-								opacity={0.3}
+								opacity={0.5}
 								style={{
-									transform: "scale(2)",
+									transform: "scale(2.5)",
 									transition: "opacity 0.3s ease",
 								}}
 							/>
 							<Image
 								pos="relative"
 								src={pictoSidekick}
-								w={132}
-								h={132}
+								w={85}
+								h={85}
 							/>
 						</Box>
 						<PrimaryTitle
@@ -148,11 +146,12 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 										role="button"
 										radius={100}
 										tabIndex={0}
-										variant="interactive"
 										onClick={() => submitMessage(question.title)}
 										style={{
 											alignSelf: "stretch",
+											cursor: "pointer",
 										}}
+										withBorder
 									>
 										<Group
 											align="center"
@@ -247,10 +246,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 				px={padding ?? "xl"}
 				pb={padding ?? "xl"}
 			>
-				<Paper
-					bg={isLight ? "slate.0" : "slate.9"}
-					p="md"
-				>
+				<Paper p="md">
 					{/* <Group mb="xs">
 						<Button
 							leftSection={<Icon path={iconTable} />}
@@ -299,7 +295,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 							variant="unstyled"
 						/>
 						<ActionIcon
-							size="lg"
+							size="xl"
 							type="submit"
 							variant="gradient"
 							disabled={!canSend}
@@ -314,6 +310,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 							}}
 						>
 							<Icon
+								size="lg"
 								path={iconCursor}
 								c="white"
 							/>

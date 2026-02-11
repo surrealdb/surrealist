@@ -1,9 +1,8 @@
 import { Box, Button, Divider, Group, Stack, Text, Title } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { Icon, iconBug, iconWarning } from "@surrealdb/ui";
+import { CodeBlock, Icon, iconBug, iconWarning } from "@surrealdb/ui";
 import { ReactNode } from "react";
 import { adapter } from "~/adapter";
-import { CodePreview } from "~/components/CodePreview";
 import { Spacer } from "~/components/Spacer";
 
 /**
@@ -53,11 +52,13 @@ export async function openErrorModal(
 						<Stack gap="lg">
 							{additionalInfo.map((info) => (
 								<Box key={info.title}>
-									<Title order={3}>{info.title}</Title>
-									<CodePreview
-										value={info.content}
-										withCopy
-									/>
+									<Text
+										fz="lg"
+										fw={600}
+									>
+										{info.title}
+									</Text>
+									<CodeBlock value={info.content} />
 								</Box>
 							))}
 						</Stack>
@@ -66,32 +67,20 @@ export async function openErrorModal(
 					{message && (
 						<Box>
 							<Title order={3}>Message</Title>
-
-							<CodePreview
-								value={message}
-								withCopy
-							/>
+							<CodeBlock value={message} />
 						</Box>
 					)}
 					{cause && (
 						<Box>
 							<Title order={3}>Cause</Title>
-
-							<CodePreview
-								value={cause}
-								withCopy
-							/>
+							<CodeBlock value={cause} />
 						</Box>
 					)}
 
 					{trace && (
 						<Box>
 							<Title order={3}>Stack trace</Title>
-
-							<CodePreview
-								value={trace}
-								withCopy
-							/>
+							<CodeBlock value={trace} />
 						</Box>
 					)}
 

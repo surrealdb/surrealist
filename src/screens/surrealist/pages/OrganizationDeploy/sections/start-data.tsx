@@ -1,4 +1,4 @@
-import { Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Anchor, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Icon } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -69,26 +69,30 @@ function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCa
 	});
 
 	return (
-		<Paper
-			p="lg"
-			variant={disabled ? "disabled" : selected ? "selected" : "interactive"}
-			onClick={disabled ? undefined : handleSelect}
-			style={{
-				cursor: disabled ? "not-allowed" : "pointer",
-			}}
-			opacity={disabled ? 0.6 : 1}
-		>
-			<Stack gap="xs">
-				<Group>
-					<PrimaryTitle fz={18}>{data.title}</PrimaryTitle>
-					<Spacer />
-					<Icon
-						path={data.icon}
-						c="slate"
-					/>
-				</Group>
-				<Text>{data.description}</Text>
-			</Stack>
-		</Paper>
+		<Anchor variant="glow">
+			<Paper
+				p="lg"
+				radius="md"
+				onClick={disabled ? undefined : handleSelect}
+				style={{
+					cursor: disabled ? "not-allowed" : "pointer",
+					borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
+				}}
+				opacity={disabled ? 0.6 : 1}
+				withBorder
+			>
+				<Stack gap="xs">
+					<Group>
+						<PrimaryTitle fz={18}>{data.title}</PrimaryTitle>
+						<Spacer />
+						<Icon
+							path={data.icon}
+							c="slate"
+						/>
+					</Group>
+					<Text>{data.description}</Text>
+				</Stack>
+			</Paper>
+		</Anchor>
 	);
 }

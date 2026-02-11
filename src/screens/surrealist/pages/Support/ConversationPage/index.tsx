@@ -209,7 +209,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 			if (val.content_type) {
 				return (
 					<Text
-						c="surreal"
+						c="violet"
 						style={{ cursor: "pointer" }}
 						onClick={() => adapter.openUrl(val.url)}
 					>
@@ -256,7 +256,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 				return (
 					<Text
 						rel="noopener noreferrer"
-						c="surreal"
+						c="violet"
 						style={{ textDecoration: "underline", cursor: "pointer" }}
 						onClick={() => adapter.openUrl(val)}
 					>
@@ -270,7 +270,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 					<Text
 						component="a"
 						href={`mailto:${val}`}
-						c="surreal"
+						c="violet"
 						style={{ textDecoration: "underline" }}
 					>
 						{val}

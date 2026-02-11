@@ -48,7 +48,7 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 						<Indicator
 							inset={0}
 							size={8}
-							color="surreal"
+							color="violet"
 						/>
 					)}
 				</Group>

@@ -93,6 +93,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 							mx="auto"
 							maw={1200}
 							pb={68}
+							className={classes.content}
 						>
 							{organization && (
 								<>
@@ -169,6 +170,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 									) : null}
 									<Tabs
 										mt="xl"
+										variant="gradient"
 										value={tab}
 										onChange={(value) => {
 											if (value) {
@@ -176,7 +178,11 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											}
 										}}
 									>
-										<Tabs.List>
+										<Tabs.List
+											mb="md"
+											bg="transparent"
+											bd="none"
+										>
 											<Tabs.Tab
 												value="instances"
 												leftSection={<Icon path={iconServer} />}
@@ -240,7 +246,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											)}
 										</Tabs.List>
 
-										<Divider my="xl" />
+										<Divider mb="xl" />
 
 										<Tabs.Panel value="instances">
 											<OrganizationInstancesTab organization={organization} />

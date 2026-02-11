@@ -23,7 +23,6 @@ export function SidekickAction() {
 				<ActionButton
 					w={36}
 					h={36}
-					radius="md"
 					variant="subtle"
 					label="Sidekick AI"
 					tooltipProps={{

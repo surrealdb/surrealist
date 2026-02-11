@@ -2,7 +2,7 @@ import { Button, Checkbox, Group, Stack, Text } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
 import { Icon, iconCheck } from "@surrealdb/ui";
 import { Fragment, useState } from "react";
-import glowUrl from "~/assets/images/gradient-glow.webp";
+import glowUrl from "~/assets/images/glow.png";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";

@@ -1,4 +1,5 @@
 import {
+	Anchor,
 	Box,
 	Button,
 	Checkbox,
@@ -23,6 +24,7 @@ import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstanceType } from "~/types";
 import { getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory, optional } from "~/util/helpers";
+import classes from "../style.module.scss";
 import { DeploySectionProps } from "../types";
 
 export function InstanceTypeSection({ organisation, details, setDetails }: DeploySectionProps) {
@@ -105,6 +107,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 			<SimpleGrid
 				cols={{ base: 1, xs: 2, md: 3 }}
 				spacing="xl"
+				className={classes.content}
 			>
 				{selected && !isRecommended ? (
 					<InstanceTypeCard
@@ -242,63 +245,77 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	const isActive = details.computeType === type.slug;
 
 	return (
-		<Paper
-			p="xl"
-			variant={isActive ? "selected" : "interactive"}
-			onClick={handleSelect}
-			aria-selected={isActive}
-			tabIndex={0}
-			role="radio"
-		>
-			<Group>
-				<Box flex={1}>
-					<Text
-						c="surreal"
-						fw={500}
-					>
-						{getTypeCategoryName(type.category)}
-					</Text>
-					<PrimaryTitle lh="h1">{type.display_name}</PrimaryTitle>
-				</Box>
-				<Group
-					gap={4}
-					align="start"
-				>
-					<Text
-						fz="xl"
-						fw={500}
-						c="bright"
-					>
-						{estimatedCost > 0 ? `${CURRENCY_FORMAT.format(estimatedCost)}` : "Free"}
-					</Text>
-					<Text
-						mt={6}
-						fz="sm"
-						fw={500}
-					>
-						/ hour
-					</Text>
-				</Group>
-			</Group>
-			<Divider my="xl" />
-			<Stack gap="xs">
-				{features.map((feature, i) => (
+		<Anchor variant="glow">
+			<Paper
+				p="xl"
+				radius="md"
+				onClick={handleSelect}
+				aria-selected={isActive}
+				tabIndex={0}
+				role="radio"
+				withBorder
+				style={{
+					borderColor: isActive ? "var(--mantine-color-violet-6)" : undefined,
+					cursor: isActive ? "default" : "pointer",
+				}}
+			>
+				<Group>
+					<Box flex={1}>
+						<Text
+							c="violet"
+							fw={500}
+						>
+							{getTypeCategoryName(type.category)}
+						</Text>
+						<PrimaryTitle lh="h1">{type.display_name}</PrimaryTitle>
+					</Box>
 					<Group
-						gap="xs"
-						key={i}
+						gap={4}
+						align="start"
 					>
-						<Checkbox
-							readOnly
-							checked
-							role="presentation"
-							tabIndex={-1}
-							size="xs"
-							mr="xs"
-						/>
-						{feature}
+						<Text
+							fz="xl"
+							fw={500}
+							c="bright"
+						>
+							{estimatedCost > 0
+								? `${CURRENCY_FORMAT.format(estimatedCost)}`
+								: "Free"}
+						</Text>
+						<Text
+							mt={6}
+							fz="sm"
+							fw={500}
+						>
+							/ hour
+						</Text>
 					</Group>
-				))}
-			</Stack>
-		</Paper>
+				</Group>
+				<Divider my="xl" />
+				<Stack gap="xs">
+					{features.map((feature, i) => (
+						<Group
+							key={i}
+							gap="xs"
+						>
+							<Checkbox
+								mr="xs"
+								readOnly
+								checked
+								size="sm"
+								variant="gradient"
+								styles={{
+									icon: {
+										width: 9,
+										color: "var(--mantine-color-bright)",
+									},
+								}}
+							/>
+							<Group>{feature}</Group>
+						</Group>
+					))}
+				</Stack>
+			</Paper>
+		</Anchor>
 	);
 }

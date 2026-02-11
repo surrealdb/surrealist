@@ -202,7 +202,8 @@ export function FreeRuleSetCapability({
 
 					<Paper
 						my="xl"
-						bg={isLight ? "slate.0" : "slate.7"}
+						bg={isLight ? "obsidian.0" : "obsidian.8"}
+						withBorder
 						p="md"
 					>
 						<Stack>

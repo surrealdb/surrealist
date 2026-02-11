@@ -149,7 +149,7 @@ export function showWarning(info: {
  */
 export function showInfo(info: { title: ReactNode; subtitle: ReactNode }) {
 	showNotification({
-		color: "surreal.6",
+		color: "violet.6",
 		message: (
 			<Stack gap={0}>
 				<Text

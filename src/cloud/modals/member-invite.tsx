@@ -103,7 +103,7 @@ function InviteModal({ organization }: InviteModalProps) {
 
 				<Text
 					fz="sm"
-					c="surreal"
+					c="violet"
 					style={{
 						cursor: "pointer",
 					}}

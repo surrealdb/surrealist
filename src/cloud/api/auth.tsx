@@ -297,7 +297,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 
 		if (invitationCode) {
 			showNotification({
-				color: "surreal",
+				color: "violet",
 				title: "Invitation accepted",
 				message: "You have joined the organisation",
 				icon: <Icon path={iconCheck} />,

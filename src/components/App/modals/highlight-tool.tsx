@@ -127,7 +127,7 @@ export function HighlightToolModal() {
 					<Button
 						onClick={format}
 						size="xs"
-						color="surreal"
+						color="violet"
 					>
 						Format
 					</Button>

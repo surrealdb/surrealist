@@ -1,9 +1,8 @@
 import { Alert, Box, Button, Divider, Image, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
-import { Icon, iconArrowUpRight, iconDownload } from "@surrealdb/ui";
+import { Icon, iconArrowUpRight, iconDownload, pictoSurrealist } from "@surrealdb/ui";
 import { useState } from "react";
 import { adapter } from "~/adapter";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -54,7 +53,7 @@ export function NewDomainScreen() {
 						gap={0}
 					>
 						<Image
-							src={iconUrl}
+							src={pictoSurrealist}
 							w={85}
 						/>
 
@@ -69,7 +68,7 @@ export function NewDomainScreen() {
 						mt={38}
 						maw={500}
 						mx="auto"
-						variant="gradient"
+						withBorder
 					>
 						<Stack gap="xl">
 							<PrimaryTitle fz={32}>Surrealist has moved!</PrimaryTitle>

@@ -100,7 +100,10 @@ export function SupportPage() {
 					{flags.support_tickets && (
 						<>
 							{isAuthenticated && chats && chats.length !== 0 && !isChatsLoading && (
-								<Paper p="xl">
+								<Paper
+									p="xl"
+									withBorder
+								>
 									<Group>
 										<Text
 											c="bright"
@@ -147,7 +150,6 @@ export function SupportPage() {
 													<Paper
 														p="xs"
 														key={chat.id}
-														variant="transparent"
 														withBorder={false}
 														style={{
 															cursor: "pointer",
@@ -202,6 +204,7 @@ export function SupportPage() {
 					<Box
 						mt="xl"
 						w="100%"
+						className={classes.content}
 					>
 						<PrimaryTitle fz={22}>Support Collections</PrimaryTitle>
 						{isLoading && (
@@ -232,6 +235,7 @@ export function SupportPage() {
 					<Box
 						mt="xl"
 						w="100%"
+						className={classes.content}
 					>
 						<PrimaryTitle fz={22}>Helpful Resources</PrimaryTitle>
 
@@ -275,6 +279,7 @@ export function SupportPage() {
 					<Box
 						mt="xl"
 						w="100%"
+						className={classes.content}
 					>
 						<PrimaryTitle fz={22}>Reach Out</PrimaryTitle>
 

@@ -1,8 +1,7 @@
 import { Group, Skeleton, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
-import { Icon, iconConsole } from "@surrealdb/ui";
+import { CodeBlock, Icon, iconConsole } from "@surrealdb/ui";
 import { useEffect } from "react";
-import { CodePreview } from "~/components/CodePreview";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -54,10 +53,9 @@ function ConnectCliModal({ instance }: ConnectCliModalProps) {
 				mt="xl"
 				visible={isPending}
 			>
-				<CodePreview
-					language="bash"
+				<CodeBlock
+					lang="bash"
 					value={command}
-					withCopy
 				/>
 			</Skeleton>
 

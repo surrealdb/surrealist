@@ -13,12 +13,15 @@ export function InstanceBackup({ selected, backup, onSelect }: InstanceBackupPro
 	return (
 		<Paper
 			p="md"
-			variant={selected ? "selected" : "interactive"}
+			bg="obsidian.8"
+			withBorder
+			style={{
+				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
+			}}
 			onClick={() => onSelect()}
 		>
 			<Group gap="md">
 				<ThemeIcon
-					color="slate"
 					variant="light"
 					size="lg"
 				>

@@ -24,13 +24,13 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 	return (
 		<Paper
 			p="xl"
-			variant="gradient"
+			withBorder
 			{...rest}
 		>
 			<Group>
 				<Icon
 					path={iconAccount}
-					size="xl"
+					size="lg"
 				/>
 				<Text
 					fz="xl"

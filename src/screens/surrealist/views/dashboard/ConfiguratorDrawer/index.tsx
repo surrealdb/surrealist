@@ -1,9 +1,8 @@
-import { Drawer, Group, Tabs } from "@mantine/core";
+import { Drawer, Group, Tabs, Text } from "@mantine/core";
 import { Icon, iconClose, iconTune } from "@surrealdb/ui";
 import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { CloudInstance } from "~/types";
 import { ConfigurationCapabilities } from "./configs/capabilities";
@@ -53,18 +52,20 @@ export function ConfiguratorDrawer({
 				onResize={setWidth}
 			/>
 
-			<Group
-				gap="sm"
-				p="xl"
-			>
-				<PrimaryTitle>
+			<Group p="xl">
+				<Group>
 					<Icon
-						left
 						path={iconTune}
-						size="sm"
+						size="lg"
 					/>
-					Manage instance
-				</PrimaryTitle>
+					<Text
+						fw={700}
+						fz="xl"
+						c="bright"
+					>
+						Manage instance
+					</Text>
+				</Group>
 
 				<Spacer />
 
@@ -77,35 +78,41 @@ export function ConfiguratorDrawer({
 			</Group>
 
 			<Tabs
+				variant="gradient"
 				value={tab}
 				className={classes.drawerTabs}
 				onChange={onChangeTab as any}
 				flex={1}
 			>
-				<Tabs.List
-					grow
-					mb="xl"
-					mx="xl"
+				<div
+					style={{
+						padding: "0 1rem",
+					}}
 				>
-					<Tabs.Tab
-						flex={1}
-						value="capabilities"
+					<Tabs.List
+						mb="xl"
+						grow
 					>
-						Capabilities
-					</Tabs.Tab>
-					<Tabs.Tab
-						value="version"
-						flex={1}
-					>
-						Version
-					</Tabs.Tab>
-					<Tabs.Tab
-						value="import-export"
-						flex={1}
-					>
-						Import & Export
-					</Tabs.Tab>
-				</Tabs.List>
+						<Tabs.Tab
+							value="capabilities"
+							py="sm"
+						>
+							Capabilities
+						</Tabs.Tab>
+						<Tabs.Tab
+							value="version"
+							py="sm"
+						>
+							Version
+						</Tabs.Tab>
+						<Tabs.Tab
+							value="import-export"
+							py="sm"
+						>
+							Import & Export
+						</Tabs.Tab>
+					</Tabs.List>
+				</div>
 
 				<Tabs.Panel value="capabilities">
 					<ConfigurationCapabilities

@@ -1,10 +1,17 @@
 import { Box, Button, Divider, Group, Paper, ScrollArea, Stack, Text, Title } from "@mantine/core";
-import { Icon, iconBug, iconCheck, iconCopy, iconCursor, iconWarning } from "@surrealdb/ui";
+import {
+	CodeBlock,
+	Icon,
+	iconBug,
+	iconCheck,
+	iconCopy,
+	iconCursor,
+	iconWarning,
+} from "@surrealdb/ui";
 import type { FallbackProps } from "react-error-boundary";
 import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
 import { useIsLight } from "~/hooks/theme";
-import { CodePreview } from "../CodePreview";
 
 export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 	const [copyDebug, clipboard] = useVersionCopy();
@@ -29,7 +36,13 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 							path={iconWarning}
 							size="lg"
 						/>
-						<Title>Surrealist encountered an error</Title>
+						<Text
+							fz="xl"
+							fw={600}
+							c="bright"
+						>
+							Surrealist encountered an error
+						</Text>
 					</Group>
 
 					<Text>
@@ -78,10 +91,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Message</Title>
 
-							<CodePreview
-								value={message}
-								withCopy
-							/>
+							<CodeBlock value={message} />
 						</Box>
 					)}
 
@@ -89,10 +99,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Cause</Title>
 
-							<CodePreview
-								value={error.cause}
-								withCopy
-							/>
+							<CodeBlock value={error.cause} />
 						</Box>
 					)}
 
@@ -100,92 +107,11 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Stack trace</Title>
 
-							<CodePreview
-								value={error.stack}
-								withCopy
-							/>
+							<CodeBlock value={error.stack} />
 						</Box>
 					)}
 				</Stack>
 			</Paper>
 		</ScrollArea>
-		// <div style={{
-		// 	width: '100%',
-		// 	display: 'flex',
-		// 	justifyContent: 'center',
-		// 	paddingTop: '50px',
-		// }}>
-		// 	<div style={{
-		// 		display: 'flex',
-		// 		flexDirection: 'column',
-		// 		justifyContent: 'center',
-		// 	}}>
-		// 		<h1>Something went wrong!</h1>
-		// 		{error.name && <h2>{error.name}</h2>}
-		// 		<div style={{
-		// 			padding: '0px 10px',
-		// 			border: '1px solid black'
-		// 		}}>
-		// 			<h3>Message</h3>
-		// 			<p style={{
-		// 				whiteSpace: 'pre',
-		// 				overflowX: 'auto',
-		// 				maxWidth: '90vw'
-		// 			}}>
-		// 				{message}
-		// 			</p>
-		// 		</div>
-		// 		{error.cause && (
-		// 			<div style={{
-		// 				padding: '0px 10px',
-		// 				border: '1px solid black',
-		// 				marginTop: '20px',
-		// 			}}>
-		// 				<h3>Cause</h3>
-		// 				<p style={{
-		// 					whiteSpace: 'pre',
-		// 					overflowX: 'auto',
-		// 					maxWidth: '90vw'
-		// 				}}>
-		// 					{error.cause}
-		// 				</p>
-		// 			</div>
-		// 		)}
-		// 		{error.stack && (
-		// 			<div style={{
-		// 				padding: '0px 10px',
-		// 				border: '1px solid black',
-		// 				marginTop: '20px',
-		// 			}}>
-		// 				<h3>Stack trace</h3>
-		// 				<p style={{
-		// 					whiteSpace: 'pre',
-		// 					overflowX: 'auto',
-		// 					maxWidth: '90vw',
-		// 					lineHeight: '30px',
-		// 				}}>
-		// 					{error.stack}
-		// 				</p>
-		// 			</div>
-		// 		)}
-		// 		<div style={{
-		// 			display: 'flex',
-		// 			justifyContent: 'center',
-		// 			marginTop: '40px',
-		// 		}}>
-		// 			<button onClick={resetErrorBoundary} style={{
-		// 				padding: '10px',
-		// 				background: 'black',
-		// 				color: 'white',
-		// 				border: 'none',
-		// 				cursor: 'pointer',
-		// 				fontSize: '16px',
-		// 				fontWeight: '600',
-		// 			}}>
-		// 				Reload Surrealist
-		// 			</button>
-		// 		</div>
-		// 	</div>
-		// </div>
 	);
 }

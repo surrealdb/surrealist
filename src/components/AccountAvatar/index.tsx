@@ -8,7 +8,6 @@ export function AccountAvatar(props: AvatarProps) {
 
 	return (
 		<Avatar
-			radius="md"
 			size={36}
 			name={name}
 			src={profile.picture}

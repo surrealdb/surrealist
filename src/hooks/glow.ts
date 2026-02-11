@@ -6,14 +6,13 @@ export function useGlowOffset() {
 	const [location] = useAbsoluteLocation();
 
 	switch (true) {
-		case matchRoute(parser, "/c/:connection/dashboard", location)[0]:
-		case matchRoute(parser, "/c/:connection/sidekick", location)[0]:
-			return 300;
-		case matchRoute(parser, "/c/:connection/:view", location)[0]:
-			return 600;
 		case matchRoute(parser, "/overview", location)[0]:
-			return 150;
+			return 0;
+		case matchRoute(parser, "/c/:connection/dashboard", location)[0]:
+			return 125;
+		case matchRoute(parser, "/c/:connection/:view", location)[0]:
+			return 500;
 		default:
-			return 300;
+			return 125;
 	}
 }

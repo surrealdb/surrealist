@@ -32,13 +32,13 @@ import {
 	pictoSDBCloud,
 	pictoSidekick,
 	pictoSurrealDB,
+	pictoSurrealist,
 	pictoUniversity,
 } from "@surrealdb/ui";
 import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { isOrganisationRestricted } from "~/cloud/helpers";
@@ -161,7 +161,7 @@ export function OverviewPage() {
 								mb={52}
 							>
 								<Image
-									src={iconUrl}
+									src={pictoSurrealist}
 									w={74}
 								/>
 

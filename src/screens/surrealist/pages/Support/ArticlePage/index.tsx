@@ -11,12 +11,11 @@ import {
 	Text,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon, iconArrowLeft, iconOpen } from "@surrealdb/ui";
+import { Icon, iconArrowLeft, iconOpen, Markdown } from "@surrealdb/ui";
 import TurndownService from "turndown";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { useSupportArticleQuery } from "~/cloud/queries/context";
-import { MarkdownContent } from "~/components/MarkdownContent";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -108,12 +107,10 @@ export function ArticlePage({ id }: ArticlePageProps) {
 							<Group
 								mt="md"
 								mb="lg"
-								gap="xs"
 							>
 								{article?.author && (
 									<Avatar
-										radius="xl"
-										size={30}
+										size={35}
 										name={article.author.name}
 										src={article.author.avatar}
 										component={UnstyledButton}
@@ -140,7 +137,10 @@ export function ArticlePage({ id }: ArticlePageProps) {
 											{article?.author?.name ?? "SurrealDB Team"}
 										</Text>
 									</Group>
-									<Text fz="sm">
+									<Text
+										fz="sm"
+										c="slate"
+									>
 										Last updated{" "}
 										{formatRelativeDate((article?.updated_at ?? 0) * 1000)}
 									</Text>
@@ -149,9 +149,7 @@ export function ArticlePage({ id }: ArticlePageProps) {
 						</Box>
 
 						<Paper p="xl">
-							<MarkdownContent>
-								{turndown.turndown(article.body ?? "")}
-							</MarkdownContent>
+							<Markdown content={turndown.turndown(article?.body ?? "")} />
 						</Paper>
 
 						<Group>

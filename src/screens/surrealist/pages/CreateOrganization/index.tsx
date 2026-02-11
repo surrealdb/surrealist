@@ -94,7 +94,7 @@ export function CreateOrganizationPage() {
 								onChange={setName}
 								leftSection={
 									<Icon
-										c="surreal"
+										c="violet"
 										path={iconOrganization}
 									/>
 								}

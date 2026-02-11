@@ -18,9 +18,9 @@ export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) 
 				p="xl"
 				gap={30}
 				component={Stack}
-				variant="gradient"
 				pos="relative"
 				mih={168}
+				withBorder
 			>
 				{computeHistory.length === 0 ? (
 					<Stack
@@ -61,7 +61,7 @@ export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) 
 
 								<Progress
 									value={(hours / computeTotal) * 100}
-									color="surreal"
+									color="violet"
 									size={4}
 									mt="md"
 								/>

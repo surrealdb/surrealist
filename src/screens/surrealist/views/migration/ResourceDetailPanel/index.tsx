@@ -11,6 +11,7 @@ import {
 	Transition,
 } from "@mantine/core";
 import {
+	CodeBlock,
 	Icon,
 	iconArrowLeft,
 	iconArrowUpRight,
@@ -23,7 +24,6 @@ import {
 import { useMemo } from "react";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
-import { CodePreview } from "~/components/CodePreview";
 import { RecordLink } from "~/components/RecordLink";
 import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
@@ -344,13 +344,11 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 
 					{/* Location info if present */}
 					{source.location && (
-						<CodePreview
+						<CodeBlock
 							value={source.location.source}
-							language="surrealql"
+							lang="surrealql"
 							bg="slate.8"
-							withCopy={false}
-							withDedent={true}
-							padding="sm"
+							p="sm"
 						/>
 					)}
 				</Stack>

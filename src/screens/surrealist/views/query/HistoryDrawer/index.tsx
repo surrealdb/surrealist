@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import {
+	CodeBlock,
 	Icon,
 	iconClose,
 	iconDelete,
@@ -24,7 +25,6 @@ import dayjs from "dayjs";
 import { capitalize } from "radash";
 import { memo, useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { CodePreview } from "~/components/CodePreview";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
@@ -142,10 +142,10 @@ function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 				</Menu>
 			</Group>
 
-			<CodePreview
+			<CodeBlock
 				mt="xs"
 				value={shortQuery}
-				language="surrealql"
+				lang="surrealql"
 			/>
 
 			<Divider mt="md" />

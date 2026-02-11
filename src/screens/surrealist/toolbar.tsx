@@ -380,7 +380,6 @@ export function SurrealistToolbar() {
 			{isConnected && isSchemaEmpty && namespace && database && !isSyncingSchema && (
 				<Button
 					size="xs"
-					color="slate"
 					variant="light"
 					loading={isDatasetLoading}
 					onClick={selectDataset}
@@ -567,12 +566,7 @@ export function SurrealistToolbar() {
 					}
 					style={{ border: "none" }}
 					onClick={openChangelog}
-					leftSection={
-						<Icon
-							path={iconStar}
-							left
-						/>
-					}
+					leftSection={<Icon path={iconStar} />}
 				>
 					See what's new in {import.meta.env.VERSION}
 				</Button>

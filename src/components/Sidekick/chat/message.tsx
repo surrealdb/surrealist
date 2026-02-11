@@ -18,11 +18,11 @@ import {
 	iconChevronDown,
 	iconChevronUp,
 	iconCopy,
+	Markdown,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Link } from "~/components/Link";
-import { MarkdownContent } from "~/components/MarkdownContent";
 import { RelativeTime } from "~/components/RelativeTime";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
@@ -49,7 +49,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 						p="md"
 						bg={isLight ? "slate.1" : "slate.6"}
 					>
-						<MarkdownContent fz="lg">{message.content}</MarkdownContent>
+						<Markdown content={message.content} />
 					</Paper>
 					<Group
 						mt={2}
@@ -82,7 +82,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 			) : (
 				<Box mb="xl">
 					{message.content ? (
-						<MarkdownContent fz="lg">{message.content}</MarkdownContent>
+						<Markdown content={message.content} />
 					) : (
 						<Group
 							gap="xs"
@@ -137,13 +137,13 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 								onClick={() => setSourcesOpen(!sourcesOpen)}
 							>
 								<Text
-									c="surreal"
+									c="violet"
 									fw={500}
 								>
 									{message.sources?.header ?? "Sources"}
 								</Text>
 								<ActionIcon
-									c="surreal"
+									c="violet"
 									variant="transparent"
 									size="sm"
 								>

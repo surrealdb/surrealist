@@ -166,7 +166,7 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 				<Group mt="md">
 					<Group
 						gap="xs"
-						c="surreal"
+						c="violet"
 						style={{
 							cursor: "pointer",
 						}}
@@ -178,7 +178,7 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 					<Spacer />
 					<Group
 						gap="xs"
-						c="surreal"
+						c="violet"
 						style={{
 							cursor: "pointer",
 						}}

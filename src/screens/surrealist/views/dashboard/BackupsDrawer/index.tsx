@@ -5,7 +5,6 @@ import { useState } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance } from "~/types";
@@ -68,14 +67,16 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 				gap="sm"
 				p="xl"
 			>
-				<PrimaryTitle>
-					<Icon
-						left
-						path={iconHistory}
-						size="sm"
-					/>
-					Instance backups
-				</PrimaryTitle>
+				<Group>
+					<Icon path={iconHistory} />
+					<Text
+						fw={700}
+						fz="xl"
+						c="bright"
+					>
+						Instance backups
+					</Text>
+				</Group>
 
 				<Spacer />
 
@@ -167,7 +168,6 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 				<Group p="xl">
 					<Button
 						onClick={handleClose}
-						color="slate"
 						variant="light"
 						flex={1}
 					>

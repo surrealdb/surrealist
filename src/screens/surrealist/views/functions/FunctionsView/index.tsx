@@ -385,7 +385,7 @@ export function FunctionsView() {
 								<Text
 									ff="mono"
 									fz="xl"
-									c="surreal"
+									c="violet"
 									style={{ transform: "translate(4px, 1px)" }}
 								>
 									fn::

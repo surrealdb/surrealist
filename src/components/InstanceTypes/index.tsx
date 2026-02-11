@@ -110,7 +110,12 @@ function InstanceTypeRow({
 	return (
 		<Paper
 			p="lg"
-			variant={active ? "gradient" : selected ? "selected" : "interactive"}
+			radius="md"
+			withBorder
+			style={{
+				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
+				cursor: active ? "not-allowed" : "pointer",
+			}}
 			onClick={() => !active && onSelect(instanceType)}
 		>
 			<Group>
@@ -125,8 +130,8 @@ function InstanceTypeRow({
 						</Text>
 						{active ? (
 							<Badge
+								variant="gradient"
 								size="sm"
-								variant="light"
 							>
 								Active
 							</Badge>

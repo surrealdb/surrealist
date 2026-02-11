@@ -1,8 +1,7 @@
 import { Group, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
-import { Icon, iconTransfer } from "@surrealdb/ui";
-import { CodePreview } from "~/components/CodePreview";
+import { CodeBlock, Icon, iconTransfer } from "@surrealdb/ui";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -119,9 +118,8 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 				Execute HTTP request
 			</Text>
 
-			<CodePreview
-				language="bash"
-				withCopy
+			<CodeBlock
+				lang="bash"
 				value={command}
 			/>
 

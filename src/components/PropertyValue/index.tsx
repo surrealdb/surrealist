@@ -18,9 +18,8 @@ export function PropertyValue({ title, icon, value, ...other }: PropertyValuePro
 			{...other}
 		>
 			<ThemeIcon
-				color="slate"
-				radius="xs"
 				variant="light"
+				color="obsidian"
 			>
 				<Icon path={icon} />
 			</ThemeIcon>

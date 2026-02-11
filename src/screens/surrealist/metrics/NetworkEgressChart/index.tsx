@@ -29,7 +29,7 @@ export function NetworkEgressChart({
 		.filter((dat) => nodeFilter === undefined || nodeFilter.includes(dat.labels))
 		.map((metric) => ({
 			name: metric.labels,
-			color: "surreal",
+			color: "violet",
 			label: `Egress traffic (${metric.labels})`,
 		}));
 

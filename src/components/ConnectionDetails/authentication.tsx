@@ -57,7 +57,6 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 			<SegmentedControl
 				mb="sm"
 				value={value.authentication.mode}
-				variant="gradient"
 				data={AUTH_MODES}
 				onChange={(value) =>
 					onChange((draft) => {
@@ -141,7 +140,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 					/>
 					<Button
 						mt={19}
-						color="surreal"
+						color="violet"
 						variant="light"
 						onClick={editingAccessHandle.open}
 					>
@@ -184,7 +183,6 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 										path={iconWarning}
 										c="yellow"
 										size="sm"
-										left
 									/>
 									This token expires in {dayjs(tokenExpire).fromNow()}
 								</Text>
@@ -194,7 +192,6 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 										path={iconWarning}
 										c="red"
 										size="sm"
-										left
 									/>
 									This token has expired
 								</Text>

@@ -77,14 +77,15 @@ export function ConfigurationBlock({
 		>
 			<Paper
 				p="xl"
-				variant="gradient"
+				display="flex"
+				withBorder
+				style={{
+					flexDirection: "column",
+					justifyContent: "space-between",
+				}}
 			>
-				<SimpleGrid
-					cols={{ base: 1, xl: 2 }}
-					verticalSpacing="xs"
-					spacing="md"
-				>
-					<Stack gap="xs">
+				<SimpleGrid cols={{ base: 1, xl: 2 }}>
+					<Stack>
 						<PropertyValue
 							title="Type"
 							icon={iconPackageClosed}
@@ -108,7 +109,7 @@ export function ConfigurationBlock({
 							value={<Text c={isFree ? "orange" : "green"}>{backupText}</Text>}
 						/>
 					</Stack>
-					<Stack gap="xs">
+					<Stack>
 						<PropertyValue
 							title="Memory"
 							icon={iconMemory}
@@ -137,7 +138,6 @@ export function ConfigurationBlock({
 				<SimpleGrid
 					mt="xl"
 					cols={2}
-					spacing="md"
 				>
 					<Button
 						size="xs"

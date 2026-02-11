@@ -58,7 +58,7 @@ export function StorageOptionsSection({ organisation, details, setDetails }: Dep
 					onChange={updateAmount}
 					marks={marks}
 					label={(value) => formatMemory(value * 1000, true)}
-					color="slate"
+					color="violet"
 					styles={{
 						label: {
 							paddingInline: 10,

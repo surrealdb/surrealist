@@ -1,12 +1,8 @@
-import { Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
-import { Icon, iconArrowLeft } from "@surrealdb/ui";
+import { Anchor, Box, BoxProps, Paper, Stack, Text, UnstyledButton } from "@mantine/core";
 import { format } from "date-fns";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
 import { NewsPost } from "~/hooks/newsfeed";
 import { useStable } from "~/hooks/stable";
 import { dispatchIntent } from "~/util/intents";
-import classes from "../style.module.scss";
 
 export interface StartBlogProps extends BoxProps {
 	post: NewsPost;
@@ -20,49 +16,51 @@ export function StartBlog({ post, ...other }: StartBlogProps) {
 	return (
 		<UnstyledButton
 			onClick={handleClick}
+			style={{ height: "100%" }}
 			{...other}
 		>
-			<Paper
-				variant="interactive"
-				className={classes.startBlog}
-				withBorder
+			<Anchor
+				variant="glow"
+				style={{ height: "100%", display: "block" }}
 			>
-				<Box
-					w="100%"
-					h={200}
-					className={classes.startBlogHeader}
-					__vars={{
-						"--image-url": `url("${post.thumbnail}")`,
+				<Paper
+					withBorder
+					radius="md"
+					h="100%"
+					display="flex"
+					style={{
+						flexDirection: "column",
 					}}
-				/>
-				<Box
-					p="xl"
-					pt="xs"
-					mt={-42}
 				>
-					<PrimaryTitle
-						fz={26}
-						lh="h1"
-						mih={106}
-						lineClamp={3}
-					>
-						{post.title}
-					</PrimaryTitle>
-					<Group
-						mt="sm"
+					<Box
+						w="100%"
+						h={275}
+						style={{
+							backgroundPosition: "center",
+							backgroundSize: "cover",
+							backgroundImage: `url("${post.thumbnail}")`,
+							borderTopLeftRadius: "var(--mantine-radius-md)",
+							borderTopRightRadius: "var(--mantine-radius-md)",
+						}}
+					/>
+					<Stack
+						p="lg"
+						flex={1}
 						gap="xs"
+						h="auto"
+						justify="center"
 					>
+						<Text
+							fz="xl"
+							c="bright"
+							fw={600}
+						>
+							{post.title}
+						</Text>
 						<Text>{format(post.published, "MMMM d, yyyy - h:mm a")}</Text>
-						<Spacer />
-						<Text c="surreal">Read article</Text>
-						<Icon
-							className={classes.startBlogArrow}
-							path={iconArrowLeft}
-							c="surreal"
-						/>
-					</Group>
-				</Box>
-			</Paper>
+					</Stack>
+				</Paper>
+			</Anchor>
 		</UnstyledButton>
 	);
 }

@@ -9,7 +9,7 @@ import {
 	pictoSidekick,
 } from "@surrealdb/ui";
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
-import glowImg from "~/assets/images/glow.webp";
+import glowImg from "~/assets/images/radial-glow.png";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -84,7 +84,6 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 				gap={0}
 				h="100%"
 				w="100%"
-				bg={inline ? "var(--mantine-color-body)" : "transparent"}
 			>
 				{!inline && (
 					<>
@@ -99,7 +98,7 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 									inset={0}
 									opacity={0.3}
 									style={{
-										transform: "scale(2)",
+										transform: "scale(2.5)",
 										transition: "opacity 0.3s ease",
 									}}
 								/>

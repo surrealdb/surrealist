@@ -1,11 +1,8 @@
-.scroll-area :global(.mantine-ScrollArea-viewport)>div {
-	display: block !important;
+.content {
+	position: relative;
+	z-index: 0;
 }
 
-.organization-box {
-	position: relative;
-	overflow: hidden;
-	height: 112px;
-	display: flex;
-	flex-direction: column;
+.scroll-area :global(.mantine-ScrollArea-viewport)>div {
+	display: block !important;
 }

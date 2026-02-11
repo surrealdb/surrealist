@@ -1,26 +1,23 @@
 import {
-	ActionIcon,
 	Badge,
-	Box,
 	BoxProps,
 	Group,
+	Image,
 	Paper,
 	Stack,
 	Text,
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon, iconCloud, iconDotsVertical } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconCloud, Spacer } from "@surrealdb/ui";
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { Faint } from "~/components/Faint";
-import { InstanceActions } from "~/components/InstanceActions";
+import { REGION_FLAGS } from "~/constants";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudOrganization } from "~/types";
-import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
-import classes from "../style.module.scss";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
@@ -66,65 +63,56 @@ export function StartInstance({
 		>
 			<Paper
 				p="lg"
-				variant="interactive"
-				className={classes.startInstance}
-				ref={containerRef}
+				radius="md"
 				withBorder
+				ref={containerRef}
 			>
 				<Group
+					gap="lg"
 					wrap="nowrap"
-					align="strech"
-					flex={1}
+					mt={-3}
 				>
-					<Stack flex={1}>
-						<Group
-							wrap="nowrap"
-							mt={-3}
-						>
-							<ThemeIcon
-								radius="xs"
-								size={36}
-								color="slate"
-								variant="light"
+					<ThemeIcon
+						color="obsidian"
+						variant="light"
+						size="xl"
+					>
+						<Icon
+							size="md"
+							path={connection ? USER_ICONS[connection.icon] : iconCloud}
+						/>
+					</ThemeIcon>
+					<Stack gap={0}>
+						<Group>
+							<Text
+								c="bright"
+								fw={600}
+								fz="xl"
 							>
-								<Icon path={connection ? USER_ICONS[connection.icon] : iconCloud} />
-							</ThemeIcon>
-							<Box flex={1}>
-								<Group>
-									<Text
-										c="bright"
-										fw={600}
-										fz="xl"
-									>
-										{instance.name}
-									</Text>
-									<StateBadge
-										size={10}
-										state={instance.state}
-									/>
-								</Group>
-								<Text>SurrealDB {instance.version}</Text>
-							</Box>
+								{instance.name}
+							</Text>
+							<StateBadge
+								size={10}
+								state={instance.state}
+							/>
+						</Group>
+						<Group>
+							<Group gap="sm">
+								<Image
+									src={REGION_FLAGS[instance.region]}
+									w={18}
+								/>
+								<Text>{instance.region}</Text>
+							</Group>
+							<Text c="slate">/</Text>
+							<Text>SurrealDB {instance.version}</Text>
 						</Group>
 					</Stack>
-					{/* biome-ignore lint/a11y/noStaticElementInteractions: Stop event propagation */}
-					<div
-						onClick={ON_STOP_PROPAGATION}
-						onKeyDown={ON_STOP_PROPAGATION}
-					>
-						<InstanceActions
-							instance={instance}
-							organisation={organisation}
-						>
-							<ActionIcon
-								color="slate"
-								variant="subtle"
-								component="div"
-							>
-								<Icon path={iconDotsVertical} />
-							</ActionIcon>
-						</InstanceActions>
-					</div>
+					<Spacer />
+					<Icon
+						c="dimmed"
+						path={iconChevronRight}
+					/>
 				</Group>
 				<Group gap="xs">{labels}</Group>
 				<Faint containerRef={containerRef} />

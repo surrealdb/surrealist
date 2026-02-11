@@ -21,7 +21,7 @@ import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
-import glowUrl from "~/assets/images/glow.webp";
+import glowUrl from "~/assets/images/glow.png";
 import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
 import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
 import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
@@ -162,9 +162,8 @@ export function CreateConnectionPage() {
 								<Menu.Target>
 									<Button
 										rightSection={<Icon path={iconChevronDown} />}
-										color="slate"
+										color="violet"
 										variant="light"
-										size="xs"
 									>
 										Apply template
 									</Button>
@@ -242,7 +241,6 @@ export function CreateConnectionPage() {
 					<Paper
 						p="xl"
 						pos="relative"
-						variant="gradient"
 						className={classes.cloudBox}
 					>
 						<Stack flex={1}>

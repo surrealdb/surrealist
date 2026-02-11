@@ -1,4 +1,4 @@
-import { Box, Button, Center, Paper, Skeleton, Stack, Text } from "@mantine/core";
+import { Button, Center, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { Icon, iconChevronRight, iconKeyboardShift } from "@surrealdb/ui";
 import { formatDistance } from "date-fns";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
@@ -48,9 +48,9 @@ export function BackupsBlock({
 				p="xl"
 				gap={15}
 				component={Stack}
-				variant="gradient"
 				pos="relative"
 				mih={168}
+				withBorder
 			>
 				<Text
 					c="bright"
@@ -78,19 +78,19 @@ export function BackupsBlock({
 					</>
 				) : latest ? (
 					<>
-						<Box flex={1}>
-							<Text>Latest backup</Text>
+						<Group gap="xs">
+							<Text>Latest backup: </Text>
 							<Text
 								c="bright"
-								fz="lg"
 								fw={600}
 							>
 								{formatDistance(latest.snapshot_started_at, new Date(), {
 									addSuffix: true,
 								})}
 							</Text>
-						</Box>
+						</Group>
 						<Button
+							mt="md"
 							size="xs"
 							rightSection={<Icon path={iconChevronRight} />}
 							variant="gradient"

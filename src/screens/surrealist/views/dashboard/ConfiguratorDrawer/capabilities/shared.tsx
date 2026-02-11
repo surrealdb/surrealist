@@ -1,9 +1,15 @@
-import { Button, Checkbox, CheckboxProps, MantineColor, SimpleGrid } from "@mantine/core";
-import { Icon, iconCancel, iconCheck } from "@surrealdb/ui";
-import { ReactNode } from "react";
-import { CodeInput, CodeInputProps } from "~/components/Inputs";
-import { useStable } from "~/hooks/stable";
-import { CloudInstanceCapabilities, Selectable } from "~/types";
+import {
+	Button,
+	Checkbox,
+	type CheckboxProps,
+	type MantineColor,
+	SimpleGrid,
+	TextInput,
+	type TextInputProps,
+} from "@mantine/core";
+import { Icon, iconCancel, iconCheck, useStable } from "@surrealdb/ui";
+import type { ReactNode } from "react";
+import type { CloudInstanceCapabilities, Selectable } from "~/types";
 
 export type CapabilityField = keyof CloudInstanceCapabilities;
 export type BaseValue = "allowed" | "denied" | "granular";
@@ -51,8 +57,8 @@ export function RuleSetBase({ icon, active, value, title, onChange }: RuleSetBas
 
 export interface DynamicInputListProps {
 	value: string[];
-	inputProps?: Partial<CodeInputProps>;
-	ghostProps?: Partial<CodeInputProps>;
+	inputProps?: Partial<TextInputProps>;
+	ghostProps?: Partial<TextInputProps>;
 	onChange: (value: string[]) => void;
 }
 
@@ -73,11 +79,11 @@ export function DynamicInputList({
 	});
 
 	return fullList.map((item, index) => (
-		<CodeInput
+		<TextInput
 			key={index}
 			value={item}
 			{...(index === value.length ? ghostProps : inputProps)}
-			onChange={(change) => handleUpdate(change, index)}
+			onChange={(e) => handleUpdate(e.currentTarget.value, index)}
 			onBlur={() => {
 				if (item === "" && index !== value.length) {
 					onChange(value.toSpliced(index, 1));
@@ -98,16 +104,18 @@ export interface CheckboxGridProps {
 
 const DenyIcon: CheckboxProps["icon"] = ({ indeterminate, ...others }) => (
 	<Icon
+		c="bright"
 		path={iconCancel}
-		size={0.85}
+		size="xs"
 		{...others}
 	/>
 );
 
 const AllowIcon: CheckboxProps["icon"] = ({ indeterminate, ...others }) => (
 	<Icon
+		c="bright"
 		path={iconCheck}
-		size={0.85}
+		size="xs"
 		{...others}
 	/>
 );
@@ -133,11 +141,12 @@ export function CheckboxGrid({
 
 				return (
 					<Checkbox
+						variant="gradient"
 						key={option.value}
 						checked={checked}
 						disabled={disabled}
 						label={option.label}
-						color="red"
+						color={base === "allowed" ? "red" : undefined}
 						icon={base === "allowed" ? DenyIcon : AllowIcon}
 						onChange={(e) =>
 							onChange(

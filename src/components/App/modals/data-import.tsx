@@ -83,7 +83,7 @@ const SqlImportForm = ({
 				Are you sure you want to import the selected file?
 			</Text>
 
-			<Group c="surreal">
+			<Group c="violet">
 				<Icon path={iconFile} />
 				<Text>{fileName}</Text>
 			</Group>

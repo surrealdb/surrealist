@@ -18,18 +18,19 @@ export function ResumeBlock({ instance, organisation }: ResumelockProps) {
 	return (
 		<Paper
 			p="xl"
-			variant="gradient"
+			withBorder
 		>
 			<Center h="100%">
 				<Stack
 					align="center"
 					gap={0}
 				>
-					<ActionIcon size="xl">
-						<Icon
-							path={iconPause}
-							size="lg"
-						/>
+					<ActionIcon
+						size="xl"
+						color="violet"
+						variant="light"
+					>
+						<Icon path={iconPause} />
 					</ActionIcon>
 					<PrimaryTitle mt="xl">This instance is paused</PrimaryTitle>
 					<Text>Resume your instance to continue where you left off.</Text>
@@ -42,7 +43,12 @@ export function ResumeBlock({ instance, organisation }: ResumelockProps) {
 							size="xs"
 							variant="gradient"
 							disabled={!canResume}
-							rightSection={<Icon path={iconPlay} />}
+							rightSection={
+								<Icon
+									path={iconPlay}
+									size="sm"
+								/>
+							}
 							onClick={() => {
 								if (organisation.resources_locked) {
 									openResourcesLockedModal(organisation);

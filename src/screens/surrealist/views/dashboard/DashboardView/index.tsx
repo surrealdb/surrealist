@@ -1,4 +1,5 @@
 import {
+	Anchor,
 	Box,
 	Button,
 	Center,
@@ -41,7 +42,6 @@ import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { InstanceActions } from "~/components/InstanceActions";
-import { Link } from "~/components/Link";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -438,7 +438,7 @@ export function DashboardView() {
 													bg={
 														copied
 															? "var(--mantine-color-violet-light)"
-															: "var(--mantine-color-slate-light)"
+															: "var(--mantine-color-obsidian-light)"
 													}
 													withBorder={false}
 													p={8}
@@ -477,6 +477,7 @@ export function DashboardView() {
 									</CopyButton>
 
 									<SimpleGrid
+										mt="md"
 										cols={2}
 										spacing="xl"
 									>
@@ -677,8 +678,8 @@ function LoadingScreen() {
 				<Image
 					className={classes.provisionIcon}
 					src={pictoSDBCloud}
-					w={82}
-					h={82}
+					w={68}
+					h={68}
 					mt={-8}
 				/>
 			</Center>
@@ -702,6 +703,7 @@ function LoadingScreen() {
 				spacing="xl"
 				mx="auto"
 				maw={900}
+				className={classes.content}
 			>
 				<GettingStartedLink
 					title="Cloud Documentation"
@@ -735,21 +737,23 @@ interface GettingStartedLinkProps {
 
 function GettingStartedLink({ image, description, title, href }: GettingStartedLinkProps) {
 	return (
-		<Link
+		<Anchor
+			variant="glow"
 			href={href}
-			underline={false}
-			c="unset"
 		>
 			<Paper
 				p="md"
 				radius="md"
-				variant="interactive"
+				withBorder
 			>
-				<Group wrap="nowrap">
+				<Group
+					wrap="nowrap"
+					gap="lg"
+				>
 					<Image
 						src={image}
-						w={52}
-						h={52}
+						w={48}
+						h={48}
 					/>
 					<Box>
 						<Text
@@ -759,11 +763,16 @@ function GettingStartedLink({ image, description, title, href }: GettingStartedL
 						>
 							{title}
 						</Text>
-						<Text mt="xs">{description}</Text>
+						<Text
+							mt="xs"
+							fz="sm"
+						>
+							{description}
+						</Text>
 					</Box>
 				</Group>
 			</Paper>
-		</Link>
+		</Anchor>
 	);
 }
 

@@ -131,7 +131,7 @@ export function HelpSearchModal() {
 							>
 								<Box p={4}>
 									{article.author && (
-										<Text c="surreal">{article.author.name}</Text>
+										<Text c="violet">{article.author.name}</Text>
 									)}
 									<PrimaryTitle>{article.title}</PrimaryTitle>
 									<Text

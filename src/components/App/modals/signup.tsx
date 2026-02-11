@@ -150,7 +150,7 @@ export function AccessSignupModal() {
 					</Button>
 					<Spacer />
 					<Button
-						color="surreal"
+						color="violet"
 						variant="light"
 						onClick={openEditor}
 					>

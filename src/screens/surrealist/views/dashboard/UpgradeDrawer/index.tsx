@@ -69,7 +69,6 @@ export function UpgradeDrawer({
 			>
 				<PrimaryTitle>
 					<Icon
-						left
 						style={{
 							rotate: "180deg",
 						}}
@@ -90,28 +89,40 @@ export function UpgradeDrawer({
 			</Group>
 
 			<Tabs
+				variant="gradient"
 				value={tab}
 				className={classes.drawerTabs}
 				onChange={onChangeTab as any}
 				flex={1}
 			>
-				<Tabs.List
-					grow
-					mb="xl"
-					mx="xl"
+				<div
+					style={{
+						padding: "0 1rem",
+					}}
 				>
-					<Tabs.Tab value="type">Instance type</Tabs.Tab>
-					<Tabs.Tab
-						value="disk"
-						// disabled={hideDisk}
+					<Tabs.List
+						mb="xl"
+						w="100%"
 					>
-						Storage capacity
-					</Tabs.Tab>
-					{isComputeNodesTabVisible && (
-						<Tabs.Tab value="compute-nodes">Compute nodes</Tabs.Tab>
-					)}
-				</Tabs.List>
-
+						<Tabs.Tab
+							value="type"
+							py="sm"
+							flex={1}
+						>
+							Instance type
+						</Tabs.Tab>
+						<Tabs.Tab
+							value="disk"
+							py="sm"
+							flex={1}
+						>
+							Storage capacity
+						</Tabs.Tab>
+						{isComputeNodesTabVisible && (
+							<Tabs.Tab value="compute-nodes">Compute nodes</Tabs.Tab>
+						)}
+					</Tabs.List>
+				</div>
 				<Tabs.Panel value="type">
 					<ConfigurationInstanceType
 						instance={instance}
