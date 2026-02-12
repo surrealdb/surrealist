@@ -76,10 +76,10 @@ function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCa
 				onClick={disabled ? undefined : handleSelect}
 				style={{
 					cursor: disabled ? "not-allowed" : "pointer",
-					borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
+					borderColor: selected ? "var(--surreal-focus-outline)" : undefined,
 				}}
 				opacity={disabled ? 0.6 : 1}
-				withBorder
+				withBorder={selected ?? undefined}
 			>
 				<Stack gap="xs">
 					<Group>

@@ -36,7 +36,6 @@ export function MetricPane({
 						<ActionButton
 							label="Reveal monitors"
 							mr="sm"
-							color="slate"
 							variant="light"
 							onClick={onRevealSidebar}
 							aria-label="Reveal observables"
@@ -56,6 +55,7 @@ export function MetricPane({
 				bg="transparent"
 				pos="relative"
 				flex={1}
+				withBorder
 			>
 				<ScrollArea
 					scrollbars="y"

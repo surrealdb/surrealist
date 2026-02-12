@@ -24,7 +24,6 @@ export function StartBlog({ post, ...other }: StartBlogProps) {
 				style={{ height: "100%", display: "block" }}
 			>
 				<Paper
-					withBorder
 					radius="md"
 					h="100%"
 					display="flex"

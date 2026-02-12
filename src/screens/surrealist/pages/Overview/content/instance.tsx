@@ -1,4 +1,5 @@
 import {
+	Anchor,
 	Badge,
 	BoxProps,
 	Group,
@@ -61,62 +62,65 @@ export function StartInstance({
 			onClick={handleConnect}
 			{...other}
 		>
-			<Paper
-				p="lg"
-				radius="md"
-				withBorder
-				ref={containerRef}
+			<Anchor
+				variant="glow"
+				c="var(--mantine-color-text)"
 			>
-				<Group
-					gap="lg"
-					wrap="nowrap"
-					mt={-3}
+				<Paper
+					p="lg"
+					ref={containerRef}
 				>
-					<ThemeIcon
-						color="obsidian"
-						variant="light"
-						size="xl"
+					<Group
+						gap="lg"
+						wrap="nowrap"
+						mt={-3}
 					>
-						<Icon
-							size="md"
-							path={connection ? USER_ICONS[connection.icon] : iconCloud}
-						/>
-					</ThemeIcon>
-					<Stack gap={0}>
-						<Group>
-							<Text
-								c="bright"
-								fw={600}
-								fz="xl"
-							>
-								{instance.name}
-							</Text>
-							<StateBadge
-								size={10}
-								state={instance.state}
+						<ThemeIcon
+							color="obsidian"
+							variant="light"
+							size="xl"
+						>
+							<Icon
+								size="md"
+								path={connection ? USER_ICONS[connection.icon] : iconCloud}
 							/>
-						</Group>
-						<Group>
-							<Group gap="sm">
-								<Image
-									src={REGION_FLAGS[instance.region]}
-									w={18}
+						</ThemeIcon>
+						<Stack gap={0}>
+							<Group>
+								<Text
+									c="bright"
+									fw={600}
+									fz="xl"
+								>
+									{instance.name}
+								</Text>
+								<StateBadge
+									size={10}
+									state={instance.state}
 								/>
-								<Text>{instance.region}</Text>
 							</Group>
-							<Text c="slate">/</Text>
-							<Text>SurrealDB {instance.version}</Text>
-						</Group>
-					</Stack>
-					<Spacer />
-					<Icon
-						c="dimmed"
-						path={iconChevronRight}
-					/>
-				</Group>
-				<Group gap="xs">{labels}</Group>
-				<Faint containerRef={containerRef} />
-			</Paper>
+							<Group>
+								<Group gap="sm">
+									<Image
+										src={REGION_FLAGS[instance.region]}
+										w={18}
+									/>
+									<Text>{instance.region}</Text>
+								</Group>
+								<Text c="slate">/</Text>
+								<Text>SurrealDB {instance.version}</Text>
+							</Group>
+						</Stack>
+						<Spacer />
+						<Icon
+							c="dimmed"
+							path={iconChevronRight}
+						/>
+					</Group>
+					<Group gap="xs">{labels}</Group>
+					<Faint containerRef={containerRef} />
+				</Paper>
+			</Anchor>
 		</UnstyledButton>
 	);
 }

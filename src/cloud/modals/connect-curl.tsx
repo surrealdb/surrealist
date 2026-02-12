@@ -15,7 +15,7 @@ export function openConnectCurl(instance: CloudInstance, namespace: string, data
 			<Group>
 				<Icon
 					path={iconTransfer}
-					size="xl"
+					size="lg"
 				/>
 				<PrimaryTitle>Connect with HTTP using cURL</PrimaryTitle>
 			</Group>
@@ -80,7 +80,8 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 			</Text>
 
 			<Paper
-				bg={isLight ? "slate.0" : "slate.9"}
+				withBorder
+				bg={isLight ? "obsidian.0" : "obsidian.9"}
 				p="md"
 			>
 				<SimpleGrid

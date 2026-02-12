@@ -78,7 +78,6 @@ export function ConfigurationBlock({
 			<Paper
 				p="xl"
 				display="flex"
-				withBorder
 				style={{
 					flexDirection: "column",
 					justifyContent: "space-between",

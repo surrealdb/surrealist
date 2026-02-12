@@ -21,7 +21,6 @@ export function StartCloud({
 		<Paper
 			p="xl"
 			pos="relative"
-			withBorder
 			className={classes.startCloud}
 			{...other}
 		>

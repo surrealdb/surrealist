@@ -16,6 +16,17 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 				c: "bright",
 			},
 		},
+		Checkbox: {
+			defaultProps: {
+				variant: "gradient",
+				styles: {
+					icon: {
+						width: 9,
+						color: "var(--mantine-color-bright)",
+					},
+				},
+			},
+		},
 	},
 };
 

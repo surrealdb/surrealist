@@ -34,7 +34,6 @@ function ImportExportCard({ title, description, icon, onClick }: ImportExportCar
 		<Paper
 			p="md"
 			bg={isLight ? "obsidian.0" : "obsidian.8"}
-			withBorder
 			onClick={onClick}
 		>
 			<Group justify="space-between">

@@ -18,7 +18,6 @@ export function StartPlaceholder({
 		<Anchor variant="glow">
 			<Paper
 				p="lg"
-				withBorder
 				h={112}
 				display="flex"
 				style={{

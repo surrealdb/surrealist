@@ -192,7 +192,6 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 				<Group mt="xl">
 					<Button
 						onClick={handleClose}
-						color="slate"
 						variant="light"
 						flex={1}
 					>

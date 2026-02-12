@@ -161,7 +161,6 @@ export function FixedRuleSetCapability({
 						my="xl"
 						bg={isLight ? "obsidian.0" : "obsidian.8"}
 						p="md"
-						withBorder
 					>
 						<Group>
 							<ThemeIcon

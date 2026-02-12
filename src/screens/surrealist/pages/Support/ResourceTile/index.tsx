@@ -17,7 +17,6 @@ export function ResourceTile({ name, description, image, badge, onClick }: Resou
 			<Paper
 				p="lg"
 				radius="md"
-				withBorder
 			>
 				<Group
 					wrap="nowrap"

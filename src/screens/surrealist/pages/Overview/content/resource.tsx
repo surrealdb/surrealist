@@ -20,7 +20,6 @@ export function StartResource({ title, subtitle, image, onClick, ...other }: Sta
 			<Anchor variant="glow">
 				<Paper
 					p="lg"
-					withBorder
 					display="flex"
 					style={{
 						flexDirection: "column",

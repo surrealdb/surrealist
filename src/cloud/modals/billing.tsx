@@ -311,7 +311,6 @@ function BillingForm({ organization, details, callback }: BillingFormProps) {
 				</SimpleGrid>
 				<Group mt="xl">
 					<Button
-						color="slate"
 						variant="light"
 						onClick={handleClose}
 					>

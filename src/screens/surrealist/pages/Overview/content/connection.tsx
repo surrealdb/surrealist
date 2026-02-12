@@ -1,4 +1,5 @@
 import {
+	Anchor,
 	Badge,
 	BoxProps,
 	Group,
@@ -53,59 +54,62 @@ export function StartConnection({
 			onClick={handleConnect}
 			{...other}
 		>
-			<Paper
-				p="lg"
-				withBorder
-				radius="md"
-				ref={containerRef}
+			<Anchor
+				variant="glow"
+				c="var(--mantine-color-text)"
 			>
-				<Group
-					wrap="nowrap"
-					mt={-3}
+				<Paper
+					p="lg"
+					ref={containerRef}
 				>
-					<ThemeIcon
-						size="xl"
-						variant="light"
+					<Group
+						wrap="nowrap"
+						mt={-3}
 					>
-						<Icon
-							size={isSandbox ? "lg" : "md"}
-							path={isSandbox ? iconSurreal : USER_ICONS[connection.icon]}
-						/>
-					</ThemeIcon>
-					<Stack gap={0}>
-						<Group gap="sm">
-							<Text
-								c="bright"
-								fw={600}
-								fz="xl"
-								truncate
-							>
-								{connection.name}
-							</Text>
-
-							{isManaged ? (
+						<ThemeIcon
+							size="xl"
+							variant="light"
+						>
+							<Icon
+								size={isSandbox ? "lg" : "md"}
+								path={isSandbox ? iconSurreal : USER_ICONS[connection.icon]}
+							/>
+						</ThemeIcon>
+						<Stack gap={0}>
+							<Group gap="sm">
 								<Text
+									c="bright"
 									fw={600}
-									fz="xs"
-									variant="gradient"
+									fz="xl"
+									truncate
 								>
-									BUILT-IN
+									{connection.name}
 								</Text>
-							) : (
-								<Group gap="xs">{labels}</Group>
-							)}
-						</Group>
-						<Text truncate>
-							{isSandbox ? "Your personal offline playground" : target}
-						</Text>
-					</Stack>
-					<Spacer />
-					<Icon
-						c="dimmed"
-						path={iconChevronRight}
-					/>
-				</Group>
-			</Paper>
+
+								{isManaged ? (
+									<Text
+										fw={600}
+										fz="xs"
+										variant="gradient"
+									>
+										BUILT-IN
+									</Text>
+								) : (
+									<Group gap="xs">{labels}</Group>
+								)}
+							</Group>
+							<Text truncate>
+								{isSandbox ? "Your personal offline playground" : target}
+							</Text>
+						</Stack>
+						<Spacer />
+						<Icon
+							c="dimmed"
+							path={iconChevronRight}
+						/>
+					</Group>
+				</Paper>
+			</Anchor>
 		</UnstyledButton>
 	);
 }

@@ -3,10 +3,12 @@ import glowUrl from "~/assets/images/glow.png";
 import classes from "./style.module.scss";
 
 export interface TopGlowProps {
-	offset?: number;
+	offset?: number | null;
 }
 
 export function TopGlow({ offset }: TopGlowProps) {
+	if (offset === null) return null;
+
 	return (
 		<Box
 			className={classes.glow}

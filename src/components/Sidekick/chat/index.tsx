@@ -151,7 +151,6 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 											alignSelf: "stretch",
 											cursor: "pointer",
 										}}
-										withBorder
 									>
 										<Group
 											align="center"

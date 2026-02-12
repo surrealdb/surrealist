@@ -20,7 +20,6 @@ export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) 
 				component={Stack}
 				pos="relative"
 				mih={168}
-				withBorder
 			>
 				{computeHistory.length === 0 ? (
 					<Stack

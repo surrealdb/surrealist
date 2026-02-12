@@ -111,7 +111,6 @@ function InstanceTypeRow({
 		<Paper
 			p="lg"
 			radius="md"
-			withBorder
 			style={{
 				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
 				cursor: active ? "not-allowed" : "pointer",

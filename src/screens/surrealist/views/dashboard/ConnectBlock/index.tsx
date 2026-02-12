@@ -28,10 +28,7 @@ function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectAct
 				onClick={onClick}
 				className={classes.action}
 			>
-				<Paper
-					withBorder
-					p="md"
-				>
+				<Paper p="md">
 					<Group
 						wrap="nowrap"
 						h="100%"

@@ -50,7 +50,6 @@ export function BackupsBlock({
 				component={Stack}
 				pos="relative"
 				mih={168}
-				withBorder
 			>
 				<Text
 					c="bright"

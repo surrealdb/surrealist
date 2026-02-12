@@ -20,7 +20,6 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 			<Paper
 				p="xl"
 				pos="relative"
-				withBorder
 				style={{ overflow: "hidden" }}
 			>
 				<LoadingOverlay

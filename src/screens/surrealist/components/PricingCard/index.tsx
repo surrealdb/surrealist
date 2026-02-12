@@ -1,10 +1,8 @@
-import { Anchor, Box, Button, Checkbox, Group, Paper, Stack, Text } from "@mantine/core";
+import { Anchor, Button, Checkbox, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import clsx from "clsx";
 import { PricingConfigBase, PricingConfigCloud } from "~/cloud/queries/pricing";
 import { Label } from "~/components/Label";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { CURRENCY_FORMAT } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 
@@ -32,6 +30,13 @@ export function PricingCard({
 	if (!config) {
 		return null;
 	}
+	const isDedicated =
+		config.name === "Dedicated" ||
+		config.name === "Premium" ||
+		config.name === "Enterprise Edition";
+
+	const isHourly = typeof config.price === "number";
+	const showFromPerHour = isHourly && !isDedicated;
 
 	return (
 		<Anchor
@@ -64,70 +69,54 @@ export function PricingCard({
 				)}
 			>
 				<Stack h="100%">
-					<Box>
-						<Text
-							fz={22}
-							c="violet"
+					<Text
+						c="slate.4"
+						fw={600}
+						lts="0.02em"
+					>
+						{config.name}
+					</Text>
+
+					{isHourly ? (
+						<Group
+							gap={8}
+							align="center"
+							wrap="nowrap"
 						>
-							{config.name}
-						</Text>
-						{state === "contact" ? (
-							<Text
-								fz={22}
-								fw={600}
-								variant="gradient"
-							>
-								Contact us
-							</Text>
-						) : state === "future" ? (
-							<Text
-								fz={22}
-								fw={600}
-								variant="gradient"
-							>
-								Coming soon
-							</Text>
-						) : config.price === 0 ? (
-							<Text
-								fz={22}
-								fw={600}
+							<Title
+								order={2}
 								c="bright"
+								fz={40}
+								lh={1.1}
 							>
-								Free
-							</Text>
-						) : typeof config.price === "string" ? (
-							<Text
-								fz={22}
-								fw={600}
-								c="bright"
-							>
-								{config.price}
-							</Text>
-						) : (
-							<Box>
-								<Group
-									align="end"
-									gap="xs"
+								{typeof config.price === "number"
+									? `$${config.price.toFixed(3)}`
+									: config.price}
+							</Title>
+							{showFromPerHour && (
+								<Text
+									c="slate.4"
+									fz="xs"
+									className={classes.priceSuffix}
+									lh={1.1}
 								>
-									<Text
-										size="md"
-										lh={2.25}
-									>
-										Starts at
-									</Text>
-									<PrimaryTitle fz={22}>
-										{CURRENCY_FORMAT.format(config.price ?? 0)}
-									</PrimaryTitle>
-									<Text
-										size="md"
-										lh={2.25}
-									>
-										/ per hour
-									</Text>
-								</Group>
-							</Box>
-						)}
-					</Box>
+									From
+									<br />
+									per hour
+								</Text>
+							)}
+						</Group>
+					) : (
+						<Text
+							fw={600}
+							c="bright"
+							variant={isDedicated ? "gradient" : undefined}
+							fz={40}
+							lh={1.1}
+						>
+							{config.price}
+						</Text>
+					)}
 					<Text>{config.description}</Text>
 					<Label mt="xl">What you get</Label>
 					<Stack>

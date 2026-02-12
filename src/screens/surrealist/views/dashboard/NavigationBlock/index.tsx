@@ -75,7 +75,6 @@ function NavigationBox({ icon, color, title, description, isLoading }: Navigatio
 			<Anchor variant="glow">
 				<Paper
 					p="md"
-					withBorder
 					className={classes.navigationBox}
 				>
 					<Group wrap="nowrap">

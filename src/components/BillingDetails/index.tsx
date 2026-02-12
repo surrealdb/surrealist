@@ -24,7 +24,6 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 	return (
 		<Paper
 			p="xl"
-			withBorder
 			{...rest}
 		>
 			<Group>

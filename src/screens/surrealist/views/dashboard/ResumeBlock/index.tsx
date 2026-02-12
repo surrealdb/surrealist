@@ -16,10 +16,7 @@ export function ResumeBlock({ instance, organisation }: ResumelockProps) {
 	const resumeInstance = useResumeInstance(instance);
 
 	return (
-		<Paper
-			p="xl"
-			withBorder
-		>
+		<Paper p="xl">
 			<Center h="100%">
 				<Stack
 					align="center"

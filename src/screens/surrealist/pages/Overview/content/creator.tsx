@@ -14,11 +14,12 @@ export function StartCreator({ organization, ...other }: PropsWithChildren<Start
 	return (
 		<Link href={`/o/${organization}/deploy`}>
 			<UnstyledButton {...other}>
-				<Anchor variant="glow">
+				<Anchor
+					variant="glow"
+					c="var(--mantine-color-text)"
+				>
 					<Paper
 						p="lg"
-						radius="md"
-						withBorder
 						ref={containerRef}
 					>
 						<Group
@@ -44,6 +45,7 @@ export function StartCreator({ organization, ...other }: PropsWithChildren<Start
 							</Box>
 
 							<Icon
+								c="dimmed"
 								style={{ alignSelf: "center" }}
 								path={iconChevronRight}
 								ml="xl"

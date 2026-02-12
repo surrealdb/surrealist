@@ -89,7 +89,6 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 	return (
 		<Paper
 			p="xl"
-			withBorder
 			{...rest}
 		>
 			<Group>

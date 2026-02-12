@@ -7,7 +7,7 @@ export function useGlowOffset() {
 
 	switch (true) {
 		case matchRoute(parser, "/overview", location)[0]:
-			return 0;
+			return 50;
 		case matchRoute(parser, "/c/:connection/dashboard", location)[0]:
 			return 125;
 		case matchRoute(parser, "/c/:connection/:view", location)[0]:

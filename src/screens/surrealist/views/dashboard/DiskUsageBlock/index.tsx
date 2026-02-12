@@ -55,7 +55,6 @@ export function DiskUsageBlock({
 				component={Stack}
 				pos="relative"
 				mih={168}
-				withBorder
 			>
 				<Group>
 					<Stack gap={0}>

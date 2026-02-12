@@ -783,7 +783,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 					</ReactFlow>
 
 					<Paper
-						withBorder
 						pos="absolute"
 						right={12}
 						top={12}

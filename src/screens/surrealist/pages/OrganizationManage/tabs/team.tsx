@@ -107,10 +107,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 					)
 				}
 			>
-				<Paper
-					p="md"
-					withBorder
-				>
+				<Paper p="md">
 					<Table
 						className={classes.table}
 						verticalSpacing="md"
@@ -239,10 +236,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 					}
 					description="Sent invitations awaiting acceptance"
 				>
-					<Paper
-						p="md"
-						withBorder
-					>
+					<Paper p="md">
 						<Table className={classes.table}>
 							<Table.Tbody>
 								{invitations.map((invite) => (

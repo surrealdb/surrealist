@@ -22,7 +22,10 @@ export function LearnMore({
 			className={clsx(classes.root, className)}
 			{...other}
 		>
-			<Group gap="sm">
+			<Group
+				gap="sm"
+				c="dimmed"
+			>
 				<Icon path={iconHelp} />
 				{children}
 			</Group>

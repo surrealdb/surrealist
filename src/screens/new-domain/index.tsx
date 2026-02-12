@@ -68,7 +68,6 @@ export function NewDomainScreen() {
 						mt={38}
 						maw={500}
 						mx="auto"
-						withBorder
 					>
 						<Stack gap="xl">
 							<PrimaryTitle fz={32}>Surrealist has moved!</PrimaryTitle>

@@ -141,7 +141,6 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 			<Paper
 				className={classes.confirmBox}
 				p="xl"
-				withBorder
 			>
 				<Image
 					src={glow}
@@ -290,7 +289,6 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 					className={classes.freeBox}
 					mt="md"
 					p="xl"
-					withBorder
 				>
 					<Stack gap={0}>
 						<Text
@@ -346,7 +344,6 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 					mt="md"
 					p={4}
 					pr="xl"
-					withBorder
 				>
 					<Flex
 						wrap="nowrap"

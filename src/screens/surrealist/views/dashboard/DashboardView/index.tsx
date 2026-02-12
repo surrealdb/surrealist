@@ -744,7 +744,6 @@ function GettingStartedLink({ image, description, title, href }: GettingStartedL
 			<Paper
 				p="md"
 				radius="md"
-				withBorder
 			>
 				<Group
 					wrap="nowrap"

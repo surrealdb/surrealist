@@ -49,7 +49,6 @@ export function OrganizationTile({
 					style={{
 						flexDirection: "column",
 					}}
-					withBorder
 				>
 					<Group
 						wrap="nowrap"

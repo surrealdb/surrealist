@@ -100,10 +100,7 @@ export function SupportPage() {
 					{flags.support_tickets && (
 						<>
 							{isAuthenticated && chats && chats.length !== 0 && !isChatsLoading && (
-								<Paper
-									p="xl"
-									withBorder
-								>
+								<Paper p="xl">
 									<Group>
 										<Text
 											c="bright"

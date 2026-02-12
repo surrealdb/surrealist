@@ -79,36 +79,36 @@ export function displayKey(key: string) {
 		case "command": {
 			return (
 				<Icon
+					size="sm"
 					key={key}
 					path={iconCommand}
-					size={0.7}
 				/>
 			);
 		}
 		case "alt": {
 			return (
 				<Icon
+					size="sm"
 					key={key}
 					path={iconKeyboardOption}
-					size={0.7}
 				/>
 			);
 		}
 		case "ctrl": {
 			return (
 				<Icon
+					size="sm"
 					key={key}
 					path={iconKeyboardControl}
-					size={0.7}
 				/>
 			);
 		}
 		case "shift": {
 			return (
 				<Icon
+					size="sm"
 					key={key}
 					path={iconKeyboardShift}
-					size={0.7}
 				/>
 			);
 		}

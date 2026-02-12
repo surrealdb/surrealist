@@ -21,10 +21,7 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 			title="Invoices"
 			description="View and download invoices of service charges"
 		>
-			<Paper
-				p="md"
-				withBorder
-			>
+			<Paper p="md">
 				{invoiceQuery.isPending ? (
 					<Stack>
 						<Skeleton height={40} />

@@ -14,7 +14,7 @@ export function InstanceBackup({ selected, backup, onSelect }: InstanceBackupPro
 		<Paper
 			p="md"
 			bg="obsidian.8"
-			withBorder
+			withBorder={selected ?? undefined}
 			style={{
 				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
 			}}

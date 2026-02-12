@@ -55,7 +55,6 @@ export function BaseAreaChart({
 			component={Stack}
 			pos="relative"
 			h={height ?? 280}
-			withBorder
 		>
 			<Group gap="xs">
 				<Text
