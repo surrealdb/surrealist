@@ -165,22 +165,24 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 						setOverlaySidebar(false);
 					}}
 				>
-					<Flex
+					<Group
+						gap="lg"
 						wrap="nowrap"
 						align="center"
 						style={{ flexShrink: 0 }}
 					>
 						<Image
+							my={-9}
 							src={pictoSurrealist}
-							w={45}
+							w={42}
+							className={classes.hat}
 						/>
 						<Image
 							src={logoUrl}
 							style={{ flexShrink: 0 }}
-							w={128}
-							ml={14}
+							w={118}
 						/>
-					</Flex>
+					</Group>
 				</UnstyledButton>
 				<Stack
 					gap="sm"
