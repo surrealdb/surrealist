@@ -30,7 +30,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 			{field.kind && (
 				<>
 					<Text
-						c="slate"
+						c="obsidian"
 						mr="xs"
 					>
 						:

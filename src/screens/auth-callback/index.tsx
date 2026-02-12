@@ -156,7 +156,7 @@ export function AuthCallbackScreen() {
 						>
 							If the app does not open automatically, please click here to open it
 						</Text>
-						<Text c="slate">You can close this page once the app has opened</Text>
+						<Text c="obsidian">You can close this page once the app has opened</Text>
 					</>
 				) : null}
 			</Stack>

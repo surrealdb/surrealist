@@ -98,7 +98,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 								be billed for them.
 							</Text>
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 								size="xs"
 								mt="md"

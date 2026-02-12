@@ -206,7 +206,7 @@ export function OverviewPage() {
 										>
 											<ActionButton
 												variant="subtle"
-												color="slate"
+												color="obsidian"
 												label="Filter connections"
 											>
 												<Icon path={iconTune} />
@@ -320,7 +320,7 @@ export function OverviewPage() {
 									<Link href="/organisations/create">
 										<Button
 											size="xs"
-											color="slate"
+											color="obsidian"
 											variant="light"
 											rightSection={<Icon path={iconPlus} />}
 										>
@@ -567,7 +567,7 @@ export function OverviewPage() {
 										/>
 									}
 									onClick={() => dispatchIntent("open-news")}
-									color="slate"
+									color="obsidian"
 									variant="subtle"
 								>
 									Read all articles

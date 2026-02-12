@@ -107,7 +107,7 @@ export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProp
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>

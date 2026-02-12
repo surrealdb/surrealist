@@ -46,7 +46,7 @@ export function FeatureFlagsTab() {
 				{filteredFlags.length === 0 && (
 					<Text
 						ta="center"
-						c="slate"
+						c="obsidian"
 						mt="xl"
 					>
 						No flags matched your search
@@ -69,7 +69,7 @@ export function FeatureFlagsTab() {
 							>
 								{flag}
 							</Text>
-							<Text c="slate">({typeof flags[flag]})</Text>
+							<Text c="obsidian">({typeof flags[flag]})</Text>
 							<Spacer />
 							{defaults[flag] !== flags[flag] && (
 								<ActionButton

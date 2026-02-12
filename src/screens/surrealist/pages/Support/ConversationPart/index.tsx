@@ -15,7 +15,7 @@ export interface ConversationPartProps {
 
 export function ConversationPartAttachment({ attachment }: { attachment: IntercomAttachment }) {
 	const isLight = useIsLight();
-	const bg = isLight ? "slate.0" : "slate.9";
+	const bg = isLight ? "obsidian.0" : "obsidian.9";
 
 	return (
 		<Paper
@@ -33,7 +33,7 @@ export function ConversationPartAttachment({ attachment }: { attachment: Interco
 				<ThemeIcon
 					size="lg"
 					variant="light"
-					color="slate"
+					color="obsidian"
 				>
 					<Icon path={iconFile} />
 				</ThemeIcon>
@@ -48,7 +48,7 @@ export function ConversationPartAttachment({ attachment }: { attachment: Interco
 					</Text>
 					<Text
 						fz="sm"
-						c="slate.4"
+						c="obsidian.4"
 					>
 						{formatFileSize(attachment.filesize)}
 					</Text>
@@ -124,13 +124,13 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 				</Text>
 				<Text
 					fz="lg"
-					c="slate.4"
+					c="obsidian.4"
 				>
 					&bull;
 				</Text>
 				<Text
 					fz="md"
-					c="slate.4"
+					c="obsidian.4"
 				>
 					{formatRelativeDate(part.updated_at * 1000)}
 				</Text>
@@ -168,13 +168,13 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 					</Text>
 					<Text
 						fz="lg"
-						c="slate.4"
+						c="obsidian.4"
 					>
 						&bull;
 					</Text>
 					<Text
 						fz="md"
-						c="slate.4"
+						c="obsidian.4"
 					>
 						{formatRelativeDate(part.updated_at * 1000)}
 					</Text>

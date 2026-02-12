@@ -86,7 +86,6 @@ export function LinkTopic({ entry }: TopicProps<DocsLinkTopic>) {
 			<Icon
 				path={iconOpen}
 				size="sm"
-				right
 			/>
 		</Entry>
 	);

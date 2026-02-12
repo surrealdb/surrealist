@@ -140,7 +140,7 @@ export function ConfigurationBlock({
 				>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						onClick={onConfigure}
 						disabled={!instance || isIdle || !canModify}
 						variant="light"

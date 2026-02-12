@@ -100,14 +100,14 @@ export function VariablesPane({
 							</Badge>
 						)}
 						<ActionButton
-							color="slate"
+							color="obsidian"
 							onClick={clearVariables}
 							label="Clear variables"
 						>
 							<Icon path={iconReset} />
 						</ActionButton>
 						<ActionButton
-							color="slate"
+							color="obsidian"
 							onClick={closeVariables}
 							label="Close panel"
 						>

@@ -30,7 +30,7 @@ const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],
 	UPDATE: ["orange", iconHammer],
 	DELETE: ["red", iconDelete],
-	CLOSE: ["slate", iconClose],
+	CLOSE: ["obsidian", iconClose],
 };
 
 function hasBody(msg: LiveMessage) {
@@ -112,7 +112,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 					>
 						{messages.map((msg) => {
 							const [color, icon] = LIVE_ACTION_COLORS[msg.action] || [
-								"slate",
+								"obsidian",
 								iconHelp,
 							];
 
@@ -148,7 +148,6 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 													<Icon
 														path={icon}
 														c={color}
-														left
 													/>
 												}
 											>
@@ -162,7 +161,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 											<Stack gap={0}>
 												<RelativeTime value={msg.timestamp} />
 												<Text
-													c="slate"
+													c="obsidian"
 													size="xs"
 												>
 													<Text
@@ -193,7 +192,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 			) : (
 				<Center
 					h="100%"
-					c="slate"
+					c="obsidian"
 				>
 					<Stack>
 						<Icon

@@ -189,7 +189,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			>
 				<PrimaryTitle>
 					<Icon
-						left
 						path={iconSearch}
 						size="sm"
 					/>
@@ -254,7 +253,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					currentRecord.isEdge && (
 						<Paper
 							title="This record is an edge"
-							bg="slate"
+							bg="obsidian"
 							c="bright"
 							px="xs"
 						>
@@ -278,7 +277,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 							<Icon
 								path={iconJSON}
 								size={0.85}
-								right
 							/>
 						</Tabs.Tab>
 						<Tabs.Tab value="relations">
@@ -286,7 +284,6 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 							<Icon
 								path={iconTransfer}
 								size={0.85}
-								right
 							/>
 						</Tabs.Tab>
 					</Tabs.List>

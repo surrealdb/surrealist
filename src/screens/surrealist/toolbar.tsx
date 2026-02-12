@@ -344,8 +344,8 @@ export function SurrealistToolbar() {
 				<>
 					<Icon
 						path={iconChevronRight}
-						size="xl"
-						color="slate.5"
+						size="lg"
+						color="obsidian.5"
 						mx={-8}
 					/>
 
@@ -357,8 +357,8 @@ export function SurrealistToolbar() {
 				<>
 					<Icon
 						path={iconChevronRight}
-						size="xl"
-						color="slate.5"
+						size="lg"
+						color="obsidian.5"
 						mx={-8}
 					/>
 
@@ -368,7 +368,7 @@ export function SurrealistToolbar() {
 
 			{isConnected && isSandbox && (
 				<ActionButton
-					color="slate"
+					color="obsidian"
 					variant="subtle"
 					label="Reset sandbox environment"
 					onClick={resetSandbox}
@@ -480,7 +480,7 @@ export function SurrealistToolbar() {
 									<Group gap="md">
 										<Button
 											flex={1}
-											color="slate"
+											color="obsidian"
 											variant="light"
 											size="xs"
 											onClick={() => {
@@ -558,7 +558,7 @@ export function SurrealistToolbar() {
 					h={34}
 					size="xs"
 					radius="xs"
-					color="slate"
+					color="obsidian"
 					variant={
 						(flags.changelog === "auto" ? hasReadChangelog : flags.changelog === "read")
 							? "filled"
@@ -627,7 +627,7 @@ export function SurrealistToolbar() {
 					<Group>
 						<Button
 							onClick={datasetModalOpenHandle.close}
-							color="slate"
+							color="obsidian"
 							variant="light"
 							flex={1}
 						>

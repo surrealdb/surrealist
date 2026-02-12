@@ -159,7 +159,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 		if (val === null || val === undefined) {
 			return (
 				<Text
-					c="slate.4"
+					c="obsidian.4"
 					fs="italic"
 				>
 					No value
@@ -172,7 +172,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 			if (val.length === 0) {
 				return (
 					<Text
-						c="slate.4"
+						c="obsidian.4"
 						fs="italic"
 					>
 						No items
@@ -228,7 +228,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 					style={{
 						whiteSpace: "pre-wrap",
 						fontSize: "0.875rem",
-						backgroundColor: "var(--mantine-color-slate-8)",
+						backgroundColor: "var(--mantine-color-obsidian-8)",
 						padding: "0.5rem",
 						borderRadius: "0.25rem",
 						fontFamily: "monospace",
@@ -448,7 +448,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 									<Spacer />
 
 									<Button
-										color="slate"
+										color="obsidian"
 										variant="light"
 										leftSection={<Icon path={iconArrowLeft} />}
 										onClick={() => navigate(`/support/requests`)}

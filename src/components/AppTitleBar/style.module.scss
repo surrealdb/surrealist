@@ -7,10 +7,10 @@
 	position: fixed;
 	z-index: 1000;
 	background-color: var(--mantine-color-body);
-	border-bottom: 1px solid var(--mantine-color-slate-7);
+	border-bottom: 1px solid var(--mantine-color-obsidian-7);
 
 	@include light {
-		border-color: var(--mantine-color-slate-2);
+		border-color: var(--mantine-color-obsidian-2);
 	}
 }
 
@@ -36,49 +36,49 @@
 }
 
 .menu-button {
-	color: var(--mantine-color-slate-2);
+	color: var(--mantine-color-obsidian-2);
 	padding: 6px 10px;
 	border-radius: 0;
 	font-size: small;
 
 	&:hover {
-		background: var(--mantine-color-slate-6);
+		background: var(--mantine-color-obsidian-6);
 		color: white;
 
 		@include light {
-			background: var(--mantine-color-slate-1);
+			background: var(--mantine-color-obsidian-1);
 			color: black;
 		}
 	}
 
 	@include light {
-		color: var(--mantine-color-slate-7);
+		color: var(--mantine-color-obsidian-7);
 	}
 }
 
 .control-button {
-	color: var(--mantine-color-slate-2);
+	color: var(--mantine-color-obsidian-2);
 	border-radius: 0;
 	width: 46px;
 	height: 32px;
 
 	&:hover {
-		background: var(--mantine-color-slate-6);
+		background: var(--mantine-color-obsidian-6);
 		color: white;
 
 		@include light {
-			background: var(--mantine-color-slate-1);
+			background: var(--mantine-color-obsidian-1);
 			color: black;
 		}
 	}
 
 	@include light {
-		color: var(--mantine-color-slate-7);
+		color: var(--mantine-color-obsidian-7);
 	}
 }
 
 .close-button {
-	color: var(--mantine-color-slate-2);
+	color: var(--mantine-color-obsidian-2);
 	border-radius: 0;
 	width: 46px;
 	height: 32px;
@@ -94,6 +94,6 @@
 	}
 
 	@include light {
-		color: var(--mantine-color-slate-7);
+		color: var(--mantine-color-obsidian-7);
 	}
 }

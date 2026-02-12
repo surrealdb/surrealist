@@ -26,7 +26,7 @@
 	// 	// backdrop-filter: blur(2px);
 	// 	// -webkit-backdrop-filter: blur(2px);
 	// 	background-color: rgba(0, 0, 0, 0.4) !important;
-	// 	border: 1px solid var(--mantine-color-slate-5) !important;
+	// 	border: 1px solid var(--mantine-color-obsidian-5) !important;
 	// 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.35);
 	// 	display: flex;
 	// 	align-items: center;
@@ -60,11 +60,11 @@
 	}
 
 	:global(.react-flow__edge-textbg) {
-		fill: var(--mantine-color-slate-7) !important;
+		fill: var(--mantine-color-obsidian-7) !important;
 	}
 
 	:global(.react-flow__edge).record-link path {
-		stroke: var(--mantine-color-slate-5) !important;
+		stroke: var(--mantine-color-obsidian-5) !important;
 		stroke-dasharray: 5;
 	}
 
@@ -121,21 +121,21 @@
 	@include light {
 
 		:global(.react-flow__edge-textbg) {
-			fill: var(--mantine-color-slate-1) !important;
+			fill: var(--mantine-color-obsidian-1) !important;
 		}
 
 		:global(.react-flow__handle) {
 			background-color: rgba(255, 255, 255, 0.01) !important;
-			border: 1px solid var(--mantine-color-slate-2) !important;
+			border: 1px solid var(--mantine-color-obsidian-2) !important;
 			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 
 			&::before {
-				background-color: var(--mantine-color-slate-4);
+				background-color: var(--mantine-color-obsidian-4);
 			}
 		}
 
 		:global(.react-flow__edge > path) {
-			stroke: var(--mantine-color-slate-3) !important;
+			stroke: var(--mantine-color-obsidian-3) !important;
 		}
 
 	}

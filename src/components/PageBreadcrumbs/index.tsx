@@ -19,7 +19,12 @@ export function PageBreadcrumbs({ items, ...other }: PageBreadcrumbsProps) {
 						{item.label}
 					</Link>
 				) : (
-					<span key={index}>{item.label}</span>
+					<span
+						key={index}
+						className={classes.link}
+					>
+						{item.label}
+					</span>
 				),
 			)}
 		</Breadcrumbs>

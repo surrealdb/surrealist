@@ -64,7 +64,7 @@ export function LogActions({ options, isLoading, onChange, onRefresh }: LogActio
 					>
 						<ActionButton
 							variant="light"
-							color="slate"
+							color="obsidian"
 							label="Node filter"
 							size="lg"
 						>

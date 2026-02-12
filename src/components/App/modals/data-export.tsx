@@ -226,7 +226,7 @@ export function DataExportModal() {
 				<Group>
 					<Button
 						flex={1}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={openedHandle.close}
 					>

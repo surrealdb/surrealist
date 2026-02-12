@@ -124,10 +124,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 	return (
 		<Box>
 			<SimpleGrid cols={{ base: 1, xl: 2 }}>
-				<Paper
-					p="xl"
-					variant="gradient"
-				>
+				<Paper p="xl">
 					<Group>
 						<Icon
 							path={iconMemory}
@@ -172,10 +169,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 						</Group>
 					</Stack>
 				</Paper>
-				<Paper
-					p="xl"
-					variant="gradient"
-				>
+				<Paper p="xl">
 					<Group>
 						<Icon
 							path={iconDatabase}
@@ -280,7 +274,7 @@ export function IntegerInput({ value, min, max, step, suffix, onChange }: Intege
 				<ActionIcon
 					disabled={value <= min}
 					variant="transparent"
-					color="slate"
+					color="obsidian"
 					onClick={() => onChange(Math.max(min, round(value - step, step)))}
 				>
 					<Text fz="xl">-</Text>
@@ -290,7 +284,7 @@ export function IntegerInput({ value, min, max, step, suffix, onChange }: Intege
 				<ActionIcon
 					disabled={value >= max}
 					variant="transparent"
-					color="slate"
+					color="obsidian"
 					onClick={() => onChange(Math.min(max, round(value + step, step)))}
 				>
 					<Text fz="xl">+</Text>

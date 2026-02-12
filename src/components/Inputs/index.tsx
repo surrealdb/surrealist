@@ -361,7 +361,7 @@ export function EmailInput({ value, onChange, autoFocus, ...other }: EmailInputP
 						key={email}
 						withRemoveButton
 						onRemove={() => onChange?.(value.filter((_, j) => i !== j))}
-						bg={isLight ? "slate.1" : "slate.9"}
+						bg={isLight ? "obsidian.1" : "obsidian.9"}
 					>
 						{email}
 					</Pill>

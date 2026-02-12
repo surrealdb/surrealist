@@ -75,7 +75,7 @@ export function Pagination({ store, loading }: PaginationProps) {
 					}}
 				/>
 
-				<Text c="slate">of {store.pageCount} pages</Text>
+				<Text c="obsidian">of {store.pageCount} pages</Text>
 
 				<ActionButton
 					loading={loading}

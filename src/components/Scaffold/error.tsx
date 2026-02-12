@@ -22,7 +22,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 	return (
 		<ScrollArea
 			h="100%"
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "obsidian.0" : "obsidian.9"}
 		>
 			<Paper
 				p="xl"
@@ -55,7 +55,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 							leftSection={<Icon path={iconCursor} />}
 							onClick={resetErrorBoundary}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							radius="xs"
 							size="xs"
 						>
@@ -67,7 +67,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 								adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 							}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							radius="xs"
 							size="xs"
 						>
@@ -77,7 +77,7 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 							leftSection={<Icon path={clipboard.copied ? iconCheck : iconCopy} />}
 							onClick={copyDebug}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							radius="xs"
 							size="xs"
 						>

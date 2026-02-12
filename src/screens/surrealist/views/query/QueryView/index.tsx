@@ -282,7 +282,7 @@ export function QueryView() {
 									<Text
 										span
 										size="xs"
-										c="slate"
+										c="obsidian"
 									>
 										(optional)
 									</Text>
@@ -305,7 +305,7 @@ export function QueryView() {
 							<Button
 								onClick={isSavingHandle.close}
 								variant="light"
-								color="slate"
+								color="obsidian"
 							>
 								Close
 							</Button>

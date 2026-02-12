@@ -109,8 +109,8 @@ export function ArticlePane({
 	});
 
 	const border = isLight
-		? "1px solid var(--mantine-color-slate-1)"
-		: "1px solid var(--mantine-color-slate-7)";
+		? "1px solid var(--mantine-color-obsidian-1)"
+		: "1px solid var(--mantine-color-obsidian-7)";
 
 	return (
 		<ContentPane

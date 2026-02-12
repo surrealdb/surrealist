@@ -94,7 +94,7 @@ export function AppTitleBar() {
 													{keybinds.has(item.id) && (
 														<>
 															<Spacer />
-															<Text c="slate.4">
+															<Text c="obsidian.4">
 																<Group
 																	gap={2}
 																	wrap="nowrap"

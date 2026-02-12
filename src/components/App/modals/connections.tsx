@@ -128,7 +128,7 @@ export function ConnectionsModal() {
 								>
 									<Button
 										size="xs"
-										color="slate"
+										color="obsidian"
 										className={clsx(
 											classes.label,
 											showAll && classes.labelActive,
@@ -145,7 +145,7 @@ export function ConnectionsModal() {
 											<Button
 												key={i}
 												size="xs"
-												color="slate"
+												color="obsidian"
 												className={clsx(
 													classes.label,
 													isActive && classes.labelActive,
@@ -164,7 +164,7 @@ export function ConnectionsModal() {
 
 					{isEmpty && (
 						<Text
-							c="slate"
+							c="obsidian"
 							ta="center"
 							my="xl"
 						>
@@ -219,7 +219,7 @@ export function ConnectionsModal() {
 								</Text>
 								<Icon
 									path={iconCircle}
-									c="slate"
+									c="obsidian"
 								/>
 								<Text>SurrealDB Cloud</Text>
 							</Group>

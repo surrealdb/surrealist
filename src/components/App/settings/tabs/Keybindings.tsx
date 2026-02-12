@@ -88,7 +88,7 @@ export function KeybindingsTab() {
 					{filtered.length === 0 && (
 						<Text
 							ta="center"
-							c="slate"
+							c="obsidian"
 							mt="xl"
 						>
 							No results matched your search
@@ -119,12 +119,12 @@ export function KeybindingsTab() {
 													size="sm"
 												/>
 												<Text c="bright">{cmd.name}</Text>
-												{modified && <Text c="slate">(Modified)</Text>}
+												{modified && <Text c="obsidian">(Modified)</Text>}
 												<Spacer />
 												{active && active.length > 0 ? (
 													<Shortcut value={active} />
 												) : (
-													<Text c="slate">&mdash;</Text>
+													<Text c="obsidian">&mdash;</Text>
 												)}
 												<ActionButton
 													ml="xl"
@@ -249,7 +249,7 @@ function RecordingModal({ command, commands, keybindMap, onClose }: RecordingMod
 			</Box>
 			{duplicates.length > 0 && (
 				<Paper
-					bg="slate.9"
+					bg="obsidian.9"
 					mt="sm"
 					p="lg"
 				>
@@ -284,7 +284,7 @@ function RecordingModal({ command, commands, keybindMap, onClose }: RecordingMod
 			<Group mt="lg">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>
@@ -293,7 +293,7 @@ function RecordingModal({ command, commands, keybindMap, onClose }: RecordingMod
 				{isResettable && (
 					<Button
 						onClick={handleReset}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						flex={1}
 					>

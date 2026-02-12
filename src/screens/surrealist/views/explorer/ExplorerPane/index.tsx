@@ -342,7 +342,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					<ActionButton
 						label="Reveal tables"
 						mr="sm"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={openTableList}
 						aria-label="Reveal tables"

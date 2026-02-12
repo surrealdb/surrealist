@@ -173,7 +173,7 @@ export function ConfigureStep({
 
 			<Group>
 				<Button
-					color="slate"
+					color="obsidian"
 					variant="light"
 					onClick={() => setStep(0)}
 				>

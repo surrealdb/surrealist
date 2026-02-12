@@ -229,16 +229,6 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					<Spacer />
 
 					<NavigationIcon
-						name="Support"
-						icon={iconHelp}
-						match={["/support", "/support/*"]}
-						onClick={() => navigate("/support")}
-						onMouseEnter={hoverSidebarHandle.open}
-						withTooltip={sidebarMode === "compact"}
-						indicator={unreadConversations}
-					/>
-
-					<NavigationIcon
 						name={
 							<Group wrap="nowrap">
 								Search
@@ -249,6 +239,16 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 						onClick={openCommands}
 						onMouseEnter={hoverSidebarHandle.open}
 						withTooltip={sidebarMode === "compact"}
+					/>
+
+					<NavigationIcon
+						name="Support"
+						icon={iconHelp}
+						match={["/support", "/support/*"]}
+						onClick={() => navigate("/support")}
+						onMouseEnter={hoverSidebarHandle.open}
+						withTooltip={sidebarMode === "compact"}
+						indicator={unreadConversations}
 					/>
 
 					<NavigationIcon

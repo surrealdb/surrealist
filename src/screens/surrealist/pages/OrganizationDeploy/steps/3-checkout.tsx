@@ -165,7 +165,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						<Button
 							mt="xl"
 							size="xs"
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={() => setStep(1)}
 						>
@@ -374,7 +374,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 								<Button
 									mt="md"
 									size="xs"
-									color="slate"
+									color="obsidian"
 									variant="light"
 									rightSection={
 										<Icon
@@ -414,7 +414,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 
 			<Group>
 				<Button
-					color="slate"
+					color="obsidian"
 					variant="light"
 					onClick={() => setStep(1)}
 				>

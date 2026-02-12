@@ -44,7 +44,6 @@ export function SandboxModal() {
 
 			<Paper
 				p={24}
-				variant="gradient"
 				withBorder={false}
 				radius={0}
 			>

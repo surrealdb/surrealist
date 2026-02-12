@@ -18,7 +18,7 @@
 	background-color: unset !important;
 
 	&::placeholder {
-		color: var(--mantine-color-slate-4);
+		color: var(--mantine-color-obsidian-4);
 	}
 }
 
@@ -35,22 +35,22 @@
 }
 
 .listing-active {
-	background-color: var(--mantine-color-slate-7);
+	background-color: var(--mantine-color-obsidian-7);
 
 	@include light {
-		background-color: var(--mantine-color-slate-1);
+		background-color: var(--mantine-color-obsidian-1);
 	}
 }
 
 .update-dialog {
-	background-color: var(--mantine-color-slate-9);
-	border: 1px solid var(--mantine-color-slate-6);
+	background-color: var(--mantine-color-obsidian-9);
+	border: 1px solid var(--mantine-color-obsidian-6);
 	transition-property: transform, opacity, background-color !important;
 	cursor: pointer;
 
 	@include light {
 		background-color: white;
-		border-color: var(--mantine-color-slate-2);
+		border-color: var(--mantine-color-obsidian-2);
 	}
 }
 
@@ -139,7 +139,7 @@
 
 	@include light {
 		box-shadow: unset;
-		background-color: var(--mantine-color-slate-2);
+		background-color: var(--mantine-color-obsidian-2);
 		color: var(--mantine-color-bright);
 	}
 }

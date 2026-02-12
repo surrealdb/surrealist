@@ -56,7 +56,7 @@ export function ContentPane({
 						{icon && (
 							<Icon
 								path={icon}
-								c={isLight ? "slate.4" : "slate.3"}
+								c={isLight ? "obsidian.4" : "obsidian.3"}
 							/>
 						)}
 						<Text

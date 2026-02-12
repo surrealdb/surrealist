@@ -175,7 +175,7 @@ export function CreateConnectionPage() {
 												onClick={() => applyTemplate(localhost)}
 												leftSection={
 													<ThemeIcon
-														color="slate"
+														color="obsidian"
 														variant="light"
 														radius="xs"
 														mr="xs"
@@ -206,7 +206,7 @@ export function CreateConnectionPage() {
 													onClick={() => applyTemplate(template)}
 													leftSection={
 														<ThemeIcon
-															color="slate"
+															color="obsidian"
 															variant="light"
 															radius="xs"
 															mr="xs"
@@ -272,7 +272,7 @@ export function CreateConnectionPage() {
 								<a href="https://surrealdb.com/cloud">
 									<Button
 										size="xs"
-										color="slate"
+										color="obsidian"
 										variant="light"
 									>
 										Learn more
@@ -348,7 +348,7 @@ export function CreateConnectionPage() {
 					<Group mt={24}>
 						<Link to={savepoint.path}>
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 							>
 								Back

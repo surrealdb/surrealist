@@ -18,7 +18,7 @@ export function MiniRunScreen() {
 				style={{
 					backgroundColor: transparent
 						? undefined
-						: `var(--mantine-color-slate-${isLight ? 0 : 9})`,
+						: `var(--mantine-color-obsidian-${isLight ? 0 : 9})`,
 				}}
 			>
 				<CommandsProvider>

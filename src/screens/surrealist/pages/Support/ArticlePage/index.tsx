@@ -11,8 +11,7 @@ import {
 	Text,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon, iconArrowLeft, iconOpen, Markdown } from "@surrealdb/ui";
-import TurndownService from "turndown";
+import { Icon, iconArrowLeft, iconOpen } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { useSupportArticleQuery } from "~/cloud/queries/context";
@@ -27,7 +26,6 @@ export interface ArticlePageProps {
 }
 
 export function ArticlePage({ id }: ArticlePageProps) {
-	const turndown = new TurndownService();
 	const { data: article, isLoading } = useSupportArticleQuery(id);
 
 	return (
@@ -121,7 +119,7 @@ export function ArticlePage({ id }: ArticlePageProps) {
 										{isLoading && (
 											<Loader
 												size="sm"
-												color="slate.4"
+												color="obsidian.4"
 											/>
 										)}
 									</Avatar>
@@ -139,7 +137,7 @@ export function ArticlePage({ id }: ArticlePageProps) {
 									</Group>
 									<Text
 										fz="sm"
-										c="slate"
+										c="obsidian"
 									>
 										Last updated{" "}
 										{formatRelativeDate((article?.updated_at ?? 0) * 1000)}
@@ -149,12 +147,13 @@ export function ArticlePage({ id }: ArticlePageProps) {
 						</Box>
 
 						<Paper p="xl">
-							<Markdown content={turndown.turndown(article?.body ?? "")} />
+							{/** biome-ignore lint/security/noDangerouslySetInnerHtml: It's safe since its Intercom */}
+							<div dangerouslySetInnerHTML={{ __html: article?.body ?? "" }} />
 						</Paper>
 
 						<Group>
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 								leftSection={<Icon path={iconArrowLeft} />}
 								onClick={() =>

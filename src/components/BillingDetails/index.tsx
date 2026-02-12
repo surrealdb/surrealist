@@ -41,7 +41,7 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 				<Spacer />
 				{isOwner && (
 					<Button
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={handleEditBilling}
 					>
@@ -63,7 +63,7 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 							</Text>
 						) : (
 							<Text
-								c="slate.4"
+								c="obsidian.4"
 								fw={500}
 							>
 								Not provided yet
@@ -83,7 +83,7 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 							</Text>
 						) : (
 							<Text
-								c="slate.4"
+								c="obsidian.4"
 								fw={500}
 							>
 								Not provided yet

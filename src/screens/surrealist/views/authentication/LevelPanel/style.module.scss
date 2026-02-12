@@ -1,6 +1,6 @@
-.scroller > div {
+.scroller>div {
 	width: 100%;
-    table-layout: fixed;
+	table-layout: fixed;
 }
 
 .accordion {
@@ -10,11 +10,11 @@
 	}
 
 	:global(.mantine-Accordion-control) {
-		background-color: var(--mantine-color-slate-7);
+		background-color: var(--mantine-color-obsidian-7);
 		border-radius: var(--mantine-radius-md);
 
 		@include light {
-			background-color: var(--mantine-color-slate-0);
+			background-color: var(--mantine-color-obsidian-0);
 		}
 	}
 

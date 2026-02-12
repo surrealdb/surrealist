@@ -31,7 +31,7 @@ export function openResourcesLockedModal(organisation: CloudOrganization) {
 				</Text>
 				<Group>
 					<Button
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={() => {
 							closeModal("resources-locked");

@@ -62,7 +62,7 @@ export function PreferencesTab() {
 				{sections.length === 0 && (
 					<Text
 						ta="center"
-						c="slate"
+						c="obsidian"
 						mt="xl"
 					>
 						No preferences matched your search
@@ -105,7 +105,7 @@ export function PreferencesTab() {
 												{preference.description && (
 													<Text
 														fz="sm"
-														c="slate"
+														c="obsidian"
 													>
 														{preference.description}
 													</Text>

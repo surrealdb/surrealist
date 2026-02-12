@@ -30,7 +30,7 @@ export function ResultPane() {
 			) : (
 				<Center
 					h="100%"
-					c="slate"
+					c="obsidian"
 				>
 					<Stack>
 						<Icon

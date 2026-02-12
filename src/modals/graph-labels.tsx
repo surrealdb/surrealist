@@ -101,13 +101,13 @@ function GraphLabelEditor() {
 			</Text>
 			<Stack mt="xl">
 				{mappedTables.length === 0 ? (
-					<Text c="slate">No label mappings defined yet</Text>
+					<Text c="obsidian">No label mappings defined yet</Text>
 				) : (
 					mappedTables.map(({ table, labels, fields }, i) => (
 						<Paper
 							key={i}
 							p="md"
-							bg={isLight ? "slate.0" : "slate.7"}
+							bg={isLight ? "obsidian.0" : "obsidian.7"}
 						>
 							<Group>
 								<Icon path={iconTable} />

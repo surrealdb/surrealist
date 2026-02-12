@@ -42,7 +42,7 @@ export function SelectDatabase({ withNamespace, withDatabase, ...other }: Select
 				<Icon
 					path={iconChevronRight}
 					size="xl"
-					color="slate.5"
+					color="obsidian.5"
 					mx="md"
 				/>
 			)}

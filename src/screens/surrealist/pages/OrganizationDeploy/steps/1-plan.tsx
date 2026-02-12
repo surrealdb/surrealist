@@ -116,7 +116,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 			</SimpleGrid>
 
 			<Box mt="sm">
-				<Text c="slate">* Coming soon</Text>
+				<Text c="obsidian">* Coming soon</Text>
 			</Box>
 
 			<Stack
@@ -131,7 +131,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 				>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						rightSection={<Icon path={iconArrowUpRight} />}
 					>

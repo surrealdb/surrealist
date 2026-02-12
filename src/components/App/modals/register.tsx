@@ -157,7 +157,7 @@ export function RegisterUserModal() {
 					<Button
 						onClick={openedHandle.close}
 						variant="light"
-						color="slate"
+						color="obsidian"
 					>
 						Close
 					</Button>

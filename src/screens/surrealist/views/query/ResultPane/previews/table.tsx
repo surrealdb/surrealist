@@ -52,7 +52,7 @@ export function TablePreview({ responses, selected }: PreviewProps) {
 			<Center
 				h="100%"
 				mih={80}
-				c="slate"
+				c="obsidian"
 			>
 				<Stack>
 					<Icon

@@ -47,7 +47,7 @@ export function ParametersPanel({
 			style={{ flexShrink: 0 }}
 			infoSection={
 				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
+					color={isLight ? "obsidian.0" : "obsidian.9"}
 					radius="sm"
 					c="inherit"
 				>
@@ -90,7 +90,7 @@ export function ParametersPanel({
 						/>
 					) : (
 						<Text
-							c="slate"
+							c="obsidian"
 							ta="center"
 							mt="lg"
 						>
@@ -100,7 +100,7 @@ export function ParametersPanel({
 
 					{search && filtered.length === 0 && (
 						<Text
-							c="slate"
+							c="obsidian"
 							ta="center"
 							mt="lg"
 						>

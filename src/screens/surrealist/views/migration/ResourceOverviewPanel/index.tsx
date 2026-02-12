@@ -80,7 +80,7 @@ export function ResourceOverviewPanel({
 				>
 					<Icon
 						path={iconTransfer}
-						c={isLight ? "slate.4" : "slate.3"}
+						c={isLight ? "obsidian.4" : "obsidian.3"}
 					/>
 					<Text
 						fw={600}
@@ -90,7 +90,7 @@ export function ResourceOverviewPanel({
 						Migration Overview
 					</Text>
 					<Badge
-						color="slate"
+						color="obsidian"
 						radius="sm"
 					>
 						{totalIssues} {totalIssues === 1 ? "issue" : "issues"}
@@ -98,7 +98,7 @@ export function ResourceOverviewPanel({
 					<Spacer />
 					<Button
 						variant="light"
-						color="slate"
+						color="obsidian"
 						size="xs"
 						onClick={onRestart}
 						loading={isFetching}
@@ -131,7 +131,7 @@ export function ResourceOverviewPanel({
 					>
 						{activeTypes.length === 0 ? (
 							<Text
-								c="slate"
+								c="obsidian"
 								ta="center"
 								py="xl"
 							>
@@ -173,7 +173,7 @@ export function ResourceOverviewPanel({
 													<Text fw={600}>{meta.label}</Text>
 													<Badge
 														size="sm"
-														color="slate"
+														color="obsidian"
 														variant="light"
 														radius="sm"
 													>
@@ -226,13 +226,13 @@ function ResourceCard({ type, resource, resolvedIds, onSelect }: ResourceCardPro
 			<Paper
 				p="sm"
 				radius="md"
-				bg="slate.8"
+				bg="obsidian.8"
 				withBorder={false}
 			>
 				<Group align="center">
 					<ThemeIcon
 						size="lg"
-						color="slate"
+						color="obsidian"
 						variant="light"
 					>
 						<Icon path={typeMeta.icon} />

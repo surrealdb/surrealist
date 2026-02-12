@@ -40,7 +40,7 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 											{new Date(invoice.date).toLocaleDateString()}
 										</Table.Td>
 										<Table.Td
-											c={status?.color ?? "slate"}
+											c={status?.color ?? "obsidian"}
 											fw={600}
 										>
 											{status?.name ?? invoice.status}

@@ -62,7 +62,7 @@ export function VariablesPane(props: VariablesPaneProps) {
 						</Badge>
 					)}
 					<ActionButton
-						color="slate"
+						color="obsidian"
 						label="Close panel"
 						onClick={props.closeVariables}
 					>

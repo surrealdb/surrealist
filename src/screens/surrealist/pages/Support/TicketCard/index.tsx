@@ -33,7 +33,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
 						{ticket.parts[ticket.parts.length - 1]?.author?.name || "Unknown"}
 					</Text>
 					<Text
-						c="slate.4"
+						c="obsidian.4"
 						fz={4}
 					>
 						&#x2B24;

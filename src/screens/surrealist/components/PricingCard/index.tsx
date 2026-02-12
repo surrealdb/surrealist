@@ -70,7 +70,7 @@ export function PricingCard({
 			>
 				<Stack h="100%">
 					<Text
-						c="slate.4"
+						c="obsidian.4"
 						fw={600}
 						lts="0.02em"
 					>
@@ -95,7 +95,7 @@ export function PricingCard({
 							</Title>
 							{showFromPerHour && (
 								<Text
-									c="slate.4"
+									c="obsidian.4"
 									fz="xs"
 									className={classes.priceSuffix}
 									lh={1.1}
@@ -141,7 +141,7 @@ export function PricingCard({
 								{feat.comingSoon && (
 									<Text
 										fz={18}
-										c="slate"
+										c="obsidian"
 										lh={0}
 										ml="-xs"
 									>

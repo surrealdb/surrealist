@@ -85,7 +85,10 @@ export function CollectionPage({ id }: CollectionPageProps) {
 							</PrimaryTitle>
 						</Box>
 
-						<Stack gap="lg">
+						<Stack
+							gap="lg"
+							className={classes.content}
+						>
 							{collection.articles
 								.sort((a, b) => a.created_at - b.created_at)
 								.map((article) => (

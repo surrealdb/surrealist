@@ -186,7 +186,7 @@ export function CommandPaletteModal() {
 						{filtered.map((cat) => (
 							<Box key={cat.name}>
 								<Text
-									c="slate"
+									c="obsidian"
 									fw={500}
 								>
 									{cat.name}
@@ -245,7 +245,7 @@ export function CommandPaletteModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						No matching commands found

@@ -41,7 +41,7 @@ export function DriverSelector({
 					<Paper
 						key={lib.name}
 						radius="md"
-						bg={isLight ? "slate.0" : "slate.9"}
+						bg={isLight ? "obsidian.0" : "obsidian.9"}
 						className={clsx(
 							classes.library,
 							isActive && classes.libraryActive,

@@ -56,7 +56,9 @@ export function FunctionPropertiesPanel({
 		});
 	});
 
-	const argColor = isLight ? "var(--mantine-color-slate-0)" : "var(--mantine-color-slate-9)";
+	const argColor = isLight
+		? "var(--mantine-color-obsidian-0)"
+		: "var(--mantine-color-obsidian-9)";
 	return (
 		<ContentPane
 			title="Properties"
@@ -82,7 +84,7 @@ export function FunctionPropertiesPanel({
 				direction="column"
 			>
 				<Box>
-					<Paper bg={isLight ? "slate.0" : "slate.9"}>
+					<Paper bg={isLight ? "obsidian.0" : "obsidian.9"}>
 						<Flex align="center">
 							<ScrollArea
 								scrollbars="x"

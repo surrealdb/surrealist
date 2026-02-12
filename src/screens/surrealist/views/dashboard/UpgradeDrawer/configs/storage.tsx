@@ -126,7 +126,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 								{isMaximized ? (
 									<Alert
 										mb="md"
-										color="slate"
+										color="obsidian"
 										title="Maximum storage capacity reached"
 										icon={<Icon path={iconHelp} />}
 									>
@@ -168,7 +168,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 										},
 										bar: {
 											background: isDisabled
-												? "var(--mantine-color-slate-4)"
+												? "var(--mantine-color-obsidian-4)"
 												: undefined,
 										},
 									}}
@@ -193,7 +193,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>

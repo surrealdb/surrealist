@@ -226,7 +226,7 @@ export function ParametersView() {
 									</Button>
 									<Button
 										flex={1}
-										color="slate"
+										color="obsidian"
 										variant="light"
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() =>
@@ -296,7 +296,7 @@ export function ParametersView() {
 						<Group mt="lg">
 							<Button
 								onClick={showCreatorHandle.close}
-								color="slate"
+								color="obsidian"
 								variant="light"
 								flex={1}
 							>

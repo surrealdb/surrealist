@@ -166,7 +166,6 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 			<Group gap="sm">
 				<PrimaryTitle>
 					<Icon
-						left
 						path={iconPlus}
 						size="sm"
 					/>
@@ -239,7 +238,9 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 								<Box>
 									<Text>From record</Text>
 									{fromTables.length > 0 && (
-										<Text c="slate">Valid tables: {fromTables.join(", ")}</Text>
+										<Text c="obsidian">
+											Valid tables: {fromTables.join(", ")}
+										</Text>
 									)}
 								</Box>
 							}
@@ -252,7 +253,9 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 								<Box>
 									<Text>To record</Text>
 									{toTables.length > 0 && (
-										<Text c="slate">Valid tables: {toTables.join(", ")}</Text>
+										<Text c="obsidian">
+											Valid tables: {toTables.join(", ")}
+										</Text>
 									)}
 								</Box>
 							}

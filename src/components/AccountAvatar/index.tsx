@@ -17,7 +17,7 @@ export function AccountAvatar(props: AvatarProps) {
 			{state === "loading" && !profile.picture && (
 				<Loader
 					size="sm"
-					color="slate.4"
+					color="obsidian.4"
 				/>
 			)}
 		</Avatar>

@@ -35,7 +35,7 @@ function ConnectAction({ title, subtitle, icon, isLoading, onClick }: ConnectAct
 						px="xs"
 					>
 						<ThemeIcon
-							color="slate"
+							color="obsidian"
 							variant="light"
 							size={40}
 						>

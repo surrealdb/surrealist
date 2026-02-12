@@ -157,7 +157,7 @@ export function GraphqlView() {
 					>
 						<Paper
 							className={classes.sendCircle}
-							bg={isLight ? "slate.0" : "slate.9"}
+							bg={isLight ? "obsidian.0" : "obsidian.9"}
 							pos="absolute"
 							radius={100}
 							p="xs"
@@ -209,7 +209,7 @@ export function GraphqlView() {
 				</Text>
 			</Group>
 			<Button
-				color="slate"
+				color="obsidian"
 				variant="light"
 				rightSection={<Icon path={iconOpen} />}
 				onClick={() =>

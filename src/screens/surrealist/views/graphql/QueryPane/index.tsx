@@ -238,7 +238,7 @@ export function QueryPane({
 						instance
 						<Link href="https://surrealdb.com/docs/surrealdb/querying/graphql/surrealist">
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 								rightSection={<Icon path={iconOpen} />}
 								radius="sm"

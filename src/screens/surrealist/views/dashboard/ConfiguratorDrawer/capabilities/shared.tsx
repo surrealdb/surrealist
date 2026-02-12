@@ -45,7 +45,7 @@ export interface RuleSetBaseProps {
 export function RuleSetBase({ icon, active, value, title, onChange }: RuleSetBaseProps) {
 	return (
 		<Button
-			color="slate"
+			color="obsidian"
 			variant={active === value ? "gradient" : "light"}
 			leftSection={<Icon path={icon} />}
 			onClick={() => onChange(value)}

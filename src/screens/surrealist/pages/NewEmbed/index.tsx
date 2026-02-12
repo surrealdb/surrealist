@@ -123,7 +123,7 @@ export function NewEmbedPage() {
 									<Button
 										mt="xl"
 										size="sm"
-										color="slate"
+										color="obsidian"
 										variant="light"
 										onClick={showParseHandle.open}
 									>
@@ -184,7 +184,7 @@ export function NewEmbedPage() {
 										<CopyButton value={snippet}>
 											{({ copied, copy }) => (
 												<Button
-													color="slate"
+													color="obsidian"
 													variant={copied ? "gradient" : "light"}
 													leftSection={
 														<Icon path={copied ? iconCheck : iconXml} />
@@ -198,7 +198,7 @@ export function NewEmbedPage() {
 										<CopyButton value={url}>
 											{({ copied, copy }) => (
 												<Button
-													color="slate"
+													color="obsidian"
 													variant={copied ? "gradient" : "light"}
 													leftSection={
 														<Icon

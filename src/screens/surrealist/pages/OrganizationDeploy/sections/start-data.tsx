@@ -87,7 +87,7 @@ function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCa
 						<Spacer />
 						<Icon
 							path={data.icon}
-							c="slate"
+							c="obsidian"
 						/>
 					</Group>
 					<Text>{data.description}</Text>

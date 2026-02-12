@@ -142,7 +142,7 @@ export function AccessSignupModal() {
 
 				<Group>
 					<Button
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={closeAccessSignup}
 					>

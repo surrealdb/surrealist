@@ -21,7 +21,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 			{index.name}
 			{index.cols && (
 				<Text
-					c={isLight ? "slate.5" : "slate.3"}
+					c={isLight ? "obsidian.5" : "obsidian.3"}
 					ml="xs"
 				>
 					({index.cols})

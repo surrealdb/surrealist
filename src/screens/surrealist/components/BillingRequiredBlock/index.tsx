@@ -18,7 +18,6 @@ export function BillingRequiredBlock({
 		<Paper
 			p="xl"
 			pos="relative"
-			variant="gradient"
 			className={classes.cloud}
 			{...other}
 		>

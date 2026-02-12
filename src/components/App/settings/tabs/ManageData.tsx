@@ -160,7 +160,7 @@ export function ManageDataTab() {
 							<Button
 								px="xl"
 								size="xs"
-								color="slate"
+								color="obsidian"
 								rightSection={<Icon path={iconUpload} />}
 								onClick={restoreFile}
 							>

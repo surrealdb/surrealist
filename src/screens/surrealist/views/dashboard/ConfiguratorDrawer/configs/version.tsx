@@ -81,7 +81,7 @@ export function ConfigurationVersion({ instance, onUpdate, onClose }: Configurat
 										</Text>
 										<Button
 											size="xs"
-											color="slate"
+											color="obsidian"
 											variant="light"
 											rightSection={<Icon path={iconOpen} />}
 											onClick={(e) => {
@@ -118,7 +118,7 @@ export function ConfigurationVersion({ instance, onUpdate, onClose }: Configurat
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>

@@ -176,7 +176,7 @@ function SettingsSidebar({
 							onClick={startUpdate}
 							className={classes.updateButton}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							leftSection={
 								<ThemeIcon
 									variant="gradient"

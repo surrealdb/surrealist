@@ -178,7 +178,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 						) : (
 							tokenExpireSoon &&
 							(tokenExpire > Date.now() ? (
-								<Text c="slate">
+								<Text c="obsidian">
 									<Icon
 										path={iconWarning}
 										c="yellow"
@@ -187,7 +187,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 									This token expires in {dayjs(tokenExpire).fromNow()}
 								</Text>
 							) : (
-								<Text c="slate">
+								<Text c="obsidian">
 									<Icon
 										path={iconWarning}
 										c="red"

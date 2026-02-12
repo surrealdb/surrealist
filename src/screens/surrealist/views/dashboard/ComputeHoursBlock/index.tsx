@@ -29,7 +29,7 @@ export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) 
 						gap={0}
 					>
 						<Text>No data available</Text>
-						<Text c="slate">Please check back later</Text>
+						<Text c="obsidian">Please check back later</Text>
 					</Stack>
 				) : (
 					<>

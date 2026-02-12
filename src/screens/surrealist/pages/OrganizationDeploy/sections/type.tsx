@@ -148,7 +148,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						</Button>
 						<Button
 							size="xs"
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={handleReset}
 						>
@@ -177,7 +177,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 				>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						rightSection={<Icon path={iconArrowUpRight} />}
 					>
@@ -211,7 +211,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 			>
 				{archName}
 			</Text>
-			<Text c="slate.3">{archKind}</Text>
+			<Text c="obsidian.3">{archKind}</Text>
 		</Fragment>,
 		<Fragment key="cpu">
 			<Text
@@ -220,7 +220,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 			>
 				{type.cpu} Core
 			</Text>
-			<Text c="slate.3">vCPU</Text>
+			<Text c="obsidian.3">vCPU</Text>
 		</Fragment>,
 		<Fragment key="memory">
 			<Text
@@ -229,7 +229,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 			>
 				{formatMemory(type.memory)}
 			</Text>
-			<Text c="slate.3">Memory</Text>
+			<Text c="obsidian.3">Memory</Text>
 		</Fragment>,
 		<Fragment key="cluster">
 			<Text
@@ -238,7 +238,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 			>
 				{type.default_storage_size} GB
 			</Text>
-			<Text c="slate.3">Storage</Text>
+			<Text c="obsidian.3">Storage</Text>
 		</Fragment>,
 	];
 

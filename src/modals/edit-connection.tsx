@@ -140,7 +140,7 @@ function ConnectionEditor({ value }: ConnectionEditorProps) {
 				<Group mt="xl">
 					<Button
 						flex={1}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={() => closeModal("connection-edit")}
 					>

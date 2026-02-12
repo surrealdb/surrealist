@@ -99,7 +99,7 @@ export async function openErrorModal(
 								adapter.openUrl("https://github.com/surrealdb/surrealist/issues")
 							}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							radius="xs"
 							size="xs"
 						>

@@ -37,7 +37,7 @@ import classes from "./style.module.scss";
 function NullishCell(props: { value: null | undefined }) {
 	return (
 		<Text
-			c="slate"
+			c="obsidian"
 			ff="JetBrains Mono"
 		>
 			{props.value === null ? "null" : "—"}
@@ -97,7 +97,6 @@ function UuidCell(props: { value: Uuid }) {
 		>
 			<Icon
 				path={iconXml}
-				left
 				mt={-3}
 			/>
 			{props.value.toString()}
@@ -117,7 +116,6 @@ function DateTimeCell(props: { value: DateTime }) {
 		<Text title={`${date.toISOString()} (${relative})`}>
 			<Icon
 				path={iconExplorer}
-				left
 				mt={-3}
 			/>
 			{date.toLocaleString()}
@@ -133,7 +131,6 @@ function DateCell(props: { value: Date }) {
 		<Text title={`${date.toISOString()} (${relative})`}>
 			<Icon
 				path={iconExplorer}
-				left
 				mt={-3}
 			/>
 			{date.toLocaleString()}
@@ -146,7 +143,6 @@ function DurationCell(props: { value: Duration }) {
 		<Text ff="monospace">
 			<Icon
 				path={iconClock}
-				left
 				mt={-3}
 			/>
 			{props.value.toString()}
@@ -159,7 +155,6 @@ function FileCell(props: { value: FileRef }) {
 		<Text ff="monospace">
 			<Icon
 				path={iconFile}
-				left
 				mt={-3}
 			/>
 			{props.value.toString()}

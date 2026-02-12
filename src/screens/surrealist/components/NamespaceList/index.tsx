@@ -131,7 +131,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	return willCreate ? (
 		<Button
 			px="sm"
-			color="slate"
+			color="obsidian"
 			variant="light"
 			leftSection={<Icon path={iconNamespace} />}
 			onClick={openCreateNamespaceModal}
@@ -159,7 +159,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 				<Button
 					px="sm"
 					variant={namespace ? "subtle" : "light"}
-					color="slate"
+					color="obsidian"
 					leftSection={<Icon path={iconNamespace} />}
 					{...buttonProps}
 				>
@@ -186,7 +186,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 					{isPending && <Loader size={14} />}
 					<Spacer />
 					<ActionButton
-						color="slate"
+						color="obsidian"
 						variant="light"
 						disabled={!connected || (level !== "root" && level !== "namespace")}
 						label="Create namespace"
@@ -199,7 +199,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 				<ScrollArea.Autosize mah={350}>
 					{namespaces.length === 0 ? (
 						<Text
-							c="slate"
+							c="obsidian"
 							py="md"
 							ta="center"
 						>

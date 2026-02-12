@@ -64,12 +64,7 @@ export function RecordLink({ value, withOpen, ...rest }: RecordLinkProps) {
 			>
 				{recordText}
 			</Text>
-			{withOpen !== false && (
-				<Icon
-					path={iconArrowUpRight}
-					right
-				/>
-			)}
+			{withOpen !== false && <Icon path={iconArrowUpRight} />}
 		</Group>
 	);
 }

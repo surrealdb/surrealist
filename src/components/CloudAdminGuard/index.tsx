@@ -49,7 +49,7 @@ export function CloudAdminGuard({
 					>
 						<Button
 							flex={1}
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={() => navigate(`/overview`)}
 						>

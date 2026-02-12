@@ -69,7 +69,7 @@ export function Lister<T extends { name: string }>({
 							key={item.name}
 							px="xs"
 							fullWidth
-							color="slate"
+							color="obsidian"
 							variant="subtle"
 							onClick={() => openEditor(item)}
 							styles={{
@@ -78,7 +78,7 @@ export function Lister<T extends { name: string }>({
 							leftSection={
 								<Icon
 									path={iconCircle}
-									c="slate.4"
+									c="obsidian.4"
 								/>
 							}
 							rightSection={
@@ -135,7 +135,7 @@ export function Lister<T extends { name: string }>({
 					<Group mt="xl">
 						<Button
 							flex={1}
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={editingHandle.close}
 						>

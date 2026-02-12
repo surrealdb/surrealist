@@ -1,5 +1,6 @@
 import { Anchor, Box, Group, Image, Paper, Text } from "@mantine/core";
 import { pictoSurrealDB } from "@surrealdb/ui";
+import { navigate } from "wouter/use-browser-location";
 import { IntercomSupportCollectionShallow } from "~/types";
 
 export interface SupportCollectionProps {
@@ -9,8 +10,8 @@ export interface SupportCollectionProps {
 export function SupportCollection({ collection }: SupportCollectionProps) {
 	return (
 		<Anchor
-			href={`/support/collections/${collection.id}`}
 			variant="glow"
+			onClick={() => navigate(`/support/collections/${collection.id}`)}
 		>
 			<Paper
 				p="lg"

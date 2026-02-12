@@ -112,7 +112,7 @@ export function TableCreatorModal() {
 		>
 			<SegmentedControl
 				fullWidth
-				variant="gradient"
+				variant="surreal"
 				data={[
 					{
 						value: "normal",
@@ -205,7 +205,7 @@ export function TableCreatorModal() {
 					<Group mt="lg">
 						<Button
 							onClick={closeTableCreator}
-							color="slate"
+							color="obsidian"
 							variant="light"
 							flex={1}
 						>

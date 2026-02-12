@@ -114,7 +114,7 @@ export function SupportPage() {
 										<Button
 											variant="light"
 											size="xs"
-											color="slate"
+											color="obsidian"
 											onClick={() => navigate("/support/requests")}
 										>
 											View All

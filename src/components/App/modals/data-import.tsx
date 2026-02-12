@@ -79,7 +79,7 @@ const SqlImportForm = ({
 
 	return (
 		<Stack gap="xl">
-			<Text c={isLight ? "slate.7" : "slate.2"}>
+			<Text c={isLight ? "obsidian.7" : "obsidian.2"}>
 				Are you sure you want to import the selected file?
 			</Text>
 
@@ -88,14 +88,14 @@ const SqlImportForm = ({
 				<Text>{fileName}</Text>
 			</Group>
 
-			<Text c={isLight ? "slate.7" : "slate.2"}>
+			<Text c={isLight ? "obsidian.7" : "obsidian.2"}>
 				While existing data will be preserved, it may be overwritten by the imported data.
 			</Text>
 
 			<Group>
 				<Button
 					flex={1}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					onClick={cancelImport}
 				>
@@ -108,10 +108,7 @@ const SqlImportForm = ({
 					variant="gradient"
 				>
 					Start import
-					<Icon
-						path={iconDownload}
-						right
-					/>
+					<Icon path={iconDownload} />
 				</Button>
 			</Group>
 		</Stack>
@@ -474,16 +471,13 @@ const FileFormatFormFooter = (props: FileFormatFormFooterProps) => {
 				disabled={!canExport}
 			>
 				Start import
-				<Icon
-					path={iconDownload}
-					right
-				/>
+				<Icon path={iconDownload} />
 			</Button>
 
 			{importedRows.length > 0 ? (
 				<Text
 					fz="sm"
-					c="slate"
+					c="obsidian"
 					mt={-3}
 				>
 					Importing this file will create{insertRelation ? "" : " or update"}{" "}

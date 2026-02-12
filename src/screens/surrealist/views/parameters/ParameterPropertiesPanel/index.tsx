@@ -60,7 +60,7 @@ export function ParameterPropertiesPanel({
 				direction="column"
 			>
 				<Box>
-					<Paper bg={isLight ? "slate.0" : "slate.9"}>
+					<Paper bg={isLight ? "obsidian.0" : "obsidian.9"}>
 						<Flex align="center">
 							<ScrollArea
 								scrollbars="x"

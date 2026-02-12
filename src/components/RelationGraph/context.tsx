@@ -83,7 +83,7 @@ export function NodeContextMenu({
 							fz="xs"
 							truncate
 							mt={-2}
-							c={isLight ? "slate.6" : "slate.2"}
+							c={isLight ? "obsidian.6" : "obsidian.2"}
 							pr="md"
 						>
 							{recordId}

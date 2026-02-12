@@ -16,7 +16,7 @@
 	}
 
 	tbody tr:nth-child(odd) td {
-		background-color: var(--mantine-color-slate-7);
+		background-color: var(--mantine-color-obsidian-7);
 
 		&:first-child {
 			border-top-left-radius: var(--mantine-radius-xs);
@@ -29,7 +29,7 @@
 		}
 
 		@include light {
-			background-color: var(--mantine-color-slate-0);
+			background-color: var(--mantine-color-obsidian-0);
 		}
 	}
 

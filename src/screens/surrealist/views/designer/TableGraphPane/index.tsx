@@ -563,7 +563,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						<ActionButton
 							label="Reveal tables"
 							mr="sm"
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={openTableList}
 						>
@@ -702,7 +702,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				<Paper
 					flex="1"
 					pos="relative"
-					bg={isLight ? "slate.1" : "slate.7"}
+					bg={isLight ? "obsidian.1" : "obsidian.7"}
 				>
 					<ReactFlow
 						ref={ref}
@@ -778,7 +778,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						])}
 					>
 						{!showBox && (
-							<Background color={themeColor(isLight ? "slate.3" : "slate.5")} />
+							<Background color={themeColor(isLight ? "obsidian.3" : "obsidian.5")} />
 						)}
 					</ReactFlow>
 

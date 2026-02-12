@@ -165,7 +165,7 @@ export function FixedRuleSetCapability({
 						<Group>
 							<ThemeIcon
 								size="lg"
-								color="slate"
+								color="obsidian"
 								variant="light"
 							>
 								<Icon

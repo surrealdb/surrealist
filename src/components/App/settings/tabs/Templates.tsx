@@ -207,7 +207,7 @@ export function TemplatesTab() {
 
 						<Group mt="xl">
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 								onClick={showEditorHandle.close}
 							>

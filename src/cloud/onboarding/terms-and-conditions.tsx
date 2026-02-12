@@ -117,7 +117,6 @@ function TermsModal({ conditions }: TermsModalProps) {
 			/>
 			<Group mt="xl">
 				<Button
-					color="slate"
 					variant="light"
 					onClick={declineTerms}
 				>

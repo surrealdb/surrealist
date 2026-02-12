@@ -58,7 +58,7 @@ export function SupportCapability({ name, description }: CapabilityBaseProps) {
 				<Box pt="xs">
 					<Paper
 						my="xl"
-						bg={isLight ? "slate.0" : "slate.7"}
+						bg={isLight ? "obsidian.0" : "obsidian.7"}
 						p="md"
 					>
 						<Group
@@ -68,7 +68,7 @@ export function SupportCapability({ name, description }: CapabilityBaseProps) {
 							<ThemeIcon
 								radius="xs"
 								size={38}
-								color="slate"
+								color="obsidian"
 								variant="light"
 							>
 								<Icon

@@ -30,7 +30,7 @@ export function ModelPanel({ details, onDownload }: ModelPanelProps) {
 			title={details.name}
 			icon={iconModuleML}
 			snippet={snippet}
-			rightSection={<Text c="slate">Version {details.version}</Text>}
+			rightSection={<Text c="obsidian">Version {details.version}</Text>}
 		>
 			<Text>
 				Upload your SurrealML models directly to SurrealDB and use the power of Machine
@@ -47,7 +47,7 @@ export function ModelPanel({ details, onDownload }: ModelPanelProps) {
 				</Button>
 				<Button
 					flex={1}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					rightSection={<Icon path={iconOpen} />}
 					onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealml")}

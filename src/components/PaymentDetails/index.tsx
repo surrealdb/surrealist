@@ -110,7 +110,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 						label="Please provide billing details first"
 					>
 						<Button
-							color="slate"
+							color="obsidian"
 							variant="light"
 							disabled={!organisation.billing_info}
 							loading={requesting}
@@ -135,7 +135,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 							</Text>
 						) : (
 							<Text
-								c="slate.4"
+								c="obsidian.4"
 								fw={500}
 							>
 								Not provided yet
@@ -155,7 +155,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 							</Text>
 						) : (
 							<Text
-								c="slate.4"
+								c="obsidian.4"
 								fw={500}
 							>
 								Not provided yet

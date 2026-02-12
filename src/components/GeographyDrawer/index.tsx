@@ -123,7 +123,6 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 					}}
 				>
 					<Icon
-						left
 						path={iconMarker}
 						size="sm"
 					/>

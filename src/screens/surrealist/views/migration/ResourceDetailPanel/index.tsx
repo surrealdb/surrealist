@@ -137,7 +137,7 @@ export function ResourceDetailPanel({
 					<ActionButton
 						label="Back to overview"
 						mr="sm"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={onBack}
 					>
@@ -145,7 +145,7 @@ export function ResourceDetailPanel({
 					</ActionButton>
 					<Icon
 						path={meta.icon}
-						c={isLight ? "slate.4" : "slate.3"}
+						c={isLight ? "obsidian.4" : "obsidian.3"}
 					/>
 					<Text
 						fw={600}
@@ -282,7 +282,7 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 						{kind?.documentationUrl && (
 							<Button
 								size="xs"
-								color="slate"
+								color="obsidian"
 								variant="filled"
 								leftSection={<Icon path={iconBook} />}
 								rightSection={<Icon path={iconArrowUpRight} />}
@@ -294,7 +294,7 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 						{isResolved ? (
 							<Button
 								size="xs"
-								color="slate"
+								color="obsidian"
 								variant="light"
 								rightSection={<Icon path={iconClose} />}
 								onClick={onToggleResolved}
@@ -347,7 +347,7 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 						<CodeBlock
 							value={source.location.source}
 							lang="surrealql"
-							bg="slate.8"
+							bg="obsidian.8"
 							p="sm"
 						/>
 					)}
@@ -424,7 +424,7 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 							{severity.label}
 						</Badge>
 						<Badge
-							color="slate"
+							color="obsidian"
 							variant="light"
 							size="sm"
 						>
@@ -435,7 +435,7 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 						{kind?.documentationUrl && (
 							<Button
 								size="xs"
-								color="slate"
+								color="obsidian"
 								variant="light"
 								leftSection={<Icon path={iconBook} />}
 								rightSection={<Icon path={iconArrowUpRight} />}
@@ -447,7 +447,7 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 						{allResolved ? (
 							<Button
 								size="xs"
-								color="slate"
+								color="obsidian"
 								variant="light"
 								rightSection={<Icon path={iconClose} />}
 								onClick={onToggleAll}

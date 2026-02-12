@@ -51,7 +51,7 @@ export function SaveBox({
 		<Button
 			miw={100}
 			px="xl"
-			color="slate"
+			color="obsidian"
 			variant="light"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
@@ -66,7 +66,7 @@ export function SaveBox({
 			px="xl"
 			disabled={!handle.isChanged}
 			onClick={handle.revert}
-			color="slate"
+			color="obsidian"
 			variant="light"
 		>
 			{revertText ?? (minimal ? "Revert" : "Revert changes")}

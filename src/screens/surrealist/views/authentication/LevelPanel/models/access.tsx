@@ -369,7 +369,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 				<Group mt="xl">
 					<Button
 						onClick={onClose}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						flex={1}
 					>

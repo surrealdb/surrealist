@@ -86,7 +86,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 
 	const { success, result } = responses[selected] ?? { result: null };
 	const textSize = Math.floor(15 * (editorScale / 100));
-	const disabled = themeColor(isLight ? "slate.2" : "slate.6");
+	const disabled = themeColor(isLight ? "obsidian.2" : "obsidian.6");
 
 	// Refresh the graph based on the query result
 	const refreshGraph = useStable(async (result: any) => {
@@ -524,7 +524,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	return success ? (
 		<Paper
 			flex="1"
-			bg={isLight ? "slate.0" : "slate.7"}
+			bg={isLight ? "obsidian.0" : "obsidian.7"}
 		>
 			<Group
 				h="100%"
@@ -551,7 +551,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 					/>
 				) : (
 					<Center
-						c="slate"
+						c="obsidian"
 						flex={1}
 					>
 						<Stack>
@@ -589,7 +589,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 										<Group gap="xs">
 											<Icon
 												path={iconBraces}
-												color="slate.4"
+												color="obsidian.4"
 												size="sm"
 											/>
 											{nodeCount.toString()} records
@@ -599,7 +599,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 										<Group gap="xs">
 											<Icon
 												path={iconRelation}
-												color="slate.4"
+												color="obsidian.4"
 												size="sm"
 											/>
 											{edgeCount.toString()} edges
@@ -609,7 +609,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 										<Group gap="xs">
 											<Icon
 												path={iconFilter}
-												color="slate.4"
+												color="obsidian.4"
 												size="sm"
 											/>
 											{strayCount.toString()} stray records
@@ -621,7 +621,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								<Label>Tables</Label>
 								{tables.length === 0 ? (
 									<Skeleton visible={isInitialized}>
-										<Text c="slate">No tables found</Text>
+										<Text c="obsidian">No tables found</Text>
 									</Skeleton>
 								) : (
 									<Stack
@@ -637,7 +637,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 													key={table}
 													p={4}
 													ta="start"
-													color="slate"
+													color="obsidian"
 													variant="subtle"
 													onClick={() => handleToggleTable(table)}
 													className={classes.graphTable}
@@ -673,7 +673,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 																<Text
 																	fz="xs"
 																	span
-																	c="slate"
+																	c="obsidian"
 																	ml={4}
 																>
 																	{`(${labels} ${plural(labels, "label")})`}
@@ -691,7 +691,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 								<Label>Edges</Label>
 								{edges.length === 0 ? (
 									<Skeleton visible={isInitialized}>
-										<Text c="slate">No edges found</Text>
+										<Text c="obsidian">No edges found</Text>
 									</Skeleton>
 								) : (
 									<Stack
@@ -706,7 +706,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 													key={edge}
 													p={4}
 													ta="start"
-													color="slate"
+													color="obsidian"
 													variant="subtle"
 													onClick={() => handleToggleEdge(edge)}
 													styles={{
@@ -764,7 +764,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 										onChange={updateStraightLines}
 									/>
 									<Button
-										color="slate"
+										color="obsidian"
 										variant="light"
 										size="xs"
 										mt="md"

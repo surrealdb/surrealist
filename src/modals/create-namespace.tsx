@@ -57,7 +57,7 @@ function CreateNamespace() {
 				<Group>
 					<Button
 						onClick={closeCreator}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						flex={1}
 					>

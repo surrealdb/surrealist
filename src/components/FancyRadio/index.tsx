@@ -18,12 +18,11 @@ export const FancyRadio = ({ title, titleIcon, subtitle, ...props }: FancyRadioP
 					<Icon
 						path={titleIcon}
 						size="sm"
-						left
 					/>
 				)}
 				{title}
 			</Text>
-			{subtitle && <Text c="slate">{subtitle}</Text>}
+			{subtitle && <Text c="obsidian">{subtitle}</Text>}
 		</>
 	);
 

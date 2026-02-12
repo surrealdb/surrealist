@@ -131,7 +131,7 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 									</Box>
 									{isTerminated ? (
 										<Alert
-											color="slate"
+											color="obsidian"
 											title="Organisation terminated"
 										>
 											This organisation has been terminated and is no longer

@@ -228,7 +228,7 @@ export function QueryPane({
 					<ActionButton
 						label="Reveal queries"
 						mr="sm"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={openQueryList}
 					>
@@ -239,7 +239,7 @@ export function QueryPane({
 			infoSection={
 				activeTab.type === "file" && (
 					<Text
-						c="slate"
+						c="obsidian"
 						truncate
 					>
 						{trim(activeTab.query, "\\\\?")}
@@ -332,11 +332,10 @@ export function QueryPane({
 					<Paper
 						p="xs"
 						pl="md"
-						variant="gradient"
 						bg={
 							isLight
-								? "var(--mantine-color-slate-1)"
-								: "var(--mantine-color-slate-6)"
+								? "var(--mantine-color-obsidian-1)"
+								: "var(--mantine-color-obsidian-6)"
 						}
 						withBorder={false}
 						style={{

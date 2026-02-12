@@ -91,7 +91,6 @@ function RoleModal({ organization, member }: RoleModalProps) {
 				<Group mt="xl">
 					<Button
 						onClick={handleClose}
-						color="slate"
 						variant="light"
 						flex={1}
 					>

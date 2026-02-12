@@ -47,7 +47,7 @@ export function UpdateBlock({
 					</Button>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						rightSection={<Icon path={iconOpen} />}
 						onClick={() => openSurrealChangelog(latest)}
@@ -56,7 +56,7 @@ export function UpdateBlock({
 					</Button>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={onVersions}
 					>

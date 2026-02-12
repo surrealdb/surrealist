@@ -576,7 +576,7 @@ export function DashboardView() {
 										<Spacer />
 										<Button
 											variant="light"
-											color="slate"
+											color="obsidian"
 											rightSection={<Icon path={iconChevronRight} />}
 											onClick={() => {
 												navigate("monitor");

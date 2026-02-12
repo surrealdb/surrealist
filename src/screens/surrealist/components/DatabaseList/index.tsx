@@ -134,7 +134,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	return willCreate ? (
 		<Button
 			px="sm"
-			color="slate"
+			color="obsidian"
 			variant="light"
 			leftSection={<Icon path={iconDatabase} />}
 			onClick={openCreateDatabaseModal}
@@ -162,7 +162,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 				<Button
 					px="sm"
 					variant={database ? "subtle" : "light"}
-					color="slate"
+					color="obsidian"
 					leftSection={<Icon path={iconDatabase} />}
 					{...buttonProps}
 				>
@@ -189,7 +189,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 					{isPending && <Loader size={14} />}
 					<Spacer />
 					<ActionButton
-						color="slate"
+						color="obsidian"
 						variant="light"
 						disabled={!connected || (level !== "root" && level !== "namespace")}
 						label="Create database"
@@ -202,7 +202,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 				<ScrollArea.Autosize mah={350}>
 					{databases.length === 0 ? (
 						<Text
-							c="slate"
+							c="obsidian"
 							py="md"
 							ta="center"
 						>

@@ -25,7 +25,7 @@ export function Section({
 					<Text
 						fw={700}
 						fz={17}
-						c={isLight ? "slate.9" : "slate.0"}
+						c={isLight ? "obsidian.9" : "obsidian.0"}
 					>
 						{title}
 					</Text>

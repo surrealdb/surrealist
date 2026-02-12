@@ -155,7 +155,7 @@ export function DesignerView() {
 								</Button>
 								<Button
 									flex={1}
-									color="slate"
+									color="obsidian"
 									variant="light"
 									rightSection={<Icon path={iconOpen} />}
 									onClick={() =>

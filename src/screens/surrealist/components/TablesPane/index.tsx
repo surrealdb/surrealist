@@ -126,7 +126,7 @@ export function TablesPane({
 			infoSection={
 				schema.length > 0 && (
 					<Badge
-						color={isLight ? "slate.0" : "slate.9"}
+						color={isLight ? "obsidian.0" : "obsidian.9"}
 						radius="sm"
 						c="inherit"
 					>
@@ -187,7 +187,7 @@ export function TablesPane({
 						{isConnected ? (
 							tablesFiltered.length === 0 && (
 								<Text
-									c="slate"
+									c="obsidian"
 									ta="center"
 									mt="lg"
 								>
@@ -196,7 +196,7 @@ export function TablesPane({
 							)
 						) : (
 							<Text
-								c="slate"
+								c="obsidian"
 								ta="center"
 								mt="lg"
 							>

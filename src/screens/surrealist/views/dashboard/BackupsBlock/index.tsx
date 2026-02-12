@@ -100,7 +100,7 @@ export function BackupsBlock({
 					</>
 				) : (
 					<Center flex={1}>
-						<Text c="slate">Waiting for next backup...</Text>
+						<Text c="obsidian">Waiting for next backup...</Text>
 					</Center>
 				)}
 			</Paper>

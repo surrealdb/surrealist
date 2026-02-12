@@ -151,7 +151,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 				<>
 					{isEmpty && (
 						<Text
-							c="slate"
+							c="obsidian"
 							ta="center"
 							mt="lg"
 						>
@@ -295,7 +295,7 @@ function AuthList<T extends { name: string }>({
 					{name}
 				</Text>
 				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
+					color={isLight ? "obsidian.0" : "obsidian.9"}
 					radius="sm"
 					c="inherit"
 				>
@@ -326,7 +326,7 @@ function AuthList<T extends { name: string }>({
 								<Text>{item.name}</Text>
 								{details && (
 									<Text
-										c="slate"
+										c="obsidian"
 										fz="sm"
 										mt={-3}
 									>

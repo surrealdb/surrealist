@@ -1,10 +1,12 @@
 .input {
-	input, textarea {
+
+	input,
+	textarea {
 		font-family: 'JetBrains Mono';
 		scrollbar-width: none;
 	}
 
-	textarea::-webkit-scrollbar { 
+	textarea::-webkit-scrollbar {
 		display: none;
 	}
 }
@@ -25,11 +27,11 @@
 	}
 
 	:global(.cm-cursor) {
-		border-color: var(--mantine-color-slate-1);
+		border-color: var(--mantine-color-obsidian-1);
 		border-width: 2px;
 
 		@include light {
-			border-color: var(--mantine-color-slate-9);
+			border-color: var(--mantine-color-obsidian-9);
 		}
 	}
 

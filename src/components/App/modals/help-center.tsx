@@ -104,7 +104,7 @@ export function HelpSearchModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						Enter a search term to find articles
@@ -113,7 +113,7 @@ export function HelpSearchModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						No search results found

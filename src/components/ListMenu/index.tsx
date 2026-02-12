@@ -40,8 +40,7 @@ export function ListMenu<T extends string>({
 							leftSection={
 								icon && (
 									<ThemeIcon
-										radius="xs"
-										color="slate"
+										color="obsidian"
 										variant={value === itemValue ? "gradient" : "light"}
 										mr="xs"
 									>
@@ -58,7 +57,7 @@ export function ListMenu<T extends string>({
 							</Text>
 							{description && (
 								<Text
-									c={isLight ? "slate.5" : "slate.3"}
+									c={isLight ? "obsidian.5" : "obsidian.3"}
 									size="sm"
 									mt={-2}
 								>

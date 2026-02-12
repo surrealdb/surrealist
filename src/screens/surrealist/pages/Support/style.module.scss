@@ -3,10 +3,10 @@
 }
 
 .message-item:hover {
-	background-color: var(--mantine-color-slate-7);
+	background-color: var(--mantine-color-obsidian-7);
 
 	@include light {
-		background-color: var(--mantine-color-slate-1);
+		background-color: var(--mantine-color-obsidian-1);
 	}
 }
 

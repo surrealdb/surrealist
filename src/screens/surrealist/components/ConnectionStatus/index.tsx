@@ -91,7 +91,7 @@ export function ConnectionStatus() {
 					<Menu.Target>
 						<Button
 							variant="subtle"
-							color="slate"
+							color="obsidian"
 							onClick={openConnections}
 							leftSection={
 								isSandbox ? (
@@ -137,7 +137,7 @@ export function ConnectionStatus() {
 								Connection
 							</Text>
 							<Text
-								c="slate"
+								c="obsidian"
 								fz="sm"
 								truncate
 							>

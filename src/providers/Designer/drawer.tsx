@@ -114,7 +114,6 @@ export function DesignDrawer({
 			>
 				<PrimaryTitle>
 					<Icon
-						left
 						path={iconDesigner}
 						size="sm"
 					/>

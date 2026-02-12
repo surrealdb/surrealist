@@ -114,7 +114,7 @@ export function OrganizationTile({
 								{organization.billing_provider === "aws_marketplace" && (
 									<Tooltip label="This organisation is managed by AWS Marketplace">
 										<Badge
-											color="slate"
+											color="obsidian"
 											variant="light"
 											mr={-42}
 										>

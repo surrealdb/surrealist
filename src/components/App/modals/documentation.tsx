@@ -148,7 +148,7 @@ export function DocumentationModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						Enter a search term to find documentation
@@ -157,7 +157,7 @@ export function DocumentationModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						No search results found

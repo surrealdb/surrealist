@@ -244,7 +244,7 @@ export function NewsFeedDrawer() {
 							) : isEmpty ? (
 								<Text
 									mt={68}
-									c="slate"
+									c="obsidian"
 									ta="center"
 								>
 									No blog articles available

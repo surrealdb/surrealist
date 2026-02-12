@@ -97,9 +97,9 @@ export function RelationGraph({
 		neighbours: new Set<string>(),
 	});
 
-	const edgeColor = isLight ? theme.colors.slate[3] : theme.colors.slate[4];
-	const nodeLabelColor = isLight ? theme.colors.slate[9] : theme.colors.slate[0];
-	const edgeLabelColor = isLight ? theme.colors.slate[5] : theme.colors.slate[2];
+	const edgeColor = isLight ? theme.colors.obsidian[3] : theme.colors.obsidian[4];
+	const nodeLabelColor = isLight ? theme.colors.obsidian[9] : theme.colors.obsidian[0];
+	const edgeLabelColor = isLight ? theme.colors.obsidian[5] : theme.colors.obsidian[2];
 
 	const handleZoomIn = useStable(() => {
 		sigmaRef.current?.refresh();
@@ -191,7 +191,7 @@ export function RelationGraph({
 					focus.hoveredNode !== node
 				) {
 					res.label = "";
-					res.color = isLight ? theme.colors.slate[2] : theme.colors.slate[6];
+					res.color = isLight ? theme.colors.obsidian[2] : theme.colors.obsidian[6];
 				}
 
 				// Force highlight
@@ -373,7 +373,7 @@ export function RelationGraph({
 							<ThemeIcon
 								radius="xs"
 								variant="light"
-								color="slate"
+								color="obsidian"
 								size={40}
 							>
 								<Icon
@@ -388,7 +388,7 @@ export function RelationGraph({
 								>
 									Waiting for records to visualise
 								</Text>
-								<Text c="slate">Selected records will be shown here</Text>
+								<Text c="obsidian">Selected records will be shown here</Text>
 							</Box>
 						</Group>
 					</Paper>

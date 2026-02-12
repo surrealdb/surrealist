@@ -130,7 +130,7 @@ function AboutModal({ questions }: AboutModalProps) {
 				wrap="nowrap"
 			>
 				<Text
-					c="slate"
+					c="obsidian"
 					fz="sm"
 				>
 					This information will help us understand your needs

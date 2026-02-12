@@ -96,7 +96,7 @@ function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 					</Text>
 					{entry.origin && (
 						<Text
-							c="slate"
+							c="obsidian"
 							truncate
 							miw={0}
 						>
@@ -227,7 +227,7 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 					<Text
 						ta="center"
 						mt="sm"
-						c="slate"
+						c="obsidian"
 					>
 						No queries to display
 					</Text>

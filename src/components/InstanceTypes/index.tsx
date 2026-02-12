@@ -169,7 +169,7 @@ function InstanceTypeRow({
 					</Text>
 					<Label
 						mt={2}
-						c="slate.3"
+						c="obsidian.3"
 					>
 						vCPU
 					</Label>
@@ -188,7 +188,7 @@ function InstanceTypeRow({
 					</Text>
 					<Label
 						mt={2}
-						c="slate.3"
+						c="obsidian.3"
 					>
 						Memory
 					</Label>

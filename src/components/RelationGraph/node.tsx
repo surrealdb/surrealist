@@ -6,7 +6,7 @@ export interface NodeCircleProps extends BoxProps {
 }
 
 export function NodeCircle({ color, size, ...other }: NodeCircleProps) {
-	const colorValue = color || "var(--mantine-color-slate-5)";
+	const colorValue = color || "var(--mantine-color-obsidian-5)";
 
 	return (
 		<Box

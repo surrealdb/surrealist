@@ -329,7 +329,7 @@ export function FunctionsView() {
 										</Button>
 										<Button
 											flex={1}
-											color="slate"
+											color="obsidian"
 											variant="light"
 											rightSection={<Icon path={iconOpen} />}
 											onClick={() =>
@@ -386,7 +386,7 @@ export function FunctionsView() {
 									ff="mono"
 									fz="xl"
 									c="violet"
-									style={{ transform: "translate(4px, 1px)" }}
+									style={{ transform: "tranobsidian(4px, 1px)" }}
 								>
 									fn::
 								</Text>
@@ -400,7 +400,7 @@ export function FunctionsView() {
 						<Group mt="lg">
 							<Button
 								onClick={showCreatorHandle.close}
-								color="slate"
+								color="obsidian"
 								variant="light"
 								flex={1}
 							>

@@ -32,7 +32,7 @@ export async function showNodeStatus() {
 					<Stack mt="md">
 						{nodes.map((node) => (
 							<Paper
-								bg="slate.7"
+								bg="obsidian.7"
 								key={node.id.toString()}
 								p="md"
 							>

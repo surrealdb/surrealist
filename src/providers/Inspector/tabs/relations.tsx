@@ -15,7 +15,7 @@ function RelationsList({ name, relations }: RelationsListProps) {
 	return (
 		<Paper
 			p="xs"
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg={isLight ? "obsidian.0" : "obsidian.9"}
 			mt={6}
 		>
 			{relations.length === 0 && (

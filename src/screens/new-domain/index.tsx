@@ -41,7 +41,7 @@ export function NewDomainScreen() {
 		<Scaffold>
 			<Box
 				h="100vh"
-				bg={`var(--mantine-color-slate-${isLight ? 0 : 9})`}
+				bg={`var(--mantine-color-obsidian-${isLight ? 0 : 9})`}
 			>
 				<TopGlow />
 				<Box
@@ -95,7 +95,7 @@ export function NewDomainScreen() {
 								<Button
 									rightSection={<Icon path={iconDownload} />}
 									variant="light"
-									color="slate"
+									color="obsidian"
 									onClick={saveBackup}
 								>
 									Export config

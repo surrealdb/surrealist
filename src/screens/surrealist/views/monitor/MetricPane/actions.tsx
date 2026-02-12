@@ -44,7 +44,7 @@ export function MetricActions({ options, onChange }: MetricActionsProps) {
 					>
 						<ActionButton
 							variant="light"
-							color="slate"
+							color="obsidian"
 							label="Node filter"
 							size="lg"
 						>

@@ -47,7 +47,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 				<>
 					<Paper
 						p="md"
-						bg={isLight ? "slate.1" : "slate.6"}
+						bg={isLight ? "obsidian.1" : "obsidian.6"}
 					>
 						<Markdown content={message.content} />
 					</Paper>
@@ -57,7 +57,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 					>
 						<Spacer />
 						<Text
-							c="slate"
+							c="obsidian"
 							fz="sm"
 						>
 							<RelativeTime value={message.sent_at.valueOf()} />
@@ -65,7 +65,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 						<CopyButton value={message.content}>
 							{({ copied, copy }) => (
 								<ActionButton
-									color="slate"
+									color="obsidian"
 									variant="transparent"
 									onClick={copy}
 									label={copied ? "Copied" : "Copy"}
@@ -86,7 +86,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 					) : (
 						<Group
 							gap="xs"
-							c="slate"
+							c="obsidian"
 						>
 							<Loader
 								size={14}
@@ -110,7 +110,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 								{({ copied, copy }) => (
 									<ActionButton
 										size="sm"
-										color="slate"
+										color="obsidian"
 										variant="transparent"
 										onClick={copy}
 										label={copied ? "Copied" : "Copy"}
@@ -123,7 +123,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 								)}
 							</CopyButton>
 							<Text
-								c="slate"
+								c="obsidian"
 								fz="sm"
 							>
 								<RelativeTime value={message.sent_at.valueOf()} />
@@ -152,7 +152,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 							</Group>
 							<Collapse in={sourcesOpen}>
 								<Paper
-									bg={isLight ? "slate.0" : "slate.7"}
+									bg={isLight ? "obsidian.0" : "obsidian.7"}
 									p="md"
 								>
 									<List>

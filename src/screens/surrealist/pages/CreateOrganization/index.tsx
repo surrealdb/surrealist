@@ -109,7 +109,7 @@ export function CreateOrganizationPage() {
 						<Group mt={24}>
 							<Link to={savepoint.path}>
 								<Button
-									color="slate"
+									color="obsidian"
 									variant="light"
 								>
 									Back

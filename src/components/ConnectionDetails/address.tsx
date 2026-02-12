@@ -154,7 +154,7 @@ export function ConnectionAddressDetails({
 						rightSection={
 							statusFetching ? (
 								<Loader
-									color="slate.5"
+									color="obsidian.5"
 									size={16}
 								/>
 							) : (
@@ -191,7 +191,7 @@ export function ConnectionAddressDetails({
 					<Button
 						size="xs"
 						mt="md"
-						color={isLight ? "slate.9" : "slate.0"}
+						color={isLight ? "obsidian.9" : "obsidian.0"}
 						variant="light"
 						onClick={() =>
 							onChange((draft) => {

@@ -57,7 +57,7 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 						{conversation.last_response_author?.name || "Unknown"}
 					</Text>
 					<Text
-						c="slate.4"
+						c="obsidian.4"
 						fz={4}
 						mx={2}
 					>

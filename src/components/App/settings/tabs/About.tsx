@@ -48,7 +48,7 @@ export function AboutTab() {
 
 	return (
 		<>
-			<Text c="slate">Surrealist &copy; {format(currDate, "yyyy")} SurrealDB Ltd</Text>
+			<Text c="obsidian">Surrealist &copy; {format(currDate, "yyyy")} SurrealDB Ltd</Text>
 			<Stack
 				gap="xs"
 				mt="xl"
@@ -81,7 +81,7 @@ export function AboutTab() {
 				<Button
 					onClick={copyDebug}
 					rightSection={<Icon path={clipboard.copied ? iconCheck : iconWrench} />}
-					color={clipboard.copied ? "surreal" : "slate"}
+					color={clipboard.copied ? "surreal" : "obsidian"}
 					variant="light"
 					size="xs"
 				>
@@ -90,7 +90,7 @@ export function AboutTab() {
 				{isDesktop && (
 					<Button
 						onClick={checkForUpdates}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						size="xs"
 						rightSection={

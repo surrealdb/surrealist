@@ -181,7 +181,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 										<Text
 											span
 											inherit
-											c="slate"
+											c="obsidian"
 											mr="sm"
 										>
 											{step + 1}.

@@ -50,7 +50,7 @@ export function StartInstance({
 	const labels = connection?.labels?.map((label, i) => (
 		<Badge
 			key={i}
-			color="slate"
+			color="obsidian"
 			variant="light"
 		>
 			{label}
@@ -107,7 +107,7 @@ export function StartInstance({
 									/>
 									<Text>{instance.region}</Text>
 								</Group>
-								<Text c="slate">/</Text>
+								<Text c="obsidian">/</Text>
 								<Text>SurrealDB {instance.version}</Text>
 							</Group>
 						</Stack>

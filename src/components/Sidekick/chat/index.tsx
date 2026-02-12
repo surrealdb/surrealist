@@ -193,7 +193,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 									</Button>
 									<Button
 										flex={1}
-										color="slate"
+										color="obsidian"
 										variant="light"
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() =>
@@ -250,7 +250,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 						<Button
 							leftSection={<Icon path={iconTable} />}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							size="xs"
 						>
 							Attach schema
@@ -258,7 +258,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 						<Button
 							leftSection={<Icon path={iconTable} />}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							size="xs"
 						>
 							Attach table
@@ -266,7 +266,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 						<Button
 							leftSection={<Icon path={iconRelation} />}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							size="xs"
 						>
 							Attach relation

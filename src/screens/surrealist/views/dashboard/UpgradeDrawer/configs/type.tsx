@@ -86,7 +86,7 @@ export function ConfigurationInstanceType({
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>

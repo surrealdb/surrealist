@@ -61,11 +61,11 @@ export function openBillingRequiredModal({
 						>
 							<BillingDetails
 								organisation={organization}
-								bg="slate.7"
+								bg="obsidian.7"
 							/>
 							<PaymentDetails
 								organisation={organization}
-								bg="slate.7"
+								bg="obsidian.7"
 							/>
 						</SimpleGrid>
 					)}
