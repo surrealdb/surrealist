@@ -14,7 +14,6 @@ import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useGraphqlIntrospection } from "~/hooks/graphql";
 import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { checkGraphqlSupport } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
@@ -39,7 +38,6 @@ export function GraphqlView() {
 	const [queryValid, setQueryValid] = useState(true);
 	const [editor, setEditor] = useState<EditorView | null>(null);
 
-	const isLight = useIsLight();
 	const isConnected = useIsConnected();
 	const [schema, introspectSchema] = useGraphqlIntrospection();
 
@@ -157,7 +155,7 @@ export function GraphqlView() {
 					>
 						<Paper
 							className={classes.sendCircle}
-							bg={isLight ? "obsidian.0" : "obsidian.9"}
+							bg="var(--mantine-color-body)"
 							pos="absolute"
 							radius={100}
 							p="xs"

@@ -24,7 +24,6 @@ import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/conne
 import { useConnectionAndView } from "~/hooks/routing";
 import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { showTableDefinitionModal } from "~/modals/table-definition";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
@@ -61,7 +60,6 @@ export function TablesPane({
 
 	const [connection] = useConnectionAndView();
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
-	const isLight = useIsLight();
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
 	const pinnedTables = useConnection((c) => c?.pinnedTables ?? []);
@@ -126,7 +124,7 @@ export function TablesPane({
 			infoSection={
 				schema.length > 0 && (
 					<Badge
-						color={isLight ? "obsidian.0" : "obsidian.9"}
+						bg="var(--mantine-color-body)"
 						radius="sm"
 						c="inherit"
 					>

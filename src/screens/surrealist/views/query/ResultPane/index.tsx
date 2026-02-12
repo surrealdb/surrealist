@@ -24,7 +24,6 @@ import { executeEditorQuery } from "~/editor/query";
 import { useSetting } from "~/hooks/config";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
@@ -85,7 +84,6 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const responseMap = useDatabaseStore((s) => s.queryResponses);
 	const isQueryValid = useQueryStore((s) => s.isQueryValid);
 
-	const isLight = useIsLight();
 	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
 	const [resultTab, setResultTab] = useState<number>(1);
 	const selectedTab = resultTab - 1;
@@ -378,7 +376,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		>
 			{isLive && resultMode !== "live" && (
 				<UnstyledButton
-					bg={isLight ? "obsidian.0" : "obsidian.9"}
+					bg="var(--mantine-color-body)"
 					mb="md"
 					p="md"
 					onClick={() => setResultMode("live")}

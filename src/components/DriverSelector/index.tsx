@@ -2,7 +2,6 @@ import { type BoxProps, Paper, SimpleGrid, type StyleProp, Text } from "@mantine
 import clsx from "clsx";
 import { useMemo } from "react";
 import { DRIVERS } from "~/constants";
-import { useIsLight } from "~/hooks/theme";
 import type { CodeLang } from "~/types";
 import classes from "./style.module.scss";
 
@@ -22,8 +21,6 @@ export function DriverSelector({
 	onChange,
 	...other
 }: DriverSelectorProps) {
-	const isLight = useIsLight();
-
 	const drivers = useMemo(() => {
 		return DRIVERS.filter((lib) => !exclude?.includes(lib.id));
 	}, [exclude]);
@@ -41,7 +38,7 @@ export function DriverSelector({
 					<Paper
 						key={lib.name}
 						radius="md"
-						bg={isLight ? "obsidian.0" : "obsidian.9"}
+						bg="var(--mantine-color-body)"
 						className={clsx(
 							classes.library,
 							isActive && classes.libraryActive,

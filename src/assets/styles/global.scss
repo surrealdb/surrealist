@@ -27,20 +27,6 @@ textarea,
 	-webkit-user-select: text;
 }
 
-pre,
-code {
-	font-size: inherit;
-	background-color: var(--mantine-color-obsidian-7);
-	white-space: pre-wrap;
-	word-break: break-word;
-	overflow-x: auto;
-	max-width: 100%;
-
-	@include light {
-		background-color: var(--mantine-color-obsidian-0);
-	}
-}
-
 a {
 	text-decoration: none;
 	;

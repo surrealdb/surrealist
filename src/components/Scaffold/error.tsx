@@ -11,18 +11,16 @@ import {
 import type { FallbackProps } from "react-error-boundary";
 import { adapter } from "~/adapter";
 import { useVersionCopy } from "~/hooks/debug";
-import { useIsLight } from "~/hooks/theme";
 
 export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProps) {
 	const [copyDebug, clipboard] = useVersionCopy();
-	const isLight = useIsLight();
 
 	const message = error instanceof Error ? error.message : error;
 
 	return (
 		<ScrollArea
 			h="100%"
-			bg={isLight ? "obsidian.0" : "obsidian.9"}
+			bg="var(--mantine-color-body)"
 		>
 			<Paper
 				p="xl"

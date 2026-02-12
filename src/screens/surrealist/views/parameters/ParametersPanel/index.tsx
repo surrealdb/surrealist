@@ -7,7 +7,6 @@ import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
 import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
-import { useIsLight } from "~/hooks/theme";
 import type { SchemaParameter } from "~/types";
 import classes from "./style.module.scss";
 
@@ -28,7 +27,6 @@ export function ParametersPanel({
 	onDuplicate,
 	onCreate,
 }: ParametersPanelProps) {
-	const isLight = useIsLight();
 	const isConnected = useIsConnected();
 	const { showContextMenu } = useContextMenu();
 
@@ -47,7 +45,7 @@ export function ParametersPanel({
 			style={{ flexShrink: 0 }}
 			infoSection={
 				<Badge
-					color={isLight ? "obsidian.0" : "obsidian.9"}
+					bg="var(--mantine-color-body)"
 					radius="sm"
 					c="inherit"
 				>

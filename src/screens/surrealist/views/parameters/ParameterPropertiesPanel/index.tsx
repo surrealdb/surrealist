@@ -18,7 +18,6 @@ import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
-import { useIsLight } from "~/hooks/theme";
 import { SchemaParameter } from "~/types";
 import classes from "./style.module.scss";
 
@@ -37,7 +36,6 @@ export function ParameterPropertiesPanel({
 	onChange,
 	onDelete,
 }: ParameterPropertiesPanelProps) {
-	const isLight = useIsLight();
 	const fullName = `$${details.name}`;
 
 	return (
@@ -60,7 +58,7 @@ export function ParameterPropertiesPanel({
 				direction="column"
 			>
 				<Box>
-					<Paper bg={isLight ? "obsidian.0" : "obsidian.9"}>
+					<Paper bg="var(--mantine-color-body)">
 						<Flex align="center">
 							<ScrollArea
 								scrollbars="x"

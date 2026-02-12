@@ -94,7 +94,6 @@ export function MiniQueryView() {
 						value={showVariables ? "Variables" : "Query"}
 						onChange={() => setShowVariables(!showVariables)}
 						className={classes.switcher}
-						color="obsidian.5"
 						radius="xs"
 					/>
 				</InPortal>

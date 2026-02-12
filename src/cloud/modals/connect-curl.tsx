@@ -5,7 +5,6 @@ import { CodeBlock, Icon, iconTransfer } from "@surrealdb/ui";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance } from "~/types";
 
 export function openConnectCurl(instance: CloudInstance, namespace: string, database: string) {
@@ -38,8 +37,6 @@ interface ConnectCurlModalProps {
 }
 
 function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalProps) {
-	const isLight = useIsLight();
-
 	const [username, setUsername] = useInputState("");
 	const [password, setPassword] = useInputState("");
 
@@ -81,7 +78,7 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 
 			<Paper
 				withBorder
-				bg={isLight ? "obsidian.0" : "obsidian.9"}
+				bg="var(--mantine-color-body)"
 				p="md"
 			>
 				<SimpleGrid

@@ -12,7 +12,6 @@ import { ActionButton } from "~/components/ActionButton";
 import { ContentPane } from "~/components/Pane";
 import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
 import { useConnection } from "~/hooks/connection";
-import { useIsLight } from "~/hooks/theme";
 import { CloudLogLine } from "~/types";
 import { fuzzyMatch } from "~/util/helpers";
 import { MonitorContentProps } from "../helpers";
@@ -27,7 +26,6 @@ export function LogPane({
 	onRevealSidebar,
 	onChangeLogOptions,
 }: MonitorContentProps) {
-	const isLight = useIsLight();
 	const listRef = useRef<FixedSizeList>(null);
 	const instance = useConnection((con) => con?.authentication.cloudInstance);
 	const logQuery = useCloudLogsQuery(instance, logOptions.duration);
@@ -117,7 +115,7 @@ export function LogPane({
 				component={Stack}
 				gap={0}
 				pos="relative"
-				bg={isLight ? "obsidian.0" : "obsidian.9"}
+				bg="var(--mantine-color-body)"
 			>
 				{logQuery.isSuccess ? (
 					logLines.length === 0 ? (

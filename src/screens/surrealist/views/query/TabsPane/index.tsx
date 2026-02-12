@@ -245,7 +245,6 @@ export function TabsPane(props: TabsPaneProps) {
 	const [connection] = useConnectionAndView();
 	const [activeQuery, queries] = useConnection((c) => [c?.activeQuery ?? "", c?.queries ?? []]);
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
-	const isLight = useIsLight();
 
 	const newTab = useStable(() => {
 		if (!connection) return;
@@ -308,7 +307,7 @@ export function TabsPane(props: TabsPaneProps) {
 			style={{ flexShrink: 0 }}
 			infoSection={
 				<Badge
-					color={isLight ? "obsidian.0" : "obsidian.9"}
+					bg="var(--mantine-color-body)"
 					radius="sm"
 					c="inherit"
 				>

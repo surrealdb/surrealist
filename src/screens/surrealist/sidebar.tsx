@@ -143,7 +143,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 			top={0}
 			left={0}
 			bottom={0}
-			bg={isLight ? "obsidian.0" : "obsidian.9"}
+			bg="var(--mantine-color-body)"
 			onMouseEnter={hoverSidebarHandle.open}
 			className={clsx(
 				classes.sidebar,

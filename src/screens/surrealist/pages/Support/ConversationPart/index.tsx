@@ -1,7 +1,6 @@
 import { Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { Icon, iconClose, iconFile, iconPackageClosed, iconPlay } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
-import { useIsLight } from "~/hooks/theme";
 import { IntercomAttachment, IntercomConversation, IntercomConversationPart } from "~/types";
 import { formatFileSize, formatRelativeDate } from "~/util/helpers";
 import { ConversationPartAuthor } from "../ConversationPartAuthor";
@@ -14,14 +13,11 @@ export interface ConversationPartProps {
 }
 
 export function ConversationPartAttachment({ attachment }: { attachment: IntercomAttachment }) {
-	const isLight = useIsLight();
-	const bg = isLight ? "obsidian.0" : "obsidian.9";
-
 	return (
 		<Paper
 			key={attachment.url}
 			p="md"
-			bg={bg}
+			bg="var(--mantine-color-body)"
 			w="12.6rem"
 			withBorder={false}
 			style={{

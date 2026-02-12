@@ -10,7 +10,6 @@ import { useBoolean } from "~/hooks/boolean";
 import { useIsConnected } from "~/hooks/connection";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
 import {
 	SelectDatabase,
@@ -282,8 +281,6 @@ function AuthList<T extends { name: string }>({
 	onOptions,
 	onDetails,
 }: AuthListProps<T>) {
-	const isLight = useIsLight();
-
 	return (
 		<Box>
 			<Group mb="sm">
@@ -295,7 +292,7 @@ function AuthList<T extends { name: string }>({
 					{name}
 				</Text>
 				<Badge
-					color={isLight ? "obsidian.0" : "obsidian.9"}
+					bg="var(--mantine-color-body)"
 					radius="sm"
 					c="inherit"
 				>

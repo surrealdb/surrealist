@@ -84,7 +84,7 @@ export function FunctionPropertiesPanel({
 				direction="column"
 			>
 				<Box>
-					<Paper bg={isLight ? "obsidian.0" : "obsidian.9"}>
+					<Paper bg="var(--mantine-color-body)">
 						<Flex align="center">
 							<ScrollArea
 								scrollbars="x"
