@@ -41,14 +41,22 @@ export function parseCapabilities(
 	};
 }
 
-type Option = Selectable & { since?: string };
+type Option = Selectable & { since?: string; until?: string };
 
 export function filterOptions(options: Option[], version: string) {
 	return options.filter((option) => {
-		if (!option.since) {
-			return true;
+		let allowed = true;
+
+		// Allow if version is equal to or greater than "since"
+		if (option.since) {
+			allowed = allowed && compareVersions(version, option.since) >= 0;
 		}
 
-		return compareVersions(version, option.since) >= 0;
+		// Disallow if version is less than "until"
+		if (option.until) {
+			allowed = allowed && compareVersions(version, option.until) < 0;
+		}
+
+		return allowed;
 	});
 }
