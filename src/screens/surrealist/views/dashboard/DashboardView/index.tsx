@@ -65,12 +65,14 @@ import { ConfigurationBlock } from "../ConfigurationBlock";
 import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
+import { MajorUpdateSection } from "../MajorUpdateSection";
 import { NavigationBlock } from "../NavigationBlock";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
 import { UpgradeDrawer } from "../UpgradeDrawer";
 import classes from "./style.module.scss";
 
+const MajorUpdateSectionLazy = memo(MajorUpdateSection);
 const UpdateBlockLazy = memo(UpdateBlock);
 const ResumeBlockLazy = memo(ResumeBlock);
 const ConfigurationBlockLazy = memo(ConfigurationBlock);
@@ -310,6 +312,8 @@ export function DashboardView() {
 	const isLoading =
 		detailsPending || backupsPending || instancePending || usagePending || organisationPending;
 
+	const hasMajorUpdate = true;
+
 	if (!isCloud) {
 		return <Redirect to="/query" />;
 	}
@@ -404,6 +408,11 @@ export function DashboardView() {
 
 							{!isLoading && details && instance && organisation ? (
 								<>
+									<MajorUpdateSectionLazy
+										instance={details}
+										organisation={organisation}
+									/>
+
 									<Box mt={32}>
 										<PrimaryTitle>Your instance</PrimaryTitle>
 										<Text>
