@@ -5,6 +5,9 @@ import { type EditorView, keymap, scrollPastEnd } from "@codemirror/view";
 import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import {
+	CodeEditor,
+	createSerializedState,
+	EditorStateSnapshot,
 	Icon,
 	iconAutoFix,
 	iconChevronRight,
@@ -13,12 +16,12 @@ import {
 	iconStar,
 	iconText,
 	iconWarning,
+	useEditor,
 } from "@surrealdb/ui";
 import { objectify, trim } from "radash";
 import { useMemo, useRef, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
-import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
@@ -46,7 +49,6 @@ import { showErrorNotification, tryParseParams } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { parseVariables } from "~/util/language";
 import { readQuery, writeQuery } from "../QueryView/strategy";
-import classes from "./style.module.scss";
 
 const SERIALIZE = {
 	history: historyField,
@@ -103,29 +105,32 @@ export function QueryPane({
 			return cache;
 		}
 
-		const state = EditorState.create().toJSON(SERIALIZE) as StateSnapshot;
+		const state = createSerializedState("");
 
 		Promise.resolve(readQuery(activeTab)).then((query) => {
-			updateQueryState(activeTab.id, EditorState.create({ doc: query }).toJSON(SERIALIZE));
+			updateQueryState(activeTab.id, createSerializedState(query));
 		});
 
 		return state;
 	}, [queryStateMap, activeTab, updateQueryState]);
 
+	const queryLength = typeof queryState.doc === "string" ? queryState.doc.length : 0;
+
 	// Cache the editor state and schedule query writing
-	const updateState = useStable((query: string, snapshot: StateSnapshot, state: EditorState) => {
+	const updateState = useStable((state: EditorStateSnapshot) => {
 		const id = activeTab.id;
+		const snapshot = EditorState.fromJSON(state, { extensions: extensions }, SERIALIZE);
 		const task = saveTasks.current.get(id);
-		const selection = state.selection.main;
+		const selection = snapshot.selection.main;
 		const range = selection.empty ? undefined : selection;
 
 		onSelectionChange(range);
-		updateQueryState(activeTab.id, snapshot);
+		updateQueryState(activeTab.id, state);
 		clearTimeout(task);
 
 		const newTask = setTimeout(() => {
 			saveTasks.current.delete(id);
-			writeQuery(activeTab, query);
+			writeQuery(activeTab, snapshot.doc.toString());
 		}, 500);
 
 		saveTasks.current.set(id, newTask);
@@ -215,6 +220,15 @@ export function QueryPane({
 		[inspect, surqlVersion],
 	);
 
+	const editorController = useEditor({
+		state: queryState,
+		onChangeState: updateState,
+		extensions,
+		lineNumbers,
+		// TODO pending ui-kit release
+		// onMounted: onEditorMounted,
+	});
+
 	useIntent("format-query", handleFormat);
 	useIntent("infer-variables", inferVariables);
 
@@ -254,7 +268,7 @@ export function QueryPane({
 						gap="sm"
 						style={{ flexShrink: 0 }}
 					>
-						{queryState.doc.length > MAX_HISTORY_QUERY_LENGTH && (
+						{queryLength > MAX_HISTORY_QUERY_LENGTH && (
 							<HoverCard position="bottom">
 								<HoverCard.Target>
 									<ThemeIcon
@@ -308,7 +322,7 @@ export function QueryPane({
 				)
 			}
 		>
-			<CodeEditor
+			{/* <CodeEditor
 				state={queryState}
 				onChange={updateState}
 				onMount={onEditorMounted}
@@ -318,6 +332,10 @@ export function QueryPane({
 				className={classes.editor}
 				mb={-9}
 				autoCollapseDepth={0}
+			/> */}
+			<CodeEditor
+				controller={editorController}
+				autoFocus
 			/>
 			<Transition
 				transition="slide-up"
