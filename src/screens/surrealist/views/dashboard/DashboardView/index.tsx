@@ -312,8 +312,6 @@ export function DashboardView() {
 	const isLoading =
 		detailsPending || backupsPending || instancePending || usagePending || organisationPending;
 
-	const hasMajorUpdate = true;
-
 	if (!isCloud) {
 		return <Redirect to="/query" />;
 	}
