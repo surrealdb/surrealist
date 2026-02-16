@@ -2,6 +2,7 @@ import {
 	Alert,
 	Box,
 	Button,
+	Checkbox,
 	Divider,
 	Flex,
 	Group,
@@ -11,6 +12,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { ChangeEvent } from "react";
 import { navigate } from "wouter/use-browser-location";
 import glow from "~/assets/images/glow.webp";
 import cloud from "~/assets/images/icons/cloud.webp";
@@ -25,6 +27,8 @@ import { openResourcesLockedModal } from "~/components/App/modals/resources-lock
 import { BillingDetails } from "~/components/BillingDetails";
 import { EstimatedCost } from "~/components/EstimatedCost";
 import { Icon } from "~/components/Icon";
+import { Label } from "~/components/Label";
+import { LearnMore } from "~/components/LearnMore";
 import { PaymentDetails } from "~/components/PaymentDetails";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { PropertyValue } from "~/components/PropertyValue";
@@ -54,7 +58,7 @@ import { STARTING_DATA } from "../constants";
 import classes from "../style.module.scss";
 import { StepProps } from "../types";
 
-export function CheckoutStep({ organisation, details, setStep }: StepProps) {
+export function CheckoutStep({ organisation, details, setDetails, setStep }: StepProps) {
 	const navigateConnection = useConnectionNavigator();
 	const isDedicated = details.plan === "enterprise";
 	const deployMutation = useInstanceDeployMutation(organisation);
@@ -125,6 +129,12 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 	const computeNodesText = isDedicated ? details.computeUnits : "Single-node";
 	const storageNodesText = `${formatMemory(details.storageAmount * 1000, true)} x ${details.storageUnits} Nodes`;
 	const startingDataText = STARTING_DATA[details.startingData.type].title;
+
+	const updateMigration = useStable((e: ChangeEvent<HTMLInputElement>) => {
+		setDetails((draft) => {
+			draft.migration = e.target.checked;
+		});
+	});
 
 	return (
 		<>
@@ -380,6 +390,24 @@ export function CheckoutStep({ organisation, details, setStep }: StepProps) {
 					</Flex>
 				</Paper>
 			)}
+
+			<Box mt={36}>
+				<PrimaryTitle>Additional information</PrimaryTitle>
+			</Box>
+
+			<Checkbox
+				mt="md"
+				label={<Label>This instance is used to migrate to SurrealDB 3.0</Label>}
+				description="Instances used to migrate to SurrealDB 3.0 may be eligible for compensation"
+				checked={details.migration ?? false}
+				onChange={updateMigration}
+			/>
+
+			<Box mt="xl">
+				<LearnMore href="https://surrealdb.com/docs/surrealdb/installation/upgrading/migrating-data-to-3x">
+					Learn more about the migration process
+				</LearnMore>
+			</Box>
 
 			<Divider my={36} />
 

@@ -42,6 +42,7 @@ export function useInstanceDeployMutation(organisation?: CloudOrganization) {
 				dataset:
 					config.startingData.type === "dataset" ? "surreal-deal-store-mini" : undefined,
 				email: useCloudStore.getState().profile.username,
+				v3_migration: config.migration ?? false,
 			});
 
 			return [instance, connection] as const;

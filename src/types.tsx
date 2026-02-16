@@ -860,6 +860,7 @@ export interface CloudDeployConfig {
 	storageAmount: number;
 	startingData: StartingDataDetails;
 	plan: InstancePlan;
+	migration?: boolean;
 }
 
 export interface CloudPlanCategories {
