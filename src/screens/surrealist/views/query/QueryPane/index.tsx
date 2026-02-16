@@ -225,8 +225,7 @@ export function QueryPane({
 		onChangeState: updateState,
 		extensions,
 		lineNumbers,
-		// TODO pending ui-kit release
-		// onMounted: onEditorMounted,
+		onMounted: onEditorMounted,
 	});
 
 	useIntent("format-query", handleFormat);
