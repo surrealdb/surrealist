@@ -1,4 +1,19 @@
-import { MantineThemeOverride } from "@mantine/core";
+import {
+	Checkbox,
+	Drawer,
+	InputBase,
+	MantineThemeOverride,
+	MultiSelect,
+	NumberInput,
+	Paper,
+	PasswordInput,
+	Select,
+	Switch,
+	TagsInput,
+	Textarea,
+	TextInput,
+	Title,
+} from "@mantine/core";
 import { MANTINE_THEME } from "@surrealdb/ui";
 
 const ICON_SIZES: Record<string, number> = {
@@ -13,28 +28,75 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 	...MANTINE_THEME,
 	components: {
 		...MANTINE_THEME.components,
-		Drawer: {
+		Drawer: Drawer.extend({
 			defaultProps: {
 				withCloseButton: false,
 			},
-		},
-		Title: {
+		}),
+		Title: Title.extend({
 			defaultProps: {
 				fz: "xl",
 				c: "bright",
 			},
-		},
-		Checkbox: {
+		}),
+		Checkbox: Checkbox.extend({
 			defaultProps: {
 				variant: "gradient",
-				styles: {
-					icon: {
-						width: 9,
-						color: "var(--mantine-color-bright)",
-					},
-				},
 			},
-		},
+		}),
+		Paper: Paper.extend({
+			defaultProps: {
+				variant: "filled",
+			},
+		}),
+		Switch: Switch.extend({
+			defaultProps: {
+				variant: "gradient",
+				withThumbIndicator: false,
+			},
+		}),
+		Select: Select.extend({
+			defaultProps: {
+				variant: "filled",
+			},
+		}),
+		MultiSelect: MultiSelect.extend({
+			defaultProps: {
+				variant: "filled",
+			},
+		}),
+		InputBase: InputBase.extend({
+			defaultProps: {
+				variant: "filled",
+			},
+		}),
+		TextInput: TextInput.extend({
+			defaultProps: {
+				spellCheck: false,
+				variant: "filled",
+			},
+		}),
+		NumberInput: NumberInput.extend({
+			defaultProps: {
+				spellCheck: false,
+				variant: "filled",
+			},
+		}),
+		PasswordInput: PasswordInput.extend({
+			defaultProps: {
+				variant: "filled",
+			},
+		}),
+		Textarea: Textarea.extend({
+			defaultProps: {
+				variant: "filled",
+			},
+		}),
+		TagsInput: TagsInput.extend({
+			defaultProps: {
+				variant: "filled",
+			},
+		}),
 	},
 };
 
