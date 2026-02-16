@@ -182,65 +182,78 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											mb="md"
 											bg="transparent"
 											bd="none"
+											w="100%"
 										>
 											<Tabs.Tab
+												flex={1}
 												value="instances"
-												leftSection={<Icon path={iconServer} />}
-												px="xl"
 											>
-												Instances
+												<Group justify="center">
+													<Icon path={iconServer} />
+													<Text fz="sm">Instances</Text>
+												</Group>
 											</Tabs.Tab>
 											<Tabs.Tab
+												flex={1}
 												value="team"
-												leftSection={<Icon path={iconOrganization} />}
-												px="xl"
 											>
-												Team
+												<Group justify="center">
+													<Icon path={iconOrganization} />
+													<Text fz="sm">Team</Text>
+												</Group>
 											</Tabs.Tab>
 											{isOwner && !isManagedBilling && (
 												<Tabs.Tab
+													flex={1}
 													value="invoices"
-													leftSection={<Icon path={iconDollar} />}
-													px="xl"
 												>
-													Invoices
+													<Group justify="center">
+														<Icon path={iconDollar} />
+														<Text fz="sm">Invoices</Text>
+													</Group>
 												</Tabs.Tab>
 											)}
 											{isOwner && (
 												<Tabs.Tab
+													flex={1}
 													value="billing"
-													leftSection={<Icon path={iconCreditCard} />}
-													px="xl"
 												>
-													Billing
+													<Group justify="center">
+														<Icon path={iconCreditCard} />
+														<Text fz="sm">Billing</Text>
+													</Group>
 												</Tabs.Tab>
 											)}
 											{isSupport && (
 												<Tabs.Tab
+													flex={1}
 													value="support"
-													leftSection={<Icon path={iconChat} />}
-													px="xl"
 												>
-													Support
+													<Group justify="center">
+														<Icon path={iconChat} />
+														<Text fz="sm">Support</Text>
+													</Group>
 												</Tabs.Tab>
 											)}
 											{isAdmin && (
 												<>
 													<Tabs.Tab
+														flex={1}
 														value="usage"
-														leftSection={
-															<Icon path={iconProgressClock} />
-														}
-														px="xl"
 													>
-														Usage
+														<Group justify="center">
+															<Icon path={iconProgressClock} />
+															<Text fz="sm">Usage</Text>
+														</Group>
 													</Tabs.Tab>
 													<Tabs.Tab
+														flex={1}
 														value="settings"
-														leftSection={<Icon path={iconCog} />}
-														px="xl"
 													>
-														Settings
+														<Group justify="center">
+															<Icon path={iconCog} />
+															<Text fz="sm">Settings</Text>
+														</Group>
 													</Tabs.Tab>
 												</>
 											)}

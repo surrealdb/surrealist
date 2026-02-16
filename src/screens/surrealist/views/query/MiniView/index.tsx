@@ -1,12 +1,12 @@
 import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { Box, Group, Image, noop, SegmentedControl, Stack } from "@mantine/core";
+import { pictoSurrealist } from "@surrealdb/ui";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { createHtmlPortalNode, InPortal } from "react-reverse-portal";
 import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
-import surrealistIcon from "~/assets/images/icon.webp";
 import { Link } from "~/components/Link";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { Spacer } from "~/components/Spacer";
@@ -103,9 +103,10 @@ export function MiniQueryView() {
 						<Link href="https://surrealdb.com/surrealist">
 							<Group>
 								<Image
-									h={18}
+									h={32}
+									my={-9}
 									w="auto"
-									src={surrealistIcon}
+									src={pictoSurrealist}
 								/>
 								<Image
 									src={logoUrl}

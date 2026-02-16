@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Checkbox,
 	Drawer,
 	InputBase,
@@ -28,6 +29,11 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 	...MANTINE_THEME,
 	components: {
 		...MANTINE_THEME.components,
+		Alert: Alert.extend({
+			defaultProps: {
+				variant: "light",
+			},
+		}),
 		Drawer: Drawer.extend({
 			defaultProps: {
 				withCloseButton: false,

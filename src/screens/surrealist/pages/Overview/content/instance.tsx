@@ -3,7 +3,6 @@ import {
 	Badge,
 	BoxProps,
 	Group,
-	Image,
 	Paper,
 	Stack,
 	Text,
@@ -13,15 +12,15 @@ import {
 import { Icon, iconChevronRight, iconCloud, Spacer } from "@surrealdb/ui";
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { Faint } from "~/components/Faint";
-import { REGION_FLAGS } from "~/constants";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { CloudInstance, CloudOrganization } from "~/types";
+import { CloudInstance, CloudOrganization, CloudRegion } from "~/types";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
+	regions: CloudRegion[];
 	organisation: CloudOrganization;
 	onConnect: (instance: CloudInstance) => void;
 }
@@ -29,6 +28,7 @@ export interface StartInstanceProps extends BoxProps {
 export function StartInstance({
 	instance,
 	organisation,
+	regions,
 	onConnect,
 	...other
 }: PropsWithChildren<StartInstanceProps>) {
@@ -85,7 +85,7 @@ export function StartInstance({
 								path={connection ? USER_ICONS[connection.icon] : iconCloud}
 							/>
 						</ThemeIcon>
-						<Stack gap={0}>
+						<Stack gap="xs">
 							<Group>
 								<Text
 									c="bright"
@@ -99,17 +99,10 @@ export function StartInstance({
 									state={instance.state}
 								/>
 							</Group>
-							<Group>
-								<Group gap="sm">
-									<Image
-										src={REGION_FLAGS[instance.region]}
-										w={18}
-									/>
-									<Text>{instance.region}</Text>
-								</Group>
-								<Text c="obsidian">/</Text>
-								<Text>SurrealDB {instance.version}</Text>
-							</Group>
+							<Text>SurrealDB {instance.version}</Text>
+							<Text size="sm">
+								{regions.find((r) => r.slug === instance.region)?.description}
+							</Text>
 						</Stack>
 						<Spacer />
 						<Icon

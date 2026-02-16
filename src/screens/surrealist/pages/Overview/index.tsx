@@ -117,6 +117,7 @@ export function OverviewPage() {
 		activateConnection(resolveInstanceConnection(instance));
 	});
 
+	const allRegions = useCloudStore((s) => s.regions);
 	const authState = useCloudStore((s) => s.authState);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
 	const isLoading = authState === "loading" || isPending;
@@ -419,6 +420,7 @@ export function OverviewPage() {
 													<StartInstance
 														key={instance.id}
 														instance={instance}
+														regions={allRegions}
 														organisation={organization.info}
 														onConnect={activateInstance}
 													/>

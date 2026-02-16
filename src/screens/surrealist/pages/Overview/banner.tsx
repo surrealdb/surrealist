@@ -3,7 +3,7 @@ import { Icon, iconBullhorn, iconWarning } from "@surrealdb/ui";
 import { BannerType, CloudBanner } from "~/types";
 
 const BANNER_INFO: Record<BannerType, [MantineColor, string, string]> = {
-	info: ["blue", "Service Update", iconBullhorn],
+	info: ["violet", "Service Update", iconBullhorn],
 	warning: ["orange", "Service Update", iconWarning],
 	important: ["red", "Important Service Update", iconWarning],
 };
