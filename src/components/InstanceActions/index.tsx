@@ -9,7 +9,8 @@ import { useStable } from "~/hooks/stable";
 import { openConnectionEditModal } from "~/modals/edit-connection";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
+import { iconBug, iconDelete, iconEdit, iconOrganization, iconPause, iconPlay } from "~/util/icons";
+import { dispatchIntent } from "~/util/intents";
 import { openResourcesLockedModal } from "../App/modals/resources-locked";
 import { Icon } from "../Icon";
 
@@ -107,6 +108,19 @@ export function InstanceActions({
 						View organisation
 					</Menu.Item>
 				</Link>
+				<Menu.Item
+					leftSection={<Icon path={iconBug} />}
+					onClick={() => {
+						dispatchIntent("create-message", {
+							type: "conversation",
+							organisation: organisation.id,
+							message: `Hello! I would like to report an issue regarding my instance (ID: ${instance.id})`,
+							conversationType: "instance-issue",
+						});
+					}}
+				>
+					Report an issue
+				</Menu.Item>
 				<Menu.Divider />
 				<Menu.Item onClick={handleCopyHost}>Copy hostname</Menu.Item>
 				<Menu.Item onClick={handleCopyID}>Copy instance ID</Menu.Item>

@@ -40,6 +40,11 @@ const CONVERSATION_TYPES = [
 		header: "Account / billing enquiry",
 		tags: [],
 	},
+	{
+		id: "instance-issue",
+		header: "Report instance issue",
+		tags: [],
+	},
 ];
 
 export function CreateMessageModal() {
