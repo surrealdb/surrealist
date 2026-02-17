@@ -140,7 +140,7 @@ export function ResourceOverviewPanel({
 						) : (
 							<Accordion
 								multiple
-								variant="separated"
+								variant="surreal"
 								value={openedTypes}
 								onChange={onChangeOpenedTypes}
 								styles={{

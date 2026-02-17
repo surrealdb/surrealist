@@ -81,106 +81,111 @@ export function ManageDataTab() {
 			scrollbars="y"
 			type="always"
 		>
-			<Stack
-				gap="xl"
-				pb={32}
-			>
-				<Box>
-					<Text
-						fw={600}
-						fz={20}
-						c="bright"
-					>
-						Backup your configuration
-					</Text>
-					<Stack
-						align="start"
-						mt="md"
-					>
-						<Text>
-							Generate a backup of your Surrealist configuration which can be restored
-							later.
-							<br />
-							You can customize the backup to include sensitive details or limit the
-							included connections.
-						</Text>
-						<Checkbox
-							label="Include authentication credentials"
-							checked={includeSensitive}
-							onChange={updateIncludeSensitive}
-						/>
-						<Checkbox
-							label="Only include specific connections"
-							checked={filterConnections}
-							onChange={updateFilterConnections}
-						/>
-						<MultiSelect
-							data={connectionOptions}
-							value={filteredConnections}
-							disabled={!filterConnections}
-							onChange={setFilteredConnections}
-							placeholder={
-								filteredConnections.length === 0 ? "Select connections" : undefined
-							}
-							styles={{
-								inputField: {
-									transform: "translateY(2px)",
-								},
-							}}
-						/>
-						<Button
-							px="xl"
-							mt="md"
-							size="xs"
-							variant="gradient"
-							rightSection={<Icon path={iconDownload} />}
-							onClick={saveBackup}
+			<Box m="xs">
+				<Stack
+					gap="xl"
+					pb={32}
+				>
+					<Box>
+						<Text
+							fw={600}
+							fz={20}
+							c="bright"
 						>
-							Save backup
-						</Button>
-					</Stack>
-				</Box>
-				<Box>
-					<Text
-						mt="xl"
-						fw={600}
-						fz={20}
-						c="bright"
-					>
-						Restore configuration
-					</Text>
-					<Stack
-						align="start"
-						mt="md"
-					>
-						<Text>
-							Restore a previously generated backup of your Surrealist configuration.
+							Backup your configuration
 						</Text>
-						<Group>
+						<Stack
+							align="start"
+							mt="md"
+						>
+							<Text>
+								Generate a backup of your Surrealist configuration which can be
+								restored later.
+								<br />
+								You can customize the backup to include sensitive details or limit
+								the included connections.
+							</Text>
+							<Checkbox
+								label="Include authentication credentials"
+								checked={includeSensitive}
+								onChange={updateIncludeSensitive}
+							/>
+							<Checkbox
+								label="Only include specific connections"
+								checked={filterConnections}
+								onChange={updateFilterConnections}
+							/>
+							<MultiSelect
+								data={connectionOptions}
+								value={filteredConnections}
+								disabled={!filterConnections}
+								onChange={setFilteredConnections}
+								placeholder={
+									filteredConnections.length === 0
+										? "Select connections"
+										: undefined
+								}
+								styles={{
+									inputField: {
+										transform: "translateY(2px)",
+									},
+								}}
+							/>
 							<Button
 								px="xl"
+								mt="md"
 								size="xs"
-								color="obsidian"
-								rightSection={<Icon path={iconUpload} />}
-								onClick={restoreFile}
+								variant="gradient"
+								rightSection={<Icon path={iconDownload} />}
+								onClick={saveBackup}
 							>
-								Select a backup file
+								Save backup
 							</Button>
-							{restoreConfig && (
+						</Stack>
+					</Box>
+					<Box>
+						<Text
+							mt="xl"
+							fw={600}
+							fz={20}
+							c="bright"
+						>
+							Restore configuration
+						</Text>
+						<Stack
+							align="start"
+							mt="md"
+						>
+							<Text>
+								Restore a previously generated backup of your Surrealist
+								configuration.
+							</Text>
+							<Group>
 								<Button
 									px="xl"
 									size="xs"
-									variant="gradient"
-									onClick={applyBackup}
-									rightSection={<Icon path={iconCheck} />}
+									color="obsidian"
+									rightSection={<Icon path={iconUpload} />}
+									onClick={restoreFile}
 								>
-									Apply backup
+									Select a backup file
 								</Button>
-							)}
-						</Group>
-					</Stack>
-				</Box>
-			</Stack>
+								{restoreConfig && (
+									<Button
+										px="xl"
+										size="xs"
+										variant="gradient"
+										onClick={applyBackup}
+										rightSection={<Icon path={iconCheck} />}
+									>
+										Apply backup
+									</Button>
+								)}
+							</Group>
+						</Stack>
+					</Box>
+				</Stack>
+			</Box>
 		</ScrollArea>
 	);
 }

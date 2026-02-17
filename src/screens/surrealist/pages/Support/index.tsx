@@ -239,7 +239,7 @@ export function SupportPage() {
 						<SimpleGrid
 							mt="md"
 							cols={{ base: 1, md: 2 }}
-							spacing="xl"
+							spacing="md"
 							mx="auto"
 						>
 							<ResourceTile
@@ -283,7 +283,7 @@ export function SupportPage() {
 						<SimpleGrid
 							mt="md"
 							cols={{ base: 1, md: 2 }}
-							spacing="xl"
+							spacing="md"
 							mx="auto"
 						>
 							<ResourceTile

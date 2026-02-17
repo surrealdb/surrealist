@@ -13,7 +13,6 @@ import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
-import { Entry } from "~/components/Entry";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
@@ -59,12 +58,9 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 	});
 
 	return (
-		<Entry
-			py={5}
-			h="unset"
-			radius="xs"
+		<Menu.Item
+			variant={value === activeDatabase ? "gradient" : undefined}
 			onClick={open}
-			isActive={value === activeDatabase}
 			className={classes.database}
 			rightSection={
 				<ActionButton
@@ -82,7 +78,7 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 			}
 		>
 			{value}
-		</Entry>
+		</Menu.Item>
 	);
 }
 

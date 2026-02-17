@@ -324,7 +324,10 @@ export function Settings() {
 					flex={1}
 					miw={0}
 				>
-					<Group mb={26}>
+					<Group
+						mb={26}
+						mx="xs"
+					>
 						<ActionButton
 							hiddenFrom="md"
 							label="Toggle sidebar"

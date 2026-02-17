@@ -355,7 +355,6 @@ export function CreateConnectionPage() {
 							</Button>
 						</Link>
 						<Button
-							w={150}
 							type="submit"
 							variant="gradient"
 							disabled={!isValid}

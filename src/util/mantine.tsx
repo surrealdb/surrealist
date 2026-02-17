@@ -5,6 +5,7 @@ import {
 	InputBase,
 	MantineThemeOverride,
 	MultiSelect,
+	Notification,
 	NumberInput,
 	Paper,
 	PasswordInput,
@@ -101,6 +102,11 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 		TagsInput: TagsInput.extend({
 			defaultProps: {
 				variant: "filled",
+			},
+		}),
+		Notification: Notification.extend({
+			defaultProps: {
+				variant: "surreal",
 			},
 		}),
 	},

@@ -5,6 +5,7 @@ import {
 	Modal,
 	PasswordInput,
 	ScrollArea,
+	SegmentedControl,
 	Stack,
 	Tabs,
 	Textarea,
@@ -39,6 +40,7 @@ export interface UserEditorModalProps {
 }
 
 export function UserEditorModal({ level, existing, opened, onClose }: UserEditorModalProps) {
+	const [activeTab, setActiveTab] = useState("general");
 	const [target, setTarget] = useState<SchemaUser | null>(null);
 	const [username, setUsername] = useInputState("");
 	const [password, setPassword] = useInputState("");
@@ -118,15 +120,21 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			}
 		>
 			<Form onSubmit={saveUser}>
-				<Tabs defaultValue="general">
-					<Tabs.List
-						grow
+				<Tabs
+					value={activeTab}
+					variant="gradient"
+				>
+					<SegmentedControl
+						w="100%"
 						mb="xl"
-					>
-						<Tabs.Tab value="general">General</Tabs.Tab>
-						<Tabs.Tab value="durations">Durations</Tabs.Tab>
-						<Tabs.Tab value="comment">Comment</Tabs.Tab>
-					</Tabs.List>
+						data={[
+							{ label: "General", value: "general" },
+							{ label: "Durations", value: "durations" },
+							{ label: "Comment", value: "comment" },
+						]}
+						value={activeTab}
+						onChange={setActiveTab}
+					/>
 
 					<Tabs.Panel value="general">
 						<Stack gap="lg">

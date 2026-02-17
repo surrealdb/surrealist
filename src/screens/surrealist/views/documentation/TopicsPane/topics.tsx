@@ -36,7 +36,6 @@ export function ArticleTopic({ active, entry, onOpen }: TopicProps<DocsArticleTo
 			isActive={active === entry.id}
 			className={classes.topic}
 			onClick={onClick}
-			radius="xs"
 			h={24}
 		>
 			{entry.title}
@@ -57,7 +56,6 @@ export function GroupTopic({ active, entry, lang, onOpen }: TopicProps<DocsGroup
 				isActive={active === entry.id}
 				className={classes.topic}
 				onClick={onClick}
-				radius="xs"
 				h={24}
 			>
 				{entry.title}
@@ -80,7 +78,6 @@ export function LinkTopic({ entry }: TopicProps<DocsLinkTopic>) {
 			h={24}
 			className={classes.topic}
 			onClick={() => adapter.openUrl(entry.link)}
-			radius="xs"
 		>
 			{entry.title}
 			<Icon

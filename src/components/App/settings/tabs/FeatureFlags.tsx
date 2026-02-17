@@ -1,4 +1,4 @@
-import { Group, ScrollArea, Select, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Group, ScrollArea, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Icon, iconReset, iconSearch } from "@surrealdb/ui";
 import { useMemo } from "react";
@@ -25,75 +25,77 @@ export function FeatureFlagsTab() {
 			scrollbars="y"
 			type="always"
 		>
-			<TextInput
-				leftSection={
-					<Icon
-						path={iconSearch}
-						size="sm"
-					/>
-				}
-				autoFocus
-				placeholder="Search preferences"
-				value={search}
-				onChange={setSearch}
-				size="xs"
-				mb="sm"
-			/>
-			<Stack
-				mt="xl"
-				pb={32}
-			>
-				{filteredFlags.length === 0 && (
-					<Text
-						ta="center"
-						c="obsidian"
-						mt="xl"
-					>
-						No flags matched your search
-					</Text>
-				)}
-				{filteredFlags.map((flag) => {
-					const mapped = Object.fromEntries(
-						schema[flag].options.map((v) => [v.toString(), v]),
-					);
-					const data = schema[flag].options.map((value) => value.toString());
-
-					return (
-						<Group
-							key={flag}
-							gap="xs"
+			<Box m="xs">
+				<TextInput
+					leftSection={
+						<Icon
+							path={iconSearch}
+							size="sm"
+						/>
+					}
+					autoFocus
+					placeholder="Search preferences"
+					value={search}
+					onChange={setSearch}
+					size="xs"
+					mb="sm"
+				/>
+				<Stack
+					mt="xl"
+					pb={32}
+				>
+					{filteredFlags.length === 0 && (
+						<Text
+							ta="center"
+							c="obsidian"
+							mt="xl"
 						>
-							<Text
-								fw={600}
-								c="bright"
+							No flags matched your search
+						</Text>
+					)}
+					{filteredFlags.map((flag) => {
+						const mapped = Object.fromEntries(
+							schema[flag].options.map((v) => [v.toString(), v]),
+						);
+						const data = schema[flag].options.map((value) => value.toString());
+
+						return (
+							<Group
+								key={flag}
+								gap="xs"
 							>
-								{flag}
-							</Text>
-							<Text c="obsidian">({typeof flags[flag]})</Text>
-							<Spacer />
-							{defaults[flag] !== flags[flag] && (
-								<ActionButton
-									variant="subtle"
-									label="Reset to default"
-									onClick={() => setFlags({ [flag]: defaults[flag] })}
+								<Text
+									fw={600}
+									c="bright"
 								>
-									<Icon path={iconReset} />
-								</ActionButton>
-							)}
-							<Select
-								data={data}
-								value={flags[flag].toString()}
-								onChange={(val) =>
-									setFlags({
-										[flag]: val ? mapped[val] : defaults[flag],
-									})
-								}
-								size="xs"
-							/>
-						</Group>
-					);
-				})}
-			</Stack>
+									{flag}
+								</Text>
+								<Text c="obsidian">({typeof flags[flag]})</Text>
+								<Spacer />
+								{defaults[flag] !== flags[flag] && (
+									<ActionButton
+										variant="subtle"
+										label="Reset to default"
+										onClick={() => setFlags({ [flag]: defaults[flag] })}
+									>
+										<Icon path={iconReset} />
+									</ActionButton>
+								)}
+								<Select
+									data={data}
+									value={flags[flag].toString()}
+									onChange={(val) =>
+										setFlags({
+											[flag]: val ? mapped[val] : defaults[flag],
+										})
+									}
+									size="xs"
+								/>
+							</Group>
+						);
+					})}
+				</Stack>
+			</Box>
 		</ScrollArea>
 	);
 }

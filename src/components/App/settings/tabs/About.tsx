@@ -1,4 +1,4 @@
-import { Button, Stack, Text } from "@mantine/core";
+import { Box, Button, Stack, Text } from "@mantine/core";
 import { Icon, iconCheck, iconReset, iconWrench } from "@surrealdb/ui";
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
@@ -47,7 +47,7 @@ export function AboutTab() {
 	});
 
 	return (
-		<>
+		<Box m="xs">
 			<Text c="obsidian">Surrealist &copy; {format(currDate, "yyyy")} SurrealDB Ltd</Text>
 			<Stack
 				gap="xs"
@@ -104,6 +104,6 @@ export function AboutTab() {
 					</Button>
 				)}
 			</Stack>
-		</>
+		</Box>
 	);
 }

@@ -5,7 +5,7 @@ import {
 	iconBug,
 	iconCheck,
 	iconCopy,
-	iconCursor,
+	iconRefresh,
 	iconWarning,
 } from "@surrealdb/ui";
 import type { FallbackProps } from "react-error-boundary";
@@ -50,11 +50,9 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 
 					<Group>
 						<Button
-							leftSection={<Icon path={iconCursor} />}
+							leftSection={<Icon path={iconRefresh} />}
 							onClick={resetErrorBoundary}
-							variant="light"
-							color="obsidian"
-							radius="xs"
+							variant="gradient"
 							size="xs"
 						>
 							Reload Surrealist
@@ -66,7 +64,6 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 							}
 							variant="light"
 							color="obsidian"
-							radius="xs"
 							size="xs"
 						>
 							File an issue
@@ -76,7 +73,6 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 							onClick={copyDebug}
 							variant="light"
 							color="obsidian"
-							radius="xs"
 							size="xs"
 						>
 							{clipboard.copied ? "Copied!" : "Copy version information"}

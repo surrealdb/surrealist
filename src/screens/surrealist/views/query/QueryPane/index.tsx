@@ -5,9 +5,6 @@ import { type EditorView, keymap, scrollPastEnd } from "@codemirror/view";
 import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import {
-	CodeEditor,
-	createSerializedState,
-	EditorStateSnapshot,
 	Icon,
 	iconAutoFix,
 	iconChevronRight,
@@ -16,12 +13,12 @@ import {
 	iconStar,
 	iconText,
 	iconWarning,
-	useEditor,
 } from "@surrealdb/ui";
 import { objectify, trim } from "radash";
 import { useMemo, useRef, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
+import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
@@ -105,32 +102,29 @@ export function QueryPane({
 			return cache;
 		}
 
-		const state = createSerializedState("");
+		const state = EditorState.create().toJSON(SERIALIZE) as StateSnapshot;
 
 		Promise.resolve(readQuery(activeTab)).then((query) => {
-			updateQueryState(activeTab.id, createSerializedState(query));
+			updateQueryState(activeTab.id, EditorState.create({ doc: query }).toJSON(SERIALIZE));
 		});
 
 		return state;
 	}, [queryStateMap, activeTab, updateQueryState]);
 
-	const queryLength = typeof queryState.doc === "string" ? queryState.doc.length : 0;
-
 	// Cache the editor state and schedule query writing
-	const updateState = useStable((state: EditorStateSnapshot) => {
+	const updateState = useStable((query: string, snapshot: StateSnapshot, state: EditorState) => {
 		const id = activeTab.id;
-		const snapshot = EditorState.fromJSON(state, { extensions: extensions }, SERIALIZE);
 		const task = saveTasks.current.get(id);
-		const selection = snapshot.selection.main;
+		const selection = state.selection.main;
 		const range = selection.empty ? undefined : selection;
 
 		onSelectionChange(range);
-		updateQueryState(activeTab.id, state);
+		updateQueryState(activeTab.id, snapshot);
 		clearTimeout(task);
 
 		const newTask = setTimeout(() => {
 			saveTasks.current.delete(id);
-			writeQuery(activeTab, snapshot.doc.toString());
+			writeQuery(activeTab, query);
 		}, 500);
 
 		saveTasks.current.set(id, newTask);
@@ -220,14 +214,6 @@ export function QueryPane({
 		[inspect, surqlVersion],
 	);
 
-	const editorController = useEditor({
-		state: queryState,
-		onChangeState: updateState,
-		extensions,
-		lineNumbers,
-		onMounted: onEditorMounted,
-	});
-
 	useIntent("format-query", handleFormat);
 	useIntent("infer-variables", inferVariables);
 
@@ -241,7 +227,7 @@ export function QueryPane({
 					<ActionButton
 						label="Reveal queries"
 						mr="sm"
-						color="obsidian"
+						color="slate"
 						variant="light"
 						onClick={openQueryList}
 					>
@@ -252,7 +238,7 @@ export function QueryPane({
 			infoSection={
 				activeTab.type === "file" && (
 					<Text
-						c="obsidian"
+						c="slate"
 						truncate
 					>
 						{trim(activeTab.query, "\\\\?")}
@@ -267,23 +253,24 @@ export function QueryPane({
 						gap="sm"
 						style={{ flexShrink: 0 }}
 					>
-						{queryLength > MAX_HISTORY_QUERY_LENGTH && (
-							<HoverCard position="bottom">
-								<HoverCard.Target>
-									<ThemeIcon
-										radius="xs"
-										variant="light"
-										color="orange"
-									>
-										<Icon path={iconWarning} />
-									</ThemeIcon>
-								</HoverCard.Target>
-								<HoverCard.Dropdown maw={225}>
-									This query exceeds the maximum length to be saved in the query
-									history.
-								</HoverCard.Dropdown>
-							</HoverCard>
-						)}
+						{Array.isArray(queryState.doc as any) &&
+							(queryState.doc as any).length > MAX_HISTORY_QUERY_LENGTH && (
+								<HoverCard position="bottom">
+									<HoverCard.Target>
+										<ThemeIcon
+											radius="xs"
+											variant="light"
+											color="orange"
+										>
+											<Icon path={iconWarning} />
+										</ThemeIcon>
+									</HoverCard.Target>
+									<HoverCard.Dropdown maw={225}>
+										This query exceeds the maximum length to be saved in the
+										query history.
+									</HoverCard.Dropdown>
+								</HoverCard>
+							)}
 
 						<ActionButton
 							variant="light"
@@ -321,20 +308,15 @@ export function QueryPane({
 				)
 			}
 		>
-			{/* <CodeEditor
-				state={queryState}
+			<CodeEditor
+				state={queryState as unknown as StateSnapshot | undefined}
 				onChange={updateState}
 				onMount={onEditorMounted}
 				lineNumbers={lineNumbers}
 				serialize={SERIALIZE}
 				extensions={extensions}
-				className={classes.editor}
 				mb={-9}
 				autoCollapseDepth={0}
-			/> */}
-			<CodeEditor
-				controller={editorController}
-				autoFocus
 			/>
 			<Transition
 				transition="slide-up"
@@ -351,10 +333,9 @@ export function QueryPane({
 						pl="md"
 						bg={
 							isLight
-								? "var(--mantine-color-obsidian-1)"
-								: "var(--mantine-color-obsidian-6)"
+								? "var(--mantine-color-slate-1)"
+								: "var(--mantine-color-slate-6)"
 						}
-						withBorder={false}
 						style={{
 							...style,
 							position: "absolute",

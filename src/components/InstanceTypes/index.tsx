@@ -3,6 +3,7 @@ import { Icon, iconAuth } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
 import { TypeVariant, useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { useIsLight } from "~/hooks/theme";
 import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
@@ -103,13 +104,16 @@ function InstanceTypeRow({
 	withPrices,
 	onSelect,
 }: InstanceTypeRowProps) {
+	const isLight = useIsLight();
 	const hourlyPriceThousandth = instanceType?.price_hour ?? 0;
 	const estimatedCost = hourlyPriceThousandth / 1000;
 	const kind = instanceType.category === "free" ? "free" : "paid";
 
 	return (
 		<Paper
+			bg={isLight ? "obsidian.1" : "obsidian.9"}
 			p="lg"
+			withBorder
 			radius="md"
 			style={{
 				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,

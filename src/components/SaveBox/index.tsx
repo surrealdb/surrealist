@@ -52,7 +52,6 @@ export function SaveBox({
 			miw={100}
 			px="xl"
 			color="obsidian"
-			variant="light"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={() => handle.save(true)}
@@ -67,7 +66,6 @@ export function SaveBox({
 			disabled={!handle.isChanged}
 			onClick={handle.revert}
 			color="obsidian"
-			variant="light"
 		>
 			{revertText ?? (minimal ? "Revert" : "Revert changes")}
 		</Button>

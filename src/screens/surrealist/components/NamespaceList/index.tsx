@@ -13,7 +13,6 @@ import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
-import { Entry } from "~/components/Entry";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
@@ -58,12 +57,9 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 	});
 
 	return (
-		<Entry
-			py={5}
-			h="unset"
-			radius="xs"
+		<Menu.Item
+			variant={value === activeNamespace ? "gradient" : undefined}
 			onClick={open}
-			isActive={value === activeNamespace}
 			className={classes.namespace}
 			rightSection={
 				<ActionButton
@@ -81,7 +77,7 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 			}
 		>
 			{value}
-		</Entry>
+		</Menu.Item>
 	);
 }
 
@@ -157,7 +153,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 		>
 			<Menu.Target>
 				<Button
-					px="sm"
+					px="md"
 					variant={namespace ? "subtle" : "light"}
 					color="obsidian"
 					leftSection={<Icon path={iconNamespace} />}

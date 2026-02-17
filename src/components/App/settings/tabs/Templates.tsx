@@ -105,31 +105,33 @@ export function TemplatesTab() {
 
 	return (
 		<>
-			<SettingsSection>
-				<Text mb="xs">
-					Connection templates make it easier to create new connections by pre-filling
-					common connection details. <br />
-					From the connection editor you can choose which template to use.
-				</Text>
+			<Box m="xs">
+				<SettingsSection>
+					<Text mb="xs">
+						Connection templates make it easier to create new connections by pre-filling
+						common connection details. <br />
+						From the connection editor you can choose which template to use.
+					</Text>
 
-				{templates.map((template) => (
-					<Item
-						key={template.id}
-						template={template}
-						onOpen={openEditor}
-						onRemove={handleRemove}
-						onDuplicate={handleDuplicate}
-					/>
-				))}
+					{templates.map((template) => (
+						<Item
+							key={template.id}
+							template={template}
+							onOpen={openEditor}
+							onRemove={handleRemove}
+							onDuplicate={handleDuplicate}
+						/>
+					))}
 
-				<Entry
-					variant="subtle"
-					onClick={openCreator}
-					leftSection={<Icon path={iconPlus} />}
-				>
-					New template
-				</Entry>
-			</SettingsSection>
+					<Entry
+						variant="subtle"
+						onClick={openCreator}
+						leftSection={<Icon path={iconPlus} />}
+					>
+						New template
+					</Entry>
+				</SettingsSection>
+			</Box>
 
 			<Modal
 				opened={showEditor}

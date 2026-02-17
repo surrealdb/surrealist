@@ -61,7 +61,6 @@ export function DocsGlobalIntroduction() {
 							rightSection={<Icon path={iconOpen} />}
 							onClick={() => adapter.openUrl(active.link)}
 							size="xs"
-							radius="sm"
 						>
 							Visit {active.name} docs
 						</Button>

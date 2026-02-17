@@ -1,4 +1,4 @@
-import { NumberInput, ScrollArea, Select, Text, TextInput } from "@mantine/core";
+import { Box, NumberInput, ScrollArea, Select, Text, TextInput } from "@mantine/core";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
 import type { LogLevel, Selectable } from "~/types";
@@ -49,103 +49,105 @@ export function ServingTab() {
 			type="always"
 			pb={32}
 		>
-			<Text
-				mb="xl"
-				maw={500}
-			>
-				You can use Surrealist Desktop to serve SurrealDB on your local machine.
-				<br />
-				This page allows you to customize the settings for the database.
-			</Text>
+			<Box m="xs">
+				<Text
+					mb="xl"
+					maw={500}
+				>
+					You can use Surrealist Desktop to serve SurrealDB on your local machine.
+					<br />
+					This page allows you to customize the settings for the database.
+				</Text>
 
-			<SettingsSection
-				label="Options"
-				maw={400}
-			>
-				<NumberInput
-					label="Serving port"
-					value={port}
-					onChange={updatePort}
-					min={1}
-					max={65_535}
-				/>
+				<SettingsSection
+					label="Options"
+					maw={400}
+				>
+					<NumberInput
+						label="Serving port"
+						value={port}
+						onChange={updatePort}
+						min={1}
+						max={65_535}
+					/>
 
-				<Select
-					w="unset"
-					label="Log level"
-					data={LOG_LEVELS}
-					value={logLevel}
-					onChange={setLogLevel as any}
-				/>
+					<Select
+						w="unset"
+						label="Log level"
+						data={LOG_LEVELS}
+						value={logLevel}
+						onChange={setLogLevel as any}
+					/>
 
-				<NumberInput
-					w="unset"
-					label="Console history size"
-					value={historySize}
-					onChange={updateHistorySize}
-					min={1}
-					max={10_000}
-				/>
+					<NumberInput
+						w="unset"
+						label="Console history size"
+						value={historySize}
+						onChange={updateHistorySize}
+						min={1}
+						max={10_000}
+					/>
 
-				<TextInput
-					w="unset"
-					label="SurrealDB executable path"
-					value={executable}
-					spellCheck={false}
-					onChange={(e) => setExecutable(e.target.value)}
-					placeholder="Leave empty to infer from $PATH"
-				/>
-			</SettingsSection>
-
-			<SettingsSection
-				mt="xl"
-				maw={400}
-				label="Authentication"
-			>
-				<TextInput
-					w="unset"
-					label="Initial root user"
-					placeholder="root"
-					value={username}
-					spellCheck={false}
-					onChange={(e) => setUsername(e.target.value)}
-				/>
-
-				<TextInput
-					w="unset"
-					label="Initial root password"
-					placeholder="root"
-					value={password}
-					spellCheck={false}
-					onChange={(e) => setPassword(e.target.value)}
-				/>
-			</SettingsSection>
-
-			<SettingsSection
-				mt="xl"
-				maw={400}
-				label="Storage"
-			>
-				<Select
-					w="unset"
-					label="Storage mode"
-					data={DRIVERS}
-					value={driver}
-					spellCheck={false}
-					onChange={setDriver as any}
-				/>
-
-				{(driver === "file" || driver === "tikv" || driver === "surrealkv") && (
 					<TextInput
 						w="unset"
-						label={isFileDriver ? "Storage path" : "Storage cluster address"}
-						placeholder={isFileDriver ? "/path/to/storage" : "address:port"}
-						value={storage}
+						label="SurrealDB executable path"
+						value={executable}
 						spellCheck={false}
-						onChange={(e) => setStorage(e.target.value)}
+						onChange={(e) => setExecutable(e.target.value)}
+						placeholder="Leave empty to infer from $PATH"
 					/>
-				)}
-			</SettingsSection>
+				</SettingsSection>
+
+				<SettingsSection
+					mt="xl"
+					maw={400}
+					label="Authentication"
+				>
+					<TextInput
+						w="unset"
+						label="Initial root user"
+						placeholder="root"
+						value={username}
+						spellCheck={false}
+						onChange={(e) => setUsername(e.target.value)}
+					/>
+
+					<TextInput
+						w="unset"
+						label="Initial root password"
+						placeholder="root"
+						value={password}
+						spellCheck={false}
+						onChange={(e) => setPassword(e.target.value)}
+					/>
+				</SettingsSection>
+
+				<SettingsSection
+					mt="xl"
+					maw={400}
+					label="Storage"
+				>
+					<Select
+						w="unset"
+						label="Storage mode"
+						data={DRIVERS}
+						value={driver}
+						spellCheck={false}
+						onChange={setDriver as any}
+					/>
+
+					{(driver === "file" || driver === "tikv" || driver === "surrealkv") && (
+						<TextInput
+							w="unset"
+							label={isFileDriver ? "Storage path" : "Storage cluster address"}
+							placeholder={isFileDriver ? "/path/to/storage" : "address:port"}
+							value={storage}
+							spellCheck={false}
+							onChange={(e) => setStorage(e.target.value)}
+						/>
+					)}
+				</SettingsSection>
+			</Box>
 		</ScrollArea>
 	);
 }

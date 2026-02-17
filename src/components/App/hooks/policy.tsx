@@ -1,4 +1,4 @@
-import { Box, Button } from "@mantine/core";
+import { Box, Button, Text } from "@mantine/core";
 import { hideNotification, showNotification } from "@mantine/notifications";
 import { useEffect } from "react";
 import { Link } from "~/components/Link";
@@ -16,15 +16,33 @@ export function usePolicyAlert() {
 				autoClose: false,
 				message: (
 					<Box>
-						<div>
+						<Text
+							span
+							fz="xs"
+						>
 							By clicking 'I agree' or continuing to use the site, you agree to our
 							use of cookies to improve your browsing experience, analyse site
 							performance, and for advertising. To learn more, including how to
 							disable cookies, view our{" "}
-							<Link href="https://surrealdb.com/legal/privacy">Privacy Policy</Link>{" "}
+							<Link
+								span
+								fz="xs"
+								c="violet"
+								href="https://surrealdb.com/legal/privacy"
+							>
+								Privacy Policy
+							</Link>{" "}
 							and{" "}
-							<Link href="https://surrealdb.com/legal/cookies">Cookies Policy</Link>.
-						</div>
+							<Link
+								span
+								fz="xs"
+								c="violet"
+								href="https://surrealdb.com/legal/cookies"
+							>
+								Cookies Policy
+							</Link>
+							.
+						</Text>
 						<Button
 							variant="gradient"
 							size="xs"

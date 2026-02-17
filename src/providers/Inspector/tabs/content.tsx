@@ -43,6 +43,7 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 				flex="1 0 0"
 				mih={0}
 				p="xs"
+				withBorder
 			>
 				<CodeEditor
 					h="100%"
