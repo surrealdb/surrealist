@@ -264,7 +264,10 @@ export function PermissionInput({
 			rightSectionWidth={70}
 			extensions={[surrealql("permission")]}
 			rightSection={
-				<Group gap="xs">
+				<Group
+					gap="xs"
+					wrap="nowrap"
+				>
 					<ActionButton
 						color="green.4"
 						label="Grant full access"

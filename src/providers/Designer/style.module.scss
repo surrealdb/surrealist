@@ -7,7 +7,7 @@
 	border: none;
 
 	@include light {
-		background-color: var(--mantine-color-obsidian-0);
+		background-color: var(--mantine-color-obsidian-1);
 	}
 }
 
@@ -22,4 +22,12 @@
 
 .kind {
 	color: var(--surrealist-kind-color);
+}
+
+.drawer-root {
+
+	:global(.mantine-Input-input),
+	:global(.mantine-Checkbox-input) {
+		background-color: var(--surreal-paper-background-filled);
+	}
 }
