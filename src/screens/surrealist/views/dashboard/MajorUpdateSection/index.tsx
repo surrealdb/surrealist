@@ -1,5 +1,5 @@
 import { Anchor, Box, Button, Group, Image, Paper, Text } from "@mantine/core";
-import { Icon, iconArrowUpRight, pictoFullTextSearch, pictoRocket } from "@surrealdb/ui";
+import { Icon, iconArrowUpRight, pictoFullTextSearch } from "@surrealdb/ui";
 import { satisfies } from "compare-versions";
 import { Link } from "wouter";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
