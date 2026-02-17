@@ -488,7 +488,8 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 
 	const { id, variables, name } = tabQuery;
 
-	const query = getQueryOr(id, options?.override).trim();
+	const queryValue = getQueryOr(id, options?.override);
+	const query = (typeof queryValue === "string" ? queryValue : "").trim();
 
 	if (query.length === 0) {
 		return;
