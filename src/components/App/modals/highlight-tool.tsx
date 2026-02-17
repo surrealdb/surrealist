@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { CodeEditor, useEditor } from "@surrealdb/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { CodeEditor } from "~/components/CodeEditor";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { RadioSelect } from "~/components/RadioSelect";
 import { DRIVERS } from "~/constants";
@@ -123,20 +123,25 @@ function HighlightTool({ value, onChange, lang }: HighlightToolProps) {
 
 	const extensions = useMemo(() => (lang === "cli" ? [surrealql()] : []), [lang]);
 
-	const editorController = useEditor({
-		extensions,
-		document: value,
-		onChangeDocument: (document) => {
-			onChange(document.toString());
-		},
-	});
+	// const editorController = useEditor({
+	// 	extensions,
+	// 	document: value,
+	// 	onChangeDocument: (document) => {
+	// 		onChange(document.toString());
+	// 	},
+	// });
 
 	return (
 		<Stack>
 			<Box>
-				<CodeEditor
+				{/* <CodeEditor
 					controller={editorController}
 					h={200}
+				/> */}
+				<CodeEditor
+					value={value}
+					onChange={onChange}
+					extensions={extensions}
 				/>
 			</Box>
 			<Divider />
