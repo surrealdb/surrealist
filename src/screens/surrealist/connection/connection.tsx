@@ -39,7 +39,8 @@ import {
 	SURREAL_START_BASICS,
 	SURREAL_START_GRAPH_V2,
 	SURREAL_START_GRAPH_V3,
-	SURREAL_START_VECTOR,
+	SURREAL_START_VECTOR_V2,
+	SURREAL_START_VECTOR_V3,
 } from "~/util/dataset";
 import { createBaseQuery } from "~/util/defaults";
 import { surqlDurationToSeconds } from "~/util/duration";
@@ -238,11 +239,11 @@ export async function openConnection(options?: ConnectOptions) {
 
 				if (canUse30Queries) {
 					queries.push(SURREAL_START_GRAPH_V3);
+					queries.push(SURREAL_START_VECTOR_V3);
 				} else {
 					queries.push(SURREAL_START_GRAPH_V2);
+					queries.push(SURREAL_START_VECTOR_V2);
 				}
-
-				queries.push(SURREAL_START_VECTOR);
 
 				const configs = queries.map((query) => ({
 					...createBaseQuery(settings, "config"),
@@ -258,7 +259,8 @@ export async function openConnection(options?: ConnectOptions) {
 							SURREAL_START_BASICS.name,
 							SURREAL_START_GRAPH_V2.name,
 							SURREAL_START_GRAPH_V3.name,
-							SURREAL_START_VECTOR.name,
+							SURREAL_START_VECTOR_V2.name,
+							SURREAL_START_VECTOR_V3.name,
 						].includes(it.name ?? ""),
 				);
 
