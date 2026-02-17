@@ -557,10 +557,9 @@ export function SurrealistToolbar() {
 				<Button
 					h={34}
 					size="xs"
-					color="obsidian"
 					variant={
 						(flags.changelog === "auto" ? hasReadChangelog : flags.changelog === "read")
-							? "filled"
+							? "light"
 							: "gradient"
 					}
 					style={{ border: "none" }}
