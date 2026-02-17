@@ -1,4 +1,20 @@
 import { Badge, type BoxProps, Divider, type ElementProps, ScrollArea, Stack } from "@mantine/core";
+import {
+	Icon,
+	iconArrowUpRight,
+	iconChevronLeft,
+	iconChevronRight,
+	iconClose,
+	iconCopy,
+	iconFile,
+	iconHistory,
+	iconList,
+	iconPlus,
+	iconQuery,
+	iconSearch,
+	iconStar,
+	iconText,
+} from "@surrealdb/ui";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { useState } from "react";
@@ -7,7 +23,6 @@ import { DesktopAdapter } from "~/adapter/desktop";
 import { ActionButton } from "~/components/ActionButton";
 import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { LiveIndicator } from "~/components/LiveIndicator";
 import { ContentPane } from "~/components/Pane";
 import { Sortable } from "~/components/Sortable";
@@ -22,21 +37,6 @@ import { useInterfaceStore } from "~/stores/interface";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab, QueryType } from "~/types";
 import { uniqueName } from "~/util/helpers";
-import {
-	iconArrowUpRight,
-	iconChevronLeft,
-	iconChevronRight,
-	iconClose,
-	iconCopy,
-	iconFile,
-	iconHistory,
-	iconList,
-	iconPlus,
-	iconQuery,
-	iconSearch,
-	iconStar,
-	iconText,
-} from "~/util/icons";
 import classes from "./style.module.scss";
 
 const TYPE_ICONS: Record<QueryType, string> = {
@@ -245,7 +245,6 @@ export function TabsPane(props: TabsPaneProps) {
 	const [connection] = useConnectionAndView();
 	const [activeQuery, queries] = useConnection((c) => [c?.activeQuery ?? "", c?.queries ?? []]);
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
-	const isLight = useIsLight();
 
 	const newTab = useStable(() => {
 		if (!connection) return;
@@ -308,7 +307,7 @@ export function TabsPane(props: TabsPaneProps) {
 			style={{ flexShrink: 0 }}
 			infoSection={
 				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
+					bg="var(--mantine-color-body)"
 					radius="sm"
 					c="inherit"
 				>

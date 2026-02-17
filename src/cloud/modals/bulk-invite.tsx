@@ -1,19 +1,18 @@
 import { ActionIcon, Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon, iconClose, iconOrganization, iconPlus, iconUpload } from "@surrealdb/ui";
 import Papa from "papaparse";
 import { capitalize } from "radash";
 import { useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import { OpenedTextFile } from "~/adapter/base";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { EMAIL_REGEX, showErrorNotification } from "~/util/helpers";
-import { iconClose, iconOrganization, iconPlus, iconUpload } from "~/util/icons";
 import { useInvitationMutation } from "../mutations/invites";
 import { useCloudRolesQuery } from "../queries/roles";
 
@@ -167,7 +166,7 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 				<Group mt="md">
 					<Group
 						gap="xs"
-						c="surreal"
+						c="violet"
 						style={{
 							cursor: "pointer",
 						}}
@@ -179,7 +178,7 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 					<Spacer />
 					<Group
 						gap="xs"
-						c="surreal"
+						c="violet"
 						style={{
 							cursor: "pointer",
 						}}
@@ -193,7 +192,6 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 				<Group mt="xl">
 					<Button
 						onClick={handleClose}
-						color="slate"
 						variant="light"
 						flex={1}
 					>

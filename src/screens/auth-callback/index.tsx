@@ -1,8 +1,9 @@
 import { Button, List, MantineProvider, Paper, Stack, Text } from "@mantine/core";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useThemePreference } from "~/hooks/theme";
 import { isDevelopment } from "~/util/environment";
-import { MANTINE_THEME } from "~/util/mantine";
+import { SURREALIST_THEME } from "~/util/mantine";
 import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
 import classes from "./style.module.scss";
 
@@ -13,6 +14,7 @@ const REDIRECT_ENDPOINT = isDevelopment ? "http://localhost:1420" : `https://${l
 // http://localhost:1420/cloud/callback/index.html?error=access_denied&error_description=Please%20verify%20your%20email%20before%20continuing.&state=browser2NP1~m7q8.NGa_Z7RIHDTY6sZN7hUaUPqZhlGsvLKfQ4sJkniN
 
 export function AuthCallbackScreen() {
+	const colorScheme = useThemePreference();
 	const [result, setResult] = useState<Result>("redirect");
 	const [error, setError] = useState<string | undefined>(undefined);
 	const codeRef = useRef("");
@@ -93,8 +95,8 @@ export function AuthCallbackScreen() {
 	return (
 		<MantineProvider
 			withCssVariables
-			theme={MANTINE_THEME}
-			forceColorScheme="dark"
+			theme={SURREALIST_THEME}
+			forceColorScheme={colorScheme}
 		>
 			<Stack
 				className={classes.root}
@@ -156,7 +158,7 @@ export function AuthCallbackScreen() {
 						>
 							If the app does not open automatically, please click here to open it
 						</Text>
-						<Text c="slate">You can close this page once the app has opened</Text>
+						<Text c="obsidian">You can close this page once the app has opened</Text>
 					</>
 				) : null}
 			</Stack>

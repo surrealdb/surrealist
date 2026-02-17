@@ -11,8 +11,8 @@ import {
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
+import { Icon, iconWarning } from "@surrealdb/ui";
 import { useLayoutEffect, useState } from "react";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SENSITIVE_ACCESS_FIELDS } from "~/constants";
@@ -22,7 +22,6 @@ import { openConnectionEditModal } from "~/modals/edit-connection";
 import { openConnection } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { getConnection, getConnectionById } from "~/util/connection";
-import { iconWarning } from "~/util/icons";
 
 export function AccessSignupModal() {
 	const { closeAccessSignup } = useInterfaceStore.getState();
@@ -143,7 +142,7 @@ export function AccessSignupModal() {
 
 				<Group>
 					<Button
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={closeAccessSignup}
 					>
@@ -151,7 +150,7 @@ export function AccessSignupModal() {
 					</Button>
 					<Spacer />
 					<Button
-						color="surreal"
+						color="violet"
 						variant="light"
 						onClick={openEditor}
 					>

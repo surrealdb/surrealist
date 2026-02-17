@@ -1,14 +1,6 @@
 import { Button, Paper, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
-import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { Icon } from "~/components/Icon";
-import { PropertyValue } from "~/components/PropertyValue";
-import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance, CloudOrganization } from "~/types";
-import { tagEvent } from "~/util/analytics";
-import { getTypeCategoryName } from "~/util/cloud";
-import { formatMemory, plural } from "~/util/helpers";
 import {
+	Icon,
 	iconArrowDownFat,
 	iconDatabase,
 	iconHistory,
@@ -18,7 +10,15 @@ import {
 	iconQuery,
 	iconRelation,
 	iconTag,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
+import { PropertyValue } from "~/components/PropertyValue";
+import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
+import { CloudInstance, CloudOrganization } from "~/types";
+import { tagEvent } from "~/util/analytics";
+import { getTypeCategoryName } from "~/util/cloud";
+import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
 	instance: CloudInstance | undefined;
@@ -77,14 +77,14 @@ export function ConfigurationBlock({
 		>
 			<Paper
 				p="xl"
-				variant="gradient"
+				display="flex"
+				style={{
+					flexDirection: "column",
+					justifyContent: "space-between",
+				}}
 			>
-				<SimpleGrid
-					cols={{ base: 1, xl: 2 }}
-					verticalSpacing="xs"
-					spacing="md"
-				>
-					<Stack gap="xs">
+				<SimpleGrid cols={{ base: 1, xl: 2 }}>
+					<Stack>
 						<PropertyValue
 							title="Type"
 							icon={iconPackageClosed}
@@ -108,7 +108,7 @@ export function ConfigurationBlock({
 							value={<Text c={isFree ? "orange" : "green"}>{backupText}</Text>}
 						/>
 					</Stack>
-					<Stack gap="xs">
+					<Stack>
 						<PropertyValue
 							title="Memory"
 							icon={iconMemory}
@@ -137,11 +137,10 @@ export function ConfigurationBlock({
 				<SimpleGrid
 					mt="xl"
 					cols={2}
-					spacing="md"
 				>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						onClick={onConfigure}
 						disabled={!instance || isIdle || !canModify}
 						variant="light"

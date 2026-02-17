@@ -1,5 +1,5 @@
-import glowUrl2 from "~/assets/images/glow.webp";
-import glowUrl from "~/assets/images/gradient-glow.webp";
+import glowUrl2 from "~/assets/images/glow.png";
+import glowUrl from "~/assets/images/glow.png";
 
 function preloadImage(url: string) {
 	const img = new Image();

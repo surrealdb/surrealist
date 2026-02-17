@@ -8,12 +8,11 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { Icon, iconClose, iconDatabase, iconPlus } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
@@ -23,7 +22,6 @@ import { openCreateDatabaseModal } from "~/modals/create-database";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
-import { iconClose, iconDatabase, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/language";
 import { activateDatabase, executeQuery } from "../../connection/connection";
 import classes from "./style.module.scss";
@@ -60,12 +58,9 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 	});
 
 	return (
-		<Entry
-			py={5}
-			h="unset"
-			radius="xs"
+		<Menu.Item
+			variant={value === activeDatabase ? "gradient" : undefined}
 			onClick={open}
-			isActive={value === activeDatabase}
 			className={classes.database}
 			rightSection={
 				<ActionButton
@@ -83,7 +78,7 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 			}
 		>
 			{value}
-		</Entry>
+		</Menu.Item>
 	);
 }
 
@@ -135,7 +130,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	return willCreate ? (
 		<Button
 			px="sm"
-			color="slate"
+			color="obsidian"
 			variant="light"
 			leftSection={<Icon path={iconDatabase} />}
 			onClick={openCreateDatabaseModal}
@@ -163,7 +158,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 				<Button
 					px="sm"
 					variant={database ? "subtle" : "light"}
-					color="slate"
+					color="obsidian"
 					leftSection={<Icon path={iconDatabase} />}
 					{...buttonProps}
 				>
@@ -190,7 +185,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 					{isPending && <Loader size={14} />}
 					<Spacer />
 					<ActionButton
-						color="slate"
+						color="obsidian"
 						variant="light"
 						disabled={!connected || (level !== "root" && level !== "namespace")}
 						label="Create database"
@@ -203,7 +198,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 				<ScrollArea.Autosize mah={350}>
 					{databases.length === 0 ? (
 						<Text
-							c="slate"
+							c="obsidian"
 							py="md"
 							ta="center"
 						>

@@ -1,15 +1,13 @@
 import { Badge, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconCopy, iconDelete, iconPlus, iconSearch, iconVariable } from "@surrealdb/ui";
 import { useContextMenu } from "mantine-contextmenu";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useIsConnected } from "~/hooks/connection";
-import { useIsLight } from "~/hooks/theme";
 import type { SchemaParameter } from "~/types";
-import { iconCopy, iconDelete, iconPlus, iconSearch, iconVariable } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface ParametersPanelProps {
@@ -29,7 +27,6 @@ export function ParametersPanel({
 	onDuplicate,
 	onCreate,
 }: ParametersPanelProps) {
-	const isLight = useIsLight();
 	const isConnected = useIsConnected();
 	const { showContextMenu } = useContextMenu();
 
@@ -48,7 +45,7 @@ export function ParametersPanel({
 			style={{ flexShrink: 0 }}
 			infoSection={
 				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
+					bg="var(--mantine-color-body)"
 					radius="sm"
 					c="inherit"
 				>
@@ -91,7 +88,7 @@ export function ParametersPanel({
 						/>
 					) : (
 						<Text
-							c="slate"
+							c="obsidian"
 							ta="center"
 							mt="lg"
 						>
@@ -101,7 +98,7 @@ export function ParametersPanel({
 
 					{search && filtered.length === 0 && (
 						<Text
-							c="slate"
+							c="obsidian"
 							ta="center"
 							mt="lg"
 						>

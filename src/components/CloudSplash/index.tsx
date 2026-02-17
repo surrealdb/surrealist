@@ -1,13 +1,11 @@
 import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
+import { Icon, iconChevronRight, iconOpen, pictoSDBCloud } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
-import cloudImg from "~/assets/images/icons/cloud.webp";
 import logoLightImg from "~/assets/images/light/cloud-logo.svg";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import { iconChevronRight, iconOpen } from "~/util/icons";
-import { Icon } from "../Icon";
 
 export function CloudSplash() {
 	const authState = useCloudStore((s) => s.authState);
@@ -24,7 +22,7 @@ export function CloudSplash() {
 		>
 			<Stack align="center">
 				<Image
-					src={cloudImg}
+					src={pictoSDBCloud}
 					alt=""
 					maw={125}
 				/>
@@ -59,7 +57,7 @@ export function CloudSplash() {
 					</Button>
 					<Button
 						flex={1}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						rightSection={<Icon path={iconOpen} />}
 						onClick={() => adapter.openUrl("https://surrealdb.com/cloud")}

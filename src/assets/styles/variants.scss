@@ -1,10 +1,10 @@
 .mantine-Paper-root[data-variant=gradient],
 .mantine-Paper-root[data-variant=interactive],
 .mantine-Paper-root[data-variant=selected] {
-	background: linear-gradient(var(--mantine-color-slate-7), var(--mantine-color-body));
+	background: linear-gradient(var(--mantine-color-obsidian-7), var(--mantine-color-obsidian-9));
 
 	@include light {
-		background: linear-gradient(var(--mantine-color-body), var(--mantine-color-slate-0));
+		background: linear-gradient(var(--mantine-color-body), var(--mantine-color-obsidian-0));
 	}
 
 }
@@ -21,10 +21,10 @@
 	&:hover {
 		transform: scale(1.01);
 		box-shadow: var(--mantine-shadow-sm) !important;
-		border-color: rgba(255, 255, 255, 0.15) !important;
+		border-color: rgba(119, 18, 18, 0.15) !important;
 
 		@include light {
-			border-color: var(--mantine-color-slate-2) !important;
+			border-color: var(--mantine-color-obsidian-2) !important;
 		}
 	}
 }
@@ -39,6 +39,6 @@
 	cursor: pointer;
 
 	@include light {
-		border-color: var(--mantine-color-slate-2) !important;
+		border-color: var(--mantine-color-obsidian-2) !important;
 	}
 }

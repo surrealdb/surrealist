@@ -1,8 +1,7 @@
 import { Group, Stack, Text, ThemeIcon } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Icon, iconTag } from "@surrealdb/ui";
 import { IntercomTicket } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
-import { iconTag } from "~/util/icons";
 
 export interface TicketCardProps {
 	ticket: IntercomTicket;
@@ -34,7 +33,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
 						{ticket.parts[ticket.parts.length - 1]?.author?.name || "Unknown"}
 					</Text>
 					<Text
-						c="slate.4"
+						c="obsidian.4"
 						fz={4}
 					>
 						&#x2B24;

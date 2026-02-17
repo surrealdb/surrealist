@@ -1,14 +1,14 @@
 import { Text } from "@mantine/core";
-import { capitalize } from "radash";
-import { Fragment } from "react/jsx-runtime";
-import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import {
+	Icon,
 	iconCommand,
 	iconKeyboardControl,
 	iconKeyboardOption,
 	iconKeyboardShift,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { capitalize } from "radash";
+import { Fragment } from "react/jsx-runtime";
+import { adapter } from "~/adapter";
 
 const MODIFIER_KEYS = ["shift", "alt", "meta", "mod", "ctrl"];
 
@@ -79,36 +79,36 @@ export function displayKey(key: string) {
 		case "command": {
 			return (
 				<Icon
+					size="sm"
 					key={key}
 					path={iconCommand}
-					size={0.7}
 				/>
 			);
 		}
 		case "alt": {
 			return (
 				<Icon
+					size="sm"
 					key={key}
 					path={iconKeyboardOption}
-					size={0.7}
 				/>
 			);
 		}
 		case "ctrl": {
 			return (
 				<Icon
+					size="sm"
 					key={key}
 					path={iconKeyboardControl}
-					size={0.7}
 				/>
 			);
 		}
 		case "shift": {
 			return (
 				<Icon
+					size="sm"
 					key={key}
 					path={iconKeyboardShift}
-					size={0.7}
 				/>
 			);
 		}

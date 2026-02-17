@@ -1,8 +1,8 @@
 import { Accordion, Checkbox, Flex, Text, TextInput } from "@mantine/core";
+import { iconJSON } from "@surrealdb/ui";
 import { CodeInput, FieldKindInput, PermissionInput } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
 import type { SchemaField } from "~/types";
-import { iconJSON } from "~/util/icons";
 import { type ElementProps, SectionTitle } from "../helpers";
 import { Lister } from "../lister";
 import classes from "../style.module.scss";
@@ -30,7 +30,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 			{field.kind && (
 				<>
 					<Text
-						c="slate"
+						c="obsidian"
 						mr="xs"
 					>
 						:

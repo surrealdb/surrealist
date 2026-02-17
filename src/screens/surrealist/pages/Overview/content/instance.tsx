@@ -1,7 +1,6 @@
 import {
-	ActionIcon,
+	Anchor,
 	Badge,
-	Box,
 	BoxProps,
 	Group,
 	Paper,
@@ -10,21 +9,18 @@ import {
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
+import { Icon, iconChevronRight, iconCloud, Spacer } from "@surrealdb/ui";
 import { PropsWithChildren, useMemo, useRef } from "react";
 import { Faint } from "~/components/Faint";
-import { Icon } from "~/components/Icon";
-import { InstanceActions } from "~/components/InstanceActions";
 import { useConnectionList } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { CloudInstance, CloudOrganization } from "~/types";
-import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconCloud, iconDotsVertical } from "~/util/icons";
+import { CloudInstance, CloudOrganization, CloudRegion } from "~/types";
 import { USER_ICONS } from "~/util/user-icons";
 import { StateBadge } from "../badge";
-import classes from "../style.module.scss";
 
 export interface StartInstanceProps extends BoxProps {
 	instance: CloudInstance;
+	regions: CloudRegion[];
 	organisation: CloudOrganization;
 	onConnect: (instance: CloudInstance) => void;
 }
@@ -32,6 +28,7 @@ export interface StartInstanceProps extends BoxProps {
 export function StartInstance({
 	instance,
 	organisation,
+	regions,
 	onConnect,
 	...other
 }: PropsWithChildren<StartInstanceProps>) {
@@ -53,7 +50,7 @@ export function StartInstance({
 	const labels = connection?.labels?.map((label, i) => (
 		<Badge
 			key={i}
-			color="slate"
+			color="obsidian"
 			variant="light"
 		>
 			{label}
@@ -65,71 +62,58 @@ export function StartInstance({
 			onClick={handleConnect}
 			{...other}
 		>
-			<Paper
-				p="lg"
-				variant="interactive"
-				className={classes.startInstance}
-				ref={containerRef}
-				withBorder
+			<Anchor
+				variant="glow"
+				c="var(--mantine-color-text)"
 			>
-				<Group
-					wrap="nowrap"
-					align="strech"
-					flex={1}
+				<Paper
+					p="lg"
+					ref={containerRef}
 				>
-					<Stack flex={1}>
-						<Group
-							wrap="nowrap"
-							mt={-3}
-						>
-							<ThemeIcon
-								radius="xs"
-								size={36}
-								color="slate"
-								variant="light"
-							>
-								<Icon path={connection ? USER_ICONS[connection.icon] : iconCloud} />
-							</ThemeIcon>
-							<Box flex={1}>
-								<Group>
-									<Text
-										c="bright"
-										fw={600}
-										fz="xl"
-									>
-										{instance.name}
-									</Text>
-									<StateBadge
-										size={10}
-										state={instance.state}
-									/>
-								</Group>
-								<Text>SurrealDB {instance.version}</Text>
-							</Box>
-						</Group>
-					</Stack>
-					{/* biome-ignore lint/a11y/noStaticElementInteractions: Stop event propagation */}
-					<div
-						onClick={ON_STOP_PROPAGATION}
-						onKeyDown={ON_STOP_PROPAGATION}
+					<Group
+						gap="lg"
+						wrap="nowrap"
+						mt={-3}
 					>
-						<InstanceActions
-							instance={instance}
-							organisation={organisation}
+						<ThemeIcon
+							color="obsidian"
+							variant="light"
+							size="xl"
 						>
-							<ActionIcon
-								color="slate"
-								variant="subtle"
-								component="div"
-							>
-								<Icon path={iconDotsVertical} />
-							</ActionIcon>
-						</InstanceActions>
-					</div>
-				</Group>
-				<Group gap="xs">{labels}</Group>
-				<Faint containerRef={containerRef} />
-			</Paper>
+							<Icon
+								size="md"
+								path={connection ? USER_ICONS[connection.icon] : iconCloud}
+							/>
+						</ThemeIcon>
+						<Stack gap="xs">
+							<Group>
+								<Text
+									c="bright"
+									fw={600}
+									fz="xl"
+								>
+									{instance.name}
+								</Text>
+								<StateBadge
+									size={10}
+									state={instance.state}
+								/>
+							</Group>
+							<Text>SurrealDB {instance.version}</Text>
+							<Text size="sm">
+								{regions.find((r) => r.slug === instance.region)?.description}
+							</Text>
+						</Stack>
+						<Spacer />
+						<Icon
+							c="dimmed"
+							path={iconChevronRight}
+						/>
+					</Group>
+					<Group gap="xs">{labels}</Group>
+					<Faint containerRef={containerRef} />
+				</Paper>
+			</Anchor>
 		</UnstyledButton>
 	);
 }

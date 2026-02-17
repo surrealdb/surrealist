@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
+import { Icon, iconClose, iconPlus, iconWarning } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { Updater } from "use-immer";
@@ -19,9 +20,7 @@ import { AUTH_MODES, SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { AuthMode, Connection } from "~/types";
 import { fastParseJwt } from "~/util/helpers";
-import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
 
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
@@ -58,7 +57,6 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 			<SegmentedControl
 				mb="sm"
 				value={value.authentication.mode}
-				variant="gradient"
 				data={AUTH_MODES}
 				onChange={(value) =>
 					onChange((draft) => {
@@ -142,7 +140,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 					/>
 					<Button
 						mt={19}
-						color="surreal"
+						color="violet"
 						variant="light"
 						onClick={editingAccessHandle.open}
 					>
@@ -180,22 +178,20 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 						) : (
 							tokenExpireSoon &&
 							(tokenExpire > Date.now() ? (
-								<Text c="slate">
+								<Text c="obsidian">
 									<Icon
 										path={iconWarning}
 										c="yellow"
 										size="sm"
-										left
 									/>
 									This token expires in {dayjs(tokenExpire).fromNow()}
 								</Text>
 							) : (
-								<Text c="slate">
+								<Text c="obsidian">
 									<Icon
 										path={iconWarning}
 										c="red"
 										size="sm"
-										left
 									/>
 									This token has expired
 								</Text>

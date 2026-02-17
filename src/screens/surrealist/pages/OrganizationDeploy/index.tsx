@@ -181,7 +181,7 @@ function PageContent({ organisation, instances }: PageContentProps) {
 										<Text
 											span
 											inherit
-											opacity={0.3}
+											c="obsidian"
 											mr="sm"
 										>
 											{step + 1}.

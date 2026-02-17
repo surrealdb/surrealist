@@ -11,16 +11,22 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import {
+	Icon,
+	iconArrowLeft,
+	iconCheck,
+	iconChevronDown,
+	iconChevronUp,
+	iconCopy,
+	Markdown,
+} from "@surrealdb/ui";
 import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
-import { MarkdownContent } from "~/components/MarkdownContent";
 import { RelativeTime } from "~/components/RelativeTime";
 import { Spacer } from "~/components/Spacer";
 import { useIsLight } from "~/hooks/theme";
 import { SidekickChatMessage } from "~/types";
-import { iconArrowLeft, iconCheck, iconChevronDown, iconChevronUp, iconCopy } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface SidekickMessageProps {
@@ -41,9 +47,9 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 				<>
 					<Paper
 						p="md"
-						bg={isLight ? "slate.1" : "slate.6"}
+						bg={isLight ? "obsidian.1" : "obsidian.6"}
 					>
-						<MarkdownContent fz="lg">{message.content}</MarkdownContent>
+						<Markdown content={message.content} />
 					</Paper>
 					<Group
 						mt={2}
@@ -51,7 +57,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 					>
 						<Spacer />
 						<Text
-							c="slate"
+							c="obsidian"
 							fz="sm"
 						>
 							<RelativeTime value={message.sent_at.valueOf()} />
@@ -59,7 +65,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 						<CopyButton value={message.content}>
 							{({ copied, copy }) => (
 								<ActionButton
-									color="slate"
+									color="obsidian"
 									variant="transparent"
 									onClick={copy}
 									label={copied ? "Copied" : "Copy"}
@@ -76,11 +82,11 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 			) : (
 				<Box mb="xl">
 					{message.content ? (
-						<MarkdownContent fz="lg">{message.content}</MarkdownContent>
+						<Markdown content={message.content} />
 					) : (
 						<Group
 							gap="xs"
-							c="slate"
+							c="obsidian"
 						>
 							<Loader
 								size={14}
@@ -104,7 +110,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 								{({ copied, copy }) => (
 									<ActionButton
 										size="sm"
-										color="slate"
+										color="obsidian"
 										variant="transparent"
 										onClick={copy}
 										label={copied ? "Copied" : "Copy"}
@@ -117,7 +123,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 								)}
 							</CopyButton>
 							<Text
-								c="slate"
+								c="obsidian"
 								fz="sm"
 							>
 								<RelativeTime value={message.sent_at.valueOf()} />
@@ -131,13 +137,13 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 								onClick={() => setSourcesOpen(!sourcesOpen)}
 							>
 								<Text
-									c="surreal"
+									c="violet"
 									fw={500}
 								>
 									{message.sources?.header ?? "Sources"}
 								</Text>
 								<ActionIcon
-									c="surreal"
+									c="violet"
 									variant="transparent"
 									size="sm"
 								>
@@ -146,7 +152,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 							</Group>
 							<Collapse in={sourcesOpen}>
 								<Paper
-									bg={isLight ? "slate.0" : "slate.7"}
+									bg={isLight ? "obsidian.0" : "obsidian.7"}
 									p="md"
 								>
 									<List>

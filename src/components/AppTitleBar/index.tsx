@@ -1,8 +1,14 @@
 import { Box, Group, Image, Menu, Text } from "@mantine/core";
+import {
+	Icon,
+	iconClose,
+	iconMaximize,
+	iconMinimize,
+	iconRestore,
+	pictoSurrealist,
+} from "@surrealdb/ui";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
-import icon from "~/assets/images/icon.webp";
-import { Icon } from "~/components/Icon";
 import {
 	Command,
 	useCommandCategories,
@@ -11,7 +17,6 @@ import {
 } from "~/providers/Commands";
 import { displayBinding } from "~/providers/Commands/keybindings";
 import { useInterfaceStore } from "~/stores/interface";
-import { iconExit, iconMaximize, iconMinimize, iconRestore } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
 import { getMenuItems } from "../App/hooks/menu";
 import { Spacer } from "../Spacer";
@@ -42,7 +47,7 @@ export function AppTitleBar() {
 		<Box className={classes.titleBar}>
 			<Group gap={0}>
 				<Image
-					src={icon}
+					src={pictoSurrealist}
 					w={23}
 					m="md"
 					data-tauri-drag-region
@@ -89,7 +94,7 @@ export function AppTitleBar() {
 													{keybinds.has(item.id) && (
 														<>
 															<Spacer />
-															<Text c="slate.4">
+															<Text c="obsidian.4">
 																<Group
 																	gap={2}
 																	wrap="nowrap"
@@ -182,7 +187,7 @@ export function AppTitleBar() {
 						await getCurrentWindow().close();
 					}}
 				>
-					<Icon path={iconExit} />
+					<Icon path={iconClose} />
 				</ActionButton>
 			</Group>
 		</Box>

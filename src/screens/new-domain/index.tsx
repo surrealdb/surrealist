@@ -1,10 +1,9 @@
 import { Alert, Box, Button, Divider, Image, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Icon, iconArrowUpRight, iconDownload, pictoSurrealist } from "@surrealdb/ui";
 import { useState } from "react";
 import { adapter } from "~/adapter";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import iconUrl from "~/assets/images/icon.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Scaffold } from "~/components/Scaffold";
@@ -13,7 +12,6 @@ import { JSON_FILTER } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight, useThemeImage } from "~/hooks/theme";
 import { backupConfig } from "~/util/config";
-import { iconArrowUpRight, iconDownload } from "~/util/icons";
 
 export function NewDomainScreen() {
 	const isLight = useIsLight();
@@ -43,7 +41,7 @@ export function NewDomainScreen() {
 		<Scaffold>
 			<Box
 				h="100vh"
-				bg={`var(--mantine-color-slate-${isLight ? 0 : 9})`}
+				bg={`var(--mantine-color-obsidian-${isLight ? 0 : 9})`}
 			>
 				<TopGlow />
 				<Box
@@ -55,7 +53,7 @@ export function NewDomainScreen() {
 						gap={0}
 					>
 						<Image
-							src={iconUrl}
+							src={pictoSurrealist}
 							w={85}
 						/>
 
@@ -70,7 +68,6 @@ export function NewDomainScreen() {
 						mt={38}
 						maw={500}
 						mx="auto"
-						variant="gradient"
 					>
 						<Stack gap="xl">
 							<PrimaryTitle fz={32}>Surrealist has moved!</PrimaryTitle>
@@ -98,7 +95,7 @@ export function NewDomainScreen() {
 								<Button
 									rightSection={<Icon path={iconDownload} />}
 									variant="light"
-									color="slate"
+									color="obsidian"
 									onClick={saveBackup}
 								>
 									Export config

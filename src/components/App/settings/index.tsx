@@ -10,21 +10,8 @@ import {
 	ThemeIcon,
 	Title,
 } from "@mantine/core";
-import { useState } from "react";
-import { isDesktop } from "~/adapter";
-import { ActionButton } from "~/components/ActionButton";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
-import { Spacer } from "~/components/Spacer";
-import { useBoolean } from "~/hooks/boolean";
-import { useLogoUrl } from "~/hooks/brand";
-import { useIntent } from "~/hooks/routing";
-import { useStable } from "~/hooks/stable";
-import { useDesktopUpdater } from "~/hooks/updater";
-import { useInterfaceStore } from "~/stores/interface";
-import type { Assign, FeatureCondition } from "~/types";
-import { useFeatureFlags } from "~/util/feature-flags";
 import {
+	Icon,
 	iconBalance,
 	iconChevronRight,
 	iconClose,
@@ -36,7 +23,20 @@ import {
 	iconServer,
 	iconTransfer,
 	iconTune,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { useState } from "react";
+import { isDesktop } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
+import { Entry } from "~/components/Entry";
+import { Spacer } from "~/components/Spacer";
+import { useBoolean } from "~/hooks/boolean";
+import { useLogoUrl } from "~/hooks/brand";
+import { useIntent } from "~/hooks/routing";
+import { useStable } from "~/hooks/stable";
+import { useDesktopUpdater } from "~/hooks/updater";
+import { useInterfaceStore } from "~/stores/interface";
+import type { Assign, FeatureCondition } from "~/types";
+import { useFeatureFlags } from "~/util/feature-flags";
 import classes from "./style.module.scss";
 import { AboutTab } from "./tabs/About";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
@@ -176,7 +176,7 @@ function SettingsSidebar({
 							onClick={startUpdate}
 							className={classes.updateButton}
 							variant="light"
-							color="slate"
+							color="obsidian"
 							leftSection={
 								<ThemeIcon
 									variant="gradient"
@@ -300,6 +300,7 @@ export function Settings() {
 					visibleFrom="md"
 				/>
 				<Drawer
+					withCloseButton={false}
 					hiddenFrom="md"
 					opened={overlaySidebar}
 					onClose={overlaySidebarHandle.close}
@@ -323,7 +324,10 @@ export function Settings() {
 					flex={1}
 					miw={0}
 				>
-					<Group mb={26}>
+					<Group
+						mb={26}
+						mx="xs"
+					>
 						<ActionButton
 							hiddenFrom="md"
 							label="Toggle sidebar"

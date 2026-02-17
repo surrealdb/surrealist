@@ -1,8 +1,7 @@
 import { type BoxProps, Group } from "@mantine/core";
+import { Icon, iconHelp } from "@surrealdb/ui";
 import clsx from "clsx";
 import type { HTMLAttributes, PropsWithChildren } from "react";
-import { iconHelp } from "~/util/icons";
-import { Icon } from "../Icon";
 import { Link } from "../Link";
 import classes from "./style.module.scss";
 
@@ -23,7 +22,10 @@ export function LearnMore({
 			className={clsx(classes.root, className)}
 			{...other}
 		>
-			<Group gap="sm">
+			<Group
+				gap="sm"
+				c="dimmed"
+			>
 				<Icon path={iconHelp} />
 				{children}
 			</Group>

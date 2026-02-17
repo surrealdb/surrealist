@@ -12,13 +12,21 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
+import {
+	Icon,
+	iconCheck,
+	iconClose,
+	iconCopy,
+	iconDelete,
+	iconDesigner,
+	iconWarning,
+} from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { useState } from "react";
 import { escapeIdent } from "surrealdb";
 import type { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
@@ -29,14 +37,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import type { TableInfo } from "~/types";
-import {
-	iconCheck,
-	iconClose,
-	iconCopy,
-	iconDelete,
-	iconDesigner,
-	iconWarning,
-} from "~/util/icons";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";
 import { ChangefeedElement } from "./elements/changefeed";
 import { EventsElement } from "./elements/events";
@@ -88,6 +88,7 @@ export function DesignDrawer({
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"
@@ -113,7 +114,6 @@ export function DesignDrawer({
 			>
 				<PrimaryTitle>
 					<Icon
-						left
 						path={iconDesigner}
 						size="sm"
 					/>

@@ -1,10 +1,10 @@
 import { Button, Group, Modal, PasswordInput, Table, Text, TextInput } from "@mantine/core";
 import { parser } from "@surrealdb/lezer";
+import { Icon, iconAccountPlus } from "@surrealdb/ui";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SENSITIVE_ACCESS_FIELDS } from "~/constants";
@@ -17,7 +17,6 @@ import { authenticate, register } from "~/screens/surrealist/connection/connecti
 import { composeAuthentication } from "~/screens/surrealist/connection/helpers";
 import type { AccessField, SchemaAccess } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconAccountPlus } from "~/util/icons";
 import { parseVariables } from "~/util/language";
 
 export function RegisterUserModal() {
@@ -158,7 +157,7 @@ export function RegisterUserModal() {
 					<Button
 						onClick={openedHandle.close}
 						variant="light"
-						color="slate"
+						color="obsidian"
 					>
 						Close
 					</Button>

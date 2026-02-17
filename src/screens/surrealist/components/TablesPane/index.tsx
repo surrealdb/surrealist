@@ -1,29 +1,7 @@
 import { Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
-import { sort } from "radash";
-import { useMemo } from "react";
-import { escapeIdent } from "surrealdb";
-import { ActionButton } from "~/components/ActionButton";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
-import { ContentPane } from "~/components/Pane";
-import { Spacer } from "~/components/Spacer";
-import { TABLE_VARIANT_ICONS } from "~/constants";
-import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
-import { useConnectionAndView } from "~/hooks/routing";
-import { useHasSchemaAccess, useTables } from "~/hooks/schema";
-import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
-import { showTableDefinitionModal } from "~/modals/table-definition";
-import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
-import { useConfigStore } from "~/stores/config";
-import { useInterfaceStore } from "~/stores/interface";
-import { TableVariant } from "~/types";
-import { RecordsChangedEvent } from "~/util/global-events";
-import { fuzzyMultiMatch } from "~/util/helpers";
 import {
+	Icon,
 	iconAPI,
 	iconChevronLeft,
 	iconDelete,
@@ -32,7 +10,28 @@ import {
 	iconPlus,
 	iconReset,
 	iconSearch,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { type ContextMenuItemOptions, useContextMenu } from "mantine-contextmenu";
+import { sort } from "radash";
+import { useMemo } from "react";
+import { escapeIdent } from "surrealdb";
+import { ActionButton } from "~/components/ActionButton";
+import { Entry } from "~/components/Entry";
+import { ContentPane } from "~/components/Pane";
+import { Spacer } from "~/components/Spacer";
+import { TABLE_VARIANT_ICONS } from "~/constants";
+import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
+import { useConnectionAndView } from "~/hooks/routing";
+import { useHasSchemaAccess, useTables } from "~/hooks/schema";
+import { useStable } from "~/hooks/stable";
+import { showTableDefinitionModal } from "~/modals/table-definition";
+import { useConfirmation } from "~/providers/Confirmation";
+import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { useConfigStore } from "~/stores/config";
+import { useInterfaceStore } from "~/stores/interface";
+import { TableVariant } from "~/types";
+import { RecordsChangedEvent } from "~/util/global-events";
+import { fuzzyMultiMatch } from "~/util/helpers";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";
 import classes from "./style.module.scss";
 
@@ -61,7 +60,6 @@ export function TablesPane({
 
 	const [connection] = useConnectionAndView();
 	const toggleTablePin = useConfigStore((s) => s.toggleTablePin);
-	const isLight = useIsLight();
 	const [search, setSearch] = useInputState("");
 	const hasAccess = useHasSchemaAccess();
 	const pinnedTables = useConnection((c) => c?.pinnedTables ?? []);
@@ -126,7 +124,7 @@ export function TablesPane({
 			infoSection={
 				schema.length > 0 && (
 					<Badge
-						color={isLight ? "slate.0" : "slate.9"}
+						bg="var(--mantine-color-body)"
 						radius="sm"
 						c="inherit"
 					>
@@ -187,7 +185,7 @@ export function TablesPane({
 						{isConnected ? (
 							tablesFiltered.length === 0 && (
 								<Text
-									c="slate"
+									c="obsidian"
 									ta="center"
 									mt="lg"
 								>
@@ -196,7 +194,7 @@ export function TablesPane({
 							)
 						) : (
 							<Text
-								c="slate"
+								c="obsidian"
 								ta="center"
 								mt="lg"
 							>

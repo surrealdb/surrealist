@@ -1,9 +1,9 @@
 import { Box, Divider, Group, Modal, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconSearch } from "@surrealdb/ui";
 import clsx from "clsx";
 import { type KeyboardEvent, useMemo, useRef } from "react";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { PreferenceInput } from "~/components/Inputs/preference";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
@@ -19,7 +19,6 @@ import {
 } from "~/providers/Commands";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch, ON_STOP_PROPAGATION, Y_SLIDE_TRANSITION } from "~/util/helpers";
-import { iconSearch } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export function CommandPaletteModal() {
@@ -187,7 +186,7 @@ export function CommandPaletteModal() {
 						{filtered.map((cat) => (
 							<Box key={cat.name}>
 								<Text
-									c="slate"
+									c="obsidian"
 									fw={500}
 								>
 									{cat.name}
@@ -246,7 +245,7 @@ export function CommandPaletteModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						No matching commands found

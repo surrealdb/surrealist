@@ -1,4 +1,5 @@
 import { Box, Divider, Flex, Group, Paper, ScrollArea, Stack, Text, Tooltip } from "@mantine/core";
+import { Icon, iconBullhorn, iconIndex, iconJSON } from "@surrealdb/ui";
 import { Handle, Position } from "@xyflow/react";
 import {
 	createContext,
@@ -9,7 +10,6 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
 import { useStable } from "~/hooks/stable";
@@ -18,7 +18,6 @@ import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { GraphWarning } from "~/screens/surrealist/views/designer/TableGraphPane/helpers";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconBullhorn, iconIndex, iconJSON } from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { getTableVariant } from "~/util/schema";
 import classes from "../style.module.scss";
@@ -44,7 +43,7 @@ function Summary(props: SummaryProps) {
 			wrap="nowrap"
 		>
 			<Icon path={props.icon} />
-			<Text c={props.isLight ? "slate.9" : "white"}>{props.title}</Text>
+			<Text c={props.isLight ? "obsidian.9" : "white"}>{props.title}</Text>
 			<Spacer />
 			<Text
 				c={valueColor}
@@ -209,7 +208,7 @@ function FieldKind({ kind }: FieldKindProps) {
 
 	const value = (
 		<Text
-			c="surreal.6"
+			c="violet.6"
 			ff="mono"
 			maw="50%"
 			truncate
@@ -321,7 +320,7 @@ function Fields(props: FieldsProps) {
 									<FieldKind kind={field.kind} />
 								) : (
 									<Text
-										c="slate"
+										c="obsidian"
 										title={field.kind}
 									>
 										none
@@ -407,13 +406,13 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						? `linear-gradient(-45deg, var(--diagonal-color-2) 12.5%, var(--diagonal-color-1) 12.5%, var(--diagonal-color-1) 50%, var(--diagonal-color-2) 50%, var(--diagonal-color-2) 62.5%, var(--diagonal-color-1) 62.5%, var(--diagonal-color-1) 100%) center / 8px 8px`
 						: isLight
 							? "white"
-							: "slate.7"
+							: "obsidian.7"
 				}
 				shadow={`0 8px 12px rgba(0, 0, 0, ${isLight ? 0.075 : 0.2})`}
 				style={{
-					"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-slate-7"})`,
-					"--diagonal-color-2": `var(${isLight ? "--mantine-color-slate-1" : "--mantine-color-slate-6"})`,
-					border: `${table.schema.full ? "2px solid" : "2px dashed"} ${themeColor(isSelected ? "surreal" : isLight ? "slate.2" : "slate.5")}`,
+					"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-obsidian-7"})`,
+					"--diagonal-color-2": `var(${isLight ? "--mantine-color-obsidian-1" : "--mantine-color-obsidian-6"})`,
+					border: `${table.schema.full ? "2px solid" : "2px dashed"} ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
 					userSelect: "none",
 					backgroundSize: "8px 8px",
 					overflow: "hidden",
@@ -427,7 +426,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 				>
 					<Icon
 						path={TABLE_VARIANT_ICONS[variant]}
-						color={isSelected ? "surreal" : isLight ? "slate.7" : "slate.2"}
+						color={isSelected ? "surreal" : isLight ? "obsidian.7" : "obsidian.2"}
 					/>
 					<Text
 						style={{
@@ -442,7 +441,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 				{isEdge && inField && outField && (
 					<>
 						<Divider
-							color={isLight ? "slate.2" : "slate.6"}
+							color={isLight ? "obsidian.2" : "obsidian.6"}
 							my="sm"
 						/>
 						<Stack
@@ -467,7 +466,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 				{showMore && (
 					<>
 						<Divider
-							color={isLight ? "slate.2" : "slate.6"}
+							color={isLight ? "obsidian.2" : "obsidian.6"}
 							mt="sm"
 						/>
 
@@ -479,7 +478,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 								/>
 							) : (
 								<Text
-									c={isLight ? "slate.6" : "slate.4"}
+									c={isLight ? "obsidian.6" : "obsidian.4"}
 									mt={10}
 								>
 									No fields defined.

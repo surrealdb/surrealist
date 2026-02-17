@@ -10,11 +10,11 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { Icon, iconHelp } from "@surrealdb/ui";
 import clsx from "clsx";
 import { navigate } from "wouter/use-browser-location";
 import { useSearchHelpArticlesQuery } from "~/cloud/queries/context";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useKeyNavigation } from "~/hooks/keys";
@@ -22,7 +22,6 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { IntercomSupportArticle } from "~/types";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
-import { iconHelp } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export function HelpSearchModal() {
@@ -105,7 +104,7 @@ export function HelpSearchModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						Enter a search term to find articles
@@ -114,7 +113,7 @@ export function HelpSearchModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						No search results found
@@ -132,7 +131,7 @@ export function HelpSearchModal() {
 							>
 								<Box p={4}>
 									{article.author && (
-										<Text c="surreal">{article.author.name}</Text>
+										<Text c="violet">{article.author.name}</Text>
 									)}
 									<PrimaryTitle>{article.title}</PrimaryTitle>
 									<Text

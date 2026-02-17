@@ -1,8 +1,8 @@
-import { Box, Divider, Group, Paper, type PaperProps, Text } from "@mantine/core";
+import { Box, Divider, Group, MantineSize, Paper, type PaperProps, Text } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
 import { useIsLight } from "~/hooks/theme";
-import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
 
@@ -11,6 +11,7 @@ export interface ContentPaneProps
 		Omit<HTMLAttributes<HTMLDivElement>, "style"> {
 	title?: string;
 	icon?: string;
+	p?: MantineSize | number;
 	leftSection?: React.ReactNode;
 	infoSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
@@ -24,6 +25,7 @@ export function ContentPane({
 	title,
 	icon,
 	className,
+	p,
 	leftSection,
 	infoSection,
 	rightSection,
@@ -56,7 +58,7 @@ export function ContentPane({
 						{icon && (
 							<Icon
 								path={icon}
-								c={isLight ? "slate.4" : "slate.3"}
+								c={isLight ? "obsidian.4" : "obsidian.3"}
 							/>
 						)}
 						<Text
@@ -82,7 +84,7 @@ export function ContentPane({
 			)}
 			{children && (
 				<Box
-					p="sm"
+					p={p ?? "sm"}
 					pt={0}
 					mt={withTopPadding === false || withDivider === false ? undefined : "sm"}
 					pos="relative"

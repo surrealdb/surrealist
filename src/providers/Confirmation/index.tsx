@@ -143,7 +143,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 					<Button
 						onClick={onDissmiss}
 						variant="light"
-						color="slate"
+						color="obsidian"
 						{...(options?.dismissProps || {})}
 					>
 						{applyNode(options?.dismissText ?? DEFAULT_DISMISS, value)}

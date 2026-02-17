@@ -1,10 +1,9 @@
 import { Button, Group, type GroupProps, Notification, Portal } from "@mantine/core";
+import { Icon, iconCheck, iconHelp } from "@surrealdb/ui";
 import { clsx } from "clsx";
 import { capitalize } from "radash";
 import type { ReactNode } from "react";
 import type { SaveableHandle } from "~/hooks/save";
-import { iconCheck, iconHelp } from "~/util/icons";
-import { Icon } from "../Icon";
 import { Spacer } from "../Spacer";
 import classes from "./style.module.scss";
 
@@ -52,8 +51,7 @@ export function SaveBox({
 		<Button
 			miw={100}
 			px="xl"
-			color="slate"
-			variant="light"
+			color="obsidian"
 			loading={handle.isSaving}
 			disabled={!handle.isSaveable}
 			onClick={() => handle.save(true)}
@@ -67,8 +65,7 @@ export function SaveBox({
 			px="xl"
 			disabled={!handle.isChanged}
 			onClick={handle.revert}
-			color="slate"
-			variant="light"
+			color="obsidian"
 		>
 			{revertText ?? (minimal ? "Revert" : "Revert changes")}
 		</Button>

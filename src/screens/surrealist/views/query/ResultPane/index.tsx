@@ -1,13 +1,22 @@
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 import { Button, Center, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import {
+	Icon,
+	iconBroadcastOff,
+	iconCursor,
+	iconHelp,
+	iconList,
+	iconLive,
+	iconQuery,
+	iconUpload,
+} from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { unparse } from "papaparse";
 import { isArray, isObject } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { adapter, isMini } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
 import { CSV_FILTER, NONE_RESULT_MODES, RESULT_FORMATS, RESULT_MODES } from "~/constants";
@@ -15,7 +24,6 @@ import { executeEditorQuery } from "~/editor/query";
 import { useSetting } from "~/hooks/config";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
@@ -31,15 +39,6 @@ import type {
 } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showInfo, slugify } from "~/util/helpers";
-import {
-	iconBroadcastOff,
-	iconCursor,
-	iconHelp,
-	iconList,
-	iconLive,
-	iconQuery,
-	iconUpload,
-} from "~/util/icons";
 import type { PreviewProps } from "./previews";
 import { CombinedPreview } from "./previews/combined";
 import { GraphPreview } from "./previews/graph";
@@ -85,7 +84,6 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const responseMap = useDatabaseStore((s) => s.queryResponses);
 	const isQueryValid = useQueryStore((s) => s.isQueryValid);
 
-	const isLight = useIsLight();
 	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
 	const [resultTab, setResultTab] = useState<number>(1);
 	const selectedTab = resultTab - 1;
@@ -222,7 +220,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							variant="light"
 							size="xs"
 							radius="sm"
-							color="slate"
+							color="obsidian"
 							leftSection={<Icon path={iconUpload} />}
 							disabled={!canExport}
 						>
@@ -255,10 +253,9 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							>
 								<Button
 									size="xs"
-									radius="xs"
 									aria-label="Change NONE display"
 									variant="light"
-									color="slate"
+									color="obsidian"
 									leftSection={
 										activeNoneMode?.icon && <Icon path={activeNoneMode.icon} />
 									}
@@ -280,10 +277,9 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 								>
 									<Button
 										size="xs"
-										radius="xs"
 										aria-label="Change result"
 										variant="light"
-										color="slate"
+										color="obsidian"
 										leftSection={<Icon path={iconList} />}
 									>
 										Query {resultTab}
@@ -305,10 +301,9 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							>
 								<Button
 									size="xs"
-									radius="xs"
 									aria-label="Change format mode"
 									variant="light"
-									color="slate"
+									color="obsidian"
 									leftSection={
 										activeFormat?.icon && <Icon path={activeFormat.icon} />
 									}
@@ -331,6 +326,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							{isMini ? (
 								<ActionButton
 									label="Change result mode"
+									variant="light"
 									h={30}
 									w={30}
 								>
@@ -339,10 +335,9 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							) : (
 								<Button
 									size="xs"
-									radius="xs"
 									aria-label="Change result mode"
 									variant="light"
-									color="slate"
+									color="obsidian"
 									leftSection={
 										activeMode && <Icon path={activeMode?.icon ?? iconHelp} />
 									}
@@ -355,8 +350,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 					<Button
 						size="xs"
-						radius="xs"
-						color="slate"
+						color="obsidian"
 						variant={isQueryValid ? "gradient" : "light"}
 						style={{ border: "none" }}
 						className={classes.runLarge}
@@ -369,9 +363,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 					<ActionButton
 						label={runText}
-						radius="xs"
-						size={30}
-						color="slate"
+						color="obsidian"
 						variant={isQueryValid ? "gradient" : "light"}
 						className={classes.runSmall}
 						loading={isQuerying}
@@ -384,7 +376,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		>
 			{isLive && resultMode !== "live" && (
 				<UnstyledButton
-					bg={isLight ? "slate.0" : "slate.9"}
+					bg="var(--mantine-color-body)"
 					mb="md"
 					p="md"
 					onClick={() => setResultMode("live")}
@@ -395,7 +387,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 					<Group>
 						<Icon
 							path={iconLive}
-							c="slate"
+							c="obsidian"
 							size="xl"
 						/>
 						<Text
@@ -412,7 +404,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 				<Center
 					h="100%"
 					mih={80}
-					c="slate"
+					c="obsidian"
 				>
 					<Stack>
 						<Icon

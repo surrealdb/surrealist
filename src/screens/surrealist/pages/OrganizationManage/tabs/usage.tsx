@@ -25,14 +25,14 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 				<LoadingOverlay
 					visible={usageQuery.isPending}
 					overlayProps={{
-						color: "var(--mantine-color-slate-8)",
+						color: "var(--mantine-color-obsidian-8)",
 					}}
 				/>
 				<Label>Usage cost breakdown</Label>
 				{usageCharge.summary.length === 0 ? (
 					<Text
 						mt="xs"
-						c="slate"
+						c="obsidian"
 					>
 						No instance usage data available yet
 					</Text>
@@ -75,7 +75,7 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 
 				<Text
 					fz="sm"
-					c="slate"
+					c="obsidian"
 					mt="sm"
 				>
 					This amount is an estimation, final amounts may vary.

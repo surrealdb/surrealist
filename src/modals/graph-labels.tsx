@@ -1,9 +1,9 @@
 import { Button, Combobox, Group, Paper, Stack, TagsInput, Text, useCombobox } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
+import { Icon, iconClose, iconPlus, iconSearch, iconTable } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useConnection } from "~/hooks/connection";
 import { useConnectionAndView } from "~/hooks/routing";
@@ -12,7 +12,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconClose, iconPlus, iconSearch, iconTable } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 export async function openGraphLabelEditorModal(callback: () => void) {
@@ -102,13 +101,13 @@ function GraphLabelEditor() {
 			</Text>
 			<Stack mt="xl">
 				{mappedTables.length === 0 ? (
-					<Text c="slate">No label mappings defined yet</Text>
+					<Text c="obsidian">No label mappings defined yet</Text>
 				) : (
 					mappedTables.map(({ table, labels, fields }, i) => (
 						<Paper
 							key={i}
 							p="md"
-							bg={isLight ? "slate.0" : "slate.7"}
+							bg={isLight ? "obsidian.0" : "obsidian.7"}
 						>
 							<Group>
 								<Icon path={iconTable} />

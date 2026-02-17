@@ -16,29 +16,27 @@ import {
 	TextInput,
 	Tooltip,
 } from "@mantine/core";
+import { Icon, iconCheck, iconCopy, iconHelp, pictoChatHeart } from "@surrealdb/ui";
 import { ReactNode } from "react";
-import iconDarkUrl from "~/assets/images/dark/referral-icon.png";
 import tier1DarkUrl from "~/assets/images/dark/referral-tier-1.png";
 import tier2DarkUrl from "~/assets/images/dark/referral-tier-2.png";
 import tier3DarkUrl from "~/assets/images/dark/referral-tier-3.png";
 import tier4DarkUrl from "~/assets/images/dark/referral-tier-4.png";
 import tier5DarkUrl from "~/assets/images/dark/referral-tier-5.png";
-import iconLightUrl from "~/assets/images/light/referral-icon.png";
 import tier1LightUrl from "~/assets/images/light/referral-tier-1.png";
 import tier2LightUrl from "~/assets/images/light/referral-tier-2.png";
 import tier3LightUrl from "~/assets/images/light/referral-tier-3.png";
 import tier4LightUrl from "~/assets/images/light/referral-tier-4.png";
 import tier5LightUrl from "~/assets/images/light/referral-tier-5.png";
+import glowImage from "~/assets/images/radial-glow.png";
 import { useCloudReferralCodeQuery, useCloudReferralQuery } from "~/cloud/queries/referral";
 import { CloudSplash } from "~/components/CloudSplash";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconCheck, iconCopy, iconHelp } from "~/util/icons";
 import classes from "./style.module.scss";
 
 const REWARDS = [1, 10, 25, 100, 500];
@@ -54,10 +52,7 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 	const isLight = useIsLight();
 
 	return (
-		<Paper
-			{...other}
-			variant="gradient"
-		>
+		<Paper {...other}>
 			<Box
 				p="xl"
 				c={!isLight && active ? "white" : undefined}
@@ -143,16 +138,31 @@ export function ReferralPage() {
 
 						<Paper
 							p="xl"
-							variant="gradient"
+							style={{ overflow: "hidden", position: "relative" }}
 						>
-							<Group gap={0}>
-								<Box style={{ alignSelf: "start" }}>
+							<Group gap="xl">
+								<Box
+									mx="xl"
+									style={{ alignSelf: "center" }}
+								>
 									<Image
-										src={isLight ? iconLightUrl : iconDarkUrl}
-										w={250}
-										ml={-46}
-										mr={-12}
-										my={-32}
+										src={glowImage}
+										opacity={0.5}
+										w={100}
+										style={{
+											transform: "scale(2.5)",
+											transition: "opacity 0.3s ease",
+											position: "absolute",
+											zIndex: 0,
+										}}
+									/>
+									<Image
+										src={pictoChatHeart}
+										w={100}
+										style={{
+											position: "relative",
+											zIndex: 1,
+										}}
 									/>
 								</Box>
 								<Stack
@@ -252,7 +262,7 @@ export function ReferralPage() {
 							<Progress
 								mt="lg"
 								value={progress}
-								bg={isLight ? "slate.2" : "slate"}
+								bg={isLight ? "obsidian.2" : "obsidian"}
 								styles={{
 									root: {
 										overflow: "unset",
@@ -338,10 +348,7 @@ export function ReferralPage() {
 									md: 3,
 								}}
 							>
-								<Paper
-									p="xl"
-									variant="gradient"
-								>
+								<Paper p="xl">
 									<Text
 										fw={600}
 										fz={18}
@@ -355,10 +362,7 @@ export function ReferralPage() {
 										benefit from our services.
 									</Text>
 								</Paper>
-								<Paper
-									p="xl"
-									variant="gradient"
-								>
+								<Paper p="xl">
 									<Text
 										fw={600}
 										fz={18}
@@ -371,10 +375,7 @@ export function ReferralPage() {
 										special reward or discount as a welcome gift.
 									</Text>
 								</Paper>
-								<Paper
-									p="xl"
-									variant="gradient"
-								>
+								<Paper p="xl">
 									<Text
 										fw={600}
 										fz={18}

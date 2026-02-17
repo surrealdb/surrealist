@@ -14,13 +14,12 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
+import { Icon, iconCheck, iconClose, iconTransfer, iconXml } from "@surrealdb/ui";
 import { useMemo, useRef, useState } from "react";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { dedent } from "~/util/dedent";
-import { iconCheck, iconClose, iconTransfer, iconXml } from "~/util/icons";
 import { DEFAULT_STATE, Embedder, EmbedState } from "./embedder";
 import classes from "./style.module.scss";
 
@@ -124,7 +123,7 @@ export function NewEmbedPage() {
 									<Button
 										mt="xl"
 										size="sm"
-										color="slate"
+										color="obsidian"
 										variant="light"
 										onClick={showParseHandle.open}
 									>
@@ -185,7 +184,7 @@ export function NewEmbedPage() {
 										<CopyButton value={snippet}>
 											{({ copied, copy }) => (
 												<Button
-													color="slate"
+													color="obsidian"
 													variant={copied ? "gradient" : "light"}
 													leftSection={
 														<Icon path={copied ? iconCheck : iconXml} />
@@ -199,7 +198,7 @@ export function NewEmbedPage() {
 										<CopyButton value={url}>
 											{({ copied, copy }) => (
 												<Button
-													color="slate"
+													color="obsidian"
 													variant={copied ? "gradient" : "light"}
 													leftSection={
 														<Icon

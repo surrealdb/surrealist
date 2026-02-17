@@ -1,4 +1,4 @@
-import { Button, Divider, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
+import { Box, Button, Divider, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
@@ -51,8 +51,6 @@ export function HighlightToolModal() {
 	const [lang, setLang] = useState<CodeLang>("cli");
 	const [isOpen, openedHandle] = useBoolean();
 	const [_, setFeatureFlags] = useFeatureFlags();
-	const [theme, setTheme] = useState<ColorScheme>("dark");
-	const syntaxTheme = useConfigStore((state) => state.settings.appearance.syntaxTheme);
 
 	const languages = useMemo(() => {
 		return DRIVERS.map((driver) => ({
@@ -62,17 +60,11 @@ export function HighlightToolModal() {
 		}));
 	}, []);
 
-	const format = useCallback(async () => {
-		onChange(await getSurrealQL().formatQuery(value));
-	}, [value]);
-
 	useEffect(() => {
 		if (!isOpen) {
 			onChange("");
 		}
 	}, [isOpen]);
-
-	const extensions = useMemo(() => (lang === "cli" ? [surrealql()] : []), [lang]);
 
 	useIntent("highlight-tool", () => {
 		openedHandle.open();
@@ -106,39 +98,76 @@ export function HighlightToolModal() {
 				},
 			}}
 		>
-			<Stack>
+			<HighlightTool
+				value={value}
+				onChange={onChange}
+				lang={lang}
+			/>
+		</Modal>
+	);
+}
+
+interface HighlightToolProps {
+	value: string;
+	onChange: (value: string) => void;
+	lang: CodeLang;
+}
+
+function HighlightTool({ value, onChange, lang }: HighlightToolProps) {
+	const [theme, setTheme] = useState<ColorScheme>("dark");
+	const syntaxTheme = useConfigStore((state) => state.settings.appearance.syntaxTheme);
+
+	const format = useCallback(async () => {
+		onChange(await getSurrealQL().formatQuery(value));
+	}, [value, onChange]);
+
+	const extensions = useMemo(() => (lang === "cli" ? [surrealql()] : []), [lang]);
+
+	// const editorController = useEditor({
+	// 	extensions,
+	// 	document: value,
+	// 	onChangeDocument: (document) => {
+	// 		onChange(document.toString());
+	// 	},
+	// });
+
+	return (
+		<Stack>
+			<Box>
+				{/* <CodeEditor
+					controller={editorController}
+					h={200}
+				/> */}
 				<CodeEditor
-					h="50%"
 					value={value}
 					onChange={onChange}
 					extensions={extensions}
-					autoFocus
 				/>
-				<Divider />
-				<RadioSelect
-					value={theme}
-					onChange={setTheme as any}
-					data={[
-						{ value: "dark", label: "Dark theme" },
-						{ value: "light", label: "Light theme" },
-					]}
+			</Box>
+			<Divider />
+			<RadioSelect
+				value={theme}
+				onChange={setTheme as any}
+				data={[
+					{ value: "dark", label: "Dark theme" },
+					{ value: "light", label: "Light theme" },
+				]}
+			/>
+			<SimpleGrid cols={2}>
+				<Button
+					onClick={format}
+					size="xs"
+					color="violet"
+				>
+					Format
+				</Button>
+				<Render
+					value={value}
+					theme={theme}
+					lang={lang}
+					syntaxTheme={syntaxTheme}
 				/>
-				<SimpleGrid cols={2}>
-					<Button
-						onClick={format}
-						size="xs"
-						color="surreal"
-					>
-						Format
-					</Button>
-					<Render
-						value={value}
-						theme={theme}
-						lang={lang}
-						syntaxTheme={syntaxTheme}
-					/>
-				</SimpleGrid>
-			</Stack>
-		</Modal>
+			</SimpleGrid>
+		</Stack>
 	);
 }

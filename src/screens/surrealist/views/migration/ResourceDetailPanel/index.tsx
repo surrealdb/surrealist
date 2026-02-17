@@ -10,18 +10,9 @@ import {
 	Text,
 	Transition,
 } from "@mantine/core";
-import { useMemo } from "react";
-import { adapter } from "~/adapter";
-import { ActionButton } from "~/components/ActionButton";
-import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
-import { RecordLink } from "~/components/RecordLink";
-import { Spacer } from "~/components/Spacer";
-import { SURQL_FILTER } from "~/constants";
-import { useIsLight } from "~/hooks/theme";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
-import { MigrationKind, MigrationResourceType, MigrationSeverity } from "~/types";
 import {
+	CodeBlock,
+	Icon,
 	iconArrowLeft,
 	iconArrowUpRight,
 	iconBook,
@@ -29,7 +20,16 @@ import {
 	iconChevronLeft,
 	iconClose,
 	iconDownload,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { useMemo } from "react";
+import { adapter } from "~/adapter";
+import { ActionButton } from "~/components/ActionButton";
+import { RecordLink } from "~/components/RecordLink";
+import { Spacer } from "~/components/Spacer";
+import { SURQL_FILTER } from "~/constants";
+import { useIsLight } from "~/hooks/theme";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { MigrationKind, MigrationResourceType, MigrationSeverity } from "~/types";
 import { kindMeta } from "../MigrationView/kinds";
 import { DiagnosticEntry, DiagnosticResource } from "../MigrationView/organizer";
 import { severityMeta } from "../MigrationView/severities";
@@ -137,7 +137,7 @@ export function ResourceDetailPanel({
 					<ActionButton
 						label="Back to overview"
 						mr="sm"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={onBack}
 					>
@@ -145,7 +145,7 @@ export function ResourceDetailPanel({
 					</ActionButton>
 					<Icon
 						path={meta.icon}
-						c={isLight ? "slate.4" : "slate.3"}
+						c={isLight ? "obsidian.4" : "obsidian.3"}
 					/>
 					<Text
 						fw={600}
@@ -282,7 +282,7 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 						{kind?.documentationUrl && (
 							<Button
 								size="xs"
-								color="slate"
+								color="obsidian"
 								variant="filled"
 								leftSection={<Icon path={iconBook} />}
 								rightSection={<Icon path={iconArrowUpRight} />}
@@ -294,7 +294,7 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 						{isResolved ? (
 							<Button
 								size="xs"
-								color="slate"
+								color="obsidian"
 								variant="light"
 								rightSection={<Icon path={iconClose} />}
 								onClick={onToggleResolved}
@@ -344,13 +344,11 @@ function EntryCard({ index, entry, isResolved, onToggleResolved }: EntryCardProp
 
 					{/* Location info if present */}
 					{source.location && (
-						<CodePreview
+						<CodeBlock
 							value={source.location.source}
-							language="surrealql"
-							bg="slate.8"
-							withCopy={false}
-							withDedent={true}
-							padding="sm"
+							lang="surrealql"
+							bg="obsidian.8"
+							p="sm"
 						/>
 					)}
 				</Stack>
@@ -426,7 +424,7 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 							{severity.label}
 						</Badge>
 						<Badge
-							color="slate"
+							color="obsidian"
 							variant="light"
 							size="sm"
 						>
@@ -437,7 +435,7 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 						{kind?.documentationUrl && (
 							<Button
 								size="xs"
-								color="slate"
+								color="obsidian"
 								variant="light"
 								leftSection={<Icon path={iconBook} />}
 								rightSection={<Icon path={iconArrowUpRight} />}
@@ -449,7 +447,7 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 						{allResolved ? (
 							<Button
 								size="xs"
-								color="slate"
+								color="obsidian"
 								variant="light"
 								rightSection={<Icon path={iconClose} />}
 								onClick={onToggleAll}

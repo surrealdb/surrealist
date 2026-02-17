@@ -1,11 +1,11 @@
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Icon, iconChevronRight, iconFunction, iconOpen, iconPlus } from "@surrealdb/ui";
 import { type ChangeEvent, memo, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -26,7 +26,6 @@ import type { FunctionDetails, SchemaFunction, SchemaModel } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { createBaseAuthentication } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
-import { iconChevronRight, iconFunction, iconOpen, iconPlus } from "~/util/icons";
 import { buildFunctionDefinition, buildModelDefinition, syncConnectionSchema } from "~/util/schema";
 import { FunctionEditorPanel } from "../FunctionEditorPanel";
 import { FunctionPropertiesPanel } from "../FunctionPropertiesPanel";
@@ -330,7 +329,7 @@ export function FunctionsView() {
 										</Button>
 										<Button
 											flex={1}
-											color="slate"
+											color="obsidian"
 											variant="light"
 											rightSection={<Icon path={iconOpen} />}
 											onClick={() =>
@@ -386,8 +385,8 @@ export function FunctionsView() {
 								<Text
 									ff="mono"
 									fz="xl"
-									c="surreal"
-									style={{ transform: "translate(4px, 1px)" }}
+									c="violet"
+									style={{ transform: "tranobsidian(4px, 1px)" }}
 								>
 									fn::
 								</Text>
@@ -401,7 +400,7 @@ export function FunctionsView() {
 						<Group mt="lg">
 							<Button
 								onClick={showCreatorHandle.close}
-								color="slate"
+								color="obsidian"
 								variant="light"
 								flex={1}
 							>

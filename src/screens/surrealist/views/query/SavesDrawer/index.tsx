@@ -10,12 +10,21 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import {
+	CodeBlock,
+	Icon,
+	iconClose,
+	iconDelete,
+	iconEdit,
+	iconPlus,
+	iconQuery,
+	iconSearch,
+	iconText,
+} from "@surrealdb/ui";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
@@ -24,15 +33,6 @@ import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { SavedQuery } from "~/types";
-import {
-	iconClose,
-	iconDelete,
-	iconEdit,
-	iconPlus,
-	iconQuery,
-	iconSearch,
-	iconText,
-} from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface SavesDrawerProps {
@@ -104,6 +104,7 @@ export function SavesDrawer({
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"
@@ -149,7 +150,7 @@ export function SavesDrawer({
 					>
 						<Button
 							size="xs"
-							color="slate"
+							color="obsidian"
 							className={clsx(classes.tag, showAll && classes.tagActive)}
 							variant={showAll ? "filled" : "subtle"}
 							onClick={() => setFilterTag(null)}
@@ -163,7 +164,7 @@ export function SavesDrawer({
 								<Button
 									key={i}
 									size="xs"
-									color="slate"
+									color="obsidian"
 									className={clsx(classes.tag, isActive && classes.tagActive)}
 									variant={isActive ? "filled" : "subtle"}
 									onClick={() => setFilterTag(tag)}
@@ -180,7 +181,7 @@ export function SavesDrawer({
 				<Text
 					ta="center"
 					mt="sm"
-					c="slate"
+					c="obsidian"
 				>
 					No queries to display
 				</Text>
@@ -239,7 +240,7 @@ export function SavesDrawer({
 								h={46}
 							>
 								<Text
-									c="surreal"
+									c="violet"
 									fw={600}
 								>
 									{entry.name}
@@ -251,10 +252,7 @@ export function SavesDrawer({
 									onClick={(e) => handleUseQuery(entry, e)}
 									label="Open in new tab"
 								>
-									<Icon
-										path={iconQuery}
-										size={0.9}
-									/>
+									<Icon path={iconQuery} />
 								</ActionButton>
 							</Group>
 						</Accordion.Control>
@@ -262,9 +260,9 @@ export function SavesDrawer({
 							p={0}
 							px={4}
 						>
-							<CodePreview
+							<CodeBlock
 								value={entry.query}
-								language="surrealql"
+								lang="surrealql"
 							/>
 							{entry.tags.length > 0 && (
 								<Group
@@ -275,7 +273,6 @@ export function SavesDrawer({
 										<Badge
 											key={i}
 											size="xs"
-											color="slate"
 											radius="sm"
 										>
 											{tag}

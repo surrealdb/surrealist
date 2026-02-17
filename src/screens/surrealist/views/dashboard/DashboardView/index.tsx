@@ -1,4 +1,5 @@
 import {
+	Anchor,
 	Box,
 	Button,
 	Center,
@@ -17,14 +18,21 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import {
+	Icon,
+	iconCheck,
+	iconChevronDown,
+	iconChevronRight,
+	iconCopy,
+	pictoDocument,
+	pictoHandsOn,
+	pictoPlay,
+	pictoSDBCloud,
+} from "@surrealdb/ui";
 import { memo, useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
-import cloudUrl from "~/assets/images/icons/cloud.webp";
-import communtyUrl from "~/assets/images/icons/community.webp";
-import documentationUrl from "~/assets/images/icons/document.webp";
-import tutorialsUrl from "~/assets/images/icons/tutorials.webp";
 import { isOrganisationBillable } from "~/cloud/helpers";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
@@ -33,9 +41,7 @@ import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
-import { Icon } from "~/components/Icon";
 import { InstanceActions } from "~/components/InstanceActions";
-import { Link } from "~/components/Link";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -53,7 +59,6 @@ import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
 import { showErrorNotification, showInfo } from "~/util/helpers";
-import { iconCheck, iconChevronDown, iconChevronRight, iconCopy } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { MonitorMetricOptions } from "../../monitor/helpers";
@@ -433,7 +438,7 @@ export function DashboardView() {
 													bg={
 														copied
 															? "var(--mantine-color-violet-light)"
-															: "var(--mantine-color-slate-light)"
+															: "var(--mantine-color-obsidian-light)"
 													}
 													withBorder={false}
 													p={8}
@@ -472,6 +477,7 @@ export function DashboardView() {
 									</CopyButton>
 
 									<SimpleGrid
+										mt="md"
 										cols={2}
 										spacing="xl"
 									>
@@ -570,7 +576,7 @@ export function DashboardView() {
 										<Spacer />
 										<Button
 											variant="light"
-											color="slate"
+											color="obsidian"
 											rightSection={<Icon path={iconChevronRight} />}
 											onClick={() => {
 												navigate("monitor");
@@ -671,9 +677,9 @@ function LoadingScreen() {
 				/>
 				<Image
 					className={classes.provisionIcon}
-					src={cloudUrl}
-					w={82}
-					h={82}
+					src={pictoSDBCloud}
+					w={68}
+					h={68}
 					mt={-8}
 				/>
 			</Center>
@@ -697,23 +703,24 @@ function LoadingScreen() {
 				spacing="xl"
 				mx="auto"
 				maw={900}
+				className={classes.content}
 			>
 				<GettingStartedLink
 					title="Cloud Documentation"
 					description="Learn more about SurrealDB Cloud features and capabilities."
-					image={documentationUrl}
+					image={pictoDocument}
 					href="https://surrealdb.com/docs/cloud"
 				/>
 				<GettingStartedLink
 					title="Join the Community"
 					description="Get help from the community and share your experiences."
-					image={communtyUrl}
+					image={pictoHandsOn}
 					href="https://surrealdb.com/community"
 				/>
 				<GettingStartedLink
 					title="Quick Start Tutorial"
 					description="Watch a quick tutorial to get started with SurrealDB Cloud."
-					image={tutorialsUrl}
+					image={pictoPlay}
 					href="https://www.youtube.com/watch?v=S04qOKkVcmE"
 				/>
 			</SimpleGrid>
@@ -730,21 +737,22 @@ interface GettingStartedLinkProps {
 
 function GettingStartedLink({ image, description, title, href }: GettingStartedLinkProps) {
 	return (
-		<Link
+		<Anchor
+			variant="glow"
 			href={href}
-			underline={false}
-			c="unset"
 		>
 			<Paper
 				p="md"
 				radius="md"
-				variant="interactive"
 			>
-				<Group wrap="nowrap">
+				<Group
+					wrap="nowrap"
+					gap="lg"
+				>
 					<Image
 						src={image}
-						w={52}
-						h={52}
+						w={48}
+						h={48}
 					/>
 					<Box>
 						<Text
@@ -754,11 +762,16 @@ function GettingStartedLink({ image, description, title, href }: GettingStartedL
 						>
 							{title}
 						</Text>
-						<Text mt="xs">{description}</Text>
+						<Text
+							mt="xs"
+							fz="sm"
+						>
+							{description}
+						</Text>
 					</Box>
 				</Group>
 			</Paper>
-		</Link>
+		</Anchor>
 	);
 }
 

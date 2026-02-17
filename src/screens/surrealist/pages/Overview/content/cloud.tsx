@@ -1,8 +1,7 @@
 import { Box, BoxProps, Button, Image, Paper, Stack, Text } from "@mantine/core";
+import { Icon, iconChevronRight } from "@surrealdb/ui";
 import { PropsWithChildren } from "react";
-import glow from "~/assets/images/glow.webp";
-import { Icon } from "~/components/Icon";
-import { iconChevronRight } from "~/util/icons";
+import glow from "~/assets/images/radial-glow.png";
 import classes from "../style.module.scss";
 
 export interface StartCloudProps extends BoxProps {
@@ -22,7 +21,6 @@ export function StartCloud({
 		<Paper
 			p="xl"
 			pos="relative"
-			variant="gradient"
 			className={classes.startCloud}
 			{...other}
 		>

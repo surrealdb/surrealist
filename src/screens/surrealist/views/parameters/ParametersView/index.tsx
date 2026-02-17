@@ -1,11 +1,11 @@
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Icon, iconChevronRight, iconOpen, iconPlus, iconVariable } from "@surrealdb/ui";
 import { type ChangeEvent, memo, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -20,7 +20,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { SchemaParameter } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconChevronRight, iconOpen, iconPlus, iconVariable } from "~/util/icons";
 import { buildParameterDefinition, syncConnectionSchema } from "~/util/schema";
 import { ParameterEditorPanel } from "../ParameterEditorPanel";
 import { ParameterPropertiesPanel } from "../ParameterPropertiesPanel";
@@ -227,7 +226,7 @@ export function ParametersView() {
 									</Button>
 									<Button
 										flex={1}
-										color="slate"
+										color="obsidian"
 										variant="light"
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() =>
@@ -282,7 +281,7 @@ export function ParametersView() {
 								<Text
 									ff="mono"
 									fz="xl"
-									c="surreal"
+									c="violet"
 									style={{ transform: "translate(4px, 1px)" }}
 								>
 									$
@@ -297,7 +296,7 @@ export function ParametersView() {
 						<Group mt="lg">
 							<Button
 								onClick={showCreatorHandle.close}
-								color="slate"
+								color="obsidian"
 								variant="light"
 								flex={1}
 							>

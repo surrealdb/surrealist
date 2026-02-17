@@ -1,10 +1,10 @@
 import { Box, Button, Group, ScrollArea, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconOrganization } from "@surrealdb/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
 import { AuthGuard } from "~/components/AuthGuard";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useLastSavepoint } from "~/hooks/overview";
@@ -12,7 +12,6 @@ import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconOrganization } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export function CreateOrganizationPage() {
@@ -95,7 +94,7 @@ export function CreateOrganizationPage() {
 								onChange={setName}
 								leftSection={
 									<Icon
-										c="surreal"
+										c="violet"
 										path={iconOrganization}
 									/>
 								}
@@ -110,7 +109,7 @@ export function CreateOrganizationPage() {
 						<Group mt={24}>
 							<Link to={savepoint.path}>
 								<Button
-									color="slate"
+									color="obsidian"
 									variant="light"
 								>
 									Back

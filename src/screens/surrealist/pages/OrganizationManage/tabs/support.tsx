@@ -1,18 +1,16 @@
 import { Box, Button, Center, Group, Loader, Paper, Stack, Text } from "@mantine/core";
+import { Icon, iconOpen, iconPlus, pictoHealthChat } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
-import chatImage from "~/assets/images/icons/chat.webp";
 import { useCloudOrganizationTicketsQuery } from "~/cloud/queries/context";
 import { useActiveSupportPlanQuery } from "~/cloud/queries/support";
-import { Icon } from "~/components/Icon";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useIsLight } from "~/hooks/theme";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { iconOpen, iconPlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../../Overview/content/cloud";
 import { TicketCard } from "../../Support/TicketCard";
@@ -123,7 +121,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 					{!hasSupportPlan && (!tickets?.length || tickets?.length === 0) && (
 						<StartCloud
 							action="View plans"
-							image={chatImage}
+							image={pictoHealthChat}
 							onClick={() => {
 								navigate(`/o/${organization.id}/support-plans`);
 							}}
@@ -159,7 +157,7 @@ function SupportPlan({ name, description, organization }: SupportPlanProps) {
 			<Group>
 				<Box flex={1}>
 					<PrimaryTitle>{name}</PrimaryTitle>
-					<Text c={isLight ? "slate.7" : "slate.2"}>{description}</Text>
+					<Text c={isLight ? "obsidian.7" : "obsidian.2"}>{description}</Text>
 				</Box>
 				<Button
 					variant="gradient"

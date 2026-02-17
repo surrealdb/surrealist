@@ -8,12 +8,11 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { Icon, iconClose, iconNamespace, iconPlus } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
@@ -23,7 +22,6 @@ import { openCreateNamespaceModal } from "~/modals/create-namespace";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
-import { iconClose, iconNamespace, iconPlus } from "~/util/icons";
 import { parseIdent } from "~/util/language";
 import { activateDatabase, executeQuery } from "../../connection/connection";
 import classes from "./style.module.scss";
@@ -59,12 +57,9 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 	});
 
 	return (
-		<Entry
-			py={5}
-			h="unset"
-			radius="xs"
+		<Menu.Item
+			variant={value === activeNamespace ? "gradient" : undefined}
 			onClick={open}
-			isActive={value === activeNamespace}
 			className={classes.namespace}
 			rightSection={
 				<ActionButton
@@ -82,7 +77,7 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 			}
 		>
 			{value}
-		</Entry>
+		</Menu.Item>
 	);
 }
 
@@ -132,7 +127,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	return willCreate ? (
 		<Button
 			px="sm"
-			color="slate"
+			color="obsidian"
 			variant="light"
 			leftSection={<Icon path={iconNamespace} />}
 			onClick={openCreateNamespaceModal}
@@ -158,9 +153,9 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 		>
 			<Menu.Target>
 				<Button
-					px="sm"
+					px="md"
 					variant={namespace ? "subtle" : "light"}
-					color="slate"
+					color="obsidian"
 					leftSection={<Icon path={iconNamespace} />}
 					{...buttonProps}
 				>
@@ -187,7 +182,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 					{isPending && <Loader size={14} />}
 					<Spacer />
 					<ActionButton
-						color="slate"
+						color="obsidian"
 						variant="light"
 						disabled={!connected || (level !== "root" && level !== "namespace")}
 						label="Create namespace"
@@ -200,7 +195,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 				<ScrollArea.Autosize mah={350}>
 					{namespaces.length === 0 ? (
 						<Text
-							c="slate"
+							c="obsidian"
 							py="md"
 							ta="center"
 						>

@@ -1,15 +1,7 @@
 import { Badge, Group, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { useContextMenu } from "mantine-contextmenu";
-import { useMemo } from "react";
-import { ActionButton } from "~/components/ActionButton";
-import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
-import { ContentPane } from "~/components/Pane";
-import { useIsConnected } from "~/hooks/connection";
-import { useIsLight } from "~/hooks/theme";
-import type { FunctionDetails, SchemaModel } from "~/types";
 import {
+	Icon,
 	iconCopy,
 	iconDelete,
 	iconDownload,
@@ -18,7 +10,14 @@ import {
 	iconPlus,
 	iconSearch,
 	iconUpload,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { useContextMenu } from "mantine-contextmenu";
+import { useMemo } from "react";
+import { ActionButton } from "~/components/ActionButton";
+import { Entry } from "~/components/Entry";
+import { ContentPane } from "~/components/Pane";
+import { useIsConnected } from "~/hooks/connection";
+import type { FunctionDetails, SchemaModel } from "~/types";
 import classes from "./style.module.scss";
 
 export interface FunctionsPanelProps {
@@ -42,7 +41,6 @@ export function FunctionsPanel({
 	onDuplicate,
 	onCreate,
 }: FunctionsPanelProps) {
-	const isLight = useIsLight();
 	const isConnected = useIsConnected();
 	const { showContextMenu } = useContextMenu();
 
@@ -61,7 +59,7 @@ export function FunctionsPanel({
 			style={{ flexShrink: 0 }}
 			infoSection={
 				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
+					bg="var(--mantine-color-body)"
 					radius="sm"
 					c="inherit"
 				>
@@ -116,7 +114,7 @@ export function FunctionsPanel({
 					<Stack gap="sm">
 						{filtered.length === 0 && (
 							<Text
-								c="slate"
+								c="obsidian"
 								ta="center"
 								mt="lg"
 							>

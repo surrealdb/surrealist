@@ -10,11 +10,11 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import { Icon, iconBook } from "@surrealdb/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useKeyNavigation } from "~/hooks/keys";
@@ -22,7 +22,6 @@ import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { tagEvent } from "~/util/analytics";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
-import { iconBook } from "~/util/icons";
 import classes from "../style.module.scss";
 
 const ENDPOINT = "https://surrealdb.com/api/docs/search";
@@ -149,7 +148,7 @@ export function DocumentationModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						Enter a search term to find documentation
@@ -158,7 +157,7 @@ export function DocumentationModal() {
 					<Text
 						ta="center"
 						py="md"
-						c="slate"
+						c="obsidian"
 						my="xl"
 					>
 						No search results found
@@ -176,7 +175,7 @@ export function DocumentationModal() {
 							>
 								<Box p={4}>
 									<PrimaryTitle>{doc.title}</PrimaryTitle>
-									<Text c="surreal">{doc.url}</Text>
+									<Text c="violet">{doc.url}</Text>
 									<Text
 										style={{
 											textWrap: "wrap",

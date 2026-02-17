@@ -9,16 +9,15 @@ import {
 	ThemeIcon,
 	Tooltip,
 } from "@mantine/core";
+import { Icon, iconWarning } from "@surrealdb/ui";
 import { compareVersions, satisfies } from "compare-versions";
 import equal from "fast-deep-equal";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
-import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { filterOptions, parseCapabilities, transformCapabilities } from "~/util/capabilities";
-import { iconWarning } from "~/util/icons";
 import { BooleanCapability } from "../capabilities/boolean";
 import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
 import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
@@ -149,7 +148,6 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 											>
 												<ThemeIcon
 													color="orange"
-													variant="subtle"
 													size="sm"
 												>
 													<Icon path={iconWarning} />
@@ -257,7 +255,6 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
 					variant="light"
 					flex={1}
 				>

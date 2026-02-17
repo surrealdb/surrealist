@@ -11,6 +11,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { useWindowEvent } from "@mantine/hooks";
+import { Icon, iconCreditCard } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { capitalize } from "radash";
 import { useRef, useState } from "react";
@@ -22,8 +23,6 @@ import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification } from "~/util/helpers";
-import { iconCreditCard } from "~/util/icons";
-import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { Spacer } from "../Spacer";
 
@@ -90,13 +89,12 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 	return (
 		<Paper
 			p="xl"
-			variant="gradient"
 			{...rest}
 		>
 			<Group>
 				<Icon
 					path={iconCreditCard}
-					size="xl"
+					size="lg"
 				/>
 				<Text
 					fz="xl"
@@ -112,7 +110,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 						label="Please provide billing details first"
 					>
 						<Button
-							color="slate"
+							color="obsidian"
 							variant="light"
 							disabled={!organisation.billing_info}
 							loading={requesting}
@@ -137,7 +135,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 							</Text>
 						) : (
 							<Text
-								c="slate.4"
+								c="obsidian.4"
 								fw={500}
 							>
 								Not provided yet
@@ -157,7 +155,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 							</Text>
 						) : (
 							<Text
-								c="slate.4"
+								c="obsidian.4"
 								fw={500}
 							>
 								Not provided yet

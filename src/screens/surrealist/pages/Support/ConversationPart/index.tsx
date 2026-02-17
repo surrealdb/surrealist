@@ -1,10 +1,8 @@
 import { Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Icon, iconClose, iconFile, iconPackageClosed, iconPlay } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
-import { useIsLight } from "~/hooks/theme";
 import { IntercomAttachment, IntercomConversation, IntercomConversationPart } from "~/types";
 import { formatFileSize, formatRelativeDate } from "~/util/helpers";
-import { iconClose, iconFile, iconPackageClosed, iconPlay } from "~/util/icons";
 import { ConversationPartAuthor } from "../ConversationPartAuthor";
 import styles from "./style.module.scss";
 
@@ -15,14 +13,11 @@ export interface ConversationPartProps {
 }
 
 export function ConversationPartAttachment({ attachment }: { attachment: IntercomAttachment }) {
-	const isLight = useIsLight();
-	const bg = isLight ? "slate.0" : "slate.9";
-
 	return (
 		<Paper
 			key={attachment.url}
 			p="md"
-			bg={bg}
+			bg="var(--mantine-color-body)"
 			w="12.6rem"
 			withBorder={false}
 			style={{
@@ -34,7 +29,7 @@ export function ConversationPartAttachment({ attachment }: { attachment: Interco
 				<ThemeIcon
 					size="lg"
 					variant="light"
-					color="slate"
+					color="obsidian"
 				>
 					<Icon path={iconFile} />
 				</ThemeIcon>
@@ -49,7 +44,7 @@ export function ConversationPartAttachment({ attachment }: { attachment: Interco
 					</Text>
 					<Text
 						fz="sm"
-						c="slate.4"
+						c="obsidian.4"
 					>
 						{formatFileSize(attachment.filesize)}
 					</Text>
@@ -125,13 +120,13 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 				</Text>
 				<Text
 					fz="lg"
-					c="slate.4"
+					c="obsidian.4"
 				>
 					&bull;
 				</Text>
 				<Text
 					fz="md"
-					c="slate.4"
+					c="obsidian.4"
 				>
 					{formatRelativeDate(part.updated_at * 1000)}
 				</Text>
@@ -169,13 +164,13 @@ export function ConversationPart({ conversation, part, initial }: ConversationPa
 					</Text>
 					<Text
 						fz="lg"
-						c="slate.4"
+						c="obsidian.4"
 					>
 						&bull;
 					</Text>
 					<Text
 						fz="md"
-						c="slate.4"
+						c="obsidian.4"
 					>
 						{formatRelativeDate(part.updated_at * 1000)}
 					</Text>

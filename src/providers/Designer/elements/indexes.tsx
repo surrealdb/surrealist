@@ -1,9 +1,9 @@
 import { Accordion, Flex, Text, TextInput } from "@mantine/core";
+import { iconIndex } from "@surrealdb/ui";
 import { CodeInput } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { SchemaIndex } from "~/types";
-import { iconIndex } from "~/util/icons";
 import { type ElementProps, SectionTitle } from "../helpers";
 import { Lister } from "../lister";
 
@@ -21,7 +21,7 @@ export function IndexesElement({ data, setData }: ElementProps) {
 			{index.name}
 			{index.cols && (
 				<Text
-					c={isLight ? "slate.5" : "slate.3"}
+					c={isLight ? "obsidian.5" : "obsidian.3"}
 					ml="xs"
 				>
 					({index.cols})

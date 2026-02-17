@@ -1,12 +1,12 @@
 import type { EditorView } from "@codemirror/view";
 import { Alert, Badge, Box, Group, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon, iconDownload, iconJSON, iconText, iconWarning } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
 import type { Updater } from "use-immer";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { SURQL_FILTER } from "~/constants";
 import {
@@ -21,7 +21,6 @@ import { useStable } from "~/hooks/stable";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { FunctionDetails, SchemaFunction } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconDownload, iconJSON, iconText, iconWarning } from "~/util/icons";
 import { buildFunctionDefinition } from "~/util/schema";
 
 export interface FunctionEditorPanelProps {

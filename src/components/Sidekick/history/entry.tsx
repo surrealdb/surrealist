@@ -1,15 +1,14 @@
 import { Text } from "@mantine/core";
+import { Icon, iconArrowUpRight, iconChevronRight, iconDelete, iconText } from "@surrealdb/ui";
 import { useContextMenu } from "mantine-contextmenu";
 import { useState } from "react";
 import { EditableText } from "~/components/EditableText";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
 import { useSidekickDeleteMutation, useSidekickRenameMutation } from "~/hooks/sidekick";
 import { useStable } from "~/hooks/stable";
 import { useSidekickStore } from "~/stores/sidekick";
 import { SidekickChat } from "~/types";
-import { iconArrowUpRight, iconChevronRight, iconDelete, iconText } from "~/util/icons";
 
 export interface SidekickHistoryEntryProps {
 	chat: SidekickChat;
@@ -67,7 +66,7 @@ export function SidekickHistoryEntry({ chat, isActive, onOpen }: SidekickHistory
 
 	return (
 		<Entry
-			color="slate.5"
+			color="obsidian.5"
 			key={chat.id.toString()}
 			onClick={isRenaming ? undefined : handleOpen}
 			variant="light"

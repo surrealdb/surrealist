@@ -1,9 +1,8 @@
 import { Paper, ScrollArea, Stack } from "@mantine/core";
+import { Icon, iconChart, iconChevronRight } from "@surrealdb/ui";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { CloudMetrics } from "~/types";
-import { iconChart, iconChevronRight } from "~/util/icons";
 import { MonitorContentProps, MonitorMetricOptions } from "../helpers";
 import { MetricActions } from "./actions";
 import { ConnectionsPanel } from "./metrics/connections";
@@ -37,7 +36,6 @@ export function MetricPane({
 						<ActionButton
 							label="Reveal monitors"
 							mr="sm"
-							color="slate"
 							variant="light"
 							onClick={onRevealSidebar}
 							aria-label="Reveal observables"
@@ -57,6 +55,7 @@ export function MetricPane({
 				bg="transparent"
 				pos="relative"
 				flex={1}
+				withBorder
 			>
 				<ScrollArea
 					scrollbars="y"

@@ -1,5 +1,6 @@
 import { Group, SimpleGrid, Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { Icon, iconCreditCard } from "@surrealdb/ui";
 import { useEffect } from "react";
 import {
 	getBillingProviderAction,
@@ -7,10 +8,8 @@ import {
 	isOrganisationBillable,
 } from "~/cloud/helpers";
 import { BillingDetails } from "~/components/BillingDetails";
-import { Icon } from "~/components/Icon";
 import { PaymentDetails } from "~/components/PaymentDetails";
 import { CloudOrganization } from "~/types";
-import { iconCreditCard } from "~/util/icons";
 import { BillingRequiredBlock } from "../screens/surrealist/components/BillingRequiredBlock";
 
 export function openBillingRequiredModal({
@@ -62,11 +61,11 @@ export function openBillingRequiredModal({
 						>
 							<BillingDetails
 								organisation={organization}
-								bg="slate.7"
+								bg="obsidian.7"
 							/>
 							<PaymentDetails
 								organisation={organization}
-								bg="slate.7"
+								bg="obsidian.7"
 							/>
 						</SimpleGrid>
 					)}

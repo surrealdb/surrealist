@@ -1,31 +1,20 @@
 import {
-	ActionIcon,
+	Anchor,
 	Badge,
-	Box,
 	BoxProps,
 	Group,
-	Menu,
 	Paper,
 	Stack,
 	Text,
 	ThemeIcon,
 	UnstyledButton,
 } from "@mantine/core";
+import { Icon, iconChevronRight, iconSurreal, Spacer } from "@surrealdb/ui";
 import { PropsWithChildren, useRef } from "react";
-import { Faint } from "~/components/Faint";
-import { Icon } from "~/components/Icon";
 import { SANDBOX } from "~/constants";
 import { useStable } from "~/hooks/stable";
-import { openConnectionEditModal } from "~/modals/edit-connection";
-import { useConfirmation } from "~/providers/Confirmation";
-import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
-import { tagEvent } from "~/util/analytics";
-import { getConnectionVariant } from "~/util/connection";
-import { newId, ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconCopy, iconDelete, iconDotsVertical, iconEdit, iconSandbox } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
-import classes from "../style.module.scss";
 
 export interface StartConnectionProps extends BoxProps {
 	connection: Connection;
@@ -38,7 +27,6 @@ export function StartConnection({
 	children,
 	...other
 }: PropsWithChildren<StartConnectionProps>) {
-	const { addConnection, removeConnection } = useConfigStore.getState();
 	const { protocol, hostname } = connection.authentication;
 
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -50,43 +38,10 @@ export function StartConnection({
 		onConnect(connection);
 	});
 
-	const handleEdit = useStable(() => {
-		openConnectionEditModal(connection);
-	});
-
-	const handleDuplicate = useStable(() => {
-		addConnection({
-			...connection,
-			lastNamespace: "",
-			lastDatabase: "",
-			id: newId(),
-		});
-
-		tagEvent("connection_duplicated", {
-			protocol: connection.authentication.protocol.toString(),
-			variant: getConnectionVariant(connection),
-			is_local: connection.authentication.hostname.includes("localhost"),
-		});
-	});
-
-	const handleDelete = useConfirmation({
-		title: "Remove connection",
-		message: "Are you sure you want to remove this connection?",
-		skippable: true,
-		onConfirm() {
-			removeConnection(connection.id);
-
-			tagEvent("connection_deleted", {
-				protocol: connection.authentication.protocol.toString(),
-				variant: getConnectionVariant(connection),
-				is_local: connection.authentication.hostname.includes("localhost"),
-			});
-		},
-	});
-
 	const labels = connection?.labels?.map((label, i) => (
 		<Badge
 			key={i}
+			size="sm"
 			color="violet"
 			variant="light"
 		>
@@ -99,40 +54,29 @@ export function StartConnection({
 			onClick={handleConnect}
 			{...other}
 		>
-			<Paper
-				p="lg"
-				ref={containerRef}
-				variant="interactive"
-				className={classes.startConnection}
-				withBorder
+			<Anchor
+				variant="glow"
+				c="var(--mantine-color-text)"
 			>
-				<Group
-					wrap="nowrap"
-					align="strech"
-					flex={1}
+				<Paper
+					p="lg"
+					ref={containerRef}
 				>
-					<Stack
-						flex={1}
-						miw={0}
+					<Group
+						wrap="nowrap"
+						mt={-3}
 					>
-						<Group
-							wrap="nowrap"
-							mt={-3}
+						<ThemeIcon
+							size="xl"
+							variant="light"
 						>
-							<ThemeIcon
-								radius="xs"
-								size={36}
-								color="slate"
-								variant="light"
-							>
-								<Icon
-									path={isSandbox ? iconSandbox : USER_ICONS[connection.icon]}
-								/>
-							</ThemeIcon>
-							<Box
-								flex={1}
-								miw={0}
-							>
+							<Icon
+								size={isSandbox ? "lg" : "md"}
+								path={isSandbox ? iconSurreal : USER_ICONS[connection.icon]}
+							/>
+						</ThemeIcon>
+						<Stack gap={0}>
+							<Group gap="sm">
 								<Text
 									c="bright"
 									fw={600}
@@ -141,76 +85,31 @@ export function StartConnection({
 								>
 									{connection.name}
 								</Text>
-								<Text truncate>
-									{isSandbox ? "Your personal offline playground" : target}
-								</Text>
-							</Box>
-						</Group>
-					</Stack>
-					{!isManaged && (
-						// biome-ignore lint/a11y/noStaticElementInteractions: Stop event propagation
-						<div
-							onClick={ON_STOP_PROPAGATION}
-							onKeyDown={ON_STOP_PROPAGATION}
-						>
-							<Menu
-								transitionProps={{
-									transition: "scale-y",
-								}}
-							>
-								<Menu.Target>
-									<ActionIcon
-										color="slate"
-										variant="subtle"
-										component="div"
+
+								{isManaged ? (
+									<Text
+										fw={600}
+										fz="xs"
+										variant="gradient"
 									>
-										<Icon path={iconDotsVertical} />
-									</ActionIcon>
-								</Menu.Target>
-								<Menu.Dropdown>
-									<Menu.Item
-										leftSection={<Icon path={iconEdit} />}
-										onClick={handleEdit}
-									>
-										Edit connection
-									</Menu.Item>
-									<Menu.Item
-										leftSection={<Icon path={iconCopy} />}
-										onClick={handleDuplicate}
-									>
-										Duplicate
-									</Menu.Item>
-									<Menu.Divider />
-									<Menu.Item
-										leftSection={
-											<Icon
-												path={iconDelete}
-												c="red"
-											/>
-										}
-										onClick={handleDelete}
-										c="red"
-									>
-										Delete
-									</Menu.Item>
-								</Menu.Dropdown>
-							</Menu>
-						</div>
-					)}
-				</Group>
-				{isManaged ? (
-					<Badge
-						color="violet"
-						variant="subtle"
-						px={0}
-					>
-						Built-in
-					</Badge>
-				) : (
-					<Group gap="xs">{labels}</Group>
-				)}
-				<Faint containerRef={containerRef} />
-			</Paper>
+										BUILT-IN
+									</Text>
+								) : (
+									<Group gap="xs">{labels}</Group>
+								)}
+							</Group>
+							<Text truncate>
+								{isSandbox ? "Your personal offline playground" : target}
+							</Text>
+						</Stack>
+						<Spacer />
+						<Icon
+							c="dimmed"
+							path={iconChevronRight}
+						/>
+					</Group>
+				</Paper>
+			</Anchor>
 		</UnstyledButton>
 	);
 }

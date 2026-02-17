@@ -1,7 +1,6 @@
 import { type BoxProps, Group } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Icon, iconChevronRight } from "@surrealdb/ui";
 import { useConnection, useIsConnected } from "~/hooks/connection";
-import { iconChevronRight } from "~/util/icons";
 import { DatabaseList } from "../DatabaseList";
 import { NamespaceList } from "../NamespaceList";
 
@@ -43,7 +42,7 @@ export function SelectDatabase({ withNamespace, withDatabase, ...other }: Select
 				<Icon
 					path={iconChevronRight}
 					size="xl"
-					color="slate.5"
+					color="obsidian.5"
 					mx="md"
 				/>
 			)}

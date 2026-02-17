@@ -10,13 +10,12 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
-import { Icon } from "~/components/Icon";
+import { Icon, iconPlus, iconSearch } from "@surrealdb/ui";
 import { Label } from "~/components/Label";
 import { useSidekickChatsQuery, useSidekickMessagesMutation } from "~/hooks/sidekick";
 import { useStable } from "~/hooks/stable";
 import { useSidekickStore } from "~/stores/sidekick";
 import { SidekickChat } from "~/types";
-import { iconPlus, iconSearch } from "~/util/icons";
 import { groupChatsByDate } from "../helpers";
 import { SidekickHistoryEntry } from "./entry";
 

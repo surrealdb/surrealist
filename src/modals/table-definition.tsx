@@ -1,7 +1,7 @@
 import { Stack, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { CodeBlock } from "@surrealdb/ui";
 import { escapeIdent } from "surrealdb";
-import { CodePreview } from "~/components/CodePreview";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { executeQuerySingle } from "~/screens/surrealist/connection/connection";
 import { showErrorNotification } from "~/util/helpers";
@@ -42,10 +42,9 @@ export async function showTableDefinitionModal(table: string) {
 						This is the full definition of the <strong>{table}</strong> table including
 						fields, indexes, and events.
 					</Text>
-					<CodePreview
+					<CodeBlock
 						mt="xl"
-						withCopy
-						language="surrealql"
+						lang="surrealql"
 						value={fullDefinition}
 					/>
 				</Stack>

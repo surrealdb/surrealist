@@ -1,14 +1,15 @@
 .glow {
 	background-position: top center;
 	background-repeat: no-repeat;
-	background-size: min(1300px, 100vw);
-	height: 650px;
+	background-size: cover;
+	height: 350px;
 	z-index: 0;
 	position: absolute;
 	left: 0;
 	right: 0;
 	transition: top 0.75s cubic-bezier(0, 0.55, 0.45, 1);
 	top: var(--offset);
+	rotate: 180deg;
 
 	@include light {
 		opacity: 0.5;

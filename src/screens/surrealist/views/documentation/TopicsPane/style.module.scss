@@ -1,8 +1,8 @@
 .topic {
 	transition: none !important;
-	
+
 	&:not(:hover) :global(.mantine-Button-label) {
-		color: var(--mantine-color-slate-1);
+		color: var(--mantine-color-obsidian-1);
 		font-weight: normal;
 	}
 

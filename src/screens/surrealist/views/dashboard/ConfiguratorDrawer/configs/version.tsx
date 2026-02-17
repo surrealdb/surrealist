@@ -1,11 +1,10 @@
 import { Box, Button, Divider, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon, iconOpen } from "@surrealdb/ui";
 import { useState } from "react";
-import { Icon } from "~/components/Icon";
 import { Tile } from "~/components/Tile";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { openSurrealChangelog } from "~/util/cloud";
-import { iconOpen } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface ConfigurationVersionProps {
@@ -82,7 +81,7 @@ export function ConfigurationVersion({ instance, onUpdate, onClose }: Configurat
 										</Text>
 										<Button
 											size="xs"
-											color="slate"
+											color="obsidian"
 											variant="light"
 											rightSection={<Icon path={iconOpen} />}
 											onClick={(e) => {
@@ -119,7 +118,7 @@ export function ConfigurationVersion({ instance, onUpdate, onClose }: Configurat
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>

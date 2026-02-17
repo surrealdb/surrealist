@@ -11,6 +11,15 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+import {
+	Icon,
+	iconCheck,
+	iconChevronRight,
+	iconCloud,
+	iconReset,
+	iconStar,
+	iconTable,
+} from "@surrealdb/ui";
 import { useEffect, useState } from "react";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
@@ -21,7 +30,6 @@ import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionBar } from "~/components/ActionBar";
 import { ActionButton } from "~/components/ActionButton";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
@@ -50,14 +58,6 @@ import { CloudDeployConfig } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
-import {
-	iconCheck,
-	iconChevronRight,
-	iconCloud,
-	iconReset,
-	iconStar,
-	iconTable,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { generateRandomName } from "~/util/random";
 import { ConnectionStatus } from "./components/ConnectionStatus";
@@ -344,8 +344,8 @@ export function SurrealistToolbar() {
 				<>
 					<Icon
 						path={iconChevronRight}
-						size="xl"
-						color="slate.5"
+						size="lg"
+						color="obsidian.5"
 						mx={-8}
 					/>
 
@@ -357,8 +357,8 @@ export function SurrealistToolbar() {
 				<>
 					<Icon
 						path={iconChevronRight}
-						size="xl"
-						color="slate.5"
+						size="lg"
+						color="obsidian.5"
 						mx={-8}
 					/>
 
@@ -368,7 +368,7 @@ export function SurrealistToolbar() {
 
 			{isConnected && isSandbox && (
 				<ActionButton
-					color="slate"
+					color="obsidian"
 					variant="subtle"
 					label="Reset sandbox environment"
 					onClick={resetSandbox}
@@ -380,7 +380,6 @@ export function SurrealistToolbar() {
 			{isConnected && isSchemaEmpty && namespace && database && !isSyncingSchema && (
 				<Button
 					size="xs"
-					color="slate"
 					variant="light"
 					loading={isDatasetLoading}
 					onClick={selectDataset}
@@ -481,7 +480,7 @@ export function SurrealistToolbar() {
 									<Group gap="md">
 										<Button
 											flex={1}
-											color="slate"
+											color="obsidian"
 											variant="light"
 											size="xs"
 											onClick={() => {
@@ -559,7 +558,7 @@ export function SurrealistToolbar() {
 					h={34}
 					size="xs"
 					radius="xs"
-					color="slate"
+					color="obsidian"
 					variant={
 						(flags.changelog === "auto" ? hasReadChangelog : flags.changelog === "read")
 							? "filled"
@@ -567,12 +566,7 @@ export function SurrealistToolbar() {
 					}
 					style={{ border: "none" }}
 					onClick={openChangelog}
-					leftSection={
-						<Icon
-							path={iconStar}
-							left
-						/>
-					}
+					leftSection={<Icon path={iconStar} />}
 				>
 					See what's new in {import.meta.env.VERSION}
 				</Button>
@@ -633,7 +627,7 @@ export function SurrealistToolbar() {
 					<Group>
 						<Button
 							onClick={datasetModalOpenHandle.close}
-							color="slate"
+							color="obsidian"
 							variant="light"
 							flex={1}
 						>

@@ -1,5 +1,6 @@
-import { Box, Button, Group, Menu, Modal, Paper, Stack, Text, TextInput } from "@mantine/core";
+import { Box, Button, Group, Menu, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconChevronRight, iconCog, iconExitToAp, iconOrganization } from "@surrealdb/ui";
 import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";
 import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
@@ -10,10 +11,8 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconChevronRight, iconCog, iconExitToAp, iconOrganization } from "~/util/icons";
 import { AccountAvatar } from "../AccountAvatar";
 import { Form } from "../Form";
-import { Icon } from "../Icon";
 import { PrimaryTitle } from "../PrimaryTitle";
 
 interface AccountFormProps {
@@ -69,7 +68,6 @@ function AccountForm({ onClose }: AccountFormProps) {
 				<Group mt="lg">
 					<Button
 						onClick={onClose}
-						color="slate"
 						variant="light"
 						flex={1}
 					>
@@ -129,12 +127,9 @@ export function CloudAccount() {
 					</div>
 				</Menu.Target>
 				<Menu.Dropdown miw={200}>
-					<Paper
+					<Box
 						p="sm"
 						mb="xs"
-						bg="slate.8"
-						radius="xs"
-						style={{ userSelect: "text", WebkitUserSelect: "text" }}
 					>
 						<Group>
 							<AccountAvatar />
@@ -148,14 +143,14 @@ export function CloudAccount() {
 								</Text>
 								<Text
 									fz="sm"
-									c="slate"
+									c="obsidian"
 									mt={-3}
 								>
 									{profile.username}
 								</Text>
 							</Box>
 						</Group>
-					</Paper>
+					</Box>
 					{/* <Stack gap="xs"> */}
 					<Menu.Item
 						leftSection={<Icon path={iconCog} />}

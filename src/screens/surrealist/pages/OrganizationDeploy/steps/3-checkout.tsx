@@ -12,10 +12,23 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import {
+	Icon,
+	iconArrowUpRight,
+	iconCreditCard,
+	iconDatabase,
+	iconHistory,
+	iconMarker,
+	iconMemory,
+	iconPackageClosed,
+	iconQuery,
+	iconRelation,
+	iconTag,
+	pictoSDBCloud,
+} from "@surrealdb/ui";
 import { ChangeEvent } from "react";
 import { navigate } from "wouter/use-browser-location";
-import glow from "~/assets/images/glow.webp";
-import cloud from "~/assets/images/icons/cloud.webp";
+import glow from "~/assets/images/glow.png";
 import {
 	getBillingProviderAction,
 	isBillingManaged,
@@ -26,7 +39,6 @@ import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { BillingDetails } from "~/components/BillingDetails";
 import { EstimatedCost } from "~/components/EstimatedCost";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { LearnMore } from "~/components/LearnMore";
 import { PaymentDetails } from "~/components/PaymentDetails";
@@ -41,18 +53,6 @@ import { getTypeCategoryName } from "~/util/cloud";
 import { SAMPLE_QUERIES } from "~/util/dataset";
 import { createBaseQuery } from "~/util/defaults";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
-import {
-	iconArrowUpRight,
-	iconCreditCard,
-	iconDatabase,
-	iconHistory,
-	iconMarker,
-	iconMemory,
-	iconPackageClosed,
-	iconQuery,
-	iconRelation,
-	iconTag,
-} from "~/util/icons";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { STARTING_DATA } from "../constants";
 import classes from "../style.module.scss";
@@ -140,7 +140,6 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 		<>
 			<Paper
 				className={classes.confirmBox}
-				variant="gradient"
 				p="xl"
 			>
 				<Image
@@ -157,13 +156,16 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						miw={250}
 					>
 						<PrimaryTitle>We're nearly there!</PrimaryTitle>
-						<Text mt="xs">
+						<Text
+							mt="xs"
+							fz="sm"
+						>
 							Please confirm whether the presented details are correct.
 						</Text>
 						<Button
 							mt="xl"
 							size="xs"
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={() => setStep(1)}
 						>
@@ -285,7 +287,6 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 			{isFree ? (
 				<Paper
 					className={classes.freeBox}
-					variant="gradient"
 					mt="md"
 					p="xl"
 				>
@@ -306,7 +307,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						</Box>
 					</Stack>
 					<Image
-						src={cloud}
+						src={pictoSDBCloud}
 						className={classes.cloudImage}
 					/>
 					<Image
@@ -340,7 +341,6 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 				</>
 			) : (
 				<Paper
-					variant="gradient"
 					mt="md"
 					p={4}
 					pr="xl"
@@ -350,43 +350,44 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						direction={{ base: "column", sm: "row" }}
 						align={{ base: "start", sm: "center" }}
 					>
-						<Alert
-							flex={1}
-							color="slate"
-							variant="subtle"
-							icon={<Icon path={iconCreditCard} />}
-							title="Billing & payment information available"
+						<Group
+							w="100%"
+							p="md"
+							gap="lg"
+							align="start"
 						>
-							<Text>
-								Your billing and payment information is already set up for this
-								organisation.
-							</Text>
+							<Icon path={iconCreditCard} />
+							<Stack gap="xs">
+								<Text
+									fw={600}
+									c="bright"
+								>
+									Billing & payment information available
+								</Text>
+								<Text fz="xs">
+									Your billing and payment information is already set up for this
+									organisation.
+								</Text>
+							</Stack>
+							<Spacer />
 							{!isManaged && (
 								<Button
 									mt="md"
 									size="xs"
-									hiddenFrom="sm"
-									color="slate"
+									color="obsidian"
 									variant="light"
-									rightSection={<Icon path={iconArrowUpRight} />}
+									rightSection={
+										<Icon
+											size="sm"
+											path={iconArrowUpRight}
+										/>
+									}
 									onClick={() => navigate(`/o/${organisation.id}/billing`)}
 								>
 									Update billing details
 								</Button>
 							)}
-						</Alert>
-						{!isManaged && (
-							<Button
-								size="xs"
-								visibleFrom="sm"
-								color="slate"
-								variant="light"
-								rightSection={<Icon path={iconArrowUpRight} />}
-								onClick={() => navigate(`/o/${organisation.id}/billing`)}
-							>
-								Update billing details
-							</Button>
-						)}
+						</Group>
 					</Flex>
 				</Paper>
 			)}
@@ -413,7 +414,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 
 			<Group>
 				<Button
-					color="slate"
+					color="obsidian"
 					variant="light"
 					onClick={() => setStep(1)}
 				>

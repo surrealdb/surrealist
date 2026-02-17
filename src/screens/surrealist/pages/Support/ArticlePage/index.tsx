@@ -11,17 +11,14 @@ import {
 	Text,
 	UnstyledButton,
 } from "@mantine/core";
-import TurndownService from "turndown";
+import { Icon, iconArrowLeft, iconOpen } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { useSupportArticleQuery } from "~/cloud/queries/context";
-import { Icon } from "~/components/Icon";
-import { MarkdownContent } from "~/components/MarkdownContent";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { formatRelativeDate } from "~/util/helpers";
-import { iconArrowLeft, iconOpen } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface ArticlePageProps {
@@ -29,7 +26,6 @@ export interface ArticlePageProps {
 }
 
 export function ArticlePage({ id }: ArticlePageProps) {
-	const turndown = new TurndownService();
 	const { data: article, isLoading } = useSupportArticleQuery(id);
 
 	return (
@@ -109,12 +105,10 @@ export function ArticlePage({ id }: ArticlePageProps) {
 							<Group
 								mt="md"
 								mb="lg"
-								gap="xs"
 							>
 								{article?.author && (
 									<Avatar
-										radius="xl"
-										size={30}
+										size={35}
 										name={article.author.name}
 										src={article.author.avatar}
 										component={UnstyledButton}
@@ -125,7 +119,7 @@ export function ArticlePage({ id }: ArticlePageProps) {
 										{isLoading && (
 											<Loader
 												size="sm"
-												color="slate.4"
+												color="obsidian.4"
 											/>
 										)}
 									</Avatar>
@@ -141,7 +135,10 @@ export function ArticlePage({ id }: ArticlePageProps) {
 											{article?.author?.name ?? "SurrealDB Team"}
 										</Text>
 									</Group>
-									<Text fz="sm">
+									<Text
+										fz="sm"
+										c="obsidian"
+									>
 										Last updated{" "}
 										{formatRelativeDate((article?.updated_at ?? 0) * 1000)}
 									</Text>
@@ -150,14 +147,13 @@ export function ArticlePage({ id }: ArticlePageProps) {
 						</Box>
 
 						<Paper p="xl">
-							<MarkdownContent>
-								{turndown.turndown(article.body ?? "")}
-							</MarkdownContent>
+							{/** biome-ignore lint/security/noDangerouslySetInnerHtml: It's safe since its Intercom */}
+							<div dangerouslySetInnerHTML={{ __html: article?.body ?? "" }} />
 						</Paper>
 
 						<Group>
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 								leftSection={<Icon path={iconArrowLeft} />}
 								onClick={() =>

@@ -12,10 +12,10 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconPlus } from "@surrealdb/ui";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -24,7 +24,6 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { AccessType, Base, SchemaAccess } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconPlus } from "~/util/icons";
 import { readBlock, syncConnectionSchema } from "~/util/schema";
 
 type VerifyMode = "url" | "keyalg";
@@ -370,7 +369,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 				<Group mt="xl">
 					<Button
 						onClick={onClose}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						flex={1}
 					>

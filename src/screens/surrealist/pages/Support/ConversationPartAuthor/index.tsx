@@ -101,7 +101,7 @@ export function ConversationUser({
 							<Badge
 								size="sm"
 								variant="light"
-								color="surreal"
+								color="violet"
 							>
 								Org
 							</Badge>
@@ -127,7 +127,7 @@ export function ConversationUser({
 					</Group>
 					<Text
 						fz="sm"
-						c="slate.3"
+						c="obsidian.3"
 					>
 						{formatRelativeDate(updated_at * 1000)}
 					</Text>

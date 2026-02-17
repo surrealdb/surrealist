@@ -1,9 +1,8 @@
 import { Indicator } from "@mantine/core";
+import { Icon, iconNewspaper } from "@surrealdb/ui";
 import { useUnreadNewsPosts } from "~/hooks/newsfeed";
-import { iconNewspaper } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 
 export function NewsFeed() {
 	const unread = useUnreadNewsPosts();
@@ -13,7 +12,6 @@ export function NewsFeed() {
 			<ActionButton
 				w={36}
 				h={36}
-				radius="md"
 				variant="subtle"
 				label="Latest news"
 				tooltipProps={{

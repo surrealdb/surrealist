@@ -1,16 +1,15 @@
 import { Button, Group, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon, iconPlus } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
 import { getConnection } from "~/util/connection";
-import { iconPlus } from "~/util/icons";
 
 export function openCreateDatabaseModal() {
 	openModal({
@@ -62,7 +61,7 @@ function CreateDatabase() {
 				<Group>
 					<Button
 						onClick={closeCreator}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						flex={1}
 					>

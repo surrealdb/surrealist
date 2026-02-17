@@ -1,13 +1,12 @@
 import { Alert, Paper } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon, iconWarning } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { SaveBox } from "~/components/SaveBox";
 import { surqlLinting, surqlRecordLinks } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import type { SaveableHandle } from "~/hooks/save";
-import { iconWarning } from "~/util/icons";
 import { useInspector } from "..";
 
 export interface ContentTabProps {
@@ -44,6 +43,7 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 				flex="1 0 0"
 				mih={0}
 				p="xs"
+				withBorder
 			>
 				<CodeEditor
 					h="100%"

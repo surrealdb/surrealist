@@ -11,12 +11,20 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import {
+	CodeBlock,
+	Icon,
+	iconClose,
+	iconDelete,
+	iconDotsVertical,
+	iconQuery,
+	iconSearch,
+	iconText,
+} from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { capitalize } from "radash";
 import { memo, useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { setEditorText } from "~/editor/helpers";
@@ -25,14 +33,6 @@ import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import type { HistoryQuery } from "~/types";
-import {
-	iconClose,
-	iconDelete,
-	iconDotsVertical,
-	iconQuery,
-	iconSearch,
-	iconText,
-} from "~/util/icons";
 
 const MAX_PREVIEW_LENGTH = 500;
 
@@ -96,7 +96,7 @@ function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 					</Text>
 					{entry.origin && (
 						<Text
-							c="slate"
+							c="obsidian"
 							truncate
 							miw={0}
 						>
@@ -142,10 +142,10 @@ function HistoryRow({ entry, editor, history, onClose }: HistoryRowProps) {
 				</Menu>
 			</Group>
 
-			<CodePreview
+			<CodeBlock
 				mt="xs"
 				value={shortQuery}
-				language="surrealql"
+				lang="surrealql"
 			/>
 
 			<Divider mt="md" />
@@ -184,6 +184,7 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"
@@ -226,7 +227,7 @@ export function HistoryDrawer({ opened, editor, onClose }: HistoryDrawerProps) {
 					<Text
 						ta="center"
 						mt="sm"
-						c="slate"
+						c="obsidian"
 					>
 						No queries to display
 					</Text>

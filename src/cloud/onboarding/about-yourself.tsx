@@ -1,13 +1,12 @@
 import { Alert, Button, Group, Select, Stack, Text, TextInput } from "@mantine/core";
 import { closeAllModals, openModal } from "@mantine/modals";
+import { Icon, iconChevronRight, iconErrorCircle } from "@surrealdb/ui";
 import { ErrorBoundary } from "react-error-boundary";
 import { useImmer } from "use-immer";
-import glowUrl from "~/assets/images/gradient-glow.webp";
-import { Icon } from "~/components/Icon";
+import glowUrl from "~/assets/images/glow.png";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { iconChevronRight, iconErrorCircle } from "~/util/icons";
 import { fetchAPI } from "../api";
 import classes from "../style.module.scss";
 
@@ -131,7 +130,7 @@ function AboutModal({ questions }: AboutModalProps) {
 				wrap="nowrap"
 			>
 				<Text
-					c="slate"
+					c="obsidian"
 					fz="sm"
 				>
 					This information will help us understand your needs

@@ -2,7 +2,6 @@
 	height: 41px !important;
 
 	&-active {
-		box-shadow: var(--surrealist-glow) !important;
 		transition: box-shadow 0.3s cubic-bezier(.33, 1.8, .6, 1);
 	}
 

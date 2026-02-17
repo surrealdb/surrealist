@@ -8,12 +8,10 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-
-import { Icon } from "~/components/Icon";
+import { Icon, iconChevronDown, iconChevronUp, iconDownload, iconHelp } from "@surrealdb/ui";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
-import { iconChevronDown, iconChevronUp, iconDownload, iconHelp } from "~/util/icons";
 import { CapabilityBaseProps } from "./shared";
 
 export function SupportCapability({ name, description }: CapabilityBaseProps) {
@@ -60,7 +58,7 @@ export function SupportCapability({ name, description }: CapabilityBaseProps) {
 				<Box pt="xs">
 					<Paper
 						my="xl"
-						bg={isLight ? "slate.0" : "slate.7"}
+						bg={isLight ? "obsidian.0" : "obsidian.7"}
 						p="md"
 					>
 						<Group
@@ -70,7 +68,7 @@ export function SupportCapability({ name, description }: CapabilityBaseProps) {
 							<ThemeIcon
 								radius="xs"
 								size={38}
-								color="slate"
+								color="obsidian"
 								variant="light"
 							>
 								<Icon

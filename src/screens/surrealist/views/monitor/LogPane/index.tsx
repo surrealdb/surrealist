@@ -1,5 +1,6 @@
 import { Box, BoxProps, Center, Group, Loader, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
+import { Icon, iconChevronRight, iconHelp, iconList } from "@surrealdb/ui";
 import { formatDate, formatDistanceToNow } from "date-fns";
 import { capitalize } from "radash";
 import { useEffect, useMemo, useRef } from "react";
@@ -8,14 +9,11 @@ import { FixedSizeList } from "react-window";
 import { computeMetricRange } from "~/cloud/helpers";
 import { useCloudLogsQuery } from "~/cloud/queries/logs";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
 import { useConnection } from "~/hooks/connection";
-import { useIsLight } from "~/hooks/theme";
 import { CloudLogLine } from "~/types";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconChevronRight, iconHelp, iconList } from "~/util/icons";
 import { MonitorContentProps } from "../helpers";
 import { LogActions } from "./actions";
 import { LogActivityChart } from "./chart";
@@ -28,7 +26,6 @@ export function LogPane({
 	onRevealSidebar,
 	onChangeLogOptions,
 }: MonitorContentProps) {
-	const isLight = useIsLight();
 	const listRef = useRef<FixedSizeList>(null);
 	const instance = useConnection((con) => con?.authentication.cloudInstance);
 	const logQuery = useCloudLogsQuery(instance, logOptions.duration);
@@ -81,7 +78,6 @@ export function LogPane({
 						<ActionButton
 							label="Reveal monitors"
 							mr="sm"
-							color="slate"
 							variant="light"
 							onClick={onRevealSidebar}
 							aria-label="Reveal observables"
@@ -119,7 +115,7 @@ export function LogPane({
 				component={Stack}
 				gap={0}
 				pos="relative"
-				bg={isLight ? "slate.0" : "slate.9"}
+				bg="var(--mantine-color-body)"
 			>
 				{logQuery.isSuccess ? (
 					logLines.length === 0 ? (

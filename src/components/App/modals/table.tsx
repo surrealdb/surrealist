@@ -9,10 +9,10 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconPlus, iconRelation, iconSearch, iconTable } from "@surrealdb/ui";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SCHEMA_MODES } from "~/constants";
@@ -23,7 +23,6 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { type SchemaMode, TableVariant } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { iconPlus, iconRelation, iconSearch, iconTable } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -113,7 +112,7 @@ export function TableCreatorModal() {
 		>
 			<SegmentedControl
 				fullWidth
-				variant="gradient"
+				variant="surreal"
 				data={[
 					{
 						value: "normal",
@@ -206,7 +205,7 @@ export function TableCreatorModal() {
 					<Group mt="lg">
 						<Button
 							onClick={closeTableCreator}
-							color="slate"
+							color="obsidian"
 							variant="light"
 							flex={1}
 						>

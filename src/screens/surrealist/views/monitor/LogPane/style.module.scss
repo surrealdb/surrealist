@@ -3,7 +3,7 @@
 	position: relative;
 
 	&:not([data-last="true"]) {
-		border-bottom: 1px solid var(--mantine-color-slate-light);
+		border-bottom: 1px solid var(--mantine-color-obsidian-light);
 	}
 
 	&::after {
@@ -16,7 +16,7 @@
 	}
 
 	&[data-severity="info"]::after {
-		background-color: var(--mantine-color-slate-light);
+		background-color: var(--mantine-color-obsidian-light);
 	}
 
 	&[data-severity="warning"]::after {

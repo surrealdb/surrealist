@@ -1,9 +1,8 @@
 import { Button, Group, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
-import { Icon } from "~/components/Icon";
+import { Icon, iconAuth } from "@surrealdb/ui";
 import { Spacer } from "~/components/Spacer";
 import { CloudOrganization } from "~/types";
-import { iconAuth } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 
 export function openResourcesLockedModal(organisation: CloudOrganization) {
@@ -32,7 +31,7 @@ export function openResourcesLockedModal(organisation: CloudOrganization) {
 				</Text>
 				<Group>
 					<Button
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={() => {
 							closeModal("resources-locked");

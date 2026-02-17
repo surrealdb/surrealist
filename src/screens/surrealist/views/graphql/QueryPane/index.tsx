@@ -1,12 +1,20 @@
 import { Prec } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { Alert, Badge, Button, Group, Stack } from "@mantine/core";
+import {
+	Icon,
+	iconAutoFix,
+	iconDollar,
+	iconGraphql,
+	iconOpen,
+	iconRefresh,
+	iconText,
+} from "@surrealdb/ui";
 import { graphql, updateSchema } from "cm6-graphql";
 import { type GraphQLSchema, parse, print } from "graphql";
 import { useEffect, useMemo } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
 import {
@@ -22,14 +30,6 @@ import { useStable } from "~/hooks/stable";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { showErrorNotification, showInfo, tryParseParams } from "~/util/helpers";
-import {
-	iconAutoFix,
-	iconDollar,
-	iconGraphql,
-	iconOpen,
-	iconRefresh,
-	iconText,
-} from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface QueryPaneProps {
@@ -238,7 +238,7 @@ export function QueryPane({
 						instance
 						<Link href="https://surrealdb.com/docs/surrealdb/querying/graphql/surrealist">
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 								rightSection={<Icon path={iconOpen} />}
 								radius="sm"

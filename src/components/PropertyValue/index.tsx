@@ -1,6 +1,6 @@
 import { BoxProps, Group, Text, ThemeIcon } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { ReactNode } from "react";
-import { Icon } from "../Icon";
 
 export interface PropertyValueProps extends BoxProps {
 	title: string;
@@ -18,9 +18,8 @@ export function PropertyValue({ title, icon, value, ...other }: PropertyValuePro
 			{...other}
 		>
 			<ThemeIcon
-				color="slate"
-				radius="xs"
 				variant="light"
+				color="obsidian"
 			>
 				<Icon path={icon} />
 			</ThemeIcon>

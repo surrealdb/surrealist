@@ -1,18 +1,17 @@
 import { Alert, Button, Group, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon, iconAccount } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { shake } from "radash";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 import { ApiError, fetchAPI, updateCloudInformation } from "~/cloud/api";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
-import { iconAccount } from "~/util/icons";
 import { useCloudBillingQuery } from "../queries/billing";
 
 export async function openBillingDetails(organization: CloudOrganization) {
@@ -312,7 +311,6 @@ function BillingForm({ organization, details, callback }: BillingFormProps) {
 				</SimpleGrid>
 				<Group mt="xl">
 					<Button
-						color="slate"
 						variant="light"
 						onClick={handleClose}
 					>

@@ -1,14 +1,13 @@
 import { ActionIcon, Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
+import { Icon, iconCircle, iconClose, iconPlus } from "@surrealdb/ui";
 import { klona } from "klona";
 import { replace } from "radash";
 import { type ReactNode, useState } from "react";
 import { type Updater, useImmer } from "use-immer";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useBoolean } from "~/hooks/boolean";
 import { useStable } from "~/hooks/stable";
-import { iconCircle, iconClose, iconPlus } from "~/util/icons";
 
 export interface ListerProps<T> {
 	name: string;
@@ -70,7 +69,7 @@ export function Lister<T extends { name: string }>({
 							key={item.name}
 							px="xs"
 							fullWidth
-							color="slate"
+							color="obsidian"
 							variant="subtle"
 							onClick={() => openEditor(item)}
 							styles={{
@@ -79,7 +78,7 @@ export function Lister<T extends { name: string }>({
 							leftSection={
 								<Icon
 									path={iconCircle}
-									c="slate.4"
+									c="obsidian.4"
 								/>
 							}
 							rightSection={
@@ -136,7 +135,7 @@ export function Lister<T extends { name: string }>({
 					<Group mt="xl">
 						<Button
 							flex={1}
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={editingHandle.close}
 						>

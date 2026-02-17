@@ -18,23 +18,33 @@ import {
 	Transition,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import {
+	Icon,
+	iconArrowLeft,
+	iconArrowUpRight,
+	iconCheck,
+	iconPlus,
+	iconReset,
+	iconSearch,
+	iconTune,
+	iconWarning,
+	pictoHandsOn,
+	pictoSDBCloud,
+	pictoSidekick,
+	pictoSurrealDB,
+	pictoSurrealist,
+	pictoUniversity,
+} from "@surrealdb/ui";
 import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import iconUrl from "~/assets/images/icon.webp";
-import cloudUrl from "~/assets/images/icons/cloud.webp";
-import communityUrl from "~/assets/images/icons/community.webp";
-import sidekickUrl from "~/assets/images/icons/sidekick.webp";
-import databaseUrl from "~/assets/images/icons/surrealdb.webp";
-import universityUrl from "~/assets/images/icons/university.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { isOrganisationRestricted } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsCloudEnabled } from "~/hooks/cloud";
@@ -47,16 +57,6 @@ import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
-import {
-	iconArrowLeft,
-	iconArrowUpRight,
-	iconCheck,
-	iconPlus,
-	iconReset,
-	iconSearch,
-	iconTune,
-	iconWarning,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
 import { StartBlog } from "./content/blog";
@@ -117,6 +117,7 @@ export function OverviewPage() {
 		activateConnection(resolveInstanceConnection(instance));
 	});
 
+	const allRegions = useCloudStore((s) => s.regions);
 	const authState = useCloudStore((s) => s.authState);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
 	const isLoading = authState === "loading" || isPending;
@@ -161,7 +162,7 @@ export function OverviewPage() {
 								mb={52}
 							>
 								<Image
-									src={iconUrl}
+									src={pictoSurrealist}
 									w={74}
 								/>
 
@@ -206,7 +207,7 @@ export function OverviewPage() {
 										>
 											<ActionButton
 												variant="subtle"
-												color="slate"
+												color="obsidian"
 												label="Filter connections"
 											>
 												<Icon path={iconTune} />
@@ -320,7 +321,7 @@ export function OverviewPage() {
 									<Link href="/organisations/create">
 										<Button
 											size="xs"
-											color="slate"
+											color="obsidian"
 											variant="light"
 											rightSection={<Icon path={iconPlus} />}
 										>
@@ -419,6 +420,7 @@ export function OverviewPage() {
 													<StartInstance
 														key={instance.id}
 														instance={instance}
+														regions={allRegions}
 														organisation={organization.info}
 														onConnect={activateInstance}
 													/>
@@ -491,7 +493,7 @@ export function OverviewPage() {
 									</PrimaryTitle>
 									<StartCloud
 										action="Sign in"
-										image={cloudUrl}
+										image={pictoSDBCloud}
 										onClick={openCloudAuthentication}
 									>
 										<Text
@@ -525,7 +527,7 @@ export function OverviewPage() {
 								<StartResource
 									title="Documentation"
 									subtitle="Explore the SurrealDB documentation"
-									image={databaseUrl}
+									image={pictoSurrealDB}
 									onClick={() =>
 										adapter.openUrl("https://surrealdb.com/docs/surrealdb")
 									}
@@ -533,7 +535,7 @@ export function OverviewPage() {
 								<StartResource
 									title="Community"
 									subtitle="Join the discussion on Discord"
-									image={communityUrl}
+									image={pictoHandsOn}
 									onClick={() =>
 										adapter.openUrl("https://discord.com/invite/surrealdb")
 									}
@@ -541,13 +543,13 @@ export function OverviewPage() {
 								<StartResource
 									title="University"
 									subtitle="Learn the SurrealDB fundamentals in 3 hours"
-									image={universityUrl}
+									image={pictoUniversity}
 									onClick={() => adapter.openUrl("https://surrealdb.com/learn")}
 								/>
 								<StartResource
 									title="Sidekick"
 									subtitle="Get support from your personal Surreal AI assistant"
-									image={sidekickUrl}
+									image={pictoSidekick}
 									onClick={() => dispatchIntent("open-sidekick")}
 								/>
 							</SimpleGrid>
@@ -567,7 +569,7 @@ export function OverviewPage() {
 										/>
 									}
 									onClick={() => dispatchIntent("open-news")}
-									color="slate"
+									color="obsidian"
 									variant="subtle"
 								>
 									Read all articles

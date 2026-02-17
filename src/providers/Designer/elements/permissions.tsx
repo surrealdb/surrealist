@@ -1,6 +1,6 @@
 import { Accordion, Stack } from "@mantine/core";
+import { iconKey } from "@surrealdb/ui";
 import { PermissionInput } from "~/components/Inputs";
-import { iconKey } from "~/util/icons";
 import { type ElementProps, SectionTitle } from "../helpers";
 
 export function PermissionsElement({ data, setData }: ElementProps) {

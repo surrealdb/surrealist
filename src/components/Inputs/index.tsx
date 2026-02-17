@@ -19,6 +19,7 @@ import {
 } from "@mantine/core";
 import { clamp, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon, iconCancel, iconCheck } from "@surrealdb/ui";
 import clsx from "clsx";
 import {
 	type FocusEvent,
@@ -28,13 +29,11 @@ import {
 	useMemo,
 	useRef,
 } from "react";
-import { Icon } from "~/components/Icon";
 import { acceptWithTab, editorTheme, inputBase } from "~/editor";
 import { useKindList } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight, useTheme } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
-import { iconCancel, iconCheck } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
 
 export interface CodeInputProps
@@ -362,7 +361,7 @@ export function EmailInput({ value, onChange, autoFocus, ...other }: EmailInputP
 						key={email}
 						withRemoveButton
 						onRemove={() => onChange?.(value.filter((_, j) => i !== j))}
-						bg={isLight ? "slate.1" : "slate.9"}
+						bg={isLight ? "obsidian.1" : "obsidian.9"}
 					>
 						{email}
 					</Pill>

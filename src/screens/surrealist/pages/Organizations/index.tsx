@@ -42,6 +42,7 @@ export function OrganizationsPage() {
 					mt={18}
 				>
 					<Stack
+						className={classes.content}
 						px="xl"
 						mx="auto"
 						maw={1200}

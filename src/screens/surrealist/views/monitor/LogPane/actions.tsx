@@ -1,9 +1,8 @@
 import { Group, Select, TextInput } from "@mantine/core";
+import { Icon, iconChevronDown, iconClock, iconRefresh, iconSearch } from "@surrealdb/ui";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { MetricsDuration } from "~/types";
-import { iconChevronDown, iconClock, iconRefresh, iconSearch } from "~/util/icons";
 import { MonitorLogOptions } from "../helpers";
 
 export interface LogActionsProps {
@@ -65,7 +64,7 @@ export function LogActions({ options, isLoading, onChange, onRefresh }: LogActio
 					>
 						<ActionButton
 							variant="light"
-							color="slate"
+							color="obsidian"
 							label="Node filter"
 							size="lg"
 						>

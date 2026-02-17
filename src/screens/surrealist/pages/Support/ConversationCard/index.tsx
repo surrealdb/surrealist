@@ -1,9 +1,8 @@
 import { Group, Indicator, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Icon, iconChat, iconTag } from "@surrealdb/ui";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
-import { Icon } from "~/components/Icon";
 import { IntercomConversation } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
-import { iconChat, iconTag } from "~/util/icons";
 
 export interface ConversationCardProps {
 	conversation: IntercomConversation;
@@ -49,7 +48,7 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 						<Indicator
 							inset={0}
 							size={8}
-							color="surreal"
+							color="violet"
 						/>
 					)}
 				</Group>
@@ -58,7 +57,7 @@ export function ConversationCard({ conversation }: ConversationCardProps) {
 						{conversation.last_response_author?.name || "Unknown"}
 					</Text>
 					<Text
-						c="slate.4"
+						c="obsidian.4"
 						fz={4}
 						mx={2}
 					>

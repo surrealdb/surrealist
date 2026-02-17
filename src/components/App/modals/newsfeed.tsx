@@ -16,20 +16,18 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Icon, iconArrowLeft, iconArrowUpRight, iconClose, Markdown } from "@surrealdb/ui";
 import { format } from "date-fns";
 import dayjs from "dayjs";
 import { Fragment, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
-import { MarkdownContent } from "~/components/MarkdownContent";
 import { Spacer } from "~/components/Spacer";
 import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
 import { tagEvent } from "~/util/analytics";
-import { iconArrowLeft, iconArrowUpRight, iconClose } from "~/util/icons";
 import classes from "../style.module.scss";
 
 interface NewsItem {
@@ -89,6 +87,7 @@ export function NewsFeedDrawer() {
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={isOpen}
 			onClose={handleClose}
 			position="right"
@@ -170,11 +169,11 @@ export function NewsFeedDrawer() {
 										{format(reading.published, "MMMM d, yyyy - h:mm a")}
 									</Text>
 									<Divider my="xl" />
-									<MarkdownContent fz="lg">{reading.content}</MarkdownContent>
+									<Markdown content={reading.content} />
 									{reading.link && (
 										<Alert
 											mt="xl"
-											color="surreal.2"
+											color="violet.2"
 											py={0}
 										>
 											<Link
@@ -183,15 +182,12 @@ export function NewsFeedDrawer() {
 												href={reading.link}
 											>
 												<Text
-													c="surreal"
+													c="violet"
 													fw={600}
 													fz={14}
 												>
 													Read on surrealdb.com
-													<Icon
-														path={iconArrowUpRight}
-														right
-													/>
+													<Icon path={iconArrowUpRight} />
 												</Text>
 											</Link>
 										</Alert>
@@ -248,7 +244,7 @@ export function NewsFeedDrawer() {
 							) : isEmpty ? (
 								<Text
 									mt={68}
-									c="slate"
+									c="obsidian"
 									ta="center"
 								>
 									No blog articles available
@@ -292,11 +288,11 @@ export function NewsFeedDrawer() {
 													mt="sm"
 													gap="xs"
 												>
-													<Text c="surreal">Read article</Text>
+													<Text c="violet">Read article</Text>
 													<Icon
 														className={classes.newsItemArrow}
 														path={iconArrowLeft}
-														c="surreal"
+														c="violet"
 													/>
 												</Group>
 											</UnstyledButton>

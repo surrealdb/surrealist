@@ -1,15 +1,13 @@
 import { Box, Button, Divider, Drawer, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon, iconClose, iconHistory } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance } from "~/types";
-import { iconClose, iconHistory } from "~/util/icons";
 import { InstanceBackup } from "./InstanceBackup";
 import classes from "./style.module.scss";
 
@@ -44,6 +42,7 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={handleClose}
 			position="right"
@@ -68,14 +67,16 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 				gap="sm"
 				p="xl"
 			>
-				<PrimaryTitle>
-					<Icon
-						left
-						path={iconHistory}
-						size="sm"
-					/>
-					Instance backups
-				</PrimaryTitle>
+				<Group>
+					<Icon path={iconHistory} />
+					<Text
+						fw={700}
+						fz="xl"
+						c="bright"
+					>
+						Instance backups
+					</Text>
+				</Group>
 
 				<Spacer />
 
@@ -167,7 +168,6 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 				<Group p="xl">
 					<Button
 						onClick={handleClose}
-						color="slate"
 						variant="light"
 						flex={1}
 					>

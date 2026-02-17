@@ -4,7 +4,7 @@ import { InstanceState } from "~/types";
 const BADGE_INFO = {
 	ready: ["green", "Instance is active and utilizing resources"],
 	deleting: ["red", "Instance is scheduled for removal"],
-	paused: ["slate.5", "Instance is paused and not utilizing resources"],
+	paused: ["obsidian.5", "Instance is paused and not utilizing resources"],
 	updating: ["loader", "Updating instance..."],
 	creating: ["loader", "Provisioning instance..."],
 	pausing: ["loader", "Pausing instance..."],

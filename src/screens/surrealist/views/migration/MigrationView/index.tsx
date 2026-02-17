@@ -10,11 +10,10 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
+import { Icon, iconDownload, iconReset, iconTransfer, pictoSurrealDB } from "@surrealdb/ui";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { adapter } from "~/adapter";
-import surrealUrl from "~/assets/images/icons/surrealdb.webp";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { StarSparkles } from "~/components/StarSparkles";
 import { SURQL_FILTER } from "~/constants";
@@ -24,7 +23,6 @@ import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showInfo } from "~/util/helpers";
-import { iconDownload, iconReset, iconTransfer } from "~/util/icons";
 import { ResourceDetailPanel } from "../ResourceDetailPanel";
 import { ResourceOverviewPanel } from "../ResourceOverviewPanel";
 import { DiagnosticResource, organizeDiagnostics, ResourceMap } from "./organizer";
@@ -150,10 +148,7 @@ export function MigrationView() {
 				>
 					<Stack>
 						<Group>
-							<Icon
-								path={iconTransfer}
-								size={1.35}
-							/>
+							<Icon path={iconTransfer} />
 							<Title c="bright">Migrate to SurrealDB 3.0</Title>
 						</Group>
 						<Text mt="sm">
@@ -206,7 +201,7 @@ export function MigrationView() {
 									offsetModifier={0}
 								>
 									<Image
-										src={surrealUrl}
+										src={pictoSurrealDB}
 										alt="SurrealDB"
 										w={74}
 									/>

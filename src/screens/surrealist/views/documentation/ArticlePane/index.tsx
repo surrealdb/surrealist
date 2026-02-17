@@ -1,6 +1,6 @@
 import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
+import { Icon, iconCheck, iconList } from "@surrealdb/ui";
 import { type RefObject, useMemo } from "react";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { ScrollFader } from "~/components/ScrollFader";
 import { Spacer } from "~/components/Spacer";
@@ -17,7 +17,6 @@ import {
 	isSection,
 } from "~/screens/surrealist/docs/types";
 import type { CodeLang } from "~/types";
-import { iconCheck, iconList } from "~/util/icons";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 
@@ -110,8 +109,8 @@ export function ArticlePane({
 	});
 
 	const border = isLight
-		? "1px solid var(--mantine-color-slate-1)"
-		: "1px solid var(--mantine-color-slate-7)";
+		? "1px solid var(--mantine-color-obsidian-1)"
+		: "1px solid var(--mantine-color-obsidian-7)";
 
 	return (
 		<ContentPane

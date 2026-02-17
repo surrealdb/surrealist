@@ -1,16 +1,15 @@
 import { ActionIcon, Box, Drawer, Group, Stack } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon, iconClose, iconMarker } from "@surrealdb/ui";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconClose, iconMarker } from "~/util/icons";
 import { CodeEditor } from "../CodeEditor";
 import type { GeographyInput } from "../GeographyMap";
 
@@ -91,6 +90,7 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"
@@ -123,7 +123,6 @@ export function GeographyDrawer({ opened, data, onClose }: GeographyDrawerProps)
 					}}
 				>
 					<Icon
-						left
 						path={iconMarker}
 						size="sm"
 					/>

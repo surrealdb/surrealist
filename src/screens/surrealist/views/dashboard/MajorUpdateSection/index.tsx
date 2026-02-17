@@ -1,12 +1,10 @@
 import { Anchor, Box, Button, Group, Image, Paper, Text } from "@mantine/core";
+import { Icon, iconArrowUpRight, pictoFullTextSearch } from "@surrealdb/ui";
 import { satisfies } from "compare-versions";
 import { Link } from "wouter";
-import surrealdbImg from "~/assets/images/icons/surrealdb.webp";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { CloudInstance, CloudOrganization } from "~/types";
-import { iconArrowUpRight } from "~/util/icons";
 
 export interface MajorUpdateSectionProps {
 	instance: CloudInstance;
@@ -25,12 +23,15 @@ export function MajorUpdateSection({ instance, organisation }: MajorUpdateSectio
 					<Text>Enjoy the latest features and improvements</Text>
 				</Box>
 				<Paper>
-					<Group pl="md">
+					<Group
+						p="xl"
+						gap="xl"
+					>
 						<Image
-							src={surrealdbImg}
-							w={112}
+							src={pictoFullTextSearch}
+							w={84}
 						/>
-						<Box py="xl">
+						<Box>
 							<PrimaryTitle>Check compatibility</PrimaryTitle>
 							<Text>
 								Check if your database is compatible with SurrealDB 3.0 and start

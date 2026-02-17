@@ -10,6 +10,7 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+import { Icon } from "@surrealdb/ui";
 import { isNumber } from "radash";
 import { useConfigStore } from "~/stores/config";
 import {
@@ -20,7 +21,6 @@ import {
 	SelectionController,
 	TextController,
 } from "~/util/preferences";
-import { Icon } from "../Icon";
 
 export interface PreferenceInputProps extends BoxProps {
 	controller: PreferenceController;

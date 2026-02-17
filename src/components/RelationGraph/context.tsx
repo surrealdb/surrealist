@@ -1,12 +1,6 @@
 import { Box, Group, Text } from "@mantine/core";
-import { useQuery } from "@tanstack/react-query";
-import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
-import { unique } from "radash";
-import { RecordId } from "surrealdb";
-import { useIsLight } from "~/hooks/theme";
-import { getSurreal } from "~/screens/surrealist/connection/connection";
-import { QueryResponse } from "~/types";
 import {
+	Icon,
 	iconCopy,
 	iconEyeOff,
 	iconFullscreen,
@@ -14,8 +8,14 @@ import {
 	iconRelationIn,
 	iconRelationOut,
 	iconSearch,
-} from "~/util/icons";
-import { Icon } from "../Icon";
+} from "@surrealdb/ui";
+import { useQuery } from "@tanstack/react-query";
+import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
+import { unique } from "radash";
+import { RecordId } from "surrealdb";
+import { useIsLight } from "~/hooks/theme";
+import { getSurreal } from "~/screens/surrealist/connection/connection";
+import { QueryResponse } from "~/types";
 import { NodeCircle } from "./node";
 import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";
 
@@ -83,7 +83,7 @@ export function NodeContextMenu({
 							fz="xs"
 							truncate
 							mt={-2}
-							c={isLight ? "slate.6" : "slate.2"}
+							c={isLight ? "obsidian.6" : "obsidian.2"}
 							pr="md"
 						>
 							{recordId}

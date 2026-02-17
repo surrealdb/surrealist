@@ -1,11 +1,10 @@
 import { Box, Divider, Flex, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconSearch } from "@surrealdb/ui";
 import { Fragment, useMemo } from "react";
-import { Icon } from "~/components/Icon";
 import { PreferenceInput } from "~/components/Inputs/preference";
 import { Spacer } from "~/components/Spacer";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconSearch } from "~/util/icons";
 import { FlagSetController, Preference, useComputedPreferences } from "~/util/preferences";
 
 function isTallInput(preference: Preference) {
@@ -41,91 +40,93 @@ export function PreferencesTab() {
 			scrollbars="y"
 			type="always"
 		>
-			<TextInput
-				leftSection={
-					<Icon
-						path={iconSearch}
-						size="sm"
-					/>
-				}
-				placeholder="Search preferences"
-				value={search}
-				onChange={setSearch}
-				autoFocus
-				size="xs"
-				mb="sm"
-			/>
-			<Stack
-				gap={52}
-				mt="xl"
-				pb={32}
-			>
-				{sections.length === 0 && (
-					<Text
-						ta="center"
-						c="slate"
-						mt="xl"
-					>
-						No preferences matched your search
-					</Text>
-				)}
-				{sections.map((section, i) => (
-					<Box
-						key={i}
-						id={section.id}
-					>
+			<Box m="xs">
+				<TextInput
+					leftSection={
+						<Icon
+							path={iconSearch}
+							size="sm"
+						/>
+					}
+					placeholder="Search preferences"
+					value={search}
+					onChange={setSearch}
+					autoFocus
+					size="xs"
+					mb="sm"
+				/>
+				<Stack
+					gap={52}
+					mt="xl"
+					pb={32}
+				>
+					{sections.length === 0 && (
 						<Text
-							fw={600}
-							fz={20}
-							c="bright"
+							ta="center"
+							c="obsidian"
+							mt="xl"
 						>
-							{section.name}
+							No preferences matched your search
 						</Text>
-						<Stack
-							mt="lg"
-							gap="lg"
+					)}
+					{sections.map((section, i) => (
+						<Box
+							key={i}
+							id={section.id}
 						>
-							{section.preferences.map((preference, j) => {
-								const isTall = isTallInput(preference);
+							<Text
+								fw={600}
+								fz={20}
+								c="bright"
+							>
+								{section.name}
+							</Text>
+							<Stack
+								mt="lg"
+								gap="lg"
+							>
+								{section.preferences.map((preference, j) => {
+									const isTall = isTallInput(preference);
 
-								return (
-									<Fragment key={j}>
-										<Flex
-											id={preference.id}
-											align={isTall ? "strech" : "center"}
-											direction={isTall ? "column" : "row"}
-											w="100%"
-										>
-											<Box>
-												<Text
-													c="bright"
-													fw={500}
-												>
-													{preference.name}
-												</Text>
-												{preference.description && (
+									return (
+										<Fragment key={j}>
+											<Flex
+												id={preference.id}
+												align={isTall ? "strech" : "center"}
+												direction={isTall ? "column" : "row"}
+												w="100%"
+											>
+												<Box>
 													<Text
-														fz="sm"
-														c="slate"
+														c="bright"
+														fw={500}
 													>
-														{preference.description}
+														{preference.name}
 													</Text>
-												)}
-											</Box>
-											<Spacer />
-											<PreferenceInput
-												controller={preference.controller}
-												mt={isTall ? "lg" : undefined}
-											/>
-										</Flex>
-										{j < section.preferences.length - 1 && <Divider />}
-									</Fragment>
-								);
-							})}
-						</Stack>
-					</Box>
-				))}
-			</Stack>
+													{preference.description && (
+														<Text
+															fz="sm"
+															c="obsidian"
+														>
+															{preference.description}
+														</Text>
+													)}
+												</Box>
+												<Spacer />
+												<PreferenceInput
+													controller={preference.controller}
+													mt={isTall ? "lg" : undefined}
+												/>
+											</Flex>
+											{j < section.preferences.length - 1 && <Divider />}
+										</Fragment>
+									);
+								})}
+							</Stack>
+						</Box>
+					))}
+				</Stack>
+			</Box>
 		</ScrollArea>
 	);
 }

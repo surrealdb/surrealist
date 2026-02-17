@@ -29,7 +29,7 @@ export function DiskUsageBlock({
 	const storageFrac = (storageUsage / storageMax) * 100;
 	const storageUsageMB = formatMemory(storageUsage);
 	const storageMaxMB = formatMemory(storageMax);
-	const storageColor = storageFrac > 80 ? "red" : "surreal";
+	const storageColor = storageFrac > 80 ? "red" : "violet";
 	const canManage = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);
 
 	const handleUpgrade = useStable(() => {
@@ -53,7 +53,6 @@ export function DiskUsageBlock({
 				p="xl"
 				gap={30}
 				component={Stack}
-				variant="gradient"
 				pos="relative"
 				mih={168}
 			>
@@ -72,7 +71,7 @@ export function DiskUsageBlock({
 						<>
 							<Spacer />
 							<Button
-								c="surreal"
+								c="violet"
 								size="xs"
 								fz={13}
 								variant="subtle"

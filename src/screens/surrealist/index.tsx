@@ -10,7 +10,6 @@ import { useSetting } from "~/hooks/config";
 import { useAvailableViews } from "~/hooks/connection";
 import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useInterfaceStore } from "~/stores/interface";
 import type { ViewPage } from "~/types";
 import { CreateConnectionPage } from "./pages/CreateConnection";
@@ -94,7 +93,6 @@ const VIEW_COMPONENTS: Record<ViewPage, FC> = {
 export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
-	const isLight = useIsLight();
 	const showCloud = useIsCloudEnabled();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
@@ -121,7 +119,7 @@ export function SurrealistScreen() {
 	return (
 		<Box
 			className={classes.root}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg="var(--mantine-color-body)"
 		>
 			{isOtherOS && <AppTitleBar />}
 			<Flex
@@ -303,6 +301,7 @@ export function SurrealistScreen() {
 			</Flex>
 
 			<Drawer
+				withCloseButton={false}
 				opened={overlaySidebar}
 				onClose={onCloseSidebar}
 				size={215}

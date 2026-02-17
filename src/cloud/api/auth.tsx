@@ -1,15 +1,14 @@
 import { shutdown } from "@intercom/messenger-js-sdk";
 import { showNotification } from "@mantine/notifications";
+import { Icon, iconCheck } from "@surrealdb/ui";
 import { sleep } from "radash";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudSignin } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { isDevelopment } from "~/util/environment";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { fastParseJwt, showErrorNotification } from "~/util/helpers";
-import { iconCheck } from "~/util/icons";
 import {
 	AWS_MARKETPLACE_KEY,
 	INVITATION_KEY,
@@ -298,7 +297,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 
 		if (invitationCode) {
 			showNotification({
-				color: "surreal",
+				color: "violet",
 				title: "Invitation accepted",
 				message: "You have joined the organisation",
 				icon: <Icon path={iconCheck} />,

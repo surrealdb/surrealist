@@ -1,15 +1,15 @@
 import { Alert, AlertProps, Box, Button, Divider, Group, SimpleGrid, Stack } from "@mantine/core";
+import { Icon, iconChevronRight, iconWarning } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { EstimatedCost } from "~/components/EstimatedCost";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
-import { iconChevronRight, iconWarning } from "~/util/icons";
 import { ClusterOptionsSection } from "../sections/cluster";
 import { DataOptionsSection } from "../sections/data-opts";
 import { DeploymentSection } from "../sections/instance";
 import { StartingDataSection } from "../sections/start-data";
 import { StorageOptionsSection } from "../sections/storage";
 import { InstanceTypeSection } from "../sections/type";
+import classes from "../style.module.scss";
 import { StepProps } from "../types";
 
 interface WarningAlertProps extends AlertProps {
@@ -126,6 +126,7 @@ export function ConfigureStep({
 				<SimpleGrid
 					spacing={{ base: 36, xl: 64 }}
 					cols={{ base: 1, xl: 2 }}
+					className={classes.content}
 				>
 					<Stack gap={36}>
 						<DeploymentSection
@@ -172,7 +173,7 @@ export function ConfigureStep({
 
 			<Group>
 				<Button
-					color="slate"
+					color="obsidian"
 					variant="light"
 					onClick={() => setStep(0)}
 				>

@@ -1,33 +1,24 @@
+import { CodeBlock, CodeBlockProps } from "@surrealdb/ui";
 import { useMemo } from "react";
 import type { CodeLang, Snippets } from "~/types";
 import { dedent } from "~/util/dedent";
-import { CodePreview, type CodePreviewOptions } from "../CodePreview";
 
-export interface CodeSnippetProps extends Omit<CodePreviewOptions, "value"> {
-	title?: string;
+export interface CodeSnippetProps extends Omit<CodeBlockProps, "value"> {
 	values: Snippets;
 	language: CodeLang;
 	editorLanguage?: string;
 }
 
-export function CodeSnippet({
-	title,
-	values,
-	language,
-	editorLanguage,
-	...other
-}: CodeSnippetProps) {
+export function CodeSnippet({ values, language, editorLanguage, ...other }: CodeSnippetProps) {
 	const snippet = useMemo(() => {
 		const value = values[language];
 		return value ? dedent(value) : undefined;
 	}, [values, language]);
 
 	return (
-		<CodePreview
-			label={title}
+		<CodeBlock
 			value={snippet || "No example available for this language"}
-			language={editorLanguage || language}
-			withCopy
+			lang={editorLanguage || language}
 			{...other}
 		/>
 	);

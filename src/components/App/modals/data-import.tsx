@@ -10,13 +10,13 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconDownload, iconFile } from "@surrealdb/ui";
 import papaparse, { LocalFile } from "papaparse";
 import { cluster, isArray, isObject, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
 import type { OpenedTextFile } from "~/adapter/base";
-import { Icon } from "~/components/Icon";
 import { FieldKindInputCore } from "~/components/Inputs";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -29,7 +29,6 @@ import { useIsLight } from "~/hooks/theme";
 import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification, showInfo, showWarning } from "~/util/helpers";
-import { iconDownload, iconFile } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 type DataFileFormat = "csv" | "json" | "ndjson";
@@ -80,23 +79,23 @@ const SqlImportForm = ({
 
 	return (
 		<Stack gap="xl">
-			<Text c={isLight ? "slate.7" : "slate.2"}>
+			<Text c={isLight ? "obsidian.7" : "obsidian.2"}>
 				Are you sure you want to import the selected file?
 			</Text>
 
-			<Group c="surreal">
+			<Group c="violet">
 				<Icon path={iconFile} />
 				<Text>{fileName}</Text>
 			</Group>
 
-			<Text c={isLight ? "slate.7" : "slate.2"}>
+			<Text c={isLight ? "obsidian.7" : "obsidian.2"}>
 				While existing data will be preserved, it may be overwritten by the imported data.
 			</Text>
 
 			<Group>
 				<Button
 					flex={1}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					onClick={cancelImport}
 				>
@@ -109,10 +108,7 @@ const SqlImportForm = ({
 					variant="gradient"
 				>
 					Start import
-					<Icon
-						path={iconDownload}
-						right
-					/>
+					<Icon path={iconDownload} />
 				</Button>
 			</Group>
 		</Stack>
@@ -475,16 +471,13 @@ const FileFormatFormFooter = (props: FileFormatFormFooterProps) => {
 				disabled={!canExport}
 			>
 				Start import
-				<Icon
-					path={iconDownload}
-					right
-				/>
+				<Icon path={iconDownload} />
 			</Button>
 
 			{importedRows.length > 0 ? (
 				<Text
 					fz="sm"
-					c="slate"
+					c="obsidian"
 					mt={-3}
 				>
 					Importing this file will create{insertRelation ? "" : " or update"}{" "}

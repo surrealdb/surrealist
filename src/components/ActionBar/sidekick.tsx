@@ -1,10 +1,9 @@
 import { Indicator } from "@mantine/core";
+import { Icon, iconSidekick } from "@surrealdb/ui";
 import { useOnboarding } from "~/hooks/onboarding";
 import { useStable } from "~/hooks/stable";
-import { iconSidekick } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 import { StarSparkles } from "../StarSparkles";
 
 export function SidekickAction() {
@@ -24,7 +23,6 @@ export function SidekickAction() {
 				<ActionButton
 					w={36}
 					h={36}
-					radius="md"
 					variant="subtle"
 					label="Sidekick AI"
 					tooltipProps={{

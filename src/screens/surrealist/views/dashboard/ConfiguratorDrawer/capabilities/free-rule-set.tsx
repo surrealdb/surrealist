@@ -10,21 +10,21 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-import { useEffect, useMemo, useState } from "react";
-import { Icon } from "~/components/Icon";
-import { Label } from "~/components/Label";
-import { Spacer } from "~/components/Spacer";
-import { useBoolean } from "~/hooks/boolean";
-import { useIsLight } from "~/hooks/theme";
-import { plural } from "~/util/helpers";
 import {
+	Icon,
 	iconCancel,
 	iconCheck,
 	iconChevronDown,
 	iconChevronUp,
 	iconHelp,
 	iconWrench,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { useEffect, useMemo, useState } from "react";
+import { Label } from "~/components/Label";
+import { Spacer } from "~/components/Spacer";
+import { useBoolean } from "~/hooks/boolean";
+import { useIsLight } from "~/hooks/theme";
+import { plural } from "~/util/helpers";
 import {
 	BASE_STATUS,
 	BaseValue,
@@ -202,7 +202,7 @@ export function FreeRuleSetCapability({
 
 					<Paper
 						my="xl"
-						bg={isLight ? "slate.0" : "slate.7"}
+						bg={isLight ? "obsidian.0" : "obsidian.8"}
 						p="md"
 					>
 						<Stack>

@@ -12,25 +12,28 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
+import {
+	Icon,
+	iconPlus,
+	iconSearch,
+	pictoDiscord,
+	pictoDocument,
+	pictoGitHub,
+	pictoHealthChat,
+	pictoPlay,
+	pictoSidekick,
+	pictoSurrealDB,
+	pictoUniversity,
+} from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
-import chatImage from "~/assets/images/icons/chat.webp";
-import communityImage from "~/assets/images/icons/community.webp";
-import documentImage from "~/assets/images/icons/document.webp";
-import githubImage from "~/assets/images/icons/github.webp";
-import playImage from "~/assets/images/icons/play.webp";
-import sidekickImage from "~/assets/images/icons/sidekick.webp";
-import surrealdbImage from "~/assets/images/icons/surrealdb.webp";
-import universityImage from "~/assets/images/icons/university.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useFeatureFlags } from "~/util/feature-flags";
-import { iconPlus, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../Overview/content/cloud";
 import { ConversationCard } from "./ConversationCard";
@@ -111,7 +114,7 @@ export function SupportPage() {
 										<Button
 											variant="light"
 											size="xs"
-											color="slate"
+											color="obsidian"
 											onClick={() => navigate("/support/requests")}
 										>
 											View All
@@ -144,7 +147,6 @@ export function SupportPage() {
 													<Paper
 														p="xs"
 														key={chat.id}
-														variant="transparent"
 														withBorder={false}
 														style={{
 															cursor: "pointer",
@@ -172,7 +174,7 @@ export function SupportPage() {
 								(!isAuthenticated || !chats || chats.length === 0) && (
 									<StartCloud
 										action={isAuthenticated ? "Explore plans" : "Sign in"}
-										image={chatImage}
+										image={pictoHealthChat}
 										onClick={() => {
 											if (isAuthenticated) {
 												navigate(
@@ -199,6 +201,7 @@ export function SupportPage() {
 					<Box
 						mt="xl"
 						w="100%"
+						className={classes.content}
 					>
 						<PrimaryTitle fz={22}>Support Collections</PrimaryTitle>
 						{isLoading && (
@@ -229,25 +232,26 @@ export function SupportPage() {
 					<Box
 						mt="xl"
 						w="100%"
+						className={classes.content}
 					>
 						<PrimaryTitle fz={22}>Helpful Resources</PrimaryTitle>
 
 						<SimpleGrid
 							mt="md"
 							cols={{ base: 1, md: 2 }}
-							spacing="xl"
+							spacing="md"
 							mx="auto"
 						>
 							<ResourceTile
 								name="SurrealDB Documentation"
 								description="Learn everything there is to know about all SurrealDB products"
-								image={surrealdbImage}
+								image={pictoSurrealDB}
 								onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
 							/>
 							<ResourceTile
 								name="SurrealDB YouTube"
 								description="Learn about SurrealDB through live streams and video tutorials"
-								image={playImage}
+								image={pictoPlay}
 								onClick={() =>
 									adapter.openUrl("https://www.youtube.com/@SurrealDB")
 								}
@@ -255,7 +259,7 @@ export function SupportPage() {
 							<ResourceTile
 								name="University: Fundamentals"
 								description="Learn the fundamentals of SurrealDB in as little as 3 hours"
-								image={universityImage}
+								image={pictoUniversity}
 								onClick={() =>
 									adapter.openUrl("https://surrealdb.com/learn/fundamentals")
 								}
@@ -263,7 +267,7 @@ export function SupportPage() {
 							<ResourceTile
 								name="University: Book"
 								description="Become a SurrealQL expert through Aeon's Surreal Renaissance"
-								image={documentImage}
+								image={pictoDocument}
 								onClick={() => adapter.openUrl("https://surrealdb.com/learn/book")}
 							/>
 						</SimpleGrid>
@@ -272,19 +276,20 @@ export function SupportPage() {
 					<Box
 						mt="xl"
 						w="100%"
+						className={classes.content}
 					>
 						<PrimaryTitle fz={22}>Reach Out</PrimaryTitle>
 
 						<SimpleGrid
 							mt="md"
 							cols={{ base: 1, md: 2 }}
-							spacing="xl"
+							spacing="md"
 							mx="auto"
 						>
 							<ResourceTile
 								name="Discord Community"
 								description="Join our active community for ideas, discussions, and support"
-								image={communityImage}
+								image={pictoDiscord}
 								onClick={() =>
 									adapter.openUrl("https://discord.com/invite/dc4JNWrrMc")
 								}
@@ -292,20 +297,20 @@ export function SupportPage() {
 							<ResourceTile
 								name="Sidekick"
 								description="Chat with Sidekick for the quickest answers to your questions"
-								image={sidekickImage}
+								image={pictoSidekick}
 								onClick={() => dispatchIntent("open-sidekick")}
 							/>
 							<ResourceTile
 								name="GitHub"
 								description="Report issues or submit feature requests"
-								image={githubImage}
+								image={pictoGitHub}
 								onClick={() => adapter.openUrl("https://github.com/surrealdb")}
 							/>
 							{flags.support_tickets && (
 								<ResourceTile
 									name="Account Support"
 									description="Contact us for account and billing issues"
-									image={chatImage}
+									image={pictoHealthChat}
 									onClick={() =>
 										dispatchIntent("create-message", {
 											type: "conversation",
@@ -319,7 +324,7 @@ export function SupportPage() {
 								<ResourceTile
 									name="Contact Support"
 									description="For account and billing issues, email support"
-									image={chatImage}
+									image={pictoHealthChat}
 									onClick={() => adapter.openUrl("mailto:support@surrealdb.com")}
 								/>
 							)}

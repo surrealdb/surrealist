@@ -1,11 +1,10 @@
 import { Box, Button, Paper, Text, Title } from "@mantine/core";
+import { Icon, iconOpen } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import { DriverSelector } from "~/components/DriverSelector";
-import { Icon } from "~/components/Icon";
 import { DRIVERS } from "~/constants";
 import { useSetting } from "~/hooks/config";
 import { Article } from "~/screens/surrealist/docs/components";
-import { iconOpen } from "~/util/icons";
 
 export function DocsGlobalIntroduction() {
 	const [language, setLanguage] = useSetting("behavior", "docsLanguage");
@@ -62,7 +61,6 @@ export function DocsGlobalIntroduction() {
 							rightSection={<Icon path={iconOpen} />}
 							onClick={() => adapter.openUrl(active.link)}
 							size="xs"
-							radius="sm"
 						>
 							Visit {active.name} docs
 						</Button>

@@ -1,14 +1,11 @@
 import { Group, Paper, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { openModal } from "@mantine/modals";
-import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
+import { CodeBlock, Icon, iconTransfer } from "@surrealdb/ui";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useIsLight } from "~/hooks/theme";
 import type { CloudInstance } from "~/types";
-import { iconTransfer } from "~/util/icons";
 
 export function openConnectCurl(instance: CloudInstance, namespace: string, database: string) {
 	openModal({
@@ -17,7 +14,7 @@ export function openConnectCurl(instance: CloudInstance, namespace: string, data
 			<Group>
 				<Icon
 					path={iconTransfer}
-					size="xl"
+					size="lg"
 				/>
 				<PrimaryTitle>Connect with HTTP using cURL</PrimaryTitle>
 			</Group>
@@ -40,8 +37,6 @@ interface ConnectCurlModalProps {
 }
 
 function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalProps) {
-	const isLight = useIsLight();
-
 	const [username, setUsername] = useInputState("");
 	const [password, setPassword] = useInputState("");
 
@@ -82,7 +77,8 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 			</Text>
 
 			<Paper
-				bg={isLight ? "slate.0" : "slate.9"}
+				withBorder
+				bg="var(--mantine-color-body)"
 				p="md"
 			>
 				<SimpleGrid
@@ -120,9 +116,8 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 				Execute HTTP request
 			</Text>
 
-			<CodePreview
-				language="bash"
-				withCopy
+			<CodeBlock
+				lang="bash"
 				value={command}
 			/>
 

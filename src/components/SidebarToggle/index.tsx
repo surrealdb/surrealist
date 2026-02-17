@@ -1,8 +1,7 @@
+import { Icon, iconChevronRight } from "@surrealdb/ui";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
-import { iconChevronRight } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 
 export function SidebarToggle() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();

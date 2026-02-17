@@ -1,10 +1,20 @@
 import { Box, Button, Group, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import {
+	Icon,
+	iconChevronRight,
+	iconDesigner,
+	iconDownload,
+	iconExplorer,
+	iconOpen,
+	iconPlus,
+	iconTable,
+	iconUpload,
+} from "@surrealdb/ui";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { adapter } from "~/adapter";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { SidekickPanel } from "~/components/Sidekick/panel";
@@ -18,16 +28,6 @@ import { TablesPane } from "~/screens/surrealist/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { ActivateDatabaseEvent, DisconnectedEvent } from "~/util/global-events";
-import {
-	iconChevronRight,
-	iconDesigner,
-	iconDownload,
-	iconExplorer,
-	iconOpen,
-	iconPlus,
-	iconTable,
-	iconUpload,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { CreatorDrawer } from "../CreatorDrawer";
@@ -205,7 +205,7 @@ export function ExplorerView() {
 									</Button>
 									<Button
 										flex={1}
-										color="slate"
+										color="obsidian"
 										variant="light"
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() =>

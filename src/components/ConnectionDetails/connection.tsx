@@ -1,9 +1,9 @@
 import { ActionIcon, Box, Group, Popover, SimpleGrid, TextInput, Tooltip } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Icon } from "@surrealdb/ui";
 import { Updater } from "use-immer";
 import { Connection } from "~/types";
 import { USER_ICONS } from "~/util/user-icons";
-import { Icon } from "../Icon";
 
 export interface ConnectionNameDetailsProps {
 	value: Connection;
@@ -42,10 +42,7 @@ export function ConnectionNameDetails({ value, onChange }: ConnectionNameDetails
 								aria-label="Customize icon"
 								size="lg"
 							>
-								<Icon
-									path={USER_ICONS[value.icon]}
-									size="lg"
-								/>
+								<Icon path={USER_ICONS[value.icon]} />
 							</ActionIcon>
 						</Tooltip>
 					</Popover.Target>

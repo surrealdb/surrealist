@@ -1,15 +1,20 @@
 import { Box, Divider, Flex, Group, Image, Stack, Text, Transition } from "@mantine/core";
+import {
+	Icon,
+	iconChat,
+	iconChevronLeft,
+	iconList,
+	iconPin,
+	iconPinOff,
+	pictoSidekick,
+} from "@surrealdb/ui";
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
-import glowImg from "~/assets/images/glow.webp";
-import sidekickImg from "~/assets/images/icons/sidekick.webp";
+import glowImg from "~/assets/images/radial-glow.png";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { Icon } from "~/components/Icon";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useSidekickStore } from "~/stores/sidekick";
-import { iconChat, iconChevronLeft, iconList, iconPin, iconPinOff } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { ActionButton } from "../ActionButton";
 import { SidekickChat } from "./chat";
@@ -41,6 +46,9 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 		const activeId = useSidekickStore((state) => state.activeId);
 		const activeTitle = useSidekickStore((state) => state.activeTitle);
 		const historyOpened = useSidekickStore((state) => state.historyOpened);
+		const activeHistory = useSidekickStore((state) => state.activeHistory);
+		const activeRequest = useSidekickStore((state) => state.activeRequest);
+		const activeResponse = useSidekickStore((state) => state.activeResponse);
 
 		const { toggleHistory } = useSidekickStore.getState();
 
@@ -72,18 +80,22 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 			};
 		}, [activeId?.id, stream.cancel]);
 
+		const showGlow = !activeRequest && !activeResponse && activeHistory.length === 0;
+
 		return (
 			<Stack
 				ref={rootRef}
 				gap={0}
 				h="100%"
 				w="100%"
-				bg={inline ? "var(--mantine-color-body)" : "transparent"}
+				style={{
+					overflow: "hidden",
+				}}
 			>
 				{!inline && (
 					<>
 						<Group
-							p="xl"
+							p="lg"
 							wrap="nowrap"
 						>
 							<Box pos="relative">
@@ -93,21 +105,28 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 									inset={0}
 									opacity={0.3}
 									style={{
-										transform: "scale(2)",
+										transform: "scale(2.25)",
 										transition: "opacity 0.3s ease",
 									}}
 								/>
 								<Image
 									pos="relative"
-									src={sidekickImg}
-									w={52}
-									h={52}
+									src={pictoSidekick}
+									w={36}
+									h={36}
 								/>
 							</Box>
 							<Box miw={0}>
-								<PrimaryTitle>Sidekick</PrimaryTitle>
 								<Text
 									fz="lg"
+									fw={700}
+									c="bright"
+								>
+									Sidekick
+								</Text>
+								<Text
+									fz="sm"
+									c="dimmed"
 									truncate
 								>
 									{activeTitle || "New chat"}
@@ -147,6 +166,19 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 					pos="relative"
 					style={{ overflow: "hidden" }}
 				>
+					{showGlow && (
+						<Image
+							pos="relative"
+							src={glowImg}
+							left={-200}
+							bottom={-300}
+							opacity={0.5}
+							style={{
+								transform: "scale(2)",
+								transition: "opacity 0.3s ease",
+							}}
+						/>
+					)}
 					<Flex
 						inset={0}
 						flex={1}

@@ -1,10 +1,9 @@
 import { AreaChart } from "@mantine/charts";
 import { Box, Group, Paper, Stack, StyleProp, Text, Tooltip } from "@mantine/core";
+import { Icon, iconHelp } from "@surrealdb/ui";
 import { format } from "date-fns";
 import { computeMetricRange } from "~/cloud/helpers";
-import { Icon } from "~/components/Icon";
 import { CloudMetrics, MetricsDuration } from "~/types";
-import { iconHelp } from "~/util/icons";
 
 export interface BaseAreaChartProps {
 	title: string;
@@ -54,7 +53,6 @@ export function BaseAreaChart({
 			p="xl"
 			gap={24}
 			component={Stack}
-			variant="gradient"
 			pos="relative"
 			h={height ?? 280}
 		>
@@ -93,7 +91,7 @@ export function BaseAreaChart({
 						gap={0}
 					>
 						<Text>No data available</Text>
-						<Text c="slate">Please check back later</Text>
+						<Text c="obsidian">Please check back later</Text>
 					</Stack>
 				) : (
 					<AreaChart

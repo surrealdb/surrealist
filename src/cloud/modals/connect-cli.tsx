@@ -1,13 +1,11 @@
 import { Group, Skeleton, Text } from "@mantine/core";
 import { openModal } from "@mantine/modals";
+import { CodeBlock, Icon, iconConsole } from "@surrealdb/ui";
 import { useEffect } from "react";
-import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import type { CloudInstance } from "~/types";
-import { iconConsole } from "~/util/icons";
 import { useCloudAuthTokenMutation } from "../mutations/auth";
 
 export function openConnectCli(instance: CloudInstance) {
@@ -55,10 +53,9 @@ function ConnectCliModal({ instance }: ConnectCliModalProps) {
 				mt="xl"
 				visible={isPending}
 			>
-				<CodePreview
-					language="bash"
+				<CodeBlock
+					lang="bash"
 					value={command}
-					withCopy
 				/>
 			</Skeleton>
 

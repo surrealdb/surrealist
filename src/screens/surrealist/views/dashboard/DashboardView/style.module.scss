@@ -5,7 +5,7 @@
 
 .provision-loader::after {
 	border: solid 3px transparent;
-	background-image: linear-gradient(var(--mantine-color-body), var(--mantine-color-body)), var(--surrealist-gradient);
+	background-image: linear-gradient(var(--mantine-color-body), var(--mantine-color-body)), var(--surreal-gradient);
 	background-origin: border-box;
 	background-clip: content-box, border-box;
 	animation-duration: 0.75s;
@@ -16,4 +16,9 @@
 	width: 68px;
 	height: 68px;
 	transform: translateY(1px);
+}
+
+.content {
+	position: relative;
+	z-index: 0;
 }

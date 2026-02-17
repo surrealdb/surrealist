@@ -1,10 +1,9 @@
 import { type ComboboxData, Group, Select, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconChevronLeft, iconChevronRight } from "@surrealdb/ui";
 import { type FocusEvent, type KeyboardEvent, useLayoutEffect } from "react";
 import { useStable } from "~/hooks/stable";
-import { iconChevronLeft, iconChevronRight } from "~/util/icons";
 import { ActionButton } from "../ActionButton";
-import { Icon } from "../Icon";
 import type { PaginationStore } from "./hook";
 
 const PAGE_SIZES: ComboboxData = [
@@ -76,7 +75,7 @@ export function Pagination({ store, loading }: PaginationProps) {
 					}}
 				/>
 
-				<Text c="slate">of {store.pageCount} pages</Text>
+				<Text c="obsidian">of {store.pageCount} pages</Text>
 
 				<ActionButton
 					loading={loading}

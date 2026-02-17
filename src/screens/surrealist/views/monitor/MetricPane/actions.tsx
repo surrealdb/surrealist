@@ -1,9 +1,8 @@
 import { Checkbox, Group, Indicator, Menu, Select, Stack, Text } from "@mantine/core";
+import { Icon, iconChevronDown, iconClock, iconFilter } from "@surrealdb/ui";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { MetricsDuration } from "~/types";
-import { iconChevronDown, iconClock, iconFilter } from "~/util/icons";
 import { MonitorMetricOptions } from "../helpers";
 
 export interface MetricActionsProps {
@@ -45,7 +44,7 @@ export function MetricActions({ options, onChange }: MetricActionsProps) {
 					>
 						<ActionButton
 							variant="light"
-							color="slate"
+							color="obsidian"
 							label="Node filter"
 							size="lg"
 						>

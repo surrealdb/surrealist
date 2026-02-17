@@ -1,17 +1,17 @@
 import { Box, Button, Divider, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon, iconDownload, iconUpload } from "@surrealdb/ui";
 import { useState } from "react";
 import { adapter } from "~/adapter";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabilities";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { JSON_FILTER } from "~/constants";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { parseCapabilities, transformCapabilities } from "~/util/capabilities";
 import { showErrorNotification } from "~/util/helpers";
-import { iconDownload, iconUpload } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
 
@@ -28,10 +28,12 @@ interface ImportExportCardProps {
 }
 
 function ImportExportCard({ title, description, icon, onClick }: ImportExportCardProps) {
+	const isLight = useIsLight();
+
 	return (
 		<Paper
-			variant="interactive"
 			p="md"
+			bg={isLight ? "obsidian.0" : "obsidian.8"}
 			onClick={onClick}
 		>
 			<Group justify="space-between">
@@ -210,7 +212,6 @@ export function ImportExport({ instance, onClose }: ImportExportProps) {
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
 					variant="light"
 					flex={1}
 				>

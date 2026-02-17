@@ -10,17 +10,15 @@ import {
 	Text,
 	Textarea,
 } from "@mantine/core";
+import { Icon, iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "@surrealdb/ui";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { PermissionInput } from "~/components/Inputs";
 import { ContentPane } from "~/components/Pane";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { SaveableHandle } from "~/hooks/save";
-import { useIsLight } from "~/hooks/theme";
 import { SchemaParameter } from "~/types";
-import { iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "~/util/icons";
 import classes from "./style.module.scss";
 
 export interface ParameterPropertiesPanelProps {
@@ -38,7 +36,6 @@ export function ParameterPropertiesPanel({
 	onChange,
 	onDelete,
 }: ParameterPropertiesPanelProps) {
-	const isLight = useIsLight();
 	const fullName = `$${details.name}`;
 
 	return (
@@ -61,7 +58,7 @@ export function ParameterPropertiesPanel({
 				direction="column"
 			>
 				<Box>
-					<Paper bg={isLight ? "slate.0" : "slate.9"}>
+					<Paper bg="var(--mantine-color-body)">
 						<Flex align="center">
 							<ScrollArea
 								scrollbars="x"

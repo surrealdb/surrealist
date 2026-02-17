@@ -1,12 +1,12 @@
-import { type BoxProps, type ElementProps, Group, Text } from "@mantine/core";
+import { type BoxProps, type ElementProps, Group } from "@mantine/core";
+import { Icon, iconArrowUpRight } from "@surrealdb/ui";
 import type { MouseEvent } from "react";
 import { useEffect, useState } from "react";
 import type { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
-import { iconArrowUpRight } from "~/util/icons";
-import { Icon } from "../Icon";
+import { HighlightedText } from "../HighlightedText";
 
 export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {
 	value: RecordId;
@@ -46,31 +46,15 @@ export function RecordLink({ value, withOpen, ...rest }: RecordLinkProps) {
 		<Group
 			{...rest}
 			wrap="nowrap"
-			c="surreal.5"
+			c="rgb(0, 132, 255)"
 			gap={0}
 			onClick={handleOpen}
 			style={{
 				cursor: withOpen !== false ? "pointer" : undefined,
 			}}
 		>
-			<Text
-				ff="JetBrains Mono"
-				fw={600}
-				style={{
-					whiteSpace: "nowrap",
-					overflow: "hidden",
-					textOverflow: "ellipsis",
-					maxWidth: 300,
-				}}
-			>
-				{recordText}
-			</Text>
-			{withOpen !== false && (
-				<Icon
-					path={iconArrowUpRight}
-					right
-				/>
-			)}
+			<HighlightedText language="surrealql">{recordText}</HighlightedText>
+			{withOpen !== false && <Icon path={iconArrowUpRight} />}
 		</Group>
 	);
 }

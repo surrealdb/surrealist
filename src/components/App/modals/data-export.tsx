@@ -9,13 +9,13 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
+import { Icon, iconDownload } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { toggle } from "radash";
 import { useState } from "react";
 import type { SqlExportOptions as BaseExportOptions } from "surrealdb";
 import { useImmer } from "use-immer";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
@@ -26,7 +26,6 @@ import { useStable } from "~/hooks/stable";
 import { requestDatabaseExport } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification, showInfo, slugify } from "~/util/helpers";
-import { iconDownload } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 export type ExportOptions = BaseExportOptions & { tables: string[] };
@@ -227,7 +226,7 @@ export function DataExportModal() {
 				<Group>
 					<Button
 						flex={1}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={openedHandle.close}
 					>

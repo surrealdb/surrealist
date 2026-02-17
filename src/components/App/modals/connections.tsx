@@ -9,10 +9,10 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
+import { Icon, iconCircle, iconCloud, iconServer } from "@surrealdb/ui";
 import clsx from "clsx";
 import { useMemo, useState } from "react";
 import { Entry, type EntryProps } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnectionLabels, useConnectionList, useConnectionOverview } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
@@ -21,7 +21,6 @@ import { useStable } from "~/hooks/stable";
 import type { CloudInstance, Connection } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
 import { Y_SLIDE_TRANSITION } from "~/util/helpers";
-import { iconCircle, iconCloud, iconServer } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import classes from "../style.module.scss";
 
@@ -129,7 +128,7 @@ export function ConnectionsModal() {
 								>
 									<Button
 										size="xs"
-										color="slate"
+										color="obsidian"
 										className={clsx(
 											classes.label,
 											showAll && classes.labelActive,
@@ -146,7 +145,7 @@ export function ConnectionsModal() {
 											<Button
 												key={i}
 												size="xs"
-												color="slate"
+												color="obsidian"
 												className={clsx(
 													classes.label,
 													isActive && classes.labelActive,
@@ -165,7 +164,7 @@ export function ConnectionsModal() {
 
 					{isEmpty && (
 						<Text
-							c="slate"
+							c="obsidian"
 							ta="center"
 							my="xl"
 						>
@@ -220,7 +219,7 @@ export function ConnectionsModal() {
 								</Text>
 								<Icon
 									path={iconCircle}
-									c="slate"
+									c="obsidian"
 								/>
 								<Text>SurrealDB Cloud</Text>
 							</Group>

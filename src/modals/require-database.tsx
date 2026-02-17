@@ -42,7 +42,7 @@ function NamespaceDatabaseSelector({ onSelect }: NamespaceDatabaseSelectorProps)
 			/>
 			<Group mt="xl">
 				<Button
-					color="slate"
+					color="obsidian"
 					variant="light"
 					onClick={closeSelector}
 				>

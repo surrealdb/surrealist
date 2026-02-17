@@ -1,11 +1,11 @@
 .root {
 	border: 1px solid transparent;
 	border-radius: var(--mantine-radius-md);
-	background-color: var(--mantine-color-slate-7);
+	background-color: var(--mantine-color-obsidian-7);
 	transition: border-color 0.2s;
 
 	@include light {
-		background-color: var(--mantine-color-slate-1);
+		background-color: var(--mantine-color-obsidian-1);
 	}
 
 	&[data-with-border] {
@@ -18,7 +18,7 @@
 
 	&:focus-visible {
 		outline: none;
-		border-color: var(--mantine-color-slate-3);
+		border-color: var(--mantine-color-obsidian-3);
 
 		&[data-active] {
 			border-color: var(--mantine-color-surreal-3);

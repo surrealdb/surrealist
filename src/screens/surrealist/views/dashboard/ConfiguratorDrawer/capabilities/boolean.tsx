@@ -1,9 +1,8 @@
 import { Group, Switch, Text, Tooltip } from "@mantine/core";
+import { Icon, iconHelp } from "@surrealdb/ui";
 import { ChangeEvent } from "react";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
-import { iconHelp } from "~/util/icons";
 import { CapabilityBaseProps, CapabilityField } from "./shared";
 
 export interface BooleanCapabilityProps extends CapabilityBaseProps {

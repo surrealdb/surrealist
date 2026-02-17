@@ -1,13 +1,12 @@
 import { Badge, Group, Image, Select, Stack, TextInput } from "@mantine/core";
+import { Icon, iconCheck } from "@surrealdb/ui";
 import { ChangeEvent, useLayoutEffect } from "react";
-import { Icon } from "~/components/Icon";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconCheck } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
 export function DeploymentSection({ organisation, details, setDetails }: DeploySectionProps) {

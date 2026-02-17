@@ -12,15 +12,14 @@ import {
 	Text,
 } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon, iconChevronY, iconDatabase, iconMemory, iconPlus } from "@surrealdb/ui";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
-import { Icon } from "~/components/Icon";
 import { InstanceTypes } from "~/components/InstanceTypes";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudInstanceType } from "~/types";
 import { plural } from "~/util/helpers";
-import { iconChevronY, iconDatabase, iconMemory, iconPlus } from "~/util/icons";
 import { DeploySectionProps } from "../types";
 
 export function ClusterOptionsSection({ organisation, details, setDetails }: DeploySectionProps) {
@@ -125,10 +124,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 	return (
 		<Box>
 			<SimpleGrid cols={{ base: 1, xl: 2 }}>
-				<Paper
-					p="xl"
-					variant="gradient"
-				>
+				<Paper p="xl">
 					<Group>
 						<Icon
 							path={iconMemory}
@@ -173,10 +169,7 @@ export function ClusterOptionsSection({ organisation, details, setDetails }: Dep
 						</Group>
 					</Stack>
 				</Paper>
-				<Paper
-					p="xl"
-					variant="gradient"
-				>
+				<Paper p="xl">
 					<Group>
 						<Icon
 							path={iconDatabase}
@@ -281,7 +274,7 @@ export function IntegerInput({ value, min, max, step, suffix, onChange }: Intege
 				<ActionIcon
 					disabled={value <= min}
 					variant="transparent"
-					color="slate"
+					color="obsidian"
 					onClick={() => onChange(Math.max(min, round(value - step, step)))}
 				>
 					<Text fz="xl">-</Text>
@@ -291,7 +284,7 @@ export function IntegerInput({ value, min, max, step, suffix, onChange }: Intege
 				<ActionIcon
 					disabled={value >= max}
 					variant="transparent"
-					color="slate"
+					color="obsidian"
 					onClick={() => onChange(Math.min(max, round(value + step, step)))}
 				>
 					<Text fz="xl">+</Text>

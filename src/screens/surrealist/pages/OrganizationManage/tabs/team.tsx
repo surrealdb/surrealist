@@ -1,4 +1,13 @@
 import { Avatar, Badge, Box, Button, Group, Menu, Paper, Stack, Table, Text } from "@mantine/core";
+import {
+	Icon,
+	iconAccountPlus,
+	iconClose,
+	iconDelete,
+	iconDotsVertical,
+	iconExitToAp,
+	iconServerSecure,
+} from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import {
@@ -15,7 +24,6 @@ import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudInvitationsQuery } from "~/cloud/queries/invitations";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -23,14 +31,6 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudMember } from "~/types";
 import { showInfo } from "~/util/helpers";
-import {
-	iconAccountPlus,
-	iconClose,
-	iconDelete,
-	iconDotsVertical,
-	iconExitToAp,
-	iconServerSecure,
-} from "~/util/icons";
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
@@ -108,7 +108,10 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 				}
 			>
 				<Paper p="md">
-					<Table className={classes.table}>
+					<Table
+						className={classes.table}
+						verticalSpacing="md"
+					>
 						<Table.Tbody>
 							{membersQuery.data?.map((member) => {
 								const isSelf = member.user_id === userId;
@@ -117,18 +120,21 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 
 								return (
 									<Table.Tr key={member.user_id}>
-										<Table.Td c="bright">
+										<Table.Td>
 											<Group>
 												<Avatar
 													src={member.profile_picture}
 													name={member.name}
-													radius="sm"
 												/>
 												<Box>
 													<Group gap="sm">
-														<Text fw={500}>{member.name}</Text>
+														<Text
+															fw={500}
+															c="bright"
+														>
+															{member.name}
+														</Text>
 														<Badge
-															color="slate"
 															variant="light"
 															size="sm"
 														>
@@ -221,7 +227,6 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 						<Group gap="sm">
 							Pending invitations
 							<Badge
-								color="slate"
 								variant="light"
 								size="sm"
 							>
@@ -238,9 +243,13 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 									<Table.Tr key={invite.code}>
 										<Table.Td c="bright">
 											<Group gap="sm">
-												<Text fw={500}>{invite.email}</Text>
+												<Text
+													fw={500}
+													c="bright"
+												>
+													{invite.email}
+												</Text>
 												<Badge
-													color="slate"
 													variant="light"
 													size="sm"
 												>

@@ -8,6 +8,7 @@ import {
 	Text,
 	Tooltip,
 } from "@mantine/core";
+import { Icon, iconChevronDown, iconChevronUp, iconIndex, iconWarning } from "@surrealdb/ui";
 import clsx from "clsx";
 import { alphabetical, isObject } from "radash";
 import { type MouseEvent, useMemo } from "react";
@@ -15,8 +16,6 @@ import { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
 import type { ColumnSort, TableInfo } from "~/types";
-import { iconChevronDown, iconChevronUp, iconIndex, iconWarning } from "~/util/icons";
-import { Icon } from "../Icon";
 import { DataCell } from "./datatypes";
 import classes from "./style.module.scss";
 
@@ -144,7 +143,7 @@ export function DataTable(props: DataTableProps) {
 								<div>
 									<Icon
 										path={iconIndex}
-										c="slate.3"
+										c="obsidian.3"
 									/>
 								</div>
 							</Tooltip>
@@ -152,7 +151,7 @@ export function DataTable(props: DataTableProps) {
 						{sorting?.[0] === key && (
 							<Icon
 								path={sorting[1] === "asc" ? iconChevronDown : iconChevronUp}
-								c="slate.3"
+								c="obsidian.3"
 							/>
 						)}
 					</Group>
@@ -186,7 +185,7 @@ export function DataTable(props: DataTableProps) {
 					component="tr"
 					onContextMenu={(e) => onRowContextMenu?.(e, value)}
 					style={{
-						backgroundColor: `${isActive ? "var(--mantine-color-slate-6)" : undefined} !important`,
+						backgroundColor: `${isActive ? "var(--mantine-color-obsidian-6)" : undefined} !important`,
 					}}
 				>
 					{onSelectionChange && (
@@ -222,7 +221,7 @@ export function DataTable(props: DataTableProps) {
 	}, [keys, values, active, selected, inspect, onRowContextMenu, onSelectionChange]);
 
 	if (!isRenderable(data)) {
-		return <Text c="slate">Result could not be displayed as a table.</Text>;
+		return <Text c="obsidian">Result could not be displayed as a table.</Text>;
 	}
 
 	return (

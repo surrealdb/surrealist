@@ -1,14 +1,13 @@
-import { Button, Stack, Text } from "@mantine/core";
+import { Box, Button, Stack, Text } from "@mantine/core";
+import { Icon, iconCheck, iconReset, iconWrench } from "@surrealdb/ui";
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import { adapter, isDesktop } from "~/adapter";
 import type { DesktopAdapter } from "~/adapter/desktop";
-import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { useVersionCopy } from "~/hooks/debug";
 import { useStable } from "~/hooks/stable";
 import { isDevelopment, isPreview } from "~/util/environment";
-import { iconCheck, iconReset, iconWrench } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export function AboutTab() {
@@ -48,8 +47,8 @@ export function AboutTab() {
 	});
 
 	return (
-		<>
-			<Text c="slate">Surrealist &copy; {format(currDate, "yyyy")} SurrealDB Ltd</Text>
+		<Box m="xs">
+			<Text c="obsidian">Surrealist &copy; {format(currDate, "yyyy")} SurrealDB Ltd</Text>
 			<Stack
 				gap="xs"
 				mt="xl"
@@ -82,7 +81,7 @@ export function AboutTab() {
 				<Button
 					onClick={copyDebug}
 					rightSection={<Icon path={clipboard.copied ? iconCheck : iconWrench} />}
-					color={clipboard.copied ? "surreal" : "slate"}
+					color={clipboard.copied ? "surreal" : "obsidian"}
 					variant="light"
 					size="xs"
 				>
@@ -91,7 +90,7 @@ export function AboutTab() {
 				{isDesktop && (
 					<Button
 						onClick={checkForUpdates}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						size="xs"
 						rightSection={
@@ -105,6 +104,6 @@ export function AboutTab() {
 					</Button>
 				)}
 			</Stack>
-		</>
+		</Box>
 	);
 }

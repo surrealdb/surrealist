@@ -14,11 +14,21 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import {
+	CodeBlock,
+	Icon,
+	iconArrowLeft,
+	iconAuth,
+	iconDownload,
+	iconFilter,
+	iconQuery,
+	iconServer,
+	iconTransfer,
+	iconWrench,
+} from "@surrealdb/ui";
 import { formatDistanceToNow } from "date-fns";
 import { FC, memo, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
-import { CodePreview } from "~/components/CodePreview";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -28,16 +38,6 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { DiagnosticWithTime, useDatabaseStore } from "~/stores/database";
 import { showInfo } from "~/util/helpers";
-import {
-	iconArrowLeft,
-	iconAuth,
-	iconDownload,
-	iconFilter,
-	iconQuery,
-	iconServer,
-	iconTransfer,
-	iconWrench,
-} from "~/util/icons";
 
 interface DiagnosticEntry {
 	id: string;
@@ -52,7 +52,7 @@ const QUERY_DECORATION: Decoration = [iconQuery, "orange"];
 const AUTH_DECORATION: Decoration = [iconAuth, "red"];
 const SERVER_DECORATION: Decoration = [iconServer, "blue"];
 const DATA_DECORATION: Decoration = [iconTransfer, "green"];
-const OTHER_DECORATION: Decoration = [iconWrench, "slate"];
+const OTHER_DECORATION: Decoration = [iconWrench, "obsidian"];
 
 const DIAGNOSTIC_TYPES: Record<string, string> = {
 	query: "Query",
@@ -187,14 +187,13 @@ function ConnectionDiagnosticsSelector() {
 					<Button
 						leftSection={<Icon path={iconArrowLeft} />}
 						onClick={() => setFocusedDiagnostic(null)}
-						color="slate"
 						variant="light"
 					>
 						Back to diagnostics
 					</Button>
 					<Paper
 						bd="none"
-						bg={isLight ? "slate.4" : "slate.7"}
+						bg={isLight ? "obsidian.4" : "obsidian.7"}
 						flex={1}
 					>
 						<DiagnosticDetails entry={focusedDiagnostic} />
@@ -238,7 +237,7 @@ function ConnectionDiagnosticsSelector() {
 						<Paper
 							p="lg"
 							bd="none"
-							bg={isLight ? "slate.2" : "slate.8"}
+							bg={isLight ? "obsidian.2" : "obsidian.8"}
 						>
 							<Text
 								c="dimmed"
@@ -263,7 +262,6 @@ function ConnectionDiagnosticsSelector() {
 			</Box>
 			<Group mt="xl">
 				<Button
-					color="slate"
 					variant="light"
 					onClick={closeSelector}
 				>
@@ -271,14 +269,12 @@ function ConnectionDiagnosticsSelector() {
 				</Button>
 				<Spacer />
 				<Button
-					color="slate"
 					variant="light"
 					onClick={() => setRecordDiagnostics(false)}
 				>
 					Stop recording
 				</Button>
 				<Button
-					color="slate"
 					variant="light"
 					onClick={exportDiagnostics}
 					rightSection={<Icon path={iconDownload} />}
@@ -370,7 +366,7 @@ const DiagnosticDetails: FC<{ entry: DiagnosticEntry } & BoxProps> = memo(({ ent
 				<Text>Not started yet</Text>
 			)}
 			<Spacer />
-			<Text c="slate">
+			<Text c="dimmed">
 				{formatDistanceToNow(entry.before.timestamp, {
 					addSuffix: true,
 				})}
@@ -392,7 +388,7 @@ const DiagnosticEntry: FC<
 		<UnstyledButton onClick={handleSelect}>
 			<Paper
 				bd="none"
-				bg={isLight ? "slate.4" : "slate.7"}
+				bg={isLight ? "obsidian.4" : "obsidian.7"}
 				{...rest}
 			>
 				<DiagnosticDetails entry={entry} />
@@ -409,8 +405,8 @@ const DiagnosticTimeline: FC<{ entry: DiagnosticEntry }> = memo(({ entry }) => {
 					key={index}
 					title={<Label>Progress update #{index + 1}</Label>}
 				>
-					<CodePreview
-						language="json"
+					<CodeBlock
+						lang="json"
 						value={JSON.stringify(
 							prog.phase === "progress" ? prog.result : {},
 							null,
@@ -422,8 +418,8 @@ const DiagnosticTimeline: FC<{ entry: DiagnosticEntry }> = memo(({ entry }) => {
 			{entry.after?.phase === "after" && (
 				<Timeline.Item title={<Label>Final update</Label>}>
 					{entry.after.success ? (
-						<CodePreview
-							language="json"
+						<CodeBlock
+							lang="json"
 							value={JSON.stringify(
 								(entry.after?.phase === "after" && entry.after.result) || {},
 								null,

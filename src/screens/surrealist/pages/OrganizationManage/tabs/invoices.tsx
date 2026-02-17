@@ -1,10 +1,9 @@
 import { ActionIcon, Alert, Paper, Skeleton, Stack, Table } from "@mantine/core";
+import { Icon, iconHelp, iconOpen } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import { useCloudInvoicesQuery } from "~/cloud/queries/invoices";
-import { Icon } from "~/components/Icon";
 import { Section } from "~/components/Section";
 import { InvoiceStatus } from "~/types";
-import { iconHelp, iconOpen } from "~/util/icons";
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
@@ -31,14 +30,6 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 					</Stack>
 				) : invoiceQuery.data?.length ? (
 					<Table className={classes.table}>
-						{/* <Table.Thead>
-				<Table.Tr>
-					<Table.Th>Invoice date</Table.Th>
-					<Table.Th>Status</Table.Th>
-					<Table.Th>Amount</Table.Th>
-					<Table.Th w={0}>Actions</Table.Th>
-				</Table.Tr>
-			</Table.Thead> */}
 						<Table.Tbody>
 							{invoiceQuery.data?.map((invoice) => {
 								const status = INVOICE_STATUSES[invoice.status];
@@ -49,7 +40,7 @@ export function OrganizationInvoicesTab({ organization }: OrganizationTabProps) 
 											{new Date(invoice.date).toLocaleDateString()}
 										</Table.Td>
 										<Table.Td
-											c={status?.color ?? "slate"}
+											c={status?.color ?? "obsidian"}
 											fw={600}
 										>
 											{status?.name ?? invoice.status}

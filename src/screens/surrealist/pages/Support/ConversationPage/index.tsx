@@ -17,6 +17,18 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
+import {
+	Icon,
+	iconArrowLeft,
+	iconBullhorn,
+	iconChat,
+	iconCheck,
+	iconClock,
+	iconFile,
+	iconPause,
+	iconPlus,
+	iconRefresh,
+} from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
@@ -29,24 +41,12 @@ import { useCloudConversationQuery } from "~/cloud/queries/context";
 import { AccountAvatar } from "~/components/AccountAvatar";
 import { ActionButton } from "~/components/ActionButton";
 import { AuthGuard } from "~/components/AuthGuard";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useCloudProfile } from "~/hooks/cloud";
 import { fileToBase64 } from "~/util/file";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
-import {
-	iconArrowLeft,
-	iconBullhorn,
-	iconChat,
-	iconCheck,
-	iconClock,
-	iconFile,
-	iconPause,
-	iconPlus,
-	iconRefresh,
-} from "~/util/icons";
 import { ConversationPart } from "../ConversationPart";
 import classes from "../style.module.scss";
 
@@ -159,7 +159,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 		if (val === null || val === undefined) {
 			return (
 				<Text
-					c="slate.4"
+					c="obsidian.4"
 					fs="italic"
 				>
 					No value
@@ -172,7 +172,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 			if (val.length === 0) {
 				return (
 					<Text
-						c="slate.4"
+						c="obsidian.4"
 						fs="italic"
 					>
 						No items
@@ -209,7 +209,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 			if (val.content_type) {
 				return (
 					<Text
-						c="surreal"
+						c="violet"
 						style={{ cursor: "pointer" }}
 						onClick={() => adapter.openUrl(val.url)}
 					>
@@ -228,7 +228,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 					style={{
 						whiteSpace: "pre-wrap",
 						fontSize: "0.875rem",
-						backgroundColor: "var(--mantine-color-slate-8)",
+						backgroundColor: "var(--mantine-color-obsidian-8)",
 						padding: "0.5rem",
 						borderRadius: "0.25rem",
 						fontFamily: "monospace",
@@ -256,7 +256,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 				return (
 					<Text
 						rel="noopener noreferrer"
-						c="surreal"
+						c="violet"
 						style={{ textDecoration: "underline", cursor: "pointer" }}
 						onClick={() => adapter.openUrl(val)}
 					>
@@ -270,7 +270,7 @@ function ConversationAttribute({ value }: ConversationAttributeProps) {
 					<Text
 						component="a"
 						href={`mailto:${val}`}
-						c="surreal"
+						c="violet"
 						style={{ textDecoration: "underline" }}
 					>
 						{val}
@@ -448,7 +448,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 									<Spacer />
 
 									<Button
-										color="slate"
+										color="obsidian"
 										variant="light"
 										leftSection={<Icon path={iconArrowLeft} />}
 										onClick={() => navigate(`/support/requests`)}

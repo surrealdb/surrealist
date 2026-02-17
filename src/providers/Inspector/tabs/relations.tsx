@@ -1,9 +1,7 @@
 import { Group, Paper, ScrollArea, Text } from "@mantine/core";
+import { Icon, iconCircle } from "@surrealdb/ui";
 import type { RecordId } from "surrealdb";
-import { Icon } from "~/components/Icon";
 import { RecordLink } from "~/components/RecordLink";
-import { useIsLight } from "~/hooks/theme";
-import { iconCircle } from "~/util/icons";
 
 interface RelationsListProps {
 	name: string;
@@ -11,12 +9,10 @@ interface RelationsListProps {
 }
 
 function RelationsList({ name, relations }: RelationsListProps) {
-	const isLight = useIsLight();
-
 	return (
 		<Paper
 			p="xs"
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg="var(--mantine-color-body)"
 			mt={6}
 		>
 			{relations.length === 0 && (

@@ -246,7 +246,7 @@ export async function buildFlowNodes(
 	if (linkMode === "visible") {
 		const uniqueLinks = new Map<string, Edge>();
 		const linkColor = getComputedStyle(document.body).getPropertyValue(
-			"--mantine-color-slate-5",
+			"--mantine-color-obsidian-5",
 		);
 
 		for (const table of tables) {
@@ -280,7 +280,7 @@ export async function buildFlowNodes(
 							source: table.schema.name,
 							target,
 							className: classes.recordLink,
-							labelBgStyle: { fill: "var(--mantine-color-slate-8" },
+							labelBgStyle: { fill: "var(--mantine-color-obsidian-8" },
 							labelStyle: { fill: "currentColor" },
 							label: field.name,
 							data: {

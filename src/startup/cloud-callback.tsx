@@ -1,4 +1,6 @@
 import "@mantine/core/styles.layer.css";
+import "@surrealdb/ui/styles.css";
+import "@surrealdb/ui/fonts.css";
 
 import "../assets/styles/override.scss";
 import "../assets/styles/variants.scss";

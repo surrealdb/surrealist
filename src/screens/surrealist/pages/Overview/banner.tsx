@@ -1,10 +1,9 @@
 import { Alert, MantineColor } from "@mantine/core";
-import { Icon } from "~/components/Icon";
+import { Icon, iconBullhorn, iconWarning } from "@surrealdb/ui";
 import { BannerType, CloudBanner } from "~/types";
-import { iconBullhorn, iconWarning } from "~/util/icons";
 
 const BANNER_INFO: Record<BannerType, [MantineColor, string, string]> = {
-	info: ["blue", "Service Update", iconBullhorn],
+	info: ["violet", "Service Update", iconBullhorn],
 	warning: ["orange", "Service Update", iconWarning],
 	important: ["red", "Important Service Update", iconWarning],
 };

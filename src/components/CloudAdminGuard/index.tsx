@@ -1,7 +1,7 @@
 import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
+import { pictoSDBCloud } from "@surrealdb/ui";
 import { PropsWithChildren } from "react";
 import { navigate } from "wouter/use-browser-location";
-import cloudImg from "~/assets/images/icons/cloud.webp";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { CloudOrganization } from "~/types";
 
@@ -23,7 +23,7 @@ export function CloudAdminGuard({
 			>
 				<Stack align="center">
 					<Image
-						src={cloudImg}
+						src={pictoSDBCloud}
 						alt=""
 						maw={125}
 					/>
@@ -49,7 +49,7 @@ export function CloudAdminGuard({
 					>
 						<Button
 							flex={1}
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={() => navigate(`/overview`)}
 						>

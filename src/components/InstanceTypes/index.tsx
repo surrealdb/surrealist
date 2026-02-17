@@ -1,12 +1,12 @@
 import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
+import { Icon, iconAuth } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
 import { TypeVariant, useInstanceTypeRegistry } from "~/cloud/hooks/types";
+import { useIsLight } from "~/hooks/theme";
 import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
 import { getTypeCategoryDescription, getTypeCategoryName } from "~/util/cloud";
 import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
-import { iconAuth } from "~/util/icons";
-import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
 
@@ -104,14 +104,21 @@ function InstanceTypeRow({
 	withPrices,
 	onSelect,
 }: InstanceTypeRowProps) {
+	const isLight = useIsLight();
 	const hourlyPriceThousandth = instanceType?.price_hour ?? 0;
 	const estimatedCost = hourlyPriceThousandth / 1000;
 	const kind = instanceType.category === "free" ? "free" : "paid";
 
 	return (
 		<Paper
+			bg={isLight ? "obsidian.1" : "obsidian.9"}
 			p="lg"
-			variant={active ? "gradient" : selected ? "selected" : "interactive"}
+			withBorder
+			radius="md"
+			style={{
+				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
+				cursor: active ? "not-allowed" : "pointer",
+			}}
 			onClick={() => !active && onSelect(instanceType)}
 		>
 			<Group>
@@ -126,8 +133,8 @@ function InstanceTypeRow({
 						</Text>
 						{active ? (
 							<Badge
+								variant="gradient"
 								size="sm"
-								variant="light"
 							>
 								Active
 							</Badge>
@@ -166,7 +173,7 @@ function InstanceTypeRow({
 					</Text>
 					<Label
 						mt={2}
-						c="slate.3"
+						c="obsidian.3"
 					>
 						vCPU
 					</Label>
@@ -185,7 +192,7 @@ function InstanceTypeRow({
 					</Text>
 					<Label
 						mt={2}
-						c="slate.3"
+						c="obsidian.3"
 					>
 						Memory
 					</Label>

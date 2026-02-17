@@ -1,5 +1,5 @@
 import { Radio, type RadioProps, Text } from "@mantine/core";
-import { Icon } from "../Icon";
+import { Icon } from "@surrealdb/ui";
 
 export interface FancyRadioProps extends RadioProps {
 	title: string;
@@ -18,12 +18,11 @@ export const FancyRadio = ({ title, titleIcon, subtitle, ...props }: FancyRadioP
 					<Icon
 						path={titleIcon}
 						size="sm"
-						left
 					/>
 				)}
 				{title}
 			</Text>
-			{subtitle && <Text c="slate">{subtitle}</Text>}
+			{subtitle && <Text c="obsidian">{subtitle}</Text>}
 		</>
 	);
 

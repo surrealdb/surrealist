@@ -11,10 +11,10 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconEdit, iconPlus, iconSearch } from "@surrealdb/ui";
 import equal from "fast-deep-equal";
 import { Fragment, useMemo, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { KeybindInput } from "~/components/Inputs/keybinding";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Shortcut } from "~/components/Shortcut";
@@ -29,7 +29,6 @@ import {
 } from "~/providers/Commands";
 import { useConfigStore } from "~/stores/config";
 import { fuzzyMatch } from "~/util/helpers";
-import { iconEdit, iconPlus, iconSearch } from "~/util/icons";
 
 export function KeybindingsTab() {
 	const [search, setSearch] = useInputState("");
@@ -67,90 +66,94 @@ export function KeybindingsTab() {
 				scrollbars="y"
 				type="always"
 			>
-				<TextInput
-					leftSection={
-						<Icon
-							path={iconSearch}
-							size="sm"
-						/>
-					}
-					placeholder="Search commands"
-					value={search}
-					onChange={setSearch}
-					autoFocus
-					size="xs"
-					mb="sm"
-				/>
-				<Stack
-					gap="xl"
-					mt="xl"
-					pb={32}
-				>
-					{filtered.length === 0 && (
-						<Text
-							ta="center"
-							c="slate"
-							mt="xl"
-						>
-							No results matched your search
-						</Text>
-					)}
-					{filtered.map((category, i) => (
-						<Box key={i}>
+				<Box m="xs">
+					<TextInput
+						leftSection={
+							<Icon
+								path={iconSearch}
+								size="sm"
+							/>
+						}
+						placeholder="Search commands"
+						value={search}
+						onChange={setSearch}
+						autoFocus
+						size="xs"
+						mb="sm"
+					/>
+					<Stack
+						gap="xl"
+						mt="xl"
+						pb={32}
+					>
+						{filtered.length === 0 && (
 							<Text
-								fw={600}
-								fz={20}
-								c="bright"
+								ta="center"
+								c="obsidian"
+								mt="xl"
 							>
-								{category.name}
+								No results matched your search
 							</Text>
-							<Stack
-								mt="lg"
-								gap="xs"
-							>
-								{category.commands.map((cmd, j) => {
-									const active = keybinds.get(cmd.id);
-									const modified = userKeybinds[cmd.id] !== undefined;
+						)}
+						{filtered.map((category, i) => (
+							<Box key={i}>
+								<Text
+									fw={600}
+									fz={20}
+									c="bright"
+								>
+									{category.name}
+								</Text>
+								<Stack
+									mt="lg"
+									gap="xs"
+								>
+									{category.commands.map((cmd, j) => {
+										const active = keybinds.get(cmd.id);
+										const modified = userKeybinds[cmd.id] !== undefined;
 
-									return (
-										<Fragment key={j}>
-											<Group h={42}>
-												<Icon
-													path={cmd.icon}
-													size="sm"
-												/>
-												<Text c="bright">{cmd.name}</Text>
-												{modified && <Text c="slate">(Modified)</Text>}
-												<Spacer />
-												{active && active.length > 0 ? (
-													<Shortcut value={active} />
-												) : (
-													<Text c="slate">&mdash;</Text>
-												)}
-												<ActionButton
-													ml="xl"
-													variant="subtle"
-													label={
-														active
-															? "Edit keybinding"
-															: "Add keybinding"
-													}
-													onClick={() => {
-														setRecordCommand(cmd);
-														recordingHandle.open();
-													}}
-												>
-													<Icon path={active ? iconEdit : iconPlus} />
-												</ActionButton>
-											</Group>
-											{j < category.commands.length - 1 && <Divider />}
-										</Fragment>
-									);
-								})}
-							</Stack>
-						</Box>
-					))}
-				</Stack>
+										return (
+											<Fragment key={j}>
+												<Group h={42}>
+													<Icon
+														path={cmd.icon}
+														size="sm"
+													/>
+													<Text c="bright">{cmd.name}</Text>
+													{modified && (
+														<Text c="obsidian">(Modified)</Text>
+													)}
+													<Spacer />
+													{active && active.length > 0 ? (
+														<Shortcut value={active} />
+													) : (
+														<Text c="obsidian">&mdash;</Text>
+													)}
+													<ActionButton
+														ml="xl"
+														variant="subtle"
+														label={
+															active
+																? "Edit keybinding"
+																: "Add keybinding"
+														}
+														onClick={() => {
+															setRecordCommand(cmd);
+															recordingHandle.open();
+														}}
+													>
+														<Icon path={active ? iconEdit : iconPlus} />
+													</ActionButton>
+												</Group>
+												{j < category.commands.length - 1 && <Divider />}
+											</Fragment>
+										);
+									})}
+								</Stack>
+							</Box>
+						))}
+					</Stack>
+				</Box>
 			</ScrollArea>
 
 			<Modal
@@ -250,7 +253,7 @@ function RecordingModal({ command, commands, keybindMap, onClose }: RecordingMod
 			</Box>
 			{duplicates.length > 0 && (
 				<Paper
-					bg="slate.9"
+					bg="obsidian.9"
 					mt="sm"
 					p="lg"
 				>
@@ -285,7 +288,7 @@ function RecordingModal({ command, commands, keybindMap, onClose }: RecordingMod
 			<Group mt="lg">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>
@@ -294,7 +297,7 @@ function RecordingModal({ command, commands, keybindMap, onClose }: RecordingMod
 				{isResettable && (
 					<Button
 						onClick={handleReset}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						flex={1}
 					>

@@ -1,10 +1,9 @@
 import { Alert, Box, Button, Group } from "@mantine/core";
+import { Icon, iconOpen, iconReset } from "@surrealdb/ui";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { Icon } from "~/components/Icon";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { openSurrealChangelog } from "~/util/cloud";
-import { iconOpen, iconReset } from "~/util/icons";
 
 export interface UpdateBlockProps {
 	instance: CloudInstance;
@@ -48,7 +47,7 @@ export function UpdateBlock({
 					</Button>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						rightSection={<Icon path={iconOpen} />}
 						onClick={() => openSurrealChangelog(latest)}
@@ -57,7 +56,7 @@ export function UpdateBlock({
 					</Button>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={onVersions}
 					>

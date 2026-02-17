@@ -26,7 +26,7 @@ export function ChangelogModal() {
 					<Fragment key={index}>
 						<Box>
 							<Text
-								c="slate.3"
+								c="obsidian.3"
 								fz="lg"
 							>
 								{dayjs(changelog.metadata.date).format("YYYY-MM-DD")}

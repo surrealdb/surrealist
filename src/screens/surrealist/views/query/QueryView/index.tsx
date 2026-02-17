@@ -3,10 +3,10 @@ import { EditorView } from "@codemirror/view";
 import { Box, Button, Group, Modal, Stack, TagsInput, Text, TextInput } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon, iconCheck } from "@surrealdb/ui";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -25,7 +25,6 @@ import type { SavedQuery } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { SetQueryEvent } from "~/util/global-events";
 import { newId, ON_FOCUS_SELECT } from "~/util/helpers";
-import { iconCheck } from "~/util/icons";
 import { HistoryDrawer } from "../HistoryDrawer";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
@@ -283,7 +282,7 @@ export function QueryView() {
 									<Text
 										span
 										size="xs"
-										c="slate"
+										c="obsidian"
 									>
 										(optional)
 									</Text>
@@ -306,7 +305,7 @@ export function QueryView() {
 							<Button
 								onClick={isSavingHandle.close}
 								variant="light"
-								color="slate"
+								color="obsidian"
 							>
 								Close
 							</Button>

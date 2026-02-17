@@ -2,11 +2,11 @@ import { Prec } from "@codemirror/state";
 import { type EditorView, keymap } from "@codemirror/view";
 import { Badge, Group } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon, iconClose, iconDollar, iconReset } from "@surrealdb/ui";
 import { useEffect, useMemo, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { runQueryKeymap, surqlLinting } from "~/editor";
 import { queryEditorField, setQueryEditor } from "~/editor/query";
@@ -16,7 +16,6 @@ import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
-import { iconClose, iconDollar, iconReset } from "~/util/icons";
 
 export interface VariablesPaneProps {
 	isValid: boolean;
@@ -101,14 +100,14 @@ export function VariablesPane({
 							</Badge>
 						)}
 						<ActionButton
-							color="slate"
+							color="obsidian"
 							onClick={clearVariables}
 							label="Clear variables"
 						>
 							<Icon path={iconReset} />
 						</ActionButton>
 						<ActionButton
-							color="slate"
+							color="obsidian"
 							onClick={closeVariables}
 							label="Close panel"
 						>

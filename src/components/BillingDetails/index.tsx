@@ -1,11 +1,10 @@
 import { Box, BoxProps, Button, Divider, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
+import { Icon, iconAccount } from "@surrealdb/ui";
 import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
 import { openBillingDetails } from "~/cloud/modals/billing";
 import { useCloudBillingQuery } from "~/cloud/queries/billing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
-import { iconAccount } from "~/util/icons";
-import { Icon } from "../Icon";
 import { Label } from "../Label";
 import { Spacer } from "../Spacer";
 
@@ -25,13 +24,12 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 	return (
 		<Paper
 			p="xl"
-			variant="gradient"
 			{...rest}
 		>
 			<Group>
 				<Icon
 					path={iconAccount}
-					size="xl"
+					size="lg"
 				/>
 				<Text
 					fz="xl"
@@ -43,7 +41,7 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 				<Spacer />
 				{isOwner && (
 					<Button
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={handleEditBilling}
 					>
@@ -65,7 +63,7 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 							</Text>
 						) : (
 							<Text
-								c="slate.4"
+								c="obsidian.4"
 								fw={500}
 							>
 								Not provided yet
@@ -85,7 +83,7 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 							</Text>
 						) : (
 							<Text
-								c="slate.4"
+								c="obsidian.4"
 								fw={500}
 							>
 								Not provided yet

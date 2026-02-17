@@ -5,6 +5,7 @@ import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Section } from "~/components/Section";
 import { useAbsoluteLocation, useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
 import { StartCreator } from "../../Overview/content/creator";
@@ -22,6 +23,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	const [, _navigate] = useAbsoluteLocation();
 	const navigateConnection = useConnectionNavigator();
 	const { data, isSuccess, isPending } = useCloudOrganizationInstancesQuery(organization.id);
+	const allRegions = useCloudStore((s) => s.regions);
 	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
 	const isRestricted = isOrganisationRestricted(organization);
 	const instances = isSuccess ? data : [];
@@ -55,6 +57,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 					<StartInstance
 						key={instance.id}
 						instance={instance}
+						regions={allRegions}
 						organisation={organization}
 						onConnect={activateInstance}
 					/>

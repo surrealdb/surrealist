@@ -4,12 +4,21 @@ import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap, scrollPastEnd } from "@codemirror/view";
 import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import {
+	Icon,
+	iconAutoFix,
+	iconChevronRight,
+	iconDollar,
+	iconServer,
+	iconStar,
+	iconText,
+	iconWarning,
+} from "@surrealdb/ui";
 import { objectify, trim } from "radash";
 import { useMemo, useRef, useState } from "react";
 import { type HtmlPortalNode, OutPortal } from "react-reverse-portal";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor, StateSnapshot } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
@@ -34,19 +43,9 @@ import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
 import { showErrorNotification, tryParseParams } from "~/util/helpers";
-import {
-	iconAutoFix,
-	iconChevronRight,
-	iconDollar,
-	iconServer,
-	iconStar,
-	iconText,
-	iconWarning,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { parseVariables } from "~/util/language";
 import { readQuery, writeQuery } from "../QueryView/strategy";
-import classes from "./style.module.scss";
 
 const SERIALIZE = {
 	history: historyField,
@@ -254,23 +253,24 @@ export function QueryPane({
 						gap="sm"
 						style={{ flexShrink: 0 }}
 					>
-						{queryState.doc.length > MAX_HISTORY_QUERY_LENGTH && (
-							<HoverCard position="bottom">
-								<HoverCard.Target>
-									<ThemeIcon
-										radius="xs"
-										variant="light"
-										color="orange"
-									>
-										<Icon path={iconWarning} />
-									</ThemeIcon>
-								</HoverCard.Target>
-								<HoverCard.Dropdown maw={225}>
-									This query exceeds the maximum length to be saved in the query
-									history.
-								</HoverCard.Dropdown>
-							</HoverCard>
-						)}
+						{Array.isArray(queryState.doc as any) &&
+							(queryState.doc as any).length > MAX_HISTORY_QUERY_LENGTH && (
+								<HoverCard position="bottom">
+									<HoverCard.Target>
+										<ThemeIcon
+											radius="xs"
+											variant="light"
+											color="orange"
+										>
+											<Icon path={iconWarning} />
+										</ThemeIcon>
+									</HoverCard.Target>
+									<HoverCard.Dropdown maw={225}>
+										This query exceeds the maximum length to be saved in the
+										query history.
+									</HoverCard.Dropdown>
+								</HoverCard>
+							)}
 
 						<ActionButton
 							variant="light"
@@ -309,13 +309,12 @@ export function QueryPane({
 			}
 		>
 			<CodeEditor
-				state={queryState}
+				state={queryState as unknown as StateSnapshot | undefined}
 				onChange={updateState}
 				onMount={onEditorMounted}
 				lineNumbers={lineNumbers}
 				serialize={SERIALIZE}
 				extensions={extensions}
-				className={classes.editor}
 				mb={-9}
 				autoCollapseDepth={0}
 			/>
@@ -332,13 +331,11 @@ export function QueryPane({
 					<Paper
 						p="xs"
 						pl="md"
-						variant="gradient"
 						bg={
 							isLight
 								? "var(--mantine-color-slate-1)"
 								: "var(--mantine-color-slate-6)"
 						}
-						withBorder={false}
 						style={{
 							...style,
 							position: "absolute",

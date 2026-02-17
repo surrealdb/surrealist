@@ -1,15 +1,14 @@
 import { Button, Group, Select, Stack, Text } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
+import { Icon, iconTag } from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { useState } from "react";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { CloudMember, CloudOrganization } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconTag } from "~/util/icons";
 import { useUpdateRoleMutation } from "../mutations/role";
 import { useCloudRolesQuery } from "../queries/roles";
 
@@ -92,7 +91,6 @@ function RoleModal({ organization, member }: RoleModalProps) {
 				<Group mt="xl">
 					<Button
 						onClick={handleClose}
-						color="slate"
 						variant="light"
 						flex={1}
 					>

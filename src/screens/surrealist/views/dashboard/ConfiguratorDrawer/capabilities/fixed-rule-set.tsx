@@ -10,15 +10,20 @@ import {
 	Tooltip,
 	UnstyledButton,
 } from "@mantine/core";
-
+import {
+	Icon,
+	iconCancel,
+	iconCheck,
+	iconChevronDown,
+	iconChevronUp,
+	iconHelp,
+} from "@surrealdb/ui";
 import { useEffect, useState } from "react";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsLight } from "~/hooks/theme";
 import { Selectable } from "~/types";
 import { plural } from "~/util/helpers";
-import { iconCancel, iconCheck, iconChevronDown, iconChevronUp, iconHelp } from "~/util/icons";
 
 import {
 	BASE_STATUS,
@@ -154,17 +159,19 @@ export function FixedRuleSetCapability({
 
 					<Paper
 						my="xl"
-						bg={isLight ? "slate.0" : "slate.7"}
+						bg={isLight ? "obsidian.0" : "obsidian.8"}
 						p="md"
 					>
 						<Group>
 							<ThemeIcon
-								radius="xs"
 								size="lg"
-								color="slate"
+								color="obsidian"
 								variant="light"
 							>
-								<Icon path={noteIcon} />
+								<Icon
+									path={noteIcon}
+									size="sm"
+								/>
 							</ThemeIcon>
 							<Box>
 								<Text

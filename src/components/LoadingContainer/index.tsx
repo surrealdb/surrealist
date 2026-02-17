@@ -9,7 +9,7 @@ export function LoadingContainer({ visible }: LoadingContainerProps) {
 		<LoadingOverlay
 			visible={visible}
 			zIndex={1000}
-			overlayProps={{ radius: "lg", opacity: 0.75, bg: "slate.8" }}
+			overlayProps={{ radius: "lg", opacity: 0.75, bg: "obsidian.8" }}
 			transitionProps={{ duration: 150 }}
 			loaderProps={{ type: "dots" }}
 		/>

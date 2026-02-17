@@ -1,5 +1,6 @@
 import { ActionIcon, Box, Button, Group, Menu, Modal, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Icon, iconCopy, iconDelete, iconDotsVertical, iconPlus } from "@surrealdb/ui";
 import { type HTMLAttributes, type MouseEvent, useState } from "react";
 import { useImmer } from "use-immer";
 import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
@@ -8,7 +9,6 @@ import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection
 import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { Entry, type EntryProps } from "~/components/Entry";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { Spacer } from "~/components/Spacer";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
@@ -17,7 +17,6 @@ import { useConfigStore } from "~/stores/config";
 import type { Connection, Template } from "~/types";
 import { createBaseConnection } from "~/util/defaults";
 import { newId, ON_STOP_PROPAGATION, uniqueName } from "~/util/helpers";
-import { iconCopy, iconDelete, iconDotsVertical, iconPlus } from "~/util/icons";
 import { USER_ICONS } from "~/util/user-icons";
 import { SettingsSection } from "../utilities";
 
@@ -106,31 +105,33 @@ export function TemplatesTab() {
 
 	return (
 		<>
-			<SettingsSection>
-				<Text mb="xs">
-					Connection templates make it easier to create new connections by pre-filling
-					common connection details. <br />
-					From the connection editor you can choose which template to use.
-				</Text>
+			<Box m="xs">
+				<SettingsSection>
+					<Text mb="xs">
+						Connection templates make it easier to create new connections by pre-filling
+						common connection details. <br />
+						From the connection editor you can choose which template to use.
+					</Text>
 
-				{templates.map((template) => (
-					<Item
-						key={template.id}
-						template={template}
-						onOpen={openEditor}
-						onRemove={handleRemove}
-						onDuplicate={handleDuplicate}
-					/>
-				))}
+					{templates.map((template) => (
+						<Item
+							key={template.id}
+							template={template}
+							onOpen={openEditor}
+							onRemove={handleRemove}
+							onDuplicate={handleDuplicate}
+						/>
+					))}
 
-				<Entry
-					variant="subtle"
-					onClick={openCreator}
-					leftSection={<Icon path={iconPlus} />}
-				>
-					New template
-				</Entry>
-			</SettingsSection>
+					<Entry
+						variant="subtle"
+						onClick={openCreator}
+						leftSection={<Icon path={iconPlus} />}
+					>
+						New template
+					</Entry>
+				</SettingsSection>
+			</Box>
 
 			<Modal
 				opened={showEditor}
@@ -208,7 +209,7 @@ export function TemplatesTab() {
 
 						<Group mt="xl">
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 								onClick={showEditorHandle.close}
 							>

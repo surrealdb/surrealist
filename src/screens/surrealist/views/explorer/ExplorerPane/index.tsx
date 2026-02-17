@@ -12,13 +12,24 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
+import {
+	Icon,
+	iconChevronDown,
+	iconChevronRight,
+	iconCopy,
+	iconDelete,
+	iconFilter,
+	iconPlus,
+	iconRefresh,
+	iconServer,
+	iconTable,
+} from "@surrealdb/ui";
 import clsx from "clsx";
 import { useContextMenu } from "mantine-contextmenu";
 import { type MouseEvent, useEffect, useLayoutEffect, useState } from "react";
 import { escapeIdent, RecordId, StringRecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DataTable } from "~/components/DataTable";
-import { Icon } from "~/components/Icon";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
@@ -38,17 +49,6 @@ import {
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { showInfo } from "~/util/helpers";
-import {
-	iconChevronDown,
-	iconChevronRight,
-	iconCopy,
-	iconDelete,
-	iconFilter,
-	iconPlus,
-	iconRefresh,
-	iconServer,
-	iconTable,
-} from "~/util/icons";
 import { getTableVariant } from "~/util/schema";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 import classes from "./style.module.scss";
@@ -342,7 +342,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					<ActionButton
 						label="Reveal tables"
 						mr="sm"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						onClick={openTableList}
 						aria-label="Reveal tables"

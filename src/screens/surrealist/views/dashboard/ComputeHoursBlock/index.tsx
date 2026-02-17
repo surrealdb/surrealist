@@ -18,7 +18,6 @@ export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) 
 				p="xl"
 				gap={30}
 				component={Stack}
-				variant="gradient"
 				pos="relative"
 				mih={168}
 			>
@@ -30,7 +29,7 @@ export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) 
 						gap={0}
 					>
 						<Text>No data available</Text>
-						<Text c="slate">Please check back later</Text>
+						<Text c="obsidian">Please check back later</Text>
 					</Stack>
 				) : (
 					<>
@@ -61,7 +60,7 @@ export function ComputeHoursBlock({ usage, isLoading }: ComputeHoursBlockProps) 
 
 								<Progress
 									value={(hours / computeTotal) * 100}
-									color="surreal"
+									color="violet"
 									size={4}
 									mt="md"
 								/>

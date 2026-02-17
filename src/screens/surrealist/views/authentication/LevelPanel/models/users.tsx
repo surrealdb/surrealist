@@ -5,6 +5,7 @@ import {
 	Modal,
 	PasswordInput,
 	ScrollArea,
+	SegmentedControl,
 	Stack,
 	Tabs,
 	Textarea,
@@ -12,10 +13,10 @@ import {
 } from "@mantine/core";
 
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconCheck, iconPlus } from "@surrealdb/ui";
 import { useLayoutEffect, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
-import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -23,7 +24,6 @@ import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { Base, SchemaUser } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
-import { iconCheck, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 
 const ROLES = [
@@ -40,6 +40,7 @@ export interface UserEditorModalProps {
 }
 
 export function UserEditorModal({ level, existing, opened, onClose }: UserEditorModalProps) {
+	const [activeTab, setActiveTab] = useState("general");
 	const [target, setTarget] = useState<SchemaUser | null>(null);
 	const [username, setUsername] = useInputState("");
 	const [password, setPassword] = useInputState("");
@@ -119,15 +120,21 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			}
 		>
 			<Form onSubmit={saveUser}>
-				<Tabs defaultValue="general">
-					<Tabs.List
-						grow
+				<Tabs
+					value={activeTab}
+					variant="gradient"
+				>
+					<SegmentedControl
+						w="100%"
 						mb="xl"
-					>
-						<Tabs.Tab value="general">General</Tabs.Tab>
-						<Tabs.Tab value="durations">Durations</Tabs.Tab>
-						<Tabs.Tab value="comment">Comment</Tabs.Tab>
-					</Tabs.List>
+						data={[
+							{ label: "General", value: "general" },
+							{ label: "Durations", value: "durations" },
+							{ label: "Comment", value: "comment" },
+						]}
+						value={activeTab}
+						onChange={setActiveTab}
+					/>
 
 					<Tabs.Panel value="general">
 						<Stack gap="lg">
@@ -211,7 +218,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 				<Group mt="xl">
 					<Button
 						onClick={onClose}
-						color="slate"
+						color="obsidian"
 						variant="light"
 						flex={1}
 					>

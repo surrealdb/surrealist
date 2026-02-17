@@ -1,16 +1,15 @@
 import { ActionIcon, Badge, Box, Group, Menu, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon, iconAccount, iconDotsVertical, iconKey, iconPlus } from "@surrealdb/ui";
 import { capitalize } from "radash";
 import { type ReactNode, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
-import { Icon } from "~/components/Icon";
 import { ContentPane } from "~/components/Pane";
 import { useBoolean } from "~/hooks/boolean";
 import { useIsConnected } from "~/hooks/connection";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
 import {
 	SelectDatabase,
@@ -19,7 +18,6 @@ import {
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import type { Base, SchemaAccess, SchemaUser } from "~/types";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
-import { iconAccount, iconDotsVertical, iconKey, iconPlus } from "~/util/icons";
 import { syncConnectionSchema } from "~/util/schema";
 import { AccessEditorModal } from "./models/access";
 import { UserEditorModal } from "./models/users";
@@ -152,7 +150,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 				<>
 					{isEmpty && (
 						<Text
-							c="slate"
+							c="obsidian"
 							ta="center"
 							mt="lg"
 						>
@@ -283,8 +281,6 @@ function AuthList<T extends { name: string }>({
 	onOptions,
 	onDetails,
 }: AuthListProps<T>) {
-	const isLight = useIsLight();
-
 	return (
 		<Box>
 			<Group mb="sm">
@@ -296,7 +292,7 @@ function AuthList<T extends { name: string }>({
 					{name}
 				</Text>
 				<Badge
-					color={isLight ? "slate.0" : "slate.9"}
+					bg="var(--mantine-color-body)"
 					radius="sm"
 					c="inherit"
 				>
@@ -327,7 +323,7 @@ function AuthList<T extends { name: string }>({
 								<Text>{item.name}</Text>
 								{details && (
 									<Text
-										c="slate"
+										c="obsidian"
 										fz="sm"
 										mt={-3}
 									>

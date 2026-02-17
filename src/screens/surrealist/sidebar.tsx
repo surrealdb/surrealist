@@ -8,9 +8,9 @@ import {
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
+import { iconArrowLeft, iconCog, iconHelp, iconSearch, pictoSurrealist } from "@surrealdb/ui";
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
-import iconUrl from "~/assets/images/icon.webp";
 import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
@@ -25,7 +25,6 @@ import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import type { GlobalPage, SidebarMode, ViewPage } from "~/types";
 import { isMobile } from "~/util/helpers";
-import { iconArrowLeft, iconCog, iconHelp, iconSearch } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 
@@ -144,7 +143,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 			top={0}
 			left={0}
 			bottom={0}
-			bg={isLight ? "slate.0" : "slate.9"}
+			bg="var(--mantine-color-body)"
 			onMouseEnter={hoverSidebarHandle.open}
 			className={clsx(
 				classes.sidebar,
@@ -166,13 +165,15 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 						setOverlaySidebar(false);
 					}}
 				>
-					<Flex
+					<Group
+						gap="lg"
 						wrap="nowrap"
 						align="center"
 						style={{ flexShrink: 0 }}
 					>
 						<Image
-							src={iconUrl}
+							my={-9}
+							src={pictoSurrealist}
 							w={42}
 							className={classes.hat}
 						/>
@@ -180,9 +181,8 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 							src={logoUrl}
 							style={{ flexShrink: 0 }}
 							w={118}
-							ml={14}
 						/>
-					</Flex>
+					</Group>
 				</UnstyledButton>
 				<Stack
 					gap="sm"
@@ -200,7 +200,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 								onMouseEnter={hoverSidebarHandle.open}
 								withTooltip={sidebarMode === "compact"}
 							/>
-							<Divider color={isLight ? "slate.2" : "slate.7"} />
+							<Divider color={isLight ? "obsidian.2" : "obsidian.7"} />
 						</>
 					)}
 
@@ -223,22 +223,12 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 								</Group>
 							))}
 							{i < navigation.length - 1 && (
-								<Divider color={isLight ? "slate.2" : "slate.7"} />
+								<Divider color={isLight ? "obsidian.2" : "obsidian.7"} />
 							)}
 						</Fragment>
 					))}
 
 					<Spacer />
-
-					<NavigationIcon
-						name="Support"
-						icon={iconHelp}
-						match={["/support", "/support/*"]}
-						onClick={() => navigate("/support")}
-						onMouseEnter={hoverSidebarHandle.open}
-						withTooltip={sidebarMode === "compact"}
-						indicator={unreadConversations}
-					/>
 
 					<NavigationIcon
 						name={
@@ -251,6 +241,16 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 						onClick={openCommands}
 						onMouseEnter={hoverSidebarHandle.open}
 						withTooltip={sidebarMode === "compact"}
+					/>
+
+					<NavigationIcon
+						name="Support"
+						icon={iconHelp}
+						match={["/support", "/support/*"]}
+						onClick={() => navigate("/support")}
+						onMouseEnter={hoverSidebarHandle.open}
+						withTooltip={sidebarMode === "compact"}
+						indicator={unreadConversations}
 					/>
 
 					<NavigationIcon

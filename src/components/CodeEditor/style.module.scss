@@ -21,28 +21,28 @@
 	}
 
 	:global(.cm-lineNumbers) {
-		color: var(--mantine-color-slate-5);
+		color: var(--mantine-color-obsidian-5);
 
 		@include light {
-			color: var(--mantine-color-slate-3);
+			color: var(--mantine-color-obsidian-3);
 		}
 	}
 
 	:global(.cm-activeLineGutter) {
-		color: var(--mantine-color-slate-2);
+		color: var(--mantine-color-obsidian-2);
 
 		@include light {
-			color: var(--mantine-color-slate-9);
+			color: var(--mantine-color-obsidian-9);
 		}
 	}
 
 	:global(.cm-cursor),
 	:global(.cm-dropCursor) {
-		border-color: var(--mantine-color-slate-1);
+		border-color: var(--mantine-color-obsidian-1);
 		border-width: 2px;
 
 		@include light {
-			border-color: var(--mantine-color-slate-9);
+			border-color: var(--mantine-color-obsidian-9);
 		}
 	}
 
@@ -64,11 +64,11 @@
 	}
 
 	:global(.cm-foldPlaceholder) {
-		background-color: var(--mantine-color-slate-6);
+		background-color: var(--mantine-color-obsidian-6);
 		border: none;
 
 		@include light {
-			background-color: var(--mantine-color-slate-1);
+			background-color: var(--mantine-color-obsidian-1);
 		}
 	}
 
@@ -81,7 +81,7 @@
 		-webkit-backdrop-filter: blur(5px);
 
 		@include light {
-			border-color: var(--mantine-color-slate-2);
+			border-color: var(--mantine-color-obsidian-2);
 		}
 	}
 
@@ -93,19 +93,19 @@
 
 			li {
 				border-radius: var(--mantine-radius-sm);
-				color: var(--mantine-color-slate-1);
+				color: var(--mantine-color-obsidian-1);
 
 				@include light {
-					color: var(--mantine-color-slate-6);
+					color: var(--mantine-color-obsidian-6);
 				}
 			}
 
 			li[aria-selected] {
-				background-color: var(--mantine-color-slate-6);
+				background-color: var(--mantine-color-obsidian-6);
 				color: var(--mantine-color-bright) !important;
 
 				@include light {
-					background-color: var(--mantine-color-slate-1);
+					background-color: var(--mantine-color-obsidian-1);
 				}
 			}
 		}
@@ -119,7 +119,7 @@
 	:global(.cm-panels) {
 		z-index: 1;
 		background-color: var(--mantine-body-color);
-		border-color: var(--mantine-color-slate-7);
+		border-color: var(--mantine-color-obsidian-7);
 
 		label {
 			display: inline-flex;
@@ -132,15 +132,15 @@
 			background-image: unset !important;
 			background-color: var(--mantine-color-body);
 			border-radius: var(--mantine-radius-xs);
-			border-color: var(--mantine-color-slate-6);
+			border-color: var(--mantine-color-obsidian-6);
 
 			&:active {
-				background-color: var(--mantine-color-slate-6) !important;
+				background-color: var(--mantine-color-obsidian-6) !important;
 			}
 		}
 
 		input {
-			background-color: var(--mantine-color-slate-6);
+			background-color: var(--mantine-color-obsidian-6);
 			border-radius: var(--mantine-radius-xs);
 			color: var(--mantine-color-bright);
 			border: none;
@@ -165,18 +165,18 @@
 		}
 
 		@include light {
-			border-color: var(--mantine-color-slate-2);
+			border-color: var(--mantine-color-obsidian-2);
 
 			button {
-				border-color: var(--mantine-color-slate-2);
+				border-color: var(--mantine-color-obsidian-2);
 
 				&:active {
-					background-color: var(--mantine-color-slate-2) !important;
+					background-color: var(--mantine-color-obsidian-2) !important;
 				}
 			}
 
 			input {
-				background-color: var(--mantine-color-slate-1);
+				background-color: var(--mantine-color-obsidian-1);
 			}
 		}
 	}
@@ -250,7 +250,7 @@
 }
 
 :global(.cm-lintRange-hint) {
-	text-decoration-color: var(--mantine-color-slate-5);
+	text-decoration-color: var(--mantine-color-obsidian-5);
 }
 
 :global(.cm-diagnostic-error) {
@@ -266,7 +266,7 @@
 }
 
 :global(.cm-diagnostic-hint) {
-	border-color: var(--mantine-color-slate-5);
+	border-color: var(--mantine-color-obsidian-5);
 }
 
 }

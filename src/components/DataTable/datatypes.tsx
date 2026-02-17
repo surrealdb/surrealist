@@ -1,4 +1,13 @@
 import { Group, HoverCard, Stack, Text } from "@mantine/core";
+import {
+	Icon,
+	iconCheck,
+	iconClock,
+	iconClose,
+	iconExplorer,
+	iconFile,
+	iconXml,
+} from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { convert } from "geo-coordinates-parser";
 import { useEffect, useState } from "react";
@@ -19,9 +28,7 @@ import {
 } from "surrealdb";
 import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { TRUNCATE_STYLE } from "~/util/helpers";
-import { iconCheck, iconClock, iconClose, iconExplorer, iconFile, iconXml } from "~/util/icons";
 import { GeographyLink } from "../GeographyLink";
-import { Icon } from "../Icon";
 import { RecordLink } from "../RecordLink";
 import classes from "./style.module.scss";
 
@@ -30,7 +37,7 @@ import classes from "./style.module.scss";
 function NullishCell(props: { value: null | undefined }) {
 	return (
 		<Text
-			c="slate"
+			c="obsidian"
 			ff="JetBrains Mono"
 		>
 			{props.value === null ? "null" : "—"}
@@ -90,7 +97,6 @@ function UuidCell(props: { value: Uuid }) {
 		>
 			<Icon
 				path={iconXml}
-				left
 				mt={-3}
 			/>
 			{props.value.toString()}
@@ -110,7 +116,6 @@ function DateTimeCell(props: { value: DateTime }) {
 		<Text title={`${date.toISOString()} (${relative})`}>
 			<Icon
 				path={iconExplorer}
-				left
 				mt={-3}
 			/>
 			{date.toLocaleString()}
@@ -126,7 +131,6 @@ function DateCell(props: { value: Date }) {
 		<Text title={`${date.toISOString()} (${relative})`}>
 			<Icon
 				path={iconExplorer}
-				left
 				mt={-3}
 			/>
 			{date.toLocaleString()}
@@ -139,7 +143,6 @@ function DurationCell(props: { value: Duration }) {
 		<Text ff="monospace">
 			<Icon
 				path={iconClock}
-				left
 				mt={-3}
 			/>
 			{props.value.toString()}
@@ -152,7 +155,6 @@ function FileCell(props: { value: FileRef }) {
 		<Text ff="monospace">
 			<Icon
 				path={iconFile}
-				left
 				mt={-3}
 			/>
 			{props.value.toString()}

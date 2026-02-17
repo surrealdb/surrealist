@@ -10,17 +10,22 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
+import {
+	Icon,
+	iconChevronDown,
+	iconChevronRight,
+	iconHomePlus,
+	pictoSDBCloud,
+} from "@surrealdb/ui";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
-import glowUrl from "~/assets/images/glow.webp";
-import cloudUrl from "~/assets/images/icons/cloud.webp";
+import glowUrl from "~/assets/images/glow.png";
 import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
 import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentication";
 import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
 import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
-import { Icon } from "~/components/Icon";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useLastSavepoint } from "~/hooks/overview";
@@ -31,7 +36,6 @@ import { Template } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { getConnectionVariant, isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
-import { iconChevronDown, iconChevronRight, iconHomePlus } from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
 import classes from "./style.module.scss";
@@ -158,9 +162,8 @@ export function CreateConnectionPage() {
 								<Menu.Target>
 									<Button
 										rightSection={<Icon path={iconChevronDown} />}
-										color="slate"
+										color="violet"
 										variant="light"
-										size="xs"
 									>
 										Apply template
 									</Button>
@@ -172,7 +175,7 @@ export function CreateConnectionPage() {
 												onClick={() => applyTemplate(localhost)}
 												leftSection={
 													<ThemeIcon
-														color="slate"
+														color="obsidian"
 														variant="light"
 														radius="xs"
 														mr="xs"
@@ -203,7 +206,7 @@ export function CreateConnectionPage() {
 													onClick={() => applyTemplate(template)}
 													leftSection={
 														<ThemeIcon
-															color="slate"
+															color="obsidian"
 															variant="light"
 															radius="xs"
 															mr="xs"
@@ -238,7 +241,6 @@ export function CreateConnectionPage() {
 					<Paper
 						p="xl"
 						pos="relative"
-						variant="gradient"
 						className={classes.cloudBox}
 					>
 						<Stack flex={1}>
@@ -270,7 +272,7 @@ export function CreateConnectionPage() {
 								<a href="https://surrealdb.com/cloud">
 									<Button
 										size="xs"
-										color="slate"
+										color="obsidian"
 										variant="light"
 									>
 										Learn more
@@ -279,7 +281,7 @@ export function CreateConnectionPage() {
 							</Group>
 						</Stack>
 						<Image
-							src={cloudUrl}
+							src={pictoSDBCloud}
 							className={classes.cloudImage}
 						/>
 						<Image
@@ -346,14 +348,13 @@ export function CreateConnectionPage() {
 					<Group mt={24}>
 						<Link to={savepoint.path}>
 							<Button
-								color="slate"
+								color="obsidian"
 								variant="light"
 							>
 								Back
 							</Button>
 						</Link>
 						<Button
-							w={150}
 							type="submit"
 							variant="gradient"
 							disabled={!isValid}

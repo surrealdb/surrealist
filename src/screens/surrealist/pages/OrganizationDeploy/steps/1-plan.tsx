@@ -1,13 +1,13 @@
 import { Box, Button, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
+import { Icon, iconArrowUpRight } from "@surrealdb/ui";
 import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
 import { isInstancePlan } from "~/cloud/helpers";
 import { PricingConfigCloud, useCloudPricingQuery } from "~/cloud/queries/pricing";
-import { Icon } from "~/components/Icon";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { PricingCard } from "~/screens/surrealist/components/PricingCard";
-import { iconArrowUpRight } from "~/util/icons";
+import classes from "../style.module.scss";
 import { StepProps } from "../types";
 
 export function PlanStep({ organisation, instances, setDetails, setStep }: StepProps) {
@@ -50,6 +50,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 			<SimpleGrid
 				cols={{ base: 1, sm: 2, lg: 3 }}
 				spacing="xl"
+				className={classes.content}
 			>
 				{showFree &&
 					(pricingQuery.isSuccess ? (
@@ -115,7 +116,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 			</SimpleGrid>
 
 			<Box mt="sm">
-				<Text c="slate">* Coming soon</Text>
+				<Text c="obsidian">* Coming soon</Text>
 			</Box>
 
 			<Stack
@@ -130,7 +131,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 				>
 					<Button
 						size="xs"
-						color="slate"
+						color="obsidian"
 						variant="light"
 						rightSection={<Icon path={iconArrowUpRight} />}
 					>

@@ -1,7 +1,6 @@
 import { Box, type BoxProps, type MantineColor } from "@mantine/core";
+import { Icon, iconCircleFilled } from "@surrealdb/ui";
 import clsx from "clsx";
-import { iconCircleFilled } from "~/util/icons";
-import { Icon } from "../Icon";
 import classes from "./style.module.scss";
 
 export interface LiveIndicatorProps extends BoxProps {

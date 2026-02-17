@@ -1,10 +1,10 @@
 import type { EditorView } from "@codemirror/view";
 import { ActionIcon, Button, Center, Group, Paper, Stack, Text } from "@mantine/core";
+import { Icon, iconCursor, iconGraphql, iconOpen, iconWarning } from "@surrealdb/ui";
 import clsx from "clsx";
 import { memo, useMemo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { adapter } from "~/adapter";
-import { Icon } from "~/components/Icon";
 import { Introduction } from "~/components/Introduction";
 import { PanelDragger } from "~/components/Pane/dragger";
 import { SidekickPanel } from "~/components/Sidekick/panel";
@@ -14,12 +14,10 @@ import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useGraphqlIntrospection } from "~/hooks/graphql";
 import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { checkGraphqlSupport } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { createBaseAuthentication } from "~/util/defaults";
-import { iconCursor, iconGraphql, iconOpen, iconWarning } from "~/util/icons";
 import { QueryPane } from "../QueryPane";
 import { ResultPane } from "../ResultPane";
 import { VariablesPane } from "../VariablesPane";
@@ -40,7 +38,6 @@ export function GraphqlView() {
 	const [queryValid, setQueryValid] = useState(true);
 	const [editor, setEditor] = useState<EditorView | null>(null);
 
-	const isLight = useIsLight();
 	const isConnected = useIsConnected();
 	const [schema, introspectSchema] = useGraphqlIntrospection();
 
@@ -158,7 +155,7 @@ export function GraphqlView() {
 					>
 						<Paper
 							className={classes.sendCircle}
-							bg={isLight ? "slate.0" : "slate.9"}
+							bg="var(--mantine-color-body)"
 							pos="absolute"
 							radius={100}
 							p="xs"
@@ -210,7 +207,7 @@ export function GraphqlView() {
 				</Text>
 			</Group>
 			<Button
-				color="slate"
+				color="obsidian"
 				variant="light"
 				rightSection={<Icon path={iconOpen} />}
 				onClick={() =>

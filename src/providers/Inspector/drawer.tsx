@@ -1,12 +1,18 @@
-import { Center, Drawer, Group, Paper, Tabs, Text } from "@mantine/core";
+import { Center, Drawer, Group, Paper, SegmentedControl, Tabs, Text } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import {
+	Icon,
+	iconArrowLeftFat,
+	iconClose,
+	iconDelete,
+	iconRefresh,
+	iconSearch,
+} from "@surrealdb/ui";
 import { useEffect, useState } from "react";
 import { RecordId } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import type { HistoryHandle } from "~/hooks/history";
 import { useSaveable } from "~/hooks/save";
@@ -14,15 +20,6 @@ import { useStable } from "~/hooks/stable";
 import { useValueValidator } from "~/hooks/surrealql";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
-import {
-	iconArrowLeftFat,
-	iconClose,
-	iconDelete,
-	iconJSON,
-	iconRefresh,
-	iconSearch,
-	iconTransfer,
-} from "~/util/icons";
 import { useConfirmation } from "../Confirmation";
 import classes from "./style.module.scss";
 import { ContentTab } from "./tabs/content";
@@ -57,6 +54,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 	const [recordBody, setRecordBody] = useState("");
 	const [error, setError] = useState("");
 	const [isValid, body] = useValueValidator(recordBody);
+	const [tab, setTab] = useState("content");
 
 	const isLight = useIsLight();
 	const inputColor = currentRecord.exists ? undefined : "var(--mantine-color-red-6)";
@@ -163,6 +161,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"
@@ -186,14 +185,16 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 				mb="md"
 				gap="sm"
 			>
-				<PrimaryTitle>
-					<Icon
-						left
-						path={iconSearch}
-						size="sm"
-					/>
-					Record inspector
-				</PrimaryTitle>
+				<Group>
+					<Icon path={iconSearch} />
+					<Text
+						fw={600}
+						c="bright"
+						fz="xl"
+					>
+						Record inspector
+					</Text>
+				</Group>
 
 				<Spacer />
 
@@ -253,7 +254,7 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 					currentRecord.isEdge && (
 						<Paper
 							title="This record is an edge"
-							bg="slate"
+							bg="obsidian"
 							c="bright"
 							px="xs"
 						>
@@ -266,29 +267,18 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			{currentRecord.exists ? (
 				<Tabs
 					mt="sm"
-					defaultValue="content"
+					value={tab}
 					className={classes.tabs}
-					variant="pills"
 					radius="sm"
 				>
-					<Tabs.List grow>
-						<Tabs.Tab value="content">
-							Content
-							<Icon
-								path={iconJSON}
-								size={0.85}
-								right
-							/>
-						</Tabs.Tab>
-						<Tabs.Tab value="relations">
-							Relations
-							<Icon
-								path={iconTransfer}
-								size={0.85}
-								right
-							/>
-						</Tabs.Tab>
-					</Tabs.List>
+					<SegmentedControl
+						data={[
+							{ label: "Content", value: "content" },
+							{ label: "Relations", value: "relations" },
+						]}
+						value={tab}
+						onChange={setTab}
+					/>
 
 					<Tabs.Panel value="content">
 						<ContentTab

@@ -1,7 +1,7 @@
-import { Box, Center, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
-import type { PropsWithChildren, ReactNode } from "react";
-import { CodePreview } from "../CodePreview";
-import { Icon } from "../Icon";
+import { Box, Center, Divider, Group, Paper, Stack, Text } from "@mantine/core";
+import { CodeBlock, Icon } from "@surrealdb/ui";
+import { type PropsWithChildren, type ReactNode, useMemo } from "react";
+import { dedent } from "~/util/dedent";
 import { Spacer } from "../Spacer";
 
 export interface IntroductionProps {
@@ -25,6 +25,10 @@ export function Introduction({
 	children,
 	rightSection,
 }: PropsWithChildren<IntroductionProps>) {
+	const formattedSnippet = useMemo(() => {
+		return dedent(snippet?.code || "");
+	}, [snippet]);
+
 	return (
 		<Center
 			h="100%"
@@ -41,36 +45,35 @@ export function Introduction({
 					gap="xl"
 				>
 					<Group>
-						<Icon
-							path={icon}
-							size={1.35}
-						/>
-						<Title c="bright">{title}</Title>
+						<Icon path={icon} />
+						<Text
+							c="bright"
+							fz="xl"
+							fw={600}
+						>
+							{title}
+						</Text>
 						<Spacer />
 						{rightSection}
 					</Group>
 					{children}
 				</Stack>
+				<Divider mx="xl" />
 				{snippet?.code && (
-					<>
-						<Divider />
-						<Box p="xl">
-							<Text
-								c="bright"
-								fz={18}
-								fw={600}
-								mb="md"
-							>
-								{snippet.title ?? "Example"}
-							</Text>
-							<CodePreview
-								withCopy
-								value={snippet.code}
-								language={snippet.language}
-								withDedent={snippet.dedent !== false}
-							/>
-						</Box>
-					</>
+					<Box p="xl">
+						<Text
+							c="bright"
+							fz={18}
+							fw={600}
+							mb="md"
+						>
+							{snippet.title ?? "Example"}
+						</Text>
+						<CodeBlock
+							value={formattedSnippet}
+							lang={snippet.language}
+						/>
+					</Box>
 				)}
 			</Paper>
 		</Center>

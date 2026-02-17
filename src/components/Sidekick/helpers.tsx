@@ -1,5 +1,3 @@
-import { RecordId } from "surrealdb";
-import { SidekickChat } from "~/types";
 import {
 	iconAccount,
 	iconCreditCard,
@@ -13,7 +11,9 @@ import {
 	iconStar,
 	iconTable,
 	iconTransfer,
-} from "~/util/icons";
+} from "@surrealdb/ui";
+import { RecordId } from "surrealdb";
+import { SidekickChat } from "~/types";
 import { GroupedChats } from "./types";
 
 export const SIDEKICK_QUESTIONS = [

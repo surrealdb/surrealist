@@ -91,7 +91,7 @@ export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProp
 								onChange={setValue}
 								marks={marks}
 								label={labelize}
-								color="slate"
+								color="violet"
 								styles={{
 									label: {
 										paddingInline: 10,
@@ -107,7 +107,7 @@ export function ConfigurationNodes({ instance, onClose }: ConfigurationNodesProp
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>

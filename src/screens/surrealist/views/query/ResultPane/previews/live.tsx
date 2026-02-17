@@ -1,10 +1,20 @@
 import { Accordion, Badge, Center, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { surrealql } from "@surrealdb/codemirror";
+import {
+	Icon,
+	iconBroadcastOff,
+	iconBroadcastOn,
+	iconClose,
+	iconCopy,
+	iconDelete,
+	iconHammer,
+	iconHelp,
+	iconPlus,
+} from "@surrealdb/ui";
 import { useContextMenu } from "mantine-contextmenu";
 import { useEffect, useMemo, useState } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
-import { Icon } from "~/components/Icon";
 import { RelativeTime } from "~/components/RelativeTime";
 import { surqlRecordLinks } from "~/editor";
 import { type Formatter, useResultFormatter } from "~/hooks/surrealql";
@@ -14,23 +24,13 @@ import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import type { LiveMessage } from "~/types";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
-import {
-	iconBroadcastOff,
-	iconBroadcastOn,
-	iconClose,
-	iconCopy,
-	iconDelete,
-	iconHammer,
-	iconHelp,
-	iconPlus,
-} from "~/util/icons";
 import { attemptFormat, type PreviewProps } from ".";
 
 const LIVE_ACTION_COLORS: Record<string, [string, string]> = {
 	CREATE: ["surreal.3", iconPlus],
 	UPDATE: ["orange", iconHammer],
 	DELETE: ["red", iconDelete],
-	CLOSE: ["slate", iconClose],
+	CLOSE: ["obsidian", iconClose],
 };
 
 function hasBody(msg: LiveMessage) {
@@ -112,7 +112,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 					>
 						{messages.map((msg) => {
 							const [color, icon] = LIVE_ACTION_COLORS[msg.action] || [
-								"slate",
+								"obsidian",
 								iconHelp,
 							];
 
@@ -148,7 +148,6 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 													<Icon
 														path={icon}
 														c={color}
-														left
 													/>
 												}
 											>
@@ -162,7 +161,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 											<Stack gap={0}>
 												<RelativeTime value={msg.timestamp} />
 												<Text
-													c="slate"
+													c="obsidian"
 													size="xs"
 												>
 													<Text
@@ -193,7 +192,7 @@ export function LivePreview({ query, isLive }: PreviewProps) {
 			) : (
 				<Center
 					h="100%"
-					c="slate"
+					c="obsidian"
 				>
 					<Stack>
 						<Icon

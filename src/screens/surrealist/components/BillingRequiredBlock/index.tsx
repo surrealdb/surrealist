@@ -1,7 +1,7 @@
 import { BoxProps, Image, Paper, Stack, Text } from "@mantine/core";
+import { pictoSDBCloud } from "@surrealdb/ui";
 import { PropsWithChildren, ReactNode } from "react";
 import glowImage from "~/assets/images/glow.png";
-import cloudImage from "~/assets/images/icons/cloud.png";
 import classes from "./style.module.scss";
 
 export interface BillingRequiredBlockProps extends BoxProps {
@@ -18,7 +18,6 @@ export function BillingRequiredBlock({
 		<Paper
 			p="xl"
 			pos="relative"
-			variant="gradient"
 			className={classes.cloud}
 			{...other}
 		>
@@ -34,7 +33,7 @@ export function BillingRequiredBlock({
 				{subtitle}
 			</Stack>
 			<Image
-				src={cloudImage}
+				src={pictoSDBCloud}
 				className={classes.cloudImage}
 			/>
 			<Image

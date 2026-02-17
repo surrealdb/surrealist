@@ -14,13 +14,13 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { surrealql } from "@surrealdb/codemirror";
+import { Icon, iconClose, iconPlus, iconWarning } from "@surrealdb/ui";
 import { omit } from "radash";
 import { useLayoutEffect, useMemo, useState } from "react";
 import { RecordId, StringRecordId, Table } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { CodeEditor } from "~/components/CodeEditor";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { Icon } from "~/components/Icon";
 import { CodeInput } from "~/components/Inputs";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -32,7 +32,6 @@ import { useValueValidator } from "~/hooks/surrealql";
 import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import type { QueryResponse } from "~/types";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { iconClose, iconPlus, iconWarning } from "~/util/icons";
 import { extractEdgeRecords, getTableVariant } from "~/util/schema";
 
 type EdgeInfo = [string[], string[]];
@@ -141,6 +140,7 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 
 	return (
 		<Drawer
+			withCloseButton={false}
 			opened={opened}
 			onClose={onClose}
 			position="right"
@@ -166,7 +166,6 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 			<Group gap="sm">
 				<PrimaryTitle>
 					<Icon
-						left
 						path={iconPlus}
 						size="sm"
 					/>
@@ -239,7 +238,9 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 								<Box>
 									<Text>From record</Text>
 									{fromTables.length > 0 && (
-										<Text c="slate">Valid tables: {fromTables.join(", ")}</Text>
+										<Text c="obsidian">
+											Valid tables: {fromTables.join(", ")}
+										</Text>
 									)}
 								</Box>
 							}
@@ -252,7 +253,9 @@ export function CreatorDrawer({ opened, table, content, onClose }: CreatorDrawer
 								<Box>
 									<Text>To record</Text>
 									{toTables.length > 0 && (
-										<Text c="slate">Valid tables: {toTables.join(", ")}</Text>
+										<Text c="obsidian">
+											Valid tables: {toTables.join(", ")}
+										</Text>
 									)}
 								</Box>
 							}

@@ -1,24 +1,12 @@
-import {
-	Alert,
-	Box,
-	Button,
-	Divider,
-	Group,
-	Paper,
-	ScrollArea,
-	Slider,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Alert, Box, Button, Divider, Group, ScrollArea, Slider, Stack, Text } from "@mantine/core";
+import { Icon, iconChevronRight, iconClock, iconHelp, iconWarning } from "@surrealdb/ui";
 import { add, formatDistance } from "date-fns";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceStorageMutation } from "~/cloud/mutations/storage";
-import { Icon } from "~/components/Icon";
 import { Link } from "~/components/Link";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
-import { iconChevronRight, iconClock, iconHelp, iconWarning } from "~/util/icons";
 import classes from "../style.module.scss";
 
 export interface ConfigurationStorageProps {
@@ -138,7 +126,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 								{isMaximized ? (
 									<Alert
 										mb="md"
-										color="slate"
+										color="obsidian"
 										title="Maximum storage capacity reached"
 										icon={<Icon path={iconHelp} />}
 									>
@@ -161,34 +149,30 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 									)
 								)}
 
-								<Paper
-									p={42}
-									withBorder={false}
-								>
-									<Slider
-										min={minimum}
-										max={maximum}
-										step={1}
-										value={value}
-										onChange={setValue}
-										marks={marks}
-										label={(value) => `${value} GB`}
-										disabled={isDisabled}
-										color="slate"
-										styles={{
-											label: {
-												paddingInline: 10,
-												fontSize: "var(--mantine-font-size-lg)",
-												fontWeight: 600,
-											},
-											bar: {
-												background: isDisabled
-													? "var(--mantine-color-slate-4)"
-													: undefined,
-											},
-										}}
-									/>
-								</Paper>
+								<Slider
+									mx="xl"
+									color="violet"
+									min={minimum}
+									max={maximum}
+									step={1}
+									value={value}
+									onChange={setValue}
+									marks={marks}
+									label={(value) => `${value} GB`}
+									disabled={isDisabled}
+									styles={{
+										label: {
+											paddingInline: 10,
+											fontSize: "var(--mantine-font-size-lg)",
+											fontWeight: 600,
+										},
+										bar: {
+											background: isDisabled
+												? "var(--mantine-color-obsidian-4)"
+												: undefined,
+										},
+									}}
+								/>
 
 								{isTooLow && (
 									<Alert
@@ -209,7 +193,7 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 			<Group p="xl">
 				<Button
 					onClick={onClose}
-					color="slate"
+					color="obsidian"
 					variant="light"
 					flex={1}
 				>

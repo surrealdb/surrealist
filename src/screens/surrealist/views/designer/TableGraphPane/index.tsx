@@ -13,6 +13,21 @@ import {
 	Text,
 } from "@mantine/core";
 import {
+	Icon,
+	iconAPI,
+	iconChevronRight,
+	iconCog,
+	iconFullscreen,
+	iconHelp,
+	iconImage,
+	iconMagnifyMinus,
+	iconMagnifyPlus,
+	iconPlus,
+	iconRefresh,
+	iconRelation,
+	iconReset,
+} from "@surrealdb/ui";
+import {
 	Background,
 	type Edge,
 	getNodesBounds,
@@ -35,7 +50,6 @@ import {
 } from "react";
 import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
 import { ContentPane } from "~/components/Pane";
@@ -68,20 +82,6 @@ import type {
 	TableInfo,
 } from "~/types";
 import { showInfo } from "~/util/helpers";
-import {
-	iconAPI,
-	iconChevronRight,
-	iconCog,
-	iconFullscreen,
-	iconHelp,
-	iconImage,
-	iconMagnifyMinus,
-	iconMagnifyPlus,
-	iconPlus,
-	iconRefresh,
-	iconRelation,
-	iconReset,
-} from "~/util/icons";
 import { themeColor } from "~/util/mantine";
 import { GraphWarningLine } from "./components";
 import {
@@ -563,7 +563,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						<ActionButton
 							label="Reveal tables"
 							mr="sm"
-							color="slate"
+							color="obsidian"
 							variant="light"
 							onClick={openTableList}
 						>
@@ -702,7 +702,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				<Paper
 					flex="1"
 					pos="relative"
-					bg={isLight ? "slate.1" : "slate.7"}
+					bg={isLight ? "obsidian.1" : "obsidian.7"}
 				>
 					<ReactFlow
 						ref={ref}
@@ -778,12 +778,11 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						])}
 					>
 						{!showBox && (
-							<Background color={themeColor(isLight ? "slate.3" : "slate.5")} />
+							<Background color={themeColor(isLight ? "obsidian.3" : "obsidian.5")} />
 						)}
 					</ReactFlow>
 
 					<Paper
-						withBorder
 						pos="absolute"
 						right={12}
 						top={12}

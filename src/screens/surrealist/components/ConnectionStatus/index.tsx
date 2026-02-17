@@ -1,4 +1,16 @@
 import { Box, Button, Indicator, Loader, Menu, Text } from "@mantine/core";
+import {
+	Icon,
+	iconClose,
+	iconDownload,
+	iconEdit,
+	iconRefresh,
+	iconRelation,
+	iconReset,
+	iconSandbox,
+	iconUpload,
+	iconWrench,
+} from "@surrealdb/ui";
 import { useState } from "react";
 import { SANDBOX } from "~/constants";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
@@ -9,21 +21,9 @@ import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnectionById } from "~/util/connection";
-import {
-	iconClose,
-	iconDownload,
-	iconEdit,
-	iconRefresh,
-	iconRelation,
-	iconReset,
-	iconSandbox,
-	iconUpload,
-	iconWrench,
-} from "~/util/icons";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
-import { Icon } from "../../../../components/Icon";
 import { closeConnection, openConnection } from "../../connection/connection";
 
 export function ConnectionStatus() {
@@ -91,7 +91,7 @@ export function ConnectionStatus() {
 					<Menu.Target>
 						<Button
 							variant="subtle"
-							color="slate"
+							color="obsidian"
 							onClick={openConnections}
 							leftSection={
 								isSandbox ? (
@@ -137,7 +137,7 @@ export function ConnectionStatus() {
 								Connection
 							</Text>
 							<Text
-								c="slate"
+								c="obsidian"
 								fz="sm"
 								truncate
 							>

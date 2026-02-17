@@ -12,10 +12,10 @@ import {
 	Textarea,
 	TextInput,
 } from "@mantine/core";
+import { Icon, iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "@surrealdb/ui";
 import { useState } from "react";
 import { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
-import { Icon } from "~/components/Icon";
 import { FieldKindInput, PermissionInput } from "~/components/Inputs";
 import { Label } from "~/components/Label";
 import { ContentPane } from "~/components/Pane";
@@ -26,7 +26,6 @@ import { SaveableHandle } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { FunctionDetails, SchemaFunction } from "~/types";
-import { iconCheck, iconCopy, iconDelete, iconList, iconPlus } from "~/util/icons";
 import { SDB_2_0_0 } from "~/util/versions";
 import classes from "./style.module.scss";
 
@@ -57,7 +56,9 @@ export function FunctionPropertiesPanel({
 		});
 	});
 
-	const argColor = isLight ? "var(--mantine-color-slate-0)" : "var(--mantine-color-slate-9)";
+	const argColor = isLight
+		? "var(--mantine-color-obsidian-0)"
+		: "var(--mantine-color-obsidian-9)";
 	return (
 		<ContentPane
 			title="Properties"
@@ -83,7 +84,7 @@ export function FunctionPropertiesPanel({
 				direction="column"
 			>
 				<Box>
-					<Paper bg={isLight ? "slate.0" : "slate.9"}>
+					<Paper bg="var(--mantine-color-body)">
 						<Flex align="center">
 							<ScrollArea
 								scrollbars="x"
@@ -93,7 +94,7 @@ export function FunctionPropertiesPanel({
 								<Flex>
 									<Text
 										fz={15}
-										c="surreal"
+										c="violet"
 										ff="mono"
 									>
 										fn::
