@@ -1,4 +1,4 @@
-import { Box, Divider, Group, Paper, type PaperProps, Text } from "@mantine/core";
+import { Box, Divider, Group, MantineSize, Paper, type PaperProps, Text } from "@mantine/core";
 import { Icon } from "@surrealdb/ui";
 import clsx from "clsx";
 import type { HTMLAttributes } from "react";
@@ -11,6 +11,7 @@ export interface ContentPaneProps
 		Omit<HTMLAttributes<HTMLDivElement>, "style"> {
 	title?: string;
 	icon?: string;
+	p?: MantineSize | number;
 	leftSection?: React.ReactNode;
 	infoSection?: React.ReactNode;
 	rightSection?: React.ReactNode;
@@ -24,6 +25,7 @@ export function ContentPane({
 	title,
 	icon,
 	className,
+	p,
 	leftSection,
 	infoSection,
 	rightSection,
@@ -82,7 +84,7 @@ export function ContentPane({
 			)}
 			{children && (
 				<Box
-					p="sm"
+					p={p ?? "sm"}
 					pt={0}
 					mt={withTopPadding === false || withDivider === false ? undefined : "sm"}
 					pos="relative"

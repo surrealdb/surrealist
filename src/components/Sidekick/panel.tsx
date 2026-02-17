@@ -31,6 +31,7 @@ export function SidekickPanel() {
 				maxSize={50}
 			>
 				<ContentPane
+					p={0}
 					title={`Sidekick - ${activeTitle ? activeTitle : "New chat"}`}
 					icon={iconSidekick}
 					rightSection={

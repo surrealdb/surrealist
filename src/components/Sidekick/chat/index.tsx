@@ -11,6 +11,7 @@ import {
 	Text,
 	Textarea,
 	ThemeIcon,
+	Title,
 } from "@mantine/core";
 import { Icon, iconChevronRight, iconCursor, iconOpen, pictoSidekick } from "@surrealdb/ui";
 import { shuffle } from "radash";
@@ -19,11 +20,10 @@ import { adapter } from "~/adapter";
 import glowImg from "~/assets/images/radial-glow.png";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { useSidekickStore } from "~/stores/sidekick";
-import { PrimaryTitle } from "../../PrimaryTitle";
 import { SIDEKICK_QUESTIONS } from "../helpers";
 import { SidekickStream } from "../stream";
-import classes from "../style.module.scss";
 import { SidekickMessage } from "./message";
 
 export interface ChatConversationProps {
@@ -35,6 +35,7 @@ export interface ChatConversationProps {
 export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProps) {
 	const { startRequest, completeRequest } = useSidekickStore.getState();
 
+	const isLight = useIsLight();
 	const activeId = useSidekickStore((state) => state.activeId);
 	const activeHistory = useSidekickStore((state) => state.activeHistory);
 	const activeRequest = useSidekickStore((state) => state.activeRequest);
@@ -100,6 +101,8 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 	const questions = useMemo(() => shuffle(SIDEKICK_QUESTIONS).slice(0, 4), []);
 	const showPrompts = !activeRequest && !activeResponse && activeHistory.length === 0;
 
+	const glassColor = isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)";
+
 	return (
 		<>
 			{showPrompts ? (
@@ -122,25 +125,28 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 							<Image
 								pos="relative"
 								src={pictoSidekick}
-								w={85}
-								h={85}
+								w={55}
+								h={55}
 							/>
 						</Box>
-						<PrimaryTitle
-							fz={42}
-							mt="md"
+						<Title
+							c="bright"
+							fw="bold"
+							fz={30}
+							mt="xl"
 						>
 							Welcome to Sidekick
-						</PrimaryTitle>
-						<Text fz="xl">Your personal Surreal assistant designed for you.</Text>
+						</Title>
+						<Text>Your personal Surreal assistant designed for you.</Text>
 						<Stack
 							mt={36}
-							w={450}
-							style={{ alignSelf: "stretch" }}
+							w={375}
+							align="center"
 						>
 							{isAuthed ? (
 								questions.map((question) => (
 									<Paper
+										w="100%"
 										p="sm"
 										key={question.title}
 										role="button"
@@ -148,8 +154,8 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 										tabIndex={0}
 										onClick={() => submitMessage(question.title)}
 										style={{
-											alignSelf: "stretch",
 											cursor: "pointer",
+											backgroundColor: glassColor,
 										}}
 									>
 										<Group
@@ -167,14 +173,13 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 													size="md"
 												/>
 											</ThemeIcon>
-											<PrimaryTitle
+											<Text
 												c="bright"
 												fw={500}
-												fz="xl"
-												pr="md"
+												fz="lg"
 											>
 												{question.title}
-											</PrimaryTitle>
+											</Text>
 										</Group>
 									</Paper>
 								))
@@ -245,85 +250,75 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 				px={padding ?? "xl"}
 				pb={padding ?? "xl"}
 			>
-				<Paper p="md">
-					{/* <Group mb="xs">
-						<Button
-							leftSection={<Icon path={iconTable} />}
-							variant="light"
-							color="obsidian"
-							size="xs"
-						>
-							Attach schema
-						</Button>
-						<Button
-							leftSection={<Icon path={iconTable} />}
-							variant="light"
-							color="obsidian"
-							size="xs"
-						>
-							Attach table
-						</Button>
-						<Button
-							leftSection={<Icon path={iconRelation} />}
-							variant="light"
-							color="obsidian"
-							size="xs"
-						>
-							Attach relation
-						</Button>
-					</Group> */}
-					<Group
-						wrap="nowrap"
-						align="end"
+				<Group
+					gap="sm"
+					wrap="nowrap"
+					align="end"
+				>
+					<Textarea
+						mt="lg"
+						bg={glassColor}
+						bdrs="xl"
+						ref={inputRef}
+						flex={1}
+						maxRows={4}
+						autosize
+						placeholder="Send a message..."
+						onKeyDown={handleKeyDown}
+						value={currentPrompt}
+						autoFocus
+						onChange={(e) => {
+							updatePrompt(e.target.value);
+						}}
+						variant="unstyled"
+						styles={{
+							input: {
+								color: "var(--mantine-color-bright)",
+								padding: "0.5rem 1rem",
+								"&:placeholder-shown": {
+									color: "red",
+									opacity: 0.5,
+								},
+							},
+						}}
+						style={{
+							border: "1px solid rgba(255, 255, 255, 0.3)",
+						}}
+					/>
+					<ActionIcon
+						size="xl"
+						type="submit"
+						variant="gradient"
+						disabled={!canSend}
+						onClick={() => submitMessage(currentPrompt)}
+						loading={stream.isResponding}
+						style={{
+							backgroundOrigin: "border-box",
+							filter: canSend ? undefined : "saturate(0%)",
+							transition: "all 0.1s",
+						}}
 					>
-						<Textarea
-							ref={inputRef}
-							flex={1}
-							rows={1}
-							maxRows={12}
-							autosize
-							className={classes.sidekickInput}
-							placeholder="Send a message..."
-							onKeyDown={handleKeyDown}
-							value={currentPrompt}
-							autoFocus
-							onChange={(e) => {
-								updatePrompt(e.target.value);
-							}}
-							rightSectionWidth={96}
-							variant="unstyled"
+						<Icon
+							size="lg"
+							path={iconCursor}
+							c="white"
 						/>
-						<ActionIcon
-							size="xl"
-							type="submit"
-							variant="gradient"
-							disabled={!canSend}
-							onClick={() => submitMessage(currentPrompt)}
-							loading={stream.isResponding}
-							style={{
-								opacity: canSend ? 1 : 0.5,
-								border: "1px solid rgba(255, 255, 255, 0.3)",
-								backgroundOrigin: "border-box",
-								filter: canSend ? undefined : "saturate(0%)",
-								transition: "all 0.1s",
-							}}
-						>
-							<Icon
-								size="lg"
-								path={iconCursor}
-								c="white"
-							/>
-						</ActionIcon>
-					</Group>
-				</Paper>
+					</ActionIcon>
+				</Group>
 				<Text
 					opacity={0.8}
-					fz="sm"
-					mt="xs"
-					px="xs"
+					fz={11}
+					mt="md"
+					ta="center"
 				>
-					You are chatting with an AI assistant, responses may be inaccurate. Refrain from
-					submitting sensitive data.
+					You are chatting with an AI assistant, responses may be inaccurate.
+				</Text>
+				<Text
+					opacity={0.8}
+					fz={11}
+					ta="center"
+				>
+					Refrain from submitting sensitive data.
 				</Text>
 			</Box>
 		</>
