@@ -103,7 +103,7 @@ export const featureFlags = new FeatureFlags({
 			feature_flags: true,
 			query_view: true,
 			explorer_view: true,
-			graphql_view: true,
+			graphql_view: false,
 			designer_view: true,
 			auth_view: true,
 			functions_view: true,
@@ -126,7 +126,7 @@ export const featureFlags = new FeatureFlags({
 		preview: {
 			query_view: true,
 			explorer_view: true,
-			graphql_view: true,
+			graphql_view: false,
 			designer_view: true,
 			auth_view: true,
 			functions_view: true,
