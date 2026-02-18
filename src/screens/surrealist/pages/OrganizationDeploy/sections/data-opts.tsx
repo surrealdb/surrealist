@@ -1,5 +1,5 @@
-import { Alert, Button, Group, Select, Stack, Text } from "@mantine/core";
-import { Icon, iconArrowDownFat, iconHelp, useStable } from "@surrealdb/ui";
+import { Alert, Box, Button, Group, Select, Stack, Text } from "@mantine/core";
+import { Icon, iconArrowDownFat, iconHelp, iconInfo, useStable } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { isDistributedPlan } from "~/cloud/helpers";
 import { DeploySectionProps } from "../types";
@@ -14,7 +14,10 @@ export function DataOptionsSection({
 	const isDistributed = isDistributedPlan(details.plan);
 
 	const restorableInstances = instances.filter((instance) => {
-		return !!instance.distributed_storage_specs === isDistributed;
+		return (
+			!!instance.distributed_storage_specs === isDistributed &&
+			instance.region === details.region
+		);
 	});
 
 	const backupList = backups ?? [];
@@ -111,39 +114,65 @@ export function DataOptionsSection({
 				</Alert>
 			) : (
 				<Stack gap="xl">
-					<Select
-						label="Instance"
-						placeholder="Make a selection..."
-						description="Select a supported instance to restore from"
-						value={details.startingData.backupOptions?.instance?.id}
-						nothingFoundMessage="No instances available"
-						data={restorableInstances.map((it) => ({
-							value: it.id,
-							label: it.name,
-						}))}
-						onChange={(value) => {
-							const instance = restorableInstances.find((it) => it.id === value);
+					<Box>
+						<Select
+							label="Instance"
+							placeholder="Make a selection..."
+							description="Select a supported instance to restore from"
+							value={details.startingData.backupOptions?.instance?.id}
+							nothingFoundMessage="No instances available"
+							data={restorableInstances.map((it) => ({
+								value: it.id,
+								label: it.name,
+							}))}
+							onChange={(value) => {
+								const instance = restorableInstances.find((it) => it.id === value);
 
-							if (instance) {
-								setDetails((draft) => {
-									draft.startingData.backupOptions = {
-										instance: instance,
-									};
-								});
-							}
-						}}
-					/>
+								if (instance) {
+									setDetails((draft) => {
+										draft.startingData.backupOptions = {
+											instance: instance,
+										};
+									});
+								}
+							}}
+						/>
+						<Group
+							mt="sm"
+							fz="xs"
+							gap="xs"
+							c="violet"
+						>
+							<Icon path={iconInfo} />
+							<Text inherit>
+								You can only restore backups from instances in the same region
+							</Text>
+						</Group>
+					</Box>
 
-					<Select
-						label="Backup"
-						placeholder="Select a backup..."
-						description="Select the backup you want to restore from"
-						disabled={!details.startingData.backupOptions?.instance}
-						value={details.startingData.backupOptions?.backup?.snapshot_id}
-						nothingFoundMessage="No compatible backups available"
-						data={restorableSnapshots}
-						onChange={handleSelectBackup}
-					/>
+					<Box>
+						<Select
+							label="Backup"
+							placeholder="Select a backup..."
+							description="Select the backup you want to restore from"
+							disabled={!details.startingData.backupOptions?.instance}
+							value={details.startingData.backupOptions?.backup?.snapshot_id}
+							nothingFoundMessage="No compatible backups available"
+							data={restorableSnapshots}
+							onChange={handleSelectBackup}
+						/>
+						<Group
+							mt="sm"
+							fz="xs"
+							gap="xs"
+							c="violet"
+						>
+							<Icon path={iconInfo} />
+							<Text inherit>
+								You can only select backups from compatible versions
+							</Text>
+						</Group>
+					</Box>
 				</Stack>
 			);
 		}
