@@ -36,24 +36,22 @@ export function DataOptionsSection({
 	});
 
 	const backupList = backups ?? [];
-	const restorableSnapshots = backupList
-		.filter((backup) => {
-			return (
-				!details.version ||
-				!backup.valid_versions ||
-				backup.valid_versions.includes(details.version)
-			);
-		})
-		.map((backup) => ({
-			value: backup.snapshot_id,
-			label: dayjs(backup.snapshot_started_at).format("MMMM D, YYYY - hh:mm A"),
-		}));
+	const restorableSnapshots = backupList.map((backup) => ({
+		value: backup.snapshot_id,
+		label: dayjs(backup.snapshot_started_at).format("MMMM D, YYYY - hh:mm A"),
+	}));
 
 	const handleSelectBackup = useStable((value: string | null) => {
 		const backup = backupList.find((backup) => backup.snapshot_id === value);
 
 		if (backup) {
 			setDetails((draft) => {
+				const versions = backup.valid_versions ?? [];
+
+				if (!versions.includes(details.version)) {
+					draft.version = versions[0];
+				}
+
 				draft.startingData.backupOptions = {
 					instance: details.startingData.backupOptions?.instance,
 					backup: backup,
@@ -134,7 +132,7 @@ export function DataOptionsSection({
 							label="Instance"
 							placeholder="Make a selection..."
 							description="Select a supported instance to restore from"
-							value={details.startingData.backupOptions?.instance?.id}
+							value={details.startingData.backupOptions?.instance?.id ?? null}
 							nothingFoundMessage="No instances available"
 							data={restorableInstances}
 							onChange={handleSelectInstance}
@@ -158,7 +156,7 @@ export function DataOptionsSection({
 							placeholder="Select a backup..."
 							description="Select the backup you want to restore from"
 							disabled={!details.startingData.backupOptions?.instance}
-							value={details.startingData.backupOptions?.backup?.snapshot_id}
+							value={details.startingData.backupOptions?.backup?.snapshot_id ?? null}
 							nothingFoundMessage="No compatible backups available"
 							data={restorableSnapshots}
 							onChange={handleSelectBackup}
@@ -170,9 +168,7 @@ export function DataOptionsSection({
 							c="violet"
 						>
 							<Icon path={iconInfo} />
-							<Text inherit>
-								You can only select backups from compatible versions
-							</Text>
+							<Text inherit>Backups may limit your instance version</Text>
 						</Group>
 					</Box>
 				</Stack>
