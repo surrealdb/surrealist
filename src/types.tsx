@@ -225,6 +225,7 @@ export interface SurrealistAppearanceSettings {
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
 	sidebarViews: Flags<ViewPage>;
+	disableAnimations: boolean;
 }
 
 export interface SurrealistTemplateSettings {

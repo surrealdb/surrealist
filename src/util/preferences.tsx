@@ -176,6 +176,17 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "disable-animations",
+						name: "Disable animations",
+						description: "Disable visual animations",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.appearance.disableAnimations,
+							writer: (config, value) => {
+								config.settings.appearance.disableAnimations = value;
+							},
+						}),
+					},
 				],
 			},
 			{

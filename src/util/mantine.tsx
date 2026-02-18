@@ -2,6 +2,7 @@ import {
 	Alert,
 	Checkbox,
 	Drawer,
+	Indicator,
 	InputBase,
 	MantineThemeOverride,
 	MultiSelect,
@@ -107,6 +108,11 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 		Notification: Notification.extend({
 			defaultProps: {
 				variant: "surreal",
+			},
+		}),
+		Indicator: Indicator.extend({
+			defaultProps: {
+				color: "violet",
 			},
 		}),
 	},

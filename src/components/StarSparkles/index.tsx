@@ -1,5 +1,6 @@
 import { Box } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
+import { useConfigStore } from "~/stores/config";
 import classes from "./style.module.scss";
 
 interface Star {
@@ -24,12 +25,14 @@ export function StarSparkles({
 	offsetBase = 8,
 	offsetModifier = 4,
 }: StarSparkleProps) {
+	const disableAnimations = useConfigStore((s) => s.settings.appearance.disableAnimations);
+
 	const ref = useRef<HTMLDivElement>(null);
 	const [stars, setStars] = useState<Star[]>([]);
 	const [starId, setStarId] = useState(0);
 
 	useEffect(() => {
-		if (!ref.current || hidden) return;
+		if (!ref.current || hidden || disableAnimations) return;
 
 		const interval = setInterval(() => {
 			if (!ref.current) return;
@@ -70,7 +73,7 @@ export function StarSparkles({
 		}, 800);
 
 		return () => clearInterval(interval);
-	}, [starId, hidden, inset, offsetBase, offsetModifier]);
+	}, [starId, hidden, inset, offsetBase, offsetModifier, disableAnimations]);
 
 	return (
 		<div

@@ -27,7 +27,6 @@ import { escapeIdent } from "surrealdb";
 import type { Updater } from "use-immer";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
@@ -112,13 +111,19 @@ export function DesignDrawer({
 				mb="md"
 				gap="sm"
 			>
-				<PrimaryTitle>
+				<Group>
 					<Icon
 						path={iconDesigner}
-						size="sm"
+						size="lg"
 					/>
-					Table designer
-				</PrimaryTitle>
+					<Text
+						fw={700}
+						fz="xl"
+						c="bright"
+					>
+						Table designer
+					</Text>
+				</Group>
 
 				<Spacer />
 
@@ -222,6 +227,7 @@ export function DesignDrawer({
 						item: classes.accordionItem,
 						label: classes.accordionLabel,
 					}}
+					className={classes.drawerRoot}
 				>
 					<GeneralElement
 						data={value}
