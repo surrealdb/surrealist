@@ -9,6 +9,10 @@
 	:global(.mantine-Modal-body) {
 		position: relative;
 	}
+	
+	:global(.mantine-Modal-content) {
+		max-width: 99vw;
+	}
 
 	&::before {
 		content: "";
