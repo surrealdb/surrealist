@@ -1,5 +1,5 @@
 import { Alert, Button, Group, Select, Stack, Text } from "@mantine/core";
-import { Icon, iconArrowDownFat, iconHelp } from "@surrealdb/ui";
+import { Icon, iconArrowDownFat, iconHelp, useStable } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { isDistributedPlan } from "~/cloud/helpers";
 import { DeploySectionProps } from "../types";
@@ -15,6 +15,33 @@ export function DataOptionsSection({
 
 	const restorableInstances = instances.filter((instance) => {
 		return !!instance.distributed_storage_specs === isDistributed;
+	});
+
+	const backupList = backups ?? [];
+	const restorableSnapshots = backupList
+		.filter((backup) => {
+			return (
+				!details.version ||
+				!backup.valid_versions ||
+				backup.valid_versions.includes(details.version)
+			);
+		})
+		.map((backup) => ({
+			value: backup.snapshot_id,
+			label: dayjs(backup.snapshot_started_at).format("MMMM D, YYYY - hh:mm A"),
+		}));
+
+	const handleSelectBackup = useStable((value: string | null) => {
+		const backup = backupList.find((backup) => backup.snapshot_id === value);
+
+		if (backup) {
+			setDetails((draft) => {
+				draft.startingData.backupOptions = {
+					instance: details.startingData.backupOptions?.instance,
+					backup: backup,
+				};
+			});
+		}
 	});
 
 	switch (details.startingData.type) {
@@ -113,25 +140,9 @@ export function DataOptionsSection({
 						description="Select the backup you want to restore from"
 						disabled={!details.startingData.backupOptions?.instance}
 						value={details.startingData.backupOptions?.backup?.snapshot_id}
-						nothingFoundMessage="No backups available"
-						data={backups?.map((backup) => ({
-							value: backup.snapshot_id,
-							label: dayjs(backup.snapshot_started_at).format(
-								"MMMM D, YYYY - hh:mm A",
-							),
-						}))}
-						onChange={(value) => {
-							const backup = backups?.find((backup) => backup.snapshot_id === value);
-
-							if (backup) {
-								setDetails((draft) => {
-									draft.startingData.backupOptions = {
-										instance: details.startingData.backupOptions?.instance,
-										backup: backup,
-									};
-								});
-							}
-						}}
+						nothingFoundMessage="No compatible backups available"
+						data={restorableSnapshots}
+						onChange={handleSelectBackup}
 					/>
 				</Stack>
 			);

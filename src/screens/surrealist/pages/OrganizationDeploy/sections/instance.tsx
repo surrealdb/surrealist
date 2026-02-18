@@ -40,6 +40,10 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 	const updateVersion = useStable((value: string | null) => {
 		setDetails((draft) => {
 			draft.version = value ?? "";
+
+			if (draft.startingData.backupOptions) {
+				draft.startingData.backupOptions.backup = undefined;
+			}
 		});
 	});
 
