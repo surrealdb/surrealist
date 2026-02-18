@@ -8,16 +8,15 @@
 	font-size: 0.75rem;
 	pointer-events: none;
 	z-index: 10;
-	color: var(--surreal-energy);
 	animation: starFade 3s ease-out forwards;
 	transform: translate(-50%, -50%);
-	will-change: transform, opacity;
 }
 
 @keyframes starFade {
 	0% {
 		opacity: 0;
 		transform: translate(-50%, -50%) scale(0.5);
+		color: var(--surreal-energy);
 	}
 
 	20% {
@@ -28,5 +27,6 @@
 	100% {
 		opacity: 0;
 		transform: translate(-50%, -50%) scale(0.8);
+		color: var(--surreal-passion);
 	}
 }
