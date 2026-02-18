@@ -13,11 +13,26 @@ export function DataOptionsSection({
 }: DeploySectionProps) {
 	const isDistributed = isDistributedPlan(details.plan);
 
-	const restorableInstances = instances.filter((instance) => {
-		return (
-			!!instance.distributed_storage_specs === isDistributed &&
-			instance.region === details.region
-		);
+	const restorableInstances = instances
+		.filter((instance) => {
+			return (
+				!!instance.distributed_storage_specs === isDistributed &&
+				instance.region === details.region
+			);
+		})
+		.map((it) => ({
+			value: it.id,
+			label: it.name,
+		}));
+
+	const handleSelectInstance = useStable((value: string | null) => {
+		const instance = instances.find((it) => it.id === value);
+
+		if (instance) {
+			setDetails((draft) => {
+				draft.startingData.backupOptions = { instance: instance };
+			});
+		}
 	});
 
 	const backupList = backups ?? [];
@@ -121,21 +136,8 @@ export function DataOptionsSection({
 							description="Select a supported instance to restore from"
 							value={details.startingData.backupOptions?.instance?.id}
 							nothingFoundMessage="No instances available"
-							data={restorableInstances.map((it) => ({
-								value: it.id,
-								label: it.name,
-							}))}
-							onChange={(value) => {
-								const instance = restorableInstances.find((it) => it.id === value);
-
-								if (instance) {
-									setDetails((draft) => {
-										draft.startingData.backupOptions = {
-											instance: instance,
-										};
-									});
-								}
-							}}
+							data={restorableInstances}
+							onChange={handleSelectInstance}
 						/>
 						<Group
 							mt="sm"

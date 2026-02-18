@@ -23,6 +23,7 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 	const updateRegion = useStable((value: string | null) => {
 		setDetails((draft) => {
 			draft.region = value ?? "";
+			draft.startingData.backupOptions = undefined;
 		});
 	});
 
