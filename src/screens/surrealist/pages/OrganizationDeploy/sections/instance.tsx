@@ -23,10 +23,12 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 	const updateRegion = useStable((value: string | null) => {
 		setDetails((draft) => {
 			draft.region = value ?? "";
+			draft.startingData.backupOptions = undefined;
 		});
 	});
 
-	const versionList = versions.map((ver) => ({
+	const versionSource = details.startingData.backupOptions?.backup?.valid_versions ?? versions;
+	const versionList = versionSource.map((ver) => ({
 		value: ver,
 		label: `SurrealDB ${ver}`,
 	}));
@@ -54,10 +56,10 @@ export function DeploymentSection({ organisation, details, setDetails }: DeployS
 	useLayoutEffect(() => {
 		if (!details.version) {
 			setDetails((draft) => {
-				draft.version = versions[0];
+				draft.version = versionSource[0];
 			});
 		}
-	}, [details.version, versions, setDetails]);
+	}, [details.version, versionSource, setDetails]);
 
 	return (
 		<Stack gap="lg">

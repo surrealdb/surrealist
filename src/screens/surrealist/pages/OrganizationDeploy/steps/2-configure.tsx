@@ -107,8 +107,7 @@ export function ConfigureStep({
 					title="Region mismatch"
 					mb="xl"
 				>
-					When restoring from a backup, the instance must be in the same region as the
-					backup
+					You can only restore a backup from an instance in the same region
 				</WarningAlert>
 			)}
 

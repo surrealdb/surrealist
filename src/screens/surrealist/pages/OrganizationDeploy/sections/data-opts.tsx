@@ -1,5 +1,5 @@
-import { Alert, Button, Group, Select, Stack, Text } from "@mantine/core";
-import { Icon, iconArrowDownFat, iconHelp } from "@surrealdb/ui";
+import { Alert, Box, Button, Group, Select, Stack, Text } from "@mantine/core";
+import { Icon, iconArrowDownFat, iconHelp, iconInfo, useStable } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { isDistributedPlan } from "~/cloud/helpers";
 import { DeploySectionProps } from "../types";
@@ -13,8 +13,51 @@ export function DataOptionsSection({
 }: DeploySectionProps) {
 	const isDistributed = isDistributedPlan(details.plan);
 
-	const restorableInstances = instances.filter((instance) => {
-		return !!instance.distributed_storage_specs === isDistributed;
+	const restorableInstances = instances
+		.filter((instance) => {
+			return (
+				!!instance.distributed_storage_specs === isDistributed &&
+				instance.region === details.region
+			);
+		})
+		.map((it) => ({
+			value: it.id,
+			label: it.name,
+		}));
+
+	const handleSelectInstance = useStable((value: string | null) => {
+		const instance = instances.find((it) => it.id === value);
+
+		if (instance) {
+			setDetails((draft) => {
+				draft.startingData.backupOptions = { instance: instance };
+			});
+		}
+	});
+
+	const backupList = backups ?? [];
+	const restorableSnapshots = backupList.map((backup) => ({
+		value: backup.snapshot_id,
+		label: dayjs(backup.snapshot_started_at).format("MMMM D, YYYY - hh:mm A"),
+	}));
+
+	const handleSelectBackup = useStable((value: string | null) => {
+		const backup = backupList.find((backup) => backup.snapshot_id === value);
+
+		if (backup) {
+			setDetails((draft) => {
+				const versions = backup.valid_versions ?? [];
+
+				if (!versions.includes(details.version)) {
+					draft.version = versions[0];
+				}
+
+				draft.startingData.backupOptions = {
+					instance: details.startingData.backupOptions?.instance,
+					backup: backup,
+				};
+			});
+		}
 	});
 
 	switch (details.startingData.type) {
@@ -84,55 +127,50 @@ export function DataOptionsSection({
 				</Alert>
 			) : (
 				<Stack gap="xl">
-					<Select
-						label="Instance"
-						placeholder="Make a selection..."
-						description="Select a supported instance to restore from"
-						value={details.startingData.backupOptions?.instance?.id}
-						nothingFoundMessage="No instances available"
-						data={restorableInstances.map((it) => ({
-							value: it.id,
-							label: it.name,
-						}))}
-						onChange={(value) => {
-							const instance = restorableInstances.find((it) => it.id === value);
+					<Box>
+						<Select
+							label="Instance"
+							placeholder="Make a selection..."
+							description="Select a supported instance to restore from"
+							value={details.startingData.backupOptions?.instance?.id ?? null}
+							nothingFoundMessage="No instances available"
+							data={restorableInstances}
+							onChange={handleSelectInstance}
+						/>
+						<Group
+							mt="sm"
+							fz="xs"
+							gap="xs"
+							c="violet"
+						>
+							<Icon path={iconInfo} />
+							<Text inherit>
+								You can only restore backups from instances in the same region
+							</Text>
+						</Group>
+					</Box>
 
-							if (instance) {
-								setDetails((draft) => {
-									draft.startingData.backupOptions = {
-										instance: instance,
-									};
-								});
-							}
-						}}
-					/>
-
-					<Select
-						label="Backup"
-						placeholder="Select a backup..."
-						description="Select the backup you want to restore from"
-						disabled={!details.startingData.backupOptions?.instance}
-						value={details.startingData.backupOptions?.backup?.snapshot_id}
-						nothingFoundMessage="No backups available"
-						data={backups?.map((backup) => ({
-							value: backup.snapshot_id,
-							label: dayjs(backup.snapshot_started_at).format(
-								"MMMM D, YYYY - hh:mm A",
-							),
-						}))}
-						onChange={(value) => {
-							const backup = backups?.find((backup) => backup.snapshot_id === value);
-
-							if (backup) {
-								setDetails((draft) => {
-									draft.startingData.backupOptions = {
-										instance: details.startingData.backupOptions?.instance,
-										backup: backup,
-									};
-								});
-							}
-						}}
-					/>
+					<Box>
+						<Select
+							label="Backup"
+							placeholder="Select a backup..."
+							description="Select the backup you want to restore from"
+							disabled={!details.startingData.backupOptions?.instance}
+							value={details.startingData.backupOptions?.backup?.snapshot_id ?? null}
+							nothingFoundMessage="No compatible backups available"
+							data={restorableSnapshots}
+							onChange={handleSelectBackup}
+						/>
+						<Group
+							mt="sm"
+							fz="xs"
+							gap="xs"
+							c="violet"
+						>
+							<Icon path={iconInfo} />
+							<Text inherit>Backups may limit your instance version</Text>
+						</Group>
+					</Box>
 				</Stack>
 			);
 		}

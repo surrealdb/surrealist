@@ -802,6 +802,7 @@ export interface CloudCoupon {
 export interface CloudBackup {
 	snapshot_started_at: string;
 	snapshot_id: string;
+	valid_versions?: string[];
 }
 
 export interface CloudMember {
