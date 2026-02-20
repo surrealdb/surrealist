@@ -1,5 +1,4 @@
 import { Anchor, Box, BoxProps, Group, Paper, Text, UnstyledButton } from "@mantine/core";
-import { Icon, iconChevronRight } from "@surrealdb/ui";
 import { PropsWithChildren, useRef } from "react";
 import { Link } from "wouter";
 import { Faint } from "~/components/Faint";
@@ -19,12 +18,12 @@ export function StartCreator({ organization, ...other }: PropsWithChildren<Start
 					c="var(--mantine-color-text)"
 				>
 					<Paper
-						p="lg"
+						p="xl"
 						ref={containerRef}
 					>
 						<Group
 							wrap="nowrap"
-							align="start"
+							ta="center"
 							h="100%"
 						>
 							<Box flex={1}>
@@ -43,13 +42,6 @@ export function StartCreator({ organization, ...other }: PropsWithChildren<Start
 									organisation.
 								</Text>
 							</Box>
-
-							<Icon
-								c="dimmed"
-								style={{ alignSelf: "center" }}
-								path={iconChevronRight}
-								ml="xl"
-							/>
 						</Group>
 						<Faint containerRef={containerRef} />
 					</Paper>
