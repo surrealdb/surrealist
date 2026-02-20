@@ -4,6 +4,7 @@ import {
 	Group,
 	Modal,
 	ScrollArea,
+	SegmentedControl,
 	Select,
 	Stack,
 	Tabs,
@@ -66,6 +67,23 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 	const [jwtVerifyUrl, setJwtVerifyUrl] = useInputState("");
 	const [jwtVerifyMode, setJwtVerifyMode] = useState<VerifyMode>("keyalg");
 	const [comment, setComment] = useInputState("");
+
+	const [activeTab, setActiveTab] = useState("general");
+
+	const tabs = useMemo(() => {
+		const list = [
+			{ label: "General", value: "general" },
+			{ label: "Durations", value: "durations" },
+			{ label: "JWT", value: "jwt" },
+			{ label: "Comment", value: "comment" },
+		];
+
+		if (type === "RECORD") {
+			list.push({ label: "Session", value: "session" });
+		}
+
+		return list;
+	}, [type]);
 
 	useLayoutEffect(() => {
 		if (opened) {
@@ -202,19 +220,14 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			}
 		>
 			<Form onSubmit={saveUser}>
-				<Tabs defaultValue="general">
-					<Tabs.List
-						grow
+				<Tabs value={activeTab}>
+					<SegmentedControl
 						mb="xl"
-					>
-						<Tabs.Tab value="general">General</Tabs.Tab>
-
-						{type === "RECORD" && <Tabs.Tab value="session">Session</Tabs.Tab>}
-
-						<Tabs.Tab value="durations">Durations</Tabs.Tab>
-						<Tabs.Tab value="jwt">JWT</Tabs.Tab>
-						<Tabs.Tab value="comment">Comment</Tabs.Tab>
-					</Tabs.List>
+						w="100%"
+						data={tabs}
+						value={activeTab}
+						onChange={setActiveTab}
+					/>
 
 					<Tabs.Panel value="general">
 						<Stack gap="lg">
