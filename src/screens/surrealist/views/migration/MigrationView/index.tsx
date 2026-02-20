@@ -3,6 +3,7 @@ import {
 	Box,
 	Button,
 	Center,
+	Checkbox,
 	Group,
 	Image,
 	Paper,
@@ -29,6 +30,7 @@ import { DiagnosticResource, organizeDiagnostics, ResourceMap } from "./organize
 
 export function MigrationView() {
 	const connectionId = useConnection((c) => c?.id);
+	const [exportVersions, setExportVersions] = useState<boolean>(false);
 
 	// State for opened resource types
 	const [openedTypes, setOpenedTypes] = useState<string[]>([]);
@@ -59,7 +61,7 @@ export function MigrationView() {
 		mutationFn: async () => {
 			const backup = new Blob([
 				await getSurreal().export({
-					versions: true,
+					versions: exportVersions,
 					v3: true,
 				}),
 			]);
@@ -231,7 +233,13 @@ export function MigrationView() {
 							Press the button below to create an export of your database which can be
 							restored in a SurrealDB 3.0 instance.
 						</Text>
-						<Group mt="md">
+						<Checkbox
+							my="md"
+							label="Export historical data (SurrealKV only)"
+							checked={exportVersions}
+							onChange={(event) => setExportVersions(event.currentTarget.checked)}
+						/>
+						<Group>
 							<Button
 								variant="gradient"
 								onClick={() => exportMutation.mutate()}
