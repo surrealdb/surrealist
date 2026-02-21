@@ -45,7 +45,7 @@
         "@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
         "@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.1",
         "@surrealdb/ui": "^1.0.65",
-        "@surrealdb/wasm": "^2.6.1",
+        "@surrealdb/wasm": "^3.0.0",
         "@tanstack/react-query": "^5.37.1",
         "@tauri-apps/api": "2.4.0",
         "@tauri-apps/plugin-deep-link": "2.2.0",
@@ -99,7 +99,7 @@
         "remark-github-blockquote-alert": "^2.0.0",
         "rss-parser": "^3.13.0",
         "sigma": "^3.0.0",
-        "surrealdb": "^2.0.0-beta.1",
+        "surrealdb": "^2.0.0-beta.2",
         "turndown": "^7.2.1",
         "use-immer": "^0.9.0",
         "valibot": "^1.2.0",
@@ -622,7 +622,7 @@
 
     "@surrealdb/ui": ["@surrealdb/ui@1.0.65", "", { "dependencies": { "@codemirror/legacy-modes": "^6.4.2", "@lezer/common": "^1.2.1", "@lezer/go": "^1.0.0", "@lezer/highlight": "^1.2.1", "@lezer/html": "^1.3.10", "@lezer/javascript": "^1.4.17", "@lezer/json": "^1.0.3", "@lezer/php": "^1.0.2", "@lezer/python": "^1.1.14", "@lezer/rust": "^1.0.2", "@lezer/yaml": "^1.0.3", "@replit/codemirror-indentation-markers": "^6.5.3", "@surrealdb/lezer": "1.0.0-beta.23", "github-slugger": "^2.0.0", "vite-tsconfig-paths": "^6.0.5" }, "peerDependencies": { "@codemirror/autocomplete": "^6.13.0", "@codemirror/commands": "^6.3.3", "@codemirror/language": "^6.10.1", "@codemirror/lint": "^6.5.0", "@codemirror/search": "^6.5.6", "@codemirror/state": "^6.4.1", "@codemirror/view": "^6.24.1", "@mantine/core": "^8", "@mantine/hooks": "^8", "react": "^19" } }, "sha512-kztY8KZpVWo5cT0tLEx59x3KccNH6htWh9y/j0VcI7oNdghH0u/tC7YTdfDI4h9UDbmGUkGxHg/JqCRNxx04uA=="],
 
-    "@surrealdb/wasm": ["@surrealdb/wasm@2.6.1", "", { "peerDependencies": { "surrealdb": "^2.0.0-0" } }, "sha512-pBxgOX/wZ+aBvMIJbDv6UtUDCT0RjhpPqa31NMUmAZuTx9WfZb1PQan4vCBH9rcSPDR6BC8zJ4pFQUuliFQUEQ=="],
+    "@surrealdb/wasm": ["@surrealdb/wasm@3.0.0", "", { "peerDependencies": { "surrealdb": "^2.0.0-0" } }, "sha512-h2tGA/2mz8nkd/I2oqX31uXD56Mw20ZFG8NKMZsXQozZSRaYZnV/QlX2fdXVpWFMkBf/6O55reSF9RHfqCeTGA=="],
 
     "@tanstack/query-core": ["@tanstack/query-core@5.90.20", "", {}, "sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg=="],
 
@@ -1364,7 +1364,7 @@
 
     "supports-preserve-symlinks-flag": ["supports-preserve-symlinks-flag@1.0.0", "", {}, "sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w=="],
 
-    "surrealdb": ["surrealdb@2.0.0-beta.1", "", { "dependencies": { "@surrealdb/cbor": "2.0.0-alpha.4", "uuidv7": "^1.0.1" }, "peerDependencies": { "tslib": "^2.6.3", "typescript": "^5.0.0" } }, "sha512-10Xe9lkuelc7AjKiYGIoU39OD+57aa88LFlEoRZLX8DyoKCH9fxPto566AmEtN+12lAyWZEi13BrR+9XvOF2HA=="],
+    "surrealdb": ["surrealdb@2.0.0-beta.2", "", { "dependencies": { "@surrealdb/cbor": "2.0.0-alpha.4", "uuidv7": "^1.0.1" }, "peerDependencies": { "tslib": "^2.6.3", "typescript": "^5.0.0" } }, "sha512-0LrBP1U15E+Q7aXaGAf1GQMDOkZ5ETaSpeiLhsmcK0KyNb9rcS8fPHd5dZcMeBGWfM+f9G4Tu+sPBSNhuRNJKA=="],
 
     "svgo": ["svgo@3.3.2", "", { "dependencies": { "@trysound/sax": "0.2.0", "commander": "^7.2.0", "css-select": "^5.1.0", "css-tree": "^2.3.1", "css-what": "^6.1.0", "csso": "^5.0.5", "picocolors": "^1.0.0" }, "bin": "./bin/svgo" }, "sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw=="],
 

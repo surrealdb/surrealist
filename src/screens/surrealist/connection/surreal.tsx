@@ -9,7 +9,7 @@ export interface SurrealOptions {
 /**
  * Create a new configured Surreal instance
  */
-export async function createSurreal(options?: SurrealOptions) {
+export async function createSurreal(_options?: SurrealOptions) {
 	const { createWasmEngines } = await import("@surrealdb/wasm");
 	const { pushDiagnostic } = useDatabaseStore.getState();
 	const maxSize = getSetting("behavior", "diagnosticsHistorySize");
@@ -17,7 +17,8 @@ export async function createSurreal(options?: SurrealOptions) {
 	const engines = {
 		...createRemoteEngines(),
 		...createWasmEngines({
-			strict: options?.strict,
+			// TODO Why is this missing?
+			// strict: options?.strict,
 			capabilities: {
 				experimental: true,
 				functions: true,
