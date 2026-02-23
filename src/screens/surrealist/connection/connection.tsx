@@ -101,9 +101,9 @@ export async function openConnection(options?: ConnectOptions) {
 		throw new Error("No connection available");
 	}
 
+	const strictSandbox = getSetting("behavior", "strictSandbox");
 	const newState = options?.isRetry ? "retrying" : "connecting";
-	const strict = getSetting("behavior", "strictSandbox");
-	const surreal = await createSurreal({ strict });
+	const surreal = await createSurreal();
 
 	await _closeConnection(newState, false);
 
@@ -229,8 +229,10 @@ export async function openConnection(options?: ConnectOptions) {
 				database: "sandbox",
 			});
 
-			await instance.query("DEFINE NAMESPACE IF NOT EXISTS sandbox");
-			await instance.query("DEFINE DATABASE IF NOT EXISTS sandbox");
+			await instance.query(`
+				DEFINE NAMESPACE OVERWRITE sandbox;
+				DEFINE DATABASE OVERWRITE sandbox ${strictSandbox ? "STRICT" : ""};
+			`);
 
 			if (!hasCompletedSandboxOnboarding && adapter.isSampleSandboxEnabled) {
 				const queries = [SURREAL_START_BASICS];
