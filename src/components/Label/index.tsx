@@ -1,14 +1,16 @@
-import { Text, type TextProps } from "@mantine/core";
-import clsx from "clsx";
+import { InputLabel, InputLabelProps } from "@mantine/core";
 import type { PropsWithChildren } from "react";
 
-export function Label({ className, children, ...other }: PropsWithChildren<TextProps>) {
+export function Label({ className, children, ...other }: PropsWithChildren<InputLabelProps>) {
 	return (
-		<Text
-			className={clsx("mantine-InputWrapper-label", className)}
+		<InputLabel
+			c="bright"
+			fw={600}
+			mb={4}
+			data-variant="filled"
 			{...other}
 		>
 			{children}
-		</Text>
+		</InputLabel>
 	);
 }
