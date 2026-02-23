@@ -1,5 +1,6 @@
 import {
 	Alert,
+	Autocomplete,
 	Checkbox,
 	Drawer,
 	Indicator,
@@ -31,6 +32,11 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 	...MANTINE_THEME,
 	components: {
 		...MANTINE_THEME.components,
+		Autocomplete: Autocomplete.extend({
+			defaultProps: {
+				variant: "filled",
+			},
+		}),
 		Alert: Alert.extend({
 			defaultProps: {
 				variant: "light",
