@@ -271,7 +271,7 @@ export function PermissionInput({
 					<ActionButton
 						color="green.4"
 						label="Grant full access"
-						onClick={() => onChange("FULL")}
+						onClick={() => handleChange("FULL")}
 						variant={textValue.toUpperCase() === "FULL" ? "light" : "subtle"}
 					>
 						<Icon path={iconCheck} />
@@ -279,7 +279,7 @@ export function PermissionInput({
 					<ActionButton
 						color="pink.6"
 						label="Reject all access"
-						onClick={() => onChange("NONE")}
+						onClick={() => handleChange("NONE")}
 						variant={textValue.toUpperCase() === "NONE" ? "light" : "subtle"}
 					>
 						<Icon path={iconCancel} />
