@@ -190,7 +190,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			</Box>
 		),
 		onConfirm: async (id) => {
-			await executeQuery(`DELETE ${getSurrealQL().formatValue(id)}`);
+			await executeQuery(`DELETE ${await getSurrealQL().formatValue(id)}`);
 			refetch();
 		},
 	});
