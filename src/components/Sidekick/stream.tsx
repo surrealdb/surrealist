@@ -28,7 +28,6 @@ export function useSidekickStream(handler: StreamHandler): SidekickStream {
 
 		tagEvent("sidekick_message_sent", {
 			chat_id: chatId,
-			message,
 		});
 
 		try {
