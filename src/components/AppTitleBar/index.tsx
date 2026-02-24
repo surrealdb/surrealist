@@ -134,7 +134,7 @@ export function AppTitleBar() {
 			>
 				<Text
 					c="bright"
-					fz="lg"
+					fz="md"
 					fw={500}
 					data-tauri-drag-region
 				>

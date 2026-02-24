@@ -22,3 +22,7 @@
 .mantine-Menu-item[data-variant="gradient"] {
 	background: var(--surreal-gradient);
 }
+
+.mantine-Drawer-inner {
+	margin-top: var(--titlebar-offset);
+}
