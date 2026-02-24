@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
+import { tagEvent } from "~/util/analytics";
 import { StreamEvent } from "./types";
 
 const SIDEKICK_ENDPOINT = "https://xzg2igifvha4rfi2w677skt7h40yrtsm.lambda-url.us-east-1.on.aws/";
@@ -24,6 +25,11 @@ export function useSidekickStream(handler: StreamHandler): SidekickStream {
 		}
 
 		setIsResponding(true);
+
+		tagEvent("sidekick_message_sent", {
+			chat_id: chatId,
+			message,
+		});
 
 		try {
 			controller.current = new AbortController();
