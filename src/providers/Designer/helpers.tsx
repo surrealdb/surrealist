@@ -125,10 +125,6 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 
 		query += ` ${field.name} ON TABLE ${escapeIdent(name)}`;
 
-		if (field.flex) {
-			query += " FLEXIBLE";
-		}
-
 		if (field.kind) {
 			if (isRelation && field.name === "in") {
 				query += ` TYPE record<${inTables}>`;
@@ -137,6 +133,10 @@ export function buildDefinitionQueries({ previous, current, useOverwrite }: Buil
 			} else {
 				query += ` TYPE ${field.kind}`;
 			}
+		}
+
+		if (field.flex) {
+			query += " FLEXIBLE";
 		}
 
 		if (field.value) {
