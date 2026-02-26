@@ -25,6 +25,8 @@ export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	storageAmount: 100,
 	version: "",
 	plan: "free",
+	public_traffic: true,
+	private_traffic: false,
 	startingData: {
 		type: "none",
 	},
@@ -133,6 +135,16 @@ export function compileDeployConfig(
 
 	if (config.plan !== "free") {
 		configuration.storage = config.storageAmount;
+	}
+
+	if (organisation.privatelink_enabled) {
+		if (config.public_traffic && config.private_traffic) {
+			configuration.access_type = "dual";
+		} else if (config.public_traffic) {
+			configuration.access_type = "public";
+		} else if (config.private_traffic) {
+			configuration.access_type = "private";
+		}
 	}
 
 	if (isDistributedPlan(config.plan)) {

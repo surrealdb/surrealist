@@ -240,6 +240,8 @@ export function SurrealistToolbar() {
 						computeType: type.slug ?? "",
 						computeUnits: 1,
 						plan: allowFree ? "free" : "start",
+						private_traffic: false,
+						public_traffic: true,
 						storageAmount: type.default_storage_size,
 						storageType: "",
 						storageUnits: 3,

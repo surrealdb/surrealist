@@ -33,7 +33,7 @@ function ImportExportCard({ title, description, icon, onClick }: ImportExportCar
 	return (
 		<Paper
 			p="md"
-			bg={isLight ? "obsidian.0" : "obsidian.8"}
+			bg={isLight ? "obsidian.0" : "obsidian.7"}
 			onClick={onClick}
 		>
 			<Group justify="space-between">

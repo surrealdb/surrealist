@@ -1,5 +1,6 @@
 import {
 	Anchor,
+	Badge,
 	Box,
 	Button,
 	Center,
@@ -314,6 +315,8 @@ export function DashboardView() {
 		configuringHandle.open();
 	});
 
+	const publicAccess = details?.access_type === "public" || details?.access_type === "dual";
+	const privateAccess = details?.access_type === "private" || details?.access_type === "dual";
 	const isLoading =
 		detailsPending || backupsPending || instancePending || usagePending || organisationPending;
 
@@ -431,50 +434,26 @@ export function DashboardView() {
 										onVersions={handleVersions}
 									/>
 
-									<CopyButton value={`https://${details.host}/`}>
-										{({ copied, copy }) => (
-											<UnstyledButton onClick={copy}>
-												<Paper
-													bg={
-														copied
-															? "var(--mantine-color-violet-light)"
-															: "var(--mantine-color-obsidian-light)"
-													}
-													withBorder={false}
-													p={8}
-												>
-													<Group
-														gap={8}
-														wrap="nowrap"
-													>
-														<Icon
-															path={copied ? iconCheck : iconCopy}
-															opacity={0.66}
-														/>
-														<Text>
-															<Text span>https://</Text>
-															<Text
-																span
-																c="bright"
-															>
-																{details.host}
-															</Text>
-															<Text span>/</Text>
-														</Text>
-
-														{copied && (
-															<Text
-																c="bright"
-																opacity={0.66}
-															>
-																Copied!
-															</Text>
-														)}
-													</Group>
-												</Paper>
-											</UnstyledButton>
-										)}
-									</CopyButton>
+									{organisation.privatelink_enabled ? (
+										<Stack gap="xs">
+											{publicAccess && (
+												<HostnameEntry
+													host={details.host}
+													accessLabel="Public"
+													accessColor="orange"
+												/>
+											)}
+											{privateAccess && (
+												<HostnameEntry
+													host={details.private_host ?? ""}
+													accessLabel="Private"
+													accessColor="violet"
+												/>
+											)}
+										</Stack>
+									) : (
+										<HostnameEntry host={details.host} />
+									)}
 
 									<SimpleGrid
 										mt="md"
@@ -639,6 +618,7 @@ export function DashboardView() {
 					<ConfiguratorDrawerLazy
 						opened={configuring}
 						tab={configuratorTab}
+						organisation={organisation}
 						instance={details}
 						onChangeTab={setConfiguratorTab}
 						onClose={configuringHandle.close}
@@ -772,6 +752,72 @@ function GettingStartedLink({ image, description, title, href }: GettingStartedL
 				</Group>
 			</Paper>
 		</Anchor>
+	);
+}
+
+interface HostnameEntryProps {
+	host: string;
+	accessColor?: string;
+	accessLabel?: string;
+}
+
+function HostnameEntry({ host, accessColor, accessLabel }: HostnameEntryProps) {
+	return (
+		<CopyButton value={`https://${host}/`}>
+			{({ copied, copy }) => (
+				<UnstyledButton onClick={copy}>
+					<Paper
+						bg={
+							copied
+								? "var(--mantine-color-violet-light)"
+								: "var(--mantine-color-obsidian-light)"
+						}
+						withBorder={false}
+						p={8}
+					>
+						<Group
+							gap={8}
+							wrap="nowrap"
+						>
+							{accessLabel && accessColor && (
+								<Badge
+									color={accessColor}
+									variant="light"
+									h={24}
+									w={72}
+								>
+									{accessLabel}
+								</Badge>
+							)}
+
+							<Icon
+								path={copied ? iconCheck : iconCopy}
+								opacity={0.66}
+							/>
+							<Text>
+								<Text span>https://</Text>
+								<Text
+									span
+									c="bright"
+								>
+									{host}
+								</Text>
+								<Text span>/</Text>
+							</Text>
+
+							{copied && (
+								<Text
+									c="bright"
+									opacity={0.66}
+								>
+									Copied!
+								</Text>
+							)}
+						</Group>
+					</Paper>
+				</UnstyledButton>
+			)}
+		</CopyButton>
 	);
 }
 

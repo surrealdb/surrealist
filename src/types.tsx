@@ -49,6 +49,8 @@ export type IntercomConversationStateId = "open" | "closed" | "snoozed";
 export type MigrationIssueSeverity = "might_break" | "will_break" | "breaking_resolution";
 export type MigrationIssueKind = "incompatible feature";
 export type MigrationIssueTruncation = "none" | "start" | "end" | "both";
+export type OrganisationBillingProvider = "stripe" | "aws_marketplace" | "bank_transfer";
+export type CloudInstanceAccessType = "public" | "private" | "dual";
 export type OrganisationState =
 	| "created"
 	| "onboarded"
@@ -56,8 +58,6 @@ export type OrganisationState =
 	| "frozen"
 	| "terminating"
 	| "terminated";
-export type OrganisationBillingProvider = "stripe" | "aws_marketplace" | "bank_transfer";
-
 export type InstanceState =
 	| "creating"
 	| "updating"
@@ -620,6 +620,7 @@ export interface CloudInstance {
 	id: string;
 	name: string;
 	host: string;
+	private_host?: string;
 	region: string;
 	version: string;
 	organization_id: string;
@@ -630,6 +631,7 @@ export interface CloudInstance {
 	can_update_storage_size: boolean;
 	storage_size_update_cooloff_hours: number;
 	capabilities: CloudInstanceCapabilities;
+	access_type: CloudInstanceAccessType;
 	state: InstanceState;
 	type: CloudInstanceType;
 	distributed_storage_specs?: CloudDistributedStorageSpecs;
@@ -707,6 +709,7 @@ export interface CloudOrganization {
 	member_count: number;
 	user_role: string;
 	resources_locked: boolean;
+	privatelink_enabled: boolean;
 }
 
 export interface CloudBanner {
@@ -861,6 +864,8 @@ export interface CloudDeployConfig {
 	storageUnits: number;
 	storageAmount: number;
 	startingData: StartingDataDetails;
+	public_traffic: boolean;
+	private_traffic: boolean;
 	plan: InstancePlan;
 	migration?: boolean;
 }
