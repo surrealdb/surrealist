@@ -620,6 +620,7 @@ export interface CloudInstance {
 	id: string;
 	name: string;
 	host: string;
+	private_host?: string;
 	region: string;
 	version: string;
 	organization_id: string;

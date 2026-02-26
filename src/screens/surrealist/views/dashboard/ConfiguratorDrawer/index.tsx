@@ -4,15 +4,17 @@ import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { DrawerResizer } from "~/components/DrawerResizer";
 import { Spacer } from "~/components/Spacer";
-import { CloudInstance } from "~/types";
+import { CloudInstance, CloudOrganization } from "~/types";
 import { ConfigurationCapabilities } from "./configs/capabilities";
 import { ImportExport } from "./configs/import-export";
+import { ConfigurationNetwork } from "./configs/network";
 import { ConfigurationVersion } from "./configs/version";
 import classes from "./style.module.scss";
 
 export interface ConfiguratorDrawerProps {
 	opened: boolean;
 	tab: string;
+	organisation: CloudOrganization;
 	instance: CloudInstance;
 	onChangeTab: (tab: string) => void;
 	onUpdate: (version: string) => void;
@@ -22,6 +24,7 @@ export interface ConfiguratorDrawerProps {
 export function ConfiguratorDrawer({
 	opened,
 	tab,
+	organisation,
 	instance,
 	onChangeTab,
 	onUpdate,
@@ -105,6 +108,14 @@ export function ConfiguratorDrawer({
 						>
 							Version
 						</Tabs.Tab>
+						{organisation.privatelink_enabled && (
+							<Tabs.Tab
+								value="network"
+								py="sm"
+							>
+								Network
+							</Tabs.Tab>
+						)}
 						<Tabs.Tab
 							value="import-export"
 							py="sm"
@@ -128,6 +139,15 @@ export function ConfiguratorDrawer({
 						onClose={onClose}
 					/>
 				</Tabs.Panel>
+
+				{organisation.privatelink_enabled && (
+					<Tabs.Panel value="network">
+						<ConfigurationNetwork
+							instance={instance}
+							onClose={onClose}
+						/>
+					</Tabs.Panel>
+				)}
 
 				<Tabs.Panel value="import-export">
 					<ImportExport

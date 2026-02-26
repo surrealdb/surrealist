@@ -639,6 +639,7 @@ export function DashboardView() {
 					<ConfiguratorDrawerLazy
 						opened={configuring}
 						tab={configuratorTab}
+						organisation={organisation}
 						instance={details}
 						onChangeTab={setConfiguratorTab}
 						onClose={configuringHandle.close}
