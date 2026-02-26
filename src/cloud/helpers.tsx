@@ -137,6 +137,16 @@ export function compileDeployConfig(
 		configuration.storage = config.storageAmount;
 	}
 
+	if (organisation.privatelink_enabled) {
+		if (config.public_traffic && config.private_traffic) {
+			configuration.access_type = "dual";
+		} else if (config.public_traffic) {
+			configuration.access_type = "public";
+		} else if (config.private_traffic) {
+			configuration.access_type = "private";
+		}
+	}
+
 	if (isDistributedPlan(config.plan)) {
 		configuration.storage = (config.storageAmount * config.storageUnits) / 3;
 		configuration.distributed_storage_specs = {
