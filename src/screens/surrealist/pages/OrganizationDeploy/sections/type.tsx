@@ -253,7 +253,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 				aria-selected={isActive}
 				tabIndex={0}
 				role="radio"
-				withBorder={isActive ?? undefined}
+				withBorder
 				style={{
 					borderColor: isActive ? "var(--surreal-focus-outline)" : undefined,
 					cursor: isActive ? "default" : "pointer",

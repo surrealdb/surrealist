@@ -79,7 +79,7 @@ function StartingDataCard({ data, selected, disabled, onSelect }: StartingDataCa
 					borderColor: selected ? "var(--surreal-focus-outline)" : undefined,
 				}}
 				opacity={disabled ? 0.6 : 1}
-				withBorder={selected ?? undefined}
+				withBorder
 			>
 				<Stack gap="xs">
 					<Group>
