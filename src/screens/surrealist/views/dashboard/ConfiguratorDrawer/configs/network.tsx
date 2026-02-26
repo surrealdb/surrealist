@@ -32,7 +32,10 @@ function accessTypeToFlags(accessType: CloudInstanceAccessType) {
 	};
 }
 
-function flagsToAccessType(publicTraffic: boolean, privateTraffic: boolean): CloudInstanceAccessType {
+function flagsToAccessType(
+	publicTraffic: boolean,
+	privateTraffic: boolean,
+): CloudInstanceAccessType {
 	if (publicTraffic && privateTraffic) return "dual";
 	if (privateTraffic) return "private";
 	return "public";
@@ -95,8 +98,8 @@ export function ConfigurationNetwork({ instance, onClose }: ConfigurationNetwork
 								mt="sm"
 								fz="lg"
 							>
-								Configure how traffic can reach your instance by enabling
-								public access, private access, or both.
+								Configure how traffic can reach your instance by enabling public
+								access, private access, or both.
 							</Text>
 						</Box>
 

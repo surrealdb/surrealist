@@ -21,12 +21,10 @@ import {
 import { showNotification } from "@mantine/notifications";
 import {
 	Icon,
-	iconAuth,
 	iconCheck,
 	iconChevronDown,
 	iconChevronRight,
 	iconCopy,
-	iconTarget,
 	pictoDocument,
 	pictoHandsOn,
 	pictoPlay,
