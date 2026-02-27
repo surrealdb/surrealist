@@ -1,5 +1,6 @@
-import { Box, Button, Stack, TextInput } from "@mantine/core";
+import { ActionIcon, Box, Button, CopyButton, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
+import { Icon, iconCheck, iconCopy } from "@surrealdb/ui";
 import { useUpdateOrganizationMutation } from "~/cloud/mutations/update";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
@@ -51,14 +52,45 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 	return (
 		<Stack>
 			<Section
-				title="Organisation name"
-				description="Update the name of your organisation"
+				title="Organisation"
+				description="Manage the details of your organisation"
 			>
 				<TextInput
-					value={name}
-					onChange={setName}
+					maw={400}
+					label="Organisation ID"
+					description="This ID may be requested by the SurrealDB support team"
+					value={organization.id}
+					rightSection={
+						<CopyButton value={organization.id}>
+							{({ copied, copy }) => (
+								<ActionIcon
+									variant={copied ? "gradient" : undefined}
+									aria-label="Copy organisation ID"
+									radius="xs"
+									size="md"
+									onClick={copy}
+								>
+									<Icon path={copied ? iconCheck : iconCopy} />
+								</ActionIcon>
+							)}
+						</CopyButton>
+					}
+					styles={{
+						input: {
+							fontFamily: "var(--mantine-font-family-monospace)",
+						},
+					}}
 				/>
-				<Box>
+
+				<TextInput
+					value={name}
+					label="Name"
+					description="The display name of your organisation"
+					onChange={setName}
+					maw={400}
+				/>
+
+				<Box mt="xl">
 					<Button
 						size="xs"
 						variant="gradient"
