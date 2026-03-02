@@ -30,13 +30,13 @@ import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
+import { ConversationTable } from "~/components/ConversationTable";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../Overview/content/cloud";
-import { ConversationCard } from "./ConversationCard";
 import { ResourceTile } from "./ResourceTile";
 import { SupportCollection } from "./SupportCollection";
 import classes from "./style.module.scss";
@@ -100,15 +100,15 @@ export function SupportPage() {
 					{flags.support_tickets && (
 						<>
 							{isAuthenticated && chats && chats.length !== 0 && !isChatsLoading && (
-								<Paper p="xl">
-									<Group>
+								<Paper p="lg">
+									<Group p="sm">
 										<Text
 											c="bright"
 											fw={600}
 											fz={20}
 											lh={1}
 										>
-											Recent support tickets
+											Open support tickets
 										</Text>
 										<Spacer />
 										<Button
@@ -117,7 +117,7 @@ export function SupportPage() {
 											color="obsidian"
 											onClick={() => navigate("/support/requests")}
 										>
-											View All
+											View all tickets
 										</Button>
 
 										<Button
@@ -134,39 +134,14 @@ export function SupportPage() {
 										</Button>
 									</Group>
 
-									<Stack
-										ml="-xs"
-										mt="md"
-										gap={0}
-									>
-										{!isChatsLoading &&
-											chats
-												?.sort((a, b) => b.updated_at - a.updated_at)
-												.slice(0, 3)
-												.map((chat) => (
-													<Paper
-														p="xs"
-														key={chat.id}
-														withBorder={false}
-														style={{
-															cursor: "pointer",
-														}}
-														className={classes.messageItem}
-														onClick={() =>
-															navigate(
-																`/support/conversations/${chat.id}`,
-															)
-														}
-													>
-														<ConversationCard conversation={chat} />
-													</Paper>
-												))}
-										{isChatsLoading && (
-											<Center my="xl">
-												<Loader />
-											</Center>
+									<ConversationTable
+										conversations={chats.sort(
+											(a, b) => b.updated_at - a.updated_at,
 										)}
-									</Stack>
+										defaultSortMode="updated_latest"
+										defaultType="open"
+										withHeader={false}
+									/>
 								</Paper>
 							)}
 

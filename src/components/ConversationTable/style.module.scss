@@ -1,0 +1,34 @@
+.conversation-card {
+    cursor: pointer;
+    padding: var(--mantine-spacing-sm);
+    border-radius: var(--mantine-radius-md);
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: var(--mantine-color-obsidian-7);
+
+        @include light {
+            background-color: var(--mantine-color-obsidian-1);
+        }
+    }
+}
+
+.conversation-table-header {
+    padding: var(--mantine-spacing-sm) 0px;
+    border-top-left-radius: var(--mantine-radius-xs);
+    border-top-right-radius: var(--mantine-radius-xs);
+    margin-bottom: -3px;
+}
+
+.header-button {
+    padding: var(--mantine-spacing-sm);
+    border-radius: var(--mantine-radius-xs);
+
+    &:hover {
+        background-color: var(--mantine-color-obsidian-7);
+
+        @include light {
+            background-color: var(--mantine-color-obsidian-1);
+        }
+    }
+}
