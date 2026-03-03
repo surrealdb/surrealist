@@ -15,6 +15,7 @@ import { Icon, iconChat, iconChevronDown, iconFilter, iconTag, Spacer } from "@s
 import { useEffect, useMemo, useState } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
+import { SUPPORT_STATES } from "~/constants";
 import { IntercomConversation, IntercomTicket } from "~/types";
 import { formatRelativeDate } from "~/util/helpers";
 import { Pagination } from "../Pagination";
@@ -53,6 +54,10 @@ export function ConversationRow({ conversation }: ConversationRowProps) {
 	const { data: organization } = useCloudOrganizationQuery(ticketOrganization);
 
 	const hasTicket = isConversation ? conversation.hasTicket : true;
+	const ticketState = isConversation
+		? SUPPORT_STATES.find((it) => it.value === conversation.ticketData?.state.category)
+		: undefined;
+
 	const color = hasTicket ? "violet" : "pink";
 	const icon = hasTicket ? iconTag : iconChat;
 
@@ -68,46 +73,64 @@ export function ConversationRow({ conversation }: ConversationRowProps) {
 		<>
 			<Divider m={0} />
 			<Group
+				gap={100}
 				onClick={() => navigate(`/support/conversations/${conversation.id}`)}
 				className={classes.conversationCard}
 			>
-				<ThemeIcon
-					size={40}
-					variant="light"
-					color={color}
-				>
-					<Icon path={icon} />
-				</ThemeIcon>
-				<Stack gap={2.5}>
-					<Group>
-						<Text
-							fz="lg"
-							fw={read ? 400 : 600}
-							c="bright"
-						>
-							{title}
-						</Text>
-						{!read && (
-							<Indicator
-								inset={0}
-								size={8}
-								color="violet"
+				<Group>
+					<ThemeIcon
+						size={40}
+						variant="light"
+						color={color}
+					>
+						<Icon path={icon} />
+					</ThemeIcon>
+					<Stack gap={2.5}>
+						<Group>
+							<Text
+								fz="lg"
+								fw={read ? 400 : 600}
+								c="bright"
+							>
+								{title}
+							</Text>
+							{!read && (
+								<Indicator
+									inset={0}
+									size={8}
+									color="violet"
+								/>
+							)}
+						</Group>
+						<Group gap={4}>
+							<Text c={hasTicket ? "violet" : "pink"}>{authorName || "Unknown"}</Text>
+							<Text
+								c="obsidian.4"
+								fz={4}
+								mx={2}
+							>
+								&#x2B24;
+							</Text>
+							<Text>{formatRelativeDate(conversation.updated_at * 1000)}</Text>
+							{showOrganization && <Text>in {organization?.name ?? "Unknown"}</Text>}
+						</Group>
+					</Stack>
+				</Group>
+				<Spacer />
+				{ticketState && (
+					<Badge
+						color={ticketState.color}
+						variant="light"
+					>
+						<Group gap="xs">
+							<Icon
+								size="xs"
+								path={ticketState.icon}
 							/>
-						)}
-					</Group>
-					<Group gap={4}>
-						<Text c={hasTicket ? "violet" : "pink"}>{authorName || "Unknown"}</Text>
-						<Text
-							c="obsidian.4"
-							fz={4}
-							mx={2}
-						>
-							&#x2B24;
-						</Text>
-						<Text>{formatRelativeDate(conversation.updated_at * 1000)}</Text>
-						{showOrganization && <Text>in {organization?.name ?? "Unknown"}</Text>}
-					</Group>
-				</Stack>
+							{ticketState.label}
+						</Group>
+					</Badge>
+				)}
 			</Group>
 		</>
 	);
