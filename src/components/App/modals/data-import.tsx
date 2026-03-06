@@ -14,7 +14,7 @@ import { Icon, iconDownload, iconFile } from "@surrealdb/ui";
 import papaparse from "papaparse";
 import { cluster, isArray, isObject, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
-import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
+import { Duration, Features, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
 import { FieldKindInputCore } from "~/components/Inputs";
 import { Label } from "~/components/Label";
@@ -55,9 +55,15 @@ const SqlImportForm = ({
 	const submit = () => {
 		const execute = async () => {
 			const file = importFile.current;
+			const surreal = getSurreal();
+
 			if (!file) return;
 
-			await getSurreal().import(file.stream());
+			if (surreal.isFeatureSupported(Features.ExportImportRaw)) {
+				await surreal.import(file.stream());
+			} else {
+				await surreal.import(await file.text());
+			}
 
 			showInfo({
 				title: "Importer",
