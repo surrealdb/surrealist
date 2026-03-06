@@ -11,12 +11,11 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Icon, iconDownload, iconFile } from "@surrealdb/ui";
-import papaparse, { LocalFile } from "papaparse";
+import papaparse from "papaparse";
 import { cluster, isArray, isObject, sleep, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
 import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
-import type { OpenedTextFile } from "~/adapter/base";
 import { FieldKindInputCore } from "~/components/Inputs";
 import { Label } from "~/components/Label";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -26,7 +25,7 @@ import { useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { executeQuery, getSurreal, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification, showInfo, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
@@ -34,11 +33,12 @@ import { syncConnectionSchema } from "~/util/schema";
 type DataFileFormat = "csv" | "json" | "ndjson";
 type ImportType = "sql" | DataFileFormat;
 
-type ExecuteTransformAndImportFn = (content: string) => Promise<void>;
+type ExecuteTransformAndImportFn = () => Promise<void>;
 
 type SqlImportFormProps = {
 	fileName: string | undefined;
 	isImporting: boolean;
+	importFile: MutableRefObject<File | null>;
 	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
 	cancelImport: () => void;
 };
@@ -46,25 +46,18 @@ type SqlImportFormProps = {
 const SqlImportForm = ({
 	fileName,
 	isImporting,
+	importFile,
 	confirmImport,
 	cancelImport,
 }: SqlImportFormProps) => {
 	const isLight = useIsLight();
 
 	const submit = () => {
-		const execute = async (content: string) => {
-			const result = await executeQuery(content);
-			const failed = result.filter((result) => !result.success);
+		const execute = async () => {
+			const file = importFile.current;
+			if (!file) return;
 
-			if (failed.length > 0) {
-				for (const fail of failed) {
-					showErrorNotification({
-						title: "Query partially failed",
-						content: new Error(fail.result),
-					});
-				}
-				return;
-			}
+			await getSurreal().import(file.stream());
 
 			showInfo({
 				title: "Importer",
@@ -344,7 +337,7 @@ type DataFileImportFormProps = {
 	fileFormat: DataFileFormat;
 	defaultTableName: string;
 	isImporting: boolean;
-	importFile: MutableRefObject<OpenedTextFile | null>;
+	importFile: MutableRefObject<File | null>;
 	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
 };
 
@@ -585,12 +578,16 @@ const CsvImportForm = ({
 }: CsvImportFormProps) => {
 	const [header, setHeader] = useInputState(true);
 	const [delimiter, setDelimiter] = useInputState(papaparse.DefaultDelimiter);
+	const [fileText, setFileText] = useState("");
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Read file content on mount
+	useEffect(() => {
+		importFile.current?.text().then((t) => setFileText(t.trim()));
+	}, []);
 
 	const { data: importedRows, errors } = useMemo(() => {
-		if (importFile.current) {
-			const content = importFile.current.content.trim();
-
-			return papaparse.parse(content, {
+		if (fileText) {
+			return papaparse.parse(fileText, {
 				delimiter,
 				header,
 				dynamicTyping: true,
@@ -599,7 +596,7 @@ const CsvImportForm = ({
 		}
 
 		return { data: [], errors: [] } as Omit<papaparse.ParseResult<unknown>, "meta">;
-	}, [importFile.current, delimiter, header]);
+	}, [fileText, delimiter, header]);
 
 	const {
 		table,
@@ -639,114 +636,68 @@ const CsvImportForm = ({
 			return o;
 		};
 
-		const execute = async (content: string) => {
-			if (!importFile.current?.self) {
-				const rawItems: any[] = [];
+		const execute = async () => {
+			const file = importFile.current;
+			if (!file) return;
 
-				let isParserSuccess = true;
+			let successImportCount = 0;
+			let errorImportCount = 0;
+			let errorMessage: string | undefined;
 
-				papaparse.parse(content, {
+			await new Promise<void>((resolve, reject) => {
+				papaparse.parse(file, {
 					delimiter,
 					header,
 					skipEmptyLines: true,
-					step: (row, parser) => {
-						if (row.errors.length > 0) {
-							const err = row.errors[0].message;
+					chunkSize: 100 * 1_024,
+					chunk: async (results, parser) => {
+						if (results.errors.length > 0) {
+							const err = results.errors[0];
 
 							showErrorNotification({
 								title: "Import failed",
-								content: `There was an error importing the CSV file: ${err}`,
+								content: err,
 							});
 
-							isParserSuccess = false;
 							parser.abort();
+							reject();
 							return;
 						}
 
-						rawItems.push(row.data);
+						const items = await Promise.all(
+							results.data.map(async (row) => {
+								return header
+									? await createEntity(
+											row as any,
+											table,
+											columnNames,
+											columnTypes,
+										)
+									: createEntityWithoutHeader(row as unknown[]);
+							}),
+						);
+
+						parser.pause();
+
+						const batchedResponse = await applySingleBatchImport(
+							items,
+							table,
+							insertRelation,
+						);
+
+						successImportCount += batchedResponse.successImportCount;
+						errorImportCount += batchedResponse.errorImportCount;
+						if (!errorMessage) {
+							errorMessage = batchedResponse.errorMessage;
+						}
+
+						parser.resume();
 					},
+					complete: () => resolve(),
 				});
+			});
 
-				if (!isParserSuccess) {
-					return;
-				}
-
-				const items = await Promise.all(
-					rawItems.map((data) =>
-						header
-							? createEntity(data as any, table, columnNames, columnTypes)
-							: createEntityWithoutHeader(data as unknown[]),
-					),
-				);
-
-				const { errorImportCount, successImportCount, errorMessage } =
-					await applyBatchImport(items, table, insertRelation);
-				await completeBatchImport(successImportCount, errorImportCount, errorMessage);
-			} else {
-				let successImportCount = 0;
-				let errorImportCount = 0;
-				let errorMessage: string | undefined;
-
-				await new Promise((resolve, reject) => {
-					if (!importFile.current) {
-						reject();
-						return;
-					}
-
-					papaparse.parse(importFile.current.self as LocalFile, {
-						delimiter,
-						header,
-						skipEmptyLines: true,
-						chunkSize: 100 * 1_024,
-						chunk: async (results, parser) => {
-							if (results.errors.length > 0) {
-								const err = results.errors[0];
-
-								showErrorNotification({
-									title: "Import failed",
-									content: err,
-								});
-
-								parser.abort();
-								reject();
-							}
-
-							const items = await Promise.all(
-								results.data.map(async (row) => {
-									return header
-										? await createEntity(
-												row as any,
-												table,
-												columnNames,
-												columnTypes,
-											)
-										: createEntityWithoutHeader(row as unknown[]);
-								}),
-							);
-
-							parser.pause();
-
-							const batchedResponse = await applySingleBatchImport(
-								items,
-								table,
-								insertRelation,
-							);
-
-							successImportCount += batchedResponse.successImportCount;
-							errorImportCount += batchedResponse.errorImportCount;
-							if (!errorMessage) {
-								errorMessage = batchedResponse.errorMessage;
-							}
-
-							parser.resume();
-						},
-						complete: () => {
-							resolve("completed");
-						},
-					});
-				});
-				await completeBatchImport(successImportCount, errorImportCount, errorMessage);
-			}
+			await completeBatchImport(successImportCount, errorImportCount, errorMessage);
 		};
 
 		confirmImport(execute);
@@ -833,12 +784,17 @@ const JsonImportForm = ({
 	importFile,
 	confirmImport,
 }: JsonImportFormProps) => {
-	const { data: importedRows, errors } = useMemo(() => {
-		if (importFile.current) {
-			const content = importFile.current.content.trim();
+	const [fileText, setFileText] = useState("");
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Read file content on mount
+	useEffect(() => {
+		importFile.current?.text().then((t) => setFileText(t.trim()));
+	}, []);
+
+	const { data: importedRows, errors } = useMemo(() => {
+		if (fileText) {
 			try {
-				const value = JSON.parse(content);
+				const value = JSON.parse(fileText);
 				const items = isArray(value) ? value : [value];
 
 				return { data: items, errors: [] } as { data: any[]; errors: Error[] };
@@ -848,7 +804,7 @@ const JsonImportForm = ({
 		}
 
 		return { data: [], errors: [] } as { data: any[]; errors: Error[] };
-	}, [importFile.current]);
+	}, [fileText]);
 
 	const {
 		table,
@@ -867,8 +823,12 @@ const JsonImportForm = ({
 	});
 
 	const submit = () => {
-		const execute = async (content: string) => {
-			const value = JSON.parse(content);
+		const execute = async () => {
+			const file = importFile.current;
+			if (!file) return;
+
+			const content = await file.text();
+			const value = JSON.parse(content.trim());
 			const items = await Promise.all(
 				(isArray(value) ? value : [value]).map((data) =>
 					createEntity(data, table, columnNames, columnTypes),
@@ -942,12 +902,17 @@ const NdJsonImportForm = ({
 			.map((s) => JSON.parse(s));
 	});
 
-	const { data: importedRows, errors } = useMemo(() => {
-		if (importFile.current) {
-			const content = importFile.current.content.trim();
+	const [fileText, setFileText] = useState("");
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Read file content on mount
+	useEffect(() => {
+		importFile.current?.text().then((t) => setFileText(t.trim()));
+	}, []);
+
+	const { data: importedRows, errors } = useMemo(() => {
+		if (fileText) {
 			try {
-				const items = extractItems(content);
+				const items = extractItems(fileText);
 
 				for (const item of items) {
 					if (!isObject(item)) {
@@ -962,7 +927,7 @@ const NdJsonImportForm = ({
 		}
 
 		return { data: [], errors: [] } as { data: any[]; errors: Error[] };
-	}, [importFile.current]);
+	}, [fileText]);
 
 	const {
 		table,
@@ -981,9 +946,13 @@ const NdJsonImportForm = ({
 	});
 
 	const submit = () => {
-		const execute = async (content: string) => {
+		const execute = async () => {
+			const file = importFile.current;
+			if (!file) return;
+
+			const content = await file.text();
 			const items = await Promise.all(
-				extractItems(content).map((data) =>
+				extractItems(content.trim()).map((data) =>
 					createEntity(data, table, columnNames, columnTypes),
 				),
 			);
@@ -1044,11 +1013,11 @@ export function DataImportModal() {
 	const [isImporting, setImporting] = useState(false);
 	const [defaultTableName, setDefaultTableName] = useState("");
 
-	const importFile = useRef<OpenedTextFile | null>(null);
+	const importFile = useRef<File | null>(null);
 
 	const startImport = useStable(async () => {
 		try {
-			const [file] = await adapter.openTextFile(
+			const [file] = await adapter.openFile(
 				"Import query file",
 				[
 					SURQL_FILTER,
@@ -1112,9 +1081,7 @@ export function DataImportModal() {
 
 				await sleep(50);
 
-				const content = importFile.current.content.trim();
-
-				await executeTransformAndImport(content);
+				await executeTransformAndImport();
 			} catch (err: any) {
 				showErrorNotification({
 					title: "Import failed",
@@ -1141,6 +1108,7 @@ export function DataImportModal() {
 				<SqlImportForm
 					fileName={importFile.current?.name}
 					isImporting={isImporting}
+					importFile={importFile}
 					confirmImport={confirmImport}
 					cancelImport={openedHandle.close}
 				/>

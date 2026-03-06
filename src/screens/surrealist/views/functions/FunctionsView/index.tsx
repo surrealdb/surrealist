@@ -203,7 +203,7 @@ export function FunctionsView() {
 	});
 
 	const uploadModel = useRequireDatabase(async () => {
-		const files = await adapter.openBinaryFile("Select a SurrealML model", SURML_FILTERS, true);
+		const files = await adapter.openFile("Select a SurrealML model", SURML_FILTERS, true);
 		const { endpoint, headers } = composeHttpConnection(auth, "/ml/import", {
 			Accept: "application/json",
 		});
@@ -212,7 +212,7 @@ export function FunctionsView() {
 			await fetch(endpoint, {
 				method: "POST",
 				headers,
-				body: file.content,
+				body: file,
 			});
 
 			tagEvent("import", { extension: "surml" });

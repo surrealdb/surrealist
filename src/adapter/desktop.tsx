@@ -1,11 +1,10 @@
 import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
 import { Event, listen } from "@tauri-apps/api/event";
-import { basename } from "@tauri-apps/api/path";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open, save } from "@tauri-apps/plugin-dialog";
-import { readFile, readTextFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
+import { readFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
 import { fetch } from "@tauri-apps/plugin-http";
 import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { arch, type } from "@tauri-apps/plugin-os";
@@ -22,12 +21,12 @@ import { startCloudSync, syncCloudStore } from "~/util/cloud";
 import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
-import { saveFilePicker } from "~/util/file-system";
+import { openAndReadFiles, openAndWriteFile } from "~/util/file-system";
 import { NavigateViewEvent } from "~/util/global-events";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
-import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import type { FileFilter, SurrealistAdapter } from "./base";
 
 const WAIT_DURATION = 1000;
 interface Resource {
@@ -205,7 +204,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		content: () => Result<string | Blob | null>,
 	): Promise<boolean> {
 		// Attempt saving using the file picker
-		if (await saveFilePicker(content, defaultPath, filters)) {
+		if (await openAndWriteFile(content, defaultPath, filters)) {
 			return true;
 		}
 
@@ -231,11 +230,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 		return true;
 	}
 
-	public async openTextFile<M extends boolean>(
+	public async openFile(
 		title: string,
-		filters: any,
-		multiple: M,
-	): Promise<OpenedTextFile[]> {
+		filters: FileFilter[],
+		multiple: boolean,
+	): Promise<File[]> {
+		const files = await openAndReadFiles(filters, multiple);
+
+		if (Array.isArray(files)) {
+			return files;
+		}
+
 		const result = await open({
 			title,
 			filters,
@@ -246,42 +251,13 @@ export class DesktopAdapter implements SurrealistAdapter {
 			return [];
 		}
 
-		const files: string[] = Array.isArray(result) ? result : [result];
-		const tasks = files.map(async (path) => ({
-			name: await basename(path),
-			content: await readTextFile(path),
-			self: undefined,
-		}));
+		const paths: string[] = Array.isArray(result) ? result : [result];
 
-		return Promise.all(tasks);
-	}
-
-	public async openBinaryFile<M extends boolean>(
-		title: string,
-		filters: any,
-		multiple: M,
-	): Promise<OpenedBinaryFile[]> {
-		const result = await open({
-			title,
-			filters,
-			multiple,
-		});
-
-		if (!result) {
-			return [];
-		}
-
-		const files: string[] = Array.isArray(result) ? result : [result];
-		const tasks = files.map(async (path) => {
-			const data = await readFile(path);
-
-			return {
-				name: await basename(path),
-				content: new Blob([new Uint8Array(data)]),
-			};
-		});
-
-		return Promise.all(tasks);
+		return Promise.all(
+			paths.map(async (path) => {
+				return new File([(await readFile(path)) as unknown as BlobPart], path);
+			}),
+		);
 	}
 
 	public toggleDevTools() {

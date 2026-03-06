@@ -43,10 +43,11 @@ export function ManageDataTab() {
 
 	const [restoreConfig, setRestoreConfig] = useState<string | null>(null);
 
-	const restoreFile = useStable(() => {
-		adapter.openTextFile("Select a backup file", [JSON_FILTER], false).then(([file]) => {
-			setRestoreConfig(file.content);
-		});
+	const restoreFile = useStable(async () => {
+		const [file] = await adapter.openFile("Select a backup file", [JSON_FILTER], false);
+		const content = await file.text();
+
+		setRestoreConfig(content);
 	});
 
 	const applyBackup = useStable(() => {

@@ -5,17 +5,6 @@ export interface FileFilter {
 	extensions: string[];
 }
 
-export interface OpenedTextFile {
-	name: string;
-	content: string;
-	self: File | undefined;
-}
-
-export interface OpenedBinaryFile {
-	name: string;
-	content: Blob;
-}
-
 export interface SurrealistAdapter {
 	/**
 	 * Identifier for this adapter
@@ -119,22 +108,9 @@ export interface SurrealistAdapter {
 	): Promise<boolean>;
 
 	/**
-	 * Open a text file locally
+	 * Open a file locally
 	 */
-	openTextFile(
-		title: string,
-		filters: FileFilter[],
-		multiple: boolean,
-	): Promise<OpenedTextFile[]>;
-
-	/**
-	 * Open a binary file locally
-	 */
-	openBinaryFile(
-		title: string,
-		filters: FileFilter[],
-		multiple: boolean,
-	): Promise<OpenedBinaryFile[]>;
+	openFile(title: string, filters: FileFilter[], multiple: boolean): Promise<File[]>;
 
 	/**
 	 * Log a message to the implemented logging system
