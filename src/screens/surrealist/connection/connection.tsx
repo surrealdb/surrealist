@@ -820,7 +820,7 @@ export async function activateDatabase(namespace: string, database: string) {
  *
  * @param config The export configuration
  */
-export async function requestDatabaseExport(config?: SqlExportOptions) {
+export async function requestDatabaseExport(config?: Partial<SqlExportOptions>): Promise<Response> {
 	const { currentState, version } = useDatabaseStore.getState();
 	const connection = getConnection();
 	const useModern = compareVersions(version, "2.1.0");
@@ -830,17 +830,15 @@ export async function requestDatabaseExport(config?: SqlExportOptions) {
 	}
 
 	if (useModern) {
-		return new Blob([await instance.export(config)]);
+		return instance.export(config).raw();
 	}
 
 	const { endpoint, headers } = composeHttpConnection(connection.authentication, "/export");
 
-	const response = await fetch(endpoint, {
+	return fetch(endpoint, {
 		headers,
 		method: "GET",
 	});
-
-	return await response.blob();
 }
 
 /**

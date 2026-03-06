@@ -20,10 +20,10 @@ import { StarSparkles } from "~/components/StarSparkles";
 import { SURQL_FILTER } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { getSurreal } from "~/screens/surrealist/connection/connection";
+import { getSurreal, requestDatabaseExport } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { showInfo } from "~/util/helpers";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { ResourceDetailPanel } from "../ResourceDetailPanel";
 import { ResourceOverviewPanel } from "../ResourceOverviewPanel";
 import { DiagnosticResource, organizeDiagnostics, ResourceMap } from "./organizer";
@@ -59,26 +59,38 @@ export function MigrationView() {
 
 	const exportMutation = useMutation({
 		mutationFn: async () => {
-			const backup = new Blob([
-				await getSurreal().export({
-					versions: exportVersions,
-					v3: true,
-				}),
-			]);
+			try {
+				const success = await adapter.saveFile(
+					"Save database export",
+					"v3-export.surql",
+					[SURQL_FILTER],
+					() => {
+						return requestDatabaseExport({
+							versions: exportVersions,
+							v3: true,
+						});
+					},
+				);
 
-			await adapter.saveFile(
-				"Save database export",
-				"v3-export.surql",
-				[SURQL_FILTER],
-				() => backup,
-			);
+				if (success) {
+					showInfo({
+						title: "Export",
+						subtitle: "Database successfully exported",
+					});
 
-			showInfo({
-				title: "Database export",
-				subtitle: "The database has been exported successfully",
-			});
-
-			tagEvent("migration_export");
+					tagEvent("migration_export");
+				} else {
+					showErrorNotification({
+						title: "Export failed",
+						content: "Failed to save export to disk",
+					});
+				}
+			} catch (err: any) {
+				showErrorNotification({
+					title: "Export failed",
+					content: err,
+				});
+			}
 		},
 	});
 

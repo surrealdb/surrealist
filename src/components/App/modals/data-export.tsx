@@ -82,6 +82,11 @@ export function DataExportModal() {
 				});
 
 				tagEvent("export", { extension: "surql" });
+			} else {
+				showErrorNotification({
+					title: "Export failed",
+					content: "Failed to save export to disk",
+				});
 			}
 		} catch (err: any) {
 			showErrorNotification({

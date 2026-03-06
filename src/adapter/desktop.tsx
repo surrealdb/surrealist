@@ -22,6 +22,7 @@ import { startCloudSync, syncCloudStore } from "~/util/cloud";
 import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
+import { saveFilePicker } from "~/util/file-system";
 import { NavigateViewEvent } from "~/util/global-events";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
@@ -203,6 +204,12 @@ export class DesktopAdapter implements SurrealistAdapter {
 		filters: any,
 		content: () => Result<string | Blob | null>,
 	): Promise<boolean> {
+		// Attempt saving using the file picker
+		if (await saveFilePicker(content, defaultPath, filters)) {
+			return true;
+		}
+
+		// Fall back to desktop dialog
 		const filePath = await save({ title, defaultPath, filters });
 
 		if (!filePath) {

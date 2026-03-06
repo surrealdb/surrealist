@@ -99,7 +99,7 @@
         "remark-github-blockquote-alert": "^2.0.0",
         "rss-parser": "^3.13.0",
         "sigma": "^3.0.0",
-        "surrealdb": "^2.0.0-beta.2",
+        "surrealdb": "^2.0.1",
         "turndown": "^7.2.1",
         "use-immer": "^0.9.0",
         "valibot": "^1.2.0",
@@ -115,6 +115,7 @@
         "@types/react": "^18.2.20",
         "@types/react-dom": "^18.2.7",
         "@types/react-window": "^1.8.8",
+        "@types/wicg-file-system-access": "^2023.10.7",
         "@vitejs/plugin-legacy": "^5.4.1",
         "@vitejs/plugin-react": "^4.0.4",
         "license-report": "^6.5.0",
@@ -744,6 +745,8 @@
 
     "@types/unist": ["@types/unist@3.0.3", "", {}, "sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q=="],
 
+    "@types/wicg-file-system-access": ["@types/wicg-file-system-access@2023.10.7", "", {}, "sha512-g49ijasEJvCd7ifmAY2D0wdEtt1xRjBbA33PJTiv8mKBr7DoMsPeISoJ8oQOTopSRi+FBWPpPW5ouDj2QPKtGA=="],
+
     "@ungap/structured-clone": ["@ungap/structured-clone@1.3.0", "", {}, "sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g=="],
 
     "@vitejs/plugin-legacy": ["@vitejs/plugin-legacy@5.4.3", "", { "dependencies": { "@babel/core": "^7.25.8", "@babel/preset-env": "^7.25.8", "browserslist": "^4.24.0", "browserslist-to-esbuild": "^2.1.1", "core-js": "^3.38.1", "magic-string": "^0.30.12", "regenerator-runtime": "^0.14.1", "systemjs": "^6.15.1" }, "peerDependencies": { "terser": "^5.4.0", "vite": "^5.0.0" } }, "sha512-wsyXK9mascyplcqvww1gA1xYiy29iRHfyciw+a0t7qRNdzX6PdfSWmOoCi74epr87DujM+5J+rnnSv+4PazqVg=="],
@@ -1364,7 +1367,7 @@
 
     "supports-preserve-symlinks-flag": ["supports-preserve-symlinks-flag@1.0.0", "", {}, "sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w=="],
 
-    "surrealdb": ["surrealdb@2.0.0-beta.2", "", { "dependencies": { "@surrealdb/cbor": "2.0.0-alpha.4", "uuidv7": "^1.0.1" }, "peerDependencies": { "tslib": "^2.6.3", "typescript": "^5.0.0" } }, "sha512-0LrBP1U15E+Q7aXaGAf1GQMDOkZ5ETaSpeiLhsmcK0KyNb9rcS8fPHd5dZcMeBGWfM+f9G4Tu+sPBSNhuRNJKA=="],
+    "surrealdb": ["surrealdb@2.0.1", "", { "dependencies": { "@surrealdb/cbor": "2.0.0-alpha.4", "uuidv7": "^1.0.1" }, "peerDependencies": { "tslib": "^2.6.3", "typescript": "^5.0.0" } }, "sha512-CU7vkH0fBZul46QBrrCkIqVKJGjwYNsfvH/AJLa+17WaN1GQYmRKJcBHb477AJtx7fxulgMBHuhZHDKlpLYyRA=="],
 
     "svgo": ["svgo@3.3.2", "", { "dependencies": { "@trysound/sax": "0.2.0", "commander": "^7.2.0", "css-select": "^5.1.0", "css-tree": "^2.3.1", "css-what": "^6.1.0", "csso": "^5.0.5", "picocolors": "^1.0.0" }, "bin": "./bin/svgo" }, "sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw=="],
 

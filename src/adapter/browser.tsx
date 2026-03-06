@@ -1,8 +1,9 @@
 import { isFunction, shake } from "radash";
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
+import { createFileDefinition, saveFilePicker } from "~/util/file-system";
 import * as idxdb from "~/util/idxdb";
 import { CONFIG_KEY } from "~/util/storage";
-import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import type { FileFilter, OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
 
 /**
  * Base adapter for running as web app
@@ -80,18 +81,22 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public async saveFile(
 		_title: string,
 		defaultPath: string,
-		_filters: any,
-		content: () => Result<string | Blob>,
+		filters: FileFilter[],
+		content: () => Result<string | Blob | Response | null>,
 	): Promise<boolean> {
+		// Attempt saving using the file picker
+		if (await saveFilePicker(content, defaultPath, filters)) {
+			return true;
+		}
+
+		// Fall back to browser download
 		const result = await content();
 
 		if (!result) {
 			throw new Error("File is empty");
 		}
 
-		const file =
-			typeof result === "string" ? new File([result], "", { type: "text/plain" }) : result;
-
+		const file = await createFileDefinition(result, defaultPath);
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement("a");
 
