@@ -6,6 +6,7 @@ import { Spacer } from "~/components/Spacer";
 import { ClusterOptionsSection } from "../sections/cluster";
 import { DataOptionsSection } from "../sections/data-opts";
 import { DeploymentSection } from "../sections/instance";
+import { NetworkAccessSection } from "../sections/network-access";
 import { StartingDataSection } from "../sections/start-data";
 import { StorageOptionsSection } from "../sections/storage";
 import { InstanceTypeSection } from "../sections/type";
@@ -59,6 +60,8 @@ export function ConfigureStep({
 		if (!details.version) return true;
 
 		if (isNotFree && !details.computeUnits) return true;
+
+		if (!details.public_traffic && !details.private_traffic) return true;
 
 		if (details.startingData.type === "restore") {
 			if (!details.startingData.backupOptions) return true;
@@ -136,6 +139,16 @@ export function ConfigureStep({
 							setDetails={setDetails}
 							setStep={setStep}
 						/>
+
+						{organisation.privatelink_enabled && (
+							<NetworkAccessSection
+								organisation={organisation}
+								instances={instances}
+								details={details}
+								setDetails={setDetails}
+								setStep={setStep}
+							/>
+						)}
 
 						{isNotFree && !isDedicated && (
 							<StorageOptionsSection
