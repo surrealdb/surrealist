@@ -304,11 +304,11 @@ export function SurrealistToolbar() {
 				deployInstance();
 			}
 		} catch (error) {
+			setIsDeploying(false);
 			showErrorNotification({
 				title: "Deployment failed",
 				content: error,
 			});
-			setIsDeploying(false);
 		}
 	});
 

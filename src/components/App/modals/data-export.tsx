@@ -13,9 +13,9 @@ import { Icon, iconDownload } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { toggle } from "radash";
 import { useState } from "react";
-import type { SqlExportOptions as BaseExportOptions } from "surrealdb";
+import { type SqlExportOptions as BaseExportOptions } from "surrealdb";
 import { useImmer } from "use-immer";
-import { adapter } from "~/adapter";
+import { adapter, isBrowser } from "~/adapter";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
@@ -23,7 +23,10 @@ import { useConnection, useMinimumVersion } from "~/hooks/connection";
 import { useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { requestDatabaseExport } from "~/screens/surrealist/connection/connection";
+import {
+	isStreamingSupported,
+	requestDatabaseExport,
+} from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification, showInfo, slugify } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
@@ -82,6 +85,11 @@ export function DataExportModal() {
 				});
 
 				tagEvent("export", { extension: "surql" });
+			} else {
+				showErrorNotification({
+					title: "Export failed",
+					content: "Failed to save export to disk",
+				});
 			}
 		} catch (err: any) {
 			showErrorNotification({
@@ -107,6 +115,7 @@ export function DataExportModal() {
 	});
 
 	const isEmpty = Object.values(config).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
+	const streamSupport = isStreamingSupported();
 
 	useIntent("export-database", () => {
 		openedHandle.open();
@@ -124,6 +133,24 @@ export function DataExportModal() {
 					Select which schema resources and table records you want to include in your
 					export.
 				</Text>
+
+				{streamSupport === "unsupported-browser" ? (
+					<Alert
+						title="Notice"
+						color="orange"
+					>
+						Your {isBrowser ? "browser" : "environment"} does not support streaming
+						exports. For larger exports, please use the SurrealDB CLI.
+					</Alert>
+				) : streamSupport === "unsupported-engine" ? (
+					<Alert
+						title="Notice"
+						color="orange"
+					>
+						The current connection does not support streaming exports. Performance may
+						be degraded.
+					</Alert>
+				) : null}
 
 				{!configSupport ? (
 					<Alert

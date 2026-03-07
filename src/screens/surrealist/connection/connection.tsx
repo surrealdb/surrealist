@@ -1,6 +1,7 @@
 import { compareVersions } from "compare-versions";
 import {
 	type AccessRecordAuth,
+	Features,
 	ProvidedAuth,
 	SqlExportOptions,
 	Surreal,
@@ -820,7 +821,7 @@ export async function activateDatabase(namespace: string, database: string) {
  *
  * @param config The export configuration
  */
-export async function requestDatabaseExport(config?: SqlExportOptions) {
+export async function requestDatabaseExport(config?: Partial<SqlExportOptions>): Promise<Response> {
 	const { currentState, version } = useDatabaseStore.getState();
 	const connection = getConnection();
 	const useModern = compareVersions(version, "2.1.0");
@@ -830,17 +831,38 @@ export async function requestDatabaseExport(config?: SqlExportOptions) {
 	}
 
 	if (useModern) {
-		return new Blob([await instance.export(config)]);
+		if (instance.isFeatureSupported(Features.ExportImportRaw)) {
+			return instance.export(config).raw();
+		} else {
+			return new Response(await instance.export(config));
+		}
 	}
 
 	const { endpoint, headers } = composeHttpConnection(connection.authentication, "/export");
 
-	const response = await fetch(endpoint, {
+	return fetch(endpoint, {
 		headers,
 		method: "GET",
 	});
+}
 
-	return await response.blob();
+export type StreamingSupport = "unsupported-browser" | "unsupported-engine" | "supported";
+
+/**
+ * Returns whether streaming imports or exports are supported
+ */
+export function isStreamingSupported() {
+	const surreal = getSurreal();
+
+	if (!("showSaveFilePicker" in window) || !("showOpenFilePicker" in window)) {
+		return "unsupported-browser";
+	}
+
+	if (!surreal.isConnected || !surreal.isFeatureSupported(Features.ExportImportRaw)) {
+		return "unsupported-engine";
+	}
+
+	return "supported";
 }
 
 /**
