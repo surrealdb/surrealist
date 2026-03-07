@@ -1,38 +1,26 @@
-import { Box, Button, Center, Group, Loader, Paper, Stack, Text } from "@mantine/core";
+import { Box, Button, Group, Paper, Stack, Text } from "@mantine/core";
 import { Icon, iconOpen, iconPlus, pictoHealthChat } from "@surrealdb/ui";
-import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { useCloudOrganizationTicketsQuery } from "~/cloud/queries/context";
 import { useActiveSupportPlanQuery } from "~/cloud/queries/support";
-import { Pagination } from "~/components/Pagination";
-import { usePagination } from "~/components/Pagination/hook";
+import { ConversationTable } from "~/components/ConversationTable";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useIsLight } from "~/hooks/theme";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../../Overview/content/cloud";
-import { TicketCard } from "../../Support/TicketCard";
 import { OrganizationTabProps } from "../types";
 
 export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
-	const pagination = usePagination();
-
 	const { data: activeSupportPlan } = useActiveSupportPlanQuery(organization.id);
 	const { data: tickets, isLoading: areTicketsLoading } = useCloudOrganizationTicketsQuery(
 		organization.id,
 	);
 
 	const [flags] = useFeatureFlags();
-
 	const hasSupportPlan = activeSupportPlan?.support_plan !== undefined;
-	const startAt = (pagination.currentPage - 1) * pagination.pageSize;
-	const pageSlice = tickets?.slice(startAt, startAt + pagination.pageSize) ?? [];
-
-	useEffect(() => {
-		pagination.setTotal(tickets?.length || 0);
-	}, [pagination.setTotal, tickets]);
 
 	return (
 		<Stack>
@@ -72,51 +60,12 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 					}
 				>
 					{(hasSupportPlan || (tickets && tickets.length > 0)) && (
-						<>
-							<Stack>
-								{areTicketsLoading && (
-									<Center>
-										<Loader />
-									</Center>
-								)}
-								{!areTicketsLoading && pageSlice && pageSlice.length > 0 && (
-									<Paper p="lg">
-										<Stack>
-											{pageSlice
-												?.sort((a, b) => b.updated_at - a.updated_at)
-												.slice(0, 3)
-												.map((ticket) => (
-													<Box
-														key={ticket.id}
-														style={{
-															cursor: "pointer",
-														}}
-														onClick={() =>
-															navigate(
-																`/support/conversations/${ticket.id}`,
-															)
-														}
-													>
-														<TicketCard ticket={ticket} />
-													</Box>
-												))}
-										</Stack>
-									</Paper>
-								)}
-								{!areTicketsLoading && (!pageSlice || pageSlice.length === 0) && (
-									<Center>
-										<Text>No support tickets found</Text>
-									</Center>
-								)}
-							</Stack>
-
-							<Group
-								justify="center"
-								mt="xl"
-							>
-								<Pagination store={pagination} />
-							</Group>
-						</>
+						<ConversationTable
+							conversations={tickets ?? []}
+							isLoading={areTicketsLoading}
+							defaultSortMode="updated_latest"
+							defaultType="open"
+						/>
 					)}
 					{!hasSupportPlan && (!tickets?.length || tickets?.length === 0) && (
 						<StartCloud
