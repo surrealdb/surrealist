@@ -179,7 +179,6 @@ export function SurrealistToolbar() {
 				functions: true,
 				params: true,
 				users: true,
-				versions: false,
 				records: true,
 				sequences: true,
 				tables: true,

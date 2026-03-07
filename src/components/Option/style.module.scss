@@ -1,0 +1,27 @@
+.root {
+	padding: var(--mantine-spacing-sm);
+	border-radius: var(--mantine-radius-sm);
+	transition: all 0.15s;
+
+	:global(.mantine-Checkbox-labelWrapper) {
+		min-width: 0;
+	}
+
+	:global(.mantine-Checkbox-label) {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&:hover {
+		background-color: var(--mantine-color-obsidian-7);
+	}
+
+	&[data-checked] {
+		background-color: var(--mantine-color-violet-light);
+	}
+
+	&[data-disabled] {
+		opacity: 0.5;
+	}
+}

@@ -1,22 +1,25 @@
 import {
 	Alert,
+	Box,
 	Button,
 	Checkbox,
 	Divider,
 	Group,
+	Loader,
 	Modal,
+	ScrollArea,
 	SimpleGrid,
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon, iconDownload } from "@surrealdb/ui";
+import { useSet } from "@mantine/hooks";
+import { showNotification, updateNotification } from "@mantine/notifications";
+import { Icon, iconCheck, iconDownload, iconWarning } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { toggle } from "radash";
-import { useState } from "react";
-import { type SqlExportOptions as BaseExportOptions } from "surrealdb";
-import { useImmer } from "use-immer";
 import { adapter, isBrowser } from "~/adapter";
+import { Option } from "~/components/Option";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useMinimumVersion } from "~/hooks/connection";
@@ -28,20 +31,35 @@ import {
 	requestDatabaseExport,
 } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
-import { showErrorNotification, showInfo, slugify } from "~/util/helpers";
+import { slugify } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 
-export type ExportOptions = BaseExportOptions & { tables: string[] };
-export type ExportType = keyof ExportOptions;
+function toggleSet<T>(set: Set<T>, item: T) {
+	if (set.has(item)) {
+		set.delete(item);
+	} else {
+		set.add(item);
+	}
+}
 
-const RESOURCES = [
-	"accesses",
-	"analyzers",
-	"functions",
-	"params",
+type ExportFlag =
+	| "users"
+	| "accesses"
+	| "params"
+	| "functions"
+	| "analyzers"
+	| "records"
+	| "sequences";
+
+const RESOURCES: ExportFlag[] = [
 	"users",
-	"versions",
-] satisfies ExportType[];
+	"accesses",
+	"params",
+	"functions",
+	"analyzers",
+	"records",
+	"sequences",
+];
 
 export function DataExportModal() {
 	const tables = useTableNames();
@@ -50,71 +68,93 @@ export function DataExportModal() {
 	const [configSupport] = useMinimumVersion("2.1.0");
 	const [isOpen, openedHandle] = useBoolean();
 
-	const [isExporting, setIsExporting] = useState(false);
-	const [config, setConfig] = useImmer<ExportOptions>({
-		accesses: true,
-		analyzers: true,
-		functions: true,
-		params: true,
-		users: true,
-		versions: false,
-		records: true,
-		sequences: true,
-		tables: [],
-		v3: false,
-	});
+	const exportFlags = useSet<ExportFlag>();
+	const exportTables = useSet<string>();
 
 	const fileName = `${slugify(name)}-${dayjs().format("YYYY-MM-DD")}.surql`;
 
 	const handleExport = useStable(async () => {
+		openedHandle.close();
+
+		const id = showNotification({
+			title: "Exporting database",
+			message: "Please wait while the database is exported",
+			icon: (
+				<Loader
+					color="violet"
+					size="sm"
+				/>
+			),
+			autoClose: false,
+		});
+
 		try {
 			const success = await adapter.saveFile(
 				"Save database export",
 				fileName,
 				[SURQL_FILTER],
 				async () => {
-					setIsExporting(true);
-					return requestDatabaseExport(config);
+					return requestDatabaseExport({
+						users: exportFlags.has("users"),
+						accesses: exportFlags.has("accesses"),
+						params: exportFlags.has("params"),
+						functions: exportFlags.has("functions"),
+						analyzers: exportFlags.has("analyzers"),
+						records: exportFlags.has("records"),
+						sequences: exportFlags.has("sequences"),
+						tables: Array.from(exportTables),
+					});
 				},
 			);
 
 			if (success) {
-				showInfo({
-					title: "Export",
-					subtitle: "Database successfully exported",
+				updateNotification({
+					id,
+					message: "Database successfully exported",
+					icon: <Icon path={iconCheck} />,
+					autoClose: 1000,
+					color: "green",
 				});
 
 				tagEvent("export", { extension: "surql" });
 			} else {
-				showErrorNotification({
-					title: "Export failed",
-					content: "Failed to save export to disk",
+				updateNotification({
+					id,
+					message: "Export failed",
+					icon: <Icon path={iconWarning} />,
+					autoClose: 1000,
+					color: "red",
 				});
 			}
 		} catch (err: any) {
-			showErrorNotification({
-				title: "Export failed",
-				content: err,
+			console.error(err);
+			updateNotification({
+				id,
+				message: "Export failed",
+				icon: <Icon path={iconWarning} />,
+				autoClose: 1000,
+				color: "red",
 			});
-		} finally {
-			setIsExporting(false);
-			openedHandle.close();
+		}
+	});
+
+	const toggleAllResources = useStable(() => {
+		if (exportFlags.size === RESOURCES.length) {
+			exportFlags.clear();
+		} else {
+			RESOURCES.forEach((resource) => exportFlags.add(resource));
 		}
 	});
 
 	const toggleAllRecords = useStable(() => {
-		if (config.tables.length === tables.length) {
-			setConfig((draft) => {
-				draft.tables = [];
-			});
+		if (exportTables.size === tables.length) {
+			exportTables.clear();
 		} else {
-			setConfig((draft) => {
-				draft.tables = tables;
-			});
+			tables.forEach((table) => exportTables.add(table));
 		}
 	});
 
-	const isEmpty = Object.values(config).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
+	const isEmpty = exportFlags.size === 0 && exportTables.size === 0;
 	const streamSupport = isStreamingSupported();
 
 	useIntent("export-database", () => {
@@ -126,6 +166,7 @@ export function DataExportModal() {
 		<Modal
 			opened={isOpen}
 			onClose={openedHandle.close}
+			size="lg"
 			title={<PrimaryTitle>Export database</PrimaryTitle>}
 		>
 			<Stack gap="xl">
@@ -136,7 +177,7 @@ export function DataExportModal() {
 
 				{streamSupport === "unsupported-browser" ? (
 					<Alert
-						title="Notice"
+						icon={<Icon path={iconWarning} />}
 						color="orange"
 					>
 						Your {isBrowser ? "browser" : "environment"} does not support streaming
@@ -144,7 +185,7 @@ export function DataExportModal() {
 					</Alert>
 				) : streamSupport === "unsupported-engine" ? (
 					<Alert
-						title="Notice"
+						icon={<Icon path={iconWarning} />}
 						color="orange"
 					>
 						The current connection does not support streaming exports. Performance may
@@ -154,103 +195,148 @@ export function DataExportModal() {
 
 				{!configSupport ? (
 					<Alert
-						title="Notice"
+						icon={<Icon path={iconWarning} />}
 						color="orange"
 					>
 						The remote database does not support export customization
 					</Alert>
 				) : (
 					<>
-						<Stack>
+						<Box>
 							<Text
 								c="bright"
 								fw={600}
 								fz="lg"
-							>
-								Options
-							</Text>
-
-							<SimpleGrid cols={2}>
-								<Checkbox
-									label="Include table records"
-									checked={config.records}
-									disabled={!configSupport}
-									onChange={() => {
-										setConfig((draft) => {
-											draft.records = !draft.records;
-										});
-									}}
-								/>
-							</SimpleGrid>
-						</Stack>
-
-						<Stack>
-							<Text
-								c="bright"
-								fw={600}
-								fz="lg"
+								mb="xs"
 							>
 								Resources
 							</Text>
 
-							<SimpleGrid cols={2}>
-								{RESOURCES.map((opt) => (
-									<Checkbox
-										key={opt}
-										label={`Include ${opt}`}
-										checked={config[opt]}
-										disabled={!configSupport}
-										onChange={() => {
-											setConfig((draft) => {
-												draft[opt] = !draft[opt];
-											});
-										}}
-									/>
-								))}
+							<Checkbox
+								pl="sm"
+								py="sm"
+								label="Select all resources"
+								checked={RESOURCES.every((v) => exportFlags.has(v))}
+								onChange={toggleAllResources}
+								disabled={!configSupport}
+								indeterminate={RESOURCES.some(
+									(v) =>
+										exportFlags.has(v) && exportFlags.size < RESOURCES.length,
+								)}
+							/>
+
+							<Divider my="xs" />
+
+							<SimpleGrid
+								cols={3}
+								spacing="xs"
+								mt="xs"
+							>
+								<Option
+									label="Record data"
+									checked={exportFlags.has("records")}
+									disabled={!configSupport}
+									onChange={() => toggleSet(exportFlags, "records")}
+								/>
+								<Option
+									label="Access methods"
+									checked={exportFlags.has("accesses")}
+									disabled={!configSupport}
+									onChange={() => toggleSet(exportFlags, "accesses")}
+								/>
+								<Option
+									label="Analyzers"
+									checked={exportFlags.has("analyzers")}
+									disabled={!configSupport}
+									onChange={() => toggleSet(exportFlags, "analyzers")}
+								/>
+								<Option
+									label="Functions"
+									checked={exportFlags.has("functions")}
+									disabled={!configSupport}
+									onChange={() => toggleSet(exportFlags, "functions")}
+								/>
+								<Option
+									label="Parameters"
+									checked={exportFlags.has("params")}
+									disabled={!configSupport}
+									onChange={() => toggleSet(exportFlags, "params")}
+								/>
+								<Option
+									label="Users"
+									checked={exportFlags.has("users")}
+									disabled={!configSupport}
+									onChange={() => toggleSet(exportFlags, "users")}
+								/>
+								<Option
+									label="Sequences"
+									checked={exportFlags.has("sequences")}
+									disabled={!configSupport}
+									onChange={() => toggleSet(exportFlags, "sequences")}
+								/>
 							</SimpleGrid>
-						</Stack>
+						</Box>
 
 						{tables.length > 0 && (
-							<Stack>
+							<Box>
 								<Text
 									c="bright"
 									fw={600}
 									fz="lg"
+									mb="xs"
 								>
 									Tables
 								</Text>
-								<Checkbox
-									label="Include all tables"
-									checked={config.tables.length === tables.length}
-									onChange={toggleAllRecords}
-									disabled={!configSupport}
-									indeterminate={
-										config.tables.length > 0 &&
-										config.tables.length < tables.length
-									}
-								/>
-								<Divider />
-								<Stack gap="sm">
-									{tables.map((table) => (
-										<Checkbox
-											key={table}
-											label={table}
-											disabled={!configSupport}
-											checked={config.tables.includes(table)}
-											onChange={() => {
-												setConfig((draft) => {
-													draft.tables = toggle(draft.tables, table);
-												});
-											}}
-										/>
-									))}
-								</Stack>
-							</Stack>
+
+								<Group>
+									<Checkbox
+										pl="sm"
+										py="sm"
+										label="Select all tables"
+										checked={exportTables.size === tables.length}
+										onChange={toggleAllRecords}
+										disabled={!configSupport}
+										indeterminate={
+											exportTables.size > 0 &&
+											exportTables.size < tables.length
+										}
+									/>
+									<Spacer />
+									<Text fz="xs">
+										{exportTables.size} of {tables.length} selected
+									</Text>
+								</Group>
+
+								<Divider my="xs" />
+
+								<ScrollArea.Autosize mah={200}>
+									<SimpleGrid
+										cols={3}
+										spacing="xs"
+									>
+										{tables.map((table) => (
+											<Option
+												key={table}
+												label={table}
+												checked={exportTables.has(table)}
+												disabled={!configSupport}
+												onChange={() => {
+													if (exportTables.has(table)) {
+														exportTables.delete(table);
+													} else {
+														exportTables.add(table);
+													}
+												}}
+											/>
+										))}
+									</SimpleGrid>
+								</ScrollArea.Autosize>
+							</Box>
 						)}
 					</>
 				)}
 
-				<Group>
+				<Group mt="xs">
 					<Button
 						flex={1}
 						color="obsidian"
@@ -262,7 +348,6 @@ export function DataExportModal() {
 					<Button
 						flex={1}
 						onClick={handleExport}
-						loading={isExporting}
 						variant="gradient"
 						disabled={isEmpty}
 						rightSection={<Icon path={iconDownload} />}
