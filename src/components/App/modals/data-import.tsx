@@ -3,6 +3,7 @@ import {
 	Button,
 	Divider,
 	Group,
+	Loader,
 	Modal,
 	Stack,
 	Switch,
@@ -10,11 +11,12 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon, iconDownload, iconFile } from "@surrealdb/ui";
+import { showNotification, updateNotification } from "@mantine/notifications";
+import { Icon, iconCheck, iconFile, iconUpload, iconWarning } from "@surrealdb/ui";
 import papaparse from "papaparse";
-import { cluster, isArray, isObject, sleep, unique } from "radash";
+import { cluster, isArray, isObject, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
-import { Duration, Features, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
+import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
 import { FieldKindInputCore } from "~/components/Inputs";
 import { Label } from "~/components/Label";
@@ -27,7 +29,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { executeQuery, getSurreal, getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { tagEvent } from "~/util/analytics";
-import { showErrorNotification, showInfo, showWarning } from "~/util/helpers";
+import { formatFileSize, showErrorNotification, showWarning } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 
 type DataFileFormat = "csv" | "json" | "ndjson";
@@ -37,7 +39,6 @@ type ExecuteTransformAndImportFn = () => Promise<void>;
 
 type SqlImportFormProps = {
 	fileName: string | undefined;
-	isImporting: boolean;
 	importFile: MutableRefObject<File | null>;
 	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
 	cancelImport: () => void;
@@ -45,32 +46,44 @@ type SqlImportFormProps = {
 
 const SqlImportForm = ({
 	fileName,
-	isImporting,
 	importFile,
 	confirmImport,
 	cancelImport,
 }: SqlImportFormProps) => {
 	const isLight = useIsLight();
+	const fileSize = useMemo(() => {
+		return importFile.current?.size ? formatFileSize(importFile.current.size) : "0 B";
+	}, [importFile.current]);
 
 	const submit = () => {
 		const execute = async () => {
-			const file = importFile.current;
-			const surreal = getSurreal();
+			try {
+				const file = importFile.current;
+				const surreal = getSurreal();
 
-			if (!file) return;
+				if (!file) return;
 
-			if (surreal.isFeatureSupported(Features.ExportImportRaw)) {
-				await surreal.import(file.stream());
-			} else {
-				await surreal.import(await file.text());
+				// Attempt stream based import first, fallback to a blob based approach
+				// if the engine does not support streaming or a network error occurs
+				try {
+					adapter.log("import", "Attempting to import file using stream");
+					await surreal.import(file.stream());
+				} catch {
+					try {
+						adapter.log("import", "Falling back to blob based import");
+						await surreal.import(file);
+					} catch (err: any) {
+						throw typeof err === "string" ? new Error(err) : err;
+					}
+				}
+
+				await syncConnectionSchema();
+			} catch (err: any) {
+				showErrorNotification({
+					title: "Import failed",
+					content: err.message,
+				});
 			}
-
-			showInfo({
-				title: "Importer",
-				subtitle: "Database was successfully imported",
-			});
-
-			await syncConnectionSchema();
 		};
 
 		confirmImport(execute);
@@ -82,9 +95,18 @@ const SqlImportForm = ({
 				Are you sure you want to import the selected file?
 			</Text>
 
-			<Group c="violet">
+			<Group
+				c="violet"
+				gap="sm"
+			>
 				<Icon path={iconFile} />
 				<Text>{fileName}</Text>
+				<Text
+					c="slate"
+					fz="sm"
+				>
+					({fileSize})
+				</Text>
 			</Group>
 
 			<Text c={isLight ? "obsidian.7" : "obsidian.2"}>
@@ -103,11 +125,10 @@ const SqlImportForm = ({
 				<Button
 					flex={1}
 					onClick={submit}
-					loading={isImporting}
+					rightSection={<Icon path={iconUpload} />}
 					variant="gradient"
 				>
 					Start import
-					<Icon path={iconDownload} />
 				</Button>
 			</Group>
 		</Stack>
@@ -329,11 +350,6 @@ const completeBatchImport = async (
 				content: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
 			});
 		}
-	} else {
-		showInfo({
-			title: "Import successful",
-			subtitle: `${successImportCount} records were successfully inserted`,
-		});
 	}
 
 	await syncConnectionSchema();
@@ -342,7 +358,6 @@ const completeBatchImport = async (
 type DataFileImportFormProps = {
 	fileFormat: DataFileFormat;
 	defaultTableName: string;
-	isImporting: boolean;
 	importFile: MutableRefObject<File | null>;
 	confirmImport: (fn: ExecuteTransformAndImportFn) => void;
 };
@@ -430,7 +445,6 @@ type FileFormatFormFooterProps = {
 	setInsertRelation: (value: boolean | ChangeEvent<any> | null | undefined) => void;
 	canInsertRelation: boolean;
 	errorMessage: string | null;
-	isImporting: boolean;
 	importedRows: any[];
 	canExport: boolean;
 	submit: () => void;
@@ -442,7 +456,6 @@ const FileFormatFormFooter = (props: FileFormatFormFooterProps) => {
 		setInsertRelation,
 		canInsertRelation,
 		errorMessage,
-		isImporting,
 		importedRows,
 		canExport,
 		submit,
@@ -465,12 +478,11 @@ const FileFormatFormFooter = (props: FileFormatFormFooterProps) => {
 				mt="md"
 				fullWidth
 				onClick={submit}
-				loading={isImporting}
 				variant="gradient"
+				rightSection={<Icon path={iconUpload} />}
 				disabled={!canExport}
 			>
 				Start import
-				<Icon path={iconDownload} />
 			</Button>
 
 			{importedRows.length > 0 ? (
@@ -578,7 +590,6 @@ type CsvImportFormProps = DataFileImportFormProps;
 const CsvImportForm = ({
 	fileFormat,
 	defaultTableName,
-	isImporting,
 	importFile,
 	confirmImport,
 }: CsvImportFormProps) => {
@@ -658,15 +669,8 @@ const CsvImportForm = ({
 					chunkSize: 100 * 1_024,
 					chunk: async (results, parser) => {
 						if (results.errors.length > 0) {
-							const err = results.errors[0];
-
-							showErrorNotification({
-								title: "Import failed",
-								content: err,
-							});
-
 							parser.abort();
-							reject();
+							reject("Import failed");
 							return;
 						}
 
@@ -772,7 +776,6 @@ const CsvImportForm = ({
 				setInsertRelation={setInsertRelation}
 				canInsertRelation={canInsertRelation}
 				errorMessage={errorMessage}
-				isImporting={isImporting}
 				importedRows={importedRows}
 				canExport={canExport}
 				submit={submit}
@@ -786,7 +789,6 @@ type JsonImportFormProps = DataFileImportFormProps;
 const JsonImportForm = ({
 	fileFormat,
 	defaultTableName,
-	isImporting,
 	importFile,
 	confirmImport,
 }: JsonImportFormProps) => {
@@ -881,7 +883,6 @@ const JsonImportForm = ({
 				setInsertRelation={setInsertRelation}
 				canInsertRelation={canInsertRelation}
 				errorMessage={errorMessage}
-				isImporting={isImporting}
 				importedRows={importedRows}
 				canExport={canExport}
 				submit={submit}
@@ -895,7 +896,6 @@ type NdJsonImportFormProps = DataFileImportFormProps;
 const NdJsonImportForm = ({
 	fileFormat,
 	defaultTableName,
-	isImporting,
 	importFile,
 	confirmImport,
 }: NdJsonImportFormProps) => {
@@ -1003,7 +1003,6 @@ const NdJsonImportForm = ({
 				setInsertRelation={setInsertRelation}
 				canInsertRelation={canInsertRelation}
 				errorMessage={errorMessage}
-				isImporting={isImporting}
 				importedRows={importedRows}
 				canExport={canExport}
 				submit={submit}
@@ -1016,65 +1015,60 @@ export function DataImportModal() {
 	const [isOpen, openedHandle] = useBoolean();
 
 	const [importType, setImportType] = useState<ImportType>("sql");
-	const [isImporting, setImporting] = useState(false);
 	const [defaultTableName, setDefaultTableName] = useState("");
 
 	const importFile = useRef<File | null>(null);
 
 	const startImport = useStable(async () => {
-		try {
-			const [file] = await adapter.openFile(
-				"Import query file",
-				[
-					SURQL_FILTER,
-					{
-						name: "Table data (csv)",
-						extensions: ["csv"],
-					},
-					{
-						name: "JavaScript Object Notation data (json)",
-						extensions: ["json"],
-					},
-					{
-						name: "Newline Delimited JSON data (ndjson)",
-						extensions: ["ndjson"],
-					},
-				],
-				false,
-			);
+		const [file] = await adapter.openFile(
+			"Import query file",
+			[
+				SURQL_FILTER,
+				{
+					name: "Table data (csv)",
+					extensions: ["csv"],
+				},
+				{
+					name: "JavaScript Object Notation data (json)",
+					extensions: ["json"],
+				},
+				{
+					name: "Newline Delimited JSON data (ndjson)",
+					extensions: ["ndjson"],
+				},
+			],
+			false,
+		);
 
-			if (!file) {
-				return;
-			}
+		if (!file) {
+			return;
+		}
 
-			importFile.current = file;
-			openedHandle.open();
+		importFile.current = file;
+		openedHandle.open();
 
-			const configureImportType = (type: ImportType) => {
-				setImportType(type);
-				tagEvent("import", { extension: type });
-			};
+		const configureImportType = (type: ImportType) => {
+			setImportType(type);
+			tagEvent("import", { extension: type });
+		};
 
-			const extractFromFileType = (fileFormat: DataFileFormat) => {
-				const possibleTableName = file.name.replace(`.${fileFormat}`, "");
-				const possibleTableNameRegex = /^[a-zA-Z][a-zA-Z0-9_]*$/;
-				const isValidTableName = !!possibleTableName.match(possibleTableNameRegex);
+		const extractFromFileType = (fileFormat: DataFileFormat) => {
+			const possibleTableName = file.name.replace(`.${fileFormat}`, "");
+			const possibleTableNameRegex = /^[a-zA-Z][a-zA-Z0-9_]*$/;
+			const isValidTableName = !!possibleTableName.match(possibleTableNameRegex);
 
-				configureImportType(fileFormat);
-				setDefaultTableName(isValidTableName ? possibleTableName : "");
-			};
+			configureImportType(fileFormat);
+			setDefaultTableName(isValidTableName ? possibleTableName : "");
+		};
 
-			if (file.name.endsWith(".csv")) {
-				extractFromFileType("csv");
-			} else if (file.name.endsWith(".json")) {
-				extractFromFileType("json");
-			} else if (file.name.endsWith(".ndjson")) {
-				extractFromFileType("ndjson");
-			} else {
-				configureImportType("sql");
-			}
-		} finally {
-			setImporting(false);
+		if (file.name.endsWith(".csv")) {
+			extractFromFileType("csv");
+		} else if (file.name.endsWith(".json")) {
+			extractFromFileType("json");
+		} else if (file.name.endsWith(".ndjson")) {
+			extractFromFileType("ndjson");
+		} else {
+			configureImportType("sql");
 		}
 	});
 
@@ -1082,20 +1076,41 @@ export function DataImportModal() {
 		async (executeTransformAndImport: ExecuteTransformAndImportFn) => {
 			if (!importFile.current) return;
 
+			openedHandle.close();
+
+			const messageId = showNotification({
+				title: "Importing database",
+				message: "Please wait while the database is imported",
+				withCloseButton: false,
+				autoClose: false,
+				icon: (
+					<Loader
+						color="violet"
+						size="sm"
+					/>
+				),
+			});
+
 			try {
-				setImporting(true);
-
-				await sleep(50);
-
 				await executeTransformAndImport();
-			} catch (err: any) {
-				showErrorNotification({
-					title: "Import failed",
-					content: err,
+
+				updateNotification({
+					id: messageId,
+					title: "Importing database",
+					message: "Database successfully imported",
+					icon: <Icon path={iconCheck} />,
+					autoClose: 2000,
+					color: "green",
 				});
-			} finally {
-				setImporting(false);
-				openedHandle.close();
+			} catch (err: any) {
+				updateNotification({
+					id: messageId,
+					title: "Import failed",
+					message: err.message,
+					icon: <Icon path={iconWarning} />,
+					autoClose: 2000,
+					color: "red",
+				});
 			}
 		},
 	);
@@ -1113,7 +1128,6 @@ export function DataImportModal() {
 			{importType === "sql" ? (
 				<SqlImportForm
 					fileName={importFile.current?.name}
-					isImporting={isImporting}
 					importFile={importFile}
 					confirmImport={confirmImport}
 					cancelImport={openedHandle.close}
@@ -1123,7 +1137,6 @@ export function DataImportModal() {
 				<CsvImportForm
 					fileFormat={importType}
 					defaultTableName={defaultTableName}
-					isImporting={isImporting}
 					importFile={importFile}
 					confirmImport={confirmImport}
 				/>
@@ -1132,7 +1145,6 @@ export function DataImportModal() {
 				<JsonImportForm
 					fileFormat={importType}
 					defaultTableName={defaultTableName}
-					isImporting={isImporting}
 					importFile={importFile}
 					confirmImport={confirmImport}
 				/>
@@ -1141,7 +1153,6 @@ export function DataImportModal() {
 				<NdJsonImportForm
 					fileFormat={importType}
 					defaultTableName={defaultTableName}
-					isImporting={isImporting}
 					importFile={importFile}
 					confirmImport={confirmImport}
 				/>

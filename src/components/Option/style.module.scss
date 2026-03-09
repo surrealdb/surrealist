@@ -2,6 +2,9 @@
 	padding: var(--mantine-spacing-sm);
 	border-radius: var(--mantine-radius-sm);
 	transition: all 0.15s;
+	display: flex;
+	gap: var(--mantine-spacing-sm);
+	align-items: center;
 
 	:global(.mantine-Checkbox-labelWrapper) {
 		min-width: 0;

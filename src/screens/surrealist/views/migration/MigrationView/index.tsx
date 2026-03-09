@@ -11,18 +11,15 @@ import {
 	Title,
 } from "@mantine/core";
 import { Icon, iconDownload, iconReset, iconTransfer, pictoSurrealDB } from "@surrealdb/ui";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { adapter } from "~/adapter";
 import { Spacer } from "~/components/Spacer";
 import { StarSparkles } from "~/components/StarSparkles";
-import { SURQL_FILTER } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { getSurreal, requestDatabaseExport } from "~/screens/surrealist/connection/connection";
+import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
-import { tagEvent } from "~/util/analytics";
-import { showErrorNotification, showInfo } from "~/util/helpers";
+import { dispatchIntent } from "~/util/intents";
 import { ResourceDetailPanel } from "../ResourceDetailPanel";
 import { ResourceOverviewPanel } from "../ResourceOverviewPanel";
 import { DiagnosticResource, organizeDiagnostics, ResourceMap } from "./organizer";
@@ -55,40 +52,8 @@ export function MigrationView() {
 		},
 	});
 
-	const exportMutation = useMutation({
-		mutationFn: async () => {
-			try {
-				const success = await adapter.saveFile(
-					"Save database export",
-					"v3-export.surql",
-					[SURQL_FILTER],
-					() => {
-						return requestDatabaseExport({
-							v3: true,
-						});
-					},
-				);
-
-				if (success) {
-					showInfo({
-						title: "Export",
-						subtitle: "Database successfully exported",
-					});
-
-					tagEvent("migration_export");
-				} else {
-					showErrorNotification({
-						title: "Export failed",
-						content: "Failed to save export to disk",
-					});
-				}
-			} catch (err: any) {
-				showErrorNotification({
-					title: "Export failed",
-					content: err,
-				});
-			}
-		},
+	const configureExport = useStable(async () => {
+		dispatchIntent("export-database", { v3: "true", tables: "*", resources: "*" });
 	});
 
 	// Count total and unresolved issues
@@ -245,11 +210,10 @@ export function MigrationView() {
 						<Group>
 							<Button
 								variant="gradient"
-								onClick={() => exportMutation.mutate()}
-								loading={exportMutation.isPending}
+								onClick={configureExport}
 								rightSection={<Icon path={iconDownload} />}
 							>
-								Export database
+								Export database...
 							</Button>
 							<Spacer />
 							<Button
