@@ -35,6 +35,7 @@ import {
 } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
+import { SqlExportOptions } from "surrealdb";
 import { adapter, isBrowser } from "~/adapter";
 import { Option } from "~/components/Option";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -152,7 +153,7 @@ export function DataExportModal() {
 						sequences: exportFlags.has("sequences"),
 						tables: Array.from(exportTables),
 						v3: exportV3,
-					});
+					} as SqlExportOptions);
 				},
 			);
 
