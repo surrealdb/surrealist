@@ -5,6 +5,7 @@ import {
 	iconBraces,
 	iconChart,
 	iconChat,
+	iconCheck,
 	iconChevronUp,
 	iconCombined,
 	iconDatabase,
@@ -19,8 +20,10 @@ import {
 	iconHelp,
 	iconLive,
 	iconOrganization,
+	iconPause,
 	iconQuery,
 	iconReferral,
+	iconRefresh,
 	iconRelation,
 	iconSearch,
 	iconTable,
@@ -532,3 +535,30 @@ export const MONITOR_LOG_LEVEL_INFO: Record<string, [string, MantineColor, Monit
 	ERROR: [iconErrorCircle, "red", "error"],
 	FATAL: [iconErrorCircle, "red", "error"],
 };
+
+export const SUPPORT_STATES = [
+	{
+		label: "Resolved",
+		value: "resolved",
+		icon: iconCheck,
+		color: "green",
+	},
+	{
+		label: "Submitted",
+		value: "submitted",
+		icon: iconChat,
+		color: "blue",
+	},
+	{
+		label: "In progress",
+		value: "in_progress",
+		icon: iconRefresh,
+		color: "orange",
+	},
+	{
+		label: "Waiting on you",
+		value: "waiting_on_customer",
+		icon: iconPause,
+		color: "red",
+	},
+];

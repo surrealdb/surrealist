@@ -15,7 +15,7 @@ export function SupportCollection({ collection }: SupportCollectionProps) {
 		>
 			<Paper
 				p="lg"
-				radius="md"
+				radius="xs"
 			>
 				<Group
 					wrap="nowrap"

@@ -1,28 +1,16 @@
-import { Box, Button, Center, Group, Loader, Paper, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, Button, Center, Group, Loader, ScrollArea, Stack } from "@mantine/core";
 import { Icon, iconPlus } from "@surrealdb/ui";
-import { useEffect } from "react";
-import { navigate } from "wouter/use-browser-location";
 import { useConversationsQuery } from "~/cloud/queries/context";
 import { AuthGuard } from "~/components/AuthGuard";
+import { ConversationTable } from "~/components/ConversationTable";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { Pagination } from "~/components/Pagination";
-import { usePagination } from "~/components/Pagination/hook";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { dispatchIntent } from "~/util/intents";
-import { ConversationCard } from "../ConversationCard";
 import classes from "../style.module.scss";
 
 export function RequestsPage() {
-	const pagination = usePagination();
 	const { data: requests, isLoading } = useConversationsQuery();
-
-	const startAt = (pagination.currentPage - 1) * pagination.pageSize;
-	const pageSlice = requests?.slice(startAt, startAt + pagination.pageSize) ?? [];
-
-	useEffect(() => {
-		pagination.setTotal(requests?.length || 0);
-	}, [pagination.setTotal, requests]);
 
 	return (
 		<AuthGuard>
@@ -85,56 +73,12 @@ export function RequestsPage() {
 							</Group>
 						</Box>
 
-						{!isLoading && requests && requests.length > 0 && (
-							<>
-								<Paper p="lg">
-									<Stack gap={5}>
-										{pageSlice
-											.sort((a, b) => b.updated_at - a.updated_at)
-											.map((request) => (
-												<Box
-													p="xs"
-													key={request.id}
-													style={{
-														cursor: "pointer",
-													}}
-													className={classes.messageItem}
-													onClick={() =>
-														navigate(
-															`/support/conversations/${request.id}`,
-														)
-													}
-												>
-													<ConversationCard conversation={request} />
-												</Box>
-											))}
-									</Stack>
-								</Paper>
-
-								<Group
-									justify="center"
-									py="xl"
-								>
-									<Pagination store={pagination} />
-								</Group>
-							</>
-						)}
-
-						{!isLoading && (!requests || requests.length === 0) && (
-							<Center
-								w="100%"
-								h="100%"
-								flex={1}
-							>
-								<Stack
-									gap={0}
-									align="center"
-								>
-									<PrimaryTitle>No tickets found</PrimaryTitle>
-									<Text>You have no current or previous support tickets</Text>
-								</Stack>
-							</Center>
-						)}
+						<ConversationTable
+							conversations={requests ?? []}
+							isLoading={isLoading}
+							defaultSortMode="updated_latest"
+							defaultType="open"
+						/>
 					</Stack>
 				</ScrollArea>
 			</Box>
