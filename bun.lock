@@ -44,7 +44,7 @@
         "@surrealdb/lezer": "1.0.3",
         "@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
         "@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.1",
-        "@surrealdb/ui": "^1.0.78",
+        "@surrealdb/ui": "^1.0.79",
         "@surrealdb/wasm": "^3.0.3",
         "@tanstack/react-query": "^5.37.1",
         "@tauri-apps/api": "2.4.0",
@@ -683,7 +683,7 @@
 
     "@surrealdb/ql-wasm-3": ["@surrealdb/ql-wasm@0.3.1", "", {}, "sha512-0fRDqhibbbzSrSIw4ertFsN7xgOI8nBx0CipDnMeCYN8Vb9Sc5/ZMahpS2ZTQt1po+k1TmayjlH5CHtx41Iegw=="],
 
-    "@surrealdb/ui": ["@surrealdb/ui@1.0.78", "", { "dependencies": { "@codemirror/legacy-modes": "^6.4.2", "@lezer/common": "^1.2.1", "@lezer/go": "^1.0.0", "@lezer/highlight": "^1.2.1", "@lezer/html": "^1.3.10", "@lezer/javascript": "^1.4.17", "@lezer/json": "^1.0.3", "@lezer/php": "^1.0.2", "@lezer/python": "^1.1.14", "@lezer/rust": "^1.0.2", "@lezer/yaml": "^1.0.3", "@replit/codemirror-indentation-markers": "^6.5.3", "@surrealdb/lezer": "1.0.0-beta.23", "acorn": "^8.16.0", "github-slugger": "^2.0.0", "vite-tsconfig-paths": "^6.0.5" }, "peerDependencies": { "@codemirror/autocomplete": "^6.13.0", "@codemirror/commands": "^6.3.3", "@codemirror/language": "^6.10.1", "@codemirror/lint": "^6.5.0", "@codemirror/search": "^6.5.6", "@codemirror/state": "^6.4.1", "@codemirror/view": "^6.24.1", "@mantine/core": "^8", "@mantine/hooks": "^8", "@yoopta/blockquote": "^6", "@yoopta/callout": "^6", "@yoopta/divider": "^6", "@yoopta/editor": "^6", "@yoopta/headings": "^6", "@yoopta/lists": "^6", "@yoopta/marks": "^6", "@yoopta/paragraph": "^6", "@yoopta/ui": "^6", "react": "^19", "slate": "^0.120.0", "slate-dom": "^0.119.0", "slate-react": "^0.120.0" } }, "sha512-lo4WtQ4DsJHD24inCTEurrD8qJ7w9FjU1lZ8hj/as3EgV0siZ9u2oRY3Qkj3fG+K1pwijRm/LLXqx+RP9u1rIQ=="],
+    "@surrealdb/ui": ["@surrealdb/ui@1.0.79", "", { "dependencies": { "@codemirror/legacy-modes": "^6.4.2", "@lezer/common": "^1.2.1", "@lezer/go": "^1.0.0", "@lezer/highlight": "^1.2.1", "@lezer/html": "^1.3.10", "@lezer/javascript": "^1.4.17", "@lezer/json": "^1.0.3", "@lezer/php": "^1.0.2", "@lezer/python": "^1.1.14", "@lezer/rust": "^1.0.2", "@lezer/yaml": "^1.0.3", "@replit/codemirror-indentation-markers": "^6.5.3", "@surrealdb/lezer": "1.0.0-beta.23", "acorn": "^8.16.0", "github-slugger": "^2.0.0", "vite-tsconfig-paths": "^6.0.5" }, "peerDependencies": { "@codemirror/autocomplete": "^6.13.0", "@codemirror/commands": "^6.3.3", "@codemirror/language": "^6.10.1", "@codemirror/lint": "^6.5.0", "@codemirror/search": "^6.5.6", "@codemirror/state": "^6.4.1", "@codemirror/view": "^6.24.1", "@mantine/core": "^8", "@mantine/hooks": "^8", "@yoopta/blockquote": "^6", "@yoopta/callout": "^6", "@yoopta/divider": "^6", "@yoopta/editor": "^6", "@yoopta/headings": "^6", "@yoopta/lists": "^6", "@yoopta/marks": "^6", "@yoopta/paragraph": "^6", "@yoopta/ui": "^6", "react": "^19", "slate": "^0.120.0", "slate-dom": "^0.119.0", "slate-react": "^0.120.0" } }, "sha512-/nIp9ZsGOKinuPeRQUpTZB1mTxnJKDw4JL96uJxZ3aBMHcVtrFzhziDILWpCZ2umNbq8MTk9P6XWmuYmb+f12g=="],
 
     "@surrealdb/wasm": ["@surrealdb/wasm@3.0.3", "", { "peerDependencies": { "surrealdb": "^2.0.1" } }, "sha512-7tUOiQB2eZY80oNKfLvwqZLgANun04ubKXqfanAZmAnwJMB/nKetk7eh6dRd+PFzmLla1Ns2m6Fku+H/DSFjbA=="],
 
