@@ -4,9 +4,8 @@ import { closeModal, openModal } from "@mantine/modals";
 import { Icon, iconClose, iconOrganization, iconPlus, iconUpload } from "@surrealdb/ui";
 import Papa from "papaparse";
 import { capitalize } from "radash";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { adapter } from "~/adapter";
-import { OpenedTextFile } from "~/adapter/base";
 import { Form } from "~/components/Form";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -46,8 +45,6 @@ interface InviteUser {
 function InviteBulkModal({ organization }: InviteBulkModalProps) {
 	const inviteMutation = useInvitationMutation(organization.id);
 	const rolesQuery = useCloudRolesQuery(organization.id);
-
-	const importedFile = useRef<OpenedTextFile | null>(null);
 
 	const [invites, setInvites] = useInputState<InviteUser[]>([]);
 
@@ -92,37 +89,33 @@ function InviteBulkModal({ organization }: InviteBulkModalProps) {
 	}, [invites, roles]);
 
 	const startImport = useStable(async () => {
-		try {
-			const [file] = await adapter.openTextFile(
-				"Import query file",
-				[
-					{
-						name: "Table data (csv)",
-						extensions: ["csv"],
-					},
-				],
-				false,
-			);
+		const [file] = await adapter.openFile(
+			"Import query file",
+			[
+				{
+					name: "Members data (csv)",
+					extensions: ["csv"],
+				},
+			],
+			false,
+		);
 
-			if (!file) {
-				return;
-			}
-
-			importedFile.current = file;
-
-			const result = Papa.parse<string>(file.content, {
-				header: false,
-				skipEmptyLines: true,
-			});
-
-			const emails = result.data.slice(1);
-
-			if (file.name.endsWith(".csv")) {
-				setInvites([...invites, ...emails.map((it) => ({ email: it, role: "member" }))]);
-			}
-		} finally {
-			importedFile.current = null;
+		if (!file) {
+			return;
 		}
+
+		const members: InviteUser[] = [];
+
+		Papa.parse<string[]>(file, {
+			header: false,
+			skipEmptyLines: true,
+			step({ data }) {
+				members.push({ email: data[0], role: "member" });
+			},
+			complete() {
+				setInvites([...invites, ...members]);
+			},
+		});
 	});
 
 	return (

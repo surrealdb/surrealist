@@ -33,7 +33,7 @@ function ImportExportCard({ title, description, icon, onClick }: ImportExportCar
 	return (
 		<Paper
 			p="md"
-			bg={isLight ? "obsidian.0" : "obsidian.8"}
+			bg={isLight ? "obsidian.0" : "obsidian.7"}
 			onClick={onClick}
 		>
 			<Group justify="space-between">
@@ -84,15 +84,11 @@ export function ImportExport({ instance, onClose }: ImportExportProps) {
 
 	const handleCapabilitiesImport = useStable(async () => {
 		try {
-			const files = await adapter.openTextFile(
+			const [file] = await adapter.openFile(
 				"Import capabilities configuration",
 				[JSON_FILTER],
 				false,
 			);
-
-			if (files.length === 0) return;
-
-			const file = files[0].self;
 
 			if (!file) return;
 

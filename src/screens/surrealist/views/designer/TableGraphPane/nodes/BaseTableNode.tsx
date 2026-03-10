@@ -24,6 +24,7 @@ import classes from "../style.module.scss";
 
 export type DiagramContextProps = {
 	warnings?: GraphWarning[];
+	isTiny?: boolean;
 };
 export const DiagramContext = createContext<DiagramContextProps>({});
 
@@ -344,6 +345,7 @@ interface BaseTableNodeProps {
 }
 
 export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: BaseTableNodeProps) {
+	const { isTiny } = useContext(DiagramContext);
 	const isLight = useIsLight();
 	const isLTR = direction === "ltr";
 	const showMore = mode === "summary" || (mode === "fields" && table.fields.length > 0);
@@ -380,23 +382,63 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 		};
 	}, [inField, outField]);
 
-	return (
+	const handles = (
 		<>
 			<Handle
 				type="target"
 				position={isLTR ? Position.Left : Position.Right}
-				style={{
-					visibility: "hidden",
-				}}
+				style={{ visibility: "hidden" }}
 			/>
-
 			<Handle
 				type="source"
 				position={isLTR ? Position.Right : Position.Left}
-				style={{
-					visibility: "hidden",
-				}}
+				style={{ visibility: "hidden" }}
 			/>
+		</>
+	);
+
+	if (isTiny) {
+		return (
+			<>
+				{handles}
+				<Paper
+					px="xs"
+					py={4}
+					bg={isLight ? "white" : "obsidian.6"}
+					shadow={`0 4px 8px rgba(0, 0, 0, ${isLight ? 0.1 : 0.35})`}
+					style={{
+						border: `2px solid ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+						userSelect: "none",
+						overflow: "hidden",
+						height: "100%",
+						minWidth: 60,
+					}}
+				>
+					<Group
+						gap={4}
+						wrap="nowrap"
+					>
+						<Icon
+							path={TABLE_VARIANT_ICONS[variant]}
+							size="xs"
+							color={isSelected ? "surreal" : isLight ? "obsidian.7" : "obsidian.2"}
+						/>
+						<Text
+							fz="xs"
+							c={isLight ? undefined : "white"}
+							truncate
+						>
+							{table.schema.name}
+						</Text>
+					</Group>
+				</Paper>
+			</>
+		);
+	}
+
+	return (
+		<>
+			{handles}
 
 			<Paper
 				p="md"

@@ -3,7 +3,6 @@ import {
 	Box,
 	Button,
 	Center,
-	Checkbox,
 	Group,
 	Image,
 	Paper,
@@ -12,25 +11,21 @@ import {
 	Title,
 } from "@mantine/core";
 import { Icon, iconDownload, iconReset, iconTransfer, pictoSurrealDB } from "@surrealdb/ui";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { adapter } from "~/adapter";
 import { Spacer } from "~/components/Spacer";
 import { StarSparkles } from "~/components/StarSparkles";
-import { SURQL_FILTER } from "~/constants";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { MigrationDiagnosticResult, MigrationResourceType } from "~/types";
-import { tagEvent } from "~/util/analytics";
-import { showInfo } from "~/util/helpers";
+import { dispatchIntent } from "~/util/intents";
 import { ResourceDetailPanel } from "../ResourceDetailPanel";
 import { ResourceOverviewPanel } from "../ResourceOverviewPanel";
 import { DiagnosticResource, organizeDiagnostics, ResourceMap } from "./organizer";
 
 export function MigrationView() {
 	const connectionId = useConnection((c) => c?.id);
-	const [exportVersions, setExportVersions] = useState<boolean>(false);
 
 	// State for opened resource types
 	const [openedTypes, setOpenedTypes] = useState<string[]>([]);
@@ -57,29 +52,8 @@ export function MigrationView() {
 		},
 	});
 
-	const exportMutation = useMutation({
-		mutationFn: async () => {
-			const backup = new Blob([
-				await getSurreal().export({
-					versions: exportVersions,
-					v3: true,
-				}),
-			]);
-
-			await adapter.saveFile(
-				"Save database export",
-				"v3-export.surql",
-				[SURQL_FILTER],
-				() => backup,
-			);
-
-			showInfo({
-				title: "Database export",
-				subtitle: "The database has been exported successfully",
-			});
-
-			tagEvent("migration_export");
-		},
+	const configureExport = useStable(async () => {
+		dispatchIntent("export-database", { v3: "true", tables: "*", resources: "*" });
 	});
 
 	// Count total and unresolved issues
@@ -233,20 +207,13 @@ export function MigrationView() {
 							Press the button below to create an export of your database which can be
 							restored in a SurrealDB 3.0 instance.
 						</Text>
-						<Checkbox
-							my="md"
-							label="Export historical data (SurrealKV only)"
-							checked={exportVersions}
-							onChange={(event) => setExportVersions(event.currentTarget.checked)}
-						/>
 						<Group>
 							<Button
 								variant="gradient"
-								onClick={() => exportMutation.mutate()}
-								loading={exportMutation.isPending}
+								onClick={configureExport}
 								rightSection={<Icon path={iconDownload} />}
 							>
-								Export database
+								Export database...
 							</Button>
 							<Spacer />
 							<Button

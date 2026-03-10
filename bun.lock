@@ -45,7 +45,7 @@
         "@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
         "@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.1",
         "@surrealdb/ui": "^1.0.77",
-        "@surrealdb/wasm": "^3.0.0",
+        "@surrealdb/wasm": "^3.0.3",
         "@tanstack/react-query": "^5.37.1",
         "@tauri-apps/api": "2.4.0",
         "@tauri-apps/plugin-deep-link": "2.2.0",
@@ -99,7 +99,7 @@
         "remark-github-blockquote-alert": "^2.0.0",
         "rss-parser": "^3.13.0",
         "sigma": "^3.0.0",
-        "surrealdb": "^2.0.0-beta.2",
+        "surrealdb": "^2.0.2",
         "turndown": "^7.2.1",
         "use-immer": "^0.9.0",
         "valibot": "^1.2.0",
@@ -115,6 +115,7 @@
         "@types/react": "^18.2.20",
         "@types/react-dom": "^18.2.7",
         "@types/react-window": "^1.8.8",
+        "@types/wicg-file-system-access": "^2023.10.7",
         "@vitejs/plugin-legacy": "^5.4.1",
         "@vitejs/plugin-react": "^4.0.4",
         "license-report": "^6.5.0",
@@ -684,7 +685,7 @@
 
     "@surrealdb/ui": ["@surrealdb/ui@1.0.77", "", { "dependencies": { "@codemirror/legacy-modes": "^6.4.2", "@lezer/common": "^1.2.1", "@lezer/go": "^1.0.0", "@lezer/highlight": "^1.2.1", "@lezer/html": "^1.3.10", "@lezer/javascript": "^1.4.17", "@lezer/json": "^1.0.3", "@lezer/php": "^1.0.2", "@lezer/python": "^1.1.14", "@lezer/rust": "^1.0.2", "@lezer/yaml": "^1.0.3", "@replit/codemirror-indentation-markers": "^6.5.3", "@surrealdb/lezer": "1.0.0-beta.23", "github-slugger": "^2.0.0", "vite-tsconfig-paths": "^6.0.5" }, "peerDependencies": { "@codemirror/autocomplete": "^6.13.0", "@codemirror/commands": "^6.3.3", "@codemirror/language": "^6.10.1", "@codemirror/lint": "^6.5.0", "@codemirror/search": "^6.5.6", "@codemirror/state": "^6.4.1", "@codemirror/view": "^6.24.1", "@mantine/core": "^8", "@mantine/hooks": "^8", "@yoopta/blockquote": "^6", "@yoopta/callout": "^6", "@yoopta/divider": "^6", "@yoopta/editor": "^6", "@yoopta/headings": "^6", "@yoopta/lists": "^6", "@yoopta/marks": "^6", "@yoopta/paragraph": "^6", "@yoopta/ui": "^6", "react": "^19", "slate": "^0.120.0", "slate-dom": "^0.119.0", "slate-react": "^0.120.0" } }, "sha512-ppZlCNHgl/FTnx7SakrzKahAoyhQkpEsQ7BcLnKSNoosozJT1u8Nri5ABVK+lDuO0REJN3XHbgjEOxHb6u8Yaw=="],
 
-    "@surrealdb/wasm": ["@surrealdb/wasm@3.0.0", "", { "peerDependencies": { "surrealdb": "^2.0.0-0" } }, "sha512-h2tGA/2mz8nkd/I2oqX31uXD56Mw20ZFG8NKMZsXQozZSRaYZnV/QlX2fdXVpWFMkBf/6O55reSF9RHfqCeTGA=="],
+    "@surrealdb/wasm": ["@surrealdb/wasm@3.0.3", "", { "peerDependencies": { "surrealdb": "^2.0.1" } }, "sha512-7tUOiQB2eZY80oNKfLvwqZLgANun04ubKXqfanAZmAnwJMB/nKetk7eh6dRd+PFzmLla1Ns2m6Fku+H/DSFjbA=="],
 
     "@tanstack/query-core": ["@tanstack/query-core@5.90.20", "", {}, "sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg=="],
 
@@ -805,6 +806,8 @@
     "@types/turndown": ["@types/turndown@5.0.6", "", {}, "sha512-ru00MoyeeouE5BX4gRL+6m/BsDfbRayOskWqUvh7CLGW+UXxHQItqALa38kKnOiZPqJrtzJUgAC2+F0rL1S4Pg=="],
 
     "@types/unist": ["@types/unist@3.0.3", "", {}, "sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q=="],
+
+    "@types/wicg-file-system-access": ["@types/wicg-file-system-access@2023.10.7", "", {}, "sha512-g49ijasEJvCd7ifmAY2D0wdEtt1xRjBbA33PJTiv8mKBr7DoMsPeISoJ8oQOTopSRi+FBWPpPW5ouDj2QPKtGA=="],
 
     "@ungap/structured-clone": ["@ungap/structured-clone@1.3.0", "", {}, "sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g=="],
 
@@ -1470,7 +1473,7 @@
 
     "supports-preserve-symlinks-flag": ["supports-preserve-symlinks-flag@1.0.0", "", {}, "sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w=="],
 
-    "surrealdb": ["surrealdb@2.0.0-beta.2", "", { "dependencies": { "@surrealdb/cbor": "2.0.0-alpha.4", "uuidv7": "^1.0.1" }, "peerDependencies": { "tslib": "^2.6.3", "typescript": "^5.0.0" } }, "sha512-0LrBP1U15E+Q7aXaGAf1GQMDOkZ5ETaSpeiLhsmcK0KyNb9rcS8fPHd5dZcMeBGWfM+f9G4Tu+sPBSNhuRNJKA=="],
+    "surrealdb": ["surrealdb@2.0.2", "", { "dependencies": { "@surrealdb/cbor": "2.0.0-alpha.4", "uuidv7": "^1.0.1" }, "peerDependencies": { "tslib": "^2.6.3", "typescript": "^5.0.0" } }, "sha512-yKd4atWe1HdJEdACQhC8tsOSJxyxYs5/CqHoxweia4y8R8j8zP5aMzYeAx+lR/ZzhF29W276cxu/PbK1QDsWVA=="],
 
     "svgo": ["svgo@3.3.2", "", { "dependencies": { "@trysound/sax": "0.2.0", "commander": "^7.2.0", "css-select": "^5.1.0", "css-tree": "^2.3.1", "css-what": "^6.1.0", "csso": "^5.0.5", "picocolors": "^1.0.0" }, "bin": "./bin/svgo" }, "sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw=="],
 

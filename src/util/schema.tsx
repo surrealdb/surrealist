@@ -5,6 +5,7 @@ import { adapter } from "~/adapter";
 import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import type {
+	ConnectionSchema,
 	SchemaFunction,
 	SchemaInfoDB,
 	SchemaInfoKV,
@@ -30,8 +31,11 @@ export interface SchemaSyncOptions {
  * Synchronize the remote connection schema locally
  *
  * @param options Sync options
+ * @returns The updated schema, or null if the connection is not connected
  */
-export async function syncConnectionSchema(options?: SchemaSyncOptions) {
+export async function syncConnectionSchema(
+	options?: SchemaSyncOptions,
+): Promise<ConnectionSchema | null> {
 	const { tables: onlyTables, clearRoot, clearNamespace, clearDatabase } = options ?? {};
 	const { currentState, connectionSchema, setDatabaseSchema, setIsSyncingSchema } =
 		useDatabaseStore.getState();
@@ -49,7 +53,7 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 	}
 
 	if (currentState !== "connected") {
-		return;
+		return null;
 	}
 
 	const schema = createConnectionSchema();
@@ -186,6 +190,8 @@ export async function syncConnectionSchema(options?: SchemaSyncOptions) {
 			console.debug("Updated schema:", schema);
 			setDatabaseSchema(schema);
 		}
+
+		return schema;
 	} finally {
 		setIsSyncingSchema(false);
 	}
