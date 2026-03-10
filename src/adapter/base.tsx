@@ -105,7 +105,6 @@ export interface SurrealistAdapter {
 		defaultPath: string,
 		filters: FileFilter[],
 		content: () => Result<string | Blob | Response | null>,
-		progress?: (progress: number) => void,
 	): Promise<boolean>;
 
 	/**
