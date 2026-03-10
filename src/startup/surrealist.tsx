@@ -5,7 +5,6 @@ import "@mantine/charts/styles.css";
 import "@mantine/dates/styles.css";
 import "mantine-contextmenu/styles.layer.css";
 import "@surrealdb/ui/styles.css";
-import "@surrealdb/ui/fonts.css";
 
 import "../assets/styles/layers.scss";
 import "../assets/styles/fonts.scss";
@@ -22,6 +21,7 @@ import { invalidateSession } from "~/cloud/api/auth";
 import { clearCachedConnections } from "~/cloud/helpers";
 import { NewDomainScreen } from "~/screens/new-domain";
 import { startConfigSync } from "~/util/config";
+import { HeadInjector } from "~/util/head";
 import { exposeDebug } from "~/util/helpers";
 import { preloadImages } from "~/util/preloader";
 import { adapter } from "../adapter";
@@ -50,11 +50,21 @@ import { promptChangelog } from "../util/changelogs";
 
 	// TODO - Temporary redirect notice
 	if (location.host.endsWith("surrealist.app")) {
-		createRoot(root).render(<NewDomainScreen />);
+		createRoot(root).render(
+			<>
+				<HeadInjector />
+				<NewDomainScreen />
+			</>,
+		);
 		return;
 	}
 
-	createRoot(root).render(<App />);
+	createRoot(root).render(
+		<>
+			<HeadInjector />
+			<App />
+		</>,
+	);
 
 	// Check for new release
 	promptChangelog();
