@@ -239,6 +239,8 @@ export function SurrealistToolbar() {
 						computeType: type.slug ?? "",
 						computeUnits: 1,
 						plan: allowFree ? "free" : "start",
+						private_traffic: false,
+						public_traffic: true,
 						storageAmount: type.default_storage_size,
 						storageType: "",
 						storageUnits: 3,
@@ -384,7 +386,7 @@ export function SurrealistToolbar() {
 					onClick={selectDataset}
 					leftSection={<Icon path={iconTable} />}
 				>
-					Apply dataset
+					Import sample data
 				</Button>
 			)}
 
@@ -600,13 +602,13 @@ export function SurrealistToolbar() {
 							path={iconTable}
 							size="lg"
 						/>
-						<PrimaryTitle>Apply dataset</PrimaryTitle>
+						<PrimaryTitle>Import sample data</PrimaryTitle>
 					</Group>
 				}
 			>
 				<Stack gap="xl">
 					<Text>
-						You can initialize your empty database with an official dataset to provide a
+						Initialize your empty database with an official sample dataset to provide a
 						starting point for your project.
 					</Text>
 
@@ -640,7 +642,7 @@ export function SurrealistToolbar() {
 							}}
 							loading={isDatasetLoading}
 						>
-							Apply dataset
+							Apply
 						</Button>
 					</Group>
 				</Stack>

@@ -39,6 +39,8 @@ export function useInstanceDeployMutation(organisation?: CloudOrganization) {
 				instance_type: instance.type.slug,
 				storage_size: instance.storage_size,
 				organisation: organisation.id,
+				public_traffic: config.public_traffic,
+				private_traffic: config.private_traffic,
 				dataset:
 					config.startingData.type === "dataset" ? "surreal-deal-store-mini" : undefined,
 				email: useCloudStore.getState().profile.username,

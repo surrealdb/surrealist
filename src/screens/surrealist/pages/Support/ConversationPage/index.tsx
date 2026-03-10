@@ -22,12 +22,9 @@ import {
 	iconArrowLeft,
 	iconBullhorn,
 	iconChat,
-	iconCheck,
 	iconClock,
 	iconFile,
-	iconPause,
 	iconPlus,
-	iconRefresh,
 } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
@@ -44,38 +41,12 @@ import { AuthGuard } from "~/components/AuthGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { SUPPORT_STATES } from "~/constants";
 import { useCloudProfile } from "~/hooks/cloud";
 import { fileToBase64 } from "~/util/file-system";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
 import { ConversationPart } from "../ConversationPart";
 import classes from "../style.module.scss";
-
-const SUPPORT_STATES = [
-	{
-		label: "Resolved",
-		value: "resolved",
-		icon: iconCheck,
-		color: "green",
-	},
-	{
-		label: "Submitted",
-		value: "submitted",
-		icon: iconChat,
-		color: "blue",
-	},
-	{
-		label: "In progress",
-		value: "in_progress",
-		icon: iconRefresh,
-		color: "blue",
-	},
-	{
-		label: "Waiting on you",
-		value: "waiting_on_customer",
-		icon: iconPause,
-		color: "orange",
-	},
-];
 
 const openReopenTicketModal = (id: string) => {
 	openModal({

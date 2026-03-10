@@ -36,6 +36,7 @@ import {
 	useEdgesState,
 	useNodesInitialized,
 	useNodesState,
+	useOnViewportChange,
 	useReactFlow,
 } from "@xyflow/react";
 import { useContextMenu } from "mantine-contextmenu";
@@ -134,6 +135,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	]);
 
 	const [isExporting, setIsExporting] = useState(false);
+	const [isTiny, setIsTiny] = useState(false);
 	const ref = useRef<ElementRef<"div">>(null);
 	const isLight = useIsLight();
 
@@ -370,6 +372,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		fitView({ duration: 150 });
 	});
 
+	useOnViewportChange({
+		onChange: (vp) => setIsTiny(vp.zoom <= 0.1),
+	});
+
 	const isViewActive = view === "designer";
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Render on schema or setting change
@@ -552,7 +558,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	return (
-		<DiagramContext.Provider value={{ warnings }}>
+		<DiagramContext.Provider value={{ warnings, isTiny: isTiny && !isExporting }}>
 			<ContentPane
 				title="Table Graph"
 				icon={iconRelation}
@@ -709,11 +715,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						fitView
 						nodes={nodes}
 						edges={edges}
-						minZoom={0.1}
+						minZoom={0.01}
 						nodeTypes={NODE_TYPES}
 						edgeTypes={EDGE_TYPES}
 						nodesConnectable={false}
 						edgesFocusable={false}
+						onlyRenderVisibleElements={!isExporting}
 						proOptions={{ hideAttribution: true }}
 						onNodesChange={onNodesChange}
 						onEdgesChange={onEdgesChange}
