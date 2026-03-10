@@ -1,6 +1,6 @@
 import { sleep } from "radash";
 import { useState } from "react";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { getSurreal } from "~/screens/surrealist/connection/connection";
 import { showInfo } from "~/util/helpers";
 import { getDatasetURL } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
@@ -17,10 +17,11 @@ export function useDatasets() {
 
 		try {
 			const source = getDatasetURL(version);
-			const dataset = await fetch(source).then((res) => res.text());
+			const response = await fetch(source);
+			const dataset = await response.blob();
 
 			await sleep(50);
-			await executeQuery(dataset);
+			await getSurreal().import(dataset);
 			await syncConnectionSchema();
 
 			showInfo({

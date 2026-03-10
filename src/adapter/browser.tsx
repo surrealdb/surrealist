@@ -1,8 +1,9 @@
 import { isFunction, shake } from "radash";
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
+import { createFileDefinition, openAndReadFiles, openAndWriteFile } from "~/util/file-system";
 import * as idxdb from "~/util/idxdb";
 import { CONFIG_KEY } from "~/util/storage";
-import type { OpenedBinaryFile, OpenedTextFile, SurrealistAdapter } from "./base";
+import type { FileFilter, SurrealistAdapter } from "./base";
 
 /**
  * Base adapter for running as web app
@@ -80,18 +81,22 @@ export class BrowserAdapter implements SurrealistAdapter {
 	public async saveFile(
 		_title: string,
 		defaultPath: string,
-		_filters: any,
-		content: () => Result<string | Blob>,
+		filters: FileFilter[],
+		content: () => Result<string | Blob | Response | null>,
 	): Promise<boolean> {
+		// Attempt saving using the file picker
+		if (await openAndWriteFile(content, defaultPath, filters)) {
+			return true;
+		}
+
+		// Fall back to browser download
 		const result = await content();
 
 		if (!result) {
 			throw new Error("File is empty");
 		}
 
-		const file =
-			typeof result === "string" ? new File([result], "", { type: "text/plain" }) : result;
-
+		const file = await createFileDefinition(result, defaultPath);
 		const url = window.URL.createObjectURL(file);
 		const el = document.createElement("a");
 
@@ -108,38 +113,17 @@ export class BrowserAdapter implements SurrealistAdapter {
 		return true;
 	}
 
-	public async openTextFile(_: string, filters: any, __: boolean): Promise<OpenedTextFile[]> {
-		const el = document.createElement("input");
+	public async openFile(
+		_title: string,
+		filters: FileFilter[],
+		multiple: boolean,
+	): Promise<File[]> {
+		const files = await openAndReadFiles(filters, multiple);
 
-		el.type = "file";
-		el.accept = filters
-			.map((f: any) => f.extensions.map((e: any) => `.${e}`).join(","))
-			.join(",");
-		el.style.display = "none";
+		if (Array.isArray(files)) {
+			return files;
+		}
 
-		el.click();
-
-		return new Promise((resolve, reject) => {
-			el.addEventListener("change", async () => {
-				const files = [...(el.files ?? [])];
-				const tasks = files.map(async (file) => ({
-					name: file.name,
-					content: await file.text(),
-					self: file,
-				}));
-
-				const results = await Promise.all(tasks);
-
-				resolve(results);
-			});
-
-			el.addEventListener("error", async () => {
-				reject(new Error("Failed to read file"));
-			});
-		});
-	}
-
-	public async openBinaryFile(): Promise<OpenedBinaryFile[]> {
 		const el = document.createElement("input");
 
 		el.type = "file";
@@ -149,15 +133,7 @@ export class BrowserAdapter implements SurrealistAdapter {
 
 		return new Promise((resolve, reject) => {
 			el.addEventListener("change", async () => {
-				const files = [...(el.files ?? [])];
-				const tasks = files.map(async (file) => ({
-					name: file.name,
-					content: file,
-				}));
-
-				const results = await Promise.all(tasks);
-
-				resolve(results);
+				resolve([...(el.files ?? [])]);
 			});
 
 			el.addEventListener("error", async () => {

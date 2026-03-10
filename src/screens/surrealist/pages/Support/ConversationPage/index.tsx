@@ -43,7 +43,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SUPPORT_STATES } from "~/constants";
 import { useCloudProfile } from "~/hooks/cloud";
-import { fileToBase64 } from "~/util/file";
+import { fileToBase64 } from "~/util/file-system";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
 import { ConversationPart } from "../ConversationPart";
 import classes from "../style.module.scss";

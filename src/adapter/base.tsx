@@ -1,14 +1,8 @@
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
 
-export interface OpenedTextFile {
+export interface FileFilter {
 	name: string;
-	content: string;
-	self: File | undefined;
-}
-
-export interface OpenedBinaryFile {
-	name: string;
-	content: Blob;
+	extensions: string[];
 }
 
 export interface SurrealistAdapter {
@@ -109,19 +103,14 @@ export interface SurrealistAdapter {
 	saveFile(
 		title: string,
 		defaultPath: string,
-		filters: any,
-		content: () => Result<string | Blob | null>,
+		filters: FileFilter[],
+		content: () => Result<string | Blob | Response | null>,
 	): Promise<boolean>;
 
 	/**
-	 * Open a text file locally
+	 * Open a file locally
 	 */
-	openTextFile(title: string, filters: any, multiple: boolean): Promise<OpenedTextFile[]>;
-
-	/**
-	 * Open a binary file locally
-	 */
-	openBinaryFile(title: string, filters: any, multiple: boolean): Promise<OpenedBinaryFile[]>;
+	openFile(title: string, filters: FileFilter[], multiple: boolean): Promise<File[]>;
 
 	/**
 	 * Log a message to the implemented logging system

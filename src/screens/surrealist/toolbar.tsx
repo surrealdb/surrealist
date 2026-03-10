@@ -179,7 +179,6 @@ export function SurrealistToolbar() {
 				functions: true,
 				params: true,
 				users: true,
-				versions: false,
 				records: true,
 				sequences: true,
 				tables: true,
@@ -304,11 +303,11 @@ export function SurrealistToolbar() {
 				deployInstance();
 			}
 		} catch (error) {
+			setIsDeploying(false);
 			showErrorNotification({
 				title: "Deployment failed",
 				content: error,
 			});
-			setIsDeploying(false);
 		}
 	});
 
