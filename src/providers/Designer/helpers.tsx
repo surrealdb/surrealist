@@ -225,8 +225,7 @@ export function isSchemaValid(info: TableInfo): boolean {
 				field.name &&
 				field.permissions.create !== "" &&
 				field.permissions.select !== "" &&
-				field.permissions.update !== "" &&
-				field.permissions.delete !== "",
+				field.permissions.update !== "",
 		) &&
 		info.indexes.every((index) => index.name && index.cols) &&
 		info.events.every((event) => event.name && event.when && event.then[0].length > 0);
