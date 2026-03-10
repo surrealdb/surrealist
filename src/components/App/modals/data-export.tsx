@@ -153,7 +153,7 @@ export function DataExportModal() {
 						sequences: exportFlags.has("sequences"),
 						tables: Array.from(exportTables),
 						v3: exportV3,
-					} as SqlExportOptions);
+					} as Partial<SqlExportOptions>);
 				},
 			);
 
