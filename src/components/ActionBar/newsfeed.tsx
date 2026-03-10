@@ -23,7 +23,7 @@ export function NewsFeed() {
 			>
 				<Icon
 					path={iconNewspaper}
-					size="lg"
+					size="xl"
 				/>
 			</ActionButton>
 		</Indicator>

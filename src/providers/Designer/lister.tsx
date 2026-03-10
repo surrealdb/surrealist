@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Button, Group, Modal, Stack, Text } from "@mantine/core";
-import { Icon, iconCircle, iconClose, iconPlus } from "@surrealdb/ui";
+import { Icon, iconCircleFilled, iconClose, iconPlus } from "@surrealdb/ui";
 import { klona } from "klona";
 import { replace } from "radash";
 import { type ReactNode, useState } from "react";
@@ -77,8 +77,8 @@ export function Lister<T extends { name: string }>({
 							}}
 							leftSection={
 								<Icon
-									path={iconCircle}
-									c="obsidian.4"
+									path={iconCircleFilled}
+									opacity={0.6}
 								/>
 							}
 							rightSection={

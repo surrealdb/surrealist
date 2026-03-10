@@ -24,7 +24,7 @@ export function LearnMore({
 		>
 			<Group
 				gap="sm"
-				c="dimmed"
+				fw={500}
 			>
 				<Icon path={iconHelp} />
 				{children}

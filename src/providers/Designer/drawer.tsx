@@ -31,7 +31,6 @@ import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
 import type { SaveableHandle } from "~/hooks/save";
-import { useIsLight } from "~/hooks/theme";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
@@ -64,7 +63,6 @@ export function DesignDrawer({
 }: SchemaDrawerProps) {
 	const { setOpenDesignerPanels } = useConfigStore.getState();
 
-	const _isLight = useIsLight();
 	const [width, setWidth] = useState(650);
 	const openDesignerPanels = useConfigStore((s) => s.openDesignerPanels);
 

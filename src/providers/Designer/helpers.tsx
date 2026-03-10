@@ -18,7 +18,7 @@ export function SectionTitle({ children, icon }: { children: string; icon: strin
 			<Group gap="sm">
 				<Icon
 					path={icon}
-					size={0.85}
+					opacity={0.6}
 				/>
 				<Text
 					fw={600}
