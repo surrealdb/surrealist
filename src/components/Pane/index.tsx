@@ -49,7 +49,7 @@ export function ContentPane({
 					<Group
 						px="sm"
 						py="xs"
-						gap="xs"
+						gap="sm"
 						h={48}
 						wrap="nowrap"
 						className={classes.header}

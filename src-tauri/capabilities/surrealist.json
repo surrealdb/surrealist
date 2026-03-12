@@ -2,9 +2,7 @@
 	"$schema": "../gen/schemas/desktop-schema.json",
 	"identifier": "surrealist",
 	"description": "default surrealist permissions",
-	"windows": [
-		"surrealist-*"
-	],
+	"windows": ["surrealist-*"],
 	"permissions": [
 		"core:path:default",
 		"core:event:default",
@@ -16,7 +14,6 @@
 		"log:default",
 		"deep-link:default",
 		"updater:default",
-		"http:default",
 		"os:allow-os-type",
 		"fs:allow-read-file",
 		"fs:allow-write-file",
@@ -46,20 +43,6 @@
 		"core:webview:allow-internal-toggle-devtools",
 		"updater:allow-check",
 		"updater:allow-download-and-install",
-		"process:allow-restart",
-		{
-			"identifier": "http:allow-fetch",
-			"allow": [
-				"https://surrealdb.us.auth0.com/*",
-				"https://api.cloud.surrealdb.com/api/*",
-				"https://auth.surrealdb.com/*",
-				"https://checkout.stripe.com/*",
-				"https://lago-production.s3.amazonaws.com/*",
-				"https://api-prod.scoutos.com/*",
-				"https://api-iam.intercom.io/*",
-				"https://cloud-api-use1.staging.surrealdb.cloud/*",
-				"https://*.on.aws/*"
-			]
-		}
+		"process:allow-restart"
 	]
 }

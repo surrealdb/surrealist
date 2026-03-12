@@ -40,6 +40,8 @@ jobs:
 
       - name: Build frontend
         run: bun install && bun run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Check frontend
         run: |

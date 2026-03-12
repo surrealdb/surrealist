@@ -1,5 +1,5 @@
 import { Accordion, Checkbox, Flex, Text, TextInput } from "@mantine/core";
-import { iconJSON } from "@surrealdb/ui";
+import { iconBraces } from "@surrealdb/ui";
 import { CodeInput, FieldKindInput, PermissionInput } from "~/components/Inputs";
 import { useStable } from "~/hooks/stable";
 import type { SchemaField } from "~/types";
@@ -35,7 +35,12 @@ export function FieldsElement({ data, setData }: ElementProps) {
 					>
 						:
 					</Text>
-					<Text className={classes.kind}>{field.kind}</Text>
+					<Text
+						className={classes.kind}
+						c="violet"
+					>
+						{field.kind}
+					</Text>
 				</>
 			)}
 		</Flex>
@@ -49,7 +54,7 @@ export function FieldsElement({ data, setData }: ElementProps) {
 
 	return (
 		<Accordion.Item value="fields">
-			<SectionTitle icon={iconJSON}>Fields</SectionTitle>
+			<SectionTitle icon={iconBraces}>Fields</SectionTitle>
 			<Accordion.Panel>
 				<Lister
 					value={data.fields}

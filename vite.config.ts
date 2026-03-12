@@ -1,7 +1,6 @@
 import { mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import legacy from "@vitejs/plugin-legacy";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type PluginOption } from "vite";
 import { compression } from "vite-plugin-compression2";
@@ -37,11 +36,6 @@ export default defineConfig(({ mode }) => {
 		react(),
 		markdown({
 			mode: [Mode.HTML],
-		}),
-		legacy({
-			modernTargets: "since 2021-01-01, not dead",
-			modernPolyfills: true,
-			renderLegacyChunks: false,
 		}),
 		{
 			name: "rename-html",

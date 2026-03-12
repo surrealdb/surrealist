@@ -1,8 +1,8 @@
 .root {
-	color: unset;
+	color: var(--mantine-color-violet-text);
 	transition: color .1s;
 
 	&:hover {
-		color: var(--mantine-color-surreal-4)
+		color: var(--mantine-color-bright)
 	}
 }

@@ -62,7 +62,7 @@ export class DockerAdapter extends BrowserAdapter {
 
 	private async fetchInstanceConfig() {
 		try {
-			return await this.fetch(`/${INSTANCE_CONFIG}`).then((res) => res.json());
+			return await fetch(`/${INSTANCE_CONFIG}`).then((res) => res.json());
 		} catch {
 			return null;
 		}

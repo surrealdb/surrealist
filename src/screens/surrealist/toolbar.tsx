@@ -565,7 +565,12 @@ export function SurrealistToolbar() {
 					}
 					style={{ border: "none" }}
 					onClick={openChangelog}
-					leftSection={<Icon path={iconStar} />}
+					leftSection={
+						<Icon
+							path={iconStar}
+							size="lg"
+						/>
+					}
 				>
 					See what's new in {import.meta.env.VERSION}
 				</Button>

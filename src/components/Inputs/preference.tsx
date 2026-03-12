@@ -1,15 +1,4 @@
-import {
-	type BoxProps,
-	Checkbox,
-	Group,
-	NumberInput,
-	Paper,
-	Select,
-	SimpleGrid,
-	Switch,
-	Text,
-	TextInput,
-} from "@mantine/core";
+import { type BoxProps, Checkbox, NumberInput, Select, SimpleGrid, TextInput } from "@mantine/core";
 import { Icon } from "@surrealdb/ui";
 import { isNumber } from "radash";
 import { useConfigStore } from "~/stores/config";
@@ -21,6 +10,7 @@ import {
 	SelectionController,
 	TextController,
 } from "~/util/preferences";
+import { Option } from "../Option";
 
 export interface PreferenceInputProps extends BoxProps {
 	controller: PreferenceController;
@@ -90,48 +80,25 @@ export function PreferenceInput({ controller, compact, ...other }: PreferenceInp
 
 	if (controller instanceof FlagSetController) {
 		return (
-			<Paper
-				p="md"
+			<SimpleGrid
+				cols={{ base: 1, sm: 2, xl: 3 }}
 				{...other}
 			>
-				<SimpleGrid cols={{ base: 1, sm: 2, xl: 3 }}>
-					{controller.options.options.map((flag, i) => (
-						<Switch
-							key={i}
-							styles={{
-								labelWrapper: {
-									flex: 1,
-								},
-								body: {
-									width: "100%",
-								},
-							}}
-							label={
-								<Group
-									fz="lg"
-									miw={controller.options.minWidth}
-								>
-									{flag.icon && (
-										<Icon
-											path={flag.icon}
-											size="sm"
-										/>
-									)}
-									<Text fw={500}>{flag.label}</Text>
-								</Group>
-							}
-							variant="gradient"
-							checked={value[flag.value] ?? controller.options.default ?? false}
-							onChange={(event) => {
-								applyPreference(controller.options.writer, {
-									...value,
-									[flag.value]: event.target.checked,
-								});
-							}}
-						/>
-					))}
-				</SimpleGrid>
-			</Paper>
+				{controller.options.options.map((flag, i) => (
+					<Option
+						key={i}
+						label={flag.label}
+						icon={flag.icon && <Icon path={flag.icon} />}
+						checked={value[flag.value] ?? controller.options.default ?? false}
+						onChange={(val) => {
+							applyPreference(controller.options.writer, {
+								...value,
+								[flag.value]: val,
+							});
+						}}
+					/>
+				))}
+			</SimpleGrid>
 		);
 	}
 }

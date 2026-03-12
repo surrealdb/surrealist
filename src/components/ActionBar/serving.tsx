@@ -80,7 +80,7 @@ export function DatabaseServing() {
 			>
 				<Icon
 					path={isServing ? iconStop : iconPlay}
-					size="lg"
+					size="xl"
 				/>
 			</ActionButton>
 
@@ -99,7 +99,7 @@ export function DatabaseServing() {
 				>
 					<Icon
 						path={iconConsole}
-						size="lg"
+						size="xl"
 					/>
 				</ActionButton>
 			)}

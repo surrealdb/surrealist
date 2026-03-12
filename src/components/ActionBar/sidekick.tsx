@@ -34,7 +34,7 @@ export function SidekickAction() {
 				>
 					<Icon
 						path={iconSidekick}
-						size="lg"
+						size="xl"
 					/>
 				</ActionButton>
 			</StarSparkles>

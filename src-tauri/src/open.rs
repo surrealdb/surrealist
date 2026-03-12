@@ -134,12 +134,6 @@ pub fn prune_allowed_files(paths: Vec<String>) {
     write_allowed_files(whitelist);
 }
 
-#[derive(Serialize)]
-pub struct QueryFile {
-    name: String,
-    path: String,
-}
-
 #[tauri::command]
 pub async fn open_query_file(app: AppHandle, window: Window) {
     let mut dialog = app.dialog().file();
