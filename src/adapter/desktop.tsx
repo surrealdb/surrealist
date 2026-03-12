@@ -5,7 +5,6 @@ import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { readFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
-import { fetch } from "@tauri-apps/plugin-http";
 import { attachConsole, info, trace, warn } from "@tauri-apps/plugin-log";
 import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
@@ -274,10 +273,6 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 	public trace(label: string, message: string) {
 		trace(`${label}: ${message}`);
-	}
-
-	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
-		return fetch(url, options);
 	}
 
 	public async checkForUpdates(force?: boolean) {

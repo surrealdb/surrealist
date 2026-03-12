@@ -121,7 +121,7 @@ export async function verifyAuthentication(code: string, state: string) {
 
 		setLoading();
 
-		const response = await adapter.fetch(`${authBase}/oauth/token`, {
+		const response = await fetch(`${authBase}/oauth/token`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -197,7 +197,7 @@ export async function refreshAccess() {
 			return;
 		}
 
-		const response = await adapter.fetch(`${authBase}/oauth/token`, {
+		const response = await fetch(`${authBase}/oauth/token`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

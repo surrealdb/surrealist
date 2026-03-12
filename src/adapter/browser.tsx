@@ -154,10 +154,6 @@ export class BrowserAdapter implements SurrealistAdapter {
 		console.debug(`${label}: ${message}`);
 	}
 
-	public fetch(url: string, options?: RequestInit | undefined): Promise<Response> {
-		return fetch(url, options);
-	}
-
 	public async trackEvent(url: string): Promise<void> {
 		try {
 			await fetch(url, {

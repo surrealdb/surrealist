@@ -1,4 +1,3 @@
-import { adapter } from "~/adapter";
 import { TOKEN_ACCESS_KEY } from "~/util/storage";
 import { ApiError } from ".";
 import { getCloudEndpoints } from "./endpoints";
@@ -25,7 +24,7 @@ export async function fetchContextAPI<T = unknown>(
 	}
 
 	try {
-		const response = await adapter.fetch(`${ticketsBase}${path}`, {
+		const response = await fetch(`${ticketsBase}${path}`, {
 			headers: {
 				...headers,
 				...options?.headers,
