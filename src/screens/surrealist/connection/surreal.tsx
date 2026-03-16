@@ -1,3 +1,5 @@
+import { createWasmWorkerEngines } from "@surrealdb/wasm";
+import WasmWorker from "@surrealdb/wasm/worker?worker";
 import { applyDiagnostics, createRemoteEngines, Surreal } from "surrealdb";
 import { useDatabaseStore } from "~/stores/database";
 import { getSetting } from "~/util/config";
@@ -6,13 +8,13 @@ import { getSetting } from "~/util/config";
  * Create a new configured Surreal instance
  */
 export async function createSurreal() {
-	const { createWasmEngines } = await import("@surrealdb/wasm");
 	const { pushDiagnostic } = useDatabaseStore.getState();
 	const maxSize = getSetting("behavior", "diagnosticsHistorySize");
 
 	const engines = {
 		...createRemoteEngines(),
-		...createWasmEngines({
+		...createWasmWorkerEngines({
+			createWorker: () => new WasmWorker({ name: "surrealist-wasm" }),
 			capabilities: {
 				experimental: true,
 				functions: true,
