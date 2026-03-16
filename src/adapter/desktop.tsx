@@ -21,7 +21,7 @@ import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { openAndReadFiles, openAndWriteFile } from "~/util/file-system";
-import { NavigateViewEvent } from "~/util/global-events";
+import { DeepLinkAuthEvent, NavigateViewEvent } from "~/util/global-events";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
@@ -445,6 +445,13 @@ export class DesktopAdapter implements SurrealistAdapter {
 				await invoke("clear_opened_resources");
 			} else if (Link) {
 				const { host, params } = Link;
+
+				if (host === "callback" && params?.includes("code=")) {
+					const authUrl = `surrealist://callback/auth?${params}`;
+					DeepLinkAuthEvent.dispatch(authUrl);
+					await invoke("clear_opened_resources");
+					continue;
+				}
 
 				if (host) {
 					const views = Object.keys(VIEW_PAGES) as ViewPage[];

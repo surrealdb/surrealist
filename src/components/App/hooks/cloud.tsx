@@ -1,62 +1,107 @@
-import { useLayoutEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import {
+	acquireSession,
 	checkSessionExpiry,
 	invalidateSession,
 	openCloudAuthentication,
-	refreshAccess,
-	verifyAuthentication,
 } from "~/cloud/api/auth";
+import type { Auth0Handle } from "~/cloud/api/auth";
+import { useEventSubscription } from "~/hooks/event";
 import { useIntent } from "~/hooks/routing";
+import { useCloudStore } from "~/stores/cloud";
 import { featureFlags } from "~/util/feature-flags";
-import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
+import { DeepLinkAuthEvent } from "~/util/global-events";
 
 /**
  * Automatically set up the cloud authentication flow
  */
 export function useCloudAuthentication() {
-	// Check for session expiry every 3 minutes
-	useLayoutEffect(() => {
-		const responseCode = sessionStorage.getItem(CODE_RES_KEY);
-		const responseState = sessionStorage.getItem(STATE_RES_KEY);
+	const {
+		isAuthenticated,
+		isLoading,
+		error,
+		getAccessTokenSilently,
+		handleRedirectCallback,
+		loginWithRedirect,
+		logout,
+	} = useAuth0();
 
-		// Check for configured redirect response, otherwise
-		// attempt to refresh the currently active session
-		if (responseCode && responseState) {
-			sessionStorage.removeItem(CODE_RES_KEY);
-			sessionStorage.removeItem(STATE_RES_KEY);
+	const wasAuthenticated = useRef(false);
+	const awaitingInitialLogin = useRef(false);
 
-			verifyAuthentication(responseCode, responseState);
-		} else {
-			refreshAccess();
+	const auth0Handle: Auth0Handle = useMemo(
+		() => ({ loginWithRedirect, logout, getAccessTokenSilently }),
+		[loginWithRedirect, logout, getAccessTokenSilently],
+	);
+
+	useEffect(() => {
+		if (error) {
+			adapter.log("Cloud", `Auth0 error: ${error.message}`);
+			console.error("Auth0 error", error);
 		}
+	}, [error]);
 
-		setInterval(checkSessionExpiry, 1000 * 60 * 3);
-	}, []);
+	useEffect(() => {
+		if (!isLoading && !isAuthenticated) {
+			wasAuthenticated.current = false;
+			awaitingInitialLogin.current = true;
 
-	// React to authentication intents
-	useIntent("cloud-auth", (payload) => {
-		const { code, state } = payload;
+			const { setAuthState } = useCloudStore.getState();
+			setAuthState("unauthenticated");
+		}
+	}, [isLoading, isAuthenticated]);
 
-		if (!code || !state) {
-			adapter.warn("Cloud", "Invalid cloud callback payload");
+	useEffect(() => {
+		if (isLoading || !isAuthenticated || wasAuthenticated.current) {
 			return;
 		}
 
-		verifyAuthentication(code, state);
+		wasAuthenticated.current = true;
+
+		const initial = awaitingInitialLogin.current;
+		awaitingInitialLogin.current = false;
+
+		(async () => {
+			try {
+				const { setLoading } = useCloudStore.getState();
+				setLoading();
+
+				const accessToken = await getAccessTokenSilently();
+				await acquireSession(accessToken, initial);
+			} catch (err) {
+				console.error("Failed to acquire cloud session", err);
+				invalidateSession();
+			}
+		})();
+	}, [isAuthenticated, isLoading, getAccessTokenSilently]);
+
+	useEffect(() => {
+		const interval = setInterval(() => checkSessionExpiry(auth0Handle), 1000 * 60 * 3);
+		return () => clearInterval(interval);
+	}, [auth0Handle]);
+
+	useEventSubscription(DeepLinkAuthEvent, async (authUrl) => {
+		adapter.log("Cloud", "Received deep link auth callback");
+
+		try {
+			awaitingInitialLogin.current = true;
+			await handleRedirectCallback(authUrl);
+		} catch (err) {
+			console.error("Failed to handle auth callback", err);
+			invalidateSession();
+		}
 	});
 
-	// React to signin intents
 	useIntent("cloud-signin", () => {
-		openCloudAuthentication();
+		openCloudAuthentication(auth0Handle);
 	});
 
-	// React to callback intents
 	useIntent("cloud-signout", () => {
 		invalidateSession();
 	});
 
-	// React to cloud activation
 	useIntent("cloud-activate", () => {
 		featureFlags.set("cloud_access", true);
 	});

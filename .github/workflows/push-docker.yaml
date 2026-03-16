@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 env:
-  CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
-  CLOUD_CALLBACK_URL: https://app.surrealdb.com/cloud/callback
+  AUTH0_DOMAIN: surrealdb.us.auth0.com
+  AUTH0_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
   CLOUD_AUTH_BASE: https://auth.surrealdb.com
   CLOUD_API_BASE: https://api.cloud.surrealdb.com/api/v1
   CLOUD_API_TICKETS_BASE: https://nlsmye6spqokxdxevwqramvqri0dtbto.lambda-url.us-east-1.on.aws
@@ -51,8 +51,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         env:
-          VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
-          VITE_CLOUD_CALLBACK_URL: ${{ env.CLOUD_CALLBACK_URL }}
+          VITE_AUTH0_DOMAIN: ${{ env.AUTH0_DOMAIN }}
+          VITE_AUTH0_CLIENT_ID: ${{ env.AUTH0_CLIENT_ID }}
           VITE_CLOUD_AUTH_BASE: ${{ env.CLOUD_AUTH_BASE }}
           VITE_CLOUD_API_BASE: ${{ env.CLOUD_API_BASE }}
           VITE_CLOUD_API_TICKETS_BASE: ${{ env.CLOUD_API_TICKETS_BASE }}

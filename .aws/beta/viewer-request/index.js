@@ -34,10 +34,6 @@ function handler(event) {
 			request.uri = '/mini/run/index.html';
 			break;
 
-		case request.uri === '/cloud/callback':
-			request.uri = '/cloud/callback/index.html';
-			break;
-
 		case request.uri === '/referral':
 			request.uri = '/cloud/referral/index.html';
 			break;
