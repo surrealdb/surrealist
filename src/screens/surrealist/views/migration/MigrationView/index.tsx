@@ -10,9 +10,10 @@ import {
 	Text,
 	Title,
 } from "@mantine/core";
-import { Icon, iconDownload, iconReset, iconTransfer, pictoSurrealDB } from "@surrealdb/ui";
+import { Icon, iconDownload, iconReset, iconTransfer, pictoBadgeAccess } from "@surrealdb/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { LearnMore } from "~/components/LearnMore";
 import { Spacer } from "~/components/Spacer";
 import { StarSparkles } from "~/components/StarSparkles";
 import { useConnection } from "~/hooks/connection";
@@ -168,7 +169,6 @@ export function MigrationView() {
 					<Stack>
 						<Stack
 							justify="center"
-							gap={0}
 							mb="md"
 						>
 							<Box mx="auto">
@@ -177,9 +177,9 @@ export function MigrationView() {
 									offsetModifier={0}
 								>
 									<Image
-										src={pictoSurrealDB}
+										src={pictoBadgeAccess}
 										alt="SurrealDB"
-										w={74}
+										w={52}
 									/>
 								</StarSparkles>
 							</Box>
@@ -203,17 +203,26 @@ export function MigrationView() {
 								are required to upgrade.
 							</Text>
 						)}
-						<Text fz="lg">
-							Press the button below to create an export of your database which can be
-							restored in a SurrealDB 3.0 instance.
+						<Text
+							fz="lg"
+							c="bright"
+						>
+							You will need to export your database and restore it in a SurrealDB 3.0
+							instance.
 						</Text>
+						<LearnMore
+							my="md"
+							href="https://surrealdb.com/docs/surrealdb/installation/upgrading/migrating-data-to-3x"
+						>
+							Learn more about upgrading to SurrealDB 3.0
+						</LearnMore>
 						<Group>
 							<Button
 								variant="gradient"
 								onClick={configureExport}
 								rightSection={<Icon path={iconDownload} />}
 							>
-								Export database...
+								Export database
 							</Button>
 							<Spacer />
 							<Button

@@ -1,6 +1,5 @@
 use std::sync::{Mutex, OnceLock};
 use tauri::{AppHandle, Emitter, Manager, WindowEvent};
-use uuid::Uuid;
 
 static LAST_FOCUSED_WINDOW: OnceLock<Mutex<Option<String>>> = OnceLock::new();
 
@@ -19,7 +18,12 @@ pub async fn new_window(app: AppHandle) {
 }
 
 pub async fn open_new_window(app: &AppHandle) {
-    let window_label = format!("surrealist-{}", Uuid::new_v4());
+    let current_time = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+
+    let window_label = format!("surrealist-{}", current_time);
 
     #[allow(unused_mut)]
     let mut builder = tauri::WebviewWindowBuilder::new(app, &window_label, Default::default())

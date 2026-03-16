@@ -63,7 +63,7 @@ export function NavigationIcon({
 						>
 							<Icon
 								path={icon}
-								size="md"
+								size="lg"
 							/>
 						</Indicator>
 					}

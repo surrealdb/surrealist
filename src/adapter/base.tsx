@@ -128,14 +128,6 @@ export interface SurrealistAdapter {
 	trace(label: string, message: string): void;
 
 	/**
-	 * Perform a native HTTP request
-	 *
-	 * @param url The URL to fetch
-	 * @param options The fetch options
-	 */
-	fetch(url: string, options?: RequestInit): Promise<Response>;
-
-	/**
 	 * Track an analytics event by it's url
 	 *
 	 * @param url The URL of the event

@@ -1,4 +1,3 @@
-import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBillingCountry, CloudInstanceType, CloudProfile, CloudRegion } from "~/types";
 import { getCloudEndpoints } from "./endpoints";
@@ -23,7 +22,7 @@ export async function fetchAPI<T = unknown>(
 	}
 
 	try {
-		const response = await adapter.fetch(`${apiBase}${path}`, {
+		const response = await fetch(`${apiBase}${path}`, {
 			headers: {
 				...headers,
 				...options?.headers,
