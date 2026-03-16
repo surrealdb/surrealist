@@ -75,7 +75,7 @@
 		"@tauri-apps/plugin-updater": "2.6.1",
 		"@theopensource-company/feature-flags": "^0.4.6",
 		"@types/turndown": "^5.0.5",
-		"@xyflow/react": "^12.3.2",
+		"@xyflow/react": "12.6.3",
 		"ansi-to-html": "^0.7.2",
 		"clsx": "^2.1.0",
 		"cm6-graphql": "^0.1.1",

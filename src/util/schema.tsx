@@ -166,6 +166,7 @@ export async function syncConnectionSchema(
 					indexes: Object.values(tableStruct.indexes),
 					events: Object.values(tableStruct.events).map((ev) => ({
 						...ev,
+						what: undefined,
 						then: ev.then.map(readBlock),
 					})),
 				};
