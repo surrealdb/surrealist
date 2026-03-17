@@ -1,5 +1,12 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { type PropsWithChildren, createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+	createContext,
+	type PropsWithChildren,
+	useContext,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { Surreal } from "surrealdb";
 import { adapter } from "~/adapter";
 import { useStable } from "~/hooks/stable";

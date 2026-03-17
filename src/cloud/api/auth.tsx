@@ -85,13 +85,8 @@ export async function refreshCloudSession(auth0: Auth0Handle) {
  * Attempt to start a new session using the given access token
  */
 export async function acquireSession(accessToken: string, initial: boolean) {
-	const {
-		setSessionToken,
-		setAuthProvider,
-		setUserId,
-		setSessionExpired,
-		setAuthError,
-	} = useCloudStore.getState();
+	const { setSessionToken, setAuthProvider, setUserId, setSessionExpired, setAuthError } =
+		useCloudStore.getState();
 
 	try {
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
@@ -203,9 +198,7 @@ export function destroySession(auth0: Auth0Handle) {
 		logoutParams: {
 			returnTo: isDesktop ? "surrealist://callback/signout" : window.location.origin,
 		},
-		openUrl: isDesktop
-			? (url: string) => adapter.openUrl(url)
-			: undefined,
+		openUrl: isDesktop ? (url: string) => adapter.openUrl(url) : undefined,
 	});
 
 	invalidateSession();

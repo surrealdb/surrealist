@@ -36,6 +36,7 @@ import { StarSparkles } from "~/components/StarSparkles";
 import { REGION_FLAGS, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions, useIsAuthenticated } from "~/hooks/cloud";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import {
 	useConnection,
 	useIsConnected,
@@ -43,7 +44,6 @@ import {
 	useRequireDatabase,
 } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
-import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
@@ -336,9 +336,9 @@ export function SurrealistToolbar() {
 				<Button
 					variant="gradient"
 					size="xs"
-				onClick={signIn}
-			>
-				Sign in to SurrealDB Cloud
+					onClick={signIn}
+				>
+					Sign in to SurrealDB Cloud
 				</Button>
 			)}
 
@@ -511,9 +511,9 @@ export function SurrealistToolbar() {
 						<Button
 							variant="gradient"
 							size="xs"
-						onClick={signIn}
-					>
-						Deploy to Cloud
+							onClick={signIn}
+						>
+							Deploy to Cloud
 						</Button>
 					)}
 				</StarSparkles>

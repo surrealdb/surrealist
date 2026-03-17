@@ -1,11 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useMemo } from "react";
-import {
-	destroySession,
-	invalidateSession,
-	openCloudAuthentication,
-} from "~/cloud/api/auth";
 import type { Auth0Handle } from "~/cloud/api/auth";
+import { destroySession, invalidateSession, openCloudAuthentication } from "~/cloud/api/auth";
 import { useStable } from "~/hooks/stable";
 
 /**

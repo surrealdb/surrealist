@@ -1,13 +1,13 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
+import type { Auth0Handle } from "~/cloud/api/auth";
 import {
 	acquireSession,
 	checkSessionExpiry,
 	invalidateSession,
 	openCloudAuthentication,
 } from "~/cloud/api/auth";
-import type { Auth0Handle } from "~/cloud/api/auth";
 import { useEventSubscription } from "~/hooks/event";
 import { useIntent } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
