@@ -55,9 +55,15 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			setUsername(existing?.name ?? "");
 			setRoles(existing?.roles ?? []);
 			setComment(existing?.comment ?? "");
-			setSessionDuration(existing?.duration?.session?.toString() ?? "");
-			setTokenDuration(existing?.duration?.token?.toString() ?? "1h");
 			setPassword("");
+
+			if (existing) {
+				setTokenDuration(existing.duration.token?.toString() ?? "");
+				setSessionDuration(existing.duration.session?.toString() ?? "");
+			} else {
+				setTokenDuration("1h");
+				setSessionDuration("");
+			}
 		}
 	}, [opened, existing]);
 
@@ -75,19 +81,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 				query += ` ROLES ${roles.join(", ")}`;
 			}
 
-			const durations: string[] = [];
-
-			if (tokenDuration) {
-				durations.push(`FOR TOKEN ${tokenDuration}`);
-			}
-
-			if (sessionDuration) {
-				durations.push(`FOR SESSION ${sessionDuration}`);
-			}
-
-			if (durations.length > 0) {
-				query += ` DURATION ${durations.join(", ")}`;
-			}
+			query += ` DURATION FOR TOKEN ${tokenDuration || "NONE"} FOR SESSION ${sessionDuration || "NONE"}`;
 
 			if (comment) {
 				query += ` COMMENT "${comment}"`;
@@ -186,7 +180,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 							<CodeInput
 								label="Token duration"
 								description="The duration of the token used to establish an authenticated session"
-								placeholder="Enter duration"
+								placeholder="No duration set"
 								value={tokenDuration}
 								onChange={setTokenDuration}
 							/>
@@ -194,7 +188,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 							<CodeInput
 								label="Session duration"
 								description="The duration of the authenticated session established with the token"
-								placeholder="Enter duration"
+								placeholder="No duration set"
 								value={sessionDuration}
 								onChange={setSessionDuration}
 							/>
