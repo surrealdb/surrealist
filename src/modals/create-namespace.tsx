@@ -3,10 +3,12 @@ import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
 import { Icon, iconPlus } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
 
@@ -22,8 +24,13 @@ export function openCreateNamespaceModal() {
 
 function CreateNamespace() {
 	const [namespaceName, setNamespaceName] = useInputState("");
+	const { namespaces } = useRootSchema();
 
 	const closeCreator = useStable(() => closeModal("create-namespace"));
+	const isDuplicate = useMemo(
+		() => namespaces.map((ns) => ns.name).includes(namespaceName),
+		[namespaces, namespaceName],
+	);
 
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: async () => {
@@ -68,7 +75,7 @@ function CreateNamespace() {
 						variant="gradient"
 						flex={1}
 						loading={isPending}
-						disabled={!namespaceName}
+						disabled={!namespaceName || isDuplicate}
 						rightSection={<Icon path={iconPlus} />}
 					>
 						Create

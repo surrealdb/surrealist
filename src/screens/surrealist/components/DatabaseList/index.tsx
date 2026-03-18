@@ -8,7 +8,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon, iconClose, iconDatabase, iconPlus } from "@surrealdb/ui";
+import { Icon, iconDatabase, iconPlus, iconTrash } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
@@ -38,10 +38,36 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 	const open = useStable(() => onOpen(value));
 
 	const remove = useConfirmation({
-		title: "Remove database",
-		message: `Are you sure you want to remove the database "${value}"?`,
-		confirmText: "Remove",
-		skippable: true,
+		message: () => (
+			<Stack className="selectable">
+				<Text>
+					You are about to delete the database{" "}
+					<Text
+						span
+						c="bright"
+						fw={600}
+					>
+						{value}
+					</Text>
+					.
+				</Text>
+				<Text>
+					This action{" "}
+					<Text
+						span
+						fw={600}
+						c="bright"
+					>
+						CANNOT
+					</Text>{" "}
+					be undone. Your tables, records, and other resources in this database will be
+					permanently deleted and cannot be recovered.
+				</Text>
+			</Stack>
+		),
+		confirmText: "Delete database",
+		verification: value,
+		verifyText: "Please type the name of the database to confirm",
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `REMOVE DATABASE ${escapeIdent(value)}`);
 
@@ -67,11 +93,11 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 					variant="transparent"
 					className={classes.databaseOptions}
 					onClick={requestRemove}
-					label="Remove database"
+					label="Delete database"
 					size="xs"
 				>
 					<Icon
-						path={iconClose}
+						path={iconTrash}
 						size="sm"
 					/>
 				</ActionButton>

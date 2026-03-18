@@ -103,6 +103,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 			<Modal
 				opened={isConfirming}
 				onClose={onDissmiss}
+				trapFocus={false}
 				zIndex={210}
 				title={
 					<PrimaryTitle>{applyNode(options?.title ?? DEFAULT_TITLE, value)}</PrimaryTitle>
@@ -152,6 +153,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 					<Button
 						ref={confirmationRef}
 						color="red"
+						variant="filled"
 						onClick={onConfirm}
 						disabled={!isVerified}
 						{...options?.confirmProps}

@@ -21,6 +21,7 @@ input::-ms-clear {
 
 input,
 textarea,
+.selectable,
 .cm-tooltip,
 *[contenteditable] {
 	user-select: text;

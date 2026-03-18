@@ -3,10 +3,12 @@ import { useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
 import { Icon, iconPlus } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useNamespaceSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
 import { getConnection } from "~/util/connection";
@@ -23,8 +25,15 @@ export function openCreateDatabaseModal() {
 
 function CreateDatabase() {
 	const [databaseName, setDatabaseName] = useInputState("");
+	const { databases } = useNamespaceSchema();
 
 	const closeCreator = useStable(() => closeModal("create-database"));
+	const isDuplicate = useMemo(
+		() => databases.map((db) => db.name).includes(databaseName),
+		[databases, databaseName],
+	);
+
+	console.log("databases", databases);
 
 	const { mutateAsync, isPending } = useMutation({
 		mutationFn: async () => {
@@ -72,7 +81,7 @@ function CreateDatabase() {
 						variant="gradient"
 						flex={1}
 						loading={isPending}
-						disabled={!databaseName}
+						disabled={!databaseName || isDuplicate}
 						rightSection={<Icon path={iconPlus} />}
 					>
 						Create

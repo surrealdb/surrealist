@@ -8,7 +8,7 @@ import {
 	Stack,
 	Text,
 } from "@mantine/core";
-import { Icon, iconClose, iconNamespace, iconPlus } from "@surrealdb/ui";
+import { Icon, iconNamespace, iconPlus, iconTrash } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
 import { type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
@@ -37,10 +37,36 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 	const open = useStable(() => onOpen(value));
 
 	const remove = useConfirmation({
-		title: "Remove namespace",
-		message: `Are you sure you want to remove the namespace "${value}"?`,
-		confirmText: "Remove",
-		skippable: true,
+		message: () => (
+			<Stack className="selectable">
+				<Text>
+					You are about to delete the namespace{" "}
+					<Text
+						span
+						c="bright"
+						fw={600}
+					>
+						{value}
+					</Text>
+					.
+				</Text>
+				<Text>
+					This action{" "}
+					<Text
+						span
+						fw={600}
+						c="bright"
+					>
+						CANNOT
+					</Text>{" "}
+					be undone. Your tables, records, and other resources within contained databases
+					will be permanently deleted and cannot be recovered.
+				</Text>
+			</Stack>
+		),
+		confirmText: "Delete namespace",
+		verification: value,
+		verifyText: "Please type the name of the namespace to confirm",
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(value)}`);
 
@@ -66,11 +92,11 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 					variant="transparent"
 					className={classes.namespaceOptions}
 					onClick={requestRemove}
-					label="Remove namespace"
+					label="Delete namespace"
 					size="xs"
 				>
 					<Icon
-						path={iconClose}
+						path={iconTrash}
 						size="sm"
 					/>
 				</ActionButton>
