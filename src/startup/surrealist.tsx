@@ -17,7 +17,7 @@ import "../adapter";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
-import { invalidateSession } from "~/cloud/api/auth";
+import { AuthProvider } from "~/cloud/auth0-provider";
 import { clearCachedConnections } from "~/cloud/helpers";
 import { NewDomainScreen } from "~/screens/new-domain";
 import { startConfigSync } from "~/util/config";
@@ -62,7 +62,9 @@ import { promptChangelog } from "../util/changelogs";
 	createRoot(root).render(
 		<>
 			<HeadInjector />
-			<App />
+			<AuthProvider>
+				<App />
+			</AuthProvider>
 		</>,
 	);
 
@@ -74,7 +76,6 @@ import { promptChangelog } from "../util/changelogs";
 
 	// Expose debugging tools
 	exposeDebug({
-		invalidateSession,
 		clearCachedConnections,
 	});
 })();

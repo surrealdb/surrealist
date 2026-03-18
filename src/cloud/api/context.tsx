@@ -1,4 +1,4 @@
-import { TOKEN_ACCESS_KEY } from "~/util/storage";
+import { getAccessToken } from "~/cloud/auth0-provider";
 import { ApiError } from ".";
 import { getCloudEndpoints } from "./endpoints";
 
@@ -13,14 +13,16 @@ export async function fetchContextAPI<T = unknown>(
 ): Promise<T> {
 	const { ticketsBase } = getCloudEndpoints();
 
-	const token = localStorage.getItem(TOKEN_ACCESS_KEY);
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
 	};
 
-	if (token) {
+	try {
+		const token = await getAccessToken();
 		headers.Authorization = `Bearer ${token}`;
 		headers["X-SurrealDB-Cloud-Environment"] = environment;
+	} catch {
+		// Not authenticated
 	}
 
 	try {

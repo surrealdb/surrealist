@@ -18,7 +18,7 @@ import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import glowImg from "~/assets/images/radial-glow.png";
-import { openCloudAuthentication } from "~/cloud/api/auth";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useSidekickStore } from "~/stores/sidekick";
@@ -44,6 +44,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 	const thinkingText = useSidekickStore((state) => state.thinkingText);
 
 	const { updatePrompt } = useSidekickStore.getState();
+	const { signIn } = useCloudAuth();
 
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const scrollRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 
 	const submitMessage = useStable(async (message: string) => {
 		if (!isAuthed) {
-			openCloudAuthentication();
+			signIn();
 			return;
 		}
 
@@ -191,7 +192,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 									<Button
 										flex={1}
 										variant="gradient"
-										onClick={openCloudAuthentication}
+										onClick={signIn}
 										rightSection={<Icon path={iconChevronRight} />}
 									>
 										Sign in

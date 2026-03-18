@@ -1,8 +1,8 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import { useRef, useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { tagEvent } from "~/util/analytics";
-import { StreamEvent } from "./types";
+import type { StreamEvent } from "./types";
 
 const SIDEKICK_ENDPOINT = "https://xzg2igifvha4rfi2w677skt7h40yrtsm.lambda-url.us-east-1.on.aws/";
 
@@ -17,7 +17,7 @@ export interface SidekickStream {
 export function useSidekickStream(handler: StreamHandler): SidekickStream {
 	const [isResponding, setIsResponding] = useState(false);
 	const controller = useRef<AbortController | null>(null);
-	const accessToken = useCloudStore((state) => state.accessToken);
+	const { getAccessTokenSilently } = useAuth0();
 
 	const sendMessage = useStable(async (message: string, chatId?: string) => {
 		if (isResponding) {
@@ -32,6 +32,7 @@ export function useSidekickStream(handler: StreamHandler): SidekickStream {
 
 		try {
 			controller.current = new AbortController();
+			const accessToken = await getAccessTokenSilently();
 
 			const response = await fetch(SIDEKICK_ENDPOINT, {
 				method: "POST",
