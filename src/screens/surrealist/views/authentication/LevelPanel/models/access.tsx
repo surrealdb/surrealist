@@ -94,8 +94,6 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			setType(existing?.kind?.kind ?? defaultType);
 			setAuthClause(readBlock(existing?.authenticate ?? ""));
 			setComment(existing?.comment ?? "");
-			setSessionDuration(existing?.duration?.session?.toString() ?? "");
-			setTokenDuration(existing?.duration?.token?.toString() ?? "1h");
 			setJwtIssuerKey(existing?.kind?.jwt?.issuer?.key ?? "");
 			setJwtVerifyMode("keyalg");
 			setSigninClause("");
@@ -107,6 +105,14 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			if (existing?.kind?.kind === "RECORD") {
 				setSignupClause(readBlock(existing.kind.signup));
 				setSigninClause(readBlock(existing.kind.signin));
+			}
+
+			if (existing) {
+				setTokenDuration(existing.duration.token?.toString() ?? "");
+				setSessionDuration(existing.duration.session?.toString() ?? "");
+			} else {
+				setTokenDuration("1h");
+				setSessionDuration("");
 			}
 
 			const verify = existing?.kind?.jwt?.verify;
@@ -175,19 +181,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 				query += ` AUTHENTICATE { ${authClause} }`;
 			}
 
-			const durations: string[] = [];
-
-			if (tokenDuration) {
-				durations.push(`FOR TOKEN ${tokenDuration}`);
-			}
-
-			if (sessionDuration) {
-				durations.push(`FOR SESSION ${sessionDuration}`);
-			}
-
-			if (durations.length > 0) {
-				query += ` DURATION ${durations.join(", ")}`;
-			}
+			query += ` DURATION FOR TOKEN ${tokenDuration || "NONE"} FOR SESSION ${sessionDuration || "NONE"}`;
 
 			if (comment) {
 				query += ` COMMENT "${comment}"`;
@@ -296,7 +290,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 							<CodeInput
 								label="Token duration"
 								description="The duration of the token used to establish an authenticated session"
-								placeholder="Enter duration"
+								placeholder="No duration set"
 								value={tokenDuration}
 								onChange={setTokenDuration}
 								readOnly={!!existing} // NOTE temp
@@ -305,7 +299,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 							<CodeInput
 								label="Session duration"
 								description="The duration of the authenticated session established with the token"
-								placeholder="Enter duration"
+								placeholder="No duration set"
 								value={sessionDuration}
 								onChange={setSessionDuration}
 								readOnly={!!existing} // NOTE temp
