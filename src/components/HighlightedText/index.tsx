@@ -1,5 +1,5 @@
-import { useColorScheme } from "@mantine/hooks";
 import { useMemo } from "react";
+import { useTheme } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
 import { CodeLang } from "~/types";
 import { renderHighlighting } from "~/util/highlighting";
@@ -11,7 +11,7 @@ export interface HighlightedTextProps {
 }
 
 export function HighlightedText({ children, language = "surrealql" }: HighlightedTextProps) {
-	const colorScheme = useColorScheme();
+	const colorScheme = useTheme();
 	const syntaxTheme = useConfigStore((state) => state.settings.appearance.syntaxTheme);
 
 	const highlightedText = useMemo(() => {
