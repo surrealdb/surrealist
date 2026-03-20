@@ -180,6 +180,20 @@ export async function buildFlowNodes(
 				// Relational table with no extra fields (just in/out)
 				nodeHeight = baseHeight;
 			}
+		} else if (nodeMode === "summary") {
+			// Summary mode shows 3 rows: Fields count, Indexes count, and Events count
+			const isRelation = variant === "relation";
+			const baseHeight = isRelation ? BASE_HEIGHT_RELATIONAL : BASE_HEIGHT_REGULAR;
+
+			// Add divider + fields margin + 3 summary rows + 2 gaps between them
+			const summaryHeight =
+				DIVIDER_MARGIN +
+				DIVIDER_HEIGHT +
+				FIELDS_MARGIN +
+				3 * FIELD_ROW_HEIGHT +
+				2 * FIELD_GAP;
+
+			nodeHeight = baseHeight + summaryHeight;
 		}
 
 		const node = {
