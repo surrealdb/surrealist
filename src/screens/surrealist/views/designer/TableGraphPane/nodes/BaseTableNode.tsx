@@ -267,9 +267,7 @@ function Field({ isLight, name, value }: FieldProps) {
 			>
 				{name}
 			</Text>
-			<Box style={{ flex: "0 0 auto" }}>
-				{value}
-			</Box>
+			<Box style={{ flex: "0 0 auto" }}>{value}</Box>
 		</Flex>
 	);
 }
@@ -364,7 +362,8 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 	const lodLevel = zoomLevel > 0.5 ? 1 : zoomLevel > 0.35 ? 2 : zoomLevel > 0.2 ? 3 : 4;
 
 	// Calculate inverse scale for dashed borders in levels 2 and 3
-	const borderInverseScale = (lodLevel === 2 || lodLevel === 3) && !table.schema.full ? Math.min(3, 1 / zoomLevel) : 1;
+	const borderInverseScale =
+		(lodLevel === 2 || lodLevel === 3) && !table.schema.full ? Math.min(3, 1 / zoomLevel) : 1;
 
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
@@ -569,9 +568,11 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 										style={{
 											flex: "1 1 0",
 											minWidth: 0,
-											background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+											background: isLight
+												? "var(--mantine-color-obsidian-1)"
+												: "var(--mantine-color-obsidian-6)",
 											borderRadius: 4,
-											color: "transparent"
+											color: "transparent",
 										}}
 									>
 										in
@@ -580,10 +581,12 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 										<Text
 											truncate
 											style={{
-												background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+												background: isLight
+													? "var(--mantine-color-obsidian-1)"
+													: "var(--mantine-color-obsidian-6)",
 												borderRadius: 4,
 												color: "transparent",
-												whiteSpace: "nowrap"
+												whiteSpace: "nowrap",
 											}}
 										>
 											{inRecords || "placeholder"}
@@ -600,9 +603,11 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 										style={{
 											flex: "1 1 0",
 											minWidth: 0,
-											background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+											background: isLight
+												? "var(--mantine-color-obsidian-1)"
+												: "var(--mantine-color-obsidian-6)",
 											borderRadius: 4,
-											color: "transparent"
+											color: "transparent",
 										}}
 									>
 										out
@@ -611,10 +616,12 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 										<Text
 											truncate
 											style={{
-												background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+												background: isLight
+													? "var(--mantine-color-obsidian-1)"
+													: "var(--mantine-color-obsidian-6)",
 												borderRadius: 4,
 												color: "transparent",
-												whiteSpace: "nowrap"
+												whiteSpace: "nowrap",
 											}}
 										>
 											{outRecords || "placeholder"}
@@ -638,7 +645,12 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 							>
 								{mode === "fields"
 									? table.fields
-											.filter((f) => f.name !== "in" && f.name !== "out" && f.name !== "id")
+											.filter(
+												(f) =>
+													f.name !== "in" &&
+													f.name !== "out" &&
+													f.name !== "id",
+											)
 											.map((field, i) => (
 												<Flex
 													key={i}
@@ -651,9 +663,11 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 														style={{
 															flex: "1 1 0",
 															minWidth: 0,
-															background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+															background: isLight
+																? "var(--mantine-color-obsidian-1)"
+																: "var(--mantine-color-obsidian-6)",
 															borderRadius: 4,
-															color: "transparent"
+															color: "transparent",
 														}}
 													>
 														{field.name}
@@ -663,10 +677,12 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 															ff="mono"
 															truncate
 															style={{
-																background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+																background: isLight
+																	? "var(--mantine-color-obsidian-1)"
+																	: "var(--mantine-color-obsidian-6)",
 																borderRadius: 4,
 																color: "transparent",
-																whiteSpace: "nowrap"
+																whiteSpace: "nowrap",
 															}}
 														>
 															{field.kind || "none"}
@@ -686,8 +702,10 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 														flex: "1 1 0",
 														minWidth: 60,
 														height: 19,
-														background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
-														borderRadius: 4
+														background: isLight
+															? "var(--mantine-color-obsidian-1)"
+															: "var(--mantine-color-obsidian-6)",
+														borderRadius: 4,
 													}}
 												/>
 												<Box style={{ flex: "0 0 auto" }}>
@@ -695,8 +713,10 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 														style={{
 															minWidth: 80,
 															height: 19,
-															background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
-															borderRadius: 4
+															background: isLight
+																? "var(--mantine-color-obsidian-1)"
+																: "var(--mantine-color-obsidian-6)",
+															borderRadius: 4,
 														}}
 													/>
 												</Box>
