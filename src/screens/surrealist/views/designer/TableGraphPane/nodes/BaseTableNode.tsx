@@ -212,8 +212,8 @@ function FieldKind({ kind }: FieldKindProps) {
 		<Text
 			c="violet.6"
 			ff="mono"
-			maw="50%"
 			truncate
+			style={{ whiteSpace: "nowrap" }}
 		>
 			<FieldSubKind
 				kind={kind}
@@ -257,15 +257,19 @@ function Field({ isLight, name, value }: FieldProps) {
 			key={name}
 			justify="space-between"
 			gap="xl"
+			style={{ minWidth: 0 }}
 		>
 			<Text
 				title={name}
 				c={isLight ? undefined : "white"}
 				truncate
+				style={{ flex: "1 1 0", minWidth: 0 }}
 			>
 				{name}
 			</Text>
-			{value}
+			<Box style={{ flex: "0 0 auto" }}>
+				{value}
+			</Box>
 		</Flex>
 	);
 }
@@ -353,11 +357,11 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 	const variant = getTableVariant(table);
 
 	// Calculate LOD level based on zoom (use zoomLevel from context to trigger re-renders)
-	// Level 1: zoom > 0.75 - full detail
-	// Level 2: 0.35 < zoom <= 0.75 - partial detail (skeleton placeholders)
+	// Level 1: zoom > 0.5 - full detail
+	// Level 2: 0.35 < zoom <= 0.5 - partial detail (skeleton placeholders)
 	// Level 3: 0.2 < zoom <= 0.35 - low detail (table name with inverse scaling)
 	// Level 4: zoom <= 0.2- no detail (just rectangle)
-	const lodLevel = zoomLevel > 0.75 ? 1 : zoomLevel > 0.35 ? 2 : zoomLevel > 0.2 ? 3 : 4;
+	const lodLevel = zoomLevel > 0.5 ? 1 : zoomLevel > 0.35 ? 2 : zoomLevel > 0.2 ? 3 : 4;
 
 	// Calculate inverse scale for dashed borders in levels 2 and 3
 	const borderInverseScale = (lodLevel === 2 || lodLevel === 3) && !table.schema.full ? Math.min(3, 1 / zoomLevel) : 1;
@@ -544,6 +548,83 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						</Text>
 					</Box>
 
+					{isEdge && inField && outField && (
+						<>
+							<Divider
+								color={isLight ? "obsidian.2" : "obsidian.6"}
+								my="sm"
+							/>
+							<Stack
+								gap="xs"
+								mt={10}
+								p={0}
+							>
+								<Flex
+									justify="space-between"
+									gap="xl"
+									style={{ minWidth: 0 }}
+								>
+									<Text
+										truncate
+										style={{
+											flex: "1 1 0",
+											minWidth: 0,
+											background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+											borderRadius: 4,
+											color: "transparent"
+										}}
+									>
+										in
+									</Text>
+									<Box style={{ flex: "0 0 auto" }}>
+										<Text
+											truncate
+											style={{
+												background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+												borderRadius: 4,
+												color: "transparent",
+												whiteSpace: "nowrap"
+											}}
+										>
+											{inRecords || "placeholder"}
+										</Text>
+									</Box>
+								</Flex>
+								<Flex
+									justify="space-between"
+									gap="xl"
+									style={{ minWidth: 0 }}
+								>
+									<Text
+										truncate
+										style={{
+											flex: "1 1 0",
+											minWidth: 0,
+											background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+											borderRadius: 4,
+											color: "transparent"
+										}}
+									>
+										out
+									</Text>
+									<Box style={{ flex: "0 0 auto" }}>
+										<Text
+											truncate
+											style={{
+												background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+												borderRadius: 4,
+												color: "transparent",
+												whiteSpace: "nowrap"
+											}}
+										>
+											{outRecords || "placeholder"}
+										</Text>
+									</Box>
+								</Flex>
+							</Stack>
+						</>
+					)}
+
 					{showMore && (
 						<>
 							<Divider
@@ -563,30 +644,30 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 													key={i}
 													justify="space-between"
 													gap="xl"
+													style={{ minWidth: 0 }}
 												>
-													<Box
-														h={16}
-														bg={isLight ? "obsidian.1" : "obsidian.6"}
-														style={{ borderRadius: 4, position: "relative", overflow: "hidden" }}
+													<Text
+														truncate
+														style={{
+															flex: "1 1 0",
+															minWidth: 0,
+															background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+															borderRadius: 4,
+															color: "transparent"
+														}}
 													>
+														{field.name}
+													</Text>
+													<Box style={{ flex: "0 0 auto" }}>
 														<Text
-															c={isLight ? undefined : "white"}
-															truncate
-															style={{ opacity: 0, visibility: "hidden" }}
-														>
-															{field.name}
-														</Text>
-													</Box>
-													<Box
-														h={16}
-														bg={isLight ? "obsidian.1" : "obsidian.6"}
-														style={{ borderRadius: 4, position: "relative", overflow: "hidden" }}
-													>
-														<Text
-															c="violet.6"
 															ff="mono"
 															truncate
-															style={{ opacity: 0, visibility: "hidden" }}
+															style={{
+																background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+																borderRadius: 4,
+																color: "transparent",
+																whiteSpace: "nowrap"
+															}}
 														>
 															{field.kind || "none"}
 														</Text>
@@ -598,17 +679,27 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 												key={i}
 												justify="space-between"
 												gap="xl"
+												style={{ minWidth: 0 }}
 											>
 												<Box
-													h={16}
-													bg={isLight ? "obsidian.1" : "obsidian.6"}
-													style={{ borderRadius: 4, minWidth: 60 }}
+													style={{
+														flex: "1 1 0",
+														minWidth: 60,
+														height: 19,
+														background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+														borderRadius: 4
+													}}
 												/>
-												<Box
-													h={16}
-													bg={isLight ? "obsidian.1" : "obsidian.6"}
-													style={{ borderRadius: 4, minWidth: 80 }}
-												/>
+												<Box style={{ flex: "0 0 auto" }}>
+													<Box
+														style={{
+															minWidth: 80,
+															height: 19,
+															background: isLight ? "var(--mantine-color-obsidian-1)" : "var(--mantine-color-obsidian-6)",
+															borderRadius: 4
+														}}
+													/>
+												</Box>
 											</Flex>
 										))}
 							</Stack>
@@ -658,6 +749,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						style={{
 							textOverflow: "ellipsis",
 							overflow: "hidden",
+							whiteSpace: "nowrap",
 						}}
 					>
 						{table.schema.name}
