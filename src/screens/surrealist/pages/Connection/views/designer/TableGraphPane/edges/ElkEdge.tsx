@@ -165,6 +165,7 @@ export function ElkStepEdge({
 	}
 
 	const labelScale = Math.min(2, 1 / zoomLevel);
+	const showLabel = zoomLevel > 0.2; // Hide labels in LOD Level 4
 
 	return (
 		<>
@@ -172,7 +173,7 @@ export function ElkStepEdge({
 				{...rest}
 				path={edgePath}
 			/>
-			{label && (
+			{label && showLabel && (
 				<EdgeLabelRenderer>
 					<div
 						style={{

@@ -122,7 +122,7 @@ export async function buildFlowNodes(
 	// Divider margin: 10px (mt="sm")
 	// Divider height: 1px
 	// Fields Stack margin: 10px (mt={10})
-	// Field row height: 19px (text line height + flex gap)
+	// Field row height: 19.58px (text line height with slight buffer for rendering)
 	// Field gap: 6px (gap="xs" in Stack)
 
 	const PADDING = 32; // p="md" = 16px top + 16px bottom
@@ -130,7 +130,7 @@ export async function buildFlowNodes(
 	const DIVIDER_MARGIN = 10; // mt="sm"
 	const DIVIDER_HEIGHT = 1;
 	const FIELDS_MARGIN = 10; // mt={10}
-	const FIELD_ROW_HEIGHT = 19; // Individual field row
+	const FIELD_ROW_HEIGHT = 19.58; // Individual field row (includes text line-height (source of fractional value))
 	const FIELD_GAP = 6; // gap="xs" between fields
 
 	// Base height for regular tables (no fields shown)
