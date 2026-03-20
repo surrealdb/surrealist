@@ -1,4 +1,10 @@
-import { BaseEdge, type Edge, EdgeLabelRenderer, type EdgeProps, SmoothStepEdge } from "@xyflow/react";
+import {
+	BaseEdge,
+	type Edge,
+	EdgeLabelRenderer,
+	type EdgeProps,
+	SmoothStepEdge,
+} from "@xyflow/react";
 import type { ElkEdgeSection } from "elkjs/lib/elk-api";
 import { useContext, useMemo } from "react";
 import { DiagramContext } from "../nodes/BaseTableNode";

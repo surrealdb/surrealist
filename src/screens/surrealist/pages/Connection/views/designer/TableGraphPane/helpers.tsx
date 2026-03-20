@@ -138,7 +138,13 @@ export async function buildFlowNodes(
 
 	// Base height for relational tables (includes in/out fields)
 	// Additional: Divider (10 + 1) + Fields margin (10) + 2 fields (2 * 19) + 1 gap (6)
-	const BASE_HEIGHT_RELATIONAL = BASE_HEIGHT_REGULAR + DIVIDER_MARGIN + DIVIDER_HEIGHT + FIELDS_MARGIN + (2 * FIELD_ROW_HEIGHT) + FIELD_GAP;
+	const BASE_HEIGHT_RELATIONAL =
+		BASE_HEIGHT_REGULAR +
+		DIVIDER_MARGIN +
+		DIVIDER_HEIGHT +
+		FIELDS_MARGIN +
+		2 * FIELD_ROW_HEIGHT +
+		FIELD_GAP;
 
 	// Define all nodes
 	for (const { table, variant } of items) {
@@ -152,15 +158,18 @@ export async function buildFlowNodes(
 
 			// Filter fields (exclude in, out, id for display)
 			const displayFields = table.fields.filter(
-				(f) => f.name !== "in" && f.name !== "out" && f.name !== "id"
+				(f) => f.name !== "in" && f.name !== "out" && f.name !== "id",
 			);
 			const fieldCount = Math.max(displayFields.length, 0);
 
 			if (fieldCount > 0) {
 				// Add divider + fields margin + field rows + gaps between fields
-				const fieldsHeight = DIVIDER_MARGIN + DIVIDER_HEIGHT + FIELDS_MARGIN +
-					(fieldCount * FIELD_ROW_HEIGHT) +
-					((fieldCount - 1) * FIELD_GAP);
+				const fieldsHeight =
+					DIVIDER_MARGIN +
+					DIVIDER_HEIGHT +
+					FIELDS_MARGIN +
+					fieldCount * FIELD_ROW_HEIGHT +
+					(fieldCount - 1) * FIELD_GAP;
 
 				nodeHeight = baseHeight + fieldsHeight;
 			} else if (!isRelation) {
