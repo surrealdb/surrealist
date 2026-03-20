@@ -1,6 +1,7 @@
-import { BaseEdge, type Edge, type EdgeProps, SmoothStepEdge } from "@xyflow/react";
+import { BaseEdge, type Edge, EdgeLabelRenderer, type EdgeProps, SmoothStepEdge } from "@xyflow/react";
 import type { ElkEdgeSection } from "elkjs/lib/elk-api";
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
+import { DiagramContext } from "../nodes/BaseTableNode";
 
 export type ElkEdge = Edge<
 	{
@@ -16,8 +17,10 @@ export function ElkStepEdge({
 	targetX,
 	targetY,
 	data,
+	label,
 	...rest
 }: EdgeProps<ElkEdge>) {
+	const { zoomLevel = 1 } = useContext(DiagramContext);
 	const bendSection = data?.path;
 
 	const edgePath = useMemo(() => {
@@ -161,12 +164,30 @@ export function ElkStepEdge({
 		);
 	}
 
+	const labelScale = Math.min(2, 1 / zoomLevel);
+
 	return (
-		<BaseEdge
-			{...rest}
-			path={edgePath}
-			labelX={labelPosition.x}
-			labelY={labelPosition.y}
-		/>
+		<>
+			<BaseEdge
+				{...rest}
+				path={edgePath}
+			/>
+			{label && (
+				<EdgeLabelRenderer>
+					<div
+						style={{
+							position: "absolute",
+							transform: `translate(-50%, -50%) translate(${labelPosition.x}px, ${labelPosition.y}px) scale(${labelScale})`,
+							pointerEvents: "all",
+							fontSize: 12,
+							fontWeight: 500,
+						}}
+						className="nodrag nopan"
+					>
+						{label}
+					</div>
+				</EdgeLabelRenderer>
+			)}
+		</>
 	);
 }
