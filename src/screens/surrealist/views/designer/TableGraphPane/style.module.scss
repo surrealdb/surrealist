@@ -81,6 +81,13 @@
 		// Render the viewport in its own layer (GPU) to improve transform performance
 		// Only done while dragging to reduce blurring of text due to rasterization
 		will-change: transform;
+		text-rendering: optimizeSpeed;
+		backface-visibility: hidden;
+		-webkit-font-smoothing: none;
+	}
+
+	:global(.react-flow__edge) {
+		pointer-events: none;
 	}
 
 	:global(.react-flow .react-flow__edges svg) {
