@@ -416,27 +416,79 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 		// Scale pattern size inversely with zoom to remain visible at very low zoom levels
 		const patternSize = Math.max(8, 8 / zoomLevel);
 
+		// Build tooltip content with table name and fields
+		const displayFields = table.fields.filter(
+			(f) => f.name !== "in" && f.name !== "out" && f.name !== "id",
+		);
+		const tooltipContent = (
+			<Stack gap={4} p={0}>
+				<Text fw={600} size="sm" c={isLight ? "dark.9" : "white"}>
+					{table.schema.name}
+				</Text>
+				{displayFields.length > 0 ? (
+					<Stack gap={2} p={0}>
+						{displayFields.slice(0, 10).map((f) => (
+							<Flex key={f.name} gap="xs" justify="space-between">
+								<Text size="xs" c={isLight ? "dark.7" : "gray.4"}>
+									{f.name}
+								</Text>
+								<Text size="xs" c={isLight ? "violet.7" : "violet.3"} ff="mono">
+									{f.kind || "none"}
+								</Text>
+							</Flex>
+						))}
+						{displayFields.length > 10 && (
+							<Text size="xs" c={isLight ? "dark.5" : "gray.5"} fs="italic" mt={2}>
+								+{displayFields.length - 10} more fields
+							</Text>
+						)}
+					</Stack>
+				) : (
+					<Text size="xs" c={isLight ? "dark.5" : "gray.5"} fs="italic">
+						No fields
+					</Text>
+				)}
+			</Stack>
+		);
+
 		return (
 			<>
 				{handles}
-				<Paper
-					bg={
-						!table.schema.full
-							? `linear-gradient(-45deg, var(--diagonal-color-2) 12.5%, var(--diagonal-color-1) 12.5%, var(--diagonal-color-1) 50%, var(--diagonal-color-2) 50%, var(--diagonal-color-2) 62.5%, var(--diagonal-color-1) 62.5%, var(--diagonal-color-1) 100%) center / ${patternSize}px ${patternSize}px`
-							: isLight
-								? "white"
-								: "obsidian.6"
-					}
-					style={{
-						"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-obsidian-6"})`,
-						"--diagonal-color-2": `var(${isLight ? "--mantine-color-obsidian-1" : "--mantine-color-obsidian-5"})`,
-						border: `2px solid ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
-						userSelect: "none",
-						overflow: "hidden",
-						height: "100%",
-						minWidth: 40,
+				<Tooltip
+					label={tooltipContent}
+					position="top"
+					openDelay={300}
+					withArrow
+					multiline
+					w={280}
+					styles={{
+						tooltip: {
+							backgroundColor: isLight
+								? "var(--mantine-color-gray-0)"
+								: "var(--mantine-color-dark-7)",
+							border: isLight ? "1px solid var(--mantine-color-gray-3)" : "none",
+						},
 					}}
-				/>
+				>
+					<Paper
+						bg={
+							!table.schema.full
+								? `linear-gradient(-45deg, var(--diagonal-color-2) 12.5%, var(--diagonal-color-1) 12.5%, var(--diagonal-color-1) 50%, var(--diagonal-color-2) 50%, var(--diagonal-color-2) 62.5%, var(--diagonal-color-1) 62.5%, var(--diagonal-color-1) 100%) center / ${patternSize}px ${patternSize}px`
+								: isLight
+									? "white"
+									: "obsidian.6"
+						}
+						style={{
+							"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-obsidian-6"})`,
+							"--diagonal-color-2": `var(${isLight ? "--mantine-color-obsidian-1" : "--mantine-color-obsidian-5"})`,
+							border: `2px solid ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+							userSelect: "none",
+							overflow: "hidden",
+							height: "100%",
+							minWidth: 40,
+						}}
+					/>
+				</Tooltip>
 			</>
 		);
 	}
