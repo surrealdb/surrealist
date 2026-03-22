@@ -4,6 +4,7 @@ import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap, scrollPastEnd } from "@codemirror/view";
 import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
+import { format, formatRange } from "@surrealdb/surql-fmt";
 import {
 	Icon,
 	iconAutoFix,
@@ -143,16 +144,13 @@ export function QueryPane({
 		if (!editor) return;
 
 		try {
-			const document = editor.state.doc;
-			const formatted = hasSelection
-				? document.sliceString(0, selection.from) +
-					(await getSurrealQL().formatQuery(
-						document.sliceString(selection.from, selection.to),
-					)) +
-					document.sliceString(selection.to)
-				: await getSurrealQL().formatQuery(document.toString());
+			const document = editor.state.doc.toString();
 
-			setEditorText(editor, formatted);
+			if (hasSelection) {
+				setEditorText(editor, formatRange(document, selection.from, selection.to));
+			} else {
+				setEditorText(editor, format(document));
+			}
 		} catch {
 			showErrorNotification({
 				title: "Failed to format",
