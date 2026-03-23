@@ -4,7 +4,7 @@ import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap, scrollPastEnd } from "@codemirror/view";
 import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { format, formatRange } from "@surrealdb/surql-fmt";
+import { FormatOptions, format, formatRange } from "@surrealdb/surql-fmt";
 import {
 	Icon,
 	iconAutoFix,
@@ -50,6 +50,10 @@ import { readQuery, writeQuery } from "../QueryView/strategy";
 
 const SERIALIZE = {
 	history: historyField,
+};
+
+const FORMAT_OPTS: FormatOptions = {
+	indent: 4,
 };
 
 export interface QueryPaneProps {
@@ -147,9 +151,12 @@ export function QueryPane({
 			const document = editor.state.doc.toString();
 
 			if (hasSelection) {
-				setEditorText(editor, formatRange(document, selection.from, selection.to));
+				setEditorText(
+					editor,
+					formatRange(document, selection.from, selection.to, FORMAT_OPTS),
+				);
 			} else {
-				setEditorText(editor, format(document));
+				setEditorText(editor, format(document, FORMAT_OPTS));
 			}
 		} catch {
 			showErrorNotification({
