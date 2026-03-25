@@ -7,7 +7,7 @@ export function Label({ className, children, ...other }: PropsWithChildren<Input
 			c="bright"
 			fw={600}
 			mb={4}
-			data-variant="filled"
+			data-variant="surreal"
 			{...other}
 		>
 			{children}
