@@ -421,30 +421,60 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 			(f) => f.name !== "in" && f.name !== "out" && f.name !== "id",
 		);
 		const tooltipContent = (
-			<Stack gap={4} p={0}>
-				<Text fw={600} size="sm" c={isLight ? "dark.9" : "white"}>
+			<Stack
+				gap={4}
+				p={0}
+			>
+				<Text
+					fw={600}
+					size="sm"
+					c={isLight ? "dark.9" : "white"}
+				>
 					{table.schema.name}
 				</Text>
 				{displayFields.length > 0 ? (
-					<Stack gap={2} p={0}>
+					<Stack
+						gap={2}
+						p={0}
+					>
 						{displayFields.slice(0, 10).map((f) => (
-							<Flex key={f.name} gap="xs" justify="space-between">
-								<Text size="xs" c={isLight ? "dark.7" : "gray.4"}>
+							<Flex
+								key={f.name}
+								gap="xs"
+								justify="space-between"
+							>
+								<Text
+									size="xs"
+									c={isLight ? "dark.7" : "gray.4"}
+								>
 									{f.name}
 								</Text>
-								<Text size="xs" c={isLight ? "violet.7" : "violet.3"} ff="mono">
+								<Text
+									size="xs"
+									c={isLight ? "violet.7" : "violet.3"}
+									ff="mono"
+								>
 									{f.kind || "none"}
 								</Text>
 							</Flex>
 						))}
 						{displayFields.length > 10 && (
-							<Text size="xs" c={isLight ? "dark.5" : "gray.5"} fs="italic" mt={2}>
+							<Text
+								size="xs"
+								c={isLight ? "dark.5" : "gray.5"}
+								fs="italic"
+								mt={2}
+							>
 								+{displayFields.length - 10} more fields
 							</Text>
 						)}
 					</Stack>
 				) : (
-					<Text size="xs" c={isLight ? "dark.5" : "gray.5"} fs="italic">
+					<Text
+						size="xs"
+						c={isLight ? "dark.5" : "gray.5"}
+						fs="italic"
+					>
 						No fields
 					</Text>
 				)}
