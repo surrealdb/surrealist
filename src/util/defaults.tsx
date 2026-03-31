@@ -77,6 +77,9 @@ export function createBaseSettings(): SurrealistSettings {
 			queryOrientation: "vertical",
 			sidebarViews: {},
 			disableAnimations: false,
+			formatIndentSize: 4,
+			formatIndentMode: "space",
+			formatMaxLineLength: 120,
 		},
 		templates: {
 			list: [],

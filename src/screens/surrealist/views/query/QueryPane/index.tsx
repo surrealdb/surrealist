@@ -4,7 +4,6 @@ import { EditorState, Prec, type SelectionRange } from "@codemirror/state";
 import { type EditorView, keymap, scrollPastEnd } from "@codemirror/view";
 import { Button, Group, HoverCard, Paper, rem, Text, ThemeIcon, Transition } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { FormatOptions, format, formatRange } from "@surrealdb/surql-fmt";
 import {
 	Icon,
 	iconAutoFix,
@@ -35,6 +34,7 @@ import { setEditorText } from "~/editor/helpers";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
+import { useFormatter } from "~/hooks/formatter";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -50,10 +50,6 @@ import { readQuery, writeQuery } from "../QueryView/strategy";
 
 const SERIALIZE = {
 	history: historyField,
-};
-
-const FORMAT_OPTS: FormatOptions = {
-	indent: 4,
 };
 
 export interface QueryPaneProps {
@@ -84,6 +80,7 @@ export function QueryPane({
 	onEditorMounted,
 }: QueryPaneProps) {
 	const isLight = useIsLight();
+	const { format, formatRange } = useFormatter();
 	const { updateQueryTab, updateConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
@@ -151,12 +148,9 @@ export function QueryPane({
 			const document = editor.state.doc.toString();
 
 			if (hasSelection) {
-				setEditorText(
-					editor,
-					formatRange(document, selection.from, selection.to, FORMAT_OPTS),
-				);
+				setEditorText(editor, formatRange(document, selection.from, selection.to));
 			} else {
-				setEditorText(editor, format(document, FORMAT_OPTS));
+				setEditorText(editor, format(document));
 			}
 		} catch {
 			showErrorNotification({

@@ -39,6 +39,8 @@ export function PreferenceInput({ controller, compact, ...other }: PreferenceInp
 				{...other}
 				value={value}
 				size={compact ? "xs" : undefined}
+				min={controller.options.min}
+				max={controller.options.max}
 				onChange={(input) => {
 					applyPreference(
 						controller.options.writer,

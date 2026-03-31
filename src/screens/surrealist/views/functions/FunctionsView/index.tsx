@@ -1,5 +1,6 @@
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { format } from "@surrealdb/surql-fmt";
 import { Icon, iconChevronRight, iconFunction, iconOpen, iconPlus } from "@surrealdb/ui";
 import { type ChangeEvent, memo, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -145,7 +146,7 @@ export function FunctionsView() {
 		} else {
 			const f = func.details as SchemaFunction;
 			const isInvalid = await getSurrealQL().validateQuery(f.block);
-			const block = isInvalid ? f.block : await getSurrealQL().formatQuery(f.block);
+			const block = isInvalid ? f.block : format(f.block);
 
 			setActive({
 				type: "function",
