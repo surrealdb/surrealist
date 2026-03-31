@@ -26,7 +26,7 @@ import {
 	RecordId,
 	Uuid,
 } from "surrealdb";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { useFormatter } from "~/hooks/formatter";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { GeographyLink } from "../GeographyLink";
 import { RecordLink } from "../RecordLink";
@@ -215,12 +215,13 @@ function ArrayCell(props: { value: any[] }) {
 
 function ObjectCell(props: { value: any }) {
 	const [formatted, setFormatted] = useState("");
+	const { formatValue } = useFormatter();
 
 	useEffect(() => {
 		let cancelled = false;
 
 		const format = async () => {
-			const result = await getSurrealQL().formatValue(props.value, false, true);
+			const result = await formatValue(props.value);
 			if (!cancelled) {
 				setFormatted(result);
 			}
@@ -231,7 +232,7 @@ function ObjectCell(props: { value: any }) {
 		return () => {
 			cancelled = true;
 		};
-	}, [props.value]);
+	}, [props.value, formatValue]);
 
 	return (
 		<div>

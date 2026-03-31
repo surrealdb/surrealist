@@ -1,10 +1,12 @@
 import { FormatOptions, format, formatRange } from "@surrealdb/surql-fmt";
 import { useStable } from "@surrealdb/ui";
+import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useSetting } from "./config";
 
 export interface Formatters {
 	format: (query: string) => string;
 	formatRange: (query: string, from: number, to: number) => string;
+	formatValue: (value: unknown) => Promise<string>;
 }
 
 /**
@@ -28,5 +30,9 @@ export function useFormatter(): Formatters {
 		formatRange(query, from, to, options),
 	);
 
-	return { format: formatFn, formatRange: formatRangeFn };
+	const formatValueFn = useStable(async (value: unknown) =>
+		format(await getSurrealQL().formatValue(value, false, false)),
+	);
+
+	return { format: formatFn, formatRange: formatRangeFn, formatValue: formatValueFn };
 }

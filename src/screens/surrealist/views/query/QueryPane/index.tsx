@@ -39,7 +39,6 @@ import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInspector } from "~/providers/Inspector";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
@@ -80,7 +79,7 @@ export function QueryPane({
 	onEditorMounted,
 }: QueryPaneProps) {
 	const isLight = useIsLight();
-	const { format, formatRange } = useFormatter();
+	const { format, formatRange, formatValue } = useFormatter();
 	const { updateQueryTab, updateConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
@@ -181,10 +180,11 @@ export function QueryPane({
 			...currentVars,
 			...newVars,
 		};
-		-setShowVariables(true);
+
+		setShowVariables(true);
 		updateQueryTab(connection, {
 			id: activeTab.id,
-			variables: await getSurrealQL().formatValue(mergedVars, false, true),
+			variables: await formatValue(mergedVars),
 		});
 	});
 
