@@ -29,14 +29,7 @@ export function Section({
 					>
 						{title}
 					</Text>
-					{description && (
-						<Text
-							fz="lg"
-							mt="xs"
-						>
-							{description}
-						</Text>
-					)}
+					{description && <Text>{description}</Text>}
 				</Box>
 				{rightSection}
 			</Group>

@@ -361,7 +361,6 @@ export function DashboardView() {
 									<PageBreadcrumbs
 										items={[
 											{ label: "Surrealist", href: "/overview" },
-											{ label: "Organisations", href: "/organisations" },
 											{
 												label: organisation?.name ?? "",
 												href: `/o/${details?.organization_id}`,

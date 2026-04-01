@@ -28,11 +28,7 @@ import { isMobile } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 
-const GLOBAL_NAVIGATION: GlobalPage[][] = [
-	["/overview", "/organisations"],
-	["/referrals"],
-	["/mini/new"],
-];
+const GLOBAL_NAVIGATION: GlobalPage[][] = [["/overview"], ["/referrals"], ["/mini/new"]];
 
 const VIEW_NAVIGATION: ViewPage[][] = [
 	["dashboard", "monitor", "migrations"],

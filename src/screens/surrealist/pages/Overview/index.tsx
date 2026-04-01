@@ -3,15 +3,14 @@ import {
 	Button,
 	Center,
 	Collapse,
-	Divider,
 	Group,
-	Image,
 	Indicator,
 	Loader,
 	Menu,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
+	Skeleton,
 	Stack,
 	Text,
 	TextInput,
@@ -21,49 +20,42 @@ import { useInputState } from "@mantine/hooks";
 import {
 	Icon,
 	iconArrowLeft,
-	iconArrowUpRight,
 	iconCheck,
 	iconPlus,
 	iconReset,
 	iconSearch,
 	iconTune,
-	iconWarning,
+	pictoCloud,
 	pictoHandsOn,
-	pictoSDBCloud,
 	pictoSidekick,
 	pictoSurrealDB,
-	pictoSurrealist,
 	pictoUniversity,
 } from "@surrealdb/ui";
 import { MouseEvent, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
-import logoDarkUrl from "~/assets/images/dark/logo.webp";
-import logoLightUrl from "~/assets/images/light/logo.webp";
 import { openCloudAuthentication } from "~/cloud/api/auth";
-import { isOrganisationRestricted } from "~/cloud/helpers";
+import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
+import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionButton } from "~/components/ActionButton";
-import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
-import { OVERVIEW, useSavepoint } from "~/hooks/overview";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useThemeImage } from "~/hooks/theme";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudInstance, Connection } from "~/types";
-import { resolveInstanceConnection } from "~/util/connection";
+import { useConfigStore } from "~/stores/config";
+import { Connection } from "~/types";
 import { dispatchIntent } from "~/util/intents";
 import { CloudAlert } from "./banner";
 import { StartBlog } from "./content/blog";
 import { StartCloud } from "./content/cloud";
 import { StartConnection } from "./content/connection";
-import { StartCreator } from "./content/creator";
-import { StartInstance } from "./content/instance";
+import { OrganizationTile } from "./content/organization";
 import { StartResource } from "./content/resource";
 import classes from "./style.module.scss";
 
@@ -101,7 +93,11 @@ export function OverviewPage() {
 		);
 	};
 
-	const { isPending, sandbox, userConnections, organizations } = useConnectionOverview({
+	const {
+		isPending: isConnectionsPending,
+		sandbox,
+		userConnections,
+	} = useConnectionOverview({
 		search,
 		labels: selectedLabels,
 		labelMode,
@@ -113,24 +109,30 @@ export function OverviewPage() {
 		navigateConnection(con.id);
 	});
 
-	const activateInstance = useStable((instance: CloudInstance) => {
-		activateConnection(resolveInstanceConnection(instance));
-	});
-
-	const allRegions = useCloudStore((s) => s.regions);
 	const authState = useCloudStore((s) => s.authState);
+	const dismissedBanners = useConfigStore((s) => s.dismissedBanners);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
-	const isLoading = authState === "loading" || isPending;
-	const showConnections = !isLoading && (sandbox || userConnections.length > 0);
-	const hasNoResults = !isLoading && organizations.length === 0 && !showConnections;
-	const showOrgCreator = authState === "authenticated" || authState === "loading";
 
-	const logoUrl = useThemeImage({
-		light: logoLightUrl,
-		dark: logoDarkUrl,
+	const orgsQuery = useCloudOrganizationsQuery();
+	const activeOrgs = orgsQuery.data?.filter((org) => !isOrganisationTerminated(org)) ?? [];
+	const isOrgsLoading =
+		authState === "loading" || (authState === "authenticated" && orgsQuery.isPending);
+
+	const isConnectionsLoading = isConnectionsPending;
+	const showConnections = !isConnectionsLoading && (sandbox || userConnections.length > 0);
+
+	const handleCreateOrganisation = useStable(() => {
+		if (authState === "authenticated") {
+			return;
+		}
+
+		openCloudAuthentication();
 	});
 
-	useSavepoint(OVERVIEW);
+	// const logoUrl = useThemeImage({
+	// 	light: logoLightUrl,
+	// 	dark: logoDarkUrl,
+	// });
 
 	return (
 		<Box
@@ -144,19 +146,33 @@ export function OverviewPage() {
 			>
 				{(style) => (
 					<ScrollArea
-						pos="absolute"
-						inset={0}
 						style={style}
+						pos="absolute"
+						scrollbars="y"
+						type="scroll"
+						inset={0}
+						mt={18}
 					>
 						<Stack
-							className={classes.content}
-							justify="center"
-							maw={1200}
 							px="xl"
 							mx="auto"
+							maw={1200}
 							pb={68}
+							className={classes.content}
 						>
-							<Stack
+							<Box>
+								<PageBreadcrumbs
+									items={[{ label: "Surrealist", href: "/overview" }]}
+								/>
+								<PrimaryTitle
+									mt="sm"
+									fz={32}
+								>
+									Overview
+								</PrimaryTitle>
+							</Box>
+
+							{/* <Stack
 								align="center"
 								gap={0}
 								mb={52}
@@ -179,21 +195,111 @@ export function OverviewPage() {
 								>
 									Version {import.meta.env.VERSION}
 								</Text>
-							</Stack>
+							</Stack> */}
 
-							{bannerQuery.isSuccess && bannerQuery.data.length > 0 && (
-								<Box mb={36}>
-									{bannerQuery.data?.map((banner, i) => (
-										<CloudAlert
-											key={i}
-											banner={banner}
-										/>
-									))}
-								</Box>
+							{bannerQuery.isSuccess &&
+								bannerQuery.data.length > 0 &&
+								(() => {
+									const visibleBanners = bannerQuery.data.filter(
+										(b) => !dismissedBanners.includes(b.timestamp),
+									);
+
+									return (
+										visibleBanners.length > 0 && (
+											<Box mb={36}>
+												{visibleBanners.map((banner) => (
+													<CloudAlert
+														key={banner.timestamp}
+														banner={banner}
+													/>
+												))}
+											</Box>
+										)
+									);
+								})()}
+
+							{showCloud && (
+								<>
+									<Group>
+										<PrimaryTitle fz={22}>Organisations</PrimaryTitle>
+										<Spacer />
+										{authState === "authenticated" ? (
+											<Link href="/organisations/create">
+												<Button
+													size="xs"
+													variant="gradient"
+													rightSection={<Icon path={iconPlus} />}
+												>
+													Create organisation
+												</Button>
+											</Link>
+										) : (
+											<Button
+												size="xs"
+												variant="gradient"
+												rightSection={<Icon path={iconPlus} />}
+												onClick={handleCreateOrganisation}
+											>
+												Create organisation
+											</Button>
+										)}
+									</Group>
+
+									{isOrgsLoading && (
+										<SimpleGrid
+											cols={GRID_COLUMNS}
+											mt="sm"
+										>
+											<Skeleton h={112} />
+										</SimpleGrid>
+									)}
+
+									{/* {!isOrgsLoading && activeOrgs.length === 0 && (
+										<Center mt="lg">
+											<Text c="dimmed">
+												{authState === "authenticated"
+													? "You don't have any organisations yet"
+													: "Sign in to view your organisations"}
+											</Text>
+										</Center>
+									)} */}
+
+									{authState !== "authenticated" && (
+										<StartCloud
+											mt="sm"
+											action="Sign in"
+											image={pictoCloud}
+											onClick={openCloudAuthentication}
+										>
+											<PrimaryTitle>
+												Get started with SurrealDB Cloud
+											</PrimaryTitle>
+											<Text>
+												Sign in to deploy managed instances, collaborate
+												with your team, and manage your infrastructure from
+												one place.
+											</Text>
+										</StartCloud>
+									)}
+
+									{activeOrgs.length > 0 && (
+										<SimpleGrid
+											cols={GRID_COLUMNS}
+											mt="sm"
+										>
+											{activeOrgs.map((org) => (
+												<OrganizationTile
+													key={org.id}
+													organization={org}
+												/>
+											))}
+										</SimpleGrid>
+									)}
+								</>
 							)}
 
-							<Group>
-								<PrimaryTitle fz={22}>Your instances</PrimaryTitle>
+							<Group mt={showCloud ? 36 : 0}>
+								<PrimaryTitle fz={22}>Connections</PrimaryTitle>
 
 								<Spacer />
 
@@ -300,7 +406,7 @@ export function OverviewPage() {
 									<TextInput
 										value={search}
 										onChange={setSearch}
-										placeholder="Search instances..."
+										placeholder="Search connections..."
 										leftSection={
 											<Icon
 												path={iconSearch}
@@ -317,198 +423,48 @@ export function OverviewPage() {
 									/>
 								</Paper>
 
-								{showOrgCreator && (
-									<Link href="/organisations/create">
-										<Button
-											size="xs"
-											color="obsidian"
-											variant="light"
-											rightSection={<Icon path={iconPlus} />}
-										>
-											Create organisation
-										</Button>
-									</Link>
-								)}
+								<Link href="/connections/create">
+									<Button
+										size="xs"
+										variant="gradient"
+										rightSection={<Icon path={iconPlus} />}
+									>
+										Create connection
+									</Button>
+								</Link>
 							</Group>
 
-							{isLoading && (
+							{isConnectionsLoading && (
 								<Center mt={52}>
 									<Loader type="dots" />
 								</Center>
 							)}
 
-							{hasNoResults && (
-								<Center mt={52}>
-									<Text>No instances match the provided filters</Text>
-								</Center>
+							{showConnections && (
+								<SimpleGrid
+									cols={GRID_COLUMNS}
+									mt="sm"
+								>
+									{sandbox && (
+										<StartConnection
+											connection={sandbox}
+											onConnect={activateConnection}
+										/>
+									)}
+									{userConnections.map((connection) => (
+										<StartConnection
+											key={connection.id}
+											connection={connection}
+											onConnect={activateConnection}
+										/>
+									))}
+								</SimpleGrid>
 							)}
 
-							<Stack
-								gap={36}
-								mt="sm"
-							>
-								{authState === "authenticated" &&
-									organizations.map((organization) => (
-										<Box key={organization.info.id}>
-											<Group gap="xl">
-												<Box>
-													<Text>SurrealDB Cloud</Text>
-													<Link href={`/o/${organization.info.id}`}>
-														<Group
-															gap="sm"
-															className={classes.organisationName}
-														>
-															<PrimaryTitle
-																fz={18}
-																lh="h1"
-																fw={600}
-															>
-																{organization.info.name}
-															</PrimaryTitle>
-															{isOrganisationRestricted(
-																organization.info,
-															) && (
-																<Icon
-																	path={iconWarning}
-																	c="red"
-																/>
-															)}
-															<Icon
-																path={iconArrowUpRight}
-																className={classes.organisationLink}
-																c="bright"
-																size="sm"
-																mb={-4}
-															/>
-														</Group>
-													</Link>
-												</Box>
-												<Divider
-													flex={1}
-													className={classes.connectionSpacer}
-												/>
-												{organization.info.resources_locked ? (
-													<Button
-														size="xs"
-														variant="gradient"
-														onClick={() =>
-															openResourcesLockedModal(
-																organization.info,
-															)
-														}
-													>
-														Deploy instance
-													</Button>
-												) : (
-													<Link
-														href={`/o/${organization.info.id}/deploy`}
-													>
-														<Button
-															size="xs"
-															variant="gradient"
-														>
-															Deploy instance
-														</Button>
-													</Link>
-												)}
-											</Group>
-											<SimpleGrid
-												cols={GRID_COLUMNS}
-												mt="xl"
-											>
-												{organization.instances.map((instance) => (
-													<StartInstance
-														key={instance.id}
-														instance={instance}
-														regions={allRegions}
-														organisation={organization.info}
-														onConnect={activateInstance}
-													/>
-												))}
-												{organization.instances.length === 0 && (
-													<StartCreator
-														organization={organization.info.id}
-													/>
-												)}
-											</SimpleGrid>
-										</Box>
-									))}
-
-								{showConnections && (
-									<Box>
-										<Group gap="xl">
-											<Box>
-												<Text>Locally configured</Text>
-												<PrimaryTitle
-													fz={18}
-													lh="h1"
-													fw={600}
-												>
-													Connections
-												</PrimaryTitle>
-											</Box>
-											<Divider
-												flex={1}
-												className={classes.connectionSpacer}
-											/>
-											<Link href="/connections/create">
-												<Button
-													size="xs"
-													variant="gradient"
-												>
-													Create connection
-												</Button>
-											</Link>
-										</Group>
-
-										<SimpleGrid
-											cols={GRID_COLUMNS}
-											mt="xl"
-										>
-											{sandbox && (
-												<StartConnection
-													connection={sandbox}
-													onConnect={activateConnection}
-												/>
-											)}
-											{userConnections.map((connection) => (
-												<StartConnection
-													key={connection.id}
-													connection={connection}
-													onConnect={activateConnection}
-												/>
-											))}
-										</SimpleGrid>
-									</Box>
-								)}
-							</Stack>
-
-							{authState === "unauthenticated" && showCloud && (
-								<>
-									<PrimaryTitle
-										mt={36}
-										fz={22}
-									>
-										Sign in to SurrealDB Cloud
-									</PrimaryTitle>
-									<StartCloud
-										action="Sign in"
-										image={pictoSDBCloud}
-										onClick={openCloudAuthentication}
-									>
-										<Text
-											span
-											fw={500}
-											inherit
-											c="bright"
-										>
-											SurrealDB Cloud
-										</Text>{" "}
-										redefines the database experience, offering the power and
-										flexibility of SurrealDB without the pain of managing
-										infrastructure. Get your own free instance today.
-									</StartCloud>
-								</>
+							{!isConnectionsLoading && !showConnections && !noFilter && (
+								<Center mt={52}>
+									<Text>No connections match the provided filters</Text>
+								</Center>
 							)}
 
 							<PrimaryTitle

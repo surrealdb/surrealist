@@ -214,7 +214,7 @@ export function CreateMessageModal() {
 										variant="light"
 										size="xs"
 										onClick={() => {
-											navigate("/organisations?destination=support-plans");
+											navigate("/overview");
 											openedHandle.close();
 										}}
 									>

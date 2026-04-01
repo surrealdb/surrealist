@@ -1,5 +1,6 @@
 import { Alert, MantineColor } from "@mantine/core";
 import { Icon, iconBullhorn, iconWarning } from "@surrealdb/ui";
+import { useConfigStore } from "~/stores/config";
 import { BannerType, CloudBanner } from "~/types";
 
 const BANNER_INFO: Record<BannerType, [MantineColor, string, string]> = {
@@ -14,6 +15,7 @@ export interface CloudAlertProps {
 
 export function CloudAlert({ banner }: CloudAlertProps) {
 	const [color, title, icon] = BANNER_INFO[banner.message_type];
+	const dismissBanner = useConfigStore((s) => s.dismissBanner);
 
 	return (
 		<Alert
@@ -21,6 +23,8 @@ export function CloudAlert({ banner }: CloudAlertProps) {
 			color={color}
 			title={title}
 			icon={<Icon path={icon} />}
+			withCloseButton
+			onClose={() => dismissBanner(banner.timestamp)}
 		>
 			{banner.message}
 		</Alert>
