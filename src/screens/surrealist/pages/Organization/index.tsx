@@ -1,15 +1,6 @@
-import { Alert, Box, Button, Divider, Group, ScrollArea, Stack, Tabs, Text } from "@mantine/core";
-import {
-	Icon,
-	iconChat,
-	iconChevronRight,
-	iconCog,
-	iconCreditCard,
-	iconDollar,
-	iconOrganization,
-	iconProgressClock,
-} from "@surrealdb/ui";
-import { Redirect, useLocation } from "wouter";
+import { Alert, Box, Button, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Icon, iconChevronRight, iconCreditCard } from "@surrealdb/ui";
+import { Redirect } from "wouter";
 import {
 	hasOrganizationRoles,
 	isBillingManaged,
@@ -28,15 +19,22 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
-import { OrganizationDataStoresSection } from "./tabs/datastores";
-import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationInvoicesTab } from "./tabs/invoices";
+import { OrganizationOverviewTab } from "./tabs/overview";
 import { OrganizationSettingsTab } from "./tabs/settings";
 import { OrganizationSupportTab } from "./tabs/support";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
 
-const MANAGEMENT_TABS = ["team", "invoices", "billing", "support", "usage", "settings"] as const;
+const MANAGEMENT_TABS = [
+	"overview",
+	"team",
+	"invoices",
+	"billing",
+	"support",
+	"usage",
+	"settings",
+] as const;
 
 export interface OrganizationPageProps {
 	id: string;
@@ -45,7 +43,6 @@ export interface OrganizationPageProps {
 
 export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 	const isAuthed = useIsAuthenticated();
-	const [, navigate] = useLocation();
 
 	const { data: organization, isSuccess } = useCloudOrganizationQuery(id);
 
@@ -162,124 +159,33 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 										</Alert>
 									) : null}
 
-									<OrganizationInstancesTab organization={organization} />
+									{activeTab === "overview" && (
+										<OrganizationOverviewTab organization={organization} />
+									)}
 
-									<OrganizationDataStoresSection organization={organization} />
+									{activeTab === "team" && (
+										<OrganizationTeamTab organization={organization} />
+									)}
 
-									<Divider mt="xl" />
+									{activeTab === "invoices" && isOwner && !isManagedBilling && (
+										<OrganizationInvoicesTab organization={organization} />
+									)}
 
-									<Tabs
-										variant="gradient"
-										value={activeTab}
-										onChange={(value) => {
-											if (value) {
-												navigate(value);
-											}
-										}}
-									>
-										<Tabs.List
-											mb="md"
-											bg="transparent"
-											bd="none"
-										>
-											<Tabs.Tab
-												px="xl"
-												value="team"
-												leftSection={<Icon path={iconOrganization} />}
-											>
-												Team
-											</Tabs.Tab>
-											{isOwner && !isManagedBilling && (
-												<Tabs.Tab
-													px="xl"
-													value="invoices"
-													leftSection={<Icon path={iconDollar} />}
-												>
-													Invoices
-												</Tabs.Tab>
-											)}
-											{isOwner && (
-												<Tabs.Tab
-													px="xl"
-													value="billing"
-													leftSection={<Icon path={iconCreditCard} />}
-												>
-													Billing
-												</Tabs.Tab>
-											)}
-											{isSupport && (
-												<Tabs.Tab
-													px="xl"
-													value="support"
-													leftSection={<Icon path={iconChat} />}
-												>
-													Support
-												</Tabs.Tab>
-											)}
-											{isAdmin && (
-												<>
-													<Tabs.Tab
-														px="xl"
-														value="usage"
-														leftSection={
-															<Icon path={iconProgressClock} />
-														}
-													>
-														Usage
-													</Tabs.Tab>
-													<Tabs.Tab
-														px="xl"
-														value="settings"
-														leftSection={<Icon path={iconCog} />}
-													>
-														Settings
-													</Tabs.Tab>
-												</>
-											)}
-										</Tabs.List>
+									{activeTab === "billing" && isOwner && (
+										<OrganizationBillingTab organization={organization} />
+									)}
 
-										<Divider mb="xl" />
+									{activeTab === "support" && isSupport && (
+										<OrganizationSupportTab organization={organization} />
+									)}
 
-										<Tabs.Panel value="team">
-											<OrganizationTeamTab organization={organization} />
-										</Tabs.Panel>
+									{activeTab === "usage" && isAdmin && (
+										<OrganizationUsageTab organization={organization} />
+									)}
 
-										{isOwner && !isManagedBilling && (
-											<Tabs.Panel value="invoices">
-												<OrganizationInvoicesTab
-													organization={organization}
-												/>
-											</Tabs.Panel>
-										)}
-										{isOwner && (
-											<Tabs.Panel value="billing">
-												<OrganizationBillingTab
-													organization={organization}
-												/>
-											</Tabs.Panel>
-										)}
-										{isSupport && (
-											<Tabs.Panel value="support">
-												<OrganizationSupportTab
-													organization={organization}
-												/>
-											</Tabs.Panel>
-										)}
-										{isAdmin && (
-											<>
-												<Tabs.Panel value="usage">
-													<OrganizationUsageTab
-														organization={organization}
-													/>
-												</Tabs.Panel>
-												<Tabs.Panel value="settings">
-													<OrganizationSettingsTab
-														organization={organization}
-													/>
-												</Tabs.Panel>
-											</>
-										)}
-									</Tabs>
+									{activeTab === "settings" && isAdmin && (
+										<OrganizationSettingsTab organization={organization} />
+									)}
 								</>
 							)}
 						</Stack>
