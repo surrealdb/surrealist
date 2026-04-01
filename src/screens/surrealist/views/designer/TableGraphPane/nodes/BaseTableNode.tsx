@@ -25,6 +25,7 @@ import classes from "../style.module.scss";
 export type DiagramContextProps = {
 	warnings?: GraphWarning[];
 	isTiny?: boolean;
+	zoomLevel?: number;
 };
 export const DiagramContext = createContext<DiagramContextProps>({});
 
@@ -211,8 +212,8 @@ function FieldKind({ kind }: FieldKindProps) {
 		<Text
 			c="violet.6"
 			ff="mono"
-			maw="50%"
 			truncate
+			style={{ whiteSpace: "nowrap" }}
 		>
 			<FieldSubKind
 				kind={kind}
@@ -256,15 +257,17 @@ function Field({ isLight, name, value }: FieldProps) {
 			key={name}
 			justify="space-between"
 			gap="xl"
+			style={{ minWidth: 0 }}
 		>
 			<Text
 				title={name}
 				c={isLight ? undefined : "white"}
 				truncate
+				style={{ flex: "1 1 0", minWidth: 0 }}
 			>
 				{name}
 			</Text>
-			{value}
+			<Box style={{ flex: "0 0 auto" }}>{value}</Box>
 		</Flex>
 	);
 }
@@ -345,11 +348,22 @@ interface BaseTableNodeProps {
 }
 
 export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: BaseTableNodeProps) {
-	const { isTiny } = useContext(DiagramContext);
+	const { zoomLevel = 1 } = useContext(DiagramContext);
 	const isLight = useIsLight();
 	const isLTR = direction === "ltr";
 	const showMore = mode === "summary" || (mode === "fields" && table.fields.length > 0);
 	const variant = getTableVariant(table);
+
+	// Calculate LOD level based on zoom (use zoomLevel from context to trigger re-renders)
+	// Level 1: zoom > 0.5 - full detail
+	// Level 2: 0.35 < zoom <= 0.5 - partial detail (skeleton placeholders)
+	// Level 3: 0.2 < zoom <= 0.35 - low detail (table name with inverse scaling)
+	// Level 4: zoom <= 0.2- no detail (just rectangle)
+	const lodLevel = zoomLevel > 0.5 ? 1 : zoomLevel > 0.35 ? 2 : zoomLevel > 0.2 ? 3 : 4;
+
+	// Calculate inverse scale for dashed borders in levels 2 and 3
+	const borderInverseScale =
+		(lodLevel === 2 || lodLevel === 3) && !table.schema.full ? Math.min(3, 1 / zoomLevel) : 1;
 
 	const inField = table.fields.find((f) => f.name === "in");
 	const outField = table.fields.find((f) => f.name === "out");
@@ -397,7 +411,123 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 		</>
 	);
 
-	if (isTiny) {
+	// LOD Level 4: No detail (just rectangle)
+	if (lodLevel === 4) {
+		// Scale pattern size inversely with zoom to remain visible at very low zoom levels
+		const patternSize = Math.max(8, 8 / zoomLevel);
+
+		// Build tooltip content with table name and fields
+		const displayFields = table.fields.filter(
+			(f) => f.name !== "in" && f.name !== "out" && f.name !== "id",
+		);
+		const tooltipContent = (
+			<Stack
+				gap={4}
+				p={0}
+			>
+				<Text
+					fw={600}
+					size="sm"
+					c={isLight ? "dark.9" : "white"}
+				>
+					{table.schema.name}
+				</Text>
+				{displayFields.length > 0 ? (
+					<Stack
+						gap={2}
+						p={0}
+					>
+						{displayFields.slice(0, 10).map((f) => (
+							<Flex
+								key={f.name}
+								gap="xs"
+								justify="space-between"
+							>
+								<Text
+									size="xs"
+									c={isLight ? "dark.7" : "gray.4"}
+								>
+									{f.name}
+								</Text>
+								<Text
+									size="xs"
+									c={isLight ? "violet.7" : "violet.3"}
+									ff="mono"
+								>
+									{f.kind || "none"}
+								</Text>
+							</Flex>
+						))}
+						{displayFields.length > 10 && (
+							<Text
+								size="xs"
+								c={isLight ? "dark.5" : "gray.5"}
+								fs="italic"
+								mt={2}
+							>
+								+{displayFields.length - 10} more fields
+							</Text>
+						)}
+					</Stack>
+				) : (
+					<Text
+						size="xs"
+						c={isLight ? "dark.5" : "gray.5"}
+						fs="italic"
+					>
+						No fields
+					</Text>
+				)}
+			</Stack>
+		);
+
+		return (
+			<>
+				{handles}
+				<Tooltip
+					label={tooltipContent}
+					position="top"
+					openDelay={300}
+					withArrow
+					multiline
+					w={280}
+					styles={{
+						tooltip: {
+							backgroundColor: isLight
+								? "var(--mantine-color-gray-0)"
+								: "var(--mantine-color-dark-7)",
+							border: isLight ? "1px solid var(--mantine-color-gray-3)" : "none",
+						},
+					}}
+				>
+					<Paper
+						bg={
+							!table.schema.full
+								? `linear-gradient(-45deg, var(--diagonal-color-2) 12.5%, var(--diagonal-color-1) 12.5%, var(--diagonal-color-1) 50%, var(--diagonal-color-2) 50%, var(--diagonal-color-2) 62.5%, var(--diagonal-color-1) 62.5%, var(--diagonal-color-1) 100%) center / ${patternSize}px ${patternSize}px`
+								: isLight
+									? "white"
+									: "obsidian.6"
+						}
+						style={{
+							"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-obsidian-6"})`,
+							"--diagonal-color-2": `var(${isLight ? "--mantine-color-obsidian-1" : "--mantine-color-obsidian-5"})`,
+							border: `2px solid ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+							userSelect: "none",
+							overflow: "hidden",
+							height: "100%",
+							minWidth: 40,
+						}}
+					/>
+				</Tooltip>
+			</>
+		);
+	}
+
+	// LOD Level 3: Low detail (table name with inverse scaling)
+	if (lodLevel === 3) {
+		const borderWidth = 2 * borderInverseScale;
+		const borderStyle = table.schema.full ? "solid" : "dashed";
+
 		return (
 			<>
 				{handles}
@@ -407,16 +537,25 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 					bg={isLight ? "white" : "obsidian.6"}
 					shadow={`0 4px 8px rgba(0, 0, 0, ${isLight ? 0.1 : 0.35})`}
 					style={{
-						border: `2px solid ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+						border: `${borderWidth}px ${borderStyle} ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
 						userSelect: "none",
 						overflow: "hidden",
 						height: "100%",
 						minWidth: 60,
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
 					}}
 				>
-					<Group
-						gap={4}
-						wrap="nowrap"
+					<Box
+						style={{
+							transform: `scale(${1 / zoomLevel})`,
+							transformOrigin: "center",
+							display: "flex",
+							alignItems: "center",
+							gap: "var(--mantine-spacing-xs)",
+							maxWidth: `${100 * zoomLevel}%`,
+						}}
 					>
 						<Icon
 							path={TABLE_VARIANT_ICONS[variant]}
@@ -430,12 +569,250 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						>
 							{table.schema.name}
 						</Text>
-					</Group>
+					</Box>
 				</Paper>
 			</>
 		);
 	}
 
+	// LOD Level 2: Partial detail (skeleton text placeholders)
+	if (lodLevel === 2) {
+		const borderWidth = 2 * borderInverseScale;
+		const borderStyle = table.schema.full ? "solid" : "dashed";
+
+		return (
+			<>
+				{handles}
+				<Paper
+					p="md"
+					bg={
+						table.schema.drop
+							? `linear-gradient(-45deg, var(--diagonal-color-2) 12.5%, var(--diagonal-color-1) 12.5%, var(--diagonal-color-1) 50%, var(--diagonal-color-2) 50%, var(--diagonal-color-2) 62.5%, var(--diagonal-color-1) 62.5%, var(--diagonal-color-1) 100%) center / 8px 8px`
+							: isLight
+								? "white"
+								: "obsidian.7"
+					}
+					shadow={`0 8px 12px rgba(0, 0, 0, ${isLight ? 0.075 : 0.2})`}
+					style={{
+						"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-obsidian-7"})`,
+						"--diagonal-color-2": `var(${isLight ? "--mantine-color-obsidian-1" : "--mantine-color-obsidian-6"})`,
+						border: `${borderWidth}px ${borderStyle} ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+						userSelect: "none",
+						backgroundSize: "8px 8px",
+						overflow: "hidden",
+						height: "100%",
+					}}
+				>
+					<Box
+						style={{
+							transform: `scale(${1 / zoomLevel})`,
+							transformOrigin: "left center",
+							display: "flex",
+							alignItems: "center",
+							gap: "var(--mantine-spacing-xs)",
+							maxWidth: `${100 * zoomLevel}%`,
+							color: isLight ? undefined : "white",
+						}}
+					>
+						<Icon
+							path={TABLE_VARIANT_ICONS[variant]}
+							color={isSelected ? "surreal" : isLight ? "obsidian.7" : "obsidian.2"}
+						/>
+						<Text
+							style={{
+								textOverflow: "ellipsis",
+								overflow: "hidden",
+								whiteSpace: "nowrap",
+							}}
+						>
+							{table.schema.name}
+						</Text>
+					</Box>
+
+					{isEdge && inField && outField && (
+						<>
+							<Divider
+								color={isLight ? "obsidian.2" : "obsidian.6"}
+								my="sm"
+							/>
+							<Stack
+								gap="xs"
+								mt={10}
+								p={0}
+							>
+								<Flex
+									justify="space-between"
+									gap="xl"
+									style={{ minWidth: 0 }}
+								>
+									<Text
+										truncate
+										style={{
+											flex: "1 1 0",
+											minWidth: 0,
+											background: isLight
+												? "var(--mantine-color-obsidian-1)"
+												: "var(--mantine-color-obsidian-6)",
+											borderRadius: 4,
+											color: "transparent",
+										}}
+									>
+										in
+									</Text>
+									<Box style={{ flex: "0 0 auto" }}>
+										<Text
+											truncate
+											style={{
+												background: isLight
+													? "var(--mantine-color-obsidian-1)"
+													: "var(--mantine-color-obsidian-6)",
+												borderRadius: 4,
+												color: "transparent",
+												whiteSpace: "nowrap",
+											}}
+										>
+											{inRecords || "placeholder"}
+										</Text>
+									</Box>
+								</Flex>
+								<Flex
+									justify="space-between"
+									gap="xl"
+									style={{ minWidth: 0 }}
+								>
+									<Text
+										truncate
+										style={{
+											flex: "1 1 0",
+											minWidth: 0,
+											background: isLight
+												? "var(--mantine-color-obsidian-1)"
+												: "var(--mantine-color-obsidian-6)",
+											borderRadius: 4,
+											color: "transparent",
+										}}
+									>
+										out
+									</Text>
+									<Box style={{ flex: "0 0 auto" }}>
+										<Text
+											truncate
+											style={{
+												background: isLight
+													? "var(--mantine-color-obsidian-1)"
+													: "var(--mantine-color-obsidian-6)",
+												borderRadius: 4,
+												color: "transparent",
+												whiteSpace: "nowrap",
+											}}
+										>
+											{outRecords || "placeholder"}
+										</Text>
+									</Box>
+								</Flex>
+							</Stack>
+						</>
+					)}
+
+					{showMore && (
+						<>
+							<Divider
+								color={isLight ? "obsidian.2" : "obsidian.6"}
+								mt="sm"
+							/>
+							<Stack
+								gap="xs"
+								mt={10}
+								p={0}
+							>
+								{mode === "fields"
+									? table.fields
+											.filter(
+												(f) =>
+													f.name !== "in" &&
+													f.name !== "out" &&
+													f.name !== "id",
+											)
+											.map((field, i) => (
+												<Flex
+													key={i}
+													justify="space-between"
+													gap="xl"
+													style={{ minWidth: 0 }}
+												>
+													<Text
+														truncate
+														style={{
+															flex: "1 1 0",
+															minWidth: 0,
+															background: isLight
+																? "var(--mantine-color-obsidian-1)"
+																: "var(--mantine-color-obsidian-6)",
+															borderRadius: 4,
+															color: "transparent",
+														}}
+													>
+														{field.name}
+													</Text>
+													<Box style={{ flex: "0 0 auto" }}>
+														<Text
+															ff="mono"
+															truncate
+															style={{
+																background: isLight
+																	? "var(--mantine-color-obsidian-1)"
+																	: "var(--mantine-color-obsidian-6)",
+																borderRadius: 4,
+																color: "transparent",
+																whiteSpace: "nowrap",
+															}}
+														>
+															{field.kind || "none"}
+														</Text>
+													</Box>
+												</Flex>
+											))
+									: [...Array(Math.min(3, table.fields.length))].map((_, i) => (
+											<Flex
+												key={i}
+												justify="space-between"
+												gap="xl"
+												style={{ minWidth: 0 }}
+											>
+												<Box
+													style={{
+														flex: "1 1 0",
+														minWidth: 60,
+														height: 19,
+														background: isLight
+															? "var(--mantine-color-obsidian-1)"
+															: "var(--mantine-color-obsidian-6)",
+														borderRadius: 4,
+													}}
+												/>
+												<Box style={{ flex: "0 0 auto" }}>
+													<Box
+														style={{
+															minWidth: 80,
+															height: 19,
+															background: isLight
+																? "var(--mantine-color-obsidian-1)"
+																: "var(--mantine-color-obsidian-6)",
+															borderRadius: 4,
+														}}
+													/>
+												</Box>
+											</Flex>
+										))}
+							</Stack>
+						</>
+					)}
+				</Paper>
+			</>
+		);
+	}
+
+	// LOD Level 1: Full detail
 	return (
 		<>
 			{handles}
@@ -474,6 +851,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						style={{
 							textOverflow: "ellipsis",
 							overflow: "hidden",
+							whiteSpace: "nowrap",
 						}}
 					>
 						{table.schema.name}
