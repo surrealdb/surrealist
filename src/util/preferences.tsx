@@ -17,6 +17,7 @@ import {
 	THEMES,
 	VIEW_PAGES,
 } from "~/constants";
+import { useSetting } from "~/hooks/config";
 import { Flags, type Listable, Selectable, type SurrealistConfig } from "~/types";
 import { useFeatureFlags } from "./feature-flags";
 import { optional } from "./helpers";
@@ -57,7 +58,7 @@ export class CheckboxController {
  * A preference controller for a number
  */
 export class NumberController {
-	constructor(public options: ReaderWriter<number>) {}
+	constructor(public options: ReaderWriter<number> & { min?: number; max?: number }) {}
 }
 
 /**
@@ -95,6 +96,8 @@ export function useComputedPreferences(): PreferenceSection[] {
 	const [
 		{ themes, syntax_themes, cloud_endpoints, gtm_debug, sidebar_customization, website_base },
 	] = useFeatureFlags();
+
+	const [currentFormatIndentMode] = useSetting("appearance", "formatIndentMode");
 
 	return useMemo(() => {
 		const sections: PreferenceSection[] = [];
@@ -283,6 +286,51 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "format-max-line-length",
+						name: "Format max line length",
+						description: "The maximum line length for formatted queries",
+						controller: new NumberController({
+							min: 1,
+							max: 300,
+							reader: (config) => config.settings.appearance.formatMaxLineLength,
+							writer: (config, value) => {
+								config.settings.appearance.formatMaxLineLength = value;
+							},
+						}),
+					},
+					{
+						id: "format-indentation-mode",
+						name: "Format indentation mode",
+						description: "Configure how queries are indented during formatting",
+						controller: new SelectionController({
+							options: [
+								{ label: "Space", value: "space" },
+								{ label: "Tab", value: "tab" },
+							],
+							reader: (config) => config.settings.appearance.formatIndentMode,
+							writer: (config, value) => {
+								config.settings.appearance.formatIndentMode = value as
+									| "space"
+									| "tab";
+							},
+						}),
+					},
+					...optional(
+						currentFormatIndentMode === "space" && {
+							id: "format-indentation-size",
+							name: "Format indentation size",
+							description: "The indentation level for formatted queries",
+							controller: new NumberController({
+								min: 1,
+								max: 10,
+								reader: (config) => config.settings.appearance.formatIndentSize,
+								writer: (config, value) => {
+									config.settings.appearance.formatIndentSize = value;
+								},
+							}),
+						},
+					),
 				],
 			},
 			{
@@ -656,7 +704,15 @@ export function useComputedPreferences(): PreferenceSection[] {
 		}
 
 		return sections;
-	}, [cloud_endpoints, website_base, gtm_debug, sidebar_customization, syntax_themes, themes]);
+	}, [
+		cloud_endpoints,
+		website_base,
+		gtm_debug,
+		sidebar_customization,
+		syntax_themes,
+		themes,
+		currentFormatIndentMode,
+	]);
 }
 
 function nodef<T extends string>(items: Selectable<T>[]) {

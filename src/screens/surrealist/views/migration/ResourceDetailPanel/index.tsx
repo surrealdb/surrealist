@@ -27,8 +27,8 @@ import { ActionButton } from "~/components/ActionButton";
 import { RecordLink } from "~/components/RecordLink";
 import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
+import { useFormatter } from "~/hooks/formatter";
 import { useIsLight } from "~/hooks/theme";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { MigrationKind, MigrationResourceType, MigrationSeverity } from "~/types";
 import { kindMeta } from "../MigrationView/kinds";
 import { DiagnosticEntry, DiagnosticResource } from "../MigrationView/organizer";
@@ -370,6 +370,8 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 	const unresolvedCount = group.entries.filter((e) => !resolvedIds.has(e.id)).length;
 	const allResolved = unresolvedCount === 0;
 
+	const { formatValue } = useFormatter();
+
 	const handleOpenDocs = () => {
 		if (kind?.documentationUrl) {
 			adapter.openUrl(kind.documentationUrl);
@@ -378,7 +380,7 @@ function GroupedKindCard({ index, group, resolvedIds, onToggleAll }: GroupedKind
 
 	const handleDownloadRecords = async () => {
 		const recordIds = group.entries.map((entry) => entry.record).filter(Boolean);
-		const surql = await getSurrealQL().formatValue(recordIds, false, true);
+		const surql = await formatValue(recordIds);
 		const kindSlug = group.kind.replace(/\s+/g, "-").toLowerCase();
 
 		adapter.saveFile(

@@ -226,6 +226,9 @@ export interface SurrealistAppearanceSettings {
 	queryOrientation: Orientation;
 	sidebarViews: Flags<ViewPage>;
 	disableAnimations: boolean;
+	formatIndentSize: number;
+	formatIndentMode: "space" | "tab";
+	formatMaxLineLength: number;
 }
 
 export interface SurrealistTemplateSettings {

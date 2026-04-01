@@ -55,8 +55,8 @@ export class SurrealQLV3 implements SurrealQL {
 		return Promise.resolve(indexes);
 	}
 
-	formatQuery(query: string, pretty = true): Promise<string> {
-		return Promise.resolve(Wasm.format(query, pretty));
+	formatQuery(): Promise<string> {
+		throw new Error("Use of legacy formatter is no longer supported");
 	}
 
 	extractKindRecords(kind: string): Promise<string[]> {

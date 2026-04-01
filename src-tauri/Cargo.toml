@@ -37,5 +37,8 @@ objc = "0.2.7"
 [target.'cfg(target_os = "linux")'.dependencies]
 openssl = { version = "0.10.72", features = ["vendored"] }
 
+[lints.rust]
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(feature, values("cargo-clippy"))'] }
+
 [build-dependencies]
 tauri-build = { version = "2.1.0" }

@@ -1,14 +1,14 @@
 import { Box, Button, Divider, Modal, Select, SimpleGrid, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CodeEditor } from "~/components/CodeEditor";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { RadioSelect } from "~/components/RadioSelect";
 import { DRIVERS } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
+import { useFormatter } from "~/hooks/formatter";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { CodeLang, type ColorScheme, type SyntaxTheme } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -116,10 +116,11 @@ interface HighlightToolProps {
 function HighlightTool({ value, onChange, lang }: HighlightToolProps) {
 	const [theme, setTheme] = useState<ColorScheme>("dark");
 	const syntaxTheme = useConfigStore((state) => state.settings.appearance.syntaxTheme);
+	const { format } = useFormatter();
 
-	const format = useCallback(async () => {
-		onChange(await getSurrealQL().formatQuery(value));
-	}, [value, onChange]);
+	const formatQuery = useStable(() => {
+		onChange(format(value));
+	});
 
 	const extensions = useMemo(() => (lang === "cli" ? [surrealql()] : []), [lang]);
 
@@ -155,7 +156,7 @@ function HighlightTool({ value, onChange, lang }: HighlightToolProps) {
 			/>
 			<SimpleGrid cols={2}>
 				<Button
-					onClick={format}
+					onClick={formatQuery}
 					size="xs"
 					color="violet"
 				>

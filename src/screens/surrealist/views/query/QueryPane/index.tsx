@@ -34,11 +34,11 @@ import { setEditorText } from "~/editor/helpers";
 import { useSetting } from "~/hooks/config";
 import { useConnection } from "~/hooks/connection";
 import { useDatabaseVersionLinter } from "~/hooks/editor";
+import { useFormatter } from "~/hooks/formatter";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useInspector } from "~/providers/Inspector";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useQueryStore } from "~/stores/query";
 import type { QueryTab } from "~/types";
@@ -79,6 +79,7 @@ export function QueryPane({
 	onEditorMounted,
 }: QueryPaneProps) {
 	const isLight = useIsLight();
+	const { format, formatRange, formatValue } = useFormatter();
 	const { updateQueryTab, updateConnection } = useConfigStore.getState();
 	const { updateQueryState, setQueryValid } = useQueryStore.getState();
 	const { inspect } = useInspector();
@@ -143,16 +144,13 @@ export function QueryPane({
 		if (!editor) return;
 
 		try {
-			const document = editor.state.doc;
-			const formatted = hasSelection
-				? document.sliceString(0, selection.from) +
-					(await getSurrealQL().formatQuery(
-						document.sliceString(selection.from, selection.to),
-					)) +
-					document.sliceString(selection.to)
-				: await getSurrealQL().formatQuery(document.toString());
+			const document = editor.state.doc.toString();
 
-			setEditorText(editor, formatted);
+			if (hasSelection) {
+				setEditorText(editor, formatRange(document, selection.from, selection.to));
+			} else {
+				setEditorText(editor, format(document));
+			}
 		} catch {
 			showErrorNotification({
 				title: "Failed to format",
@@ -182,10 +180,11 @@ export function QueryPane({
 			...currentVars,
 			...newVars,
 		};
-		-setShowVariables(true);
+
+		setShowVariables(true);
 		updateQueryTab(connection, {
 			id: activeTab.id,
-			variables: await getSurrealQL().formatValue(mergedVars, false, true),
+			variables: await formatValue(mergedVars),
 		});
 	});
 

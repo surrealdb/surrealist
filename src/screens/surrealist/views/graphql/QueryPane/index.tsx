@@ -25,9 +25,9 @@ import {
 } from "~/editor";
 import { useConnection } from "~/hooks/connection";
 import { useDebouncedFunction } from "~/hooks/debounce";
+import { useFormatter } from "~/hooks/formatter";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { showErrorNotification, showInfo, tryParseParams } from "~/util/helpers";
 import classes from "./style.module.scss";
@@ -57,6 +57,7 @@ export function QueryPane({
 }: QueryPaneProps) {
 	const [connection] = useConnectionAndView();
 	const { updateConnection } = useConfigStore.getState();
+	const { formatValue } = useFormatter();
 	const queryText = useConnection((c) => c?.graphqlQuery ?? "");
 
 	const setQueryForced = useStable((query: string) => {
@@ -137,7 +138,7 @@ export function QueryPane({
 			setShowVariables(true);
 			updateConnection({
 				id: connection,
-				graphqlVariables: await getSurrealQL().formatValue(mergedVars, false, true),
+				graphqlVariables: await formatValue(mergedVars),
 			});
 		} catch {
 			showErrorNotification({
