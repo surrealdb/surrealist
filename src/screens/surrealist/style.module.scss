@@ -62,6 +62,7 @@ $sidebar-wide: 215px;
 	&-hoverable:hover {
 		width: 230px;
 		border-color: var(--mantine-color-obsidian-7);
+		background-color: var(--mantine-color-body);
 
 		@include light {
 			border-color: var(--mantine-color-obsidian-1);
