@@ -147,14 +147,14 @@ export function SurrealistScreen() {
 							</Flex>
 						)}
 
+						<TopGlow offset={glowOffset} />
+
 						<Stack
 							flex={1}
 							className={classes.pageContent}
 							pos="relative"
 							gap="lg"
 						>
-							<TopGlow offset={glowOffset} />
-
 							<Group
 								gap="md"
 								pos="absolute"

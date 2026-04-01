@@ -50,7 +50,6 @@ export function SurrealistSidebar({ className, ...other }: SurrealistSidebarProp
 			top={0}
 			left={0}
 			bottom={0}
-			bg="var(--mantine-color-body)"
 			onMouseEnter={onHoverEnter}
 			className={clsx(
 				classes.sidebar,
