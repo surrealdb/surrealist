@@ -1,0 +1,143 @@
+---
+description: Code style conventions observed across the project
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Code Style
+
+## Comments
+
+- Keep comments **sparse**. Do not narrate what code does; only explain **why**
+  something non-obvious is happening.
+- Use **JSDoc** (`/** ... */`) on exported hooks, utilities, and public-facing
+  functions. Keep descriptions to one or two short lines; add `@param` /
+  `@returns` only when the signature is not self-documenting.
+- Use **inline `//` comments** to label steps in longer flows (startup
+  sequences, multi-stage async operations, auth logic).
+- Use **section banners** (`// ----- Section Name -----`) to visually separate
+  groups of related declarations within a large file (e.g. cell type renderers,
+  command groups).
+- When suppressing a lint rule, use `// biome-ignore lint/...` with a brief
+  reason rather than disabling rules globally.
+- Do not add TODO comments without context; include what needs to happen and
+  why.
+
+## Naming
+
+- **Components**: PascalCase (`QueryPane`, `ActionButton`).
+- **Hooks**: `use` + PascalCase segment (`useStable`, `useResultFormatter`).
+- **Functions & variables**: camelCase (`handleFormat`, `queryTabList`).
+- **Types & interfaces**: PascalCase (`QueryPaneProps`, `ConfigStore`).
+- **Constants**: UPPER_SNAKE_CASE for shared literals, keys, and config values
+  (`CONFIG_KEY`, `EMAIL_REGEX`, `DEFAULT_TITLE`).
+- **Callback props**: `on` + PascalCase verb (`onConfirm`, `onSaveQuery`).
+- **Local event handlers**: `handle` + PascalCase verb (`handleFormat`,
+  `handleDeploy`).
+- **CSS class names**: kebab-case in SCSS modules; they are accessed as
+  camelCase in TypeScript automatically.
+
+## Function & component declarations
+
+- Prefer **`export function Name()`** for components, hooks, and most
+  utilities. Use arrow functions only for small single-expression constants
+  (e.g. event helpers, tiny `FC` components).
+- Internal (non-exported) helpers should be plain **`function`** declarations
+  placed before or after the main export in the same file.
+- Wrap heavy child views or panels in **`memo()`** and suffix the binding with
+  `Lazy` when appropriate (e.g. `const QueryPaneLazy = memo(QueryPane)`).
+
+## Props & types
+
+- Define component props as **`export interface XProps`** in the same file as
+  the component. Extend Mantine prop types where applicable
+  (`extends ActionIconProps`).
+- Use **`interface`** for object shapes (props, options, configs). Use
+  **`type`** for unions, intersections, function signatures, and mapped/utility
+  types.
+- Inline prop types are acceptable for trivial internal components
+  (e.g. `function Cell(props: { value: string })`).
+- Prefer **`import type`** for type-only imports. Type and value imports from
+  the same module may be combined
+  (`import { Button, type ButtonProps } from "..."`).
+
+## File structure
+
+Lay out a typical file in this order:
+
+1. Imports.
+2. Module-level constants.
+3. Type / interface definitions.
+4. Private helper functions (if any).
+5. Main exported component or function.
+6. Secondary named exports.
+7. Default export (only for top-level view/page components, as a final line).
+
+Component prop interfaces should always be defined directly above the component declaration.
+
+## Exports
+
+- **Named exports** are the default for hooks, utilities, modals, and shared
+  components.
+- **Default exports** are reserved for top-level **view / page** components
+  used in routing. These files typically also have a named export of the same
+  component.
+- Barrel `index.tsx` files may re-export from sub-modules
+  (`export * from "./types"`).
+
+## Hooks & state
+
+- Use **`useStable`** instead of `useCallback` for handlers that need
+  referential stability without a dependency list. Reserve `useCallback` for
+  cases where a real dependency array is required.
+- Use **`useMemo`** for derived data, filtered lists, and expensive
+  computations.
+- Organise hooks inside a component in this order: theme / config / connection
+  hooks, store selectors, local state (`useState`, `useRef`), derived values
+  (`useMemo`), stable handlers (`useStable`), effects and intent registration.
+- State management follows **Zustand** (with Immer middleware for deeply nested
+  updates). Access store state via selectors
+  (`useConfigStore((s) => s.field)`) and use `getState()` for imperative reads
+  inside callbacks.
+
+## Effects
+
+- Start effects with a **guard clause** when they depend on a ref or optional
+  value (`if (!ref.current) return`).
+- Use a **`cancelled` boolean** pattern for async work inside `useEffect` to
+  avoid setting state after unmount.
+- Return a cleanup function for subscriptions, timers, and editor instances.
+
+## Error handling
+
+- Wrap I/O and query execution in **`try` / `catch`**. Surface errors to the
+  user via `showErrorNotification` or `openErrorModal`, not silent catches.
+- Context hooks should **throw** if used outside their provider
+  (`throw new Error("... must be used within ...")`).
+- Use **`async` / `await`** as the default async style. Use `Promise.all` for
+  parallel work.
+
+## Spacing & grouping
+
+- Separate logical groups within a function or component with **single blank
+  lines**: hook cluster, derived state, constants, handlers, JSX return.
+- Place a blank line after early-return guard clauses.
+- Do not leave multiple consecutive blank lines.
+- Prefer if statement with braces over single line statements.
+
+## Conditional rendering
+
+- Use **`condition && <Node />`** for optionally rendered elements.
+- Use **ternaries** (including nested ternaries) for mutually exclusive UI
+  states.
+- Prefer **early returns** or **sequential `if` / `return`** in render helpers
+  that dispatch by type or variant.
+
+## Destructuring
+
+- Destructure props **in the parameter list**, spreading remaining props with
+  `...rest` or `...other` when forwarding.
+- Destructure store actions from `getState()` at the top of the component or
+  handler.
+- Use tuple destructuring for custom hook returns
+  (`const [value, setter] = useSetting(...)`).

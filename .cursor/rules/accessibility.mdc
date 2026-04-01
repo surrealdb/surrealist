@@ -1,0 +1,15 @@
+---
+description: Accessibility best practices for components
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# Accessibility
+
+- Every `<img>` and image component must have descriptive `alt` text. Use `alt=""` only for purely decorative images.
+- Icon-only buttons must have an `aria-label`.
+- Use semantic elements via `<Box component="nav">`, `<Box component="main">`, etc.
+- Interactive elements (`<Button>`, `<Anchor>`) must be keyboard-accessible. Don't attach `onClick` to non-interactive elements like `<Box>` or `<span>`.
+- Maintain a logical heading hierarchy (`h1` > `h2` > `h3`). Don't skip levels.
+- Ensure sufficient colour contrast, especially for text over images or gradients.
+- Form inputs must have associated `<label>` elements or `aria-label`.

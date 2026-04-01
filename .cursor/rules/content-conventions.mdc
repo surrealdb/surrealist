@@ -1,0 +1,25 @@
+---
+description: Consistent copy and content conventions
+globs: "**/*.{tsx,md,mdx}"
+alwaysApply: false
+---
+
+# Content Conventions
+
+## Product names
+
+Always capitalise correctly:
+- **SurrealDB** (not "surrealdb", "Surrealdb", or "Surreal DB")
+- **SurrealQL** (not "surrealql" or "Surreal QL")
+- **SurrealKV** (not "surrealkv" or "Surreal KV")
+- **Surrealist** (not "surrealist" when referring to the product)
+- **Surrealism** (not "surrealism" when referring to the product)
+- **SurrealAI** (not "surrealai" or "Surreal AI")
+- **SurrealML** (not "surrealml" or "Surreal ML")
+
+## Formatting
+
+- Use sentence case for headings ("Get started with SurrealDB", not "Get Started With SurrealDB").
+- Use the Oxford comma in lists (e.g. "queries, mutations, and subscriptions").
+- Use en dashes (–) for ranges, not hyphens.
+- Dates should follow the format "18 February 2026" (day month year, no ordinal suffix).
