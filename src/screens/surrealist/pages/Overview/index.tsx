@@ -1,49 +1,36 @@
 import {
 	Box,
 	Button,
-	Center,
-	Collapse,
 	Group,
-	Indicator,
-	Loader,
-	Menu,
-	Paper,
 	ScrollArea,
 	SimpleGrid,
 	Skeleton,
 	Stack,
 	Text,
-	TextInput,
 	Transition,
 } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
 import {
 	Icon,
 	iconArrowUpRight,
-	iconCheck,
 	iconPlus,
-	iconReset,
-	iconSearch,
-	iconTune,
 	pictoCloud,
 	pictoHandsOn,
 	pictoSidekick,
 	pictoSurrealDB,
 	pictoUniversity,
 } from "@surrealdb/ui";
-import { MouseEvent, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
-import { ActionButton } from "~/components/ActionButton";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsCloudEnabled } from "~/hooks/cloud";
-import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
+import { useConnectionList } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -66,44 +53,19 @@ const GRID_COLUMNS = {
 };
 
 export function OverviewPage() {
-	const knownLabels = useConnectionLabels();
 	const showCloud = useIsCloudEnabled();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
 	const navigateConnection = useConnectionNavigator();
 
-	const [search, setSearch] = useInputState("");
-	const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-	const [labelMode, setLabelMode] = useState<"any" | "all">("any");
-	const [labelInclude, setLabelInclude] = useState(true);
+	const connections = useConnectionList();
+	const sandbox = useConfigStore((s) => s.sandbox);
 
-	const noFilter = !search && selectedLabels.length === 0;
-
-	const toggleLabel = (e: MouseEvent, labelToToggle: string) => {
-		if (e.ctrlKey || e.metaKey) {
-			setSelectedLabels([labelToToggle]);
-			return;
-		}
-
-		setSelectedLabels((current) =>
-			current.includes(labelToToggle)
-				? current.filter((label) => label !== labelToToggle)
-				: [...current, labelToToggle],
-		);
-	};
-
-	const {
-		isPending: isConnectionsPending,
-		sandbox,
-		userConnections,
-	} = useConnectionOverview({
-		search,
-		labels: selectedLabels,
-		labelMode,
-		labelInclude,
-		includeEmpty: noFilter,
-	});
+	const userConnections = useMemo(
+		() => connections.filter((c) => !c.authentication.cloudInstance),
+		[connections],
+	);
 
 	const activateConnection = useStable((con: Connection) => {
 		navigateConnection(con.id);
@@ -117,14 +79,6 @@ export function OverviewPage() {
 	const activeOrgs = orgsQuery.data?.filter((org) => !isOrganisationTerminated(org)) ?? [];
 	const isOrgsLoading =
 		authState === "loading" || (authState === "authenticated" && orgsQuery.isPending);
-
-	const isConnectionsLoading = isConnectionsPending;
-	const showConnections = !isConnectionsLoading && (sandbox || userConnections.length > 0);
-
-	// const logoUrl = useThemeImage({
-	// 	light: logoLightUrl,
-	// 	dark: logoDarkUrl,
-	// });
 
 	return (
 		<Box
@@ -249,126 +203,6 @@ export function OverviewPage() {
 
 								<Spacer />
 
-								<Menu closeOnItemClick={false}>
-									<Menu.Target>
-										<Indicator
-											disabled={selectedLabels.length === 0}
-											color="violet"
-											size={14}
-											label={selectedLabels.length}
-										>
-											<ActionButton
-												variant="subtle"
-												color="obsidian"
-												label="Filter connections"
-											>
-												<Icon path={iconTune} />
-											</ActionButton>
-										</Indicator>
-									</Menu.Target>
-									<Menu.Dropdown miw={220}>
-										<Group justify="space-between">
-											<Menu.Label py="xs">Labels</Menu.Label>
-											{selectedLabels.length > 0 && (
-												<ActionButton
-													size="sm"
-													mr="xs"
-													label="Reset filter"
-													variant="subtle"
-													onClick={() => setSelectedLabels([])}
-												>
-													<Icon path={iconReset} />
-												</ActionButton>
-											)}
-										</Group>
-										{knownLabels.length === 0 && (
-											<Text
-												maw={200}
-												px="sm"
-												pb="sm"
-											>
-												No labels available. Add labels to your connections
-												to filter them here.
-											</Text>
-										)}
-										{knownLabels.map((option) => {
-											const isActive = selectedLabels.includes(option);
-
-											return (
-												<Menu.Item
-													key={option}
-													onClick={(e) => toggleLabel(e, option)}
-													rightSection={
-														isActive && <Icon path={iconCheck} />
-													}
-												>
-													{option}
-												</Menu.Item>
-											);
-										})}
-										<Collapse in={selectedLabels.length > 0}>
-											<Menu.Divider />
-											<Menu.Label mt="sm">Visibility</Menu.Label>
-											<Menu.Item
-												onClick={() => setLabelInclude(true)}
-												rightSection={
-													labelInclude && <Icon path={iconCheck} />
-												}
-											>
-												Show matching items
-											</Menu.Item>
-											<Menu.Item
-												onClick={() => setLabelInclude(false)}
-												rightSection={
-													!labelInclude && <Icon path={iconCheck} />
-												}
-											>
-												Hide matching items
-											</Menu.Item>
-
-											<Menu.Divider />
-											<Menu.Label mt="sm">Method</Menu.Label>
-											<Menu.Item
-												onClick={() => setLabelMode("any")}
-												rightSection={
-													labelMode === "any" && <Icon path={iconCheck} />
-												}
-											>
-												Any selected label
-											</Menu.Item>
-											<Menu.Item
-												onClick={() => setLabelMode("all")}
-												rightSection={
-													labelMode === "all" && <Icon path={iconCheck} />
-												}
-											>
-												All selected labels
-											</Menu.Item>
-										</Collapse>
-									</Menu.Dropdown>
-								</Menu>
-
-								<Paper>
-									<TextInput
-										value={search}
-										onChange={setSearch}
-										placeholder="Search connections..."
-										leftSection={
-											<Icon
-												path={iconSearch}
-												size="sm"
-											/>
-										}
-										flex={1}
-										w={182}
-										size="xs"
-										variant="unstyled"
-										styles={{
-											input: { backgroundColor: "unset" },
-										}}
-									/>
-								</Paper>
-
 								<Link href="/connections/create">
 									<Button
 										size="xs"
@@ -380,38 +214,22 @@ export function OverviewPage() {
 								</Link>
 							</Group>
 
-							{isConnectionsLoading && (
-								<Center mt={52}>
-									<Loader type="dots" />
-								</Center>
-							)}
-
-							{showConnections && (
-								<SimpleGrid
-									cols={GRID_COLUMNS}
-									mt="sm"
-								>
-									{sandbox && (
-										<StartConnection
-											connection={sandbox}
-											onConnect={activateConnection}
-										/>
-									)}
-									{userConnections.map((connection) => (
-										<StartConnection
-											key={connection.id}
-											connection={connection}
-											onConnect={activateConnection}
-										/>
-									))}
-								</SimpleGrid>
-							)}
-
-							{!isConnectionsLoading && !showConnections && !noFilter && (
-								<Center mt={52}>
-									<Text>No connections match the provided filters</Text>
-								</Center>
-							)}
+							<SimpleGrid
+								cols={GRID_COLUMNS}
+								mt="sm"
+							>
+								<StartConnection
+									connection={sandbox}
+									onConnect={activateConnection}
+								/>
+								{userConnections.map((connection) => (
+									<StartConnection
+										key={connection.id}
+										connection={connection}
+										onConnect={activateConnection}
+									/>
+								))}
+							</SimpleGrid>
 
 							<PrimaryTitle
 								mt={36}
