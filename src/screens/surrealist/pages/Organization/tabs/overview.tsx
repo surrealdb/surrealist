@@ -1,6 +1,5 @@
 import {
 	Anchor,
-	Badge,
 	Button,
 	Center,
 	Group,
@@ -14,14 +13,14 @@ import {
 	ThemeIcon,
 	Tooltip,
 } from "@mantine/core";
-import { Icon, iconDatabase } from "@surrealdb/ui";
+import { Icon, iconModel } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationDataStoresQuery } from "~/cloud/queries/datastores";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { Section } from "~/components/Section";
-import { Spacer } from "~/components/Spacer";
+import { useHasCloudFeature } from "~/hooks/cloud";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -99,7 +98,7 @@ function DataStoreCard({
 						>
 							<Icon
 								size="md"
-								path={iconDatabase}
+								path={iconModel}
 							/>
 						</ThemeIcon>
 						<Stack
@@ -130,13 +129,6 @@ function DataStoreCard({
 							</Text>
 						</Stack>
 					</Group>
-					<Spacer />
-					<Badge
-						color="violet"
-						variant="light"
-					>
-						Data Store
-					</Badge>
 				</Group>
 			</Paper>
 		</Anchor>
@@ -148,6 +140,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 	const allRegions = useCloudStore((s) => s.regions);
 	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
 	const isRestricted = isOrganisationRestricted(organization);
+	const showDataStores = useHasCloudFeature("create_memory_store");
 
 	const {
 		data: instanceData,
@@ -181,7 +174,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 		<>
 			<Section
 				title="Instances"
-				description="All cloud instances deployed in this organization."
+				description="SurrealDB instances deployed in this organization."
 				rightSection={
 					isAdmin && (
 						<Link href={`/o/${organization.id}/deploy`}>
@@ -219,27 +212,42 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 				</SimpleGrid>
 			</Section>
 
-			<Section
-				title="Data Stores"
-				description="Managed data stores deployed in this organisation."
-			>
-				<SimpleGrid cols={GRID_COLUMNS}>
-					{dataStoresPending && <Skeleton h={112} />}
-					{sortedDataStores.map((ds) => (
-						<DataStoreCard
-							key={ds.id}
-							dataStore={ds}
-							regions={allRegions}
-						/>
-					))}
-					{dataStoresLoaded && dataStores.length === 0 && (
-						<StartPlaceholder
-							title="No data stores"
-							subtitle="This organisation has no data stores"
-						/>
-					)}
-				</SimpleGrid>
-			</Section>
+			{showDataStores && (
+				<Section
+					title="Data Stores"
+					description="Spectron memory stores deployed in this organisation."
+					rightSection={
+						isAdmin && (
+							<Link href={`/o/${organization.id}/deploy`}>
+								<Button
+									size="xs"
+									disabled={isRestricted}
+									variant="gradient"
+								>
+									Deploy memory store
+								</Button>
+							</Link>
+						)
+					}
+				>
+					<SimpleGrid cols={GRID_COLUMNS}>
+						{dataStoresPending && <Skeleton h={112} />}
+						{sortedDataStores.map((ds) => (
+							<DataStoreCard
+								key={ds.id}
+								dataStore={ds}
+								regions={allRegions}
+							/>
+						))}
+						{dataStoresLoaded && dataStores.length === 0 && (
+							<StartPlaceholder
+								title="No data stores"
+								subtitle="This organisation has no data stores"
+							/>
+						)}
+					</SimpleGrid>
+				</Section>
+			)}
 		</>
 	);
 }
