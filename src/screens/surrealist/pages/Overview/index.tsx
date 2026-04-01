@@ -121,14 +121,6 @@ export function OverviewPage() {
 	const isConnectionsLoading = isConnectionsPending;
 	const showConnections = !isConnectionsLoading && (sandbox || userConnections.length > 0);
 
-	const handleCreateOrganisation = useStable(() => {
-		if (authState === "authenticated") {
-			return;
-		}
-
-		openCloudAuthentication();
-	});
-
 	// const logoUrl = useThemeImage({
 	// 	light: logoLightUrl,
 	// 	dark: logoDarkUrl,
@@ -172,31 +164,6 @@ export function OverviewPage() {
 								</PrimaryTitle>
 							</Box>
 
-							{/* <Stack
-								align="center"
-								gap={0}
-								mb={52}
-							>
-								<Image
-									src={pictoSurrealist}
-									w={74}
-								/>
-
-								<Image
-									src={logoUrl}
-									w={200}
-									mt="md"
-								/>
-
-								<Text
-									mt="xs"
-									opacity={0.4}
-									c="bright"
-								>
-									Version {import.meta.env.VERSION}
-								</Text>
-							</Stack> */}
-
 							{bannerQuery.isSuccess &&
 								bannerQuery.data.length > 0 &&
 								(() => {
@@ -223,26 +190,15 @@ export function OverviewPage() {
 									<Group>
 										<PrimaryTitle fz={22}>Organisations</PrimaryTitle>
 										<Spacer />
-										{authState === "authenticated" ? (
-											<Link href="/organisations/create">
-												<Button
-													size="xs"
-													variant="gradient"
-													rightSection={<Icon path={iconPlus} />}
-												>
-													Create organisation
-												</Button>
-											</Link>
-										) : (
+										<Link href="/organisations/create">
 											<Button
 												size="xs"
 												variant="gradient"
 												rightSection={<Icon path={iconPlus} />}
-												onClick={handleCreateOrganisation}
 											>
 												Create organisation
 											</Button>
-										)}
+										</Link>
 									</Group>
 
 									{isOrgsLoading && (
@@ -254,17 +210,7 @@ export function OverviewPage() {
 										</SimpleGrid>
 									)}
 
-									{/* {!isOrgsLoading && activeOrgs.length === 0 && (
-										<Center mt="lg">
-											<Text c="dimmed">
-												{authState === "authenticated"
-													? "You don't have any organisations yet"
-													: "Sign in to view your organisations"}
-											</Text>
-										</Center>
-									)} */}
-
-									{authState !== "authenticated" && (
+									{authState === "unauthenticated" && (
 										<StartCloud
 											mt="sm"
 											action="Sign in"
