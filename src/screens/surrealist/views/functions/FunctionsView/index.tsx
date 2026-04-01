@@ -1,6 +1,5 @@
 import { Box, Button, Group, Modal, Stack, Text, TextInput } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { format } from "@surrealdb/surql-fmt";
 import { Icon, iconChevronRight, iconFunction, iconOpen, iconPlus } from "@surrealdb/ui";
 import { type ChangeEvent, memo, useEffect, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -12,6 +11,7 @@ import { PanelDragger } from "~/components/Pane/dragger";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SidekickPanel } from "~/components/Sidekick/panel";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
+import { useFormatter } from "~/hooks/formatter";
 import { usePanelMinSize } from "~/hooks/panels";
 import { useViewFocus } from "~/hooks/routing";
 import { useSaveable } from "~/hooks/save";
@@ -49,6 +49,7 @@ export function FunctionsView() {
 	const [auth] = useConnection((c) => [c?.authentication ?? createBaseAuthentication()]);
 
 	const { functions, models } = useDatabaseSchema();
+	const { format } = useFormatter();
 
 	const [available, setAvailable] = useState<FunctionDetails[]>([]);
 	const [active, setActive] = useImmer<FunctionDetails | null>(null);
