@@ -42,6 +42,11 @@ export const CloudAuthEvent = createEventBus();
 export const CloudExpiredEvent = createEventBus();
 
 /**
+ * Invoked when a deep link auth callback URL is received
+ */
+export const DeepLinkAuthEvent = createEventBus<string>();
+
+/**
  * Set the query in the currently active query tab
  */
 export const SetQueryEvent = createEventBus<string>();

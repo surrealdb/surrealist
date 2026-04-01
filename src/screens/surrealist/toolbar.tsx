@@ -21,7 +21,6 @@ import {
 	iconTable,
 } from "@surrealdb/ui";
 import { useEffect, useState } from "react";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
@@ -37,6 +36,7 @@ import { StarSparkles } from "~/components/StarSparkles";
 import { REGION_FLAGS, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions, useIsAuthenticated } from "~/hooks/cloud";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import {
 	useConnection,
 	useIsConnected,
@@ -71,6 +71,7 @@ export function SurrealistToolbar() {
 	const [flags] = useFeatureFlags();
 
 	const navigateConnection = useConnectionNavigator();
+	const { signIn } = useCloudAuth();
 	const isAuthenticated = useIsAuthenticated();
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
@@ -335,7 +336,7 @@ export function SurrealistToolbar() {
 				<Button
 					variant="gradient"
 					size="xs"
-					onClick={openCloudAuthentication}
+					onClick={signIn}
 				>
 					Sign in to SurrealDB Cloud
 				</Button>
@@ -510,7 +511,7 @@ export function SurrealistToolbar() {
 						<Button
 							variant="gradient"
 							size="xs"
-							onClick={openCloudAuthentication}
+							onClick={signIn}
 						>
 							Deploy to Cloud
 						</Button>

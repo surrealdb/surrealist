@@ -40,7 +40,6 @@ import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import logoDarkUrl from "~/assets/images/dark/logo.webp";
 import logoLightUrl from "~/assets/images/light/logo.webp";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 import { isOrganisationRestricted } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { ActionButton } from "~/components/ActionButton";
@@ -48,6 +47,7 @@ import { openResourcesLockedModal } from "~/components/App/modals/resources-lock
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsCloudEnabled } from "~/hooks/cloud";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useConnectionLabels, useConnectionOverview } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { OVERVIEW, useSavepoint } from "~/hooks/overview";
@@ -75,6 +75,7 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const knownLabels = useConnectionLabels();
+	const { signIn } = useCloudAuth();
 	const showCloud = useIsCloudEnabled();
 
 	const newsQuery = useLatestNewsQuery();
@@ -494,7 +495,7 @@ export function OverviewPage() {
 									<StartCloud
 										action="Sign in"
 										image={pictoSDBCloud}
-										onClick={openCloudAuthentication}
+										onClick={signIn}
 									>
 										<Text
 											span
