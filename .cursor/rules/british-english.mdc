@@ -1,0 +1,32 @@
+---
+description: Enforce British English in user-facing copy
+globs: "**/*.{tsx,md,mdx}"
+alwaysApply: false
+---
+
+# British English
+
+All user-facing text must use British English spelling.
+
+Common corrections:
+
+| American | British |
+|----------|---------|
+| color | colour |
+| optimize | optimise |
+| organization | organisation |
+| license (verb is fine) | licence (noun) |
+| analyze | analyse |
+| center | centre |
+| favor | favour |
+| modeling | modelling |
+| customize | customise |
+| behavior | behaviour |
+| catalog | catalogue |
+| defense | defence |
+
+Use `-ise` over `-ize` (e.g. summarise, standardise, authorise).
+Use `-our` over `-or` (e.g. colour, behaviour, neighbour).
+Use `-re` over `-er` (e.g. centre, fibre, litre).
+Use `-ogue` over `-og` (e.g. catalogue, dialogue).
+Use `-ence` over `-ense` (e.g. defence, licence as noun).
