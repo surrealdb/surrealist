@@ -161,7 +161,7 @@ export function CloudAccount() {
 					<Menu.Item
 						leftSection={<Icon path={iconOrganization} />}
 						onClick={() => {
-							navigate("/organisations");
+							navigate("/overview");
 						}}
 					>
 						Organisations

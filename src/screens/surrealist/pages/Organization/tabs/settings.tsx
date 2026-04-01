@@ -38,7 +38,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 	// 	verification: organization.name,
 	// 	verifyText: "Type the organisation name to confirm",
 	// 	onConfirm: async () => {
-	// 		navigate("/organisations");
+	// 		navigate("/overview");
 
 	// 		await archiveMutation.mutateAsync();
 

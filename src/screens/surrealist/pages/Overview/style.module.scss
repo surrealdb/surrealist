@@ -3,26 +3,6 @@
 	z-index: 0;
 }
 
-.organisation-name {
-	.organisation-link {
-		opacity: 0.6;
-		transition: opacity 0.2s;
-	}
-
-	&:hover .organisation-link {
-		opacity: 1;
-	}
-}
-
-.connection-spacer {
-	visibility: hidden;
-	border-color: rgba(255, 255, 255, 0.075);
-
-	@include light {
-		border-color: rgba(0, 0, 0, 0.1);
-	}
-}
-
 .start-blog,
 .start-cloud,
 .start-connection,
