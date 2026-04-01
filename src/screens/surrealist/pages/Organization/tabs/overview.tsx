@@ -19,6 +19,7 @@ import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationDataStoresQuery } from "~/cloud/queries/datastores";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useConnectionNavigator } from "~/hooks/routing";
@@ -172,6 +173,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 
 	return (
 		<>
+			<PrimaryTitle fz={32}>Overview</PrimaryTitle>
 			<Section
 				title="Instances"
 				description="SurrealDB instances deployed in this organization."

@@ -24,6 +24,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 
 	return (
 		<Stack>
+			<PrimaryTitle fz={32}>Support</PrimaryTitle>
 			<Section
 				title="Support Plan"
 				description="The support plan for this organisation"
