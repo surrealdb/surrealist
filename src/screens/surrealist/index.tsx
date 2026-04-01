@@ -16,6 +16,7 @@ import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
 import { OrganizationPage } from "./pages/Organization";
+import { OrganisationSidebar } from "./pages/Organization/sidebar";
 import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
@@ -26,7 +27,10 @@ import { CollectionPage } from "./pages/Support/CollectionPage";
 import { ConversationPage } from "./pages/Support/ConversationPage";
 import { RequestsPage } from "./pages/Support/RequestsPage";
 import { SupportPlansPage } from "./pages/SupportPlans";
-import { SurrealistSidebar } from "./sidebar";
+import { ConnectionSidebar } from "./sidebar/connection";
+import { GlobalSidebar } from "./sidebar/global";
+import { SurrealistSidebar } from "./sidebar/index";
+import { SidebarProvider } from "./sidebar/portal";
 import classes from "./style.module.scss";
 import { SurrealistToolbar } from "./toolbar";
 import AuthenticationView from "./views/authentication/AuthenticationView";
@@ -115,197 +119,244 @@ export function SurrealistScreen() {
 	}, [sidebarOffset]);
 
 	return (
-		<Box
-			className={classes.root}
-			bg="var(--mantine-color-body)"
-		>
-			{isOtherOS && <AppTitleBar />}
-			<Flex
-				direction="column"
-				flex={1}
-				pos="relative"
+		<SidebarProvider sidebarMode={sidebarMode}>
+			<Box
+				className={classes.root}
+				bg="var(--mantine-color-body)"
 			>
-				<DatabaseSidebarLazy
-					sidebarMode={sidebarMode}
-					visibleFrom="md"
-				/>
+				{isOtherOS && <AppTitleBar />}
+				<Flex
+					direction="column"
+					flex={1}
+					pos="relative"
+				>
+					<DatabaseSidebarLazy
+						sidebarMode={sidebarMode}
+						visibleFrom="md"
+					/>
 
-				<Box className={classes.wrapper}>
-					{isMacos && (
-						<Flex
-							data-tauri-drag-region
-							className={classes.titlebar}
-							justify="center"
-							align="center"
+					<Box className={classes.wrapper}>
+						{isMacos && (
+							<Flex
+								data-tauri-drag-region
+								className={classes.titlebar}
+								justify="center"
+								align="center"
+							>
+								{title}
+							</Flex>
+						)}
+
+						<Stack
+							flex={1}
+							className={classes.pageContent}
+							pos="relative"
+							gap="lg"
 						>
-							{title}
-						</Flex>
-					)}
+							<TopGlow offset={glowOffset} />
 
-					<Stack
-						flex={1}
-						className={classes.pageContent}
-						pos="relative"
-						gap="lg"
-					>
-						<TopGlow offset={glowOffset} />
+							<Group
+								gap="md"
+								pos="absolute"
+								left={0}
+								right={0}
+								top={0}
+								align="center"
+								wrap="nowrap"
+								className={classes.toolbar}
+							>
+								<SurrealistToolbar />
+							</Group>
 
-						<Group
-							gap="md"
-							pos="absolute"
-							left={0}
-							right={0}
-							top={0}
-							align="center"
-							wrap="nowrap"
-							className={classes.toolbar}
-						>
-							<SurrealistToolbar />
-						</Group>
+							<Switch>
+								<Route path="/" />
 
-						<Switch>
-							<Route path="/" />
+								<Route path="/overview">
+									<GlobalSidebar />
+									<OverviewPageLazy />
+								</Route>
 
-							<Route path="/overview">
-								<OverviewPageLazy />
-							</Route>
+								<Route path="/mini/new">
+									<GlobalSidebar />
+									<NewEmbedPageLazy />
+								</Route>
 
-							<Route path="/mini/new">
-								<NewEmbedPageLazy />
-							</Route>
+								<Route path="/connections/create">
+									<GlobalSidebar />
+									<CreateConnectionPageLazy />
+								</Route>
 
-							<Route path="/connections/create">
-								<CreateConnectionPageLazy />
-							</Route>
+								<Route path="/support">
+									<GlobalSidebar />
+									<SupportPageLazy />
+								</Route>
 
-							<Route path="/support">
-								<SupportPageLazy />
-							</Route>
-
-							<Route path="/support/collections/:collection">
-								{({ collection }) => <CollectionPage id={collection} />}
-							</Route>
-
-							<Route path="/support/articles/:article">
-								{({ article }) => <ArticlePage id={article} />}
-							</Route>
-
-							<Route path="/support/requests">
-								<RequestsPageLazy />
-							</Route>
-
-							<Route path="/support/conversations/:conversation">
-								{({ conversation }) => <ConversationPage id={conversation} />}
-							</Route>
-
-							{showCloud && (
-								<>
-									<Route path="/organisations/create">
-										<CreateOrganizationsPageLazy />
-									</Route>
-
-									<Route path="/organisations">
-										<Redirect to="/overview" />
-									</Route>
-
-									<Route path="/o/:organization/deploy">
-										{({ organization }) => (
-											<OrganizationDeployPageLazy id={organization} />
-										)}
-									</Route>
-
-									<Route path="/o/:organization/support-plans">
-										{({ organization }) => (
-											<SupportPlansPageLazy id={organization} />
-										)}
-									</Route>
-
-									<Route path="/o/:organization/:tab">
-										{({ organization, tab }) => (
-											<OrganizationPageLazy
-												id={organization}
-												tab={tab}
-											/>
-										)}
-									</Route>
-
-									<Route path="/o/:organization">
-										{({ organization }) => (
-											<Redirect to={`/o/${organization}/overview`} />
-										)}
-									</Route>
-
-									<Route path="/referrals">
-										<ReferralPageLazy />
-									</Route>
-
-									<Route path="/signin/:plan?">
-										{({ plan }) => <SigninPageLazy plan={plan} />}
-									</Route>
-
-									<Route path="/cloud">
-										<Redirect to="/signin" />
-									</Route>
-
-									<Route path="/billing">
-										<Redirect to="/overview" />
-									</Route>
-								</>
-							)}
-
-							<Route path="/c/:connection/:view">
-								{({ view }) => {
-									const _view = view as ViewPage;
-									const portal = views[_view] ? VIEW_PORTALS[_view] : undefined;
-
-									return (
+								<Route path="/support/collections/:collection">
+									{({ collection }) => (
 										<>
-											{Object.values(views).map((mode) => {
-												const Content = VIEW_COMPONENTS[mode.id];
-
-												return (
-													<InPortal
-														key={mode.id}
-														node={VIEW_PORTALS[mode.id]}
-													>
-														<Suspense fallback={null}>
-															<Content />
-														</Suspense>
-													</InPortal>
-												);
-											})}
-
-											{portal ? (
-												<Stack
-													flex={1}
-													gap={0}
-												>
-													<OutPortal node={portal} />
-												</Stack>
-											) : (
-												<Redirect to="/overview" />
-											)}
+											<GlobalSidebar />
+											<CollectionPage id={collection} />
 										</>
-									);
-								}}
-							</Route>
+									)}
+								</Route>
 
-							<Route>
-								<Redirect to="/overview" />
-							</Route>
-						</Switch>
-					</Stack>
-				</Box>
-			</Flex>
+								<Route path="/support/articles/:article">
+									{({ article }) => (
+										<>
+											<GlobalSidebar />
+											<ArticlePage id={article} />
+										</>
+									)}
+								</Route>
 
-			<Drawer
-				withCloseButton={false}
-				opened={overlaySidebar}
-				onClose={onCloseSidebar}
-				size={215}
-			>
-				<DatabaseSidebarLazy sidebarMode="fill" />
-			</Drawer>
-		</Box>
+								<Route path="/support/requests">
+									<GlobalSidebar />
+									<RequestsPageLazy />
+								</Route>
+
+								<Route path="/support/conversations/:conversation">
+									{({ conversation }) => (
+										<>
+											<GlobalSidebar />
+											<ConversationPage id={conversation} />
+										</>
+									)}
+								</Route>
+
+								{showCloud && (
+									<>
+										<Route path="/organisations/create">
+											<GlobalSidebar />
+											<CreateOrganizationsPageLazy />
+										</Route>
+
+										<Route path="/organisations">
+											<Redirect to="/overview" />
+										</Route>
+
+										<Route path="/o/:organization/deploy">
+											{({ organization }) => (
+												<>
+													<OrganisationSidebar
+														organizationId={organization}
+													/>
+													<OrganizationDeployPageLazy id={organization} />
+												</>
+											)}
+										</Route>
+
+										<Route path="/o/:organization/support-plans">
+											{({ organization }) => (
+												<>
+													<OrganisationSidebar
+														organizationId={organization}
+													/>
+													<SupportPlansPageLazy id={organization} />
+												</>
+											)}
+										</Route>
+
+										<Route path="/o/:organization/:tab">
+											{({ organization, tab }) => (
+												<>
+													<OrganisationSidebar
+														organizationId={organization}
+													/>
+													<OrganizationPageLazy
+														id={organization}
+														tab={tab}
+													/>
+												</>
+											)}
+										</Route>
+
+										<Route path="/o/:organization">
+											{({ organization }) => (
+												<Redirect to={`/o/${organization}/overview`} />
+											)}
+										</Route>
+
+										<Route path="/referrals">
+											<GlobalSidebar />
+											<ReferralPageLazy />
+										</Route>
+
+										<Route path="/signin/:plan?">
+											{({ plan }) => (
+												<>
+													<GlobalSidebar />
+													<SigninPageLazy plan={plan} />
+												</>
+											)}
+										</Route>
+
+										<Route path="/cloud">
+											<Redirect to="/signin" />
+										</Route>
+
+										<Route path="/billing">
+											<Redirect to="/overview" />
+										</Route>
+									</>
+								)}
+
+								<Route path="/c/:connection/:view">
+									{({ view }) => {
+										const _view = view as ViewPage;
+										const portal = views[_view]
+											? VIEW_PORTALS[_view]
+											: undefined;
+
+										return (
+											<>
+												<ConnectionSidebar />
+												{Object.values(views).map((mode) => {
+													const Content = VIEW_COMPONENTS[mode.id];
+
+													return (
+														<InPortal
+															key={mode.id}
+															node={VIEW_PORTALS[mode.id]}
+														>
+															<Suspense fallback={null}>
+																<Content />
+															</Suspense>
+														</InPortal>
+													);
+												})}
+
+												{portal ? (
+													<Stack
+														flex={1}
+														gap={0}
+													>
+														<OutPortal node={portal} />
+													</Stack>
+												) : (
+													<Redirect to="/overview" />
+												)}
+											</>
+										);
+									}}
+								</Route>
+
+								<Route>
+									<Redirect to="/overview" />
+								</Route>
+							</Switch>
+						</Stack>
+					</Box>
+				</Flex>
+
+				<Drawer
+					withCloseButton={false}
+					opened={overlaySidebar}
+					onClose={onCloseSidebar}
+					size={215}
+				>
+					<DatabaseSidebarLazy sidebarMode="fill" />
+				</Drawer>
+			</Box>
+		</SidebarProvider>
 	);
 }
