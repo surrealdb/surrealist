@@ -8,17 +8,43 @@ import {
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
-import { iconArrowLeft, iconCog, iconHelp, iconSearch, pictoSurrealist } from "@surrealdb/ui";
+import {
+	iconArrowLeft,
+	iconChat,
+	iconCog,
+	iconCreditCard,
+	iconDollar,
+	iconHelp,
+	iconOrganization,
+	iconProgressClock,
+	iconSearch,
+	iconServer,
+	pictoSurrealist,
+} from "@surrealdb/ui";
 import clsx from "clsx";
 import { Fragment, useMemo } from "react";
+import {
+	hasOrganizationRoles,
+	isBillingManaged,
+	ORG_ROLES_ADMIN,
+	ORG_ROLES_OWNER,
+	ORG_ROLES_SUPPORT,
+} from "~/cloud/helpers";
 import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
+import { useCloudInstanceQuery } from "~/cloud/queries/instances";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
-import { useAvailablePages, useAvailableViews } from "~/hooks/connection";
-import { useAbsoluteLocation, useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
+import { useAvailablePages, useAvailableViews, useConnection } from "~/hooks/connection";
+import {
+	useAbsoluteLocation,
+	useAbsoluteRoute,
+	useConnectionAndView,
+	useConnectionNavigator,
+} from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { useConfigStore } from "~/stores/config";
@@ -58,6 +84,9 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
 	const pages = useAvailablePages();
 	const views = useAvailableViews();
+
+	const instanceId = useConnection((s) => s?.authentication.cloudInstance);
+	const instanceQuery = useCloudInstanceQuery(instanceId);
 
 	const { data: unreadConversations } = useCloudUnreadConversationsQuery();
 
@@ -121,7 +150,91 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 		});
 	}, [views, sidebarViews, connection]);
 
-	const navigation = connection ? viewNavigation : globalNavigation;
+	const [isOrgRoute, orgParams] = useAbsoluteRoute("/o/:organization/:rest*");
+	const organizationId = isOrgRoute ? orgParams?.organization : undefined;
+	const { data: orgData } = useCloudOrganizationQuery(organizationId);
+
+	const isOrgSupport = orgData ? hasOrganizationRoles(orgData, ORG_ROLES_SUPPORT) : false;
+	const isOrgAdmin = orgData ? hasOrganizationRoles(orgData, ORG_ROLES_ADMIN) : false;
+	const isOrgOwner = orgData ? hasOrganizationRoles(orgData, ORG_ROLES_OWNER, true) : false;
+	const isOrgManagedBilling = orgData ? isBillingManaged(orgData) : false;
+
+	const orgNavigation: NavigationItem[][] = useMemo(() => {
+		if (!organizationId) {
+			return [];
+		}
+
+		const base = `/o/${organizationId}`;
+
+		const primary: NavigationItem[] = [
+			{
+				name: "Overview",
+				icon: iconServer,
+				match: [`${base}/overview`],
+				navigate: () => setLocation(`${base}/overview`),
+			},
+			{
+				name: "Team",
+				icon: iconOrganization,
+				match: [`${base}/team`],
+				navigate: () => setLocation(`${base}/team`),
+			},
+		];
+
+		const billing: NavigationItem[] = [
+			...(isOrgOwner && !isOrgManagedBilling
+				? [
+						{
+							name: "Invoices",
+							icon: iconDollar,
+							match: [`${base}/invoices`],
+							navigate: () => setLocation(`${base}/invoices`),
+						},
+					]
+				: []),
+			...(isOrgOwner
+				? [
+						{
+							name: "Billing",
+							icon: iconCreditCard,
+							match: [`${base}/billing`],
+							navigate: () => setLocation(`${base}/billing`),
+						},
+					]
+				: []),
+			...(isOrgSupport
+				? [
+						{
+							name: "Support",
+							icon: iconChat,
+							match: [`${base}/support`],
+							navigate: () => setLocation(`${base}/support`),
+						},
+					]
+				: []),
+		];
+
+		const admin: NavigationItem[] = isOrgAdmin
+			? [
+					{
+						name: "Usage",
+						icon: iconProgressClock,
+						match: [`${base}/usage`],
+						navigate: () => setLocation(`${base}/usage`),
+					},
+					{
+						name: "Settings",
+						icon: iconCog,
+						match: [`${base}/settings`],
+						navigate: () => setLocation(`${base}/settings`),
+					},
+				]
+			: [];
+
+		return [primary, billing, admin].filter((group) => group.length > 0);
+	}, [organizationId, isOrgOwner, isOrgManagedBilling, isOrgSupport, isOrgAdmin]);
+
+	const navigation = connection ? viewNavigation : isOrgRoute ? orgNavigation : globalNavigation;
 
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
@@ -187,7 +300,20 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 					component="nav"
 					flex={1}
 				>
-					{connection && (
+					{connection && instanceId ? (
+						<>
+							<NavigationIcon
+								name="Organization"
+								icon={iconArrowLeft}
+								onClick={() =>
+									setLocation(`/o/${instanceQuery.data?.organization_id}`)
+								}
+								onMouseEnter={hoverSidebarHandle.open}
+								withTooltip={sidebarMode === "compact"}
+							/>
+							<Divider color={isLight ? "obsidian.2" : "obsidian.7"} />
+						</>
+					) : connection || isOrgRoute ? (
 						<>
 							<NavigationIcon
 								name="Overview"
@@ -198,7 +324,7 @@ export function SurrealistSidebar({ sidebarMode, className, ...other }: Surreali
 							/>
 							<Divider color={isLight ? "obsidian.2" : "obsidian.7"} />
 						</>
-					)}
+					) : null}
 
 					{navigation.map((items, i) => (
 						<Fragment key={i}>

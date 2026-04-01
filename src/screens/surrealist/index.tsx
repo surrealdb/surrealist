@@ -231,7 +231,7 @@ export function SurrealistScreen() {
 
 									<Route path="/o/:organization">
 										{({ organization }) => (
-											<Redirect to={`/o/${organization}/instances`} />
+											<Redirect to={`/o/${organization}/overview`} />
 										)}
 									</Route>
 
