@@ -19,6 +19,7 @@ import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
 import { BillingDetails } from "~/components/BillingDetails";
 import { Form } from "~/components/Form";
 import { PaymentDetails } from "~/components/PaymentDetails";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
 import { CloudCoupon } from "~/types";
@@ -29,6 +30,7 @@ import { OrganizationTabProps } from "../types";
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	return (
 		<Stack>
+			<PrimaryTitle fz={32}>Billing</PrimaryTitle>
 			{isBillingManaged(organization) ? (
 				<ExternalBillingConfiguration organization={organization} />
 			) : (

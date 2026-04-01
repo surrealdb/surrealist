@@ -13,74 +13,77 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 	const usageCharge = measureComputeCost(usageQuery.data ?? []);
 
 	return (
-		<Section
-			title="Usage charges"
-			description="Your organisation's usage charges for the current month"
-		>
-			<Paper
-				p="xl"
-				pos="relative"
-				style={{ overflow: "hidden" }}
+		<>
+			<PrimaryTitle fz={32}>Usage</PrimaryTitle>
+			<Section
+				title="Usage charges"
+				description="Your organisation's usage charges for the current month"
 			>
-				<LoadingOverlay
-					visible={usageQuery.isPending}
-					overlayProps={{
-						color: "var(--mantine-color-obsidian-8)",
-					}}
-				/>
-				<Label>Usage cost breakdown</Label>
-				{usageCharge.summary.length === 0 ? (
+				<Paper
+					p="xl"
+					pos="relative"
+					style={{ overflow: "hidden" }}
+				>
+					<LoadingOverlay
+						visible={usageQuery.isPending}
+						overlayProps={{
+							color: "var(--mantine-color-obsidian-8)",
+						}}
+					/>
+					<Label>Usage cost breakdown</Label>
+					{usageCharge.summary.length === 0 ? (
+						<Text
+							mt="xs"
+							c="obsidian"
+						>
+							No instance usage data available yet
+						</Text>
+					) : (
+						<Table
+							className={classes.table}
+							mt="sm"
+						>
+							<Table.Tbody>
+								{usageCharge.summary.map((charge, i) => (
+									<Table.Tr
+										key={i}
+										h={42}
+									>
+										<Table.Td c="bright">{charge.name}</Table.Td>
+										<Table.Td
+											w={0}
+											pr="md"
+											style={{ textWrap: "nowrap" }}
+										>
+											<Text
+												span
+												c="bright"
+												fw={500}
+											>
+												${charge.cost.toFixed(3)}
+											</Text>{" "}
+											<Text span>
+												for {charge.hours.toString()} compute hours
+											</Text>
+										</Table.Td>
+									</Table.Tr>
+								))}
+							</Table.Tbody>
+						</Table>
+					)}
+					<Divider my="xl" />
+					<Label>Total charges this month to date</Label>
+					<PrimaryTitle>${usageCharge.total.toFixed(2)}</PrimaryTitle>
+
 					<Text
-						mt="xs"
+						fz="sm"
 						c="obsidian"
-					>
-						No instance usage data available yet
-					</Text>
-				) : (
-					<Table
-						className={classes.table}
 						mt="sm"
 					>
-						<Table.Tbody>
-							{usageCharge.summary.map((charge, i) => (
-								<Table.Tr
-									key={i}
-									h={42}
-								>
-									<Table.Td c="bright">{charge.name}</Table.Td>
-									<Table.Td
-										w={0}
-										pr="md"
-										style={{ textWrap: "nowrap" }}
-									>
-										<Text
-											span
-											c="bright"
-											fw={500}
-										>
-											${charge.cost.toFixed(3)}
-										</Text>{" "}
-										<Text span>
-											for {charge.hours.toString()} compute hours
-										</Text>
-									</Table.Td>
-								</Table.Tr>
-							))}
-						</Table.Tbody>
-					</Table>
-				)}
-				<Divider my="xl" />
-				<Label>Total charges this month to date</Label>
-				<PrimaryTitle>${usageCharge.total.toFixed(2)}</PrimaryTitle>
-
-				<Text
-					fz="sm"
-					c="obsidian"
-					mt="sm"
-				>
-					This amount is an estimation, final amounts may vary.
-				</Text>
-			</Paper>
-		</Section>
+						This amount is an estimation, final amounts may vary.
+					</Text>
+				</Paper>
+			</Section>
+		</>
 	);
 }

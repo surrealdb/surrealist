@@ -24,6 +24,7 @@ import { useRemoveMemberMutation } from "~/cloud/mutations/remove";
 import { useCloudInvitationsQuery } from "~/cloud/queries/invitations";
 import { useCloudMembersQuery } from "~/cloud/queries/members";
 import { ActionButton } from "~/components/ActionButton";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -90,6 +91,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 
 	return (
 		<Stack>
+			<PrimaryTitle fz={32}>Team</PrimaryTitle>
 			<Section
 				title="Team members"
 				description="Manage the members of your organisation"
