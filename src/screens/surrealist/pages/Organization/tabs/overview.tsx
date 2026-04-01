@@ -15,6 +15,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { Icon, iconDatabase } from "@surrealdb/ui";
+import { useMemo } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationDataStoresQuery } from "~/cloud/queries/datastores";
@@ -164,6 +165,14 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 	const dataStores = dataStoresLoaded ? dataStoreData : [];
 	const canCreate = instancesLoaded && instances.length === 0 && !isRestricted && isAdmin;
 
+	const sortedInstances = useMemo(() => {
+		return instances.sort((a, b) => statusComparator(a, b) || a.name.localeCompare(b.name));
+	}, [instances]);
+
+	const sortedDataStores = useMemo(() => {
+		return dataStores.sort((a, b) => a.name.localeCompare(b.name));
+	}, [dataStores]);
+
 	const activateInstance = useStable((instance: CloudInstance) => {
 		navigateConnection(resolveInstanceConnection(instance).id);
 	});
@@ -189,7 +198,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 			>
 				<SimpleGrid cols={GRID_COLUMNS}>
 					{instancesPending && <Skeleton h={112} />}
-					{instances.map((instance) => (
+					{sortedInstances.map((instance) => (
 						<StartInstance
 							key={instance.id}
 							instance={instance}
@@ -216,7 +225,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 			>
 				<SimpleGrid cols={GRID_COLUMNS}>
 					{dataStoresPending && <Skeleton h={112} />}
-					{dataStores.map((ds) => (
+					{sortedDataStores.map((ds) => (
 						<DataStoreCard
 							key={ds.id}
 							dataStore={ds}
@@ -233,4 +242,10 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 			</Section>
 		</>
 	);
+}
+
+function statusComparator(a: CloudInstance | CloudDataStore, b: CloudInstance | CloudDataStore) {
+	if (a.state === "paused" && b.state !== "paused") return 1;
+	if (a.state !== "paused" && b.state === "paused") return -1;
+	return 0;
 }
