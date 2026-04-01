@@ -2,6 +2,7 @@ import { ActionIcon, Box, Button, CopyButton, Stack, TextInput } from "@mantine/
 import { useInputState } from "@mantine/hooks";
 import { Icon, iconCheck, iconCopy } from "@surrealdb/ui";
 import { useUpdateOrganizationMutation } from "~/cloud/mutations/update";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
 import { showInfo } from "~/util/helpers";
@@ -51,6 +52,7 @@ export function OrganizationSettingsTab({ organization }: OrganizationTabProps) 
 
 	return (
 		<Stack>
+			<PrimaryTitle fz={32}>Settings</PrimaryTitle>
 			<Section
 				title="Organisation"
 				description="Manage the details of your organisation"

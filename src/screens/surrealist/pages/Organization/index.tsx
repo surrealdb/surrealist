@@ -14,7 +14,6 @@ import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
@@ -95,14 +94,11 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 												{ label: organization.name },
 											]}
 										/>
-										<PrimaryTitle
-											mt="sm"
-											fz={32}
-										>
-											{organization.name}
-										</PrimaryTitle>
 										{organization.billing_provider === "aws_marketplace" && (
-											<Group gap="xs">
+											<Group
+												gap="xs"
+												mt="xs"
+											>
 												<Icon
 													path={iconChevronRight}
 													size="sm"
