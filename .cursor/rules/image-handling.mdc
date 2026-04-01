@@ -1,0 +1,14 @@
+---
+description: Image best practices for performance and accessibility
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# Image Handling
+
+- Always provide descriptive `alt` text that conveys the image's purpose.
+- Prefer existing image components (e.g. `DescriptiveImage`) over raw `<img>` tags.
+- Use WebP or AVIF formats where possible for smaller file sizes.
+- Avoid enormous inline SVGs. Extract them to separate files or use the `Icon` component from `@surrealdb/ui`.
+- Specify `width` and `height` (or aspect ratio) to prevent layout shifts during loading.
+- **NEVER** add `loading="lazy"` to images as this is broken on Firefox and Webkit browsers.

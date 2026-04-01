@@ -14,12 +14,13 @@
 		"qc": "biome check .",
 		"qa": "biome check . --write --formatter-enabled=true",
 		"qau": "biome check . --write --unsafe --formatter-enabled=true",
+		"qts": "tsc --noEmit",
+		"qtsw": "tsc --noEmit --watch",
 		"license-report": "license-report --fields name --fields licenseType --fields link --fields installedVersion --fields author > src/assets/data/license-report.json",
 		"start": "bun run dev",
 		"tauri": "tauri",
 		"tauri:dev": "tauri dev",
-		"tauri:build": "tauri build",
-		"ts": "tsc --watch --noEmit"
+		"tauri:build": "tauri build"
 	},
 	"dependencies": {
 		"@codemirror/autocomplete": "^6.13.0",
