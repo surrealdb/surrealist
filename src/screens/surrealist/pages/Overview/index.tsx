@@ -19,7 +19,7 @@ import {
 import { useInputState } from "@mantine/hooks";
 import {
 	Icon,
-	iconArrowLeft,
+	iconArrowUpRight,
 	iconCheck,
 	iconPlus,
 	iconReset,
@@ -518,12 +518,7 @@ export function OverviewPage() {
 									Featured articles
 								</PrimaryTitle>
 								<Button
-									rightSection={
-										<Icon
-											path={iconArrowLeft}
-											flip="horizontal"
-										/>
-									}
+									rightSection={<Icon path={iconArrowUpRight} />}
 									onClick={() => dispatchIntent("open-news")}
 									color="obsidian"
 									variant="subtle"
