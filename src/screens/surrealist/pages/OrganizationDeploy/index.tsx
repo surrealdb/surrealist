@@ -39,7 +39,7 @@ export function OrganizationDeployPage({ id }: OrganizationDeployPageProps) {
 	const { data: organisation } = useCloudOrganizationQuery(id);
 
 	if (organisationsQuery.isSuccess && !organisation) {
-		return <Redirect to="/organisations" />;
+		return <Redirect to="/overview" />;
 	}
 
 	return (
@@ -166,7 +166,6 @@ function PageContent({ organisation, instances }: PageContentProps) {
 									<PageBreadcrumbs
 										items={[
 											{ label: "Surrealist", href: "/overview" },
-											{ label: "Organisations", href: "/organisations" },
 											{
 												label: organisation.name,
 												href: `/o/${organisation.id}`,

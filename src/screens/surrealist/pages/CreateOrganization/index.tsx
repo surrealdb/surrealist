@@ -7,7 +7,6 @@ import { fetchAPI } from "~/cloud/api";
 import { AuthGuard } from "~/components/AuthGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useLastSavepoint } from "~/hooks/overview";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
@@ -43,8 +42,6 @@ export function CreateOrganizationPage() {
 		mutateAsync();
 	});
 
-	const savepoint = useLastSavepoint();
-
 	return (
 		<AuthGuard>
 			<Box
@@ -69,8 +66,7 @@ export function CreateOrganizationPage() {
 							<PageBreadcrumbs
 								items={[
 									{ label: "Surrealist", href: "/overview" },
-									{ label: "Organisations", href: "/organisations" },
-									{ label: "Create" },
+									{ label: "Create organisation" },
 								]}
 							/>
 							<PrimaryTitle
@@ -107,7 +103,7 @@ export function CreateOrganizationPage() {
 						</Stack>
 
 						<Group mt={24}>
-							<Link to={savepoint.path}>
+							<Link to="/overview">
 								<Button
 									color="obsidian"
 									variant="light"

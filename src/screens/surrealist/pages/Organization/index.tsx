@@ -8,9 +8,7 @@ import {
 	iconDollar,
 	iconOrganization,
 	iconProgressClock,
-	iconServer,
 } from "@surrealdb/ui";
-import { useMemo } from "react";
 import { Redirect, useLocation } from "wouter";
 import {
 	hasOrganizationRoles,
@@ -27,10 +25,10 @@ import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { OVERVIEW, Savepoint, useSavepoint } from "~/hooks/overview";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
+import { OrganizationDataStoresSection } from "./tabs/datastores";
 import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationSettingsTab } from "./tabs/settings";
@@ -38,12 +36,14 @@ import { OrganizationSupportTab } from "./tabs/support";
 import { OrganizationTeamTab } from "./tabs/team";
 import { OrganizationUsageTab } from "./tabs/usage";
 
-export interface OrganizationManagePageProps {
+const MANAGEMENT_TABS = ["team", "invoices", "billing", "support", "usage", "settings"] as const;
+
+export interface OrganizationPageProps {
 	id: string;
 	tab: string;
 }
 
-export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps) {
+export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 	const isAuthed = useIsAuthenticated();
 	const [, navigate] = useLocation();
 
@@ -59,18 +59,12 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 	const isTerminated = organization ? isOrganisationTerminated(organization) : false;
 	const isManagedBilling = organization ? isBillingManaged(organization) : false;
 
-	const savepoint = useMemo<Savepoint>(() => {
-		if (organization) {
-			return { path: `/o/${organization.id}`, name: organization.name };
-		}
-
-		return OVERVIEW;
-	}, [organization]);
-
-	useSavepoint(savepoint);
+	const activeTab = MANAGEMENT_TABS.includes(tab as (typeof MANAGEMENT_TABS)[number])
+		? tab
+		: null;
 
 	if (isSuccess && !organization) {
-		return <Redirect to="/organisations" />;
+		return <Redirect to="/overview" />;
 	}
 
 	return (
@@ -101,7 +95,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 										<PageBreadcrumbs
 											items={[
 												{ label: "Surrealist", href: "/overview" },
-												{ label: "Organisations", href: "/organisations" },
 												{ label: organization.name },
 											]}
 										/>
@@ -168,10 +161,16 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											</div>
 										</Alert>
 									) : null}
+
+									<OrganizationInstancesTab organization={organization} />
+
+									<OrganizationDataStoresSection organization={organization} />
+
+									<Divider mt="xl" />
+
 									<Tabs
-										mt="xl"
 										variant="gradient"
-										value={tab}
+										value={activeTab}
 										onChange={(value) => {
 											if (value) {
 												navigate(value);
@@ -183,13 +182,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 											bg="transparent"
 											bd="none"
 										>
-											<Tabs.Tab
-												px="xl"
-												value="instances"
-												leftSection={<Icon path={iconServer} />}
-											>
-												Instances
-											</Tabs.Tab>
 											<Tabs.Tab
 												px="xl"
 												value="team"
@@ -247,10 +239,6 @@ export function OrganizationManagePage({ id, tab }: OrganizationManagePageProps)
 										</Tabs.List>
 
 										<Divider mb="xl" />
-
-										<Tabs.Panel value="instances">
-											<OrganizationInstancesTab organization={organization} />
-										</Tabs.Panel>
 
 										<Tabs.Panel value="team">
 											<OrganizationTeamTab organization={organization} />

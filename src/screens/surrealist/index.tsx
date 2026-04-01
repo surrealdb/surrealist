@@ -15,9 +15,8 @@ import type { ViewPage } from "~/types";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
+import { OrganizationPage } from "./pages/Organization";
 import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
-import { OrganizationManagePage } from "./pages/OrganizationManage";
-import { OrganizationsPage } from "./pages/Organizations";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
 import { SigninPage } from "./pages/Signin";
@@ -45,8 +44,7 @@ import QueryView from "./views/query/QueryView";
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
-const OrganizationsPageLazy = memo(OrganizationsPage);
-const OrganizationManagePageLazy = memo(OrganizationManagePage);
+const OrganizationPageLazy = memo(OrganizationPage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
 const SupportPlansPageLazy = memo(SupportPlansPage);
 const ReferralPageLazy = memo(ReferralPage);
@@ -207,7 +205,7 @@ export function SurrealistScreen() {
 									</Route>
 
 									<Route path="/organisations">
-										<OrganizationsPageLazy />
+										<Redirect to="/overview" />
 									</Route>
 
 									<Route path="/o/:organization/deploy">
@@ -224,7 +222,7 @@ export function SurrealistScreen() {
 
 									<Route path="/o/:organization/:tab">
 										{({ organization, tab }) => (
-											<OrganizationManagePageLazy
+											<OrganizationPageLazy
 												id={organization}
 												tab={tab}
 											/>
@@ -250,7 +248,7 @@ export function SurrealistScreen() {
 									</Route>
 
 									<Route path="/billing">
-										<Redirect to="/organisations" />
+										<Redirect to="/overview" />
 									</Route>
 								</>
 							)}

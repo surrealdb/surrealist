@@ -19,7 +19,6 @@ import {
 	iconGraphql,
 	iconHelp,
 	iconLive,
-	iconOrganization,
 	iconPause,
 	iconQuery,
 	iconReferral,
@@ -235,18 +234,12 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/overview",
 		name: "Overview",
 		icon: iconExplorer,
+		aliases: ["/o/*"],
 	},
 	"/signin": {
 		id: "/signin",
 		name: "Authenticate",
 		icon: iconAuth,
-	},
-	"/organisations": {
-		id: "/organisations",
-		name: "Organisations",
-		icon: iconOrganization,
-		aliases: ["/o/*"],
-		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/referrals": {
 		id: "/referrals",

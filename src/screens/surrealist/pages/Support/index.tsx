@@ -152,9 +152,7 @@ export function SupportPage() {
 										image={pictoHealthChat}
 										onClick={() => {
 											if (isAuthenticated) {
-												navigate(
-													"/organisations?destination=support-plans",
-												);
+												navigate("/overview");
 											} else {
 												openCloudAuthentication();
 											}

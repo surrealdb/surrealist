@@ -28,7 +28,6 @@ import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection
 import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useLastSavepoint } from "~/hooks/overview";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
@@ -122,7 +121,6 @@ export function CreateConnectionPage() {
 	}, []);
 
 	const templates = useConfigStore((s) => s.settings.templates.list);
-	const savepoint = useLastSavepoint();
 
 	return (
 		<Box
@@ -346,7 +344,7 @@ export function CreateConnectionPage() {
 						onChange={setConnection}
 					/>
 					<Group mt={24}>
-						<Link to={savepoint.path}>
+						<Link to="/overview">
 							<Button
 								color="obsidian"
 								variant="light"
