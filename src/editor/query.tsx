@@ -1,6 +1,9 @@
 import { EditorSelection, SelectionRange, StateEffect, StateField } from "@codemirror/state";
 import type { Command, EditorView } from "@codemirror/view";
-import { executeGraphql, executeUserQuery } from "~/screens/surrealist/connection/connection";
+import {
+	executeGraphql,
+	executeUserQuery,
+} from "~/screens/surrealist/pages/Connection/connection/connection";
 import { getConnection } from "~/util/connection";
 import { tryParseParams } from "~/util/helpers";
 import { getQueryRange } from "./surrealql";

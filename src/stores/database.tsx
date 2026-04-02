@@ -1,7 +1,7 @@
 import { omit } from "radash";
 import { Diagnostic } from "surrealdb";
 import { create } from "zustand";
-import type { GraphqlResponse } from "~/screens/surrealist/connection/connection";
+import type { GraphqlResponse } from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { ConnectionSchema, QueryResponse } from "~/types";
 import { createConnectionSchema } from "~/util/defaults";
 

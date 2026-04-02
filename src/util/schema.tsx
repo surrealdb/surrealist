@@ -2,7 +2,10 @@ import equal from "fast-deep-equal";
 import { klona } from "klona";
 import { escapeIdent, Table } from "surrealdb";
 import { adapter } from "~/adapter";
-import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
+import {
+	executeQuery,
+	executeQuerySingle,
+} from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import type {
 	ConnectionSchema,

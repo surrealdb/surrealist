@@ -19,7 +19,10 @@ import { useSaveable } from "~/hooks/save";
 import { useStable } from "~/hooks/stable";
 import { useValueValidator } from "~/hooks/surrealql";
 import { useIsLight } from "~/hooks/theme";
-import { executeQuery, getSurrealQL } from "~/screens/surrealist/connection/connection";
+import {
+	executeQuery,
+	getSurrealQL,
+} from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useConfirmation } from "../Confirmation";
 import classes from "./style.module.scss";
 import { ContentTab } from "./tabs/content";

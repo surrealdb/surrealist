@@ -3,7 +3,7 @@ import { openModal } from "@mantine/modals";
 import { CodeBlock } from "@surrealdb/ui";
 import { escapeIdent } from "surrealdb";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { executeQuerySingle } from "~/screens/surrealist/connection/connection";
+import { executeQuerySingle } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { showErrorNotification } from "~/util/helpers";
 
 function header(name: string) {

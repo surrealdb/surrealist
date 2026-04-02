@@ -10,7 +10,10 @@ import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useNamespaceSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { activateDatabase, executeQuery } from "~/screens/surrealist/connection/connection";
+import {
+	activateDatabase,
+	executeQuery,
+} from "~/screens/surrealist/pages/Connection/connection/connection";
 import { getConnection } from "~/util/connection";
 
 export function openCreateDatabaseModal() {

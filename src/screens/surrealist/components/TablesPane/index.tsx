@@ -26,7 +26,7 @@ import { useHasSchemaAccess, useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { showTableDefinitionModal } from "~/modals/table-definition";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { TableVariant } from "~/types";

@@ -8,7 +8,7 @@ import { Label } from "~/components/Label";
 import { LoadingContainer } from "~/components/LoadingContainer";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { getSurrealQL } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { CodeEditor } from "../CodeEditor";
 import type { GeographyInput } from "../GeographyMap";

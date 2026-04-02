@@ -13,8 +13,11 @@ import { useConnection } from "~/hooks/connection";
 import { useIntent } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { authenticate, register } from "~/screens/surrealist/connection/connection";
-import { composeAuthentication } from "~/screens/surrealist/connection/helpers";
+import {
+	authenticate,
+	register,
+} from "~/screens/surrealist/pages/Connection/connection/connection";
+import { composeAuthentication } from "~/screens/surrealist/pages/Connection/connection/helpers";
 import type { AccessField, SchemaAccess } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { parseVariables } from "~/util/language";
