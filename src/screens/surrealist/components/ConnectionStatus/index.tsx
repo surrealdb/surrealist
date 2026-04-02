@@ -24,7 +24,7 @@ import { getConnectionById } from "~/util/connection";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
-import { closeConnection, openConnection } from "../../connection/connection";
+import { closeConnection, openConnection } from "../../pages/Connection/connection/connection";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);

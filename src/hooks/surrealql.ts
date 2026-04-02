@@ -1,6 +1,6 @@
 import { useDebouncedValue } from "@mantine/hooks";
 import { useEffect, useState } from "react";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { getSurrealQL } from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { ResultFormat } from "~/types";
 import { useActiveQuery } from "./connection";
 import { useStable } from "./stable";

@@ -5,7 +5,7 @@ import { useMinimumVersion } from "~/hooks/connection";
 import { useSaveable } from "~/hooks/save";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery } from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { TableInfo } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification } from "~/util/helpers";

@@ -1,23 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudDataStore } from "~/types";
+import type { CloudContext } from "~/types";
 
-const MOCK_DATA_STORES: Record<string, CloudDataStore[]> = {};
+const MOCK_CONTEXTS: Record<string, CloudContext[]> = {};
 
-function getMockDataStores(organization: string): CloudDataStore[] {
-	if (!MOCK_DATA_STORES[organization]) {
-		MOCK_DATA_STORES[organization] = [
-			{
-				id: `ds-${organization}-1`,
-				name: "Production Store",
-				state: "ready",
-				region: "us-east-1",
-				version: "2.0.0",
-				organization_id: organization,
-			},
+function getMockContexts(organization: string): CloudContext[] {
+	if (!MOCK_CONTEXTS[organization]) {
+		MOCK_CONTEXTS[organization] = [
+			// {
+			// 	id: `ds-${organization}-1`,
+			// 	name: "Production Context",
+			// 	state: "ready",
+			// 	region: "us-east-1",
+			// 	version: "2.0.0",
+			// 	organization_id: organization,
+			// },
 			{
 				id: `ds-${organization}-2`,
-				name: "Staging Store",
+				name: "Staging Context",
 				state: "ready",
 				region: "eu-west-1",
 				version: "2.0.0",
@@ -25,8 +25,8 @@ function getMockDataStores(organization: string): CloudDataStore[] {
 			},
 			{
 				id: `ds-${organization}-3`,
-				name: "Development Store",
-				state: "creating",
+				name: "Production Context",
+				state: "ready",
 				region: "us-east-1",
 				version: "2.0.0",
 				organization_id: organization,
@@ -34,23 +34,23 @@ function getMockDataStores(organization: string): CloudDataStore[] {
 		];
 	}
 
-	return MOCK_DATA_STORES[organization];
+	return MOCK_CONTEXTS[organization];
 }
 
 /**
- * Fetch organization data stores (mock implementation)
+ * Fetch organization contexts (mock implementation)
  */
-export function useCloudOrganizationDataStoresQuery(organization?: string) {
+export function useCloudOrganizationContextsQuery(organization?: string) {
 	const authState = useCloudStore((state) => state.authState);
 
 	return useQuery({
-		queryKey: ["cloud", "datastores", { org: organization }],
+		queryKey: ["cloud", "contexts", { org: organization }],
 		refetchInterval: 15_000,
 		enabled: !!organization && authState === "authenticated",
 		queryFn: async () => {
 			await new Promise((resolve) => setTimeout(resolve, 300));
 
-			return getMockDataStores(organization as string);
+			return getMockContexts(organization as string);
 		},
 	});
 }
