@@ -660,12 +660,12 @@ export interface CloudInstanceCapabilities {
 	denied_arbitrary_query: string[];
 }
 
-export type DataStoreState = "creating" | "ready" | "deleting";
+export type ContextState = "creating" | "ready" | "deleting";
 
-export interface CloudDataStore {
+export interface CloudContext {
 	id: string;
 	name: string;
-	state: DataStoreState;
+	state: ContextState;
 	region: string;
 	version: string;
 	organization_id: string;

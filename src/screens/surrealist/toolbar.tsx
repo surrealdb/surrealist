@@ -63,7 +63,7 @@ import { generateRandomName } from "~/util/random";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
-import { requestDatabaseExport, resetConnection } from "./connection/connection";
+import { requestDatabaseExport, resetConnection } from "./pages/Connection/connection/connection";
 
 export function SurrealistToolbar() {
 	const { readChangelog } = useInterfaceStore.getState();

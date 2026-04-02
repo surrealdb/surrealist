@@ -2,7 +2,10 @@ import type { MantineColorScheme } from "@mantine/core";
 import { createWasmEngines } from "@surrealdb/wasm";
 import { Surreal } from "surrealdb";
 import { ORIENTATIONS, RESULT_MODES } from "~/constants";
-import { executeQuery, executeUserQuery } from "~/screens/surrealist/connection/connection";
+import {
+	executeQuery,
+	executeUserQuery,
+} from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { MiniAppearance, Orientation, ResultMode, SurrealistConfig } from "~/types";
 import { dedent } from "~/util/dedent";
 import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";

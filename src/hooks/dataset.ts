@@ -1,6 +1,6 @@
 import { sleep } from "radash";
 import { useState } from "react";
-import { getSurreal } from "~/screens/surrealist/connection/connection";
+import { getSurreal } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { showInfo } from "~/util/helpers";
 import { getDatasetURL } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";

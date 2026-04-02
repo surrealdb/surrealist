@@ -1,17 +1,17 @@
 import { Box, Drawer, Flex, Group, Stack } from "@mantine/core";
-import { type FC, memo, Suspense, useLayoutEffect } from "react";
-import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
+import { memo, useLayoutEffect } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AppTitleBar } from "~/components/AppTitleBar";
 import { TopGlow } from "~/components/TopGlow";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
-import { useAvailableViews } from "~/hooks/connection";
 import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
-import type { ViewPage } from "~/types";
+import { ViewPage } from "~/types";
+import { ConnectionPage } from "./pages/Connection";
+import { ConnectionSidebar } from "./pages/Connection/sidebar";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
@@ -27,26 +27,16 @@ import { CollectionPage } from "./pages/Support/CollectionPage";
 import { ConversationPage } from "./pages/Support/ConversationPage";
 import { RequestsPage } from "./pages/Support/RequestsPage";
 import { SupportPlansPage } from "./pages/SupportPlans";
-import { ConnectionSidebar } from "./sidebar/connection";
+import { SurrealistSidebar } from "./sidebar";
 import { GlobalSidebar } from "./sidebar/global";
-import { SurrealistSidebar } from "./sidebar/index";
 import { SidebarProvider } from "./sidebar/portal";
 import classes from "./style.module.scss";
 import { SurrealistToolbar } from "./toolbar";
-import AuthenticationView from "./views/authentication/AuthenticationView";
-import DashboardView from "./views/dashboard/DashboardView";
-import DesignerView from "./views/designer/DesignerView";
-import DocumentationView from "./views/documentation/DocumentationView";
-import ExplorerView from "./views/explorer/ExplorerView";
-import FunctionsView from "./views/functions/FunctionsView";
-import GraphqlView from "./views/graphql/GraphqlView";
-import MigrationView from "./views/migration/MigrationView";
-import MonitorView from "./views/monitor/MonitorView";
-import ParametersView from "./views/parameters/ParametersView";
-import QueryView from "./views/query/QueryView";
 
 const DatabaseSidebarLazy = memo(SurrealistSidebar);
+
 const OverviewPageLazy = memo(OverviewPage);
+const ConnectionPageLazy = memo(ConnectionPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationPageLazy = memo(OrganizationPage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
@@ -58,47 +48,12 @@ const CreateConnectionPageLazy = memo(CreateConnectionPage);
 const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
 const SigninPageLazy = memo(SigninPage);
 
-const PORTAL_OPTIONS = {
-	attributes: {
-		style: "height: 100%; display: flex; flex-direction: column;",
-	},
-};
-
-const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
-	dashboard: createHtmlPortalNode(PORTAL_OPTIONS),
-	monitor: createHtmlPortalNode(PORTAL_OPTIONS),
-	query: createHtmlPortalNode(PORTAL_OPTIONS),
-	explorer: createHtmlPortalNode(PORTAL_OPTIONS),
-	graphql: createHtmlPortalNode(PORTAL_OPTIONS),
-	designer: createHtmlPortalNode(PORTAL_OPTIONS),
-	authentication: createHtmlPortalNode(PORTAL_OPTIONS),
-	functions: createHtmlPortalNode(PORTAL_OPTIONS),
-	parameters: createHtmlPortalNode(PORTAL_OPTIONS),
-	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
-	migrations: createHtmlPortalNode(PORTAL_OPTIONS),
-};
-
-const VIEW_COMPONENTS: Record<ViewPage, FC> = {
-	dashboard: memo(DashboardView),
-	monitor: memo(MonitorView),
-	query: memo(QueryView),
-	explorer: memo(ExplorerView),
-	graphql: memo(GraphqlView),
-	designer: memo(DesignerView),
-	authentication: memo(AuthenticationView),
-	functions: memo(FunctionsView),
-	parameters: memo(ParametersView),
-	documentation: memo(DocumentationView),
-	migrations: memo(MigrationView),
-};
-
 export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const showCloud = useIsCloudEnabled();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
-	const views = useAvailableViews();
 
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const isMacos = adapter.platform === "darwin" && isDesktop;
@@ -301,43 +256,12 @@ export function SurrealistScreen() {
 								)}
 
 								<Route path="/c/:connection/:view">
-									{({ view }) => {
-										const _view = view as ViewPage;
-										const portal = views[_view]
-											? VIEW_PORTALS[_view]
-											: undefined;
-
-										return (
-											<>
-												<ConnectionSidebar />
-												{Object.values(views).map((mode) => {
-													const Content = VIEW_COMPONENTS[mode.id];
-
-													return (
-														<InPortal
-															key={mode.id}
-															node={VIEW_PORTALS[mode.id]}
-														>
-															<Suspense fallback={null}>
-																<Content />
-															</Suspense>
-														</InPortal>
-													);
-												})}
-
-												{portal ? (
-													<Stack
-														flex={1}
-														gap={0}
-													>
-														<OutPortal node={portal} />
-													</Stack>
-												) : (
-													<Redirect to="/overview" />
-												)}
-											</>
-										);
-									}}
+									{({ view }) => (
+										<>
+											<ConnectionSidebar />
+											<ConnectionPageLazy view={view as ViewPage} />
+										</>
+									)}
 								</Route>
 
 								<Route>

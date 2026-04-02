@@ -13,11 +13,11 @@ import {
 	ThemeIcon,
 	Tooltip,
 } from "@mantine/core";
-import { Icon, iconModel } from "@surrealdb/ui";
+import { Icon, iconSpectron } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { useCloudOrganizationDataStoresQuery } from "~/cloud/queries/datastores";
+import { useCloudOrganizationContextsQuery } from "~/cloud/queries/datastores";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
@@ -25,7 +25,7 @@ import { useHasCloudFeature } from "~/hooks/cloud";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudDataStore, CloudInstance, DataStoreState } from "~/types";
+import type { CloudContext, CloudInstance, ContextState } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
 import { StartCreator } from "../../Overview/content/creator";
 import { StartInstance } from "../../Overview/content/instance";
@@ -38,13 +38,13 @@ const GRID_COLUMNS = {
 	lg: 3,
 };
 
-const STATE_INFO: Record<DataStoreState, [string, string]> = {
+const STATE_INFO: Record<ContextState, [string, string]> = {
 	ready: ["green", "Data store is active"],
 	creating: ["loader", "Provisioning data store..."],
 	deleting: ["red", "Data store is being removed"],
 };
 
-function DataStoreStateBadge({ state, size }: { state: DataStoreState; size: number }) {
+function DataStoreStateBadge({ state, size }: { state: ContextState; size: number }) {
 	const [display, text] = STATE_INFO[state];
 
 	return (
@@ -74,7 +74,7 @@ function DataStoreCard({
 	dataStore,
 	regions,
 }: {
-	dataStore: CloudDataStore;
+	dataStore: CloudContext;
 	regions: { slug: string; description: string }[];
 }) {
 	return (
@@ -98,8 +98,8 @@ function DataStoreCard({
 							size="xl"
 						>
 							<Icon
-								size="md"
-								path={iconModel}
+								size="xl"
+								path={iconSpectron}
 							/>
 						</ThemeIcon>
 						<Stack
@@ -123,7 +123,7 @@ function DataStoreCard({
 									state={dataStore.state}
 								/>
 							</Group>
-							<Text>SurrealDB {dataStore.version}</Text>
+							{/* <Text>SurrealDB {dataStore.version}</Text> */}
 							<Text size="sm">
 								{regions.find((r) => r.slug === dataStore.region)?.description ??
 									dataStore.region}
@@ -141,7 +141,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 	const allRegions = useCloudStore((s) => s.regions);
 	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
 	const isRestricted = isOrganisationRestricted(organization);
-	const showDataStores = useHasCloudFeature("create_memory_store");
+	const showContexts = useHasCloudFeature("create_memory_store");
 
 	const {
 		data: instanceData,
@@ -150,22 +150,22 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 	} = useCloudOrganizationInstancesQuery(organization.id);
 
 	const {
-		data: dataStoreData,
-		isSuccess: dataStoresLoaded,
-		isPending: dataStoresPending,
-	} = useCloudOrganizationDataStoresQuery(organization.id);
+		data: contextData,
+		isSuccess: contextsLoaded,
+		isPending: contextsPending,
+	} = useCloudOrganizationContextsQuery(organization.id);
 
 	const instances = instancesLoaded ? instanceData : [];
-	const dataStores = dataStoresLoaded ? dataStoreData : [];
+	const contexts = contextsLoaded ? contextData : [];
 	const canCreate = instancesLoaded && instances.length === 0 && !isRestricted && isAdmin;
 
 	const sortedInstances = useMemo(() => {
 		return instances.sort((a, b) => statusComparator(a, b) || a.name.localeCompare(b.name));
 	}, [instances]);
 
-	const sortedDataStores = useMemo(() => {
-		return dataStores.sort((a, b) => a.name.localeCompare(b.name));
-	}, [dataStores]);
+	const sortedContexts = useMemo(() => {
+		return contexts.sort((a, b) => a.name.localeCompare(b.name));
+	}, [contexts]);
 
 	const activateInstance = useStable((instance: CloudInstance) => {
 		navigateConnection(resolveInstanceConnection(instance).id);
@@ -214,37 +214,37 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 				</SimpleGrid>
 			</Section>
 
-			{showDataStores && (
+			{showContexts && (
 				<Section
-					title="Data Stores"
-					description="Spectron memory stores deployed in this organisation."
+					title="Contexts"
+					description="Spectron contexts deployed in this organisation."
 					rightSection={
 						isAdmin && (
-							<Link href={`/o/${organization.id}/deploy`}>
+							<Link href={`/o/${organization.id}/context/deploy`}>
 								<Button
 									size="xs"
 									disabled={isRestricted}
 									variant="gradient"
 								>
-									Deploy memory store
+									Create context
 								</Button>
 							</Link>
 						)
 					}
 				>
 					<SimpleGrid cols={GRID_COLUMNS}>
-						{dataStoresPending && <Skeleton h={112} />}
-						{sortedDataStores.map((ds) => (
+						{contextsPending && <Skeleton h={112} />}
+						{sortedContexts.map((ds) => (
 							<DataStoreCard
 								key={ds.id}
 								dataStore={ds}
 								regions={allRegions}
 							/>
 						))}
-						{dataStoresLoaded && dataStores.length === 0 && (
+						{contextsLoaded && contexts.length === 0 && (
 							<StartPlaceholder
-								title="No data stores"
-								subtitle="This organisation has no data stores"
+								title="No contexts"
+								subtitle="This organisation has no contexts"
 							/>
 						)}
 					</SimpleGrid>
@@ -254,7 +254,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 	);
 }
 
-function statusComparator(a: CloudInstance | CloudDataStore, b: CloudInstance | CloudDataStore) {
+function statusComparator(a: CloudInstance | CloudContext, b: CloudInstance | CloudContext) {
 	if (a.state === "paused" && b.state !== "paused") return 1;
 	if (a.state !== "paused" && b.state === "paused") return -1;
 	return 0;

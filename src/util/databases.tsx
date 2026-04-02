@@ -1,5 +1,8 @@
 import { escapeIdent } from "surrealdb";
-import { executeQuery, executeQuerySingle } from "~/screens/surrealist/connection/connection";
+import {
+	executeQuery,
+	executeQuerySingle,
+} from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { getAuthDB, getAuthNS, getConnection } from "./connection";
 import { parseIdent } from "./language";

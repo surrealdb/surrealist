@@ -1,6 +1,6 @@
 import { FormatOptions, format, formatRange } from "@surrealdb/surql-fmt";
 import { useStable } from "@surrealdb/ui";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { getSurrealQL } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useSetting } from "./config";
 
 export interface Formatters {

@@ -18,7 +18,7 @@ import { Updater } from "use-immer";
 import { CONNECTION_PROTOCOLS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
-import { createSurreal } from "~/screens/surrealist/connection/surreal";
+import { createSurreal } from "~/screens/surrealist/pages/Connection/connection/surreal";
 import { Connection, Protocol } from "~/types";
 import { connectionUri, isHostLocal } from "~/util/helpers";
 
