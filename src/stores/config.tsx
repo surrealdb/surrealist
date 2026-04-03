@@ -84,6 +84,7 @@ export type ConfigStore = SurrealistConfig & {
 	setOpenDesignerPanels: (openDesignerPanels: string[]) => void;
 	setKeybinding: (command: string, action: string[]) => void;
 	removeKeybinding: (command: string) => void;
+	dismissBanner: (timestamp: string) => void;
 };
 
 export const useConfigStore = create<ConfigStore>()(
@@ -383,5 +384,10 @@ export const useConfigStore = create<ConfigStore>()(
 				delete keybindings[command];
 				return { keybindings };
 			}),
+
+		dismissBanner: (timestamp) =>
+			set((state) => ({
+				dismissedBanners: [...state.dismissedBanners, timestamp],
+			})),
 	})),
 );

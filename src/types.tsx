@@ -75,7 +75,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage = "/overview" | "/signin" | "/organisations" | "/referrals" | "/mini/new";
+export type GlobalPage = "/overview" | "/signin" | "/referrals" | "/mini/new";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -324,6 +324,7 @@ export interface SurrealistConfig {
 	openDesignerPanels: string[];
 	commandHistory: string[];
 	onboarding: string[];
+	dismissedBanners: string[];
 }
 
 export interface AccessField {
@@ -657,6 +658,17 @@ export interface CloudInstanceCapabilities {
 	denied_experimental: string[];
 	allowed_arbitrary_query: string[];
 	denied_arbitrary_query: string[];
+}
+
+export type ContextState = "creating" | "ready" | "deleting";
+
+export interface CloudContext {
+	id: string;
+	name: string;
+	state: ContextState;
+	region: string;
+	version: string;
+	organization_id: string;
 }
 
 export interface CloudDistributedStorageSpecs {

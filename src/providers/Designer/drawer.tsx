@@ -32,7 +32,7 @@ import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
 import type { SaveableHandle } from "~/hooks/save";
 import { useConfirmation } from "~/providers/Confirmation";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import type { TableInfo } from "~/types";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";

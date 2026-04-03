@@ -4,7 +4,7 @@ import type { MiniAdapter } from "~/adapter/mini";
 import { Scaffold } from "~/components/Scaffold";
 import { useIsLight } from "~/hooks/theme";
 import { CommandsProvider } from "~/providers/Commands";
-import MiniQueryView from "../surrealist/views/query/MiniView";
+import MiniQueryView from "../surrealist/pages/Connection/views/query/MiniView";
 
 export function MiniRunScreen() {
 	const { appearance, transparent } = adapter as MiniAdapter;

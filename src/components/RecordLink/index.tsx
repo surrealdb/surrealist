@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { RecordId } from "surrealdb";
 import { useStable } from "~/hooks/stable";
 import { useInspector } from "~/providers/Inspector";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { getSurrealQL } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { HighlightedText } from "../HighlightedText";
 
 export interface RecordLinkProps extends BoxProps, ElementProps<"div"> {

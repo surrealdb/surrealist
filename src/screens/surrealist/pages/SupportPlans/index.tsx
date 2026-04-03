@@ -42,7 +42,6 @@ export function SupportPlansPage({ id }: SupportPlansPageProps) {
 								<PageBreadcrumbs
 									items={[
 										{ label: "Surrealist", href: "/overview" },
-										{ label: "Organisations", href: "/organisations" },
 										{
 											label: organisation.name,
 											href: `/o/${organisation.id}`,

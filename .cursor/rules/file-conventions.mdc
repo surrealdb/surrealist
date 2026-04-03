@@ -1,0 +1,17 @@
+---
+description: File and directory organisation conventions
+alwaysApply: true
+---
+
+# File Conventions
+
+- **Surrealist**: The main Surrealist screens are located in `src/screens/surrealist/`.
+- **Cloud**: SurrealDB Cloud specific operational functionality goes in `src/cloud/`.
+- **Hooks**: Shared hooks go in `src/hooks/`.
+- **Providers**: Global providers go in `src/providers/` including any associated hooks, components, and utilities.
+- **Components**: Place in `src/components/` with styles alongside (e.g. `src/components/MyComponent/index.tsx` + `style.module.scss`).
+- **Utilities**: Shared helpers, hooks, and API functions go in `src/util/`.
+- **Modals**: Modal components go in `src/modals/`.
+- **Assets**: Static images, styles, and data files go in `src/assets/`.
+- Don't create new top-level directories, or directories within `src/` without discussing it first.
+- TypeScript files should always use the `*.tsx` extension.

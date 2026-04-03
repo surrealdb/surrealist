@@ -4,7 +4,7 @@ import { createContext, type PropsWithChildren, useContext, useState } from "rea
 import { RecordId } from "surrealdb";
 import { type HistoryHandle, useHistory } from "~/hooks/history";
 import { useStable } from "~/hooks/stable";
-import { getSurrealQL } from "~/screens/surrealist/connection/connection";
+import { getSurrealQL } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { RecordsChangedEvent } from "~/util/global-events";
 import { InspectorDrawer } from "./drawer";

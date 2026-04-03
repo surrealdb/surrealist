@@ -14,7 +14,7 @@ import { ContextMenuDivider, ContextMenuItem } from "mantine-contextmenu";
 import { unique } from "radash";
 import { RecordId } from "surrealdb";
 import { useIsLight } from "~/hooks/theme";
-import { getSurreal } from "~/screens/surrealist/connection/connection";
+import { getSurreal } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { QueryResponse } from "~/types";
 import { NodeCircle } from "./node";
 import { GraphEdges, GraphExpansion, RelationGraphNode } from "./types";

@@ -1,0 +1,12 @@
+---
+description: Run quality checks before finishing any task
+alwaysApply: true
+---
+
+# Quality Checks
+
+Before finishing a task, always run these commands in order:
+
+1. `bun run qa` — apply code quality formatting
+2. `bun run qc` — check full code quality
+3. `bun run qts` — check TypeScript types
