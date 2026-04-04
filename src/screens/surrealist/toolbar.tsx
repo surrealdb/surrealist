@@ -20,6 +20,7 @@ import {
 	iconStar,
 	iconTable,
 } from "@surrealdb/ui";
+import { compareVersions } from "compare-versions";
 import { useEffect, useState } from "react";
 import { openCloudAuthentication } from "~/cloud/api/auth";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
@@ -55,7 +56,15 @@ import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
 import { useInterfaceStore } from "~/stores/interface";
 import { CloudDeployConfig } from "~/types";
-import { getConnectionById } from "~/util/connection";
+import { getConnection, getConnectionById } from "~/util/connection";
+import {
+	SURREAL_START_BASICS,
+	SURREAL_START_GRAPH_V2,
+	SURREAL_START_GRAPH_V3,
+	SURREAL_START_VECTOR_V2,
+	SURREAL_START_VECTOR_V3,
+} from "~/util/dataset";
+import { createBaseQuery } from "~/util/defaults";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
@@ -323,7 +332,46 @@ export function SurrealistToolbar() {
 	const showNS = !isSandbox && id && isConnected;
 	const showDB = showNS && namespace;
 
+	const [dataset, setDataset] = useState("surreal-deal-store-mini");
 	const selectDataset = useRequireDatabase(() => datasetModalOpenHandle.open());
+
+	const handleApplyDataset = useStable(async () => {
+		if (dataset === "surreal-deal-store-mini") {
+			await applyDataset(version);
+		} else if (dataset === "surreal-start") {
+			const { settings, updateConnection } = useConfigStore.getState();
+			const connection = getConnection();
+			const queries = [SURREAL_START_BASICS];
+
+			if (!connection) {
+				return;
+			}
+
+			const canUse30Queries = compareVersions(version, "3.0.0") >= 0;
+
+			if (canUse30Queries) {
+				queries.push(SURREAL_START_GRAPH_V3);
+				queries.push(SURREAL_START_VECTOR_V3);
+			} else {
+				queries.push(SURREAL_START_GRAPH_V2);
+				queries.push(SURREAL_START_VECTOR_V2);
+			}
+
+			const configs = queries.map((query) => ({
+				...createBaseQuery(settings, "config"),
+				name: query.name,
+				query: query.query,
+			}));
+
+			updateConnection({
+				id: connection.id,
+				activeQuery: configs[0].id,
+				queries: [...connection.queries, ...configs],
+			});
+		}
+
+		datasetModalOpenHandle.close();
+	});
 
 	return (
 		<>
@@ -619,11 +667,16 @@ export function SurrealistToolbar() {
 
 					<Select
 						placeholder="Select a dataset"
-						value="surreal-deal-store-mini"
+						value={dataset}
+						onChange={(value) => setDataset(value || "")}
 						data={[
 							{
 								label: "Surreal Deal Store (Mini)",
 								value: "surreal-deal-store-mini",
+							},
+							{
+								label: "Surreal Start",
+								value: "surreal-start",
 							},
 						]}
 					/>
@@ -641,10 +694,7 @@ export function SurrealistToolbar() {
 							type="submit"
 							variant="gradient"
 							flex={1}
-							onClick={async () => {
-								await applyDataset(version);
-								datasetModalOpenHandle.close();
-							}}
+							onClick={handleApplyDataset}
 							loading={isDatasetLoading}
 						>
 							Apply
