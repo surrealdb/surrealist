@@ -140,9 +140,14 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 		confirmText: "Delete",
 		skippable: true,
 		onConfirm: async () => {
-			await executeQuery(
+			const [{ success, result }] = await executeQuery(
 				/* surql */ `DELETE ${await getSurrealQL().formatValue(history.current)}`,
 			);
+
+			if (!success) {
+				setError(result.replace("There was a problem with the database: ", ""));
+				return;
+			}
 
 			history.clear();
 
