@@ -26,25 +26,26 @@ export function useLatestNewsQuery() {
 	return useQuery<NewsPost[]>({
 		queryKey: ["newsfeed", newsfeedBase],
 		queryFn: async () => {
-			const response = await fetch(`${newsfeedBase}/feed/surrealist.rss`);
-			const body = await response.text();
-			const result = new DOMParser().parseFromString(body, "text/xml");
+			// const response = await fetch(`${newsfeedBase}/feed/surrealist.rss`);
+			// const body = await response.text();
+			// const result = new DOMParser().parseFromString(body, "text/xml");
 
-			const parseError = result.querySelector("parsererror div")?.textContent;
+			// const parseError = result.querySelector("parsererror div")?.textContent;
 
-			if (parseError) {
-				throw new Error(parseError);
-			}
+			// if (parseError) {
+			// 	throw new Error(parseError);
+			// }
 
-			return [...result.querySelectorAll("item")].map((item) => ({
-				id: item.querySelector("guid")?.textContent || "",
-				title: item.querySelector("title")?.textContent || "",
-				link: item.querySelector("link")?.textContent || "",
-				description: item.querySelector("description")?.textContent || "",
-				thumbnail: item.querySelector("content")?.getAttribute("url") || "",
-				content: item.querySelector("encoded")?.textContent || "",
-				published: item.querySelector("pubDate")?.textContent || "",
-			}));
+			// return [...result.querySelectorAll("item")].map((item) => ({
+			// 	id: item.querySelector("guid")?.textContent || "",
+			// 	title: item.querySelector("title")?.textContent || "",
+			// 	link: item.querySelector("link")?.textContent || "",
+			// 	description: item.querySelector("description")?.textContent || "",
+			// 	thumbnail: item.querySelector("content")?.getAttribute("url") || "",
+			// 	content: item.querySelector("encoded")?.textContent || "",
+			// 	published: item.querySelector("pubDate")?.textContent || "",
+			// }));
+			return [];
 		},
 	});
 }

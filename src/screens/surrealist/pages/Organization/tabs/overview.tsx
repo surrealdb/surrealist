@@ -17,12 +17,12 @@ import { Icon, iconSpectron } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
-import { useCloudOrganizationContextsQuery } from "~/cloud/queries/datastores";
+import { useCloudOrganizationContextsQuery } from "~/cloud/queries/contexts";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useHasCloudFeature } from "~/hooks/cloud";
-import { useConnectionNavigator } from "~/hooks/routing";
+import { useConnectionNavigator, useContextNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudContext, CloudInstance, ContextState } from "~/types";
@@ -73,14 +73,18 @@ function DataStoreStateBadge({ state, size }: { state: ContextState; size: numbe
 function DataStoreCard({
 	dataStore,
 	regions,
+	onClick,
 }: {
 	dataStore: CloudContext;
 	regions: { slug: string; description: string }[];
+	onClick: () => void;
 }) {
 	return (
 		<Anchor
 			variant="glow"
 			c="var(--mantine-color-text)"
+			onClick={onClick}
+			style={{ cursor: "pointer" }}
 		>
 			<Paper p="lg">
 				<Group
@@ -138,6 +142,7 @@ function DataStoreCard({
 
 export function OrganizationOverviewTab({ organization }: OrganizationTabProps) {
 	const navigateConnection = useConnectionNavigator();
+	const navigateContext = useContextNavigator();
 	const allRegions = useCloudStore((s) => s.regions);
 	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
 	const isRestricted = isOrganisationRestricted(organization);
@@ -239,6 +244,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 								key={ds.id}
 								dataStore={ds}
 								regions={allRegions}
+								onClick={() => navigateContext(ds.id)}
 							/>
 						))}
 						{contextsLoaded && contexts.length === 0 && (

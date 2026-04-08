@@ -89,6 +89,8 @@ export type ViewPage =
 	| "documentation"
 	| "migrations";
 
+export type ContextViewPage = "dashboard" | "memories" | "knowledge" | "api-keys" | "settings";
+
 export type AppMenuItemType =
 	| "Separator"
 	| "Copy"
@@ -570,6 +572,12 @@ export interface ViewCondition {
 	isCloud: boolean;
 }
 
+export interface ContextViewPageInfo {
+	id: ContextViewPage;
+	name: string;
+	icon: string;
+}
+
 export interface Dataset {
 	name: string;
 	path: string;
@@ -669,6 +677,93 @@ export interface CloudContext {
 	region: string;
 	version: string;
 	organization_id: string;
+	description?: string;
+}
+
+export type MemoryEventType = "ADD" | "UPDATE" | "DELETE" | "NOOP";
+export type MemoryEventStatus = "PENDING" | "RUNNING" | "SUCCEEDED" | "FAILED";
+
+export interface ContextMemory {
+	id: string;
+	text: string;
+	userId: string;
+	categories: string[];
+	metadata: Record<string, string>;
+	score: number;
+	immutable: boolean;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface KnowledgeRelation {
+	source: string;
+	sourceType: string;
+	relationship: string;
+	target: string;
+	targetType: string;
+}
+
+export interface KnowledgeNode {
+	id: string;
+	label: string;
+	type: string;
+	memoryCount: number;
+}
+
+export interface ContextKnowledge {
+	nodes: KnowledgeNode[];
+	relations: KnowledgeRelation[];
+}
+
+export interface ContextEvent {
+	id: string;
+	eventType: MemoryEventType;
+	status: MemoryEventStatus;
+	memoryText: string;
+	userId: string;
+	latency: number;
+	createdAt: string;
+	completedAt: string | null;
+}
+
+export interface ContextEntity {
+	id: string;
+	name: string;
+	type: "user" | "agent" | "app";
+	totalMemories: number;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface ContextStats {
+	totalMemories: number;
+	totalUsers: number;
+	totalAgents: number;
+	totalKnowledgeNodes: number;
+	totalKnowledgeRelations: number;
+	memoriesAddedToday: number;
+	memoriesAddedThisWeek: number;
+	searchesToday: number;
+	avgSearchLatencyMs: number;
+	graphEnabled: boolean;
+	lastActivity: string;
+}
+
+export interface ContextCategory {
+	name: string;
+	description: string;
+	count: number;
+}
+
+export interface ContextApiKey {
+	id: string;
+	name: string;
+	key: string;
+	maskedKey: string;
+	createdAt: string;
+	lastUsedAt: string | null;
+	expiresAt: string | null;
+	scopes: string[];
 }
 
 export interface CloudDistributedStorageSpecs {
