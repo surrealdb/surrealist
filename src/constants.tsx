@@ -1,5 +1,6 @@
 import type { MantineColor, MantineColorScheme } from "@mantine/core";
 import {
+	iconAccount,
 	iconAPI,
 	iconAuth,
 	iconBraces,
@@ -21,6 +22,7 @@ import {
 	iconHelp,
 	iconKey,
 	iconLive,
+	iconModel,
 	iconPause,
 	iconQuery,
 	iconReferral,
@@ -341,11 +343,16 @@ export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = 
 	memories: {
 		id: "memories",
 		name: "Memories",
-		icon: iconChat,
+		icon: iconModel,
+	},
+	entities: {
+		id: "entities",
+		name: "Entities",
+		icon: iconAccount,
 	},
 	knowledge: {
 		id: "knowledge",
-		name: "Knowledge",
+		name: "Knowledge Graph",
 		icon: iconRelation,
 	},
 	"api-keys": {

@@ -1,19 +1,13 @@
-import {
-	Badge,
-	Chip,
-	Group,
-	Paper,
-	SimpleGrid,
-	Stack,
-	Table,
-	Text,
-	ThemeIcon,
-} from "@mantine/core";
+import { Badge, Group, Paper, Text, ThemeIcon, useMantineTheme } from "@mantine/core";
 import { Icon, iconRelation } from "@surrealdb/ui";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { RecordId } from "surrealdb";
 import { useCloudContextKnowledgeQuery, useCloudContextStatsQuery } from "~/cloud/queries/contexts";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { newRelationalGraph, RelationGraph } from "~/components/RelationGraph";
+import type { GraphEdges } from "~/components/RelationGraph/types";
 import { Section } from "~/components/Section";
+import { useStable } from "~/hooks/stable";
 import { ContextViewProps } from "../../types";
 
 const TYPE_COLORS: Record<string, string> = {
@@ -30,9 +24,59 @@ const TYPE_COLORS: Record<string, string> = {
 export default function KnowledgeView({ context }: ContextViewProps) {
 	const { data: knowledge } = useCloudContextKnowledgeQuery(context.id);
 	const { data: stats } = useCloudContextStatsQuery(context.id);
+	const theme = useMantineTheme();
+	const graphBuilt = useRef(false);
 
-	const [typeFilter, setTypeFilter] = useState("all");
-	const [selectedNode, setSelectedNode] = useState<string | null>(null);
+	const graph = useMemo(() => newRelationalGraph(), []);
+
+	useEffect(() => {
+		if (!knowledge || graphBuilt.current) return;
+		graphBuilt.current = true;
+
+		const nodeMap = new Map<string, string>();
+
+		for (const node of knowledge.nodes) {
+			const record = new RecordId(node.type, node.id);
+			const id = record.toString();
+			const color = theme.colors[TYPE_COLORS[node.type] ?? "gray"][6];
+
+			nodeMap.set(node.label, id);
+
+			const angle = Math.random() * 2 * Math.PI;
+			const radius = 50 + Math.random() * 150;
+
+			graph.addNode(id, {
+				record,
+				label: node.label,
+				x: Math.cos(angle) * radius,
+				y: Math.sin(angle) * radius,
+				size: 8 + node.memoryCount * 1.5,
+				color,
+			});
+		}
+
+		for (const rel of knowledge.relations) {
+			const sourceId = nodeMap.get(rel.source);
+			const targetId = nodeMap.get(rel.target);
+
+			if (!sourceId || !targetId) continue;
+			if (sourceId === targetId) continue;
+
+			const record = new RecordId(rel.relationship, `${rel.source}_${rel.target}`);
+
+			graph.addEdge(sourceId, targetId, {
+				record,
+				label: rel.relationship,
+				weight: 1,
+				size: 2,
+				type: "curved",
+			});
+		}
+	}, [knowledge, graph, theme.colors]);
+
+	const queryEdges = useStable((_record: RecordId): GraphEdges => {
+		return { from: new Set(), to: new Set() };
+	});
 
 	const entityTypes = useMemo(() => {
 		if (!knowledge) return [];
@@ -40,33 +84,9 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 		return Array.from(types).sort();
 	}, [knowledge]);
 
-	const filteredNodes = useMemo(() => {
-		if (!knowledge) return [];
-		if (typeFilter === "all") return knowledge.nodes;
-		return knowledge.nodes.filter((n) => n.type === typeFilter);
-	}, [knowledge, typeFilter]);
-
-	const filteredRelations = useMemo(() => {
-		if (!knowledge) return [];
-
-		let result = knowledge.relations;
-
-		if (typeFilter !== "all") {
-			result = result.filter(
-				(r) => r.sourceType === typeFilter || r.targetType === typeFilter,
-			);
-		}
-
-		if (selectedNode) {
-			result = result.filter((r) => r.source === selectedNode || r.target === selectedNode);
-		}
-
-		return result;
-	}, [knowledge, typeFilter, selectedNode]);
-
 	return (
 		<>
-			<PrimaryTitle fz={32}>Knowledge</PrimaryTitle>
+			<PrimaryTitle fz={32}>Knowledge Graph</PrimaryTitle>
 
 			<Section title="Overview">
 				<Group gap="lg">
@@ -82,12 +102,7 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 							>
 								<Icon path={iconRelation} />
 							</ThemeIcon>
-							<Text
-								fw={600}
-								size="sm"
-							>
-								{stats?.totalKnowledgeNodes ?? 0} nodes
-							</Text>
+							<Text fw={600}>{stats?.totalKnowledgeNodes ?? 0} nodes</Text>
 						</Group>
 					</Paper>
 					<Paper
@@ -102,12 +117,7 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 							>
 								<Icon path={iconRelation} />
 							</ThemeIcon>
-							<Text
-								fw={600}
-								size="sm"
-							>
-								{stats?.totalKnowledgeRelations ?? 0} relations
-							</Text>
+							<Text fw={600}>{stats?.totalKnowledgeRelations ?? 0} relations</Text>
 						</Group>
 					</Paper>
 					<Paper
@@ -115,12 +125,7 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 						px="md"
 					>
 						<Group gap="xs">
-							<Text
-								fw={600}
-								size="sm"
-							>
-								{entityTypes.length} entity types
-							</Text>
+							<Text fw={600}>{entityTypes.length} entity types</Text>
 						</Group>
 					</Paper>
 					<Paper
@@ -137,173 +142,14 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 				</Group>
 			</Section>
 
-			<Chip.Group
-				multiple={false}
-				value={typeFilter}
-				onChange={(v) => {
-					setTypeFilter(v as string);
-					setSelectedNode(null);
-				}}
-			>
-				<Group gap="xs">
-					<Chip
-						value="all"
-						size="xs"
-					>
-						All types
-					</Chip>
-					{entityTypes.map((type) => (
-						<Chip
-							key={type}
-							value={type}
-							size="xs"
-							color={TYPE_COLORS[type] ?? "gray"}
-						>
-							{type}
-						</Chip>
-					))}
-				</Group>
-			</Chip.Group>
-
-			<Section title="Entities">
-				<SimpleGrid cols={{ base: 2, sm: 3, lg: 4 }}>
-					{filteredNodes.map((node) => (
-						<Paper
-							key={node.id}
-							p="sm"
-							withBorder={selectedNode === node.label}
-							style={{
-								cursor: "pointer",
-								borderColor:
-									selectedNode === node.label
-										? `var(--mantine-color-${TYPE_COLORS[node.type] ?? "gray"}-6)`
-										: undefined,
-							}}
-							onClick={() =>
-								setSelectedNode(selectedNode === node.label ? null : node.label)
-							}
-						>
-							<Stack gap={4}>
-								<Text
-									fw={600}
-									size="sm"
-									c="bright"
-								>
-									{node.label}
-								</Text>
-								<Group
-									gap="xs"
-									justify="space-between"
-								>
-									<Badge
-										variant="light"
-										size="xs"
-										color={TYPE_COLORS[node.type] ?? "gray"}
-									>
-										{node.type}
-									</Badge>
-									<Text
-										size="xs"
-										c="dimmed"
-									>
-										{node.memoryCount} memories
-									</Text>
-								</Group>
-							</Stack>
-						</Paper>
-					))}
-				</SimpleGrid>
-			</Section>
-
-			<Section
-				title="Relations"
-				description={
-					selectedNode ? `Showing relations involving "${selectedNode}"` : undefined
-				}
-				rightSection={
-					selectedNode ? (
-						<Badge
-							variant="light"
-							onClick={() => setSelectedNode(null)}
-							style={{ cursor: "pointer" }}
-						>
-							Clear filter
-						</Badge>
-					) : undefined
-				}
-			>
-				<Table.ScrollContainer minWidth={600}>
-					<Table>
-						<Table.Thead>
-							<Table.Tr>
-								<Table.Th>Source</Table.Th>
-								<Table.Th>Relationship</Table.Th>
-								<Table.Th>Target</Table.Th>
-							</Table.Tr>
-						</Table.Thead>
-						<Table.Tbody>
-							{filteredRelations.map((rel, i) => (
-								<Table.Tr
-									key={`${rel.source}-${rel.relationship}-${rel.target}-${i}`}
-								>
-									<Table.Td>
-										<Group
-											gap="xs"
-											wrap="nowrap"
-										>
-											<Badge
-												variant="light"
-												size="xs"
-												color={TYPE_COLORS[rel.sourceType] ?? "gray"}
-											>
-												{rel.sourceType}
-											</Badge>
-											<Text size="sm">{rel.source}</Text>
-										</Group>
-									</Table.Td>
-									<Table.Td>
-										<Text
-											size="sm"
-											fw={500}
-											c="dimmed"
-										>
-											{rel.relationship}
-										</Text>
-									</Table.Td>
-									<Table.Td>
-										<Group
-											gap="xs"
-											wrap="nowrap"
-										>
-											<Badge
-												variant="light"
-												size="xs"
-												color={TYPE_COLORS[rel.targetType] ?? "gray"}
-											>
-												{rel.targetType}
-											</Badge>
-											<Text size="sm">{rel.target}</Text>
-										</Group>
-									</Table.Td>
-								</Table.Tr>
-							))}
-							{filteredRelations.length === 0 && (
-								<Table.Tr>
-									<Table.Td colSpan={3}>
-										<Text
-											ta="center"
-											c="dimmed"
-											py="lg"
-										>
-											No relations found
-										</Text>
-									</Table.Td>
-								</Table.Tr>
-							)}
-						</Table.Tbody>
-					</Table>
-				</Table.ScrollContainer>
-			</Section>
+			<Paper>
+				<RelationGraph
+					graph={graph}
+					queryEdges={queryEdges}
+					h={500}
+					style={{ borderRadius: "var(--mantine-radius-md)" }}
+				/>
+			</Paper>
 		</>
 	);
 }

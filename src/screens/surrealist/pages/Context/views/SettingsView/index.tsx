@@ -115,16 +115,11 @@ export default function SettingsView({ context }: ContextViewProps) {
 					<Box>
 						<Text
 							fw={500}
-							size="sm"
 							mb="xs"
 						>
 							Custom categories
 						</Text>
-						<Text
-							size="xs"
-							c="dimmed"
-							mb="md"
-						>
+						<Text mb="md">
 							Define categories for automatic memory classification. Memories will be
 							tagged using these labels.
 						</Text>
@@ -203,10 +198,7 @@ export default function SettingsView({ context }: ContextViewProps) {
 								>
 									Reset all memories
 								</Text>
-								<Text
-									size="sm"
-									c="dimmed"
-								>
+								<Text>
 									Remove all memories from this context. This action cannot be
 									undone.
 								</Text>
@@ -231,10 +223,7 @@ export default function SettingsView({ context }: ContextViewProps) {
 								>
 									Delete context
 								</Text>
-								<Text
-									size="sm"
-									c="dimmed"
-								>
+								<Text>
 									Permanently delete this context and all associated data.
 								</Text>
 							</Box>

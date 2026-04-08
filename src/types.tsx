@@ -89,7 +89,13 @@ export type ViewPage =
 	| "documentation"
 	| "migrations";
 
-export type ContextViewPage = "dashboard" | "memories" | "knowledge" | "api-keys" | "settings";
+export type ContextViewPage =
+	| "dashboard"
+	| "memories"
+	| "entities"
+	| "knowledge"
+	| "api-keys"
+	| "settings";
 
 export type AppMenuItemType =
 	| "Separator"

@@ -239,12 +239,7 @@ curl -X POST ${endpoint}/memories/search \\
 							{apiKeys?.map((apiKey) => (
 								<Table.Tr key={apiKey.id}>
 									<Table.Td>
-										<Text
-											size="sm"
-											fw={500}
-										>
-											{apiKey.name}
-										</Text>
+										<Text fw={500}>{apiKey.name}</Text>
 									</Table.Td>
 									<Table.Td>
 										<Code>
@@ -267,28 +262,17 @@ curl -X POST ${endpoint}/memories/search \\
 										</Group>
 									</Table.Td>
 									<Table.Td>
-										<Text
-											size="sm"
-											c="dimmed"
-										>
-											{formatRelativeTime(apiKey.createdAt)}
-										</Text>
+										<Text>{formatRelativeTime(apiKey.createdAt)}</Text>
 									</Table.Td>
 									<Table.Td>
-										<Text
-											size="sm"
-											c="dimmed"
-										>
+										<Text>
 											{apiKey.lastUsedAt
 												? formatRelativeTime(apiKey.lastUsedAt)
 												: "Never"}
 										</Text>
 									</Table.Td>
 									<Table.Td>
-										<Text
-											size="sm"
-											c="dimmed"
-										>
+										<Text>
 											{apiKey.expiresAt
 												? new Date(apiKey.expiresAt).toLocaleDateString()
 												: "Never"}
@@ -352,34 +336,19 @@ curl -X POST ${endpoint}/memories/search \\
 							value="javascript"
 							pt="md"
 						>
-							<Code
-								block
-								fz="xs"
-							>
-								{jsSnippet}
-							</Code>
+							<Code block>{jsSnippet}</Code>
 						</Tabs.Panel>
 						<Tabs.Panel
 							value="python"
 							pt="md"
 						>
-							<Code
-								block
-								fz="xs"
-							>
-								{pySnippet}
-							</Code>
+							<Code block>{pySnippet}</Code>
 						</Tabs.Panel>
 						<Tabs.Panel
 							value="curl"
 							pt="md"
 						>
-							<Code
-								block
-								fz="xs"
-							>
-								{curlSnippet}
-							</Code>
+							<Code block>{curlSnippet}</Code>
 						</Tabs.Panel>
 					</Tabs>
 				</Paper>

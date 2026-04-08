@@ -140,33 +140,13 @@ function MemoryCard({
 
 				<Group justify="space-between">
 					<Group gap="md">
-						<Text
-							size="xs"
-							c="dimmed"
-						>
-							{memory.userId}
-						</Text>
-						<Text
-							size="xs"
-							c="dimmed"
-						>
-							Score: {memory.score.toFixed(2)}
-						</Text>
+						<Text>{memory.userId}</Text>
+						<Text>Score: {memory.score.toFixed(2)}</Text>
 					</Group>
 					<Group gap="md">
-						<Text
-							size="xs"
-							c="dimmed"
-						>
-							Created {formatRelativeTime(memory.createdAt)}
-						</Text>
+						<Text>Created {formatRelativeTime(memory.createdAt)}</Text>
 						{memory.createdAt !== memory.updatedAt && (
-							<Text
-								size="xs"
-								c="dimmed"
-							>
-								Updated {formatRelativeTime(memory.updatedAt)}
-							</Text>
+							<Text>Updated {formatRelativeTime(memory.updatedAt)}</Text>
 						)}
 					</Group>
 				</Group>
@@ -325,7 +305,6 @@ export default function MemoriesView({ context }: ContextViewProps) {
 							<Icon
 								path={iconChat}
 								size="xl"
-								c="dimmed"
 							/>
 							<Text
 								fw={600}
@@ -333,10 +312,7 @@ export default function MemoriesView({ context }: ContextViewProps) {
 							>
 								No memories found
 							</Text>
-							<Text
-								size="sm"
-								c="dimmed"
-							>
+							<Text>
 								{search || activeCategory !== "all" || entityFilter
 									? "Try adjusting your filters"
 									: "This context has no memories yet"}
@@ -382,7 +358,6 @@ export default function MemoriesView({ context }: ContextViewProps) {
 						{Object.keys(editingMemory.metadata).length > 0 && (
 							<Box>
 								<Text
-									size="sm"
 									fw={500}
 									mb="xs"
 								>
@@ -406,18 +381,8 @@ export default function MemoriesView({ context }: ContextViewProps) {
 							</Box>
 						)}
 
-						<Text
-							size="xs"
-							c="dimmed"
-						>
-							Created: {new Date(editingMemory.createdAt).toLocaleString()}
-						</Text>
-						<Text
-							size="xs"
-							c="dimmed"
-						>
-							Updated: {new Date(editingMemory.updatedAt).toLocaleString()}
-						</Text>
+						<Text>Created: {new Date(editingMemory.createdAt).toLocaleString()}</Text>
+						<Text>Updated: {new Date(editingMemory.updatedAt).toLocaleString()}</Text>
 
 						<Group justify="flex-end">
 							<Button

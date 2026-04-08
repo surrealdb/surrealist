@@ -12,6 +12,7 @@ import { ContextViewProps } from "./types";
 
 const DashboardView = lazy(() => import("./views/DashboardView"));
 const MemoriesView = lazy(() => import("./views/MemoriesView"));
+const EntitiesView = lazy(() => import("./views/EntitiesView"));
 const KnowledgeView = lazy(() => import("./views/KnowledgeView"));
 const ApiKeysView = lazy(() => import("./views/ApiKeysView"));
 const SettingsView = lazy(() => import("./views/SettingsView"));
@@ -19,6 +20,7 @@ const SettingsView = lazy(() => import("./views/SettingsView"));
 const VIEW_COMPONENTS: Record<ContextViewPage, React.ComponentType<ContextViewProps>> = {
 	dashboard: memo(DashboardView),
 	memories: memo(MemoriesView),
+	entities: memo(EntitiesView),
 	knowledge: memo(KnowledgeView),
 	"api-keys": memo(ApiKeysView),
 	settings: memo(SettingsView),

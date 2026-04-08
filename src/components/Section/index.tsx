@@ -3,7 +3,7 @@ import type { PropsWithChildren, ReactNode } from "react";
 import { useIsLight } from "~/hooks/theme";
 
 export interface SectionProps {
-	title: ReactNode;
+	title?: ReactNode;
 	description?: ReactNode;
 	rightSection?: ReactNode;
 	withMaxWidth?: boolean;
@@ -20,19 +20,21 @@ export function Section({
 
 	return (
 		<Box>
-			<Group>
-				<Box flex={1}>
-					<Text
-						fw={700}
-						fz={17}
-						c={isLight ? "obsidian.9" : "obsidian.0"}
-					>
-						{title}
-					</Text>
-					{description && <Text>{description}</Text>}
-				</Box>
-				{rightSection}
-			</Group>
+			{title && (
+				<Group>
+					<Box flex={1}>
+						<Text
+							fw={700}
+							fz={17}
+							c={isLight ? "obsidian.9" : "obsidian.0"}
+						>
+							{title}
+						</Text>
+						{description && <Text>{description}</Text>}
+					</Box>
+					{rightSection}
+				</Group>
+			)}
 			<Stack
 				py="xl"
 				maw={withMaxWidth ? 500 : undefined}
