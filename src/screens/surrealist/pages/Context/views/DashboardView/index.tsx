@@ -1,94 +1,37 @@
+import { Sparkline } from "@mantine/charts";
 import {
-	Badge,
+	Anchor,
+	Box,
+	Button,
 	Group,
-	Indicator,
 	Paper,
-	Progress,
 	SimpleGrid,
 	Stack,
-	Table,
+	Tabs,
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
-import { Icon, iconChart, iconChat, iconRelation, iconSearch } from "@surrealdb/ui";
 import {
-	useCloudContextCategoriesQuery,
-	useCloudContextEntitiesQuery,
-	useCloudContextEventsQuery,
-	useCloudContextStatsQuery,
-} from "~/cloud/queries/contexts";
+	CodeBlock,
+	Icon,
+	iconAPI,
+	iconModel,
+	iconOpen,
+	iconRelation,
+	iconSearch,
+} from "@surrealdb/ui";
+import { useState } from "react";
+import { useCloudContextStatsQuery } from "~/cloud/queries/contexts";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
-import type { ContextEvent, MemoryEventType } from "~/types";
 import { ContextViewProps } from "../../types";
 
-const GRID_COLUMNS = { base: 1, sm: 2, lg: 3 };
+const GRID_COLUMNS = { base: 1, sm: 2, lg: 4 };
 
-const EVENT_COLORS: Record<MemoryEventType, string> = {
-	ADD: "green",
-	UPDATE: "blue",
-	DELETE: "red",
-	NOOP: "gray",
-};
-
-function formatRelativeTime(iso: string): string {
-	const diff = Date.now() - new Date(iso).getTime();
-	const minutes = Math.floor(diff / 60_000);
-
-	if (minutes < 1) return "Just now";
-	if (minutes < 60) return `${minutes}m ago`;
-
-	const hours = Math.floor(minutes / 60);
-	if (hours < 24) return `${hours}h ago`;
-
-	const days = Math.floor(hours / 24);
-	return `${days}d ago`;
-}
-
-function EventStatusIndicator({ event }: { event: ContextEvent }) {
-	switch (event.status) {
-		case "SUCCEEDED":
-			return (
-				<Indicator
-					color="green"
-					size={8}
-					processing={false}
-				>
-					<Text size="sm">Succeeded</Text>
-				</Indicator>
-			);
-		case "FAILED":
-			return (
-				<Indicator
-					color="red"
-					size={8}
-					processing={false}
-				>
-					<Text size="sm">Failed</Text>
-				</Indicator>
-			);
-		case "PENDING":
-			return (
-				<Indicator
-					color="yellow"
-					size={8}
-					processing
-				>
-					<Text size="sm">Pending</Text>
-				</Indicator>
-			);
-		case "RUNNING":
-			return (
-				<Indicator
-					color="blue"
-					size={8}
-					processing
-				>
-					<Text size="sm">Running</Text>
-				</Indicator>
-			);
-	}
-}
+const MOCK_MEMORY_TREND = [3, 5, 8, 6, 12, 9, 14, 11, 18, 15, 20, 18];
+const MOCK_SEARCH_TREND = [12, 18, 24, 15, 30, 22, 35, 28, 40, 47, 42, 47];
+const MOCK_KNOWLEDGE_TREND = [2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12];
+const MOCK_LATENCY_TREND = [65, 58, 52, 48, 55, 44, 50, 46, 43, 42, 45, 42];
 
 function StatCard({
 	icon,
@@ -96,79 +39,209 @@ function StatCard({
 	value,
 	subtitle,
 	color,
+	trendData,
 }: {
 	icon: string;
 	label: string;
 	value: string | number;
 	subtitle?: string;
 	color: string;
+	trendData: number[];
 }) {
 	return (
 		<Paper p="lg">
 			<Group
 				gap="md"
 				wrap="nowrap"
+				justify="space-between"
 			>
-				<ThemeIcon
-					color={color}
-					variant="light"
-					size="xl"
+				<Group
+					gap="md"
+					wrap="nowrap"
 				>
-					<Icon
-						size="lg"
-						path={icon}
-					/>
-				</ThemeIcon>
-				<Stack gap={2}>
-					<Text
-						fw={700}
-						fz="xl"
-						c="bright"
+					<ThemeIcon
+						color={color}
+						variant="light"
+						size="xl"
 					>
-						{value}
-					</Text>
-					<Text size="sm">{label}</Text>
-					{subtitle && (
+						<Icon
+							size="lg"
+							path={icon}
+						/>
+					</ThemeIcon>
+					<Stack gap={2}>
 						<Text
-							size="xs"
-							c="dimmed"
+							fw={700}
+							fz="xl"
+							c="bright"
 						>
-							{subtitle}
+							{value}
 						</Text>
-					)}
-				</Stack>
+						<Text>{label}</Text>
+					</Stack>
+				</Group>
+				<Sparkline
+					w={80}
+					h={32}
+					data={trendData}
+					curveType="natural"
+					color={`var(--mantine-color-${color}-6)`}
+					strokeWidth={2}
+					fillOpacity={0.15}
+				/>
 			</Group>
+			{subtitle && <Text mt="xs">{subtitle}</Text>}
 		</Paper>
 	);
 }
 
+type IntegrationTab = "python" | "javascript" | "api";
+
+const INTEGRATION_STEPS: Record<
+	IntegrationTab,
+	{ title: string; description: string; code: string; lang: string }[]
+> = {
+	python: [
+		{
+			title: "Install the SDK",
+			description: "Get started by installing the SurrealDB Context Python package.",
+			code: "pip install surrealdb-context",
+			lang: "bash",
+		},
+		{
+			title: "Initialise the client",
+			description: "Initialise the client with your API key to start making requests.",
+			code: `from surrealdb_context import ContextClient
+
+client = ContextClient(api_key="your-api-key")`,
+			lang: "python",
+		},
+		{
+			title: "Add memory",
+			description: "Store conversation history and important information for your users.",
+			code: `messages = [
+    { "role": "user", "content": "Hi, I'm Alex. I prefer dark mode." },
+    { "role": "assistant", "content": "Hello Alex! I've noted your preference." }
+]
+
+client.add(messages, user_id="alex")`,
+			lang: "python",
+		},
+		{
+			title: "Retrieve memory",
+			description: "Retrieve the complete memory history for a specific user.",
+			code: `query = "What are the user's preferences?"
+
+results = client.search(query, user_id="alex")`,
+			lang: "python",
+		},
+	],
+	javascript: [
+		{
+			title: "Install the SDK",
+			description: "Get started by installing the SurrealDB Context npm package.",
+			code: "npm install @surrealdb/context",
+			lang: "bash",
+		},
+		{
+			title: "Initialise the client",
+			description: "Initialise the client with your API key to start making requests.",
+			code: `import { ContextClient } from "@surrealdb/context";
+
+const client = new ContextClient({ apiKey: "your-api-key" });`,
+			lang: "javascript",
+		},
+		{
+			title: "Add memory",
+			description: "Store conversation history and important information for your users.",
+			code: `const messages = [
+    { role: "user", content: "Hi, I'm Alex. I prefer dark mode." },
+    { role: "assistant", content: "Hello Alex! I've noted your preference." }
+];
+
+await client.add(messages, { userId: "alex" });`,
+			lang: "javascript",
+		},
+		{
+			title: "Retrieve memory",
+			description: "Retrieve the complete memory history for a specific user.",
+			code: `const results = await client.search(
+    "What are the user's preferences?",
+    { userId: "alex" }
+);`,
+			lang: "javascript",
+		},
+	],
+	api: [
+		{
+			title: "Add memory",
+			description: "Store conversation history using the REST API.",
+			code: `curl -X POST https://api.surrealdb.com/v1/context/memories \\
+    -H "Authorization: Bearer your-api-key" \\
+    -H "Content-Type: application/json" \\
+    -d '{
+        "messages": [
+            { "role": "user", "content": "Hi, I'm Alex." }
+        ],
+        "user_id": "alex"
+    }'`,
+			lang: "bash",
+		},
+		{
+			title: "Search memories",
+			description: "Search across stored memories using semantic search.",
+			code: `curl -X POST https://api.surrealdb.com/v1/context/search \\
+    -H "Authorization: Bearer your-api-key" \\
+    -H "Content-Type: application/json" \\
+    -d '{
+        "query": "What are the user preferences?",
+        "user_id": "alex"
+    }'`,
+			lang: "bash",
+		},
+		{
+			title: "List memories",
+			description: "Retrieve all stored memories for a specific user.",
+			code: `curl https://api.surrealdb.com/v1/context/memories?user_id=alex \\
+    -H "Authorization: Bearer your-api-key"`,
+			lang: "bash",
+		},
+	],
+};
+
+const TAB_LABELS: Record<IntegrationTab, string> = {
+	python: "Python",
+	javascript: "JavaScript",
+	api: "REST API",
+};
+
 export default function DashboardView({ context }: ContextViewProps) {
 	const { data: stats } = useCloudContextStatsQuery(context.id);
-	const { data: events } = useCloudContextEventsQuery(context.id);
-	const { data: categories } = useCloudContextCategoriesQuery(context.id);
-	const { data: entities } = useCloudContextEntitiesQuery(context.id);
+	const [activeTab, setActiveTab] = useState<IntegrationTab>("python");
 
-	const totalCategories = categories?.reduce((sum, c) => sum + c.count, 0) ?? 0;
+	const steps = INTEGRATION_STEPS[activeTab];
 
 	return (
 		<>
 			<PrimaryTitle fz={32}>{context.name}</PrimaryTitle>
 
-			<Section title="Overview">
+			<Section>
 				<SimpleGrid cols={GRID_COLUMNS}>
 					<StatCard
-						icon={iconChat}
+						icon={iconModel}
 						label="Total memories"
 						value={stats?.totalMemories ?? 0}
 						subtitle={`${stats?.memoriesAddedToday ?? 0} added today`}
 						color="blue"
+						trendData={MOCK_MEMORY_TREND}
 					/>
 					<StatCard
 						icon={iconSearch}
 						label="Searches today"
 						value={stats?.searchesToday ?? 0}
-						subtitle={`${stats?.avgSearchLatencyMs ?? 0}ms avg latency`}
+						subtitle={`${stats?.memoriesAddedThisWeek ?? 0} this week`}
 						color="violet"
+						trendData={MOCK_SEARCH_TREND}
 					/>
 					<StatCard
 						icon={iconRelation}
@@ -176,172 +249,114 @@ export default function DashboardView({ context }: ContextViewProps) {
 						value={stats?.totalKnowledgeNodes ?? 0}
 						subtitle={`${stats?.totalKnowledgeRelations ?? 0} relations`}
 						color="teal"
+						trendData={MOCK_KNOWLEDGE_TREND}
 					/>
 					<StatCard
-						icon={iconChart}
-						label="Users / Agents"
-						value={`${stats?.totalUsers ?? 0} / ${stats?.totalAgents ?? 0}`}
-						color="orange"
-					/>
-					<StatCard
-						icon={iconSearch}
-						label="Avg search latency"
+						icon={iconAPI}
+						label="Avg latency"
 						value={`${stats?.avgSearchLatencyMs ?? 0}ms`}
-						color="grape"
-					/>
-					<StatCard
-						icon={iconRelation}
-						label="Graph memory"
-						value={stats?.graphEnabled ? "Enabled" : "Disabled"}
-						color={stats?.graphEnabled ? "green" : "gray"}
+						subtitle={`${stats?.totalUsers ?? 0} users, ${stats?.totalAgents ?? 0} agents`}
+						color="orange"
+						trendData={MOCK_LATENCY_TREND}
 					/>
 				</SimpleGrid>
 			</Section>
 
-			<Section title="Recent events">
-				<Table.ScrollContainer minWidth={700}>
-					<Table>
-						<Table.Thead>
-							<Table.Tr>
-								<Table.Th>Event</Table.Th>
-								<Table.Th>Memory</Table.Th>
-								<Table.Th>Entity</Table.Th>
-								<Table.Th>Status</Table.Th>
-								<Table.Th>Latency</Table.Th>
-								<Table.Th>Time</Table.Th>
-							</Table.Tr>
-						</Table.Thead>
-						<Table.Tbody>
-							{events?.slice(0, 10).map((event) => (
-								<Table.Tr key={event.id}>
-									<Table.Td>
-										<Badge
-											color={EVENT_COLORS[event.eventType]}
-											variant="light"
-											size="sm"
-										>
-											{event.eventType}
-										</Badge>
-									</Table.Td>
-									<Table.Td maw={250}>
-										<Text
-											size="sm"
-											truncate
-										>
-											{event.memoryText}
-										</Text>
-									</Table.Td>
-									<Table.Td>
-										<Text size="sm">{event.userId}</Text>
-									</Table.Td>
-									<Table.Td>
-										<EventStatusIndicator event={event} />
-									</Table.Td>
-									<Table.Td>
-										<Text size="sm">
-											{event.latency > 0 ? `${event.latency}ms` : "—"}
-										</Text>
-									</Table.Td>
-									<Table.Td>
-										<Text
-											size="sm"
-											c="dimmed"
-										>
-											{formatRelativeTime(event.createdAt)}
-										</Text>
-									</Table.Td>
-								</Table.Tr>
-							))}
-						</Table.Tbody>
-					</Table>
-				</Table.ScrollContainer>
-			</Section>
-
-			<Section title="Category distribution">
-				<Stack gap="sm">
-					{categories
-						?.slice()
-						.sort((a, b) => b.count - a.count)
-						.map((category) => (
-							<Paper
-								key={category.name}
-								p="sm"
+			<Section
+				title="Integrate with your stack"
+				description="Get started quickly using the SDK or REST API"
+				rightSection={
+					<Button
+						component="a"
+						href="https://surrealdb.com/docs/context"
+						target="_blank"
+						rel="noopener noreferrer"
+						variant="subtle"
+						size="sm"
+						rightSection={
+							<Icon
+								path={iconOpen}
+								size="sm"
+							/>
+						}
+					>
+						Documentation
+					</Button>
+				}
+			>
+				<Tabs
+					value={activeTab}
+					onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
+				>
+					<Tabs.List mb="lg">
+						{(Object.keys(TAB_LABELS) as IntegrationTab[]).map((tab) => (
+							<Tabs.Tab
+								key={tab}
+								value={tab}
 							>
-								<Group
-									justify="space-between"
-									mb={4}
-								>
-									<Text
-										size="sm"
-										fw={500}
-									>
-										{category.name}
-									</Text>
-									<Text
-										size="sm"
-										c="dimmed"
-									>
-										{category.count}
-									</Text>
-								</Group>
-								<Progress
-									value={
-										totalCategories > 0
-											? (category.count / totalCategories) * 100
-											: 0
-									}
-									size="sm"
-								/>
-							</Paper>
+								{TAB_LABELS[tab]}
+							</Tabs.Tab>
 						))}
-				</Stack>
-			</Section>
+					</Tabs.List>
+				</Tabs>
 
-			<Section title="Entities">
-				<Table>
-					<Table.Thead>
-						<Table.Tr>
-							<Table.Th>Name</Table.Th>
-							<Table.Th>Type</Table.Th>
-							<Table.Th>Memories</Table.Th>
-							<Table.Th>Last updated</Table.Th>
-						</Table.Tr>
-					</Table.Thead>
-					<Table.Tbody>
-						{entities?.map((entity) => (
-							<Table.Tr key={entity.id}>
-								<Table.Td>
+				<SimpleGrid cols={{ base: 1, md: 2 }}>
+					<Stack gap="xl">
+						{steps.map((step, index) => (
+							<Group
+								key={step.title}
+								gap="md"
+								wrap="nowrap"
+								align="flex-start"
+							>
+								<ThemeIcon
+									size="lg"
+									radius="xl"
+									variant="light"
+									color="surreal"
+									mt={2}
+								>
+									<Text fw={700}>{index + 1}</Text>
+								</ThemeIcon>
+								<Box>
 									<Text
-										size="sm"
-										fw={500}
+										fw={600}
+										c="bright"
+										mb={4}
 									>
-										{entity.name}
+										{step.title}
 									</Text>
-								</Table.Td>
-								<Table.Td>
-									<Badge
-										variant="light"
-										size="sm"
-										color={entity.type === "agent" ? "violet" : "blue"}
-									>
-										{entity.type}
-									</Badge>
-								</Table.Td>
-								<Table.Td>
-									<Text size="sm">{entity.totalMemories}</Text>
-								</Table.Td>
-								<Table.Td>
-									<Text
-										size="sm"
-										c="dimmed"
-									>
-										{formatRelativeTime(entity.updatedAt)}
-									</Text>
-								</Table.Td>
-							</Table.Tr>
+									<Text>{step.description}</Text>
+								</Box>
+							</Group>
 						))}
-					</Table.Tbody>
-				</Table>
+					</Stack>
+
+					<Stack gap="md">
+						{steps.map((step) => (
+							<CodeBlock
+								key={step.title}
+								value={step.code}
+								lang={step.lang}
+							/>
+						))}
+					</Stack>
+				</SimpleGrid>
+
+				<Box mt="xl">
+					<Text>
+						For more examples and advanced usage, visit the{" "}
+						<Anchor
+							href="https://surrealdb.com/docs/context"
+							target="_blank"
+							rel="noopener noreferrer"
+							c="surreal"
+						>
+							full documentation
+						</Anchor>
+						.
+					</Text>
+				</Box>
 			</Section>
 		</>
 	);

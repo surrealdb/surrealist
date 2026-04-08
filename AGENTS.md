@@ -52,6 +52,7 @@
   camelCase when used in JavaScript.
 - Use `className={classes.xyz}` for module-driven layout and visuals; keep
   inline styles only when necessary (e.g. dynamic values).
+- Never use c="dimmed" or "dimmed" in any other context. Instead use the default text color e.g. omit "c"
 
 ## Tips
 

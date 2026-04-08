@@ -10,9 +10,8 @@ import {
 
 const VIEW_NAVIGATION: ContextViewPage[][] = [
 	["dashboard"],
-	["memories", "knowledge"],
-	["api-keys"],
-	["settings"],
+	["memories", "entities", "knowledge"],
+	["api-keys", "settings"],
 ];
 
 export interface ContextSidebarProps {
