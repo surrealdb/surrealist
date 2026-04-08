@@ -1,16 +1,19 @@
 import {
-	Anchor,
 	Box,
 	Button,
 	Divider,
 	Group,
+	Image,
 	Paper,
 	SimpleGrid,
 	Tabs,
 	Text,
+	ThemeIcon,
 	Timeline,
 } from "@mantine/core";
 import {
+	brandJavaScript,
+	brandPython,
 	CodeBlock,
 	Icon,
 	iconAPI,
@@ -21,7 +24,7 @@ import {
 	iconSearch,
 	iconTrend,
 } from "@surrealdb/ui";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { useCloudContextStatsQuery } from "~/cloud/queries/contexts";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
@@ -76,7 +79,7 @@ type IntegrationTab = "python" | "javascript" | "api";
 
 const INTEGRATION_STEPS: Record<
 	IntegrationTab,
-	{ title: string; description: string; code: string; lang: string }[]
+	{ title: string; description: string; code?: string; lang?: string; content?: ReactNode }[]
 > = {
 	python: [
 		{
@@ -111,6 +114,22 @@ client.add(messages, user_id="alex")`,
 
 results = client.search(query, user_id="alex")`,
 			lang: "python",
+		},
+		{
+			title: "Learn more",
+			description: "For more examples and advanced usage, visit the full documentation.",
+			content: (
+				<Button
+					component="a"
+					href="https://surrealdb.com/docs/context"
+					target="_blank"
+					rel="noopener noreferrer"
+					mt="lg"
+					rightSection={<Icon path={iconArrowUpRight} />}
+				>
+					Full documentation
+				</Button>
+			),
 		},
 	],
 	javascript: [
@@ -148,6 +167,22 @@ await client.add(messages, { userId: "alex" });`,
 );`,
 			lang: "javascript",
 		},
+		{
+			title: "Learn more",
+			description: "For more examples and advanced usage, visit the full documentation.",
+			content: (
+				<Button
+					component="a"
+					href="https://surrealdb.com/docs/context"
+					target="_blank"
+					rel="noopener noreferrer"
+					mt="lg"
+					rightSection={<Icon path={iconArrowUpRight} />}
+				>
+					Full documentation
+				</Button>
+			),
+		},
 	],
 	api: [
 		{
@@ -183,13 +218,29 @@ await client.add(messages, { userId: "alex" });`,
     -H "Authorization: Bearer your-api-key"`,
 			lang: "bash",
 		},
+		{
+			title: "Learn more",
+			description: "For more examples and advanced usage, visit the full documentation.",
+			content: (
+				<Button
+					component="a"
+					href="https://surrealdb.com/docs/context"
+					target="_blank"
+					rel="noopener noreferrer"
+					mt="lg"
+					rightSection={<Icon path={iconArrowUpRight} />}
+				>
+					Full documentation
+				</Button>
+			),
+		},
 	],
 };
 
-const TAB_LABELS: Record<IntegrationTab, string> = {
-	python: "Python",
-	javascript: "JavaScript",
-	api: "REST API",
+const LANGUAGES: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
+	python: { label: "Python", img: brandPython },
+	javascript: { label: "JavaScript", img: brandJavaScript },
+	api: { label: "REST API", icon: iconAPI },
 };
 
 export default function DashboardView({ context }: ContextViewProps) {
@@ -234,6 +285,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 			<Section
 				title="Integrate with your stack"
 				description="Get started quickly using the SDK or REST API"
+				withPaper
 				rightSection={
 					<Button
 						component="a"
@@ -259,12 +311,28 @@ export default function DashboardView({ context }: ContextViewProps) {
 					mb="lg"
 				>
 					<Tabs.List>
-						{(Object.keys(TAB_LABELS) as IntegrationTab[]).map((tab) => (
+						{(Object.keys(LANGUAGES) as IntegrationTab[]).map((tab) => (
 							<Tabs.Tab
 								key={tab}
 								value={tab}
+								leftSection={
+									LANGUAGES[tab].img ? (
+										<Image
+											src={LANGUAGES[tab].img}
+											w={16}
+											mr="xs"
+										/>
+									) : LANGUAGES[tab].icon ? (
+										<Icon
+											path={LANGUAGES[tab].icon}
+											c="bright"
+											size="lg"
+											mr="xs"
+										/>
+									) : undefined
+								}
 							>
-								{TAB_LABELS[tab]}
+								{LANGUAGES[tab].label}
 							</Tabs.Tab>
 						))}
 					</Tabs.List>
@@ -273,40 +341,50 @@ export default function DashboardView({ context }: ContextViewProps) {
 
 				<Timeline
 					active={steps.length - 1}
-					bulletSize={28}
+					bulletSize={24}
 					lineWidth={2}
+					styles={{
+						itemTitle: {
+							color: "var(--mantine-color-bright)",
+							fontSize: "var(--mantine-font-size-lg)",
+						},
+					}}
 				>
 					{steps.map((step, index) => (
 						<Timeline.Item
 							key={step.title}
-							bullet={<Text fw={700}>{index + 1}</Text>}
+							bullet={
+								<ThemeIcon
+									size={24}
+									color="violet"
+									variant="filled"
+									radius="xl"
+								>
+									<Text
+										inherit
+										fz="xs"
+									>
+										{index + 1}
+									</Text>
+								</ThemeIcon>
+							}
 							title={step.title}
 						>
-							<Text mb="xs">{step.description}</Text>
-							<CodeBlock
-								value={step.code}
-								lang={step.lang}
-							/>
+							<SimpleGrid cols={2}>
+								<Box>
+									<Text mt="xs">{step.description}</Text>
+									{step.content}
+								</Box>
+								{step.code && (
+									<CodeBlock
+										value={step.code}
+										lang={step.lang}
+									/>
+								)}
+							</SimpleGrid>
 						</Timeline.Item>
 					))}
 				</Timeline>
-
-				<Box mt="xl">
-					<Group gap="xs">
-						For more examples and advanced usage, visit the{" "}
-						<Anchor
-							href="https://surrealdb.com/docs/context"
-							target="_blank"
-							rel="noopener noreferrer"
-							c="surreal"
-						>
-							<Group gap="xs">
-								full documentation
-								<Icon path={iconArrowUpRight} />
-							</Group>
-						</Anchor>
-					</Group>
-				</Box>
 			</Section>
 		</>
 	);

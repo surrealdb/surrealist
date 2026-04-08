@@ -1,4 +1,4 @@
-import { Box, Group, Stack, Text } from "@mantine/core";
+import { Box, Group, Paper, Stack, Text } from "@mantine/core";
 import type { PropsWithChildren, ReactNode } from "react";
 import { useIsLight } from "~/hooks/theme";
 
@@ -7,6 +7,7 @@ export interface SectionProps {
 	description?: ReactNode;
 	rightSection?: ReactNode;
 	withMaxWidth?: boolean;
+	withPaper?: boolean;
 }
 
 export function Section({
@@ -14,9 +15,19 @@ export function Section({
 	description,
 	rightSection,
 	withMaxWidth,
+	withPaper,
 	children,
 }: PropsWithChildren<SectionProps>) {
 	const isLight = useIsLight();
+
+	const inner = (
+		<Stack
+			py="lg"
+			maw={withMaxWidth ? 500 : undefined}
+		>
+			{children}
+		</Stack>
+	);
 
 	return (
 		<Box>
@@ -35,12 +46,16 @@ export function Section({
 					{rightSection}
 				</Group>
 			)}
-			<Stack
-				py="xl"
-				maw={withMaxWidth ? 500 : undefined}
-			>
-				{children}
-			</Stack>
+			{withPaper ? (
+				<Paper
+					px="lg"
+					mt="sm"
+				>
+					{inner}
+				</Paper>
+			) : (
+				inner
+			)}
 		</Box>
 	);
 }
