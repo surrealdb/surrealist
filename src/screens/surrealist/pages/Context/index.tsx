@@ -2,7 +2,6 @@ import { Box, Center, Loader, ScrollArea, Skeleton, Stack } from "@mantine/core"
 import { lazy, memo, Suspense } from "react";
 import { Redirect } from "wouter";
 import { useCloudContextQuery } from "~/cloud/queries/contexts";
-import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useContextAndView } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
@@ -34,17 +33,16 @@ export function ContextPage({ view }: ContextPageProps) {
 	const [contextId] = useContextAndView();
 
 	const contextQuery = useCloudContextQuery(contextId ?? undefined);
-	const organizationQuery = useCloudOrganizationQuery(contextQuery.data?.organization_id);
+	// const organizationQuery = useCloudOrganizationQuery(contextQuery.data?.organization_id);
 
 	const viewPage = view as ContextViewPage;
 	const Component = VIEW_COMPONENTS[viewPage];
 
-	const isSuccess = contextQuery.isSuccess && organizationQuery.isSuccess;
-	const isLoading =
-		contextQuery.isLoading ||
-		contextQuery.isPending ||
-		organizationQuery.isLoading ||
-		organizationQuery.isPending;
+	const isSuccess = contextQuery.isSuccess;
+	// const isSuccess = contextQuery.isSuccess && organizationQuery.isSuccess;
+	const isLoading = contextQuery.isLoading || contextQuery.isPending;
+	// organizationQuery.isLoading ||
+	// organizationQuery.isPending;
 
 	if (isSuccess && !contextQuery.data) {
 		return <Redirect to="/overview" />;
@@ -83,9 +81,13 @@ export function ContextPage({ view }: ContextPageProps) {
 							<PageBreadcrumbs
 								items={[
 									{ label: "Surrealist", href: "/overview" },
+									// {
+									// 	label: organizationQuery.data?.name ?? "",
+									// 	href: `/o/${contextQuery.data?.organization_id}`,
+									// },
 									{
-										label: organizationQuery.data?.name ?? "",
-										href: `/o/${contextQuery.data?.organization_id}`,
+										label: "TODO",
+										href: `/overview`,
 									},
 									{ label: contextQuery.data?.name ?? "" },
 								]}
@@ -98,7 +100,8 @@ export function ContextPage({ view }: ContextPageProps) {
 								mt="sm"
 							/>
 						)}
-						{contextQuery.data && organizationQuery.data && (
+						{contextQuery.data && (
+							// {contextQuery.data && organizationQuery.data && (
 							<Suspense
 								fallback={
 									<Center flex={1}>
@@ -108,7 +111,7 @@ export function ContextPage({ view }: ContextPageProps) {
 							>
 								<Component
 									context={contextQuery.data}
-									organization={organizationQuery.data}
+									// organization={organizationQuery.data}
 								/>
 							</Suspense>
 						)}

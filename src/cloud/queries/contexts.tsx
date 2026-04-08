@@ -517,7 +517,7 @@ function getMockContexts(): CloudContext[] {
 			state: "ready",
 			region: "eu-west-1",
 			version: "2.0.0",
-			organization_id: "068na13ir1tnf3f689dd8c8ruc",
+			organization_id: "",
 		},
 		{
 			id: `ds-068na13ir1tnf3f689dd8c8ruc-3`,
@@ -525,7 +525,7 @@ function getMockContexts(): CloudContext[] {
 			state: "ready",
 			region: "us-east-1",
 			version: "2.0.0",
-			organization_id: "068na13ir1tnf3f689dd8c8ruc",
+			organization_id: "",
 		},
 	];
 }
