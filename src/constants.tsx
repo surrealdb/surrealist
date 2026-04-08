@@ -7,6 +7,7 @@ import {
 	iconChat,
 	iconCheck,
 	iconChevronUp,
+	iconCog,
 	iconCombined,
 	iconDatabase,
 	iconDataTable,
@@ -18,6 +19,7 @@ import {
 	iconFunction,
 	iconGraphql,
 	iconHelp,
+	iconKey,
 	iconLive,
 	iconPause,
 	iconQuery,
@@ -39,6 +41,8 @@ import flagIN from "flag-icons/flags/4x3/in.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 import type {
 	AuthMode,
+	ContextViewPage,
+	ContextViewPageInfo,
 	DiagramAlgorithm,
 	DiagramDirection,
 	DiagramHoverFocus,
@@ -325,6 +329,34 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		icon: iconTransfer,
 		disabled: ({ flags, version }) =>
 			!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.6.1 <3.0.0-0"),
+	},
+};
+
+export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = {
+	dashboard: {
+		id: "dashboard",
+		name: "Dashboard",
+		icon: iconTune,
+	},
+	memories: {
+		id: "memories",
+		name: "Memories",
+		icon: iconChat,
+	},
+	knowledge: {
+		id: "knowledge",
+		name: "Knowledge",
+		icon: iconRelation,
+	},
+	"api-keys": {
+		id: "api-keys",
+		name: "API Keys",
+		icon: iconKey,
+	},
+	settings: {
+		id: "settings",
+		name: "Settings",
+		icon: iconCog,
 	},
 };
 

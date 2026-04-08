@@ -12,6 +12,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import { ViewPage } from "~/types";
 import { ConnectionPage } from "./pages/Connection";
 import { ConnectionSidebar } from "./pages/Connection/sidebar";
+import { ContextPage } from "./pages/Context";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
@@ -47,6 +48,7 @@ const RequestsPageLazy = memo(RequestsPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
 const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
 const SigninPageLazy = memo(SigninPage);
+const ContextPageLazy = memo(ContextPage);
 
 export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
@@ -262,6 +264,10 @@ export function SurrealistScreen() {
 											<ConnectionPageLazy view={view as ViewPage} />
 										</>
 									)}
+								</Route>
+
+								<Route path="/x/:context/:view">
+									{({ view }) => <ContextPageLazy view={view} />}
 								</Route>
 
 								<Route>
