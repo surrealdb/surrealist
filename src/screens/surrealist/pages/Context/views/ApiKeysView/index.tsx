@@ -21,8 +21,10 @@ import { notifications } from "@mantine/notifications";
 import { Icon, iconCheck, iconDelete, iconEye, iconEyeOff } from "@surrealdb/ui";
 import { useState } from "react";
 import { useCloudContextApiKeysQuery } from "~/cloud/queries/contexts";
+import { CodeSnippet } from "~/components/CodeSnippet";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
+import type { CodeLang, Snippets } from "~/types";
 import { ContextViewProps } from "../../types";
 
 const SCOPE_OPTIONS = [
@@ -65,6 +67,7 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 		"knowledge:write",
 	]);
 	const [newKeyExpiration, setNewKeyExpiration] = useState("never");
+	const [quickStartLang, setQuickStartLang] = useState<CodeLang>("js");
 
 	const endpoint = `https://api.surrealdb.com/v1/contexts/${context.id}`;
 
@@ -155,6 +158,18 @@ curl -X POST ${endpoint}/memories/search \\
     "query": "What are the user preferences?",
     "filters": {"AND": [{"user_id": "user-123"}]}
   }'`;
+
+	const quickStartSnippets: Snippets = {
+		js: jsSnippet,
+		py: pySnippet,
+		cli: curlSnippet,
+	};
+
+	const EDITOR_LANGS: Record<CodeLang, string> = {
+		js: "javascript",
+		py: "python",
+		cli: "bash",
+	} as Record<CodeLang, string>;
 
 	return (
 		<>
@@ -326,31 +341,22 @@ curl -X POST ${endpoint}/memories/search \\
 
 			<Section title="Quick start">
 				<Paper p="md">
-					<Tabs defaultValue="javascript">
+					<Tabs
+						value={quickStartLang}
+						onChange={(v) => setQuickStartLang((v as CodeLang) ?? "js")}
+						mb="md"
+					>
 						<Tabs.List>
-							<Tabs.Tab value="javascript">JavaScript</Tabs.Tab>
-							<Tabs.Tab value="python">Python</Tabs.Tab>
-							<Tabs.Tab value="curl">cURL</Tabs.Tab>
+							<Tabs.Tab value="js">JavaScript</Tabs.Tab>
+							<Tabs.Tab value="py">Python</Tabs.Tab>
+							<Tabs.Tab value="cli">cURL</Tabs.Tab>
 						</Tabs.List>
-						<Tabs.Panel
-							value="javascript"
-							pt="md"
-						>
-							<Code block>{jsSnippet}</Code>
-						</Tabs.Panel>
-						<Tabs.Panel
-							value="python"
-							pt="md"
-						>
-							<Code block>{pySnippet}</Code>
-						</Tabs.Panel>
-						<Tabs.Panel
-							value="curl"
-							pt="md"
-						>
-							<Code block>{curlSnippet}</Code>
-						</Tabs.Panel>
 					</Tabs>
+					<CodeSnippet
+						values={quickStartSnippets}
+						language={quickStartLang}
+						editorLanguage={EDITOR_LANGS[quickStartLang]}
+					/>
 				</Paper>
 			</Section>
 

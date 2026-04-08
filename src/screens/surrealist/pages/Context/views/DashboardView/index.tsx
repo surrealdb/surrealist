@@ -1,24 +1,25 @@
-import { Sparkline } from "@mantine/charts";
 import {
 	Anchor,
 	Box,
 	Button,
+	Divider,
 	Group,
 	Paper,
 	SimpleGrid,
-	Stack,
 	Tabs,
 	Text,
-	ThemeIcon,
+	Timeline,
 } from "@mantine/core";
 import {
 	CodeBlock,
 	Icon,
 	iconAPI,
+	iconArrowUpRight,
 	iconModel,
 	iconOpen,
 	iconRelation,
 	iconSearch,
+	iconTrend,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import { useCloudContextStatsQuery } from "~/cloud/queries/contexts";
@@ -28,69 +29,45 @@ import { ContextViewProps } from "../../types";
 
 const GRID_COLUMNS = { base: 1, sm: 2, lg: 4 };
 
-const MOCK_MEMORY_TREND = [3, 5, 8, 6, 12, 9, 14, 11, 18, 15, 20, 18];
-const MOCK_SEARCH_TREND = [12, 18, 24, 15, 30, 22, 35, 28, 40, 47, 42, 47];
-const MOCK_KNOWLEDGE_TREND = [2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 12];
-const MOCK_LATENCY_TREND = [65, 58, 52, 48, 55, 44, 50, 46, 43, 42, 45, 42];
-
 function StatCard({
 	icon,
 	label,
 	value,
-	subtitle,
-	color,
-	trendData,
+	delta,
 }: {
 	icon: string;
 	label: string;
 	value: string | number;
-	subtitle?: string;
-	color: string;
-	trendData: number[];
+	delta: number;
 }) {
 	return (
 		<Paper p="lg">
 			<Group
 				gap="md"
 				wrap="nowrap"
-				justify="space-between"
 			>
-				<Group
-					gap="md"
-					wrap="nowrap"
-				>
-					<ThemeIcon
-						color={color}
-						variant="light"
-						size="xl"
-					>
-						<Icon
-							size="lg"
-							path={icon}
-						/>
-					</ThemeIcon>
-					<Stack gap={2}>
-						<Text
-							fw={700}
-							fz="xl"
-							c="bright"
-						>
-							{value}
-						</Text>
-						<Text>{label}</Text>
-					</Stack>
-				</Group>
-				<Sparkline
-					w={80}
-					h={32}
-					data={trendData}
-					curveType="natural"
-					color={`var(--mantine-color-${color}-6)`}
-					strokeWidth={2}
-					fillOpacity={0.15}
-				/>
+				<Icon path={icon} />
+				<Text inherit>{label}</Text>
 			</Group>
-			{subtitle && <Text mt="xs">{subtitle}</Text>}
+			<Group>
+				<Text
+					fz="h1"
+					c="bright"
+					fw={700}
+				>
+					{value}
+				</Text>
+				<Group
+					c={delta > 0 ? "green" : "red"}
+					gap="xs"
+				>
+					<Icon
+						path={iconTrend}
+						style={{ transform: delta > 0 ? undefined : "scaleY(-1)" }}
+					/>
+					<Text inherit>{Math.abs(delta)}%</Text>
+				</Group>
+			</Group>
 		</Paper>
 	);
 }
@@ -231,33 +208,25 @@ export default function DashboardView({ context }: ContextViewProps) {
 						icon={iconModel}
 						label="Total memories"
 						value={stats?.totalMemories ?? 0}
-						subtitle={`${stats?.memoriesAddedToday ?? 0} added today`}
-						color="blue"
-						trendData={MOCK_MEMORY_TREND}
+						delta={stats?.memoriesAddedToday ?? 0}
 					/>
 					<StatCard
 						icon={iconSearch}
 						label="Searches today"
 						value={stats?.searchesToday ?? 0}
-						subtitle={`${stats?.memoriesAddedThisWeek ?? 0} this week`}
-						color="violet"
-						trendData={MOCK_SEARCH_TREND}
+						delta={stats?.searchesToday ?? 0}
 					/>
 					<StatCard
 						icon={iconRelation}
 						label="Knowledge nodes"
 						value={stats?.totalKnowledgeNodes ?? 0}
-						subtitle={`${stats?.totalKnowledgeRelations ?? 0} relations`}
-						color="teal"
-						trendData={MOCK_KNOWLEDGE_TREND}
+						delta={stats?.totalKnowledgeRelations ?? 0}
 					/>
 					<StatCard
 						icon={iconAPI}
 						label="Avg latency"
 						value={`${stats?.avgSearchLatencyMs ?? 0}ms`}
-						subtitle={`${stats?.totalUsers ?? 0} users, ${stats?.totalAgents ?? 0} agents`}
-						color="orange"
-						trendData={MOCK_LATENCY_TREND}
+						delta={-(stats?.avgSearchLatencyMs ?? 0)}
 					/>
 				</SimpleGrid>
 			</Section>
@@ -287,8 +256,9 @@ export default function DashboardView({ context }: ContextViewProps) {
 				<Tabs
 					value={activeTab}
 					onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
+					mb="lg"
 				>
-					<Tabs.List mb="lg">
+					<Tabs.List>
 						{(Object.keys(TAB_LABELS) as IntegrationTab[]).map((tab) => (
 							<Tabs.Tab
 								key={tab}
@@ -298,53 +268,31 @@ export default function DashboardView({ context }: ContextViewProps) {
 							</Tabs.Tab>
 						))}
 					</Tabs.List>
+					<Divider />
 				</Tabs>
 
-				<SimpleGrid cols={{ base: 1, md: 2 }}>
-					<Stack gap="xl">
-						{steps.map((step, index) => (
-							<Group
-								key={step.title}
-								gap="md"
-								wrap="nowrap"
-								align="flex-start"
-							>
-								<ThemeIcon
-									size="lg"
-									radius="xl"
-									variant="light"
-									color="surreal"
-									mt={2}
-								>
-									<Text fw={700}>{index + 1}</Text>
-								</ThemeIcon>
-								<Box>
-									<Text
-										fw={600}
-										c="bright"
-										mb={4}
-									>
-										{step.title}
-									</Text>
-									<Text>{step.description}</Text>
-								</Box>
-							</Group>
-						))}
-					</Stack>
-
-					<Stack gap="md">
-						{steps.map((step) => (
+				<Timeline
+					active={steps.length - 1}
+					bulletSize={28}
+					lineWidth={2}
+				>
+					{steps.map((step, index) => (
+						<Timeline.Item
+							key={step.title}
+							bullet={<Text fw={700}>{index + 1}</Text>}
+							title={step.title}
+						>
+							<Text mb="xs">{step.description}</Text>
 							<CodeBlock
-								key={step.title}
 								value={step.code}
 								lang={step.lang}
 							/>
-						))}
-					</Stack>
-				</SimpleGrid>
+						</Timeline.Item>
+					))}
+				</Timeline>
 
 				<Box mt="xl">
-					<Text>
+					<Group gap="xs">
 						For more examples and advanced usage, visit the{" "}
 						<Anchor
 							href="https://surrealdb.com/docs/context"
@@ -352,10 +300,12 @@ export default function DashboardView({ context }: ContextViewProps) {
 							rel="noopener noreferrer"
 							c="surreal"
 						>
-							full documentation
+							<Group gap="xs">
+								full documentation
+								<Icon path={iconArrowUpRight} />
+							</Group>
 						</Anchor>
-						.
-					</Text>
+					</Group>
 				</Box>
 			</Section>
 		</>
