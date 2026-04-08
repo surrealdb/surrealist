@@ -476,7 +476,7 @@ const MOCK_API_KEYS: ContextApiKey[] = [
 	{
 		id: "key-001",
 		name: "Production key",
-		key: "sk-ctx-prod-a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+		key: "thisisaplaceholderforanapikey",
 		maskedKey: "sk-ctx-****...o5p6",
 		createdAt: "2026-03-09T10:00:00Z",
 		lastUsedAt: "2026-04-08T07:12:00Z",
@@ -486,7 +486,7 @@ const MOCK_API_KEYS: ContextApiKey[] = [
 	{
 		id: "key-002",
 		name: "Development key",
-		key: "sk-ctx-dev-q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
+		key: "thisisaplaceholderforanapikey",
 		maskedKey: "sk-ctx-****...e1f2",
 		createdAt: "2026-04-01T10:00:00Z",
 		lastUsedAt: "2026-04-07T16:45:00Z",
@@ -496,7 +496,7 @@ const MOCK_API_KEYS: ContextApiKey[] = [
 	{
 		id: "key-003",
 		name: "Read-only integration",
-		key: "sk-ctx-ro-g3h4i5j6k7l8m9n0o1p2q3r4s5t6u7v8",
+		key: "thisisaplaceholderforanapikey",
 		maskedKey: "sk-ctx-****...u7v8",
 		createdAt: "2026-03-25T14:00:00Z",
 		lastUsedAt: null,
