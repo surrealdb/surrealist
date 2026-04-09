@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useConfigStore } from "~/stores/config";
 
-const API_BASE = `https://surrealdb.com/api/surrealdb/website`;
+const API_BASE = `https://surrealdb.com/api`;
 
 interface RemoteListPost {
 	id: string;
@@ -66,7 +66,7 @@ export function useLatestNewsQuery() {
 	return useQuery<NewsPost[]>({
 		queryKey: ["newsfeed"],
 		queryFn: async () => {
-			const response = await fetch(`${API_BASE}/blogs/all`, {
+			const response = await fetch(`${API_BASE}/feed`, {
 				headers: { Accept: "application/json" },
 			});
 
@@ -90,7 +90,7 @@ export function useBlogPostContentQuery(slug: string | null) {
 		queryFn: async () => {
 			if (!slug) throw new Error("No slug provided");
 
-			const response = await fetch(`${API_BASE}/blog/${encodeURIComponent(slug)}`, {
+			const response = await fetch(`${API_BASE}/feed/${encodeURIComponent(slug)}`, {
 				headers: { Accept: "application/json" },
 			});
 
