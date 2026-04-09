@@ -16,14 +16,21 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Icon, iconArrowLeft, iconArrowUpRight, iconClose, Markdown } from "@surrealdb/ui";
+import {
+	BlockRenderer,
+	BlockRendererProps,
+	Icon,
+	iconArrowLeft,
+	iconArrowUpRight,
+	iconClose,
+} from "@surrealdb/ui";
 import { format } from "date-fns";
 import dayjs from "dayjs";
 import { Fragment, useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
 import { Link } from "~/components/Link";
 import { Spacer } from "~/components/Spacer";
-import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
+import { useBlogPostContentQuery, useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
@@ -32,6 +39,7 @@ import classes from "../style.module.scss";
 
 interface NewsItem {
 	id: string;
+	slug: string;
 	title: string;
 	link: string;
 	description: string;
@@ -50,6 +58,7 @@ export function NewsFeedDrawer() {
 	const [isReading, readingHandle] = useDisclosure();
 	const [reading, setReading] = useState<NewsItem | null>(null);
 	const [pendingEvent, setPendingEvent] = useState<object>();
+	const contentQuery = useBlogPostContentQuery(reading?.slug ?? null);
 
 	const readArticle = (item: NewsItem) => {
 		setReading(item);
@@ -169,7 +178,17 @@ export function NewsFeedDrawer() {
 										{format(reading.published, "MMMM d, yyyy - h:mm a")}
 									</Text>
 									<Divider my="xl" />
-									<Markdown content={reading.content} />
+									{contentQuery.isPending ? (
+										<Loader
+											mt={32}
+											mx="auto"
+											display="block"
+										/>
+									) : (
+										<BlockRenderer
+											value={contentQuery.data as BlockRendererProps["value"]}
+										/>
+									)}
 									{reading.link && (
 										<Alert
 											mt="xl"
