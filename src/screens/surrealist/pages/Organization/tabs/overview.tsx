@@ -2,13 +2,11 @@ import {
 	Anchor,
 	Badge,
 	Box,
-	Button,
 	Divider,
 	Group,
 	Image,
 	Paper,
 	SimpleGrid,
-	Skeleton,
 	Stack,
 	Text,
 	ThemeIcon,
@@ -55,7 +53,6 @@ interface ResourceCardProps {
 	image: string;
 	color: string;
 	count: number;
-	isPending: boolean;
 	onClick: () => void;
 }
 
@@ -67,7 +64,6 @@ function ResourceCard({
 	image,
 	color,
 	count,
-	isPending,
 	onClick,
 }: ResourceCardProps) {
 	return (
@@ -273,17 +269,13 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 
 	const base = `/o/${organization.id}`;
 
-	const {
-		data: instanceData,
-		isSuccess: instancesLoaded,
-		isPending: instancesPending,
-	} = useCloudOrganizationInstancesQuery(organization.id);
+	const { data: instanceData, isSuccess: instancesLoaded } = useCloudOrganizationInstancesQuery(
+		organization.id,
+	);
 
-	const {
-		data: contextData,
-		isSuccess: contextsLoaded,
-		isPending: contextsPending,
-	} = useCloudOrganizationContextsQuery(organization.id);
+	const { data: contextData, isSuccess: contextsLoaded } = useCloudOrganizationContextsQuery(
+		organization.id,
+	);
 
 	const instanceCount = instancesLoaded ? instanceData.length : 0;
 	const contextCount = contextsLoaded ? contextData.length : 0;
@@ -393,7 +385,6 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 					image={pictoSurrealDB}
 					color="violet"
 					count={instanceCount}
-					isPending={instancesPending}
 					onClick={() =>
 						instanceCount === 0
 							? setLocation(`${base}/instances/deploy`)
@@ -409,7 +400,6 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 						image={pictoSpectron}
 						color="violet"
 						count={contextCount}
-						isPending={contextsPending}
 						onClick={() =>
 							contextCount === 0
 								? setLocation(`${base}/contexts/deploy`)
