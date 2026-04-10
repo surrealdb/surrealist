@@ -684,6 +684,22 @@ export interface ContextApiKey {
 	key?: string;
 }
 
+export interface ContextPackage {
+	id: string;
+	name: string;
+	description: string;
+	cost_millcents: number;
+	token_limit: number;
+	contexts_limit: number;
+}
+
+export interface OrganizationContextPackage {
+	package_id: string;
+	organization_id: string;
+	enabled_at: string;
+	disabled_at?: string;
+}
+
 export interface CloudDistributedStorageSpecs {
 	slug: string;
 	units: number;

@@ -1,6 +1,11 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudContext, ContextApiKey } from "~/types";
+import type {
+	CloudContext,
+	ContextApiKey,
+	ContextPackage,
+	OrganizationContextPackage,
+} from "~/types";
 import { fetchAPI } from "../api";
 
 export function useCloudOrganizationContextsQuery(organization?: string) {
@@ -57,6 +62,32 @@ export function useCloudContextApiKeysQuery(organization?: string, contextId?: s
 		queryFn: async () => {
 			return fetchAPI<ContextApiKey[]>(
 				`/organizations/${organization}/spectron_contexts/${contextId}/api_keys`,
+			);
+		},
+	});
+}
+
+export function useContextPackagesQuery() {
+	const authState = useCloudStore((state) => state.authState);
+
+	return useQuery({
+		queryKey: ["cloud", "context-packages"],
+		enabled: authState === "authenticated",
+		queryFn: async () => {
+			return fetchAPI<ContextPackage[]>("/spectron_context_packages");
+		},
+	});
+}
+
+export function useOrganizationContextPackageQuery(organization?: string) {
+	const authState = useCloudStore((state) => state.authState);
+
+	return useQuery({
+		queryKey: ["cloud", "context-packages", { org: organization }],
+		enabled: !!organization && authState === "authenticated",
+		queryFn: async () => {
+			return fetchAPI<OrganizationContextPackage[]>(
+				`/organizations/${organization}/spectron_context_packages`,
 			);
 		},
 	});
