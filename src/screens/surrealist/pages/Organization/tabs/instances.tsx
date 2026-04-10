@@ -1,4 +1,14 @@
-import { Button, Group, Select, SimpleGrid, Skeleton, TextInput } from "@mantine/core";
+import {
+	Box,
+	Button,
+	Group,
+	Select,
+	SimpleGrid,
+	Skeleton,
+	Stack,
+	Text,
+	TextInput,
+} from "@mantine/core";
 import { Icon, iconSearch } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
@@ -10,9 +20,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudInstance } from "~/types";
 import { resolveInstanceConnection } from "~/util/connection";
-import { StartCreator } from "../../Overview/content/creator";
 import { StartInstance } from "../../Overview/content/instance";
-import { StartPlaceholder } from "../../Overview/content/placeholder";
 import type { OrganizationTabProps } from "../types";
 
 const GRID_COLUMNS = {
@@ -43,7 +51,6 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 	} = useCloudOrganizationInstancesQuery(organization.id);
 
 	const instances = instancesLoaded ? instanceData : [];
-	const canCreate = instancesLoaded && instances.length === 0 && !isRestricted && isAdmin;
 
 	const regionOptions = useMemo(() => {
 		const usedRegions = new Set(instances.map((i) => i.region));
@@ -127,25 +134,63 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 						onConnect={activateInstance}
 					/>
 				))}
-				{canCreate &&
-					(isAdmin ? (
-						<StartCreator organization={organization.id} />
-					) : (
-						<StartPlaceholder
-							title="No instances"
-							subtitle="This organisation has no instances"
-						/>
-					))}
-				{instancesLoaded &&
-					instances.length > 0 &&
-					filteredInstances.length === 0 &&
-					(search || regionFilter) && (
-						<StartPlaceholder
-							title="No matching instances"
-							subtitle="Try adjusting your search or filter"
-						/>
-					)}
 			</SimpleGrid>
+
+			{instancesLoaded && instances.length === 0 && (
+				<Box
+					ta="center"
+					py={64}
+				>
+					<Stack
+						align="center"
+						gap="sm"
+					>
+						<Text
+							c="bright"
+							fw={600}
+							fz="xl"
+						>
+							No instances deployed yet
+						</Text>
+						<Text
+							fz="sm"
+							maw={360}
+						>
+							Deploy your first SurrealDB Cloud instance to start building with a
+							fully managed database.
+						</Text>
+						{isAdmin && (
+							<Link href={`/o/${organization.id}/instances/deploy`}>
+								<Button
+									mt="xs"
+									disabled={isRestricted}
+									variant="gradient"
+								>
+									Deploy instance
+								</Button>
+							</Link>
+						)}
+					</Stack>
+				</Box>
+			)}
+
+			{instancesLoaded &&
+				instances.length > 0 &&
+				filteredInstances.length === 0 &&
+				(search || regionFilter) && (
+					<Box
+						ta="center"
+						py={48}
+					>
+						<Text
+							c="bright"
+							fw={600}
+						>
+							No matching instances
+						</Text>
+						<Text fz="sm">Try adjusting your search or filter</Text>
+					</Box>
+				)}
 		</>
 	);
 }

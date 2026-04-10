@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CloudContext, ContextApiKey } from "~/types";
+import type { CloudContext, ContextApiKey, OrganizationContextPackage } from "~/types";
 import { fetchAPI } from "../api";
 
 export interface CreateContextRequest {
@@ -108,6 +108,36 @@ export function useDeleteContextApiKeyMutation(
 			client.invalidateQueries({
 				queryKey: ["cloud", "context", contextId, "api-keys"],
 			});
+		},
+	});
+}
+
+export function useAssignContextPackageMutation(organization: string | undefined) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (packageId: string) => {
+			if (!organization) {
+				throw new Error("Organization is required");
+			}
+
+			const result = await fetchAPI<OrganizationContextPackage>(
+				`/organizations/${organization}/spectron_context_packages`,
+				{
+					method: "POST",
+					body: JSON.stringify({ package_id: packageId }),
+				},
+			);
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "context-packages", { org: organization }],
+			});
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "organizations"],
+			});
+
+			return result;
 		},
 	});
 }

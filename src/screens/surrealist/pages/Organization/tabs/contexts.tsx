@@ -1,5 +1,6 @@
 import {
 	Anchor,
+	Box,
 	Button,
 	Group,
 	Paper,
@@ -20,7 +21,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudContext } from "~/types";
-import { StartPlaceholder } from "../../Overview/content/placeholder";
 import type { OrganizationTabProps } from "../types";
 
 const GRID_COLUMNS = {
@@ -188,22 +188,63 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 						onClick={() => navigateContext(ctx.id)}
 					/>
 				))}
-				{contextsLoaded && contexts.length === 0 && (
-					<StartPlaceholder
-						title="No contexts"
-						subtitle="This organisation has no contexts"
-					/>
-				)}
-				{contextsLoaded &&
-					contexts.length > 0 &&
-					filteredContexts.length === 0 &&
-					(search || regionFilter) && (
-						<StartPlaceholder
-							title="No matching contexts"
-							subtitle="Try adjusting your search or filter"
-						/>
-					)}
 			</SimpleGrid>
+
+			{contextsLoaded && contexts.length === 0 && (
+				<Box
+					ta="center"
+					py={64}
+				>
+					<Stack
+						align="center"
+						gap="sm"
+					>
+						<Text
+							c="bright"
+							fw={600}
+							fz="xl"
+						>
+							No contexts deployed yet
+						</Text>
+						<Text
+							fz="sm"
+							maw={360}
+						>
+							Create your first Spectron context to add persistent memory and
+							knowledge to your AI applications.
+						</Text>
+						{isAdmin && (
+							<Link href={`/o/${organization.id}/contexts/deploy`}>
+								<Button
+									mt="xs"
+									disabled={isRestricted}
+									variant="gradient"
+								>
+									Create context
+								</Button>
+							</Link>
+						)}
+					</Stack>
+				</Box>
+			)}
+
+			{contextsLoaded &&
+				contexts.length > 0 &&
+				filteredContexts.length === 0 &&
+				(search || regionFilter) && (
+					<Box
+						ta="center"
+						py={48}
+					>
+						<Text
+							c="bright"
+							fw={600}
+						>
+							No matching contexts
+						</Text>
+						<Text fz="sm">Try adjusting your search or filter</Text>
+					</Box>
+				)}
 		</>
 	);
 }
