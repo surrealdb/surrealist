@@ -7,20 +7,16 @@ import { useContextAndView } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
 import { ContextSidebar } from "./sidebar";
 import classes from "./style.module.scss";
-import { ContextViewProps } from "./types";
+import type { ContextViewProps } from "./types";
 
 const DashboardView = lazy(() => import("./views/DashboardView"));
-const MemoriesView = lazy(() => import("./views/MemoriesView"));
-const EntitiesView = lazy(() => import("./views/EntitiesView"));
-const KnowledgeView = lazy(() => import("./views/KnowledgeView"));
+const PlaygroundView = lazy(() => import("./views/PlaygroundView"));
 const ApiKeysView = lazy(() => import("./views/ApiKeysView"));
 const SettingsView = lazy(() => import("./views/SettingsView"));
 
 const VIEW_COMPONENTS: Record<ContextViewPage, React.ComponentType<ContextViewProps>> = {
 	dashboard: memo(DashboardView),
-	memories: memo(MemoriesView),
-	entities: memo(EntitiesView),
-	knowledge: memo(KnowledgeView),
+	playground: memo(PlaygroundView),
 	"api-keys": memo(ApiKeysView),
 	settings: memo(SettingsView),
 };
@@ -32,17 +28,13 @@ export interface ContextPageProps {
 export function ContextPage({ view }: ContextPageProps) {
 	const [contextId] = useContextAndView();
 
-	const contextQuery = useCloudContextQuery(contextId ?? undefined);
-	// const organizationQuery = useCloudOrganizationQuery(contextQuery.data?.organization_id);
+	const contextQuery = useCloudContextQuery(undefined, contextId ?? undefined);
 
 	const viewPage = view as ContextViewPage;
 	const Component = VIEW_COMPONENTS[viewPage];
 
 	const isSuccess = contextQuery.isSuccess;
-	// const isSuccess = contextQuery.isSuccess && organizationQuery.isSuccess;
 	const isLoading = contextQuery.isLoading || contextQuery.isPending;
-	// organizationQuery.isLoading ||
-	// organizationQuery.isPending;
 
 	if (isSuccess && !contextQuery.data) {
 		return <Redirect to="/overview" />;
@@ -81,14 +73,6 @@ export function ContextPage({ view }: ContextPageProps) {
 							<PageBreadcrumbs
 								items={[
 									{ label: "Surrealist", href: "/overview" },
-									// {
-									// 	label: organizationQuery.data?.name ?? "",
-									// 	href: `/o/${contextQuery.data?.organization_id}`,
-									// },
-									{
-										label: "TODO",
-										href: `/overview`,
-									},
 									{ label: contextQuery.data?.name ?? "" },
 								]}
 							/>
@@ -101,7 +85,6 @@ export function ContextPage({ view }: ContextPageProps) {
 							/>
 						)}
 						{contextQuery.data && (
-							// {contextQuery.data && organizationQuery.data && (
 							<Suspense
 								fallback={
 									<Center flex={1}>
@@ -109,10 +92,7 @@ export function ContextPage({ view }: ContextPageProps) {
 									</Center>
 								}
 							>
-								<Component
-									context={contextQuery.data}
-									// organization={organizationQuery.data}
-								/>
+								<Component context={contextQuery.data} />
 							</Suspense>
 						)}
 					</Stack>

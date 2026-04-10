@@ -18,6 +18,7 @@ import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
 import { OrganizationPage } from "./pages/Organization";
 import { OrganisationSidebar } from "./pages/Organization/sidebar";
+import { OrganizationContextDeployPage } from "./pages/OrganizationContextDeploy";
 import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
@@ -41,6 +42,7 @@ const ConnectionPageLazy = memo(ConnectionPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationPageLazy = memo(OrganizationPage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
+const OrganizationContextDeployPageLazy = memo(OrganizationContextDeployPage);
 const SupportPlansPageLazy = memo(SupportPlansPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
@@ -87,10 +89,7 @@ export function SurrealistScreen() {
 					flex={1}
 					pos="relative"
 				>
-					<DatabaseSidebarLazy
-						sidebarMode={sidebarMode}
-						visibleFrom="md"
-					/>
+					<DatabaseSidebarLazy visibleFrom="md" />
 
 					<Box className={classes.wrapper}>
 						{isMacos && (
@@ -191,13 +190,34 @@ export function SurrealistScreen() {
 											<Redirect to="/overview" />
 										</Route>
 
-										<Route path="/o/:organization/deploy">
+										<Route path="/o/:organization/instances/deploy">
 											{({ organization }) => (
 												<>
 													<OrganisationSidebar
 														organizationId={organization}
 													/>
 													<OrganizationDeployPageLazy id={organization} />
+												</>
+											)}
+										</Route>
+
+										<Route path="/o/:organization/deploy">
+											{({ organization }) => (
+												<Redirect
+													to={`/o/${organization}/instances/deploy`}
+												/>
+											)}
+										</Route>
+
+										<Route path="/o/:organization/contexts/deploy">
+											{({ organization }) => (
+												<>
+													<OrganisationSidebar
+														organizationId={organization}
+													/>
+													<OrganizationContextDeployPageLazy
+														id={organization}
+													/>
 												</>
 											)}
 										</Route>
@@ -284,7 +304,7 @@ export function SurrealistScreen() {
 					onClose={onCloseSidebar}
 					size={215}
 				>
-					<DatabaseSidebarLazy sidebarMode="fill" />
+					<DatabaseSidebarLazy forceMode="fill" />
 				</Drawer>
 			</Box>
 		</SidebarProvider>

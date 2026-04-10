@@ -368,6 +368,10 @@ export function DashboardView() {
 												label: organisation?.name ?? "",
 												href: `/o/${details?.organization_id}`,
 											},
+											{
+												label: "Instances",
+												href: `/o/${details?.organization_id}/instances`,
+											},
 											{ label: details?.name ?? "" },
 										]}
 									/>

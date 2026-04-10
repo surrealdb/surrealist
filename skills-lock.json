@@ -1,0 +1,10 @@
+{
+	"version": 1,
+	"skills": {
+		"surrealql": {
+			"source": "surrealdb/agent-skills",
+			"sourceType": "github",
+			"computedHash": "015f1bb2a2aa13a1a58525e0f52824c699ef67c04398e1a09d108974cf38ce5d"
+		}
+	}
+}

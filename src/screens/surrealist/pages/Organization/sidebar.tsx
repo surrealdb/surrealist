@@ -6,6 +6,8 @@ import {
 	iconOrganization,
 	iconProgressClock,
 	iconServer,
+	iconSpectron,
+	iconSurreal,
 } from "@surrealdb/ui";
 import { useMemo } from "react";
 import {
@@ -16,6 +18,8 @@ import {
 	ORG_ROLES_SUPPORT,
 } from "~/cloud/helpers";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
+import { useHasCloudFeature } from "~/hooks/cloud";
+import { optional } from "~/util/helpers";
 import {
 	type NavigationItem,
 	SidebarNavigation,
@@ -30,6 +34,7 @@ export interface OrganisationSidebarProps {
 export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps) {
 	const { setLocation } = useSidebar();
 	const { data: orgData } = useCloudOrganizationQuery(organizationId);
+	const showContexts = useHasCloudFeature("create_memory_store");
 
 	const isOrgSupport = orgData ? hasOrganizationRoles(orgData, ORG_ROLES_SUPPORT) : false;
 	const isOrgAdmin = orgData ? hasOrganizationRoles(orgData, ORG_ROLES_ADMIN) : false;
@@ -39,7 +44,7 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 	const navigation: NavigationItem[][] = useMemo(() => {
 		const base = `/o/${organizationId}`;
 
-		const primary: NavigationItem[] = [
+		const resources: NavigationItem[] = [
 			{
 				name: "Overview",
 				icon: iconServer,
@@ -47,65 +52,80 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 				navigate: () => setLocation(`${base}/overview`),
 			},
 			{
+				name: "Instances",
+				icon: iconSurreal,
+				match: [`${base}/instances`],
+				navigate: () => setLocation(`${base}/instances`),
+			},
+			...optional(
+				showContexts && {
+					name: "Contexts",
+					icon: iconSpectron,
+					match: [`${base}/contexts`],
+					navigate: () => setLocation(`${base}/contexts`),
+				},
+			),
+		];
+
+		const manage: NavigationItem[] = [
+			{
 				name: "Team",
 				icon: iconOrganization,
 				match: [`${base}/team`],
 				navigate: () => setLocation(`${base}/team`),
 			},
+			...optional(
+				isOrgOwner &&
+					!isOrgManagedBilling && {
+						name: "Invoices",
+						icon: iconDollar,
+						match: [`${base}/invoices`],
+						navigate: () => setLocation(`${base}/invoices`),
+					},
+			),
+			...optional(
+				isOrgOwner && {
+					name: "Billing",
+					icon: iconCreditCard,
+					match: [`${base}/billing`],
+					navigate: () => setLocation(`${base}/billing`),
+				},
+			),
+			...optional(
+				isOrgSupport && {
+					name: "Support",
+					icon: iconChat,
+					match: [`${base}/support`],
+					navigate: () => setLocation(`${base}/support`),
+				},
+			),
+			{
+				name: "Usage",
+				icon: iconProgressClock,
+				match: [`${base}/usage`],
+				navigate: () => setLocation(`${base}/usage`),
+			},
 		];
 
-		const billing: NavigationItem[] = [
-			...(isOrgOwner && !isOrgManagedBilling
-				? [
-						{
-							name: "Invoices",
-							icon: iconDollar,
-							match: [`${base}/invoices`],
-							navigate: () => setLocation(`${base}/invoices`),
-						},
-					]
-				: []),
-			...(isOrgOwner
-				? [
-						{
-							name: "Billing",
-							icon: iconCreditCard,
-							match: [`${base}/billing`],
-							navigate: () => setLocation(`${base}/billing`),
-						},
-					]
-				: []),
-			...(isOrgSupport
-				? [
-						{
-							name: "Support",
-							icon: iconChat,
-							match: [`${base}/support`],
-							navigate: () => setLocation(`${base}/support`),
-						},
-					]
-				: []),
-		];
+		const admin: NavigationItem[] = optional(
+			isOrgAdmin && {
+				name: "Settings",
+				icon: iconCog,
+				match: [`${base}/settings`],
+				navigate: () => setLocation(`${base}/settings`),
+			},
+		);
 
-		const admin: NavigationItem[] = isOrgAdmin
-			? [
-					{
-						name: "Usage",
-						icon: iconProgressClock,
-						match: [`${base}/usage`],
-						navigate: () => setLocation(`${base}/usage`),
-					},
-					{
-						name: "Settings",
-						icon: iconCog,
-						match: [`${base}/settings`],
-						navigate: () => setLocation(`${base}/settings`),
-					},
-				]
-			: [];
-
-		return [primary, billing, admin].filter((group) => group.length > 0);
-	}, [organizationId, isOrgOwner, isOrgManagedBilling, isOrgSupport, isOrgAdmin, setLocation]);
+		return [resources, manage, admin].filter((group) => group.length > 0);
+	}, [
+		organizationId,
+		showContexts,
+		isOrgOwner,
+		isOrgManagedBilling,
+		isOrgSupport,
+		isOrgAdmin,
+		setLocation,
+	]);
 
 	return (
 		<SidebarPortal>

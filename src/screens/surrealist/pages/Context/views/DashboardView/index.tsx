@@ -2,9 +2,7 @@ import {
 	Box,
 	Button,
 	Divider,
-	Group,
 	Image,
-	Paper,
 	SimpleGrid,
 	Tabs,
 	Text,
@@ -18,62 +16,12 @@ import {
 	Icon,
 	iconAPI,
 	iconArrowUpRight,
-	iconModel,
 	iconOpen,
-	iconRelation,
-	iconSearch,
-	iconTrend,
 } from "@surrealdb/ui";
-import { ReactNode, useState } from "react";
-import { useCloudContextStatsQuery } from "~/cloud/queries/contexts";
+import { type ReactNode, useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
-import { ContextViewProps } from "../../types";
-
-const GRID_COLUMNS = { base: 1, sm: 2, lg: 4 };
-
-function StatCard({
-	icon,
-	label,
-	value,
-	delta,
-}: {
-	icon: string;
-	label: string;
-	value: string | number;
-	delta: number;
-}) {
-	return (
-		<Paper p="lg">
-			<Group
-				gap="md"
-				wrap="nowrap"
-			>
-				<Icon path={icon} />
-				<Text inherit>{label}</Text>
-			</Group>
-			<Group>
-				<Text
-					fz="h1"
-					c="bright"
-					fw={700}
-				>
-					{value}
-				</Text>
-				<Group
-					c={delta > 0 ? "green" : "red"}
-					gap="xs"
-				>
-					<Icon
-						path={iconTrend}
-						style={{ transform: delta > 0 ? undefined : "scaleY(-1)" }}
-					/>
-					<Text inherit>{Math.abs(delta)}%</Text>
-				</Group>
-			</Group>
-		</Paper>
-	);
-}
+import type { ContextViewProps } from "../../types";
 
 type IntegrationTab = "python" | "javascript" | "api";
 
@@ -244,7 +192,6 @@ const LANGUAGES: Record<IntegrationTab, { label: string; img?: string; icon?: st
 };
 
 export default function DashboardView({ context }: ContextViewProps) {
-	const { data: stats } = useCloudContextStatsQuery(context.id);
 	const [activeTab, setActiveTab] = useState<IntegrationTab>("python");
 
 	const steps = INTEGRATION_STEPS[activeTab];
@@ -252,35 +199,6 @@ export default function DashboardView({ context }: ContextViewProps) {
 	return (
 		<>
 			<PrimaryTitle fz={32}>{context.name}</PrimaryTitle>
-
-			<Section>
-				<SimpleGrid cols={GRID_COLUMNS}>
-					<StatCard
-						icon={iconModel}
-						label="Total memories"
-						value={stats?.totalMemories ?? 0}
-						delta={stats?.memoriesAddedToday ?? 0}
-					/>
-					<StatCard
-						icon={iconSearch}
-						label="Searches today"
-						value={stats?.searchesToday ?? 0}
-						delta={stats?.searchesToday ?? 0}
-					/>
-					<StatCard
-						icon={iconRelation}
-						label="Knowledge nodes"
-						value={stats?.totalKnowledgeNodes ?? 0}
-						delta={stats?.totalKnowledgeRelations ?? 0}
-					/>
-					<StatCard
-						icon={iconAPI}
-						label="Avg latency"
-						value={`${stats?.avgSearchLatencyMs ?? 0}ms`}
-						delta={-(stats?.avgSearchLatencyMs ?? 0)}
-					/>
-				</SimpleGrid>
-			</Section>
 
 			<Section
 				title="Integrate with your stack"
