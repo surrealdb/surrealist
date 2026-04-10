@@ -11,7 +11,7 @@ export function StartCreator({ organization, ...other }: PropsWithChildren<Start
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	return (
-		<Link href={`/o/${organization}/deploy`}>
+		<Link href={`/o/${organization}/instances/deploy`}>
 			<UnstyledButton {...other}>
 				<Anchor
 					variant="glow"

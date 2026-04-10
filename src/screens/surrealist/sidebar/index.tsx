@@ -22,10 +22,10 @@ import classes from "../style.module.scss";
 import { SidebarTarget, useSidebar } from "./portal";
 
 export interface SurrealistSidebarProps extends BoxProps {
-	sidebarMode: string;
+	forceMode?: string;
 }
 
-export function SurrealistSidebar({ className, ...other }: SurrealistSidebarProps) {
+export function SurrealistSidebar({ className, forceMode, ...other }: SurrealistSidebarProps) {
 	const logoUrl = useLogoUrl();
 	const [, navigate] = useAbsoluteLocation();
 	const { sidebarMode, canHoverSidebar, onHoverEnter, setLocation } = useSidebar();
@@ -37,9 +37,10 @@ export function SurrealistSidebar({ className, ...other }: SurrealistSidebarProp
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
 
-	const isHoverable = sidebarMode === "expandable" && canHoverSidebar;
-	const isCollapsed = sidebarMode === "compact" || sidebarMode === "expandable";
-	const isFilled = sidebarMode === "fill";
+	const mode = forceMode || sidebarMode;
+	const isHoverable = mode === "expandable" && canHoverSidebar;
+	const isCollapsed = mode === "compact" || mode === "expandable";
+	const isFilled = mode === "fill";
 
 	return (
 		<ScrollArea
@@ -109,7 +110,7 @@ export function SurrealistSidebar({ className, ...other }: SurrealistSidebarProp
 						icon={iconSearch}
 						onClick={openCommands}
 						onMouseEnter={onHoverEnter}
-						withTooltip={sidebarMode === "compact"}
+						withTooltip={mode === "compact"}
 					/>
 
 					<NavigationIcon
@@ -118,7 +119,7 @@ export function SurrealistSidebar({ className, ...other }: SurrealistSidebarProp
 						match={["/support", "/support/*"]}
 						onClick={() => navigate("/support")}
 						onMouseEnter={onHoverEnter}
-						withTooltip={sidebarMode === "compact"}
+						withTooltip={mode === "compact"}
 						indicator={unreadConversations}
 					/>
 
@@ -127,7 +128,7 @@ export function SurrealistSidebar({ className, ...other }: SurrealistSidebarProp
 						icon={iconCog}
 						onClick={openSettings}
 						onMouseEnter={onHoverEnter}
-						withTooltip={sidebarMode === "compact"}
+						withTooltip={mode === "compact"}
 						indicator={!!availableUpdate}
 					/>
 				</Stack>

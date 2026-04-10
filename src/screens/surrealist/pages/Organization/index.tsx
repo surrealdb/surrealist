@@ -1,5 +1,5 @@
-import { Alert, Box, Button, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { Icon, iconChevronRight, iconCreditCard } from "@surrealdb/ui";
+import { Alert, Box, Button, ScrollArea, Stack } from "@mantine/core";
+import { Icon, iconCreditCard } from "@surrealdb/ui";
 import { Redirect } from "wouter";
 import {
 	hasOrganizationRoles,
@@ -18,6 +18,8 @@ import { useIsAuthenticated } from "~/hooks/cloud";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
+import { OrganizationContextsTab } from "./tabs/contexts";
+import { OrganizationInstancesTab } from "./tabs/instances";
 import { OrganizationInvoicesTab } from "./tabs/invoices";
 import { OrganizationOverviewTab } from "./tabs/overview";
 import { OrganizationSettingsTab } from "./tabs/settings";
@@ -27,6 +29,8 @@ import { OrganizationUsageTab } from "./tabs/usage";
 
 const MANAGEMENT_TABS = [
 	"overview",
+	"instances",
+	"contexts",
 	"team",
 	"invoices",
 	"billing",
@@ -87,34 +91,15 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 						>
 							{organization && (
 								<>
-									<Box>
-										<PageBreadcrumbs
-											items={[
-												{ label: "Surrealist", href: "/overview" },
-												{ label: organization.name },
-											]}
-										/>
-										{organization.billing_provider === "aws_marketplace" && (
-											<Group
-												gap="xs"
-												mt="xs"
-											>
-												<Icon
-													path={iconChevronRight}
-													size="sm"
-												/>
-												<Text>
-													This organisation is managed by{" "}
-													<Text
-														span
-														fw="bold"
-													>
-														AWS Marketplace
-													</Text>
-												</Text>
-											</Group>
-										)}
-									</Box>
+									<PageBreadcrumbs
+										items={[
+											{ label: "Surrealist", href: "/overview" },
+											{
+												label: organization.name,
+												href: `/o/${organization.id}`,
+											},
+										]}
+									/>
 									{isTerminated ? (
 										<Alert
 											color="obsidian"
@@ -157,6 +142,14 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 
 									{activeTab === "overview" && (
 										<OrganizationOverviewTab organization={organization} />
+									)}
+
+									{activeTab === "instances" && (
+										<OrganizationInstancesTab organization={organization} />
+									)}
+
+									{activeTab === "contexts" && (
+										<OrganizationContextsTab organization={organization} />
 									)}
 
 									{activeTab === "team" && (

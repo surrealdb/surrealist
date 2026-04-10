@@ -1,14 +1,12 @@
 import {
 	ActionIcon,
-	Badge,
+	Alert,
 	Button,
 	Code,
 	CopyButton,
 	Group,
 	Modal,
-	MultiSelect,
 	Paper,
-	Select,
 	Stack,
 	Table,
 	Tabs,
@@ -17,91 +15,45 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { Icon, iconCheck, iconDelete, iconEye, iconEyeOff } from "@surrealdb/ui";
+import { Icon, iconCheck, iconCopy, iconDelete, iconEye } from "@surrealdb/ui";
 import { useState } from "react";
+import {
+	useCreateContextApiKeyMutation,
+	useDeleteContextApiKeyMutation,
+} from "~/cloud/mutations/spectron";
 import { useCloudContextApiKeysQuery } from "~/cloud/queries/contexts";
 import { CodeSnippet } from "~/components/CodeSnippet";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
-import type { CodeLang, Snippets } from "~/types";
-import { ContextViewProps } from "../../types";
-
-const SCOPE_OPTIONS = [
-	{ label: "memories:read", value: "memories:read" },
-	{ label: "memories:write", value: "memories:write" },
-	{ label: "knowledge:read", value: "knowledge:read" },
-	{ label: "knowledge:write", value: "knowledge:write" },
-];
-
-const EXPIRATION_OPTIONS = [
-	{ label: "Never", value: "never" },
-	{ label: "30 days", value: "30" },
-	{ label: "90 days", value: "90" },
-	{ label: "1 year", value: "365" },
-];
-
-function formatRelativeTime(iso: string): string {
-	const diff = Date.now() - new Date(iso).getTime();
-	const minutes = Math.floor(diff / 60_000);
-
-	if (minutes < 1) return "Just now";
-	if (minutes < 60) return `${minutes}m ago`;
-
-	const hours = Math.floor(minutes / 60);
-	if (hours < 24) return `${hours}h ago`;
-
-	const days = Math.floor(hours / 24);
-	return `${days}d ago`;
-}
+import type { CodeLang, ContextApiKey, Snippets } from "~/types";
+import type { ContextViewProps } from "../../types";
 
 export default function ApiKeysView({ context }: ContextViewProps) {
-	const { data: apiKeys } = useCloudContextApiKeysQuery(context.id);
-	const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
+	const organization = context.organization_id;
+	const { data: apiKeys } = useCloudContextApiKeysQuery(organization, context.id);
+	const createKeyMutation = useCreateContextApiKeyMutation(organization, context.id);
+	const deleteKeyMutation = useDeleteContextApiKeyMutation(organization, context.id);
+
 	const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false);
 	const [newKeyName, setNewKeyName] = useState("");
-	const [newKeyScopes, setNewKeyScopes] = useState<string[]>([
-		"memories:read",
-		"memories:write",
-		"knowledge:read",
-		"knowledge:write",
-	]);
-	const [newKeyExpiration, setNewKeyExpiration] = useState("never");
+	const [createdKey, setCreatedKey] = useState<ContextApiKey | null>(null);
 	const [quickStartLang, setQuickStartLang] = useState<CodeLang>("js");
 
-	const endpoint = `https://api.surrealdb.com/v1/contexts/${context.id}`;
+	const endpoint = `https://${context.host}`;
 
-	const toggleReveal = (keyId: string) => {
-		setRevealedKeys((prev) => {
-			const next = new Set(prev);
-			if (next.has(keyId)) {
-				next.delete(keyId);
-			} else {
-				next.add(keyId);
-			}
-			return next;
-		});
-	};
-
-	const handleCreateKey = () => {
-		closeModal();
-		notifications.show({
-			title: "API key created",
-			message:
-				"Your new API key has been generated. Copy it now — it will only be shown once.",
-			color: "green",
-		});
+	const handleCreateKey = async () => {
+		const result = await createKeyMutation.mutateAsync({ name: newKeyName });
+		setCreatedKey(result);
 		setNewKeyName("");
-		setNewKeyScopes(["memories:read", "memories:write", "knowledge:read", "knowledge:write"]);
-		setNewKeyExpiration("never");
+		closeModal();
 	};
 
-	const handleRevoke = (keyName: string) => {
-		notifications.show({
-			title: "API key revoked",
-			message: `"${keyName}" has been permanently revoked.`,
-			color: "red",
-		});
+	const handleDismissCreatedKey = () => {
+		setCreatedKey(null);
+	};
+
+	const handleRevoke = (keyId: string) => {
+		deleteKeyMutation.mutate(keyId);
 	};
 
 	const jsSnippet = `import { Memory } from "@surrealdb/memory";
@@ -175,6 +127,32 @@ curl -X POST ${endpoint}/memories/search \\
 		<>
 			<PrimaryTitle fz={32}>API Keys</PrimaryTitle>
 
+			{createdKey?.key && (
+				<Alert
+					color="green"
+					title="API key created"
+					withCloseButton
+					onClose={handleDismissCreatedKey}
+				>
+					<Text mb="xs">Copy your API key now. It will only be shown once.</Text>
+					<Group gap="sm">
+						<Code>{createdKey.key}</Code>
+						<CopyButton value={createdKey.key}>
+							{({ copied, copy }) => (
+								<ActionIcon
+									variant="subtle"
+									size="sm"
+									color={copied ? "green" : undefined}
+									onClick={copy}
+								>
+									<Icon path={copied ? iconCheck : iconCopy} />
+								</ActionIcon>
+							)}
+						</CopyButton>
+					</Group>
+				</Alert>
+			)}
+
 			<Section
 				title="Endpoint"
 				description="Use these details to connect your agents and applications to this context."
@@ -237,16 +215,12 @@ curl -X POST ${endpoint}/memories/search \\
 					</Button>
 				}
 			>
-				<Table.ScrollContainer minWidth={800}>
+				<Table.ScrollContainer minWidth={500}>
 					<Table>
 						<Table.Thead>
 							<Table.Tr>
 								<Table.Th>Name</Table.Th>
-								<Table.Th>Key</Table.Th>
-								<Table.Th>Scopes</Table.Th>
-								<Table.Th>Created</Table.Th>
-								<Table.Th>Last used</Table.Th>
-								<Table.Th>Expires</Table.Th>
+								<Table.Th>ID</Table.Th>
 								<Table.Th>Actions</Table.Th>
 							</Table.Tr>
 						</Table.Thead>
@@ -257,83 +231,33 @@ curl -X POST ${endpoint}/memories/search \\
 										<Text fw={500}>{apiKey.name}</Text>
 									</Table.Td>
 									<Table.Td>
-										<Code>
-											{revealedKeys.has(apiKey.id)
-												? apiKey.key
-												: apiKey.maskedKey}
-										</Code>
+										<Code>{apiKey.id}</Code>
 									</Table.Td>
 									<Table.Td>
-										<Group gap={4}>
-											{apiKey.scopes.map((scope) => (
-												<Badge
-													key={scope}
-													variant="light"
-													size="xs"
-												>
-													{scope}
-												</Badge>
-											))}
-										</Group>
-									</Table.Td>
-									<Table.Td>
-										<Text>{formatRelativeTime(apiKey.createdAt)}</Text>
-									</Table.Td>
-									<Table.Td>
-										<Text>
-											{apiKey.lastUsedAt
-												? formatRelativeTime(apiKey.lastUsedAt)
-												: "Never"}
-										</Text>
-									</Table.Td>
-									<Table.Td>
-										<Text>
-											{apiKey.expiresAt
-												? new Date(apiKey.expiresAt).toLocaleDateString()
-												: "Never"}
-										</Text>
-									</Table.Td>
-									<Table.Td>
-										<Group gap={4}>
-											<ActionIcon
-												variant="subtle"
-												size="sm"
-												onClick={() => toggleReveal(apiKey.id)}
-											>
-												<Icon
-													path={
-														revealedKeys.has(apiKey.id)
-															? iconEyeOff
-															: iconEye
-													}
-												/>
-											</ActionIcon>
-											<CopyButton value={apiKey.key}>
-												{({ copied, copy }) => (
-													<ActionIcon
-														variant="subtle"
-														size="sm"
-														color={copied ? "green" : undefined}
-														onClick={copy}
-													>
-														<Icon
-															path={copied ? iconCheck : iconCheck}
-														/>
-													</ActionIcon>
-												)}
-											</CopyButton>
-											<ActionIcon
-												variant="subtle"
-												size="sm"
-												color="red"
-												onClick={() => handleRevoke(apiKey.name)}
-											>
-												<Icon path={iconDelete} />
-											</ActionIcon>
-										</Group>
+										<ActionIcon
+											variant="subtle"
+											size="sm"
+											color="red"
+											onClick={() => handleRevoke(apiKey.id)}
+											loading={deleteKeyMutation.isPending}
+										>
+											<Icon path={iconDelete} />
+										</ActionIcon>
 									</Table.Td>
 								</Table.Tr>
 							))}
+							{apiKeys?.length === 0 && (
+								<Table.Tr>
+									<Table.Td colSpan={3}>
+										<Text
+											ta="center"
+											py="lg"
+										>
+											No API keys created yet
+										</Text>
+									</Table.Td>
+								</Table.Tr>
+							)}
 						</Table.Tbody>
 					</Table>
 				</Table.ScrollContainer>
@@ -372,18 +296,6 @@ curl -X POST ${endpoint}/memories/search \\
 						value={newKeyName}
 						onChange={(e) => setNewKeyName(e.currentTarget.value)}
 					/>
-					<MultiSelect
-						label="Scopes"
-						data={SCOPE_OPTIONS}
-						value={newKeyScopes}
-						onChange={setNewKeyScopes}
-					/>
-					<Select
-						label="Expiration"
-						data={EXPIRATION_OPTIONS}
-						value={newKeyExpiration}
-						onChange={(v) => setNewKeyExpiration(v ?? "never")}
-					/>
 					<Group justify="flex-end">
 						<Button
 							variant="default"
@@ -394,6 +306,7 @@ curl -X POST ${endpoint}/memories/search \\
 						<Button
 							onClick={handleCreateKey}
 							disabled={!newKeyName.trim()}
+							loading={createKeyMutation.isPending}
 						>
 							Create
 						</Button>

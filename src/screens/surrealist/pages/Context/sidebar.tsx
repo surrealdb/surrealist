@@ -9,8 +9,7 @@ import {
 } from "../../sidebar/portal";
 
 const VIEW_NAVIGATION: ContextViewPage[][] = [
-	["dashboard"],
-	["memories", "entities", "knowledge"],
+	["dashboard", "playground"],
 	["api-keys", "settings"],
 ];
 

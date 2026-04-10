@@ -22,7 +22,7 @@ export function SigninPage({ plan }: SigninPageProps) {
 		if (plan === "explore") {
 			navigate("/c/sandbox/query");
 		} else if ((!hasInstances || plan) && default_org) {
-			const target = withSearchParams(`/o/${default_org}/deploy`, {
+			const target = withSearchParams(`/o/${default_org}/instances/deploy`, {
 				plan: plan === "deploy" ? undefined : plan,
 			});
 

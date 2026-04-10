@@ -170,6 +170,10 @@ function PageContent({ organisation, instances }: PageContentProps) {
 												label: organisation.name,
 												href: `/o/${organisation.id}`,
 											},
+											{
+												label: "Instances",
+												href: `/o/${organisation.id}/instances`,
+											},
 											{ label: "Deploy instance" },
 										]}
 									/>

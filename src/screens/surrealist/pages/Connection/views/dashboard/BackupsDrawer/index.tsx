@@ -33,7 +33,7 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 
 			params.set("backupId", selected);
 			params.set("instanceId", instance.id);
-			const path = `/o/${instance.organization_id}/deploy?${params.toString()}`;
+			const path = `/o/${instance.organization_id}/instances/deploy?${params.toString()}`;
 
 			navigate(path);
 			onClose();

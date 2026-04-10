@@ -1,6 +1,5 @@
-import { CloudContext, CloudOrganization } from "~/types";
+import type { CloudContext } from "~/types";
 
 export interface ContextViewProps {
 	context: CloudContext;
-	organization?: CloudOrganization;
 }

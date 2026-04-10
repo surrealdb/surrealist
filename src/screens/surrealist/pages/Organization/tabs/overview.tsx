@@ -1,84 +1,75 @@
 import {
 	Anchor,
+	Badge,
+	Box,
 	Button,
-	Center,
+	Divider,
 	Group,
-	Indicator,
-	Loader,
+	Image,
 	Paper,
 	SimpleGrid,
 	Skeleton,
 	Stack,
 	Text,
 	ThemeIcon,
-	Tooltip,
+	UnstyledButton,
 } from "@mantine/core";
-import { Icon, iconSpectron } from "@surrealdb/ui";
-import { useMemo } from "react";
-import { Link } from "wouter";
-import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
+import {
+	Icon,
+	iconArrowUpRight,
+	iconBook,
+	iconChat,
+	iconChevronRight,
+	iconCog,
+	iconCreditCard,
+	iconDollar,
+	iconOrganization,
+	iconProgressClock,
+	iconSpectron,
+	iconSurreal,
+	pictoSpectron,
+	pictoSurrealDB,
+} from "@surrealdb/ui";
+import { Fragment, useMemo } from "react";
+import {
+	hasOrganizationRoles,
+	isBillingManaged,
+	ORG_ROLES_ADMIN,
+	ORG_ROLES_OWNER,
+	ORG_ROLES_SUPPORT,
+} from "~/cloud/helpers";
 import { useCloudOrganizationContextsQuery } from "~/cloud/queries/contexts";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useHasCloudFeature } from "~/hooks/cloud";
-import { useConnectionNavigator, useContextNavigator } from "~/hooks/routing";
-import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
-import type { CloudContext, CloudInstance, ContextState } from "~/types";
-import { resolveInstanceConnection } from "~/util/connection";
-import { StartCreator } from "../../Overview/content/creator";
-import { StartInstance } from "../../Overview/content/instance";
-import { StartPlaceholder } from "../../Overview/content/placeholder";
+import { plural } from "~/util/helpers";
+import { useSidebar } from "../../../sidebar/portal";
 import type { OrganizationTabProps } from "../types";
 
-const GRID_COLUMNS = {
-	xs: 1,
-	sm: 2,
-	lg: 3,
-};
-
-const STATE_INFO: Record<ContextState, [string, string]> = {
-	ready: ["green", "Data store is active"],
-	creating: ["loader", "Provisioning data store..."],
-	deleting: ["red", "Data store is being removed"],
-};
-
-function DataStoreStateBadge({ state, size }: { state: ContextState; size: number }) {
-	const [display, text] = STATE_INFO[state];
-
-	return (
-		<Center
-			w={size}
-			h={size}
-		>
-			<Tooltip label={text}>
-				{display !== "loader" ? (
-					<Indicator
-						processing={state === "ready"}
-						color={display}
-						size={size}
-					/>
-				) : (
-					<Loader
-						size={size}
-						style={{ transform: "scale(1.5)" }}
-					/>
-				)}
-			</Tooltip>
-		</Center>
-	);
+interface ResourceCardProps {
+	name: string;
+	description: string;
+	subject: string;
+	icon: string;
+	image: string;
+	color: string;
+	count: number;
+	isPending: boolean;
+	onClick: () => void;
 }
 
-function DataStoreCard({
-	dataStore,
-	regions,
+function ResourceCard({
+	name,
+	description,
+	subject,
+	icon,
+	image,
+	color,
+	count,
+	isPending,
 	onClick,
-}: {
-	dataStore: CloudContext;
-	regions: { slug: string; description: string }[];
-	onClick: () => void;
-}) {
+}: ResourceCardProps) {
 	return (
 		<Anchor
 			variant="glow"
@@ -86,67 +77,201 @@ function DataStoreCard({
 			onClick={onClick}
 			style={{ cursor: "pointer" }}
 		>
-			<Paper p="lg">
+			<Paper p="xl">
 				<Group
-					wrap="nowrap"
-					align="strech"
-					mt={-3}
+					gap="md"
+					pos="relative"
+					style={{ zIndex: 1 }}
 				>
-					<Group
-						gap="lg"
-						wrap="nowrap"
+					<ThemeIcon
+						color={color}
+						variant="gradient"
+						size={48}
+						radius="md"
 					>
-						<ThemeIcon
-							color="obsidian"
-							variant="light"
+						<Icon
 							size="xl"
+							path={icon}
+						/>
+					</ThemeIcon>
+					<Box>
+						<Text
+							c="bright"
+							fw={600}
+							fz="lg"
 						>
-							<Icon
-								size="xl"
-								path={iconSpectron}
-							/>
-						</ThemeIcon>
-						<Stack
-							gap="xs"
-							miw={0}
-						>
-							<Group
-								miw={0}
-								wrap="nowrap"
-							>
-								<Text
-									c="bright"
-									fw={600}
-									fz="xl"
-									truncate
-								>
-									{dataStore.name}
-								</Text>
-								<DataStoreStateBadge
-									size={10}
-									state={dataStore.state}
-								/>
-							</Group>
-							{/* <Text>SurrealDB {dataStore.version}</Text> */}
-							<Text size="sm">
-								{regions.find((r) => r.slug === dataStore.region)?.description ??
-									dataStore.region}
-							</Text>
-						</Stack>
-					</Group>
+							{name}
+						</Text>
+						<Text fz="sm">{description}</Text>
+					</Box>
 				</Group>
+				<Group
+					gap={4}
+					mt="lg"
+					c="var(--mantine-color-violet-light-color)"
+					mb={-4}
+				>
+					{count > 0 ? (
+						<Text
+							fz="sm"
+							fw={500}
+							c="inherit"
+						>
+							View {plural(count, "", "all")} {count} {plural(count, subject)}
+						</Text>
+					) : (
+						<Text
+							fz="sm"
+							fw={500}
+							c="inherit"
+						>
+							Create your first {subject}
+						</Text>
+					)}
+					<Icon
+						path={iconChevronRight}
+						size="sm"
+					/>
+				</Group>
+				<Box
+					style={{ overflow: "hidden" }}
+					pos="absolute"
+					bottom={0}
+					right={0}
+					w={150}
+					h={150}
+				>
+					<Image
+						src={image}
+						w={150}
+						pos="absolute"
+						bottom={-45}
+						right={-32}
+						style={{
+							mixBlendMode: "plus-lighter",
+							zIndex: 0,
+							filter: "grayscale(100%)",
+							opacity: 0.2,
+						}}
+					/>
+				</Box>
 			</Paper>
 		</Anchor>
 	);
 }
 
+interface ManageItemProps {
+	name: string;
+	description: string;
+	icon: string;
+	onClick: () => void;
+	extra?: string;
+}
+
+function ManageItem({ name, description, icon, onClick, extra }: ManageItemProps) {
+	return (
+		<UnstyledButton onClick={onClick}>
+			<Anchor
+				variant="glow"
+				c="var(--mantine-color-text)"
+				component="span"
+			>
+				<Paper
+					px="md"
+					py="sm"
+				>
+					<Group
+						wrap="nowrap"
+						gap="md"
+					>
+						<ThemeIcon
+							color="obsidian"
+							variant="light"
+							size="lg"
+						>
+							<Icon path={icon} />
+						</ThemeIcon>
+						<Box
+							flex={1}
+							miw={0}
+						>
+							<Text
+								c="bright"
+								fw={600}
+							>
+								{name}
+							</Text>
+							<Text
+								fz="sm"
+								truncate
+							>
+								{description}
+							</Text>
+						</Box>
+						{extra && (
+							<Badge
+								fz="xs"
+								fw={500}
+								variant="light"
+							>
+								{extra}
+							</Badge>
+						)}
+						<Icon
+							path={iconChevronRight}
+							size="sm"
+							c="bright"
+							style={{ opacity: 0.4 }}
+						/>
+					</Group>
+				</Paper>
+			</Anchor>
+		</UnstyledButton>
+	);
+}
+
+interface DocLinkProps {
+	label: string;
+	href: string;
+}
+
+function DocLink({ label, href }: DocLinkProps) {
+	return (
+		<Anchor
+			href={href}
+			target="_blank"
+			rel="noopener noreferrer"
+			fz="sm"
+		>
+			<Group
+				gap="sm"
+				wrap="nowrap"
+			>
+				<Icon
+					path={iconBook}
+					size="md"
+					c="slate"
+				/>
+				{label}
+				<Icon
+					path={iconArrowUpRight}
+					size="xs"
+				/>
+			</Group>
+		</Anchor>
+	);
+}
+
 export function OrganizationOverviewTab({ organization }: OrganizationTabProps) {
-	const navigateConnection = useConnectionNavigator();
-	const navigateContext = useContextNavigator();
-	const allRegions = useCloudStore((s) => s.regions);
-	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
-	const isRestricted = isOrganisationRestricted(organization);
+	const { setLocation } = useSidebar();
 	const showContexts = useHasCloudFeature("create_memory_store");
+
+	const isOrgSupport = hasOrganizationRoles(organization, ORG_ROLES_SUPPORT);
+	const isOrgAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
+	const isOrgOwner = hasOrganizationRoles(organization, ORG_ROLES_OWNER, true);
+	const isOrgManagedBilling = isBillingManaged(organization);
+
+	const base = `/o/${organization.id}`;
 
 	const {
 		data: instanceData,
@@ -160,108 +285,177 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 		isPending: contextsPending,
 	} = useCloudOrganizationContextsQuery(organization.id);
 
-	const instances = instancesLoaded ? instanceData : [];
-	const contexts = contextsLoaded ? contextData : [];
-	const canCreate = instancesLoaded && instances.length === 0 && !isRestricted && isAdmin;
+	const instanceCount = instancesLoaded ? instanceData.length : 0;
+	const contextCount = contextsLoaded ? contextData.length : 0;
 
-	const sortedInstances = useMemo(() => {
-		return instances.sort((a, b) => statusComparator(a, b) || a.name.localeCompare(b.name));
-	}, [instances]);
+	const manageItems = useMemo(() => {
+		const items: ManageItemProps[] = [
+			{
+				name: "Team",
+				description: "Members and roles",
+				icon: iconOrganization,
+				onClick: () => setLocation(`${base}/team`),
+				extra: `${organization.member_count} ${plural(organization.member_count, "member")}`,
+			},
+		];
 
-	const sortedContexts = useMemo(() => {
-		return contexts.sort((a, b) => a.name.localeCompare(b.name));
-	}, [contexts]);
+		if (isOrgSupport) {
+			items.push({
+				name: "Support",
+				description: "Support plans and requests",
+				icon: iconChat,
+				onClick: () => setLocation(`${base}/support`),
+			});
+		}
 
-	const activateInstance = useStable((instance: CloudInstance) => {
-		navigateConnection(resolveInstanceConnection(instance).id);
-	});
+		if (isOrgOwner && !isOrgManagedBilling) {
+			items.push({
+				name: "Invoices",
+				description: "Past invoices and receipts",
+				icon: iconDollar,
+				onClick: () => setLocation(`${base}/invoices`),
+			});
+		}
+
+		if (isOrgOwner) {
+			items.push({
+				name: "Billing",
+				description: "Payment methods and billing",
+				icon: iconCreditCard,
+				onClick: () => setLocation(`${base}/billing`),
+			});
+		}
+
+		if (isOrgAdmin) {
+			items.push({
+				name: "Usage",
+				description: "Resource usage and quotas",
+				icon: iconProgressClock,
+				onClick: () => setLocation(`${base}/usage`),
+			});
+
+			items.push({
+				name: "Settings",
+				description: "Organisation configuration",
+				icon: iconCog,
+				onClick: () => setLocation(`${base}/settings`),
+			});
+		}
+
+		return items;
+	}, [
+		base,
+		isOrgOwner,
+		isOrgManagedBilling,
+		isOrgSupport,
+		isOrgAdmin,
+		setLocation,
+		organization.member_count,
+	]);
+
+	const docLinks = useMemo(() => {
+		const links: DocLinkProps[] = [
+			{
+				label: "SurrealDB Cloud documentation",
+				href: "https://surrealdb.com/docs/cloud",
+			},
+			{
+				label: "Connecting to your instance",
+				href: "https://surrealdb.com/docs/cloud/connecting",
+			},
+		];
+
+		if (showContexts) {
+			links.push({
+				label: "Spectron Context documentation",
+				href: "https://surrealdb.com/docs/context",
+			});
+		}
+
+		links.push({
+			label: "SDK reference",
+			href: "https://surrealdb.com/docs/sdk",
+		});
+
+		return links;
+	}, [showContexts]);
 
 	return (
 		<>
-			<PrimaryTitle fz={32}>Overview</PrimaryTitle>
-			<Section
-				title="Instances"
-				description="SurrealDB instances deployed in this organization."
-				rightSection={
-					isAdmin && (
-						<Link href={`/o/${organization.id}/deploy`}>
-							<Button
-								size="xs"
-								disabled={isRestricted}
-								variant="gradient"
-							>
-								Deploy instance
-							</Button>
-						</Link>
-					)
-				}
-			>
-				<SimpleGrid cols={GRID_COLUMNS}>
-					{instancesPending && <Skeleton h={112} />}
-					{sortedInstances.map((instance) => (
-						<StartInstance
-							key={instance.id}
-							instance={instance}
-							regions={allRegions}
-							organisation={organization}
-							onConnect={activateInstance}
-						/>
-					))}
-					{canCreate &&
-						(isAdmin ? (
-							<StartCreator organization={organization.id} />
-						) : (
-							<StartPlaceholder
-								title="No instances"
-								subtitle="This organisation has no instances"
-							/>
-						))}
-				</SimpleGrid>
-			</Section>
+			<PrimaryTitle fz={32}>{organization.name}</PrimaryTitle>
 
-			{showContexts && (
-				<Section
-					title="Contexts"
-					description="Spectron contexts deployed in this organisation."
-					rightSection={
-						isAdmin && (
-							<Link href={`/o/${organization.id}/context/deploy`}>
-								<Button
-									size="xs"
-									disabled={isRestricted}
-									variant="gradient"
-								>
-									Create context
-								</Button>
-							</Link>
-						)
+			<SimpleGrid cols={{ xs: 1, sm: showContexts ? 2 : 1 }}>
+				<ResourceCard
+					name="Instances"
+					subject="instance"
+					description="SurrealDB Cloud database instances"
+					icon={iconSurreal}
+					image={pictoSurrealDB}
+					color="violet"
+					count={instanceCount}
+					isPending={instancesPending}
+					onClick={() =>
+						instanceCount === 0
+							? setLocation(`${base}/instances/deploy`)
+							: setLocation(`${base}/instances`)
 					}
+				/>
+				{showContexts && (
+					<ResourceCard
+						name="Contexts"
+						subject="context"
+						description="Spectron memory and context stores"
+						icon={iconSpectron}
+						image={pictoSpectron}
+						color="violet"
+						count={contextCount}
+						isPending={contextsPending}
+						onClick={() =>
+							contextCount === 0
+								? setLocation(`${base}/contexts/deploy`)
+								: setLocation(`${base}/contexts`)
+						}
+					/>
+				)}
+			</SimpleGrid>
+
+			<SimpleGrid
+				cols={{ xs: 1, md: 2 }}
+				mt="xl"
+			>
+				<Section
+					title="Manage"
+					description="Organisation administration"
 				>
-					<SimpleGrid cols={GRID_COLUMNS}>
-						{contextsPending && <Skeleton h={112} />}
-						{sortedContexts.map((ds) => (
-							<DataStoreCard
-								key={ds.id}
-								dataStore={ds}
-								regions={allRegions}
-								onClick={() => navigateContext(ds.id)}
+					<Stack gap="xs">
+						{manageItems.map((item) => (
+							<ManageItem
+								key={item.name}
+								{...item}
 							/>
 						))}
-						{contextsLoaded && contexts.length === 0 && (
-							<StartPlaceholder
-								title="No contexts"
-								subtitle="This organisation has no contexts"
-							/>
-						)}
-					</SimpleGrid>
+					</Stack>
 				</Section>
-			)}
+
+				<Section
+					title="Documentation"
+					description="Guides and resources"
+				>
+					<Paper p="lg">
+						<Stack>
+							{docLinks.map((link, index) => (
+								<Fragment key={link.href}>
+									<DocLink
+										key={link.href}
+										{...link}
+									/>
+									{index < docLinks.length - 1 && <Divider />}
+								</Fragment>
+							))}
+						</Stack>
+					</Paper>
+				</Section>
+			</SimpleGrid>
 		</>
 	);
-}
-
-function statusComparator(a: CloudInstance | CloudContext, b: CloudInstance | CloudContext) {
-	if (a.state === "paused" && b.state !== "paused") return 1;
-	if (a.state !== "paused" && b.state === "paused") return -1;
-	return 0;
 }
