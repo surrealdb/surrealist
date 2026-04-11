@@ -1,10 +1,10 @@
 import {
 	Button,
 	Checkbox,
+	Divider,
 	Group,
 	Modal,
 	ScrollArea,
-	SegmentedControl,
 	Select,
 	Stack,
 	Tabs,
@@ -49,10 +49,17 @@ export interface AccessEditorModalProps {
 	level: Base;
 	existing: SchemaAccess | null;
 	opened: boolean;
+	list: SchemaAccess[];
 	onClose: () => void;
 }
 
-export function AccessEditorModal({ level, existing, opened, onClose }: AccessEditorModalProps) {
+export function AccessEditorModal({
+	level,
+	existing,
+	opened,
+	list,
+	onClose,
+}: AccessEditorModalProps) {
 	const [target, setTarget] = useState<SchemaAccess | null>(null);
 	const [name, setName] = useInputState("");
 	const [type, setType] = useState<AccessType>("RECORD");
@@ -69,21 +76,6 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 	const [comment, setComment] = useInputState("");
 
 	const [activeTab, setActiveTab] = useState("general");
-
-	const tabs = useMemo(() => {
-		const list = [
-			{ label: "General", value: "general" },
-			{ label: "Durations", value: "durations" },
-			{ label: "JWT", value: "jwt" },
-			{ label: "Comment", value: "comment" },
-		];
-
-		if (type === "RECORD") {
-			list.push({ label: "Session", value: "session" });
-		}
-
-		return list;
-	}, [type]);
 
 	useLayoutEffect(() => {
 		if (opened) {
@@ -199,6 +191,9 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 		}
 	});
 
+	const isConflicting = !existing && list.some((access) => access.name === name);
+	const isValid = !isConflicting && name.length > 0;
+
 	return (
 		<Modal
 			opened={opened}
@@ -214,14 +209,20 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 			}
 		>
 			<Form onSubmit={saveUser}>
-				<Tabs value={activeTab}>
-					<SegmentedControl
-						mb="xl"
-						w="100%"
-						data={tabs}
-						value={activeTab}
-						onChange={setActiveTab}
-					/>
+				<Tabs
+					value={activeTab}
+					onChange={setActiveTab as any}
+					variant="surreal"
+				>
+					<Tabs.List>
+						<Tabs.Tab value="general">General</Tabs.Tab>
+						<Tabs.Tab value="durations">Durations</Tabs.Tab>
+						<Tabs.Tab value="jwt">JWT</Tabs.Tab>
+						{type === "RECORD" && <Tabs.Tab value="session">Session</Tabs.Tab>}
+						<Tabs.Tab value="comment">Comment</Tabs.Tab>
+					</Tabs.List>
+
+					<Divider mb="xl" />
 
 					<Tabs.Panel value="general">
 						<Stack gap="lg">
@@ -232,6 +233,8 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 									value={name}
 									spellCheck={false}
 									onChange={setName}
+									error={isConflicting && "This name is already in use"}
+									data-autofocus
 									required
 								/>
 							)}
@@ -398,6 +401,7 @@ export function AccessEditorModal({ level, existing, opened, onClose }: AccessEd
 							type="submit"
 							variant="gradient"
 							flex={1}
+							disabled={!isValid}
 							rightSection={<Icon path={iconPlus} />}
 						>
 							Create access method

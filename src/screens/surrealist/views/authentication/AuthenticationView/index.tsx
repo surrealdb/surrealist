@@ -17,9 +17,10 @@ export function AuthenticationView() {
 	const nsSchema = useNamespaceSchema();
 	const dbSchema = useDatabaseSchema();
 
-	const [namespace, database] = useConnection((c) => [
+	const [namespace, database, isCloud] = useConnection((c) => [
 		c?.lastNamespace ?? "",
 		c?.lastDatabase ?? "",
+		c?.authentication?.mode === "cloud",
 	]);
 
 	const rootUsers = useMemo(() => kvSchema.users, [kvSchema.users]);
@@ -49,6 +50,7 @@ export function AuthenticationView() {
 						icon={iconServerSecure}
 						users={rootUsers}
 						accesses={rootAccesses}
+						filterAccesses={(access) => isCloud && access.name !== "cloud"}
 					/>
 				</Panel>
 				<PanelDragger />

@@ -1,11 +1,11 @@
 import {
 	Button,
 	Checkbox,
+	Divider,
 	Group,
 	Modal,
 	PasswordInput,
 	ScrollArea,
-	SegmentedControl,
 	Stack,
 	Tabs,
 	Textarea,
@@ -36,10 +36,11 @@ export interface UserEditorModalProps {
 	level: Base;
 	existing: SchemaUser | null;
 	opened: boolean;
+	list: SchemaUser[];
 	onClose: () => void;
 }
 
-export function UserEditorModal({ level, existing, opened, onClose }: UserEditorModalProps) {
+export function UserEditorModal({ level, existing, opened, list, onClose }: UserEditorModalProps) {
 	const [activeTab, setActiveTab] = useState("general");
 	const [target, setTarget] = useState<SchemaUser | null>(null);
 	const [username, setUsername] = useInputState("");
@@ -99,6 +100,10 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 		}
 	});
 
+	const isConflicting = !existing && list.some((user) => user.name === username);
+	const isValid =
+		!isConflicting && username.length > 0 && password.length > 0 && roles.length > 0;
+
 	return (
 		<Modal
 			opened={opened}
@@ -116,19 +121,16 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 			<Form onSubmit={saveUser}>
 				<Tabs
 					value={activeTab}
-					variant="gradient"
+					onChange={setActiveTab as any}
+					variant="surreal"
 				>
-					<SegmentedControl
-						w="100%"
-						mb="xl"
-						data={[
-							{ label: "General", value: "general" },
-							{ label: "Durations", value: "durations" },
-							{ label: "Comment", value: "comment" },
-						]}
-						value={activeTab}
-						onChange={setActiveTab}
-					/>
+					<Tabs.List>
+						<Tabs.Tab value="general">General</Tabs.Tab>
+						<Tabs.Tab value="durations">Durations</Tabs.Tab>
+						<Tabs.Tab value="comment">Comment</Tabs.Tab>
+					</Tabs.List>
+
+					<Divider mb="xl" />
 
 					<Tabs.Panel value="general">
 						<Stack gap="lg">
@@ -139,6 +141,8 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 									value={username}
 									spellCheck={false}
 									onChange={setUsername}
+									error={isConflicting && "This name is already in use"}
+									data-autofocus
 									required
 								/>
 							)}
@@ -222,6 +226,7 @@ export function UserEditorModal({ level, existing, opened, onClose }: UserEditor
 						type="submit"
 						variant="gradient"
 						flex={1}
+						disabled={!isValid}
 						rightSection={<Icon path={target ? iconCheck : iconPlus} />}
 					>
 						{target ? "Save user" : "Create user"}
