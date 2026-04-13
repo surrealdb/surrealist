@@ -1,5 +1,5 @@
 import { QueryObserverOptions, useQueries } from "@tanstack/react-query";
-import { useCloudStore } from "~/stores/cloud";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import type { CloudInstance } from "~/types";
 import { fetchAPI } from "../api";
 import { useCloudOrganizationsQuery } from "../queries/organizations";
@@ -9,7 +9,7 @@ import { useCloudOrganizationsQuery } from "../queries/organizations";
  */
 export function useCloudInstanceList() {
 	const { data: organizations = [], isLoading } = useCloudOrganizationsQuery();
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
 
 	return useQueries({
 		queries: organizations.map(
@@ -17,7 +17,7 @@ export function useCloudInstanceList() {
 				({
 					queryKey: ["cloud", "instances", { org: org.id, instances: true }],
 					refetchInterval: 15_000,
-					enabled: authState === "authenticated",
+					enabled: isAuthenticated,
 					queryFn: async ({ client }) => {
 						const instances = await fetchAPI<CloudInstance[]>(
 							`/organizations/${org.id}/instances`,

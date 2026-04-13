@@ -16,14 +16,21 @@ const isDocker = process.env.VITE_SURREALIST_DOCKER === "true";
 const ENTRYPOINTS = {
 	surrealist: "/index.html",
 	mini_embed: "/tools/mini-embed.html",
-	auth_callback: "/tools/auth-callback.html",
+	auth_return: "/tools/auth-return.html",
+	auth_launch: "/tools/auth-launch.html",
 	cloud_referral: "/tools/cloud-referral.html",
 };
 
 const TOOLS = {
 	"tools/mini-embed.html": "mini/run/index.html",
-	"tools/auth-callback.html": "cloud/callback/index.html", // TODO rename to cloud/callback
+	"tools/auth-return.html": "auth/return/index.html",
+	"tools/auth-launch.html": "auth/launch/index.html",
 	"tools/cloud-referral.html": "cloud/referral/index.html",
+};
+
+const REWRITES = {
+	"/auth/return": "/tools/auth-return.html",
+	"/auth/launch": "/tools/auth-launch.html",
 };
 
 export default defineConfig(({ mode }) => {
@@ -49,6 +56,22 @@ export default defineConfig(({ mode }) => {
 						chunk.fileName = endpoint;
 					}
 				}
+			},
+		},
+		{
+			name: "rewrite-routes",
+			configureServer(server) {
+				server.middlewares.use((req, _res, next) => {
+					if (req.url) {
+						const [pathname, query] = req.url.split("?", 2);
+						const target = REWRITES[pathname];
+
+						if (target) {
+							req.url = query ? `${target}?${query}` : target;
+						}
+					}
+					next();
+				});
 			},
 		},
 	];
@@ -121,7 +144,7 @@ export default defineConfig(({ mode }) => {
 			},
 			preprocessorOptions: {
 				scss: {
-					additionalData: '@use "~/assets/styles/mixins" as *;',
+					additionalData: "@use '@surrealdb/ui/mixins' as *;",
 					api: "modern-compiler",
 				},
 			},

@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import { useSupportTicketsEnvironment } from "~/hooks/context";
-import { useCloudStore } from "~/stores/cloud";
 import {
 	IntercomConversation,
 	IntercomSupportArticle,
@@ -16,7 +16,7 @@ import { fetchContextAPI } from "../api/context";
  * Fetch a list of all conversations the user has access to
  */
 export function useConversationsQuery() {
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
 	const env = useSupportTicketsEnvironment();
 
 	const [flags] = useFeatureFlags();
@@ -24,7 +24,7 @@ export function useConversationsQuery() {
 	return useQuery({
 		queryKey: ["cloud", "conversations"],
 		refetchInterval: 30_000,
-		enabled: authState === "authenticated" && flags.support_tickets,
+		enabled: isAuthenticated && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation[]>(`/cloud/conversations`, env);
 		},
@@ -72,12 +72,12 @@ export function useCloudOrganizationTicketAttributesQuery(organizationId?: strin
 export function useCloudConversationQuery(conversationId?: string) {
 	const [flags] = useFeatureFlags();
 	const env = useSupportTicketsEnvironment();
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
 
 	return useQuery({
 		queryKey: ["cloud", "conversations", conversationId],
 		refetchInterval: 30_000,
-		enabled: !!conversationId && authState === "authenticated" && flags.support_tickets,
+		enabled: !!conversationId && isAuthenticated && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation>(
 				`/cloud/conversations/${conversationId}`,
@@ -93,12 +93,12 @@ export function useCloudConversationQuery(conversationId?: string) {
 export function useCloudUnreadConversationsQuery() {
 	const [flags] = useFeatureFlags();
 	const env = useSupportTicketsEnvironment();
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
 
 	return useQuery({
 		queryKey: ["cloud", "unread_conversations"],
 		refetchInterval: 30_000,
-		enabled: authState === "authenticated" && flags.support_tickets,
+		enabled: isAuthenticated && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<boolean>(`/cloud/conversations/has_unread`, env);
 		},

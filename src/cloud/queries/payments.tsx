@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useCloudStore } from "~/stores/cloud";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import type { CloudPayment } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -7,11 +7,11 @@ import { fetchAPI } from "../api";
  * Fetch organization payment details
  */
 export function useCloudPaymentsQuery(organization?: string) {
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
 
 	return useQuery({
 		queryKey: ["cloud", "payments", organization],
-		enabled: !!organization && authState === "authenticated",
+		enabled: !!organization && isAuthenticated,
 		queryFn: async () => {
 			return fetchAPI<CloudPayment>(`/organizations/${organization}/payment`);
 		},

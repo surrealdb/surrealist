@@ -3,9 +3,9 @@ import { useInputState } from "@mantine/hooks";
 import { Icon, iconChevronRight, iconCog, iconExitToAp, iconOrganization } from "@surrealdb/ui";
 import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";
-import { destroySession, openCloudAuthentication } from "~/cloud/api/auth";
 import { useBoolean } from "~/hooks/boolean";
-import { useCloudProfile } from "~/hooks/cloud";
+import { useCloudProfile, useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -90,18 +90,20 @@ function AccountForm({ onClose }: AccountFormProps) {
 
 export function CloudAccount() {
 	const [showSettings, settingsModal] = useBoolean();
+	const { signIn, signOut } = useCloudAuth();
 
 	const profile = useCloudProfile();
-	const state = useCloudStore((s) => s.authState);
+	const isAuthenticated = useIsAuthenticated();
+	const isAuthLoading = useIsAuthLoading();
 	const [, navigate] = useAbsoluteLocation();
 
-	if (state === "unauthenticated" || state === "unknown") {
+	if (!isAuthenticated) {
 		return (
 			<Button
 				variant="gradient"
 				size="xs"
-				disabled={state === "unknown"}
-				onClick={openCloudAuthentication}
+				disabled={isAuthLoading}
+				onClick={signIn}
 				rightSection={<Icon path={iconChevronRight} />}
 			>
 				Sign in
@@ -116,7 +118,7 @@ export function CloudAccount() {
 			<Menu
 				position="bottom-end"
 				trigger="click-hover"
-				disabled={state === "loading"}
+				disabled={isAuthLoading}
 				transitionProps={{
 					transition: "scale-y",
 				}}
@@ -169,7 +171,7 @@ export function CloudAccount() {
 					<Menu.Divider />
 					<Menu.Item
 						leftSection={<Icon path={iconExitToAp} />}
-						onClick={destroySession}
+						onClick={signOut}
 					>
 						Sign out
 					</Menu.Item>

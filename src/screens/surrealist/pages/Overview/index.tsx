@@ -22,19 +22,18 @@ import {
 import { useMemo } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useIsCloudEnabled } from "~/hooks/cloud";
+import { useIsAuthenticated, useIsAuthLoading, useIsCloudEnabled } from "~/hooks/cloud";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useConnectionList } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
 import { dispatchIntent } from "~/util/intents";
@@ -54,6 +53,7 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const showCloud = useIsCloudEnabled();
+	const { signIn } = useCloudAuth();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
@@ -71,14 +71,14 @@ export function OverviewPage() {
 		navigateConnection(con.id);
 	});
 
-	const authState = useCloudStore((s) => s.authState);
+	const isAuthenticated = useIsAuthenticated();
+	const isAuthLoading = useIsAuthLoading();
 	const dismissedBanners = useConfigStore((s) => s.dismissedBanners);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
 
 	const orgsQuery = useCloudOrganizationsQuery();
 	const activeOrgs = orgsQuery.data?.filter((org) => !isOrganisationTerminated(org)) ?? [];
-	const isOrgsLoading =
-		authState === "loading" || (authState === "authenticated" && orgsQuery.isPending);
+	const isOrgsLoading = isAuthLoading || (isAuthenticated && orgsQuery.isPending);
 
 	return (
 		<Box
@@ -88,7 +88,7 @@ export function OverviewPage() {
 			<Transition
 				duration={250}
 				transition="fade-up"
-				mounted={authState !== "unknown"}
+				mounted={!isAuthLoading}
 			>
 				{(style) => (
 					<ScrollArea
@@ -164,12 +164,12 @@ export function OverviewPage() {
 										</SimpleGrid>
 									)}
 
-									{authState === "unauthenticated" && (
+									{!isAuthenticated && !isAuthLoading && (
 										<StartCloud
 											mt="sm"
 											action="Sign in"
 											image={pictoCloud}
-											onClick={openCloudAuthentication}
+											onClick={signIn}
 										>
 											<PrimaryTitle>
 												Get started with SurrealDB Cloud
@@ -182,7 +182,7 @@ export function OverviewPage() {
 										</StartCloud>
 									)}
 
-									{activeOrgs.length > 0 && (
+									{isAuthenticated && activeOrgs.length > 0 && (
 										<SimpleGrid
 											cols={GRID_COLUMNS}
 											mt="sm"

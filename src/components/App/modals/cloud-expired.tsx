@@ -1,13 +1,14 @@
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
 import { Icon, iconClose, pictoSDBCloud } from "@surrealdb/ui";
 import type { MouseEvent } from "react";
-import { openCloudAuthentication } from "~/cloud/api/auth";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import classes from "../style.module.scss";
 
 export function CloudExpiredDialog() {
 	const { setSessionExpired } = useCloudStore.getState();
+	const { signIn } = useCloudAuth();
 
 	const isOpen = useCloudStore((s) => s.sessionExpired);
 
@@ -36,7 +37,7 @@ export function CloudExpiredDialog() {
 			classNames={{
 				root: classes.updateDialog,
 			}}
-			onClick={openCloudAuthentication}
+			onClick={signIn}
 		>
 			<Group>
 				<Image

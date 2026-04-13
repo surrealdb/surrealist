@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useCloudStore } from "~/stores/cloud";
+import { useIsAuthenticated } from "~/hooks/cloud";
 import { CloudBackup } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -7,12 +7,12 @@ import { fetchAPI } from "../api";
  * Fetch instance backups
  */
 export function useCloudBackupsQuery(instance?: string) {
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
 
 	return useQuery({
 		queryKey: ["cloud", "backups", instance],
 		refetchInterval: 15_000,
-		enabled: !!instance && authState === "authenticated",
+		enabled: !!instance && isAuthenticated,
 		queryFn: async () => {
 			const { db_backups } = await fetchAPI<{ db_backups?: CloudBackup[] }>(
 				`/instances/${instance}/status`,

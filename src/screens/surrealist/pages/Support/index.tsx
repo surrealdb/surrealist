@@ -28,12 +28,12 @@ import {
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
 import { ConversationTable } from "~/components/ConversationTable";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../Overview/content/cloud";
@@ -42,6 +42,7 @@ import { SupportCollection } from "./SupportCollection";
 import classes from "./style.module.scss";
 
 export function SupportPage() {
+	const { signIn } = useCloudAuth();
 	const isAuthenticated = useIsAuthenticated();
 
 	const { data: collections, isLoading } = useSupportCollectionsQuery();
@@ -154,7 +155,7 @@ export function SupportPage() {
 											if (isAuthenticated) {
 												navigate("/overview");
 											} else {
-												openCloudAuthentication();
+												signIn();
 											}
 										}}
 									>

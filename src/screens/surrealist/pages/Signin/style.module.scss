@@ -1,0 +1,64 @@
+.root {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+}
+
+.form-column {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding: 48px 64px;
+	overflow-y: auto;
+
+	@include sm-and-down {
+		padding: 32px 24px;
+	}
+}
+
+.form-content {
+	max-width: 480px;
+	width: 100%;
+}
+
+.brand-column {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+	background: linear-gradient(
+		135deg,
+		color-mix(in srgb, var(--surreal-purple) 80%, transparent) 0%,
+		color-mix(in srgb, var(--surreal-purple) 40%, transparent) 100%
+	);
+
+	@include sm-and-down {
+		display: none;
+	}
+}
+
+.brand-glow {
+	position: absolute;
+	inset: 0;
+	background-image: var(--glow-image);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	opacity: 0.35;
+	pointer-events: none;
+}
+
+.brand-logo {
+	width: 72px;
+	height: 72px;
+	opacity: 0.6;
+}
+
+.brand-tagline {
+	text-align: center;
+	max-width: 340px;
+}
