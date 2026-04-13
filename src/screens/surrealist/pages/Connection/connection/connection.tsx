@@ -134,14 +134,14 @@ export async function openConnection(options?: ConnectOptions) {
 		const [versionCheck] = getVersionTimeout();
 
 		if (connection.authentication.mode === "cloud") {
-			const { authState } = useCloudStore.getState();
+			const { cloudSessionActive, isProcessingAuth } = useCloudStore.getState();
 
-			if (authState === "loading" || authState === "unknown") {
+			if (isProcessingAuth) {
 				scheduleReconnect(1000);
 				return;
 			}
 
-			if (authState === "unauthenticated") {
+			if (!cloudSessionActive) {
 				throw new CloudError("Not authenticated with SurrealDB Cloud");
 			}
 

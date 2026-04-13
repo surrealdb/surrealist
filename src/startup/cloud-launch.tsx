@@ -6,7 +6,7 @@ import "../assets/styles/variants.scss";
 import "../assets/styles/global.scss";
 
 import { createRoot } from "react-dom/client";
-import { AuthCallbackScreen } from "~/screens/auth-callback";
+import { AuthLaunchScreen } from "~/screens/auth-launch";
 import { HeadInjector } from "~/util/head";
 
 (async () => {
@@ -19,7 +19,7 @@ import { HeadInjector } from "~/util/head";
 	createRoot(root).render(
 		<>
 			<HeadInjector />
-			<AuthCallbackScreen />
+			<AuthLaunchScreen />
 		</>,
 	);
 })();

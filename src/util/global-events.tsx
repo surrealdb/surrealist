@@ -45,3 +45,8 @@ export const CloudExpiredEvent = createEventBus();
  * Set the query in the currently active query tab
  */
 export const SetQueryEvent = createEventBus<string>();
+
+/**
+ * Invoked when a desktop deep link auth callback is received
+ */
+export const DeepLinkAuthEvent = createEventBus<string>();

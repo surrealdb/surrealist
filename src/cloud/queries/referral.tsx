@@ -1,18 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { useCloudProfile } from "~/hooks/cloud";
-import { useCloudStore } from "~/stores/cloud";
+import { useCloudProfile, useIsAuthenticated } from "~/hooks/cloud";
 import { fetchAPI } from "../api";
 
 /**
  * Fetch referral statistics
  */
 export function useCloudReferralQuery() {
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
 	const { username } = useCloudProfile();
 
 	return useQuery({
 		queryKey: ["cloud", "referral", username],
-		enabled: authState === "authenticated",
+		enabled: isAuthenticated,
 		queryFn: async () => {
 			const { users_referred } = await fetchAPI<{ users_referred: number }>(
 				`/user/referrals`,
@@ -27,12 +26,12 @@ export function useCloudReferralQuery() {
  * Fetch personal referral code
  */
 export function useCloudReferralCodeQuery() {
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
 	const { username } = useCloudProfile();
 
 	return useQuery({
 		queryKey: ["cloud", "referral-code", username],
-		enabled: authState === "authenticated",
+		enabled: isAuthenticated,
 		queryFn: async () => {
 			return fetchAPI<string>(`/user/referrals/code`);
 		},

@@ -1,13 +1,14 @@
-import { Box, Drawer, Flex, Group, Stack } from "@mantine/core";
+import { Box, Drawer, Flex, Group, LoadingOverlay, Stack } from "@mantine/core";
 import { memo, useLayoutEffect } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AppTitleBar } from "~/components/AppTitleBar";
 import { TopGlow } from "~/components/TopGlow";
-import { useIsCloudEnabled } from "~/hooks/cloud";
+import { useIsAuthenticated, useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
+import { useCloudStore } from "~/stores/cloud";
 import { useInterfaceStore } from "~/stores/interface";
 import { ViewPage } from "~/types";
 import { ConnectionPage } from "./pages/Connection";
@@ -56,8 +57,13 @@ export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const showCloud = useIsCloudEnabled();
+	const isAuthenticated = useIsAuthenticated();
+	const onboardingRequired = useCloudStore((s) => s.onboardingRequired);
+	const isProcessingAuth = useCloudStore((s) => s.isProcessingAuth);
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
+
+	const blockNavigation = isAuthenticated && onboardingRequired;
 
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const isMacos = adapter.platform === "darwin" && isDesktop;
@@ -125,6 +131,17 @@ export function SurrealistScreen() {
 							</Group>
 
 							<Switch>
+								{blockNavigation && (
+									<>
+										<Route path="/signin">
+											<SigninPageLazy />
+										</Route>
+										<Route>
+											<Redirect to="/signin" />
+										</Route>
+									</>
+								)}
+
 								<Route path="/" />
 
 								<Route path="/overview">
@@ -258,13 +275,8 @@ export function SurrealistScreen() {
 											<ReferralPageLazy />
 										</Route>
 
-										<Route path="/signin/:plan?">
-											{({ plan }) => (
-												<>
-													<GlobalSidebar />
-													<SigninPageLazy plan={plan} />
-												</>
-											)}
+										<Route path="/signin">
+											<SigninPageLazy />
 										</Route>
 
 										<Route path="/cloud">
@@ -306,6 +318,12 @@ export function SurrealistScreen() {
 				>
 					<DatabaseSidebarLazy forceMode="fill" />
 				</Drawer>
+
+				<LoadingOverlay
+					visible={isProcessingAuth}
+					zIndex={1000}
+					overlayProps={{ blur: 4 }}
+				/>
 			</Box>
 		</SidebarProvider>
 	);

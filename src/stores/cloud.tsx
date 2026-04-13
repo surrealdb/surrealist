@@ -1,12 +1,6 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import type {
-	AuthState,
-	CloudBillingCountry,
-	CloudInstanceType,
-	CloudProfile,
-	CloudRegion,
-} from "~/types";
+import type { CloudBillingCountry, CloudInstanceType, CloudProfile, CloudRegion } from "~/types";
 
 interface CloudValues {
 	instanceVersions: string[];
@@ -23,9 +17,7 @@ export const EMPTY_PROFILE: CloudProfile = {
 };
 
 export type CloudStore = {
-	authState: AuthState;
 	authError: string;
-	accessToken: string;
 	sessionToken: string;
 	authProvider: string;
 	userId: string;
@@ -37,11 +29,12 @@ export type CloudStore = {
 	regions: CloudRegion[];
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
+	onboardingRequired: boolean;
+	cloudSessionActive: boolean;
+	isProcessingAuth: boolean;
 	chatLastResponse: string;
 
-	setLoading: () => void;
 	setAuthError: (error: string) => void;
-	setAccessToken: (token: string) => void;
 	setSessionToken: (token: string) => void;
 	setUserId: (id: string) => void;
 	setAuthProvider: (provider: string) => void;
@@ -49,16 +42,17 @@ export type CloudStore = {
 	setIsSupported: (supported: boolean) => void;
 	setFailedConnected: (failed: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
+	setCloudSessionActive: (active: boolean) => void;
+	setIsProcessingAuth: (processing: boolean) => void;
 	setProfile: (profile: CloudProfile) => void;
 	setSessionExpired: (expired: boolean) => void;
+	setOnboardingRequired: (required: boolean) => void;
 	clearSession: () => void;
 };
 
 export const useCloudStore = create<CloudStore>()(
 	immer((set) => ({
-		authState: "unknown",
 		authError: "",
-		accessToken: "",
 		sessionToken: "",
 		userId: "",
 		authProvider: "",
@@ -70,22 +64,18 @@ export const useCloudStore = create<CloudStore>()(
 		regions: [],
 		billingCountries: [],
 		sessionExpired: false,
+		onboardingRequired: false,
+		cloudSessionActive: false,
+		isProcessingAuth: false,
 		isProvisioning: false,
 		isProvisionDone: false,
 		provisioning: null,
 		chatConversation: [],
 		chatLastResponse: "",
 
-		setLoading: () => set({ authState: "loading" }),
-
 		setAuthError: (error) =>
 			set({
 				authError: error,
-			}),
-
-		setAccessToken: (token) =>
-			set({
-				accessToken: token,
 			}),
 
 		setSessionToken: (token) =>
@@ -115,8 +105,18 @@ export const useCloudStore = create<CloudStore>()(
 
 		setCloudValues: (values) =>
 			set({
-				authState: "authenticated",
+				cloudSessionActive: true,
 				...values,
+			}),
+
+		setCloudSessionActive: (active) =>
+			set({
+				cloudSessionActive: active,
+			}),
+
+		setIsProcessingAuth: (processing) =>
+			set({
+				isProcessingAuth: processing,
 			}),
 
 		setFailedConnected: (failed) =>
@@ -131,14 +131,20 @@ export const useCloudStore = create<CloudStore>()(
 
 		clearSession: () =>
 			set({
-				authState: "unauthenticated",
 				sessionToken: "",
 				profile: EMPTY_PROFILE,
+				onboardingRequired: false,
+				cloudSessionActive: false,
 			}),
 
 		setSessionExpired: (expired) =>
 			set({
 				sessionExpired: expired,
+			}),
+
+		setOnboardingRequired: (required) =>
+			set({
+				onboardingRequired: required,
 			}),
 	})),
 );

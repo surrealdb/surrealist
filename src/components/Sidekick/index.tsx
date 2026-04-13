@@ -10,9 +10,9 @@ import {
 } from "@surrealdb/ui";
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
 import glowImg from "~/assets/images/radial-glow.png";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
+import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useSetting } from "~/hooks/config";
 import { useSidekickStore } from "~/stores/sidekick";
 import { dispatchIntent } from "~/util/intents";
@@ -53,12 +53,13 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 		const { toggleHistory } = useSidekickStore.getState();
 
 		const isAuthed = useIsAuthenticated();
+		const { signIn } = useCloudAuth();
 		const [sidekickPanel, setSidekickPanel] = useSetting("behavior", "sidekickPanel");
 
 		useImperativeHandle(ref, () => ({
 			sendMessage: async (message: string) => {
 				if (!isAuthed) {
-					openCloudAuthentication();
+					signIn();
 					return;
 				}
 

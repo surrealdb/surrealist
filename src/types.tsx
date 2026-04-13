@@ -40,7 +40,7 @@ export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
-export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+
 export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";

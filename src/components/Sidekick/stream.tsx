@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
+import { getAccessToken } from "~/providers/Auth0";
 import { tagEvent } from "~/util/analytics";
 import { StreamEvent } from "./types";
 
@@ -17,7 +17,6 @@ export interface SidekickStream {
 export function useSidekickStream(handler: StreamHandler): SidekickStream {
 	const [isResponding, setIsResponding] = useState(false);
 	const controller = useRef<AbortController | null>(null);
-	const accessToken = useCloudStore((state) => state.accessToken);
 
 	const sendMessage = useStable(async (message: string, chatId?: string) => {
 		if (isResponding) {
@@ -31,6 +30,7 @@ export function useSidekickStream(handler: StreamHandler): SidekickStream {
 		});
 
 		try {
+			const accessToken = await getAccessToken();
 			controller.current = new AbortController();
 
 			const response = await fetch(SIDEKICK_ENDPOINT, {

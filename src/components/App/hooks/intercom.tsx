@@ -1,7 +1,7 @@
 import { Intercom, update } from "@intercom/messenger-js-sdk";
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
-import { useCloudProfile } from "~/hooks/cloud";
+import { useCloudProfile, useIsAuthLoading } from "~/hooks/cloud";
 import { useCloudStore } from "~/stores/cloud";
 import { isProduction } from "~/util/environment";
 
@@ -10,10 +10,10 @@ export function useIntercom() {
 	const initialize = useRef(true);
 
 	const profile = useCloudProfile();
-	const authState = useCloudStore((s) => s.authState);
+	const isAuthLoading = useIsAuthLoading();
 	const userId = useCloudStore((s) => s.userId);
 
-	const isReady = authState !== "unknown" && authState !== "loading";
+	const isReady = !isAuthLoading;
 
 	const metadata = useMemo(() => {
 		if (!profile.user_hmac) return {};
