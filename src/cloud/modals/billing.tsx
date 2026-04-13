@@ -68,8 +68,6 @@ function BillingForm({ organization, details, callback }: BillingFormProps) {
 		Zipcode: details.Zipcode || "",
 		State: details.State || "",
 		Country: details.Country || "",
-		LegalName: details.LegalName || "",
-		TaxIdentificationNumber: details.TaxIdentificationNumber || "",
 		Phone: details.Phone || "",
 	});
 	const [isLoading, setLoading] = useState(false);
@@ -108,13 +106,6 @@ function BillingForm({ organization, details, callback }: BillingFormProps) {
 
 		if (data.Zipcode.length < 4 || data.Zipcode.length > 10) {
 			return "Postal code must be between 4 and 10 characters";
-		}
-
-		if (
-			data.TaxIdentificationNumber &&
-			(data.TaxIdentificationNumber.length < 9 || data.TaxIdentificationNumber.length > 20)
-		) {
-			return "Tax Identification Number must be between 9 and 20 characters";
 		}
 
 		if (data.Phone.length < 7 || data.Phone.length > 20) {
@@ -189,26 +180,6 @@ function BillingForm({ organization, details, callback }: BillingFormProps) {
 					onChange={(e) =>
 						setData((d) => {
 							d.Name = e.target.value;
-						})
-					}
-				/>
-				<TextInput
-					label="Company Name"
-					value={data.LegalName}
-					onBlur={updateValidation}
-					onChange={(e) =>
-						setData((d) => {
-							d.LegalName = e.target.value;
-						})
-					}
-				/>
-				<TextInput
-					label="Tax Identification Number"
-					value={data.TaxIdentificationNumber}
-					onBlur={updateValidation}
-					onChange={(e) =>
-						setData((d) => {
-							d.TaxIdentificationNumber = e.target.value;
 						})
 					}
 				/>
