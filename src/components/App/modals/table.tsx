@@ -112,7 +112,7 @@ export function TableCreatorModal() {
 		>
 			<SegmentedControl
 				fullWidth
-				variant="surreal"
+				variant="gradient"
 				data={[
 					{
 						value: "normal",

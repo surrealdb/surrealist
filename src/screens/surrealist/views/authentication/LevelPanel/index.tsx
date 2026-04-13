@@ -35,9 +35,20 @@ export interface LevelPanelProps {
 	users: SchemaUser[];
 	accesses: SchemaAccess[];
 	disabled?: DisabledState | false;
+	filterUsers?: (user: SchemaUser) => boolean;
+	filterAccesses?: (access: SchemaAccess) => boolean;
 }
 
-export function LevelPanel({ level, icon, color, disabled, users, accesses }: LevelPanelProps) {
+export function LevelPanel({
+	level,
+	icon,
+	color,
+	disabled,
+	users,
+	filterUsers,
+	filterAccesses,
+	accesses,
+}: LevelPanelProps) {
 	const isConnected = useIsConnected();
 
 	const [showUserEditor, showUserEditorHandle] = useBoolean();
@@ -89,7 +100,10 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 	const nameTitle = capitalize(level);
 	const nameLower = nameTitle.toLowerCase();
 
-	const isEmpty = users.length === 0 && accesses.length === 0;
+	const filteredAccesses = filterAccesses ? accesses.filter(filterAccesses) : accesses;
+	const filteredUsers = filterUsers ? users.filter(filterUsers) : users;
+
+	const isEmpty = filteredUsers.length === 0 && filteredAccesses.length === 0;
 
 	useIntent("create-user", (opts) => {
 		if (opts.level === level) {
@@ -169,10 +183,10 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 						}}
 					>
 						<Stack gap="xl">
-							{accesses.length > 0 && (
+							{filteredAccesses.length > 0 && (
 								<AuthList
 									name="Access Methods"
-									list={accesses}
+									list={filteredAccesses}
 									icon={iconKey}
 									color={color}
 									onEdit={editAccess}
@@ -203,10 +217,10 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 								/>
 							)}
 
-							{users.length > 0 && (
+							{filteredUsers.length > 0 && (
 								<AuthList
 									name="System Users"
-									list={users}
+									list={filteredUsers}
 									icon={iconAccount}
 									color={color}
 									onEdit={editUser}
@@ -249,6 +263,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 				level={level}
 				onClose={showUserEditorHandle.close}
 				existing={editingUser}
+				list={users}
 			/>
 
 			<AccessEditorModal
@@ -256,6 +271,7 @@ export function LevelPanel({ level, icon, color, disabled, users, accesses }: Le
 				level={level}
 				onClose={showAccessEditorHandle.close}
 				existing={editingAccess}
+				list={accesses}
 			/>
 		</ContentPane>
 	);
