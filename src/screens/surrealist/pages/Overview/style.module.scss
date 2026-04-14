@@ -58,12 +58,16 @@
 	right: 0px;
 	opacity: 0.2;
 	bottom: -88px;
-	z-index: 1;
+	z-index: 0;
 	transition: bottom 0.5s ease;
+	filter: grayscale(100%);
+	mix-blend-mode: plus-lighter;
 
 	@include sm-and-up {
 		opacity: 1;
 		right: 50px;
+		filter: none;
+		mix-blend-mode: normal;
 	}
 }
 
