@@ -6,7 +6,6 @@ import {
 	Group,
 	Loader,
 	Menu,
-	ScrollArea,
 	Stack,
 	Text,
 	TextInput,
@@ -501,13 +500,14 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					<Loader />
 				</Center>
 			) : records.length > 0 ? (
-				<ScrollArea
+				<Box
 					style={{
 						position: "absolute",
 						inset: 12,
 						top: filtering ? 40 : 0,
 						bottom: 54,
 						transition: "top .1s",
+						overflow: "hidden",
 					}}
 				>
 					<DataTable
@@ -523,7 +523,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 					/>
 
 					<LoadingContainer visible={recordQuery.isFetching} />
-				</ScrollArea>
+				</Box>
 			) : (
 				<Center flex={1}>
 					<Stack
