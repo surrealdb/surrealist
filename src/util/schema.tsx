@@ -163,7 +163,13 @@ export async function syncConnectionSchema(
 						full: tableInfo.schemafull ?? tableInfo.full,
 					},
 					fields: Object.values(tableStruct.fields),
-					indexes: Object.values(tableStruct.indexes),
+					indexes: Object.values(tableStruct.indexes).map((idx: any) => ({
+						...idx,
+						cols: Array.isArray(idx.cols)
+							? idx.cols.join(", ")
+							: String(idx.cols ?? ""),
+						index: typeof idx.index === "string" ? idx.index : String(idx.index ?? ""),
+					})),
 					events: Object.values(tableStruct.events).map((ev) => ({
 						...ev,
 						what: undefined,
