@@ -161,6 +161,12 @@ export async function syncConnectionSchema(
 					schema: {
 						...tableInfo,
 						full: tableInfo.schemafull ?? tableInfo.full,
+						changefeed: tableInfo.changefeed
+							? {
+									expiry: String(tableInfo.changefeed.expiry ?? ""),
+									store_original: !!tableInfo.changefeed.store_original,
+								}
+							: undefined,
 					},
 					fields: Object.values(tableStruct.fields),
 					indexes: Object.values(tableStruct.indexes).map((idx: any) => ({
