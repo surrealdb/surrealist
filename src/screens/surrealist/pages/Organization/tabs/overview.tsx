@@ -121,7 +121,7 @@ function ResourceCard({
 							fw={500}
 							c="inherit"
 						>
-							Create your first {subject}
+							Get started with {plural(2, subject)}
 						</Text>
 					)}
 					<Icon
@@ -385,11 +385,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 					image={pictoSurrealDB}
 					color="violet"
 					count={instanceCount}
-					onClick={() =>
-						instanceCount === 0
-							? setLocation(`${base}/instances/deploy`)
-							: setLocation(`${base}/instances`)
-					}
+					onClick={() => setLocation(`${base}/instances`)}
 				/>
 				{showContexts && (
 					<ResourceCard
@@ -400,11 +396,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 						image={pictoSpectron}
 						color="violet"
 						count={contextCount}
-						onClick={() =>
-							contextCount === 0
-								? setLocation(`${base}/contexts/deploy`)
-								: setLocation(`${base}/contexts`)
-						}
+						onClick={() => setLocation(`${base}/contexts`)}
 					/>
 				)}
 			</SimpleGrid>
