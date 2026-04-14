@@ -16,7 +16,6 @@ import {
 	pictoCloud,
 	pictoHandsOn,
 	pictoSidekick,
-	pictoSpectron,
 	pictoSurrealDB,
 	pictoUniversity,
 } from "@surrealdb/ui";
@@ -29,12 +28,7 @@ import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import {
-	useHasCloudFeature,
-	useIsAuthenticated,
-	useIsAuthLoading,
-	useIsCloudEnabled,
-} from "~/hooks/cloud";
+import { useIsAuthenticated, useIsAuthLoading, useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionList } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConnectionNavigator } from "~/hooks/routing";
@@ -59,7 +53,6 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const showCloud = useIsCloudEnabled();
-	const showContexts = useHasCloudFeature("create_memory_store");
 	const { signIn } = useAuthentication();
 
 	const newsQuery = useLatestNewsQuery();
@@ -172,40 +165,19 @@ export function OverviewPage() {
 									)}
 
 									{!isAuthenticated && !isAuthLoading && (
-										<SimpleGrid
-											cols={{ xs: 1, sm: showContexts ? 2 : 1 }}
+										<StartCloud
+											action="View your organizations"
+											image={pictoCloud}
+											onClick={signIn}
 											mt="sm"
 										>
-											<StartCloud
-												action="View your organizations"
-												image={pictoCloud}
-												onClick={signIn}
-											>
-												<PrimaryTitle>
-													Deploy and manage memory
-												</PrimaryTitle>
-												<Text>
-													Create scalable instances and contexts,
-													collaborate with your team, and manage your
-													infrastructure from one place.
-												</Text>
-											</StartCloud>
-											{showContexts && (
-												<StartCloud
-													action="View your organizations"
-													image={pictoSpectron}
-													onClick={signIn}
-												>
-													<PrimaryTitle>
-														Build with Spectron Contexts
-													</PrimaryTitle>
-													<Text>
-														Create memory and context stores powered by
-														Spectron to build intelligent applications.
-													</Text>
-												</StartCloud>
-											)}
-										</SimpleGrid>
+											<PrimaryTitle>Deploy and manage memory</PrimaryTitle>
+											<Text>
+												Create scalable instances and contexts, collaborate
+												with your team, and manage your infrastructure from
+												one place.
+											</Text>
+										</StartCloud>
 									)}
 
 									{isAuthenticated && activeOrgs.length > 0 && (
