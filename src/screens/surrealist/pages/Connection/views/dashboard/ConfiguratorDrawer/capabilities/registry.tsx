@@ -55,7 +55,7 @@ export const EXPERIMENT_TARGETS = [
 	{ label: "Bearer access", value: "bearer_access", since: "2.2.0", until: "3.0.0" },
 	{ label: "Define API", value: "define_api", since: "2.2.0", until: "3.0.0" },
 	{ label: "Surrealism", value: "surrealism", since: "3.0.0" },
-	{ label: "Files", value: "files", since: "3.0.0" },
+	// { label: "Files", value: "files", since: "3.0.0" },
 ];
 
 /**
