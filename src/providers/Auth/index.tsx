@@ -1,8 +1,10 @@
 import { Auth0Provider as BaseAuth0Provider, User, useAuth0 } from "@auth0/auth0-react";
 import { useStable } from "@surrealdb/ui";
 import { createContext, type PropsWithChildren, useContext, useEffect } from "react";
+import { useSearchParams } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { destroySession } from "~/cloud/api/auth";
+import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
 import { callback } from "./helpers";
 
 const CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID ?? "";
@@ -64,6 +66,9 @@ export function useAuthentication(): AuthContext {
 
 function TokenBridge({ children }: PropsWithChildren) {
 	const { user, loginWithRedirect, getAccessTokenSilently, logout } = useAuth0();
+	const [params, setParams] = useSearchParams();
+	const isAuthenticated = useIsAuthenticated();
+	const isAuthLoading = useIsAuthLoading();
 
 	const signIn = useStable(async () => {
 		await loginWithRedirect({
@@ -84,6 +89,21 @@ function TokenBridge({ children }: PropsWithChildren) {
 			},
 		});
 	});
+
+	useEffect(() => {
+		if (isAuthLoading) return;
+
+		if (params.get("signin") === "true") {
+			setParams((curr) => {
+				curr.delete("signin");
+				return curr;
+			});
+
+			if (!isAuthenticated) {
+				signIn();
+			}
+		}
+	}, [params, isAuthLoading, isAuthenticated, setParams]);
 
 	useEffect(() => {
 		_getAccessToken = getAccessTokenSilently;
