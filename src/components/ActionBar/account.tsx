@@ -1,14 +1,6 @@
 import { Anchor, Box, Button, Group, Menu, Text } from "@mantine/core";
-import {
-	Icon,
-	iconChevronRight,
-	iconExitToAp,
-	iconOpen,
-	iconOrganization,
-	iconTune,
-} from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconExitToAp, iconOpen, iconTune } from "@surrealdb/ui";
 import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
-import { useAbsoluteLocation } from "~/hooks/routing";
 import { useAuthentication } from "~/providers/Auth";
 import { AccountAvatar } from "../AccountAvatar";
 
@@ -17,7 +9,6 @@ export function CloudAccount() {
 
 	const isAuthenticated = useIsAuthenticated();
 	const isAuthLoading = useIsAuthLoading();
-	const [, navigate] = useAbsoluteLocation();
 
 	if (!isAuthenticated) {
 		return (
@@ -74,7 +65,6 @@ export function CloudAccount() {
 						</Box>
 					</Group>
 				</Box>
-				{/* <Stack gap="xs"> */}
 				<Anchor href="https://account.surrealdb.com">
 					<Menu.Item
 						leftSection={<Icon path={iconTune} />}
@@ -83,14 +73,6 @@ export function CloudAccount() {
 						Manage account
 					</Menu.Item>
 				</Anchor>
-				<Menu.Item
-					leftSection={<Icon path={iconOrganization} />}
-					onClick={() => {
-						navigate("/overview");
-					}}
-				>
-					Organisations
-				</Menu.Item>
 				<Menu.Divider />
 				<Menu.Item
 					leftSection={<Icon path={iconExitToAp} />}
@@ -98,7 +80,6 @@ export function CloudAccount() {
 				>
 					Sign out
 				</Menu.Item>
-				{/* </Stack> */}
 			</Menu.Dropdown>
 		</Menu>
 	);
