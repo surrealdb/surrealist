@@ -42,7 +42,6 @@ export type CloudStore = {
 	setIsSupported: (supported: boolean) => void;
 	setFailedConnected: (failed: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
-	setCloudSessionActive: (active: boolean) => void;
 	setIsProcessingAuth: (processing: boolean) => void;
 	setProfile: (profile: CloudProfile) => void;
 	setSessionExpired: (expired: boolean) => void;
@@ -107,11 +106,6 @@ export const useCloudStore = create<CloudStore>()(
 			set({
 				cloudSessionActive: true,
 				...values,
-			}),
-
-		setCloudSessionActive: (active) =>
-			set({
-				cloudSessionActive: active,
 			}),
 
 		setIsProcessingAuth: (processing) =>

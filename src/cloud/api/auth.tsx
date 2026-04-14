@@ -56,7 +56,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		setUserId,
 		setSessionExpired,
 		setAuthError,
-		setCloudSessionActive,
+		clearSession,
 	} = useCloudStore.getState();
 
 	try {
@@ -97,8 +97,6 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 
 		await updateCloudInformation();
 
-		setCloudSessionActive(true);
-
 		adapter.log("Cloud", "Session acquired");
 		CloudAuthEvent.dispatch(null);
 
@@ -126,7 +124,7 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		console.error("Failed to acquire session", err);
 
 		setAuthError(err.message);
-		setCloudSessionActive(false);
+		clearSession();
 
 		if (err instanceof ApiError && err.status === 422) {
 			showErrorNotification({
