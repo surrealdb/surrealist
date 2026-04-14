@@ -24,7 +24,13 @@ export function StartCloud({
 			className={classes.startCloud}
 			{...other}
 		>
-			<Stack flex={1}>
+			<Stack
+				flex={1}
+				pos="relative"
+				style={{
+					zIndex: 1,
+				}}
+			>
 				<Text
 					maw={450}
 					fz="lg"
