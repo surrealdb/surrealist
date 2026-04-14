@@ -33,6 +33,7 @@ import { ConversationTable } from "~/components/ConversationTable";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
+import { openSelectOrganizationModal } from "~/modals/select-organization";
 import { useAuthentication } from "~/providers/Auth";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
@@ -153,7 +154,14 @@ export function SupportPage() {
 										image={pictoHealthChat}
 										onClick={() => {
 											if (isAuthenticated) {
-												navigate("/overview");
+												openSelectOrganizationModal({
+													description:
+														"Select an organisation to view available support plans.",
+													action: "View plans",
+													onSelect: (org) => {
+														navigate(`/o/${org.id}/support-plans`);
+													},
+												});
 											} else {
 												signIn();
 											}

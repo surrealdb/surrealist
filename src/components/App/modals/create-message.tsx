@@ -34,6 +34,7 @@ import { Spacer } from "~/components/Spacer";
 import { SALES_ENQUIRY_TAG } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useIntent } from "~/hooks/routing";
+import { openSelectOrganizationModal } from "~/modals/select-organization";
 import { IntercomTicketTypeAttribute } from "~/types";
 
 const CONVERSATION_TYPES = [
@@ -214,8 +215,15 @@ export function CreateMessageModal() {
 										variant="light"
 										size="xs"
 										onClick={() => {
-											navigate("/overview");
 											openedHandle.close();
+											openSelectOrganizationModal({
+												description:
+													"Select an organisation to view available support plans.",
+												action: "View plans",
+												onSelect: (org) => {
+													navigate(`/o/${org.id}/support-plans`);
+												},
+											});
 										}}
 									>
 										View plans
