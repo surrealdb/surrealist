@@ -4,7 +4,9 @@ import { createContext, type PropsWithChildren, useContext, useEffect } from "re
 import { useSearchParams } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { destroySession } from "~/cloud/api/auth";
-import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
+import { SignInRedirect } from "~/components/SignInRedirect";
+import { useAbsoluteLocation } from "~/hooks/routing";
+import { showErrorNotification } from "~/util/helpers";
 import { callback } from "./helpers";
 
 const CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID ?? "";
@@ -13,13 +15,19 @@ const AUTH_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE ?? "";
 
 const AUTH_RETURN_URL = callback("auth/return");
 const AUTH_LAUNCH_URL = callback("auth/launch");
+const AUTH_OVERVIEW_URL = callback("overview");
 
 export { AUTH_RETURN_URL, AUTH_LAUNCH_URL };
 
 export interface AuthContext {
 	user: User | undefined;
-	signIn: () => Promise<void>;
+	signIn: (options?: SignInOptions) => Promise<void>;
 	signOut: () => Promise<void>;
+}
+
+export interface SignInOptions {
+	screen?: "signin" | "signup";
+	redirect?: boolean;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -66,44 +74,49 @@ export function useAuthentication(): AuthContext {
 
 function TokenBridge({ children }: PropsWithChildren) {
 	const { user, loginWithRedirect, getAccessTokenSilently, logout } = useAuth0();
-	const [params, setParams] = useSearchParams();
-	const isAuthenticated = useIsAuthenticated();
-	const isAuthLoading = useIsAuthLoading();
+	const [params] = useSearchParams();
+	const [, navigate] = useAbsoluteLocation();
 
-	const signIn = useStable(async () => {
+	const isSigninPrompt = params.get("signin") === "true";
+
+	const signIn = useStable(async (options?: SignInOptions) => {
+		const { screen, redirect } = options ?? {};
+
+		const isExternal = !redirect || isDesktop;
+		const redirectUrl = isDesktop ? AUTH_LAUNCH_URL : AUTH_RETURN_URL;
+
 		await loginWithRedirect({
-			openUrl: adapter.openUrl,
+			openUrl: isExternal ? openExternal : undefined,
 			authorizationParams: {
-				redirect_uri: isDesktop ? AUTH_LAUNCH_URL : AUTH_RETURN_URL,
+				redirect_uri: isExternal ? redirectUrl : AUTH_OVERVIEW_URL,
+				screen_hint: screen,
+			},
+			appState: {
+				returnTo: isExternal ? undefined : location.pathname,
 			},
 		});
 	});
 
 	const signOut = useStable(async () => {
 		destroySession();
+		navigate("/overview");
 
 		await logout({
-			openUrl: adapter.openUrl,
+			openUrl: async (url) => {
+				const opened = await adapter.openUrl(url);
+
+				if (!opened) {
+					showErrorNotification({
+						title: "Failed to open authentication",
+						content: "Please make sure popup blockers are disabled.",
+					});
+				}
+			},
 			logoutParams: {
 				returnTo: isDesktop ? AUTH_LAUNCH_URL : AUTH_RETURN_URL,
 			},
 		});
 	});
-
-	useEffect(() => {
-		if (isAuthLoading) return;
-
-		if (params.get("signin") === "true") {
-			setParams((curr) => {
-				curr.delete("signin");
-				return curr;
-			});
-
-			if (!isAuthenticated) {
-				signIn();
-			}
-		}
-	}, [params, isAuthLoading, isAuthenticated, setParams]);
 
 	useEffect(() => {
 		_getAccessToken = getAccessTokenSilently;
@@ -118,25 +131,44 @@ function TokenBridge({ children }: PropsWithChildren) {
 	}, [user]);
 
 	return (
-		<AuthContext.Provider value={{ user, signIn, signOut }}>{children}</AuthContext.Provider>
+		<AuthContext.Provider value={{ user, signIn, signOut }}>
+			{isSigninPrompt ? <SignInRedirect /> : children}
+		</AuthContext.Provider>
 	);
 }
 
 export function AuthProvider({ children }: PropsWithChildren) {
+	const [, navigate] = useAbsoluteLocation();
+
 	return (
 		<BaseAuth0Provider
 			domain={AUTH_DOMAIN}
 			clientId={CLIENT_ID}
+			useRefreshTokens
+			cacheLocation="localstorage"
 			authorizationParams={{
 				redirect_uri: AUTH_RETURN_URL,
 				audience: AUTH_AUDIENCE,
 				scope: "openid profile email offline_access",
 			}}
-			cacheLocation="localstorage"
-			skipRedirectCallback
-			useRefreshTokens
+			onRedirectCallback={(appState) => {
+				if (appState?.returnTo) {
+					navigate(appState.returnTo);
+				}
+			}}
 		>
 			<TokenBridge>{children}</TokenBridge>
 		</BaseAuth0Provider>
 	);
+}
+
+async function openExternal(url: string) {
+	const opened = await adapter.openUrl(url);
+
+	if (!opened) {
+		showErrorNotification({
+			title: "Failed to open authentication",
+			content: "Please make sure popup blockers are disabled.",
+		});
+	}
 }

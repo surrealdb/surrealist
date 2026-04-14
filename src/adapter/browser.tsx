@@ -75,7 +75,9 @@ export class BrowserAdapter implements SurrealistAdapter {
 	}
 
 	public async openUrl(url: string, target?: UrlTarget) {
-		window.open(url, target === "internal" ? "_self" : "_blank");
+		const popup = window.open(url, target === "internal" ? "_self" : "_blank");
+
+		return popup !== null && !popup.closed;
 	}
 
 	public async saveFile(
