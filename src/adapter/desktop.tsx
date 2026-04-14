@@ -193,7 +193,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public async openUrl(url: string) {
-		openURL(url);
+		await openURL(url);
+		return true;
 	}
 
 	public async saveFile(

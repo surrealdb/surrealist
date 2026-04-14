@@ -38,7 +38,7 @@ function Surrealist() {
 
 export function App() {
 	return (
-		<Scaffold>
+		<Scaffold authentication>
 			<Globals />
 
 			<Surrealist />

@@ -212,9 +212,12 @@ export function SurrealistScreen() {
 										{/* Default organization redirect */}
 										<Route path="/o/default/*">
 											{(params: { "*": string }) => (
-												<CloudGuard>
-													<DefaultOrgRedirect rest={params["*"]} />
-												</CloudGuard>
+												<>
+													<GlobalSidebar />
+													<CloudGuard>
+														<DefaultOrgRedirect rest={params["*"]} />
+													</CloudGuard>
+												</>
 											)}
 										</Route>
 
