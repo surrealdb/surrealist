@@ -2,10 +2,7 @@ import {
 	Anchor,
 	Box,
 	Button,
-	Divider,
 	Group,
-	List,
-	Modal,
 	Paper,
 	Select,
 	SimpleGrid,
@@ -15,25 +12,14 @@ import {
 	TextInput,
 	ThemeIcon,
 } from "@mantine/core";
-import {
-	Icon,
-	iconChevronRight,
-	iconClose,
-	iconOpen,
-	iconSearch,
-	iconSpectron,
-	Spacer,
-	VideoPlayer,
-} from "@surrealdb/ui";
-import { useEffect, useMemo, useState } from "react";
+import { Icon, iconSearch, iconSpectron } from "@surrealdb/ui";
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationContextsQuery } from "~/cloud/queries/contexts";
-import { ActionButton } from "~/components/ActionButton";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useBoolean } from "~/hooks/boolean";
-import { useOnboarding } from "~/hooks/onboarding";
 import { useContextNavigator } from "~/hooks/routing";
+import { ContextsOnboarding } from "~/modals/onboarding";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudContext } from "~/types";
 import type { OrganizationTabProps } from "../types";
@@ -109,119 +95,6 @@ function ContextCard({
 	);
 }
 
-const SPECTRON_VIDEO_URL = "https://cdn.brandsafe.io/d7eeplmems9s73ft769g.mp4";
-
-function ContextsOnboardingModal({
-	deployHref,
-	canDeploy,
-}: {
-	deployHref: string;
-	canDeploy: boolean;
-}) {
-	const [isOpen, openHandle] = useBoolean();
-	const [completed, complete] = useOnboarding("cloud-contexts");
-
-	useEffect(() => {
-		if (!completed) {
-			openHandle.open();
-			complete();
-		}
-	}, [completed]);
-
-	return (
-		<Modal
-			opened={isOpen}
-			onClose={openHandle.close}
-			trapFocus={false}
-			padding={0}
-			size={525}
-		>
-			<ActionButton
-				pos="absolute"
-				top={16}
-				right={16}
-				label="Close"
-				onClick={openHandle.close}
-				style={{ zIndex: 1 }}
-			>
-				<Icon path={iconClose} />
-			</ActionButton>
-
-			<VideoPlayer
-				src={SPECTRON_VIDEO_URL}
-				initialMuted={true}
-				autoPlay={true}
-			/>
-
-			<Divider />
-
-			<Paper
-				p={24}
-				withBorder={false}
-				radius={0}
-			>
-				<Stack gap="xl">
-					<Text
-						c="bright"
-						fw={500}
-						fz="xl"
-					>
-						Spectron — Agent Memory That Actually Works
-					</Text>
-
-					<Text>
-						Spectron gives your AI agents persistent, queryable memory powered by
-						knowledge graphs, entity extraction, temporal facts, and hybrid retrieval —
-						built directly into SurrealDB rather than bolted on top.
-					</Text>
-
-					<List
-						size="sm"
-						spacing="xs"
-					>
-						<List.Item>
-							Automatically extract entities, relationships, and facts from
-							conversations
-						</List.Item>
-						<List.Item>
-							Hybrid retrieval combining graph traversal, vector similarity, and
-							structured filters
-						</List.Item>
-						<List.Item>
-							Temporal awareness with bi-temporal, append-only facts
-						</List.Item>
-						<List.Item>Multi-agent shared memory with full ACID transactions</List.Item>
-					</List>
-
-					<Group>
-						<Link href="https://surrealdb.com/platform/spectron">
-							<Button
-								color="obsidian"
-								variant="light"
-								rightSection={<Icon path={iconOpen} />}
-							>
-								Learn more
-							</Button>
-						</Link>
-						<Spacer />
-						{canDeploy && (
-							<Link href={deployHref}>
-								<Button
-									variant="gradient"
-									rightSection={<Icon path={iconChevronRight} />}
-									onClick={openHandle.close}
-								>
-									Deploy a context
-								</Button>
-							</Link>
-						)}
-					</Group>
-				</Stack>
-			</Paper>
-		</Modal>
-	);
-}
-
 export function OrganizationContextsTab({ organization }: OrganizationTabProps) {
 	const navigateContext = useContextNavigator();
 	const allRegions = useCloudStore((s) => s.regions);
@@ -267,10 +140,7 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 
 	return (
 		<>
-			<ContextsOnboardingModal
-				deployHref={deployHref}
-				canDeploy={isAdmin && !isRestricted}
-			/>
+			<ContextsOnboarding deployHref={isAdmin && !isRestricted ? deployHref : undefined} />
 
 			<Group
 				justify="space-between"
