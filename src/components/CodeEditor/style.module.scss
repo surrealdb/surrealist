@@ -58,10 +58,8 @@
 		background-color: var(--mantine-color-surreal-6) !important;
 		border-radius: 6px;
 
-		@include dark {
-			* {
-				color: white;
-			}
+		* {
+			color: white;
 		}
 
 		@include light {
