@@ -261,7 +261,7 @@ export function CreateConnectionPage() {
 									infrastructure setup or maintenance required.
 								</Text>
 								<Group mt="md">
-									<Link href="/signin/deploy">
+									<Link href="/o/default/instances/deploy">
 										<Button
 											size="xs"
 											variant="gradient"

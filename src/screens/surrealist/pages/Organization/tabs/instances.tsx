@@ -1,7 +1,11 @@
 import {
 	Box,
 	Button,
+	Divider,
 	Group,
+	List,
+	Modal,
+	Paper,
 	Select,
 	SimpleGrid,
 	Skeleton,
@@ -9,12 +13,23 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-import { Icon, iconSearch } from "@surrealdb/ui";
-import { useMemo, useState } from "react";
+import {
+	Icon,
+	iconChevronRight,
+	iconClose,
+	iconOpen,
+	iconSearch,
+	Spacer,
+	VideoPlayer,
+} from "@surrealdb/ui";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
+import { ActionButton } from "~/components/ActionButton";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { useBoolean } from "~/hooks/boolean";
+import { useOnboarding } from "~/hooks/onboarding";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
@@ -33,6 +48,123 @@ function statusComparator(a: CloudInstance, b: CloudInstance) {
 	if (a.state === "paused" && b.state !== "paused") return 1;
 	if (a.state !== "paused" && b.state === "paused") return -1;
 	return 0;
+}
+
+const SURREALDB_VIDEO_URL = "https://surrealdb.com/videos/surrealdb-overview.mp4";
+
+function InstancesOnboardingModal({
+	deployHref,
+	canDeploy,
+}: {
+	deployHref: string;
+	canDeploy: boolean;
+}) {
+	const [isOpen, openHandle] = useBoolean();
+	const [completed, complete] = useOnboarding("cloud-instances");
+
+	useEffect(() => {
+		if (!completed) {
+			openHandle.open();
+			complete();
+		}
+	}, [completed]);
+
+	return (
+		<Modal
+			opened={isOpen}
+			onClose={openHandle.close}
+			trapFocus={false}
+			padding={0}
+			size={525}
+		>
+			<ActionButton
+				pos="absolute"
+				top={16}
+				right={16}
+				label="Close"
+				onClick={openHandle.close}
+				style={{ zIndex: 1 }}
+			>
+				<Icon path={iconClose} />
+			</ActionButton>
+
+			<VideoPlayer
+				src={SURREALDB_VIDEO_URL}
+				initialMuted={true}
+				autoPlay={true}
+			/>
+
+			<Divider />
+
+			<Paper
+				p={24}
+				withBorder={false}
+				radius={0}
+			>
+				<Stack gap="xl">
+					<Text
+						c="bright"
+						fw={500}
+						fz="xl"
+					>
+						SurrealDB Cloud — Context, Made Atomic
+					</Text>
+
+					<Text>
+						SurrealDB is the database that makes context atomic. Documents, graphs,
+						vectors, time-series, and relational data as native primitives in a single
+						ACID transaction — no plugins, no bolt-ons.
+					</Text>
+
+					<List
+						size="sm"
+						spacing="xs"
+					>
+						<List.Item>
+							Native multi-model engine unifying documents, graphs, vectors, full-text
+							search, and time-series
+						</List.Item>
+						<List.Item>
+							Deploy anywhere — from embedded and edge devices to highly scalable
+							cloud
+						</List.Item>
+						<List.Item>
+							Built-in real-time subscriptions, event triggers, and streaming updates
+						</List.Item>
+						<List.Item>
+							Enterprise security with RBAC, record-level permissions, and JWT auth
+						</List.Item>
+					</List>
+
+					<Group>
+						<Link href="https://surrealdb.com/platform/surrealdb">
+							<Button
+								color="obsidian"
+								variant="light"
+								rightSection={<Icon path={iconOpen} />}
+								radius="sm"
+								size="xs"
+							>
+								Learn more
+							</Button>
+						</Link>
+						<Spacer />
+						{canDeploy && (
+							<Link href={deployHref}>
+								<Button
+									variant="gradient"
+									rightSection={<Icon path={iconChevronRight} />}
+									onClick={openHandle.close}
+								>
+									Deploy an instance
+								</Button>
+							</Link>
+						)}
+					</Group>
+				</Stack>
+			</Paper>
+		</Modal>
+	);
 }
 
 export function OrganizationInstancesTab({ organization }: OrganizationTabProps) {
@@ -80,15 +212,22 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 		navigateConnection(resolveInstanceConnection(instance).id);
 	});
 
+	const deployHref = `/o/${organization.id}/instances/deploy`;
+
 	return (
 		<>
+			<InstancesOnboardingModal
+				deployHref={deployHref}
+				canDeploy={isAdmin && !isRestricted}
+			/>
+
 			<Group
 				justify="space-between"
 				align="flex-end"
 			>
 				<PrimaryTitle fz={32}>Instances</PrimaryTitle>
 				{isAdmin && (
-					<Link href={`/o/${organization.id}/instances/deploy`}>
+					<Link href={deployHref}>
 						<Button
 							size="xs"
 							disabled={isRestricted}
@@ -160,7 +299,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 							fully managed database.
 						</Text>
 						{isAdmin && (
-							<Link href={`/o/${organization.id}/instances/deploy`}>
+							<Link href={deployHref}>
 								<Button
 									mt="xs"
 									disabled={isRestricted}
