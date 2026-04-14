@@ -144,7 +144,7 @@ export function OverviewPage() {
 									<Group>
 										<PrimaryTitle fz={22}>Organisations</PrimaryTitle>
 										<Spacer />
-										<Link href="/organisations/create">
+										<Link href="/o/create">
 											<Button
 												size="xs"
 												variant="gradient"
@@ -201,7 +201,7 @@ export function OverviewPage() {
 
 								<Spacer />
 
-								<Link href="/connections/create">
+								<Link href="/c/create">
 									<Button
 										size="xs"
 										variant="gradient"

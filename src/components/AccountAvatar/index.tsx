@@ -7,8 +7,6 @@ export function AccountAvatar(props: AvatarProps) {
 	const isAuthLoading = useIsAuthLoading();
 	const name = user?.name || "Unknown";
 
-	console.log("U", user);
-
 	return (
 		<Avatar
 			size={36}

@@ -3,8 +3,9 @@ import { memo, useLayoutEffect } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AppTitleBar } from "~/components/AppTitleBar";
+import { CloudGuard } from "~/components/CloudGuard";
 import { TopGlow } from "~/components/TopGlow";
-import { useIsAuthenticated, useIsCloudEnabled } from "~/hooks/cloud";
+import { useCloudProfile, useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
@@ -23,7 +24,6 @@ import { OrganizationContextDeployPage } from "./pages/OrganizationContextDeploy
 import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
-import { SigninPage } from "./pages/Signin";
 import { SupportPage } from "./pages/Support";
 import { ArticlePage } from "./pages/Support/ArticlePage";
 import { CollectionPage } from "./pages/Support/CollectionPage";
@@ -50,20 +50,27 @@ const SupportPageLazy = memo(SupportPage);
 const RequestsPageLazy = memo(RequestsPage);
 const CreateConnectionPageLazy = memo(CreateConnectionPage);
 const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
-const SigninPageLazy = memo(SigninPage);
 const ContextPageLazy = memo(ContextPage);
+
+function DefaultOrgRedirect({ rest }: { rest?: string }) {
+	const { default_org } = useCloudProfile();
+
+	console.log("DEFAULT ORG", default_org);
+
+	if (!default_org) {
+		return <Redirect to="/overview" />;
+	}
+
+	return <Redirect to={rest ? `/o/${default_org}/${rest}` : `/o/${default_org}`} />;
+}
 
 export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const showCloud = useIsCloudEnabled();
-	const isAuthenticated = useIsAuthenticated();
-	const onboardingRequired = useCloudStore((s) => s.onboardingRequired);
 	const isProcessingAuth = useCloudStore((s) => s.isProcessingAuth);
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
-
-	const blockNavigation = isAuthenticated && onboardingRequired;
 
 	const [sidebarMode] = useSetting("appearance", "sidebarMode");
 	const isMacos = adapter.platform === "darwin" && isDesktop;
@@ -131,39 +138,34 @@ export function SurrealistScreen() {
 							</Group>
 
 							<Switch>
-								{blockNavigation && (
-									<>
-										<Route path="/signin">
-											<SigninPageLazy />
-										</Route>
-										<Route>
-											<Redirect to="/signin" />
-										</Route>
-									</>
-								)}
-
+								{/* Special route used to redirect to the last visited page */}
 								<Route path="/" />
 
+								{/* Overview page */}
 								<Route path="/overview">
 									<GlobalSidebar />
 									<OverviewPageLazy />
 								</Route>
 
+								{/* New embed page */}
 								<Route path="/mini/new">
 									<GlobalSidebar />
 									<NewEmbedPageLazy />
 								</Route>
 
-								<Route path="/connections/create">
+								{/* Create connection page */}
+								<Route path="/c/create">
 									<GlobalSidebar />
 									<CreateConnectionPageLazy />
 								</Route>
 
+								{/* Support page */}
 								<Route path="/support">
 									<GlobalSidebar />
 									<SupportPageLazy />
 								</Route>
 
+								{/* Support collections page */}
 								<Route path="/support/collections/:collection">
 									{({ collection }) => (
 										<>
@@ -173,6 +175,7 @@ export function SurrealistScreen() {
 									)}
 								</Route>
 
+								{/* Support articles page */}
 								<Route path="/support/articles/:article">
 									{({ article }) => (
 										<>
@@ -182,11 +185,13 @@ export function SurrealistScreen() {
 									)}
 								</Route>
 
+								{/* Support requests page */}
 								<Route path="/support/requests">
 									<GlobalSidebar />
 									<RequestsPageLazy />
 								</Route>
 
+								{/* Support conversations page */}
 								<Route path="/support/conversations/:conversation">
 									{({ conversation }) => (
 										<>
@@ -198,15 +203,22 @@ export function SurrealistScreen() {
 
 								{showCloud && (
 									<>
-										<Route path="/organisations/create">
+										{/* Create organization page */}
+										<Route path="/o/create">
 											<GlobalSidebar />
 											<CreateOrganizationsPageLazy />
 										</Route>
 
-										<Route path="/organisations">
-											<Redirect to="/overview" />
+										{/* Default organization redirect */}
+										<Route path="/o/default/*">
+											{(params: { "*": string }) => (
+												<CloudGuard>
+													<DefaultOrgRedirect rest={params["*"]} />
+												</CloudGuard>
+											)}
 										</Route>
 
+										{/* Organization deploy page */}
 										<Route path="/o/:organization/instances/deploy">
 											{({ organization }) => (
 												<>
@@ -218,14 +230,7 @@ export function SurrealistScreen() {
 											)}
 										</Route>
 
-										<Route path="/o/:organization/deploy">
-											{({ organization }) => (
-												<Redirect
-													to={`/o/${organization}/instances/deploy`}
-												/>
-											)}
-										</Route>
-
+										{/* Organization contexts deploy page */}
 										<Route path="/o/:organization/contexts/deploy">
 											{({ organization }) => (
 												<>
@@ -239,6 +244,7 @@ export function SurrealistScreen() {
 											)}
 										</Route>
 
+										{/* Organization support plans page */}
 										<Route path="/o/:organization/support-plans">
 											{({ organization }) => (
 												<>
@@ -250,6 +256,7 @@ export function SurrealistScreen() {
 											)}
 										</Route>
 
+										{/* Organization view page */}
 										<Route path="/o/:organization/:tab">
 											{({ organization, tab }) => (
 												<>
@@ -264,31 +271,22 @@ export function SurrealistScreen() {
 											)}
 										</Route>
 
+										{/* Organization overview redirect */}
 										<Route path="/o/:organization">
 											{({ organization }) => (
 												<Redirect to={`/o/${organization}/overview`} />
 											)}
 										</Route>
 
+										{/* Referrals page */}
 										<Route path="/referrals">
 											<GlobalSidebar />
 											<ReferralPageLazy />
 										</Route>
-
-										<Route path="/signin">
-											<SigninPageLazy />
-										</Route>
-
-										<Route path="/cloud">
-											<Redirect to="/signin" />
-										</Route>
-
-										<Route path="/billing">
-											<Redirect to="/overview" />
-										</Route>
 									</>
 								)}
 
+								{/* Connection view page */}
 								<Route path="/c/:connection/:view">
 									{({ view }) => (
 										<>
@@ -298,10 +296,12 @@ export function SurrealistScreen() {
 									)}
 								</Route>
 
+								{/* Context view page */}
 								<Route path="/x/:context/:view">
 									{({ view }) => <ContextPageLazy view={view} />}
 								</Route>
 
+								{/* Fallback redirect to overview page */}
 								<Route>
 									<Redirect to="/overview" />
 								</Route>
