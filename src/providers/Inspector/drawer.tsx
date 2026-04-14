@@ -110,8 +110,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			isEdge: !!content?.in && !!content?.out,
 			exists: !!content,
 			initial: formatted,
-			inputs: inputs ?? [],
-			outputs: outputs ?? [],
+			inputs: Array.isArray(inputs) ? inputs : inputs ? [inputs] : [],
+			outputs: Array.isArray(outputs) ? outputs : outputs ? [outputs] : [],
 		});
 
 		if (content) {
