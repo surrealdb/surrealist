@@ -8,7 +8,7 @@ import {
 	useState,
 } from "react";
 import { Surreal } from "surrealdb";
-import { adapter } from "~/adapter";
+import { adapter, isMini } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { __throw } from "~/util/helpers";
@@ -30,6 +30,14 @@ export function useContextConnection() {
 }
 
 export function ContextProvider({ children }: PropsWithChildren) {
+	if (isMini) {
+		return <>{children}</>;
+	}
+
+	return <ContextProviderInner>{children}</ContextProviderInner>;
+}
+
+function ContextProviderInner({ children }: PropsWithChildren) {
 	const { isAuthenticated: isAuth0Authenticated, getAccessTokenSilently } = useAuth0();
 	const cloudSessionActive = useCloudStore((s) => s.cloudSessionActive);
 
