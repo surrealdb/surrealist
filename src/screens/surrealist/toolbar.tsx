@@ -37,7 +37,6 @@ import { StarSparkles } from "~/components/StarSparkles";
 import { REGION_FLAGS, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions, useIsAuthenticated } from "~/hooks/cloud";
-import { useCloudAuth } from "~/hooks/cloud-auth";
 import {
 	useConnection,
 	useIsConnected,
@@ -49,6 +48,7 @@ import { useConnectionNavigator } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { openBillingRequiredModal } from "~/modals/billing-required";
+import { useAuthentication } from "~/providers/Auth";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -80,7 +80,7 @@ export function SurrealistToolbar() {
 	const [flags] = useFeatureFlags();
 
 	const navigateConnection = useConnectionNavigator();
-	const { signIn } = useCloudAuth();
+	const { signIn } = useAuthentication();
 	const isAuthenticated = useIsAuthenticated();
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);

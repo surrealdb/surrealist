@@ -29,11 +29,11 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated, useIsAuthLoading, useIsCloudEnabled } from "~/hooks/cloud";
-import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useConnectionList } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useAuthentication } from "~/providers/Auth";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
 import { dispatchIntent } from "~/util/intents";
@@ -53,7 +53,7 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const showCloud = useIsCloudEnabled();
-	const { signIn } = useCloudAuth();
+	const { signIn } = useAuthentication();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();

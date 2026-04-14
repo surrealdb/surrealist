@@ -10,8 +10,8 @@ interface CloudValues {
 }
 
 export const EMPTY_PROFILE: CloudProfile = {
-	username: "",
-	name: "",
+	// username: "",
+	// name: "",
 	default_org: "",
 	enabled_features: [],
 };

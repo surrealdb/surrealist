@@ -18,9 +18,9 @@ import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
 import glowImg from "~/assets/images/radial-glow.png";
-import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
+import { useAuthentication } from "~/providers/Auth";
 import { useSidekickStore } from "~/stores/sidekick";
 import { SIDEKICK_QUESTIONS } from "../helpers";
 import { SidekickStream } from "../stream";
@@ -33,7 +33,7 @@ export interface ChatConversationProps {
 }
 
 export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProps) {
-	const { signIn } = useCloudAuth();
+	const { signIn } = useAuthentication();
 	const { startRequest, completeRequest } = useSidekickStore.getState();
 
 	const isLight = useIsLight();

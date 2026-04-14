@@ -2,7 +2,7 @@ import { shutdown } from "@intercom/messenger-js-sdk";
 import { showNotification } from "@mantine/notifications";
 import { Icon, iconCheck } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
-import { getAccessToken } from "~/providers/Auth0";
+import { getAccessToken } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudSignin } from "~/types";
 import { tagEvent } from "~/util/analytics";
@@ -159,7 +159,7 @@ export function invalidateSession() {
 }
 
 /**
- * Sign out of Auth0 and clear the cloud session
+ * Sign out of SurrealDB Cloud
  */
 export function destroySession() {
 	shutdown();

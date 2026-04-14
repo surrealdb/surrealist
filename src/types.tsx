@@ -620,10 +620,8 @@ export interface CloudSignin {
 }
 
 export interface CloudProfile {
-	username: string;
-	name: string;
+	// username: string;
 	default_org: string;
-	picture?: string;
 	user_hmac?: string;
 	enabled_features: string[];
 }

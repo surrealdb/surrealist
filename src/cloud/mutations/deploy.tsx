@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCloudStore } from "~/stores/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { resolveInstanceConnection } from "~/util/connection";
@@ -15,6 +15,7 @@ export interface OrganizationUpdate {
  */
 export function useInstanceDeployMutation(organisation?: CloudOrganization) {
 	const queryClient = useQueryClient();
+	const { user } = useAuthentication();
 
 	return useMutation({
 		mutationFn: async (config: CloudDeployConfig) => {
@@ -43,7 +44,7 @@ export function useInstanceDeployMutation(organisation?: CloudOrganization) {
 				private_traffic: config.private_traffic,
 				dataset:
 					config.startingData.type === "dataset" ? "surreal-deal-store-mini" : undefined,
-				email: useCloudStore.getState().profile.username,
+				email: user?.email,
 				v3_migration: config.migration ?? false,
 			});
 

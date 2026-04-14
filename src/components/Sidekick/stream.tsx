@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useStable } from "~/hooks/stable";
-import { getAccessToken } from "~/providers/Auth0";
+import { getAccessToken } from "~/providers/Auth";
 import { tagEvent } from "~/util/analytics";
 import { StreamEvent } from "./types";
 
