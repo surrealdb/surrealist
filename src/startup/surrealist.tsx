@@ -19,7 +19,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { invalidateSession } from "~/cloud/api/auth";
 import { clearCachedConnections } from "~/cloud/helpers";
-import { AuthProvider } from "~/providers/Auth0";
+import { AuthProvider } from "~/providers/Auth";
 import { NewDomainScreen } from "~/screens/new-domain";
 import { startConfigSync } from "~/util/config";
 import { HeadInjector } from "~/util/head";

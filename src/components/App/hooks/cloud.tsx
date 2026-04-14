@@ -2,11 +2,11 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { adapter } from "~/adapter";
 import { acquireSession, checkSessionExpiry, invalidateSession } from "~/cloud/api/auth";
-import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useEventSubscription } from "~/hooks/event";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openVerifyEmailModal } from "~/modals/verify-email";
+import { useAuthentication } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import { featureFlags } from "~/util/feature-flags";
 import { DeepLinkAuthEvent } from "~/util/global-events";
@@ -36,7 +36,7 @@ export function useCloudAuthentication() {
 	const { isAuthenticated, isLoading, getAccessTokenSilently, handleRedirectCallback } =
 		useAuth0();
 
-	const { signIn } = useCloudAuth();
+	const { signIn } = useAuthentication();
 	const hasInitialised = useRef(false);
 
 	const processAuthCallback = useStable(async (callbackUrl: string) => {

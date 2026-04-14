@@ -4,10 +4,10 @@ import { Icon, iconChevronRight, iconCog, iconExitToAp, iconOrganization } from 
 import { useState } from "react";
 import { fetchAPI } from "~/cloud/api";
 import { useBoolean } from "~/hooks/boolean";
-import { useCloudProfile, useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
-import { useCloudAuth } from "~/hooks/cloud-auth";
+import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useAuthentication } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudProfile } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
@@ -22,11 +22,11 @@ interface AccountFormProps {
 function AccountForm({ onClose }: AccountFormProps) {
 	const { setAccountProfile } = useCloudStore.getState();
 
-	const profile = useCloudProfile();
+	const { user } = useAuthentication();
 	const provider = useCloudStore((s) => s.authProvider);
 	const [isLoading, setLoading] = useState(false);
 
-	const [name, setName] = useInputState(profile.name || "");
+	const [name, setName] = useInputState(user?.name || "");
 
 	const saveSettings = useStable(async () => {
 		try {
@@ -78,7 +78,7 @@ function AccountForm({ onClose }: AccountFormProps) {
 						variant="gradient"
 						flex={1}
 						loading={isLoading}
-						disabled={!name || name === profile.name}
+						disabled={!name || name === user?.name}
 					>
 						Save changes
 					</Button>
@@ -90,9 +90,8 @@ function AccountForm({ onClose }: AccountFormProps) {
 
 export function CloudAccount() {
 	const [showSettings, settingsModal] = useBoolean();
-	const { signIn, signOut } = useCloudAuth();
+	const { user, signIn, signOut } = useAuthentication();
 
-	const profile = useCloudProfile();
 	const isAuthenticated = useIsAuthenticated();
 	const isAuthLoading = useIsAuthLoading();
 	const [, navigate] = useAbsoluteLocation();
@@ -111,7 +110,7 @@ export function CloudAccount() {
 		);
 	}
 
-	const name = profile.name || "Unknown";
+	const name = user?.name || "Unknown";
 
 	return (
 		<>
@@ -148,7 +147,7 @@ export function CloudAccount() {
 									c="obsidian"
 									mt={-3}
 								>
-									{profile.username}
+									{user?.email}
 								</Text>
 							</Box>
 						</Group>

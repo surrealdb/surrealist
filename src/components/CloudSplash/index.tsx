@@ -4,11 +4,11 @@ import { adapter } from "~/adapter";
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
 import logoLightImg from "~/assets/images/light/cloud-logo.svg";
 import { useIsAuthLoading } from "~/hooks/cloud";
-import { useCloudAuth } from "~/hooks/cloud-auth";
 import { useThemeImage } from "~/hooks/theme";
+import { useAuthentication } from "~/providers/Auth";
 
 export function CloudSplash() {
-	const { signIn } = useCloudAuth();
+	const { signIn } = useAuthentication();
 	const isAuthLoading = useIsAuthLoading();
 
 	const logoImg = useThemeImage({

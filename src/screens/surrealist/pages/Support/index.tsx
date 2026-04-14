@@ -33,7 +33,7 @@ import { ConversationTable } from "~/components/ConversationTable";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsAuthenticated } from "~/hooks/cloud";
-import { useCloudAuth } from "~/hooks/cloud-auth";
+import { useAuthentication } from "~/providers/Auth";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
 import { StartCloud } from "../Overview/content/cloud";
@@ -42,7 +42,7 @@ import { SupportCollection } from "./SupportCollection";
 import classes from "./style.module.scss";
 
 export function SupportPage() {
-	const { signIn } = useCloudAuth();
+	const { signIn } = useAuthentication();
 	const isAuthenticated = useIsAuthenticated();
 
 	const { data: collections, isLoading } = useSupportCollectionsQuery();

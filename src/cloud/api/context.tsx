@@ -1,4 +1,4 @@
-import { getAccessToken } from "~/providers/Auth0";
+import { getAccessToken } from "~/providers/Auth";
 import { ApiError } from ".";
 import { getCloudEndpoints } from "./endpoints";
 
