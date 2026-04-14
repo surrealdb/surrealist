@@ -257,7 +257,7 @@ export function CreateConnectionPage() {
 									>
 										SurrealDB Cloud
 									</Text>{" "}
-									is the easiest way to deploy and manage your database—no
+									is the easiest way to deploy and manage your database-no
 									infrastructure setup or maintenance required.
 								</Text>
 								<Group mt="md">
