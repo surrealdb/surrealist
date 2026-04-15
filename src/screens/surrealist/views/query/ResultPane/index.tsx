@@ -32,6 +32,7 @@ import { executeEditorQuery } from "~/editor/query";
 import { useSetting } from "~/hooks/config";
 import { useConnectionAndView } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useElapsedTime } from "~/hooks/timer";
 import { cancelLiveQueries } from "~/screens/surrealist/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
@@ -89,8 +90,13 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 
 	const liveTabs = useInterfaceStore((s) => s.liveTabs);
 	const isQuerying = useDatabaseStore((s) => s.isQueryActive);
+	const queryTiming = useDatabaseStore((s) => s.queryTimings[activeTab.id]);
 	const responseMap = useDatabaseStore((s) => s.queryResponses);
 	const isQueryValid = useQueryStore((s) => s.isQueryValid);
+	const elapsedTime = useElapsedTime(
+		queryTiming?.startedAt ?? null,
+		queryTiming?.endedAt ?? null,
+	);
 
 	const [allowSelectionExecution] = useSetting("behavior", "querySelectionExecution");
 	const [resultTab, setResultTab] = useState<number>(1);
@@ -263,6 +269,18 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 			icon={iconQuery}
 			radius={corners}
 			withDivider={resultMode !== "graph" || responseCount === 0}
+			infoSection={
+				elapsedTime && (
+					<Text
+						size="xs"
+						c="obsidian.3"
+						fw={500}
+						ff="mono"
+					>
+						{elapsedTime}
+					</Text>
+				)
+			}
 			rightSection={
 				<Group
 					align="center"
