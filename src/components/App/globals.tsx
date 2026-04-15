@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { adapter } from "~/adapter";
 import { useCloudAuthentication } from "./hooks/cloud";
 import { useConnectionSwitch } from "./hooks/connection";
-import { useKeybindListener, useModKeyTracker } from "./hooks/input";
+import { useEscapeKeyListener, useKeybindListener, useModKeyTracker } from "./hooks/input";
 import { useIntercom } from "./hooks/intercom";
 import { useNativeMenuBar } from "./hooks/menu";
 import { usePolicyAlert } from "./hooks/policy";
@@ -14,6 +14,7 @@ import { useWindowSettings } from "./hooks/window";
 export function Globals(): ReactNode {
 	useModKeyTracker();
 	useKeybindListener();
+	useEscapeKeyListener();
 	useWindowSettings();
 	useConnectionSwitch();
 	useCloudAuthentication();
