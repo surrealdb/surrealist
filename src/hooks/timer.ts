@@ -58,10 +58,7 @@ export function formatElapsed(ms: number): string {
  * @param startedAt The `performance.now()` timestamp when timing began, or null if never started
  * @param endedAt The `performance.now()` timestamp when timing ended, or null if still running
  */
-export function useElapsedTime(
-	startedAt: number | null,
-	endedAt: number | null,
-): string | null {
+export function useElapsedTime(startedAt: number | null, endedAt: number | null): string | null {
 	const [elapsed, setElapsed] = useState<number | null>(null);
 	const frameRef = useRef<number>(0);
 

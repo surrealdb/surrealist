@@ -1,6 +1,6 @@
 import { Button, Flex, MantineProvider, Portal } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
-import { Notifications, cleanNotifications, useNotifications } from "@mantine/notifications";
+import { cleanNotifications, Notifications, useNotifications } from "@mantine/notifications";
 import { Icon, iconClose } from "@surrealdb/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ContextMenuProvider } from "mantine-contextmenu";
