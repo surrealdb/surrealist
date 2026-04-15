@@ -9,6 +9,7 @@ import {
 	iconList,
 	iconLive,
 	iconQuery,
+	iconTrash,
 	iconUpload,
 } from "@surrealdb/ui";
 import dayjs from "dayjs";
@@ -109,8 +110,14 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 		});
 	}, [responses]);
 
+	const messages = useInterfaceStore((s) => s.liveQueryMessages[activeTab.id] || []);
+
 	const cancelQueries = useStable(() => {
 		cancelLiveQueries(activeTab.id);
+	});
+
+	const clearMessages = useStable(() => {
+		useInterfaceStore.getState().clearLiveQueryMessages(activeTab.id);
 	});
 
 	const runQuery = useStable(() => {
@@ -228,8 +235,21 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 						</Button>
 					) : null}
 
-					{resultMode === "live" ? (
-						isLive && (
+				{resultMode === "live" ? (
+					<>
+						{messages.length > 0 && (
+							<Button
+								onClick={clearMessages}
+								color="obsidian"
+								variant="light"
+								size="xs"
+								radius="sm"
+								leftSection={<Icon path={iconTrash} />}
+							>
+								Clear messages
+							</Button>
+						)}
+						{isLive && (
 							<Button
 								onClick={cancelQueries}
 								color="pink"
@@ -240,7 +260,8 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 							>
 								Stop listening
 							</Button>
-						)
+						)}
+					</>
 					) : resultMode === "combined" ? (
 						<ListMenu
 							data={NONE_RESULT_MODES}
