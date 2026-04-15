@@ -1,16 +1,17 @@
 import type { SelectionRange } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
-import { Button, Center, Group, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
+import { Button, Center, Group, Menu, Stack, Text, Tooltip, UnstyledButton } from "@mantine/core";
 import {
 	Icon,
 	iconBroadcastOff,
+	iconCopy,
 	iconCursor,
+	iconDownload,
 	iconHelp,
 	iconList,
 	iconLive,
 	iconQuery,
 	iconTrash,
-	iconUpload,
 } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { unparse } from "papaparse";
@@ -20,7 +21,13 @@ import { adapter, isMini } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { ListMenu } from "~/components/ListMenu";
 import { ContentPane } from "~/components/Pane";
-import { CSV_FILTER, NONE_RESULT_MODES, RESULT_FORMATS, RESULT_MODES } from "~/constants";
+import {
+	CSV_FILTER,
+	JSON_FILTER,
+	NONE_RESULT_MODES,
+	RESULT_FORMATS,
+	RESULT_MODES,
+} from "~/constants";
 import { executeEditorQuery } from "~/editor/query";
 import { useSetting } from "~/hooks/config";
 import { useConnectionAndView } from "~/hooks/routing";
@@ -176,15 +183,56 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 	const showFormat = !isMini && (resultMode === "combined" || resultMode === "single");
 
 	const selectedResponse = responses[selectedTab] ?? { result: null };
-	const isExportVisible = resultMode === "table";
-	const canExport = useMemo(() => {
+
+	const exportResult = useMemo(() => {
+		if (resultMode === "combined") {
+			return responses.map((r) => r.result);
+		}
+		return selectedResponse.result;
+	}, [resultMode, responses, selectedResponse.result]);
+
+	const hasResults = responseCount > 0 && exportResult != null;
+	const isExportable = hasResults && resultMode !== "live" && resultMode !== "graph";
+
+	const canExportCsv = useMemo(() => {
 		return (
-			isExportVisible &&
 			isArray(selectedResponse.result) &&
 			selectedResponse.result.length > 0 &&
 			selectedResponse.result.every((r) => isObject(r))
 		);
-	}, [isExportVisible, selectedResponse.result]);
+	}, [selectedResponse.result]);
+
+	const copyAsJson = useStable(() => {
+		const json = JSON.stringify(exportResult, null, 2);
+
+		navigator.clipboard.writeText(json);
+
+		showInfo({
+			title: "Copied",
+			subtitle: "Results copied to clipboard as JSON",
+		});
+	});
+
+	const exportAsJson = useStable(async () => {
+		const json = JSON.stringify(exportResult, null, 2);
+		const fileName = `${slugify(activeTab.name ?? "")}-${dayjs().format("YYYY-MM-DD")}.json`;
+
+		const success = await adapter.saveFile(
+			"Save JSON export",
+			fileName,
+			[JSON_FILTER],
+			() => new Blob([json], { type: "application/json" }),
+		);
+
+		if (success) {
+			showInfo({
+				title: "Export",
+				subtitle: "Results successfully exported",
+			});
+
+			tagEvent("export", { extension: "json" });
+		}
+	});
 
 	const exportAsCsv = useStable(async () => {
 		const csvContent = unparse(selectedResponse.result);
@@ -221,47 +269,71 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 					wrap="nowrap"
 					className={classes.controls}
 				>
-					{isExportVisible ? (
-						<Button
-							onClick={exportAsCsv}
-							variant="light"
-							size="xs"
-							radius="sm"
-							color="obsidian"
-							leftSection={<Icon path={iconUpload} />}
-							disabled={!canExport}
+					{isExportable && (
+						<Menu
+							position="bottom-end"
+							transitionProps={{ transition: "scale-y" }}
 						>
-							Export as CSV
-						</Button>
-					) : null}
+							<Menu.Target>
+								<Button
+									variant="light"
+									size="xs"
+									color="obsidian"
+									leftSection={<Icon path={iconDownload} />}
+								>
+									Export Results
+								</Button>
+							</Menu.Target>
+							<Menu.Dropdown>
+								<Menu.Item
+									leftSection={<Icon path={iconCopy} />}
+									onClick={copyAsJson}
+								>
+									Copy as JSON
+								</Menu.Item>
+								<Menu.Item
+									leftSection={<Icon path={iconDownload} />}
+									onClick={exportAsJson}
+								>
+									Save as JSON
+								</Menu.Item>
+								{canExportCsv && (
+									<Menu.Item
+										leftSection={<Icon path={iconDownload} />}
+										onClick={exportAsCsv}
+									>
+										Save as CSV
+									</Menu.Item>
+								)}
+							</Menu.Dropdown>
+						</Menu>
+					)}
 
-				{resultMode === "live" ? (
-					<>
-						{messages.length > 0 && (
-							<Button
-								onClick={clearMessages}
-								color="obsidian"
-								variant="light"
-								size="xs"
-								radius="sm"
-								leftSection={<Icon path={iconTrash} />}
-							>
-								Clear messages
-							</Button>
-						)}
-						{isLive && (
-							<Button
-								onClick={cancelQueries}
-								color="pink"
-								variant="light"
-								size="xs"
-								radius="sm"
-								leftSection={<Icon path={iconBroadcastOff} />}
-							>
-								Stop listening
-							</Button>
-						)}
-					</>
+					{resultMode === "live" ? (
+						<>
+							{messages.length > 0 && (
+								<Button
+									onClick={clearMessages}
+									color="obsidian"
+									variant="light"
+									size="xs"
+									leftSection={<Icon path={iconTrash} />}
+								>
+									Clear messages
+								</Button>
+							)}
+							{isLive && (
+								<Button
+									onClick={cancelQueries}
+									color="pink"
+									variant="light"
+									size="xs"
+									leftSection={<Icon path={iconBroadcastOff} />}
+								>
+									Stop listening
+								</Button>
+							)}
+						</>
 					) : resultMode === "combined" ? (
 						<ListMenu
 							data={NONE_RESULT_MODES}
