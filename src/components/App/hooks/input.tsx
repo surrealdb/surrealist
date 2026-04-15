@@ -50,3 +50,22 @@ export function useKeybindListener() {
 
 	useHotkeys(hotkeys, [], true);
 }
+
+/**
+ * Listen for the escape key and prevent default
+ */
+export function useEscapeKeyListener() {
+	useEffect(() => {
+		const onKeyDown = (e: KeyboardEvent) => {
+			if (e.code === "Escape") {
+				e.preventDefault();
+			}
+		};
+
+		document.addEventListener("keydown", onKeyDown, true);
+
+		return () => {
+			document.removeEventListener("keydown", onKeyDown, true);
+		};
+	}, []);
+}
