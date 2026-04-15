@@ -7,7 +7,7 @@ import { destroySession } from "~/cloud/api/auth";
 import { SignInRedirect } from "~/components/SignInRedirect";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { showErrorNotification } from "~/util/helpers";
-import { callback } from "./helpers";
+import { callback, computeReturnPath } from "./helpers";
 
 const CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID ?? "";
 const AUTH_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN ?? "";
@@ -92,7 +92,7 @@ function TokenBridge({ children }: PropsWithChildren) {
 				screen_hint: screen,
 			},
 			appState: {
-				returnTo: isExternal ? undefined : location.pathname,
+				returnTo: isExternal ? undefined : computeReturnPath(params),
 			},
 		});
 	});
