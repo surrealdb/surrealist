@@ -136,11 +136,12 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 			.sort((a, b) => a.name.localeCompare(b.name));
 	}, [contexts, search, regionFilter]);
 
-	const deployHref = `/o/${organization.id}/contexts/deploy`;
+	const deployPath = `/o/${organization.id}/contexts/deploy`;
+	const deployHref = isAdmin && !isRestricted && contexts.length === 0 ? deployPath : undefined;
 
 	return (
 		<>
-			<ContextsOnboarding deployHref={isAdmin && !isRestricted ? deployHref : undefined} />
+			<ContextsOnboarding deployHref={deployHref} />
 
 			<Group
 				justify="space-between"
@@ -148,7 +149,7 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 			>
 				<PrimaryTitle fz={32}>Contexts</PrimaryTitle>
 				{isAdmin && (
-					<Link href={deployHref}>
+					<Link href={deployPath}>
 						<Button
 							size="xs"
 							disabled={isRestricted}
@@ -219,7 +220,7 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 							knowledge to your AI applications.
 						</Text>
 						{isAdmin && (
-							<Link href={deployHref}>
+							<Link href={deployPath}>
 								<Button
 									mt="xs"
 									disabled={isRestricted}

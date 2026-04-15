@@ -18,7 +18,7 @@ import { useOnboarding } from "~/hooks/onboarding";
 
 interface OnboardingAction {
 	label: string;
-	href: string;
+	href?: string;
 }
 
 interface OnboardingModalProps {
@@ -125,8 +125,18 @@ function OnboardingModal({
 							</Link>
 						)}
 						<Spacer />
-						{deployAction && (
-							<Link href={deployAction.href}>
+						{deployAction &&
+							(deployAction.href ? (
+								<Link href={deployAction.href}>
+									<Button
+										variant="gradient"
+										rightSection={<Icon path={iconChevronRight} />}
+										onClick={openHandle.close}
+									>
+										{deployAction.label}
+									</Button>
+								</Link>
+							) : (
 								<Button
 									variant="gradient"
 									rightSection={<Icon path={iconChevronRight} />}
@@ -134,8 +144,7 @@ function OnboardingModal({
 								>
 									{deployAction.label}
 								</Button>
-							</Link>
-						)}
+							))}
 					</Group>
 				</Stack>
 			</Paper>
@@ -182,9 +191,7 @@ export function InstancesOnboarding({ deployHref }: InstancesOnboardingProps) {
 			subtitle="Context, Made Atomic"
 			description="SurrealDB is the database that makes context atomic. Documents, graphs, vectors, time-series, and relational data as native primitives in a single ACID transaction - no plugins, no bolt-ons."
 			learnMoreHref="https://surrealdb.com/platform/surrealdb"
-			deployAction={
-				deployHref ? { label: "Deploy an instance", href: deployHref } : undefined
-			}
+			deployAction={{ label: "Get started", href: deployHref }}
 			media={
 				<VideoPlayer
 					src="https://surrealdb.com/videos/surrealdb-overview.mp4"
@@ -225,7 +232,7 @@ export function ContextsOnboarding({ deployHref }: ContextsOnboardingProps) {
 			subtitle="Agent Memory That Actually Works"
 			description="Spectron gives your AI agents persistent, queryable memory powered by knowledge graphs, entity extraction, temporal facts, and hybrid retrieval - built directly into SurrealDB rather than bolted on top."
 			learnMoreHref="https://surrealdb.com/platform/spectron"
-			deployAction={deployHref ? { label: "Deploy a context", href: deployHref } : undefined}
+			deployAction={{ label: "Get started", href: deployHref }}
 			media={
 				<VideoPlayer
 					src="https://cdn.brandsafe.io/d7eeplmems9s73ft769g.mp4"

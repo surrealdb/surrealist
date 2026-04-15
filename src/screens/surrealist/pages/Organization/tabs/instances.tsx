@@ -81,11 +81,12 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 		navigateConnection(resolveInstanceConnection(instance).id);
 	});
 
-	const deployHref = `/o/${organization.id}/instances/deploy`;
+	const deployPath = `/o/${organization.id}/instances/deploy`;
+	const deployHref = isAdmin && !isRestricted && instances.length === 0 ? deployPath : undefined;
 
 	return (
 		<>
-			<InstancesOnboarding deployHref={isAdmin && !isRestricted ? deployHref : undefined} />
+			<InstancesOnboarding deployHref={deployHref} />
 
 			<Group
 				justify="space-between"
@@ -93,7 +94,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 			>
 				<PrimaryTitle fz={32}>Instances</PrimaryTitle>
 				{isAdmin && (
-					<Link href={deployHref}>
+					<Link href={deployPath}>
 						<Button
 							size="xs"
 							disabled={isRestricted}
@@ -165,7 +166,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 							fully managed database.
 						</Text>
 						{isAdmin && (
-							<Link href={deployHref}>
+							<Link href={deployPath}>
 								<Button
 									mt="xs"
 									disabled={isRestricted}
