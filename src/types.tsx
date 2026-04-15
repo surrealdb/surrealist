@@ -1060,6 +1060,19 @@ export interface CloudCoupon {
 	expires_at?: string;
 }
 
+export interface CloudLedgerEntry {
+	organization_id: string;
+	description: string;
+	resource: string;
+	amount_millcents: number;
+	cloud_usage_units: number;
+	units?: number;
+	units_literal?: string;
+	effective_at: string;
+	instance_id?: string;
+	instance_type?: string;
+}
+
 export interface CloudBackup {
 	snapshot_started_at: string;
 	snapshot_id: string;

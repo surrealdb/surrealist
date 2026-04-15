@@ -1,21 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
 import { useHasCloudSession } from "~/hooks/cloud";
 import { useAuthentication } from "~/providers/Auth";
-import type { CloudMeasurement } from "~/types";
+import type { CloudLedgerEntry, CloudMeasurement } from "~/types";
+import { withSearchParams } from "~/util/helpers";
 import { fetchAPI } from "../api";
 
 /**
- * Fetch organization usage metrics
+ * Fetch organization spend breakdown for a billing period
  */
-export function useCloudOrgUsageQuery(organization?: string) {
+export function useCloudOrgSpendQuery(organization?: string, period?: string) {
 	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
-		queryKey: ["cloud", "orgusage", organization],
+		queryKey: ["cloud", "orgspend", organization, period],
 		enabled: !!organization && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
-			return fetchAPI<CloudMeasurement[]>(`/organizations/${organization}/usage`);
+			return fetchAPI<CloudLedgerEntry[]>(
+				withSearchParams(`/organizations/${organization}/spend`, { period }),
+			);
 		},
 	});
 }

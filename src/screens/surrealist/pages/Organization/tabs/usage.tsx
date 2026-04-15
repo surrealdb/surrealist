@@ -1,97 +1,270 @@
-import { Divider, LoadingOverlay, Paper, Table, Text } from "@mantine/core";
-import { useCloudOrgUsageQuery } from "~/cloud/queries/usage";
-import { Label } from "~/components/Label";
+import {
+	Group,
+	LoadingOverlay,
+	Paper,
+	SegmentedControl,
+	SimpleGrid,
+	Stack,
+	Table,
+	Text,
+	type TextProps,
+	Tooltip,
+} from "@mantine/core";
+import { Icon, iconClock, iconDatabase, iconDollar, iconServer } from "@surrealdb/ui";
+import dayjs from "dayjs";
+import { useMemo, useState } from "react";
+import { useCloudOrgSpendQuery } from "~/cloud/queries/usage";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
-import { measureComputeCost } from "~/util/cloud";
+import { formatBytesUsage, formatMillcents, formatMinutesAsHours } from "~/util/cloud";
 import classes from "../style.module.scss";
 import { OrganizationTabProps } from "../types";
 
-export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
-	const usageQuery = useCloudOrgUsageQuery(organization.id);
+type SpendPeriod = "current" | "previous";
 
-	const usageCharge = measureComputeCost(usageQuery.data ?? []);
+function computePeriod(selection: SpendPeriod) {
+	const base = selection === "current" ? dayjs() : dayjs().subtract(1, "month");
+	return base.format("MM-YYYY");
+}
+
+function spendTextProps(millcents: number): TextProps {
+	if (millcents > 0) return { c: "bright", fw: 500, ff: "monospace" };
+	if (millcents === 0) return { fw: 300, ff: "monospace" };
+	return { c: "orange", fw: 500, ff: "monospace" };
+}
+
+export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
+	const [period, setPeriod] = useState<SpendPeriod>("current");
+
+	const periodString = computePeriod(period);
+	const spendQuery = useCloudOrgSpendQuery(organization.id, periodString);
+	const entries = spendQuery.data ?? [];
+
+	const totalMillcents = useMemo(
+		() => entries.reduce((sum, e) => sum + (e.amount_millcents || 0), 0),
+		[entries],
+	);
+
+	const totalComputeMinutes = useMemo(
+		() =>
+			entries
+				.filter((e) => e.resource.includes("compute"))
+				.reduce((sum, e) => sum + (e.units || 0), 0),
+		[entries],
+	);
+
+	const totalStorageBytes = useMemo(
+		() =>
+			entries
+				.filter((e) => e.resource.includes("storage"))
+				.reduce((sum, e) => sum + (e.units || 0), 0),
+		[entries],
+	);
+
+	const uniqueInstances = useMemo(
+		() => new Set(entries.filter((e) => e.instance_id).map((e) => e.instance_id)).size,
+		[entries],
+	);
 
 	return (
 		<>
-			<PrimaryTitle fz={32}>Usage</PrimaryTitle>
+			<Group
+				justify="space-between"
+				align="center"
+			>
+				<PrimaryTitle fz={32}>Usage</PrimaryTitle>
+				<SegmentedControl
+					value={period}
+					onChange={(v) => setPeriod(v as SpendPeriod)}
+					data={[
+						{ label: "Current month", value: "current" },
+						{ label: "Previous month", value: "previous" },
+					]}
+				/>
+			</Group>
+
 			<Section
-				title="Usage charges"
-				description="Your organisation's usage charges for the current month"
+				title="Usage overview"
+				description="Your organisation's credit usage breakdown for the selected period"
+			>
+				<SimpleGrid cols={{ xs: 2, md: 4 }}>
+					<SummaryCard
+						icon={iconDollar}
+						label="Total spend"
+						value={formatMillcents(totalMillcents)}
+					/>
+					<SummaryCard
+						icon={iconClock}
+						label="Total compute"
+						value={formatMinutesAsHours(totalComputeMinutes)}
+					/>
+					<SummaryCard
+						icon={iconDatabase}
+						label="Total storage"
+						value={formatBytesUsage(totalStorageBytes)}
+					/>
+					<SummaryCard
+						icon={iconServer}
+						label="Instances"
+						value={String(uniqueInstances)}
+					/>
+				</SimpleGrid>
+			</Section>
+
+			<Section
+				title="Usage breakdown"
+				description="Individual ledger entries for the selected period"
 			>
 				<Paper
-					p="xl"
+					p="md"
 					pos="relative"
-					style={{ overflow: "hidden" }}
+					style={{ overflow: "auto" }}
 				>
 					<LoadingOverlay
-						visible={usageQuery.isPending}
+						visible={spendQuery.isPending}
 						overlayProps={{
 							color: "var(--mantine-color-obsidian-8)",
 						}}
 					/>
-					<Label>Usage cost breakdown</Label>
-					{usageCharge.summary.length === 0 ? (
-						<Text
-							mt="xs"
-							c="obsidian"
-							className="selectable"
-						>
-							No instance usage data available yet
-						</Text>
+
+					{entries.length === 0 && !spendQuery.isPending ? (
+						<Text mt="xs">No spend data available for this period</Text>
 					) : (
-						<Table
-							className={classes.table}
-							mt="sm"
-						>
+						<Table className={classes.table}>
+							<Table.Thead>
+								<Table.Tr>
+									<Table.Th>Description</Table.Th>
+									<Table.Th>Instance</Table.Th>
+									<Table.Th>Type</Table.Th>
+									<Table.Th>Units</Table.Th>
+									<Table.Th ta="right">Spend</Table.Th>
+									<Table.Th ta="right">Date</Table.Th>
+								</Table.Tr>
+							</Table.Thead>
 							<Table.Tbody>
-								{usageCharge.summary.map((charge, i) => (
-									<Table.Tr
-										key={i}
-										h={42}
-									>
-										<Table.Td
-											c="bright"
-											className="selectable"
+								{entries.map((entry, i) => {
+									const isCompute =
+										entry.resource.includes("compute") &&
+										(entry.units ?? 0) > 0;
+									const isStorage =
+										entry.resource.includes("storage") &&
+										(entry.units ?? 0) > 0;
+
+									return (
+										<Table.Tr
+											key={i}
+											h={42}
 										>
-											{charge.name}
-										</Table.Td>
-										<Table.Td
-											w={0}
-											pr="md"
-											style={{ textWrap: "nowrap" }}
-											className="selectable"
-										>
-											<Text
-												span
-												c="bright"
-												fw={500}
-											>
-												${charge.cost.toFixed(3)}
-											</Text>{" "}
-											<Text span>
-												for {charge.hours.toString()} compute hours
-											</Text>
-										</Table.Td>
-									</Table.Tr>
-								))}
+											<Table.Td>
+												{entry.description ? (
+													<Tooltip
+														label={entry.description}
+														multiline
+														maw={300}
+													>
+														<Text
+															fz="sm"
+															lineClamp={1}
+															style={{ cursor: "help" }}
+															c="bright"
+														>
+															{entry.description}
+														</Text>
+													</Tooltip>
+												) : (
+													<Text fz="sm">&mdash;</Text>
+												)}
+											</Table.Td>
+											<Table.Td>
+												<Text fz="sm">{entry.instance_id}</Text>
+											</Table.Td>
+											<Table.Td>
+												<Text fz="sm">
+													{entry.instance_type || "\u2014"}
+												</Text>
+											</Table.Td>
+											<Table.Td>
+												{isCompute ? (
+													<Group
+														gap="xs"
+														c="blue"
+													>
+														<Icon path={iconClock} />
+														<Text fz="sm">
+															{formatMinutesAsHours(entry.units ?? 0)}
+														</Text>
+													</Group>
+												) : isStorage ? (
+													<Group
+														gap="xs"
+														c="green"
+													>
+														<Icon path={iconDatabase} />
+														<Text fz="sm">
+															{formatBytesUsage(entry.units ?? 0)}
+														</Text>
+													</Group>
+												) : (entry.units ?? 0) > 0 ? (
+													<Text fz="sm">{entry.units}</Text>
+												) : (
+													<Text fz="sm">&mdash;</Text>
+												)}
+											</Table.Td>
+											<Table.Td ta="right">
+												<Text
+													fz="sm"
+													{...spendTextProps(entry.amount_millcents)}
+												>
+													{formatMillcents(entry.amount_millcents)}
+												</Text>
+											</Table.Td>
+											<Table.Td ta="right">
+												<Text fz="sm">
+													{entry.effective_at
+														? dayjs(entry.effective_at).format(
+																"MMM DD, YYYY",
+															)
+														: "\u2014"}
+												</Text>
+											</Table.Td>
+										</Table.Tr>
+									);
+								})}
 							</Table.Tbody>
 						</Table>
 					)}
-					<Divider my="xl" />
-					<Label>Total charges this month to date</Label>
-					<PrimaryTitle>${usageCharge.total.toFixed(2)}</PrimaryTitle>
-
-					<Text
-						fz="sm"
-						c="obsidian"
-						mt="sm"
-						className="selectable"
-					>
-						This amount is an estimation, final amounts may vary.
-					</Text>
 				</Paper>
 			</Section>
 		</>
+	);
+}
+
+interface SummaryCardProps {
+	icon: string;
+	label: string;
+	value: string;
+}
+
+function SummaryCard({ icon, label, value }: SummaryCardProps) {
+	return (
+		<Paper p="lg">
+			<Stack gap="xs">
+				<Group gap="xs">
+					<Icon
+						path={icon}
+						size="sm"
+						c="violet"
+					/>
+					<Text fz="sm">{label}</Text>
+				</Group>
+				<Text
+					fz="xl"
+					fw={600}
+					c="bright"
+				>
+					{value}
+				</Text>
+			</Stack>
+		</Paper>
 	);
 }
