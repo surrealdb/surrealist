@@ -6,6 +6,7 @@ import {
 	iconBroadcastOff,
 	iconCopy,
 	iconCursor,
+	iconDotsVertical,
 	iconDownload,
 	iconHelp,
 	iconList,
@@ -287,177 +288,307 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 					wrap="nowrap"
 					className={classes.controls}
 				>
-					{isExportable && (
-						<Menu
-							position="bottom-end"
-							transitionProps={{ transition: "scale-y" }}
-						>
-							<Menu.Target>
-								<Button
-									variant="light"
-									size="xs"
-									color="obsidian"
-									leftSection={<Icon path={iconDownload} />}
-								>
-									Export Results
-								</Button>
-							</Menu.Target>
-							<Menu.Dropdown>
-								<Menu.Item
-									leftSection={<Icon path={iconCopy} />}
-									onClick={copyAsJson}
-								>
-									Copy as JSON
-								</Menu.Item>
-								<Menu.Item
-									leftSection={<Icon path={iconDownload} />}
-									onClick={exportAsJson}
-								>
-									Save as JSON
-								</Menu.Item>
-								{canExportCsv && (
+					<Group
+						wrap="nowrap"
+						gap="xs"
+						className={classes.optionsExpanded}
+					>
+						{isExportable && (
+							<Menu
+								position="bottom-end"
+								transitionProps={{ transition: "scale-y" }}
+							>
+								<Menu.Target>
+									<Button
+										variant="light"
+										size="xs"
+										color="obsidian"
+										leftSection={<Icon path={iconDownload} />}
+									>
+										Export Results
+									</Button>
+								</Menu.Target>
+								<Menu.Dropdown>
+									<Menu.Item
+										leftSection={<Icon path={iconCopy} />}
+										onClick={copyAsJson}
+									>
+										Copy as JSON
+									</Menu.Item>
 									<Menu.Item
 										leftSection={<Icon path={iconDownload} />}
-										onClick={exportAsCsv}
+										onClick={exportAsJson}
 									>
-										Save as CSV
+										Save as JSON
 									</Menu.Item>
-								)}
-							</Menu.Dropdown>
-						</Menu>
-					)}
+									{canExportCsv && (
+										<Menu.Item
+											leftSection={<Icon path={iconDownload} />}
+											onClick={exportAsCsv}
+										>
+											Save as CSV
+										</Menu.Item>
+									)}
+								</Menu.Dropdown>
+							</Menu>
+						)}
 
-					{resultMode === "live" ? (
-						<>
-							{messages.length > 0 && (
-								<Button
-									onClick={clearMessages}
-									color="obsidian"
-									variant="light"
-									size="xs"
-									leftSection={<Icon path={iconTrash} />}
-								>
-									Clear messages
-								</Button>
-							)}
-							{isLive && (
-								<Button
-									onClick={cancelQueries}
-									color="pink"
-									variant="light"
-									size="xs"
-									leftSection={<Icon path={iconBroadcastOff} />}
-								>
-									Stop listening
-								</Button>
-							)}
-						</>
-					) : resultMode === "combined" ? (
-						<ListMenu
-							data={NONE_RESULT_MODES}
-							value={noneResultsMode}
-							onChange={setNoneResultsMode}
-						>
-							<Tooltip
-								label="Change NONE display"
-								openDelay={300}
-							>
-								<Button
-									size="xs"
-									aria-label="Change NONE display"
-									variant="light"
-									color="obsidian"
-									leftSection={
-										activeNoneMode?.icon && <Icon path={activeNoneMode.icon} />
-									}
-								>
-									{responseCount} {responseCount === 1 ? "response" : "responses"}
-								</Button>
-							</Tooltip>
-						</ListMenu>
-					) : (
-						showQueries && (
+						{resultMode === "live" ? (
+							<>
+								{messages.length > 0 && (
+									<Button
+										onClick={clearMessages}
+										color="obsidian"
+										variant="light"
+										size="xs"
+										leftSection={<Icon path={iconTrash} />}
+									>
+										Clear messages
+									</Button>
+								)}
+								{isLive && (
+									<Button
+										onClick={cancelQueries}
+										color="pink"
+										variant="light"
+										size="xs"
+										leftSection={<Icon path={iconBroadcastOff} />}
+									>
+										Stop listening
+									</Button>
+								)}
+							</>
+						) : resultMode === "combined" ? (
 							<ListMenu
-								data={queryList}
-								value={resultTab.toString()}
-								onChange={(e) => setResultTab(Number.parseInt(e ?? "1"))}
+								data={NONE_RESULT_MODES}
+								value={noneResultsMode}
+								onChange={setNoneResultsMode}
 							>
 								<Tooltip
-									label="Change result"
+									label="Change NONE display"
 									openDelay={300}
 								>
 									<Button
 										size="xs"
-										aria-label="Change result"
+										aria-label="Change NONE display"
 										variant="light"
 										color="obsidian"
-										leftSection={<Icon path={iconList} />}
+										leftSection={
+											activeNoneMode?.icon && <Icon path={activeNoneMode.icon} />
+										}
 									>
-										Query {resultTab}
+										{responseCount} {responseCount === 1 ? "response" : "responses"}
 									</Button>
 								</Tooltip>
 							</ListMenu>
-						)
-					)}
+						) : (
+							showQueries && (
+								<ListMenu
+									data={queryList}
+									value={resultTab.toString()}
+									onChange={(e) => setResultTab(Number.parseInt(e ?? "1"))}
+								>
+									<Tooltip
+										label="Change result"
+										openDelay={300}
+									>
+										<Button
+											size="xs"
+											aria-label="Change result"
+											variant="light"
+											color="obsidian"
+											leftSection={<Icon path={iconList} />}
+										>
+											Query {resultTab}
+										</Button>
+									</Tooltip>
+								</ListMenu>
+							)
+						)}
 
-					{showFormat && (
+						{showFormat && (
+							<ListMenu
+								data={RESULT_FORMATS}
+								value={resultFormat}
+								onChange={setResultFormat}
+							>
+								<Tooltip
+									label="Change result format"
+									openDelay={300}
+								>
+									<Button
+										size="xs"
+										aria-label="Change format mode"
+										variant="light"
+										color="obsidian"
+										leftSection={
+											activeFormat?.icon && <Icon path={activeFormat.icon} />
+										}
+									>
+										{activeFormat?.label ?? resultFormat}
+									</Button>
+								</Tooltip>
+							</ListMenu>
+						)}
+
 						<ListMenu
-							data={RESULT_FORMATS}
-							value={resultFormat}
-							onChange={setResultFormat}
+							data={RESULT_MODES}
+							value={resultMode}
+							onChange={setResultMode}
 						>
 							<Tooltip
-								label="Change result format"
+								label="Change result mode"
 								openDelay={300}
 							>
-								<Button
-									size="xs"
-									aria-label="Change format mode"
-									variant="light"
-									color="obsidian"
-									leftSection={
-										activeFormat?.icon && <Icon path={activeFormat.icon} />
-									}
-								>
-									{activeFormat?.label ?? resultFormat}
-								</Button>
+								{isMini ? (
+									<ActionButton
+										label="Change result mode"
+										variant="light"
+										h={30}
+										w={30}
+									>
+										<Icon path={activeMode?.icon ?? iconHelp} />
+									</ActionButton>
+								) : (
+									<Button
+										size="xs"
+										aria-label="Change result mode"
+										variant="light"
+										color="obsidian"
+										leftSection={
+											activeMode && <Icon path={activeMode?.icon ?? iconHelp} />
+										}
+									>
+										{activeMode?.label ?? "Unknown"}
+									</Button>
+								)}
 							</Tooltip>
 						</ListMenu>
-					)}
+					</Group>
 
-					<ListMenu
-						data={RESULT_MODES}
-						value={resultMode}
-						onChange={setResultMode}
+					<Menu
+						position="bottom-end"
+						transitionProps={{ transition: "scale-y" }}
 					>
-						<Tooltip
-							label="Change result mode"
-							openDelay={300}
-						>
-							{isMini ? (
-								<ActionButton
-									label="Change result mode"
-									variant="light"
-									h={30}
-									w={30}
-								>
-									<Icon path={activeMode?.icon ?? iconHelp} />
-								</ActionButton>
-							) : (
-								<Button
-									size="xs"
-									aria-label="Change result mode"
-									variant="light"
-									color="obsidian"
-									leftSection={
-										activeMode && <Icon path={activeMode?.icon ?? iconHelp} />
-									}
-								>
-									{activeMode?.label ?? "Unknown"}
-								</Button>
+						<Menu.Target>
+							<ActionButton
+								label="Options"
+								variant="light"
+								className={classes.optionsCollapsed}
+							>
+								<Icon path={iconDotsVertical} />
+							</ActionButton>
+						</Menu.Target>
+						<Menu.Dropdown>
+							{isExportable && (
+								<>
+									<Menu.Label>Export</Menu.Label>
+									<Menu.Item
+										leftSection={<Icon path={iconCopy} />}
+										onClick={copyAsJson}
+									>
+										Copy as JSON
+									</Menu.Item>
+									<Menu.Item
+										leftSection={<Icon path={iconDownload} />}
+										onClick={exportAsJson}
+									>
+										Save as JSON
+									</Menu.Item>
+									{canExportCsv && (
+										<Menu.Item
+											leftSection={<Icon path={iconDownload} />}
+											onClick={exportAsCsv}
+										>
+											Save as CSV
+										</Menu.Item>
+									)}
+									<Menu.Divider />
+								</>
 							)}
-						</Tooltip>
-					</ListMenu>
+
+							{resultMode === "live" ? (
+								<>
+									{messages.length > 0 && (
+										<Menu.Item
+											leftSection={<Icon path={iconTrash} />}
+											onClick={clearMessages}
+										>
+											Clear messages
+										</Menu.Item>
+									)}
+									{isLive && (
+										<Menu.Item
+											leftSection={<Icon path={iconBroadcastOff} />}
+											onClick={cancelQueries}
+											color="pink"
+										>
+											Stop listening
+										</Menu.Item>
+									)}
+								</>
+							) : resultMode === "combined" ? (
+								<>
+									<Menu.Label>NONE display</Menu.Label>
+									{NONE_RESULT_MODES.map((mode) => (
+										<Menu.Item
+											key={mode.value}
+											leftSection={mode.icon && <Icon path={mode.icon} />}
+											onClick={() => setNoneResultsMode(mode.value)}
+											fw={noneResultsMode === mode.value ? 600 : undefined}
+										>
+											{mode.label}
+										</Menu.Item>
+									))}
+								</>
+							) : (
+								showQueries && (
+									<>
+										<Menu.Label>Query result</Menu.Label>
+										{queryList.map((q) => (
+											<Menu.Item
+												key={q.value}
+												onClick={() => setResultTab(Number.parseInt(q.value))}
+												fw={resultTab.toString() === q.value ? 600 : undefined}
+											>
+												{q.label}
+											</Menu.Item>
+										))}
+									</>
+								)
+							)}
+
+							{showFormat && (
+								<>
+									<Menu.Divider />
+									<Menu.Label>Result format</Menu.Label>
+									{RESULT_FORMATS.map((fmt) => (
+										<Menu.Item
+											key={fmt.value}
+											leftSection={fmt.icon && <Icon path={fmt.icon} />}
+											onClick={() => setResultFormat(fmt.value)}
+											fw={resultFormat === fmt.value ? 600 : undefined}
+										>
+											{fmt.label}
+										</Menu.Item>
+									))}
+								</>
+							)}
+
+							<Menu.Divider />
+							<Menu.Label>Result mode</Menu.Label>
+							{RESULT_MODES.map((mode) => (
+								<Menu.Item
+									key={mode.value}
+									leftSection={mode.icon && <Icon path={mode.icon} />}
+									onClick={() => setResultMode(mode.value)}
+									fw={resultMode === mode.value ? 600 : undefined}
+								>
+									{mode.label}
+								</Menu.Item>
+							))}
+						</Menu.Dropdown>
+					</Menu>
 
 					<Button
 						size="xs"
