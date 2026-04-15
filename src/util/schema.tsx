@@ -72,9 +72,9 @@ export async function syncConnectionSchema(
 		if (kvInfoTask.status === "fulfilled") {
 			const { namespaces, accesses, users } = kvInfoTask.value;
 
-			schema.root.namespaces = namespaces;
+			schema.root.namespaces = namespaces ?? [];
 			schema.root.accesses = accesses ?? [];
-			schema.root.users = users;
+			schema.root.users = users ?? [];
 
 			// TODO Trim access queries
 		}
@@ -82,9 +82,9 @@ export async function syncConnectionSchema(
 		if (nsInfoTask.status === "fulfilled") {
 			const { databases, accesses, users } = nsInfoTask.value;
 
-			schema.namespace.databases = databases;
+			schema.namespace.databases = databases ?? [];
 			schema.namespace.accesses = accesses ?? [];
-			schema.namespace.users = users;
+			schema.namespace.users = users ?? [];
 
 			// TODO Trim access queries
 		}
@@ -93,9 +93,9 @@ export async function syncConnectionSchema(
 			const { accesses, models, users, functions, tables, params } = dbInfoTask.value;
 
 			schema.database.accesses = accesses ?? [];
-			schema.database.models = models;
-			schema.database.users = users;
-			schema.database.params = params;
+			schema.database.models = models ?? [];
+			schema.database.users = users ?? [];
+			schema.database.params = params ?? [];
 
 			// TODO Trim access queries
 
@@ -106,7 +106,7 @@ export async function syncConnectionSchema(
 			// }));
 
 			// Schema functions
-			schema.database.functions = functions.map((info) => ({
+			schema.database.functions = (functions ?? []).map((info) => ({
 				...info,
 				name: info.name.replaceAll("`", ""),
 				block: readBlock(info.block),
@@ -116,7 +116,7 @@ export async function syncConnectionSchema(
 
 			// Tables
 			const isLimited = Array.isArray(onlyTables);
-			const tablesToSync = isLimited ? onlyTables : tables.map((t) => t.name);
+			const tablesToSync = isLimited ? onlyTables : (tables ?? []).map((t) => t.name);
 
 			const tbInfoMap = await executeQuery(
 				tablesToSync
@@ -147,7 +147,7 @@ export async function syncConnectionSchema(
 				}
 
 				const tableStruct = tbInfoMap[idx].result as SchemaInfoTB;
-				const tableInfo = tables.find((t) => t.name === tableName);
+				const tableInfo = (tables ?? []).find((t) => t.name === tableName);
 				const existingIndex = schema.database.tables.findIndex(
 					(t) => t.schema.name === tableName,
 				);
@@ -161,13 +161,25 @@ export async function syncConnectionSchema(
 					schema: {
 						...tableInfo,
 						full: tableInfo.schemafull ?? tableInfo.full,
+						changefeed: tableInfo.changefeed
+							? {
+									expiry: String(tableInfo.changefeed.expiry ?? ""),
+									store_original: !!tableInfo.changefeed.store_original,
+								}
+							: undefined,
 					},
-					fields: Object.values(tableStruct.fields),
-					indexes: Object.values(tableStruct.indexes),
-					events: Object.values(tableStruct.events).map((ev) => ({
+					fields: Object.values(tableStruct.fields ?? {}),
+					indexes: Object.values(tableStruct.indexes ?? {}).map((idx: any) => ({
+						...idx,
+						cols: Array.isArray(idx.cols)
+							? idx.cols.join(", ")
+							: String(idx.cols ?? ""),
+						index: typeof idx.index === "string" ? idx.index : String(idx.index ?? ""),
+					})),
+					events: Object.values(tableStruct.events ?? {}).map((ev) => ({
 						...ev,
 						what: undefined,
-						then: ev.then.map(readBlock),
+						then: (ev.then ?? []).map(readBlock),
 					})),
 				};
 

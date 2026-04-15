@@ -190,9 +190,9 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 		if (connection !== null) {
 			const tables = connectionSchema.database.tables || [];
 			const accessMethods = [
-				...connectionSchema.root.accesses,
-				...connectionSchema.namespace.accesses,
-				...connectionSchema.database.accesses,
+				...(connectionSchema.root.accesses ?? []),
+				...(connectionSchema.namespace.accesses ?? []),
+				...(connectionSchema.database.accesses ?? []),
 			].filter((access) => access.kind.kind === "RECORD");
 
 			categories.push(

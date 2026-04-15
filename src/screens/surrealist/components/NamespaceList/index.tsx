@@ -194,7 +194,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 					</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown w={225}>
+			<Menu.Dropdown miw={225}>
 				<Group
 					gap="sm"
 					p="sm"

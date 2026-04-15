@@ -230,8 +230,11 @@ export function DataTable(props: DataTableProps) {
 			styles={{
 				scrollbar: {
 					zIndex: 4,
+					opacity: 1,
+					"--scrollarea-scrollbar-size": "8px",
 				},
 			}}
+			type="always"
 			scrollbars="xy"
 			{...rest}
 		>

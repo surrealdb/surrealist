@@ -61,6 +61,12 @@
 		* {
 			color: white;
 		}
+
+		@include light {
+			* {
+				color: black;
+			}
+		}
 	}
 
 	:global(.cm-foldPlaceholder) {

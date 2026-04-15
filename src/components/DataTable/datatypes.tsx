@@ -75,8 +75,8 @@ function StringCell(props: { value: string }) {
 	);
 }
 
-function NumberCell(props: { value: number }) {
-	return <Text>{props.value.toLocaleString()}</Text>;
+function NumberCell(props: { value: number | string }) {
+	return <Text>{String(props.value)}</Text>;
 }
 function BytesCell(props: { value: ArrayBuffer }) {
 	return (
@@ -360,7 +360,7 @@ export const DataCell = ({ value }: { value: any }) => {
 	}
 
 	if (value instanceof Decimal) {
-		return <NumberCell value={Number(value.toString())} />;
+		return <NumberCell value={value.toString()} />;
 	}
 
 	if (typeof value === "number") {
