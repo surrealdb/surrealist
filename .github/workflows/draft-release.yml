@@ -16,10 +16,11 @@ on:
 env:
   UPDATE_URL_STABLE: "https://app.surrealdb.com/latest.json"
   UPDATE_URL_BETA: "https://beta-app.surrealdb.com/latest.json"
-  CLOUD_CALLBACK_URL_STABLE: "https://app.surrealdb.com/cloud/callback"
-  CLOUD_CALLBACK_URL_BETA: "https://beta-app.surrealdb.com/cloud/callback"
-  CLOUD_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
-  CLOUD_AUTH_BASE: https://auth.surrealdb.com
+  AUTH0_CALLBACK_HOST_STABLE: "https://app.surrealdb.com"
+  AUTH0_CALLBACK_HOST_BETA: "https://beta-app.surrealdb.com"
+  AUTH0_CLIENT_ID: OuFa4OeeKveeRq1G6xIPgrl6EBUJtxLR
+  AUTH0_DOMAIN: https://auth.surrealdb.com
+  AUTH0_AUDIENCE: https://surrealdb.us.auth0.com/api/v2/
   CLOUD_API_BASE: https://api.cloud.surrealdb.com/api/v1
   CLOUD_API_TICKETS_BASE: https://nlsmye6spqokxdxevwqramvqri0dtbto.lambda-url.us-east-1.on.aws
   SURREALIST_WEBSITE_BASE: https://surrealdb.com
@@ -142,16 +143,16 @@ jobs:
         run: |
           if [ "${{ inputs.prerelease }}" == "true" ]; then
             echo "UPDATE_URL=${{ env.UPDATE_URL_BETA }}" >> $GITHUB_ENV
-            echo "CLOUD_CALLBACK_URL=${{ env.CLOUD_CALLBACK_URL_BETA }}" >> $GITHUB_ENV
+            echo "AUTH0_CALLBACK_HOST=${{ env.AUTH0_CALLBACK_HOST_BETA }}" >> $GITHUB_ENV
           else
             echo "UPDATE_URL=${{ env.UPDATE_URL_STABLE }}" >> $GITHUB_ENV
-            echo "CLOUD_CALLBACK_URL=${{ env.CLOUD_CALLBACK_URL_STABLE }}" >> $GITHUB_ENV
+            echo "AUTH0_CALLBACK_HOST=${{ env.AUTH0_CALLBACK_HOST_STABLE }}" >> $GITHUB_ENV
           fi
 
       - name: Debug environment
         run: |
           echo "Update URL: ${{ env.UPDATE_URL }}"
-          echo "Callback URL: ${{ env.CLOUD_CALLBACK_URL }}"
+          echo "Callback Host: ${{ env.AUTH0_CALLBACK_HOST }}"
 
       - name: Configure update endpoint
         shell: bash
@@ -168,9 +169,10 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           VITE_SURREALIST_PREVIEW: "${{ inputs.prerelease }}"
-          VITE_CLOUD_CLIENT_ID: ${{ env.CLOUD_CLIENT_ID }}
-          VITE_CLOUD_CALLBACK_URL: "${{ env.CLOUD_CALLBACK_URL }}"
-          VITE_CLOUD_AUTH_BASE: ${{ env.CLOUD_AUTH_BASE }}
+          VITE_AUTH0_CALLBACK_HOST: "${{ env.AUTH0_CALLBACK_HOST }}"
+          VITE_AUTH0_CLIENT_ID: ${{ env.AUTH0_CLIENT_ID }}
+          VITE_AUTH0_DOMAIN: "${{ env.AUTH0_DOMAIN }}"
+          VITE_AUTH0_AUDIENCE: "${{ env.AUTH0_AUDIENCE }}"
           VITE_CLOUD_API_BASE: ${{ env.CLOUD_API_BASE }}
           VITE_CLOUD_API_TICKETS_BASE: ${{ env.CLOUD_API_TICKETS_BASE }}
           VITE_SURREALIST_WEBSITE_BASE: ${{ env.SURREALIST_WEBSITE_BASE }}

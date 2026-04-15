@@ -383,7 +383,7 @@ export function SurrealistToolbar() {
 				<Button
 					variant="gradient"
 					size="xs"
-					onClick={signIn}
+					onClick={() => signIn()}
 				>
 					Sign in to SurrealDB Cloud
 				</Button>
@@ -558,7 +558,7 @@ export function SurrealistToolbar() {
 						<Button
 							variant="gradient"
 							size="xs"
-							onClick={signIn}
+							onClick={() => signIn()}
 						>
 							Deploy to Cloud
 						</Button>

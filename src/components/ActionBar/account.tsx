@@ -16,7 +16,7 @@ export function CloudAccount() {
 				variant="gradient"
 				size="xs"
 				disabled={isAuthLoading}
-				onClick={signIn}
+				onClick={() => signIn()}
 				rightSection={<Icon path={iconChevronRight} />}
 			>
 				Sign in

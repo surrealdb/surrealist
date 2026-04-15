@@ -50,7 +50,7 @@ export function CloudSplash() {
 					<Button
 						flex={1}
 						variant="gradient"
-						onClick={signIn}
+						onClick={() => signIn()}
 						rightSection={<Icon path={iconChevronRight} />}
 						loading={isAuthLoading}
 					>

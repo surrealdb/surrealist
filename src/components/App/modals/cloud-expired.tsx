@@ -37,7 +37,7 @@ export function CloudExpiredDialog() {
 			classNames={{
 				root: classes.updateDialog,
 			}}
-			onClick={signIn}
+			onClick={() => signIn()}
 		>
 			<Group>
 				<Image

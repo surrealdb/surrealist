@@ -192,7 +192,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 									<Button
 										flex={1}
 										variant="gradient"
-										onClick={signIn}
+										onClick={() => signIn()}
 										rightSection={<Icon path={iconChevronRight} />}
 									>
 										Sign in
