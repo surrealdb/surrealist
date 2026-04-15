@@ -272,14 +272,36 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 			withDivider={resultMode !== "graph" || responseCount === 0}
 			infoSection={
 				elapsedTime && (
-					<Text
-						size="xs"
-						c="obsidian.3"
-						fw={500}
-						ff="mono"
+					<Group
+						gap={2}
+						wrap="nowrap"
 					>
-						{elapsedTime}
-					</Text>
+						<Text
+							size="xs"
+							c="obsidian.3"
+							fw={500}
+							ff="mono"
+						>
+							{elapsedTime}
+						</Text>
+						{!isQuerying && (
+							<Tooltip
+								multiline
+								maw={250}
+								openDelay={300}
+								ta="center"
+								label="This is the total round-trip duration of the request, not the execution time of individual queries"
+							>
+								<div>
+									<Icon
+										path={iconHelp}
+										size="sm"
+										c="obsidian.4"
+									/>
+								</div>
+							</Tooltip>
+						)}
+					</Group>
 				)
 			}
 			rightSection={
@@ -374,10 +396,13 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 										variant="light"
 										color="obsidian"
 										leftSection={
-											activeNoneMode?.icon && <Icon path={activeNoneMode.icon} />
+											activeNoneMode?.icon && (
+												<Icon path={activeNoneMode.icon} />
+											)
 										}
 									>
-										{responseCount} {responseCount === 1 ? "response" : "responses"}
+										{responseCount}{" "}
+										{responseCount === 1 ? "response" : "responses"}
 									</Button>
 								</Tooltip>
 							</ListMenu>
@@ -456,7 +481,9 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 										variant="light"
 										color="obsidian"
 										leftSection={
-											activeMode && <Icon path={activeMode?.icon ?? iconHelp} />
+											activeMode && (
+												<Icon path={activeMode?.icon ?? iconHelp} />
+											)
 										}
 									>
 										{activeMode?.label ?? "Unknown"}
@@ -467,7 +494,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 					</Group>
 
 					<Menu
-						position="bottom-end"
+						position="left"
 						transitionProps={{ transition: "scale-y" }}
 					>
 						<Menu.Target>
@@ -535,7 +562,11 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 											key={mode.value}
 											leftSection={mode.icon && <Icon path={mode.icon} />}
 											onClick={() => setNoneResultsMode(mode.value)}
-											fw={noneResultsMode === mode.value ? 600 : undefined}
+											variant={
+												noneResultsMode === mode.value
+													? "gradient"
+													: undefined
+											}
 										>
 											{mode.label}
 										</Menu.Item>
@@ -548,8 +579,14 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 										{queryList.map((q) => (
 											<Menu.Item
 												key={q.value}
-												onClick={() => setResultTab(Number.parseInt(q.value))}
-												fw={resultTab.toString() === q.value ? 600 : undefined}
+												onClick={() =>
+													setResultTab(Number.parseInt(q.value))
+												}
+												variant={
+													resultTab.toString() === q.value
+														? "gradient"
+														: undefined
+												}
 											>
 												{q.label}
 											</Menu.Item>
@@ -567,7 +604,9 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 											key={fmt.value}
 											leftSection={fmt.icon && <Icon path={fmt.icon} />}
 											onClick={() => setResultFormat(fmt.value)}
-											fw={resultFormat === fmt.value ? 600 : undefined}
+											variant={
+												resultFormat === fmt.value ? "gradient" : undefined
+											}
 										>
 											{fmt.label}
 										</Menu.Item>
@@ -582,7 +621,7 @@ export function ResultPane({ activeTab, selection, editor, corners }: ResultPane
 									key={mode.value}
 									leftSection={mode.icon && <Icon path={mode.icon} />}
 									onClick={() => setResultMode(mode.value)}
-									fw={resultMode === mode.value ? 600 : undefined}
+									variant={resultMode === mode.value ? "gradient" : undefined}
 								>
 									{mode.label}
 								</Menu.Item>
