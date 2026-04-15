@@ -141,3 +141,35 @@ export function useAssignContextPackageMutation(organization: string | undefined
 		},
 	});
 }
+
+export interface CancelContextPackageVariables {
+	/** When true, the subscription ends after the current billing period; when false, access ends immediately. */
+	cancelAtPeriodEnd: boolean;
+}
+
+export function useCancelContextPackageMutation(organization: string | undefined) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async ({ cancelAtPeriodEnd }: CancelContextPackageVariables) => {
+			if (!organization) {
+				throw new Error("Organization is required");
+			}
+
+			const search = new URLSearchParams({
+				cancel_at_period_end: String(cancelAtPeriodEnd),
+			});
+
+			await fetchAPI(
+				`/organizations/${organization}/spectron_context_packages?${search.toString()}`,
+				{
+					method: "DELETE",
+				},
+			);
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "context-packages", { org: organization }],
+			});
+		},
+	});
+}

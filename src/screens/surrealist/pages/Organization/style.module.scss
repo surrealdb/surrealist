@@ -49,3 +49,49 @@
 	position: relative;
 	z-index: 0;
 }
+
+.spectron-card {
+	position: relative;
+	overflow: hidden;
+}
+
+.spectron-image {
+	width: 250px;
+	height: 250px;
+	position: absolute;
+	right: 0px;
+	opacity: 0.2;
+	bottom: -88px;
+	z-index: 0;
+	transition: bottom 0.5s ease;
+	filter: grayscale(100%);
+	mix-blend-mode: plus-lighter;
+
+	@include sm-and-up {
+		opacity: 1;
+		right: 50px;
+		filter: none;
+		mix-blend-mode: normal;
+	}
+}
+
+.spectron-glow {
+	width: 900px;
+	height: 900px;
+	position: absolute;
+	right: -400px;
+	bottom: -450px;
+	z-index: 0;
+	opacity: 0.3;
+	transition: opacity 0.5s ease;
+}
+
+.spectron-card:hover {
+	.spectron-image {
+		bottom: -78px;
+	}
+
+	.spectron-glow {
+		opacity: 0.5;
+	}
+}

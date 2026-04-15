@@ -687,6 +687,8 @@ export interface ContextPackage {
 	name: string;
 	description: string;
 	cost_millcents: number;
+	/** When set, packages can be filtered by billing cadence (e.g. monthly vs yearly). */
+	billing_period?: "month" | "year";
 	token_limit: number;
 	contexts_limit: number;
 }

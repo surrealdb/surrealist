@@ -1,31 +1,61 @@
 import {
 	Alert,
+	Anchor,
+	Box,
+	BoxProps,
 	Button,
 	Group,
+	Image,
+	Modal,
+	Paper,
 	SimpleGrid,
+	Skeleton,
 	Stack,
 	Table,
 	Text,
 	TextInput,
+	ThemeIcon,
 	Tooltip,
+	UnstyledButton,
 } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
-import { Icon, iconCreditCard } from "@surrealdb/ui";
+import { useDisclosure, useInputState } from "@mantine/hooks";
+import {
+	Icon,
+	iconChevronRight,
+	iconClose,
+	iconCreditCard,
+	iconDollar,
+	iconOpen,
+	iconUpload,
+	pictoSpectron,
+} from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
+import { useState } from "react";
+import { Link } from "wouter";
+import glow from "~/assets/images/radial-glow.png";
 import { fetchAPI } from "~/cloud/api";
 import { getBillingProviderAction, isBillingManaged } from "~/cloud/helpers";
+import { useCancelContextPackageMutation } from "~/cloud/mutations/spectron";
+import {
+	useContextPackagesQuery,
+	useOrganizationContextPackageQuery,
+} from "~/cloud/queries/contexts";
 import { useCloudCouponsQuery } from "~/cloud/queries/coupons";
 import { BillingDetails } from "~/components/BillingDetails";
 import { Form } from "~/components/Form";
 import { PaymentDetails } from "~/components/PaymentDetails";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { RadioSelect } from "~/components/RadioSelect";
 import { Section } from "~/components/Section";
+import { Spacer } from "~/components/Spacer";
+import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
-import { CloudCoupon } from "~/types";
+import { ContextPlanCard } from "~/screens/surrealist/components/ContextPlanCard";
+import type { CloudCoupon } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import classes from "../style.module.scss";
-import { OrganizationTabProps } from "../types";
+import type { OrganizationTabProps } from "../types";
 
 export function OrganizationBillingTab({ organization }: OrganizationTabProps) {
 	return (
@@ -69,6 +99,7 @@ function ExternalBillingConfiguration({ organization }: OrganizationTabProps) {
 
 function InternalBillingConfiguration({ organization }: OrganizationTabProps) {
 	const client = useQueryClient();
+	const showContexts = useHasCloudFeature("create_memory_store");
 	const couponQuery = useCloudCouponsQuery(organization.id);
 	const [coupon, setCoupon] = useInputState("");
 
@@ -121,16 +152,18 @@ function InternalBillingConfiguration({ organization }: OrganizationTabProps) {
 				description="Manage organisation payment and billing information"
 			>
 				<SimpleGrid
+					spacing="xl"
 					cols={{
 						xs: 1,
 						md: 2,
 					}}
-					spacing="xl"
 				>
 					<BillingDetails organisation={organization} />
 					<PaymentDetails organisation={organization} />
 				</SimpleGrid>
 			</Section>
+
+			{showContexts && <SpectronContextSection organization={organization} />}
 
 			<Section
 				title="Discount Codes"
@@ -236,6 +269,246 @@ function InternalBillingConfiguration({ organization }: OrganizationTabProps) {
 				)}
 			</Section>
 		</>
+	);
+}
+
+function SpectronContextSection({ organization }: OrganizationTabProps) {
+	const { data: availablePackages, isPending: packagesPending } = useContextPackagesQuery();
+	const { data: orgPackages, isSuccess: orgPackageLoaded } = useOrganizationContextPackageQuery(
+		organization.id,
+	);
+
+	const [cancelMethod, setCancelMethod] = useState("");
+	const cancelMutation = useCancelContextPackageMutation(organization.id);
+	const [cancelModalOpen, cancelModalHandlers] = useDisclosure(false);
+
+	const activeOrgPackage = orgPackages?.find((p) => !p.disabled_at);
+	const hasActivePackage = orgPackageLoaded && !!activeOrgPackage;
+
+	const activePackageDetails = availablePackages?.find(
+		(p) => p.id === activeOrgPackage?.package_id,
+	);
+
+	const planPath = `/o/${organization.id}/contexts/plan`;
+
+	const confirmCancel = useStable(async (cancelAtPeriodEnd: boolean) => {
+		try {
+			await cancelMutation.mutateAsync({ cancelAtPeriodEnd });
+			cancelModalHandlers.close();
+
+			showInfo({
+				title: "Package cancelled",
+				subtitle: cancelAtPeriodEnd
+					? "Your Spectron plan will end at the end of the current billing period"
+					: "Your Spectron context package has been cancelled",
+			});
+		} catch (_err: unknown) {
+			showErrorNotification({
+				title: "Failed to cancel package",
+				content: "Something went wrong while cancelling your package",
+			});
+		}
+	});
+
+	return (
+		<Section
+			title="Spectron plan"
+			description="Manage your Spectron context package subscription"
+		>
+			{hasActivePackage && activePackageDetails ? (
+				<SimpleGrid
+					spacing="xl"
+					cols={{ base: 1, md: 2 }}
+				>
+					<ContextPlanCard pkg={activePackageDetails} />
+					<Stack gap="xs">
+						<Link
+							href={planPath}
+							style={{ display: "block" }}
+						>
+							<PlanAction
+								name="Upgrade or change plan"
+								description="Upgrade or change your Spectron plan"
+								icon={iconUpload}
+								w="100%"
+							/>
+						</Link>
+						<PlanAction
+							name="Cancel subscription"
+							description="End your current Spectron subscription"
+							icon={iconClose}
+							disabled={!hasActivePackage}
+							onClick={cancelModalHandlers.open}
+						/>
+						<Anchor
+							href="https://surrealdb.com/pricing?product=spectron"
+							variant="glow"
+						>
+							<PlanAction
+								name="View pricing page"
+								description="Visit the pricing page for detailed information"
+								icon={iconDollar}
+								w="100%"
+							/>
+						</Anchor>
+					</Stack>
+				</SimpleGrid>
+			) : (
+				<Skeleton visible={packagesPending || !orgPackageLoaded}>
+					<Paper
+						p="xl"
+						className={classes.spectronCard}
+						style={{
+							// TODO Remove when Skeleton is fixed in UI Kit
+							visibility: packagesPending || !orgPackageLoaded ? "hidden" : "visible",
+						}}
+					>
+						<Stack gap="sm">
+							<PrimaryTitle>Get started with Spectron</PrimaryTitle>
+							<Text maw={560}>
+								Memory without the memory tax. Knowledge graphs, entity extraction,
+								temporal facts, and hybrid retrieval - built into the database, not
+								bolted on top.
+							</Text>
+							<Group mt="md">
+								<Link href={planPath}>
+									<Button variant="gradient">Select a plan</Button>
+								</Link>
+								<Anchor
+									href="https://surrealdb.com/platform/spectron"
+									variant="glow"
+								>
+									<Button rightSection={<Icon path={iconOpen} />}>
+										Learn more
+									</Button>
+								</Anchor>
+							</Group>
+							<Image
+								src={pictoSpectron}
+								className={classes.spectronImage}
+							/>
+							<Image
+								src={glow}
+								className={classes.spectronGlow}
+							/>
+						</Stack>
+					</Paper>
+				</Skeleton>
+			)}
+
+			<Modal
+				opened={cancelModalOpen}
+				onClose={cancelModalHandlers.close}
+				trapFocus={false}
+				size="md"
+				title={<PrimaryTitle fz={20}>Cancel your subscription</PrimaryTitle>}
+			>
+				<Stack gap="xl">
+					<Text>
+						You are about to cancel your Spectron plan and lose access to all Spectron
+						features. Are you sure you want to continue?
+					</Text>
+					<RadioSelect
+						value={cancelMethod}
+						onChange={setCancelMethod}
+						data={[
+							{
+								label: "Cancel at end of billing period",
+								value: "cycle",
+							},
+							{ label: "Cancel immediately", value: "immediately" },
+						]}
+						radioProps={{
+							color: "violet",
+							c: "bright",
+						}}
+					/>
+					<Group>
+						<Button
+							onClick={cancelModalHandlers.close}
+							disabled={cancelMutation.isPending}
+						>
+							Keep subscription
+						</Button>
+						<Spacer />
+						<Button
+							color="red"
+							variant="filled"
+							disabled={!cancelMethod}
+							onClick={() => confirmCancel(cancelMethod === "cycle")}
+							loading={cancelMutation.isPending}
+						>
+							Yes, cancel subscription
+						</Button>
+					</Group>
+				</Stack>
+			</Modal>
+		</Section>
+	);
+}
+
+interface PlanActionProps extends BoxProps {
+	name: string;
+	description: string;
+	icon: string;
+	disabled?: boolean;
+	onClick?: () => void;
+}
+
+function PlanAction({ name, description, icon, onClick, disabled, ...props }: PlanActionProps) {
+	return (
+		<UnstyledButton
+			onClick={onClick}
+			disabled={disabled}
+			{...props}
+		>
+			<Anchor
+				variant="glow"
+				c="var(--mantine-color-text)"
+				component="span"
+			>
+				<Paper
+					px="md"
+					py="sm"
+				>
+					<Group
+						wrap="nowrap"
+						gap="md"
+					>
+						<ThemeIcon
+							color="obsidian"
+							variant="light"
+							size="lg"
+						>
+							<Icon path={icon} />
+						</ThemeIcon>
+						<Box
+							flex={1}
+							miw={0}
+						>
+							<Text
+								c="bright"
+								fw={600}
+							>
+								{name}
+							</Text>
+							<Text
+								fz="sm"
+								truncate
+							>
+								{description}
+							</Text>
+						</Box>
+						<Icon
+							path={iconChevronRight}
+							size="sm"
+							c="bright"
+							style={{ opacity: 0.4 }}
+						/>
+					</Group>
+				</Paper>
+			</Anchor>
+		</UnstyledButton>
 	);
 }
 

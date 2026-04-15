@@ -18,6 +18,9 @@ export interface PricingCardProps {
 	onClick?: (config: PricingConfigBase) => void;
 }
 
+/**
+ * @deprecated in favour of PlanCard
+ */
 export function PricingCard({
 	config,
 	state,

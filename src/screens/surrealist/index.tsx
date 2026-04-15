@@ -20,7 +20,9 @@ import { CreateOrganizationPage } from "./pages/CreateOrganization";
 import { NewEmbedPage } from "./pages/NewEmbed";
 import { OrganizationPage } from "./pages/Organization";
 import { OrganisationSidebar } from "./pages/Organization/sidebar";
+import { OrganizationContextCheckoutPage } from "./pages/OrganizationContextCheckout";
 import { OrganizationContextDeployPage } from "./pages/OrganizationContextDeploy";
+import { OrganizationContextPlanPage } from "./pages/OrganizationContextPlan";
 import { OrganizationDeployPage } from "./pages/OrganizationDeploy";
 import { OverviewPage } from "./pages/Overview";
 import { ReferralPage } from "./pages/Referral";
@@ -44,6 +46,8 @@ const NewEmbedPageLazy = memo(NewEmbedPage);
 const OrganizationPageLazy = memo(OrganizationPage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
 const OrganizationContextDeployPageLazy = memo(OrganizationContextDeployPage);
+const OrganizationContextPlanPageLazy = memo(OrganizationContextPlanPage);
+const OrganizationContextCheckoutPageLazy = memo(OrganizationContextCheckoutPage);
 const SupportPlansPageLazy = memo(SupportPlansPage);
 const ReferralPageLazy = memo(ReferralPage);
 const SupportPageLazy = memo(SupportPage);
@@ -241,6 +245,34 @@ export function SurrealistScreen() {
 														organizationId={organization}
 													/>
 													<OrganizationContextDeployPageLazy
+														id={organization}
+													/>
+												</>
+											)}
+										</Route>
+
+										{/* Organization context plan selection page */}
+										<Route path="/o/:organization/contexts/plan">
+											{({ organization }) => (
+												<>
+													<OrganisationSidebar
+														organizationId={organization}
+													/>
+													<OrganizationContextPlanPageLazy
+														id={organization}
+													/>
+												</>
+											)}
+										</Route>
+
+										{/* Organization context checkout page */}
+										<Route path="/o/:organization/contexts/checkout">
+											{({ organization }) => (
+												<>
+													<OrganisationSidebar
+														organizationId={organization}
+													/>
+													<OrganizationContextCheckoutPageLazy
 														id={organization}
 													/>
 												</>
