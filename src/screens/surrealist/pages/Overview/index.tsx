@@ -171,7 +171,9 @@ export function OverviewPage() {
 											onClick={signIn}
 											mt="sm"
 										>
-											<PrimaryTitle>Deploy and manage memory</PrimaryTitle>
+											<PrimaryTitle>
+												Get started with SurrealDB Cloud
+											</PrimaryTitle>
 											<Text>
 												Create scalable instances and contexts, collaborate
 												with your team, and manage your infrastructure from
