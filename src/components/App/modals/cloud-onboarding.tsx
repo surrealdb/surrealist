@@ -4,153 +4,140 @@ import {
 	Button,
 	Center,
 	Checkbox,
+	Container,
 	Group,
-	Loader,
+	Modal,
 	Select,
 	Stack,
 	Text,
 	TextInput,
 } from "@mantine/core";
 import { Icon, iconCheck, iconChevronRight, iconErrorCircle, iconSurreal } from "@surrealdb/ui";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useImmer } from "use-immer";
 import glowUrl from "~/assets/images/glow.png";
 import { fetchAPI } from "~/cloud/api";
-import { invalidateSession } from "~/cloud/api/auth";
-import { AuthGuard } from "~/components/AuthGuard";
+import {
+	Condition,
+	Question,
+	useCloudFormQuery,
+	useCloudTCPPQuery,
+} from "~/cloud/queries/onboarding";
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession, useIsAuthenticated, useIsCloudEnabled } from "~/hooks/cloud";
 import { useCheckbox } from "~/hooks/events";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useAuthentication } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import { showErrorNotification } from "~/util/helpers";
-import classes from "./style.module.scss";
+import classes from "./cloud-onboarding.module.scss";
 
-interface Condition {
-	name: string;
-	url: string;
-}
-
-type Question =
-	| {
-			data: { min_length?: number; max_length?: number };
-			id: number;
-			question: string;
-			type: "text";
-	  }
-	| {
-			data: { options: { order: number; text: string; value: string }[] };
-			id: number;
-			question: string;
-			type: "option";
-	  };
-
-type OnboardingStep = "loading" | "terms" | "about";
+type OnboardingStep = "terms" | "about";
 
 const REQUIRED_QUESTIONS = [1, 2];
 
-export function SigninPage() {
-	const [, navigate] = useAbsoluteLocation();
+export function CloudOnboardingModal() {
+	const cloudEnabled = useIsCloudEnabled();
+	const hasCloudSession = useHasCloudSession();
 	const isAuthenticated = useIsAuthenticated();
 	const onboardingRequired = useCloudStore((s) => s.onboardingRequired);
 
-	const [step, setStep] = useState<OnboardingStep>("loading");
-	const [conditions, setConditions] = useState<Condition[]>([]);
-	const [questions, setQuestions] = useState<Question[]>([]);
+	const { data: conditionsData, isPending: isLoadingConditions } = useCloudTCPPQuery();
+	const { data: questionsData, isPending: isLoadingQuestions } = useCloudFormQuery();
 
-	useEffect(() => {
-		if (!isAuthenticated) return;
+	const conditions = conditionsData ?? [];
+	const questions = questionsData ?? [];
 
-		if (!onboardingRequired) {
-			navigate("/overview");
-			return;
-		}
+	const opened =
+		!isLoadingConditions &&
+		!isLoadingQuestions &&
+		cloudEnabled &&
+		isAuthenticated &&
+		hasCloudSession &&
+		onboardingRequired;
 
-		fetchAPI<Condition[]>("/tc-pp")
-			.then((result) => {
-				setConditions(result);
-				setStep("terms");
-			})
-			.catch((err) => {
-				showErrorNotification({
-					title: "Failed to load terms",
-					content: err.message,
-				});
-			});
-	}, [isAuthenticated, onboardingRequired]);
-
-	if (!isAuthenticated) {
-		return <AuthGuard loading />;
-	}
-
-	if (step === "loading") {
-		return (
-			<Center flex={1}>
-				<Loader size="lg" />
-			</Center>
-		);
-	}
+	const [step, setStep] = useState<OnboardingStep>("terms");
 
 	const handleTermsAccepted = async () => {
-		const result = await fetchAPI<Question[]>("/user/form");
-
-		setQuestions(result);
 		setStep("about");
 	};
 
 	const handleAboutCompleted = () => {
 		useCloudStore.getState().setOnboardingRequired(false);
-		navigate("/overview");
 	};
 
 	return (
-		<Box className={classes.root}>
-			<Box className={classes.formColumn}>
-				<Box className={classes.formContent}>
-					{step === "terms" && (
-						<TermsStep
-							conditions={conditions}
-							onAccepted={handleTermsAccepted}
+		<Modal
+			opened={opened}
+			onClose={() => {}}
+			fullScreen
+			padding={0}
+			withCloseButton={false}
+			closeOnClickOutside={false}
+			closeOnEscape={false}
+			trapFocus
+			lockScroll
+			zIndex={1100}
+			transitionProps={{
+				transition: "fade-up",
+				duration: 500,
+			}}
+			classNames={{
+				content: classes.modalContent,
+				body: classes.modalBody,
+			}}
+		>
+			<Box className={classes.root}>
+				<Center className={classes.formColumn}>
+					<Container size="sm">
+						{step === "terms" && (
+							<TermsStep
+								conditions={conditions}
+								onAccepted={handleTermsAccepted}
+							/>
+						)}
+						{step === "about" && (
+							<AboutStep
+								questions={questions}
+								onCompleted={handleAboutCompleted}
+							/>
+						)}
+					</Container>
+				</Center>
+
+				<Box
+					className={classes.brandColumn}
+					style={{ "--glow-image": `url(${glowUrl})` }}
+					visibleFrom="lg"
+				>
+					<Box className={classes.brandGlow} />
+					<Stack
+						align="center"
+						gap="xl"
+						pos="relative"
+					>
+						<Icon
+							path={iconSurreal}
+							className={classes.brandLogo}
+							c="bright"
 						/>
-					)}
-					{step === "about" && (
-						<AboutStep
-							questions={questions}
-							onCompleted={handleAboutCompleted}
-						/>
-					)}
+						<Text
+							className={classes.brandTagline}
+							fz="xl"
+							fw={600}
+							c="white"
+						>
+							The context layer for AI agents. The only vertical stack from storage to
+							memory.
+						</Text>
+					</Stack>
 				</Box>
 			</Box>
-
-			<Box
-				className={classes.brandColumn}
-				style={{ "--glow-image": `url(${glowUrl})` }}
-			>
-				<Box className={classes.brandGlow} />
-				<Stack
-					align="center"
-					gap="xl"
-					pos="relative"
-				>
-					<Icon
-						path={iconSurreal}
-						className={classes.brandLogo}
-					/>
-					<Text
-						className={classes.brandTagline}
-						fz="xl"
-						fw={500}
-						c="white"
-					>
-						The ultimate multi-model database for tomorrow's applications
-					</Text>
-				</Stack>
-			</Box>
-		</Box>
+		</Modal>
 	);
 }
 
@@ -164,12 +151,13 @@ function TermsStep({ conditions, onAccepted }: TermsStepProps) {
 	const [termsChecked, setTermsChecked] = useState(false);
 	const [newsChecked, setNewsChecked] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const { signOut } = useAuthentication();
 
 	const updateTermsChecked = useCheckbox(setTermsChecked);
 	const updateNewsChecked = useCheckbox(setNewsChecked);
 
 	const declineTerms = useStable(() => {
-		invalidateSession();
+		signOut();
 		navigate("/overview");
 	});
 
@@ -297,6 +285,7 @@ function AboutStep({ questions, onCompleted }: AboutStepProps) {
 					>
 						We would love to know more about you and your use case!
 					</Text>
+					{(() => console.log("Q", questions))() ?? null}
 					{questions.map((question) => {
 						if (question.type === "text") {
 							return (
@@ -363,5 +352,3 @@ function AboutStep({ questions, onCompleted }: AboutStepProps) {
 		</>
 	);
 }
-
-export default SigninPage;

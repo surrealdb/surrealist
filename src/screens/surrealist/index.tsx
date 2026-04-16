@@ -149,6 +149,11 @@ export function SurrealistScreen() {
 									<OverviewPageLazy />
 								</Route>
 
+								{/* Legacy sign-in URL: onboarding is a global modal */}
+								<Route path="/signin">
+									<Redirect to="/overview" />
+								</Route>
+
 								{/* New embed page */}
 								<Route path="/mini/new">
 									<GlobalSidebar />

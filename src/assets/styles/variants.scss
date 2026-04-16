@@ -42,3 +42,7 @@
 		border-color: var(--mantine-color-obsidian-2) !important;
 	}
 }
+
+.mantine-Modal-root[data-full-screen]:is([data-variant="glass"], [data-variant="surreal"]) .mantine-Modal-content {
+	width: 100dvw;
+}

@@ -94,7 +94,6 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 
 		const promptTerms = !result.terms_accepted_at;
 
-		// commented out for testing
 		// if (promptTerms) {
 		useCloudStore.getState().setOnboardingRequired(true);
 		// }
