@@ -1,4 +1,4 @@
-import { Box, Checkbox, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { Badge, Box, Checkbox, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { Label } from "~/components/Label";
@@ -43,22 +43,27 @@ export function PlanCard({
 			h="100%"
 			p="xl"
 			className={clsx(disabled && classes.planDisabled)}
-			// withBorder
-			// style={{
-			// 	borderColor: isActive ? "var(--surreal-focus-outline)" : undefined,
-			// 	cursor: isActive ? "default" : "pointer",
-			// }}
 		>
 			<Stack h="100%">
 				<Group>
 					<Box flex={1}>
-						<Text
-							c="bright"
-							fw={600}
-							fz="h3"
-						>
-							{name}
-						</Text>
+						<Group>
+							<Text
+								c="bright"
+								fw={600}
+								fz="h3"
+							>
+								{name}
+							</Text>
+							{isActive && (
+								<Badge
+									color="violet"
+									variant="light"
+								>
+									Active
+								</Badge>
+							)}
+						</Group>
 
 						<Text>{description}</Text>
 					</Box>
