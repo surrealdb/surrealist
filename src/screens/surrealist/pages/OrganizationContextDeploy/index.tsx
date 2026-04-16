@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Box,
 	Button,
 	Group,
@@ -12,6 +13,7 @@ import {
 import { Icon, iconCheck } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
 import { Redirect } from "wouter";
+import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
 import { useCreateContextMutation } from "~/cloud/mutations/spectron";
 import { useOrganizationContextPackageQuery } from "~/cloud/queries/contexts";
 import {
@@ -58,6 +60,8 @@ function PageContent({ organisation }: PageContentProps) {
 	const allRegions = useCloudStore((s) => s.regions);
 	const createContextMutation = useCreateContextMutation(organisation.id);
 
+	const isOrgOwner = hasOrganizationRoles(organisation, ORG_ROLES_OWNER, true);
+
 	const [name, setName] = useState("");
 	const [region, setRegion] = useState<string | null>(null);
 	const [isDeploying, setIsDeploying] = useState(false);
@@ -68,6 +72,8 @@ function PageContent({ organisation }: PageContentProps) {
 
 	const activeOrgPackage = orgPackages?.find((p) => !p.disabled_at);
 	const hasOrgPackage = orgPackageLoaded && !!activeOrgPackage;
+
+	const blockedWithoutPlan = orgPackageLoaded && !hasOrgPackage && !isOrgOwner;
 
 	const regionSet = new Set(organisation?.plan.regions ?? []);
 	const supportedRegions = allRegions.filter((r) => regionSet.has(r.slug));
@@ -84,7 +90,7 @@ function PageContent({ organisation }: PageContentProps) {
 	const canDeploy = name.trim().length > 0 && name.length <= 30 && region;
 
 	const handleDeploy = useStable(async () => {
-		if (!canDeploy || !region || isDeploying) return;
+		if (!canDeploy || !region || isDeploying || blockedWithoutPlan) return;
 
 		if (organisation.resources_locked) {
 			openResourcesLockedModal(organisation);
@@ -112,7 +118,7 @@ function PageContent({ organisation }: PageContentProps) {
 		}
 	});
 
-	if (orgPackageLoaded && !hasOrgPackage) {
+	if (orgPackageLoaded && !hasOrgPackage && isOrgOwner) {
 		const redirect = encodeURIComponent(`/o/${organisation.id}/contexts/deploy`);
 
 		return <Redirect to={`/o/${organisation.id}/contexts/plan?redirect=${redirect}`} />;
@@ -161,6 +167,17 @@ function PageContent({ organisation }: PageContentProps) {
 						</Box>
 
 						<Box my="xl">
+							{blockedWithoutPlan && (
+								<Alert
+									mb="xl"
+									color="orange"
+									title="Spectron plan required"
+								>
+									This organisation does not have an active Spectron plan. Only
+									the organisation owner can subscribe to a plan. Contact your
+									organisation owner to continue.
+								</Alert>
+							)}
 							<SimpleGrid
 								spacing={{ base: 36, xl: 64 }}
 								cols={{ base: 1, xl: 2 }}
@@ -219,7 +236,7 @@ function PageContent({ organisation }: PageContentProps) {
 							<Group mt={36}>
 								<Button
 									variant="gradient"
-									disabled={!canDeploy}
+									disabled={!canDeploy || blockedWithoutPlan}
 									loading={isDeploying}
 									onClick={handleDeploy}
 								>

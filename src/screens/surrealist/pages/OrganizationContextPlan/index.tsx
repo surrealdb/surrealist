@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Box,
 	Button,
 	ScrollArea,
@@ -13,6 +14,7 @@ import { HoverGlow, Icon, iconArrowUpRight } from "@surrealdb/ui";
 import { useState } from "react";
 import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
+import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
 import {
 	useContextPackagesQuery,
 	useOrganizationContextPackageQuery,
@@ -57,6 +59,8 @@ function PageContent({ organisation }: PageContentProps) {
 	const params = useSearchParams();
 	const redirect = params.redirect;
 
+	const isOrgOwner = hasOrganizationRoles(organisation, ORG_ROLES_OWNER, true);
+
 	const [billingPeriod, setBillingPeriod] = useState<"month" | "year">("month");
 
 	const { data: availablePackages, isPending: packagesPending } = useContextPackagesQuery();
@@ -68,7 +72,7 @@ function PageContent({ organisation }: PageContentProps) {
 	const activePackageId = orgPackageLoaded ? activeOrgPackage?.package_id : undefined;
 
 	const handleSelect = (packageId: string) => {
-		if (packageId === activePackageId) return;
+		if (!isOrgOwner || packageId === activePackageId) return;
 
 		const checkoutPath = `/o/${organisation.id}/contexts/checkout?package=${packageId}`;
 		const fullPath = redirect
@@ -109,16 +113,31 @@ function PageContent({ organisation }: PageContentProps) {
 										label: organisation.name,
 										href: `/o/${organisation.id}`,
 									},
-									{
-										label: "Billing",
-										href: `/o/${organisation.id}/billing`,
-									},
+									...(isOrgOwner
+										? [
+												{
+													label: "Billing",
+													href: `/o/${organisation.id}/billing`,
+												},
+											]
+										: []),
 									{ label: "Select plan" },
 								]}
 							/>
 						</Box>
 
 						<Box my="xl">
+							{!isOrgOwner && (
+								<Alert
+									mb="xl"
+									color="orange"
+									title="Owner access required"
+								>
+									Only the organisation owner can subscribe to a Spectron plan and
+									open checkout. Contact your organisation owner if you need a
+									plan for this organisation.
+								</Alert>
+							)}
 							<Stack
 								align="center"
 								gap={0}
@@ -163,14 +182,15 @@ function PageContent({ organisation }: PageContentProps) {
 								>
 									{displayedPackages.map((pkg) => {
 										const isCurrent = pkg.id === activePackageId;
+										const isDisabled = isCurrent || !isOrgOwner;
 
 										return (
 											<UnstyledButton
 												key={pkg.id}
-												disabled={isCurrent}
+												disabled={isDisabled}
 												onClick={() => handleSelect(pkg.id)}
 												renderRoot={
-													isCurrent
+													isDisabled
 														? undefined
 														: (props) => <HoverGlow {...props} />
 												}
@@ -182,7 +202,7 @@ function PageContent({ organisation }: PageContentProps) {
 														<Button
 															mt="md"
 															size="lg"
-															disabled={isCurrent}
+															disabled={isDisabled}
 														>
 															Choose plan
 														</Button>

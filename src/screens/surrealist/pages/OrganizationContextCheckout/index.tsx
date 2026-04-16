@@ -17,8 +17,10 @@ import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
 import {
 	getBillingProviderAction,
+	hasOrganizationRoles,
 	isBillingManaged,
 	isOrganisationBillable,
+	ORG_ROLES_OWNER,
 } from "~/cloud/helpers";
 import { useAssignContextPackageMutation } from "~/cloud/mutations/spectron";
 import { useContextPackagesQuery } from "~/cloud/queries/contexts";
@@ -110,6 +112,15 @@ function PageContent({ organisation }: PageContentProps) {
 
 	if (!packageId) {
 		return <Redirect to={`/o/${organisation.id}/contexts/plan`} />;
+	}
+
+	const isOrgOwner = hasOrganizationRoles(organisation, ORG_ROLES_OWNER, true);
+
+	if (!isOrgOwner) {
+		const planPath = redirect
+			? `/o/${organisation.id}/contexts/plan?redirect=${encodeURIComponent(redirect)}`
+			: `/o/${organisation.id}/contexts/plan`;
+		return <Redirect to={planPath} />;
 	}
 
 	return (
