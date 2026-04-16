@@ -38,14 +38,17 @@ export interface OrganizationContextDeployPageProps {
 
 export function OrganizationContextDeployPage({ id }: OrganizationContextDeployPageProps) {
 	const organisationsQuery = useCloudOrganizationsQuery();
-	const { data: organisation } = useCloudOrganizationQuery(id);
+	const { data: organisation, isPending: orgDetailPending } = useCloudOrganizationQuery(id);
+	const { isPending: packageQueryPending } = useOrganizationContextPackageQuery(id);
 
 	if (organisationsQuery.isSuccess && !organisation) {
 		return <Redirect to="/overview" />;
 	}
 
 	return (
-		<AuthGuard loading={organisationsQuery.isLoading}>
+		<AuthGuard
+			loading={organisationsQuery.isLoading || orgDetailPending || packageQueryPending}
+		>
 			<PageContent organisation={organisation as CloudOrganization} />
 		</AuthGuard>
 	);
@@ -66,14 +69,13 @@ function PageContent({ organisation }: PageContentProps) {
 	const [region, setRegion] = useState<string | null>(null);
 	const [isDeploying, setIsDeploying] = useState(false);
 
-	const { data: orgPackages, isSuccess: orgPackageLoaded } = useOrganizationContextPackageQuery(
-		organisation.id,
-	);
+	const { data: orgPackages, isSuccess: orgPackageQuerySuccess } =
+		useOrganizationContextPackageQuery(organisation.id);
 
 	const activeOrgPackage = orgPackages?.find((p) => !p.disabled_at);
-	const hasOrgPackage = orgPackageLoaded && !!activeOrgPackage;
+	const hasOrgPackage = orgPackageQuerySuccess && !!activeOrgPackage;
 
-	const blockedWithoutPlan = orgPackageLoaded && !hasOrgPackage && !isOrgOwner;
+	const blockedWithoutPlan = orgPackageQuerySuccess && !hasOrgPackage && !isOrgOwner;
 
 	const regionSet = new Set(organisation?.plan.regions ?? []);
 	const supportedRegions = allRegions.filter((r) => regionSet.has(r.slug));
@@ -118,7 +120,7 @@ function PageContent({ organisation }: PageContentProps) {
 		}
 	});
 
-	if (orgPackageLoaded && !hasOrgPackage && isOrgOwner) {
+	if (orgPackageQuerySuccess && !hasOrgPackage && isOrgOwner) {
 		const redirect = encodeURIComponent(`/o/${organisation.id}/contexts/deploy`);
 
 		return <Redirect to={`/o/${organisation.id}/contexts/plan?redirect=${redirect}`} />;

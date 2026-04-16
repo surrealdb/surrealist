@@ -82,6 +82,7 @@ export function useOrganizationContextPackageQuery(organization?: string) {
 	return useQuery({
 		queryKey: ["cloud", "context-packages", { org: organization }],
 		enabled: !!organization && isAuthenticated,
+		staleTime: 30_000,
 		queryFn: async () => {
 			return fetchAPI<OrganizationContextPackage[]>(
 				`/organizations/${organization}/spectron_context_packages`,
