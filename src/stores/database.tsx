@@ -15,6 +15,7 @@ export type DatabaseStore = {
 	latestError: string;
 	isSyncingSchema: boolean;
 	isQueryActive: boolean;
+	queryTimings: Record<string, { startedAt: number; endedAt: number | null }>;
 	isGraphqlQueryActive: boolean;
 	consoleOutput: string[];
 	connectionSchema: ConnectionSchema;
@@ -23,7 +24,7 @@ export type DatabaseStore = {
 	graphqlResponse: Record<string, GraphqlResponse>;
 	diagnostics: DiagnosticWithTime[];
 
-	setQueryActive: (isQueryActive: boolean) => void;
+	setQueryActive: (tab: string, isQueryActive: boolean) => void;
 	setGraphqlQueryActive: (isQueryActive: boolean) => void;
 	clearSchema: () => void;
 	prepareServe: () => void;
@@ -51,6 +52,7 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	latestError: "",
 	isSyncingSchema: false,
 	isQueryActive: false,
+	queryTimings: {},
 	isGraphqlQueryActive: false,
 	consoleOutput: [],
 	connectionSchema: createConnectionSchema(),
@@ -59,9 +61,18 @@ export const useDatabaseStore = create<DatabaseStore>((set) => ({
 	graphqlResponse: {},
 	diagnostics: [],
 
-	setQueryActive: (isQueryActive) =>
-		set(() => ({
+	setQueryActive: (tab, isQueryActive) =>
+		set((state) => ({
 			isQueryActive,
+			queryTimings: {
+				...state.queryTimings,
+				[tab]: isQueryActive
+					? { startedAt: performance.now(), endedAt: null }
+					: {
+							startedAt: state.queryTimings[tab]?.startedAt ?? 0,
+							endedAt: performance.now(),
+						},
+			},
 		})),
 
 	setGraphqlQueryActive: (isGraphqlQueryActive) =>

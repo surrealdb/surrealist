@@ -501,7 +501,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 	}
 
 	try {
-		setQueryActive(true);
+		setQueryActive(id, true);
 
 		let liveIndexes: number[];
 
@@ -579,7 +579,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			content: err,
 		});
 	} finally {
-		setQueryActive(false);
+		setQueryActive(id, false);
 	}
 }
 
