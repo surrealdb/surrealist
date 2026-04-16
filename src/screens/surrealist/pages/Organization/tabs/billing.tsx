@@ -89,8 +89,10 @@ function ExternalBillingConfiguration({ organization }: OrganizationTabProps) {
 					mb="xl"
 					icon={<Icon path={iconCreditCard} />}
 				>
-					The billing for this organisation is managed externally.{" "}
-					{getBillingProviderAction(organization)}
+					<Text className="selectable">
+						The billing for this organisation is managed externally.{" "}
+						{getBillingProviderAction(organization)}
+					</Text>
 				</Alert>
 			</SimpleGrid>
 		</Section>
@@ -209,6 +211,7 @@ function InternalBillingConfiguration({ organization }: OrganizationTabProps) {
 										<Table.Td
 											c="bright"
 											td={isExpired ? "line-through" : undefined}
+											className="selectable"
 										>
 											{coupon.name}
 										</Table.Td>
@@ -229,7 +232,10 @@ function InternalBillingConfiguration({ organization }: OrganizationTabProps) {
 													wrap="nowrap"
 													gap="xs"
 												>
-													<Text c="bright">
+													<Text
+														c="bright"
+														className="selectable"
+													>
 														$
 														{(coupon.amount_remaining / 100).toFixed(2)}
 													</Text>
@@ -361,7 +367,10 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 					>
 						<Stack gap="sm">
 							<PrimaryTitle>Get started with Spectron</PrimaryTitle>
-							<Text maw={560}>
+							<Text
+								maw={560}
+								className="selectable"
+							>
 								Memory without the memory tax. Knowledge graphs, entity extraction,
 								temporal facts, and hybrid retrieval - built into the database, not
 								bolted on top.
@@ -400,7 +409,7 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 				title={<PrimaryTitle fz={20}>Cancel your subscription</PrimaryTitle>}
 			>
 				<Stack gap="xl">
-					<Text>
+					<Text className="selectable">
 						You are about to cancel your Spectron plan and lose access to all Spectron
 						features. Are you sure you want to continue?
 					</Text>
@@ -491,6 +500,7 @@ function PlanAction({ name, description, icon, onClick, disabled, ...props }: Pl
 							<Text
 								fz="sm"
 								truncate
+								className="selectable"
 							>
 								{description}
 							</Text>

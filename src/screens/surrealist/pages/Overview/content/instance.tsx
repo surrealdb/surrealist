@@ -89,7 +89,10 @@ export function StartInstance({
 									path={connection ? USER_ICONS[connection.icon] : iconCloud}
 								/>
 							</ThemeIcon>
-							<Stack gap="xs">
+							<Stack
+								gap="xs"
+								className="selectable"
+							>
 								<Group>
 									<Text
 										c="bright"

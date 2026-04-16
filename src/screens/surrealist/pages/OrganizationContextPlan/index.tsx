@@ -133,9 +133,11 @@ function PageContent({ organisation }: PageContentProps) {
 									color="orange"
 									title="Owner access required"
 								>
-									Only the organisation owner can subscribe to a Spectron plan and
-									open checkout. Contact your organisation owner if you need a
-									plan for this organisation.
+									<Text className="selectable">
+										Only the organisation owner can subscribe to a Spectron plan
+										and open checkout. Contact your organisation owner if you
+										need a plan for this organisation.
+									</Text>
 								</Alert>
 							)}
 							<Stack
@@ -148,7 +150,12 @@ function PageContent({ organisation }: PageContentProps) {
 								>
 									Plans and pricing
 								</PrimaryTitle>
-								<Text fz="lg">Choose the Spectron plan that's right for you</Text>
+								<Text
+									fz="lg"
+									className="selectable"
+								>
+									Choose the Spectron plan that's right for you
+								</Text>
 								<SegmentedControl
 									mt="xl"
 									size="md"
@@ -219,7 +226,9 @@ function PageContent({ organisation }: PageContentProps) {
 							align="center"
 							mt={36}
 						>
-							<Text>Looking for more pricing options and information?</Text>
+							<Text className="selectable">
+								Looking for more pricing options and information?
+							</Text>
 							<a
 								href="https://surrealdb.com/pricing?product=spectron"
 								target="_blank"

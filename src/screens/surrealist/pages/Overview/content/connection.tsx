@@ -152,7 +152,10 @@ export function StartConnection({
 										<Group gap="xs">{labels}</Group>
 									)}
 								</Group>
-								<Text truncate>
+								<Text
+									truncate
+									className="selectable"
+								>
 									{isSandbox ? "Your personal offline playground" : target}
 								</Text>
 							</Stack>

@@ -161,6 +161,7 @@ export function OrganizationInstancesTab({ organization }: OrganizationTabProps)
 						<Text
 							fz="sm"
 							maw={360}
+							className="selectable"
 						>
 							Deploy your first SurrealDB Cloud instance to start building with a
 							fully managed database.

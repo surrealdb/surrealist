@@ -151,6 +151,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 							<Text
 								c="bright"
 								fw={500}
+								className="selectable"
 							>
 								{cardDescription}
 							</Text>

@@ -46,7 +46,10 @@ export function PlanCard({
 		>
 			<Stack h="100%">
 				<Group>
-					<Box flex={1}>
+					<Box
+						flex={1}
+						className="selectable"
+					>
 						<Group>
 							<Text
 								c="bright"
@@ -71,6 +74,7 @@ export function PlanCard({
 						gap={8}
 						align="center"
 						wrap="nowrap"
+						className="selectable"
 					>
 						<Title
 							order={2}
@@ -97,7 +101,7 @@ export function PlanCard({
 				{contents.map((content) => (
 					<>
 						<Label mt="xl">{content.label}</Label>
-						<Stack>
+						<Stack className="selectable">
 							{content.features.map((feat) => (
 								<Group
 									gap="sm"

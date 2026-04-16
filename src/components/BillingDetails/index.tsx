@@ -58,6 +58,7 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 							<Text
 								c="bright"
 								fw={500}
+								className="selectable"
 							>
 								{billingQuery.data?.Name}
 							</Text>
@@ -78,6 +79,7 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 							<Text
 								c="bright"
 								fw={500}
+								className="selectable"
 							>
 								{billingQuery.data?.Email}
 							</Text>

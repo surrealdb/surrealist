@@ -35,6 +35,7 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 						<Text
 							mt="xs"
 							c="obsidian"
+							className="selectable"
 						>
 							No instance usage data available yet
 						</Text>
@@ -49,11 +50,17 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 										key={i}
 										h={42}
 									>
-										<Table.Td c="bright">{charge.name}</Table.Td>
+										<Table.Td
+											c="bright"
+											className="selectable"
+										>
+											{charge.name}
+										</Table.Td>
 										<Table.Td
 											w={0}
 											pr="md"
 											style={{ textWrap: "nowrap" }}
+											className="selectable"
 										>
 											<Text
 												span
@@ -79,6 +86,7 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 						fz="sm"
 						c="obsidian"
 						mt="sm"
+						className="selectable"
 					>
 						This amount is an estimation, final amounts may vary.
 					</Text>

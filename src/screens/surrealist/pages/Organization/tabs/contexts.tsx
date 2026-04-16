@@ -69,6 +69,7 @@ function ContextCard({
 						<Stack
 							gap="xs"
 							miw={0}
+							className="selectable"
 						>
 							<Group
 								miw={0}
@@ -215,6 +216,7 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 						<Text
 							fz="sm"
 							maw={360}
+							className="selectable"
 						>
 							Create your first Spectron context to add persistent memory and
 							knowledge to your AI applications.

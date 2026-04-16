@@ -1,4 +1,4 @@
-import { Alert, Box, Button, ScrollArea, Stack } from "@mantine/core";
+import { Alert, Box, Button, ScrollArea, Stack, Text } from "@mantine/core";
 import { Icon, iconCreditCard } from "@surrealdb/ui";
 import { Redirect } from "wouter";
 import {
@@ -109,8 +109,10 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 											color="obsidian"
 											title="Organisation terminated"
 										>
-											This organisation has been terminated and is no longer
-											available for provisioning new instances.
+											<Text className="selectable">
+												This organisation has been terminated and is no
+												longer available for provisioning new instances.
+											</Text>
 										</Alert>
 									) : isRestricted ? (
 										<Alert
@@ -118,11 +120,13 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 											title="Organisation restricted"
 											icon={<Icon path={iconCreditCard} />}
 										>
-											This organisation has been restricted due to failed
-											payments. Please update your billing and payment
-											information to restore access. If you believe this is a
-											mistake or need assistance, please use the button below
-											to contact support.
+											<Text className="selectable">
+												This organisation has been restricted due to failed
+												payments. Please update your billing and payment
+												information to restore access. If you believe this
+												is a mistake or need assistance, please use the
+												button below to contact support.
+											</Text>
 											<div>
 												<Button
 													mt="md"

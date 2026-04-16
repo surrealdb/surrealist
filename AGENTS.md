@@ -54,6 +54,18 @@
   inline styles only when necessary (e.g. dynamic values).
 - Never use c="dimmed" or "dimmed" in any other context. Instead use the default text color e.g. omit "c"
 
+## Text selection
+
+The app sets `user-select: none` on `body` (see `src/assets/styles/global.scss`). Most UI therefore cannot be highlighted unless opted in.
+
+**Enable selection** by adding the global class `selectable` to the element that wraps the copyable text (e.g. `className="selectable"` on `Text`, `Stack`, `Group`, `Table.Td`, or `Code` as appropriate). `input`, `textarea`, CodeMirror tooltips, and `[contenteditable]` remain selectable without this class.
+
+**Prefer selectable for** content users may need to copy or quote: personal or account details (names, emails, usernames), organisation or resource identifiers shown as plain text, prices and billing lines, plan or product descriptions and feature lists, alert and helper body copy, API keys and endpoints when shown outside inputs, table cells with data, and breadcrumb labels that represent the current resource (see `PageBreadcrumbs`’ optional `selectable` on items).
+
+**Leave unselectable** chrome and structure: page titles (`PrimaryTitle`), field labels (`Label`, input labels), button labels, navigation tabs, and short UI labels that are not “data”.
+
+When adding shared UI (e.g. cards, `PropertyValue`), apply `selectable` to the value/readout, not to the label column.
+
 ## Tips
 
 - Use `bun run qa` to run the linter and formatter without making changes.
@@ -68,6 +80,7 @@
 - Use Mantine props (`mt`, `fz`, etc.)
 - Use SCSS modules `style.module.scss`
 - Suggest UI Kit for shared components
+- Use `className="selectable"` on copyable text blocks where it helps users
 
 ### Don'ts
 
@@ -76,3 +89,4 @@
 - Reach for inline `style` or one-off CSS when props suffice
 - Rely on inline styles for static styling
 - Implement shared UI only in this repo
+- Mark titles, labels, and purely decorative copy as non-selectable by default (omit `selectable`)

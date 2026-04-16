@@ -134,9 +134,14 @@ curl -X POST ${endpoint}/memories/search \\
 					withCloseButton
 					onClose={handleDismissCreatedKey}
 				>
-					<Text mb="xs">Copy your API key now. It will only be shown once.</Text>
+					<Text
+						mb="xs"
+						className="selectable"
+					>
+						Copy your API key now. It will only be shown once.
+					</Text>
 					<Group gap="sm">
-						<Code>{createdKey.key}</Code>
+						<Code className="selectable">{createdKey.key}</Code>
 						<CopyButton value={createdKey.key}>
 							{({ copied, copy }) => (
 								<ActionIcon
@@ -228,10 +233,15 @@ curl -X POST ${endpoint}/memories/search \\
 							{apiKeys?.map((apiKey) => (
 								<Table.Tr key={apiKey.id}>
 									<Table.Td>
-										<Text fw={500}>{apiKey.name}</Text>
+										<Text
+											fw={500}
+											className="selectable"
+										>
+											{apiKey.name}
+										</Text>
 									</Table.Td>
 									<Table.Td>
-										<Code>{apiKey.id}</Code>
+										<Code className="selectable">{apiKey.id}</Code>
 									</Table.Td>
 									<Table.Td>
 										<ActionIcon

@@ -98,7 +98,12 @@ function ResourceCard({
 						>
 							{name}
 						</Text>
-						<Text fz="sm">{description}</Text>
+						<Text
+							fz="sm"
+							className="selectable"
+						>
+							{description}
+						</Text>
 					</Box>
 				</Group>
 				<Group
@@ -200,6 +205,7 @@ function ManageItem({ name, description, icon, onClick, extra }: ManageItemProps
 							<Text
 								fz="sm"
 								truncate
+								className="selectable"
 							>
 								{description}
 							</Text>

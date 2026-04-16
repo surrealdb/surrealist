@@ -34,6 +34,7 @@ export function StartCloud({
 				<Text
 					maw={450}
 					fz="lg"
+					className="selectable"
 				>
 					{children}
 				</Text>

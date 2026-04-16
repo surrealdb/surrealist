@@ -84,7 +84,7 @@ export function ContextPage({ view }: ContextPageProps) {
 							<PageBreadcrumbs
 								items={[
 									{ label: "Surrealist", href: "/overview" },
-									{ label: contextQuery.data?.name ?? "" },
+									{ label: contextQuery.data?.name ?? "", selectable: true },
 								]}
 							/>
 						)}

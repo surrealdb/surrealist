@@ -121,7 +121,7 @@ export function OrganizationTile({
 										</Tooltip>
 									)}
 								</Group>
-								<Text>{organization.plan.name}</Text>
+								<Text className="selectable">{organization.plan.name}</Text>
 							</Stack>
 							<Spacer />
 							<Group>

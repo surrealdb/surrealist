@@ -290,7 +290,12 @@ export default function DashboardView({ context }: ContextViewProps) {
 						>
 							<SimpleGrid cols={2}>
 								<Box>
-									<Text mt="xs">{step.description}</Text>
+									<Text
+										mt="xs"
+										className="selectable"
+									>
+										{step.description}
+									</Text>
 									{step.content}
 								</Box>
 								{step.code && (

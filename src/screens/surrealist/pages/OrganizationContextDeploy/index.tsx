@@ -8,6 +8,7 @@ import {
 	Select,
 	SimpleGrid,
 	Stack,
+	Text,
 	TextInput,
 } from "@mantine/core";
 import { Icon, iconCheck } from "@surrealdb/ui";
@@ -175,9 +176,11 @@ function PageContent({ organisation }: PageContentProps) {
 									color="orange"
 									title="Spectron plan required"
 								>
-									This organisation does not have an active Spectron plan. Only
-									the organisation owner can subscribe to a plan. Contact your
-									organisation owner to continue.
+									<Text className="selectable">
+										This organisation does not have an active Spectron plan.
+										Only the organisation owner can subscribe to a plan. Contact
+										your organisation owner to continue.
+									</Text>
 								</Alert>
 							)}
 							<SimpleGrid

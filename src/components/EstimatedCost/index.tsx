@@ -36,6 +36,7 @@ export function EstimatedCost({ organisation, config, ...other }: EstimatedCostP
 			<Group
 				gap="xs"
 				align="start"
+				className="selectable"
 			>
 				{data ? (
 					<Text

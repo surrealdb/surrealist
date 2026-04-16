@@ -69,7 +69,7 @@ export default function SettingsView({ context }: ContextViewProps) {
 								>
 									Delete context
 								</Text>
-								<Text>
+								<Text className="selectable">
 									Permanently delete this context and all associated data.
 								</Text>
 							</Box>

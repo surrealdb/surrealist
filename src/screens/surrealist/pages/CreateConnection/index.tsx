@@ -248,6 +248,7 @@ export function CreateConnectionPage() {
 								<Text
 									maw={650}
 									fz="lg"
+									className="selectable"
 								>
 									Looking for the most hassle-free SurrealDB experience?{" "}
 									<Text
@@ -299,7 +300,9 @@ export function CreateConnectionPage() {
 						>
 							Connection
 						</Text>
-						<Text>Specify an icon and name for this connection</Text>
+						<Text className="selectable">
+							Specify an icon and name for this connection
+						</Text>
 					</Box>
 					<ConnectionNameDetails
 						value={connection}
@@ -313,7 +316,9 @@ export function CreateConnectionPage() {
 						>
 							Remote address
 						</Text>
-						<Text>Select a communication protocol and specify instance address</Text>
+						<Text className="selectable">
+							Select a communication protocol and specify instance address
+						</Text>
 					</Box>
 					<ConnectionAddressDetails
 						value={connection}
@@ -327,7 +332,9 @@ export function CreateConnectionPage() {
 						>
 							Authentication
 						</Text>
-						<Text>Specify how you want to access your instance</Text>
+						<Text className="selectable">
+							Specify how you want to access your instance
+						</Text>
 					</Box>
 					<ConnectionAuthDetails
 						value={connection}
@@ -341,7 +348,7 @@ export function CreateConnectionPage() {
 						>
 							Labels
 						</Text>
-						<Text>Add filtering labels to this connection</Text>
+						<Text className="selectable">Add filtering labels to this connection</Text>
 					</Box>
 					<ConnectionLabelsDetails
 						value={connection}

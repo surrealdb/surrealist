@@ -133,6 +133,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 														<Text
 															fw={500}
 															c="bright"
+															className="selectable"
 														>
 															{member.name}
 														</Text>
@@ -156,6 +157,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 													<Text
 														fz="sm"
 														opacity={0.6}
+														className="selectable"
 													>
 														{member.username}
 													</Text>
@@ -248,6 +250,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 												<Text
 													fw={500}
 													c="bright"
+													className="selectable"
 												>
 													{invite.email}
 												</Text>

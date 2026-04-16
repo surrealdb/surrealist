@@ -107,7 +107,12 @@ function SupportPlan({ name, description, organization }: SupportPlanProps) {
 			<Group>
 				<Box flex={1}>
 					<PrimaryTitle>{name}</PrimaryTitle>
-					<Text c={isLight ? "obsidian.7" : "obsidian.2"}>{description}</Text>
+					<Text
+						c={isLight ? "obsidian.7" : "obsidian.2"}
+						className="selectable"
+					>
+						{description}
+					</Text>
 				</Box>
 				<Button
 					variant="gradient"

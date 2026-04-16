@@ -44,7 +44,7 @@ export function StartResource({ title, subtitle, image, onClick, ...other }: Sta
 							>
 								{title}
 							</Text>
-							<Text>{subtitle}</Text>
+							<Text className="selectable">{subtitle}</Text>
 						</Box>
 						<Icon
 							path={iconChevronRight}

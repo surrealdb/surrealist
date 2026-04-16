@@ -177,7 +177,7 @@ function PageContent({ organisation }: PageContentProps) {
 								>
 									<Box>
 										<PrimaryTitle>Billing & payment information</PrimaryTitle>
-										<Text>{organisation.name}</Text>
+										<Text className="selectable">{organisation.name}</Text>
 									</Box>
 
 									{isManaged ? (
@@ -187,7 +187,10 @@ function PageContent({ organisation }: PageContentProps) {
 											icon={<Icon path={iconCreditCard} />}
 											title="Billing provider not supported"
 										>
-											<Text fz="sm">
+											<Text
+												fz="sm"
+												className="selectable"
+											>
 												Spectron context packages are only available for
 												organisations using Stripe billing.{" "}
 												{getBillingProviderAction(organisation)}
@@ -209,7 +212,9 @@ function PageContent({ organisation }: PageContentProps) {
 												icon={<Icon path={iconCreditCard} />}
 												title="Billing & payment information required"
 											>
-												{getBillingProviderAction(organisation)}
+												<Text className="selectable">
+													{getBillingProviderAction(organisation)}
+												</Text>
 											</Alert>
 											<SimpleGrid
 												mt="xl"
@@ -245,7 +250,10 @@ function PageContent({ organisation }: PageContentProps) {
 														>
 															Billing & payment information available
 														</Text>
-														<Text fz="xs">
+														<Text
+															fz="xs"
+															className="selectable"
+														>
 															Your billing and payment information is
 															already set up for this organisation.
 														</Text>
@@ -327,7 +335,10 @@ function PageContent({ organisation }: PageContentProps) {
 											}
 										/>
 									) : (
-										<Text c="red">
+										<Text
+											c="red"
+											className="selectable"
+										>
 											Selected package not found. Please go back and select a
 											valid package.
 										</Text>
