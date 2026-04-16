@@ -99,12 +99,14 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 					navigate: () => setLocation(`${base}/support`),
 				},
 			),
-			{
-				name: "Usage",
-				icon: iconProgressClock,
-				match: [`${base}/usage`],
-				navigate: () => setLocation(`${base}/usage`),
-			},
+			...optional(
+				isOrgAdmin && {
+					name: "Usage",
+					icon: iconProgressClock,
+					match: [`${base}/usage`],
+					navigate: () => setLocation(`${base}/usage`),
+				},
+			),
 		];
 
 		const admin: NavigationItem[] = optional(

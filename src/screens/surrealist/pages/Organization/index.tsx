@@ -67,6 +67,10 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 		return <Redirect to="/overview" />;
 	}
 
+	if (isSuccess && organization && activeTab === null) {
+		return <Redirect to={`/o/${id}/overview`} />;
+	}
+
 	return (
 		<AuthGuard>
 			{isAuthed ? (

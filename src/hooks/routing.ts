@@ -73,16 +73,16 @@ export function useConnectionNavigator() {
 }
 
 /**
- * Returns the active context and view
+ * Returns the active organisation id, context id, and view
  */
 export function useContextAndView() {
-	const [match, params] = useAbsoluteRoute("/x/:context/:view");
+	const [match, params] = useAbsoluteRoute("/s/:organization/:context/:view");
 
 	if (!match) {
-		return [null, null] as const;
+		return [null, null, null] as const;
 	}
 
-	return [params.context, params.view as ContextViewPage] as const;
+	return [params.organization, params.context, params.view as ContextViewPage] as const;
 }
 
 /**
@@ -91,8 +91,8 @@ export function useContextAndView() {
 export function useContextNavigator() {
 	const [, navigate] = useAbsoluteLocation();
 
-	return useStable((contextId: string, view?: ContextViewPage) => {
-		navigate(`/x/${contextId}/${view ?? "dashboard"}`);
+	return useStable((organizationId: string, contextId: string, view?: ContextViewPage) => {
+		navigate(`/s/${organizationId}/${contextId}/${view ?? "dashboard"}`);
 	});
 }
 

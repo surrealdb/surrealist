@@ -168,7 +168,7 @@ export function OverviewPage() {
 										<StartCloud
 											action="View your organizations"
 											image={pictoCloud}
-											onClick={signIn}
+											onClick={() => signIn()}
 											mt="sm"
 										>
 											<PrimaryTitle>

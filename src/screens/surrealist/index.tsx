@@ -59,8 +59,6 @@ const ContextPageLazy = memo(ContextPage);
 function DefaultOrgRedirect({ rest }: { rest?: string }) {
 	const { default_org } = useCloudProfile();
 
-	console.log("DEFAULT ORG", default_org);
-
 	if (!default_org) {
 		return <Redirect to="/overview" />;
 	}
@@ -331,8 +329,8 @@ export function SurrealistScreen() {
 									)}
 								</Route>
 
-								{/* Context view page */}
-								<Route path="/x/:context/:view">
+								{/* Context view page (Spectron) */}
+								<Route path="/s/:organization/:context/:view">
 									{({ view }) => <ContextPageLazy view={view} />}
 								</Route>
 

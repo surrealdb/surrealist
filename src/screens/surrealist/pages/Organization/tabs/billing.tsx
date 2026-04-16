@@ -358,10 +358,6 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 					<Paper
 						p="xl"
 						className={classes.spectronCard}
-						style={{
-							// TODO Remove when Skeleton is fixed in UI Kit
-							visibility: packagesPending || !orgPackageLoaded ? "hidden" : "visible",
-						}}
 					>
 						<Stack gap="sm">
 							<PrimaryTitle>Get started with Spectron</PrimaryTitle>

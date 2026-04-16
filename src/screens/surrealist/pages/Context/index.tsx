@@ -2,12 +2,19 @@ import { Box, Center, Loader, ScrollArea, Skeleton, Stack } from "@mantine/core"
 import { lazy, memo, Suspense } from "react";
 import { Redirect } from "wouter";
 import { useCloudContextQuery } from "~/cloud/queries/contexts";
+import { AuthGuard } from "~/components/AuthGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useContextAndView } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
 import { ContextSidebar } from "./sidebar";
 import classes from "./style.module.scss";
 import type { ContextViewProps } from "./types";
+
+function isContextViewPage(view: string): view is ContextViewPage {
+	return (
+		view === "dashboard" || view === "playground" || view === "api-keys" || view === "settings"
+	);
+}
 
 const DashboardView = lazy(() => import("./views/DashboardView"));
 const PlaygroundView = lazy(() => import("./views/PlaygroundView"));
@@ -26,12 +33,9 @@ export interface ContextPageProps {
 }
 
 export function ContextPage({ view }: ContextPageProps) {
-	const [contextId] = useContextAndView();
+	const [organizationId, contextId] = useContextAndView();
 
-	const contextQuery = useCloudContextQuery(undefined, contextId ?? undefined);
-
-	const viewPage = view as ContextViewPage;
-	const Component = VIEW_COMPONENTS[viewPage];
+	const contextQuery = useCloudContextQuery(organizationId ?? undefined, contextId ?? undefined);
 
 	const isSuccess = contextQuery.isSuccess;
 	const isLoading = contextQuery.isLoading || contextQuery.isPending;
@@ -40,11 +44,18 @@ export function ContextPage({ view }: ContextPageProps) {
 		return <Redirect to="/overview" />;
 	}
 
+	if (organizationId && contextId && !isContextViewPage(view)) {
+		return <Redirect to={`/s/${organizationId}/${contextId}/dashboard`} />;
+	}
+
+	const viewPage = view as ContextViewPage;
+	const Component = VIEW_COMPONENTS[viewPage];
+
 	return (
-		<>
+		<AuthGuard>
 			<ContextSidebar
 				contextId={contextId ?? ""}
-				organizationId={contextQuery.data?.organization_id}
+				organizationId={organizationId ?? ""}
 			/>
 			<Box
 				flex={1}
@@ -98,6 +109,6 @@ export function ContextPage({ view }: ContextPageProps) {
 					</Stack>
 				</ScrollArea>
 			</Box>
-		</>
+		</AuthGuard>
 	);
 }

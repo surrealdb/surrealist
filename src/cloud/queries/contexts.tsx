@@ -22,7 +22,7 @@ export function useCloudOrganizationContextsQuery(organization?: string) {
 			);
 
 			for (const ctx of contexts) {
-				client.setQueryData(["cloud", "context", ctx.id], ctx);
+				client.setQueryData(["cloud", "context", organization, ctx.id], ctx);
 			}
 
 			return contexts;
@@ -30,25 +30,22 @@ export function useCloudOrganizationContextsQuery(organization?: string) {
 	});
 }
 
-export function useCloudContextQuery(organization?: string, contextId?: string) {
+export function useCloudContextQuery(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
 	const isAuthenticated = useIsAuthenticated();
 	const client = useQueryClient();
 
-	const cachedOrg =
-		organization ??
-		client.getQueryData<CloudContext>(["cloud", "context", contextId])?.organization_id;
-
 	return useQuery({
-		queryKey: ["cloud", "context", contextId],
-		enabled: !!contextId && !!cachedOrg && isAuthenticated,
+		queryKey: ["cloud", "context", organization, contextId],
+		enabled: !!organization && !!contextId && isAuthenticated,
 		queryFn: async () => {
-			const org = cachedOrg;
-
-			if (!org) {
-				throw new Error("Organization ID is required to fetch a context");
-			}
-
-			return fetchAPI<CloudContext>(`/organizations/${org}/spectron_contexts/${contextId}`);
+			const ctx = await fetchAPI<CloudContext>(
+				`/organizations/${organization}/spectron_contexts/${contextId}`,
+			);
+			client.setQueryData(["cloud", "context", organization, contextId], ctx);
+			return ctx;
 		},
 	});
 }
@@ -57,7 +54,7 @@ export function useCloudContextApiKeysQuery(organization?: string, contextId?: s
 	const isAuthenticated = useIsAuthenticated();
 
 	return useQuery({
-		queryKey: ["cloud", "context", contextId, "api-keys"],
+		queryKey: ["cloud", "context", organization, contextId, "api-keys"],
 		enabled: !!organization && !!contextId && isAuthenticated,
 		queryFn: async () => {
 			return fetchAPI<ContextApiKey[]>(

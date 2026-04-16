@@ -28,6 +28,8 @@ export function useCreateContextMutation(organization: string | undefined) {
 				},
 			);
 
+			client.setQueryData(["cloud", "context", organization, result.id], result);
+
 			client.invalidateQueries({
 				queryKey: ["cloud", "contexts"],
 			});
@@ -78,7 +80,7 @@ export function useCreateContextApiKeyMutation(
 			);
 
 			client.invalidateQueries({
-				queryKey: ["cloud", "context", contextId, "api-keys"],
+				queryKey: ["cloud", "context", organization, contextId, "api-keys"],
 			});
 
 			return result;
@@ -106,7 +108,7 @@ export function useDeleteContextApiKeyMutation(
 			);
 
 			client.invalidateQueries({
-				queryKey: ["cloud", "context", contextId, "api-keys"],
+				queryKey: ["cloud", "context", organization, contextId, "api-keys"],
 			});
 		},
 	});

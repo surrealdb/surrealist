@@ -191,7 +191,7 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 						key={ctx.id}
 						context={ctx}
 						regions={allRegions}
-						onClick={() => navigateContext(ctx.id)}
+						onClick={() => navigateContext(organization.id, ctx.id)}
 					/>
 				))}
 			</SimpleGrid>

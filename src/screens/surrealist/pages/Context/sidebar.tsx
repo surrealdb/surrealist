@@ -15,14 +15,14 @@ const VIEW_NAVIGATION: ContextViewPage[][] = [
 
 export interface ContextSidebarProps {
 	contextId: string;
-	organizationId?: string;
+	organizationId: string;
 }
 
 export function ContextSidebar({ contextId, organizationId }: ContextSidebarProps) {
 	const { setLocation } = useSidebar();
 
 	const navigation: NavigationItem[][] = useMemo(() => {
-		const base = `/x/${contextId}`;
+		const base = `/s/${organizationId}/${contextId}`;
 
 		return VIEW_NAVIGATION.map((group) =>
 			group.map((id) => {
@@ -36,7 +36,7 @@ export function ContextSidebar({ contextId, organizationId }: ContextSidebarProp
 				};
 			}),
 		);
-	}, [contextId, setLocation]);
+	}, [contextId, organizationId, setLocation]);
 
 	const backPath = organizationId ? `/o/${organizationId}/overview` : "/overview";
 

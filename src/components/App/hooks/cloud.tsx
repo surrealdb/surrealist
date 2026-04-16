@@ -3,12 +3,10 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { adapter } from "~/adapter";
 import { acquireSession, checkSessionExpiry, invalidateSession } from "~/cloud/api/auth";
 import { useEventSubscription } from "~/hooks/event";
-import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openVerifyEmailModal } from "~/modals/verify-email";
 import { useAuthentication } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
-import { featureFlags } from "~/util/feature-flags";
 import { DeepLinkAuthEvent } from "~/util/global-events";
 import { showErrorNotification } from "~/util/helpers";
 
@@ -117,17 +115,5 @@ export function useCloudAuthentication() {
 
 	useEventSubscription(DeepLinkAuthEvent, (callbackUrl) => {
 		processAuthCallback(callbackUrl);
-	});
-
-	useIntent("cloud-signin", () => {
-		// No-op: signIn is now handled by the useCloudAuth hook
-	});
-
-	useIntent("cloud-signout", () => {
-		invalidateSession();
-	});
-
-	useIntent("cloud-activate", () => {
-		featureFlags.set("cloud_access", true);
 	});
 }
