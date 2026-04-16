@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import type { CloudMeasurement } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -8,10 +8,11 @@ import { fetchAPI } from "../api";
  */
 export function useCloudOrgUsageQuery(organization?: string) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "orgusage", organization],
-		enabled: !!organization && isAuthenticated,
+		enabled: !!organization && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			return fetchAPI<CloudMeasurement[]>(`/organizations/${organization}/usage`);
 		},
@@ -23,10 +24,11 @@ export function useCloudOrgUsageQuery(organization?: string) {
  */
 export function useCloudUsageQuery(instance?: string) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "usage", instance],
-		enabled: !!instance && isAuthenticated,
+		enabled: !!instance && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			return fetchAPI<CloudMeasurement[]>(`/instances/${instance}/usage`);
 		},

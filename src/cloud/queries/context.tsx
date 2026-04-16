@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import { useSupportTicketsEnvironment } from "~/hooks/context";
 import {
 	IntercomConversation,
@@ -17,6 +17,7 @@ import { fetchContextAPI } from "../api/context";
  */
 export function useConversationsQuery() {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 	const env = useSupportTicketsEnvironment();
 
 	const [flags] = useFeatureFlags();
@@ -24,7 +25,7 @@ export function useConversationsQuery() {
 	return useQuery({
 		queryKey: ["cloud", "conversations"],
 		refetchInterval: 30_000,
-		enabled: isAuthenticated && flags.support_tickets,
+		enabled: isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation[]>(`/cloud/conversations`, env);
 		},
@@ -73,11 +74,12 @@ export function useCloudConversationQuery(conversationId?: string) {
 	const [flags] = useFeatureFlags();
 	const env = useSupportTicketsEnvironment();
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "conversations", conversationId],
 		refetchInterval: 30_000,
-		enabled: !!conversationId && isAuthenticated && flags.support_tickets,
+		enabled: !!conversationId && isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation>(
 				`/cloud/conversations/${conversationId}`,
@@ -94,11 +96,12 @@ export function useCloudUnreadConversationsQuery() {
 	const [flags] = useFeatureFlags();
 	const env = useSupportTicketsEnvironment();
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "unread_conversations"],
 		refetchInterval: 30_000,
-		enabled: isAuthenticated && flags.support_tickets,
+		enabled: isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<boolean>(`/cloud/conversations/has_unread`, env);
 		},

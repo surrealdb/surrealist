@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import type {
 	CloudContext,
 	ContextApiKey,
@@ -10,12 +10,13 @@ import { fetchAPI } from "../api";
 
 export function useCloudOrganizationContextsQuery(organization?: string) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 	const client = useQueryClient();
 
 	return useQuery({
 		queryKey: ["cloud", "contexts", { org: organization }],
 		refetchInterval: 15_000,
-		enabled: !!organization && isAuthenticated,
+		enabled: !!organization && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			const contexts = await fetchAPI<CloudContext[]>(
 				`/organizations/${organization}/spectron_contexts`,
@@ -35,11 +36,12 @@ export function useCloudContextQuery(
 	contextId: string | undefined,
 ) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 	const client = useQueryClient();
 
 	return useQuery({
 		queryKey: ["cloud", "context", organization, contextId],
-		enabled: !!organization && !!contextId && isAuthenticated,
+		enabled: !!organization && !!contextId && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			const ctx = await fetchAPI<CloudContext>(
 				`/organizations/${organization}/spectron_contexts/${contextId}`,
@@ -52,10 +54,11 @@ export function useCloudContextQuery(
 
 export function useCloudContextApiKeysQuery(organization?: string, contextId?: string) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "context", organization, contextId, "api-keys"],
-		enabled: !!organization && !!contextId && isAuthenticated,
+		enabled: !!organization && !!contextId && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			return fetchAPI<ContextApiKey[]>(
 				`/organizations/${organization}/spectron_contexts/${contextId}/api_keys`,
@@ -66,10 +69,11 @@ export function useCloudContextApiKeysQuery(organization?: string, contextId?: s
 
 export function useContextPackagesQuery() {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "context-packages"],
-		enabled: isAuthenticated,
+		enabled: isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			return fetchAPI<ContextPackage[]>("/spectron_context_packages");
 		},
@@ -78,10 +82,11 @@ export function useContextPackagesQuery() {
 
 export function useOrganizationContextPackageQuery(organization?: string) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "context-packages", { org: organization }],
-		enabled: !!organization && isAuthenticated,
+		enabled: !!organization && isAuthenticated && hasCloudSession,
 		staleTime: 30_000,
 		queryFn: async () => {
 			return fetchAPI<OrganizationContextPackage[]>(

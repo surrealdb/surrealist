@@ -32,6 +32,13 @@ export function useIsAuthLoading() {
 }
 
 /**
+ * Returns whether the user has a cloud session active
+ */
+export function useHasCloudSession() {
+	return useCloudStore((s) => s.cloudSessionActive);
+}
+
+/**
  * Returns the current user profile
  */
 export function useCloudProfile() {

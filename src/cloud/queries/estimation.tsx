@@ -1,5 +1,5 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import { CloudDeployConfig, CloudOrganization } from "~/types";
 import { fetchAPI } from "../api";
 import { compileDeployConfig } from "../helpers";
@@ -18,10 +18,11 @@ export function useCloudEstimationQuery(
 	config?: CloudDeployConfig,
 ) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery<Estimation | null>({
 		queryKey: ["cloud", "estimation", config],
-		enabled: organisation && config && isAuthenticated,
+		enabled: organisation && config && isAuthenticated && hasCloudSession,
 		placeholderData: keepPreviousData,
 		queryFn: async () => {
 			if (!organisation || !config || !config.computeType) {

@@ -1,15 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import { CloudOrganization, CloudSupportPlanResult } from "~/types";
 import { fetchAPI } from "../api";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "../helpers";
 
 export function useCloudSupportPlansQuery(organisation?: string) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "organisation", organisation, "support_plan"],
-		enabled: !!organisation && isAuthenticated,
+		enabled: !!organisation && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			return fetchAPI<CloudSupportPlanResult[]>(
 				`/organizations/${organisation}/support_plans`,

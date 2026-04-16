@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import { CloudBackup } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -8,11 +8,12 @@ import { fetchAPI } from "../api";
  */
 export function useCloudBackupsQuery(instance?: string) {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "backups", instance],
 		refetchInterval: 15_000,
-		enabled: !!instance && isAuthenticated,
+		enabled: !!instance && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			const { db_backups } = await fetchAPI<{ db_backups?: CloudBackup[] }>(
 				`/instances/${instance}/status`,

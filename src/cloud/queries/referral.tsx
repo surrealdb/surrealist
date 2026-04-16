@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import { useAuthentication } from "~/providers/Auth";
 import { fetchAPI } from "../api";
 
@@ -8,11 +8,12 @@ import { fetchAPI } from "../api";
  */
 export function useCloudReferralQuery() {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 	const { user } = useAuthentication();
 
 	return useQuery({
 		queryKey: ["cloud", "referral", user?.email],
-		enabled: isAuthenticated,
+		enabled: isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			const { users_referred } = await fetchAPI<{ users_referred: number }>(
 				`/user/referrals`,
@@ -28,11 +29,12 @@ export function useCloudReferralQuery() {
  */
 export function useCloudReferralCodeQuery() {
 	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 	const { user } = useAuthentication();
 
 	return useQuery({
 		queryKey: ["cloud", "referral-code", user?.email],
-		enabled: isAuthenticated,
+		enabled: isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			return fetchAPI<string>(`/user/referrals/code`);
 		},
