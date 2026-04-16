@@ -56,7 +56,9 @@ export function StartBlog({ post, ...other }: StartBlogProps) {
 						>
 							{post.title}
 						</Text>
-						<Text>{format(post.published, "MMMM d, yyyy - h:mm a")}</Text>
+						<Text className="selectable">
+							{format(post.published, "MMMM d, yyyy - h:mm a")}
+						</Text>
 					</Stack>
 				</Paper>
 			</Anchor>

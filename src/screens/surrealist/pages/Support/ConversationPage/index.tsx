@@ -42,7 +42,7 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SUPPORT_STATES } from "~/constants";
-import { useCloudProfile } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import { fileToBase64 } from "~/util/file-system";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
 import { ConversationPart } from "../ConversationPart";
@@ -277,7 +277,7 @@ export interface ConversationPageProps {
 
 export function ConversationPage({ id }: ConversationPageProps) {
 	const htmlRegex = /(<([^>]+)>)/gi;
-	const profile = useCloudProfile();
+	const { user } = useAuthentication();
 	const { data: conversation, isLoading } = useCloudConversationQuery(id);
 
 	const conversationStateMutation = useConversationStateMutation();
@@ -601,7 +601,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 													fw={700}
 													c="bright"
 												>
-													{profile.name}
+													{user?.name}
 												</Text>
 											</Group>
 											<PillGroup>

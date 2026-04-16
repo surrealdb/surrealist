@@ -20,10 +20,10 @@
 		"start": "bun run dev",
 		"tauri": "tauri",
 		"tauri:dev": "tauri dev",
-		"tauri:build": "tauri build",
-		"ts": "tsc --watch --noEmit"
+		"tauri:build": "tauri build"
 	},
 	"dependencies": {
+		"@auth0/auth0-react": "^2.15.1",
 		"@codemirror/autocomplete": "^6.13.0",
 		"@codemirror/commands": "^6.3.3",
 		"@codemirror/language": "^6.10.1",
@@ -64,7 +64,7 @@
 		"@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
 		"@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.1",
 		"@surrealdb/surql-fmt": "^0.1.0-beta.2",
-		"@surrealdb/ui": "^1.0.100",
+		"@surrealdb/ui": "^1.0.101",
 		"@surrealdb/wasm": "^3.0.3",
 		"@tanstack/react-query": "^5.37.1",
 		"@tauri-apps/api": "^2.10.1",
@@ -104,6 +104,7 @@
 		"lottie-web": "^5.12.2",
 		"mantine-contextmenu": "^7.15.3",
 		"papaparse": "^5.4.1",
+		"path-browserify": "^1.0.1",
 		"radash": "^11.0.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",

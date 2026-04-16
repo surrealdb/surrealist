@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { isEmpty } from "radash";
-import { useCloudStore } from "~/stores/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import type { CloudBanner } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -8,11 +8,12 @@ import { fetchAPI } from "../api";
  * Fetch the active alert banner
  */
 export function useCloudBannerQuery() {
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "banner"],
-		enabled: authState === "authenticated",
+		enabled: isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			const response = await fetchAPI<CloudBanner | CloudBanner[]>(`/message`);
 			const banners = Array.isArray(response) ? response : [response];

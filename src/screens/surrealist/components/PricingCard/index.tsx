@@ -18,6 +18,9 @@ export interface PricingCardProps {
 	onClick?: (config: PricingConfigBase) => void;
 }
 
+/**
+ * @deprecated in favour of PlanCard
+ */
 export function PricingCard({
 	config,
 	state,
@@ -73,6 +76,7 @@ export function PricingCard({
 						c="obsidian.4"
 						fw={600}
 						lts="0.02em"
+						className="selectable"
 					>
 						{config.name}
 					</Text>
@@ -82,6 +86,7 @@ export function PricingCard({
 							gap={8}
 							align="center"
 							wrap="nowrap"
+							className="selectable"
 						>
 							<Title
 								order={2}
@@ -97,7 +102,7 @@ export function PricingCard({
 								<Text
 									c="obsidian.4"
 									fz="xs"
-									className={classes.priceSuffix}
+									className={clsx(classes.priceSuffix, "selectable")}
 									lh={1.1}
 								>
 									From
@@ -113,13 +118,14 @@ export function PricingCard({
 							variant={isDedicated ? "gradient" : undefined}
 							fz={40}
 							lh={1.1}
+							className="selectable"
 						>
 							{config.price}
 						</Text>
 					)}
-					<Text>{config.description}</Text>
+					<Text className="selectable">{config.description}</Text>
 					<Label mt="xl">What you get</Label>
-					<Stack>
+					<Stack className="selectable">
 						{config.features.map((feat) => (
 							<Group
 								gap="sm"
@@ -154,7 +160,7 @@ export function PricingCard({
 					{isCloudConfig(config) && (
 						<>
 							<Label mt="xl">Resources</Label>
-							<Stack>
+							<Stack className="selectable">
 								{config.resources.map((resource) => (
 									<Group
 										gap="sm"

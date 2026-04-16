@@ -23,7 +23,7 @@ import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
 import { parseIdent } from "~/util/language";
-import { activateDatabase, executeQuery } from "../../connection/connection";
+import { activateDatabase, executeQuery } from "../../pages/Connection/connection/connection";
 import classes from "./style.module.scss";
 
 export interface NamespaceProps {

@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import { Alert, Stack, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "~/cloud/api";
@@ -17,10 +18,24 @@ export function useIsCloudEnabled() {
 }
 
 /**
- * Returns whether the user is authenticated to SurrealDB Cloud
+ * Returns whether the user is authenticated via Auth0
  */
 export function useIsAuthenticated() {
-	return useCloudStore((s) => s.authState === "authenticated");
+	return useAuth0().isAuthenticated;
+}
+
+/**
+ * Returns whether the Auth0 SDK is still loading
+ */
+export function useIsAuthLoading() {
+	return useAuth0().isLoading;
+}
+
+/**
+ * Returns whether the user has a cloud session active
+ */
+export function useHasCloudSession() {
+	return useCloudStore((s) => s.cloudSessionActive);
 }
 
 /**

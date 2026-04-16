@@ -32,6 +32,7 @@ export function PropertyValue({ title, icon, value, ...other }: PropertyValuePro
 				<Text
 					c="bright"
 					truncate
+					className="selectable"
 				>
 					{value}
 				</Text>

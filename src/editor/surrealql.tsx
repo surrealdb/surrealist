@@ -2,7 +2,10 @@ import { syntaxTree } from "@codemirror/language";
 import { linter } from "@codemirror/lint";
 import type { Extension } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
-import { getSurrealQL, hasSurrealQL } from "~/screens/surrealist/connection/connection";
+import {
+	getSurrealQL,
+	hasSurrealQL,
+} from "~/screens/surrealist/pages/Connection/connection/connection";
 import { getSetting } from "~/util/config";
 
 const findStatement = (stack: any): [number, number] | null => {

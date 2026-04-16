@@ -38,6 +38,7 @@ export function SupportCollection({ collection }: SupportCollectionProps) {
 							c="dimmed"
 							mt="xs"
 							fz="xs"
+							className="selectable"
 						>
 							{collection.description}
 						</Text>

@@ -1,39 +1,34 @@
-import { Center, Loader } from "@mantine/core";
-import { PropsWithChildren, useEffect } from "react";
-import { Redirect } from "wouter";
-import { openCloudAuthentication } from "~/cloud/api/auth";
+import { Center } from "@mantine/core";
+import { Spinner } from "@surrealdb/ui";
+import { type PropsWithChildren, useEffect } from "react";
+import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
+import { SignInRedirect } from "../SignInRedirect";
 
 export interface AuthGuardProps {
-	redirect?: string;
 	loading?: boolean;
 }
 
-export function AuthGuard({ redirect, loading, children }: PropsWithChildren<AuthGuardProps>) {
+export function AuthGuard({ loading, children }: PropsWithChildren<AuthGuardProps>) {
 	const [, navigate] = useAbsoluteLocation();
-	const authState = useCloudStore((s) => s.authState);
+	const isAuthenticated = useIsAuthenticated();
+	const isAuthLoading = useIsAuthLoading();
 	const authError = useCloudStore((s) => s.authError);
 
 	useEffect(() => {
 		if (authError) {
 			return navigate("/overview");
 		}
+	}, [authError]);
 
-		if (authState === "unauthenticated") {
-			openCloudAuthentication();
-		}
-	}, [authError, authState]);
-
-	return authState === "authenticated" && !loading ? (
-		redirect ? (
-			<Redirect to={redirect} />
-		) : (
-			children
-		)
-	) : (
+	return isAuthLoading || loading ? (
 		<Center flex={1}>
-			<Loader size="lg" />
+			<Spinner />
 		</Center>
+	) : isAuthenticated ? (
+		children
+	) : (
+		<SignInRedirect />
 	);
 }

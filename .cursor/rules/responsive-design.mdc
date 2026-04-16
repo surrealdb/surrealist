@@ -1,0 +1,15 @@
+---
+description: Responsive and mobile-friendly design guidelines
+globs: "**/*.{tsx,scss}"
+alwaysApply: false
+---
+
+# Responsive Design
+
+- Use Mantine's responsive props (`hiddenFrom`, `visibleFrom`) to show/hide elements by breakpoint instead of CSS media queries.
+- Use Mantine's responsive style props where available (e.g. `px={{ base: "md", sm: "xl" }}`).
+- Avoid fixed pixel widths on containers. Use `maw`, `w="100%"`, or Mantine grid/flex utilities.
+- Use `rem` or Mantine spacing tokens instead of `px` for spacing and sizing.
+- When writing SCSS, use `@surrealdb/ui` breakpoint mixins if available, or Mantine's `em()` helper for consistent breakpoints.
+- Test that layouts don't overflow or break at narrow viewports (~320px).
+- Prefer stacking (flex column) over side-by-side layouts on mobile.

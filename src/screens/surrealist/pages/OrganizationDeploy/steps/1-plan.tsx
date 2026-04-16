@@ -116,14 +116,21 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 			</SimpleGrid>
 
 			<Box mt="sm">
-				<Text c="obsidian">* Coming soon</Text>
+				<Text
+					c="obsidian"
+					className="selectable"
+				>
+					* Coming soon
+				</Text>
 			</Box>
 
 			<Stack
 				align="center"
 				mt={36}
 			>
-				<Text>Looking for more pricing options and information?</Text>
+				<Text className="selectable">
+					Looking for more pricing options and information?
+				</Text>
 				<a
 					href="https://surrealdb.com/pricing"
 					target="_blank"

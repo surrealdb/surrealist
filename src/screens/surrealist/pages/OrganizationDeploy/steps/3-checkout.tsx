@@ -159,6 +159,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						<Text
 							mt="xs"
 							fz="sm"
+							className="selectable"
 						>
 							Please confirm whether the presented details are correct.
 						</Text>
@@ -281,7 +282,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 
 			<Box mt={36}>
 				<PrimaryTitle>Billing & payment information</PrimaryTitle>
-				<Text>{organisation.name}</Text>
+				<Text className="selectable">{organisation.name}</Text>
 			</Box>
 
 			{isFree ? (
@@ -290,7 +291,10 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 					mt="md"
 					p="xl"
 				>
-					<Stack gap={0}>
+					<Stack
+						gap={0}
+						className="selectable"
+					>
 						<Text
 							c="bright"
 							fw={600}
@@ -323,7 +327,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						icon={<Icon path={iconCreditCard} />}
 						title="Billing & payment information required"
 					>
-						{getBillingProviderAction(organisation)}
+						<Text className="selectable">{getBillingProviderAction(organisation)}</Text>
 					</Alert>
 					{!isManaged && (
 						<SimpleGrid
@@ -364,7 +368,10 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 								>
 									Billing & payment information available
 								</Text>
-								<Text fz="xs">
+								<Text
+									fz="xs"
+									className="selectable"
+								>
 									Your billing and payment information is already set up for this
 									organisation.
 								</Text>

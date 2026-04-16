@@ -95,7 +95,7 @@ export interface SurrealistAdapter {
 	 * @param url The URL to open
 	 * @param target The target to open the URL in
 	 */
-	openUrl(url: string, target?: UrlTarget): Promise<void>;
+	openUrl(url: string, target?: UrlTarget): Promise<boolean>;
 
 	/**
 	 * Save a file locally

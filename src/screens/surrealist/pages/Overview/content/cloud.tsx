@@ -1,5 +1,5 @@
 import { Box, BoxProps, Button, Image, Paper, Stack, Text } from "@mantine/core";
-import { Icon, iconChevronRight } from "@surrealdb/ui";
+import { Icon, iconChevronRight, pictoSDBCloud } from "@surrealdb/ui";
 import { PropsWithChildren } from "react";
 import glow from "~/assets/images/radial-glow.png";
 import classes from "../style.module.scss";
@@ -24,10 +24,17 @@ export function StartCloud({
 			className={classes.startCloud}
 			{...other}
 		>
-			<Stack flex={1}>
+			<Stack
+				flex={1}
+				pos="relative"
+				style={{
+					zIndex: 1,
+				}}
+			>
 				<Text
 					maw={450}
 					fz="lg"
+					className="selectable"
 				>
 					{children}
 				</Text>
@@ -42,7 +49,7 @@ export function StartCloud({
 				</Box>
 			</Stack>
 			<Image
-				src={image}
+				src={pictoSDBCloud}
 				className={classes.cloudImage}
 			/>
 			<Image

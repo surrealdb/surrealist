@@ -1,4 +1,5 @@
 import { adapter } from "~/adapter";
+import { getUser } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import { getSetting } from "./config";
 import { isProduction } from "./environment";
@@ -60,12 +61,15 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	}
 
 	const { gtm_debug } = featureFlags.store;
+	const { userId } = useCloudStore.getState();
 	const debug_origin = getSetting("gtm", "origin");
 	const debug_mode = getSetting("gtm", "debug_mode");
 	const hostname = (gtm_debug && debug_origin) || HOSTNAME;
 	const uniqueId = (incrementalId++).toString();
 	const params = new URLSearchParams();
-	const { profile, userId } = useCloudStore.getState();
+	const user = getUser();
+
+	const email = (payload.email as string) || user.email;
 
 	_ga = _ga.substring(6);
 
@@ -95,7 +99,7 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	}
 
 	if (name === "cloud_signin" || name === "cloud_signout" || name === "cloud_instance_created") {
-		params.append("ep.email", (payload.email as string) || profile.username);
+		params.append("ep.email", email ?? "");
 	}
 
 	params.append("ep.utk", _ga);

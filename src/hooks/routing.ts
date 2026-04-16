@@ -3,7 +3,7 @@ import { matchRoute, PathPattern, useRouter, useSearch } from "wouter";
 import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
-import type { ViewPage } from "~/types";
+import type { ContextViewPage, ViewPage } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import { IntentEvent } from "~/util/global-events";
 import { consumeIntent, type IntentPayload, type IntentType } from "~/util/intents";
@@ -69,6 +69,30 @@ export function useConnectionNavigator() {
 
 			navigate(`/c/${info.id}/${view ?? fallback}`);
 		}
+	});
+}
+
+/**
+ * Returns the active organisation id, context id, and view
+ */
+export function useContextAndView() {
+	const [match, params] = useAbsoluteRoute("/s/:organization/:context/:view");
+
+	if (!match) {
+		return [null, null, null] as const;
+	}
+
+	return [params.organization, params.context, params.view as ContextViewPage] as const;
+}
+
+/**
+ * Returns a function used to navigate to a specific context and optional view
+ */
+export function useContextNavigator() {
+	const [, navigate] = useAbsoluteLocation();
+
+	return useStable((organizationId: string, contextId: string, view?: ContextViewPage) => {
+		navigate(`/s/${organizationId}/${contextId}/${view ?? "dashboard"}`);
 	});
 }
 

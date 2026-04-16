@@ -1,63 +1,119 @@
-import { useLayoutEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { adapter } from "~/adapter";
-import {
-	checkSessionExpiry,
-	invalidateSession,
-	openCloudAuthentication,
-	refreshAccess,
-	verifyAuthentication,
-} from "~/cloud/api/auth";
-import { useIntent } from "~/hooks/routing";
-import { featureFlags } from "~/util/feature-flags";
-import { CODE_RES_KEY, STATE_RES_KEY } from "~/util/storage";
+import { acquireSession, checkSessionExpiry, invalidateSession } from "~/cloud/api/auth";
+import { useEventSubscription } from "~/hooks/event";
+import { useStable } from "~/hooks/stable";
+import { openVerifyEmailModal } from "~/modals/verify-email";
+import { useAuthentication } from "~/providers/Auth";
+import { useCloudStore } from "~/stores/cloud";
+import { DeepLinkAuthEvent } from "~/util/global-events";
+import { showErrorNotification } from "~/util/helpers";
+
+const AUTH_MESSAGE_TYPE = "surrealist-auth-callback";
+
+/**
+ * Extract auth error details from a callback URL, if any.
+ */
+function extractAuthError(callbackUrl: string) {
+	const url = new URL(callbackUrl);
+	const error = url.searchParams.get("error");
+	const errorDescription = url.searchParams.get("error_description");
+
+	if (!error && !errorDescription) {
+		return null;
+	}
+
+	return { error, errorDescription };
+}
 
 /**
  * Automatically set up the cloud authentication flow
  */
 export function useCloudAuthentication() {
-	// Check for session expiry every 3 minutes
-	useLayoutEffect(() => {
-		const responseCode = sessionStorage.getItem(CODE_RES_KEY);
-		const responseState = sessionStorage.getItem(STATE_RES_KEY);
+	const { isAuthenticated, isLoading, getAccessTokenSilently, handleRedirectCallback } =
+		useAuth0();
 
-		// Check for configured redirect response, otherwise
-		// attempt to refresh the currently active session
-		if (responseCode && responseState) {
-			sessionStorage.removeItem(CODE_RES_KEY);
-			sessionStorage.removeItem(STATE_RES_KEY);
+	const { signIn } = useAuthentication();
+	const hasInitialised = useRef(false);
 
-			verifyAuthentication(responseCode, responseState);
-		} else {
-			refreshAccess();
-		}
+	const processAuthCallback = useStable(async (callbackUrl: string) => {
+		const { setIsProcessingAuth } = useCloudStore.getState();
+		const authError = extractAuthError(callbackUrl);
 
-		setInterval(checkSessionExpiry, 1000 * 60 * 3);
-	}, []);
+		if (authError) {
+			const needsVerification = authError.errorDescription?.includes("verify your email");
 
-	// React to authentication intents
-	useIntent("cloud-auth", (payload) => {
-		const { code, state } = payload;
+			if (needsVerification) {
+				openVerifyEmailModal(signIn);
+			} else {
+				showErrorNotification({
+					title: "Authentication failed",
+					content: authError.errorDescription ?? authError.error ?? "Unknown error",
+				});
+			}
 
-		if (!code || !state) {
-			adapter.warn("Cloud", "Invalid cloud callback payload");
 			return;
 		}
 
-		verifyAuthentication(code, state);
+		try {
+			setIsProcessingAuth(true);
+			adapter.log("Cloud", "Processing auth callback");
+
+			await handleRedirectCallback(callbackUrl);
+
+			const accessToken = await getAccessTokenSilently();
+
+			await acquireSession(accessToken, true);
+		} catch (err: any) {
+			console.error("Failed to process auth callback", err);
+			invalidateSession();
+		} finally {
+			setIsProcessingAuth(false);
+		}
 	});
 
-	// React to signin intents
-	useIntent("cloud-signin", () => {
-		openCloudAuthentication();
-	});
+	useEffect(() => {
+		if (isLoading) {
+			return;
+		}
 
-	// React to callback intents
-	useIntent("cloud-signout", () => {
-		invalidateSession();
-	});
+		if (isAuthenticated && !hasInitialised.current) {
+			hasInitialised.current = true;
 
-	// React to cloud activation
-	useIntent("cloud-activate", () => {
-		featureFlags.set("cloud_access", true);
+			(async () => {
+				try {
+					const accessToken = await getAccessTokenSilently();
+					await acquireSession(accessToken, false);
+				} catch (err: any) {
+					console.error("Failed to acquire cloud session on init", err);
+				}
+			})();
+		}
+	}, [isAuthenticated, isLoading, getAccessTokenSilently]);
+
+	useLayoutEffect(() => {
+		const interval = setInterval(checkSessionExpiry, 1000 * 60 * 3);
+		return () => clearInterval(interval);
+	}, []);
+
+	useEffect(() => {
+		const handler = (event: MessageEvent) => {
+			if (event.data?.type !== AUTH_MESSAGE_TYPE) return;
+			if (event.origin !== window.location.origin) return;
+
+			const callbackUrl = event.data.url as string;
+
+			if (callbackUrl) {
+				processAuthCallback(callbackUrl);
+			}
+		};
+
+		window.addEventListener("message", handler);
+		return () => window.removeEventListener("message", handler);
+	}, []);
+
+	useEventSubscription(DeepLinkAuthEvent, (callbackUrl) => {
+		processAuthCallback(callbackUrl);
 	});
 }

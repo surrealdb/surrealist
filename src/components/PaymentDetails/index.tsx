@@ -124,12 +124,13 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 			<Divider my="md" />
 			<Stack mt="md">
 				<Box>
-					<Label>Payment method</Label>
+					<Label opacity={0.75}>Payment method</Label>
 					<Skeleton visible={paymentQuery.isPending}>
 						{organisation.payment_info ? (
 							<Text
 								c="bright"
 								fw={500}
+								className="selectable"
 							>
 								Credit Card
 							</Text>
@@ -144,12 +145,13 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 					</Skeleton>
 				</Box>
 				<Box>
-					<Label>Card information</Label>
+					<Label opacity={0.75}>Card information</Label>
 					<Skeleton visible={paymentQuery.isPending}>
 						{organisation.payment_info ? (
 							<Text
 								c="bright"
 								fw={500}
+								className="selectable"
 							>
 								{cardDescription}
 							</Text>

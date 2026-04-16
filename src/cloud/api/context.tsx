@@ -1,4 +1,4 @@
-import { TOKEN_ACCESS_KEY } from "~/util/storage";
+import { getAccessToken } from "~/providers/Auth";
 import { ApiError } from ".";
 import { getCloudEndpoints } from "./endpoints";
 
@@ -13,7 +13,14 @@ export async function fetchContextAPI<T = unknown>(
 ): Promise<T> {
 	const { ticketsBase } = getCloudEndpoints();
 
-	const token = localStorage.getItem(TOKEN_ACCESS_KEY);
+	let token: string | null = null;
+
+	try {
+		token = await getAccessToken();
+	} catch {
+		// Token unavailable
+	}
+
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
 	};

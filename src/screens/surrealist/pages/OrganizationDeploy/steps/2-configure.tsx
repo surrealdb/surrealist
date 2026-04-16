@@ -1,4 +1,14 @@
-import { Alert, AlertProps, Box, Button, Divider, Group, SimpleGrid, Stack } from "@mantine/core";
+import {
+	Alert,
+	AlertProps,
+	Box,
+	Button,
+	Divider,
+	Group,
+	SimpleGrid,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { Icon, iconChevronRight, iconWarning } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { EstimatedCost } from "~/components/EstimatedCost";
@@ -27,7 +37,7 @@ function WarningAlert({ title, children, ...other }: WarningAlertProps) {
 			icon={<Icon path={iconWarning} />}
 			{...other}
 		>
-			{children}
+			<Text className="selectable">{children}</Text>
 		</Alert>
 	);
 }

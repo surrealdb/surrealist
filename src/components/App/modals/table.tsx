@@ -19,7 +19,7 @@ import { SCHEMA_MODES } from "~/constants";
 import { useConnectionAndView, useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { executeQuery } from "~/screens/surrealist/connection/connection";
+import { executeQuery } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useInterfaceStore } from "~/stores/interface";
 import { type SchemaMode, TableVariant } from "~/types";
 import { tagEvent } from "~/util/analytics";

@@ -28,7 +28,7 @@ import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection
 import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useLastSavepoint } from "~/hooks/overview";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
@@ -45,6 +45,7 @@ export function CreateConnectionPage() {
 
 	const [connection, setConnection] = useImmer(createBaseConnection(settings));
 	const navigateConnection = useConnectionNavigator();
+	const isCloudEnabled = useIsCloudEnabled();
 
 	const isValid = useMemo(() => {
 		return connection.name && isConnectionValid(connection.authentication);
@@ -122,7 +123,6 @@ export function CreateConnectionPage() {
 	}, []);
 
 	const templates = useConfigStore((s) => s.settings.templates.list);
-	const savepoint = useLastSavepoint();
 
 	return (
 		<Box
@@ -238,57 +238,60 @@ export function CreateConnectionPage() {
 							</Menu>
 						</Group>
 					</Box>
-					<Paper
-						p="xl"
-						pos="relative"
-						className={classes.cloudBox}
-					>
-						<Stack flex={1}>
-							<Text
-								maw={650}
-								fz="lg"
-							>
-								Looking for the most hassle-free SurrealDB experience?{" "}
+					{isCloudEnabled && (
+						<Paper
+							p="xl"
+							pos="relative"
+							className={classes.cloudBox}
+						>
+							<Stack flex={1}>
 								<Text
-									span
-									inherit
-									c="bright"
+									maw={650}
+									fz="lg"
+									className="selectable"
 								>
-									SurrealDB Cloud
-								</Text>{" "}
-								is the easiest way to deploy and manage your database—no
-								infrastructure setup or maintenance required.
-							</Text>
-							<Group mt="md">
-								<Link href="/signin/deploy">
-									<Button
-										size="xs"
-										variant="gradient"
-										rightSection={<Icon path={iconChevronRight} />}
+									Looking for the most hassle-free SurrealDB experience?{" "}
+									<Text
+										span
+										inherit
+										c="bright"
 									>
-										Deploy now
-									</Button>
-								</Link>
-								<a href="https://surrealdb.com/cloud">
-									<Button
-										size="xs"
-										color="obsidian"
-										variant="light"
-									>
-										Learn more
-									</Button>
-								</a>
-							</Group>
-						</Stack>
-						<Image
-							src={pictoSDBCloud}
-							className={classes.cloudImage}
-						/>
-						<Image
-							src={glowUrl}
-							className={classes.cloudGlow}
-						/>
-					</Paper>
+										SurrealDB Cloud
+									</Text>{" "}
+									is the easiest way to deploy and manage your database-no
+									infrastructure setup or maintenance required.
+								</Text>
+								<Group mt="md">
+									<Link href="/o/default/instances/deploy">
+										<Button
+											size="xs"
+											variant="gradient"
+											rightSection={<Icon path={iconChevronRight} />}
+										>
+											Deploy now
+										</Button>
+									</Link>
+									<a href="https://surrealdb.com/cloud">
+										<Button
+											size="xs"
+											color="obsidian"
+											variant="light"
+										>
+											Learn more
+										</Button>
+									</a>
+								</Group>
+							</Stack>
+							<Image
+								src={pictoSDBCloud}
+								className={classes.cloudImage}
+							/>
+							<Image
+								src={glowUrl}
+								className={classes.cloudGlow}
+							/>
+						</Paper>
+					)}
 					<Box mt={24}>
 						<Text
 							fz="xl"
@@ -297,7 +300,9 @@ export function CreateConnectionPage() {
 						>
 							Connection
 						</Text>
-						<Text>Specify an icon and name for this connection</Text>
+						<Text className="selectable">
+							Specify an icon and name for this connection
+						</Text>
 					</Box>
 					<ConnectionNameDetails
 						value={connection}
@@ -311,7 +316,9 @@ export function CreateConnectionPage() {
 						>
 							Remote address
 						</Text>
-						<Text>Select a communication protocol and specify instance address</Text>
+						<Text className="selectable">
+							Select a communication protocol and specify instance address
+						</Text>
 					</Box>
 					<ConnectionAddressDetails
 						value={connection}
@@ -325,7 +332,9 @@ export function CreateConnectionPage() {
 						>
 							Authentication
 						</Text>
-						<Text>Specify how you want to access your instance</Text>
+						<Text className="selectable">
+							Specify how you want to access your instance
+						</Text>
 					</Box>
 					<ConnectionAuthDetails
 						value={connection}
@@ -339,14 +348,14 @@ export function CreateConnectionPage() {
 						>
 							Labels
 						</Text>
-						<Text>Add filtering labels to this connection</Text>
+						<Text className="selectable">Add filtering labels to this connection</Text>
 					</Box>
 					<ConnectionLabelsDetails
 						value={connection}
 						onChange={setConnection}
 					/>
 					<Group mt={24}>
-						<Link to={savepoint.path}>
+						<Link to="/overview">
 							<Button
 								color="obsidian"
 								variant="light"

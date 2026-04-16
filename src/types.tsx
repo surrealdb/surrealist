@@ -40,7 +40,7 @@ export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
-export type AuthState = "unknown" | "loading" | "authenticated" | "unauthenticated";
+
 export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
 export type FunctionType = "function" | "model";
@@ -75,7 +75,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage = "/overview" | "/signin" | "/organisations" | "/referrals" | "/mini/new";
+export type GlobalPage = "/overview" | "/signin" | "/referrals" | "/mini/new";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -88,6 +88,8 @@ export type ViewPage =
 	| "parameters"
 	| "documentation"
 	| "migrations";
+
+export type ContextViewPage = "dashboard" | "playground" | "api-keys" | "settings";
 
 export type AppMenuItemType =
 	| "Separator"
@@ -324,6 +326,7 @@ export interface SurrealistConfig {
 	openDesignerPanels: string[];
 	commandHistory: string[];
 	onboarding: string[];
+	dismissedBanners: string[];
 }
 
 export interface AccessField {
@@ -569,6 +572,12 @@ export interface ViewCondition {
 	isCloud: boolean;
 }
 
+export interface ContextViewPageInfo {
+	id: ContextViewPage;
+	name: string;
+	icon: string;
+}
+
 export interface Dataset {
 	name: string;
 	path: string;
@@ -611,10 +620,8 @@ export interface CloudSignin {
 }
 
 export interface CloudProfile {
-	username: string;
-	name: string;
+	// username: string;
 	default_org: string;
-	picture?: string;
 	user_hmac?: string;
 	enabled_features: string[];
 }
@@ -657,6 +664,40 @@ export interface CloudInstanceCapabilities {
 	denied_experimental: string[];
 	allowed_arbitrary_query: string[];
 	denied_arbitrary_query: string[];
+}
+
+export interface CloudContext {
+	id: string;
+	organization_id: string;
+	name: string;
+	region: string;
+	host: string;
+}
+
+export interface ContextApiKey {
+	id: string;
+	organization_id: string;
+	spectron_context_id: string;
+	name: string;
+	key?: string;
+}
+
+export interface ContextPackage {
+	id: string;
+	name: string;
+	description: string;
+	cost_millcents: number;
+	/** When set, packages can be filtered by billing cadence (e.g. monthly vs yearly). */
+	billing_period?: "month" | "year";
+	token_limit: number;
+	contexts_limit: number;
+}
+
+export interface OrganizationContextPackage {
+	package_id: string;
+	organization_id: string;
+	enabled_at: string;
+	disabled_at?: string;
 }
 
 export interface CloudDistributedStorageSpecs {

@@ -49,6 +49,7 @@ export function ResourceTile({ name, description, image, badge, onClick }: Resou
 						<Text
 							mt="xs"
 							fz="xs"
+							className="selectable"
 						>
 							{description}
 						</Text>

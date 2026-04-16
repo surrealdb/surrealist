@@ -1,4 +1,20 @@
-function redirect(path, host) {
+function params(request) {
+	var qs = [];
+
+	for (var key in request.querystring) {
+		if (request.querystring[key].multiValue) {
+			request.querystring[key].multiValue.forEach((mv) => {
+				qs.push(key + "=" + mv.value)
+			});
+		} else {
+			qs.push(key + "=" + request.querystring[key].value);
+		}
+	};
+	
+	return "?" + qs.sort().join('&');
+}
+
+function redirect(path) {
 	return {
 		statusCode: 301,
 		statusDescription: 'Moved Permanently',
@@ -44,17 +60,25 @@ function handler(event) {
 		case request.uri === '/embed':
 			return redirect('/mini');
 
+		case request.uri === '/referral':
+			return redirect('/o/default' + params(request));
+
 		// Rewrites
 		case request.uri === '/mini':
 			request.uri = '/mini/run/index.html';
 			break;
 
-		case request.uri === '/cloud/callback':
-			request.uri = '/cloud/callback/index.html';
+		case request.uri === '/auth/return':
+			request.uri = '/auth/return/index.html';
 			break;
 
-		case request.uri === '/referral':
-			request.uri = '/cloud/referral/index.html';
+		case request.uri === '/auth/launch':
+			request.uri = '/auth/launch/index.html';
+			break;
+
+		// NOTE: Deprecated and unused
+		case request.uri === '/cloud/callback':
+			request.uri = '/cloud/callback/index.html';
 			break;
 
 		case request.uri.includes('.') === false:

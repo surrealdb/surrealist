@@ -1,20 +1,21 @@
 import { Avatar, AvatarProps, Loader, UnstyledButton } from "@mantine/core";
-import { useCloudStore } from "~/stores/cloud";
+import { useIsAuthLoading } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 
 export function AccountAvatar(props: AvatarProps) {
-	const profile = useCloudStore((s) => s.profile);
-	const state = useCloudStore((s) => s.authState);
-	const name = profile.name || "Unknown";
+	const { user } = useAuthentication();
+	const isAuthLoading = useIsAuthLoading();
+	const name = user?.name || "Unknown";
 
 	return (
 		<Avatar
 			size={36}
 			name={name}
-			src={profile.picture}
+			src={user?.picture}
 			component={UnstyledButton}
 			{...props}
 		>
-			{state === "loading" && !profile.picture && (
+			{isAuthLoading && !user?.picture && (
 				<Loader
 					size="sm"
 					color="obsidian.4"

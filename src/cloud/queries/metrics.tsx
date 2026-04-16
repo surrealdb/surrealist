@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useCloudStore } from "~/stores/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import { CloudMetrics, MetricsDuration } from "~/types";
 import { withSearchParams } from "~/util/helpers";
 import { fetchAPI } from "../api";
@@ -14,11 +14,12 @@ export function useCloudMetricsQuery(
 	duration: MetricsDuration,
 	dummy_data?: boolean,
 ) {
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "metrics", instance, { metric, duration }],
-		enabled: !!instance && authState === "authenticated",
+		enabled: !!instance && isAuthenticated && hasCloudSession,
 		refetchInterval: 60_000,
 		queryFn: async () => {
 			const [startAt, endAt] = computeMetricRange(duration);

@@ -1,7 +1,8 @@
 import { Intercom, update } from "@intercom/messenger-js-sdk";
 import { useEffect, useMemo, useRef } from "react";
 import { useLocation } from "wouter";
-import { useCloudProfile } from "~/hooks/cloud";
+import { useCloudProfile, useIsAuthLoading } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import { isProduction } from "~/util/environment";
 
@@ -9,23 +10,24 @@ export function useIntercom() {
 	const [location] = useLocation();
 	const initialize = useRef(true);
 
+	const { user } = useAuthentication();
 	const profile = useCloudProfile();
-	const authState = useCloudStore((s) => s.authState);
+	const isAuthLoading = useIsAuthLoading();
 	const userId = useCloudStore((s) => s.userId);
 
-	const isReady = authState !== "unknown" && authState !== "loading";
+	const isReady = !isAuthLoading;
 
 	const metadata = useMemo(() => {
-		if (!profile.user_hmac) return {};
+		if (!profile.user_hmac || !user) return {};
 
 		return {
 			user_id: userId,
-			name: profile.name,
-			email: profile.username,
-			avatar: profile.picture,
+			name: user.name,
+			email: user.email,
+			avatar: user.picture,
 			user_hash: profile.user_hmac,
 		};
-	}, [profile, userId]);
+	}, [profile, user, userId]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Track location change
 	useEffect(() => {

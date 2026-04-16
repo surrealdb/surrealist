@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useCloudStore } from "~/stores/cloud";
+import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
 import type { CloudInvitation } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -7,11 +7,12 @@ import { fetchAPI } from "../api";
  * Fetch pending organization invitation
  */
 export function useCloudInvitationsQuery(organization?: string) {
-	const authState = useCloudStore((state) => state.authState);
+	const isAuthenticated = useIsAuthenticated();
+	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
 		queryKey: ["cloud", "invitations", organization],
-		enabled: !!organization && authState === "authenticated",
+		enabled: !!organization && isAuthenticated && hasCloudSession,
 		queryFn: async () => {
 			return fetchAPI<CloudInvitation[]>(`/organizations/${organization}/invitations`);
 		},

@@ -59,7 +59,7 @@ import {
 	closeConnection,
 	openConnection,
 	resetConnection,
-} from "~/screens/surrealist/connection/connection";
+} from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { featureFlags } from "~/util/feature-flags";
@@ -159,7 +159,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						name: "Create new connection",
 						icon: iconPlus,
 						binding: true,
-						action: navigate("/connections/create"),
+						action: navigate("/c/create"),
 					},
 					{
 						id: "reconnect",

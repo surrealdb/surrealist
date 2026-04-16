@@ -1,9 +1,10 @@
 import { BoxProps, Breadcrumbs } from "@mantine/core";
+import clsx from "clsx";
 import { Link } from "wouter";
 import classes from "./style.module.scss";
 
 export interface PageBreadcrumbsProps extends BoxProps {
-	items: { label: string; href?: string }[];
+	items: { label: string; href?: string; selectable?: boolean }[];
 }
 
 export function PageBreadcrumbs({ items, ...other }: PageBreadcrumbsProps) {
@@ -14,14 +15,14 @@ export function PageBreadcrumbs({ items, ...other }: PageBreadcrumbsProps) {
 					<Link
 						key={index}
 						href={item.href}
-						className={classes.link}
+						className={clsx(classes.link, item.selectable && "selectable")}
 					>
 						{item.label}
 					</Link>
 				) : (
 					<span
 						key={index}
-						className={classes.link}
+						className={clsx(classes.link, item.selectable && "selectable")}
 					>
 						{item.label}
 					</span>

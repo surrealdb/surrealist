@@ -7,6 +7,7 @@ import {
 	iconChat,
 	iconCheck,
 	iconChevronUp,
+	iconCog,
 	iconCombined,
 	iconDatabase,
 	iconDataTable,
@@ -18,8 +19,8 @@ import {
 	iconFunction,
 	iconGraphql,
 	iconHelp,
+	iconKey,
 	iconLive,
-	iconOrganization,
 	iconPause,
 	iconQuery,
 	iconReferral,
@@ -40,6 +41,8 @@ import flagIN from "flag-icons/flags/4x3/in.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 import type {
 	AuthMode,
+	ContextViewPage,
+	ContextViewPageInfo,
 	DiagramAlgorithm,
 	DiagramDirection,
 	DiagramHoverFocus,
@@ -235,18 +238,12 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		id: "/overview",
 		name: "Overview",
 		icon: iconExplorer,
+		aliases: ["/o/*"],
 	},
 	"/signin": {
 		id: "/signin",
 		name: "Authenticate",
 		icon: iconAuth,
-	},
-	"/organisations": {
-		id: "/organisations",
-		name: "Organisations",
-		icon: iconOrganization,
-		aliases: ["/o/*"],
-		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
 	"/referrals": {
 		id: "/referrals",
@@ -332,6 +329,29 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		icon: iconTransfer,
 		disabled: ({ flags, version }) =>
 			!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.6.1 <3.0.0-0"),
+	},
+};
+
+export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = {
+	dashboard: {
+		id: "dashboard",
+		name: "Dashboard",
+		icon: iconTune,
+	},
+	playground: {
+		id: "playground",
+		name: "Playground",
+		icon: iconChat,
+	},
+	"api-keys": {
+		id: "api-keys",
+		name: "API Keys",
+		icon: iconKey,
+	},
+	settings: {
+		id: "settings",
+		name: "Settings",
+		icon: iconCog,
 	},
 };
 

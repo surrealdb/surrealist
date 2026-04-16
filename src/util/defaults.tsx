@@ -30,6 +30,7 @@ export function createBaseConfig(): SurrealistConfig {
 		openDesignerPanels: ["general"],
 		keybindings: {},
 		onboarding: [],
+		dismissedBanners: [],
 		settings,
 	};
 }

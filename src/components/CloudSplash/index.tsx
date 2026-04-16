@@ -3,12 +3,13 @@ import { Icon, iconChevronRight, iconOpen, pictoSDBCloud } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
 import logoLightImg from "~/assets/images/light/cloud-logo.svg";
-import { openCloudAuthentication } from "~/cloud/api/auth";
+import { useIsAuthLoading } from "~/hooks/cloud";
 import { useThemeImage } from "~/hooks/theme";
-import { useCloudStore } from "~/stores/cloud";
+import { useAuthentication } from "~/providers/Auth";
 
 export function CloudSplash() {
-	const authState = useCloudStore((s) => s.authState);
+	const { signIn } = useAuthentication();
+	const isAuthLoading = useIsAuthLoading();
 
 	const logoImg = useThemeImage({
 		light: logoLightImg,
@@ -49,9 +50,9 @@ export function CloudSplash() {
 					<Button
 						flex={1}
 						variant="gradient"
-						onClick={openCloudAuthentication}
+						onClick={() => signIn()}
 						rightSection={<Icon path={iconChevronRight} />}
-						loading={authState === "loading"}
+						loading={isAuthLoading}
 					>
 						Sign in
 					</Button>

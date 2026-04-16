@@ -52,12 +52,13 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 			<Divider my="md" />
 			<Stack>
 				<Box>
-					<Label>Name</Label>
+					<Label opacity={0.75}>Name</Label>
 					<Skeleton visible={billingQuery.isPending}>
 						{organisation.billing_info ? (
 							<Text
 								c="bright"
 								fw={500}
+								className="selectable"
 							>
 								{billingQuery.data?.Name}
 							</Text>
@@ -72,12 +73,13 @@ export function BillingDetails({ organisation, ...rest }: BillingDetails) {
 					</Skeleton>
 				</Box>
 				<Box>
-					<Label>Email</Label>
+					<Label opacity={0.75}>Email</Label>
 					<Skeleton visible={billingQuery.isPending}>
 						{organisation.billing_info ? (
 							<Text
 								c="bright"
 								fw={500}
+								className="selectable"
 							>
 								{billingQuery.data?.Email}
 							</Text>

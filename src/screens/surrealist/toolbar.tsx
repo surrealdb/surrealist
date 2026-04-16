@@ -22,7 +22,6 @@ import {
 } from "@surrealdb/ui";
 import { compareVersions } from "compare-versions";
 import { useEffect, useState } from "react";
-import { openCloudAuthentication } from "~/cloud/api/auth";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
@@ -49,6 +48,7 @@ import { useConnectionNavigator } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { openBillingRequiredModal } from "~/modals/billing-required";
+import { useAuthentication } from "~/providers/Auth";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -72,7 +72,7 @@ import { generateRandomName } from "~/util/random";
 import { ConnectionStatus } from "./components/ConnectionStatus";
 import { DatabaseList } from "./components/DatabaseList";
 import { NamespaceList } from "./components/NamespaceList";
-import { requestDatabaseExport, resetConnection } from "./connection/connection";
+import { requestDatabaseExport, resetConnection } from "./pages/Connection/connection/connection";
 
 export function SurrealistToolbar() {
 	const { readChangelog } = useInterfaceStore.getState();
@@ -80,11 +80,11 @@ export function SurrealistToolbar() {
 	const [flags] = useFeatureFlags();
 
 	const navigateConnection = useConnectionNavigator();
+	const { signIn } = useAuthentication();
 	const isAuthenticated = useIsAuthenticated();
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const isSyncingSchema = useDatabaseStore((s) => s.isSyncingSchema);
-	const authState = useCloudStore((s) => s.authState);
 	const isConnected = useIsConnected();
 
 	const [id, namespace, database, authMode] = useConnection((c) => [
@@ -379,11 +379,11 @@ export function SurrealistToolbar() {
 
 			<ConnectionStatus />
 
-			{authState === "unauthenticated" && authMode === "cloud" && (
+			{!isAuthenticated && authMode === "cloud" && (
 				<Button
 					variant="gradient"
 					size="xs"
-					onClick={openCloudAuthentication}
+					onClick={() => signIn()}
 				>
 					Sign in to SurrealDB Cloud
 				</Button>
@@ -558,7 +558,7 @@ export function SurrealistToolbar() {
 						<Button
 							variant="gradient"
 							size="xs"
-							onClick={openCloudAuthentication}
+							onClick={() => signIn()}
 						>
 							Deploy to Cloud
 						</Button>

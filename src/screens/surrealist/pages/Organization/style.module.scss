@@ -1,0 +1,97 @@
+.scroll-area :global(.mantine-ScrollArea-viewport)>div {
+	display: block !important;
+}
+
+.table {
+	-webkit-user-select: text;
+	user-select: text;
+
+	th {
+		color: var(--mantine-color-bright);
+		text-align: start;
+		position: sticky;
+		top: 0;
+	}
+
+	thead tr {
+		border: none;
+	}
+
+	tbody tr {
+		border: none;
+	}
+
+	tbody tr:nth-child(odd) {
+		background-color: rgba(255, 255, 255, 0.03);
+
+		@include light {
+			background-color: rgba(0, 0, 0, 0.03);
+		}
+	}
+
+	td {
+		&:first-child {
+			border-top-left-radius: var(--mantine-radius-xs);
+			border-bottom-left-radius: var(--mantine-radius-xs);
+			padding-left: 0.5rem;
+		}
+
+		&:last-child {
+			border-top-right-radius: var(--mantine-radius-xs);
+			border-bottom-right-radius: var(--mantine-radius-xs);
+			padding-right: 0.5rem;
+		}
+	}
+
+}
+
+.content {
+	position: relative;
+	z-index: 0;
+}
+
+.spectron-card {
+	position: relative;
+	overflow: hidden;
+}
+
+.spectron-image {
+	width: 250px;
+	height: 250px;
+	position: absolute;
+	right: 0px;
+	opacity: 0.2;
+	bottom: -88px;
+	z-index: 0;
+	transition: bottom 0.5s ease;
+	filter: grayscale(100%);
+	mix-blend-mode: plus-lighter;
+
+	@include sm-and-up {
+		opacity: 1;
+		right: 50px;
+		filter: none;
+		mix-blend-mode: normal;
+	}
+}
+
+.spectron-glow {
+	width: 900px;
+	height: 900px;
+	position: absolute;
+	right: -400px;
+	bottom: -450px;
+	z-index: 0;
+	opacity: 0.3;
+	transition: opacity 0.5s ease;
+}
+
+.spectron-card:hover {
+	.spectron-image {
+		bottom: -78px;
+	}
+
+	.spectron-glow {
+		opacity: 0.5;
+	}
+}
