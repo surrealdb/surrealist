@@ -17,20 +17,7 @@ import { isClientSupported } from "./version";
  * from Auth0 and acquiring a fresh cloud session.
  */
 export async function refreshCloudSession() {
-	const { setIsSupported, setFailedConnected, setSessionExpired } = useCloudStore.getState();
-
-	const versionResponse = await isClientSupported();
-
-	if (versionResponse instanceof Error) {
-		console.error(`Failed to fetch Cloud Version: ${versionResponse.message}`);
-		setFailedConnected(true);
-		return;
-	}
-
-	if (!versionResponse) {
-		setIsSupported(false);
-		return;
-	}
+	const { setSessionExpired } = useCloudStore.getState();
 
 	try {
 		adapter.log("Cloud", "Refreshing cloud session via Auth0 SDK");
@@ -57,9 +44,25 @@ export async function acquireSession(accessToken: string, initial: boolean) {
 		setSessionExpired,
 		setAuthError,
 		clearSession,
+		setIsSupported,
+		setFailedConnected,
 	} = useCloudStore.getState();
 
 	try {
+		const versionResponse = await isClientSupported();
+
+		if (versionResponse instanceof Error) {
+			console.error(`Failed to fetch Cloud Version: ${versionResponse.message}`);
+			setFailedConnected(true);
+			return;
+		}
+
+		if (!versionResponse) {
+			destroySession();
+			setIsSupported(false);
+			return;
+		}
+
 		const referralCode = sessionStorage.getItem(REFERRER_KEY);
 		const invitationCode = sessionStorage.getItem(INVITATION_KEY);
 		const awsMarketplaceCode = sessionStorage.getItem(AWS_MARKETPLACE_KEY);

@@ -65,17 +65,16 @@ export function CloudUpdateRequiredDialog() {
 					</Text>
 					<Text mt={4}>
 						{noUpdate ? (
-							<Text c="red">
-								No update available. Please contact{" "}
-								<a href="mailto:support@surrealdb.com">support@surrealdb.com</a> for
-								assistance
+							<Text>
+								Please install the latest version of Surrealist to continue using
+								SurrealDB Cloud.
 							</Text>
 						) : phase === "downloading" ? (
-							<Text c="gray.5">Installing... ({progress}%)</Text>
+							<Text>Installing... ({progress}%)</Text>
 						) : phase === "error" ? (
-							<Text c="red">Failed to install update</Text>
+							<Text>Failed to install update</Text>
 						) : (
-							<Text c="gray.5">Click to install version {version}</Text>
+							<Text>Click to install version {version}</Text>
 						)}
 					</Text>
 				</Box>

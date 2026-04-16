@@ -76,6 +76,11 @@ function handler(event) {
 			request.uri = '/auth/launch/index.html';
 			break;
 
+		// NOTE: Deprecated and unused
+		case request.uri === '/cloud/callback':
+			request.uri = '/cloud/callback/index.html';
+			break;
+
 		case request.uri.includes('.') === false:
 			request.uri = '/index.html';
 			break;
