@@ -169,9 +169,9 @@ function PageContent({ organisation }: PageContentProps) {
 									spacing="xl"
 									className={classes.content}
 								>
-									<Skeleton h={650} />
-									<Skeleton h={650} />
-									<Skeleton h={650} />
+									<Skeleton h={300} />
+									<Skeleton h={300} />
+									<Skeleton h={300} />
 								</SimpleGrid>
 							) : (
 								<SimpleGrid
