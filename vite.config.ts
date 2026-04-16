@@ -8,6 +8,27 @@ import { ViteImageOptimizer as images } from "vite-plugin-image-optimizer";
 import { Mode, plugin as markdown } from "vite-plugin-markdown";
 import { surreal, version } from "./package.json";
 
+/** Project root (directory containing this config). */
+const projectDir = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * Some dependencies import Node builtins in code paths that still run in the
+ * browser (`dom-to-svg` → PostCSS, `@surrealdb/ql-wasm` → optional `node:crypto`).
+ * Vite replaces them with stubs that log on access; alias small browser-safe
+ * implementations instead.
+ * @see https://github.com/vitejs/vite/issues/9200
+ */
+const browserNodeBuiltinAliases = {
+	path: resolve(projectDir, "node_modules/path-browserify/index.js"),
+	"node:path": resolve(projectDir, "node_modules/path-browserify/index.js"),
+	fs: resolve(projectDir, "src/util/node-fs-postcss-shim.ts"),
+	"node:fs": resolve(projectDir, "src/util/node-fs-postcss-shim.ts"),
+	url: resolve(projectDir, "src/util/node-url-postcss-shim.ts"),
+	"node:url": resolve(projectDir, "src/util/node-url-postcss-shim.ts"),
+	"source-map-js": resolve(projectDir, "node_modules/source-map-js/source-map.js"),
+	"node:crypto": resolve(projectDir, "src/util/node-crypto-web-shim.ts"),
+} as const;
+
 const isTauri = !!process.env.TAURI_ENV_PLATFORM;
 const isCompress = process.env.VITE_SURREALIST_COMPRESS !== "false";
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
@@ -135,6 +156,7 @@ export default defineConfig(({ mode }) => {
 		},
 		resolve: {
 			alias: {
+				...browserNodeBuiltinAliases,
 				"~": fileURLToPath(new URL("src", import.meta.url)),
 			},
 		},
@@ -157,6 +179,7 @@ export default defineConfig(({ mode }) => {
 			"import.meta.env.GTM_ID": JSON.stringify("G-PVD8NEJ3Z2"),
 		},
 		optimizeDeps: {
+			include: ["path-browserify"],
 			exclude: ["@surrealdb/wasm", "@surrealdb/ql-wasm-2", "@surrealdb/ql-wasm-3"],
 			esbuildOptions: {
 				target: "esnext",
