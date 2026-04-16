@@ -1,5 +1,7 @@
 import {
+	Box,
 	type BoxProps,
+	Button,
 	Center,
 	Drawer,
 	Group,
@@ -23,6 +25,7 @@ import {
 	iconServer,
 	iconTransfer,
 	iconTune,
+	Spinner,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import { isDesktop } from "~/adapter";
@@ -37,7 +40,6 @@ import { useDesktopUpdater } from "~/hooks/updater";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Assign, FeatureCondition } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
-import classes from "./style.module.scss";
 import { AboutTab } from "./tabs/About";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { KeybindingsTab } from "./tabs/Keybindings";
@@ -133,8 +135,7 @@ function SettingsSidebar({
 
 	return (
 		<Stack
-			py="lg"
-			px="xl"
+			p="lg"
 			h="100%"
 			w={250}
 			style={{
@@ -172,48 +173,67 @@ function SettingsSidebar({
 				{availableUpdate && (
 					<>
 						<Spacer />
-						<Entry
+						<Button
 							onClick={startUpdate}
-							className={classes.updateButton}
-							variant="light"
-							color="obsidian"
-							leftSection={
-								<ThemeIcon
-									variant="gradient"
-									radius="xs"
-									className={classes.updateIcon}
-								>
-									<Icon
-										path={iconDownload}
-										c="bright"
-									/>
-								</ThemeIcon>
-							}
+							color="violet"
+							variant="filled"
+							radius="sm"
+							h="unset"
+							p="sm"
+							styles={{
+								root: {
+									boxShadow: "var(--mantine-shadow-md), var(--mantine-shadow-sm)",
+								},
+								inner: {
+									justifyContent: "start",
+								},
+							}}
 						>
-							<Text fw={600}>New version available</Text>
-							{phase === "downloading" ? (
-								<Text
-									c="gray.5"
-									fz="sm"
+							<Group wrap="nowrap">
+								<ThemeIcon
+									variant="outline"
+									color="white"
 								>
-									Installing... ({progress}%)
-								</Text>
-							) : phase === "error" ? (
-								<Text
-									c="red"
-									fz="sm"
-								>
-									Failed to install update
-								</Text>
-							) : (
-								<Text
-									c="gray.5"
-									fz="sm"
-								>
-									Click to install version {version}
-								</Text>
-							)}
-						</Entry>
+									{phase === "downloading" ? (
+										<Spinner color="white" />
+									) : (
+										<Icon path={iconDownload} />
+									)}
+								</ThemeIcon>
+								<Box ta="start">
+									<Text
+										fw={600}
+										fz="lg"
+										c="white"
+									>
+										Update Surrealist
+									</Text>
+									{phase === "downloading" ? (
+										<Text
+											c="white"
+											fz="sm"
+										>
+											Installing... ({progress}%)
+										</Text>
+									) : phase === "error" ? (
+										<Text
+											c="white"
+											fz="sm"
+										>
+											Failed to install update
+										</Text>
+									) : (
+										<Text
+											c="white"
+											fz="sm"
+											opacity={0.75}
+										>
+											Click to install v{version || "???"}
+										</Text>
+									)}
+								</Box>
+							</Group>
+						</Button>
 					</>
 				)}
 			</Stack>
