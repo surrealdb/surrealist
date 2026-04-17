@@ -1,5 +1,5 @@
 import { adapter } from "~/adapter";
-import { getUser } from "~/providers/Auth";
+import { getAuthSnapshotUser } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import { getSetting } from "./config";
 import { isProduction } from "./environment";
@@ -67,9 +67,9 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	const hostname = (gtm_debug && debug_origin) || HOSTNAME;
 	const uniqueId = (incrementalId++).toString();
 	const params = new URLSearchParams();
-	const user = getUser();
+	const user = getAuthSnapshotUser();
 
-	const email = (payload.email as string) || user.email;
+	const email = (payload.email as string) || user?.email;
 
 	_ga = _ga.substring(6);
 

@@ -43,27 +43,18 @@
 }
 
 .update-dialog {
-	background-color: var(--mantine-color-obsidian-9);
-	border: 1px solid var(--mantine-color-obsidian-6);
+	background: var(--surreal-menu-background-color);
+	background-color: var(--surreal-menu-background);
+	border: 1px solid var(--surreal-glass-subtle);
 	transition-property: transform, opacity, background-color !important;
 	cursor: pointer;
+
+	@include background-blur;
 
 	@include light {
 		background-color: white;
 		border-color: var(--mantine-color-obsidian-2);
 	}
-}
-
-.update-dialog-icon {
-	width: 38px;
-	height: 38px;
-	background: var(--surrealist-gradient);
-	border-radius: 8px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 1px solid rgba(255, 255, 255, 0.3);
-	background-origin: border-box;
 }
 
 .connection-group {

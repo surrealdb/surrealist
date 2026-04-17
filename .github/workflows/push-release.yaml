@@ -174,8 +174,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        region:
-          [
+        region: [
             af-south-1,
             ap-east-1,
             ap-south-1,
@@ -184,7 +183,7 @@ jobs:
             ca-central-1,
             eu-central-1,
             eu-west-2,
-            me-south-1,
+            # me-south-1, -- offline
             sa-east-1,
             us-west-2,
           ]

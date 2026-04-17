@@ -1,6 +1,6 @@
-import { Button, Group, List, Stack, Text } from "@mantine/core";
+import { Button, Divider, Group, Stack, Text, ThemeIcon } from "@mantine/core";
 import { closeModal, openModal } from "@mantine/modals";
-import { Icon, iconEmail } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconEmail } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 
 const MODAL_ID = "verify-email";
@@ -13,24 +13,21 @@ function VerifyEmailModal({ onRetry }: VerifyEmailModalProps) {
 	return (
 		<Stack>
 			<Text>
-				Please verify your email before continuing to SurrealDB Cloud. If you have not
-				received an email, please check your spam folder.
+				Please verify your email before continuing. If you have not received an email,
+				please check your spam folder.
 			</Text>
-			<List>
-				<List.Item>Open your email inbox and find the email</List.Item>
-				<List.Item>Press the button to verify your email</List.Item>
-				<List.Item>Return to Surrealist to enter SurrealDB Cloud</List.Item>
-			</List>
-			<Text mt="md">Already verified your email?</Text>
+			<Divider my="sm" />
+			<Text>Already verified your email?</Text>
 			<Button
+				mt="md"
 				variant="gradient"
-				radius="xs"
+				rightSection={<Icon path={iconChevronRight} />}
 				onClick={() => {
 					closeModal(MODAL_ID);
 					onRetry();
 				}}
 			>
-				Continue to SurrealDB Cloud
+				Continue
 			</Button>
 		</Stack>
 	);
@@ -39,12 +36,15 @@ function VerifyEmailModal({ onRetry }: VerifyEmailModalProps) {
 export function openVerifyEmailModal(onRetry: () => void) {
 	openModal({
 		modalId: MODAL_ID,
+		size: "md",
 		title: (
 			<Group>
-				<Icon
-					path={iconEmail}
-					size="xl"
-				/>
+				<ThemeIcon variant="surreal">
+					<Icon
+						path={iconEmail}
+						size="sm"
+					/>
+				</ThemeIcon>
 				<PrimaryTitle>Verify your email</PrimaryTitle>
 			</Group>
 		),

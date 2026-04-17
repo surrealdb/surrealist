@@ -48,12 +48,12 @@ export async function getAccessToken(): Promise<string> {
 }
 
 /**
- * Get the current user from outside of React.
- * Only available after the AuthProvider has mounted.
+ * Auth0 user when the auth bridge has mounted.
+ * `undefined` before the first TokenBridge effect, or when logged out.
  */
-export function getUser(): User {
-	if (!_user) {
-		throw new Error("AuthProvider has not been initialised");
+export function getAuthSnapshotUser(): User | undefined {
+	if (!_getAccessToken) {
+		return undefined;
 	}
 
 	return _user;

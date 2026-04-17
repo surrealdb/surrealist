@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Dialog, Group, Text } from "@mantine/core";
+import { ActionIcon, Box, Dialog, Group, Text, ThemeIcon } from "@mantine/core";
 import { Icon, iconClose, iconDownload } from "@surrealdb/ui";
 import type { MouseEvent } from "react";
 import { useStable } from "~/hooks/stable";
@@ -25,6 +25,7 @@ export function UpdaterDialog() {
 			onClose={hideAvailableUpdate}
 			size="lg"
 			shadow="sm"
+			onClick={startUpdate}
 			position={{
 				bottom: "var(--mantine-spacing-xl)",
 				left: "var(--mantine-spacing-xl)",
@@ -37,7 +38,6 @@ export function UpdaterDialog() {
 			classNames={{
 				root: classes.updateDialog,
 			}}
-			onClick={startUpdate}
 		>
 			<ActionIcon
 				onClick={hideUpdate}
@@ -49,13 +49,15 @@ export function UpdaterDialog() {
 				<Icon path={iconClose} />
 			</ActionIcon>
 			<Group>
-				<Box className={classes.updateDialogIcon}>
+				<ThemeIcon
+					variant="gradient"
+					size={38}
+				>
 					<Icon
 						path={iconDownload}
 						size="lg"
-						c="white"
 					/>
-				</Box>
+				</ThemeIcon>
 				<Box miw={200}>
 					<Text
 						c="white"
@@ -65,11 +67,11 @@ export function UpdaterDialog() {
 						New version available
 					</Text>
 					{phase === "downloading" ? (
-						<Text c="gray.5">Installing... ({progress}%)</Text>
+						<Text>Installing... ({progress}%)</Text>
 					) : phase === "error" ? (
 						<Text c="red">Failed to install update</Text>
 					) : (
-						<Text c="gray.5">Click to install version {version}</Text>
+						<Text>Click to install version {version}</Text>
 					)}
 				</Box>
 			</Group>

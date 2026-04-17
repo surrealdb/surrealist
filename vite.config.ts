@@ -39,6 +39,7 @@ const ENTRYPOINTS = {
 	mini_embed: "/tools/mini-embed.html",
 	auth_return: "/tools/auth-return.html",
 	auth_launch: "/tools/auth-launch.html",
+	cloud_callback: "/tools/cloud-callback.html",
 	cloud_referral: "/tools/cloud-referral.html",
 };
 
@@ -46,12 +47,14 @@ const TOOLS = {
 	"tools/mini-embed.html": "mini/run/index.html",
 	"tools/auth-return.html": "auth/return/index.html",
 	"tools/auth-launch.html": "auth/launch/index.html",
+	"tools/cloud-callback.html": "cloud/callback/index.html",
 	"tools/cloud-referral.html": "cloud/referral/index.html",
 };
 
 const REWRITES = {
 	"/auth/return": "/tools/auth-return.html",
 	"/auth/launch": "/tools/auth-launch.html",
+	"/cloud/callback": "/tools/cloud-callback.html",
 };
 
 export default defineConfig(({ mode }) => {
