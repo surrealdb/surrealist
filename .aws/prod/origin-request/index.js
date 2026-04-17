@@ -16,7 +16,8 @@ const REGIONS = {
 	// London
 	'eu-west-2': [/* United Kingdom */ 'GB', /* Ireland */ 'IE'],
 	// Bahrain
-	'me-south-1': [/* Egypt */ 'EG', /* Middle East */ 'AE', 'AM', 'AZ', 'BH', 'GE', 'IL', 'IQ', 'IR', 'JO', 'KW', 'LB', 'OM', 'PS', 'QA', 'SA', 'SY', 'TM', 'UZ', 'YE'],
+	// NOTE: Offline due to a missile strike
+	// 'me-south-1': [/* Egypt */ 'EG', /* Middle East */ 'AE', 'AM', 'AZ', 'BH', 'GE', 'IL', 'IQ', 'IR', 'JO', 'KW', 'LB', 'OM', 'PS', 'QA', 'SA', 'SY', 'TM', 'UZ', 'YE'],
 	// Sāo Paulo
 	'sa-east-1': [/* South America */ 'AR', 'BO', 'BR', 'CL', 'CO', 'EC', 'FK', 'GF', 'GY', 'PE', 'PY', 'SR', 'UY', 'VE'],
 	// Oregon
@@ -197,26 +198,26 @@ const COUNTRIES = {
 	XK: 'eu-central-1',
 	GB: 'eu-west-2',
 	IE: 'eu-west-2',
-	EG: 'me-south-1',
-	AE: 'me-south-1',
-	AM: 'me-south-1',
-	AZ: 'me-south-1',
-	BH: 'me-south-1',
-	GE: 'me-south-1',
-	IL: 'me-south-1',
-	IQ: 'me-south-1',
-	IR: 'me-south-1',
-	JO: 'me-south-1',
-	KW: 'me-south-1',
-	LB: 'me-south-1',
-	OM: 'me-south-1',
-	PS: 'me-south-1',
-	QA: 'me-south-1',
-	SA: 'me-south-1',
-	SY: 'me-south-1',
-	TM: 'me-south-1',
-	UZ: 'me-south-1',
-	YE: 'me-south-1',
+	EG: 'me-central-1', // me-south-1
+	AE: 'me-central-1', // me-south-1
+	AM: 'me-central-1', // me-south-1
+	AZ: 'me-central-1', // me-south-1
+	BH: 'me-central-1', // me-south-1
+	GE: 'me-central-1', // me-south-1
+	IL: 'me-central-1', // me-south-1
+	IQ: 'me-central-1', // me-south-1
+	IR: 'me-central-1', // me-south-1
+	JO: 'me-central-1', // me-south-1
+	KW: 'me-central-1', // me-south-1
+	LB: 'me-central-1', // me-south-1
+	OM: 'me-central-1', // me-south-1
+	PS: 'me-central-1', // me-south-1
+	QA: 'me-central-1', // me-south-1
+	SA: 'me-central-1', // me-south-1
+	SY: 'me-central-1', // me-south-1
+	TM: 'me-central-1', // me-south-1
+	UZ: 'me-central-1', // me-south-1
+	YE: 'me-central-1', // me-south-1
 	AR: 'sa-east-1',
 	BO: 'sa-east-1',
 	BR: 'sa-east-1',
