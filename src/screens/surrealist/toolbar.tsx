@@ -109,7 +109,7 @@ export function SurrealistToolbar() {
 	} = useDeployStore();
 
 	const { data: instances = [] } = useCloudOrganizationInstancesQuery(organization?.id ?? "");
-	const allRegions = useCloudStore((s) => s.regions);
+	const allRegions = useCloudStore((s) => s.instanceRegions);
 
 	const versions = useAvailableInstanceVersions();
 	const deployMutation = useInstanceDeployMutation(organization ?? undefined);

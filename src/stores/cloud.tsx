@@ -5,7 +5,8 @@ import type { CloudBillingCountry, CloudInstanceType, CloudProfile, CloudRegion 
 interface CloudValues {
 	instanceVersions: string[];
 	instanceTypes: CloudInstanceType[];
-	regions: CloudRegion[];
+	instanceRegions: CloudRegion[];
+	contextRegions: CloudRegion[];
 	billingCountries: CloudBillingCountry[];
 }
 
@@ -26,7 +27,8 @@ export type CloudStore = {
 	profile: CloudProfile;
 	instanceVersions: string[];
 	instanceTypes: CloudInstanceType[];
-	regions: CloudRegion[];
+	instanceRegions: CloudRegion[];
+	contextRegions: CloudRegion[];
 	billingCountries: CloudBillingCountry[];
 	sessionExpired: boolean;
 	onboardingRequired: boolean;
@@ -60,7 +62,8 @@ export const useCloudStore = create<CloudStore>()(
 		profile: EMPTY_PROFILE,
 		instanceTypes: [],
 		instanceVersions: [],
-		regions: [],
+		instanceRegions: [],
+		contextRegions: [],
 		billingCountries: [],
 		sessionExpired: false,
 		onboardingRequired: false,

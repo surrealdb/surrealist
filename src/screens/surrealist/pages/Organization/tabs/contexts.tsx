@@ -98,7 +98,7 @@ function ContextCard({
 
 export function OrganizationContextsTab({ organization }: OrganizationTabProps) {
 	const navigateContext = useContextNavigator();
-	const allRegions = useCloudStore((s) => s.regions);
+	const allRegions = useCloudStore((s) => s.contextRegions);
 	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
 	const isRestricted = isOrganisationRestricted(organization);
 

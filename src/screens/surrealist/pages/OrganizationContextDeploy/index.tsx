@@ -61,7 +61,7 @@ interface PageContentProps {
 
 function PageContent({ organisation }: PageContentProps) {
 	const navigateContext = useContextNavigator();
-	const allRegions = useCloudStore((s) => s.regions);
+	const allRegions = useCloudStore((s) => s.contextRegions);
 	const createContextMutation = useCreateContextMutation(organisation.id);
 
 	const isOrgOwner = hasOrganizationRoles(organisation, ORG_ROLES_OWNER, true);

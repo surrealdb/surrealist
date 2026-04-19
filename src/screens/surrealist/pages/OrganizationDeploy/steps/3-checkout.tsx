@@ -108,7 +108,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 	const isBillable = isOrganisationBillable(organisation);
 	const isBlocked = !isFree && !isBillable;
 
-	const regions = useCloudStore((s) => s.regions);
+	const regions = useCloudStore((s) => s.instanceRegions);
 	const regionName =
 		regions.find((r) => r.slug === details?.region)?.description ?? details?.region;
 
