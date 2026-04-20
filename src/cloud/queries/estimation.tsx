@@ -1,5 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
+import { useIsAuthenticated } from "~/hooks/auth";
+import { useHasCloudSession } from "~/hooks/cloud";
 import { CloudDeployConfig, CloudOrganization } from "~/types";
 import { fetchAPI } from "../api";
 import { compileDeployConfig } from "../helpers";

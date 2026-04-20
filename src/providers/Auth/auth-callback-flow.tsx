@@ -1,14 +1,14 @@
 import { useAuth0 } from "@auth0/auth0-react";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect } from "react";
 import { adapter } from "~/adapter";
-import { acquireSession, checkSessionExpiry, invalidateSession } from "~/cloud/api/auth";
+import { acquireSession, invalidateSession } from "~/cloud/api/auth";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
 import { openVerifyEmailModal } from "~/modals/verify-email";
-import { useAuthentication } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import { DeepLinkAuthEvent } from "~/util/global-events";
 import { showErrorNotification } from "~/util/helpers";
+import type { SignInOptions } from "./types";
 
 const AUTH_MESSAGE_TYPE = "surrealist-auth-callback";
 
@@ -17,19 +17,22 @@ interface AuthFailure {
 	error_description?: string | null | undefined;
 }
 
-function isAuthFailure(error: any): error is AuthFailure {
+function isAuthFailure(error: unknown): error is AuthFailure {
 	if (typeof error !== "object" || error === null) {
 		return false;
 	}
 
-	if ("error" in error && typeof error.error === "string") {
+	if ("error" in error && typeof (error as AuthFailure).error === "string") {
 		return true;
 	}
 
 	return false;
 }
 
-function handleAuthFailure(failure: AuthFailure, signIn: () => Promise<void>) {
+function handleAuthFailure(
+	failure: AuthFailure,
+	signIn: (options?: SignInOptions) => Promise<void>,
+) {
 	const needsVerification = failure.error_description
 		?.toLowerCase()
 		.includes("verify your email");
@@ -44,23 +47,17 @@ function handleAuthFailure(failure: AuthFailure, signIn: () => Promise<void>) {
 	}
 }
 
+export interface AuthCallbackFlowProps {
+	signIn: (options?: SignInOptions) => Promise<void>;
+}
+
 /**
- * Automatically set up the cloud authentication flow
+ * Handles Auth0 redirect callbacks from deep links and postMessage, email verification UX,
+ * and Auth0 error responses.
  */
-export function useCloudAuthentication() {
-	const {
-		isAuthenticated,
-		logout,
-		isLoading,
-		getAccessTokenSilently,
-		handleRedirectCallback,
-		error,
-	} = useAuth0();
+export function useAuthCallbackFlow({ signIn }: AuthCallbackFlowProps) {
+	const { handleRedirectCallback, getAccessTokenSilently, error, isLoading } = useAuth0();
 
-	const { signIn } = useAuthentication();
-	const hasInitialised = useRef(false);
-
-	// Handle incoming deeplink callbacks
 	const processAuthCallback = useStable(async (callbackUrl: string) => {
 		const { setIsProcessingAuth } = useCloudStore.getState();
 
@@ -74,7 +71,7 @@ export function useCloudAuthentication() {
 			const accessToken = await getAccessTokenSilently();
 
 			await acquireSession(accessToken, true);
-		} catch (err: any) {
+		} catch (err: unknown) {
 			if (isAuthFailure(err)) {
 				handleAuthFailure(err, signIn);
 				adapter.warn("Auth", `Authentication was rejected: ${JSON.stringify(err)}`);
@@ -88,35 +85,6 @@ export function useCloudAuthentication() {
 		}
 	});
 
-	// Request SurrealDB Cloud session
-	useEffect(() => {
-		if (isLoading) {
-			return;
-		}
-
-		if (isAuthenticated && !hasInitialised.current) {
-			hasInitialised.current = true;
-
-			(async () => {
-				try {
-					const accessToken = await getAccessTokenSilently();
-					await acquireSession(accessToken, false);
-				} catch (err: any) {
-					adapter.warn(
-						"Auth",
-						`Failed to acquire cloud session on init: ${err?.message ?? err}`,
-					);
-
-					useCloudStore.getState().setSessionExpired(true);
-
-					invalidateSession();
-					await logout({ openUrl: false });
-				}
-			})();
-		}
-	}, [isAuthenticated, isLoading, logout, getAccessTokenSilently]);
-
-	// Handle Auth0 authentication errors
 	useEffect(() => {
 		if (isLoading || !isAuthFailure(error)) {
 			return;
@@ -125,13 +93,6 @@ export function useCloudAuthentication() {
 		handleAuthFailure(error, signIn);
 	}, [isLoading, error, signIn]);
 
-	// Check session expiry
-	useLayoutEffect(() => {
-		const interval = setInterval(checkSessionExpiry, 1000 * 60 * 3);
-		return () => clearInterval(interval);
-	}, []);
-
-	// Subscribe to deep link auth events
 	useEffect(() => {
 		const handler = (event: MessageEvent) => {
 			if (event.data?.type !== AUTH_MESSAGE_TYPE) return;

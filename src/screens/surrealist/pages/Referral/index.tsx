@@ -34,7 +34,7 @@ import { CloudSplash } from "~/components/CloudSplash";
 import { Label } from "~/components/Label";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useIsAuthenticated } from "~/hooks/auth";
 import { useIsLight } from "~/hooks/theme";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import classes from "./style.module.scss";

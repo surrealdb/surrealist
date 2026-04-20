@@ -7,7 +7,11 @@ import { destroySession } from "~/cloud/api/auth";
 import { SignInRedirect } from "~/components/SignInRedirect";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { showErrorNotification } from "~/util/helpers";
+import { useAuthCallbackFlow } from "./auth-callback-flow";
 import { callback, computeReturnPath } from "./helpers";
+import type { SignInOptions } from "./types";
+
+export type { SignInOptions };
 
 const CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID ?? "";
 const AUTH_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN ?? "";
@@ -23,11 +27,6 @@ export interface AuthContext {
 	user: User | undefined;
 	signIn: (options?: SignInOptions) => Promise<void>;
 	signOut: () => Promise<void>;
-}
-
-export interface SignInOptions {
-	screen?: "signin" | "signup";
-	redirect?: boolean;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -96,6 +95,8 @@ function TokenBridge({ children }: PropsWithChildren) {
 			},
 		});
 	});
+
+	useAuthCallbackFlow({ signIn });
 
 	const signOut = useStable(async () => {
 		destroySession();

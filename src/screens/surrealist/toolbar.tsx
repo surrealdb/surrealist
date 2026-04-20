@@ -35,8 +35,9 @@ import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
 import { StarSparkles } from "~/components/StarSparkles";
 import { REGION_FLAGS, SANDBOX } from "~/constants";
+import { useIsAuthenticated } from "~/hooks/auth";
 import { useBoolean } from "~/hooks/boolean";
-import { useAvailableInstanceVersions, useIsAuthenticated } from "~/hooks/cloud";
+import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import {
 	useConnection,
 	useIsConnected,

@@ -32,7 +32,7 @@ import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queri
 import { ConversationTable } from "~/components/ConversationTable";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useIsAuthenticated } from "~/hooks/auth";
 import { openSelectOrganizationModal } from "~/modals/select-organization";
 import { useAuthentication } from "~/providers/Auth";
 import { useFeatureFlags } from "~/util/feature-flags";

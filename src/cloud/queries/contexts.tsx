@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
+import { useIsAuthenticated } from "~/hooks/auth";
+import { useHasCloudSession } from "~/hooks/cloud";
 import type {
 	CloudContext,
 	ContextApiKey,

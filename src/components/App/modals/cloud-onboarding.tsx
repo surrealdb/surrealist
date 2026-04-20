@@ -27,7 +27,8 @@ import {
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useHasCloudSession, useIsAuthenticated, useIsCloudEnabled } from "~/hooks/cloud";
+import { useIsAuthenticated } from "~/hooks/auth";
+import { useHasCloudSession, useIsCloudEnabled } from "~/hooks/cloud";
 import { useCheckbox } from "~/hooks/events";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";

@@ -1,6 +1,6 @@
 import { Anchor, Box, Button, Group, Menu, Text } from "@mantine/core";
 import { Icon, iconChevronRight, iconExitToAp, iconOpen, iconTune } from "@surrealdb/ui";
-import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
+import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/auth";
 import { useAuthentication } from "~/providers/Auth";
 import { AccountAvatar } from "../AccountAvatar";
 

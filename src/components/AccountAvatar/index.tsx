@@ -1,5 +1,5 @@
 import { Avatar, AvatarProps, Loader, UnstyledButton } from "@mantine/core";
-import { useIsAuthLoading } from "~/hooks/cloud";
+import { useIsAuthLoading } from "~/hooks/auth";
 import { useAuthentication } from "~/providers/Auth";
 
 export function AccountAvatar(props: AvatarProps) {

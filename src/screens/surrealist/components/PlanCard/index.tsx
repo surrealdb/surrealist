@@ -2,6 +2,8 @@ import { Badge, Box, Checkbox, Group, Paper, Stack, Text, Title } from "@mantine
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { Label } from "~/components/Label";
+import { PLAN_PERIOD_LABELS } from "~/constants";
+import { PlanPeriod } from "~/types";
 import classes from "./style.module.scss";
 
 export function formatPrice(millcents: number) {
@@ -19,7 +21,7 @@ export interface PlanCardProps {
 	name: string;
 	description?: string;
 	priceMillcents: number;
-	pricePeriod: "month" | "year";
+	pricePeriod: PlanPeriod;
 	contents: PlanCardContent[];
 	disabled?: boolean;
 	footer?: ReactNode;
@@ -92,7 +94,7 @@ export function PlanCard({
 							>
 								per
 								<br />
-								{pricePeriod}
+								{PLAN_PERIOD_LABELS[pricePeriod]}
 							</Text>
 						)}
 					</Group>

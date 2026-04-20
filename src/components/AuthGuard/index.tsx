@@ -1,7 +1,7 @@
 import { Center } from "@mantine/core";
 import { Spinner } from "@surrealdb/ui";
 import { type PropsWithChildren, useEffect } from "react";
-import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
+import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/auth";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
 import { SignInRedirect } from "../SignInRedirect";

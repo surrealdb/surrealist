@@ -3,7 +3,7 @@ import { Icon, iconChevronRight, iconOpen, pictoSDBCloud } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
 import logoLightImg from "~/assets/images/light/cloud-logo.svg";
-import { useIsAuthLoading } from "~/hooks/cloud";
+import { useIsAuthLoading } from "~/hooks/auth";
 import { useThemeImage } from "~/hooks/theme";
 import { useAuthentication } from "~/providers/Auth";
 

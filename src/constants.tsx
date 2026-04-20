@@ -58,6 +58,7 @@ import type {
 	MonitorSeverity,
 	NoneResultMode,
 	Orientation,
+	PlanPeriod,
 	Protocol,
 	ResultFormat,
 	ResultMode,
@@ -582,3 +583,8 @@ export const SUPPORT_STATES = [
 		color: "red",
 	},
 ];
+
+export const PLAN_PERIOD_LABELS: Record<PlanPeriod, string> = {
+	monthly: "month",
+	yearly: "year",
+};

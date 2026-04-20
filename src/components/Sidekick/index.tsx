@@ -11,7 +11,7 @@ import {
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
 import glowImg from "~/assets/images/radial-glow.png";
 import { Spacer } from "~/components/Spacer";
-import { useIsAuthenticated } from "~/hooks/cloud";
+import { useIsAuthenticated } from "~/hooks/auth";
 import { useSetting } from "~/hooks/config";
 import { useAuthentication } from "~/providers/Auth";
 import { useSidekickStore } from "~/stores/sidekick";

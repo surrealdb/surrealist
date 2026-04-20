@@ -1,4 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { Alert, Stack, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "~/cloud/api";
@@ -15,20 +14,6 @@ import { showErrorNotification, showInfo } from "~/util/helpers";
  */
 export function useIsCloudEnabled() {
 	return useFeatureFlags()[0].cloud_enabled;
-}
-
-/**
- * Returns whether the user is authenticated via Auth0
- */
-export function useIsAuthenticated() {
-	return useAuth0().isAuthenticated;
-}
-
-/**
- * Returns whether the Auth0 SDK is still loading
- */
-export function useIsAuthLoading() {
-	return useAuth0().isLoading;
 }
 
 /**

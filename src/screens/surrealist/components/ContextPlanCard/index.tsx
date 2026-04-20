@@ -17,7 +17,7 @@ export interface ContextPlanCardProps {
 
 export function ContextPlanCard({ pkg, isCurrent, footer }: ContextPlanCardProps) {
 	const features = contextPackageFeatures(pkg);
-	const pricePeriod = pkg.billing_period ?? "month";
+	const pricePeriod = pkg.billing_period ?? "monthly";
 
 	return (
 		<PlanCard

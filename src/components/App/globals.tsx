@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { adapter } from "~/adapter";
-import { useCloudAuthentication } from "./hooks/cloud";
 import { useConnectionSwitch } from "./hooks/connection";
 import { useEscapeKeyListener, useKeybindListener, useModKeyTracker } from "./hooks/input";
 import { useIntercom } from "./hooks/intercom";
@@ -17,7 +16,6 @@ export function Globals(): ReactNode {
 	useEscapeKeyListener();
 	useWindowSettings();
 	useConnectionSwitch();
-	useCloudAuthentication();
 	useTitleSync();
 	useViewSync();
 	useAppRouter();
