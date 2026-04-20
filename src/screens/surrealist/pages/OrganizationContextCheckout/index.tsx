@@ -315,25 +315,7 @@ function PageContent({ organisation }: PageContentProps) {
 									style={{ flexShrink: 0 }}
 								>
 									{selectedPackage ? (
-										<ContextPlanCard
-											pkg={selectedPackage}
-											footer={
-												<Button
-													mt="md"
-													size="lg"
-													fullWidth
-													color="obsidian"
-													variant="light"
-													onClick={() =>
-														navigate(
-															`/o/${organisation.id}/contexts/plan${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`,
-														)
-													}
-												>
-													Change plan
-												</Button>
-											}
-										/>
+										<ContextPlanCard pkg={selectedPackage} />
 									) : (
 										<Text
 											c="red"
