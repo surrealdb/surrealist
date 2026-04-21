@@ -134,15 +134,14 @@ export async function openConnection(options?: ConnectOptions) {
 		const [versionCheck] = getVersionTimeout();
 
 		if (connection.authentication.mode === "cloud") {
-			const { isActive, isLoading } = getCloudSessionStatus();
+			const { isActive } = getCloudSessionStatus();
 
-			if (isLoading) {
+			// Wait for the cloud session to become active. `useConnectionSwitch`
+			// observes cloud state and will re-trigger this flow when it does;
+			// the scheduled retry acts as a safety net for non-reactive callers.
+			if (!isActive) {
 				scheduleReconnect(1000);
 				return;
-			}
-
-			if (!isActive) {
-				throw new CloudError("Not authenticated with SurrealDB Cloud");
 			}
 
 			const instance = await fetchAPI<CloudInstance>(
