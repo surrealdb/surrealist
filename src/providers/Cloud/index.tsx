@@ -13,13 +13,18 @@ import { adapter } from "~/adapter";
 import { ApiError, fetchAPI } from "~/cloud/api";
 import { isClientSupported } from "~/cloud/api/version";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudProfile, CloudSignin } from "~/types";
+import type {
+	CloudBillingCountry,
+	CloudInstanceType,
+	CloudProfile,
+	CloudRegion,
+	CloudSignin,
+} from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { exposeDebug, showErrorNotification } from "~/util/helpers";
 import { AWS_MARKETPLACE_KEY, INVITATION_KEY, REFERRER_KEY } from "~/util/storage";
 import { useAuthentication } from "../Auth";
-import { syncCloudResources } from "./session";
 
 export const EMPTY_PROFILE: CloudProfile = {
 	default_org: "",
@@ -86,7 +91,8 @@ export function useCloud(): CloudContext {
 
 export function CloudProvider({ children }: PropsWithChildren) {
 	const { isAuthenticated, isLoading: isAuthLoading, getAccessToken } = useAuthentication();
-	const { setOnboardingRequired, setIsSupported, setFailedConnected } = useCloudStore.getState();
+	const { setOnboardingRequired, setIsSupported, setFailedConnected, setCloudValues } =
+		useCloudStore.getState();
 
 	const [error, setError] = useState("");
 	const [isActive, setIsActive] = useState(false);
@@ -110,6 +116,26 @@ export function CloudProvider({ children }: PropsWithChildren) {
 	const syncCloudProfile = useStable(async () => {
 		const profile = await fetchAPI<CloudProfile>("/user/profile");
 		setProfile(profile);
+		adapter.log("Cloud", "Synchronised cloud profile");
+	});
+
+	const syncCloudResources = useStable(async () => {
+		const [instanceVersions, instanceTypes, instanceRegions, contextRegions, billingCountries] =
+			await Promise.all([
+				fetchAPI<string[]>("/instanceversions"),
+				fetchAPI<CloudInstanceType[]>("/instancetypes"),
+				fetchAPI<CloudRegion[]>("/regions"),
+				fetchAPI<CloudRegion[]>("/context_regions"),
+				fetchAPI<CloudBillingCountry[]>("/billingcountries"),
+			]);
+
+		setCloudValues({
+			instanceVersions,
+			instanceTypes,
+			instanceRegions,
+			contextRegions,
+			billingCountries,
+		});
 	});
 
 	const acquireSession = useStable(async (initial: boolean) => {
@@ -158,9 +184,11 @@ export function CloudProvider({ children }: PropsWithChildren) {
 				body: JSON.stringify(accessToken),
 			});
 
+			setError("");
 			setSessionToken(result.token);
 			setAuthProvider(result.provider);
 			setUserId(result.id);
+			setIsActive(true);
 
 			const promptTerms = !result.terms_accepted_at;
 
@@ -168,12 +196,8 @@ export function CloudProvider({ children }: PropsWithChildren) {
 				setOnboardingRequired(true);
 			}
 
-			await Promise.all([syncCloudProfile(), syncCloudResources()]);
-
 			adapter.log("Cloud", "Session acquired");
 			CloudAuthEvent.dispatch(null);
-
-			setError("");
 
 			if (initial) {
 				tagEvent("cloud_signin", {
@@ -266,6 +290,13 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			};
 		}
 	}, [isAuthenticated, isAuthLoading]);
+
+	useEffect(() => {
+		if (isActive) {
+			void syncCloudProfile();
+			void syncCloudResources();
+		}
+	}, [isActive]);
 
 	useEffect(() => {
 		exposeDebug({

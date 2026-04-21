@@ -11,6 +11,7 @@ export async function fetchAPI<T = unknown>(
 ): Promise<T> {
 	const sessionToken = getCloudSessionToken();
 	const { apiBase } = getCloudEndpoints();
+	const { headers: extraHeaders, ...restOptions } = options || {};
 
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
@@ -24,8 +25,9 @@ export async function fetchAPI<T = unknown>(
 		const response = await fetch(`${apiBase}${path}`, {
 			headers: {
 				...headers,
-				...options?.headers,
+				...extraHeaders,
 			},
+			...restOptions,
 		});
 
 		if (!response.ok) {
