@@ -19,6 +19,8 @@ export function useIsCloudEnabled() {
 
 /**
  * Returns whether the user has a cloud session active
+ *
+ * @deprecated Use `const { isActive } = useCloud()` instead
  */
 export function useHasCloudSession() {
 	return useCloud().isActive;
@@ -26,6 +28,8 @@ export function useHasCloudSession() {
 
 /**
  * Returns the current user profile
+ *
+ * @deprecated Use `const { profile } = useCloud()` instead
  */
 export function useCloudProfile() {
 	return useCloud().profile;

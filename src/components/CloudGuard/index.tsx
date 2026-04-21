@@ -1,5 +1,5 @@
 import { Center, Loader } from "@mantine/core";
-import type { PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 import { AuthGuard, type AuthGuardProps } from "~/components/AuthGuard";
 import { useCloud } from "~/providers/Cloud";
 

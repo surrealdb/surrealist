@@ -1,11 +1,11 @@
-import { Box, Drawer, Flex, Group, LoadingOverlay, Stack } from "@mantine/core";
+import { Box, Center, Drawer, Flex, Group, Loader, LoadingOverlay, Stack } from "@mantine/core";
 import { memo, useLayoutEffect } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AppTitleBar } from "~/components/AppTitleBar";
 import { CloudGuard } from "~/components/CloudGuard";
 import { TopGlow } from "~/components/TopGlow";
-import { useCloudProfile, useIsCloudEnabled } from "~/hooks/cloud";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
@@ -57,13 +57,18 @@ const CreateOrganizationsPageLazy = memo(CreateOrganizationPage);
 const ContextPageLazy = memo(ContextPage);
 
 function DefaultOrgRedirect({ rest }: { rest?: string }) {
-	const { default_org } = useCloudProfile();
+	const { profile, isActive } = useCloud();
+	const defaultOrg = profile.default_org;
 
-	if (!default_org) {
-		return <Redirect to="/overview" />;
+	if (!defaultOrg || !isActive) {
+		return (
+			<Center flex={1}>
+				<Loader size="lg" />
+			</Center>
+		);
 	}
 
-	return <Redirect to={rest ? `/o/${default_org}/${rest}` : `/o/${default_org}`} />;
+	return <Redirect to={rest ? `/o/${defaultOrg}/${rest}` : `/o/${defaultOrg}`} />;
 }
 
 export function SurrealistScreen() {
