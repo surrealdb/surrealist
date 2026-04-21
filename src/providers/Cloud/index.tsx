@@ -25,28 +25,12 @@ import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { exposeDebug, showErrorNotification } from "~/util/helpers";
 import { AWS_MARKETPLACE_KEY, INVITATION_KEY, REFERRER_KEY } from "~/util/storage";
 import { useAuthentication } from "../Auth";
+import { shouldRefreshJwtBeforeExpiry } from "./helpers";
+import type { CloudContext, CloudSessionStatus } from "./types";
+import { EMPTY_PROFILE } from "./types";
 
-export const EMPTY_PROFILE: CloudProfile = {
-	default_org: "",
-	enabled_features: [],
-};
-
-export interface CloudSessionStatus {
-	isActive: boolean;
-	isLoading: boolean;
-}
-
-export interface CloudContext {
-	error: string;
-	isActive: boolean;
-	isLoading: boolean;
-	sessionToken: string;
-	userId: string;
-	authProvider: string;
-	profile: CloudProfile;
-	syncCloudProfile: () => Promise<void>;
-	syncCloudResources: () => Promise<void>;
-}
+export type { CloudContext, CloudSessionStatus };
+export { EMPTY_PROFILE };
 
 const CloudSessionContext = createContext<CloudContext | null>(null);
 
@@ -253,21 +237,7 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
-		const parts = token.split(".");
-
-		if (parts.length !== 3) {
-			throw new Error("Invalid JWT token");
-		}
-
-		const expiry = JSON.parse(atob(parts[1])).exp;
-
-		if (!expiry) {
-			return;
-		}
-
-		const now = Date.now() / 1000;
-
-		if (expiry - now < 300) {
+		if (shouldRefreshJwtBeforeExpiry(token)) {
 			void acquireSession(false);
 		}
 	});
@@ -301,6 +271,8 @@ export function CloudProvider({ children }: PropsWithChildren) {
 	useEffect(() => {
 		exposeDebug({
 			invalidateSession,
+			syncCloudProfile,
+			syncCloudResources,
 		});
 	}, []);
 
