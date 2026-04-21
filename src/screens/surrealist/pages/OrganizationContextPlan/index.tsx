@@ -202,14 +202,15 @@ function PageContent({ organisation }: PageContentProps) {
 											>
 												<ContextPlanCard
 													pkg={pkg}
-													isCurrent={pkg.id === activePackageId}
 													footer={
 														<Button
 															mt="md"
 															size="lg"
 															disabled={isDisabled}
 														>
-															Choose plan
+															{isCurrent
+																? "Current plan"
+																: "Choose plan"}
 														</Button>
 													}
 												/>
