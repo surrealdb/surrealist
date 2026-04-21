@@ -28,9 +28,9 @@ import {
 	useCloudOrganizationQuery,
 	useCloudOrganizationsQuery,
 } from "~/cloud/queries/organizations";
-import { AuthGuard } from "~/components/AuthGuard";
 import { BillingDetails } from "~/components/BillingDetails";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PaymentDetails } from "~/components/PaymentDetails";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -54,9 +54,9 @@ export function OrganizationContextCheckoutPage({ id }: OrganizationContextCheck
 	}
 
 	return (
-		<AuthGuard loading={organisationsQuery.isLoading}>
+		<CloudGuard loading={organisationsQuery.isLoading}>
 			<PageContent organisation={organisation as CloudOrganization} />
-		</AuthGuard>
+		</CloudGuard>
 	);
 }
 

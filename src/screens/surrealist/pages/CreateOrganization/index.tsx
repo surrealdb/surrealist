@@ -4,7 +4,7 @@ import { Icon, iconOrganization } from "@surrealdb/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
-import { AuthGuard } from "~/components/AuthGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAbsoluteLocation } from "~/hooks/routing";
@@ -43,7 +43,7 @@ export function CreateOrganizationPage() {
 	});
 
 	return (
-		<AuthGuard>
+		<CloudGuard>
 			<Box
 				flex={1}
 				pos="relative"
@@ -125,6 +125,6 @@ export function CreateOrganizationPage() {
 					</Stack>
 				</ScrollArea>
 			</Box>
-		</AuthGuard>
+		</CloudGuard>
 	);
 }

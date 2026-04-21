@@ -76,7 +76,7 @@ export function OverviewPage() {
 
 	const orgsQuery = useCloudOrganizationsQuery();
 	const activeOrgs = orgsQuery.data?.filter((org) => !isOrganisationTerminated(org)) ?? [];
-	const isOrgsLoading = isAuthLoading || (isAuthenticated && orgsQuery.isPending);
+	const isOrgsLoading = isAuthenticated && orgsQuery.isPending;
 
 	return (
 		<Box
@@ -153,16 +153,7 @@ export function OverviewPage() {
 										</Link>
 									</Group>
 
-									{isOrgsLoading && (
-										<SimpleGrid
-											cols={GRID_COLUMNS}
-											mt="sm"
-										>
-											<Skeleton h={112} />
-										</SimpleGrid>
-									)}
-
-									{!isAuthenticated && !isAuthLoading && (
+									{!isAuthenticated ? (
 										<StartCloud
 											action="View your organizations"
 											image={pictoCloud}
@@ -178,20 +169,31 @@ export function OverviewPage() {
 												one place.
 											</Text>
 										</StartCloud>
-									)}
+									) : (
+										<>
+											{isOrgsLoading && (
+												<SimpleGrid
+													cols={GRID_COLUMNS}
+													mt="sm"
+												>
+													<Skeleton h={112} />
+												</SimpleGrid>
+											)}
 
-									{isAuthenticated && activeOrgs.length > 0 && (
-										<SimpleGrid
-											cols={GRID_COLUMNS}
-											mt="sm"
-										>
-											{activeOrgs.map((org) => (
-												<OrganizationTile
-													key={org.id}
-													organization={org}
-												/>
-											))}
-										</SimpleGrid>
+											{isAuthenticated && activeOrgs.length > 0 && (
+												<SimpleGrid
+													cols={GRID_COLUMNS}
+													mt="sm"
+												>
+													{activeOrgs.map((org) => (
+														<OrganizationTile
+															key={org.id}
+															organization={org}
+														/>
+													))}
+												</SimpleGrid>
+											)}
+										</>
 									)}
 								</>
 							)}

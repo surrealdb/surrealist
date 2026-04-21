@@ -22,8 +22,8 @@ import {
 	useCloudOrganizationsQuery,
 } from "~/cloud/queries/organizations";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
-import { AuthGuard } from "~/components/AuthGuard";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS } from "~/constants";
@@ -47,11 +47,11 @@ export function OrganizationContextDeployPage({ id }: OrganizationContextDeployP
 	}
 
 	return (
-		<AuthGuard
+		<CloudGuard
 			loading={organisationsQuery.isLoading || orgDetailPending || packageQueryPending}
 		>
 			<PageContent organisation={organisation as CloudOrganization} />
-		</AuthGuard>
+		</CloudGuard>
 	);
 }
 

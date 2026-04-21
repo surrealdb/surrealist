@@ -12,6 +12,7 @@ import {
 import { adapter } from "~/adapter";
 import { ApiError, fetchAPI } from "~/cloud/api";
 import { isClientSupported } from "~/cloud/api/version";
+import { openCloudOnboardingModal } from "~/modals/cloud-onboarding";
 import { useCloudStore } from "~/stores/cloud";
 import type {
 	CloudBillingCountry,
@@ -73,8 +74,10 @@ export function useCloud(): CloudContext {
 }
 
 export function CloudProvider({ children }: PropsWithChildren) {
-	const { isAuthenticated, isLoading: isAuthLoading, getAccessToken } = useAuthentication();
-	const { setOnboardingRequired, setIsSupported, setFailedConnected, setCloudValues } =
+	const { user, isAuthenticated, isLoading: isAuthLoading, getAccessToken } = useAuthentication();
+	const emailVerified = user?.email_verified === true;
+
+	const { setTermsAcceptancePending, setIsSupported, setFailedConnected, setCloudValues } =
 		useCloudStore.getState();
 
 	const [error, setError] = useState("");
@@ -85,10 +88,12 @@ export function CloudProvider({ children }: PropsWithChildren) {
 	const [authProvider, setAuthProvider] = useState("");
 	const [profile, setProfile] = useState<CloudProfile>(EMPTY_PROFILE);
 
+	const termsPending = useCloudStore((s) => s.termsAcceptancePending);
+
 	const invalidateSession = useStable(() => {
 		adapter.log("Cloud", "Invalidating session");
 
-		setOnboardingRequired(false);
+		setTermsAcceptancePending(false);
 		setSessionToken("");
 		setUserId("");
 		setAuthProvider("");
@@ -176,7 +181,7 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			const promptTerms = !result.terms_accepted_at;
 
 			if (promptTerms) {
-				setOnboardingRequired(true);
+				setTermsAcceptancePending(true);
 			}
 
 			adapter.log("Cloud", "Session acquired");
@@ -250,14 +255,20 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
-		if (isAuthenticated) {
+		if (isAuthenticated && emailVerified) {
 			void acquireSession(true);
 
 			return () => {
 				invalidateSession();
 			};
 		}
-	}, [isAuthenticated, isAuthLoading]);
+	}, [isAuthenticated, isAuthLoading, emailVerified]);
+
+	useEffect(() => {
+		if (termsPending) {
+			openCloudOnboardingModal();
+		}
+	}, [termsPending]);
 
 	useEffect(() => {
 		if (isActive) {

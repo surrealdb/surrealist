@@ -18,7 +18,8 @@ export type CloudStore = {
 	instanceRegions: CloudRegion[];
 	contextRegions: CloudRegion[];
 	billingCountries: CloudBillingCountry[];
-	onboardingRequired: boolean;
+	/** True after sign-in when the API reports terms not yet accepted; cleared when the user accepts in the onboarding modal. */
+	termsAcceptancePending: boolean;
 	isProvisioning: boolean;
 	isProvisionDone: boolean;
 	provisioning: unknown;
@@ -28,7 +29,7 @@ export type CloudStore = {
 	setIsSupported: (supported: boolean) => void;
 	setFailedConnected: (failed: boolean) => void;
 	setCloudValues: (values: CloudValues) => void;
-	setOnboardingRequired: (required: boolean) => void;
+	setTermsAcceptancePending: (pending: boolean) => void;
 };
 
 export const useCloudStore = create<CloudStore>()(
@@ -40,7 +41,7 @@ export const useCloudStore = create<CloudStore>()(
 		instanceRegions: [],
 		contextRegions: [],
 		billingCountries: [],
-		onboardingRequired: false,
+		termsAcceptancePending: false,
 		isProvisioning: false,
 		isProvisionDone: false,
 		provisioning: null,
@@ -62,9 +63,9 @@ export const useCloudStore = create<CloudStore>()(
 				failedConnect: failed,
 			}),
 
-		setOnboardingRequired: (required) =>
+		setTermsAcceptancePending: (pending) =>
 			set({
-				onboardingRequired: required,
+				termsAcceptancePending: pending,
 			}),
 	})),
 );

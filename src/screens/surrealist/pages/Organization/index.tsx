@@ -11,7 +11,7 @@ import {
 	ORG_ROLES_SUPPORT,
 } from "~/cloud/helpers";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
-import { AuthGuard } from "~/components/AuthGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useAuthentication } from "~/providers/Auth";
@@ -72,7 +72,7 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 	}
 
 	return (
-		<AuthGuard>
+		<CloudGuard>
 			{isAuthed ? (
 				<Box
 					flex={1}
@@ -191,6 +191,6 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 			) : (
 				<CloudSplash />
 			)}
-		</AuthGuard>
+		</CloudGuard>
 	);
 }

@@ -5,7 +5,6 @@ import { SurrealistScreen } from "~/screens/surrealist";
 import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
-import { CloudOnboardingModal } from "./modals/cloud-onboarding";
 import { CloudUpdateRequiredDialog } from "./modals/cloud-update-required";
 import { CommandPaletteModal } from "./modals/commands";
 import { ConnectionsModal } from "./modals/connections";
@@ -61,7 +60,6 @@ export function App() {
 			<NewsFeedDrawer />
 			<SidekickDrawer />
 			<CreateMessageModal />
-			<CloudOnboardingModal />
 			<CloudUpdateRequiredDialog />
 			<FailedConnectDialog />
 

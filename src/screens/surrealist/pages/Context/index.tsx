@@ -2,7 +2,7 @@ import { Box, Center, Loader, ScrollArea, Skeleton, Stack } from "@mantine/core"
 import { lazy, memo, Suspense } from "react";
 import { Redirect } from "wouter";
 import { useCloudContextQuery } from "~/cloud/queries/contexts";
-import { AuthGuard } from "~/components/AuthGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useContextAndView } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
@@ -52,7 +52,7 @@ export function ContextPage({ view }: ContextPageProps) {
 	const Component = VIEW_COMPONENTS[viewPage];
 
 	return (
-		<AuthGuard>
+		<CloudGuard>
 			<ContextSidebar
 				contextId={contextId ?? ""}
 				organizationId={organizationId ?? ""}
@@ -109,6 +109,6 @@ export function ContextPage({ view }: ContextPageProps) {
 					</Stack>
 				</ScrollArea>
 			</Box>
-		</AuthGuard>
+		</CloudGuard>
 	);
 }

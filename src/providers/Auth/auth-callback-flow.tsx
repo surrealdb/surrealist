@@ -3,11 +3,9 @@ import { useEffect } from "react";
 import { adapter } from "~/adapter";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
-import { openVerifyEmailModal } from "~/modals/verify-email";
 import { broadcastAuthEvent } from "~/util/auth-broadcast";
 import { DeepLinkAuthEvent } from "~/util/global-events";
 import { showErrorNotification } from "~/util/helpers";
-import type { SignInOptions } from "./types";
 
 const AUTH_MESSAGE_TYPE = "surrealist-auth-callback";
 
@@ -28,36 +26,21 @@ function isAuthFailure(error: unknown): error is AuthFailure {
 	return false;
 }
 
-function handleAuthFailure(
-	failure: AuthFailure,
-	signIn: (options?: SignInOptions) => Promise<void>,
-) {
-	const needsVerification = failure.error_description
-		?.toLowerCase()
-		.includes("verify your email");
-
-	if (needsVerification) {
-		openVerifyEmailModal(signIn);
-	} else {
-		showErrorNotification({
-			title: "Authentication failed",
-			content: failure.error_description ?? failure.error ?? "Unknown error",
-		});
-	}
-}
-
-export interface AuthCallbackFlowProps {
-	signIn: (options?: SignInOptions) => Promise<void>;
+function handleAuthFailure(failure: AuthFailure) {
+	showErrorNotification({
+		title: "Authentication failed",
+		content: failure.error_description ?? failure.error ?? "Unknown error",
+	});
 }
 
 /**
  * Handles Auth0 redirect callbacks arriving via deep links or postMessage,
- * including email verification UX and Auth0 error responses.
+ * including Auth0 error responses.
  *
  * Downstream sessions (e.g. the cloud session) observe the resulting Auth0
  * state transitions reactively instead of being driven from here.
  */
-export function useAuthCallbackFlow({ signIn }: AuthCallbackFlowProps) {
+export function useAuthCallbackFlow() {
 	const { handleRedirectCallback, error, isLoading } = useAuth0();
 
 	const processAuthCallback = useStable(async (callbackUrl: string) => {
@@ -68,7 +51,7 @@ export function useAuthCallbackFlow({ signIn }: AuthCallbackFlowProps) {
 			await broadcastAuthEvent("signin");
 		} catch (err: unknown) {
 			if (isAuthFailure(err)) {
-				handleAuthFailure(err, signIn);
+				handleAuthFailure(err);
 				adapter.warn("Auth", `Authentication was rejected: ${JSON.stringify(err)}`);
 			} else {
 				adapter.warn("Auth", `Failed to process auth callback: ${JSON.stringify(err)}`);
@@ -81,8 +64,8 @@ export function useAuthCallbackFlow({ signIn }: AuthCallbackFlowProps) {
 			return;
 		}
 
-		handleAuthFailure(error, signIn);
-	}, [isLoading, error, signIn]);
+		handleAuthFailure(error);
+	}, [isLoading, error]);
 
 	useEffect(() => {
 		const handler = (event: MessageEvent) => {

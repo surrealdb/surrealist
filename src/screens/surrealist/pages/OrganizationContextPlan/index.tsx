@@ -23,8 +23,8 @@ import {
 	useCloudOrganizationQuery,
 	useCloudOrganizationsQuery,
 } from "~/cloud/queries/organizations";
-import { AuthGuard } from "~/components/AuthGuard";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useSearchParams } from "~/hooks/routing";
@@ -45,9 +45,9 @@ export function OrganizationContextPlanPage({ id }: OrganizationContextPlanPageP
 	}
 
 	return (
-		<AuthGuard loading={organisationsQuery.isLoading}>
+		<CloudGuard loading={organisationsQuery.isLoading}>
 			<PageContent organisation={organisation as CloudOrganization} />
-		</AuthGuard>
+		</CloudGuard>
 	);
 }
 

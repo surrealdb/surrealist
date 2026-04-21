@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import {
 	Alert,
 	Box,
@@ -6,14 +7,24 @@ import {
 	Checkbox,
 	Container,
 	Group,
-	Modal,
+	Loader,
 	Select,
 	Stack,
 	Text,
 	TextInput,
+	ThemeIcon,
 } from "@mantine/core";
-import { Icon, iconCheck, iconChevronRight, iconErrorCircle, iconSurreal } from "@surrealdb/ui";
-import { Fragment, useState } from "react";
+import { closeModal, openModal } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import {
+	Icon,
+	iconCheck,
+	iconChevronRight,
+	iconEmail,
+	iconErrorCircle,
+	iconSurreal,
+} from "@surrealdb/ui";
+import { Fragment, useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useImmer } from "use-immer";
 import glowUrl from "~/assets/images/glow.png";
@@ -27,24 +38,48 @@ import {
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useHasCloudSession, useIsCloudEnabled } from "~/hooks/cloud";
 import { useCheckbox } from "~/hooks/events";
-import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useAuthentication } from "~/providers/Auth";
+import { useCloud } from "~/providers/Cloud";
 import { useCloudStore } from "~/stores/cloud";
 import { showErrorNotification } from "~/util/helpers";
 import classes from "./cloud-onboarding.module.scss";
 
-type OnboardingStep = "terms" | "about";
+export const CLOUD_ONBOARDING_MODAL_ID = "cloud-onboarding";
 
-const REQUIRED_QUESTIONS = [1, 2];
+type OnboardingStep = "verify" | "terms" | "about";
 
-export function CloudOnboardingModal() {
-	const cloudEnabled = useIsCloudEnabled();
-	const hasCloudSession = useHasCloudSession();
-	const { isAuthenticated } = useAuthentication();
-	const onboardingRequired = useCloudStore((s) => s.onboardingRequired);
+/**
+ * Opens the cloud onboarding flow when the user must verify their email or accept terms.
+ */
+export function openCloudOnboardingModal() {
+	openModal({
+		modalId: CLOUD_ONBOARDING_MODAL_ID,
+		fullScreen: true,
+		padding: 0,
+		withCloseButton: false,
+		closeOnClickOutside: false,
+		closeOnEscape: false,
+		trapFocus: true,
+		lockScroll: true,
+		zIndex: 1100,
+		transitionProps: {
+			transition: "fade-up",
+			duration: 500,
+		},
+		classNames: {
+			content: classes.modalContent,
+			body: classes.modalBody,
+		},
+		children: <CloudOnboardingModalInner />,
+	});
+}
+
+function CloudOnboardingModalInner() {
+	const { isActive: hasCloudSession } = useCloud();
+	const { isAuthenticated, user, signOut } = useAuthentication();
+	const termsAcceptancePending = useCloudStore((s) => s.termsAcceptancePending);
 
 	const { data: conditionsData, isPending: isLoadingConditions } = useCloudTCPPQuery();
 	const { data: questionsData, isPending: isLoadingQuestions } = useCloudFormQuery();
@@ -52,114 +87,197 @@ export function CloudOnboardingModal() {
 	const conditions = conditionsData ?? [];
 	const questions = questionsData ?? [];
 
-	const opened =
-		!isLoadingConditions &&
-		!isLoadingQuestions &&
-		cloudEnabled &&
-		isAuthenticated &&
-		hasCloudSession &&
-		onboardingRequired;
+	const needsVerify = isAuthenticated && user?.email_verified === false;
 
-	const [step, setStep] = useState<OnboardingStep>("terms");
+	const [step, setStep] = useState<OnboardingStep>("verify");
+
+	useEffect(() => {
+		if (needsVerify) {
+			setStep("verify");
+			return;
+		}
+
+		if (termsAcceptancePending && hasCloudSession) {
+			setStep("terms");
+			return;
+		}
+
+		if (hasCloudSession) {
+			setStep("about");
+		}
+	}, [needsVerify, termsAcceptancePending, hasCloudSession]);
+
+	useEffect(() => {
+		if (step !== "about") {
+			return;
+		}
+
+		if (isLoadingQuestions) {
+			return;
+		}
+
+		if (questions.length > 0) {
+			return;
+		}
+
+		closeModal(CLOUD_ONBOARDING_MODAL_ID);
+	}, [step, isLoadingQuestions, questions.length]);
+
+	const handleQuit = useStable(async () => {
+		await signOut();
+		closeModal(CLOUD_ONBOARDING_MODAL_ID);
+	});
 
 	const handleTermsAccepted = async () => {
 		setStep("about");
 	};
 
 	const handleAboutCompleted = () => {
-		useCloudStore.getState().setOnboardingRequired(false);
+		closeModal(CLOUD_ONBOARDING_MODAL_ID);
 	};
 
-	return (
-		<Modal
-			opened={opened}
-			onClose={() => {}}
-			fullScreen
-			padding={0}
-			withCloseButton={false}
-			closeOnClickOutside={false}
-			closeOnEscape={false}
-			trapFocus
-			lockScroll
-			zIndex={1100}
-			transitionProps={{
-				transition: "fade-up",
-				duration: 500,
-			}}
-			classNames={{
-				content: classes.modalContent,
-				body: classes.modalBody,
-			}}
-		>
-			<Box className={classes.root}>
-				<Center className={classes.formColumn}>
-					<Container size="sm">
-						{step === "terms" && (
-							<TermsStep
-								conditions={conditions}
-								onAccepted={handleTermsAccepted}
-							/>
-						)}
-						{step === "about" && (
-							<AboutStep
-								questions={questions}
-								onCompleted={handleAboutCompleted}
-							/>
-						)}
-					</Container>
-				</Center>
+	const showTermsLoader = step === "terms" && isLoadingConditions;
+	const showAboutLoader = step === "about" && isLoadingQuestions;
 
-				<Box
-					className={classes.brandColumn}
-					style={{ "--glow-image": `url(${glowUrl})` }}
-					visibleFrom="lg"
+	return (
+		<Box className={classes.root}>
+			<Center className={classes.formColumn}>
+				<Container size="sm">
+					{showTermsLoader || showAboutLoader ? (
+						<Center py="xl">
+							<Loader size="lg" />
+						</Center>
+					) : (
+						<>
+							{step === "verify" && <VerifyStep onQuit={handleQuit} />}
+							{step === "terms" && (
+								<TermsStep
+									onQuit={handleQuit}
+									conditions={conditions}
+									onAccepted={handleTermsAccepted}
+								/>
+							)}
+							{step === "about" && (
+								<AboutStep
+									questions={questions}
+									onCompleted={handleAboutCompleted}
+								/>
+							)}
+						</>
+					)}
+				</Container>
+			</Center>
+
+			<Box
+				className={classes.brandColumn}
+				style={{ "--glow-image": `url(${glowUrl})` }}
+				visibleFrom="lg"
+			>
+				<Box className={classes.brandGlow} />
+				<Stack
+					align="center"
+					gap="xl"
+					pos="relative"
 				>
-					<Box className={classes.brandGlow} />
-					<Stack
-						align="center"
-						gap="xl"
-						pos="relative"
+					<Icon
+						path={iconSurreal}
+						className={classes.brandLogo}
+						c="bright"
+					/>
+					<Text
+						className={classes.brandTagline}
+						fz="xl"
+						fw={600}
+						c="white"
 					>
-						<Icon
-							path={iconSurreal}
-							className={classes.brandLogo}
-							c="bright"
-						/>
-						<Text
-							className={classes.brandTagline}
-							fz="xl"
-							fw={600}
-							c="white"
-						>
-							The context layer for AI agents. The only vertical stack from storage to
-							memory.
-						</Text>
-					</Stack>
-				</Box>
+						The context layer for AI agents. The only vertical stack from storage to
+						memory.
+					</Text>
+				</Stack>
 			</Box>
-		</Modal>
+		</Box>
+	);
+}
+
+function VerifyStep({ onQuit }: { onQuit: () => void | Promise<void> }) {
+	const { getAccessTokenSilently, user } = useAuth0();
+	const [loading, setLoading] = useState(false);
+
+	const handleRefresh = useStable(async () => {
+		setLoading(true);
+
+		try {
+			await getAccessTokenSilently({ cacheMode: "off" });
+
+			if (user?.email_verified !== true) {
+				showNotification({
+					color: "blue",
+					title: "Email not yet verified",
+					message: "Please verify your email and try again.",
+				});
+			}
+		} catch {
+			showErrorNotification({
+				title: "Could not refresh verification status",
+				content: "Please try again in a moment.",
+			});
+		} finally {
+			setLoading(false);
+		}
+	});
+
+	return (
+		<Stack>
+			<Group>
+				<ThemeIcon size="lg">
+					<Icon
+						path={iconEmail}
+						size="lg"
+					/>
+				</ThemeIcon>
+				<PrimaryTitle fz={26}>Verify your email</PrimaryTitle>
+			</Group>
+			<Text
+				fz="lg"
+				mt="md"
+			>
+				Please verify your email before continuing. If you have not received an email,
+				please check your spam folder.
+			</Text>
+			<Group mt="xl">
+				<Button
+					variant="light"
+					onClick={() => void onQuit()}
+				>
+					Exit
+				</Button>
+				<Spacer />
+				<Button
+					variant="gradient"
+					loading={loading}
+					rightSection={<Icon path={iconEmail} />}
+					onClick={handleRefresh}
+				>
+					I've verified my email
+				</Button>
+			</Group>
+		</Stack>
 	);
 }
 
 interface TermsStepProps {
 	conditions: Condition[];
 	onAccepted: () => Promise<void>;
+	onQuit: () => void | Promise<void>;
 }
 
-function TermsStep({ conditions, onAccepted }: TermsStepProps) {
-	const [, navigate] = useAbsoluteLocation();
+function TermsStep({ conditions, onAccepted, onQuit }: TermsStepProps) {
 	const [termsChecked, setTermsChecked] = useState(false);
 	const [newsChecked, setNewsChecked] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const { signOut } = useAuthentication();
 
 	const updateTermsChecked = useCheckbox(setTermsChecked);
 	const updateNewsChecked = useCheckbox(setNewsChecked);
-
-	const declineTerms = useStable(() => {
-		signOut();
-		navigate("/overview");
-	});
 
 	const acceptTerms = useStable(async () => {
 		setLoading(true);
@@ -173,6 +291,7 @@ function TermsStep({ conditions, onAccepted }: TermsStepProps) {
 				}),
 			});
 
+			useCloudStore.getState().setTermsAcceptancePending(false);
 			await onAccepted();
 		} catch (err: any) {
 			showErrorNotification({
@@ -223,9 +342,9 @@ function TermsStep({ conditions, onAccepted }: TermsStepProps) {
 			<Group mt="xl">
 				<Button
 					variant="light"
-					onClick={declineTerms}
+					onClick={() => void onQuit()}
 				>
-					Decline
+					Quit
 				</Button>
 				<Spacer />
 				<Button
@@ -248,18 +367,11 @@ interface AboutStepProps {
 }
 
 function AboutStep({ questions, onCompleted }: AboutStepProps) {
-	const [values, setValues] = useImmer<Record<number, any>>({});
+	const [values, setValues] = useImmer<Record<number, unknown>>({});
 
 	const submitForm = useStable(() => {
-		fetchAPI("/user/form", {
-			method: "POST",
-			body: JSON.stringify(values),
-		});
-
 		onCompleted();
 	});
-
-	const isValid = REQUIRED_QUESTIONS.every((id) => values[id]);
 
 	return (
 		<>
@@ -285,15 +397,14 @@ function AboutStep({ questions, onCompleted }: AboutStepProps) {
 					>
 						We would love to know more about you and your use case!
 					</Text>
-					{(() => console.log("Q", questions))() ?? null}
 					{questions.map((question) => {
 						if (question.type === "text") {
 							return (
 								<TextInput
 									key={question.id}
 									label={question.question}
-									required={REQUIRED_QUESTIONS.includes(question.id)}
-									value={values[question.id] || ""}
+									required
+									value={(values[question.id] as string) || ""}
 									onChange={(value) =>
 										setValues((draft) => {
 											draft[question.id] = value.target.value;
@@ -316,7 +427,7 @@ function AboutStep({ questions, onCompleted }: AboutStepProps) {
 									key={question.id}
 									label={question.question}
 									data={options}
-									value={values[question.id] || null}
+									value={(values[question.id] as string) || null}
 									onChange={(value) =>
 										setValues((draft) => {
 											draft[question.id] = value;
@@ -343,7 +454,6 @@ function AboutStep({ questions, onCompleted }: AboutStepProps) {
 					variant="gradient"
 					rightSection={<Icon path={iconChevronRight} />}
 					onClick={submitForm}
-					disabled={!isValid}
 					style={{ flexShrink: 0 }}
 				>
 					Continue
