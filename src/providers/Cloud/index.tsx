@@ -21,7 +21,6 @@ import type {
 	CloudSignin,
 } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { CloudAuthEvent, CloudExpiredEvent } from "~/util/global-events";
 import { exposeDebug, showErrorNotification } from "~/util/helpers";
 import { AWS_MARKETPLACE_KEY, INVITATION_KEY, REFERRER_KEY } from "~/util/storage";
 import { useAuthentication } from "../Auth";
@@ -91,10 +90,10 @@ export function CloudProvider({ children }: PropsWithChildren) {
 
 		setOnboardingRequired(false);
 		setSessionToken("");
+		setUserId("");
+		setAuthProvider("");
 		setProfile(EMPTY_PROFILE);
 		setIsActive(false);
-
-		CloudExpiredEvent.dispatch(null);
 	});
 
 	const syncCloudProfile = useStable(async () => {
@@ -181,7 +180,6 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			}
 
 			adapter.log("Cloud", "Session acquired");
-			CloudAuthEvent.dispatch(null);
 
 			if (initial) {
 				tagEvent("cloud_signin", {

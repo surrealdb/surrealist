@@ -7,6 +7,7 @@ import { adapter, isDesktop } from "~/adapter";
 import { SignInRedirect } from "~/components/SignInRedirect";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { tagEvent } from "~/util/analytics";
+import { broadcastAuthEvent } from "~/util/auth-broadcast";
 import { showErrorNotification } from "~/util/helpers";
 import { useAuthCallbackFlow } from "./auth-callback-flow";
 import { callback, computeReturnPath } from "./helpers";
@@ -101,6 +102,8 @@ function TokenBridge({ children }: PropsWithChildren) {
 		shutdown();
 
 		navigate("/overview");
+
+		await broadcastAuthEvent("signout");
 
 		await logout({
 			openUrl: async (url) => {

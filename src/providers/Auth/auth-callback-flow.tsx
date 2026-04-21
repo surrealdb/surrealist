@@ -4,6 +4,7 @@ import { adapter } from "~/adapter";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
 import { openVerifyEmailModal } from "~/modals/verify-email";
+import { broadcastAuthEvent } from "~/util/auth-broadcast";
 import { DeepLinkAuthEvent } from "~/util/global-events";
 import { showErrorNotification } from "~/util/helpers";
 import type { SignInOptions } from "./types";
@@ -64,6 +65,7 @@ export function useAuthCallbackFlow({ signIn }: AuthCallbackFlowProps) {
 			adapter.log("Auth", "Processing auth callback");
 
 			await handleRedirectCallback(callbackUrl);
+			await broadcastAuthEvent("signin");
 		} catch (err: unknown) {
 			if (isAuthFailure(err)) {
 				handleAuthFailure(err, signIn);

@@ -31,31 +31,6 @@ export type CloudStore = {
 	setOnboardingRequired: (required: boolean) => void;
 };
 
-// /** Full cloud snapshot for desktop multi-window sync (legacy field names on the wire). */
-// export type CloudSyncPayload = {
-// 	isSupported: boolean;
-// 	failedConnect: boolean;
-// 	instanceVersions: string[];
-// 	instanceTypes: CloudInstanceType[];
-// 	instanceRegions: CloudRegion[];
-// 	contextRegions: CloudRegion[];
-// 	billingCountries: CloudBillingCountry[];
-// 	onboardingRequired: boolean;
-// 	isProvisioning: boolean;
-// 	isProvisionDone: boolean;
-// 	provisioning: unknown;
-// 	chatConversation: unknown[];
-// 	chatLastResponse: string;
-// 	authError: string;
-// 	sessionToken: string;
-// 	userId: string;
-// 	authProvider: string;
-// 	profile: CloudProfile;
-// 	sessionExpired: boolean;
-// 	cloudSessionActive: boolean;
-// 	isProcessingAuth: boolean;
-// };
-
 export const useCloudStore = create<CloudStore>()(
 	immer((set) => ({
 		isSupported: true,
