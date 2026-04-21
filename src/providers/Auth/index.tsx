@@ -39,8 +39,7 @@ let _getAccessToken: (() => Promise<string>) | null = null;
 let _user: User | undefined;
 
 /**
- * Get an Auth0 access token from outside of React.
- * Only available after the AuthProvider has mounted.
+ * Returns the current id token
  */
 export async function getAccessToken(): Promise<string> {
 	if (!_getAccessToken) {
@@ -51,19 +50,14 @@ export async function getAccessToken(): Promise<string> {
 }
 
 /**
- * Auth0 user when the auth bridge has mounted.
- * `undefined` before the first TokenBridge effect, or when logged out.
+ * Returns the current user snapshot
  */
-export function getAuthSnapshotUser(): User | undefined {
-	if (!_getAccessToken) {
-		return undefined;
-	}
-
+export function getUserSnapshot(): User | undefined {
 	return _user;
 }
 
 /**
- * Returns a function which retrieves the authentication context
+ * Returns the current authentication context
  */
 export function useAuthentication(): AuthContext {
 	const ctx = useContext(AuthContext);

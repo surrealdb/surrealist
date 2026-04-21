@@ -37,21 +37,21 @@ const CloudSessionContext = createContext<CloudContext | null>(null);
 let _current: CloudContext | null = null;
 
 /**
- * Current cloud API bearer token. Returns empty string when no CloudProvider is mounted.
+ * Returns the current cloud session token
  */
 export function getCloudSessionToken(): string {
 	return _current?.sessionToken ?? "";
 }
 
 /**
- * Current cloud user id (for analytics). Returns empty string when no CloudProvider is mounted.
+ * Returns the current cloud user id
  */
 export function getCloudUserId(): string {
 	return _current?.userId ?? "";
 }
 
 /**
- * Readonly cloud session status for imperative gating (e.g. `openConnection`).
+ * Returns the current cloud session status
  */
 export function getCloudSessionStatus(): CloudSessionStatus {
 	return {
@@ -61,7 +61,7 @@ export function getCloudSessionStatus(): CloudSessionStatus {
 }
 
 /**
- * SurrealDB Cloud session state and actions. Must be used within a {@link CloudProvider}.
+ * Returns the current cloud session context
  */
 export function useCloud(): CloudContext {
 	const ctx = useContext(CloudSessionContext);
