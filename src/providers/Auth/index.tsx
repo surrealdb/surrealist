@@ -1,7 +1,7 @@
 import { Auth0Provider as BaseAuth0Provider, User, useAuth0 } from "@auth0/auth0-react";
 import { shutdown } from "@intercom/messenger-js-sdk";
 import { useStable } from "@surrealdb/ui";
-import { createContext, type PropsWithChildren, useContext, useEffect, useMemo } from "react";
+import { createContext, type PropsWithChildren, useContext, useEffect } from "react";
 import { useSearchParams } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { SignInRedirect } from "~/components/SignInRedirect";
@@ -9,10 +9,9 @@ import { useAbsoluteLocation } from "~/hooks/routing";
 import { openCloudOnboardingModal } from "~/modals/cloud-onboarding";
 import { tagEvent } from "~/util/analytics";
 import { broadcastAuthEvent } from "~/util/auth-broadcast";
-import { exposeDebug, showErrorNotification } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 import { useAuthCallbackFlow } from "./auth-callback-flow";
 import { callback, computeReturnPath } from "./helpers";
-import { emailVerifiedMockDebug, useEmailVerifiedMock } from "./mocks";
 import type { SignInOptions } from "./types";
 
 export type { SignInOptions };
@@ -73,27 +72,8 @@ export function useAuthentication(): AuthContext {
 }
 
 function TokenBridge({ children }: PropsWithChildren) {
-	const {
-		user: realUser,
-		loginWithRedirect,
-		getAccessTokenSilently,
-		logout,
-		isAuthenticated,
-		isLoading,
-	} = useAuth0();
-
-	const emailVerifiedMock = useEmailVerifiedMock();
-
-	const user = useMemo<User | undefined>(() => {
-		if (!realUser || emailVerifiedMock === null) {
-			return realUser;
-		}
-
-		return {
-			...realUser,
-			email_verified: emailVerifiedMock === "verified",
-		};
-	}, [realUser, emailVerifiedMock]);
+	const { user, loginWithRedirect, getAccessTokenSilently, logout, isAuthenticated, isLoading } =
+		useAuth0();
 
 	const verifyPending = user?.email_verified === false;
 
@@ -162,10 +142,6 @@ function TokenBridge({ children }: PropsWithChildren) {
 			openCloudOnboardingModal();
 		}
 	}, [verifyPending]);
-
-	useEffect(() => {
-		exposeDebug(emailVerifiedMockDebug);
-	}, []);
 
 	useAuthCallbackFlow();
 
