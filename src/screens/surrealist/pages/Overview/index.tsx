@@ -28,7 +28,6 @@ import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/auth";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionList } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
@@ -54,7 +53,7 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const showCloud = useIsCloudEnabled();
-	const { signIn } = useAuthentication();
+	const { signIn, isAuthenticated, isLoading: isAuthLoading } = useAuthentication();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
@@ -72,8 +71,6 @@ export function OverviewPage() {
 		navigateConnection(con.id);
 	});
 
-	const isAuthenticated = useIsAuthenticated();
-	const isAuthLoading = useIsAuthLoading();
 	const dismissedBanners = useConfigStore((s) => s.dismissedBanners);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
 

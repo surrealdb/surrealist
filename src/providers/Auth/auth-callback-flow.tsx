@@ -1,11 +1,9 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect } from "react";
 import { adapter } from "~/adapter";
-import { acquireSession, invalidateSession } from "~/cloud/api/auth";
 import { useEventSubscription } from "~/hooks/event";
 import { useStable } from "~/hooks/stable";
 import { openVerifyEmailModal } from "~/modals/verify-email";
-import { useCloudStore } from "~/stores/cloud";
 import { DeepLinkAuthEvent } from "~/util/global-events";
 import { showErrorNotification } from "~/util/helpers";
 import type { SignInOptions } from "./types";
@@ -52,25 +50,20 @@ export interface AuthCallbackFlowProps {
 }
 
 /**
- * Handles Auth0 redirect callbacks from deep links and postMessage, email verification UX,
- * and Auth0 error responses.
+ * Handles Auth0 redirect callbacks arriving via deep links or postMessage,
+ * including email verification UX and Auth0 error responses.
+ *
+ * Downstream sessions (e.g. the cloud session) observe the resulting Auth0
+ * state transitions reactively instead of being driven from here.
  */
 export function useAuthCallbackFlow({ signIn }: AuthCallbackFlowProps) {
-	const { handleRedirectCallback, getAccessTokenSilently, error, isLoading } = useAuth0();
+	const { handleRedirectCallback, error, isLoading } = useAuth0();
 
 	const processAuthCallback = useStable(async (callbackUrl: string) => {
-		const { setIsProcessingAuth } = useCloudStore.getState();
-
 		try {
-			setIsProcessingAuth(true);
-
 			adapter.log("Auth", "Processing auth callback");
 
 			await handleRedirectCallback(callbackUrl);
-
-			const accessToken = await getAccessTokenSilently();
-
-			await acquireSession(accessToken, true);
 		} catch (err: unknown) {
 			if (isAuthFailure(err)) {
 				handleAuthFailure(err, signIn);
@@ -78,10 +71,6 @@ export function useAuthCallbackFlow({ signIn }: AuthCallbackFlowProps) {
 			} else {
 				adapter.warn("Auth", `Failed to process auth callback: ${JSON.stringify(err)}`);
 			}
-
-			invalidateSession();
-		} finally {
-			setIsProcessingAuth(false);
 		}
 	});
 

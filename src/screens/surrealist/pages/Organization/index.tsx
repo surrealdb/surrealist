@@ -14,7 +14,7 @@ import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { AuthGuard } from "~/components/AuthGuard";
 import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { useIsAuthenticated } from "~/hooks/auth";
+import { useAuthentication } from "~/providers/Auth";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
@@ -45,7 +45,7 @@ export interface OrganizationPageProps {
 }
 
 export function OrganizationPage({ id, tab }: OrganizationPageProps) {
-	const isAuthed = useIsAuthenticated();
+	const { isAuthenticated: isAuthed } = useAuthentication();
 
 	const { data: organization, isSuccess } = useCloudOrganizationQuery(id);
 

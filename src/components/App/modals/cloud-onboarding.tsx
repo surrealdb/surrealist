@@ -27,7 +27,6 @@ import {
 import { Link } from "~/components/Link";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { useHasCloudSession, useIsCloudEnabled } from "~/hooks/cloud";
 import { useCheckbox } from "~/hooks/events";
 import { useAbsoluteLocation } from "~/hooks/routing";
@@ -44,7 +43,7 @@ const REQUIRED_QUESTIONS = [1, 2];
 export function CloudOnboardingModal() {
 	const cloudEnabled = useIsCloudEnabled();
 	const hasCloudSession = useHasCloudSession();
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const onboardingRequired = useCloudStore((s) => s.onboardingRequired);
 
 	const { data: conditionsData, isPending: isLoadingConditions } = useCloudTCPPQuery();

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { useHasCloudSession } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import { CloudBackup } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -8,7 +8,7 @@ import { fetchAPI } from "../api";
  * Fetch instance backups
  */
 export function useCloudBackupsQuery(instance?: string) {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({

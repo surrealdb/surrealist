@@ -70,7 +70,8 @@ export function DocumentationModal() {
 				return [];
 			}
 
-			tagEvent("documentation_search_query", { search: trackedQuery });
+			await tagEvent("documentation_search_query", { search: trackedQuery });
+			return [];
 		},
 	});
 
@@ -88,7 +89,7 @@ export function DocumentationModal() {
 			setSearch(search);
 		}
 
-		tagEvent("documentation_search_open");
+		void tagEvent("documentation_search_open");
 	});
 
 	const isEmpty = data?.length === 0;

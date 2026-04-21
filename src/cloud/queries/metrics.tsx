@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { useHasCloudSession } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import { CloudMetrics, MetricsDuration } from "~/types";
 import { withSearchParams } from "~/util/helpers";
 import { fetchAPI } from "../api";
@@ -15,7 +15,7 @@ export function useCloudMetricsQuery(
 	duration: MetricsDuration,
 	dummy_data?: boolean,
 ) {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({

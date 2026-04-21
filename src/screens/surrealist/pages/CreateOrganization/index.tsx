@@ -26,7 +26,7 @@ export function CreateOrganizationPage() {
 				body: JSON.stringify({ name }),
 			});
 
-			tagEvent("cloud_organisation_created", {
+			await tagEvent("cloud_organisation_created", {
 				organisation: organization.id,
 			});
 

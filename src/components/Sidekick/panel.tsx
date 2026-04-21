@@ -1,7 +1,7 @@
 import { Icon, iconChat, iconChevronLeft, iconClose, iconList, iconSidekick } from "@surrealdb/ui";
 import { Panel } from "react-resizable-panels";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { useSetting } from "~/hooks/config";
+import { useAuthentication } from "~/providers/Auth";
 import { useSidekickStore } from "~/stores/sidekick";
 import { ActionButton } from "../ActionButton";
 import { ContentPane } from "../Pane";
@@ -9,7 +9,7 @@ import { PanelDragger } from "../Pane/dragger";
 import { Sidekick } from ".";
 
 export function SidekickPanel() {
-	const isAuthed = useIsAuthenticated();
+	const { isAuthenticated: isAuthed } = useAuthentication();
 	const activeTitle = useSidekickStore((state) => state.activeTitle);
 	const historyOpened = useSidekickStore((state) => state.historyOpened);
 

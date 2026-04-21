@@ -35,7 +35,6 @@ import { SidebarToggle } from "~/components/SidebarToggle";
 import { Spacer } from "~/components/Spacer";
 import { StarSparkles } from "~/components/StarSparkles";
 import { REGION_FLAGS, SANDBOX } from "~/constants";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import {
@@ -81,8 +80,7 @@ export function SurrealistToolbar() {
 	const [flags] = useFeatureFlags();
 
 	const navigateConnection = useConnectionNavigator();
-	const { signIn } = useAuthentication();
-	const isAuthenticated = useIsAuthenticated();
+	const { signIn, isAuthenticated } = useAuthentication();
 	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
 	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const isSyncingSchema = useDatabaseStore((s) => s.isSyncingSchema);

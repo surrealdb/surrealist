@@ -28,8 +28,8 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useCloud } from "~/providers/Cloud";
 import { useConfirmation } from "~/providers/Confirmation";
-import { useCloudStore } from "~/stores/cloud";
 import { CloudMember } from "~/types";
 import { showInfo } from "~/util/helpers";
 import classes from "../style.module.scss";
@@ -41,7 +41,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 	const invitesQuery = useCloudInvitationsQuery(organization.id);
 	const revokeMutation = useRevocationMutation(organization.id);
 	const removeMutation = useRemoveMemberMutation(organization.id);
-	const userId = useCloudStore((s) => s.userId);
+	const { userId } = useCloud();
 
 	const isRestricted = isOrganisationRestricted(organization);
 	const isOwner = hasOrganizationRoles(organization, ORG_ROLES_OWNER);

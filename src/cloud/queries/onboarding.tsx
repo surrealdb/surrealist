@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { useHasCloudSession } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import { fetchAPI } from "../api";
 
 export interface Condition {
@@ -26,7 +26,7 @@ export type Question =
  * Fetch Terms & Conditions and
  */
 export function useCloudTCPPQuery() {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
@@ -42,7 +42,7 @@ export function useCloudTCPPQuery() {
  * Fetch user form questions
  */
 export function useCloudFormQuery() {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({

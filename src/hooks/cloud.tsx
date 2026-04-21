@@ -1,6 +1,7 @@
 import { Alert, Stack, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "~/cloud/api";
+import { useCloud } from "~/providers/Cloud";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -20,14 +21,14 @@ export function useIsCloudEnabled() {
  * Returns whether the user has a cloud session active
  */
 export function useHasCloudSession() {
-	return useCloudStore((s) => s.cloudSessionActive);
+	return useCloud().isActive;
 }
 
 /**
  * Returns the current user profile
  */
 export function useCloudProfile() {
-	return useCloudStore((s) => s.profile);
+	return useCloud().profile;
 }
 
 /**

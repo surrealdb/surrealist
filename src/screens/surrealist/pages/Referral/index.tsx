@@ -34,8 +34,8 @@ import { CloudSplash } from "~/components/CloudSplash";
 import { Label } from "~/components/Label";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { useIsLight } from "~/hooks/theme";
+import { useAuthentication } from "~/providers/Auth";
 import { ON_FOCUS_SELECT } from "~/util/helpers";
 import classes from "./style.module.scss";
 
@@ -83,7 +83,7 @@ function Reward({ title, description, icon, active, ...other }: RewardProps) {
 export function ReferralPage() {
 	const referralQuery = useCloudReferralQuery();
 	const referralCodeQuery = useCloudReferralCodeQuery();
-	const isAuthed = useIsAuthenticated();
+	const { isAuthenticated: isAuthed } = useAuthentication();
 	const isLight = useIsLight();
 
 	const referralLink = `https://app.surrealdb.com/referral?code=${referralCodeQuery.data}`;

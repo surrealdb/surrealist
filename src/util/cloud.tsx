@@ -1,9 +1,71 @@
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import { adapter } from "~/adapter";
-import { CloudStore, useCloudStore } from "~/stores/cloud";
+import { useCloudStore } from "~/stores/cloud";
 import { CloudMeasurement } from "~/types";
 
-let skipCloudSync = false;
+// let skipCloudSync = false;
+
+// export function isCloudSyncSuppressed() {
+// 	return skipCloudSync;
+// }
+
+// export function suppressCloudSync<T>(fn: () => T): T {
+// 	skipCloudSync = true;
+// 	try {
+// 		return fn();
+// 	} finally {
+// 		skipCloudSync = false;
+// 	}
+// }
+
+// export type CloudSyncSessionSlice = {
+// 	error: string;
+// 	isActive: boolean;
+// 	isLoading: boolean;
+// 	sessionToken: string;
+// 	userId: string;
+// 	authProvider: string;
+// 	profile: CloudSyncPayload["profile"];
+// 	sessionExpired: boolean;
+// };
+
+// export function buildCloudSyncPayload(r: CloudStore, s: CloudSyncSessionSlice): CloudSyncPayload {
+// 	return {
+// 		isSupported: r.isSupported,
+// 		failedConnect: r.failedConnect,
+// 		instanceVersions: r.instanceVersions,
+// 		instanceTypes: r.instanceTypes,
+// 		instanceRegions: r.instanceRegions,
+// 		contextRegions: r.contextRegions,
+// 		billingCountries: r.billingCountries,
+// 		onboardingRequired: r.onboardingRequired,
+// 		isProvisioning: r.isProvisioning,
+// 		isProvisionDone: r.isProvisionDone,
+// 		provisioning: r.provisioning,
+// 		chatConversation: r.chatConversation,
+// 		chatLastResponse: r.chatLastResponse,
+// 		authError: s.error,
+// 		cloudSessionActive: s.isActive,
+// 		isProcessingAuth: s.isLoading,
+// 		sessionToken: s.sessionToken,
+// 		userId: s.userId,
+// 		authProvider: s.authProvider,
+// 		profile: s.profile,
+// 	};
+// }
+
+// export async function emitCloudSyncPayload(payload: CloudSyncPayload) {
+// 	if (skipCloudSync) {
+// 		return;
+// 	}
+
+// 	skipCloudSync = true;
+
+// 	try {
+// 		await getCurrentWindow().emit("cloud-updated", payload);
+// 	} finally {
+// 		skipCloudSync = false;
+// 	}
+// }
 
 /**
  * Measure the compute history
@@ -118,29 +180,4 @@ export function getTypeCategoryDescription(category: string) {
 		default:
 			return category;
 	}
-}
-
-export function syncCloudStore(store: CloudStore) {
-	if (!skipCloudSync) {
-		try {
-			skipCloudSync = true;
-			useCloudStore.setState(store);
-		} finally {
-			skipCloudSync = false;
-		}
-	}
-}
-
-export function startCloudSync() {
-	useCloudStore.subscribe(async (state) => {
-		if (!skipCloudSync) {
-			skipCloudSync = true;
-
-			await getCurrentWindow()
-				.emit("cloud-updated", state)
-				.then(() => {
-					skipCloudSync = false;
-				});
-		}
-	});
 }

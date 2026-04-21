@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { useHasCloudSession } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import type { CloudPayment } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -8,7 +8,7 @@ import { fetchAPI } from "../api";
  * Fetch organization payment details
  */
 export function useCloudPaymentsQuery(organization?: string) {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({

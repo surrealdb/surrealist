@@ -32,7 +32,6 @@ import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queri
 import { ConversationTable } from "~/components/ConversationTable";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useIsAuthenticated } from "~/hooks/auth";
 import { openSelectOrganizationModal } from "~/modals/select-organization";
 import { useAuthentication } from "~/providers/Auth";
 import { useFeatureFlags } from "~/util/feature-flags";
@@ -43,8 +42,7 @@ import { SupportCollection } from "./SupportCollection";
 import classes from "./style.module.scss";
 
 export function SupportPage() {
-	const { signIn } = useAuthentication();
-	const isAuthenticated = useIsAuthenticated();
+	const { signIn, isAuthenticated } = useAuthentication();
 
 	const { data: collections, isLoading } = useSupportCollectionsQuery();
 	const { data: chats, isLoading: isChatsLoading } = useConversationsQuery();

@@ -10,7 +10,7 @@ import {
 import { Surreal } from "surrealdb";
 import { adapter, isMini } from "~/adapter";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
+import { useCloud } from "~/providers/Cloud";
 import { __throw } from "~/util/helpers";
 
 const CONTEXT_ENDPOINT = "wss://surreal-cloud-06bu9hntp1rdd9dgg57rc0v87s.aws-euw1.surreal.cloud";
@@ -39,7 +39,7 @@ export function ContextProvider({ children }: PropsWithChildren) {
 
 function ContextProviderInner({ children }: PropsWithChildren) {
 	const { isAuthenticated: isAuth0Authenticated, getAccessTokenSilently } = useAuth0();
-	const cloudSessionActive = useCloudStore((s) => s.cloudSessionActive);
+	const { isActive: cloudSessionActive } = useCloud();
 
 	const [surreal] = useState(new Surreal());
 	const [connected, setConnected] = useState(false);

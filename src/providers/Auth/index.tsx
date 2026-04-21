@@ -1,11 +1,12 @@
 import { Auth0Provider as BaseAuth0Provider, User, useAuth0 } from "@auth0/auth0-react";
+import { shutdown } from "@intercom/messenger-js-sdk";
 import { useStable } from "@surrealdb/ui";
 import { createContext, type PropsWithChildren, useContext, useEffect } from "react";
 import { useSearchParams } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
-import { destroySession } from "~/cloud/api/auth";
 import { SignInRedirect } from "~/components/SignInRedirect";
 import { useAbsoluteLocation } from "~/hooks/routing";
+import { tagEvent } from "~/util/analytics";
 import { showErrorNotification } from "~/util/helpers";
 import { useAuthCallbackFlow } from "./auth-callback-flow";
 import { callback, computeReturnPath } from "./helpers";
@@ -25,6 +26,9 @@ export { AUTH_RETURN_URL, AUTH_LAUNCH_URL };
 
 export interface AuthContext {
 	user: User | undefined;
+	isAuthenticated: boolean;
+	isLoading: boolean;
+	getAccessToken: () => Promise<string>;
 	signIn: (options?: SignInOptions) => Promise<void>;
 	signOut: () => Promise<void>;
 }
@@ -72,7 +76,9 @@ export function useAuthentication(): AuthContext {
 }
 
 function TokenBridge({ children }: PropsWithChildren) {
-	const { user, loginWithRedirect, getAccessTokenSilently, logout } = useAuth0();
+	const { user, loginWithRedirect, getAccessTokenSilently, logout, isAuthenticated, isLoading } =
+		useAuth0();
+
 	const [params] = useSearchParams();
 	const [, navigate] = useAbsoluteLocation();
 
@@ -96,10 +102,10 @@ function TokenBridge({ children }: PropsWithChildren) {
 		});
 	});
 
-	useAuthCallbackFlow({ signIn });
-
 	const signOut = useStable(async () => {
-		destroySession();
+		tagEvent("cloud_signout");
+		shutdown();
+
 		navigate("/overview");
 
 		await logout({
@@ -131,8 +137,19 @@ function TokenBridge({ children }: PropsWithChildren) {
 		_user = user;
 	}, [user]);
 
+	useAuthCallbackFlow({ signIn });
+
 	return (
-		<AuthContext.Provider value={{ user, signIn, signOut }}>
+		<AuthContext.Provider
+			value={{
+				user,
+				isAuthenticated,
+				isLoading,
+				signIn,
+				signOut,
+				getAccessToken: getAccessTokenSilently,
+			}}
+		>
 			{isSigninPrompt ? <SignInRedirect /> : children}
 		</AuthContext.Provider>
 	);

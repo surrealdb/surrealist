@@ -9,7 +9,7 @@ import { useCloudProfile, useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
-import { useCloudStore } from "~/stores/cloud";
+import { useCloud } from "~/providers/Cloud";
 import { useInterfaceStore } from "~/stores/interface";
 import { ViewPage } from "~/types";
 import { ConnectionPage } from "./pages/Connection";
@@ -70,7 +70,7 @@ export function SurrealistScreen() {
 	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const showCloud = useIsCloudEnabled();
-	const isProcessingAuth = useCloudStore((s) => s.isProcessingAuth);
+	const { isLoading: isProcessingAuth } = useCloud();
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
