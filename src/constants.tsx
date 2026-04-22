@@ -2,6 +2,7 @@ import type { MantineColor, MantineColorScheme } from "@mantine/core";
 import {
 	iconAPI,
 	iconAuth,
+	iconBook,
 	iconBraces,
 	iconChart,
 	iconChat,
@@ -21,6 +22,7 @@ import {
 	iconHelp,
 	iconKey,
 	iconLive,
+	iconMemory,
 	iconPause,
 	iconQuery,
 	iconReferral,
@@ -343,6 +345,16 @@ export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = 
 		id: "playground",
 		name: "Playground",
 		icon: iconChat,
+	},
+	memories: {
+		id: "memories",
+		name: "Memories",
+		icon: iconMemory,
+	},
+	knowledge: {
+		id: "knowledge",
+		name: "Knowledge",
+		icon: iconBook,
 	},
 	"api-keys": {
 		id: "api-keys",

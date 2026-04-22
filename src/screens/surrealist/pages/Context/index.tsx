@@ -12,18 +12,27 @@ import type { ContextViewProps } from "./types";
 
 function isContextViewPage(view: string): view is ContextViewPage {
 	return (
-		view === "dashboard" || view === "playground" || view === "api-keys" || view === "settings"
+		view === "dashboard" ||
+		view === "playground" ||
+		view === "memories" ||
+		view === "knowledge" ||
+		view === "api-keys" ||
+		view === "settings"
 	);
 }
 
 const DashboardView = lazy(() => import("./views/DashboardView"));
 const PlaygroundView = lazy(() => import("./views/PlaygroundView"));
+const MemoriesView = lazy(() => import("./views/MemoriesView"));
+const KnowledgeView = lazy(() => import("./views/KnowledgeView"));
 const ApiKeysView = lazy(() => import("./views/ApiKeysView"));
 const SettingsView = lazy(() => import("./views/SettingsView"));
 
 const VIEW_COMPONENTS: Record<ContextViewPage, React.ComponentType<ContextViewProps>> = {
 	dashboard: memo(DashboardView),
 	playground: memo(PlaygroundView),
+	memories: memo(MemoriesView),
+	knowledge: memo(KnowledgeView),
 	"api-keys": memo(ApiKeysView),
 	settings: memo(SettingsView),
 };
