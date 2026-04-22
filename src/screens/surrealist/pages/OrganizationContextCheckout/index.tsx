@@ -10,7 +10,9 @@ import {
 	SimpleGrid,
 	Stack,
 	Text,
+	TextInput,
 } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
 import { Icon, iconArrowUpRight, iconCreditCard } from "@surrealdb/ui";
 import { useState } from "react";
 import { Redirect } from "wouter";
@@ -73,6 +75,7 @@ function PageContent({ organisation }: PageContentProps) {
 	const assignMutation = useAssignContextPackageMutation(organisation.id);
 
 	const [isConfirming, setIsConfirming] = useState(false);
+	const [couponCode, setCouponCode] = useInputState("");
 
 	const selectedPackage = availablePackages?.find((p) => p.id === packageId);
 
@@ -86,7 +89,10 @@ function PageContent({ organisation }: PageContentProps) {
 		setIsConfirming(true);
 
 		try {
-			await assignMutation.mutateAsync(packageId);
+			await assignMutation.mutateAsync({
+				packageId,
+				coupon_code: couponCode.trim() || undefined,
+			});
 
 			showInfo({
 				title: "Package updated",
@@ -281,6 +287,19 @@ function PageContent({ organisation }: PageContentProps) {
 												</Group>
 											</Flex>
 										</Paper>
+									)}
+
+									{!isManaged && !!selectedPackage && (
+										<Box mt="xl">
+											<TextInput
+												label="Coupon code"
+												description="Optional. Enter a code if you have been given one."
+												placeholder="Promotional code"
+												value={couponCode}
+												onChange={setCouponCode}
+												maw={420}
+											/>
+										</Box>
 									)}
 
 									<Divider my={36} />

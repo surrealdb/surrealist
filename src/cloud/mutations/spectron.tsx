@@ -114,20 +114,34 @@ export function useDeleteContextApiKeyMutation(
 	});
 }
 
+export interface AssignContextPackageVariables {
+	packageId: string;
+	coupon_code?: string;
+}
+
 export function useAssignContextPackageMutation(organization: string | undefined) {
 	const client = useQueryClient();
 
 	return useMutation({
-		mutationFn: async (packageId: string) => {
+		mutationFn: async ({ packageId, coupon_code }: AssignContextPackageVariables) => {
 			if (!organization) {
 				throw new Error("Organization is required");
+			}
+
+			const body: { package_id: string; coupon_code?: string } = {
+				package_id: packageId,
+			};
+
+			const trimmed = coupon_code?.trim();
+			if (trimmed) {
+				body.coupon_code = trimmed;
 			}
 
 			const result = await fetchAPI<OrganizationContextPackage>(
 				`/organizations/${organization}/spectron_context_packages`,
 				{
 					method: "POST",
-					body: JSON.stringify({ package_id: packageId }),
+					body: JSON.stringify(body),
 				},
 			);
 
@@ -144,33 +158,28 @@ export function useAssignContextPackageMutation(organization: string | undefined
 	});
 }
 
-export interface CancelContextPackageVariables {
-	/** When true, the subscription ends after the current billing period; when false, access ends immediately. */
-	cancelAtPeriodEnd: boolean;
-}
-
 export function useCancelContextPackageMutation(organization: string | undefined) {
 	const client = useQueryClient();
 
 	return useMutation({
-		mutationFn: async ({ cancelAtPeriodEnd }: CancelContextPackageVariables) => {
+		mutationFn: async (organizationPackageId: string) => {
 			if (!organization) {
 				throw new Error("Organization is required");
 			}
 
-			const search = new URLSearchParams({
-				cancel_at_period_end: String(cancelAtPeriodEnd),
-			});
-
 			await fetchAPI(
-				`/organizations/${organization}/spectron_context_packages?${search.toString()}`,
+				`/organizations/${organization}/spectron_context_packages/${organizationPackageId}/cancel`,
 				{
-					method: "DELETE",
+					method: "POST",
 				},
 			);
 
 			client.invalidateQueries({
 				queryKey: ["cloud", "context-packages", { org: organization }],
+			});
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "organizations"],
 			});
 		},
 	});

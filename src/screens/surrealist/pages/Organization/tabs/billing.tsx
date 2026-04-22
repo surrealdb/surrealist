@@ -4,8 +4,10 @@ import {
 	Box,
 	BoxProps,
 	Button,
+	Divider,
 	Group,
 	Image,
+	List,
 	Modal,
 	Paper,
 	SimpleGrid,
@@ -31,7 +33,7 @@ import {
 } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
-import { useState } from "react";
+import type { ReactNode } from "react";
 import { Link } from "wouter";
 import glow from "~/assets/images/radial-glow.png";
 import { fetchAPI } from "~/cloud/api";
@@ -46,13 +48,12 @@ import { BillingDetails } from "~/components/BillingDetails";
 import { Form } from "~/components/Form";
 import { PaymentDetails } from "~/components/PaymentDetails";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { RadioSelect } from "~/components/RadioSelect";
 import { Section } from "~/components/Section";
 import { Spacer } from "~/components/Spacer";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { ContextPlanCard } from "~/screens/surrealist/components/ContextPlanCard";
-import type { CloudCoupon } from "~/types";
+import type { CloudCoupon, OrganizationContextPackage } from "~/types";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import classes from "../style.module.scss";
 import type { OrganizationTabProps } from "../types";
@@ -284,12 +285,12 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 		organization.id,
 	);
 
-	const [cancelMethod, setCancelMethod] = useState("");
 	const cancelMutation = useCancelContextPackageMutation(organization.id);
 	const [cancelModalOpen, cancelModalHandlers] = useDisclosure(false);
 
 	const activeOrgPackage = orgPackages?.find((p) => !p.disabled_at);
 	const hasActivePackage = orgPackageLoaded && !!activeOrgPackage;
+	const trialActive = activeOrgPackage ? isSpectronTrialActive(activeOrgPackage) : false;
 
 	const activePackageDetails = availablePackages?.find(
 		(p) => p.id === activeOrgPackage?.package_id,
@@ -297,16 +298,24 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 
 	const planPath = `/o/${organization.id}/contexts/plan`;
 
-	const confirmCancel = useStable(async (cancelAtPeriodEnd: boolean) => {
+	const confirmCancel = useStable(async () => {
+		const organizationPackageId = activeOrgPackage?.package_id;
+
+		if (!organizationPackageId) {
+			return;
+		}
+
+		const wasTrialActive = isSpectronTrialActive(activeOrgPackage);
+
 		try {
-			await cancelMutation.mutateAsync({ cancelAtPeriodEnd });
+			await cancelMutation.mutateAsync(organizationPackageId);
 			cancelModalHandlers.close();
 
 			showInfo({
 				title: "Package cancelled",
-				subtitle: cancelAtPeriodEnd
-					? "Your Spectron plan will end at the end of the current billing period"
-					: "Your Spectron context package has been cancelled",
+				subtitle: wasTrialActive
+					? "Your Spectron context package has been cancelled"
+					: "Your Spectron plan will end at the end of the current billing period",
 			});
 		} catch (_err: unknown) {
 			showErrorNotification({
@@ -326,7 +335,10 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 					spacing="xl"
 					cols={{ base: 1, md: 2 }}
 				>
-					<ContextPlanCard pkg={activePackageDetails} />
+					<ContextPlanCard
+						pkg={activePackageDetails}
+						footer={spectronContextPlanCardFooter(activeOrgPackage)}
+					/>
 					<Stack gap="xs">
 						<Link
 							href={planPath}
@@ -405,42 +417,61 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 				opened={cancelModalOpen}
 				onClose={cancelModalHandlers.close}
 				trapFocus={false}
-				size="md"
-				title={<PrimaryTitle fz={20}>Cancel your subscription</PrimaryTitle>}
+				size="lg"
+				title={<PrimaryTitle fz={20}>Cancel Spectron subscription</PrimaryTitle>}
 			>
-				<Stack gap="xl">
-					<Text className="selectable">
-						You are about to cancel your Spectron plan and lose access to all Spectron
-						features. Are you sure you want to continue?
+				<Stack gap="lg">
+					<Text
+						fz="sm"
+						className="selectable"
+					>
+						{trialActive
+							? "You are cancelling during your trial. Here is what to expect:"
+							: "You are scheduling cancellation of your paid Spectron plan. Here is what to expect:"}
 					</Text>
-					<RadioSelect
-						value={cancelMethod}
-						onChange={setCancelMethod}
-						data={[
-							{
-								label: "Cancel at end of billing period",
-								value: "cycle",
-							},
-							{ label: "Cancel immediately", value: "immediately" },
-						]}
-						radioProps={{
-							color: "violet",
-							c: "bright",
-						}}
-					/>
-					<Group>
+					<List
+						spacing="sm"
+						size="sm"
+						c="bright"
+						className="selectable"
+					>
+						{trialActive ? (
+							<List.Item>
+								Spectron features for this organisation will stop as soon as you
+								confirm.
+							</List.Item>
+						) : (
+							<>
+								<List.Item>
+									You keep full Spectron access until the end of your current
+									billing period.
+								</List.Item>
+								<List.Item>
+									Your subscription will not renew automatically after that date.
+								</List.Item>
+							</>
+						)}
+						<List.Item>
+							You can subscribe again at any time from the Spectron plan section on
+							this billing page.
+						</List.Item>
+					</List>
+					<Divider />
+					<Group
+						mt="xs"
+						wrap="nowrap"
+					>
 						<Button
+							variant="gradient"
 							onClick={cancelModalHandlers.close}
 							disabled={cancelMutation.isPending}
 						>
-							Keep subscription
+							No, keep subscription
 						</Button>
 						<Spacer />
 						<Button
-							color="red"
-							variant="filled"
-							disabled={!cancelMethod}
-							onClick={() => confirmCancel(cancelMethod === "cycle")}
+							disabled={!activeOrgPackage?.package_id}
+							onClick={() => void confirmCancel()}
 							loading={cancelMutation.isPending}
 						>
 							Yes, cancel subscription
@@ -516,6 +547,58 @@ function PlanAction({ name, description, icon, onClick, disabled, ...props }: Pl
 			</Anchor>
 		</UnstyledButton>
 	);
+}
+
+function isSpectronTrialActive(pkg: OrganizationContextPackage) {
+	if (!pkg.trial_ends_at) {
+		return false;
+	}
+
+	return new Date(pkg.trial_ends_at) > new Date();
+}
+
+function spectronContextPlanCardFooter(
+	activeOrgPackage: OrganizationContextPackage | undefined,
+): ReactNode {
+	if (!activeOrgPackage) {
+		return null;
+	}
+
+	const now = new Date();
+
+	if (isSpectronTrialActive(activeOrgPackage) && activeOrgPackage.trial_ends_at) {
+		return (
+			<Text
+				fz="sm"
+				mt="xl"
+				className="selectable"
+			>
+				Trial ends{" "}
+				{formatDistance(new Date(activeOrgPackage.trial_ends_at), now, {
+					addSuffix: true,
+				})}
+			</Text>
+		);
+	}
+
+	const subscriptionEndsAt = activeOrgPackage.subscription_ends_at;
+
+	if (subscriptionEndsAt && new Date(subscriptionEndsAt) > now) {
+		return (
+			<Text
+				fz="sm"
+				mt="xl"
+				className="selectable"
+			>
+				Subscription ends{" "}
+				{formatDistance(new Date(subscriptionEndsAt), now, {
+					addSuffix: true,
+				})}
+			</Text>
+		);
+	}
+
+	return null;
 }
 
 function isCouponActive(coupon: CloudCoupon) {

@@ -698,6 +698,8 @@ export interface OrganizationContextPackage {
 	organization_id: string;
 	enabled_at: string;
 	disabled_at?: string;
+	trial_ends_at?: string;
+	subscription_ends_at?: string;
 }
 
 export interface CloudDistributedStorageSpecs {
