@@ -1,4 +1,9 @@
-import { Auth0Provider as BaseAuth0Provider, User, useAuth0 } from "@auth0/auth0-react";
+import {
+	Auth0ContextInterface,
+	Auth0Provider as BaseAuth0Provider,
+	User,
+	useAuth0,
+} from "@auth0/auth0-react";
 import { shutdown } from "@intercom/messenger-js-sdk";
 import { useStable } from "@surrealdb/ui";
 import { createContext, type PropsWithChildren, useContext, useEffect } from "react";
@@ -10,8 +15,9 @@ import { openCloudOnboardingModal } from "~/modals/cloud-onboarding";
 import { tagEvent } from "~/util/analytics";
 import { broadcastAuthEvent } from "~/util/auth-broadcast";
 import { showErrorNotification } from "~/util/helpers";
-import { useAuthCallbackFlow } from "./auth-callback-flow";
 import { callback, computeReturnPath } from "./helpers";
+import { useAuthCallbackFlow } from "./hooks/use-auth-callback-flow";
+import { useAuthWindowSync } from "./hooks/use-auth-window-sync";
 import type { SignInOptions } from "./types";
 
 export type { SignInOptions };
@@ -26,11 +32,13 @@ const AUTH_OVERVIEW_URL = callback("overview");
 
 export { AUTH_RETURN_URL, AUTH_LAUNCH_URL };
 
+type AccessTokenFn = Auth0ContextInterface["getAccessTokenSilently"];
+
 export interface AuthContext {
 	user: User | undefined;
 	isAuthenticated: boolean;
 	isLoading: boolean;
-	getAccessToken: () => Promise<string>;
+	getAccessToken: AccessTokenFn;
 	signIn: (options?: SignInOptions) => Promise<void>;
 	signOut: () => Promise<void>;
 }
@@ -75,11 +83,10 @@ function TokenBridge({ children }: PropsWithChildren) {
 	const { user, loginWithRedirect, getAccessTokenSilently, logout, isAuthenticated, isLoading } =
 		useAuth0();
 
-	const verifyPending = user?.email_verified === false;
-
 	const [params] = useSearchParams();
 	const [, navigate] = useAbsoluteLocation();
 
+	const isVerifyPending = user?.email_verified === false;
 	const isSigninPrompt = params.get("signin") === "true";
 
 	const signIn = useStable(async (options?: SignInOptions) => {
@@ -138,12 +145,13 @@ function TokenBridge({ children }: PropsWithChildren) {
 	}, [user]);
 
 	useEffect(() => {
-		if (verifyPending) {
+		if (isVerifyPending) {
 			openCloudOnboardingModal();
 		}
-	}, [verifyPending]);
+	}, [isVerifyPending]);
 
 	useAuthCallbackFlow();
+	useAuthWindowSync();
 
 	return (
 		<AuthContext.Provider

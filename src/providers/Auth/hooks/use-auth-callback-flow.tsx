@@ -34,11 +34,8 @@ function handleAuthFailure(failure: AuthFailure) {
 }
 
 /**
- * Handles Auth0 redirect callbacks arriving via deep links or postMessage,
+ * Hook to handle Auth0 redirect callbacks arriving via deep links or postMessage,
  * including Auth0 error responses.
- *
- * Downstream sessions (e.g. the cloud session) observe the resulting Auth0
- * state transitions reactively instead of being driven from here.
  */
 export function useAuthCallbackFlow() {
 	const { handleRedirectCallback, error, isLoading } = useAuth0();

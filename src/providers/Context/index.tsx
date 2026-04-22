@@ -1,4 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import {
 	createContext,
 	type PropsWithChildren,
@@ -12,6 +11,7 @@ import { adapter, isMini } from "~/adapter";
 import { useStable } from "~/hooks/stable";
 import { useCloud } from "~/providers/Cloud";
 import { __throw } from "~/util/helpers";
+import { useAuthentication } from "../Auth";
 
 const CONTEXT_ENDPOINT = "wss://surreal-cloud-06bu9hntp1rdd9dgg57rc0v87s.aws-euw1.surreal.cloud";
 
@@ -38,7 +38,7 @@ export function ContextProvider({ children }: PropsWithChildren) {
 }
 
 function ContextProviderInner({ children }: PropsWithChildren) {
-	const { isAuthenticated: isAuth0Authenticated, getAccessTokenSilently } = useAuth0();
+	const { isAuthenticated: isAuth0Authenticated, getAccessToken } = useAuthentication();
 	const { isActive: cloudSessionActive } = useCloud();
 
 	const [surreal] = useState(new Surreal());
@@ -84,7 +84,7 @@ function ContextProviderInner({ children }: PropsWithChildren) {
 		if (!surreal || !connected) return;
 
 		if (isAuth0Authenticated && cloudSessionActive) {
-			getAccessTokenSilently()
+			getAccessToken()
 				.then((token) => surreal.authenticate(token))
 				.then(() => setAuthenticated(true))
 				.catch(() => setAuthenticated(false));
@@ -93,7 +93,7 @@ function ContextProviderInner({ children }: PropsWithChildren) {
 				setAuthenticated(false);
 			});
 		}
-	}, [surreal, connected, isAuth0Authenticated, cloudSessionActive, getAccessTokenSilently]);
+	}, [surreal, connected, isAuth0Authenticated, cloudSessionActive, getAccessToken]);
 
 	return (
 		<ContextContext.Provider value={{ surreal, connected, authenticated }}>

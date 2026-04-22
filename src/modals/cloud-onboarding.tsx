@@ -200,14 +200,14 @@ function CloudOnboardingModalInner() {
 }
 
 function VerifyStep({ onQuit }: { onQuit: () => void | Promise<void> }) {
-	const { getAccessTokenSilently, user } = useAuth0();
+	const { getAccessToken, user } = useAuthentication();
 	const [loading, setLoading] = useState(false);
 
 	const handleRefresh = useStable(async () => {
 		setLoading(true);
 
 		try {
-			await getAccessTokenSilently({ cacheMode: "off" });
+			await getAccessToken({ cacheMode: "off" });
 
 			if (user?.email_verified !== true) {
 				showNotification({
