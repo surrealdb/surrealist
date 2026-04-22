@@ -24,7 +24,7 @@ export function useCreateTicketMutation(organization?: string) {
 			}
 
 			const result = await fetchContextAPI<IntercomTicket>(
-				`/cloud/org/${organization}/tickets`,
+				`/support/v1/cloud/org/${organization}/tickets`,
 				env,
 				{
 					method: "POST",
@@ -51,7 +51,7 @@ export function useConversationCreateMutation() {
 	return useMutation({
 		mutationFn: async (body: IntercomConversationCreateRequest) => {
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations`,
+				`/support/v1/cloud/conversations`,
 				env,
 				{
 					method: "POST",
@@ -82,7 +82,7 @@ export function useConversationReplyMutation(conversationId?: string) {
 			}
 
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations/${conversationId}/reply`,
+				`/support/v1/cloud/conversations/${conversationId}/reply`,
 				env,
 				{
 					method: "POST",
@@ -113,7 +113,7 @@ export function useConversationReopenMutation(conversationId?: string) {
 			}
 
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations/${conversationId}/reopen`,
+				`/support/v1/cloud/conversations/${conversationId}/reopen`,
 				env,
 				{
 					method: "POST",
@@ -142,7 +142,7 @@ export function useConversationStateMutation() {
 	return useMutation({
 		mutationFn: async (request: IntercomConversationStateRequest) => {
 			const result = await fetchContextAPI<IntercomConversation>(
-				`/cloud/conversations/${request.conversationId}/mark_as/${request.state}`,
+				`/support/v1/cloud/conversations/${request.conversationId}/mark_as/${request.state}`,
 				env,
 				{
 					method: "PATCH",
@@ -168,7 +168,7 @@ export function useTicketStateMutation(ticketId: string, stateId: "open" | "clos
 	return useMutation({
 		mutationFn: async () => {
 			const result = await fetchContextAPI<IntercomTicket>(
-				`/cloud/tickets/${ticketId}/${stateId}`,
+				`/support/v1/cloud/tickets/${ticketId}/${stateId}`,
 				env,
 				{
 					method: "PATCH",
