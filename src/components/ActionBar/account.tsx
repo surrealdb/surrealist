@@ -1,6 +1,21 @@
 import { Anchor, Box, Button, Group, Menu, Text } from "@mantine/core";
-import { Icon, iconChevronRight, iconExitToAp, iconOpen, iconTune } from "@surrealdb/ui";
+import {
+	Icon,
+	iconBook,
+	iconChevronRight,
+	iconCommand,
+	iconExitToAp,
+	iconMoon,
+	iconOpen,
+	iconStar,
+	iconSun,
+	iconTune,
+} from "@surrealdb/ui";
+import { useSetting } from "~/hooks/config";
+import { useTheme } from "~/hooks/theme";
 import { useAuthentication } from "~/providers/Auth";
+import { useFeatureFlags } from "~/util/feature-flags";
+import { dispatchIntent } from "~/util/intents";
 import { AccountAvatar } from "../AccountAvatar";
 
 export function CloudAccount() {
@@ -11,6 +26,10 @@ export function CloudAccount() {
 		isAuthenticated,
 		isLoading: isAuthLoading,
 	} = useAuthentication();
+
+	const [{ themes }] = useFeatureFlags();
+	const [, setColorSchemePref] = useSetting("appearance", "colorScheme");
+	const effectiveScheme = useTheme();
 
 	if (!isAuthenticated) {
 		return (
@@ -38,9 +57,9 @@ export function CloudAccount() {
 			}}
 		>
 			<Menu.Target>
-				<div>
+				<Box>
 					<AccountAvatar />
-				</div>
+				</Box>
 			</Menu.Target>
 			<Menu.Dropdown miw={200}>
 				<Box
@@ -67,12 +86,46 @@ export function CloudAccount() {
 						</Box>
 					</Group>
 				</Box>
+				<Menu.Divider />
+				<Menu.Item
+					leftSection={<Icon path={iconStar} />}
+					onClick={() => dispatchIntent("open-changelog")}
+				>
+					What&apos;s new?
+				</Menu.Item>
+				<Menu.Item
+					leftSection={<Icon path={iconCommand} />}
+					onClick={() => dispatchIntent("open-settings", { tab: "keybindings" })}
+				>
+					Keyboard shortcuts
+				</Menu.Item>
+				{themes && (
+					<Menu.Item
+						leftSection={
+							<Icon path={effectiveScheme === "light" ? iconMoon : iconSun} />
+						}
+						onClick={() =>
+							setColorSchemePref(effectiveScheme === "light" ? "dark" : "light")
+						}
+					>
+						{effectiveScheme === "light" ? "Dark" : "Light"} theme
+					</Menu.Item>
+				)}
+				<Menu.Divider />
+				<Anchor href="https://surrealdb.com/docs">
+					<Menu.Item
+						leftSection={<Icon path={iconBook} />}
+						rightSection={<Icon path={iconOpen} />}
+					>
+						Documentation
+					</Menu.Item>
+				</Anchor>
 				<Anchor href="https://account.surrealdb.com">
 					<Menu.Item
 						leftSection={<Icon path={iconTune} />}
 						rightSection={<Icon path={iconOpen} />}
 					>
-						Manage account
+						Account settings
 					</Menu.Item>
 				</Anchor>
 				<Menu.Divider />
