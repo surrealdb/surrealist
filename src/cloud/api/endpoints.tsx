@@ -14,6 +14,15 @@ export function getCloudEndpoints() {
 	};
 }
 
+const DEFAULT_API_BASE = "https://api.surrealdb.com";
+
+export function getApiBase() {
+	const { urlSurrealApiBase } = useConfigStore.getState().settings.cloud;
+	const isCustom = featureFlags.get("cloud_endpoints") === "custom";
+
+	return isCustom && urlSurrealApiBase ? urlSurrealApiBase : DEFAULT_API_BASE;
+}
+
 export function getWebsiteBase() {
 	const { urlWebsiteBase } = useConfigStore.getState().settings.cloud;
 	const isCustom = featureFlags.get("website_base") === "custom";

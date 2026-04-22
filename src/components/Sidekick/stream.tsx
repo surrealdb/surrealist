@@ -1,10 +1,9 @@
 import { useRef, useState } from "react";
+import { getApiBase } from "~/cloud/api/endpoints";
 import { useStable } from "~/hooks/stable";
 import { getAccessToken } from "~/providers/Auth";
 import { tagEvent } from "~/util/analytics";
 import { StreamEvent } from "./types";
-
-const SIDEKICK_ENDPOINT = "https://xzg2igifvha4rfi2w677skt7h40yrtsm.lambda-url.us-east-1.on.aws/";
 
 export type StreamHandler = (message: StreamEvent) => void;
 
@@ -33,7 +32,7 @@ export function useSidekickStream(handler: StreamHandler): SidekickStream {
 			const accessToken = await getAccessToken();
 			controller.current = new AbortController();
 
-			const response = await fetch(SIDEKICK_ENDPOINT, {
+			const response = await fetch(`${getApiBase()}/sidekick/v1/chat`, {
 				method: "POST",
 				signal: controller.current.signal,
 				headers: {
