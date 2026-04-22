@@ -262,6 +262,7 @@ export interface SurrealistCloudSettings {
 	urlAuthBase: string;
 	urlWebsiteBase: string;
 	urlApiTicketsBase: string;
+	urlSurrealApiBase: string;
 }
 
 export interface SurrealistGtmSettings {
