@@ -1,17 +1,17 @@
 import { getAccessToken } from "~/providers/Auth";
 import { ApiError } from ".";
-import { getCloudEndpoints } from "./endpoints";
+import { getApiBase } from "./endpoints";
 
 /**
- * Execute a fetch request against the context API for the
- * tickets bridge and returns the JSON response
+ * Execute a fetch request against the SurrealDB API
+ * and returns the JSON response
  */
 export async function fetchContextAPI<T = unknown>(
 	path: string,
 	environment: "production" | "staging",
 	options?: RequestInit | undefined,
 ): Promise<T> {
-	const { ticketsBase } = getCloudEndpoints();
+	const apiBase = getApiBase();
 
 	let token: string | null = null;
 
@@ -31,7 +31,7 @@ export async function fetchContextAPI<T = unknown>(
 	}
 
 	try {
-		const response = await fetch(`${ticketsBase}${path}`, {
+		const response = await fetch(`${apiBase}${path}`, {
 			headers: {
 				...headers,
 				...options?.headers,
@@ -63,9 +63,9 @@ export async function fetchContextAPI<T = unknown>(
 			return json.data;
 		}
 	} catch (err) {
-		throw new Error(`Failed API request to ${ticketsBase}${path}: ${err}`);
+		throw new Error(`Failed API request to ${apiBase}${path}: ${err}`);
 	}
 
 	// If we reach here, the response was not JSON, which is unexpected
-	throw new Error(`Unexpected response format from ${ticketsBase}${path}`);
+	throw new Error(`Unexpected response format from ${apiBase}${path}`);
 }

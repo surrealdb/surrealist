@@ -100,7 +100,6 @@ export function createBaseSettings(): SurrealistSettings {
 			urlAuthBase: "",
 			urlApiBase: "",
 			urlWebsiteBase: "https://surrealdb.com",
-			urlApiTicketsBase: "",
 			urlSurrealApiBase: "",
 		},
 		gtm: {

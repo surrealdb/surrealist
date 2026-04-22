@@ -261,7 +261,6 @@ export interface SurrealistCloudSettings {
 	urlApiBase: string;
 	urlAuthBase: string;
 	urlWebsiteBase: string;
-	urlApiTicketsBase: string;
 	urlSurrealApiBase: string;
 }
 
