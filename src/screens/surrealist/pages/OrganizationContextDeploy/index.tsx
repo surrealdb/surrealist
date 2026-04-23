@@ -196,19 +196,6 @@ function PageContent({ organisation }: PageContentProps) {
 							]}
 						/>
 
-						{blockedWithoutPlan && (
-							<Alert
-								color="orange"
-								title="Spectron plan required"
-							>
-								<Text className="selectable">
-									This organisation does not have an active Spectron plan. Only
-									the organisation owner can subscribe to a plan. Contact your
-									organisation owner to continue.
-								</Text>
-							</Alert>
-						)}
-
 						<Paper
 							p="xl"
 							variant="glass"
@@ -293,6 +280,19 @@ function PageContent({ organisation }: PageContentProps) {
 										</PrimaryTitle>
 									</Box>
 
+									{blockedWithoutPlan && (
+										<Alert
+											color="orange"
+											title="Spectron plan required"
+										>
+											<Text className="selectable">
+												This organisation does not have an active Spectron
+												plan. Only the organisation owner can subscribe to a
+												plan. Contact your organisation owner to continue.
+											</Text>
+										</Alert>
+									)}
+
 									<TextInput
 										label="Name"
 										placeholder="e.g. Production context"
@@ -326,6 +326,7 @@ function PageContent({ organisation }: PageContentProps) {
 															key={r.slug}
 															label={r.description}
 															checked={selected}
+															disabled={blockedWithoutPlan}
 															onChange={() => setRegion(r.slug)}
 															withBorder
 															py="md"
