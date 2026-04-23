@@ -27,4 +27,12 @@
 	&[data-disabled] {
 		opacity: 0.5;
 	}
+
+	&[data-withBorder] {
+		border: 1px solid var(--surreal-glass-subtle);
+
+		&[data-checked] {
+			border-color: var(--mantine-color-violet-text);
+		}
+	}
 }
