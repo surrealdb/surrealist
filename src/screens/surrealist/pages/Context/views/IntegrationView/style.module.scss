@@ -1,0 +1,38 @@
+.integration-pane {
+	// background: var(--mantine-color-obsidian-light);
+}
+
+.step-row {
+	position: relative;
+	padding-left: 28px;
+
+	&::before {
+		content: "";
+		position: absolute;
+		left: 11px;
+		top: 22px;
+		bottom: -16px;
+		width: 1px;
+		// background: var(--mantine-color-obsidian-5);
+	}
+
+	&:last-child::before {
+		display: none;
+	}
+}
+
+.step-bullet {
+	position: absolute;
+	left: 0;
+	top: 4px;
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	// background: color-mix(in srgb, var(--mantine-color-violet-6) 35%, var(--mantine-color-obsidian-7));
+	color: var(--mantine-color-bright);
+	font-size: 11px;
+	font-weight: 700;
+}

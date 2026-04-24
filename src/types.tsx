@@ -95,6 +95,7 @@ export type ContextViewPage =
 	| "playground"
 	| "memories"
 	| "knowledge"
+	| "integration"
 	| "api-keys"
 	| "settings";
 

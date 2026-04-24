@@ -1,4 +1,4 @@
-import { Alert, Drawer, type MantineThemeOverride, Title } from "@mantine/core";
+import { Alert, Drawer, type MantineThemeOverride } from "@mantine/core";
 import { MANTINE_THEME } from "@surrealdb/ui";
 
 export const SURREALIST_THEME: MantineThemeOverride = {
@@ -13,12 +13,6 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 		Drawer: Drawer.extend({
 			defaultProps: {
 				withCloseButton: false,
-			},
-		}),
-		Title: Title.extend({
-			defaultProps: {
-				fz: "xl",
-				c: "bright",
 			},
 		}),
 	},

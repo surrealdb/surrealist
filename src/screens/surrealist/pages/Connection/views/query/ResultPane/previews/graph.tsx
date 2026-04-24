@@ -57,7 +57,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	const [connection] = useConnectionAndView();
 
 	const isLight = useIsLight();
-	const supervisorRef = useRef<FA2LayoutSupervisor>();
+	const supervisorRef = useRef<FA2LayoutSupervisor>(null);
 
 	const [graphLabels, showStray, straightEdges] = useConnection((c) => [
 		c?.graphLabels ?? {},

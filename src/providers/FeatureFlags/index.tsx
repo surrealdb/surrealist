@@ -25,7 +25,7 @@ export function FeatureFlagsProvider({ children }: PropsWithChildren) {
 			hydratedOverrides={(flag) => fromConfig[flag]}
 		>
 			<Resolve />
-			{children}
+			{children as never}
 		</FeatureFlagProvider>
 	);
 }

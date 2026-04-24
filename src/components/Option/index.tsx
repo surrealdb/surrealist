@@ -25,7 +25,7 @@ export const Option: FC<OptionProps> = ({
 		onClick={() => onChange(!checked)}
 		disabled={disabled}
 		className={classes.root}
-		mod={{ checked, disabled, withBorder }}
+		mod={{ checked, disabled, border: withBorder }}
 		{...other}
 	>
 		{icon && (

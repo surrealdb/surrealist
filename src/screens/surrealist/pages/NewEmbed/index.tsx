@@ -96,7 +96,7 @@ export function NewEmbedPage() {
 					</Box>
 
 					<Grid
-						gutter="xl"
+						gap="xl"
 						mt="xl"
 					>
 						<Grid.Col span={5}>

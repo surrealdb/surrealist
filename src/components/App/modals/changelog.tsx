@@ -1,4 +1,4 @@
-import { Box, Divider, Modal, Stack, Text, TypographyStylesProvider } from "@mantine/core";
+import { Box, Divider, Modal, Stack, Text, Typography } from "@mantine/core";
 import dayjs from "dayjs";
 import { Fragment } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -39,7 +39,7 @@ export function ChangelogModal() {
 							>
 								{changelog.metadata.title}
 							</Text>
-							<TypographyStylesProvider
+							<Typography
 								// biome-ignore lint/security/noDangerouslySetInnerHtml: Replace with markdown
 								dangerouslySetInnerHTML={{
 									__html: changelog.content,

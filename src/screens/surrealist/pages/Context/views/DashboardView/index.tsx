@@ -3,197 +3,35 @@ import {
 	Badge,
 	Box,
 	Button,
-	Divider,
 	Group,
 	Image,
 	Paper,
 	SimpleGrid,
 	Stack,
-	Tabs,
 	Text,
 	ThemeIcon,
+	Title,
 	UnstyledButton,
 } from "@mantine/core";
 import {
-	brandJavaScript,
-	brandPython,
-	CodeBlock,
 	Icon,
-	iconAPI,
 	iconArrowUpRight,
-	iconAuth,
-	iconCheckCircle,
-	iconCloudClock,
-	iconOpen,
+	iconPackageClosed,
 	iconPlay,
-	iconRelation,
-	iconServerSecure,
-	iconSpectron,
 	pictoConnect,
 	pictoGraph,
 	pictoMemory,
 	pictoSpectron,
 	pictoVectorSearch,
 } from "@surrealdb/ui";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { CONTEXT_VIEW_PAGES } from "~/constants";
+import { CONTEXT_VIEW_PAGES, REGION_FLAGS } from "~/constants";
 import { useContextNavigator } from "~/hooks/routing";
+import { useCloudStore } from "~/stores/cloud";
 import type { ContextViewPage } from "~/types";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
-
-type IntegrationTab = "python" | "javascript" | "api";
-
-interface IntegrationStep {
-	title: string;
-	description: string;
-	code: string;
-	lang: string;
-}
-
-const INTEGRATION_STEPS: Record<IntegrationTab, IntegrationStep[]> = {
-	python: [
-		{
-			title: "Install the SDK",
-			description: "Add the Python package to your project.",
-			code: "pip install surrealdb-context",
-			lang: "bash",
-		},
-		{
-			title: "Initialise the client",
-			description: "Authenticate with an API key to reach your context.",
-			code: `from surrealdb_context import ContextClient
-
-client = ContextClient(api_key="your-api-key")`,
-			lang: "python",
-		},
-		{
-			title: "Ingest a memory",
-			description: "Store a turn that the agent should remember.",
-			code: `messages = [
-    {"role": "user", "content": "Hi, I'm Alex. I prefer dark mode."},
-    {"role": "assistant", "content": "Got it, Alex — noted."},
-]
-
-client.add(messages, user_id="alex")`,
-			lang: "python",
-		},
-		{
-			title: "Retrieve with hybrid search",
-			description: "Combine graph, vector, and structured filters in one call.",
-			code: `results = client.search(
-    "What are the user's preferences?",
-    user_id="alex",
-)`,
-			lang: "python",
-		},
-	],
-	javascript: [
-		{
-			title: "Install the SDK",
-			description: "Add the npm package to your project.",
-			code: "npm install @surrealdb/context",
-			lang: "bash",
-		},
-		{
-			title: "Initialise the client",
-			description: "Authenticate with an API key to reach your context.",
-			code: `import { ContextClient } from "@surrealdb/context";
-
-const client = new ContextClient({ apiKey: "your-api-key" });`,
-			lang: "javascript",
-		},
-		{
-			title: "Ingest a memory",
-			description: "Store a turn that the agent should remember.",
-			code: `const messages = [
-    { role: "user", content: "Hi, I'm Alex. I prefer dark mode." },
-    { role: "assistant", content: "Got it, Alex — noted." },
-];
-
-await client.add(messages, { userId: "alex" });`,
-			lang: "javascript",
-		},
-		{
-			title: "Retrieve with hybrid search",
-			description: "Combine graph, vector, and structured filters in one call.",
-			code: `const results = await client.search(
-    "What are the user's preferences?",
-    { userId: "alex" },
-);`,
-			lang: "javascript",
-		},
-	],
-	api: [
-		{
-			title: "Ingest a memory",
-			description: "POST a conversation turn to the memories endpoint.",
-			code: `curl -X POST https://api.surrealdb.com/v1/context/memories \\
-    -H "Authorization: Bearer your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{
-        "messages": [{"role": "user", "content": "Hi, I'm Alex."}],
-        "user_id": "alex"
-    }'`,
-			lang: "bash",
-		},
-		{
-			title: "Search across memory",
-			description: "Run hybrid retrieval using a natural-language query.",
-			code: `curl -X POST https://api.surrealdb.com/v1/context/search \\
-    -H "Authorization: Bearer your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{
-        "query": "What are the user preferences?",
-        "user_id": "alex"
-    }'`,
-			lang: "bash",
-		},
-		{
-			title: "List stored memories",
-			description: "Fetch everything attributed to a specific user.",
-			code: `curl https://api.surrealdb.com/v1/context/memories?user_id=alex \\
-    -H "Authorization: Bearer your-api-key"`,
-			lang: "bash",
-		},
-	],
-};
-
-const LANGUAGES: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
-	python: { label: "Python", img: brandPython },
-	javascript: { label: "JavaScript", img: brandJavaScript },
-	api: { label: "REST API", icon: iconAPI },
-};
-
-interface Capability {
-	label: string;
-	description: string;
-	icon: string;
-}
-
-const CAPABILITIES: Capability[] = [
-	{
-		label: "ACID memory",
-		description: "Atomic writes across entities, facts, and embeddings.",
-		icon: iconServerSecure,
-	},
-	{
-		label: "Temporal facts",
-		description: "Bi-temporal history — know what was true and when.",
-		icon: iconCloudClock,
-	},
-	{
-		label: "Hybrid retrieval",
-		description: "Graph traversal, vector search, and filters in one call.",
-		icon: iconRelation,
-	},
-	{
-		label: "Multi-agent",
-		description: "Shared memory for coordinated agent swarms.",
-		icon: iconAuth,
-	},
-];
 
 interface PipelineStep {
 	id: string;
@@ -243,8 +81,8 @@ const PIPELINE: PipelineStep[] = [
 		title: "Integrate",
 		summary: "Ship it into your agent with SDKs or the REST API.",
 		detail: "Mint an API key, point your SDK at this context, and your agents pick up continuity, preferences, and shared knowledge on day one.",
-		target: "api-keys",
-		targetLabel: "Manage API Keys",
+		target: "integration",
+		targetLabel: "View integration guide",
 		picto: pictoGraph,
 	},
 ];
@@ -256,6 +94,11 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+	{
+		page: "integration",
+		description: "Step-by-step setup for Python, JavaScript, and the REST API.",
+		picto: pictoGraph,
+	},
 	{
 		page: "playground",
 		description: "Chat with your context and watch memories form in real time.",
@@ -279,11 +122,15 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export default function DashboardView({ context }: ContextViewProps) {
-	const [activeTab, setActiveTab] = useState<IntegrationTab>("python");
 	const [activeStepId, setActiveStepId] = useState<string>(PIPELINE[0].id);
 	const navigateContext = useContextNavigator();
-	const steps = INTEGRATION_STEPS[activeTab];
+	const regions = useCloudStore((s) => s.contextRegions);
 	const activeStep = PIPELINE.find((step) => step.id === activeStepId) ?? PIPELINE[0];
+
+	const region = useMemo(
+		() => regions.find((r) => r.slug === context.region),
+		[regions, context.region],
+	);
 
 	const goToPage = (page: ContextViewPage) => {
 		navigateContext(context.organization_id, context.id, page);
@@ -295,6 +142,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 			<Paper
 				p="xl"
 				radius="lg"
+				variant="glass"
 				className={classes.hero}
 			>
 				<Image
@@ -308,46 +156,47 @@ export default function DashboardView({ context }: ContextViewProps) {
 					pos="relative"
 					style={{ zIndex: 1 }}
 				>
-					<Group gap="xs">
-						<Badge
-							size="sm"
-							variant="light"
-							color="violet"
-							leftSection={
-								<Icon
-									path={iconSpectron}
-									size="xs"
-								/>
-							}
-						>
-							Context · Agent memory
-						</Badge>
-						<Badge
-							size="sm"
-							variant="default"
-						>
-							{context.region}
-						</Badge>
-					</Group>
 					<Box maw={640}>
-						<PrimaryTitle
-							fz={40}
-							className="selectable"
+						<Text
+							fz="xs"
+							fw={600}
+							c="violet.4"
+							tt="uppercase"
+							style={{ letterSpacing: "0.08em" }}
+						>
+							Context
+						</Text>
+						<Title
+							fz={{ base: 28, sm: 36 }}
+							variant="gradient"
+							lh={1}
 						>
 							{context.name}
-						</PrimaryTitle>
-						<Text
-							mt="md"
-							fz="lg"
-							lh={1.55}
-							className="selectable"
+						</Title>
+						<Group
+							gap="xs"
+							mt="sm"
 						>
-							Agent memory that lives inside the database. Ingest conversations and
-							documents, extract structure, and retrieve with hybrid search — no
-							middleware, no consistency gaps.
-						</Text>
+							<Badge
+								size="sm"
+								variant="transparent"
+								px={0}
+								leftSection={
+									<Image
+										src={REGION_FLAGS[context.region]}
+										w={14}
+										mr="xs"
+									/>
+								}
+							>
+								{region?.description}
+							</Badge>
+						</Group>
 					</Box>
-					<Group gap="sm">
+					<Group
+						gap="sm"
+						mt="sm"
+					>
 						<Button
 							variant="gradient"
 							leftSection={<Icon path={iconPlay} />}
@@ -356,68 +205,14 @@ export default function DashboardView({ context }: ContextViewProps) {
 							Open playground
 						</Button>
 						<Button
-							component="a"
-							href="https://surrealdb.com/platform/spectron"
-							target="_blank"
-							rel="noopener noreferrer"
-							variant="subtle"
-							color="slate"
-							rightSection={<Icon path={iconArrowUpRight} />}
+							onClick={() => goToPage("integration")}
+							rightSection={<Icon path={iconPackageClosed} />}
 						>
-							Read about Spectron
+							Integrate Spectron
 						</Button>
 					</Group>
 				</Stack>
 			</Paper>
-
-			{/* CAPABILITY STRIP */}
-			<SimpleGrid
-				cols={{ base: 1, xs: 2, md: 4 }}
-				spacing="sm"
-			>
-				{CAPABILITIES.map((cap) => (
-					<Paper
-						key={cap.label}
-						p="md"
-						radius="md"
-						className={classes.capabilityPill}
-					>
-						<Group
-							gap="sm"
-							wrap="nowrap"
-							align="flex-start"
-						>
-							<ThemeIcon
-								size={34}
-								radius="md"
-								variant="light"
-								color="violet"
-							>
-								<Icon path={cap.icon} />
-							</ThemeIcon>
-							<Box miw={0}>
-								<Text
-									fw={600}
-									c="bright"
-									fz="sm"
-								>
-									{cap.label}
-								</Text>
-								<Text
-									fz="xs"
-									lh={1.45}
-									mt={2}
-									className="selectable"
-								>
-									{cap.description}
-								</Text>
-							</Box>
-						</Group>
-					</Paper>
-				))}
-			</SimpleGrid>
-
-			{/* INTERACTIVE PIPELINE */}
 			<Box>
 				<Group
 					justify="space-between"
@@ -584,8 +379,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 					</Group>
 				</Paper>
 			</Box>
-
-			{/* NAVIGATION GRID */}
+			;
 			<Box>
 				<Text
 					fz="xs"
@@ -675,156 +469,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 					})}
 				</SimpleGrid>
 			</Box>
-
-			{/* INTEGRATION */}
-			<Paper
-				p="lg"
-				radius="md"
-				className={classes.integrationPane}
-			>
-				<Group
-					justify="space-between"
-					align="flex-end"
-					wrap="wrap"
-					mb="md"
-					gap="md"
-				>
-					<Box>
-						<Text
-							fz="xs"
-							fw={600}
-							c="violet.4"
-							tt="uppercase"
-							style={{ letterSpacing: "0.08em" }}
-						>
-							Quick start
-						</Text>
-						<PrimaryTitle
-							fz={22}
-							mt={4}
-						>
-							Connect an agent in four steps
-						</PrimaryTitle>
-					</Box>
-					<Group gap="xs">
-						<Button
-							component="a"
-							href="https://surrealdb.com/docs/context"
-							target="_blank"
-							rel="noopener noreferrer"
-							variant="subtle"
-							size="sm"
-							color="slate"
-							rightSection={<Icon path={iconOpen} />}
-						>
-							Documentation
-						</Button>
-						<Button
-							variant="light"
-							color="violet"
-							size="sm"
-							onClick={() => goToPage("api-keys")}
-							rightSection={<Icon path={iconArrowUpRight} />}
-						>
-							Get API key
-						</Button>
-					</Group>
-				</Group>
-
-				<Tabs
-					value={activeTab}
-					onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
-				>
-					<Tabs.List>
-						{(Object.keys(LANGUAGES) as IntegrationTab[]).map((tab) => (
-							<Tabs.Tab
-								key={tab}
-								value={tab}
-								leftSection={
-									LANGUAGES[tab].img ? (
-										<Image
-											src={LANGUAGES[tab].img}
-											w={14}
-											alt=""
-										/>
-									) : LANGUAGES[tab].icon ? (
-										<Icon
-											path={LANGUAGES[tab].icon}
-											c="bright"
-											size="sm"
-										/>
-									) : undefined
-								}
-							>
-								{LANGUAGES[tab].label}
-							</Tabs.Tab>
-						))}
-					</Tabs.List>
-					<Divider mt="sm" />
-				</Tabs>
-
-				<SimpleGrid
-					cols={{ base: 1, md: 2 }}
-					spacing="xl"
-					mt="lg"
-				>
-					<Stack gap="lg">
-						{steps.map((step, idx) => (
-							<Box
-								key={step.title}
-								className={classes.stepRow}
-							>
-								<Box
-									className={classes.stepBullet}
-									aria-hidden
-								>
-									{idx + 1}
-								</Box>
-								<Text
-									fw={600}
-									c="bright"
-									fz="md"
-								>
-									{step.title}
-								</Text>
-								<Text
-									fz="sm"
-									mt={4}
-									lh={1.55}
-									className="selectable"
-								>
-									{step.description}
-								</Text>
-							</Box>
-						))}
-						<Group
-							gap="sm"
-							mt="xs"
-						>
-							<Icon
-								path={iconCheckCircle}
-								c="violet.4"
-								size="sm"
-							/>
-							<Text
-								fz="sm"
-								className="selectable"
-							>
-								Your agent now has persistent, queryable memory.
-							</Text>
-						</Group>
-					</Stack>
-					<Stack gap="sm">
-						{steps.map((step) => (
-							<CodeBlock
-								key={step.title}
-								value={step.code}
-								lang={step.lang}
-							/>
-						))}
-					</Stack>
-				</SimpleGrid>
-			</Paper>
+			;
 		</Stack>
 	);
 }

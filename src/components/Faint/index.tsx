@@ -1,7 +1,7 @@
 import { type RefObject } from "react";
 
 export interface FaintProps {
-	containerRef: RefObject<HTMLDivElement>;
+	containerRef: RefObject<HTMLDivElement | null>;
 }
 
 export function Faint({ containerRef: _unused }: FaintProps) {

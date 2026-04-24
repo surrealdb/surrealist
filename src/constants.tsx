@@ -23,6 +23,7 @@ import {
 	iconKey,
 	iconLive,
 	iconMemory,
+	iconPackageClosed,
 	iconPause,
 	iconQuery,
 	iconReferral,
@@ -355,6 +356,11 @@ export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = 
 		id: "knowledge",
 		name: "Knowledge",
 		icon: iconBook,
+	},
+	integration: {
+		id: "integration",
+		name: "Integration",
+		icon: iconPackageClosed,
 	},
 	"api-keys": {
 		id: "api-keys",

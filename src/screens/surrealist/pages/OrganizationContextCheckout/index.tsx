@@ -293,7 +293,6 @@ function PageContent({ organisation }: PageContentProps) {
 										<Box mt="xl">
 											<TextInput
 												label="Coupon code"
-												description="Optional. Enter a code if you have been given one."
 												placeholder="Promotional code"
 												value={couponCode}
 												onChange={setCouponCode}

@@ -49,8 +49,8 @@ export function CodeEditor(props: CodeEditorProps) {
 
 	const colorScheme = useTheme();
 	const syntaxTheme = useConfigStore((s) => s.settings.appearance.syntaxTheme);
-	const elementRef = useRef<HTMLDivElement | null>(null);
-	const editorRef = useRef<EditorView>();
+	const elementRef = useRef<HTMLDivElement>(null);
+	const editorRef = useRef<EditorView>(null);
 	const initializedRef = useRef(false);
 	const preventChangeNotificationsRef = useRef(true);
 	const [editorScale] = useSetting("appearance", "editorScale");

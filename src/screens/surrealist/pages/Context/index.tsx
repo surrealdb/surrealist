@@ -16,6 +16,7 @@ function isContextViewPage(view: string): view is ContextViewPage {
 		view === "playground" ||
 		view === "memories" ||
 		view === "knowledge" ||
+		view === "integration" ||
 		view === "api-keys" ||
 		view === "settings"
 	);
@@ -26,6 +27,7 @@ const PlaygroundView = lazy(() => import("./views/PlaygroundView"));
 const MemoriesView = lazy(() => import("./views/MemoriesView"));
 const KnowledgeView = lazy(() => import("./views/KnowledgeView"));
 const ApiKeysView = lazy(() => import("./views/ApiKeysView"));
+const IntegrationView = lazy(() => import("./views/IntegrationView"));
 const SettingsView = lazy(() => import("./views/SettingsView"));
 
 const VIEW_COMPONENTS: Record<ContextViewPage, React.ComponentType<ContextViewProps>> = {
@@ -33,6 +35,7 @@ const VIEW_COMPONENTS: Record<ContextViewPage, React.ComponentType<ContextViewPr
 	playground: memo(PlaygroundView),
 	memories: memo(MemoriesView),
 	knowledge: memo(KnowledgeView),
+	integration: memo(IntegrationView),
 	"api-keys": memo(ApiKeysView),
 	settings: memo(SettingsView),
 };

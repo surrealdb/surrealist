@@ -14,11 +14,11 @@ import {
 	Title,
 } from "@mantine/core";
 import {
+	Header,
 	Icon,
 	iconArrowUpRight,
 	iconAuth,
 	iconCloudClock,
-	iconOpen,
 	iconRelation,
 	iconServerSecure,
 	pictoSpectron,
@@ -198,6 +198,7 @@ function PageContent({ organisation }: PageContentProps) {
 
 						<Paper
 							p="xl"
+							radius="lg"
 							variant="glass"
 							className={classes.hero}
 						>
@@ -211,7 +212,6 @@ function PageContent({ organisation }: PageContentProps) {
 								<Title
 									fz={{ base: 28, sm: 36 }}
 									variant="gradient"
-									lh={1}
 								>
 									Create a context
 								</Title>
@@ -239,18 +239,18 @@ function PageContent({ organisation }: PageContentProps) {
 									color="slate"
 									rightSection={<Icon path={iconArrowUpRight} />}
 								>
-									Read about Spectron
+									What is Spectron?
 								</Button>
 								<Button
 									component="a"
-									href="https://surrealdb.com/docs/context"
+									href="https://surrealdb.com/docs/build/spectron"
 									target="_blank"
 									rel="noopener noreferrer"
 									variant="subtle"
 									color="slate"
-									rightSection={<Icon path={iconOpen} />}
+									rightSection={<Icon path={iconArrowUpRight} />}
 								>
-									Context documentation
+									Documentation
 								</Button>
 							</Group>
 						</Paper>
@@ -260,7 +260,10 @@ function PageContent({ organisation }: PageContentProps) {
 							spacing={48}
 							cols={{ base: 1, md: 2 }}
 						>
-							<Paper p="xl">
+							<Paper
+								p="xl"
+								radius="md"
+							>
 								<Stack gap="xl">
 									<Box>
 										<Text
@@ -368,21 +371,13 @@ function PageContent({ organisation }: PageContentProps) {
 								visibleFrom="md"
 							>
 								<Box>
-									<Text
-										fz="xs"
-										fw={600}
-										c="violet.4"
-										tt="uppercase"
-										style={{ letterSpacing: "0.08em" }}
-									>
-										What you get
-									</Text>
-									<PrimaryTitle
-										mt={4}
-										fz={24}
+									<Header
+										kicker="What you get"
+										description="This is a header description"
+										order={2}
 									>
 										Agent memory that actually works
-									</PrimaryTitle>
+									</Header>
 									<Text
 										mt="sm"
 										fz="sm"

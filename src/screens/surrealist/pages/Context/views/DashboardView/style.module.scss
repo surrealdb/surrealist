@@ -1,35 +1,19 @@
 .hero {
 	position: relative;
 	overflow: hidden;
-	// background:
-	// 	radial-gradient(120% 140% at 100% 0%,
-	// 		color-mix(in srgb, var(--mantine-color-violet-6) 16%, transparent) 0%,
-	// 		transparent 55%),
-	// 	radial-gradient(80% 120% at 0% 100%,
-	// 		color-mix(in srgb, var(--surreal-passion) 10%, transparent) 0%,
-	// 		transparent 60%),
-	// 	var(--mantine-color-obsidian-light);
 }
 
 .hero-art {
 	position: absolute;
-	top: -20px;
-	right: -10px;
+	bottom: -58px;
+	right: 10px;
 	width: 220px;
-	height: 220px;
 	pointer-events: none;
-	opacity: 0.5;
 	mix-blend-mode: plus-lighter;
-	filter: saturate(1.2);
-	mask-image: radial-gradient(closest-side, black 55%, transparent 100%);
-}
+	opacity: 0.1;
 
-.capability-pill {
-	// background: color-mix(in srgb, var(--mantine-color-obsidian-6) 50%, transparent);
-	transition: border-color 180ms ease;
-
-	&:hover {
-		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 40%, transparent);
+	@include md-and-up {
+		opacity: 0.5;
 	}
 }
 
@@ -95,45 +79,6 @@
 	opacity: 0.22;
 	mix-blend-mode: plus-lighter;
 	filter: saturate(0.9);
-}
-
-.integration-pane {
-	// background: var(--mantine-color-obsidian-light);
-}
-
-.step-row {
-	position: relative;
-	padding-left: 28px;
-
-	&::before {
-		content: "";
-		position: absolute;
-		left: 11px;
-		top: 22px;
-		bottom: -16px;
-		width: 1px;
-		// background: var(--mantine-color-obsidian-5);
-	}
-
-	&:last-child::before {
-		display: none;
-	}
-}
-
-.step-bullet {
-	position: absolute;
-	left: 0;
-	top: 4px;
-	width: 22px;
-	height: 22px;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	// background: color-mix(in srgb, var(--mantine-color-violet-6) 35%, var(--mantine-color-obsidian-7));
-	color: var(--mantine-color-bright);
-	font-size: 11px;
-	font-weight: 700;
 }
 
 @media (prefers-reduced-motion: reduce) {

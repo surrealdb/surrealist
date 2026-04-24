@@ -28,7 +28,7 @@
 		opacity: 0.5;
 	}
 
-	&[data-withBorder] {
+	&[data-border] {
 		border: 1px solid var(--surreal-glass-subtle);
 
 		&[data-checked] {

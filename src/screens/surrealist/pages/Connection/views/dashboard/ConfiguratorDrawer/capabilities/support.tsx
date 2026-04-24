@@ -54,7 +54,7 @@ export function SupportCapability({ name, description }: CapabilityBaseProps) {
 					</Group>
 				</Group>
 			</UnstyledButton>
-			<Collapse in={isExpanded}>
+			<Collapse expanded={isExpanded}>
 				<Box pt="xs">
 					<Paper
 						my="xl"
