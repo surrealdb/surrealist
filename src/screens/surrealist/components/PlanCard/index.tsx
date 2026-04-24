@@ -7,9 +7,13 @@ import { PlanPeriod } from "~/types";
 import classes from "./style.module.scss";
 
 export function formatPrice(millcents: number) {
-	const dollars = millcents / 1000;
+	const cost = millcents / 1000;
 
-	return `$${dollars % 1 === 0 ? dollars.toFixed(0) : dollars.toFixed(2)}`;
+	return cost.toLocaleString("en-US", {
+		minimumFractionDigits: 0,
+		style: "currency",
+		currency: "USD",
+	});
 }
 
 export interface PlanCardContent {
