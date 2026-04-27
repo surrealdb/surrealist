@@ -96,7 +96,13 @@ export function useCloudAuthentication() {
 					const accessToken = await getAccessTokenSilently();
 					await acquireSession(accessToken, false);
 				} catch (err: any) {
-					console.error("Failed to acquire cloud session on init", err);
+					adapter.warn(
+						"Auth",
+						`Failed to acquire cloud session on init: ${err?.message ?? err}`,
+					);
+
+					invalidateSession();
+					useCloudStore.getState().setSessionExpired(true);
 				}
 			})();
 		}
