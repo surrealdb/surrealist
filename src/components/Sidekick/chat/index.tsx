@@ -60,7 +60,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 		inputRef.current?.focus();
 		startRequest(message);
 
-		await stream.sendMessage(message, activeId?.id.toString());
+		await stream.sendMessage(message, activeId ?? undefined);
 
 		completeRequest();
 	});

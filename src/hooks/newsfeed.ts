@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { getApiBase } from "~/cloud/api/endpoints";
 import { useConfigStore } from "~/stores/config";
-
-const API_BASE = `https://surrealdb.com/api`;
 
 interface RemoteListPost {
 	id: string;
@@ -14,6 +13,20 @@ interface RemoteListPost {
 	categories: string[];
 	publish_date: string;
 	blog_url: string;
+}
+
+interface RemoteBlogPost {
+	id: string;
+	slug: string;
+	title: string;
+	summary: string;
+	content: Record<string, unknown>;
+	image_code: string;
+	categories: string[];
+	authors: unknown[];
+	created_at: string;
+	updated_at: string;
+	publish_date: string;
 }
 
 export interface NewsPost {
@@ -52,7 +65,7 @@ export function useLatestNewsQuery() {
 	return useQuery<NewsPost[]>({
 		queryKey: ["newsfeed"],
 		queryFn: async () => {
-			const response = await fetch(`${API_BASE}/feed`, {
+			const response = await fetch(`${getApiBase()}/website/v1/blogs`, {
 				headers: { Accept: "application/json" },
 			});
 
@@ -62,6 +75,32 @@ export function useLatestNewsQuery() {
 
 			const posts = (await response.json()) as RemoteListPost[];
 			return posts.map(convertRemoteListPost);
+		},
+	});
+}
+
+/**
+ * Fetch the full content of a single blog post by slug.
+ */
+export function useBlogPostContentQuery(slug: string | null) {
+	return useQuery<Record<string, unknown>>({
+		queryKey: ["newsfeed", "post", slug],
+		enabled: !!slug,
+		queryFn: async () => {
+			if (!slug) throw new Error("No slug provided");
+
+			const response = await fetch(
+				`${getApiBase()}/website/v1/blogs/${encodeURIComponent(slug)}`,
+				{ headers: { Accept: "application/json" } },
+			);
+
+			if (!response.ok) {
+				throw new Error(`Failed to fetch blog post: ${response.statusText}`);
+			}
+
+			const post = (await response.json()) as RemoteBlogPost | null;
+			const live = (post?.content as { live?: { json?: Record<string, unknown> } })?.live;
+			return live?.json ?? {};
 		},
 	});
 }
