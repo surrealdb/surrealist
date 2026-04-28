@@ -8,7 +8,7 @@ import { openVerifyEmailModal } from "~/modals/verify-email";
 import { useAuthentication } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import { DeepLinkAuthEvent } from "~/util/global-events";
-import { showErrorNotification } from "~/util/helpers";
+import { showErrorNotification, timeout } from "~/util/helpers";
 
 const AUTH_MESSAGE_TYPE = "surrealist-auth-callback";
 
@@ -48,10 +48,16 @@ function handleAuthFailure(failure: AuthFailure, signIn: () => Promise<void>) {
  * Automatically set up the cloud authentication flow
  */
 export function useCloudAuthentication() {
-	const { isAuthenticated, isLoading, getAccessTokenSilently, handleRedirectCallback, error } =
-		useAuth0();
+	const {
+		isAuthenticated,
+		logout,
+		isLoading,
+		getAccessTokenSilently,
+		handleRedirectCallback,
+		error,
+	} = useAuth0();
 
-	const { signIn } = useAuthentication();
+	const { signIn, signOut } = useAuthentication();
 	const hasInitialised = useRef(false);
 
 	// Handle incoming deeplink callbacks
@@ -101,8 +107,10 @@ export function useCloudAuthentication() {
 						`Failed to acquire cloud session on init: ${err?.message ?? err}`,
 					);
 
-					invalidateSession();
 					useCloudStore.getState().setSessionExpired(true);
+					
+					invalidateSession();
+					await logout({ openUrl: false });
 				}
 			})();
 		}
