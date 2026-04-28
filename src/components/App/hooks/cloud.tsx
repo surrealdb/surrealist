@@ -8,7 +8,7 @@ import { openVerifyEmailModal } from "~/modals/verify-email";
 import { useAuthentication } from "~/providers/Auth";
 import { useCloudStore } from "~/stores/cloud";
 import { DeepLinkAuthEvent } from "~/util/global-events";
-import { showErrorNotification, timeout } from "~/util/helpers";
+import { showErrorNotification } from "~/util/helpers";
 
 const AUTH_MESSAGE_TYPE = "surrealist-auth-callback";
 
@@ -57,7 +57,7 @@ export function useCloudAuthentication() {
 		error,
 	} = useAuth0();
 
-	const { signIn, signOut } = useAuthentication();
+	const { signIn } = useAuthentication();
 	const hasInitialised = useRef(false);
 
 	// Handle incoming deeplink callbacks
@@ -108,13 +108,13 @@ export function useCloudAuthentication() {
 					);
 
 					useCloudStore.getState().setSessionExpired(true);
-					
+
 					invalidateSession();
 					await logout({ openUrl: false });
 				}
 			})();
 		}
-	}, [isAuthenticated, isLoading, getAccessTokenSilently]);
+	}, [isAuthenticated, isLoading, logout, getAccessTokenSilently]);
 
 	// Handle Auth0 authentication errors
 	useEffect(() => {
