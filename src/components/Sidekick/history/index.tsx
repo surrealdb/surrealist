@@ -30,7 +30,7 @@ export function SidekickHistory() {
 	const messagesMutation = useSidekickMessagesMutation();
 
 	const loadChat = async (chat: SidekickChat) => {
-		const history = await messagesMutation.mutateAsync(chat.id);
+		const history = (await messagesMutation.mutateAsync(chat.id)) ?? [];
 
 		restoreChat({
 			...chat,
@@ -56,9 +56,9 @@ export function SidekickHistory() {
 				<Label mb="xs">{title}</Label>
 				{chats.map((chat) => (
 					<SidekickHistoryEntry
-						key={chat.id.toString()}
+						key={chat.id}
 						chat={chat}
-						isActive={chat.id.equals(activeId)}
+						isActive={chat.id === activeId}
 						onOpen={loadChat}
 					/>
 				))}

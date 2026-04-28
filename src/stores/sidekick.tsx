@@ -1,8 +1,6 @@
-import { RecordId } from "surrealdb";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { chatOf, messageOf } from "~/components/Sidekick/helpers";
-import { StreamEvent } from "~/components/Sidekick/types";
+import type { StreamEvent } from "~/components/Sidekick/types";
 import type { SidekickChat, SidekickChatMessage } from "~/types";
 
 export interface SidekickChatWithHistory extends SidekickChat {
@@ -10,7 +8,7 @@ export interface SidekickChatWithHistory extends SidekickChat {
 }
 
 export type SidekickStore = {
-	activeId: RecordId | null;
+	activeId: string | null;
 	activeHistory: SidekickChatMessage[];
 	currentPrompt: string;
 	activeTitle: string;
@@ -89,15 +87,15 @@ export const useSidekickStore = create<SidekickStore>()(
 			set((draft) => {
 				switch (event.type) {
 					case "start": {
-						draft.activeId = chatOf(event.data.id);
+						draft.activeId = event.data.id;
 						draft.activeRequest = {
-							id: messageOf(event.data.request.id),
+							id: event.data.request.id,
 							content: event.data.request.content,
 							role: "user",
 							sent_at: new Date(),
 						};
 						draft.activeResponse = {
-							id: messageOf(event.data.response.id),
+							id: event.data.response.id,
 							content: event.data.response.content,
 							role: "assistant",
 							sent_at: new Date(),
