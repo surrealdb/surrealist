@@ -48,8 +48,14 @@ function handleAuthFailure(failure: AuthFailure, signIn: () => Promise<void>) {
  * Automatically set up the cloud authentication flow
  */
 export function useCloudAuthentication() {
-	const { isAuthenticated, isLoading, getAccessTokenSilently, handleRedirectCallback, error } =
-		useAuth0();
+	const {
+		isAuthenticated,
+		logout,
+		isLoading,
+		getAccessTokenSilently,
+		handleRedirectCallback,
+		error,
+	} = useAuth0();
 
 	const { signIn } = useAuthentication();
 	const hasInitialised = useRef(false);
@@ -96,11 +102,19 @@ export function useCloudAuthentication() {
 					const accessToken = await getAccessTokenSilently();
 					await acquireSession(accessToken, false);
 				} catch (err: any) {
-					console.error("Failed to acquire cloud session on init", err);
+					adapter.warn(
+						"Auth",
+						`Failed to acquire cloud session on init: ${err?.message ?? err}`,
+					);
+
+					useCloudStore.getState().setSessionExpired(true);
+
+					invalidateSession();
+					await logout({ openUrl: false });
 				}
 			})();
 		}
-	}, [isAuthenticated, isLoading, getAccessTokenSilently]);
+	}, [isAuthenticated, isLoading, logout, getAccessTokenSilently]);
 
 	// Handle Auth0 authentication errors
 	useEffect(() => {
