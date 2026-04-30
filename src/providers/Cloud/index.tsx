@@ -74,7 +74,13 @@ export function useCloud(): CloudContext {
 }
 
 export function CloudProvider({ children }: PropsWithChildren) {
-	const { user, isAuthenticated, isLoading: isAuthLoading, getAccessToken } = useAuthentication();
+	const {
+		user,
+		isAuthenticated,
+		isLoading: isAuthLoading,
+		getAccessToken,
+		signOut,
+	} = useAuthentication();
 	const emailVerified = user?.email_verified === true;
 
 	const { setTermsAcceptancePending, setIsSupported, setFailedConnected, setCloudValues } =
@@ -205,6 +211,8 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			}
 		} catch (err: unknown) {
 			console.error("Failed to acquire session", err);
+
+			await signOut({ localOnly: true });
 
 			const message = err instanceof Error ? err.message : String(err);
 
