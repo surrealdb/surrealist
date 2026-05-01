@@ -66,7 +66,6 @@ export function SidekickHistoryEntry({ chat, isActive, onOpen }: SidekickHistory
 
 	return (
 		<Entry
-			color="obsidian.5"
 			key={chat.id.toString()}
 			onClick={isRenaming ? undefined : handleOpen}
 			variant="light"
