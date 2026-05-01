@@ -52,7 +52,7 @@ jobs:
         run: |
           v=$(jq -r '.version' package.json)
           TAG="surrealist-v$v"
-          if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
+          if git ls-remote --tags --exit-code origin "refs/tags/${TAG}" >/dev/null 2>&1; then
             echo "ERR: Tag ${TAG} already exists! Please bump the version."
             exit 1
           else
