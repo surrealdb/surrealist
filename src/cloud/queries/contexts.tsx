@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import type {
 	CloudContext,
 	ContextApiKey,
@@ -9,7 +10,7 @@ import type {
 import { fetchAPI } from "../api";
 
 export function useCloudOrganizationContextsQuery(organization?: string) {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 	const client = useQueryClient();
 
@@ -35,7 +36,7 @@ export function useCloudContextQuery(
 	organization: string | undefined,
 	contextId: string | undefined,
 ) {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 	const client = useQueryClient();
 
@@ -53,7 +54,7 @@ export function useCloudContextQuery(
 }
 
 export function useCloudContextApiKeysQuery(organization?: string, contextId?: string) {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
@@ -68,7 +69,7 @@ export function useCloudContextApiKeysQuery(organization?: string, contextId?: s
 }
 
 export function useContextPackagesQuery() {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
@@ -81,7 +82,7 @@ export function useContextPackagesQuery() {
 }
 
 export function useOrganizationContextPackageQuery(organization?: string) {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({

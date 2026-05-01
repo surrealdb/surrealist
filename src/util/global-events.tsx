@@ -32,16 +32,6 @@ export const IntentEvent = createEventBus();
 export const NavigateViewEvent = createEventBus<ViewPage>();
 
 /**
- * Invoked when the cloud account has been authenticated
- */
-export const CloudAuthEvent = createEventBus();
-
-/**
- * Invoked when the cloud account has expired
- */
-export const CloudExpiredEvent = createEventBus();
-
-/**
  * Set the query in the currently active query tab
  */
 export const SetQueryEvent = createEventBus<string>();

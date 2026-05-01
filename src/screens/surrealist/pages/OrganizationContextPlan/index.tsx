@@ -23,13 +23,13 @@ import {
 	useCloudOrganizationQuery,
 	useCloudOrganizationsQuery,
 } from "~/cloud/queries/organizations";
-import { AuthGuard } from "~/components/AuthGuard";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useSearchParams } from "~/hooks/routing";
 import { ContextPlanCard } from "~/screens/surrealist/components/ContextPlanCard";
-import type { CloudOrganization } from "~/types";
+import type { CloudOrganization, PlanPeriod } from "~/types";
 import classes from "./style.module.scss";
 
 export interface OrganizationContextPlanPageProps {
@@ -45,9 +45,9 @@ export function OrganizationContextPlanPage({ id }: OrganizationContextPlanPageP
 	}
 
 	return (
-		<AuthGuard loading={organisationsQuery.isLoading}>
+		<CloudGuard loading={organisationsQuery.isLoading}>
 			<PageContent organisation={organisation as CloudOrganization} />
-		</AuthGuard>
+		</CloudGuard>
 	);
 }
 
@@ -61,7 +61,7 @@ function PageContent({ organisation }: PageContentProps) {
 
 	const isOrgOwner = hasOrganizationRoles(organisation, ORG_ROLES_OWNER, true);
 
-	const [billingPeriod, setBillingPeriod] = useState<"month" | "year">("month");
+	const [billingPeriod, setBillingPeriod] = useState<PlanPeriod>("monthly");
 
 	const { data: availablePackages, isPending: packagesPending } = useContextPackagesQuery();
 	const { data: orgPackages, isSuccess: orgPackageLoaded } = useOrganizationContextPackageQuery(
@@ -82,9 +82,9 @@ function PageContent({ organisation }: PageContentProps) {
 		navigate(fullPath);
 	};
 
-	// When packages expose `billing_period`, filter with:
-	// `(availablePackages ?? []).filter((p) => p.billing_period === billingPeriod)`
-	const displayedPackages = availablePackages ?? [];
+	const displayedPackages = (availablePackages ?? []).filter(
+		(p) => p.billing_period === billingPeriod,
+	);
 
 	return (
 		<CloudAdminGuard organisation={organisation}>
@@ -160,12 +160,10 @@ function PageContent({ organisation }: PageContentProps) {
 									mt="xl"
 									size="md"
 									value={billingPeriod}
-									onChange={(value) =>
-										setBillingPeriod(value as "month" | "year")
-									}
+									onChange={(value) => setBillingPeriod(value as PlanPeriod)}
 									data={[
-										{ label: "Monthly", value: "month" },
-										{ label: "Yearly", value: "year" },
+										{ label: "Monthly", value: "monthly" },
+										{ label: "Yearly", value: "yearly" },
 									]}
 								/>
 							</Stack>
@@ -204,14 +202,15 @@ function PageContent({ organisation }: PageContentProps) {
 											>
 												<ContextPlanCard
 													pkg={pkg}
-													isCurrent={pkg.id === activePackageId}
 													footer={
 														<Button
 															mt="md"
 															size="lg"
 															disabled={isDisabled}
 														>
-															Choose plan
+															{isCurrent
+																? "Current plan"
+																: "Choose plan"}
 														</Button>
 													}
 												/>

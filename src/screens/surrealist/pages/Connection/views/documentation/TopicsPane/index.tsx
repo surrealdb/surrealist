@@ -13,7 +13,7 @@ export interface TocPaneProps {
 	active: string;
 	docs: DocsTopic[];
 	language: CodeLang;
-	scrollRef: RefObject<HTMLDivElement>;
+	scrollRef: RefObject<HTMLDivElement | null>;
 }
 
 export function TocPane({ active, docs, scrollRef }: TocPaneProps) {

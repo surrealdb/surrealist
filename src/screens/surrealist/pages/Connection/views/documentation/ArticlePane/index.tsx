@@ -23,7 +23,7 @@ type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 export interface ArticlePaneProps {
 	docs: DocsTopic[];
 	language: CodeLang;
-	scrollRef: RefObject<HTMLDivElement>;
+	scrollRef: RefObject<HTMLDivElement | null>;
 	onLanguageChange: (lang: CodeLang) => void;
 	onChangeActiveTopic: (topic: string) => void;
 }

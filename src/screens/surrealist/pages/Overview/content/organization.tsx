@@ -21,8 +21,8 @@ import { Spacer } from "~/components/Spacer";
 import { useCloudProfile } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
+import { useCloud } from "~/providers/Cloud";
 import { useConfirmation } from "~/providers/Confirmation";
-import { useCloudStore } from "~/stores/cloud";
 import { CloudOrganization } from "~/types";
 import { ON_STOP_PROPAGATION, plural, showInfo } from "~/util/helpers";
 
@@ -38,7 +38,7 @@ export function OrganizationTile({
 	...other
 }: PropsWithChildren<OrganizationTileProps>) {
 	const client = useQueryClient();
-	const userId = useCloudStore((s) => s.userId);
+	const { userId } = useCloud();
 	const defaultOrg = useCloudProfile().default_org;
 	const membersQuery = useCloudMembersQuery(organization.id);
 	const [, navigate] = useAbsoluteLocation();

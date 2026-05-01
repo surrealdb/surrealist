@@ -1,6 +1,6 @@
 import { adapter } from "~/adapter";
-import { getAuthSnapshotUser } from "~/providers/Auth";
-import { useCloudStore } from "~/stores/cloud";
+import { getUserSnapshot } from "~/providers/Auth";
+import { getCloudUserId } from "~/providers/Cloud";
 import { getSetting } from "./config";
 import { isProduction } from "./environment";
 import { featureFlags } from "./feature-flags";
@@ -61,13 +61,13 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	}
 
 	const { gtm_debug } = featureFlags.store;
-	const { userId } = useCloudStore.getState();
+	const userId = getCloudUserId();
 	const debug_origin = getSetting("gtm", "origin");
 	const debug_mode = getSetting("gtm", "debug_mode");
 	const hostname = (gtm_debug && debug_origin) || HOSTNAME;
 	const uniqueId = (incrementalId++).toString();
 	const params = new URLSearchParams();
-	const user = getAuthSnapshotUser();
+	const user = getUserSnapshot();
 
 	const email = (payload.email as string) || user?.email;
 
@@ -106,7 +106,7 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 
 	try {
 		await adapter.trackEvent(`https://${hostname}/data/event/${btoa(params.toString())}`);
-	} catch (err: any) {
+	} catch (err: unknown) {
 		console.error("Failure", err);
 	}
 }

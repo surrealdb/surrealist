@@ -1,4 +1,4 @@
-import { MantineProvider, Stack, Text } from "@mantine/core";
+import { MantineProvider, Stack, Text, v8CssVariablesResolver } from "@mantine/core";
 import { useLayoutEffect, useState } from "react";
 import { useThemePreference } from "~/hooks/theme";
 import { isDevelopment } from "~/util/environment";
@@ -41,7 +41,7 @@ export function AuthReturnScreen() {
 
 	return (
 		<MantineProvider
-			withCssVariables
+			cssVariablesResolver={v8CssVariablesResolver}
 			theme={SURREALIST_THEME}
 			forceColorScheme={colorScheme}
 		>

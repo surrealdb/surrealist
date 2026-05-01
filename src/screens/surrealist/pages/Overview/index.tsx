@@ -28,7 +28,7 @@ import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useIsAuthenticated, useIsAuthLoading, useIsCloudEnabled } from "~/hooks/cloud";
+import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionList } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConnectionNavigator } from "~/hooks/routing";
@@ -53,7 +53,7 @@ const GRID_COLUMNS = {
 
 export function OverviewPage() {
 	const showCloud = useIsCloudEnabled();
-	const { signIn } = useAuthentication();
+	const { signIn, isAuthenticated, isLoading: isAuthLoading } = useAuthentication();
 
 	const newsQuery = useLatestNewsQuery();
 	const bannerQuery = useCloudBannerQuery();
@@ -71,14 +71,12 @@ export function OverviewPage() {
 		navigateConnection(con.id);
 	});
 
-	const isAuthenticated = useIsAuthenticated();
-	const isAuthLoading = useIsAuthLoading();
 	const dismissedBanners = useConfigStore((s) => s.dismissedBanners);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
 
 	const orgsQuery = useCloudOrganizationsQuery();
 	const activeOrgs = orgsQuery.data?.filter((org) => !isOrganisationTerminated(org)) ?? [];
-	const isOrgsLoading = isAuthLoading || (isAuthenticated && orgsQuery.isPending);
+	const isOrgsLoading = isAuthenticated && orgsQuery.isPending;
 
 	return (
 		<Box
@@ -155,16 +153,7 @@ export function OverviewPage() {
 										</Link>
 									</Group>
 
-									{isOrgsLoading && (
-										<SimpleGrid
-											cols={GRID_COLUMNS}
-											mt="sm"
-										>
-											<Skeleton h={112} />
-										</SimpleGrid>
-									)}
-
-									{!isAuthenticated && !isAuthLoading && (
+									{!isAuthenticated ? (
 										<StartCloud
 											action="View your organizations"
 											image={pictoCloud}
@@ -180,20 +169,31 @@ export function OverviewPage() {
 												one place.
 											</Text>
 										</StartCloud>
-									)}
+									) : (
+										<>
+											{isOrgsLoading && (
+												<SimpleGrid
+													cols={GRID_COLUMNS}
+													mt="sm"
+												>
+													<Skeleton h={112} />
+												</SimpleGrid>
+											)}
 
-									{isAuthenticated && activeOrgs.length > 0 && (
-										<SimpleGrid
-											cols={GRID_COLUMNS}
-											mt="sm"
-										>
-											{activeOrgs.map((org) => (
-												<OrganizationTile
-													key={org.id}
-													organization={org}
-												/>
-											))}
-										</SimpleGrid>
+											{isAuthenticated && activeOrgs.length > 0 && (
+												<SimpleGrid
+													cols={GRID_COLUMNS}
+													mt="sm"
+												>
+													{activeOrgs.map((org) => (
+														<OrganizationTile
+															key={org.id}
+															organization={org}
+														/>
+													))}
+												</SimpleGrid>
+											)}
+										</>
 									)}
 								</>
 							)}

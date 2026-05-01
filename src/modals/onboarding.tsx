@@ -184,8 +184,8 @@ export function InstancesOnboarding({ deployHref }: InstancesOnboardingProps) {
 			onboardingKey="cloud-instances"
 			enabled
 			title="SurrealDB"
-			subtitle="Context, Made Atomic"
-			description="SurrealDB is the database that makes context atomic. Documents, graphs, vectors, time-series, and relational data as native primitives in a single ACID transaction - no plugins, no bolt-ons."
+			subtitle="The context layer for AI agents"
+			description="SurrealDB is the database where storage, context, and memory are one transaction. Documents, graphs, vectors, time-series, and relational data as native primitives in a single ACID transaction - no plugins, no bolt-ons."
 			learnMoreHref="https://surrealdb.com/platform/surrealdb"
 			deployAction={{ label: "Get started", href: deployHref }}
 			// media={

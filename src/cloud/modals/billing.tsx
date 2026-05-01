@@ -5,11 +5,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { shake } from "radash";
 import { useState } from "react";
 import { useImmer } from "use-immer";
-import { ApiError, fetchAPI, updateCloudInformation } from "~/cloud/api";
+import { ApiError, fetchAPI } from "~/cloud/api";
 import { Form } from "~/components/Form";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
+import { useCloud } from "~/providers/Cloud";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudBilling, CloudOrganization } from "~/types";
 import { useCloudBillingQuery } from "../queries/billing";
@@ -59,6 +60,8 @@ interface BillingFormProps {
 }
 
 function BillingForm({ organization, details, callback }: BillingFormProps) {
+	const { syncCloudProfile } = useCloud();
+
 	const [data, setData] = useImmer({
 		Name: details.Name || "",
 		Email: details.Email || "",
@@ -130,7 +133,7 @@ function BillingForm({ organization, details, callback }: BillingFormProps) {
 			});
 
 			handleClose();
-			updateCloudInformation();
+			await syncCloudProfile();
 
 			queryClient.invalidateQueries({
 				queryKey: ["cloud", "billing", organization.id],

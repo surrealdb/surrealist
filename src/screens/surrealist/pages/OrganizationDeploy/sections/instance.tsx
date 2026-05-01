@@ -11,7 +11,7 @@ import { DeploySectionProps } from "../types";
 
 export function DeploymentSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const versions = useAvailableInstanceVersions();
-	const allRegions = useCloudStore((s) => s.regions);
+	const allRegions = useCloudStore((s) => s.instanceRegions);
 	const regionSet = new Set(organisation?.plan.regions ?? []);
 	const supportedRegions = allRegions.filter((region) => regionSet.has(region.slug));
 

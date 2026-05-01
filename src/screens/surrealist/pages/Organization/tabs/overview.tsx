@@ -397,7 +397,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 					<ResourceCard
 						name="Contexts"
 						subject="context"
-						description="Spectron memory and context stores"
+						description="Spectron memory and context stores for AI agents"
 						icon={iconSpectron}
 						image={pictoSpectron}
 						color="violet"

@@ -37,7 +37,7 @@ import {
 import { useCloudConversationQuery } from "~/cloud/queries/context";
 import { AccountAvatar } from "~/components/AccountAvatar";
 import { ActionButton } from "~/components/ActionButton";
-import { AuthGuard } from "~/components/AuthGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
@@ -347,7 +347,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 	}, [conversation]);
 
 	return (
-		<AuthGuard>
+		<CloudGuard>
 			<Box
 				flex={1}
 				pos="relative"
@@ -690,6 +690,6 @@ export function ConversationPage({ id }: ConversationPageProps) {
 					</ScrollArea>
 				)}
 			</Box>
-		</AuthGuard>
+		</CloudGuard>
 	);
 }

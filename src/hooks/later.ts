@@ -11,7 +11,7 @@ import { useStable } from "./stable";
  */
 export function useLater<T extends any[]>(doLater: (...args: T) => unknown): (...args: T) => void {
 	const [shouldFire, setShouldFire] = useState(false);
-	const argsRef = useRef<T>();
+	const argsRef = useRef<T>(null);
 
 	const stableLater = useStable(doLater);
 

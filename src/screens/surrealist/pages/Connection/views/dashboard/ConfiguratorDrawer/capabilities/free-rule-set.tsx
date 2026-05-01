@@ -160,7 +160,7 @@ export function FreeRuleSetCapability({
 					</Group>
 				</Group>
 			</UnstyledButton>
-			<Collapse in={isExpanded}>
+			<Collapse expanded={isExpanded}>
 				<Box pt="xs">
 					<SimpleGrid cols={3}>
 						<RuleSetBase

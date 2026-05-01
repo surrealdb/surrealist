@@ -40,7 +40,7 @@ export function createEventBus<T>(): EventBus<T> {
  * @returns Event bus instance
  */
 export function useEventBus<T>(): EventBus<T> {
-	const bus = useRef<EventBus<T>>();
+	const bus = useRef<EventBus<T>>(null);
 
 	if (!bus.current) {
 		bus.current = createEventBus();

@@ -1,9 +1,6 @@
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import { adapter } from "~/adapter";
-import { CloudStore, useCloudStore } from "~/stores/cloud";
+import { useCloudStore } from "~/stores/cloud";
 import { CloudMeasurement } from "~/types";
-
-let skipCloudSync = false;
 
 /**
  * Measure the compute history
@@ -118,29 +115,4 @@ export function getTypeCategoryDescription(category: string) {
 		default:
 			return category;
 	}
-}
-
-export function syncCloudStore(store: CloudStore) {
-	if (!skipCloudSync) {
-		try {
-			skipCloudSync = true;
-			useCloudStore.setState(store);
-		} finally {
-			skipCloudSync = false;
-		}
-	}
-}
-
-export function startCloudSync() {
-	useCloudStore.subscribe(async (state) => {
-		if (!skipCloudSync) {
-			skipCloudSync = true;
-
-			await getCurrentWindow()
-				.emit("cloud-updated", state)
-				.then(() => {
-					skipCloudSync = false;
-				});
-		}
-	});
 }

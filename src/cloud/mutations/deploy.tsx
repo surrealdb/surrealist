@@ -33,7 +33,7 @@ export function useInstanceDeployMutation(organisation?: CloudOrganization) {
 
 			queryClient.setQueryData(["cloud", "instances", { id: instance.id }], instance);
 
-			tagEvent("cloud_instance_created", {
+			await tagEvent("cloud_instance_created", {
 				instance: instance.id,
 				region: config.region,
 				version: config.version,

@@ -1,314 +1,264 @@
 import {
+	Badge,
 	Box,
 	Button,
-	Divider,
+	Group,
 	Image,
+	Paper,
 	SimpleGrid,
-	Tabs,
+	Stack,
 	Text,
 	ThemeIcon,
-	Timeline,
+	Title,
+	UnstyledButton,
 } from "@mantine/core";
 import {
-	brandJavaScript,
-	brandPython,
-	CodeBlock,
+	Header,
+	HoverGlow,
 	Icon,
-	iconAPI,
 	iconArrowUpRight,
-	iconOpen,
+	iconPackageClosed,
+	iconPlay,
+	pictoSpectron,
 } from "@surrealdb/ui";
-import { type ReactNode, useState } from "react";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Section } from "~/components/Section";
+import { useMemo } from "react";
+import { CONTEXT_VIEW_PAGES, REGION_FLAGS } from "~/constants";
+import { useContextNavigator } from "~/hooks/routing";
+import { useCloudStore } from "~/stores/cloud";
+import type { ContextViewPage } from "~/types";
 import type { ContextViewProps } from "../../types";
+import classes from "./style.module.scss";
 
-type IntegrationTab = "python" | "javascript" | "api";
+interface NavItem {
+	page: ContextViewPage;
+	description: string;
+}
 
-const INTEGRATION_STEPS: Record<
-	IntegrationTab,
-	{ title: string; description: string; code?: string; lang?: string; content?: ReactNode }[]
-> = {
-	python: [
-		{
-			title: "Install the SDK",
-			description: "Get started by installing the SurrealDB Context Python package.",
-			code: "pip install surrealdb-context",
-			lang: "bash",
-		},
-		{
-			title: "Initialise the client",
-			description: "Initialise the client with your API key to start making requests.",
-			code: `from surrealdb_context import ContextClient
-
-client = ContextClient(api_key="your-api-key")`,
-			lang: "python",
-		},
-		{
-			title: "Add memory",
-			description: "Store conversation history and important information for your users.",
-			code: `messages = [
-    { "role": "user", "content": "Hi, I'm Alex. I prefer dark mode." },
-    { "role": "assistant", "content": "Hello Alex! I've noted your preference." }
-]
-
-client.add(messages, user_id="alex")`,
-			lang: "python",
-		},
-		{
-			title: "Retrieve memory",
-			description: "Retrieve the complete memory history for a specific user.",
-			code: `query = "What are the user's preferences?"
-
-results = client.search(query, user_id="alex")`,
-			lang: "python",
-		},
-		{
-			title: "Learn more",
-			description: "For more examples and advanced usage, visit the full documentation.",
-			content: (
-				<Button
-					component="a"
-					href="https://surrealdb.com/docs/context"
-					target="_blank"
-					rel="noopener noreferrer"
-					mt="lg"
-					rightSection={<Icon path={iconArrowUpRight} />}
-				>
-					Full documentation
-				</Button>
-			),
-		},
-	],
-	javascript: [
-		{
-			title: "Install the SDK",
-			description: "Get started by installing the SurrealDB Context npm package.",
-			code: "npm install @surrealdb/context",
-			lang: "bash",
-		},
-		{
-			title: "Initialise the client",
-			description: "Initialise the client with your API key to start making requests.",
-			code: `import { ContextClient } from "@surrealdb/context";
-
-const client = new ContextClient({ apiKey: "your-api-key" });`,
-			lang: "javascript",
-		},
-		{
-			title: "Add memory",
-			description: "Store conversation history and important information for your users.",
-			code: `const messages = [
-    { role: "user", content: "Hi, I'm Alex. I prefer dark mode." },
-    { role: "assistant", content: "Hello Alex! I've noted your preference." }
+const EXPLORE_ITEMS: NavItem[] = [
+	{
+		page: "playground",
+		description: "Chat with your context and watch memories form in real time.",
+	},
+	{
+		page: "memories",
+		description: "Inspect the agent-learned memory graph that grows with usage.",
+	},
+	{
+		page: "knowledge",
+		description: "Ground your context in files, documents, and ingressed data.",
+	},
 ];
 
-await client.add(messages, { userId: "alex" });`,
-			lang: "javascript",
-		},
-		{
-			title: "Retrieve memory",
-			description: "Retrieve the complete memory history for a specific user.",
-			code: `const results = await client.search(
-    "What are the user's preferences?",
-    { userId: "alex" }
-);`,
-			lang: "javascript",
-		},
-		{
-			title: "Learn more",
-			description: "For more examples and advanced usage, visit the full documentation.",
-			content: (
-				<Button
-					component="a"
-					href="https://surrealdb.com/docs/context"
-					target="_blank"
-					rel="noopener noreferrer"
-					mt="lg"
-					rightSection={<Icon path={iconArrowUpRight} />}
-				>
-					Full documentation
-				</Button>
-			),
-		},
-	],
-	api: [
-		{
-			title: "Add memory",
-			description: "Store conversation history using the REST API.",
-			code: `curl -X POST https://api.surrealdb.com/v1/context/memories \\
-    -H "Authorization: Bearer your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{
-        "messages": [
-            { "role": "user", "content": "Hi, I'm Alex." }
-        ],
-        "user_id": "alex"
-    }'`,
-			lang: "bash",
-		},
-		{
-			title: "Search memories",
-			description: "Search across stored memories using semantic search.",
-			code: `curl -X POST https://api.surrealdb.com/v1/context/search \\
-    -H "Authorization: Bearer your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{
-        "query": "What are the user preferences?",
-        "user_id": "alex"
-    }'`,
-			lang: "bash",
-		},
-		{
-			title: "List memories",
-			description: "Retrieve all stored memories for a specific user.",
-			code: `curl https://api.surrealdb.com/v1/context/memories?user_id=alex \\
-    -H "Authorization: Bearer your-api-key"`,
-			lang: "bash",
-		},
-		{
-			title: "Learn more",
-			description: "For more examples and advanced usage, visit the full documentation.",
-			content: (
-				<Button
-					component="a"
-					href="https://surrealdb.com/docs/context"
-					target="_blank"
-					rel="noopener noreferrer"
-					mt="lg"
-					rightSection={<Icon path={iconArrowUpRight} />}
-				>
-					Full documentation
-				</Button>
-			),
-		},
-	],
-};
-
-const LANGUAGES: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
-	python: { label: "Python", img: brandPython },
-	javascript: { label: "JavaScript", img: brandJavaScript },
-	api: { label: "REST API", icon: iconAPI },
-};
+const INTEGRATION_ITEMS: NavItem[] = [
+	{
+		page: "integration",
+		description: "Step-by-step setup for Python, JavaScript, and the REST API.",
+	},
+	{
+		page: "api-keys",
+		description: "Create keys and connect SDKs, agents, or the REST API.",
+	},
+];
 
 export default function DashboardView({ context }: ContextViewProps) {
-	const [activeTab, setActiveTab] = useState<IntegrationTab>("python");
+	const navigateContext = useContextNavigator();
+	const regions = useCloudStore((s) => s.contextRegions);
 
-	const steps = INTEGRATION_STEPS[activeTab];
+	const region = useMemo(
+		() => regions.find((r) => r.slug === context.region),
+		[regions, context.region],
+	);
+
+	const goToPage = (page: ContextViewPage) => {
+		navigateContext(context.organization_id, context.id, page);
+	};
 
 	return (
-		<>
-			<PrimaryTitle fz={32}>{context.name}</PrimaryTitle>
-
-			<Section
-				title="Integrate with your stack"
-				description="Get started quickly using the SDK or REST API"
-				withPaper
-				rightSection={
-					<Button
-						component="a"
-						href="https://surrealdb.com/docs/context"
-						target="_blank"
-						rel="noopener noreferrer"
-						variant="subtle"
-						size="sm"
-						rightSection={
-							<Icon
-								path={iconOpen}
-								size="sm"
-							/>
-						}
-					>
-						Documentation
-					</Button>
-				}
+		<Stack gap={48}>
+			{/* HERO */}
+			<Paper
+				p="xl"
+				radius="lg"
+				variant="glass"
+				className={classes.hero}
 			>
-				<Tabs
-					value={activeTab}
-					onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
-					mb="lg"
+				<Image
+					src={pictoSpectron}
+					className={classes.heroArt}
+					alt=""
+					aria-hidden
+				/>
+				<Stack
+					gap="lg"
+					pos="relative"
+					style={{ zIndex: 1 }}
 				>
-					<Tabs.List>
-						{(Object.keys(LANGUAGES) as IntegrationTab[]).map((tab) => (
-							<Tabs.Tab
-								key={tab}
-								value={tab}
+					<Box maw={640}>
+						<Text
+							fz="xs"
+							fw={600}
+							c="violet.4"
+							tt="uppercase"
+							style={{ letterSpacing: "0.08em" }}
+						>
+							Context
+						</Text>
+						<Title
+							fz={{ base: 28, sm: 36 }}
+							variant="gradient"
+							lh={1}
+						>
+							{context.name}
+						</Title>
+						<Group
+							gap="xs"
+							mt="sm"
+						>
+							<Badge
+								size="sm"
+								variant="transparent"
+								px={0}
 								leftSection={
-									LANGUAGES[tab].img ? (
-										<Image
-											src={LANGUAGES[tab].img}
-											w={16}
-											mr="xs"
-										/>
-									) : LANGUAGES[tab].icon ? (
-										<Icon
-											path={LANGUAGES[tab].icon}
-											c="bright"
-											size="lg"
-											mr="xs"
-										/>
-									) : undefined
+									<Image
+										src={REGION_FLAGS[context.region]}
+										w={14}
+										mr="xs"
+									/>
 								}
 							>
-								{LANGUAGES[tab].label}
-							</Tabs.Tab>
-						))}
-					</Tabs.List>
-					<Divider />
-				</Tabs>
-
-				<Timeline
-					active={steps.length - 1}
-					bulletSize={24}
-					lineWidth={2}
-					styles={{
-						itemTitle: {
-							color: "var(--mantine-color-bright)",
-							fontSize: "var(--mantine-font-size-lg)",
-						},
-					}}
-				>
-					{steps.map((step, index) => (
-						<Timeline.Item
-							key={step.title}
-							bullet={
-								<ThemeIcon
-									size={24}
-									color="violet"
-									variant="filled"
-									radius="xl"
-								>
-									<Text
-										inherit
-										fz="xs"
-									>
-										{index + 1}
-									</Text>
-								</ThemeIcon>
-							}
-							title={step.title}
+								{region?.description}
+							</Badge>
+						</Group>
+					</Box>
+					<Group
+						gap="sm"
+						mt="sm"
+					>
+						<Button
+							variant="gradient"
+							leftSection={<Icon path={iconPlay} />}
+							onClick={() => goToPage("playground")}
 						>
-							<SimpleGrid cols={2}>
-								<Box>
-									<Text
-										mt="xs"
-										className="selectable"
-									>
-										{step.description}
-									</Text>
-									{step.content}
-								</Box>
-								{step.code && (
-									<CodeBlock
-										value={step.code}
-										lang={step.lang}
-									/>
-								)}
-							</SimpleGrid>
-						</Timeline.Item>
+							Open playground
+						</Button>
+						<Button
+							onClick={() => goToPage("integration")}
+							rightSection={<Icon path={iconPackageClosed} />}
+						>
+							Integrate Spectron
+						</Button>
+					</Group>
+				</Stack>
+			</Paper>
+			<Box>
+				<Header
+					kicker="Explore"
+					order={2}
+				>
+					All knowledge in one place
+				</Header>
+				<SimpleGrid
+					mt="xl"
+					cols={{ base: 1, sm: 3 }}
+					spacing="md"
+				>
+					{EXPLORE_ITEMS.map((item) => (
+						<NavCard
+							key={item.page}
+							item={item}
+							onNavigate={goToPage}
+						/>
 					))}
-				</Timeline>
-			</Section>
-		</>
+				</SimpleGrid>
+			</Box>
+			<Box>
+				<Header
+					kicker="Integrate"
+					order={2}
+				>
+					Connect your tools and services
+				</Header>
+				<SimpleGrid
+					mt="xl"
+					cols={{ base: 1, sm: 2 }}
+					spacing="md"
+				>
+					{INTEGRATION_ITEMS.map((item) => (
+						<NavCard
+							key={item.page}
+							item={item}
+							onNavigate={goToPage}
+						/>
+					))}
+				</SimpleGrid>
+			</Box>
+		</Stack>
+	);
+}
+
+interface NavCardProps {
+	item: NavItem;
+	onNavigate: (page: ContextViewPage) => void;
+}
+
+function NavCard({ item, onNavigate }: NavCardProps) {
+	const meta = CONTEXT_VIEW_PAGES[item.page];
+
+	return (
+		<HoverGlow key={item.page}>
+			<UnstyledButton
+				onClick={() => onNavigate(item.page)}
+				style={{ cursor: "pointer" }}
+				w="100%"
+			>
+				<Paper
+					p="lg"
+					radius="md"
+					className={classes.navCard}
+				>
+					<Group
+						gap="md"
+						wrap="nowrap"
+						align="flex-start"
+						pos="relative"
+						style={{ zIndex: 1 }}
+					>
+						<ThemeIcon
+							size={44}
+							radius="md"
+							variant="light"
+							color="violet"
+						>
+							<Icon
+								path={meta.icon}
+								size="lg"
+							/>
+						</ThemeIcon>
+						<Box flex={1}>
+							<Text
+								fw={600}
+								fz="md"
+								c="bright"
+							>
+								{meta.name}
+							</Text>
+							<Text
+								mt={4}
+								fz="sm"
+								lh={1.5}
+								className="selectable"
+							>
+								{item.description}
+							</Text>
+						</Box>
+						<Icon
+							path={iconArrowUpRight}
+							size="sm"
+							c="slate"
+						/>
+					</Group>
+				</Paper>
+			</UnstyledButton>
+		</HoverGlow>
 	);
 }

@@ -1,10 +1,8 @@
 import { Avatar, AvatarProps, Loader, UnstyledButton } from "@mantine/core";
-import { useIsAuthLoading } from "~/hooks/cloud";
 import { useAuthentication } from "~/providers/Auth";
 
 export function AccountAvatar(props: AvatarProps) {
-	const { user } = useAuthentication();
-	const isAuthLoading = useIsAuthLoading();
+	const { user, isLoading: isAuthLoading } = useAuthentication();
 	const name = user?.name || "Unknown";
 
 	return (

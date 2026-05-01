@@ -13,7 +13,7 @@ import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
 import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
 import { hasCompletedOnboarding } from "~/hooks/onboarding";
-import { useCloudStore } from "~/stores/cloud";
+import { getCloudSessionStatus } from "~/providers/Cloud";
 import { useConfigStore } from "~/stores/config";
 import { State, useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
@@ -134,15 +134,14 @@ export async function openConnection(options?: ConnectOptions) {
 		const [versionCheck] = getVersionTimeout();
 
 		if (connection.authentication.mode === "cloud") {
-			const { cloudSessionActive, isProcessingAuth } = useCloudStore.getState();
+			const { isActive } = getCloudSessionStatus();
 
-			if (isProcessingAuth) {
+			// Wait for the cloud session to become active. `useConnectionSwitch`
+			// observes cloud state and will re-trigger this flow when it does;
+			// the scheduled retry acts as a safety net for non-reactive callers.
+			if (!isActive) {
 				scheduleReconnect(1000);
 				return;
-			}
-
-			if (!cloudSessionActive) {
-				throw new CloudError("Not authenticated with SurrealDB Cloud");
 			}
 
 			const instance = await fetchAPI<CloudInstance>(
@@ -281,7 +280,7 @@ export async function openConnection(options?: ConnectOptions) {
 
 		ConnectedEvent.dispatch(null);
 
-		tagEvent("connection_connected", {
+		void tagEvent("connection_connected", {
 			protocol: connection.authentication.protocol.toString(),
 			variant: getConnectionVariant(connection),
 		});
@@ -559,7 +558,7 @@ export async function executeUserQuery(options?: UserQueryOptions) {
 			.map(({ duration }) => (duration?.seconds ? Number(duration.seconds) : 0))
 			.reduce((a, b) => a + b, 0);
 
-		tagEvent("query_execute", {
+		void tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "surql",
 			compute_time: compute_time,
@@ -688,7 +687,7 @@ export async function executeGraphql(
 
 		setGraphqlResponse(connection.id, response);
 
-		tagEvent("query_execute", {
+		void tagEvent("query_execute", {
 			protocol: connection.authentication.protocol.toString(),
 			type: "graphql",
 			compute_time: surqlDurationToSeconds(response.execution_time),

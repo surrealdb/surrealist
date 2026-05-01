@@ -1,7 +1,7 @@
 import { Box, Button, Center, Group, Loader, ScrollArea, Stack } from "@mantine/core";
 import { Icon, iconPlus } from "@surrealdb/ui";
 import { useConversationsQuery } from "~/cloud/queries/context";
-import { AuthGuard } from "~/components/AuthGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { ConversationTable } from "~/components/ConversationTable";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -13,7 +13,7 @@ export function RequestsPage() {
 	const { data: requests, isLoading } = useConversationsQuery();
 
 	return (
-		<AuthGuard>
+		<CloudGuard>
 			<Box
 				flex={1}
 				pos="relative"
@@ -82,6 +82,6 @@ export function RequestsPage() {
 					</Stack>
 				</ScrollArea>
 			</Box>
-		</AuthGuard>
+		</CloudGuard>
 	);
 }

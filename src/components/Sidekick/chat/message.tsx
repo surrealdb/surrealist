@@ -150,7 +150,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 									<Icon path={sourcesOpen ? iconChevronUp : iconChevronDown} />
 								</ActionIcon>
 							</Group>
-							<Collapse in={sourcesOpen}>
+							<Collapse expanded={sourcesOpen}>
 								<Paper
 									bg={isLight ? "obsidian.0" : "obsidian.7"}
 									p="md"

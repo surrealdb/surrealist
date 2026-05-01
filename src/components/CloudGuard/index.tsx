@@ -1,16 +1,16 @@
 import { Center, Loader } from "@mantine/core";
-import type { PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 import { AuthGuard, type AuthGuardProps } from "~/components/AuthGuard";
-import { useCloudStore } from "~/stores/cloud";
+import { useCloud } from "~/providers/Cloud";
 
 export interface CloudGuardProps extends AuthGuardProps {}
 
 export function CloudGuard({ children, ...rest }: PropsWithChildren<CloudGuardProps>) {
-	const cloudSessionActive = useCloudStore((s) => s.cloudSessionActive);
+	const { isActive } = useCloud();
 
 	return (
 		<AuthGuard {...rest}>
-			{cloudSessionActive ? (
+			{isActive ? (
 				children
 			) : (
 				<Center flex={1}>
