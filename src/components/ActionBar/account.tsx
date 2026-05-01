@@ -131,7 +131,7 @@ export function CloudAccount() {
 				<Menu.Divider />
 				<Menu.Item
 					leftSection={<Icon path={iconExitToAp} />}
-					onClick={signOut}
+					onClick={() => signOut()}
 				>
 					Sign out
 				</Menu.Item>
