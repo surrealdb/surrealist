@@ -7,7 +7,7 @@ on:
         required: true
         type: boolean
         description: "Is this a pre-release? If not, this will be considered the latest release"
-        default: true
+        default: false
       version:
         required: false
         type: string
