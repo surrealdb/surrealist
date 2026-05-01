@@ -1,4 +1,4 @@
-import { Anchor, Box, Button, Group, Menu, Text } from "@mantine/core";
+import { Box, Button, Group, Menu, Text } from "@mantine/core";
 import {
 	Icon,
 	iconBook,
@@ -11,6 +11,7 @@ import {
 	iconSun,
 	iconTune,
 } from "@surrealdb/ui";
+import { adapter } from "~/adapter";
 import { useSetting } from "~/hooks/config";
 import { useTheme } from "~/hooks/theme";
 import { useAuthentication } from "~/providers/Auth";
@@ -112,22 +113,20 @@ export function CloudAccount() {
 					</Menu.Item>
 				)}
 				<Menu.Divider />
-				<Anchor href="https://surrealdb.com/docs">
-					<Menu.Item
-						leftSection={<Icon path={iconBook} />}
-						rightSection={<Icon path={iconOpen} />}
-					>
-						Documentation
-					</Menu.Item>
-				</Anchor>
-				<Anchor href="https://account.surrealdb.com">
-					<Menu.Item
-						leftSection={<Icon path={iconTune} />}
-						rightSection={<Icon path={iconOpen} />}
-					>
-						Account settings
-					</Menu.Item>
-				</Anchor>
+				<Menu.Item
+					leftSection={<Icon path={iconBook} />}
+					rightSection={<Icon path={iconOpen} />}
+					onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
+				>
+					Documentation
+				</Menu.Item>
+				<Menu.Item
+					leftSection={<Icon path={iconTune} />}
+					rightSection={<Icon path={iconOpen} />}
+					onClick={() => adapter.openUrl("https://account.surrealdb.com")}
+				>
+					Account settings
+				</Menu.Item>
 				<Menu.Divider />
 				<Menu.Item
 					leftSection={<Icon path={iconExitToAp} />}
