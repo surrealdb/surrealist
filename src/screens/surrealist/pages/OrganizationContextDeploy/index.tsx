@@ -38,7 +38,6 @@ import { CloudGuard } from "~/components/CloudGuard";
 import { Label } from "~/components/Label";
 import { Option } from "~/components/Option";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { REGION_FLAGS } from "~/constants";
 import { useAbsoluteLocation, useContextNavigator } from "~/hooks/routing";
@@ -266,21 +265,12 @@ function PageContent({ organisation }: PageContentProps) {
 							>
 								<Stack gap="xl">
 									<Box>
-										<Text
-											fz="xs"
-											fw={600}
-											c="violet.4"
-											tt="uppercase"
-											style={{ letterSpacing: "0.08em" }}
-										>
-											Configuration
-										</Text>
-										<PrimaryTitle
-											mt={4}
-											fz={24}
+										<Header
+											kicker="Configuration"
+											order={2}
 										>
 											Build your context
-										</PrimaryTitle>
+										</Header>
 									</Box>
 
 									{blockedWithoutPlan && (
@@ -373,7 +363,6 @@ function PageContent({ organisation }: PageContentProps) {
 								<Box>
 									<Header
 										kicker="What you get"
-										description="This is a header description"
 										order={2}
 									>
 										Agent memory that actually works
