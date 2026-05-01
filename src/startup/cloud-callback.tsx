@@ -5,7 +5,15 @@ import "../assets/styles/override.scss";
 import "../assets/styles/variants.scss";
 import "../assets/styles/global.scss";
 
-import { Anchor, Button, Image, MantineProvider, Stack, Text } from "@mantine/core";
+import {
+	Anchor,
+	Button,
+	Image,
+	MantineProvider,
+	Stack,
+	Text,
+	v8CssVariablesResolver,
+} from "@mantine/core";
 import { pictoDownload } from "@surrealdb/ui";
 import { createRoot } from "react-dom/client";
 import { useThemePreference } from "~/hooks/theme";
@@ -20,7 +28,7 @@ function AuthCallbackScreen() {
 
 	return (
 		<MantineProvider
-			withCssVariables
+			cssVariablesResolver={v8CssVariablesResolver}
 			theme={SURREALIST_THEME}
 			forceColorScheme={colorScheme}
 		>

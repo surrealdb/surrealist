@@ -34,7 +34,7 @@ export function DatabaseServing() {
 
 			adapter
 				.startDatabase()
-				.then(() => tagEvent("database_serve"))
+				.then(() => void tagEvent("database_serve"))
 				.catch(() => stopServing());
 		}
 

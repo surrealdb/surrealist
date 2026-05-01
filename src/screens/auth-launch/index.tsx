@@ -1,4 +1,11 @@
-import { Anchor, Button, MantineProvider, Stack, Text } from "@mantine/core";
+import {
+	Anchor,
+	Button,
+	MantineProvider,
+	Stack,
+	Text,
+	v8CssVariablesResolver,
+} from "@mantine/core";
 import { Icon, iconOpen, iconSurreal, Spinner } from "@surrealdb/ui";
 import { useLayoutEffect, useMemo } from "react";
 import { useThemePreference } from "~/hooks/theme";
@@ -19,7 +26,7 @@ export function AuthLaunchScreen() {
 
 	return (
 		<MantineProvider
-			withCssVariables
+			cssVariablesResolver={v8CssVariablesResolver}
 			theme={SURREALIST_THEME}
 			forceColorScheme={colorScheme}
 		>

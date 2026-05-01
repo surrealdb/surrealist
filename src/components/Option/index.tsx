@@ -8,15 +8,24 @@ export interface OptionProps extends BoxProps {
 	checked: boolean;
 	disabled?: boolean;
 	icon?: ReactNode;
+	withBorder?: boolean;
 	onChange: (value: boolean) => void;
 }
 
-export const Option: FC<OptionProps> = ({ label, checked, disabled, icon, onChange, ...other }) => (
+export const Option: FC<OptionProps> = ({
+	label,
+	checked,
+	disabled,
+	icon,
+	withBorder,
+	onChange,
+	...other
+}) => (
 	<UnstyledButton
 		onClick={() => onChange(!checked)}
 		disabled={disabled}
-		mod={{ checked, disabled }}
 		className={classes.root}
+		mod={{ checked, disabled, border: withBorder }}
 		{...other}
 	>
 		{icon && (

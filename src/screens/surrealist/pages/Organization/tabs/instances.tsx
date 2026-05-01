@@ -38,7 +38,7 @@ function statusComparator(a: CloudInstance, b: CloudInstance) {
 
 export function OrganizationInstancesTab({ organization }: OrganizationTabProps) {
 	const navigateConnection = useConnectionNavigator();
-	const allRegions = useCloudStore((s) => s.regions);
+	const allRegions = useCloudStore((s) => s.instanceRegions);
 	const isAdmin = hasOrganizationRoles(organization, ORG_ROLES_ADMIN);
 	const isRestricted = isOrganisationRestricted(organization);
 

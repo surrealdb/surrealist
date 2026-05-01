@@ -60,7 +60,7 @@ export function GroupTopic({ active, entry, lang, onOpen }: TopicProps<DocsGroup
 			>
 				{entry.title}
 			</Entry>
-			<Collapse in={hasFocus}>
+			<Collapse expanded={hasFocus}>
 				<Stack
 					gap="xs"
 					ml="lg"
@@ -116,7 +116,7 @@ export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSec
 					/>
 				</ActionIcon>
 			</Group>
-			<Collapse in={opened}>
+			<Collapse expanded={opened}>
 				<Stack gap="xs">{renderTopics(entry.topics, active, lang, onOpen)}</Stack>
 			</Collapse>
 		</>

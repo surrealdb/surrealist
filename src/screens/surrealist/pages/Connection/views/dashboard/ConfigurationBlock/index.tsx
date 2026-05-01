@@ -35,7 +35,7 @@ export function ConfigurationBlock({
 	onUpgrade,
 	onConfigure,
 }: ConfigurationBlockProps) {
-	const regions = useCloudStore((s) => s.regions);
+	const regions = useCloudStore((s) => s.instanceRegions);
 	const region = instance?.region;
 	const regionName = regions.find((r) => r.slug === region)?.description ?? region;
 

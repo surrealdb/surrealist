@@ -10,7 +10,9 @@ import {
 	SimpleGrid,
 	Stack,
 	Text,
+	TextInput,
 } from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
 import { Icon, iconArrowUpRight, iconCreditCard } from "@surrealdb/ui";
 import { useState } from "react";
 import { Redirect } from "wouter";
@@ -28,9 +30,9 @@ import {
 	useCloudOrganizationQuery,
 	useCloudOrganizationsQuery,
 } from "~/cloud/queries/organizations";
-import { AuthGuard } from "~/components/AuthGuard";
 import { BillingDetails } from "~/components/BillingDetails";
 import { CloudAdminGuard } from "~/components/CloudAdminGuard";
+import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PaymentDetails } from "~/components/PaymentDetails";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -54,9 +56,9 @@ export function OrganizationContextCheckoutPage({ id }: OrganizationContextCheck
 	}
 
 	return (
-		<AuthGuard loading={organisationsQuery.isLoading}>
+		<CloudGuard loading={organisationsQuery.isLoading}>
 			<PageContent organisation={organisation as CloudOrganization} />
-		</AuthGuard>
+		</CloudGuard>
 	);
 }
 
@@ -73,6 +75,7 @@ function PageContent({ organisation }: PageContentProps) {
 	const assignMutation = useAssignContextPackageMutation(organisation.id);
 
 	const [isConfirming, setIsConfirming] = useState(false);
+	const [couponCode, setCouponCode] = useInputState("");
 
 	const selectedPackage = availablePackages?.find((p) => p.id === packageId);
 
@@ -86,7 +89,10 @@ function PageContent({ organisation }: PageContentProps) {
 		setIsConfirming(true);
 
 		try {
-			await assignMutation.mutateAsync(packageId);
+			await assignMutation.mutateAsync({
+				packageId,
+				coupon_code: couponCode.trim() || undefined,
+			});
 
 			showInfo({
 				title: "Package updated",
@@ -283,6 +289,18 @@ function PageContent({ organisation }: PageContentProps) {
 										</Paper>
 									)}
 
+									{!isManaged && !!selectedPackage && (
+										<Box mt="xl">
+											<TextInput
+												label="Coupon code"
+												placeholder="Promotional code"
+												value={couponCode}
+												onChange={setCouponCode}
+												maw={420}
+											/>
+										</Box>
+									)}
+
 									<Divider my={36} />
 
 									<Group>
@@ -315,25 +333,7 @@ function PageContent({ organisation }: PageContentProps) {
 									style={{ flexShrink: 0 }}
 								>
 									{selectedPackage ? (
-										<ContextPlanCard
-											pkg={selectedPackage}
-											footer={
-												<Button
-													mt="md"
-													size="lg"
-													fullWidth
-													color="obsidian"
-													variant="light"
-													onClick={() =>
-														navigate(
-															`/o/${organisation.id}/contexts/plan${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`,
-														)
-													}
-												>
-													Change plan
-												</Button>
-											}
-										/>
+										<ContextPlanCard pkg={selectedPackage} />
 									) : (
 										<Text
 											c="red"

@@ -17,7 +17,6 @@ import "../adapter";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
-import { invalidateSession } from "~/cloud/api/auth";
 import { clearCachedConnections } from "~/cloud/helpers";
 import { NewDomainScreen } from "~/screens/new-domain";
 import { startConfigSync } from "~/util/config";
@@ -74,7 +73,6 @@ import { promptChangelog } from "../util/changelogs";
 
 	// Expose debugging tools
 	exposeDebug({
-		invalidateSession,
 		clearCachedConnections,
 	});
 })();

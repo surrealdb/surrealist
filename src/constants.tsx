@@ -2,6 +2,7 @@ import type { MantineColor, MantineColorScheme } from "@mantine/core";
 import {
 	iconAPI,
 	iconAuth,
+	iconBook,
 	iconBraces,
 	iconChart,
 	iconChat,
@@ -21,6 +22,8 @@ import {
 	iconHelp,
 	iconKey,
 	iconLive,
+	iconMemory,
+	iconPackageClosed,
 	iconPause,
 	iconQuery,
 	iconReferral,
@@ -58,6 +61,7 @@ import type {
 	MonitorSeverity,
 	NoneResultMode,
 	Orientation,
+	PlanPeriod,
 	Protocol,
 	ResultFormat,
 	ResultMode,
@@ -343,6 +347,21 @@ export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = 
 		name: "Playground",
 		icon: iconChat,
 	},
+	memories: {
+		id: "memories",
+		name: "Memories",
+		icon: iconMemory,
+	},
+	knowledge: {
+		id: "knowledge",
+		name: "Knowledge",
+		icon: iconBook,
+	},
+	integration: {
+		id: "integration",
+		name: "Integration",
+		icon: iconPackageClosed,
+	},
 	"api-keys": {
 		id: "api-keys",
 		name: "API Keys",
@@ -582,3 +601,8 @@ export const SUPPORT_STATES = [
 		color: "red",
 	},
 ];
+
+export const PLAN_PERIOD_LABELS: Record<PlanPeriod, string> = {
+	monthly: "month",
+	yearly: "year",
+};

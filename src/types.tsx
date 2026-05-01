@@ -40,6 +40,7 @@ export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
 export type ViewRequirement = "database";
 export type QueryType = "config" | "file";
+export type PlanPeriod = "monthly" | "yearly";
 
 export type MonitorType = "metrics" | "logs";
 export type MonitorSeverity = "info" | "warning" | "error";
@@ -89,7 +90,14 @@ export type ViewPage =
 	| "documentation"
 	| "migrations";
 
-export type ContextViewPage = "dashboard" | "playground" | "api-keys" | "settings";
+export type ContextViewPage =
+	| "dashboard"
+	| "playground"
+	| "memories"
+	| "knowledge"
+	| "integration"
+	| "api-keys"
+	| "settings";
 
 export type AppMenuItemType =
 	| "Separator"
@@ -687,8 +695,7 @@ export interface ContextPackage {
 	name: string;
 	description: string;
 	cost_millcents: number;
-	/** When set, packages can be filtered by billing cadence (e.g. monthly vs yearly). */
-	billing_period?: "month" | "year";
+	billing_period?: PlanPeriod;
 	token_limit: number;
 	contexts_limit: number;
 }
@@ -698,6 +705,8 @@ export interface OrganizationContextPackage {
 	organization_id: string;
 	enabled_at: string;
 	disabled_at?: string;
+	trial_ends_at?: string;
+	subscription_ends_at?: string;
 }
 
 export interface CloudDistributedStorageSpecs {

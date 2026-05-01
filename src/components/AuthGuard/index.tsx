@@ -1,9 +1,9 @@
 import { Center } from "@mantine/core";
 import { Spinner } from "@surrealdb/ui";
 import { type PropsWithChildren, useEffect } from "react";
-import { useIsAuthenticated, useIsAuthLoading } from "~/hooks/cloud";
 import { useAbsoluteLocation } from "~/hooks/routing";
-import { useCloudStore } from "~/stores/cloud";
+import { useAuthentication } from "~/providers/Auth";
+import { useCloud } from "~/providers/Cloud";
 import { SignInRedirect } from "../SignInRedirect";
 
 export interface AuthGuardProps {
@@ -12,15 +12,14 @@ export interface AuthGuardProps {
 
 export function AuthGuard({ loading, children }: PropsWithChildren<AuthGuardProps>) {
 	const [, navigate] = useAbsoluteLocation();
-	const isAuthenticated = useIsAuthenticated();
-	const isAuthLoading = useIsAuthLoading();
-	const authError = useCloudStore((s) => s.authError);
+	const { isAuthenticated, isLoading: isAuthLoading } = useAuthentication();
+	const { error } = useCloud();
 
 	useEffect(() => {
-		if (authError) {
+		if (error) {
 			return navigate("/overview");
 		}
-	}, [authError]);
+	}, [error]);
 
 	return isAuthLoading || loading ? (
 		<Center flex={1}>

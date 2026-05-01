@@ -16,10 +16,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { capitalize } from "radash";
 import { useRef, useState } from "react";
 import { adapter } from "~/adapter";
-import { fetchAPI, updateCloudInformation } from "~/cloud/api";
+import { fetchAPI } from "~/cloud/api";
 import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
 import { useCloudPaymentsQuery } from "~/cloud/queries/payments";
 import { useStable } from "~/hooks/stable";
+import { useCloud } from "~/providers/Cloud";
 import { CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification } from "~/util/helpers";
@@ -34,6 +35,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 	const isOwner = hasOrganizationRoles(organisation, ORG_ROLES_OWNER, true);
 	const paymentQuery = useCloudPaymentsQuery(organisation.id);
 	const client = useQueryClient();
+	const { syncCloudProfile } = useCloud();
 
 	const [requesting, setRequesting] = useState(false);
 	const hasRequested = useRef(false);
@@ -65,7 +67,7 @@ export function PaymentDetails({ organisation, ...rest }: PaymentDetailsProps) {
 			method: "PUT",
 		});
 
-		await updateCloudInformation();
+		await syncCloudProfile();
 
 		client.invalidateQueries({
 			queryKey: ["cloud", "payments", organisation.id],

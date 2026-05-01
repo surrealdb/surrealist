@@ -17,7 +17,9 @@
 		"noEmit": true,
 		"jsx": "react-jsx",
 		"paths": {
-			"~/*": ["./src/*"]
+			"~/*": ["./src/*"],
+			"@mantine/core": ["./node_modules/@mantine/core"],
+			"@mantine/hooks": ["./node_modules/@mantine/hooks"]
 		}
 	},
 	"include": ["src", "env.d.ts"],

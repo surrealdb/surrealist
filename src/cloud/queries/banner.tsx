@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { isEmpty } from "radash";
-import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import type { CloudBanner } from "~/types";
 import { fetchAPI } from "../api";
 
@@ -8,7 +9,7 @@ import { fetchAPI } from "../api";
  * Fetch the active alert banner
  */
 export function useCloudBannerQuery() {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({

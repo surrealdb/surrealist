@@ -1,4 +1,4 @@
-import { Button, Flex, MantineProvider, Portal } from "@mantine/core";
+import { Button, Flex, MantineProvider, Portal, v8CssVariablesResolver } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { cleanNotifications, Notifications, useNotifications } from "@mantine/notifications";
 import { Icon, iconClose } from "@surrealdb/ui";
@@ -8,6 +8,7 @@ import type { PropsWithChildren } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useIsLight, useThemePreference } from "~/hooks/theme";
 import { AuthProvider } from "~/providers/Auth";
+import { CloudProvider } from "~/providers/Cloud";
 import { CommandsProvider } from "~/providers/Commands";
 import { ConfirmationProvider } from "~/providers/Confirmation";
 import { ContextProvider } from "~/providers/Context";
@@ -92,11 +93,17 @@ export function Scaffold({ authentication, children }: PropsWithChildren<Scaffol
 		<FeatureFlagsProvider>
 			<QueryClientProvider client={QUERY_CLIENT}>
 				<MantineProvider
-					withCssVariables
+					cssVariablesResolver={v8CssVariablesResolver}
 					theme={SURREALIST_THEME}
 					forceColorScheme={colorScheme}
 				>
-					{authentication ? <AuthProvider>{inner}</AuthProvider> : inner}
+					{authentication ? (
+						<AuthProvider>
+							<CloudProvider>{inner}</CloudProvider>
+						</AuthProvider>
+					) : (
+						inner
+					)}
 				</MantineProvider>
 			</QueryClientProvider>
 		</FeatureFlagsProvider>

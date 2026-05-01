@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession } from "~/hooks/cloud";
 import { useSupportTicketsEnvironment } from "~/hooks/context";
+import { useAuthentication } from "~/providers/Auth";
 import {
 	IntercomConversation,
 	IntercomSupportArticle,
@@ -16,7 +17,7 @@ import { fetchContextAPI } from "../api/context";
  * Fetch a list of all conversations the user has access to
  */
 export function useConversationsQuery() {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 	const env = useSupportTicketsEnvironment();
 
@@ -73,7 +74,7 @@ export function useCloudOrganizationTicketAttributesQuery(organizationId?: strin
 export function useCloudConversationQuery(conversationId?: string) {
 	const [flags] = useFeatureFlags();
 	const env = useSupportTicketsEnvironment();
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({
@@ -95,7 +96,7 @@ export function useCloudConversationQuery(conversationId?: string) {
 export function useCloudUnreadConversationsQuery() {
 	const [flags] = useFeatureFlags();
 	const env = useSupportTicketsEnvironment();
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQuery({

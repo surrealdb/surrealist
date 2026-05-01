@@ -1,13 +1,19 @@
-import { Badge, Box, Checkbox, Group, Paper, Stack, Text, Title } from "@mantine/core";
+import { Box, Checkbox, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import { Label } from "~/components/Label";
+import { PLAN_PERIOD_LABELS } from "~/constants";
+import { PlanPeriod } from "~/types";
 import classes from "./style.module.scss";
 
 export function formatPrice(millcents: number) {
-	const dollars = millcents / 100_000;
+	const cost = millcents / 1000;
 
-	return `$${dollars % 1 === 0 ? dollars.toFixed(0) : dollars.toFixed(2)}`;
+	return cost.toLocaleString("en-US", {
+		minimumFractionDigits: 0,
+		style: "currency",
+		currency: "USD",
+	});
 }
 
 export interface PlanCardContent {
@@ -19,11 +25,10 @@ export interface PlanCardProps {
 	name: string;
 	description?: string;
 	priceMillcents: number;
-	pricePeriod: "month" | "year";
+	pricePeriod: PlanPeriod;
 	contents: PlanCardContent[];
 	disabled?: boolean;
 	footer?: ReactNode;
-	isActive?: boolean;
 }
 
 export function PlanCard({
@@ -34,7 +39,6 @@ export function PlanCard({
 	contents,
 	disabled = false,
 	footer,
-	isActive = false,
 }: PlanCardProps) {
 	const priceLabel = formatPrice(priceMillcents);
 
@@ -58,14 +62,6 @@ export function PlanCard({
 							>
 								{name}
 							</Text>
-							{isActive && (
-								<Badge
-									color="violet"
-									variant="light"
-								>
-									Active
-								</Badge>
-							)}
 						</Group>
 
 						<Text>{description}</Text>
@@ -79,7 +75,7 @@ export function PlanCard({
 						<Title
 							order={2}
 							c="bright"
-							fz={40}
+							fz={32}
 							lh={1.1}
 						>
 							{priceLabel}
@@ -92,7 +88,7 @@ export function PlanCard({
 							>
 								per
 								<br />
-								{pricePeriod}
+								{PLAN_PERIOD_LABELS[pricePeriod]}
 							</Text>
 						)}
 					</Group>

@@ -178,7 +178,7 @@ export function ConnectionAddressDetails({
 				)}
 			</Group>
 
-			<Collapse in={showSslNotice}>
+			<Collapse expanded={showSslNotice}>
 				<Alert
 					title="SSL verification"
 					color="orange"

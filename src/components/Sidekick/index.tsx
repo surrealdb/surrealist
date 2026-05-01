@@ -11,7 +11,6 @@ import {
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
 import glowImg from "~/assets/images/radial-glow.png";
 import { Spacer } from "~/components/Spacer";
-import { useIsAuthenticated } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useAuthentication } from "~/providers/Auth";
 import { useSidekickStore } from "~/stores/sidekick";
@@ -52,8 +51,7 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 
 		const { toggleHistory } = useSidekickStore.getState();
 
-		const isAuthed = useIsAuthenticated();
-		const { signIn } = useAuthentication();
+		const { signIn, isAuthenticated: isAuthed } = useAuthentication();
 		const [sidekickPanel, setSidekickPanel] = useSetting("behavior", "sidekickPanel");
 
 		useImperativeHandle(ref, () => ({

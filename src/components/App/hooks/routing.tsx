@@ -55,6 +55,6 @@ export function useAppRouter() {
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Page views
 	useLayoutEffect(() => {
-		tagEvent("page_view");
-	}, [path]);
+		void tagEvent("page_view");
+	}, [path, tagEvent]);
 }

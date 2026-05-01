@@ -1,5 +1,4 @@
-import { useCloudStore } from "~/stores/cloud";
-import type { CloudBillingCountry, CloudInstanceType, CloudProfile, CloudRegion } from "~/types";
+import { getCloudSessionToken } from "~/providers/Cloud";
 import { getCloudEndpoints } from "./endpoints";
 
 /**
@@ -10,8 +9,9 @@ export async function fetchAPI<T = unknown>(
 	path: string,
 	options?: RequestInit | undefined,
 ): Promise<T> {
-	const { sessionToken } = useCloudStore.getState();
+	const sessionToken = getCloudSessionToken();
 	const { apiBase } = getCloudEndpoints();
+	const { headers: extraHeaders, ...restOptions } = options || {};
 
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
@@ -25,9 +25,9 @@ export async function fetchAPI<T = unknown>(
 		const response = await fetch(`${apiBase}${path}`, {
 			headers: {
 				...headers,
-				...options?.headers,
+				...extraHeaders,
 			},
-			...options,
+			...restOptions,
 		});
 
 		if (!response.ok) {
@@ -52,31 +52,6 @@ export async function fetchAPI<T = unknown>(
 	}
 
 	return {} as T;
-}
-
-/**
- * Fetch essential information from the API
- */
-export async function updateCloudInformation() {
-	const { setCloudValues, setProfile } = useCloudStore.getState();
-
-	const [instanceVersions, instanceTypes, regions, billingCountries, profile] = await Promise.all(
-		[
-			fetchAPI<string[]>("/instanceversions"),
-			fetchAPI<CloudInstanceType[]>("/instancetypes"),
-			fetchAPI<CloudRegion[]>("/regions"),
-			fetchAPI<CloudBillingCountry[]>("/billingcountries"),
-			fetchAPI<CloudProfile>("/user/profile"),
-		],
-	);
-
-	setProfile(profile);
-	setCloudValues({
-		instanceVersions,
-		instanceTypes,
-		regions,
-		billingCountries,
-	});
 }
 
 /**

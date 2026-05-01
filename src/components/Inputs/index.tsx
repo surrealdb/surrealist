@@ -72,7 +72,7 @@ export function CodeInput({
 		fallbackComp: Compartment;
 		keymapsComp: Compartment;
 		themeComp: Compartment;
-	}>();
+	}>(null);
 
 	const colorScheme = useTheme();
 	const syntaxTheme = useConfigStore((s) => s.settings.appearance.syntaxTheme);

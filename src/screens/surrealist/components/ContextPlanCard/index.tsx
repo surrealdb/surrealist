@@ -11,13 +11,12 @@ function contextPackageFeatures(pkg: ContextPackage) {
 
 export interface ContextPlanCardProps {
 	pkg: ContextPackage;
-	isCurrent?: boolean;
 	footer?: ReactNode;
 }
 
-export function ContextPlanCard({ pkg, isCurrent, footer }: ContextPlanCardProps) {
+export function ContextPlanCard({ pkg, footer }: ContextPlanCardProps) {
 	const features = contextPackageFeatures(pkg);
-	const pricePeriod = pkg.billing_period ?? "month";
+	const pricePeriod = pkg.billing_period ?? "monthly";
 
 	return (
 		<PlanCard
@@ -25,7 +24,6 @@ export function ContextPlanCard({ pkg, isCurrent, footer }: ContextPlanCardProps
 			description={pkg.description}
 			priceMillcents={pkg.cost_millcents}
 			pricePeriod={pricePeriod}
-			isActive={isCurrent}
 			footer={footer}
 			contents={[
 				{

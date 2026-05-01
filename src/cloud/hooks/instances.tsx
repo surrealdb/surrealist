@@ -1,5 +1,6 @@
 import { QueryObserverOptions, useQueries } from "@tanstack/react-query";
-import { useHasCloudSession, useIsAuthenticated } from "~/hooks/cloud";
+import { useHasCloudSession } from "~/hooks/cloud";
+import { useAuthentication } from "~/providers/Auth";
 import type { CloudInstance } from "~/types";
 import { fetchAPI } from "../api";
 import { useCloudOrganizationsQuery } from "../queries/organizations";
@@ -9,7 +10,7 @@ import { useCloudOrganizationsQuery } from "../queries/organizations";
  */
 export function useCloudInstanceList() {
 	const { data: organizations = [], isLoading } = useCloudOrganizationsQuery();
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 	const hasCloudSession = useHasCloudSession();
 
 	return useQueries({

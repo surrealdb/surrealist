@@ -1,7 +1,7 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { Alert, Stack, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "~/cloud/api";
+import { useCloud } from "~/providers/Cloud";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
@@ -18,31 +18,21 @@ export function useIsCloudEnabled() {
 }
 
 /**
- * Returns whether the user is authenticated via Auth0
- */
-export function useIsAuthenticated() {
-	return useAuth0().isAuthenticated;
-}
-
-/**
- * Returns whether the Auth0 SDK is still loading
- */
-export function useIsAuthLoading() {
-	return useAuth0().isLoading;
-}
-
-/**
  * Returns whether the user has a cloud session active
+ *
+ * @deprecated Use `const { isActive } = useCloud()` instead
  */
 export function useHasCloudSession() {
-	return useCloudStore((s) => s.cloudSessionActive);
+	return useCloud().isActive;
 }
 
 /**
  * Returns the current user profile
+ *
+ * @deprecated Use `const { profile } = useCloud()` instead
  */
 export function useCloudProfile() {
-	return useCloudStore((s) => s.profile);
+	return useCloud().profile;
 }
 
 /**

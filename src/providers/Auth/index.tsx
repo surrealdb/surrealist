@@ -1,13 +1,26 @@
-import { Auth0Provider as BaseAuth0Provider, User, useAuth0 } from "@auth0/auth0-react";
+import {
+	Auth0ContextInterface,
+	Auth0Provider as BaseAuth0Provider,
+	User,
+	useAuth0,
+} from "@auth0/auth0-react";
+import { shutdown } from "@intercom/messenger-js-sdk";
 import { useStable } from "@surrealdb/ui";
 import { createContext, type PropsWithChildren, useContext, useEffect } from "react";
 import { useSearchParams } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
-import { destroySession } from "~/cloud/api/auth";
 import { SignInRedirect } from "~/components/SignInRedirect";
 import { useAbsoluteLocation } from "~/hooks/routing";
+import { openCloudOnboardingModal } from "~/modals/cloud-onboarding";
+import { tagEvent } from "~/util/analytics";
+import { broadcastAuthEvent } from "~/util/auth-broadcast";
 import { showErrorNotification } from "~/util/helpers";
 import { callback, computeReturnPath } from "./helpers";
+import { useAuthCallbackFlow } from "./hooks/use-auth-callback-flow";
+import { useAuthWindowSync } from "./hooks/use-auth-window-sync";
+import type { SignInOptions, SignOutOptions } from "./types";
+
+export type { SignInOptions };
 
 const CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID ?? "";
 const AUTH_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN ?? "";
@@ -19,15 +32,15 @@ const AUTH_OVERVIEW_URL = callback("overview");
 
 export { AUTH_RETURN_URL, AUTH_LAUNCH_URL };
 
+type AccessTokenFn = Auth0ContextInterface["getAccessTokenSilently"];
+
 export interface AuthContext {
 	user: User | undefined;
+	isAuthenticated: boolean;
+	isLoading: boolean;
+	getAccessToken: AccessTokenFn;
 	signIn: (options?: SignInOptions) => Promise<void>;
-	signOut: () => Promise<void>;
-}
-
-export interface SignInOptions {
-	screen?: "signin" | "signup";
-	redirect?: boolean;
+	signOut: (options?: SignOutOptions) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -36,8 +49,7 @@ let _getAccessToken: (() => Promise<string>) | null = null;
 let _user: User | undefined;
 
 /**
- * Get an Auth0 access token from outside of React.
- * Only available after the AuthProvider has mounted.
+ * Returns the current id token
  */
 export async function getAccessToken(): Promise<string> {
 	if (!_getAccessToken) {
@@ -48,19 +60,14 @@ export async function getAccessToken(): Promise<string> {
 }
 
 /**
- * Auth0 user when the auth bridge has mounted.
- * `undefined` before the first TokenBridge effect, or when logged out.
+ * Returns the current user snapshot
  */
-export function getAuthSnapshotUser(): User | undefined {
-	if (!_getAccessToken) {
-		return undefined;
-	}
-
+export function getUserSnapshot(): User | undefined {
 	return _user;
 }
 
 /**
- * Returns a function which retrieves the authentication context
+ * Returns the current authentication context
  */
 export function useAuthentication(): AuthContext {
 	const ctx = useContext(AuthContext);
@@ -73,10 +80,13 @@ export function useAuthentication(): AuthContext {
 }
 
 function TokenBridge({ children }: PropsWithChildren) {
-	const { user, loginWithRedirect, getAccessTokenSilently, logout } = useAuth0();
+	const { user, loginWithRedirect, getAccessTokenSilently, logout, isAuthenticated, isLoading } =
+		useAuth0();
+
 	const [params] = useSearchParams();
 	const [, navigate] = useAbsoluteLocation();
 
+	const isVerifyPending = user?.email_verified === false;
 	const isSigninPrompt = params.get("signin") === "true";
 
 	const signIn = useStable(async (options?: SignInOptions) => {
@@ -97,21 +107,29 @@ function TokenBridge({ children }: PropsWithChildren) {
 		});
 	});
 
-	const signOut = useStable(async () => {
-		destroySession();
+	const signOut = useStable(async (options?: SignOutOptions) => {
+		const { localOnly } = options ?? {};
+
+		tagEvent("cloud_signout");
+		shutdown();
+
 		navigate("/overview");
 
-		await logout({
-			openUrl: async (url) => {
-				const opened = await adapter.openUrl(url);
+		await broadcastAuthEvent("signout");
 
-				if (!opened) {
-					showErrorNotification({
-						title: "Failed to open authentication",
-						content: "Please make sure popup blockers are disabled.",
-					});
-				}
-			},
+		await logout({
+			openUrl: localOnly
+				? undefined
+				: async (url) => {
+						const opened = await adapter.openUrl(url);
+
+						if (!opened) {
+							showErrorNotification({
+								title: "Failed to open authentication",
+								content: "Please make sure popup blockers are disabled.",
+							});
+						}
+					},
 			logoutParams: {
 				returnTo: isDesktop ? AUTH_LAUNCH_URL : AUTH_RETURN_URL,
 			},
@@ -130,8 +148,26 @@ function TokenBridge({ children }: PropsWithChildren) {
 		_user = user;
 	}, [user]);
 
+	useEffect(() => {
+		if (isVerifyPending) {
+			openCloudOnboardingModal();
+		}
+	}, [isVerifyPending]);
+
+	useAuthCallbackFlow();
+	useAuthWindowSync();
+
 	return (
-		<AuthContext.Provider value={{ user, signIn, signOut }}>
+		<AuthContext.Provider
+			value={{
+				user,
+				isAuthenticated,
+				isLoading,
+				signIn,
+				signOut,
+				getAccessToken: getAccessTokenSilently,
+			}}
+		>
 			{isSigninPrompt ? <SignInRedirect /> : children}
 		</AuthContext.Provider>
 	);
