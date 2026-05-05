@@ -102,7 +102,12 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 				</ActionButton>
 			}
 		>
-			{value}
+			<Text
+				maw={215}
+				truncate
+			>
+				{value}
+			</Text>
 		</Menu.Item>
 	);
 }
@@ -194,7 +199,10 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 					</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown miw={225}>
+			<Menu.Dropdown
+				miw={225}
+				maw={275}
+			>
 				<Group
 					gap="sm"
 					p="sm"

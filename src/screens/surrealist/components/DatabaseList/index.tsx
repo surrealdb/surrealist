@@ -103,7 +103,12 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 				</ActionButton>
 			}
 		>
-			{value}
+			<Text
+				maw={215}
+				truncate
+			>
+				{value}
+			</Text>
 		</Menu.Item>
 	);
 }
@@ -197,7 +202,10 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 					</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown miw={225}>
+			<Menu.Dropdown
+				miw={225}
+				maw={275}
+			>
 				<Group
 					gap="sm"
 					p="sm"
