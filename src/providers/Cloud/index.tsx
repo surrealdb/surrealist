@@ -44,13 +44,6 @@ export function getCloudSessionToken(): string {
 }
 
 /**
- * Returns the current cloud user id
- */
-export function getCloudUserId(): string {
-	return _current?.userId ?? "";
-}
-
-/**
  * Returns the current cloud session status
  */
 export function getCloudSessionStatus(): CloudSessionStatus {
@@ -81,7 +74,6 @@ export function CloudProvider({ children }: PropsWithChildren) {
 		getAccessToken,
 		signOut,
 	} = useAuthentication();
-	const emailVerified = user?.email_verified === true;
 
 	const { setTermsAcceptancePending, setIsSupported, setFailedConnected, setCloudValues } =
 		useCloudStore.getState();
@@ -95,6 +87,7 @@ export function CloudProvider({ children }: PropsWithChildren) {
 	const [profile, setProfile] = useState<CloudProfile>(EMPTY_PROFILE);
 
 	const termsPending = useCloudStore((s) => s.termsAcceptancePending);
+	const isVerified = user?.email_verified === true;
 
 	const invalidateSession = useStable(() => {
 		adapter.log("Cloud", "Invalidating session");
@@ -193,11 +186,9 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			adapter.log("Cloud", "Session acquired");
 
 			if (initial) {
-				tagEvent("cloud_signin", {
-					auth_provider: result.provider,
+				tagEvent("cloud_session", {
 					referred: !!referralCode,
 					open_terms: promptTerms,
-					first_signin: promptTerms,
 				});
 			}
 
@@ -263,14 +254,14 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
-		if (isAuthenticated && emailVerified) {
+		if (isAuthenticated && isVerified) {
 			void acquireSession(true);
 
 			return () => {
 				invalidateSession();
 			};
 		}
-	}, [isAuthenticated, isAuthLoading, emailVerified]);
+	}, [isAuthenticated, isAuthLoading, isVerified]);
 
 	useEffect(() => {
 		if (termsPending) {
