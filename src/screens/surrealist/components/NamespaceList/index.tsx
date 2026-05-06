@@ -39,7 +39,7 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 	const remove = useConfirmation({
 		message: () => (
 			<Stack className="selectable">
-				<Text>
+				<Text lineClamp={3}>
 					You are about to delete the namespace{" "}
 					<Text
 						span
@@ -65,8 +65,7 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 			</Stack>
 		),
 		confirmText: "Delete namespace",
-		verification: value,
-		verifyText: "Please type the name of the namespace to confirm",
+		verification: "delete",
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(value)}`);
 
@@ -102,7 +101,12 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 				</ActionButton>
 			}
 		>
-			{value}
+			<Text
+				maw={215}
+				truncate
+			>
+				{value}
+			</Text>
 		</Menu.Item>
 	);
 }
@@ -194,7 +198,10 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 					</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown miw={225}>
+			<Menu.Dropdown
+				miw={225}
+				maw={275}
+			>
 				<Group
 					gap="sm"
 					p="sm"
