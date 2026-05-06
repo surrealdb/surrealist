@@ -147,6 +147,7 @@ export default defineConfig(({ mode }) => {
 							"@surrealdb/wasm",
 							"@surrealdb/ql-wasm-2",
 							"@surrealdb/ql-wasm-3",
+							"surrealql-language-server",
 						],
 					},
 				},
@@ -183,7 +184,12 @@ export default defineConfig(({ mode }) => {
 		},
 		optimizeDeps: {
 			include: ["path-browserify"],
-			exclude: ["@surrealdb/wasm", "@surrealdb/ql-wasm-2", "@surrealdb/ql-wasm-3"],
+			exclude: [
+				"@surrealdb/wasm",
+				"@surrealdb/ql-wasm-2",
+				"@surrealdb/ql-wasm-3",
+				"surrealql-language-server",
+			],
 			esbuildOptions: {
 				target: "esnext",
 			},
@@ -192,6 +198,7 @@ export default defineConfig(({ mode }) => {
 			"**/@surrealdb/wasm/dist/*.wasm",
 			"**/@surrealdb/ql-wasm-2/dist/*.wasm",
 			"**/@surrealdb/ql-wasm-3/dist/*.wasm",
+			"**/surrealql-language-server/*.wasm",
 		],
 	};
 });

@@ -23,8 +23,10 @@ import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import {
+	getSharedSurqlLspClient,
 	runQueryKeymap,
 	surqlCustomFunctionCompletion,
+	surqlLanguageServer,
 	surqlLinting,
 	surqlRecordLinks,
 	surqlTableCompletion,
@@ -198,11 +200,15 @@ export function QueryPane({
 
 	const hasSelection = selection?.empty === false;
 
+	const lspClient = useMemo(() => getSharedSurqlLspClient(), []);
+	const lspUri = useMemo(() => `surrealist:///query/${activeTab.id}.surql`, [activeTab.id]);
+
 	const extensions = useMemo(
 		() => [
 			surrealql(),
 			surqlVersion,
 			surqlLinting(updateValid),
+			surqlLanguageServer({ client: lspClient, uri: lspUri }),
 			surqlRecordLinks(inspect),
 			surqlTableCompletion(),
 			surqlVariableCompletion(resolveVariables),
@@ -210,7 +216,7 @@ export function QueryPane({
 			Prec.high(keymap.of(runQueryKeymap)),
 			scrollPastEnd(),
 		],
-		[inspect, surqlVersion],
+		[inspect, surqlVersion, lspClient, lspUri],
 	);
 
 	useIntent("format-query", handleFormat);

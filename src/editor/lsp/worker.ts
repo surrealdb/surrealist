@@ -1,0 +1,104 @@
+/// <reference lib="webworker" />
+
+/**
+ * Web Worker that hosts the SurrealQL language-server WASM module.
+ *
+ * Surrealist communicates with this worker over a small typed
+ * postMessage protocol (see [`protocol.ts`](./protocol.ts)):
+ *
+ *  * Inbound `rpc` messages carry a JSON-RPC string that the wasm
+ *    module decodes into an LSP request/notification.
+ *  * Inbound mutators (`pushWorkspaceDocument`, `setLiveMetadata`,
+ *    etc.) flow straight into the matching `WasmLanguageServer`
+ *    method.
+ *  * Outbound notifications come in two forms:
+ *      * `publishDiagnostics` / `logMessage` — pushed by the wasm
+ *        side via the JS callbacks installed below.
+ *      * `requestConfiguration` — server-initiated request; the host
+ *        replies with a matching `configuration` message keyed by id.
+ */
+
+import init, { WasmLanguageServer } from "surrealql-language-server";
+import wasmPath from "surrealql-language-server/surrealql_language_server_bg.wasm?url";
+import type { WorkerInbound, WorkerOutbound } from "./protocol";
+
+declare const self: DedicatedWorkerGlobalScope;
+
+const post = (message: WorkerOutbound) => self.postMessage(message);
+
+const pendingConfigurations = new Map<number, (value: unknown) => void>();
+let nextConfigurationId = 1;
+
+const requestConfigurationFromHost = (): Promise<unknown> => {
+	const id = nextConfigurationId++;
+	return new Promise((resolve) => {
+		pendingConfigurations.set(id, resolve);
+		post({ kind: "requestConfiguration", id });
+	});
+};
+
+const ready = (async () => {
+	await init(wasmPath);
+
+	const server = new WasmLanguageServer({
+		onPublishDiagnostics: (uri: string, diagnostics: unknown) => {
+			post({ kind: "publishDiagnostics", uri, diagnostics });
+		},
+		onLogMessage: (level: number, message: string) => {
+			post({ kind: "logMessage", level, message });
+		},
+		onRequestConfiguration: requestConfigurationFromHost,
+	});
+
+	post({ kind: "ready" });
+	return server;
+})();
+
+self.addEventListener("message", async (event: MessageEvent<WorkerInbound>) => {
+	const message = event.data;
+	const server = await ready;
+
+	switch (message.kind) {
+		case "rpc": {
+			try {
+				const response = await server.handleMessage(message.payload);
+				post({
+					kind: "rpcResult",
+					id: message.id,
+					payload: typeof response === "string" ? response : null,
+				});
+			} catch (error) {
+				post({
+					kind: "rpcError",
+					id: message.id,
+					message: error instanceof Error ? error.message : String(error),
+				});
+			}
+			return;
+		}
+		case "pushWorkspaceDocument": {
+			await server.pushWorkspaceDocument(message.uri, message.text);
+			return;
+		}
+		case "dropWorkspaceDocument": {
+			await server.dropWorkspaceDocument(message.uri);
+			return;
+		}
+		case "replaceWorkspace": {
+			await server.replaceWorkspace(message.documents);
+			return;
+		}
+		case "setLiveMetadata": {
+			await server.setLiveMetadata(message.defineStrings);
+			return;
+		}
+		case "configuration": {
+			const resolver = pendingConfigurations.get(message.id);
+			if (resolver) {
+				pendingConfigurations.delete(message.id);
+				resolver(message.value);
+			}
+			return;
+		}
+	}
+});

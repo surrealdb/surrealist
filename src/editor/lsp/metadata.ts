@@ -1,0 +1,111 @@
+/**
+ * Pump live SurrealDB schema definitions into the language-server
+ * worker.
+ *
+ * Surrealist already keeps a parsed schema in `useDatabaseStore`
+ * (populated by `syncConnectionSchema` whenever a connection is
+ * activated / reloaded). The language server, however, expects raw
+ * `DEFINE …` statements so it can re-parse them through the same
+ * tree-sitter pipeline as user buffers — that way live tables /
+ * fields / functions show up in completions and hover with the
+ * matching origin and inference metadata.
+ *
+ * This module subscribes to the database store and re-builds the
+ * `DEFINE` statement set whenever the schema changes, then pushes the
+ * resulting list into the worker.
+ */
+
+import { useDatabaseStore } from "~/stores/database";
+import type {
+	DatabaseSchema,
+	SchemaEvent,
+	SchemaField,
+	SchemaFunction,
+	SchemaIndex,
+	SchemaParameter,
+	TableInfo,
+} from "~/types";
+import type { SurqlLspClient } from "./client";
+
+/**
+ * Subscribe to the active database schema and forward every schema
+ * change to the language-server worker as a list of `DEFINE …`
+ * strings. Returns an unsubscribe function.
+ */
+export function attachLiveMetadataPump(client: SurqlLspClient): () => void {
+	const flush = (schema: DatabaseSchema | undefined) => {
+		client.setLiveMetadata(schema ? buildDefineStrings(schema) : []);
+	};
+
+	flush(useDatabaseStore.getState().connectionSchema.database);
+	return useDatabaseStore.subscribe((store) => {
+		flush(store.connectionSchema.database);
+	});
+}
+
+function buildDefineStrings(schema: DatabaseSchema): string[] {
+	const defines: string[] = [];
+
+	for (const table of schema.tables) {
+		defines.push(buildTableDefine(table));
+		for (const field of table.fields) {
+			defines.push(buildFieldDefine(table.schema.name, field));
+		}
+		for (const event of table.events) {
+			defines.push(buildEventDefine(table.schema.name, event));
+		}
+		for (const index of table.indexes) {
+			defines.push(buildIndexDefine(table.schema.name, index));
+		}
+	}
+
+	for (const fn of schema.functions ?? []) {
+		defines.push(buildFunctionDefine(fn));
+	}
+
+	for (const param of schema.params ?? []) {
+		defines.push(buildParamDefine(param));
+	}
+
+	return defines;
+}
+
+function buildTableDefine(table: TableInfo): string {
+	const schema = table.schema;
+	const schemafull = schema.full || schema.schemafull ? "SCHEMAFULL" : "SCHEMALESS";
+	return `DEFINE TABLE ${schema.name} ${schemafull};`;
+}
+
+function buildFieldDefine(tableName: string, field: SchemaField): string {
+	const type = field.kind ? ` TYPE ${field.kind}` : "";
+	const value = field.value ? ` VALUE ${field.value}` : "";
+	const assert = field.assert ? ` ASSERT ${field.assert}` : "";
+	const flex = field.flex ? " FLEXIBLE" : "";
+	const readonly = field.readonly ? " READONLY" : "";
+	return `DEFINE FIELD ${field.name} ON ${tableName}${flex}${readonly}${type}${value}${assert};`;
+}
+
+function buildEventDefine(tableName: string, event: SchemaEvent): string {
+	const when = event.when ? ` WHEN ${event.when}` : "";
+	const then = event.then?.length ? event.then.join("; ") : "";
+	return `DEFINE EVENT ${event.name} ON ${tableName}${when} THEN { ${then} };`;
+}
+
+function buildIndexDefine(tableName: string, index: SchemaIndex): string {
+	const fields = index.cols ?? "";
+	const trailing = index.index ? ` ${index.index}` : "";
+	return `DEFINE INDEX ${index.name} ON ${tableName} FIELDS ${fields}${trailing};`;
+}
+
+function buildFunctionDefine(fn: SchemaFunction): string {
+	const params = (fn.args ?? [])
+		.map(([name, kind]) => (kind ? `$${name}: ${kind}` : `$${name}`))
+		.join(", ");
+	const returns = fn.returns ? ` -> ${fn.returns}` : "";
+	const block = fn.block ?? "";
+	return `DEFINE FUNCTION fn::${fn.name}(${params})${returns} { ${block} };`;
+}
+
+function buildParamDefine(param: SchemaParameter): string {
+	return `DEFINE PARAM $${param.name} VALUE ${param.value ?? "NONE"};`;
+}
