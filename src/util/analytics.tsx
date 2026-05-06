@@ -1,6 +1,7 @@
 import { adapter } from "~/adapter";
 import { getUserSnapshot } from "~/providers/Auth";
 import { getSetting } from "./config";
+import { isProduction } from "./environment";
 import { featureFlags } from "./feature-flags";
 
 let incrementalId = 1;
@@ -49,9 +50,9 @@ function setCookie(name: string, value: string, days: number) {
  * Track analytics events
  */
 export async function tagEvent(name: string, payload: Record<string, unknown> = {}) {
-	// if (!adapter.isTelemetryEnabled || !isProduction) {
-	// 	return;
-	// }
+	if (!adapter.isTelemetryEnabled || !isProduction) {
+		return;
+	}
 
 	let gaCookie = getCookie("_ga");
 
@@ -154,8 +155,6 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 			params.append(`ep.${key}`, String(value));
 		}
 	}
-
-	console.log("tagEvent", name, "\n", Object.fromEntries(params.entries()));
 
 	try {
 		await adapter.trackEvent(`https://${hostname}/data/event/${btoa(params.toString())}`);
