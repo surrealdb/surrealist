@@ -39,7 +39,7 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 	const remove = useConfirmation({
 		message: () => (
 			<Stack className="selectable">
-				<Text>
+				<Text lineClamp={3}>
 					You are about to delete the namespace{" "}
 					<Text
 						span
@@ -65,8 +65,7 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 			</Stack>
 		),
 		confirmText: "Delete namespace",
-		verification: value,
-		verifyText: "Please type the name of the namespace to confirm",
+		verification: "delete",
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(value)}`);
 
