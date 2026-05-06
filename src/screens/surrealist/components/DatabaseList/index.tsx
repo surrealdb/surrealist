@@ -40,7 +40,7 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 	const remove = useConfirmation({
 		message: () => (
 			<Stack className="selectable">
-				<Text>
+				<Text lineClamp={3}>
 					You are about to delete the database{" "}
 					<Text
 						span
@@ -66,8 +66,7 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 			</Stack>
 		),
 		confirmText: "Delete database",
-		verification: value,
-		verifyText: "Please type the name of the database to confirm",
+		verification: "delete",
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `REMOVE DATABASE ${escapeIdent(value)}`);
 
@@ -103,7 +102,12 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 				</ActionButton>
 			}
 		>
-			{value}
+			<Text
+				maw={215}
+				truncate
+			>
+				{value}
+			</Text>
 		</Menu.Item>
 	);
 }
@@ -197,7 +201,10 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 					</Text>
 				</Button>
 			</Menu.Target>
-			<Menu.Dropdown miw={225}>
+			<Menu.Dropdown
+				miw={225}
+				maw={275}
+			>
 				<Group
 					gap="sm"
 					p="sm"
