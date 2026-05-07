@@ -11,6 +11,7 @@ import {
 	ThemeIcon,
 } from "@mantine/core";
 import {
+	Header,
 	Icon,
 	iconArrowUpRight,
 	iconBook,
@@ -94,7 +95,7 @@ const SOURCES: SourceType[] = [
 	{ label: "Media", picto: pictoMediaFile },
 ];
 
-export default function KnowledgeView({ context }: ContextViewProps) {
+function KnowledgeViewLegacy({ context }: ContextViewProps) {
 	const navigateContext = useContextNavigator();
 
 	return (
@@ -480,6 +481,35 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 					/>
 				</Group>
 			</Paper>
+		</Stack>
+	);
+}
+
+export default function KnowledgeView({ context }: ContextViewProps) {
+	return (
+		<Stack gap="md">
+			<Paper
+				p="xl"
+				radius="lg"
+				variant="glass"
+				className={classes.hero}
+			>
+				<Image
+					src={pictoGraphRAG}
+					className={classes.heroArt}
+					alt=""
+					aria-hidden
+				/>
+				<Header
+					kicker="Ingest"
+					description="Ground your context in files, documents, and ingressed data."
+					titleProps={{ variant: "gradient" }}
+				>
+					Knowledge
+				</Header>
+			</Paper>
+
+			{false && <KnowledgeViewLegacy context={context} />}
 		</Stack>
 	);
 }

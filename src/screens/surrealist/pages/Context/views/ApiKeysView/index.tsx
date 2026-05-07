@@ -1,10 +1,8 @@
 import {
 	ActionIcon,
 	Alert,
-	Badge,
 	Box,
 	Button,
-	Code,
 	CopyButton,
 	Group,
 	Image,
@@ -13,7 +11,6 @@ import {
 	SimpleGrid,
 	Stack,
 	Table,
-	Tabs,
 	Text,
 	TextInput,
 	ThemeIcon,
@@ -21,34 +18,62 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
+	brandJavaScript,
+	brandPython,
+	Header as Heading,
+	HoverGlow,
 	Icon,
 	iconAPI,
 	iconCheck,
-	iconCheckCircle,
+	iconChevronRight,
 	iconCopy,
-	iconDelete,
 	iconKey,
 	iconPlus,
-	iconServer,
+	iconTrash,
 	pictoKey,
 } from "@surrealdb/ui";
 import { useState } from "react";
+import { Link } from "wouter";
 import {
 	useCreateContextApiKeyMutation,
 	useDeleteContextApiKeyMutation,
 } from "~/cloud/mutations/spectron";
 import { useCloudContextApiKeysQuery } from "~/cloud/queries/contexts";
-import { CodeSnippet } from "~/components/CodeSnippet";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import type { CodeLang, ContextApiKey, Snippets } from "~/types";
+import type { ContextApiKey } from "~/types";
+import { ON_FOCUS_SELECT } from "~/util/helpers";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
 
-const EDITOR_LANGS: Record<CodeLang, string> = {
-	js: "javascript",
-	py: "python",
-	cli: "bash",
-} as Record<CodeLang, string>;
+type IntegrationTab = "javascript" | "python" | "api";
+
+interface IntegrationQuickLink {
+	tab: IntegrationTab;
+	label: string;
+	description: string;
+	img?: string;
+	icon?: string;
+}
+
+const INTEGRATION_QUICK_LINKS: IntegrationQuickLink[] = [
+	{
+		tab: "javascript",
+		label: "JavaScript",
+		description: "Read the JavaScript guide",
+		img: brandJavaScript,
+	},
+	{
+		tab: "python",
+		label: "Python",
+		description: "Read the Python guide",
+		img: brandPython,
+	},
+	{
+		tab: "api",
+		label: "REST API",
+		description: "Read the REST API guide",
+		icon: iconAPI,
+	},
+];
 
 export default function ApiKeysView({ context }: ContextViewProps) {
 	const organization = context.organization_id;
@@ -59,9 +84,6 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 	const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false);
 	const [newKeyName, setNewKeyName] = useState("");
 	const [createdKey, setCreatedKey] = useState<ContextApiKey | null>(null);
-	const [quickStartLang, setQuickStartLang] = useState<CodeLang>("js");
-
-	const endpoint = `https://${context.host}`;
 
 	const handleCreateKey = async () => {
 		const result = await createKeyMutation.mutateAsync({ name: newKeyName });
@@ -78,71 +100,7 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 		deleteKeyMutation.mutate(keyId);
 	};
 
-	const jsSnippet = `import { Memory } from "@surrealdb/memory";
-
-const memory = new Memory({
-  apiKey: "sk-ctx-...",
-  endpoint: "${endpoint}",
-});
-
-// Add a memory
-await memory.add([
-  { role: "user", content: "I prefer dark mode." },
-], { userId: "user-123" });
-
-// Search memories
-const results = await memory.search(
-  "What are the user preferences?",
-  { userId: "user-123" },
-);`;
-
-	const pySnippet = `from surrealdb import MemoryClient
-
-client = MemoryClient(
-    api_key="sk-ctx-...",
-    endpoint="${endpoint}",
-)
-
-# Add a memory
-client.add(
-    [{"role": "user", "content": "I prefer dark mode."}],
-    user_id="user-123",
-)
-
-# Search memories
-results = client.search(
-    "What are the user preferences?",
-    user_id="user-123",
-)`;
-
-	const curlSnippet = `# Add a memory
-curl -X POST ${endpoint}/memories \\
-  -H "Authorization: Token sk-ctx-..." \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "messages": [{"role": "user", "content": "I prefer dark mode."}],
-    "user_id": "user-123"
-  }'
-
-# Search memories
-curl -X POST ${endpoint}/memories/search \\
-  -H "Authorization: Token sk-ctx-..." \\
-  -H "Content-Type: application/json" \\
-  -d '{
-    "query": "What are the user preferences?",
-    "filters": {"AND": [{"user_id": "user-123"}]}
-  }'`;
-
-	const quickStartSnippets: Snippets = {
-		js: jsSnippet,
-		py: pySnippet,
-		cli: curlSnippet,
-	};
-
-	const endpointRows: { label: string; icon: string; value: string }[] = [
-		{ label: "Base URL", icon: iconServer, value: endpoint },
-		{ label: "Context ID", icon: iconAPI, value: context.id },
-	];
+	const integrationBasePath = `/s/${context.organization_id}/${context.id}/integration`;
 
 	return (
 		<Stack gap={32}>
@@ -150,6 +108,7 @@ curl -X POST ${endpoint}/memories/search \\
 			<Paper
 				p="xl"
 				radius="lg"
+				variant="glass"
 				className={classes.hero}
 			>
 				<Image
@@ -158,202 +117,78 @@ curl -X POST ${endpoint}/memories/search \\
 					alt=""
 					aria-hidden
 				/>
-				<Stack
-					gap="md"
-					pos="relative"
-					style={{ zIndex: 1 }}
+				<Heading
+					kicker="Access"
+					description="Connect agents, SDKs, and automations to this context. Create a key, then follow the integration guide for your stack."
+					titleProps={{ variant: "gradient" }}
+					descriptionProps={{ maw: 640 }}
 				>
-					<Group gap="xs">
-						<Badge
-							size="sm"
-							variant="light"
-							color="violet"
-							leftSection={
-								<Icon
-									path={iconKey}
-									size="xs"
-								/>
-							}
-						>
-							Access
-						</Badge>
-						<Badge
-							size="sm"
-							variant="default"
-							leftSection={
-								<Icon
-									path={iconCheckCircle}
-									size="xs"
-								/>
-							}
-						>
-							{apiKeys?.length ?? 0} active
-						</Badge>
-					</Group>
-					<Box maw={620}>
-						<PrimaryTitle fz={36}>API keys</PrimaryTitle>
-						<Text
-							mt="xs"
-							lh={1.55}
-							className="selectable"
-						>
-							Connect agents, SDKs, and automations to this context. Use the endpoint
-							below alongside a key to start reading and writing memory.
-						</Text>
-					</Box>
-				</Stack>
+					API keys
+				</Heading>
 			</Paper>
 
 			{createdKey?.key && (
 				<Alert
-					color="green"
+					color="blue"
+					variant="light"
 					title="API key created"
 					withCloseButton
 					onClose={handleDismissCreatedKey}
-					className={classes.keyCallout}
-					icon={<Icon path={iconCheckCircle} />}
+					icon={<Icon path={iconKey} />}
+					style={{
+						borderColor: "rgba(from var(--mantine-color-blue-4) r g b / 0.15)",
+					}}
 				>
 					<Text
 						mb="xs"
 						className="selectable"
 					>
-						Copy your API key now. It will only be shown once.
+						Copy your API key now, as it will no longer be visible after this point.
 					</Text>
 					<Group
+						mt="md"
 						gap="sm"
 						wrap="nowrap"
 					>
-						<Code
-							className="selectable"
-							style={{ flex: 1, wordBreak: "break-all" }}
-						>
-							{createdKey.key}
-						</Code>
 						<CopyButton value={createdKey.key}>
 							{({ copied, copy }) => (
-								<Button
-									variant="light"
-									color={copied ? "green" : "violet"}
-									size="xs"
-									leftSection={<Icon path={copied ? iconCheck : iconCopy} />}
+								<Box
 									onClick={copy}
+									flex={1}
 								>
-									{copied ? "Copied" : "Copy key"}
-								</Button>
+									<TextInput
+										value={createdKey.key}
+										variant="unstyled"
+										className={classes.preview}
+										onFocus={ON_FOCUS_SELECT}
+										leftSection={
+											<Icon
+												path={copied ? iconCheck : iconCopy}
+												c="bright"
+											/>
+										}
+										readOnly
+									/>
+								</Box>
 							)}
 						</CopyButton>
 					</Group>
 				</Alert>
 			)}
 
-			{/* ENDPOINT */}
-			<Box>
-				<Group
-					justify="space-between"
-					align="flex-end"
-					mb="sm"
-					wrap="wrap"
-				>
-					<Box>
-						<Text
-							fz="xs"
-							fw={600}
-							c="violet.4"
-							tt="uppercase"
-							style={{ letterSpacing: "0.08em" }}
-						>
-							Connect
-						</Text>
-						<PrimaryTitle
-							fz={22}
-							mt={4}
-						>
-							Endpoint details
-						</PrimaryTitle>
-					</Box>
-				</Group>
-				<Paper
-					p="md"
-					radius="md"
-					withBorder
-				>
-					<Stack gap="xs">
-						{endpointRows.map((row) => (
-							<Box
-								key={row.label}
-								className={classes.endpointRow}
-							>
-								<Group
-									gap="sm"
-									wrap="nowrap"
-								>
-									<ThemeIcon
-										size={28}
-										radius="md"
-										variant="light"
-										color="slate"
-									>
-										<Icon path={row.icon} />
-									</ThemeIcon>
-									<Text
-										fw={600}
-										c="bright"
-										fz="sm"
-									>
-										{row.label}
-									</Text>
-								</Group>
-								<Box
-									className={`${classes.valueChip} selectable`}
-									component="code"
-								>
-									{row.value}
-								</Box>
-								<CopyButton value={row.value}>
-									{({ copied, copy }) => (
-										<Tooltip label={copied ? "Copied" : "Copy"}>
-											<ActionIcon
-												variant="subtle"
-												color={copied ? "green" : "slate"}
-												onClick={copy}
-												aria-label={`Copy ${row.label}`}
-											>
-												<Icon path={copied ? iconCheck : iconCopy} />
-											</ActionIcon>
-										</Tooltip>
-									)}
-								</CopyButton>
-							</Box>
-						))}
-					</Stack>
-				</Paper>
-			</Box>
-
 			{/* KEYS TABLE */}
 			<Box>
 				<Group
 					justify="space-between"
-					align="flex-end"
-					mb="sm"
-					wrap="wrap"
+					gap="md"
 				>
-					<Box>
-						<Text
-							fz="xs"
-							fw={600}
-							c="violet.4"
-							tt="uppercase"
-							style={{ letterSpacing: "0.08em" }}
-						>
-							Credentials
-						</Text>
-						<PrimaryTitle
-							fz={22}
-							mt={4}
-						>
-							Manage API keys
-						</PrimaryTitle>
-					</Box>
+					<Heading
+						kicker="Credentials"
+						order={2}
+						titleProps={{ fz: 22, mt: 4 }}
+					>
+						Manage API keys
+					</Heading>
 					<Button
 						size="sm"
 						variant="gradient"
@@ -364,8 +199,10 @@ curl -X POST ${endpoint}/memories/search \\
 					</Button>
 				</Group>
 				<Paper
-					radius="md"
+					mt="md"
+					radius="sm"
 					withBorder
+					style={{ overflow: "hidden" }}
 				>
 					<Table.ScrollContainer minWidth={500}>
 						<Table
@@ -376,7 +213,6 @@ curl -X POST ${endpoint}/memories/search \\
 							<Table.Thead>
 								<Table.Tr>
 									<Table.Th>Name</Table.Th>
-									<Table.Th>Key ID</Table.Th>
 									<Table.Th style={{ width: 80 }}>Actions</Table.Th>
 								</Table.Tr>
 							</Table.Thead>
@@ -405,10 +241,7 @@ curl -X POST ${endpoint}/memories/search \\
 												</Text>
 											</Group>
 										</Table.Td>
-										<Table.Td>
-											<Code className="selectable">{apiKey.id}</Code>
-										</Table.Td>
-										<Table.Td>
+										<Table.Td w={0}>
 											<Tooltip label="Revoke key">
 												<ActionIcon
 													variant="subtle"
@@ -418,7 +251,7 @@ curl -X POST ${endpoint}/memories/search \\
 													onClick={() => handleRevoke(apiKey.id)}
 													loading={deleteKeyMutation.isPending}
 												>
-													<Icon path={iconDelete} />
+													<Icon path={iconTrash} />
 												</ActionIcon>
 											</Tooltip>
 										</Table.Td>
@@ -432,17 +265,6 @@ curl -X POST ${endpoint}/memories/search \\
 												align="center"
 												py="xl"
 											>
-												<ThemeIcon
-													size={48}
-													radius="xl"
-													variant="light"
-													color="slate"
-												>
-													<Icon
-														path={iconKey}
-														size="xl"
-													/>
-												</ThemeIcon>
 												<Text
 													fw={600}
 													c="bright"
@@ -456,14 +278,12 @@ curl -X POST ${endpoint}/memories/search \\
 													Create your first key to connect an agent.
 												</Text>
 												<Button
-													mt="xs"
+													mt="sm"
 													size="sm"
-													variant="light"
-													color="violet"
 													leftSection={<Icon path={iconPlus} />}
 													onClick={openModal}
 												>
-													Create key
+													Create API key
 												</Button>
 											</Stack>
 										</Table.Td>
@@ -477,106 +297,77 @@ curl -X POST ${endpoint}/memories/search \\
 
 			{/* QUICK START */}
 			<Box>
-				<Group
-					justify="space-between"
-					align="flex-end"
+				<Heading
+					kicker="Quick start"
+					order={2}
 					mb="sm"
-					wrap="wrap"
+					titleProps={{ fz: 22, mt: 4 }}
 				>
-					<Box>
-						<Text
-							fz="xs"
-							fw={600}
-							c="violet.4"
-							tt="uppercase"
-							style={{ letterSpacing: "0.08em" }}
-						>
-							Quick start
-						</Text>
-						<PrimaryTitle
-							fz={22}
-							mt={4}
-						>
-							Paste this into your agent
-						</PrimaryTitle>
-					</Box>
-				</Group>
-				<Paper
-					p="md"
-					radius="md"
-					withBorder
+					Authenticate with Spectron
+				</Heading>
+				<SimpleGrid
+					cols={{ base: 1, sm: 3 }}
+					spacing="md"
 				>
-					<Tabs
-						value={quickStartLang}
-						onChange={(v) => setQuickStartLang((v as CodeLang) ?? "js")}
-						mb="md"
-					>
-						<Tabs.List>
-							<Tabs.Tab value="js">JavaScript</Tabs.Tab>
-							<Tabs.Tab value="py">Python</Tabs.Tab>
-							<Tabs.Tab value="cli">cURL</Tabs.Tab>
-						</Tabs.List>
-					</Tabs>
-					<CodeSnippet
-						values={quickStartSnippets}
-						language={quickStartLang}
-						editorLanguage={EDITOR_LANGS[quickStartLang]}
-					/>
-					<SimpleGrid
-						cols={{ base: 1, md: 3 }}
-						spacing="xs"
-						mt="md"
-					>
-						<Group
-							gap="xs"
-							wrap="nowrap"
+					{INTEGRATION_QUICK_LINKS.map((item) => (
+						<Link
+							key={item.tab}
+							href={`${integrationBasePath}?tab=${item.tab}`}
+							className={classes.integrationLink}
 						>
-							<Icon
-								path={iconCheckCircle}
-								size="sm"
-								c="violet.4"
-							/>
-							<Text
-								fz="xs"
-								className="selectable"
-							>
-								Swap <Code>sk-ctx-…</Code> for your key
-							</Text>
-						</Group>
-						<Group
-							gap="xs"
-							wrap="nowrap"
-						>
-							<Icon
-								path={iconCheckCircle}
-								size="sm"
-								c="violet.4"
-							/>
-							<Text
-								fz="xs"
-								className="selectable"
-							>
-								Endpoint is already filled in for this context
-							</Text>
-						</Group>
-						<Group
-							gap="xs"
-							wrap="nowrap"
-						>
-							<Icon
-								path={iconCheckCircle}
-								size="sm"
-								c="violet.4"
-							/>
-							<Text
-								fz="xs"
-								className="selectable"
-							>
-								Scope memories per user via <Code>user_id</Code>
-							</Text>
-						</Group>
-					</SimpleGrid>
-				</Paper>
+							<HoverGlow h="100%">
+								<Paper
+									p="md"
+									radius="md"
+									withBorder
+									className={classes.integrationCard}
+									h="100%"
+								>
+									<Group
+										wrap="nowrap"
+										align="center"
+										h="100%"
+									>
+										{item.img ? (
+											<Image
+												src={item.img}
+												w={28}
+												h={28}
+												alt=""
+												style={{ flexShrink: 0 }}
+											/>
+										) : (
+											<ThemeIcon
+												size={32}
+												radius="sm"
+												variant="light"
+											>
+												<Icon
+													path={item.icon ?? iconAPI}
+													size="lg"
+												/>
+											</ThemeIcon>
+										)}
+										<Box flex={1}>
+											<Text
+												fw={600}
+												c="bright"
+											>
+												{item.label}
+											</Text>
+											<Text>{item.description}</Text>
+										</Box>
+										<Icon
+											path={iconChevronRight}
+											c="slate"
+											ml="md"
+										/>
+									</Group>
+								</Paper>
+							</HoverGlow>
+						</Link>
+					))}
+				</SimpleGrid>
 			</Box>
 
 			<Modal
@@ -599,12 +390,7 @@ curl -X POST ${endpoint}/memories/search \\
 						onChange={(e) => setNewKeyName(e.currentTarget.value)}
 					/>
 					<Group justify="flex-end">
-						<Button
-							variant="default"
-							onClick={closeModal}
-						>
-							Cancel
-						</Button>
+						<Button onClick={closeModal}>Cancel</Button>
 						<Button
 							variant="gradient"
 							onClick={handleCreateKey}
