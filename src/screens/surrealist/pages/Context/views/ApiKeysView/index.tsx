@@ -319,7 +319,6 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 								<Paper
 									p="md"
 									radius="md"
-									withBorder
 									className={classes.integrationCard}
 									h="100%"
 								>
