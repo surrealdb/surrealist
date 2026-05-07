@@ -41,8 +41,7 @@ const INTEGRATION_STEPS: Record<IntegrationTab, IntegrationStep[]> = {
 	python: [
 		{
 			title: "Install the SDK",
-			description:
-				"Pull the official Python package into your environment to access the SurrealDB Context client, its typed helpers, and every memory API from a single import.",
+			description: "Pull the official Python package into your environment.",
 			code: "pip install surrealdb-context",
 			lang: "bash",
 		},
@@ -81,8 +80,7 @@ client.add(messages, user_id="alex")`,
 	javascript: [
 		{
 			title: "Install the SDK",
-			description:
-				"Add the npm package to your project to use the SurrealDB Context client from any JavaScript or TypeScript codebase, with full type definitions included out of the box.",
+			description: "Add the npm package to your project.",
 			code: "npm install @surrealdb/context",
 			lang: "bash",
 		},
