@@ -1,33 +1,8 @@
-import {
-	ActionIcon,
-	Badge,
-	Box,
-	Button,
-	CopyButton,
-	Group,
-	Image,
-	Paper,
-	Stack,
-	Text,
-	TextInput,
-	ThemeIcon,
-	Tooltip,
-} from "@mantine/core";
-import {
-	Icon,
-	iconCheck,
-	iconCog,
-	iconCopy,
-	iconDelete,
-	iconServer,
-	iconTag,
-	iconWarning,
-	pictoCapabilitesGradient,
-} from "@surrealdb/ui";
-import { useState } from "react";
+import { Box, Button, Group, Image, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Header as Heading, Icon, iconWarning, pictoCapabilitesGradient } from "@surrealdb/ui";
 import { useDeleteContextMutation } from "~/cloud/mutations/spectron";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAbsoluteLocation } from "~/hooks/routing";
+import { useConfirmation } from "~/providers/Confirmation";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
 
@@ -35,24 +10,27 @@ export default function SettingsView({ context }: ContextViewProps) {
 	const organization = context.organization_id;
 	const [, navigate] = useAbsoluteLocation();
 	const deleteContextMutation = useDeleteContextMutation(organization);
-	const [confirmName, setConfirmName] = useState("");
-	const [confirmOpen, setConfirmOpen] = useState(false);
 
-	const canDelete = confirmName === context.name;
+	const requestDelete = useConfirmation({
+		title: "Delete context?",
+		message: "This action cannot be undone. Are you sure you want to continue?",
+		confirmText: "Delete context",
+		verification: "delete",
+		onConfirm: async () => {
+			await deleteContextMutation.mutateAsync(context.id);
 
-	const handleDelete = async () => {
-		await deleteContextMutation.mutateAsync(context.id);
+			const backPath = organization ? `/o/${organization}/overview` : "/overview";
 
-		const backPath = organization ? `/o/${organization}/overview` : "/";
-		navigate(backPath);
-	};
+			navigate(backPath);
+		},
+	});
 
-	const properties = [
-		{ label: "Name", icon: iconTag, value: context.name },
-		{ label: "Region", icon: iconServer, value: context.region },
-		{ label: "Host", icon: iconServer, value: context.host },
-		{ label: "Context ID", icon: iconCog, value: context.id },
-	];
+	// const properties = [
+	// 	{ label: "Name", icon: iconTag, value: context.name },
+	// 	{ label: "Region", icon: iconServer, value: context.region },
+	// 	{ label: "Host", icon: iconServer, value: context.host },
+	// 	{ label: "Context ID", icon: iconCog, value: context.id },
+	// ];
 
 	return (
 		<Stack gap={32}>
@@ -60,6 +38,7 @@ export default function SettingsView({ context }: ContextViewProps) {
 			<Paper
 				p="xl"
 				radius="lg"
+				variant="glass"
 				className={classes.hero}
 			>
 				<Image
@@ -68,66 +47,26 @@ export default function SettingsView({ context }: ContextViewProps) {
 					alt=""
 					aria-hidden
 				/>
-				<Stack
-					gap="md"
-					pos="relative"
-					style={{ zIndex: 1 }}
+
+				<Heading
+					kicker="Context"
+					description="Metadata for this context and destructive actions. Editable settings will land here as Spectron moves out of preview."
+					titleProps={{ variant: "gradient" }}
 				>
-					<Group gap="xs">
-						<Badge
-							size="sm"
-							variant="light"
-							color="violet"
-							leftSection={
-								<Icon
-									path={iconCog}
-									size="xs"
-								/>
-							}
-						>
-							Configuration
-						</Badge>
-					</Group>
-					<Box maw={620}>
-						<PrimaryTitle fz={36}>Settings</PrimaryTitle>
-						<Text
-							mt="xs"
-							lh={1.55}
-							className="selectable"
-						>
-							Metadata for this context and destructive actions. Editable settings
-							will land here as Spectron moves out of preview.
-						</Text>
-					</Box>
-				</Stack>
+					Settings
+				</Heading>
 			</Paper>
 
 			{/* GENERAL */}
-			<Box>
-				<Group
-					justify="space-between"
-					align="flex-end"
+			{/* <Box>
+				<Heading
+					kicker="General"
+					order={2}
 					mb="sm"
-					wrap="wrap"
+					titleProps={{ fz: 22, mt: 4 }}
 				>
-					<Box>
-						<Text
-							fz="xs"
-							fw={600}
-							c="violet.4"
-							tt="uppercase"
-							style={{ letterSpacing: "0.08em" }}
-						>
-							General
-						</Text>
-						<PrimaryTitle
-							fz={22}
-							mt={4}
-						>
-							Context details
-						</PrimaryTitle>
-					</Box>
-				</Group>
+					Context details
+				</Heading>
 				<Paper
 					p="md"
 					radius="md"
@@ -183,35 +122,19 @@ export default function SettingsView({ context }: ContextViewProps) {
 						))}
 					</Stack>
 				</Paper>
-			</Box>
+			</Box> */}
 
 			{/* DANGER ZONE */}
 			<Box>
-				<Group
-					justify="space-between"
-					align="flex-end"
+				<Heading
+					kicker="Danger zone"
+					order={2}
 					mb="sm"
-					wrap="wrap"
+					kickerProps={{ c: "red" }}
+					titleProps={{ fz: 22, mt: 4 }}
 				>
-					<Box>
-						<Text
-							fz="xs"
-							fw={600}
-							c="red.5"
-							tt="uppercase"
-							style={{ letterSpacing: "0.08em" }}
-						>
-							Danger zone
-						</Text>
-						<PrimaryTitle
-							fz={22}
-							mt={4}
-						>
-							Irreversible actions
-						</PrimaryTitle>
-					</Box>
-				</Group>
-
+					Irreversible actions
+				</Heading>
 				<Paper
 					p="lg"
 					radius="md"
@@ -245,7 +168,6 @@ export default function SettingsView({ context }: ContextViewProps) {
 									Delete context
 								</Text>
 								<Text
-									fz="sm"
 									mt={4}
 									className="selectable"
 								>
@@ -253,68 +175,15 @@ export default function SettingsView({ context }: ContextViewProps) {
 									knowledge source, and API key connected to it. This cannot be
 									undone.
 								</Text>
+								<Button
+									mt="md"
+									onClick={() => requestDelete()}
+								>
+									Delete context
+								</Button>
 							</Box>
 						</Group>
-						{!confirmOpen && (
-							<Button
-								color="red"
-								variant="light"
-								leftSection={<Icon path={iconDelete} />}
-								onClick={() => setConfirmOpen(true)}
-							>
-								Delete context…
-							</Button>
-						)}
 					</Group>
-
-					{confirmOpen && (
-						<Stack
-							gap="sm"
-							mt="lg"
-						>
-							<TextInput
-								label={
-									<Text
-										fz="sm"
-										c="bright"
-									>
-										Type{" "}
-										<Text
-											span
-											fw={700}
-										>
-											{context.name}
-										</Text>{" "}
-										to confirm
-									</Text>
-								}
-								placeholder={context.name}
-								value={confirmName}
-								onChange={(e) => setConfirmName(e.currentTarget.value)}
-								autoFocus
-							/>
-							<Group justify="flex-end">
-								<Button
-									variant="default"
-									onClick={() => {
-										setConfirmOpen(false);
-										setConfirmName("");
-									}}
-								>
-									Cancel
-								</Button>
-								<Button
-									color="red"
-									leftSection={<Icon path={iconDelete} />}
-									disabled={!canDelete}
-									loading={deleteContextMutation.isPending}
-									onClick={handleDelete}
-								>
-									Delete permanently
-								</Button>
-							</Group>
-						</Stack>
-					)}
 				</Paper>
 			</Box>
 		</Stack>
