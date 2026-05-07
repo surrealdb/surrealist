@@ -355,7 +355,9 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 											>
 												{item.label}
 											</Text>
-											<Text>{item.description}</Text>
+											<Text c="var(--mantine-color-text)">
+												{item.description}
+											</Text>
 										</Box>
 										<Icon
 											path={iconChevronRight}
