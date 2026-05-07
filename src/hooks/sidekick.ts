@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiBase } from "~/cloud/api/endpoints";
-import { useIsAuthenticated } from "~/hooks/cloud";
-import { getAccessToken } from "~/providers/Auth";
+import { getAccessToken, useAuthentication } from "~/providers/Auth";
 import type { SidekickChat, SidekickChatMessage } from "~/types";
 import { showErrorNotification } from "~/util/helpers";
 
@@ -50,7 +49,7 @@ function parseMessage(raw: Record<string, unknown>): SidekickChatMessage {
 }
 
 export function useSidekickChatsQuery(search?: string) {
-	const isAuthenticated = useIsAuthenticated();
+	const { isAuthenticated } = useAuthentication();
 
 	return useQuery({
 		queryKey: ["sidekick", "chats", { search }],
