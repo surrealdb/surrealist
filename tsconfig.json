@@ -12,7 +12,6 @@
 		"isolatedModules": true,
 		"module": "esnext",
 		"moduleResolution": "Bundler",
-		"baseUrl": ".",
 		"allowJs": false,
 		"noEmit": true,
 		"jsx": "react-jsx",

@@ -14,6 +14,7 @@ import {
 	Tooltip,
 } from "@mantine/core";
 import {
+	Header,
 	Icon,
 	iconAccount,
 	iconChat,
@@ -25,6 +26,7 @@ import {
 	iconSpectron,
 	MarkdownViewer,
 	pictoBrainGradient,
+	pictoGlitter,
 	pictoMemoryGradient,
 	pictoSpectronGradient,
 	pictoVectorSearchGradient,
@@ -138,7 +140,7 @@ function MemoryCard({ memory, isNew }: MemoryCardProps) {
 	);
 }
 
-export default function PlaygroundView(_props: ContextViewProps) {
+function PlaygroundViewLegacy(_props: ContextViewProps) {
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [newMemories, setNewMemories] = useState<MemoryItem[]>([]);
 	const [input, setInput] = useState("");
@@ -627,6 +629,41 @@ export default function PlaygroundView(_props: ContextViewProps) {
 					</Panel>
 				</PanelGroup>
 			</Box>
+		</Stack>
+	);
+}
+
+export default function PlaygroundView(_props: ContextViewProps) {
+	return (
+		<Stack gap="md">
+			<Paper
+				p="xl"
+				radius="lg"
+				variant="glass"
+				className={classes.hero}
+			>
+				<Image
+					src={pictoGlitter}
+					className={classes.heroArt}
+					alt=""
+					aria-hidden
+				/>
+				<Stack
+					gap="lg"
+					pos="relative"
+					style={{ zIndex: 1 }}
+				>
+					<Header
+						kicker="Evaluate"
+						description="Chat with your context and watch memories form in real time."
+						titleProps={{ variant: "gradient" }}
+					>
+						Playground
+					</Header>
+				</Stack>
+			</Paper>
+
+			{false && <PlaygroundViewLegacy {..._props} />}
 		</Stack>
 	);
 }

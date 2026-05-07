@@ -148,9 +148,18 @@ export function useContextAndView() {
 export function useContextNavigator() {
 	const [, navigate] = useAbsoluteLocation();
 
-	return useStable((organizationId: string, contextId: string, view?: ContextViewPage) => {
-		navigate(`/s/${organizationId}/${contextId}/${view ?? "dashboard"}`);
-	});
+	return useStable(
+		(
+			organizationId: string,
+			contextId: string,
+			view?: ContextViewPage,
+			params?: URLSearchParams,
+		) => {
+			const search = params ? `?${params.toString()}` : "";
+
+			navigate(`/s/${organizationId}/${contextId}/${view ?? "dashboard"}${search}`);
+		},
+	);
 }
 
 /**

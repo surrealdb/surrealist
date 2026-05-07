@@ -1,73 +1,25 @@
 .hero {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--mantine-color-violet-5) 18%, transparent);
-    background:
-        radial-gradient(
-            100% 140% at 100% 0%,
-            color-mix(in srgb, var(--mantine-color-violet-6) 14%, transparent) 0%,
-            transparent 55%
-        ),
-        var(--mantine-color-obsidian-light);
+	position: relative;
+	overflow: hidden;
 }
 
 .hero-art {
-    position: absolute;
-    top: -14px;
-    right: -18px;
-    width: 170px;
-    height: 170px;
-    pointer-events: none;
-    opacity: 0.4;
-    mix-blend-mode: plus-lighter;
-    mask-image: radial-gradient(closest-side, black 55%, transparent 100%);
-}
+	position: absolute;
+	bottom: -58px;
+	right: 10px;
+	width: 220px;
+	pointer-events: none;
+	mix-blend-mode: plus-lighter;
+	opacity: 0.1;
 
-.property-row {
-    display: grid;
-    grid-template-columns: minmax(140px, 200px) 1fr auto;
-    gap: 16px;
-    align-items: center;
-    padding: 12px 14px;
-    border-radius: var(--mantine-radius-sm);
-    background: color-mix(in srgb, var(--mantine-color-obsidian-6) 50%, transparent);
-    border: 1px solid var(--mantine-color-obsidian-5);
-
-    @media (max-width: 600px) {
-        grid-template-columns: 1fr;
-    }
-}
-
-.property-value {
-    background: var(--mantine-color-obsidian-7);
-    border: 1px solid var(--mantine-color-obsidian-5);
-    border-radius: var(--mantine-radius-sm);
-    padding: 6px 10px;
-    font-family: var(--mantine-font-family-monospace);
-    font-size: var(--mantine-font-size-sm);
-    color: var(--mantine-color-bright);
-    word-break: break-all;
+	@include md-and-up {
+		opacity: 0.5;
+	}
 }
 
 .danger-pane {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--mantine-color-red-6) 45%, transparent);
-    background:
-        linear-gradient(
-            to right,
-            color-mix(in srgb, var(--mantine-color-red-9) 15%, transparent) 0%,
-            transparent 55%
-        ),
-        var(--mantine-color-obsidian-light);
-
-    &::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        background: var(--mantine-color-red-6);
-    }
+	position: relative;
+	overflow: hidden;
+	border: 1px solid color-mix(in srgb, var(--mantine-color-red-5) 33%, transparent);
+	background-color: color-mix(in srgb, var(--mantine-color-red-5) 3%, var(--surreal-paper-background));
 }

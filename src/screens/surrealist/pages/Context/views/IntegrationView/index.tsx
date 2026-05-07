@@ -22,8 +22,8 @@ import {
 	iconArrowUpRight,
 	iconOpen,
 } from "@surrealdb/ui";
-import { useState } from "react";
-import { useContextNavigator } from "~/hooks/routing";
+import { useEffect, useState } from "react";
+import { useContextNavigator, useSearchParams } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
@@ -160,10 +160,24 @@ const LANGUAGES: Record<IntegrationTab, { label: string; img?: string; icon?: st
 	api: { label: "REST API", icon: iconAPI },
 };
 
+function isIntegrationTab(v: string | undefined): v is IntegrationTab {
+	return v === "python" || v === "javascript" || v === "api";
+}
+
 export default function IntegrationView({ context }: ContextViewProps) {
-	const [activeTab, setActiveTab] = useState<IntegrationTab>("python");
+	const search = useSearchParams();
+	const tabFromSearch = search.tab;
+	const [activeTab, setActiveTab] = useState<IntegrationTab>(() =>
+		isIntegrationTab(tabFromSearch) ? tabFromSearch : "python",
+	);
 	const navigateContext = useContextNavigator();
 	const steps = INTEGRATION_STEPS[activeTab];
+
+	useEffect(() => {
+		if (isIntegrationTab(tabFromSearch)) {
+			setActiveTab(tabFromSearch);
+		}
+	}, [tabFromSearch]);
 
 	const goToPage = (page: ContextViewPage) => {
 		navigateContext(context.organization_id, context.id, page);

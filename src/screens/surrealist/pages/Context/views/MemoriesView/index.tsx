@@ -11,6 +11,7 @@ import {
 	ThemeIcon,
 } from "@mantine/core";
 import {
+	Header,
 	Icon,
 	iconArrowUpRight,
 	iconClock,
@@ -103,7 +104,7 @@ const SAMPLE_MEMORIES: SampleMemory[] = [
 	{ label: "Completed onboarding for Spectron SDK", type: "Episodic", ts: "5d ago" },
 ];
 
-export default function MemoriesView({ context }: ContextViewProps) {
+function MemoriesViewLegacy({ context }: ContextViewProps) {
 	const navigateContext = useContextNavigator();
 
 	return (
@@ -448,6 +449,35 @@ export default function MemoriesView({ context }: ContextViewProps) {
 					))}
 				</Stack>
 			</Paper>
+		</Stack>
+	);
+}
+
+export default function MemoriesView({ context }: ContextViewProps) {
+	return (
+		<Stack gap="md">
+			<Paper
+				p="xl"
+				radius="lg"
+				variant="glass"
+				className={classes.hero}
+			>
+				<Image
+					src={pictoBrain}
+					className={classes.heroArt}
+					alt=""
+					aria-hidden
+				/>
+				<Header
+					kicker="Inspect"
+					description="Inspect the agent-learned memory graph that grows with usage."
+					titleProps={{ variant: "gradient" }}
+				>
+					Memories
+				</Header>
+			</Paper>
+
+			{false && <MemoriesViewLegacy context={context} />}
 		</Stack>
 	);
 }
