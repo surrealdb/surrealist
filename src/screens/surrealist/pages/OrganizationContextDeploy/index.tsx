@@ -81,7 +81,7 @@ export function OrganizationContextDeployPage({ id }: OrganizationContextDeployP
 	const { isPending: packageQueryPending } = useOrganizationContextPackageQuery(id);
 
 	if (organisationsQuery.isSuccess && !organisation) {
-		return <Redirect to="/" />;
+		return <Redirect to="/overview" />;
 	}
 
 	return (
