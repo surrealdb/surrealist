@@ -213,7 +213,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 				kicker="Quick start"
 				order={2}
 			>
-				Connect an agent in four steps
+				Connect to your context
 			</Header>
 
 			<Stack
