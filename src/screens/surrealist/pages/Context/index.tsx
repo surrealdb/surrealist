@@ -57,7 +57,7 @@ export function ContextPage({ view }: ContextPageProps) {
 	const isOrgLoading = orgQuery.isLoading || orgQuery.isPending;
 
 	if (isSuccess && !contextQuery.data) {
-		return <Redirect to="/" />;
+		return <Redirect to="/overview" />;
 	}
 
 	if (organizationId && contextId && !isContextViewPage(view)) {
