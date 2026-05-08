@@ -2,7 +2,6 @@ import {
 	Box,
 	Button,
 	Divider,
-	Group,
 	Image,
 	Paper,
 	SimpleGrid,
@@ -20,9 +19,9 @@ import {
 	Icon,
 	iconAPI,
 	iconArrowUpRight,
-	iconOpen,
 } from "@surrealdb/ui";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { adapter } from "~/adapter";
 import { useContextNavigator, useSearchParams } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
 import type { ContextViewProps } from "../../types";
@@ -31,8 +30,9 @@ import classes from "./style.module.scss";
 type IntegrationTab = "python" | "javascript" | "api";
 
 interface IntegrationStep {
-	title: string;
-	description: string;
+	title: ReactNode;
+	description: ReactNode;
+	action?: "api_keys" | "documentation";
 	code?: string;
 	lang?: string;
 }
@@ -47,12 +47,12 @@ const INTEGRATION_STEPS: Record<IntegrationTab, IntegrationStep[]> = {
 		},
 		{
 			title: "Initialise the client",
-			description:
-				"Create a client instance with your API key so every subsequent call is authenticated and routed to the correct context workspace for your organisation.",
+			description: "Create a client instance with your API key.",
 			code: `from surrealdb_context import ContextClient
 
 client = ContextClient(api_key="your-api-key")`,
 			lang: "python",
+			action: "api_keys",
 		},
 		{
 			title: "Ingest a memory",
@@ -76,6 +76,11 @@ client.add(messages, user_id="alex")`,
 )`,
 			lang: "python",
 		},
+		{
+			title: "Explore Spectron",
+			description: "Discover the full potential of Spectron with the official documentation.",
+			action: "documentation",
+		},
 	],
 	javascript: [
 		{
@@ -86,12 +91,12 @@ client.add(messages, user_id="alex")`,
 		},
 		{
 			title: "Initialise the client",
-			description:
-				"Create a client instance with your API key so every subsequent call is authenticated and routed to the correct context workspace for your organisation.",
+			description: "Create a client instance with your API key.",
 			code: `import { ContextClient } from "@surrealdb/context";
 
 const client = new ContextClient({ apiKey: "your-api-key" });`,
 			lang: "javascript",
+			action: "api_keys",
 		},
 		{
 			title: "Ingest a memory",
@@ -115,8 +120,18 @@ await client.add(messages, { userId: "alex" });`,
 );`,
 			lang: "javascript",
 		},
+		{
+			title: "Explore Spectron",
+			description: "Discover the full potential of Spectron with the official documentation.",
+			action: "documentation",
+		},
 	],
 	api: [
+		{
+			title: "Create an API key",
+			description: "Request a new API key to authenticate your requests to the API.",
+			action: "api_keys",
+		},
 		{
 			title: "Ingest a memory",
 			description:
@@ -150,6 +165,11 @@ await client.add(messages, { userId: "alex" });`,
 			code: `curl https://api.surrealdb.com/v1/context/memories?user_id=alex \\
     -H "Authorization: Bearer your-api-key"`,
 			lang: "bash",
+		},
+		{
+			title: "Explore Spectron",
+			description: "Discover the full potential of Spectron with the official documentation.",
+			action: "documentation",
 		},
 	],
 };
@@ -189,41 +209,12 @@ export default function IntegrationView({ context }: ContextViewProps) {
 			radius="md"
 			className={classes.integrationPane}
 		>
-			<Group
-				justify="space-between"
-				align="flex-end"
-				wrap="wrap"
-				mb="md"
-				gap="md"
+			<Header
+				kicker="Quick start"
+				order={2}
 			>
-				<Header
-					kicker="Quick start"
-					order={2}
-				>
-					Connect an agent in four steps
-				</Header>
-				<Group gap="xs">
-					<Button
-						component="a"
-						href="https://surrealdb.com/docs/spectron"
-						target="_blank"
-						rel="noopener noreferrer"
-						variant="subtle"
-						size="sm"
-						color="slate"
-						rightSection={<Icon path={iconOpen} />}
-					>
-						Documentation
-					</Button>
-					<Button
-						size="sm"
-						onClick={() => goToPage("api-keys")}
-						rightSection={<Icon path={iconArrowUpRight} />}
-					>
-						Get API key
-					</Button>
-				</Group>
-			</Group>
+				Connect an agent in four steps
+			</Header>
 
 			<Stack
 				gap="lg"
@@ -295,11 +286,40 @@ export default function IntegrationView({ context }: ContextViewProps) {
 										{step.title}
 									</Title>
 									<Text>{step.description}</Text>
+									{step.action === "api_keys" ? (
+										<Button
+											mt="sm"
+											ml="-xs"
+											size="xs"
+											color="violet"
+											rightSection={<Icon path={iconArrowUpRight} />}
+											onClick={() => goToPage("api-keys")}
+										>
+											Get API key
+										</Button>
+									) : step.action === "documentation" ? (
+										<Button
+											mt="sm"
+											ml="-xs"
+											size="xs"
+											color="violet"
+											rightSection={<Icon path={iconArrowUpRight} />}
+											onClick={() =>
+												adapter.openUrl(
+													"https://surrealdb.com/docs/learn/context",
+												)
+											}
+										>
+											Read the documentation
+										</Button>
+									) : undefined}
 								</Box>
-								<CodeBlock
-									value={step.code ?? ""}
-									lang={step.lang}
-								/>
+								{step.code && (
+									<CodeBlock
+										value={step.code}
+										lang={step.lang}
+									/>
+								)}
 							</SimpleGrid>
 						</Timeline.Item>
 					))}

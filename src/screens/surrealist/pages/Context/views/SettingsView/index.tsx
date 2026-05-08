@@ -12,8 +12,32 @@ export default function SettingsView({ context }: ContextViewProps) {
 	const deleteContextMutation = useDeleteContextMutation(organization);
 
 	const requestDelete = useConfirmation({
-		title: "Delete context?",
-		message: "This action cannot be undone. Are you sure you want to continue?",
+		message: () => (
+			<Stack className="selectable">
+				<Text>
+					You are about to delete the context{" "}
+					<Text
+						span
+						c="bright"
+						fw={600}
+					>
+						{context.name}
+					</Text>
+					.
+				</Text>
+				<Text>
+					This action{" "}
+					<Text
+						span
+						fw={600}
+						c="bright"
+					>
+						CANNOT
+					</Text>{" "}
+					be undone, and any associated data and memories will be permanently deleted.
+				</Text>
+			</Stack>
+		),
 		confirmText: "Delete context",
 		verification: "delete",
 		onConfirm: async () => {
