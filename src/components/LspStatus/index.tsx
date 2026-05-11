@@ -1,16 +1,5 @@
-import {
-	Group,
-	Indicator,
-	Loader,
-	type MantineColor,
-	Popover,
-	ScrollArea,
-	Stack,
-	Text,
-} from "@mantine/core";
-import { Icon, iconBraces } from "@surrealdb/ui";
+import { Group, type MantineColor, Popover, ScrollArea, Stack, Text } from "@mantine/core";
 import { useEffect, useMemo, useState } from "react";
-import { ActionButton } from "~/components/ActionButton";
 import { Spacer } from "~/components/Spacer";
 import { getSharedSurqlLspClient, onLiveMetadataCount } from "~/editor/lsp";
 import { useSetting } from "~/hooks/config";
@@ -86,12 +75,6 @@ export function LspStatus() {
 
 	const tone: MantineColor | undefined = hasError ? "red" : ready ? undefined : "yellow";
 
-	const status = hasError
-		? "Language server reported an error"
-		: ready
-			? `Language server ready · ${defineCount} live definition${defineCount === 1 ? "" : "s"}`
-			: "Language server initialising";
-
 	return (
 		<Popover
 			position="bottom-end"
@@ -99,41 +82,6 @@ export function LspStatus() {
 			shadow="md"
 			withArrow
 		>
-			<Popover.Target>
-				<Indicator
-					disabled={!hasError && ready}
-					processing={!ready && !hasError}
-					color={tone ?? "violet"}
-					size={8}
-					offset={6}
-				>
-					<ActionButton
-						w={36}
-						h={36}
-						variant="subtle"
-						label={status}
-						tooltipProps={{
-							position: "bottom",
-							label: status,
-							children: null,
-						}}
-						color={tone}
-						onClick={() => setHasError(false)}
-					>
-						{ready || hasError ? (
-							<Icon
-								path={iconBraces}
-								size="xl"
-							/>
-						) : (
-							<Loader
-								size="xs"
-								color={tone ?? "violet"}
-							/>
-						)}
-					</ActionButton>
-				</Indicator>
-			</Popover.Target>
 			<Popover.Dropdown p="md">
 				<Stack gap="xs">
 					<Group gap="xs">
