@@ -53,6 +53,8 @@ export function createBaseSettings(): SurrealistSettings {
 			sidekickPanel: false,
 			recordDiagnostics: false,
 			diagnosticsHistorySize: 300,
+			useLanguageServer: true,
+			inlayHints: true,
 		},
 		appearance: {
 			colorScheme: "dark",

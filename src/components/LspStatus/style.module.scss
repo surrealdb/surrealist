@@ -1,0 +1,17 @@
+.log-entry {
+	white-space: pre-wrap;
+	word-break: break-word;
+	padding: 4px 8px;
+	border-radius: 4px;
+	background-color: var(--mantine-color-slate-light);
+	color: var(--mantine-color-text);
+
+	&[data-level="1"] {
+		background-color: rgba(244, 67, 54, 0.12);
+		color: var(--mantine-color-red-4, #ef5350);
+	}
+
+	&[data-level="2"] {
+		background-color: rgba(255, 167, 38, 0.12);
+	}
+}

@@ -39,11 +39,6 @@ export class SurqlLspClient {
 	private readonly logListeners = new Set<LogListener>();
 	private readonly readyPromise: Promise<void>;
 	private readyResolver!: () => void;
-	private nextLspId = 1;
-	private readonly lspWaiters = new Map<
-		string | number,
-		{ resolve: (value: unknown) => void; reject: (error: Error) => void }
-	>();
 
 	constructor(private readonly options: SurqlLspClientOptions) {
 		this.worker = new Worker(new URL("./worker.ts", import.meta.url), {
@@ -78,7 +73,7 @@ export class SurqlLspClient {
 	 * JSON-RPC response. Throws on transport failure or LSP error.
 	 */
 	async sendRequest<T = unknown>(method: string, params?: unknown): Promise<T> {
-		const id = this.nextLspId++;
+		const id = newRequestId();
 		const payload = JSON.stringify({ jsonrpc: "2.0", id, method, params });
 		const response = await this.dispatchRpc(payload);
 		if (response === null) {

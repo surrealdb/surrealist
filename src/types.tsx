@@ -210,6 +210,8 @@ export interface SurrealistBehaviorSettings {
 	sidekickPanel: boolean;
 	recordDiagnostics: boolean;
 	diagnosticsHistorySize: number;
+	useLanguageServer: boolean;
+	inlayHints: boolean;
 }
 
 export interface SurrealistAppearanceSettings {

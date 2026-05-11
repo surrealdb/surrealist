@@ -1,4 +1,5 @@
 import { adapter } from "~/adapter";
+import { LspStatus } from "~/components/LspStatus";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { CloudAccount } from "./account";
@@ -12,6 +13,8 @@ export function ActionBar() {
 
 	return (
 		<>
+			<LspStatus />
+
 			{flags.sidekick_ai && <SidekickAction />}
 
 			{adapter.isServeSupported && <DatabaseServing />}

@@ -25,21 +25,54 @@ import type {
 	SchemaParameter,
 	TableInfo,
 } from "~/types";
+import { watchStore } from "~/util/config";
 import type { SurqlLspClient } from "./client";
+
+/**
+ * Listener invoked after every successful metadata flush with the
+ * latest define count, used by the LSP status indicator.
+ */
+export type MetadataCountListener = (count: number) => void;
+
+const metadataCountListeners = new Set<MetadataCountListener>();
+let lastMetadataCount = 0;
+
+/**
+ * Subscribe to changes in the live metadata define count.
+ * Fires synchronously with the current value on attach.
+ */
+export function onLiveMetadataCount(listener: MetadataCountListener): () => void {
+	metadataCountListeners.add(listener);
+	listener(lastMetadataCount);
+	return () => {
+		metadataCountListeners.delete(listener);
+	};
+}
 
 /**
  * Subscribe to the active database schema and forward every schema
  * change to the language-server worker as a list of `DEFINE …`
  * strings. Returns an unsubscribe function.
+ *
+ * Uses [`watchStore`] so we only re-stringify and post when the
+ * `connectionSchema.database` slice actually changes (deep equality)
+ * rather than on every database-store mutation.
  */
 export function attachLiveMetadataPump(client: SurqlLspClient): () => void {
 	const flush = (schema: DatabaseSchema | undefined) => {
-		client.setLiveMetadata(schema ? buildDefineStrings(schema) : []);
+		const defines = schema ? buildDefineStrings(schema) : [];
+		client.setLiveMetadata(defines);
+		lastMetadataCount = defines.length;
+		for (const listener of metadataCountListeners) {
+			listener(lastMetadataCount);
+		}
 	};
 
-	flush(useDatabaseStore.getState().connectionSchema.database);
-	return useDatabaseStore.subscribe((store) => {
-		flush(store.connectionSchema.database);
+	return watchStore({
+		initial: true,
+		store: useDatabaseStore,
+		select: (state) => state.connectionSchema.database,
+		then: flush,
 	});
 }
 

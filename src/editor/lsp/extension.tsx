@@ -21,11 +21,14 @@ import {
 	type CompletionContext,
 	type CompletionResult,
 } from "@codemirror/autocomplete";
-import { type Diagnostic as CmDiagnostic, linter, setDiagnostics } from "@codemirror/lint";
+import { type Diagnostic as CmDiagnostic, setDiagnostics } from "@codemirror/lint";
 import type { EditorState, Extension } from "@codemirror/state";
 import { hoverTooltip, ViewPlugin, type ViewUpdate } from "@codemirror/view";
+import DOMPurify from "dompurify";
 import { marked } from "marked";
 import type { SurqlLspClient } from "./client";
+import { inlayHintsExtension } from "./inlayHints";
+import { signatureHelpExtension } from "./signature";
 
 interface LspPosition {
 	line: number;
@@ -42,6 +45,7 @@ interface LspDiagnostic {
 	severity?: 1 | 2 | 3 | 4;
 	message: string;
 	source?: string;
+	code?: string | number;
 }
 
 interface LspCompletionItem {
@@ -58,6 +62,13 @@ interface LspHover {
 	range?: LspRange;
 }
 
+/**
+ * Callback invoked when the LSP publishes diagnostics for the bound
+ * document. The argument is the message of the first parse-error
+ * diagnostic (or empty string when there are none).
+ */
+export type LspValidateListener = (message: string) => void;
+
 export interface SurqlLanguageServerOptions {
 	client: SurqlLspClient;
 	/**
@@ -67,6 +78,17 @@ export interface SurqlLanguageServerOptions {
 	 * server-side.
 	 */
 	uri: string;
+	/**
+	 * Optional callback invoked whenever the server publishes
+	 * diagnostics for this buffer. Receives the message of the first
+	 * parse-error diagnostic (or `""` when none).
+	 */
+	onValidate?: LspValidateListener;
+	/**
+	 * Whether to render `textDocument/inlayHint` results as inline
+	 * widget decorations. Defaults to `true`.
+	 */
+	inlayHints?: boolean;
 }
 
 /**
@@ -76,8 +98,11 @@ export interface SurqlLanguageServerOptions {
 export function surqlLanguageServer(options: SurqlLanguageServerOptions): Extension {
 	return [
 		documentSyncPlugin(options),
-		linter(() => [], { delay: 250, needsRefresh: () => true }),
 		autocompletion({ override: [completionSource(options)] }),
+		signatureHelpExtension({ client: options.client, uri: options.uri }),
+		options.inlayHints !== false
+			? inlayHintsExtension({ client: options.client, uri: options.uri })
+			: [],
 		hoverTooltip(async (view, pos) => {
 			const position = offsetToPosition(view.state, pos);
 			try {
@@ -104,7 +129,7 @@ export function surqlLanguageServer(options: SurqlLanguageServerOptions): Extens
 	];
 }
 
-function documentSyncPlugin({ client, uri }: SurqlLanguageServerOptions) {
+function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOptions) {
 	return ViewPlugin.define((view) => {
 		let version = 0;
 		let unsubscribe: (() => void) | null = null;
@@ -135,10 +160,16 @@ function documentSyncPlugin({ client, uri }: SurqlLanguageServerOptions) {
 		const wireDiagnostics = () => {
 			unsubscribe = client.onDiagnostics((targetUri, diagnostics) => {
 				if (targetUri !== uri) return;
-				const cmDiagnostics = (diagnostics as LspDiagnostic[] | null | undefined)
-					?.map((d) => convertDiagnostic(d, view.state))
+				const list = (diagnostics as LspDiagnostic[] | null | undefined) ?? [];
+				const cmDiagnostics = list
+					.map((d) => convertDiagnostic(d, view.state))
 					.filter((value): value is CmDiagnostic => value !== null);
-				view.dispatch(setDiagnostics(view.state, cmDiagnostics ?? []));
+				view.dispatch(setDiagnostics(view.state, cmDiagnostics));
+
+				if (onValidate) {
+					const parseError = list.find((d) => d.code === "parse" && d.severity === 1);
+					onValidate(parseError?.message ?? "");
+				}
 			});
 		};
 
@@ -170,9 +201,13 @@ function documentSyncPlugin({ client, uri }: SurqlLanguageServerOptions) {
 }
 
 function completionSource({ client, uri }: SurqlLanguageServerOptions) {
+	let latestRequestId = 0;
+
 	return async (context: CompletionContext): Promise<CompletionResult | null> => {
 		const word = context.matchBefore(/[\w$:.<>-]+/);
 		if (!word && !context.explicit) return null;
+
+		const requestId = ++latestRequestId;
 
 		try {
 			const result = await client.sendRequest<
@@ -181,6 +216,12 @@ function completionSource({ client, uri }: SurqlLanguageServerOptions) {
 				textDocument: { uri },
 				position: offsetToPosition(context.state, context.pos),
 			});
+
+			// Drop stale responses: a newer completion request was
+			// issued (the user kept typing) or CodeMirror cancelled.
+			if (requestId !== latestRequestId || context.aborted) {
+				return null;
+			}
 
 			if (!result) return null;
 			const items = Array.isArray(result) ? result : result.items;
@@ -232,9 +273,6 @@ function lspSeverityToCodeMirror(severity?: number): CmDiagnostic["severity"] {
 			return "error";
 		case 2:
 			return "warning";
-		case 3:
-			return "info";
-		case 4:
 		default:
 			return "info";
 	}
@@ -272,11 +310,16 @@ function lspSortBoost(sortText?: string): number | undefined {
 	return 50 - tier;
 }
 
+/**
+ * LSP `Position.character` is defined in UTF-16 code units, which is
+ * exactly how JavaScript indexes strings, so the conversion is a
+ * straight subtraction. No code-point walk required.
+ */
 function offsetToPosition(state: EditorState, offset: number): LspPosition {
 	const line = state.doc.lineAt(offset);
 	return {
 		line: line.number - 1,
-		character: utf16Length(line.text.slice(0, offset - line.from)),
+		character: offset - line.from,
 	};
 }
 
@@ -285,40 +328,33 @@ function positionToOffset(state: EditorState, position: LspPosition): number {
 		return state.doc.length;
 	}
 	const line = state.doc.line(position.line + 1);
-	let offset = line.from;
-	let remaining = position.character;
-	for (const ch of line.text) {
-		if (remaining <= 0) break;
-		const consumed = utf16Length(ch);
-		if (remaining < consumed) break;
-		remaining -= consumed;
-		offset += ch.length;
-	}
-	return offset;
+	return Math.min(line.from + Math.max(position.character, 0), line.to);
 }
 
-function utf16Length(text: string): number {
-	let length = 0;
-	for (let i = 0; i < text.length; i++) {
-		// Strings in JS are already UTF-16; iterating by code unit
-		// gives the LSP `Position.character` directly.
-		length++;
-	}
-	return length;
-}
-
-function markdownToHtml(markdown: string): string {
-	const html = marked.parse(markdown, {
-		breaks: true,
-		async: false,
-	});
-	return html as string;
-}
-
+/**
+ * Render markdown content as a CodeMirror tooltip body.
+ *
+ * We avoid mounting a React component here (CodeMirror tooltips live
+ * outside the app's React tree, so any provider-aware UI Kit
+ * component renders blank) and instead pipe `marked` through
+ * DOMPurify before assigning to `innerHTML`. That keeps hover content
+ * safe even when it echoes back user-supplied `DEFINE … COMMENT`
+ * strings from the database.
+ */
 function createInfoTooltip(markdown: string): HTMLElement {
 	const dom = document.createElement("div");
 	dom.className = "cm-tooltip-surql-lsp";
-	dom.innerHTML = markdownToHtml(markdown);
+	const html = marked.parse(markdown, { breaks: true, async: false }) as string;
+	dom.innerHTML = DOMPurify.sanitize(html, {
+		USE_PROFILES: { html: true },
+		// Markdown's `<a>` output is the only place we keep an attribute
+		// that needs hardening; force every link to open safely.
+		ADD_ATTR: ["target", "rel"],
+	});
+	for (const anchor of dom.querySelectorAll("a")) {
+		anchor.setAttribute("target", "_blank");
+		anchor.setAttribute("rel", "noopener noreferrer");
+	}
 	return dom;
 }
 

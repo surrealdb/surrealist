@@ -29,11 +29,23 @@ const post = (message: WorkerOutbound) => self.postMessage(message);
 const pendingConfigurations = new Map<number, (value: unknown) => void>();
 let nextConfigurationId = 1;
 
+// Defensive ceiling: if the host never replies (terminated, hung,
+// race during teardown), resolve with `null` instead of wedging the
+// language-server task that issued `workspace/configuration`.
+const CONFIGURATION_TIMEOUT_MS = 2000;
+
 const requestConfigurationFromHost = (): Promise<unknown> => {
 	const id = nextConfigurationId++;
 	return new Promise((resolve) => {
-		pendingConfigurations.set(id, resolve);
+		const finish = (value: unknown) => {
+			if (!pendingConfigurations.has(id)) return;
+			pendingConfigurations.delete(id);
+			resolve(value);
+		};
+
+		pendingConfigurations.set(id, finish);
 		post({ kind: "requestConfiguration", id });
+		setTimeout(() => finish(null), CONFIGURATION_TIMEOUT_MS);
 	});
 };
 
@@ -94,10 +106,8 @@ self.addEventListener("message", async (event: MessageEvent<WorkerInbound>) => {
 		}
 		case "configuration": {
 			const resolver = pendingConfigurations.get(message.id);
-			if (resolver) {
-				pendingConfigurations.delete(message.id);
-				resolver(message.value);
-			}
+			// The resolver removes itself from the map; just hand off.
+			resolver?.(message.value);
 			return;
 		}
 	}
