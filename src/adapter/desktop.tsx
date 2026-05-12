@@ -10,13 +10,18 @@ import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
+import { navigate } from "wouter/use-browser-location";
 import { VIEW_PAGES } from "~/constants";
 import { ConfigStore, useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
 import { getSetting, overwriteConfig, watchStore } from "~/util/config";
-import { getConnection } from "~/util/connection";
+import {
+	getConnection,
+	parseDeepLinkConnectionParams,
+	resolveDeepLinkConnection,
+} from "~/util/connection";
 import { featureFlags } from "~/util/feature-flags";
 import { openAndReadFiles, openAndWriteFile } from "~/util/file-system";
 import { DeepLinkAuthEvent, NavigateViewEvent } from "~/util/global-events";
@@ -35,6 +40,12 @@ interface FileResource {
 	success: boolean;
 	name: string;
 	path: string;
+	/**
+	 * Raw query string from a `surrealist://<path>?<query>` deep link. Carries
+	 * the connection details (endpoint, namespace, database, username, …) the
+	 * sending integration wants Surrealist to apply before opening the file.
+	 */
+	params?: string;
 }
 
 interface LinkResource {
@@ -403,7 +414,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 
 		for (const { File, Link } of resources) {
 			if (File) {
-				const { success, name, path } = File;
+				const { success, name, path, params } = File;
 
 				if (!success) {
 					showErrorNotification({
@@ -414,9 +425,27 @@ export class DesktopAdapter implements SurrealistAdapter {
 					continue;
 				}
 
-				const connection = getConnection();
+				// External integrations (currently the JetBrains plugin) attach
+				// connection settings to the deep link so the file lands inside a
+				// matching connection rather than failing with "Connection
+				// required". We resolve (or create) that connection and switch
+				// to it before falling through to the existing tab-open logic.
+				let targetConnection = getConnection();
 
-				if (!connection) {
+				if (params) {
+					const spec = parseDeepLinkConnectionParams(new URLSearchParams(params));
+					const resolved = resolveDeepLinkConnection(spec);
+
+					if (resolved) {
+						// `navigate()` updates `location.pathname` synchronously,
+						// which is what `getConnection()` reads from, but we already
+						// have the connection object so we use it directly.
+						navigate(`/c/${resolved.id}/query`);
+						targetConnection = resolved;
+					}
+				}
+
+				if (!targetConnection) {
 					showInfo({
 						title: "Connection required",
 						subtitle: "Please open a connection before opening files",
@@ -424,14 +453,14 @@ export class DesktopAdapter implements SurrealistAdapter {
 					return;
 				}
 
-				const existing = connection.queries.find(
+				const existing = targetConnection.queries.find(
 					(q) => q.type === "file" && q.query === path,
 				);
 
 				if (existing) {
-					setActiveQueryTab(connection.id, existing.id);
+					setActiveQueryTab(targetConnection.id, existing.id);
 				} else {
-					addQueryTab(connection.id, { type: "file", name: name, query: path });
+					addQueryTab(targetConnection.id, { type: "file", name: name, query: path });
 				}
 
 				NavigateViewEvent.dispatch("query");

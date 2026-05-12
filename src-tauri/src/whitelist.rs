@@ -1,6 +1,7 @@
 use std::{
-    fs::{read_to_string, write},
-    path::Path,
+    fs::{create_dir_all, read_to_string, write},
+    io,
+    path::{Path, PathBuf},
 };
 
 use crate::paths::get_file_whitelist_path;
@@ -17,21 +18,38 @@ pub fn read_allowed_files() -> Vec<String> {
 }
 
 /// Write the list of allowed files to the whitelist
-pub fn write_allowed_files(list: Vec<String>) {
+pub fn write_allowed_files(list: Vec<String>) -> io::Result<()> {
     let path = get_file_whitelist_path();
+
+    if let Some(parent) = path.parent() {
+        create_dir_all(parent)?;
+    }
+
     let content = list.join("\n");
 
-    write(path, content).expect("whitelist should be writable");
+    write(path, content)
 }
 
 /// Append a file to the list of allowed files
-pub fn append_allowed_file(path: &Path) {
-    let path = path.canonicalize().unwrap().to_str().unwrap().to_owned();
+///
+/// Returns the canonicalised path that was added to the whitelist so callers
+/// can reuse it. Any failure to canonicalise or persist the whitelist is
+/// surfaced as an [`io::Error`] rather than panicking — opening a file should
+/// never crash Surrealist when the underlying file system is uncooperative.
+pub fn append_allowed_file(path: &Path) -> io::Result<PathBuf> {
+    let canonical = path.canonicalize()?;
+    let canonical_string = canonical
+        .to_str()
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "path is not valid UTF-8"))?
+        .to_owned();
+
     let mut whitelist = read_allowed_files();
 
-    if !whitelist.contains(&path) {
-        whitelist.push(path.clone());
+    if !whitelist.contains(&canonical_string) {
+        whitelist.push(canonical_string);
     }
 
-    write_allowed_files(whitelist);
+    write_allowed_files(whitelist)?;
+
+    Ok(canonical)
 }

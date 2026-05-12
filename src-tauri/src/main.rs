@@ -61,7 +61,9 @@ fn main() {
             }
 
             if let Some((_, window)) = app.webview_windows().iter().next() {
-                window.set_focus().unwrap();
+                if let Err(err) = window.set_focus() {
+                    log::warn!("Failed to focus window: {}", err);
+                }
             }
         }))
         .plugin(
@@ -128,7 +130,17 @@ fn main() {
         RunEvent::Opened { urls } => {
             info!("Opened resources: {:?}", urls);
 
-            *app.state::<open::OpenResourceState>().0.lock().unwrap() = urls;
+            // Store the URLs in shared state so the frontend can pick them up
+            // when it initialises. The state is consulted from initialise()
+            // regardless of whether the emit below reaches a window, which
+            // protects us from the cold-launch race where the deep link
+            // arrives before any window is ready.
+            if let Ok(mut state) = app.state::<open::OpenResourceState>().0.lock() {
+                *state = urls;
+            } else {
+                log::warn!("Failed to store opened resources");
+            }
+
             window::emit_last(app, "open-resource", ());
         }
         RunEvent::Exit => {

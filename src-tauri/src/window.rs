@@ -1,4 +1,6 @@
 use std::sync::{Mutex, OnceLock};
+
+use log::warn;
 use tauri::{AppHandle, Emitter, Manager, WindowEvent};
 
 static LAST_FOCUSED_WINDOW: OnceLock<Mutex<Option<String>>> = OnceLock::new();
@@ -20,8 +22,8 @@ pub async fn new_window(app: AppHandle) {
 pub async fn open_new_window(app: &AppHandle) {
     let current_time = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
+        .map(|d| d.as_secs())
+        .unwrap_or_default();
 
     let window_label = format!("surrealist-{}", current_time);
 
@@ -57,30 +59,40 @@ pub async fn open_new_window(app: &AppHandle) {
 
 pub fn set_last_focused_window(label: &str) {
     let storage = LAST_FOCUSED_WINDOW.get_or_init(|| Mutex::new(None));
-    let mut last = storage.lock().unwrap();
-    *last = Some(label.to_string());
+
+    if let Ok(mut last) = storage.lock() {
+        *last = Some(label.to_string());
+    }
 }
 
-pub fn get_last_focused_window(app: &AppHandle) -> tauri::WebviewWindow {
+/// Return the most recently focused window, or any other available window
+/// when none has been focused yet. Returns `None` when no windows are
+/// registered with the app handle — this can happen briefly during startup
+/// when a deep link event fires before the initial window finishes building.
+pub fn get_last_focused_window(app: &AppHandle) -> Option<tauri::WebviewWindow> {
     let storage = LAST_FOCUSED_WINDOW.get_or_init(|| Mutex::new(None));
-    let last = storage.lock().unwrap();
-    if let Some(label) = last.as_ref() {
-        if let Some(window) = app.get_webview_window(label) {
-            return window;
+
+    if let Ok(last) = storage.lock() {
+        if let Some(label) = last.as_ref() {
+            if let Some(window) = app.get_webview_window(label) {
+                return Some(window);
+            }
         }
     }
 
-    // Fallback: return the first available window
-    app.webview_windows()
-        .values()
-        .next()
-        .expect("No windows available")
-        .clone()
+    app.webview_windows().values().next().cloned()
 }
 
+/// Emit an event to the last focused window. Silently drops the event when no
+/// window is available yet — the resource queue is also re-checked from the
+/// frontend on initialise, so the pending payload is not lost.
 pub fn emit_last(app: &AppHandle, event: &str, payload: impl serde::Serialize + Clone) {
-    let last_window = get_last_focused_window(app);
+    let Some(last_window) = get_last_focused_window(app) else {
+        warn!("No window available to emit '{}' event yet", event);
+        return;
+    };
 
-    app.emit_to(last_window.label(), event, payload)
-        .expect("Failed to emit event");
+    if let Err(err) = app.emit_to(last_window.label(), event, payload) {
+        warn!("Failed to emit '{}' event: {}", event, err);
+    }
 }
