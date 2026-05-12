@@ -1,8 +1,8 @@
 [install]
-# Only install package versions published at least 3 days ago
-minimumReleaseAge = 259200
+# Only install package versions published at least 7 days ago
+minimumReleaseAge = 604800
 
-# These packages will bypass the 3-day minimum age requirement
+# These packages will bypass the 7-day minimum age requirement
 minimumReleaseAgeExcludes = [
 	"@types/bun",
 	"typescript",
