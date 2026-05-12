@@ -1,0 +1,17 @@
+[install]
+# Only install package versions published at least 3 days ago
+minimumReleaseAge = 259200
+
+# These packages will bypass the 3-day minimum age requirement
+minimumReleaseAgeExcludes = [
+	"@types/bun",
+	"typescript",
+	"surrealdb",
+	"@surrealdb/wasm",
+	"@surrealdb/lezer",
+	"@surrealdb/codemirror",
+	"@surrealdb/surql-fmt",
+	"@surrealdb/ql-wasm",
+	"@surrealdb/cbor",
+	"@surrealdb/ui",
+]
