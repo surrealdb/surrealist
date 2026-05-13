@@ -15,7 +15,7 @@ import {
 import {
 	Icon,
 	iconArrowUpRight,
-	iconBook,
+	iconBookmark,
 	iconChat,
 	iconChevronRight,
 	iconCog,
@@ -250,7 +250,7 @@ function DocLink({ label, href }: DocLinkProps) {
 				wrap="nowrap"
 			>
 				<Icon
-					path={iconBook}
+					path={iconBookmark}
 					size="md"
 					c="slate"
 				/>
