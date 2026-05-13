@@ -173,7 +173,7 @@ function MemoriesViewLegacy({ context }: ContextViewProps) {
 						</Button>
 						<Button
 							component="a"
-							href="https://surrealdb.com/platform/spectron"
+							href="https://surrealdb.com/docs/spectron"
 							target="_blank"
 							rel="noopener noreferrer"
 							variant="subtle"
