@@ -23,7 +23,7 @@ import {
 	iconHelp,
 	iconKey,
 	iconLive,
-	iconMemory,
+	iconModel,
 	iconPackageClosed,
 	iconPause,
 	iconQuery,
@@ -395,7 +395,7 @@ export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = 
 	memories: {
 		id: "memories",
 		name: "Memories",
-		icon: iconMemory,
+		icon: iconModel,
 	},
 	knowledge: {
 		id: "knowledge",
