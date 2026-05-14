@@ -3,7 +3,6 @@ import {
 	Box,
 	Button,
 	Group,
-	SegmentedControl,
 	SimpleGrid,
 	Skeleton,
 	Stack,
@@ -43,7 +42,7 @@ export function OrganizationContextPlanPage({ id }: OrganizationContextPlanPageP
 	const { data: organisation } = useCloudOrganizationQuery(id);
 
 	if (organisationsQuery.isSuccess && !organisation) {
-		return <Redirect to="/" />;
+		return <Redirect to="/overview" />;
 	}
 
 	return (
@@ -64,7 +63,7 @@ function PageContent({ organisation }: PageContentProps) {
 
 	const isOrgOwner = hasOrganizationRoles(organisation, ORG_ROLES_OWNER, true);
 
-	const [billingPeriod, setBillingPeriod] = useState<PlanPeriod>("monthly");
+	const [billingPeriod, _] = useState<PlanPeriod>("monthly");
 
 	const { data: availablePackages, isPending: packagesPending } = useContextPackagesQuery();
 	const { data: orgPackages, isSuccess: orgPackageLoaded } = useOrganizationContextPackageQuery(
@@ -126,7 +125,9 @@ function PageContent({ organisation }: PageContentProps) {
 							>
 								Choose the Spectron plan that's right for you
 							</Text>
-							<SegmentedControl
+							{/* Removed for now since we will only be offering monthly at launch */}
+
+							{/* <SegmentedControl
 								mt="xl"
 								size="md"
 								value={billingPeriod}
@@ -135,7 +136,7 @@ function PageContent({ organisation }: PageContentProps) {
 									{ label: "Monthly", value: "monthly" },
 									{ label: "Yearly", value: "yearly" },
 								]}
-							/>
+							/> */}
 						</Stack>
 						{packagesPending ? (
 							<SimpleGrid
