@@ -779,6 +779,7 @@ export interface ContextPackage {
 	name: string;
 	description: string;
 	cost_millcents: number;
+	trial_days: number;
 	billing_period?: PlanPeriod;
 	token_limit: number;
 	contexts_limit: number;
