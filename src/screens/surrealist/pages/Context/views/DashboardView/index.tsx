@@ -16,12 +16,13 @@ import {
 	HoverGlow,
 	Icon,
 	iconArrowUpRight,
+	iconOpen,
 	iconPackageClosed,
-	iconPlay,
 	pictoSpectron,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { useMemo } from "react";
+import { adapter } from "~/adapter";
 import { CONTEXT_VIEW_PAGES, REGION_FLAGS } from "~/constants";
 import { useContextNavigator } from "~/hooks/routing";
 import { useCloudStore } from "~/stores/cloud";
@@ -35,10 +36,10 @@ interface NavItem {
 }
 
 const EXPLORE_ITEMS: NavItem[] = [
-	{
-		page: "playground",
-		description: "Chat with your context and watch memories form in real time.",
-	},
+	// {
+	// 	page: "playground",
+	// 	description: "Chat with your context and watch memories form in real time.",
+	// },
 	{
 		page: "memories",
 		description: "Inspect the agent-learned memory graph that grows with usage.",
@@ -134,18 +135,26 @@ export default function DashboardView({ context }: ContextViewProps) {
 						gap="sm"
 						mt="sm"
 					>
-						<Button
+						{/* <Button
 							variant="gradient"
 							leftSection={<Icon path={iconPlay} />}
 							onClick={() => goToPage("playground")}
 						>
 							Open playground
-						</Button>
+						</Button> */}
 						<Button
+							variant="gradient"
 							onClick={() => goToPage("integration")}
 							rightSection={<Icon path={iconPackageClosed} />}
 						>
 							Integrate Spectron
+						</Button>
+						<Button
+							variant="light"
+							rightSection={<Icon path={iconOpen} />}
+							onClick={() => adapter.openUrl("https://surrealdb.com/spectron")}
+						>
+							Learn more
 						</Button>
 					</Group>
 				</Stack>
@@ -159,7 +168,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 				</SectionTitle>
 				<SimpleGrid
 					mt="xl"
-					cols={{ base: 1, sm: 3 }}
+					cols={{ base: 1, sm: 2 }}
 					spacing="md"
 				>
 					{EXPLORE_ITEMS.map((item) => (

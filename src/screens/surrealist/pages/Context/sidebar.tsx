@@ -45,7 +45,6 @@ export function ContextSidebar({ contextId, organizationId }: ContextSidebarProp
 		return [
 			[link("dashboard"), link("integration")],
 			[
-				link("playground"),
 				{
 					name: "Knowledge base",
 					icon: iconBook,
@@ -56,7 +55,7 @@ export function ContextSidebar({ contextId, organizationId }: ContextSidebarProp
 		];
 	}, [contextId, organizationId, setLocation]);
 
-	const backPath = organizationId ? `/o/${organizationId}/overview` : "/";
+	const backPath = organizationId ? `/o/${organizationId}/overview` : "/overview";
 
 	return (
 		<SidebarPortal>
