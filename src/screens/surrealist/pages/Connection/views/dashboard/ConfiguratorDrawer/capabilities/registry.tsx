@@ -56,7 +56,7 @@ export const ENDPOINT_TARGETS = [
 	{ label: "GraphQL", value: "graphql" },
 	{ label: "ML", value: "ml" },
 	{ label: "API", value: "api" },
-	{ label: "MCP", value: "mcp" },
+	{ label: "MCP", value: "mcp", since: "3.1.0" },
 ];
 
 /**

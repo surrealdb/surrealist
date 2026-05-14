@@ -64,6 +64,11 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 		[instance.version],
 	);
 
+	const httpEndpointTargets = useMemo(
+		() => filterOptions(ENDPOINT_TARGETS, instance.version),
+		[instance.version],
+	);
+
 	return (
 		<Stack
 			h="100%"
@@ -175,7 +180,7 @@ export function ConfigurationCapabilities({ instance, onClose }: ConfigurationCa
 						<Divider />
 
 						<FixedRuleSetCapability
-							data={ENDPOINT_TARGETS}
+							data={httpEndpointTargets}
 							name="HTTP endpoints"
 							description="Select which HTTP endpoints are available for use"
 							value={value}
