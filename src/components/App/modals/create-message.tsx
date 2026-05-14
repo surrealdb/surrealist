@@ -53,6 +53,11 @@ const CONVERSATION_TYPES = [
 		header: "Report instance issue",
 		tags: [],
 	},
+	{
+		id: "context-issue",
+		header: "Report context issue",
+		tags: [],
+	},
 ];
 
 export function CreateMessageModal() {

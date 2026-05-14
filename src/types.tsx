@@ -612,6 +612,7 @@ export interface ContextViewPageInfo {
 	id: ContextViewPage;
 	name: string;
 	icon: string;
+	permissions?: string[];
 }
 
 export interface Dataset {
