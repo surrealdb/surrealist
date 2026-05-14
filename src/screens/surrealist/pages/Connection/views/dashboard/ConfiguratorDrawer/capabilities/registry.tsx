@@ -57,7 +57,6 @@ export const ENDPOINT_TARGETS = [
 	{ label: "ML", value: "ml" },
 	{ label: "API", value: "api" },
 	{ label: "MCP", value: "mcp" },
-	{ label: "Sync", value: "sync" },
 ];
 
 /**
