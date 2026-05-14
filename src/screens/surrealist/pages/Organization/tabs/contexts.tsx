@@ -1,4 +1,5 @@
 import {
+	ActionIcon,
 	Anchor,
 	Box,
 	Button,
@@ -12,16 +13,18 @@ import {
 	TextInput,
 	ThemeIcon,
 } from "@mantine/core";
-import { Icon, iconSearch, iconSpectron } from "@surrealdb/ui";
+import { Icon, iconDotsVertical, iconSearch, iconSpectron, Spacer } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { hasOrganizationRoles, isOrganisationRestricted, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudOrganizationContextsQuery } from "~/cloud/queries/contexts";
+import { ContextActions } from "~/components/ContextActions";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
 import { ContextsOnboarding } from "~/modals/onboarding";
 import { useCloudStore } from "~/stores/cloud";
-import type { CloudContext } from "~/types";
+import type { CloudContext, CloudOrganization } from "~/types";
+import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import type { OrganizationTabProps } from "../types";
 
 const GRID_COLUMNS = {
@@ -32,10 +35,12 @@ const GRID_COLUMNS = {
 
 function ContextCard({
 	context,
+	organization,
 	regions,
 	onClick,
 }: {
 	context: CloudContext;
+	organization: CloudOrganization;
 	regions: { slug: string; description: string }[];
 	onClick: () => void;
 }) {
@@ -52,10 +57,7 @@ function ContextCard({
 					align="stretch"
 					mt={-3}
 				>
-					<Group
-						gap="lg"
-						wrap="nowrap"
-					>
+					<Group gap="lg">
 						<ThemeIcon
 							color="obsidian"
 							variant="light"
@@ -90,6 +92,27 @@ function ContextCard({
 							</Text>
 						</Stack>
 					</Group>
+
+					<Spacer />
+
+					{/* biome-ignore lint/a11y/noStaticElementInteractions: Stop event propagation */}
+					<div
+						onClick={ON_STOP_PROPAGATION}
+						onKeyDown={ON_STOP_PROPAGATION}
+					>
+						<ContextActions
+							context={context}
+							organisation={organization}
+						>
+							<ActionIcon
+								color="slate"
+								variant="subtle"
+								component="div"
+							>
+								<Icon path={iconDotsVertical} />
+							</ActionIcon>
+						</ContextActions>
+					</div>
 				</Group>
 			</Paper>
 		</Anchor>
@@ -191,6 +214,7 @@ export function OrganizationContextsTab({ organization }: OrganizationTabProps) 
 					<ContextCard
 						key={ctx.id}
 						context={ctx}
+						organization={organization}
 						regions={allRegions}
 						onClick={() => navigateContext(organization.id, ctx.id)}
 					/>

@@ -21,18 +21,15 @@ import {
 	pictoCapabilites,
 	useStable,
 } from "@surrealdb/ui";
-import { useDeleteContextMutation, useUpdateContextMutation } from "~/cloud/mutations/spectron";
+import { useUpdateContextMutation } from "~/cloud/mutations/spectron";
 import { Section } from "~/components/Section";
-import { useAbsoluteLocation } from "~/hooks/routing";
-import { useConfirmation } from "~/providers/Confirmation";
+import { useDeleteContext } from "~/hooks/cloud";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
 
 export default function SettingsView({ context }: ContextViewProps) {
 	const organization = context.organization_id;
-	const [, navigate] = useAbsoluteLocation();
-	const deleteContextMutation = useDeleteContextMutation(organization);
 	const updateContextMutation = useUpdateContextMutation(organization);
 
 	const [name, setName] = useInputState(context.name);
@@ -58,44 +55,7 @@ export default function SettingsView({ context }: ContextViewProps) {
 		}
 	});
 
-	const requestDelete = useConfirmation({
-		message: () => (
-			<Stack className="selectable">
-				<Text>
-					You are about to delete the context{" "}
-					<Text
-						span
-						c="bright"
-						fw={600}
-					>
-						{context.name}
-					</Text>
-					.
-				</Text>
-				<Text>
-					This action{" "}
-					<Text
-						span
-						fw={600}
-						c="bright"
-					>
-						CANNOT
-					</Text>{" "}
-					be undone, and any associated data and memories will be permanently deleted.
-				</Text>
-			</Stack>
-		),
-		confirmText: "Delete context",
-		verification: "delete",
-		onConfirm: async () => {
-			await deleteContextMutation.mutateAsync(context.id);
-
-			const backPath = organization ? `/o/${organization}/overview` : "/overview";
-
-			navigate(backPath);
-		},
-	});
-
+	const requestDelete = useDeleteContext(context, `/o/${organization}/overview`);
 	// const properties = [
 	// 	{ label: "Name", icon: iconTag, value: context.name },
 	// 	{ label: "Region", icon: iconServer, value: context.region },
