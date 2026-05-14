@@ -7,6 +7,13 @@ export interface CreateContextRequest {
 	region: string;
 }
 
+export interface UpdateContextRequest {
+	id: string;
+	body: {
+		name?: string;
+	};
+}
+
 export interface CreateContextApiKeyRequest {
 	name: string;
 }
@@ -32,6 +39,32 @@ export function useCreateContextMutation(organization: string | undefined) {
 
 			client.invalidateQueries({
 				queryKey: ["cloud", "contexts"],
+			});
+
+			return result;
+		},
+	});
+}
+
+export function useUpdateContextMutation(organization: string | undefined) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (request: UpdateContextRequest) => {
+			if (!organization) {
+				throw new Error("Organization is required");
+			}
+
+			const result = await fetchAPI<CloudContext>(
+				`/organizations/${organization}/spectron_contexts/${request.id}`,
+				{
+					method: "PATCH",
+					body: JSON.stringify(request.body),
+				},
+			);
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "context", organization, request.id],
 			});
 
 			return result;
