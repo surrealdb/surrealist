@@ -1,5 +1,12 @@
 import { selectable } from "~/util/helpers";
 
+// Mirrors the capability target enums in SurrealDB. Values here must match the
+// strings accepted by these parsers, or the server will refuse to start:
+//   - Method               (surrealdb/core/src/rpc/method.rs)
+//   - RouteTarget          (surrealdb/core/src/dbs/capabilities.rs)
+//   - ExperimentalTarget   (surrealdb/core/src/dbs/capabilities.rs)
+//   - ArbitraryQueryTarget (surrealdb/core/src/dbs/capabilities.rs)
+
 /**
  * RPC methods
  */
@@ -10,14 +17,19 @@ export const RPC_TARGETS = selectable([
 	"signup",
 	"signin",
 	"authenticate",
+	"refresh",
 	"invalidate",
+	"revoke",
+	"reset",
 	"let",
 	"unset",
 	"live",
 	"kill",
 	"query",
-	"graphql",
 	"run",
+	"sessions",
+	"attach",
+	"detach",
 	"select",
 	"create",
 	"insert",
@@ -44,6 +56,8 @@ export const ENDPOINT_TARGETS = [
 	{ label: "GraphQL", value: "graphql" },
 	{ label: "ML", value: "ml" },
 	{ label: "API", value: "api" },
+	{ label: "MCP", value: "mcp" },
+	{ label: "Sync", value: "sync" },
 ];
 
 /**
@@ -55,7 +69,7 @@ export const EXPERIMENT_TARGETS = [
 	{ label: "Bearer access", value: "bearer_access", since: "2.2.0", until: "3.0.0" },
 	{ label: "Define API", value: "define_api", since: "2.2.0", until: "3.0.0" },
 	{ label: "Surrealism", value: "surrealism", since: "3.0.0" },
-	// { label: "Files", value: "files", since: "3.0.0" },
+	{ label: "Files", value: "files", since: "3.0.0" },
 ];
 
 /**
