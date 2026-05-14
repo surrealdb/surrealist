@@ -1,8 +1,31 @@
-import { Box, Button, Group, Image, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
-import { Header as Heading, Icon, iconWarning, pictoCapabilites } from "@surrealdb/ui";
-import { useDeleteContextMutation } from "~/cloud/mutations/spectron";
+import {
+	ActionIcon,
+	Box,
+	Button,
+	CopyButton,
+	Group,
+	Image,
+	Paper,
+	Stack,
+	Text,
+	TextInput,
+	ThemeIcon,
+} from "@mantine/core";
+import { useInputState } from "@mantine/hooks";
+import {
+	Header as Heading,
+	Icon,
+	iconCheck,
+	iconCopy,
+	iconWarning,
+	pictoCapabilites,
+	useStable,
+} from "@surrealdb/ui";
+import { useDeleteContextMutation, useUpdateContextMutation } from "~/cloud/mutations/spectron";
+import { Section } from "~/components/Section";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useConfirmation } from "~/providers/Confirmation";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
 
@@ -10,6 +33,30 @@ export default function SettingsView({ context }: ContextViewProps) {
 	const organization = context.organization_id;
 	const [, navigate] = useAbsoluteLocation();
 	const deleteContextMutation = useDeleteContextMutation(organization);
+	const updateContextMutation = useUpdateContextMutation(organization);
+
+	const [name, setName] = useInputState(context.name);
+
+	const handleSave = useStable(async () => {
+		const res = await updateContextMutation.mutateAsync({
+			id: context.id,
+			body: {
+				name,
+			},
+		});
+
+		if (res) {
+			showInfo({
+				title: "Context updated",
+				subtitle: "The details of your context has been updated",
+			});
+		} else {
+			showErrorNotification({
+				title: "Failed to update context",
+				content: "An error occurred while updating the context",
+			});
+		}
+	});
 
 	const requestDelete = useConfirmation({
 		message: () => (
@@ -148,7 +195,58 @@ export default function SettingsView({ context }: ContextViewProps) {
 				</Paper>
 			</Box> */}
 
-			{/* DANGER ZONE */}
+			<Section
+				title="Context details"
+				description="Manage the details of your context"
+			>
+				<TextInput
+					maw={400}
+					label="Context ID"
+					description="This ID may be requested by the SurrealDB support team"
+					value={context.id}
+					rightSection={
+						<CopyButton value={context.id}>
+							{({ copied, copy }) => (
+								<ActionIcon
+									variant={copied ? "gradient" : undefined}
+									aria-label="Copy context ID"
+									radius="xs"
+									size="md"
+									onClick={copy}
+								>
+									<Icon path={copied ? iconCheck : iconCopy} />
+								</ActionIcon>
+							)}
+						</CopyButton>
+					}
+					styles={{
+						input: {
+							fontFamily: "var(--mantine-font-family-monospace)",
+						},
+					}}
+				/>
+
+				<TextInput
+					value={name}
+					label="Name"
+					description="The display name of your context"
+					onChange={setName}
+					maw={400}
+				/>
+
+				<Box mt="sm">
+					<Button
+						size="xs"
+						variant="gradient"
+						disabled={name === context.name}
+						loading={updateContextMutation.isPending}
+						onClick={handleSave}
+					>
+						Save changes
+					</Button>
+				</Box>
+			</Section>
+
 			<Box>
 				<Heading
 					kicker="Danger zone"
