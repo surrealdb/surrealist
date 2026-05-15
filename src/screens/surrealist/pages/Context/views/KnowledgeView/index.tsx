@@ -11,7 +11,6 @@ import {
 	ThemeIcon,
 } from "@mantine/core";
 import {
-	Header,
 	Icon,
 	iconArrowUpRight,
 	iconBook,
@@ -35,6 +34,7 @@ import {
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
 import type { ContextViewProps } from "../../types";
+import { KnowledgeExamples } from "./KnowledgeExamples";
 import classes from "./style.module.scss";
 
 interface Capability {
@@ -487,27 +487,8 @@ function KnowledgeViewLegacy({ context }: ContextViewProps) {
 
 export default function KnowledgeView({ context }: ContextViewProps) {
 	return (
-		<Stack gap="md">
-			<Paper
-				p="xl"
-				radius="lg"
-				variant="glass"
-				className={classes.hero}
-			>
-				<Image
-					src={pictoGraphRAG}
-					className={classes.heroArt}
-					alt=""
-					aria-hidden
-				/>
-				<Header
-					kicker="Ingest"
-					description="Ground your context in files, documents, and ingressed data."
-					titleProps={{ variant: "gradient" }}
-				>
-					Knowledge
-				</Header>
-			</Paper>
+		<Stack gap="lg">
+			<KnowledgeExamples context={context} />
 
 			{false && <KnowledgeViewLegacy context={context} />}
 		</Stack>

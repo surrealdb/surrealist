@@ -20,10 +20,10 @@ import {
 	iconAPI,
 	iconArrowUpRight,
 } from "@surrealdb/ui";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { useContextNavigator, useSearchParams } from "~/hooks/routing";
-import type { ContextViewPage } from "~/types";
+import type { CloudContext, ContextViewPage } from "~/types";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
 
@@ -37,142 +37,157 @@ interface IntegrationStep {
 	lang?: string;
 }
 
-const INTEGRATION_STEPS: Record<IntegrationTab, IntegrationStep[]> = {
-	python: [
-		{
-			title: "Install the SDK",
-			description: "Pull the official Python package into your environment.",
-			code: "pip install surrealdb-context",
-			lang: "bash",
-		},
-		{
-			title: "Initialise the client",
-			description: "Create a client instance with your API key.",
-			code: `from surrealdb_context import ContextClient
+function buildIntegrationSteps(context: CloudContext): Record<IntegrationTab, IntegrationStep[]> {
+	const baseUrl = `https://${context.host}`;
+	const restRoot = `${baseUrl}/api/v1/${context.id}`;
 
-client = ContextClient(api_key="your-api-key")`,
-			lang: "python",
-			action: "api_keys",
-		},
-		{
-			title: "Ingest a memory",
-			description:
-				"Store a conversation turn so the agent can recall it later, attributing each memory to a specific user so retrieval stays scoped and personalised.",
-			code: `messages = [
-    {"role": "user", "content": "Hi, I'm Alex. I prefer dark mode."},
-    {"role": "assistant", "content": "Got it, Alex - noted."},
-]
+	return {
+		python: [
+			{
+				title: "Install the SDK",
+				description: "Pull the official Python package into your environment.",
+				code: "pip install surrealdb",
+				lang: "bash",
+			},
+			{
+				title: "Initialise the client",
+				description:
+					"Create a Spectron client pointing at this context. The endpoint and context id are pre-filled from your selection.",
+				code: `from surrealdb import Spectron
 
-client.add(messages, user_id="alex")`,
-			lang: "python",
-		},
-		{
-			title: "Retrieve with hybrid search",
-			description:
-				"Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.",
-			code: `results = client.search(
-    "What are the user's preferences?",
-    user_id="alex",
+client = Spectron(
+    context="${context.id}",
+    endpoint="${baseUrl}",
+    api_key="your-api-key",
 )`,
-			lang: "python",
-		},
-		{
-			title: "Explore Spectron",
-			description: "Discover the full potential of Spectron with the official documentation.",
-			action: "documentation",
-		},
-	],
-	javascript: [
-		{
-			title: "Install the SDK",
-			description: "Add the npm package to your project.",
-			code: "npm install @surrealdb/context",
-			lang: "bash",
-		},
-		{
-			title: "Initialise the client",
-			description: "Create a client instance with your API key.",
-			code: `import { ContextClient } from "@surrealdb/context";
+				lang: "python",
+				action: "api_keys",
+			},
+			{
+				title: "Capture a memory",
+				description:
+					"Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.",
+				code: `from surrealdb import SpectronTurnRole
 
-const client = new ContextClient({ apiKey: "your-api-key" });`,
-			lang: "javascript",
-			action: "api_keys",
-		},
-		{
-			title: "Ingest a memory",
-			description:
-				"Store a conversation turn so the agent can recall it later, attributing each memory to a specific user so retrieval stays scoped and personalised.",
-			code: `const messages = [
-    { role: "user", content: "Hi, I'm Alex. I prefer dark mode." },
-    { role: "assistant", content: "Got it, Alex - noted." },
-];
+session = client.sessions.create(scope={"user": "alex"})
+session.turn(SpectronTurnRole.USER, "Hi, I'm Alex. I prefer dark mode.")
+session.turn(SpectronTurnRole.ASSISTANT, "Got it, Alex — noted.")`,
+				lang: "python",
+			},
+			{
+				title: "Recall with hybrid search",
+				description:
+					"Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.",
+				code: `results = client.query("What are the user's preferences?", k=10)
 
-await client.add(messages, { userId: "alex" });`,
-			lang: "javascript",
-		},
-		{
-			title: "Retrieve with hybrid search",
-			description:
-				"Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.",
-			code: `const results = await client.search(
-    "What are the user's preferences?",
-    { userId: "alex" },
-);`,
-			lang: "javascript",
-		},
-		{
-			title: "Explore Spectron",
-			description: "Discover the full potential of Spectron with the official documentation.",
-			action: "documentation",
-		},
-	],
-	api: [
-		{
-			title: "Create an API key",
-			description: "Request a new API key to authenticate your requests to the API.",
-			action: "api_keys",
-		},
-		{
-			title: "Ingest a memory",
-			description:
-				"Send a POST request to the memories endpoint with the conversation turn and a user identifier, and the platform will embed, index, and link it to existing context automatically.",
-			code: `curl -X POST https://api.surrealdb.com/v1/context/memories \\
-    -H "Authorization: Bearer your-api-key" \\
+for hit in results.hits:
+    print(hit.score, hit.text)`,
+				lang: "python",
+			},
+			{
+				title: "Explore Spectron",
+				description:
+					"Discover the full potential of Spectron with the official documentation.",
+				action: "documentation",
+			},
+		],
+		javascript: [
+			{
+				title: "Install the SDK",
+				description: "Add the Spectron npm package to your project.",
+				code: "npm install @surrealdb/spectron",
+				lang: "bash",
+			},
+			{
+				title: "Initialise the client",
+				description:
+					"Create a Spectron client pointing at this context. The base URL and context id are pre-filled from your selection.",
+				code: `import { Spectron } from "@surrealdb/spectron";
+
+const client = new Spectron({
+    context: "${context.id}",
+    baseUrl: "${baseUrl}",
+    apiKey: "your-api-key",
+});`,
+				lang: "javascript",
+				action: "api_keys",
+			},
+			{
+				title: "Capture a memory",
+				description:
+					"Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.",
+				code: `import { TurnRole } from "@surrealdb/spectron";
+
+const session = await client.sessions.create({
+    scope: { user: "alex" },
+});
+
+await session.turn({ role: TurnRole.user, content: "Hi, I'm Alex. I prefer dark mode." });
+await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted." });`,
+				lang: "javascript",
+			},
+			{
+				title: "Recall with hybrid search",
+				description:
+					"Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.",
+				code: `const results = await client.query({
+    query: "What are the user's preferences?",
+    k: 10,
+});`,
+				lang: "javascript",
+			},
+			{
+				title: "Explore Spectron",
+				description:
+					"Discover the full potential of Spectron with the official documentation.",
+				action: "documentation",
+			},
+		],
+		api: [
+			{
+				title: "Create an API key",
+				description: "Request a new API key to authenticate your requests to the API.",
+				action: "api_keys",
+			},
+			{
+				title: "Open a session",
+				description:
+					"Create a session scoped to a user. The response includes an `id` you'll pass to subsequent calls when recording turns.",
+				code: `curl -X POST ${restRoot}/sessions \\
+    -H "API-KEY: your-api-key" \\
     -H "Content-Type: application/json" \\
-    -d '{
-        "messages": [{"role": "user", "content": "Hi, I'm Alex."}],
-        "user_id": "alex"
-    }'`,
-			lang: "bash",
-		},
-		{
-			title: "Search across memory",
-			description:
-				"Issue a natural-language query against your stored memories and let the hybrid retrieval pipeline combine vector similarity with graph traversal behind a single endpoint.",
-			code: `curl -X POST https://api.surrealdb.com/v1/context/search \\
-    -H "Authorization: Bearer your-api-key" \\
+    -d '{"scope":[{"key":"user","value":"alex"}]}'`,
+				lang: "bash",
+			},
+			{
+				title: "Capture a memory",
+				description:
+					"Record a conversation turn against the session you just created. Replace `$SESSION_ID` with the `id` returned from the previous call.",
+				code: `curl -X POST ${restRoot}/sessions/$SESSION_ID/turns \\
+    -H "API-KEY: your-api-key" \\
     -H "Content-Type: application/json" \\
-    -d '{
-        "query": "What are the user preferences?",
-        "user_id": "alex"
-    }'`,
-			lang: "bash",
-		},
-		{
-			title: "List stored memories",
-			description:
-				"Fetch every memory attributed to a specific user, useful for auditing what the agent currently knows, exporting their context, or surfacing it inside an admin interface.",
-			code: `curl https://api.surrealdb.com/v1/context/memories?user_id=alex \\
-    -H "Authorization: Bearer your-api-key"`,
-			lang: "bash",
-		},
-		{
-			title: "Explore Spectron",
-			description: "Discover the full potential of Spectron with the official documentation.",
-			action: "documentation",
-		},
-	],
-};
+    -d '{"role":"user","content":"Hi, I am Alex. I prefer dark mode."}'`,
+				lang: "bash",
+			},
+			{
+				title: "Recall with hybrid search",
+				description:
+					"Issue a natural-language query against your stored memories and let the hybrid retrieval pipeline combine vector similarity with graph traversal behind a single endpoint.",
+				code: `curl -X POST ${restRoot}/query \\
+    -H "API-KEY: your-api-key" \\
+    -H "Content-Type: application/json" \\
+    -d '{"query":"What are the user preferences?","k":10}'`,
+				lang: "bash",
+			},
+			{
+				title: "Explore Spectron",
+				description:
+					"Discover the full potential of Spectron with the official documentation.",
+				action: "documentation",
+			},
+		],
+	};
+}
 
 const LANGUAGES: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
 	python: { label: "Python", img: brandPython },
@@ -191,7 +206,8 @@ export default function IntegrationView({ context }: ContextViewProps) {
 		isIntegrationTab(tabFromSearch) ? tabFromSearch : "python",
 	);
 	const navigateContext = useContextNavigator();
-	const steps = INTEGRATION_STEPS[activeTab];
+	const integrationSteps = useMemo(() => buildIntegrationSteps(context), [context]);
+	const steps = integrationSteps[activeTab];
 
 	useEffect(() => {
 		if (isIntegrationTab(tabFromSearch)) {
