@@ -91,3 +91,64 @@
 		opacity: 0.5;
 	}
 }
+
+.featured-card {
+	border-color: color-mix(in srgb, var(--mantine-color-violet-5) 38%, transparent);
+
+	&:hover .featured-image {
+		transform: scale(1.05);
+	}
+}
+
+.featured-image {
+	transition: transform 280ms ease;
+}
+
+.new-badge {
+	position: relative;
+	isolation: isolate;
+	padding-inline: 10px;
+	letter-spacing: 0.1em;
+	background: var(--surreal-gradient);
+	color: var(--mantine-color-white);
+	border: 1px solid color-mix(in srgb, var(--surreal-energy) 60%, transparent);
+	box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--surreal-passion) 70%, transparent);
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: -8px;
+		border-radius: 999px;
+		background: radial-gradient(
+			closest-side,
+			color-mix(in srgb, var(--surreal-energy) 55%, transparent) 0%,
+			transparent 70%
+		);
+		animation: new-badge-pulse 2.4s ease-in-out infinite;
+		z-index: -1;
+		pointer-events: none;
+	}
+}
+
+@keyframes new-badge-pulse {
+	0%,
+	100% {
+		opacity: 0.4;
+		transform: scale(0.92);
+	}
+
+	50% {
+		opacity: 0.95;
+		transform: scale(1.12);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.featured-image {
+		transition: none;
+	}
+
+	.new-badge::before {
+		animation: none;
+	}
+}

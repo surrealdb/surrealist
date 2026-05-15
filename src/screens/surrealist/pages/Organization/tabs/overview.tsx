@@ -43,6 +43,7 @@ import { Section } from "~/components/Section";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { plural } from "~/util/helpers";
 import { useSidebar } from "../../../sidebar/portal";
+import classes from "../style.module.scss";
 import type { OrganizationTabProps } from "../types";
 
 interface ResourceCardProps {
@@ -54,6 +55,7 @@ interface ResourceCardProps {
 	color: string;
 	count: number;
 	onClick: () => void;
+	featured?: boolean;
 }
 
 function ResourceCard({
@@ -65,6 +67,7 @@ function ResourceCard({
 	color,
 	count,
 	onClick,
+	featured = false,
 }: ResourceCardProps) {
 	return (
 		<Anchor
@@ -73,7 +76,10 @@ function ResourceCard({
 			onClick={onClick}
 			style={{ cursor: "pointer" }}
 		>
-			<Paper p="xl">
+			<Paper
+				p="xl"
+				className={featured ? classes.featuredCard : undefined}
+			>
 				<Group
 					gap="md"
 					pos="relative"
@@ -91,13 +97,28 @@ function ResourceCard({
 						/>
 					</ThemeIcon>
 					<Box>
-						<Text
-							c="bright"
-							fw={600}
-							fz="lg"
+						<Group
+							gap="sm"
+							wrap="nowrap"
 						>
-							{name}
-						</Text>
+							<Text
+								c="bright"
+								fw={600}
+								fz="lg"
+							>
+								{name}
+							</Text>
+							{featured && (
+								<Badge
+									size="sm"
+									radius="sm"
+									fw={700}
+									className={classes.newBadge}
+								>
+									NEW
+								</Badge>
+							)}
+						</Group>
 						<Text
 							fz="sm"
 							className="selectable"
@@ -111,6 +132,8 @@ function ResourceCard({
 					mt="lg"
 					c="var(--mantine-color-violet-light-color)"
 					mb={-4}
+					pos="relative"
+					style={{ zIndex: 1 }}
 				>
 					{count > 0 ? (
 						<Text
@@ -139,22 +162,33 @@ function ResourceCard({
 					pos="absolute"
 					bottom={0}
 					right={0}
-					w={150}
-					h={150}
+					top={0}
+					w={180}
 				>
-					<Image
-						src={image}
-						w={150}
-						pos="absolute"
-						bottom={-45}
-						right={-32}
-						style={{
-							mixBlendMode: "plus-lighter",
-							zIndex: 0,
-							filter: "grayscale(100%)",
-							opacity: 0.2,
-						}}
-					/>
+					<Box
+						pos="relative"
+						maw="100%"
+						mah="100%"
+						h="100%"
+						w="100%"
+						style={{ overflow: "hidden" }}
+					>
+						<Image
+							src={image}
+							alt=""
+							aria-hidden
+							className={featured ? classes.featuredImage : undefined}
+							w={150}
+							pos="absolute"
+							bottom={featured ? -40 : -45}
+							right={featured ? -25 : -32}
+							style={{
+								mixBlendMode: "plus-lighter",
+								filter: featured ? undefined : "grayscale(100%)",
+								opacity: featured ? 0.55 : 0.2,
+							}}
+						/>
+					</Box>
 				</Box>
 			</Paper>
 		</Anchor>
@@ -403,6 +437,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 						color="violet"
 						count={contextCount}
 						onClick={() => setLocation(`${base}/contexts`)}
+						featured
 					/>
 				)}
 			</SimpleGrid>
