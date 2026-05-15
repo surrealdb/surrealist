@@ -20,7 +20,7 @@ export const RPC_TARGETS = selectable([
 	// "refresh",
 	"invalidate",
 	// "revoke",
-	"reset",
+	// "reset",
 	"let",
 	"unset",
 	"live",
