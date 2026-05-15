@@ -11,7 +11,6 @@ import {
 	ThemeIcon,
 } from "@mantine/core";
 import {
-	Header,
 	Icon,
 	iconArrowUpRight,
 	iconClock,
@@ -27,6 +26,7 @@ import {
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
 import type { ContextViewProps } from "../../types";
+import { MemoryExamples } from "./MemoryExamples";
 import classes from "./style.module.scss";
 
 interface MemoryTypeCard {
@@ -455,27 +455,8 @@ function MemoriesViewLegacy({ context }: ContextViewProps) {
 
 export default function MemoriesView({ context }: ContextViewProps) {
 	return (
-		<Stack gap="md">
-			<Paper
-				p="xl"
-				radius="lg"
-				variant="glass"
-				className={classes.hero}
-			>
-				<Image
-					src={pictoBrain}
-					className={classes.heroArt}
-					alt=""
-					aria-hidden
-				/>
-				<Header
-					kicker="Inspect"
-					description="Inspect the agent-learned memory graph that grows with usage."
-					titleProps={{ variant: "gradient" }}
-				>
-					Memories
-				</Header>
-			</Paper>
+		<Stack gap="lg">
+			<MemoryExamples context={context} />
 
 			{false && <MemoriesViewLegacy context={context} />}
 		</Stack>
