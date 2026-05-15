@@ -2,13 +2,11 @@ use std::fs::{self, read_to_string};
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
-use log::{info, warn};
-use percent_encoding::percent_decode_str;
+use log::info;
 use serde::Serialize;
 use tauri::{AppHandle, Manager, State, Window};
 use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_dialog::FilePath;
-use url::Url;
 
 use crate::whitelist::{append_allowed_file, read_allowed_files, write_allowed_files};
 use crate::window;
@@ -16,7 +14,7 @@ use crate::window;
 const MAX_FILE_SIZE: u64 = 5 * 1024 * 1024;
 
 /// The state holding resources requested for opening
-pub struct OpenResourceState(pub Mutex<Vec<Url>>);
+pub struct OpenResourceState(pub Mutex<Vec<url::Url>>);
 
 pub fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T) {
     let mut urls = Vec::new();
@@ -24,17 +22,15 @@ pub fn store_resources<T: IntoIterator<Item = String>>(app: &AppHandle, args: T)
     for arg in args.into_iter().skip(1) {
         let path = Path::new(&arg);
 
-        if let Ok(url) = Url::from_file_path(path) {
+        if let Ok(url) = url::Url::from_file_path(path) {
             urls.push(url);
-        } else if let Ok(url) = Url::parse(&arg) {
+        } else if let Ok(url) = url::Url::parse(&arg) {
             urls.push(url);
         }
     }
 
     if !urls.is_empty() {
-        if let Ok(mut state) = app.state::<OpenResourceState>().0.lock() {
-            *state = urls;
-        }
+        *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
     }
 }
 
@@ -50,12 +46,11 @@ pub struct FileResource {
     pub success: bool,
     pub name: String,
     pub path: String,
-    /// Raw query string from a `surrealist://<path>?<query>` deep link, e.g.
-    /// passed by the JetBrains plugin to carry connection settings alongside
-    /// the file. `None` when the file was opened via a plain `file://` URL or
-    /// when the deep link didn't include a query.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub params: Option<String>,
+    /// Deep-link query string carried alongside the file (e.g.
+    /// `endpoint=...&ns=...&db=...&user=...` from a JetBrains "Open in
+    /// Surrealist" launch). Empty for plain `file://` opens that didn't
+    /// originate from a `surrealist://` URL.
+    pub params: String,
 }
 
 #[derive(Serialize)]
@@ -66,140 +61,116 @@ pub struct LinkResource {
 
 #[tauri::command]
 pub fn get_opened_resources(state: State<OpenResourceState>) -> Vec<OpenedResource> {
-    let urls = match state.0.lock() {
-        Ok(guard) => guard.clone(),
-        Err(err) => {
-            warn!("Failed to read opened resources: {}", err);
-            return Vec::new();
-        }
-    };
+    {
+        info!("Fetching requested resources {:?}", state.0.lock().unwrap());
+    }
 
-    info!("Fetching requested resources {:?}", urls);
+    state
+        .0
+        .lock()
+        .unwrap()
+        .iter()
+        .map(|u| match u.scheme() {
+            "file" => {
+                let buf = u.to_file_path().unwrap();
 
-    urls.iter().map(parse_resource).collect()
-}
-
-/// Translate a stored URL into the resource payload consumed by the frontend.
-///
-/// Errors are converted into [`OpenedResource::Unknown`] so the rest of the
-/// queue can still be processed and Surrealist never panics on a malformed
-/// or unreachable resource.
-fn parse_resource(url: &Url) -> OpenedResource {
-    match url.scheme() {
-        "file" => match url.to_file_path() {
-            Ok(buf) => resource_from_path(&buf),
-            Err(_) => {
-                warn!("Failed to convert file URL to path: {}", url);
-                OpenedResource::Unknown
+                build_file_resource(buf, String::new())
+                    .map(OpenedResource::File)
+                    .unwrap_or(OpenedResource::Unknown)
             }
-        },
-        "surrealist" => {
-            let host = url.host_str().unwrap_or_default();
+            "surrealist" => {
+                let params = u.query().unwrap_or_default().to_owned();
 
-            // External integrations (e.g. the JetBrains plugin) hand off files
-            // as `surrealist:///path/to/file.surql`. Treat URLs without a host
-            // and with a non-trivial path as a file open request, and forward
-            // any query string so the frontend can apply connection settings.
-            if host.is_empty() {
-                if let Some(buf) = surrealist_url_to_path(url) {
-                    let mut resource = resource_from_path(&buf);
-                    if let OpenedResource::File(file) = &mut resource {
-                        file.params = url.query().map(str::to_owned);
-                    }
-                    return resource;
+                // External tooling (e.g. the JetBrains plugin's "Open in
+                // Surrealist" action) hands SurrealQL files off as
+                // `surrealist://open?file=<path>&endpoint=...&ns=...&...`.
+                // We deliberately accept the file path *from the query
+                // string* rather than the URL path component: macOS routes
+                // `surrealist:///abs/path.surql` URLs through
+                // NSDocumentController's auto-reopen flow on cold start
+                // (because the `.surql` extension matches our registered
+                // file association), which fires `application:openURLs:`
+                // before tao's event loop is ready and panics tao at the
+                // FFI boundary. Keeping the path out of the URL path keeps
+                // macOS from recognising the URL as a document open.
+                if let Some(file) = file_resource_from_link(&params) {
+                    OpenedResource::File(file)
+                } else {
+                    let host = u.host_str().unwrap_or_default().to_owned();
+
+                    OpenedResource::Link(LinkResource { host, params })
                 }
             }
-
-            OpenedResource::Link(LinkResource {
-                host: host.to_owned(),
-                params: url.query().unwrap_or_default().to_owned(),
-            })
-        }
-        _ => {
-            warn!("Ignoring resource with unsupported scheme: {}", url);
-            OpenedResource::Unknown
-        }
-    }
+            _ => OpenedResource::Unknown,
+        })
+        .collect()
 }
 
-/// Extract a filesystem path from a `surrealist://` URL when it is being used
-/// to hand off a file (rather than triggering an in-app action).
+/// Build a `FileResource` from an absolute path, returning `None` if any of
+/// the OS-level metadata calls fail. Centralising this here keeps both the
+/// `file://` arm and the `surrealist://` hybrid arm in sync — they both need
+/// the same size check, whitelist append, and stem extraction.
 ///
-/// Returns `None` for URLs that don't carry a path — those are treated as
-/// regular deep links by the caller.
-fn surrealist_url_to_path(url: &Url) -> Option<PathBuf> {
-    let raw_path = url.path();
-
-    if raw_path.is_empty() || raw_path == "/" {
-        return None;
-    }
-
-    let decoded = percent_decode_str(raw_path)
-        .decode_utf8()
-        .ok()?
-        .into_owned();
-
-    let candidate = if cfg!(windows) {
-        // Windows paths come through as `/C:/path/to/file`; strip the leading
-        // slash so the result is a usable filesystem path.
-        decoded.trim_start_matches('/').to_owned()
-    } else {
-        decoded
-    };
-
-    if candidate.is_empty() {
-        None
-    } else {
-        Some(PathBuf::from(candidate))
-    }
-}
-
-/// Build a [`FileResource`] for a path on disk, or [`OpenedResource::Unknown`]
-/// when the path can't be read or whitelisted.
-fn resource_from_path(buf: &Path) -> OpenedResource {
-    let metadata = match buf.metadata() {
-        Ok(meta) => meta,
-        Err(err) => {
-            warn!("Failed to read metadata for {:?}: {}", buf, err);
-            return OpenedResource::Unknown;
-        }
-    };
-
-    if !metadata.is_file() {
-        warn!("Refusing to open non-file resource: {:?}", buf);
-        return OpenedResource::Unknown;
-    }
-
+/// A failure to persist the whitelist update is logged but does not block the
+/// open; the next `read_query_file` call will simply be rejected and the user
+/// can re-open the file.
+fn build_file_resource(buf: PathBuf, params: String) -> Option<FileResource> {
+    let metadata = buf.metadata().ok()?;
     let success = metadata.len() < MAX_FILE_SIZE;
+    let name = buf.file_stem()?.to_str()?.to_owned();
+    let path = buf.canonicalize().ok()?.to_str()?.to_owned();
 
-    let name = buf
-        .file_stem()
-        .map(|s| s.to_string_lossy().into_owned())
-        .unwrap_or_else(|| "Untitled".to_owned());
+    if let Err(err) = append_allowed_file(&buf) {
+        log::warn!("Failed to whitelist '{}': {}", buf.display(), err);
+    }
 
-    let canonical = match append_allowed_file(buf) {
-        Ok(canonical) => canonical,
-        Err(err) => {
-            warn!("Failed to whitelist file {:?}: {}", buf, err);
-            return OpenedResource::Unknown;
-        }
-    };
-
-    let path = canonical.to_string_lossy().into_owned();
-
-    OpenedResource::File(FileResource {
+    Some(FileResource {
         success,
         name,
         path,
-        params: None,
+        params,
     })
+}
+
+/// Translate the query string of a `surrealist://...` URL into a
+/// `FileResource` by reading the target file path from `?file=...`.
+///
+/// We deliberately refuse to read the file path from the URL's *path*
+/// component because macOS routes `surrealist:///abs/file.surql` URLs through
+/// `NSDocumentController` on cold start (the `.surql` extension matches our
+/// registered file association), which fires `application:openURLs:` before
+/// tao's event loop is ready and aborts the process. Forcing the file path
+/// into the query string keeps the URL path empty and avoids the document
+/// auto-reopen pathway entirely.
+fn file_resource_from_link(params: &str) -> Option<FileResource> {
+    let file_value = url::form_urlencoded::parse(params.as_bytes())
+        .find(|(key, _)| key == "file")
+        .map(|(_, value)| value.into_owned())?;
+
+    if file_value.is_empty() {
+        return None;
+    }
+
+    let buf = PathBuf::from(&file_value);
+    if !buf.is_absolute() {
+        return None;
+    }
+
+    let extension = buf
+        .extension()
+        .and_then(|s| s.to_str())
+        .map(|s| s.to_ascii_lowercase());
+
+    if !matches!(extension.as_deref(), Some("surql") | Some("surrealql")) {
+        return None;
+    }
+
+    build_file_resource(buf, params.to_owned())
 }
 
 #[tauri::command]
 pub fn clear_opened_resources(state: State<OpenResourceState>) {
-    if let Ok(mut guard) = state.0.lock() {
-        *guard = Vec::new();
-    }
+    *state.0.lock().unwrap() = Vec::new();
 }
 
 #[tauri::command]
@@ -237,10 +208,7 @@ pub fn prune_allowed_files(paths: Vec<String>) {
     let mut whitelist = read_allowed_files();
 
     whitelist.retain(|p| paths.contains(p));
-
-    if let Err(err) = write_allowed_files(whitelist) {
-        warn!("Failed to prune file whitelist: {}", err);
-    }
+    write_allowed_files(whitelist);
 }
 
 #[tauri::command]
@@ -253,21 +221,18 @@ pub async fn open_query_file(app: AppHandle, window: Window) {
     }
 
     let files = dialog.blocking_pick_files().unwrap_or_default();
-    let urls: Vec<Url> = files
+    let urls: Vec<url::Url> = files
         .iter()
         .filter_map(|f| match f {
             FilePath::Url(_) => None,
             FilePath::Path(buf) => Some(buf.display().to_string()),
         })
-        .filter_map(|f| Url::from_file_path(f).ok())
+        .filter_map(|f| url::Url::from_file_path(f).ok())
         .collect();
 
     info!("My paths: {:?}", urls);
 
-    if let Ok(mut guard) = app.state::<OpenResourceState>().0.lock() {
-        *guard = urls;
-    }
-
+    *app.state::<OpenResourceState>().0.lock().unwrap() = urls;
     window::emit_last(&app, "open-resource", ());
 }
 

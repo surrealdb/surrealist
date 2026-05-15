@@ -32,6 +32,17 @@ export const IntentEvent = createEventBus();
 export const NavigateViewEvent = createEventBus<ViewPage>();
 
 /**
+ * Invoked when the interface should switch to a specific connection (and
+ * optionally land on a particular view). The connection switch hook will
+ * close the currently active surreal instance and open the target one once
+ * the URL has changed.
+ */
+export const NavigateConnectionEvent = createEventBus<{
+	id: string;
+	view?: ViewPage;
+}>();
+
+/**
  * Set the query in the currently active query tab
  */
 export const SetQueryEvent = createEventBus<string>();

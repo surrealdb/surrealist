@@ -10,21 +10,21 @@ import { arch, type } from "@tauri-apps/plugin-os";
 import { open as openURL } from "@tauri-apps/plugin-shell";
 import { check } from "@tauri-apps/plugin-updater";
 import { compareVersions } from "compare-versions";
-import { navigate } from "wouter/use-browser-location";
 import { VIEW_PAGES } from "~/constants";
 import { ConfigStore, useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
 import { getSetting, overwriteConfig, watchStore } from "~/util/config";
-import {
-	getConnection,
-	parseDeepLinkConnectionParams,
-	resolveDeepLinkConnection,
-} from "~/util/connection";
+import { getActiveConnection, getConnectionById } from "~/util/connection";
+import { resolveDeepLinkConnectionFromParams } from "~/util/deep-link";
 import { featureFlags } from "~/util/feature-flags";
 import { openAndReadFiles, openAndWriteFile } from "~/util/file-system";
-import { DeepLinkAuthEvent, NavigateViewEvent } from "~/util/global-events";
+import {
+	DeepLinkAuthEvent,
+	NavigateConnectionEvent,
+	NavigateViewEvent,
+} from "~/util/global-events";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
@@ -41,11 +41,12 @@ interface FileResource {
 	name: string;
 	path: string;
 	/**
-	 * Raw query string from a `surrealist://<path>?<query>` deep link. Carries
-	 * the connection details (endpoint, namespace, database, username, …) the
-	 * sending integration wants Surrealist to apply before opening the file.
+	 * Deep-link query string (`endpoint=...&ns=...&db=...&user=...`) attached
+	 * by the Rust side when the open arrived as a `surrealist://path?params`
+	 * URL (e.g. from the JetBrains "Open in Surrealist" action). Empty for
+	 * regular `file://` opens.
 	 */
-	params?: string;
+	params: string;
 }
 
 interface LinkResource {
@@ -425,27 +426,19 @@ export class DesktopAdapter implements SurrealistAdapter {
 					continue;
 				}
 
-				// External integrations (currently the JetBrains plugin) attach
-				// connection settings to the deep link so the file lands inside a
-				// matching connection rather than failing with "Connection
-				// required". We resolve (or create) that connection and switch
-				// to it before falling through to the existing tab-open logic.
-				let targetConnection = getConnection();
+				// When the open arrived as a `surrealist://` deep link with
+				// connection identifiers in the query string (typical for the
+				// JetBrains "Open in Surrealist" action), prefer the connection
+				// the caller asked for over whatever Surrealist currently has
+				// active. Resolution intentionally falls back to the active
+				// connection so a missing/unrecognised endpoint doesn't drop
+				// the file on the floor.
+				const requestedId = resolveDeepLinkConnectionFromParams(params);
+				const activeId = getActiveConnection();
+				const targetId = requestedId ?? activeId;
+				const target = targetId ? getConnectionById(targetId) : undefined;
 
-				if (params) {
-					const spec = parseDeepLinkConnectionParams(new URLSearchParams(params));
-					const resolved = resolveDeepLinkConnection(spec);
-
-					if (resolved) {
-						// `navigate()` updates `location.pathname` synchronously,
-						// which is what `getConnection()` reads from, but we already
-						// have the connection object so we use it directly.
-						navigate(`/c/${resolved.id}/query`);
-						targetConnection = resolved;
-					}
-				}
-
-				if (!targetConnection) {
+				if (!target) {
 					showInfo({
 						title: "Connection required",
 						subtitle: "Please open a connection before opening files",
@@ -453,17 +446,26 @@ export class DesktopAdapter implements SurrealistAdapter {
 					return;
 				}
 
-				const existing = targetConnection.queries.find(
-					(q) => q.type === "file" && q.query === path,
-				);
+				const existing = target.queries.find((q) => q.type === "file" && q.query === path);
 
 				if (existing) {
-					setActiveQueryTab(targetConnection.id, existing.id);
+					setActiveQueryTab(target.id, existing.id);
 				} else {
-					addQueryTab(targetConnection.id, { type: "file", name: name, query: path });
+					addQueryTab(target.id, { type: "file", name: name, query: path });
 				}
 
-				NavigateViewEvent.dispatch("query");
+				// If the deep link points at a different connection than the
+				// one currently routed to, switch to it; the connection switch
+				// hook will close the previous surreal instance and open the
+				// requested one. When we're already on the right connection
+				// (or no connection was specified) we just nudge the view so
+				// the freshly added tab becomes visible.
+				if (requestedId && requestedId !== activeId) {
+					NavigateConnectionEvent.dispatch({ id: requestedId, view: "query" });
+				} else {
+					NavigateViewEvent.dispatch("query");
+				}
+
 				await invoke("clear_opened_resources");
 			} else if (Link) {
 				const { host, params } = Link;
