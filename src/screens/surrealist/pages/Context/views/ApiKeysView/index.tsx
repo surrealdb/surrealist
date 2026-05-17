@@ -388,6 +388,11 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 						label="Name"
 						placeholder="e.g. Production key"
 						value={newKeyName}
+						error={
+							apiKeys?.some((it) => it.name === newKeyName)
+								? "A key with this name already exists"
+								: undefined
+						}
 						onChange={(e) => setNewKeyName(e.currentTarget.value)}
 					/>
 					<Group justify="flex-end">
@@ -395,7 +400,9 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 						<Button
 							variant="gradient"
 							onClick={handleCreateKey}
-							disabled={!newKeyName.trim()}
+							disabled={
+								!newKeyName.trim() || apiKeys?.some((it) => it.name === newKeyName)
+							}
 							loading={createKeyMutation.isPending}
 						>
 							Create key
