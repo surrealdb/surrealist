@@ -38,8 +38,8 @@ interface IntegrationStep {
 }
 
 function buildIntegrationSteps(context: CloudContext): Record<IntegrationTab, IntegrationStep[]> {
-	const baseUrl = `https://${context.host}`;
-	const restRoot = `${baseUrl}/api/v1/${context.id}`;
+	const endpoint = `https://${context.host}`;
+	const restRoot = `${endpoint}/api/v1/${context.id}`;
 
 	return {
 		python: [
@@ -57,7 +57,7 @@ function buildIntegrationSteps(context: CloudContext): Record<IntegrationTab, In
 
 client = Spectron(
     context="${context.id}",
-    endpoint="${baseUrl}",
+    endpoint="${endpoint}",
     api_key="your-api-key",
 )`,
 				lang: "python",
@@ -106,7 +106,7 @@ for hit in results.hits:
 
 const client = new Spectron({
     context: "${context.id}",
-    baseUrl: "${baseUrl}",
+    endpoint: "${endpoint}",
     apiKey: "your-api-key",
 });`,
 				lang: "javascript",
