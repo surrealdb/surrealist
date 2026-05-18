@@ -44,6 +44,7 @@ export function getCloudSessionToken(): string {
 }
 
 /**
+<<<<<<< feat/lsp-integration
  * Returns the current cloud user id
  */
 export function getCloudUserId(): string {
@@ -51,6 +52,8 @@ export function getCloudUserId(): string {
 }
 
 /**
+=======
+>>>>>>> main
  * Returns the current cloud session status
  */
 export function getCloudSessionStatus(): CloudSessionStatus {
@@ -81,7 +84,10 @@ export function CloudProvider({ children }: PropsWithChildren) {
 		getAccessToken,
 		signOut,
 	} = useAuthentication();
+<<<<<<< feat/lsp-integration
 	const emailVerified = user?.email_verified === true;
+=======
+>>>>>>> main
 
 	const { setTermsAcceptancePending, setIsSupported, setFailedConnected, setCloudValues } =
 		useCloudStore.getState();
@@ -91,10 +97,17 @@ export function CloudProvider({ children }: PropsWithChildren) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [sessionToken, setSessionToken] = useState("");
 	const [userId, setUserId] = useState("");
+<<<<<<< feat/lsp-integration
 	const [authProvider, setAuthProvider] = useState("");
 	const [profile, setProfile] = useState<CloudProfile>(EMPTY_PROFILE);
 
 	const termsPending = useCloudStore((s) => s.termsAcceptancePending);
+=======
+	const [profile, setProfile] = useState<CloudProfile>(EMPTY_PROFILE);
+
+	const termsPending = useCloudStore((s) => s.termsAcceptancePending);
+	const isVerified = user?.email_verified === true;
+>>>>>>> main
 
 	const invalidateSession = useStable(() => {
 		adapter.log("Cloud", "Invalidating session");
@@ -102,7 +115,10 @@ export function CloudProvider({ children }: PropsWithChildren) {
 		setTermsAcceptancePending(false);
 		setSessionToken("");
 		setUserId("");
+<<<<<<< feat/lsp-integration
 		setAuthProvider("");
+=======
+>>>>>>> main
 		setProfile(EMPTY_PROFILE);
 		setIsActive(false);
 	});
@@ -180,7 +196,10 @@ export function CloudProvider({ children }: PropsWithChildren) {
 
 			setError("");
 			setSessionToken(result.token);
+<<<<<<< feat/lsp-integration
 			setAuthProvider(result.provider);
+=======
+>>>>>>> main
 			setUserId(result.id);
 			setIsActive(true);
 
@@ -193,11 +212,18 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			adapter.log("Cloud", "Session acquired");
 
 			if (initial) {
+<<<<<<< feat/lsp-integration
 				tagEvent("cloud_signin", {
 					auth_provider: result.provider,
 					referred: !!referralCode,
 					open_terms: promptTerms,
 					first_signin: promptTerms,
+=======
+				tagEvent("cloud_session", {
+					cloud_id: result.id,
+					referred: !!referralCode,
+					open_terms: promptTerms,
+>>>>>>> main
 				});
 			}
 
@@ -263,14 +289,22 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			return;
 		}
 
+<<<<<<< feat/lsp-integration
 		if (isAuthenticated && emailVerified) {
+=======
+		if (isAuthenticated && isVerified) {
+>>>>>>> main
 			void acquireSession(true);
 
 			return () => {
 				invalidateSession();
 			};
 		}
+<<<<<<< feat/lsp-integration
 	}, [isAuthenticated, isAuthLoading, emailVerified]);
+=======
+	}, [isAuthenticated, isAuthLoading, isVerified]);
+>>>>>>> main
 
 	useEffect(() => {
 		if (termsPending) {
@@ -300,12 +334,19 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			isLoading,
 			sessionToken,
 			userId,
+<<<<<<< feat/lsp-integration
 			authProvider,
+=======
+>>>>>>> main
 			profile,
 			syncCloudProfile,
 			syncCloudResources,
 		}),
+<<<<<<< feat/lsp-integration
 		[error, isActive, isLoading, sessionToken, userId, authProvider, profile],
+=======
+		[error, isActive, isLoading, sessionToken, userId, profile],
+>>>>>>> main
 	);
 
 	useLayoutEffect(() => {
