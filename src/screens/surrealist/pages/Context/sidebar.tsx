@@ -1,4 +1,3 @@
-import { iconBook } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { hasOrganizationRoles } from "~/cloud/helpers";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
@@ -9,7 +8,6 @@ import {
 	type SidebarEntry,
 	SidebarNavigation,
 	SidebarPortal,
-	type SidebarSubLink,
 	useSidebar,
 } from "../../sidebar/portal";
 
@@ -50,47 +48,14 @@ export function ContextSidebar({ contextId, organizationId }: ContextSidebarProp
 			};
 		};
 
-		const subLink = (id: ContextViewPage): SidebarSubLink | null => {
-			if (!canAccessPage(organization, id)) {
-				return null;
-			}
-
-			const info = CONTEXT_VIEW_PAGES[id];
-
-			return {
-				name: info.name,
-				match: [`${base}/${info.id}`],
-				onClick: () => setLocation(`${base}/${info.id}`),
-			};
-		};
-
-		const knowledgeItems = [subLink("memories"), subLink("knowledge")].filter(
-			(item): item is SidebarSubLink => item !== null,
-		);
-
-		const groups: SidebarEntry[][] = [
+		return [
 			[link("dashboard"), link("integration")].filter(
 				(item): item is SidebarEntry => item !== null,
 			),
-		];
-
-		if (knowledgeItems.length > 0) {
-			groups.push([
-				{
-					name: "Knowledge base",
-					icon: iconBook,
-					items: knowledgeItems,
-				},
-			]);
-		}
-
-		groups.push(
 			[link("api-keys"), link("settings")].filter(
 				(item): item is SidebarEntry => item !== null,
 			),
-		);
-
-		return groups.filter((group) => group.length > 0);
+		].filter((group) => group.length > 0);
 	}, [contextId, organizationId, organization, setLocation]);
 
 	const backPath = organizationId ? `/o/${organizationId}/overview` : "/overview";
