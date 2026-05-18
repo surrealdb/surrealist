@@ -110,8 +110,11 @@ function PageContent({ organisation }: PageContentProps) {
 	const [region, setRegion] = useState<string | null>(null);
 	const [isDeploying, setIsDeploying] = useState(false);
 
-	const { data: orgPackages, isSuccess: orgPackageQuerySuccess } =
-		useOrganizationContextPackageQuery(organisation.id);
+	const {
+		data: orgPackages,
+		isSuccess: orgPackageQuerySuccess,
+		isFetching: orgPackagesFetching,
+	} = useOrganizationContextPackageQuery(organisation.id);
 
 	const activeOrgPackage = orgPackages?.find((p) => !p.disabled_at);
 	const hasOrgPackage = orgPackageQuerySuccess && !!activeOrgPackage;
@@ -156,7 +159,7 @@ function PageContent({ organisation }: PageContentProps) {
 		}
 	});
 
-	if (orgPackageQuerySuccess && !hasOrgPackage && isOrgOwner) {
+	if (orgPackageQuerySuccess && !hasOrgPackage && isOrgOwner && !orgPackagesFetching) {
 		const redirect = encodeURIComponent(`/o/${organisation.id}/contexts/deploy`);
 
 		return <Redirect to={`/o/${organisation.id}/contexts/plan?redirect=${redirect}`} />;

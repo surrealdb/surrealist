@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Icon, iconArrowUpRight, iconCreditCard } from "@surrealdb/ui";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
@@ -68,6 +69,7 @@ interface PageContentProps {
 }
 
 function PageContent({ organisation }: PageContentProps) {
+	const queryClient = useQueryClient();
 	const params = useSearchParams();
 	const packageId = params.package;
 	const redirect = params.redirect;
@@ -93,6 +95,10 @@ function PageContent({ organisation }: PageContentProps) {
 			await assignMutation.mutateAsync({
 				packageId,
 				coupon_code: couponCode.trim() || undefined,
+			});
+
+			await queryClient.refetchQueries({
+				queryKey: ["cloud", "context-packages", { org: organisation.id }],
 			});
 
 			showInfo({
