@@ -152,7 +152,9 @@ function PageContent({ organisation }: PageContentProps) {
 						) : (
 							<SimpleGrid
 								mt="xl"
-								cols={{ base: 1, sm: 2, lg: 3 }}
+								mx="auto"
+								maw={900}
+								cols={{ base: 1, sm: 2, lg: 2 }}
 								spacing="xl"
 								className={classes.content}
 							>
