@@ -53,7 +53,8 @@ const EXPLORE_ITEMS: NavItem[] = [
 const INTEGRATION_ITEMS: NavItem[] = [
 	{
 		page: "integration",
-		description: "Step-by-step setup for Python, JavaScript, and the REST API.",
+		description:
+			"SDKs, REST, Claude Code, n8n, LangChain, OpenAI Agents, and Vercel AI quickstarts.",
 	},
 	{
 		page: "api-keys",
@@ -130,6 +131,23 @@ export default function DashboardView({ context }: ContextViewProps) {
 								{region?.description}
 							</Badge>
 						</Group>
+						<Text
+							mt="sm"
+							fz="xs"
+							fw={600}
+							tt="uppercase"
+							style={{ letterSpacing: "0.08em" }}
+						>
+							Host
+						</Text>
+						<Text
+							mt={4}
+							fz="sm"
+							ff="monospace"
+							className="selectable"
+						>
+							{context.host}
+						</Text>
 					</Box>
 					<Group
 						gap="sm"

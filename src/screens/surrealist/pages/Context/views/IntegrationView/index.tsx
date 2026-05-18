@@ -13,33 +13,66 @@ import {
 } from "@mantine/core";
 import {
 	brandJavaScript,
+	brandLangchain,
+	brandN8N,
+	brandOpenAi,
 	brandPython,
+	brandVercel,
 	CodeBlock,
 	Header,
 	Icon,
 	iconAPI,
 	iconArrowUpRight,
+	iconMCP,
 } from "@surrealdb/ui";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { useContextNavigator, useSearchParams } from "~/hooks/routing";
 import type { CloudContext, ContextViewPage } from "~/types";
 import type { ContextViewProps } from "../../types";
+import { buildClaudeCodeSteps } from "./integrations/claude-code";
+import { buildLangChainSteps } from "./integrations/langchain";
+import { buildN8nSteps } from "./integrations/n8n";
+import { buildOpenAiAgentsSteps } from "./integrations/openai-agents";
+import { getSpectronUrls } from "./integrations/spectron-urls";
+import type { IntegrationStep } from "./integrations/types";
+import { buildVercelAiSteps } from "./integrations/vercel-ai";
 import classes from "./style.module.scss";
 
-type IntegrationTab = "python" | "javascript" | "api";
+type IntegrationTab =
+	| "python"
+	| "javascript"
+	| "api"
+	| "claude-code"
+	| "n8n"
+	| "langchain"
+	| "openai-agents"
+	| "vercel-ai";
 
-interface IntegrationStep {
-	title: ReactNode;
-	description: ReactNode;
-	action?: "api_keys" | "documentation";
-	code?: string;
-	lang?: string;
-}
+const INTEGRATION_TABS: IntegrationTab[] = [
+	"python",
+	"javascript",
+	"api",
+	"claude-code",
+	"n8n",
+	"langchain",
+	"openai-agents",
+	"vercel-ai",
+];
+
+const TAB_META: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
+	python: { label: "Python", img: brandPython },
+	javascript: { label: "JavaScript", img: brandJavaScript },
+	api: { label: "REST API", icon: iconAPI },
+	"claude-code": { label: "Claude Code", icon: iconMCP },
+	n8n: { label: "n8n", img: brandN8N },
+	langchain: { label: "LangChain", img: brandLangchain },
+	"openai-agents": { label: "OpenAI Agents", img: brandOpenAi },
+	"vercel-ai": { label: "Vercel AI", img: brandVercel },
+};
 
 function buildIntegrationSteps(context: CloudContext): Record<IntegrationTab, IntegrationStep[]> {
-	const endpoint = `https://${context.host}`;
-	const restRoot = `${endpoint}/api/v1/${context.id}`;
+	const { endpoint, restRoot } = getSpectronUrls(context);
 
 	return {
 		python: [
@@ -186,18 +219,28 @@ await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted.
 				action: "documentation",
 			},
 		],
+		"claude-code": buildClaudeCodeSteps(context),
+		n8n: buildN8nSteps(context),
+		langchain: buildLangChainSteps(context),
+		"openai-agents": buildOpenAiAgentsSteps(context),
+		"vercel-ai": buildVercelAiSteps(context),
 	};
 }
 
-const LANGUAGES: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
-	python: { label: "Python", img: brandPython },
-	javascript: { label: "JavaScript", img: brandJavaScript },
-	api: { label: "REST API", icon: iconAPI },
-};
-
 function isIntegrationTab(v: string | undefined): v is IntegrationTab {
-	return v === "python" || v === "javascript" || v === "api";
+	return (
+		v === "python" ||
+		v === "javascript" ||
+		v === "api" ||
+		v === "claude-code" ||
+		v === "n8n" ||
+		v === "langchain" ||
+		v === "openai-agents" ||
+		v === "vercel-ai"
+	);
 }
+
+const DOCS_FALLBACK = "https://surrealdb.com/docs/learn/context";
 
 export default function IntegrationView({ context }: ContextViewProps) {
 	const search = useSearchParams();
@@ -240,31 +283,39 @@ export default function IntegrationView({ context }: ContextViewProps) {
 					value={activeTab}
 					onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
 				>
-					<Tabs.List>
-						{(Object.keys(LANGUAGES) as IntegrationTab[]).map((tab) => (
-							<Tabs.Tab
-								key={tab}
-								value={tab}
-								leftSection={
-									LANGUAGES[tab].img ? (
-										<Image
-											src={LANGUAGES[tab].img}
-											w={14}
-											alt=""
-										/>
-									) : LANGUAGES[tab].icon ? (
-										<Icon
-											path={LANGUAGES[tab].icon}
-											c="bright"
-											size="sm"
-										/>
-									) : undefined
-								}
-							>
-								{LANGUAGES[tab].label}
-							</Tabs.Tab>
-						))}
-					</Tabs.List>
+					<Box
+						style={{
+							overflowX: "auto",
+							marginInline: -4,
+							paddingInline: 4,
+						}}
+					>
+						<Tabs.List style={{ flexWrap: "nowrap", width: "max-content", gap: 4 }}>
+							{INTEGRATION_TABS.map((tab) => (
+								<Tabs.Tab
+									key={tab}
+									value={tab}
+									leftSection={
+										TAB_META[tab].img ? (
+											<Image
+												src={TAB_META[tab].img}
+												w={14}
+												alt=""
+											/>
+										) : TAB_META[tab].icon ? (
+											<Icon
+												path={TAB_META[tab].icon}
+												c="bright"
+												size="sm"
+											/>
+										) : undefined
+									}
+								>
+									{TAB_META[tab].label}
+								</Tabs.Tab>
+							))}
+						</Tabs.List>
+					</Box>
 					<Divider />
 				</Tabs>
 
@@ -322,7 +373,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 											rightSection={<Icon path={iconArrowUpRight} />}
 											onClick={() =>
 												adapter.openUrl(
-													"https://surrealdb.com/docs/learn/context",
+													step.documentationUrl ?? DOCS_FALLBACK,
 												)
 											}
 										>
