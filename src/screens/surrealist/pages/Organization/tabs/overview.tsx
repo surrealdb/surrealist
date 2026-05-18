@@ -113,7 +113,7 @@ function ResourceCard({
 									size="sm"
 									radius="sm"
 									fw={700}
-									className={classes.newBadge}
+									variant="gradient"
 								>
 									NEW
 								</Badge>
