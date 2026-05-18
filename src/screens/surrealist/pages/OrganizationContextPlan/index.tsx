@@ -84,9 +84,9 @@ function PageContent({ organisation }: PageContentProps) {
 		navigate(fullPath);
 	};
 
-	const displayedPackages = (availablePackages ?? []).filter(
-		(p) => p.billing_period === billingPeriod,
-	);
+	const displayedPackages = (availablePackages ?? [])
+		.filter((p) => p.billing_period === billingPeriod)
+		.sort((a, b) => a.cost_millcents - b.cost_millcents);
 
 	return (
 		<>
