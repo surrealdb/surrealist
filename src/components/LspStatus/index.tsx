@@ -73,7 +73,7 @@ export function LspStatus() {
 		return null;
 	}
 
-	const tone: MantineColor | undefined = hasError ? "red" : ready ? undefined : "yellow";
+	const _tone: MantineColor | undefined = hasError ? "red" : ready ? undefined : "yellow";
 
 	return (
 		<Popover
