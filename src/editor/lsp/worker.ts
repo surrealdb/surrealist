@@ -107,7 +107,9 @@ self.addEventListener("message", async (event: MessageEvent<WorkerInbound>) => {
 		case "configuration": {
 			const resolver = pendingConfigurations.get(message.id);
 			// The resolver removes itself from the map; just hand off.
-			resolver?.(message.value);
+			if (typeof resolver === "function") {
+				resolver(message.value);
+			}
 			return;
 		}
 	}
