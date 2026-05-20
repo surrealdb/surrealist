@@ -228,7 +228,7 @@ export function QueryPane({
 			Prec.high(keymap.of(runQueryKeymap)),
 			scrollPastEnd(),
 		],
-		[inspect, surqlVersion, lspClient, lspUri, inlayHints, queryReady],
+		[inspect, surqlVersion, lspClient, lspUri, inlayHints],
 	);
 
 	useIntent("format-query", handleFormat);

@@ -6,7 +6,7 @@ import {
 } from "@auth0/auth0-react";
 import { shutdown } from "@intercom/messenger-js-sdk";
 import { useStable } from "@surrealdb/ui";
-import { createContext, type PropsWithChildren, useContext, useEffect, useRef } from "react";
+import { createContext, type PropsWithChildren, useContext, useEffect } from "react";
 import { useSearchParams } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { SignInRedirect } from "~/components/SignInRedirect";
@@ -136,7 +136,7 @@ function TokenBridge({ children }: PropsWithChildren) {
 		});
 	});
 
-	const handleSignIn = useStable((user: User) => {
+	const _handleSignIn = useStable((user: User) => {
 		tagEvent("auth_signin", {
 			provider: user.sub?.split("|")[0] ?? "unknown",
 			verified: user.email_verified,
@@ -144,7 +144,7 @@ function TokenBridge({ children }: PropsWithChildren) {
 		});
 	});
 
-	const handleSignOut = useStable(() => {
+	const _handleSignOut = useStable(() => {
 		tagEvent("auth_signout");
 	});
 
