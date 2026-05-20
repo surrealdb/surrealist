@@ -1,6 +1,7 @@
 import { adapter } from "~/adapter";
 import { useCloudStore } from "~/stores/cloud";
-import { CloudMeasurement } from "~/types";
+import { CloudBackupPolicySummary, CloudMeasurement } from "~/types";
+import { plural } from "./helpers";
 
 /**
  * Measure the compute history
@@ -115,4 +116,30 @@ export function getTypeCategoryDescription(category: string) {
 		default:
 			return category;
 	}
+}
+
+/**
+ * Format backup retention summary for display
+ */
+export function formatBackupPolicySummary(policy?: CloudBackupPolicySummary) {
+	if (!policy) {
+		return null;
+	}
+
+	const daily = `${policy.daily_retention_days} ${plural(policy.daily_retention_days, "day")}`;
+	const weekly = `${policy.weekly_retention_weeks} ${plural(policy.weekly_retention_weeks, "week")}`;
+	const monthly = `${policy.monthly_retention_months} ${plural(policy.monthly_retention_months, "month")}`;
+
+	return `${daily} / ${weekly} / ${monthly}`;
+}
+
+/**
+ * Format backup retention summary in compact form
+ */
+export function formatBackupPolicySummaryCompact(policy?: CloudBackupPolicySummary) {
+	if (!policy) {
+		return null;
+	}
+
+	return `${policy.daily_retention_days}d / ${policy.weekly_retention_weeks}w / ${policy.monthly_retention_months}m`;
 }

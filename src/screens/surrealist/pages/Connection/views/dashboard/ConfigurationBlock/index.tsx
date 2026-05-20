@@ -17,7 +17,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { getTypeCategoryName } from "~/util/cloud";
+import { formatBackupPolicySummary, getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
@@ -46,7 +46,8 @@ export function ConfigurationBlock({
 	const typeCategory = instance?.type.category ?? "";
 
 	const isFree = instance?.type.category === "free";
-	const backupText = isFree ? "Upgrade required" : "Active";
+	const backupSummary = formatBackupPolicySummary(instance?.backup_policy);
+	const backupText = isFree ? "Upgrade required" : (backupSummary ?? "Active");
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${cpuCount} ${plural(cpuCount, "vCPU")}`;
 	const storageText = formatMemory(storageSize * 1000, true);
@@ -105,7 +106,14 @@ export function ConfigurationBlock({
 						<PropertyValue
 							title="Backups"
 							icon={iconHistory}
-							value={<Text c={isFree ? "orange" : "green"}>{backupText}</Text>}
+							value={
+								<Text
+									className={!isFree ? "selectable" : undefined}
+									c={isFree ? "orange" : undefined}
+								>
+									{backupText}
+								</Text>
+							}
 						/>
 					</Stack>
 					<Stack>

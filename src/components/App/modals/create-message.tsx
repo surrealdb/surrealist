@@ -197,7 +197,8 @@ export function CreateMessageModal() {
 							color="violet"
 							icon={<Icon path={iconComment} />}
 						>
-							Replies will be sent here and to your email address.
+							Replies are sent to your email address and are also visible in
+							Surrealist.
 						</Alert>
 					)}
 					{isTicket && !hasTicketsAccess && (
