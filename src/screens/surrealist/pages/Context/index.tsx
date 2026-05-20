@@ -53,7 +53,7 @@ export function ContextPage({ view }: ContextPageProps) {
 	const isLoading = contextQuery.isLoading || contextQuery.isPending;
 
 	if (isSuccess && !contextQuery.data) {
-		return <Redirect to="/overview" />;
+		return <Redirect to="/" />;
 	}
 
 	if (organizationId && contextId && !isContextViewPage(view)) {
@@ -95,7 +95,7 @@ export function ContextPage({ view }: ContextPageProps) {
 						) : (
 							<PageBreadcrumbs
 								items={[
-									{ label: "Surrealist", href: "/overview" },
+									{ label: "Surrealist", href: "/" },
 									{ label: contextQuery.data?.name ?? "", selectable: true },
 								]}
 							/>

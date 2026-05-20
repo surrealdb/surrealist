@@ -126,7 +126,7 @@ export function ReferralPage() {
 							<Box>
 								<PageBreadcrumbs
 									items={[
-										{ label: "Surrealist", href: "/overview" },
+										{ label: "Surrealist", href: "/" },
 										{ label: "Referral Program" },
 									]}
 								/>

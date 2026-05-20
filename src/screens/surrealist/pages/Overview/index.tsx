@@ -105,9 +105,7 @@ export function OverviewPage() {
 							className={classes.content}
 						>
 							<Box>
-								<PageBreadcrumbs
-									items={[{ label: "Surrealist", href: "/overview" }]}
-								/>
+								<PageBreadcrumbs items={[{ label: "Surrealist", href: "/" }]} />
 								<PrimaryTitle
 									mt="sm"
 									fz={32}

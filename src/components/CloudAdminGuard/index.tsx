@@ -51,7 +51,7 @@ export function CloudAdminGuard({
 							flex={1}
 							color="obsidian"
 							variant="light"
-							onClick={() => navigate(`/overview`)}
+							onClick={() => navigate(`/`)}
 						>
 							Return Home
 						</Button>

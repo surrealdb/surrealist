@@ -76,7 +76,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage = "/overview" | "/signin" | "/referrals" | "/mini/new";
+export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -324,7 +324,6 @@ export interface SurrealistConfig {
 	previousVersion: string;
 	connections: Connection[];
 	sandbox: Connection;
-	activeResource: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;

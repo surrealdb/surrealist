@@ -39,7 +39,7 @@ export function ContextSidebar({ contextId, organizationId }: ContextSidebarProp
 		);
 	}, [contextId, organizationId, setLocation]);
 
-	const backPath = organizationId ? `/o/${organizationId}/overview` : "/overview";
+	const backPath = organizationId ? `/o/${organizationId}/overview` : "/";
 
 	return (
 		<SidebarPortal>

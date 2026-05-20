@@ -32,7 +32,7 @@ export function AuthReturnScreen() {
 		const hasPayload = params.has("code") || params.has("error");
 
 		if (hasPayload) {
-			location.href = `${REDIRECT_ENDPOINT}/overview${window.location.search}${window.location.hash}`;
+			location.href = `${REDIRECT_ENDPOINT}/${window.location.search}${window.location.hash}`;
 			return;
 		}
 

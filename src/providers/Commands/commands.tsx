@@ -600,7 +600,7 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 						id: "open-overview",
 						name: "Go to overview",
 						icon: iconSurrealist,
-						action: navigate("/overview"),
+						action: navigate("/"),
 					},
 					{
 						id: "open-search",

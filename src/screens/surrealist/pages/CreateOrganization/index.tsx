@@ -65,7 +65,7 @@ export function CreateOrganizationPage() {
 						<Box>
 							<PageBreadcrumbs
 								items={[
-									{ label: "Surrealist", href: "/overview" },
+									{ label: "Surrealist", href: "/" },
 									{ label: "Create organisation" },
 								]}
 							/>
@@ -103,7 +103,7 @@ export function CreateOrganizationPage() {
 						</Stack>
 
 						<Group mt={24}>
-							<Link to="/overview">
+							<Link to="/">
 								<Button
 									color="obsidian"
 									variant="light"

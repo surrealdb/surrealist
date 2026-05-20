@@ -238,11 +238,11 @@ export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
 ];
 
 export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
-	"/overview": {
-		id: "/overview",
+	"/": {
+		id: "/",
 		name: "Overview",
 		icon: iconExplorer,
-		aliases: ["/o/*"],
+		aliases: ["/overview", "/o/*"],
 	},
 	"/signin": {
 		id: "/signin",

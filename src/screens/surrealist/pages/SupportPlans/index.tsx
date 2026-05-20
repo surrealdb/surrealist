@@ -41,7 +41,7 @@ export function SupportPlansPage({ id }: SupportPlansPageProps) {
 							<Box>
 								<PageBreadcrumbs
 									items={[
-										{ label: "Surrealist", href: "/overview" },
+										{ label: "Surrealist", href: "/" },
 										{
 											label: organisation.name,
 											href: `/o/${organisation.id}`,
