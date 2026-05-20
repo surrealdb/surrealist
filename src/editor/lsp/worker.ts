@@ -18,8 +18,8 @@
  *        replies with a matching `configuration` message keyed by id.
  */
 
-import init, { WasmLanguageServer } from "surrealql-language-server";
-import wasmPath from "surrealql-language-server/surrealql_language_server_bg.wasm?url";
+import init, { WasmLanguageServer } from "@surrealdb/surrealql-language-server";
+import wasmPath from "@surrealdb/surrealql-language-server/surrealql_language_server_bg.wasm?url";
 import type { WorkerInbound, WorkerOutbound } from "./protocol";
 
 declare const self: DedicatedWorkerGlobalScope;
