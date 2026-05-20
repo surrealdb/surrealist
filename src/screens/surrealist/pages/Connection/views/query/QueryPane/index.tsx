@@ -199,9 +199,15 @@ export function QueryPane({
 
 	const hasSelection = selection?.empty === false;
 
+	// Wait until the query buffer has been hydrated from storage before
+	// attaching the LSP. The initial empty snapshot would otherwise
+	// register an empty document and miss semantic diagnostics until a
+	// tab switch triggers another didOpen.
+	const queryReady = Boolean(queryStateMap[activeTab.id]);
+
 	const lspClient = useMemo(
-		() => (useLanguageServer ? getSharedSurqlLspClient() : null),
-		[useLanguageServer],
+		() => (useLanguageServer && queryReady ? getSharedSurqlLspClient() : null),
+		[useLanguageServer, queryReady],
 	);
 	const lspUri = useMemo(() => `surrealist:///query/${activeTab.id}.surql`, [activeTab.id]);
 
@@ -222,7 +228,7 @@ export function QueryPane({
 			Prec.high(keymap.of(runQueryKeymap)),
 			scrollPastEnd(),
 		],
-		[inspect, surqlVersion, lspClient, lspUri, inlayHints],
+		[inspect, surqlVersion, lspClient, lspUri, inlayHints, queryReady],
 	);
 
 	useIntent("format-query", handleFormat);

@@ -1,9 +1,5 @@
 import { adapter } from "~/adapter";
 import { getUserSnapshot } from "~/providers/Auth";
-<<<<<<< feat/lsp-integration
-import { getCloudUserId } from "~/providers/Cloud";
-=======
->>>>>>> main
 import { getSetting } from "./config";
 import { isProduction } from "./environment";
 import { featureFlags } from "./feature-flags";
@@ -72,15 +68,6 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 			: gaCookie;
 
 	const { gtm_debug } = featureFlags.store;
-<<<<<<< feat/lsp-integration
-	const userId = getCloudUserId();
-	const debug_origin = getSetting("gtm", "origin");
-	const debug_mode = getSetting("gtm", "debug_mode");
-	const hostname = (gtm_debug && debug_origin) || HOSTNAME;
-	const uniqueId = (incrementalId++).toString();
-	const params = new URLSearchParams();
-	const user = getUserSnapshot();
-=======
 	const debug_origin = getSetting("gtm", "origin");
 	const debug_mode = getSetting("gtm", "debug_mode");
 	const hostname = (gtm_debug && debug_origin) || HOSTNAME;
@@ -111,7 +98,6 @@ export async function tagEvent(name: string, payload: Record<string, unknown> = 
 	}
 
 	const sidStorageKey = "__surrealist_ga4_sid";
->>>>>>> main
 
 	let sessionIdStr = "";
 

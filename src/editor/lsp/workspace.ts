@@ -24,8 +24,8 @@ const PUSH_DEBOUNCE_MS = 500;
  * extension in `QueryPane` so the server's "open buffer overrides
  * workspace" merge does the right thing once the user opens a tab.
  */
-function tabUri(connectionId: string, tabId: string): string {
-	return `surrealist:///query/${connectionId}/${tabId}.surql`;
+function tabUri(tabId: string): string {
+	return `surrealist:///query/${tabId}.surql`;
 }
 
 function savedQueryUri(savedId: string): string {
@@ -46,7 +46,7 @@ function projectTabs(connections: Connection[]): ProjectedTab[] {
 
 	for (const connection of connections) {
 		for (const tab of connection.queries) {
-			projected.push({ uri: tabUri(connection.id, tab.id), tab });
+			projected.push({ uri: tabUri(tab.id), tab });
 		}
 	}
 

@@ -21,8 +21,8 @@ import {
 	type CompletionContext,
 	type CompletionResult,
 } from "@codemirror/autocomplete";
-import { type Diagnostic as CmDiagnostic, setDiagnostics } from "@codemirror/lint";
-import type { EditorState, Extension } from "@codemirror/state";
+import { type Diagnostic as CmDiagnostic, forceLinting, linter } from "@codemirror/lint";
+import { type EditorState, Extension, StateEffect, StateField } from "@codemirror/state";
 import { hoverTooltip, ViewPlugin, type ViewUpdate } from "@codemirror/view";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
@@ -91,12 +91,45 @@ export interface SurqlLanguageServerOptions {
 	inlayHints?: boolean;
 }
 
+const setLspDiagnostics = StateEffect.define<readonly CmDiagnostic[]>();
+
+/**
+ * Hold LSP diagnostics in editor state and expose them through
+ * `linter()` so they merge with other linters (e.g. the SurrealDB
+ * version checker). Using `setDiagnostics()` directly would be wiped
+ * whenever another linter pass runs.
+ */
+function lspDiagnosticsExtension(): Extension {
+	const field = StateField.define<readonly CmDiagnostic[]>({
+		create: () => [],
+		update(value, transaction) {
+			for (const effect of transaction.effects) {
+				if (effect.is(setLspDiagnostics)) {
+					return effect.value;
+				}
+			}
+			return value;
+		},
+	});
+
+	return [
+		field,
+		linter((view) => view.state.field(field), {
+			needsRefresh: (update) =>
+				update.transactions.some((transaction) =>
+					transaction.effects.some((effect) => effect.is(setLspDiagnostics)),
+				),
+		}),
+	];
+}
+
 /**
  * Build the CodeMirror 6 extension bundle that connects an editor
  * view to a SurrealQL language-server client.
  */
 export function surqlLanguageServer(options: SurqlLanguageServerOptions): Extension {
 	return [
+		lspDiagnosticsExtension(),
 		documentSyncPlugin(options),
 		autocompletion({ override: [completionSource(options)] }),
 		signatureHelpExtension({ client: options.client, uri: options.uri }),
@@ -164,7 +197,8 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 				const cmDiagnostics = list
 					.map((d) => convertDiagnostic(d, view.state))
 					.filter((value): value is CmDiagnostic => value !== null);
-				view.dispatch(setDiagnostics(view.state, cmDiagnostics));
+				view.dispatch({ effects: setLspDiagnostics.of(cmDiagnostics) });
+				forceLinting(view);
 
 				if (onValidate) {
 					const parseError = list.find((d) => d.code === "parse" && d.severity === 1);

@@ -18,6 +18,7 @@
 import { useDatabaseStore } from "~/stores/database";
 import type {
 	DatabaseSchema,
+	Permissions,
 	SchemaEvent,
 	SchemaField,
 	SchemaFunction,
@@ -26,6 +27,7 @@ import type {
 	TableInfo,
 } from "~/types";
 import { watchStore } from "~/util/config";
+import { displaySchemaPermission } from "~/util/schema";
 import type { SurqlLspClient } from "./client";
 
 /**
@@ -106,7 +108,8 @@ function buildDefineStrings(schema: DatabaseSchema): string[] {
 function buildTableDefine(table: TableInfo): string {
 	const schema = table.schema;
 	const schemafull = schema.full || schema.schemafull ? "SCHEMAFULL" : "SCHEMALESS";
-	return `DEFINE TABLE ${schema.name} ${schemafull};`;
+	const permissions = formatPermissionsClause(schema.permissions);
+	return `DEFINE TABLE ${schema.name} ${schemafull}${permissions};`;
 }
 
 function buildFieldDefine(tableName: string, field: SchemaField): string {
@@ -115,7 +118,26 @@ function buildFieldDefine(tableName: string, field: SchemaField): string {
 	const assert = field.assert ? ` ASSERT ${field.assert}` : "";
 	const flex = field.flex ? " FLEXIBLE" : "";
 	const readonly = field.readonly ? " READONLY" : "";
-	return `DEFINE FIELD ${field.name} ON ${tableName}${flex}${readonly}${type}${value}${assert};`;
+	const permissions = formatPermissionsClause(field.permissions);
+	return `DEFINE FIELD ${field.name} ON ${tableName}${flex}${readonly}${type}${value}${assert}${permissions};`;
+}
+
+function formatPermissionsClause(permissions: Permissions): string {
+	const rules: string[] = [];
+
+	for (const action of ["select", "create", "update", "delete"] as const) {
+		const rule = permissions[action];
+		if (rule === undefined) {
+			continue;
+		}
+		rules.push(`${action} ${displaySchemaPermission(rule)}`);
+	}
+
+	if (rules.length === 0) {
+		return "";
+	}
+
+	return ` PERMISSIONS FOR ${rules.join(", ")}`;
 }
 
 function buildEventDefine(tableName: string, event: SchemaEvent): string {
