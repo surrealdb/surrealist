@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Drawer, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, Button, Divider, Drawer, Group, ScrollArea, Stack, Tabs, Text } from "@mantine/core";
 import { Icon, iconClose, iconHistory } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -8,17 +8,27 @@ import { DrawerResizer } from "~/components/DrawerResizer";
 import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { CloudBackup, CloudInstance } from "~/types";
+import { BackupRetention } from "./BackupRetention";
 import { InstanceBackup } from "./InstanceBackup";
 import classes from "./style.module.scss";
 
 export interface BackupsDrawerProps {
 	opened: boolean;
+	tab: string;
 	backups: CloudBackup[] | undefined;
 	instance: CloudInstance;
+	onChangeTab: (tab: string) => void;
 	onClose: () => void;
 }
 
-export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDrawerProps) {
+export function BackupsDrawer({
+	opened,
+	tab,
+	instance,
+	backups,
+	onChangeTab,
+	onClose,
+}: BackupsDrawerProps) {
 	const [width, setWidth] = useState(650);
 	const [selected, setSelected] = useState<string | undefined>(undefined);
 
@@ -82,108 +92,151 @@ export function BackupsDrawer({ opened, instance, backups, onClose }: BackupsDra
 
 				<ActionButton
 					label="Close drawer"
-					onClick={onClose}
+					onClick={handleClose}
 				>
 					<Icon path={iconClose} />
 				</ActionButton>
 			</Group>
 
-			<Stack
-				h="100%"
-				gap={0}
+			<Tabs
+				variant="gradient"
+				value={tab}
+				className={classes.drawerTabs}
+				onChange={onChangeTab as any}
+				flex={1}
 			>
-				<Divider />
-
-				<Box
-					pos="relative"
-					flex={1}
-				>
-					<ScrollArea
-						pos="absolute"
-						inset={0}
-						className={classes.scrollArea}
+				<Box px="md">
+					<Tabs.List
+						mb="xl"
+						grow
 					>
-						<Stack
-							gap="sm"
-							p="xl"
-							mih="100%"
+						<Tabs.Tab
+							value="backups"
+							py="sm"
 						>
-							<Box mb="xl">
-								<Text
-									fz="xl"
-									c="bright"
-									fw={600}
-								>
-									Create from backup
-								</Text>
-
-								<Text
-									mt="sm"
-									fz="lg"
-								>
-									Create a new instance based on a backup from this instance.
-								</Text>
-							</Box>
-
-							{(!backups?.length || backups.length === 0) && (
-								<Stack
-									flex={1}
-									align="center"
-									justify="center"
-									gap="xs"
-								>
-									<Text
-										fz="xl"
-										c="bright"
-										fw={600}
-									>
-										No backups available
-									</Text>
-									<Text>There are no backups available for this instance.</Text>
-								</Stack>
-							)}
-							{backups?.length && backups.length > 0 && (
-								<Stack>
-									{backups
-										?.sort((a, b) => {
-											const dateA = dayjs(a.snapshot_started_at);
-											const dateB = dayjs(b.snapshot_started_at);
-
-											return dateB.valueOf() - dateA.valueOf();
-										})
-										?.map((backup) => (
-											<InstanceBackup
-												key={backup.snapshot_id}
-												selected={selected === backup.snapshot_id}
-												backup={backup}
-												onSelect={() => setSelected(backup.snapshot_id)}
-											/>
-										))}
-								</Stack>
-							)}
-						</Stack>
-					</ScrollArea>
+							Available backups
+						</Tabs.Tab>
+						<Tabs.Tab
+							value="retention"
+							py="sm"
+						>
+							Retention settings
+						</Tabs.Tab>
+					</Tabs.List>
 				</Box>
 
-				<Group p="xl">
-					<Button
-						onClick={handleClose}
-						variant="light"
-						flex={1}
+				<Tabs.Panel value="backups">
+					<Stack
+						h="100%"
+						gap={0}
 					>
-						Close
-					</Button>
-					<Button
-						flex={1}
-						type="submit"
-						variant="gradient"
-						disabled={!selected}
-						onClick={handleRestore}
-					>
-						Create from selected
-					</Button>
-				</Group>
-			</Stack>
+						<Divider />
+
+						<Box
+							pos="relative"
+							flex={1}
+						>
+							<ScrollArea
+								pos="absolute"
+								inset={0}
+								className={classes.scrollArea}
+							>
+								<Stack
+									gap="sm"
+									p="xl"
+									mih="100%"
+								>
+									<Box mb="xl">
+										<Text
+											fz="xl"
+											c="bright"
+											fw={600}
+										>
+											Create from backup
+										</Text>
+
+										<Text
+											mt="sm"
+											fz="lg"
+										>
+											Create a new instance based on a backup from this
+											instance.
+										</Text>
+									</Box>
+
+									{(!backups?.length || backups.length === 0) && (
+										<Stack
+											flex={1}
+											align="center"
+											justify="center"
+											gap="xs"
+										>
+											<Text
+												fz="xl"
+												c="bright"
+												fw={600}
+											>
+												No backups available
+											</Text>
+											<Text>
+												There are no backups available for this instance.
+											</Text>
+										</Stack>
+									)}
+									{backups?.length && backups.length > 0 && (
+										<Stack>
+											{backups
+												?.sort((a, b) => {
+													const dateA = dayjs(a.snapshot_started_at);
+													const dateB = dayjs(b.snapshot_started_at);
+
+													return dateB.valueOf() - dateA.valueOf();
+												})
+												?.map((backup) => (
+													<InstanceBackup
+														key={backup.snapshot_id}
+														selected={selected === backup.snapshot_id}
+														backup={backup}
+														onSelect={() =>
+															setSelected(backup.snapshot_id)
+														}
+													/>
+												))}
+										</Stack>
+									)}
+								</Stack>
+							</ScrollArea>
+						</Box>
+
+						<Group p="xl">
+							<Button
+								onClick={handleClose}
+								variant="light"
+								flex={1}
+							>
+								Close
+							</Button>
+							<Button
+								flex={1}
+								type="submit"
+								variant="gradient"
+								disabled={!selected}
+								onClick={handleRestore}
+							>
+								Create from selected
+							</Button>
+						</Group>
+					</Stack>
+				</Tabs.Panel>
+
+				<Tabs.Panel value="retention">
+					<Divider />
+					<BackupRetention
+						instance={instance}
+						onClose={handleClose}
+					/>
+				</Tabs.Panel>
+			</Tabs>
 		</Drawer>
 	);
 }
