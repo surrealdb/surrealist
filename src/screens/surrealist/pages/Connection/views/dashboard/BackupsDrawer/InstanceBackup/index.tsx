@@ -1,6 +1,7 @@
 import { Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { Icon, iconFile } from "@surrealdb/ui";
 import dayjs from "dayjs";
+import { useIsLight } from "~/hooks/theme";
 import { CloudBackup } from "~/types";
 
 export interface InstanceBackupProps {
@@ -10,13 +11,17 @@ export interface InstanceBackupProps {
 }
 
 export function InstanceBackup({ selected, backup, onSelect }: InstanceBackupProps) {
+	const isLight = useIsLight();
+
 	return (
 		<Paper
-			p="md"
-			bg="obsidian.8"
-			withBorder={selected ?? undefined}
+			p="lg"
+			bg={isLight ? "obsidian.1" : "obsidian.9"}
+			withBorder
+			radius="md"
 			style={{
 				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
+				cursor: "pointer",
 			}}
 			onClick={() => onSelect()}
 		>
@@ -36,12 +41,7 @@ export function InstanceBackup({ selected, backup, onSelect }: InstanceBackupPro
 						{dayjs(backup.snapshot_started_at).format("MMMM D, YYYY - h:mm A")}
 					</Text>
 
-					<Text
-						size="sm"
-						c="dimmed"
-					>
-						Automatic backup
-					</Text>
+					<Text size="sm">Automatic backup</Text>
 				</Stack>
 			</Group>
 		</Paper>
