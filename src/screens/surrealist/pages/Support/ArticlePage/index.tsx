@@ -86,7 +86,7 @@ export function ArticlePage({ id }: ArticlePageProps) {
 						<Box>
 							<PageBreadcrumbs
 								items={[
-									{ label: "Surrealist", href: "/overview" },
+									{ label: "Surrealist", href: "/" },
 									{ label: "Support", href: "/support" },
 									{
 										label: article?.collection?.name ?? "Collection",

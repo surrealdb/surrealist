@@ -55,7 +55,6 @@ export type ConfigStore = SurrealistConfig & {
 	removeConnection: (connectionId: string) => void;
 	updateConnection: (connection: PartialId<Connection>) => void;
 	setConnections: (connections: Connection[]) => void;
-	setActiveResource: (resource: string) => void;
 	addQueryTab: (connectionId: string, options: NewQueryTab) => void;
 	removeQueryTab: (connectionId: string, tabId: string) => void;
 	updateQueryTab: (connectionId: string, connection: PartialId<QueryTab>) => void;
@@ -115,8 +114,6 @@ export const useConfigStore = create<ConfigStore>()(
 			set((state) => modifyConnection(state, connection.id, () => connection)),
 
 		setConnections: (connections) => set(() => ({ connections })),
-
-		setActiveResource: (activeResource) => set(() => ({ activeResource })),
 
 		addQueryTab: (connectionId, options) =>
 			set((state) =>

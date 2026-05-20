@@ -405,7 +405,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 							<Box>
 								<PageBreadcrumbs
 									items={[
-										{ label: "Surrealist", href: "/overview" },
+										{ label: "Surrealist", href: "/" },
 										{ label: "Support", href: "/support" },
 										{ label: "Requests", href: "/support/requests" },
 										{ label: title ?? "Unnamed" },

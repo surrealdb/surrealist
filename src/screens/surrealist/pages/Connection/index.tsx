@@ -84,7 +84,7 @@ export function ConnectionPage({ view }: ConnectionPageProps) {
 					<OutPortal node={portal} />
 				</Stack>
 			) : (
-				<Redirect to="/overview" />
+				<Redirect to="/" />
 			)}
 		</>
 	);

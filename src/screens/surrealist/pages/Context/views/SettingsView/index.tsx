@@ -43,7 +43,7 @@ export default function SettingsView({ context }: ContextViewProps) {
 	const handleDelete = async () => {
 		await deleteContextMutation.mutateAsync(context.id);
 
-		const backPath = organization ? `/o/${organization}/overview` : "/overview";
+		const backPath = organization ? `/o/${organization}/overview` : "/";
 		navigate(backPath);
 	};
 

@@ -65,7 +65,7 @@ export function ConnectionSidebar() {
 			}
 		: {
 				name: "Overview" as const,
-				onClick: () => setLocation("/overview"),
+				onClick: () => setLocation("/"),
 			};
 
 	return (

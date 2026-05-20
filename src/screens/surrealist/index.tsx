@@ -145,18 +145,20 @@ export function SurrealistScreen() {
 							</Group>
 
 							<Switch>
-								{/* Special route used to redirect to the last visited page */}
-								<Route path="/" />
-
 								{/* Overview page */}
-								<Route path="/overview">
+								<Route path="/">
 									<GlobalSidebar />
 									<OverviewPageLazy />
 								</Route>
 
+								{/* Legacy overview URL */}
+								<Route path="/overview">
+									<Redirect to="/" />
+								</Route>
+
 								{/* Legacy sign-in URL: onboarding is a global modal */}
 								<Route path="/signin">
-									<Redirect to="/overview" />
+									<Redirect to="/" />
 								</Route>
 
 								{/* New embed page */}
@@ -346,7 +348,7 @@ export function SurrealistScreen() {
 
 								{/* Fallback redirect to overview page */}
 								<Route>
-									<Redirect to="/overview" />
+									<Redirect to="/" />
 								</Route>
 							</Switch>
 						</Stack>

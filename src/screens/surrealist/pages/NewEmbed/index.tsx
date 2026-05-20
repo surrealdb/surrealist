@@ -83,7 +83,7 @@ export function NewEmbedPage() {
 					<Box>
 						<PageBreadcrumbs
 							items={[
-								{ label: "Surrealist", href: "/overview" },
+								{ label: "Surrealist", href: "/" },
 								{ label: "Embed Surrealist" },
 							]}
 						/>

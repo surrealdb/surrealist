@@ -329,7 +329,7 @@ export function DashboardView() {
 	}
 
 	if (details?.state === "deleting") {
-		return <Redirect to="/overview" />;
+		return <Redirect to="/" />;
 	}
 
 	return (
@@ -365,7 +365,7 @@ export function DashboardView() {
 									) : (
 										<PageBreadcrumbs
 											items={[
-												{ label: "Surrealist", href: "/overview" },
+												{ label: "Surrealist", href: "/" },
 												{
 													label: organisation?.name ?? "",
 													href: `/o/${details?.organization_id}`,

@@ -72,7 +72,7 @@ export function CollectionPage({ id }: CollectionPageProps) {
 						<Box>
 							<PageBreadcrumbs
 								items={[
-									{ label: "Surrealist", href: "/overview" },
+									{ label: "Surrealist", href: "/" },
 									{ label: "Support", href: "/support" },
 									{ label: collection.name },
 								]}

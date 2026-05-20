@@ -64,7 +64,7 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 		: null;
 
 	if (isSuccess && !organization) {
-		return <Redirect to="/overview" />;
+		return <Redirect to="/" />;
 	}
 
 	if (isSuccess && organization && activeTab === null) {
@@ -97,7 +97,7 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 								<>
 									<PageBreadcrumbs
 										items={[
-											{ label: "Surrealist", href: "/overview" },
+											{ label: "Surrealist", href: "/" },
 											{
 												label: organization.name,
 												href: `/o/${organization.id}`,

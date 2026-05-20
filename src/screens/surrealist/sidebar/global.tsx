@@ -3,7 +3,7 @@ import { useAvailablePages } from "~/hooks/connection";
 import type { GlobalPage } from "~/types";
 import { type NavigationItem, SidebarNavigation, SidebarPortal, useSidebar } from "./portal";
 
-const GLOBAL_NAVIGATION: GlobalPage[][] = [["/overview"], ["/referrals"], ["/mini/new"]];
+const GLOBAL_NAVIGATION: GlobalPage[][] = [["/"], ["/referrals"], ["/mini/new"]];
 
 export function GlobalSidebar() {
 	const { setLocation } = useSidebar();
