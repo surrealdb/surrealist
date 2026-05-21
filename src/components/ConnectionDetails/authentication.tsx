@@ -14,6 +14,7 @@ import {
 
 import { useDisclosure } from "@mantine/hooks";
 import { Icon, iconClose, iconPlus, iconWarning } from "@surrealdb/ui";
+import dayjs from "dayjs";
 import { useMemo } from "react";
 import { Updater } from "use-immer";
 import { AUTH_MODES, SENSITIVE_ACCESS_FIELDS } from "~/constants";
@@ -346,12 +347,23 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 
 							if (tokenExpireSoon) {
 								return tokenExpire > Date.now() ? (
-									<Text>
-										This token expires in{" "}
-										{new Date(tokenExpire).toLocaleString()}
+									<Text c="obsidian">
+										<Icon
+											path={iconWarning}
+											c="yellow"
+											size="sm"
+										/>
+										This token expires in {dayjs(tokenExpire).fromNow()}
 									</Text>
 								) : (
-									<Text>This token has expired</Text>
+									<Text c="obsidian">
+										<Icon
+											path={iconWarning}
+											c="red"
+											size="sm"
+										/>
+										This token has expired
+									</Text>
 								);
 							}
 

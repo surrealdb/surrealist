@@ -2,14 +2,6 @@ import type { Authentication } from "~/types";
 import { fastParseJwt } from "./helpers";
 import { effectiveOAuthUseRefreshToken } from "./surreal-oauth";
 
-export interface OAuthSessionExpiryLines {
-	session: string;
-	/** Omit refresh row in the menu when null (refresh tokens disabled). */
-	refresh: string | null;
-	hasSession: boolean;
-	hasRefreshToken: boolean;
-}
-
 function jwtExpiryMs(token: string): number | null {
 	const payload = fastParseJwt(token);
 
@@ -18,6 +10,14 @@ function jwtExpiryMs(token: string): number | null {
 	}
 
 	return payload.exp * 1000;
+}
+
+export interface OAuthSessionExpiryLines {
+	session: string;
+	/** Omit refresh row in the menu when null (refresh tokens disabled). */
+	refresh: string | null;
+	hasSession: boolean;
+	hasRefreshToken: boolean;
 }
 
 function formatTimeLeft(expiresAt: number | null, now = Date.now()): string {
@@ -70,11 +70,7 @@ function refreshExpiryMs(auth: Authentication): number | null {
 		return null;
 	}
 
-	if (auth.oauthRefreshTokenExpiresAt) {
-		return auth.oauthRefreshTokenExpiresAt;
-	}
-
-	return jwtExpiryMs(auth.oauthRefreshToken);
+	return auth.oauthRefreshTokenExpiresAt ?? null;
 }
 
 /**

@@ -2,6 +2,7 @@ import { adapter, isDesktop } from "~/adapter";
 import { createEventSubscription } from "~/hooks/event";
 import type { Authentication } from "~/types";
 import { DeepLinkSurrealOAuthEvent } from "./global-events";
+import { parseOAuthCallback } from "./oauth-core";
 import { assertOAuthFeatureEnabled } from "./oauth-feature";
 import { generateOAuthPkce, generateOAuthState } from "./oauth-webapi";
 import {
@@ -44,41 +45,20 @@ function waitForOAuthCallback(expectedState: string, popup: Window) {
 				return;
 			}
 
-			let parsed: URL;
+			const result = parseOAuthCallback(url, expectedState);
 
-			try {
-				parsed = new URL(url);
-			} catch {
-				return;
-			}
-
-			const error = parsed.searchParams.get("error");
-
-			if (error) {
-				cleanup();
-				reject(
-					new SurrealOAuthFlowError(
-						parsed.searchParams.get("error_description") ?? error,
-					),
-				);
-				return;
-			}
-
-			const code = parsed.searchParams.get("code");
-			const state = parsed.searchParams.get("state");
-
-			if (!code || !state) {
-				return;
-			}
-
-			if (state !== expectedState) {
-				cleanup();
-				reject(new SurrealOAuthFlowError("OAuth state mismatch"));
+			if (result.kind === "incomplete") {
 				return;
 			}
 
 			cleanup();
-			resolve({ code, state });
+
+			if (result.kind === "error") {
+				reject(new SurrealOAuthFlowError(result.message));
+				return;
+			}
+
+			resolve({ code: result.code, state: result.state });
 		};
 
 		const pollClosed = window.setInterval(() => {
@@ -106,41 +86,20 @@ function waitForSurrealOAuthDeepLink(expectedState: string) {
 		}, POPUP_TIMEOUT_MS);
 
 		const unsubscribe = createEventSubscription(DeepLinkSurrealOAuthEvent, (callbackUrl) => {
-			let parsed: URL;
+			const result = parseOAuthCallback(callbackUrl, expectedState);
 
-			try {
-				parsed = new URL(callbackUrl);
-			} catch {
-				return;
-			}
-
-			const error = parsed.searchParams.get("error");
-
-			if (error) {
-				cleanup();
-				reject(
-					new SurrealOAuthFlowError(
-						parsed.searchParams.get("error_description") ?? error,
-					),
-				);
-				return;
-			}
-
-			const code = parsed.searchParams.get("code");
-			const state = parsed.searchParams.get("state");
-
-			if (!code || !state) {
-				return;
-			}
-
-			if (state !== expectedState) {
-				cleanup();
-				reject(new SurrealOAuthFlowError("OAuth state mismatch"));
+			if (result.kind === "incomplete") {
 				return;
 			}
 
 			cleanup();
-			resolve({ code, state });
+
+			if (result.kind === "error") {
+				reject(new SurrealOAuthFlowError(result.message));
+				return;
+			}
+
+			resolve({ code: result.code, state: result.state });
 		});
 
 		function cleanup() {

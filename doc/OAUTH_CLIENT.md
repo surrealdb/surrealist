@@ -47,3 +47,7 @@ Use **Authentication** (ROOT / NAMESPACE / DATABASE) → **New access method** �
 - Set `--public-url` to the externally visible base URL when behind a reverse proxy.
 - `DEFINE CONFIG DEFAULT OAUTH ACCESS <method>` for discovery (returns **404** on `/.well-known/oauth-authorization-server` until this is set)
 - `DEFINE ACCESS … WITH OAUTH` and IdP configuration
+
+## Transport security
+
+Surrealist accepts `http://` issuers and broker URLs (via `oauth4webapi`'s `allowInsecureRequests`) so local and self-hosted SurrealDB instances on private networks work out of the box. **For any production or shared deployment, front SurrealDB with HTTPS** — OAuth carries bearer credentials, and authorization codes / refresh tokens over plain HTTP are recoverable by anyone on the path.

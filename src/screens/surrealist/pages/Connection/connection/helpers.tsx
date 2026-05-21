@@ -24,6 +24,8 @@ export async function composeAuthentication(connection: Authentication): Promise
 		}
 		case "token":
 		case "oauth": {
+			// For broker-mode OAuth this is a SurrealDB JWT minted by /access/*/token;
+			// for `oauthUseDefault` it's the raw IdP access token forwarded as bearer.
 			return token;
 		}
 		case "cloud": {

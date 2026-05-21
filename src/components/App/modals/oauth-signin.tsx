@@ -3,7 +3,6 @@ import { useDisclosure } from "@mantine/hooks";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { SurrealOAuthFlowError, useSurrealOAuthFlow } from "~/hooks/use-surreal-oauth-flow";
-import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { showErrorNotification } from "~/util/helpers";
 import {
@@ -38,12 +37,6 @@ export function OAuthSignInModal() {
 
 		try {
 			const auth = await runOAuthSignIn(request.connection.authentication);
-			const { updateConnection } = useConfigStore.getState();
-
-			updateConnection({
-				...request.connection,
-				authentication: auth,
-			});
 
 			completeOAuthSignIn(auth);
 			closeOAuthSignIn();

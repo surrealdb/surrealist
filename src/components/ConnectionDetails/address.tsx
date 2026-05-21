@@ -154,12 +154,12 @@ export function ConnectionAddressDetails({
 	});
 
 	const [oauthPromptDismissed, setOauthPromptDismissed] = useState(() =>
-		isOAuthDiscoveryDismissed(hostname),
+		isOAuthDiscoveryDismissed(httpBase),
 	);
 
 	useEffect(() => {
-		setOauthPromptDismissed(isOAuthDiscoveryDismissed(hostname));
-	}, [hostname]);
+		setOauthPromptDismissed(isOAuthDiscoveryDismissed(httpBase));
+	}, [httpBase]);
 
 	const showOAuthPrompt =
 		discoveryEnabled &&
@@ -190,7 +190,7 @@ export function ConnectionAddressDetails({
 	});
 
 	const dismissOAuthPrompt = useStable(() => {
-		dismissOAuthDiscovery(hostname);
+		dismissOAuthDiscovery(httpBase);
 		setOauthPromptDismissed(true);
 	});
 

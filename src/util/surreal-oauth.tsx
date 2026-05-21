@@ -126,21 +126,29 @@ export async function fetchOAuthDiscovery(
 	return discoverAuthorizationServerMetadata(base, "oauth2", signal);
 }
 
-export function oauthDiscoveryDismissKey(hostname: string) {
-	return `surreal-oauth-discovery-dismiss:${hostname}`;
+export function oauthDiscoveryDismissKey(httpBase: string) {
+	return `surreal-oauth-discovery-dismiss:${httpBase}`;
 }
 
-export function isOAuthDiscoveryDismissed(hostname: string) {
+export function isOAuthDiscoveryDismissed(httpBase: string | null) {
+	if (!httpBase) {
+		return false;
+	}
+
 	try {
-		return sessionStorage.getItem(oauthDiscoveryDismissKey(hostname)) === "1";
+		return sessionStorage.getItem(oauthDiscoveryDismissKey(httpBase)) === "1";
 	} catch {
 		return false;
 	}
 }
 
-export function dismissOAuthDiscovery(hostname: string) {
+export function dismissOAuthDiscovery(httpBase: string | null) {
+	if (!httpBase) {
+		return;
+	}
+
 	try {
-		sessionStorage.setItem(oauthDiscoveryDismissKey(hostname), "1");
+		sessionStorage.setItem(oauthDiscoveryDismissKey(httpBase), "1");
 	} catch {
 		// ignore
 	}
