@@ -16,6 +16,7 @@
 		"qau": "biome check . --write --unsafe --formatter-enabled=true",
 		"qts": "tsc --noEmit",
 		"qtsw": "tsc --noEmit --watch",
+		"test": "bun test src/util",
 		"license-report": "license-report --fields name --fields licenseType --fields link --fields installedVersion --fields author > src/assets/data/license-report.json",
 		"start": "bun run dev",
 		"tauri": "tauri",

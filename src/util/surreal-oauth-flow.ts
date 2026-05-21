@@ -188,14 +188,8 @@ export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authe
 		const popup = window.open(authorizeUrl, "surrealist_oauth", "popup,width=520,height=720");
 
 		if (!popup) {
-			const opened = await adapter.openUrl(authorizeUrl, "external");
-
-			if (!opened) {
-				throw new SurrealOAuthFlowError("Could not open a browser window for OAuth");
-			}
-
 			throw new SurrealOAuthFlowError(
-				"Allow pop-ups for Surrealist to complete OAuth, or complete sign-in in the browser tab",
+				"Allow pop-ups for Surrealist to complete OAuth sign-in",
 			);
 		}
 

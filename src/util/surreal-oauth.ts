@@ -1,6 +1,19 @@
 import type { Authentication, Protocol } from "~/types";
 import { isDevelopment } from "./environment";
 import { fastParseJwt } from "./helpers";
+import {
+	applyOAuthTokenResponse,
+	effectiveOAuthUseRefreshToken,
+	type OAuthTokenResponse,
+} from "./oauth-core";
+
+export {
+	applyOAuthTokenResponse,
+	effectiveOAuthUseRefreshToken,
+	normalizeRedirectUri,
+	type OAuthTokenResponse,
+	redirectUriListIncludes,
+} from "./oauth-core";
 
 /** Deep-link host for desktop instance OAuth (`surrealist://surreal-oauth?…`). */
 export const SURREAL_OAUTH_DEEP_LINK_HOST = "surreal-oauth";
@@ -35,7 +48,6 @@ export function surrealOAuthRedirectUri(desktop: boolean) {
 	return desktop ? surrealOAuthDesktopLaunchUri() : surrealOAuthWebCallbackUri();
 }
 
-/** URIs to register on `DEFINE ACCESS … REDIRECT_URIS`. */
 export function surrealOAuthRedirectUriHints(): SurrealOAuthRedirectUriHint[] {
 	const web = surrealOAuthWebCallbackUri();
 	const launch = surrealOAuthDesktopLaunchUri();
@@ -75,16 +87,6 @@ export interface OAuthAuthorizationServerMetadata {
 	code_challenge_methods_supported?: string[];
 }
 
-export interface OAuthTokenResponse {
-	access_token: string;
-	token_type?: string;
-	expires_in?: number;
-	refresh_token?: string;
-	refresh_token_expires_in?: number;
-	error?: string;
-	error_description?: string;
-}
-
 export function httpBaseFromConnection(protocol: Protocol, hostname: string): string | null {
 	if (!hostname || protocol === "mem" || protocol === "indxdb") {
 		return null;
@@ -116,26 +118,6 @@ export function hasDefaultOAuthDiscovery(meta: OAuthAuthorizationServerMetadata 
 /** Whether RFC 8414 discovery advertises the refresh_token grant. */
 export function oauthDiscoverySupportsRefresh(meta: OAuthAuthorizationServerMetadata | null) {
 	return meta?.grant_types_supported?.includes("refresh_token") ?? false;
-}
-
-/**
- * Whether Surrealist should store and use IdP refresh tokens.
- * Explicit `false` opts out; unset on default-OAuth connections opts in.
- */
-export function effectiveOAuthUseRefreshToken(auth: Authentication): boolean {
-	if (auth.mode !== "oauth") {
-		return false;
-	}
-
-	if (auth.oauthUseRefreshToken === true) {
-		return true;
-	}
-
-	if (auth.oauthUseRefreshToken === false) {
-		return false;
-	}
-
-	return !!auth.oauthUseDefault;
 }
 
 export async function fetchOAuthDiscovery(
@@ -361,35 +343,6 @@ export async function refreshSurrealOAuthTokens(options: {
 	}
 
 	return data;
-}
-
-export function applyOAuthTokenResponse(
-	auth: Authentication,
-	response: OAuthTokenResponse,
-): Authentication {
-	const next: Authentication = {
-		...auth,
-		token: response.access_token,
-	};
-
-	if (effectiveOAuthUseRefreshToken(auth)) {
-		next.oauthRefreshToken = response.refresh_token ?? "";
-
-		if (response.refresh_token_expires_in != null && response.refresh_token_expires_in > 0) {
-			next.oauthRefreshTokenExpiresAt = Date.now() + response.refresh_token_expires_in * 1000;
-		} else if (!response.refresh_token) {
-			next.oauthRefreshTokenExpiresAt = undefined;
-		}
-	} else {
-		next.oauthRefreshToken = "";
-		next.oauthRefreshTokenExpiresAt = undefined;
-	}
-
-	if (response.expires_in != null && response.expires_in > 0) {
-		next.oauthTokenExpiresAt = Date.now() + response.expires_in * 1000;
-	}
-
-	return next;
 }
 
 /** Remove stored OAuth credentials from a connection (sign out). */

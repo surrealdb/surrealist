@@ -2,7 +2,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { Authentication, Connection } from "~/types";
 import { assertOAuthFeatureEnabled } from "./oauth-feature";
 import { OAuthSignInCancelled, requestOAuthSignIn } from "./oauth-signin-prompt";
-import { ensureOAuthSession, hasValidOAuthSession, isOAuthAccessRequired } from "./surreal-oauth";
+import { ensureOAuthSession, isOAuthAccessRequired } from "./surreal-oauth";
 import { runSurrealOAuthSignIn, SurrealOAuthFlowError } from "./surreal-oauth-flow";
 
 export class OAuthConnectError extends Error {
@@ -31,7 +31,7 @@ export async function resolveOAuthForConnect(connection: Connection): Promise<Au
 		);
 	}
 
-	if (hasValidOAuthSession(auth)) {
+	if (auth.token || auth.oauthRefreshToken) {
 		try {
 			return await ensureOAuthSession(auth);
 		} catch {

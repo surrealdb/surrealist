@@ -27,6 +27,58 @@ import { PrimaryTitle } from "../PrimaryTitle";
 
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
 
+function clearOAuthAuthFields(auth: Connection["authentication"]) {
+	auth.token = "";
+	auth.oauthRefreshToken = "";
+	auth.oauthUseDefault = undefined;
+	auth.oauthUseRefreshToken = undefined;
+	auth.oauthAuthorizationEndpoint = "";
+	auth.oauthTokenEndpoint = "";
+	auth.oauthTokenExpiresAt = undefined;
+	auth.oauthRefreshTokenExpiresAt = undefined;
+}
+
+function normalizeAuthModeSwitch(
+	auth: Connection["authentication"],
+	prevMode: AuthMode,
+	nextMode: AuthMode,
+) {
+	if (prevMode === nextMode) {
+		return;
+	}
+
+	if (prevMode === "oauth") {
+		clearOAuthAuthFields(auth);
+	}
+
+	if (prevMode === "token") {
+		auth.token = "";
+	}
+
+	if (SYSTEM_METHODS.has(prevMode)) {
+		auth.username = "";
+		auth.password = "";
+	}
+
+	if (nextMode === "oauth") {
+		auth.username = "";
+		auth.password = "";
+		auth.accessFields = [];
+	}
+
+	if (nextMode === "token") {
+		clearOAuthAuthFields(auth);
+	}
+
+	if (SYSTEM_METHODS.has(nextMode)) {
+		clearOAuthAuthFields(auth);
+		auth.access = "";
+		auth.accessFields = [];
+	}
+
+	auth.mode = nextMode;
+}
+
 export interface ConnectionAuthDetailsProps {
 	value: Connection;
 	onChange: Updater<Connection>;
@@ -65,7 +117,11 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 				data={authModes}
 				onChange={(value) =>
 					onChange((draft) => {
-						draft.authentication.mode = value as AuthMode;
+						normalizeAuthModeSwitch(
+							draft.authentication,
+							draft.authentication.mode,
+							value as AuthMode,
+						);
 					})
 				}
 			/>

@@ -182,6 +182,10 @@ export function ConnectionAddressDetails({
 			draft.authentication.access = "";
 			draft.authentication.token = "";
 			draft.authentication.oauthRefreshToken = "";
+			draft.authentication.namespace = "";
+			draft.authentication.database = "";
+			draft.authentication.username = "";
+			draft.authentication.password = "";
 		});
 	});
 

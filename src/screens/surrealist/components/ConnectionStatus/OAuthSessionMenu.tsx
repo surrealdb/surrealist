@@ -11,10 +11,13 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnectionById } from "~/util/connection";
 import { showErrorNotification } from "~/util/helpers";
-import { interactiveOAuthSignIn, isOAuthSignInCancelled } from "~/util/oauth-connect";
+import {
+	interactiveOAuthSignIn,
+	isOAuthSignInCancelled,
+	OAuthConnectError,
+} from "~/util/oauth-connect";
 import { getOAuthSessionExpiryLines } from "~/util/oauth-session";
 import { clearOAuthSession } from "~/util/surreal-oauth";
-import { SurrealOAuthFlowError } from "~/util/surreal-oauth-flow";
 
 interface OAuthSessionSectionProps {
 	connectionId: string;
@@ -89,7 +92,7 @@ export function OAuthSessionSection({ connectionId }: OAuthSessionSectionProps) 
 		} catch (err: unknown) {
 			if (!isOAuthSignInCancelled(err)) {
 				const message =
-					err instanceof SurrealOAuthFlowError
+					err instanceof OAuthConnectError
 						? err.message
 						: err instanceof Error
 							? err.message

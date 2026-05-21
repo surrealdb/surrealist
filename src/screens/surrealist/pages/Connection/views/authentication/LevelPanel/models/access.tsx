@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Button,
 	Checkbox,
 	Divider,
@@ -25,6 +26,7 @@ import type { AccessType, Base, SchemaAccess } from "~/types";
 import {
 	type AccessDefineForm,
 	accessDefineFormFromSchema,
+	accessHasOAuth,
 	buildDefineAccessQuery,
 	defaultAccessDefineForm,
 	validateAccessDefineForm,
@@ -118,6 +120,8 @@ export function AccessEditorModal({
 		!isConflicting && form.name.length > 0 && formValidation === null && !validationError;
 
 	const showJwtBlock = form.type === "JWT" || (form.type === "RECORD" && form.recordJwtEnabled);
+	const showOAuthFields = oauthEnabled || (!!existing && accessHasOAuth(existing));
+	const oauthFieldsReadOnly = !oauthEnabled && form.oauth.enabled;
 
 	return (
 		<Modal
@@ -332,16 +336,24 @@ export function AccessEditorModal({
 										/>
 									)}
 
-									{oauthEnabled && (
+									{showOAuthFields && (
 										<>
 											<Divider
 												label="OAuth"
 												labelPosition="left"
 											/>
 
+											{oauthFieldsReadOnly && (
+												<Alert color="orange">
+													Instance OAuth editing is not enabled in this
+													environment. Configuration is shown read-only.
+												</Alert>
+											)}
+
 											<AccessOAuthFields
 												value={form.oauth}
 												oidcIssuer={form.oidcIssuer}
+												readOnly={oauthFieldsReadOnly}
 												onChange={(oauth) => patchForm({ oauth })}
 											/>
 										</>

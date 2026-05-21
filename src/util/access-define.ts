@@ -253,6 +253,12 @@ export function validateAccessDefineForm(form: AccessDefineForm): string | null 
 				return "Remove OIDC issuer URL when using explicit OAuth endpoints";
 			}
 		}
+
+		const redirectUris = form.oauth.redirectUris.map((uri) => uri.trim()).filter(Boolean);
+
+		if (redirectUris.length === 0) {
+			return "At least one redirect URI is required when OAuth is enabled";
+		}
 	}
 
 	return null;
@@ -311,8 +317,10 @@ function appendWithOauth(query: string, form: AccessDefineForm) {
 		block += ` AUDIENCE "${escapeString(form.oauth.audience.trim())}"`;
 	}
 
-	if (form.oauth.redirectUris.length > 0) {
-		const uris = form.oauth.redirectUris.map((u) => `"${escapeString(u.trim())}"`).join(", ");
+	const redirectUris = form.oauth.redirectUris.map((uri) => uri.trim()).filter(Boolean);
+
+	if (redirectUris.length > 0) {
+		const uris = redirectUris.map((u) => `"${escapeString(u)}"`).join(", ");
 		block += ` REDIRECT_URIS [${uris}]`;
 	}
 

@@ -15,6 +15,7 @@ import { Icon, iconCheck, iconChevronDown, iconChevronUp, iconCopy, iconPlus } f
 import { useEffect, useState } from "react";
 import { useIsLight } from "~/hooks/theme";
 import {
+	redirectUriListIncludes,
 	type SurrealOAuthRedirectUriHint,
 	surrealOAuthRedirectUriHints,
 } from "~/util/surreal-oauth";
@@ -31,7 +32,7 @@ export function OAuthRedirectUriHints({
 	onAddUris,
 }: OAuthRedirectUriHintsProps) {
 	const hints = surrealOAuthRedirectUriHints();
-	const missing = hints.filter((hint) => !redirectUris.includes(hint.uri));
+	const missing = hints.filter((hint) => !redirectUriListIncludes(redirectUris, hint.uri));
 	const allAdded = missing.length === 0;
 	const [expanded, setExpanded] = useState(!allAdded);
 	const isLight = useIsLight();
