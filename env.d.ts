@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="wicg-file-system-access" />
 
 interface ImportMetaEnv {
 	DATE: string;

@@ -127,35 +127,30 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			target: "es2020",
-			minify: process.env.TAURI_DEBUG ? false : "esbuild",
+			minify: !process.env.TAURI_DEBUG,
 			sourcemap: !!process.env.TAURI_DEBUG,
-			rollupOptions: {
+			rolldownOptions: {
 				input: !isTauri ? ENTRYPOINTS : undefined,
 				output: {
-					experimentalMinChunkSize: 5000,
-					manualChunks: {
-						react: ["react", "react-dom"],
-						codemirror: [
-							"codemirror",
-							"@surrealdb/codemirror",
-							"@surrealdb/lezer",
-							"@replit/codemirror-indentation-markers",
-						],
-						mantime: ["@mantine/core", "@mantine/hooks", "@mantine/notifications"],
-						surreal: [
-							"surrealdb",
-							"@surrealdb/wasm",
-							"@surrealdb/ql-wasm-2",
-							"@surrealdb/ql-wasm-3",
-							"@surrealdb/surrealql-language-server",
+					codeSplitting: {
+						minSize: 5000,
+						groups: [
+							{ name: "react", test: /node_modules\/(react|react-dom)\// },
+							{
+								name: "codemirror",
+								test: /node_modules\/(codemirror|@surrealdb\/codemirror|@surrealdb\/lezer|@replit\/codemirror-indentation-markers)\//,
+							},
+							{
+								name: "mantine",
+								test: /node_modules\/@mantine\/(core|hooks|notifications)\//,
+							},
+							{
+								name: "surreal",
+								test: /node_modules\/(surrealdb|@surrealdb\/wasm|@surrealdb\/ql-wasm-2|@surrealdb\/ql-wasm-3|@surrealdb\/surrealql-language-server)\//,
+							},
 						],
 					},
 				},
-			},
-		},
-		esbuild: {
-			supported: {
-				"top-level-await": true, //browsers can handle top-level-await features
 			},
 		},
 		resolve: {
@@ -190,8 +185,10 @@ export default defineConfig(({ mode }) => {
 				"@surrealdb/ql-wasm-3",
 				"@surrealdb/surrealql-language-server",
 			],
-			esbuildOptions: {
-				target: "esnext",
+			rolldownOptions: {
+				transform: {
+					target: "esnext",
+				},
 			},
 		},
 		assetsInclude: [
