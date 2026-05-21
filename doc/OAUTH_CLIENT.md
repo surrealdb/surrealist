@@ -43,11 +43,7 @@ Use **Authentication** (ROOT / NAMESPACE / DATABASE) → **New access method** �
 
 ## Server requirements
 
-- Build and run SurrealDB with OAuth HTTP routes enabled:
-  ```bash
-  cargo build --features jwks,oauth
-  surreal start ... --public-url https://<external-host>
-  ```
-  Restart the server after rebuilding; an older binary may expose `/access/*` but not `/.well-known/oauth-authorization-server`.
+- **SurrealDB Enterprise** (or a dev OSS build with `--features oauth,jwks`) must expose `/access/*` and `/.well-known/oauth-authorization-server`.
+- Set `--public-url` to the externally visible base URL when behind a reverse proxy.
 - `DEFINE CONFIG DEFAULT OAUTH ACCESS <method>` for discovery (returns **404** on `/.well-known/oauth-authorization-server` until this is set)
 - `DEFINE ACCESS … WITH OAUTH` and IdP configuration
