@@ -34,6 +34,7 @@ import {
 import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
+import { AccessJwksValidation } from "./access-jwks-validation";
 import { AccessOAuthFields } from "./access-oauth-fields";
 
 const ALGORITHMS = [
@@ -285,15 +286,22 @@ export function AccessEditorModal({
 											/>
 
 											{form.jwtVerifyMode === "url" ? (
-												<TextInput
-													label="JWKS endpoint"
-													placeholder="https://example.com/.well-known/jwks.json"
-													value={form.jwtVerifyUrl}
-													spellCheck={false}
-													onChange={(e) =>
-														patchForm({ jwtVerifyUrl: e.target.value })
-													}
-												/>
+												<>
+													<TextInput
+														label="JWKS endpoint"
+														placeholder="https://example.com/.well-known/jwks.json"
+														value={form.jwtVerifyUrl}
+														spellCheck={false}
+														onChange={(e) =>
+															patchForm({
+																jwtVerifyUrl: e.target.value,
+															})
+														}
+													/>
+													<AccessJwksValidation
+														jwksUrl={form.jwtVerifyUrl}
+													/>
+												</>
 											) : (
 												<>
 													<Select

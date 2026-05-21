@@ -6,6 +6,13 @@ import {
 	effectiveOAuthUseRefreshToken,
 	type OAuthTokenResponse,
 } from "./oauth-core";
+import {
+	discoverAuthorizationServerMetadata,
+	exchangeAuthorizationCodeGrant,
+	type OAuthAuthorizationServerMetadata,
+	refreshOAuthGrant,
+	surrealOAuthClientId,
+} from "./oauth-webapi";
 
 export {
 	applyOAuthTokenResponse,
@@ -14,6 +21,7 @@ export {
 	type OAuthTokenResponse,
 	redirectUriListIncludes,
 } from "./oauth-core";
+export type { OAuthAuthorizationServerMetadata } from "./oauth-webapi";
 
 /** Deep-link host for desktop instance OAuth (`surrealist://surreal-oauth?…`). */
 export const SURREAL_OAUTH_DEEP_LINK_HOST = "surreal-oauth";
@@ -78,15 +86,6 @@ export const SURREAL_OAUTH_CALLBACK_MESSAGE = "surrealist-surreal-oauth-callback
 
 const EXPIRE_WARNING_MS = 1000 * 60 * 60 * 3;
 
-export interface OAuthAuthorizationServerMetadata {
-	issuer: string;
-	authorization_endpoint: string;
-	token_endpoint: string;
-	response_types_supported?: string[];
-	grant_types_supported?: string[];
-	code_challenge_methods_supported?: string[];
-}
-
 export function httpBaseFromConnection(protocol: Protocol, hostname: string): string | null {
 	if (!hostname || protocol === "mem" || protocol === "indxdb") {
 		return null;
@@ -124,23 +123,7 @@ export async function fetchOAuthDiscovery(
 	base: string,
 	signal?: AbortSignal,
 ): Promise<OAuthAuthorizationServerMetadata | null> {
-	const url = `${base.replace(/\/$/, "")}/.well-known/oauth-authorization-server`;
-
-	try {
-		const res = await fetch(url, { method: "GET", signal });
-
-		if (res.status === 404) {
-			return null;
-		}
-
-		if (!res.ok) {
-			return null;
-		}
-
-		return (await res.json()) as OAuthAuthorizationServerMetadata;
-	} catch {
-		return null;
-	}
+	return discoverAuthorizationServerMetadata(base, "oauth2", signal);
 }
 
 export function oauthDiscoveryDismissKey(hostname: string) {
@@ -232,44 +215,6 @@ export function buildOAuthTokenUrl(auth: Authentication, base: string) {
 	return url.toString();
 }
 
-function encodeFormBody(pairs: [string, string][]) {
-	return pairs.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join("&");
-}
-
-function parseExpiresIn(value: unknown): number | undefined {
-	if (typeof value === "number" && Number.isFinite(value)) {
-		return value;
-	}
-
-	if (typeof value === "string" && value.trim()) {
-		const parsed = Number(value);
-
-		if (Number.isFinite(parsed)) {
-			return parsed;
-		}
-	}
-
-	return undefined;
-}
-
-/** Normalize SurrealDB `/access/token` JSON (RFC 6749 + optional refresh lifetime). */
-export function parseOAuthTokenResponse(data: unknown): OAuthTokenResponse {
-	const raw = (data ?? {}) as Record<string, unknown>;
-
-	return {
-		access_token: String(raw.access_token ?? ""),
-		token_type: typeof raw.token_type === "string" ? raw.token_type : undefined,
-		expires_in: parseExpiresIn(raw.expires_in),
-		refresh_token: typeof raw.refresh_token === "string" ? raw.refresh_token : undefined,
-		refresh_token_expires_in:
-			parseExpiresIn(raw.refresh_token_expires_in) ??
-			parseExpiresIn(raw.refreshTokenExpiresIn),
-		error: typeof raw.error === "string" ? raw.error : undefined,
-		error_description:
-			typeof raw.error_description === "string" ? raw.error_description : undefined,
-	};
-}
-
 export async function exchangeOAuthCode(options: {
 	auth: Authentication;
 	base: string;
@@ -278,34 +223,14 @@ export async function exchangeOAuthCode(options: {
 	codeVerifier: string;
 }): Promise<OAuthTokenResponse> {
 	const { auth, base, code, redirectUri, codeVerifier } = options;
-	const tokenUrl = buildOAuthTokenUrl(auth, base);
 
-	const body: [string, string][] = [
-		["grant_type", "authorization_code"],
-		["code", code],
-		["redirect_uri", redirectUri],
-		["code_verifier", codeVerifier],
-	];
-
-	if (!auth.oauthUseDefault && auth.access) {
-		body.push(["client_id", auth.access]);
-	}
-
-	const res = await fetch(tokenUrl, {
-		method: "POST",
-		headers: { "Content-Type": "application/x-www-form-urlencoded" },
-		body: encodeFormBody(body),
+	return exchangeAuthorizationCodeGrant({
+		tokenEndpoint: buildOAuthTokenUrl(auth, base),
+		code,
+		redirectUri,
+		codeVerifier,
+		clientId: surrealOAuthClientId(auth),
 	});
-
-	const data = parseOAuthTokenResponse(await res.json());
-
-	if (!res.ok) {
-		throw new Error(
-			data.error_description ?? data.error ?? `Token exchange failed (${res.status})`,
-		);
-	}
-
-	return data;
 }
 
 export async function refreshSurrealOAuthTokens(options: {
@@ -318,31 +243,11 @@ export async function refreshSurrealOAuthTokens(options: {
 		throw new Error("No OAuth refresh token stored");
 	}
 
-	const tokenUrl = buildOAuthTokenUrl(auth, base);
-	const body: [string, string][] = [
-		["grant_type", "refresh_token"],
-		["refresh_token", auth.oauthRefreshToken],
-	];
-
-	if (!auth.oauthUseDefault && auth.access) {
-		body.push(["client_id", auth.access]);
-	}
-
-	const res = await fetch(tokenUrl, {
-		method: "POST",
-		headers: { "Content-Type": "application/x-www-form-urlencoded" },
-		body: encodeFormBody(body),
+	return refreshOAuthGrant({
+		tokenEndpoint: buildOAuthTokenUrl(auth, base),
+		refreshToken: auth.oauthRefreshToken,
+		clientId: surrealOAuthClientId(auth),
 	});
-
-	const data = parseOAuthTokenResponse(await res.json());
-
-	if (!res.ok) {
-		throw new Error(
-			data.error_description ?? data.error ?? `Token refresh failed (${res.status})`,
-		);
-	}
-
-	return data;
 }
 
 /** Remove stored OAuth credentials from a connection (sign out). */
@@ -447,37 +352,6 @@ export async function ensureOAuthSession(auth: Authentication): Promise<Authenti
 	}
 
 	return auth;
-}
-
-export function randomOAuthString(length: number) {
-	const bytes = new Uint8Array(length);
-	crypto.getRandomValues(bytes);
-	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	let out = "";
-
-	for (const b of bytes) {
-		out += alphabet[b % alphabet.length];
-	}
-
-	return out;
-}
-
-function base64UrlEncode(buffer: ArrayBuffer) {
-	const bytes = new Uint8Array(buffer);
-	let binary = "";
-
-	for (const b of bytes) {
-		binary += String.fromCharCode(b);
-	}
-
-	return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-/** RFC 7636 S256 code challenge (matches SurrealDB `code_challenge_s256`). */
-export async function codeChallengeS256(verifier: string) {
-	const data = new TextEncoder().encode(verifier);
-	const hash = await crypto.subtle.digest("SHA-256", data);
-	return base64UrlEncode(hash);
 }
 
 /** Access name is required when scoping OAuth to a namespace and/or database. */

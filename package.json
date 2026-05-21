@@ -104,6 +104,7 @@
 		"leaflet": "^1.9.4",
 		"lottie-web": "^5.12.2",
 		"mantine-contextmenu": "^7.15.3",
+		"oauth4webapi": "^3.8.6",
 		"papaparse": "^5.4.1",
 		"path-browserify": "^1.0.1",
 		"radash": "^11.0.0",

@@ -3,13 +3,12 @@ import { createEventSubscription } from "~/hooks/event";
 import type { Authentication } from "~/types";
 import { DeepLinkSurrealOAuthEvent } from "./global-events";
 import { assertOAuthFeatureEnabled } from "./oauth-feature";
+import { generateOAuthPkce, generateOAuthState } from "./oauth-webapi";
 import {
 	applyOAuthTokenResponse,
 	buildOAuthAuthorizeUrl,
-	codeChallengeS256,
 	exchangeOAuthCode,
 	httpBaseFromConnection,
-	randomOAuthString,
 	SURREAL_OAUTH_CALLBACK_MESSAGE,
 	surrealOAuthRedirectUri,
 } from "./surreal-oauth";
@@ -161,9 +160,8 @@ export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authe
 		throw new SurrealOAuthFlowError("OAuth requires a remote http/https/ws/wss endpoint");
 	}
 
-	const codeVerifier = randomOAuthString(64);
-	const codeChallenge = await codeChallengeS256(codeVerifier);
-	const state = randomOAuthString(32);
+	const { codeVerifier, codeChallenge } = await generateOAuthPkce();
+	const state = generateOAuthState();
 	const redirectUri = surrealOAuthRedirectUri(isDesktop);
 
 	const authorizeUrl = buildOAuthAuthorizeUrl({

@@ -12,6 +12,7 @@ import {
 import { Icon, iconClose, iconPlus } from "@surrealdb/ui";
 import { LearnMore } from "~/components/LearnMore";
 import type { AccessJwtOAuthForm, OAuthEndpointMode } from "~/util/access-define";
+import { AccessOauthIdpValidation } from "./access-oauth-idp-validation";
 import { OAuthRedirectUriHints } from "./oauth-redirect-uri-hints";
 
 interface AccessOAuthFieldsProps {
@@ -101,6 +102,12 @@ export function AccessOAuthFields({
 			{value.endpointMode === "discovery" && !oidcIssuer.trim() && (
 				<Text size="sm">Set the OIDC issuer URL above.</Text>
 			)}
+
+			<AccessOauthIdpValidation
+				issuerUrl={oidcIssuer}
+				endpointMode={value.endpointMode}
+				readOnly={readOnly}
+			/>
 
 			{value.endpointMode === "explicit" && (
 				<>
