@@ -1,5 +1,7 @@
-import { adapter } from "~/adapter";
+import { adapter, isDesktop } from "~/adapter";
+import { createEventSubscription } from "~/hooks/event";
 import type { Authentication } from "~/types";
+import { DeepLinkSurrealOAuthEvent } from "./global-events";
 import {
 	applyOAuthTokenResponse,
 	buildOAuthAuthorizeUrl,
@@ -96,6 +98,58 @@ function waitForOAuthCallback(expectedState: string, popup: Window) {
 	});
 }
 
+function waitForSurrealOAuthDeepLink(expectedState: string) {
+	return new Promise<{ code: string; state: string }>((resolve, reject) => {
+		const timeout = window.setTimeout(() => {
+			cleanup();
+			reject(new SurrealOAuthFlowError("OAuth sign-in timed out"));
+		}, POPUP_TIMEOUT_MS);
+
+		const unsubscribe = createEventSubscription(DeepLinkSurrealOAuthEvent, (callbackUrl) => {
+			let parsed: URL;
+
+			try {
+				parsed = new URL(callbackUrl);
+			} catch {
+				return;
+			}
+
+			const error = parsed.searchParams.get("error");
+
+			if (error) {
+				cleanup();
+				reject(
+					new SurrealOAuthFlowError(
+						parsed.searchParams.get("error_description") ?? error,
+					),
+				);
+				return;
+			}
+
+			const code = parsed.searchParams.get("code");
+			const state = parsed.searchParams.get("state");
+
+			if (!code || !state) {
+				return;
+			}
+
+			if (state !== expectedState) {
+				cleanup();
+				reject(new SurrealOAuthFlowError("OAuth state mismatch"));
+				return;
+			}
+
+			cleanup();
+			resolve({ code, state });
+		});
+
+		function cleanup() {
+			window.clearTimeout(timeout);
+			unsubscribe();
+		}
+	});
+}
+
 /** Run PKCE OAuth sign-in immediately (opens browser popup). */
 export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authentication> {
 	const base = httpBaseFromConnection(auth.protocol, auth.hostname);
@@ -107,7 +161,7 @@ export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authe
 	const codeVerifier = randomOAuthString(64);
 	const codeChallenge = await codeChallengeS256(codeVerifier);
 	const state = randomOAuthString(32);
-	const redirectUri = surrealOAuthRedirectUri();
+	const redirectUri = surrealOAuthRedirectUri(isDesktop);
 
 	const authorizeUrl = buildOAuthAuthorizeUrl({
 		auth,
@@ -117,26 +171,38 @@ export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authe
 		codeChallenge,
 	});
 
-	const popup = window.open(authorizeUrl, "surrealist_oauth", "popup,width=520,height=720");
+	let code: string;
 
-	if (!popup) {
+	if (isDesktop) {
 		const opened = await adapter.openUrl(authorizeUrl, "external");
 
 		if (!opened) {
 			throw new SurrealOAuthFlowError("Could not open a browser window for OAuth");
 		}
 
-		throw new SurrealOAuthFlowError(
-			"Allow pop-ups for Surrealist to complete OAuth, or complete sign-in in the browser tab",
-		);
-	}
+		({ code } = await waitForSurrealOAuthDeepLink(state));
+	} else {
+		const popup = window.open(authorizeUrl, "surrealist_oauth", "popup,width=520,height=720");
 
-	const { code } = await waitForOAuthCallback(state, popup);
+		if (!popup) {
+			const opened = await adapter.openUrl(authorizeUrl, "external");
 
-	try {
-		popup.close();
-	} catch {
-		// ignore
+			if (!opened) {
+				throw new SurrealOAuthFlowError("Could not open a browser window for OAuth");
+			}
+
+			throw new SurrealOAuthFlowError(
+				"Allow pop-ups for Surrealist to complete OAuth, or complete sign-in in the browser tab",
+			);
+		}
+
+		({ code } = await waitForOAuthCallback(state, popup));
+
+		try {
+			popup.close();
+		} catch {
+			// ignore
+		}
 	}
 
 	const tokenResponse = await exchangeOAuthCode({

@@ -40,6 +40,7 @@ const ENTRYPOINTS = {
 	auth_return: "/tools/auth-return.html",
 	auth_launch: "/tools/auth-launch.html",
 	surreal_oauth_return: "/tools/surreal-oauth-return.html",
+	surreal_oauth_launch: "/tools/surreal-oauth-launch.html",
 	cloud_callback: "/tools/cloud-callback.html",
 	cloud_referral: "/tools/cloud-referral.html",
 };
@@ -49,6 +50,7 @@ const TOOLS = {
 	"tools/auth-return.html": "auth/return/index.html",
 	"tools/auth-launch.html": "auth/launch/index.html",
 	"tools/surreal-oauth-return.html": "auth/surreal/callback/index.html",
+	"tools/surreal-oauth-launch.html": "auth/surreal/launch/index.html",
 	"tools/cloud-callback.html": "cloud/callback/index.html",
 	"tools/cloud-referral.html": "cloud/referral/index.html",
 };
@@ -57,6 +59,7 @@ const REWRITES = {
 	"/auth/return": "/tools/auth-return.html",
 	"/auth/launch": "/tools/auth-launch.html",
 	"/auth/surreal/callback": "/tools/surreal-oauth-return.html",
+	"/auth/surreal/launch": "/tools/surreal-oauth-launch.html",
 	"/cloud/callback": "/tools/cloud-callback.html",
 };
 

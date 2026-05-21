@@ -40,3 +40,8 @@ export const SetQueryEvent = createEventBus<string>();
  * Invoked when a desktop deep link auth callback is received
  */
 export const DeepLinkAuthEvent = createEventBus<string>();
+
+/**
+ * Invoked when a desktop deep link SurrealDB instance OAuth callback is received
+ */
+export const DeepLinkSurrealOAuthEvent = createEventBus<string>();

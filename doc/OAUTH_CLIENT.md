@@ -30,10 +30,16 @@ Refresh expiry in the menu (`~Xd left`) requires `refresh_token_expires_in` in t
 
 ## Callback URL
 
-Register in `DEFINE ACCESS … REDIRECT_URIS`:
+Register in `DEFINE ACCESS … REDIRECT_URIS` (see **Authentication → JWT → OAuth** for copyable values):
 
-- Development: `http://localhost:1420/auth/surreal/callback`
-- Production: `https://<your-surrealist-host>/auth/surreal/callback`
+- **Web / dev popup:** `http://localhost:1420/auth/surreal/callback` or `https://app.surrealdb.com/auth/surreal/callback`
+- **Desktop app:** `https://app.surrealdb.com/auth/surreal/launch` — hosted page opens `surrealist://surreal-oauth?…` (same pattern as SurrealDB Cloud `auth/launch` → `surrealist://callback/auth?…`)
+
+Do not use a custom-scheme URL (`surrealist://…`) as the IdP redirect URI; the IdP must redirect to HTTPS, then Surrealist deep-links into the app.
+
+## Defining OAuth access in Surrealist
+
+Use **Authentication** (ROOT / NAMESPACE / DATABASE) → **New access method** → **JWT** tab to configure verification, OIDC issuer, and **OAuth** (`WITH OAUTH` under JWT). Existing methods can be updated with **Save** (`DEFINE ACCESS OVERWRITE`).
 
 ## Server requirements
 

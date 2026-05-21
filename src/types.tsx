@@ -355,8 +355,27 @@ export interface AccessField {
 	value: string;
 }
 
+/** OAuth broker config from `INFO FOR … STRUCTURE` (`kind.jwt.oauth`). */
+export interface AccessJwtOAuth {
+	authorize_url?: string;
+	token_url?: string;
+	client_id: string;
+	client_secret?: string;
+	scopes: string[];
+	audience?: string;
+	redirect_uris: string[];
+}
+
 export interface AccessJwt {
-	issuer: {
+	/** OIDC issuer URL (`TYPE JWT ISSUER "…"`). */
+	oidc_issuer?: string;
+	/** Optional token signing key (`WITH ISSUER KEY`). */
+	issue?: {
+		alg: string;
+		key: string;
+	};
+	/** @deprecated Use `issue`; kept for older parsed structure shapes. */
+	issuer?: {
 		alg: string;
 		key: string;
 	};
@@ -368,6 +387,7 @@ export interface AccessJwt {
 				alg: string;
 				key: string;
 		  };
+	oauth?: AccessJwtOAuth;
 }
 
 export interface TableView {

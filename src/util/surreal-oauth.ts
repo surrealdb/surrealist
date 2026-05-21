@@ -1,5 +1,65 @@
 import type { Authentication, Protocol } from "~/types";
+import { isDevelopment } from "./environment";
 import { fastParseJwt } from "./helpers";
+
+/** Deep-link host for desktop instance OAuth (`surrealist://surreal-oauth?…`). */
+export const SURREAL_OAUTH_DEEP_LINK_HOST = "surreal-oauth";
+
+const OAUTH_CALLBACK_HOST = import.meta.env.VITE_AUTH0_CALLBACK_HOST;
+
+export interface SurrealOAuthRedirectUriHint {
+	id: string;
+	label: string;
+	description: string;
+	uri: string;
+}
+
+function oauthCallbackOrigin() {
+	if (isDevelopment) {
+		return "http://localhost:1420";
+	}
+
+	return OAUTH_CALLBACK_HOST ?? (typeof window !== "undefined" ? window.location.origin : "");
+}
+
+export function surrealOAuthWebCallbackUri() {
+	return `${oauthCallbackOrigin()}/auth/surreal/callback`;
+}
+
+/** Hosted page that opens the desktop app (same pattern as cloud `auth/launch`). */
+export function surrealOAuthDesktopLaunchUri() {
+	return `${oauthCallbackOrigin()}/auth/surreal/launch`;
+}
+
+export function surrealOAuthRedirectUri(desktop: boolean) {
+	return desktop ? surrealOAuthDesktopLaunchUri() : surrealOAuthWebCallbackUri();
+}
+
+/** URIs to register on `DEFINE ACCESS … REDIRECT_URIS`. */
+export function surrealOAuthRedirectUriHints(): SurrealOAuthRedirectUriHint[] {
+	const web = surrealOAuthWebCallbackUri();
+	const launch = surrealOAuthDesktopLaunchUri();
+
+	const hints: SurrealOAuthRedirectUriHint[] = [
+		{
+			id: "web",
+			label: "Web",
+			description: "Browser popup when using Surrealist on the web or in dev",
+			uri: web,
+		},
+	];
+
+	if (launch !== web) {
+		hints.push({
+			id: "desktop",
+			label: "Desktop",
+			description: "System browser → deep link into the desktop app",
+			uri: launch,
+		});
+	}
+
+	return hints;
+}
 
 /** postMessage type from `/auth/surreal/callback` popup. */
 export const SURREAL_OAUTH_CALLBACK_MESSAGE = "surrealist-surreal-oauth-callback";
@@ -119,11 +179,6 @@ export function dismissOAuthDiscovery(hostname: string) {
 	} catch {
 		// ignore
 	}
-}
-
-export function surrealOAuthRedirectUri() {
-	const origin = typeof window !== "undefined" ? window.location.origin : "";
-	return `${origin}/auth/surreal/callback`;
 }
 
 function oauthAccessPrefix(base: string, ns?: string, db?: string) {

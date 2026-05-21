@@ -67,7 +67,7 @@ export async function syncConnectionSchema(
 
 	try {
 		const [kvInfoTask, nsInfoTask, dbInfoTask] = await Promise.allSettled([
-			executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE"),
+			executeQuerySingle<SchemaInfoKV>("INFO FOR ROOT STRUCTURE"),
 			executeQuerySingle<SchemaInfoNS>("INFO FOR NS STRUCTURE"),
 			executeQuerySingle<SchemaInfoDB>("INFO FOR DB STRUCTURE"),
 		]);
