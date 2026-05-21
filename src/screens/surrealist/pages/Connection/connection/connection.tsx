@@ -61,6 +61,7 @@ import {
 	OAuthConnectError,
 	resolveOAuthForConnect,
 } from "~/util/oauth-connect";
+import { OAuthFeatureDisabledError } from "~/util/oauth-feature";
 import { syncConnectionSchema } from "~/util/schema";
 import { createSurrealQL } from "~/util/surql";
 import { SurrealQL } from "~/util/surql/surrealql";
@@ -172,7 +173,7 @@ export async function openConnection(options?: ConnectOptions) {
 					});
 				}
 			} catch (err: unknown) {
-				if (err instanceof OAuthConnectError) {
+				if (err instanceof OAuthConnectError || err instanceof OAuthFeatureDisabledError) {
 					setLatestError(err.message);
 					showErrorNotification({
 						title: "Cannot connect",

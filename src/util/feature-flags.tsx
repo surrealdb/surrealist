@@ -93,6 +93,9 @@ export const schema = {
 	sandbox_deploy: {
 		options: [false, true],
 	},
+	oauth: {
+		options: [false, true],
+	},
 } satisfies FeatureFlagSchema;
 
 export const featureFlags = new FeatureFlags({
@@ -122,6 +125,7 @@ export const featureFlags = new FeatureFlags({
 			v3_migration_tooling: true,
 			support_tickets_endpoint: "staging",
 			sandbox_deploy: true,
+			oauth: true,
 		},
 		preview: {
 			query_view: true,
@@ -145,6 +149,7 @@ export const featureFlags = new FeatureFlags({
 			v3_migration_tooling: true,
 			support_tickets_endpoint: "staging",
 			sandbox_deploy: true,
+			oauth: false,
 		},
 		production: {
 			query_view: true,
@@ -167,6 +172,7 @@ export const featureFlags = new FeatureFlags({
 			v3_migration_tooling: true,
 			support_tickets_endpoint: "production",
 			sandbox_deploy: true,
+			oauth: false,
 		},
 	},
 	overrides: (flag) => {
@@ -181,3 +187,13 @@ export const featureFlags = new FeatureFlags({
 export const useFeatureFlags = featureFlagsHookFactory(featureFlags);
 
 export type FeatureFlagMap = TFeatureFlags<typeof schema>;
+
+/** SurrealDB instance OAuth client (connect, access editor, discovery prompt). */
+export function isOAuthFeatureEnabled() {
+	return featureFlags.get("oauth") === true;
+}
+
+export function useOAuthFeatureEnabled() {
+	const [flags] = useFeatureFlags();
+	return flags.oauth;
+}

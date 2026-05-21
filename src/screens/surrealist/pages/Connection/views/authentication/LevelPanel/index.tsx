@@ -18,6 +18,7 @@ import {
 import { executeQuery } from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { Base, SchemaAccess, SchemaUser } from "~/types";
 import { accessHasOAuth } from "~/util/access-define";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { AccessEditorModal } from "./models/access";
@@ -51,6 +52,7 @@ export function LevelPanel({
 	accesses,
 }: LevelPanelProps) {
 	const isConnected = useIsConnected();
+	const oauthEnabled = useOAuthFeatureEnabled();
 
 	const [showUserEditor, showUserEditorHandle] = useBoolean();
 	const [showAccessEditor, showAccessEditorHandle] = useBoolean();
@@ -192,7 +194,9 @@ export function LevelPanel({
 									color={color}
 									onEdit={editAccess}
 									onRemove={removeAccess}
-									onDetails={(access) => (accessHasOAuth(access) ? "OAuth" : "")}
+									onDetails={(access) =>
+										oauthEnabled && accessHasOAuth(access) ? "OAuth" : ""
+									}
 									onOptions={(access) => (
 										<Menu position="right-start">
 											<Menu.Target>

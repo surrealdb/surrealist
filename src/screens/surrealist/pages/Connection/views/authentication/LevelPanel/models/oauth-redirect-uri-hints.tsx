@@ -1,7 +1,6 @@
 import {
 	ActionIcon,
 	Alert,
-	Box,
 	Button,
 	Collapse,
 	CopyButton,
@@ -140,7 +139,10 @@ export function OAuthRedirectUriHints({
 					above.
 				</Text>
 
-				<Stack gap="xs" ml="sm">
+				<Stack
+					gap="xs"
+					ml="sm"
+				>
 					{hints.map((hint) => (
 						<HintRow
 							key={hint.id}
@@ -183,9 +185,7 @@ function HintRow({ hint, added }: { hint: SurrealOAuthRedirectUriHint; added: bo
 				className="selectable"
 				title={hint.uri}
 			>
-				<pre style={{ margin: 0 }}>
-					{hint.uri.trim()}
-				</pre>
+				<pre style={{ margin: 0 }}>{hint.uri.trim()}</pre>
 			</Text>
 
 			{added && (

@@ -20,6 +20,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { createSurreal } from "~/screens/surrealist/pages/Connection/connection/surreal";
 import { Connection, Protocol } from "~/types";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { connectionUri, isHostLocal } from "~/util/helpers";
 import {
 	dismissOAuthDiscovery,
@@ -47,6 +48,7 @@ export function ConnectionAddressDetails({
 	onChange,
 }: ConnectionAddressDetailsProps) {
 	const isLight = useIsLight();
+	const oauthEnabled = useOAuthFeatureEnabled();
 
 	const { protocol, hostname } = value.authentication;
 
@@ -135,7 +137,7 @@ export function ConnectionAddressDetails({
 		[protocol, hostname],
 	);
 
-	const discoveryEnabled = !!httpBase && isRemoteProtocol(protocol);
+	const discoveryEnabled = oauthEnabled && !!httpBase && isRemoteProtocol(protocol);
 
 	const { data: oauthDiscovery } = useQuery({
 		queryKey: ["oauth-discovery", httpBase],

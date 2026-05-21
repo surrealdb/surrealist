@@ -2,6 +2,7 @@ import { adapter, isDesktop } from "~/adapter";
 import { createEventSubscription } from "~/hooks/event";
 import type { Authentication } from "~/types";
 import { DeepLinkSurrealOAuthEvent } from "./global-events";
+import { assertOAuthFeatureEnabled } from "./oauth-feature";
 import {
 	applyOAuthTokenResponse,
 	buildOAuthAuthorizeUrl,
@@ -152,6 +153,8 @@ function waitForSurrealOAuthDeepLink(expectedState: string) {
 
 /** Run PKCE OAuth sign-in immediately (opens browser popup). */
 export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authentication> {
+	assertOAuthFeatureEnabled();
+
 	const base = httpBaseFromConnection(auth.protocol, auth.hostname);
 
 	if (!base) {

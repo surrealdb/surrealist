@@ -4,6 +4,7 @@ import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import type { Authentication, AuthLevel, CloudInstance, Connection } from "~/types";
 import { createBaseConnection } from "./defaults";
+import { isOAuthFeatureEnabled } from "./feature-flags";
 import { connectionUri, fastParseJwt } from "./helpers";
 import { isOAuthConnectionValid } from "./surreal-oauth";
 
@@ -183,7 +184,7 @@ export function isConnectionValid(auth: Authentication | undefined) {
 	}
 
 	if (auth.mode === "oauth") {
-		return isOAuthConnectionValid(auth);
+		return isOAuthFeatureEnabled() && isOAuthConnectionValid(auth);
 	}
 
 	return true;

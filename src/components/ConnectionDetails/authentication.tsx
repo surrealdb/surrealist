@@ -14,10 +14,12 @@ import {
 
 import { useDisclosure } from "@mantine/hooks";
 import { Icon, iconClose, iconPlus, iconWarning } from "@surrealdb/ui";
+import { useMemo } from "react";
 import { Updater } from "use-immer";
 import { AUTH_MODES, SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { AuthMode, Connection } from "~/types";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { fastParseJwt } from "~/util/helpers";
 import { isOAuthAccessRequired } from "~/util/surreal-oauth";
 import { ActionButton } from "../ActionButton";
@@ -32,6 +34,12 @@ export interface ConnectionAuthDetailsProps {
 
 export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetailsProps) {
 	const [editingAccess, editingAccessHandle] = useDisclosure();
+	const oauthEnabled = useOAuthFeatureEnabled();
+
+	const authModes = useMemo(
+		() => AUTH_MODES.filter((entry) => entry.value !== "oauth" || oauthEnabled),
+		[oauthEnabled],
+	);
 
 	const { mode, token } = value.authentication;
 
@@ -54,13 +62,23 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 			<SegmentedControl
 				mb="sm"
 				value={value.authentication.mode}
-				data={AUTH_MODES}
+				data={authModes}
 				onChange={(value) =>
 					onChange((draft) => {
 						draft.authentication.mode = value as AuthMode;
 					})
 				}
 			/>
+
+			{mode === "oauth" && !oauthEnabled && (
+				<Alert
+					color="orange"
+					title="OAuth unavailable"
+				>
+					Instance OAuth is not enabled in this environment. Choose another authentication
+					method or use a development build.
+				</Alert>
+			)}
 
 			{isSystemMethod && (
 				<SimpleGrid cols={2}>
@@ -146,7 +164,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 				</Group>
 			)}
 
-			{value.authentication.mode === "oauth" && (
+			{value.authentication.mode === "oauth" && oauthEnabled && (
 				<Stack gap="sm">
 					{value.authentication.oauthUseDefault ? (
 						<>

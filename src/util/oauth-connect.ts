@@ -1,5 +1,6 @@
 import { useInterfaceStore } from "~/stores/interface";
 import type { Authentication, Connection } from "~/types";
+import { assertOAuthFeatureEnabled } from "./oauth-feature";
 import { OAuthSignInCancelled, requestOAuthSignIn } from "./oauth-signin-prompt";
 import { ensureOAuthSession, hasValidOAuthSession, isOAuthAccessRequired } from "./surreal-oauth";
 import { runSurrealOAuthSignIn, SurrealOAuthFlowError } from "./surreal-oauth-flow";
@@ -21,6 +22,8 @@ export async function resolveOAuthForConnect(connection: Connection): Promise<Au
 	if (auth.mode !== "oauth") {
 		return auth;
 	}
+
+	assertOAuthFeatureEnabled();
 
 	if (isOAuthAccessRequired(auth) && !auth.access?.trim()) {
 		throw new OAuthConnectError(
@@ -54,6 +57,8 @@ export async function interactiveOAuthSignIn(auth: Authentication): Promise<Auth
 	if (auth.mode !== "oauth") {
 		return auth;
 	}
+
+	assertOAuthFeatureEnabled();
 
 	if (isOAuthAccessRequired(auth) && !auth.access?.trim()) {
 		throw new OAuthConnectError(

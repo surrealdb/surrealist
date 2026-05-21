@@ -21,6 +21,7 @@ import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnectionById } from "~/util/connection";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
@@ -66,7 +67,8 @@ export function ConnectionStatus() {
 
 	const isSandbox = connectionId === SANDBOX;
 	const isManaged = isSandbox || instance;
-	const showOAuthSession = authMode === "oauth" && !isSandbox;
+	const oauthEnabled = useOAuthFeatureEnabled();
+	const showOAuthSession = oauthEnabled && authMode === "oauth" && !isSandbox;
 	const isLoading = currentState === "connecting" || currentState === "retrying";
 	const pulse = currentState === "connected";
 

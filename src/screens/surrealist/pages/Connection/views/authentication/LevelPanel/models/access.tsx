@@ -29,6 +29,7 @@ import {
 	defaultAccessDefineForm,
 	validateAccessDefineForm,
 } from "~/util/access-define";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
 import { AccessOAuthFields } from "./access-oauth-fields";
@@ -64,6 +65,7 @@ export function AccessEditorModal({
 	list,
 	onClose,
 }: AccessEditorModalProps) {
+	const oauthEnabled = useOAuthFeatureEnabled();
 	const [form, setForm] = useState<AccessDefineForm>(() => defaultAccessDefineForm(level));
 	const [activeTab, setActiveTab] = useState("general");
 	const [validationError, setValidationError] = useState<string | null>(null);
@@ -330,16 +332,20 @@ export function AccessEditorModal({
 										/>
 									)}
 
-									<Divider
-										label="OAuth"
-										labelPosition="left"
-									/>
+									{oauthEnabled && (
+										<>
+											<Divider
+												label="OAuth"
+												labelPosition="left"
+											/>
 
-									<AccessOAuthFields
-										value={form.oauth}
-										oidcIssuer={form.oidcIssuer}
-										onChange={(oauth) => patchForm({ oauth })}
-									/>
+											<AccessOAuthFields
+												value={form.oauth}
+												oidcIssuer={form.oidcIssuer}
+												onChange={(oauth) => patchForm({ oauth })}
+											/>
+										</>
+									)}
 								</>
 							)}
 						</Stack>

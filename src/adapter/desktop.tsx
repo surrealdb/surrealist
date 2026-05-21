@@ -17,7 +17,7 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
 import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
-import { featureFlags } from "~/util/feature-flags";
+import { featureFlags, isOAuthFeatureEnabled } from "~/util/feature-flags";
 import { openAndReadFiles, openAndWriteFile } from "~/util/file-system";
 import {
 	DeepLinkAuthEvent,
@@ -454,7 +454,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 					}
 				}
 
-				if (host === "surreal-oauth" && params) {
+				if (host === "surreal-oauth" && params && isOAuthFeatureEnabled()) {
 					const search = new URLSearchParams(params);
 
 					if (search.has("code") || search.has("error")) {
