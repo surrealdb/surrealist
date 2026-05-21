@@ -146,7 +146,7 @@ export function CreateConnectionPage() {
 					<Box>
 						<PageBreadcrumbs
 							items={[
-								{ label: "Surrealist", href: "/overview" },
+								{ label: "Surrealist", href: "/" },
 								{ label: "Connections" },
 								{ label: "Create" },
 							]}
@@ -355,7 +355,7 @@ export function CreateConnectionPage() {
 						onChange={setConnection}
 					/>
 					<Group mt={24}>
-						<Link to="/overview">
+						<Link to="/">
 							<Button
 								color="obsidian"
 								variant="light"

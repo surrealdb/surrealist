@@ -52,7 +52,7 @@ export function OrganizationContextCheckoutPage({ id }: OrganizationContextCheck
 	const { data: organisation } = useCloudOrganizationQuery(id);
 
 	if (organisationsQuery.isSuccess && !organisation) {
-		return <Redirect to="/overview" />;
+		return <Redirect to="/" />;
 	}
 
 	return (
@@ -151,7 +151,7 @@ function PageContent({ organisation }: PageContentProps) {
 						<Box>
 							<PageBreadcrumbs
 								items={[
-									{ label: "Surrealist", href: "/overview" },
+									{ label: "Surrealist", href: "/" },
 									{
 										label: organisation.name,
 										href: `/o/${organisation.id}`,

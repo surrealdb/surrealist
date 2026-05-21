@@ -1,6 +1,16 @@
 .drawer-tabs {
 	display: flex;
 	flex-direction: column;
+	width: 100%;
+	min-width: 0;
+
+	:global(.mantine-Tabs-list) {
+		width: 100%;
+	}
+
+	:global(.mantine-Tabs-tab) {
+		flex: 1;
+	}
 
 	:global(.mantine-Tabs-panel) {
 		flex: 1;

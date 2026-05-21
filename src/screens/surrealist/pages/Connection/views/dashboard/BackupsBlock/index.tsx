@@ -13,6 +13,7 @@ export interface BackupsBlockProps {
 	isLoading: boolean;
 	onUpgrade: () => void;
 	onOpenBackups: () => void;
+	onBackupPolicy?: () => void;
 }
 
 export function BackupsBlock({
@@ -75,19 +76,25 @@ export function BackupsBlock({
 							</Button>
 						)}
 					</>
-				) : latest ? (
+				) : (
 					<>
-						<Group gap="xs">
-							<Text>Latest backup: </Text>
-							<Text
-								c="bright"
-								fw={600}
-							>
-								{formatDistance(latest.snapshot_started_at, new Date(), {
-									addSuffix: true,
-								})}
-							</Text>
-						</Group>
+						{latest ? (
+							<Group gap="xs">
+								<Text>Latest backup: </Text>
+								<Text
+									c="bright"
+									fw={600}
+								>
+									{formatDistance(latest.snapshot_started_at, new Date(), {
+										addSuffix: true,
+									})}
+								</Text>
+							</Group>
+						) : (
+							<Center flex={1}>
+								<Text c="obsidian">Waiting for next backup...</Text>
+							</Center>
+						)}
 						<Button
 							mt="md"
 							size="xs"
@@ -95,13 +102,9 @@ export function BackupsBlock({
 							variant="gradient"
 							onClick={onOpenBackups}
 						>
-							View available backups
+							Manage backups
 						</Button>
 					</>
-				) : (
-					<Center flex={1}>
-						<Text c="obsidian">Waiting for next backup...</Text>
-					</Center>
 				)}
 			</Paper>
 		</Skeleton>

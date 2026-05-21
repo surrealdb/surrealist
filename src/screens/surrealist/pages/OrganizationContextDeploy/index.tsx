@@ -80,7 +80,7 @@ export function OrganizationContextDeployPage({ id }: OrganizationContextDeployP
 	const { isPending: packageQueryPending } = useOrganizationContextPackageQuery(id);
 
 	if (organisationsQuery.isSuccess && !organisation) {
-		return <Redirect to="/overview" />;
+		return <Redirect to="/" />;
 	}
 
 	return (
@@ -182,7 +182,7 @@ function PageContent({ organisation }: PageContentProps) {
 					>
 						<PageBreadcrumbs
 							items={[
-								{ label: "Surrealist", href: "/overview" },
+								{ label: "Surrealist", href: "/" },
 								{
 									label: organisation.name,
 									href: `/o/${organisation.id}`,

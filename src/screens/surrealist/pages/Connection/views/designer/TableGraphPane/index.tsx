@@ -136,6 +136,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const [isExporting, setIsExporting] = useState(false);
 	const [isTiny, setIsTiny] = useState(false);
+	const [zoomLevel, setZoomLevel] = useState(1);
 	const ref = useRef<ElementRef<"div">>(null);
 	const isLight = useIsLight();
 
@@ -373,7 +374,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	useOnViewportChange({
-		onChange: (vp) => setIsTiny(vp.zoom <= 0.1),
+		onChange: (vp) => {
+			setIsTiny(vp.zoom <= 0.1);
+			setZoomLevel(vp.zoom);
+		},
 	});
 
 	const isViewActive = view === "designer";
@@ -558,7 +562,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	return (
-		<DiagramContext.Provider value={{ warnings, isTiny: isTiny && !isExporting }}>
+		<DiagramContext.Provider value={{ warnings, isTiny: isTiny && !isExporting, zoomLevel }}>
 			<ContentPane
 				title="Table Graph"
 				icon={iconRelation}
@@ -715,7 +719,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						fitView
 						nodes={nodes}
 						edges={edges}
-						minZoom={0.01}
+						minZoom={0.05}
 						nodeTypes={NODE_TYPES}
 						edgeTypes={EDGE_TYPES}
 						nodesConnectable={false}

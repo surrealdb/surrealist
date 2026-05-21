@@ -112,6 +112,7 @@ export function DashboardView() {
 
 	const [upgradeTab, setUpgradeTab] = useState("type");
 	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
+	const [backupsTab, setBackupsTab] = useState("backups");
 
 	const [metricOptions, setMetricOptions] = useImmer<MonitorMetricOptions>({
 		duration: "hour",
@@ -319,6 +320,16 @@ export function DashboardView() {
 		configuringHandle.open();
 	});
 
+	const handleOpenBackups = useStable(() => {
+		setBackupsTab("backups");
+		backupsHandle.open();
+	});
+
+	const handleBackupPolicy = useStable(() => {
+		setBackupsTab("retention");
+		backupsHandle.open();
+	});
+
 	const publicAccess = details?.access_type === "public" || details?.access_type === "dual";
 	const privateAccess = details?.access_type === "private" || details?.access_type === "dual";
 	const isLoading =
@@ -329,7 +340,7 @@ export function DashboardView() {
 	}
 
 	if (details?.state === "deleting") {
-		return <Redirect to="/overview" />;
+		return <Redirect to="/" />;
 	}
 
 	return (
@@ -365,7 +376,7 @@ export function DashboardView() {
 									) : (
 										<PageBreadcrumbs
 											items={[
-												{ label: "Surrealist", href: "/overview" },
+												{ label: "Surrealist", href: "/" },
 												{
 													label: organisation?.name ?? "",
 													href: `/o/${details?.organization_id}`,
@@ -612,7 +623,8 @@ export function DashboardView() {
 												backups={backups}
 												isLoading={isLoading}
 												onUpgrade={handleUpgradeType}
-												onOpenBackups={backupsHandle.open}
+												onOpenBackups={handleOpenBackups}
+												onBackupPolicy={handleBackupPolicy}
 											/>
 										</SimpleGrid>
 									</>
@@ -632,8 +644,10 @@ export function DashboardView() {
 					<>
 						<BackupsDrawerLazy
 							opened={backupsOpened}
+							tab={backupsTab}
 							backups={backups}
 							instance={details}
+							onChangeTab={setBackupsTab}
 							onClose={backupsHandle.close}
 						/>
 						<ConfiguratorDrawerLazy

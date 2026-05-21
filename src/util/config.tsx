@@ -137,7 +137,6 @@ export function backupConfig({ stripSensitive, connections }: ConfigBackupOption
 
 	// Omit unnecessary fields
 	config.previousVersion = undefined;
-	config.activeResource = undefined;
 	config.lastPromptedVersion = undefined;
 	config.lastViewedNewsAt = undefined;
 

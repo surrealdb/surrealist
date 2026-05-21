@@ -74,7 +74,7 @@ export function OrganizationTeamTab({ organization }: OrganizationTabProps) {
 		confirmText: "Leave",
 		skippable: true,
 		onConfirm: async () => {
-			navigate("/overview");
+			navigate("/");
 
 			await removeMutation.mutateAsync(userId);
 

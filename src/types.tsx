@@ -76,7 +76,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage = "/overview" | "/signin" | "/referrals" | "/mini/new";
+export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -326,7 +326,6 @@ export interface SurrealistConfig {
 	previousVersion: string;
 	connections: Connection[];
 	sandbox: Connection;
-	activeResource: string;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
 	lastViewedNewsAt: number | null;
@@ -655,6 +654,62 @@ export interface CloudInstance {
 	state: InstanceState;
 	type: CloudInstanceType;
 	distributed_storage_specs?: CloudDistributedStorageSpecs;
+	backup_policy?: CloudBackupPolicySummary;
+}
+
+export interface CloudBackupPolicyTierDaily {
+	retention_days: number;
+	min_days: number;
+	max_days: number;
+	editable: boolean;
+}
+
+export interface CloudBackupPolicyTierWeekly {
+	retention_weeks: number;
+	min_weeks: number;
+	max_weeks: number;
+	editable: boolean;
+}
+
+export interface CloudBackupPolicyTierMonthly {
+	retention_months: number;
+	min_months: number;
+	max_months: number;
+	editable: boolean;
+}
+
+export interface CloudBackupPolicyResponse {
+	daily: CloudBackupPolicyTierDaily;
+	weekly: CloudBackupPolicyTierWeekly;
+	monthly: CloudBackupPolicyTierMonthly;
+}
+
+export interface CloudUpdateBackupPolicyRequest {
+	daily_retention_days?: number | null;
+	weekly_retention_weeks?: number | null;
+	monthly_retention_months?: number | null;
+}
+
+export interface CloudBackupPolicySummary {
+	daily_retention_days: number;
+	weekly_retention_weeks: number;
+	monthly_retention_months: number;
+}
+
+export interface CloudOrganizationBackupBounds {
+	is_custom: boolean;
+	daily: {
+		min_days: number;
+		max_days: number;
+	};
+	weekly: {
+		min_weeks: number;
+		max_weeks: number;
+	};
+	monthly: {
+		min_months: number;
+		max_months: number;
+	};
 }
 
 export interface CloudInstanceCapabilities {
@@ -765,6 +820,7 @@ export interface CloudOrganization {
 	user_role: string;
 	resources_locked: boolean;
 	privatelink_enabled: boolean;
+	backup_bounds?: CloudOrganizationBackupBounds;
 }
 
 export interface CloudBanner {

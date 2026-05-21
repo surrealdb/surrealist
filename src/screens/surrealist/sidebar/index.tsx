@@ -69,7 +69,7 @@ export function SurrealistSidebar({ className, forceMode, ...other }: Surrealist
 				<UnstyledButton
 					mb="xl"
 					onClick={() => {
-						setLocation("/overview");
+						setLocation("/");
 						setOverlaySidebar(false);
 					}}
 				>

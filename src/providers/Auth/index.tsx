@@ -28,7 +28,7 @@ const AUTH_AUDIENCE = import.meta.env.VITE_AUTH0_AUDIENCE ?? "";
 
 const AUTH_RETURN_URL = callback("auth/return");
 const AUTH_LAUNCH_URL = callback("auth/launch");
-const AUTH_OVERVIEW_URL = callback("overview");
+const AUTH_OVERVIEW_URL = callback("");
 
 export { AUTH_RETURN_URL, AUTH_LAUNCH_URL };
 
@@ -112,8 +112,7 @@ function TokenBridge({ children }: PropsWithChildren) {
 
 		tagEvent("cloud_signout");
 		shutdown();
-
-		navigate("/overview");
+		navigate("/");
 
 		await broadcastAuthEvent("signout");
 

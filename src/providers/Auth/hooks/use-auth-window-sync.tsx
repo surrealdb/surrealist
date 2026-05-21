@@ -19,7 +19,7 @@ export function useAuthWindowSync() {
 			if (payload.type === "signin") {
 				await getAccessTokenSilently();
 			} else if (payload.type === "signout") {
-				navigate("/overview");
+				navigate("/");
 				await logout({ openUrl: false });
 			}
 		} catch (err) {

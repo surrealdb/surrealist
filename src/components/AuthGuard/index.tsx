@@ -17,7 +17,7 @@ export function AuthGuard({ loading, children }: PropsWithChildren<AuthGuardProp
 
 	useEffect(() => {
 		if (error) {
-			return navigate("/overview");
+			return navigate("/");
 		}
 	}, [error]);
 
