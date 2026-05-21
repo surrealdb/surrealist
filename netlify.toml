@@ -6,3 +6,16 @@ publish = "dist"
   from = "/*"
   to = "/index.html"
   status = 200
+
+# The Vite build pipeline gzip-compresses `.wasm` assets in place (see
+# `vite-plugin-compression2` in `vite.config.ts`), so the bytes Netlify serves
+# are already gzipped while keeping the `.wasm` filename. Mirror the S3
+# deployment in `.github/workflows/push-release.yaml` and advertise the
+# encoding so the browser can decompress before handing the module to
+# `WebAssembly.instantiateStreaming`. Without this header the LSP worker (and
+# every other WASM module) fails to initialise on Netlify previews.
+[[headers]]
+  for = "/assets/*.wasm"
+  [headers.values]
+    Content-Type = "application/wasm"
+    Content-Encoding = "gzip"
