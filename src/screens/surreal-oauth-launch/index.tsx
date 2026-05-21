@@ -13,12 +13,29 @@ import { SURREALIST_THEME } from "~/util/mantine";
 import { SURREAL_OAUTH_DEEP_LINK_HOST } from "~/util/surreal-oauth";
 import classes from "../auth-launch/style.module.scss";
 
+const ALLOWED_CALLBACK_PARAMS = new Set([
+	"code",
+	"state",
+	"error",
+	"error_description",
+	"error_uri",
+	"iss",
+]);
+
 export function SurrealOAuthLaunchScreen() {
 	const colorScheme = useThemePreference();
 
 	const launchUrl = useMemo(() => {
-		const params = new URLSearchParams(window.location.search);
-		return `surrealist://${SURREAL_OAUTH_DEEP_LINK_HOST}?${params.toString()}`;
+		const incoming = new URLSearchParams(window.location.search);
+		const safe = new URLSearchParams();
+
+		for (const [key, value] of incoming) {
+			if (ALLOWED_CALLBACK_PARAMS.has(key)) {
+				safe.append(key, value);
+			}
+		}
+
+		return `surrealist://${SURREAL_OAUTH_DEEP_LINK_HOST}?${safe.toString()}`;
 	}, []);
 
 	useLayoutEffect(() => {
