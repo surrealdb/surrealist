@@ -56,6 +56,11 @@ import {
 	showWarning,
 } from "~/util/helpers";
 import { parseIdent } from "~/util/language";
+import {
+	isOAuthSignInCancelled,
+	OAuthConnectError,
+	resolveOAuthForConnect,
+} from "~/util/oauth-connect";
 import { syncConnectionSchema } from "~/util/schema";
 import { createSurrealQL } from "~/util/surql";
 import { SurrealQL } from "~/util/surql/surrealql";
@@ -154,8 +159,41 @@ export async function openConnection(options?: ConnectOptions) {
 			}
 		}
 
-		const namespace = getAuthNS(connection.authentication) || connection.lastNamespace;
-		const database = getAuthDB(connection.authentication) || connection.lastDatabase;
+		let auth = connection.authentication;
+
+		if (auth.mode === "oauth") {
+			try {
+				auth = await resolveOAuthForConnect(connection);
+
+				if (auth !== connection.authentication) {
+					updateConnection({
+						...connection,
+						authentication: auth,
+					});
+				}
+			} catch (err: unknown) {
+				if (err instanceof OAuthConnectError) {
+					setLatestError(err.message);
+					showErrorNotification({
+						title: "Cannot connect",
+						content: err.message,
+					});
+				} else if (!isOAuthSignInCancelled(err)) {
+					const message = err instanceof Error ? err.message : "OAuth sign-in failed";
+					setLatestError(message);
+					showErrorNotification({
+						title: "OAuth sign-in failed",
+						content: message,
+					});
+				}
+
+				setCurrentState("disconnected");
+				return;
+			}
+		}
+
+		const namespace = getAuthNS(auth) || connection.lastNamespace;
+		const database = getAuthDB(auth) || connection.lastDatabase;
 
 		instance.subscribe("connecting", () => {
 			setCurrentState("connecting");
@@ -187,7 +225,7 @@ export async function openConnection(options?: ConnectOptions) {
 					retryDelayJitter: 0,
 				},
 				authentication: async () => {
-					const credentials = await composeAuthentication(connection.authentication);
+					const credentials = await composeAuthentication(auth);
 
 					if (credentials) {
 						return credentials as string | SystemAuth;

@@ -121,6 +121,11 @@ export function createBaseAuthentication(): Authentication {
 		token: "",
 		access: "",
 		accessFields: [],
+		oauthRefreshToken: "",
+		oauthUseDefault: false,
+		oauthUseRefreshToken: false,
+		oauthAuthorizationEndpoint: "",
+		oauthTokenEndpoint: "",
 	};
 }
 

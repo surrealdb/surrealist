@@ -11,6 +11,7 @@ export type InterfaceStore = {
 	liveTabs: Set<string>;
 	liveQueryMessages: Record<string, LiveMessage[]>;
 	showAccessSignup: boolean;
+	showOAuthSignIn: boolean;
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
 	overlaySidebar: boolean;
@@ -27,6 +28,8 @@ export type InterfaceStore = {
 	clearLiveQueryMessages: (id: string) => void;
 	openAccessSignup: () => void;
 	closeAccessSignup: () => void;
+	openOAuthSignIn: () => void;
+	closeOAuthSignIn: () => void;
 	showChangelog: () => void;
 	readChangelog: () => void;
 	setOverlaySidebar: (overlaySidebar: boolean) => void;
@@ -45,6 +48,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	liveTabs: new Set<string>(),
 	liveQueryMessages: {},
 	showAccessSignup: false,
+	showOAuthSignIn: false,
 	showChangelogAlert: false,
 	hasReadChangelog: false,
 	showQueryVariables: false,
@@ -122,6 +126,16 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	closeAccessSignup: () =>
 		set(() => ({
 			showAccessSignup: false,
+		})),
+
+	openOAuthSignIn: () =>
+		set(() => ({
+			showOAuthSignIn: true,
+		})),
+
+	closeOAuthSignIn: () =>
+		set(() => ({
+			showOAuthSignIn: false,
 		})),
 
 	showChangelog: () =>

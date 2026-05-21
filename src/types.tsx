@@ -75,6 +75,7 @@ export type AuthMode =
 	| "token"
 	| "access"
 	| "access-signup"
+	| "oauth"
 	| "cloud";
 export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new";
 export type ViewPage =
@@ -152,6 +153,19 @@ export interface Authentication {
 	token: string;
 	access: string;
 	accessFields: AccessField[];
+	/** IdP refresh token (client-held); separate from SurrealDB bearer keys. */
+	oauthRefreshToken?: string;
+	/** Use server `DEFINE CONFIG DEFAULT OAUTH` (omit client_id on authorize/token). */
+	oauthUseDefault?: boolean;
+	/** Store and use IdP refresh tokens when the server supports `refresh_token` grant. */
+	oauthUseRefreshToken?: boolean;
+	/** Cached from RFC 8414 discovery when default OAuth is configured. */
+	oauthAuthorizationEndpoint?: string;
+	oauthTokenEndpoint?: string;
+	/** Unix ms when the IdP access token expires (`expires_in` from token response). */
+	oauthTokenExpiresAt?: number;
+	/** Unix ms when the refresh token expires (`refresh_token_expires_in` when provided). */
+	oauthRefreshTokenExpiresAt?: number;
 	cloudInstance?: string;
 }
 

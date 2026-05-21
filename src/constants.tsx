@@ -227,6 +227,7 @@ export const AUTH_MODES: Selectable<AuthMode>[] = [
 	{ label: "Namespace", value: "namespace" },
 	{ label: "Database", value: "database" },
 	{ label: "Record Access", value: "access" },
+	{ label: "OAuth", value: "oauth" },
 	{ label: "Token", value: "token" },
 	{ label: "Anonymous", value: "none" },
 ];

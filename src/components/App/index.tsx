@@ -17,6 +17,7 @@ import { FailedConnectDialog } from "./modals/failed-connect";
 import { HelpSearchModal } from "./modals/help-center";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
+import { OAuthSignInModal } from "./modals/oauth-signin";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
 import { SidekickDrawer } from "./modals/sidekick";
@@ -51,6 +52,7 @@ export function App() {
 			<ChangelogModal />
 			<SandboxModal />
 			<AccessSignupModal />
+			<OAuthSignInModal />
 			<TableCreatorModal />
 			<HighlightToolModal />
 			<DataExportModal />

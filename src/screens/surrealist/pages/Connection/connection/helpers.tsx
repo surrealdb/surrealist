@@ -22,7 +22,8 @@ export async function composeAuthentication(connection: Authentication): Promise
 		case "access": {
 			return buildAccessAuth(connection) as any; // TODO Horrible unforgivable temporary hack
 		}
-		case "token": {
+		case "token":
+		case "oauth": {
 			return token;
 		}
 		case "cloud": {
