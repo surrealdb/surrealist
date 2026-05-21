@@ -226,15 +226,17 @@ export function buildOAuthTokenUrl(auth: Authentication, base: string) {
 export async function exchangeOAuthCode(options: {
 	auth: Authentication;
 	base: string;
-	code: string;
+	callbackUrl: string;
+	expectedState: string;
 	redirectUri: string;
 	codeVerifier: string;
 }): Promise<OAuthTokenResponse> {
-	const { auth, base, code, redirectUri, codeVerifier } = options;
+	const { auth, base, callbackUrl, expectedState, redirectUri, codeVerifier } = options;
 
 	return exchangeAuthorizationCodeGrant({
 		tokenEndpoint: buildOAuthTokenUrl(auth, base),
-		code,
+		callbackUrl,
+		expectedState,
 		redirectUri,
 		codeVerifier,
 		clientId: surrealOAuthClientId(auth),

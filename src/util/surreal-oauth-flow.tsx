@@ -24,7 +24,7 @@ export class SurrealOAuthFlowError extends Error {
 }
 
 function waitForOAuthCallback(expectedState: string, popup: Window) {
-	return new Promise<{ code: string; state: string }>((resolve, reject) => {
+	return new Promise<{ callbackUrl: string }>((resolve, reject) => {
 		const timeout = window.setTimeout(() => {
 			cleanup();
 			reject(new SurrealOAuthFlowError("OAuth sign-in timed out"));
@@ -58,7 +58,7 @@ function waitForOAuthCallback(expectedState: string, popup: Window) {
 				return;
 			}
 
-			resolve({ code: result.code, state: result.state });
+			resolve({ callbackUrl: url });
 		};
 
 		const pollClosed = window.setInterval(() => {
@@ -79,7 +79,7 @@ function waitForOAuthCallback(expectedState: string, popup: Window) {
 }
 
 function waitForSurrealOAuthDeepLink(expectedState: string) {
-	return new Promise<{ code: string; state: string }>((resolve, reject) => {
+	return new Promise<{ callbackUrl: string }>((resolve, reject) => {
 		const timeout = window.setTimeout(() => {
 			cleanup();
 			reject(new SurrealOAuthFlowError("OAuth sign-in timed out"));
@@ -99,7 +99,7 @@ function waitForSurrealOAuthDeepLink(expectedState: string) {
 				return;
 			}
 
-			resolve({ code: result.code, state: result.state });
+			resolve({ callbackUrl });
 		});
 
 		function cleanup() {
@@ -131,7 +131,7 @@ export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authe
 		codeChallenge,
 	});
 
-	let code: string;
+	let callbackUrl: string;
 
 	if (isDesktop) {
 		const opened = await adapter.openUrl(authorizeUrl, "external");
@@ -140,7 +140,7 @@ export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authe
 			throw new SurrealOAuthFlowError("Could not open a browser window for OAuth");
 		}
 
-		({ code } = await waitForSurrealOAuthDeepLink(state));
+		({ callbackUrl } = await waitForSurrealOAuthDeepLink(state));
 	} else {
 		const popup = window.open(authorizeUrl, "surrealist_oauth", "popup,width=520,height=720");
 
@@ -150,7 +150,7 @@ export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authe
 			);
 		}
 
-		({ code } = await waitForOAuthCallback(state, popup));
+		({ callbackUrl } = await waitForOAuthCallback(state, popup));
 
 		try {
 			popup.close();
@@ -162,7 +162,8 @@ export async function runSurrealOAuthSignIn(auth: Authentication): Promise<Authe
 	const tokenResponse = await exchangeOAuthCode({
 		auth,
 		base,
-		code,
+		callbackUrl,
+		expectedState: state,
 		redirectUri,
 		codeVerifier,
 	});

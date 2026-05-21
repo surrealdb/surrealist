@@ -145,22 +145,50 @@ export async function discoverAuthorizationServerMetadata(
 
 export async function exchangeAuthorizationCodeGrant(options: {
 	tokenEndpoint: string;
-	code: string;
+	/** Full redirect URL (or its query) returned from the authorize step. */
+	callbackUrl: string;
+	expectedState: string;
 	redirectUri: string;
 	codeVerifier: string;
 	clientId?: string;
 }): Promise<OAuthTokenResponse> {
-	const { tokenEndpoint, code, redirectUri, codeVerifier, clientId } = options;
+	const { tokenEndpoint, callbackUrl, expectedState, redirectUri, codeVerifier, clientId } =
+		options;
 	const as = surrealAuthorizationServer(tokenEndpoint);
 	const client = surrealOAuthClient(clientId);
 	const clientAuth = surrealOAuthClientAuth(clientId);
+
+	let callbackParameters: URLSearchParams;
+
+	try {
+		callbackParameters = oauth.validateAuthResponse(
+			as,
+			client,
+			new URL(callbackUrl),
+			expectedState,
+		);
+	} catch (err) {
+		if (err instanceof oauth.AuthorizationResponseError) {
+			const params = err.cause;
+
+			if (params instanceof URLSearchParams) {
+				const description = params.get("error_description") ?? params.get("error");
+
+				if (description) {
+					throw new Error(description);
+				}
+			}
+		}
+
+		throw new Error(oauthErrorMessage(err, "Invalid OAuth callback"));
+	}
 
 	try {
 		const response = await oauth.authorizationCodeGrantRequest(
 			as,
 			client,
 			clientAuth,
-			new URLSearchParams({ code }),
+			callbackParameters,
 			redirectUri,
 			codeVerifier,
 			httpOptions(new URL(tokenEndpoint)),
