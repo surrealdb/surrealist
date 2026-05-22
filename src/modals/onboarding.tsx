@@ -3,7 +3,9 @@ import { Icon, iconCheck, iconChevronRight, iconClose, iconOpen, Spacer } from "
 import type { PropsWithChildren, ReactNode } from "react";
 import { useEffect } from "react";
 import { Link } from "wouter";
+import instanceBanner from "~/assets/images/instance.webp";
 import sandboxBanner from "~/assets/images/sandbox.webp";
+import spectronBanner from "~/assets/images/spectron.webp";
 import { ActionButton } from "~/components/ActionButton";
 import { useBoolean } from "~/hooks/boolean";
 import { useOnboarding } from "~/hooks/onboarding";
@@ -188,13 +190,7 @@ export function InstancesOnboarding({ deployHref }: InstancesOnboardingProps) {
 			description="SurrealDB is the database where storage, context, and memory are one transaction. Documents, graphs, vectors, time-series, and relational data as native primitives in a single ACID transaction - no plugins, no bolt-ons."
 			learnMoreHref="https://surrealdb.com/platform/surrealdb"
 			deployAction={{ label: "Get started", href: deployHref }}
-			// media={
-			// 	<VideoPlayer
-			// 		src="https://surrealdb.com/videos/surrealdb-overview.mp4"
-			// 		initialMuted
-			// 		autoPlay
-			// 	/>
-			// }
+			media={<Image src={instanceBanner} />}
 		>
 			<List.Item>
 				Native multi-model engine unifying documents, graphs, vectors, full-text search, and
@@ -229,13 +225,7 @@ export function ContextsOnboarding({ deployHref }: ContextsOnboardingProps) {
 			description="Spectron gives your AI agents persistent, queryable memory powered by knowledge graphs, entity extraction, temporal facts, and hybrid retrieval - built directly into SurrealDB rather than bolted on top."
 			learnMoreHref="https://surrealdb.com/platform/spectron"
 			deployAction={{ label: "Get started", href: deployHref }}
-			// media={
-			// 	<VideoPlayer
-			// 		src="https://cdn.brandsafe.io/d7eeplmems9s73ft769g.mp4"
-			// 		initialMuted
-			// 		autoPlay
-			// 	/>
-			// }
+			media={<Image src={spectronBanner} />}
 		>
 			<List.Item>Automatically extract memories and facts from conversations</List.Item>
 			<List.Item>Hybrid retrieval combining graph traversal and vector similarity</List.Item>
