@@ -28,7 +28,7 @@ export function useConversationsQuery() {
 		refetchInterval: 30_000,
 		enabled: isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
-			return fetchContextAPI<IntercomConversation[]>(`/support/v1/cloud/conversations`, env);
+			return fetchContextAPI<IntercomConversation[]>(`/api/support/v1/cloud/conversations`, env);
 		},
 	});
 }
@@ -46,7 +46,7 @@ export function useCloudOrganizationTicketsQuery(organizationId?: string) {
 		enabled: !!organizationId && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomTicket[]>(
-				`/support/v1/cloud/org/${organizationId}/tickets`,
+				`/api/support/v1/cloud/org/${organizationId}/tickets`,
 				env,
 			);
 		},
@@ -65,7 +65,7 @@ export function useCloudOrganizationTicketAttributesQuery(organizationId?: strin
 		enabled: !!organizationId && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomTicketTypeAttribute[]>(
-				`/support/v1/cloud/org/${organizationId}/ticket_attributes`,
+				`/api/support/v1/cloud/org/${organizationId}/ticket_attributes`,
 				env,
 			);
 		},
@@ -87,7 +87,7 @@ export function useCloudConversationQuery(conversationId?: string) {
 		enabled: !!conversationId && isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomConversation>(
-				`/support/v1/cloud/conversations/${conversationId}`,
+				`/api/support/v1/cloud/conversations/${conversationId}`,
 				env,
 			);
 		},
@@ -108,7 +108,7 @@ export function useCloudUnreadConversationsQuery() {
 		refetchInterval: 30_000,
 		enabled: isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
-			return fetchContextAPI<boolean>(`/support/v1/cloud/conversations/has_unread`, env);
+			return fetchContextAPI<boolean>(`/api/support/v1/cloud/conversations/has_unread`, env);
 		},
 	});
 }
@@ -123,7 +123,7 @@ export function useSupportCollectionsQuery() {
 		queryKey: ["cloud", "support_categories"],
 		queryFn: async () => {
 			return fetchContextAPI<IntercomSupportCollectionShallow[]>(
-				`/support/v1/help/collections`,
+				`/api/support/v1/help/collections`,
 				env,
 			);
 		},
@@ -141,7 +141,7 @@ export function useSupportCollectionQuery(collectionId?: string) {
 		enabled: !!collectionId,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomSupportCollection>(
-				`/support/v1/help/collections/${collectionId}`,
+				`/api/support/v1/help/collections/${collectionId}`,
 				env,
 			);
 		},
@@ -159,7 +159,7 @@ export function useSupportArticleQuery(articleId?: string) {
 		enabled: !!articleId,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomSupportArticle>(
-				`/support/v1/help/articles/${articleId}`,
+				`/api/support/v1/help/articles/${articleId}`,
 				env,
 			);
 		},
@@ -178,7 +178,7 @@ export function useSearchHelpArticlesQuery(query: string) {
 		placeholderData: keepPreviousData,
 		queryFn: async () => {
 			return fetchContextAPI<IntercomSupportArticle[]>(
-				`/support/v1/help/articles/search`,
+				`/api/support/v1/help/articles/search`,
 				env,
 				{
 					method: "POST",

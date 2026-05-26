@@ -65,7 +65,7 @@ export function useLatestNewsQuery() {
 	return useQuery<NewsPost[]>({
 		queryKey: ["newsfeed"],
 		queryFn: async () => {
-			const response = await fetch(`${getApiBase()}/website/v1/blogs`, {
+			const response = await fetch(`${getApiBase()}/api/website/v1/blogs`, {
 				headers: { Accept: "application/json" },
 			});
 
@@ -90,7 +90,7 @@ export function useBlogPostContentQuery(slug: string | null) {
 			if (!slug) throw new Error("No slug provided");
 
 			const response = await fetch(
-				`${getApiBase()}/website/v1/blogs/${encodeURIComponent(slug)}`,
+				`${getApiBase()}/api/website/v1/blogs/${encodeURIComponent(slug)}`,
 				{ headers: { Accept: "application/json" } },
 			);
 

@@ -6,7 +6,7 @@ import { showErrorNotification } from "~/util/helpers";
 
 async function sidekickFetch<T>(path: string, options?: RequestInit): Promise<T> {
 	const accessToken = await getAccessToken();
-	const response = await fetch(`${getApiBase()}/sidekick/v1${path}`, {
+	const response = await fetch(`${getApiBase()}/api/sidekick/v1${path}`, {
 		...options,
 		headers: {
 			Authorization: `Bearer ${accessToken}`,
