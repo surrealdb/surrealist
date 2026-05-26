@@ -32,7 +32,7 @@ export function useSidekickStream(handler: StreamHandler): SidekickStream {
 			const accessToken = await getAccessToken();
 			controller.current = new AbortController();
 
-			const response = await fetch(`${getApiBase()}/sidekick/v1/chat`, {
+			const response = await fetch(`${getApiBase()}/api/sidekick/v1/chat`, {
 				method: "POST",
 				signal: controller.current.signal,
 				headers: {
