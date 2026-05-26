@@ -7,21 +7,24 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
+	TextInput,
 } from "@mantine/core";
-import { Icon, iconDatabase, iconPlus, iconTrash } from "@surrealdb/ui";
+import { useInputState } from "@mantine/hooks";
+import { clsx, Icon, iconDatabase, iconPlus, iconSearch, iconTrash } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
-import { type SyntheticEvent, useMemo } from "react";
+import { type KeyboardEvent, type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
-import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useKeyNavigation } from "~/hooks/keys";
 import { useNamespaceSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { openCreateDatabaseModal } from "~/modals/create-database";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
+import { fuzzyMatch } from "~/util/helpers";
 import { parseIdent } from "~/util/language";
 import { activateDatabase, executeQuery } from "../../pages/Connection/connection/connection";
 import classes from "./style.module.scss";
@@ -30,11 +33,19 @@ export interface DatabaseProps {
 	value: string;
 	activeNamespace: string;
 	activeDatabase: string;
+	selected: boolean;
 	onOpen: (ns: string) => void;
 	onRemove: () => void;
 }
 
-function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: DatabaseProps) {
+function Database({
+	value,
+	activeNamespace,
+	activeDatabase,
+	selected,
+	onOpen,
+	onRemove,
+}: DatabaseProps) {
 	const open = useStable(() => onOpen(value));
 
 	const remove = useConfirmation({
@@ -84,9 +95,10 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 
 	return (
 		<Menu.Item
+			data-navigation-item-id={value}
 			variant={value === activeDatabase ? "gradient" : undefined}
 			onClick={open}
-			className={classes.database}
+			className={clsx(classes.database, selected && classes.databaseActive)}
 			rightSection={
 				<ActionButton
 					variant="transparent"
@@ -105,6 +117,7 @@ function Database({ value, activeNamespace, activeDatabase, onOpen, onRemove }: 
 			<Text
 				maw={215}
 				truncate
+				title={value}
 			>
 				{value}
 			</Text>
@@ -120,6 +133,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connected = useIsConnected();
 	const schema = useNamespaceSchema();
+	const [search, setSearch] = useInputState("");
 
 	const [namespace, database, authentication] = useConnection((c) => [
 		c?.lastNamespace ?? "",
@@ -136,8 +150,13 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 			return [authDB];
 		}
 
-		return schema.databases.map((db) => parseIdent(db.name));
-	}, [schema, authentication]);
+		return schema.databases
+			.filter((db) => fuzzyMatch(search, db.name))
+			.map((db) => parseIdent(db.name));
+	}, [schema, authentication, search]);
+
+	const navigationItems = useMemo(() => databases.map((db) => ({ id: db })), [databases]);
+	const menuItems = opened ? navigationItems : [];
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (db: string) => {
@@ -147,6 +166,28 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 
 			openHandle.close();
 		},
+	});
+
+	const activate = useStable((item: { id: string }) => {
+		mutate(item.id);
+	});
+
+	const [handleKeyDown, selected] = useKeyNavigation(menuItems, activate, database || undefined);
+
+	const handleSearchKeyDown = useStable((event: KeyboardEvent<HTMLInputElement>) => {
+		handleKeyDown(event);
+
+		if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter") {
+			event.stopPropagation();
+		}
+	});
+
+	const handleMenuChange = useStable((value: boolean) => {
+		openHandle.set(value);
+
+		if (!value) {
+			setSearch("");
+		}
 	});
 
 	const openCreator = useStable(() => {
@@ -177,16 +218,18 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	) : (
 		<Menu
 			opened={opened}
-			onChange={openHandle.set}
+			onChange={handleMenuChange}
 			trigger="hover"
 			position="bottom-start"
+			trapFocus={false}
+			withInitialFocusPlaceholder={false}
 			transitionProps={{
 				transition: "scale-y",
 			}}
 		>
 			<Menu.Target>
 				<Button
-					px="sm"
+					px="md"
 					variant={database ? "subtle" : "light"}
 					color="obsidian"
 					leftSection={<Icon path={iconDatabase} />}
@@ -207,16 +250,28 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 			>
 				<Group
 					gap="sm"
-					p="sm"
+					p="xs"
 				>
-					<Text
-						fw={600}
-						c="bright"
-					>
-						Databases
-					</Text>
-					{isPending && <Loader size={14} />}
-					<Spacer />
+					{isPending ? (
+						<TextInput
+							flex={1}
+							placeholder="Loading databases..."
+							leftSection={<Loader size={14} />}
+							variant="unstyled"
+							readOnly
+						/>
+					) : (
+						<TextInput
+							flex={1}
+							placeholder="Search databases"
+							leftSection={<Icon path={iconSearch} />}
+							variant="unstyled"
+							autoFocus
+							value={search}
+							onChange={setSearch}
+							onKeyDown={handleSearchKeyDown}
+						/>
+					)}
 					<ActionButton
 						color="obsidian"
 						variant="light"
@@ -235,7 +290,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 							py="md"
 							ta="center"
 						>
-							No databases defined
+							No databases found
 						</Text>
 					) : (
 						<Stack
@@ -248,6 +303,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 									value={db}
 									activeNamespace={namespace}
 									activeDatabase={database}
+									selected={selected === db}
 									onOpen={mutate}
 									onRemove={openHandle.close}
 								/>

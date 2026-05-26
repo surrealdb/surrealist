@@ -7,21 +7,24 @@ import {
 	ScrollArea,
 	Stack,
 	Text,
+	TextInput,
 } from "@mantine/core";
-import { Icon, iconNamespace, iconPlus, iconTrash } from "@surrealdb/ui";
+import { useInputState } from "@mantine/hooks";
+import { clsx, Icon, iconNamespace, iconPlus, iconSearch, iconTrash } from "@surrealdb/ui";
 import { useMutation } from "@tanstack/react-query";
-import { type SyntheticEvent, useMemo } from "react";
+import { type KeyboardEvent, type SyntheticEvent, useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
-import { Spacer } from "~/components/Spacer";
 import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useKeyNavigation } from "~/hooks/keys";
 import { useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { openCreateNamespaceModal } from "~/modals/create-namespace";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
+import { fuzzyMatch } from "~/util/helpers";
 import { parseIdent } from "~/util/language";
 import { activateDatabase, executeQuery } from "../../pages/Connection/connection/connection";
 import classes from "./style.module.scss";
@@ -29,11 +32,12 @@ import classes from "./style.module.scss";
 export interface NamespaceProps {
 	value: string;
 	activeNamespace: string;
+	selected: boolean;
 	onOpen: (ns: string) => void;
 	onRemove: () => void;
 }
 
-function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps) {
+function Namespace({ value, activeNamespace, selected, onOpen, onRemove }: NamespaceProps) {
 	const open = useStable(() => onOpen(value));
 
 	const remove = useConfirmation({
@@ -83,9 +87,10 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 
 	return (
 		<Menu.Item
+			data-navigation-item-id={value}
 			variant={value === activeNamespace ? "gradient" : undefined}
 			onClick={open}
-			className={classes.namespace}
+			className={clsx(classes.namespace, selected && classes.namespaceActive)}
 			rightSection={
 				<ActionButton
 					variant="transparent"
@@ -104,6 +109,7 @@ function Namespace({ value, activeNamespace, onOpen, onRemove }: NamespaceProps)
 			<Text
 				maw={215}
 				truncate
+				title={value}
 			>
 				{value}
 			</Text>
@@ -119,6 +125,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	const [opened, openHandle] = useBoolean();
 	const connected = useIsConnected();
 	const schema = useRootSchema();
+	const [search, setSearch] = useInputState("");
 
 	const [namespace, authentication] = useConnection((c) => [
 		c?.lastNamespace ?? "",
@@ -134,8 +141,13 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 			return [authNS];
 		}
 
-		return schema.namespaces.map((ns) => parseIdent(ns.name));
-	}, [schema, authentication]);
+		return schema.namespaces
+			.filter((ns) => fuzzyMatch(search, ns.name))
+			.map((ns) => parseIdent(ns.name));
+	}, [schema, authentication, search]);
+
+	const navigationItems = useMemo(() => namespaces.map((ns) => ({ id: ns })), [namespaces]);
+	const menuItems = opened ? navigationItems : [];
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: async (ns: string) => {
@@ -145,6 +157,28 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 
 			openHandle.close();
 		},
+	});
+
+	const activate = useStable((item: { id: string }) => {
+		mutate(item.id);
+	});
+
+	const [handleKeyDown, selected] = useKeyNavigation(menuItems, activate, namespace || undefined);
+
+	const handleSearchKeyDown = useStable((event: KeyboardEvent<HTMLInputElement>) => {
+		handleKeyDown(event);
+
+		if (event.key === "ArrowDown" || event.key === "ArrowUp" || event.key === "Enter") {
+			event.stopPropagation();
+		}
+	});
+
+	const handleMenuChange = useStable((value: boolean) => {
+		openHandle.set(value);
+
+		if (!value) {
+			setSearch("");
+		}
 	});
 
 	const openCreator = useStable(() => {
@@ -174,9 +208,11 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	) : (
 		<Menu
 			opened={opened}
-			onChange={openHandle.set}
+			onChange={handleMenuChange}
 			trigger="hover"
 			position="bottom-start"
+			trapFocus={false}
+			withInitialFocusPlaceholder={false}
 			transitionProps={{
 				transition: "scale-y",
 			}}
@@ -204,16 +240,28 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 			>
 				<Group
 					gap="sm"
-					p="sm"
+					p="xs"
 				>
-					<Text
-						fw={600}
-						c="bright"
-					>
-						Namespaces
-					</Text>
-					{isPending && <Loader size={14} />}
-					<Spacer />
+					{isPending ? (
+						<TextInput
+							flex={1}
+							placeholder="Loading namespaces..."
+							leftSection={<Loader size={14} />}
+							variant="unstyled"
+							readOnly
+						/>
+					) : (
+						<TextInput
+							flex={1}
+							placeholder="Search namespaces"
+							leftSection={<Icon path={iconSearch} />}
+							variant="unstyled"
+							autoFocus
+							value={search}
+							onChange={setSearch}
+							onKeyDown={handleSearchKeyDown}
+						/>
+					)}
 					<ActionButton
 						color="obsidian"
 						variant="light"
@@ -232,7 +280,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 							py="md"
 							ta="center"
 						>
-							No namespaces defined
+							No namespaces found
 						</Text>
 					) : (
 						<Stack
@@ -244,6 +292,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 									key={ns}
 									value={ns}
 									activeNamespace={namespace}
+									selected={selected === ns}
 									onOpen={mutate}
 									onRemove={openHandle.close}
 								/>

@@ -5,3 +5,11 @@
 .namespace:hover .namespace-options {
 	visibility: visible;
 }
+
+.namespace-active {
+	background-color: var(--mantine-color-obsidian-6);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-1);
+	}
+}

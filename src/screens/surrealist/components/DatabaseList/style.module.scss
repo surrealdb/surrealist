@@ -5,3 +5,11 @@
 .database:hover .database-options {
 	visibility: visible;
 }
+
+.database-active {
+	background-color: var(--mantine-color-obsidian-6);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-1);
+	}
+}

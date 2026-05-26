@@ -1,5 +1,5 @@
 import { useWindowEvent } from "@mantine/hooks";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { Identified } from "~/types";
 import { useStable } from "./stable";
 
@@ -29,10 +29,6 @@ export function useActiveKeys(...keys: string[]): boolean {
 	});
 
 	return active.length > 0;
-}
-
-function _getNavigationElement<T extends Identified>(cmd: T) {
-	return document.querySelector(`[data-navigation-item-id="${cmd.id}"]`) as HTMLElement | null;
 }
 
 /**
@@ -93,13 +89,13 @@ export function useKeyNavigation<T extends Identified>(
 		});
 	});
 
-	useLayoutEffect(() => {
+	useEffect(() => {
 		const found = items.find((item) => item.id === active);
 
-		if (!found && items.length > 0) {
+		if (!found && items.length > 0 && items[0]?.id !== active) {
 			setActive(items[0].id);
 		}
-	});
+	}, [active, items]);
 
 	return [handleKeyDown, active] as const;
 }
