@@ -1,5 +1,5 @@
 import { mkdirSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig, type PluginOption } from "vite";
@@ -7,7 +7,6 @@ import { compression } from "vite-plugin-compression2";
 import { ViteImageOptimizer as images } from "vite-plugin-image-optimizer";
 import { Mode, plugin as markdown } from "vite-plugin-markdown";
 import { surreal, version } from "./package.json";
-import { servePrecompressedWasm } from "./src/util/wasm-gzip-preview";
 
 /** Project root (directory containing this config). */
 const projectDir = dirname(fileURLToPath(import.meta.url));
@@ -98,14 +97,7 @@ export default defineConfig(({ mode }) => {
 					next();
 				});
 			},
-		},
-		{
-			name: "wasm-gzip-preview",
-			configurePreviewServer(server) {
-				const distDir = join(server.config.root, server.config.build.outDir);
-				servePrecompressedWasm(server.middlewares, distDir);
-			},
-		},
+		}
 	];
 
 	// Configure compression for web builds
@@ -156,6 +148,9 @@ export default defineConfig(({ mode }) => {
 							"@surrealdb/ql-wasm-2",
 							"@surrealdb/ql-wasm-3",
 						],
+						lsp: [
+							"@surrealdb/surrealql-language-server",
+						]
 					},
 				},
 			},
