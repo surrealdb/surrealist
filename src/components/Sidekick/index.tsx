@@ -73,11 +73,11 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 
 		useEffect(() => {
 			return () => {
-				if (activeId?.id) {
+				if (activeId) {
 					stream.cancel();
 				}
 			};
-		}, [activeId?.id, stream.cancel]);
+		}, [activeId, stream.cancel]);
 
 		const showGlow = !activeRequest && !activeResponse && activeHistory.length === 0;
 

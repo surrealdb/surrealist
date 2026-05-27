@@ -1,6 +1,6 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import { AboutMetadata } from "@tauri-apps/api/menu";
-import type { Duration, RecordId } from "surrealdb";
+import type { Duration } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
@@ -261,7 +261,7 @@ export interface SurrealistCloudSettings {
 	urlApiBase: string;
 	urlAuthBase: string;
 	urlWebsiteBase: string;
-	urlApiTicketsBase: string;
+	urlSurrealApiBase: string;
 }
 
 export interface SurrealistGtmSettings {
@@ -598,7 +598,7 @@ export interface Driver {
 }
 
 export interface SidekickChatMessage {
-	id: RecordId | null;
+	id: string | null;
 	sent_at: Date;
 	content: string;
 	role: "user" | "assistant";
@@ -613,7 +613,7 @@ export interface SidekickChatMessage {
 }
 
 export interface SidekickChat {
-	id: RecordId;
+	id: string;
 	author: string;
 	title: string;
 	last_activity: Date;

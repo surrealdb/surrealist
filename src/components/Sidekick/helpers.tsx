@@ -12,7 +12,6 @@ import {
 	iconTable,
 	iconTransfer,
 } from "@surrealdb/ui";
-import { RecordId } from "surrealdb";
 import { SidekickChat } from "~/types";
 import { GroupedChats } from "./types";
 
@@ -30,14 +29,6 @@ export const SIDEKICK_QUESTIONS = [
 	{ icon: iconRelation, title: "How do I visualize graphs?" },
 	{ icon: iconLive, title: "How do I listen to changes?" },
 ];
-
-export function chatOf(id: string) {
-	return new RecordId("sidekick_chat", id);
-}
-
-export function messageOf(id: string) {
-	return new RecordId("sidekick_message", id);
-}
 
 export function groupChatsByDate(chats: SidekickChat[]): GroupedChats {
 	const now = new Date();
