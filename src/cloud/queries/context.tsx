@@ -28,7 +28,10 @@ export function useConversationsQuery() {
 		refetchInterval: 30_000,
 		enabled: isAuthenticated && hasCloudSession && flags.support_tickets,
 		queryFn: async () => {
-			return fetchContextAPI<IntercomConversation[]>(`/api/support/v1/cloud/conversations`, env);
+			return fetchContextAPI<IntercomConversation[]>(
+				`/api/support/v1/cloud/conversations`,
+				env,
+			);
 		},
 	});
 }
