@@ -69,6 +69,49 @@ export interface PricingResult {
 	support: PricingConfigBase[];
 }
 
+export type PricingCardState = "available" | "future" | "contact";
+
+// NOTE - temp fix
+export function isCloudPlanComingSoon(config: PricingConfigCloud): boolean {
+	return config.id === "cloud-scale" || config.cta.variant === "disabled";
+}
+
+// NOTE - temp fix
+export function getCloudPlanCardState(
+	config: PricingConfigCloud,
+	showEnterprise: boolean,
+): PricingCardState {
+	if (isCloudPlanComingSoon(config)) {
+		return "future";
+	}
+
+	if (config.surrealist?.plan === "enterprise") {
+		return showEnterprise ? "available" : "contact";
+	}
+
+	if (config.cta.variant === "gradient") {
+		return "contact";
+	}
+
+	return "available";
+}
+
+// NOTE - temp fix
+export function getCloudPlanDisplayConfig(
+	config: PricingConfigCloud,
+	showEnterprise: boolean,
+): PricingConfigCloud {
+	if (
+		config.surrealist?.plan === "enterprise" &&
+		showEnterprise &&
+		!isCloudPlanComingSoon(config)
+	) {
+		return { ...config, price: "Available" };
+	}
+
+	return config;
+}
+
 export function useCloudPricingQuery() {
 	const [flags] = useFeatureFlags();
 	const [websiteSetting] = useSetting("cloud", "urlWebsiteBase");
