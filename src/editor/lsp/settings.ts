@@ -18,6 +18,8 @@ export interface SurqlLspSettings {
 		username?: string;
 		password?: string;
 		token?: string;
+		access?: string;
+		mode?: string;
 	};
 	metadata?: {
 		mode: "workspace+db" | "db" | "workspace" | "filesystem";
@@ -50,6 +52,8 @@ export function buildInitializationOptions(): SurqlLspSettings {
 			username: auth.username || undefined,
 			password: auth.password || undefined,
 			token: auth.token || undefined,
+			access: auth.access || undefined,
+			mode: auth.mode,
 		},
 		metadata: {
 			mode: "workspace+db",

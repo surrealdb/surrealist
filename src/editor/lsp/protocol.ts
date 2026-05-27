@@ -60,4 +60,8 @@ export type WorkerOutbound =
 	  }
 	| {
 			kind: "ready";
+	  }
+	| {
+			kind: "initError";
+			message: string;
 	  };

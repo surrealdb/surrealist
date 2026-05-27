@@ -373,7 +373,7 @@ export const SURREAL_START_VECTOR_V2 = {
 		{
 			DEFINE TABLE documents;
 			DEFINE FIELD text ON documents TYPE string;
-			DEFINE FIELD embedding ON documents TYPE array<float, 4>;
+			DEFINE FIELD embedding ON documents TYPE array<float>;
 		};
 
 		-- Vector index
@@ -438,7 +438,7 @@ export const SURREAL_START_VECTOR_V3 = {
 		{
 			DEFINE TABLE documents;
 			DEFINE FIELD text ON documents TYPE string;
-			DEFINE FIELD embedding ON documents TYPE array<float, 4>;
+			DEFINE FIELD embedding ON documents TYPE array<float>;
 		};
 
 		-- Vector index

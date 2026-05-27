@@ -29,6 +29,22 @@ const post = (message: WorkerOutbound) => self.postMessage(message);
 const pendingConfigurations = new Map<number, (value: unknown) => void>();
 let nextConfigurationId = 1;
 
+let initPromise: ReturnType<typeof init> | undefined;
+
+/**
+ * Load the wasm module via `fetch` + `arrayBuffer`, matching the
+ * `@surrealdb/wasm` strategy. Browsers transparently gunzip responses
+ * that carry `Content-Encoding: gzip`, which is required when the build
+ * ships pre-compressed `.wasm` assets.
+ */
+async function initializeLanguageServer(): Promise<void> {
+	if (initPromise === undefined) {
+		const wasmCode = await fetch(wasmPath).then((response) => response.arrayBuffer());
+		initPromise = init({ module_or_path: wasmCode });
+	}
+	await initPromise;
+}
+
 // Defensive ceiling: if the host never replies (terminated, hung,
 // race during teardown), resolve with `null` instead of wedging the
 // language-server task that issued `workspace/configuration`.
@@ -50,20 +66,26 @@ const requestConfigurationFromHost = (): Promise<unknown> => {
 };
 
 const ready = (async () => {
-	await init(wasmPath);
+	try {
+		await initializeLanguageServer();
 
-	const server = new WasmLanguageServer({
-		onPublishDiagnostics: (uri: string, diagnostics: unknown) => {
-			post({ kind: "publishDiagnostics", uri, diagnostics });
-		},
-		onLogMessage: (level: number, message: string) => {
-			post({ kind: "logMessage", level, message });
-		},
-		onRequestConfiguration: requestConfigurationFromHost,
-	});
+		const server = new WasmLanguageServer({
+			onPublishDiagnostics: (uri: string, diagnostics: unknown) => {
+				post({ kind: "publishDiagnostics", uri, diagnostics });
+			},
+			onLogMessage: (level: number, message: string) => {
+				post({ kind: "logMessage", level, message });
+			},
+			onRequestConfiguration: requestConfigurationFromHost,
+		});
 
-	post({ kind: "ready" });
-	return server;
+		post({ kind: "ready" });
+		return server;
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		post({ kind: "initError", message });
+		throw error;
+	}
 })();
 
 self.addEventListener("message", async (event: MessageEvent<WorkerInbound>) => {

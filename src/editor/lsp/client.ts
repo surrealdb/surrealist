@@ -39,14 +39,16 @@ export class SurqlLspClient {
 	private readonly logListeners = new Set<LogListener>();
 	private readonly readyPromise: Promise<void>;
 	private readyResolver!: () => void;
+	private readyRejecter!: (error: Error) => void;
 
 	constructor(private readonly options: SurqlLspClientOptions) {
 		this.worker = new Worker(new URL("./worker.ts", import.meta.url), {
 			type: "module",
 			name: "surrealql-language-server",
 		});
-		this.readyPromise = new Promise<void>((resolve) => {
+		this.readyPromise = new Promise<void>((resolve, reject) => {
 			this.readyResolver = resolve;
+			this.readyRejecter = reject;
 		});
 		this.worker.addEventListener("message", this.handleMessage);
 	}
@@ -148,6 +150,10 @@ export class SurqlLspClient {
 		switch (message.kind) {
 			case "ready": {
 				this.readyResolver();
+				return;
+			}
+			case "initError": {
+				this.readyRejecter(new Error(message.message));
 				return;
 			}
 			case "rpcResult": {
