@@ -88,10 +88,19 @@ const ready = (async () => {
 	}
 })();
 
-self.addEventListener("message", async (event: MessageEvent<WorkerInbound>) => {
-	const message = event.data;
-	const server = await ready;
+/**
+ * Process inbound messages one at a time. Tab switches and workspace
+ * sync can fire overlapping `didOpen`/`didClose`/workspace updates;
+ * the WASM server mutates shared state and must not handle them
+ * concurrently.
+ */
+let processing = Promise.resolve();
 
+function enqueue(task: () => Promise<void>): void {
+	processing = processing.then(task, task);
+}
+
+async function handleMessage(server: WasmLanguageServer, message: WorkerInbound): Promise<void> {
 	switch (message.kind) {
 		case "rpc": {
 			try {
@@ -135,4 +144,12 @@ self.addEventListener("message", async (event: MessageEvent<WorkerInbound>) => {
 			return;
 		}
 	}
+}
+
+self.addEventListener("message", (event: MessageEvent<WorkerInbound>) => {
+	const message = event.data;
+	enqueue(async () => {
+		const server = await ready;
+		await handleMessage(server, message);
+	});
 });

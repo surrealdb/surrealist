@@ -33,16 +33,9 @@ export function getSharedSurqlLspClient(): SurqlLspClient {
 	const client = new SurqlLspClient({
 		provideConfiguration: () => ({ surrealql: buildInitializationOptions() }),
 	});
-	void client
-		.sendRequest("initialize", {
-			processId: null,
-			capabilities: {},
-			initializationOptions: { surrealql: buildInitializationOptions() },
-		})
-		.then(() => client.sendNotification("initialized", {}))
-		.catch((error) => {
-			console.warn("surrealql language server: initialize failed", error);
-		});
+	void client.startInitialization(buildInitializationOptions()).catch((error) => {
+		console.warn("surrealql language server: initialize failed", error);
+	});
 
 	detachers.push(attachLiveMetadataPump(client));
 	detachers.push(attachConfigurationPump(client));

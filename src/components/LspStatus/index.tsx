@@ -43,7 +43,7 @@ export function LspStatus() {
 
 		let alive = true;
 
-		client.ready().then(() => {
+		client.ensureInitialized().then(() => {
 			if (alive) setReady(true);
 		});
 

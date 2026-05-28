@@ -97,7 +97,7 @@ export default defineConfig(({ mode }) => {
 					next();
 				});
 			},
-		}
+		},
 	];
 
 	// Configure compression for web builds
@@ -148,9 +148,7 @@ export default defineConfig(({ mode }) => {
 							"@surrealdb/ql-wasm-2",
 							"@surrealdb/ql-wasm-3",
 						],
-						lsp: [
-							"@surrealdb/surrealql-language-server",
-						]
+						lsp: ["@surrealdb/surrealql-language-server"],
 					},
 				},
 			},

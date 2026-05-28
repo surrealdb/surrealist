@@ -166,21 +166,37 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 	return ViewPlugin.define((view) => {
 		let version = 0;
 		let unsubscribe: (() => void) | null = null;
+		let destroyed = false;
+		let opened = false;
+		let pendingOpen = false;
 
 		const open = async () => {
-			await client.ready();
+			await client.ensureInitialized();
+			if (destroyed) return;
+
+			const text = view.state.doc.toString();
+			if (!opened && text.length === 0) {
+				pendingOpen = true;
+				return;
+			}
+
+			pendingOpen = false;
 			await client.sendNotification("textDocument/didOpen", {
 				textDocument: {
 					uri,
 					languageId: "surrealql",
 					version: ++version,
-					text: view.state.doc.toString(),
+					text,
 				},
 			});
+			opened = true;
 		};
 
 		const sendChange = async () => {
+			if (destroyed || !opened) return;
 			try {
+				await client.ensureInitialized();
+				if (destroyed || !opened) return;
 				await client.sendNotification("textDocument/didChange", {
 					textDocument: { uri, version: ++version },
 					contentChanges: [{ text: view.state.doc.toString() }],
@@ -190,9 +206,21 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 			}
 		};
 
+		const close = async () => {
+			if (!opened) return;
+			opened = false;
+			try {
+				await client.sendNotification("textDocument/didClose", {
+					textDocument: { uri },
+				});
+			} catch {
+				/* worker may already be torn down */
+			}
+		};
+
 		const wireDiagnostics = () => {
 			unsubscribe = client.onDiagnostics((targetUri, diagnostics) => {
-				if (targetUri !== uri) return;
+				if (destroyed || targetUri !== uri) return;
 				const list = (diagnostics as LspDiagnostic[] | null | undefined) ?? [];
 				const cmDiagnostics = list
 					.map((d) => convertDiagnostic(d, view.state))
@@ -214,6 +242,12 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 
 		return {
 			update(update: ViewUpdate) {
+				if (pendingOpen && update.docChanged && update.state.doc.length > 0) {
+					open().catch((error) => {
+						console.warn("surrealql language server: didOpen failed", error);
+					});
+					return;
+				}
 				if (update.docChanged) {
 					sendChange().catch(() => {
 						/* surfaced inside sendChange */
@@ -221,14 +255,11 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 				}
 			},
 			destroy() {
+				destroyed = true;
 				unsubscribe?.();
-				client
-					.sendNotification("textDocument/didClose", {
-						textDocument: { uri },
-					})
-					.catch(() => {
-						/* worker may already be torn down */
-					});
+				close().catch(() => {
+					/* worker may already be torn down */
+				});
 			},
 		};
 	});

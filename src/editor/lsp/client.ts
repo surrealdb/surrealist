@@ -40,6 +40,7 @@ export class SurqlLspClient {
 	private readonly readyPromise: Promise<void>;
 	private readyResolver!: () => void;
 	private readyRejecter!: (error: Error) => void;
+	private initializedPromise: Promise<void> | null = null;
 
 	constructor(private readonly options: SurqlLspClientOptions) {
 		this.worker = new Worker(new URL("./worker.ts", import.meta.url), {
@@ -56,6 +57,38 @@ export class SurqlLspClient {
 	/** Resolves when the worker has finished loading the wasm module. */
 	ready(): Promise<void> {
 		return this.readyPromise;
+	}
+
+	/**
+	 * Resolves once the LSP `initialize`/`initialized` handshake has
+	 * completed. Document sync and editor features should await this
+	 * before sending `textDocument/*` notifications.
+	 */
+	ensureInitialized(): Promise<void> {
+		return this.initializedPromise ?? this.readyPromise;
+	}
+
+	/**
+	 * Kick off (or return) the one-time LSP lifecycle handshake.
+	 * Safe to call multiple times — only the first call runs.
+	 */
+	startInitialization(initializationOptions: unknown): Promise<void> {
+		if (!this.initializedPromise) {
+			this.initializedPromise = this.ready()
+				.then(() =>
+					this.sendRequest("initialize", {
+						processId: null,
+						capabilities: {},
+						initializationOptions: { surrealql: initializationOptions },
+					}),
+				)
+				.then(() => this.sendNotification("initialized", {}))
+				.catch((error) => {
+					this.initializedPromise = null;
+					throw error;
+				});
+		}
+		return this.initializedPromise;
 	}
 
 	/** Subscribe to `textDocument/publishDiagnostics` notifications. */
@@ -75,6 +108,9 @@ export class SurqlLspClient {
 	 * JSON-RPC response. Throws on transport failure or LSP error.
 	 */
 	async sendRequest<T = unknown>(method: string, params?: unknown): Promise<T> {
+		if (method !== "initialize") {
+			await this.ensureInitialized();
+		}
 		const id = newRequestId();
 		const payload = JSON.stringify({ jsonrpc: "2.0", id, method, params });
 		const response = await this.dispatchRpc(payload);
@@ -92,6 +128,9 @@ export class SurqlLspClient {
 
 	/** Send an LSP notification (fire-and-forget). */
 	async sendNotification(method: string, params?: unknown): Promise<void> {
+		if (method !== "initialized") {
+			await this.ensureInitialized();
+		}
 		const payload = JSON.stringify({ jsonrpc: "2.0", method, params });
 		await this.dispatchRpc(payload);
 	}
@@ -126,6 +165,7 @@ export class SurqlLspClient {
 	dispose(): void {
 		this.worker.removeEventListener("message", this.handleMessage);
 		this.worker.terminate();
+		this.initializedPromise = null;
 		for (const pending of this.pending.values()) {
 			pending.reject(new Error("language server worker terminated"));
 		}
