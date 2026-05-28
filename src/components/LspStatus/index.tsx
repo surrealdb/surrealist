@@ -31,7 +31,6 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import {
 	getSharedSurqlLspClient,
-	onLiveMetadataCount,
 	restartSharedSurqlLspClient,
 	type SurqlLspError,
 	type SurqlLspMetrics,
@@ -79,7 +78,6 @@ export function LspStatus() {
 	const [enabled] = useSetting("behavior", "useLanguageServer");
 	const [opened, setOpened] = useState(false);
 	const [state, setState] = useState<SurqlLspState>("loading");
-	const [defineCount, setDefineCount] = useState(0);
 	const [logs, setLogs] = useState<LogEntry[]>([]);
 	const [lastError, setLastError] = useState<SurqlLspError | null>(null);
 	const [telemetry, setTelemetry] = useState<SurqlLspTelemetry | null>(null);
@@ -131,10 +129,6 @@ export function LspStatus() {
 			scrollLogsToEnd();
 		});
 
-		const offMetadata = onLiveMetadataCount((count) => {
-			if (alive) setDefineCount(count);
-		});
-
 		setTelemetry(client.getTelemetry());
 		setMetrics(client.getMetrics());
 
@@ -143,7 +137,6 @@ export function LspStatus() {
 			offState();
 			offError();
 			offLog();
-			offMetadata();
 		};
 	}, [client, scrollLogsToEnd]);
 
@@ -313,17 +306,9 @@ export function LspStatus() {
 					)}
 
 					<SimpleGrid
-						cols={2}
+						cols={3}
 						spacing="xs"
 					>
-						<StatTile
-							label="Schema defines"
-							value={String(defineCount)}
-						/>
-						<StatTile
-							label="Restarts"
-							value={String(telemetry?.restartCount ?? 0)}
-						/>
 						<StatTile
 							label="Time to ready"
 							value={formatDuration(telemetry?.startedAt, telemetry?.readyAt)}
@@ -331,6 +316,10 @@ export function LspStatus() {
 						<StatTile
 							label="Time to init"
 							value={formatDuration(telemetry?.startedAt, telemetry?.initializedAt)}
+						/>
+						<StatTile
+							label="Restarts"
+							value={String(telemetry?.restartCount ?? 0)}
 						/>
 					</SimpleGrid>
 
