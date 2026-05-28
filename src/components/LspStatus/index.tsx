@@ -2,19 +2,32 @@ import {
 	Badge,
 	Box,
 	Button,
-	Divider,
+	Center,
 	Group,
 	Loader,
 	type MantineColor,
+	Paper,
 	Popover,
 	ScrollArea,
+	SimpleGrid,
 	Stack,
-	Table,
 	Text,
 } from "@mantine/core";
-import { Icon, iconErrorCircle, iconPlugin, iconRefresh } from "@surrealdb/ui";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+	Icon,
+	iconDownload,
+	iconErrorCircle,
+	iconHelp,
+	iconPlugin,
+	iconRefresh,
+	iconWarning,
+} from "@surrealdb/ui";
+import { format } from "date-fns";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
+import { Label } from "~/components/Label";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import {
 	getSharedSurqlLspClient,
@@ -26,7 +39,8 @@ import {
 	type SurqlLspTelemetry,
 } from "~/editor/lsp";
 import { useSetting } from "~/hooks/config";
-import { showErrorNotification } from "~/util/helpers";
+import { useIsLight } from "~/hooks/theme";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import classes from "./style.module.scss";
 
 interface LogEntry {
@@ -39,7 +53,17 @@ interface LogEntry {
 const MAX_LOG_ENTRIES = 50;
 const METRICS_REFRESH_MS = 1500;
 
-let nextLogId = 0;
+const LOG_FILE_FILTER = {
+	name: "Log file",
+	extensions: ["log", "txt"],
+};
+
+const LOG_LEVEL_INFO: Record<number, { label: string; color: MantineColor; icon: string }> = {
+	1: { label: "Error", color: "red", icon: iconErrorCircle },
+	2: { label: "Warn", color: "orange", icon: iconWarning },
+};
+
+const DEFAULT_LOG_LEVEL = { label: "Info", color: "obsidian" as MantineColor, icon: iconHelp };
 
 /**
  * Status indicator for the SurrealQL language server.
@@ -51,6 +75,7 @@ let nextLogId = 0;
  * button when init has failed.
  */
 export function LspStatus() {
+	const isLight = useIsLight();
 	const [enabled] = useSetting("behavior", "useLanguageServer");
 	const [opened, setOpened] = useState(false);
 	const [state, setState] = useState<SurqlLspState>("loading");
@@ -63,6 +88,17 @@ export function LspStatus() {
 
 	const client = useMemo(() => (enabled ? getSharedSurqlLspClient() : null), [enabled]);
 	const refreshTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+	const logViewportRef = useRef<HTMLDivElement>(null);
+	const openedRef = useRef(opened);
+	openedRef.current = opened;
+
+	const scrollLogsToEnd = useCallback(() => {
+		requestAnimationFrame(() => {
+			if (openedRef.current && logViewportRef.current) {
+				logViewportRef.current.scrollTop = logViewportRef.current.scrollHeight;
+			}
+		});
+	}, []);
 
 	useEffect(() => {
 		if (!client) {
@@ -92,6 +128,7 @@ export function LspStatus() {
 					? next.slice(next.length - MAX_LOG_ENTRIES)
 					: next;
 			});
+			scrollLogsToEnd();
 		});
 
 		const offMetadata = onLiveMetadataCount((count) => {
@@ -108,7 +145,7 @@ export function LspStatus() {
 			offLog();
 			offMetadata();
 		};
-	}, [client]);
+	}, [client, scrollLogsToEnd]);
 
 	useEffect(() => {
 		if (!client || !opened) {
@@ -132,6 +169,12 @@ export function LspStatus() {
 		};
 	}, [client, opened]);
 
+	// Pin the log panel to the newest entries when the popover opens.
+	useEffect(() => {
+		if (!opened) return;
+		scrollLogsToEnd();
+	}, [opened, scrollLogsToEnd]);
+
 	if (!enabled) {
 		return null;
 	}
@@ -151,6 +194,37 @@ export function LspStatus() {
 		}
 	};
 
+	const handleExportLogs = async () => {
+		if (logs.length === 0) return;
+
+		try {
+			const exportedAt = new Date();
+			const exportContent = formatLogExport(logs, state, telemetry, exportedAt);
+			const exportBlob = new Blob([exportContent], {
+				type: "text/plain;charset=utf-8",
+			});
+
+			const success = await adapter.saveFile(
+				"Export language server log",
+				`surrealql-lsp-${format(exportedAt, "yyyy-MM-dd-HHmmss")}.log`,
+				[LOG_FILE_FILTER],
+				() => exportBlob,
+			);
+
+			if (success) {
+				showInfo({
+					title: "Log exported",
+					subtitle: "The language server log has been saved to disk",
+				});
+			}
+		} catch (error) {
+			showErrorNotification({
+				title: "Failed to export log",
+				content: error instanceof Error ? error.message : String(error),
+			});
+		}
+	};
+
 	const tone: MantineColor = state === "failed" ? "red" : state === "ready" ? "green" : "yellow";
 
 	const statusLabel =
@@ -160,17 +234,27 @@ export function LspStatus() {
 				? "Language server ready"
 				: "Language server initialising";
 
+	const statusBadge =
+		state === "failed" ? "Failed" : state === "ready" ? "Ready" : "Initialising";
+
 	const description =
 		state === "failed"
 			? (lastError?.message ?? "The language server worker crashed unexpectedly.")
 			: state === "ready"
-				? "The language server is running and powering completions, hover, and diagnostics in the query editor."
+				? "Powering completions, hover, and diagnostics in the query editor."
 				: "Initialising the language server worker…";
+
+	const metricRows =
+		metrics && Object.keys(metrics.perMethod).length > 0
+			? Object.entries(metrics.perMethod)
+					.sort(([, a], [, b]) => b.count - a.count)
+					.slice(0, 6)
+			: [];
 
 	return (
 		<Popover
 			position="bottom-end"
-			width={440}
+			width={460}
 			shadow="md"
 			withArrow
 			opened={opened}
@@ -194,29 +278,33 @@ export function LspStatus() {
 				</ActionButton>
 			</Popover.Target>
 			<Popover.Dropdown p="md">
-				<Stack gap="xs">
-					<Group gap="xs">
-						<Text fw={600}>SurrealQL language server</Text>
-						<Spacer />
+				<Stack gap="md">
+					<Group
+						gap="sm"
+						wrap="nowrap"
+					>
+						<Box flex={1}>
+							<PrimaryTitle fz={18}>SurrealQL language server</PrimaryTitle>
+							<Text
+								size="sm"
+								mt={4}
+							>
+								{description}
+							</Text>
+						</Box>
 						<Badge
+							variant="dot"
 							color={tone}
-							variant="light"
-							size="sm"
 						>
-							{state}
+							{statusBadge}
 						</Badge>
 					</Group>
-					<Text
-						size="sm"
-						className="selectable"
-					>
-						{description}
-					</Text>
+
 					{state === "failed" && (
 						<Button
 							leftSection={<Icon path={iconRefresh} />}
 							variant="gradient"
-							size="xs"
+							size="compact-sm"
 							onClick={handleRestart}
 							loading={restarting}
 						>
@@ -224,145 +312,248 @@ export function LspStatus() {
 						</Button>
 					)}
 
-					<Divider my={4} />
-
-					<Group
-						gap="xs"
-						wrap="nowrap"
+					<SimpleGrid
+						cols={2}
+						spacing="xs"
 					>
-						<Stat
+						<StatTile
 							label="Schema defines"
 							value={String(defineCount)}
 						/>
-						<Stat
-							label="Time to ready"
-							value={formatDuration(telemetry?.startedAt, telemetry?.readyAt)}
-						/>
-						<Stat
-							label="Time to init"
-							value={formatDuration(telemetry?.startedAt, telemetry?.initializedAt)}
-						/>
-						<Stat
+						<StatTile
 							label="Restarts"
 							value={String(telemetry?.restartCount ?? 0)}
 						/>
-					</Group>
+						<StatTile
+							label="Time to ready"
+							value={formatDuration(telemetry?.startedAt, telemetry?.readyAt)}
+						/>
+						<StatTile
+							label="Time to init"
+							value={formatDuration(telemetry?.startedAt, telemetry?.initializedAt)}
+						/>
+					</SimpleGrid>
 
-					{metrics && Object.keys(metrics.perMethod).length > 0 && (
-						<>
-							<Text
-								fw={600}
-								size="sm"
-								mt="xs"
+					{metricRows.length > 0 && (
+						<Box>
+							<Label mb="xs">Request latency</Label>
+							<Paper
+								withBorder
+								radius="sm"
+								p={0}
+								style={{ overflow: "hidden" }}
 							>
-								Request latency
-							</Text>
-							<MetricsTable metrics={metrics} />
-						</>
-					)}
-
-					<Text
-						fw={600}
-						size="sm"
-						mt="xs"
-					>
-						Recent log messages
-					</Text>
-					{logs.length === 0 ? (
-						<Text size="sm">No log messages yet.</Text>
-					) : (
-						<ScrollArea
-							h={140}
-							type="auto"
-						>
-							<Stack
-								gap={4}
-								className="selectable"
-							>
-								{logs
-									.slice()
-									.reverse()
-									.map((entry) => (
-										<Text
-											key={entry.id}
-											size="xs"
-											ff="monospace"
-											className={classes.logEntry}
-											data-level={entry.level}
+								<ScrollArea.Autosize
+									mah={180}
+									type="auto"
+								>
+									<Box
+										component="table"
+										className={classes.metricsTable}
+									>
+										<Box component="thead">
+											<Box component="tr">
+												<Box component="th">Method</Box>
+												<Box component="th">N</Box>
+												<Box component="th">P50</Box>
+												<Box component="th">P95</Box>
+											</Box>
+										</Box>
+										<Box
+											component="tbody"
+											className="selectable"
 										>
-											{entry.message}
-										</Text>
-									))}
-							</Stack>
-						</ScrollArea>
+											{metricRows.map(([method, sample]) => (
+												<Box
+													component="tr"
+													key={method}
+												>
+													<Box
+														component="td"
+														className={classes.methodCell}
+														title={method}
+													>
+														{formatMethodName(method)}
+													</Box>
+													<Box component="td">{sample.count}</Box>
+													<Box component="td">{formatMs(sample.p50)}</Box>
+													<Box component="td">{formatMs(sample.p95)}</Box>
+												</Box>
+											))}
+										</Box>
+									</Box>
+								</ScrollArea.Autosize>
+							</Paper>
+						</Box>
 					)}
+
+					<Box>
+						<Group
+							gap="xs"
+							mb="xs"
+						>
+							<Label mb={0}>Recent log messages</Label>
+							<Spacer />
+							{logs.length > 0 && (
+								<>
+									<Text size="xs">{logs.length} entries</Text>
+									<ActionButton
+										label="Export log"
+										size="sm"
+										variant="subtle"
+										onClick={handleExportLogs}
+									>
+										<Icon
+											path={iconDownload}
+											size="sm"
+										/>
+									</ActionButton>
+								</>
+							)}
+						</Group>
+						<Paper
+							withBorder
+							radius="sm"
+							p={0}
+							className={classes.logPanel}
+						>
+							{logs.length === 0 ? (
+								<Center
+									h={120}
+									p="md"
+								>
+									<Text size="sm">No log messages yet.</Text>
+								</Center>
+							) : (
+								<ScrollArea
+									h={160}
+									type="auto"
+									viewportRef={logViewportRef}
+								>
+									<Stack
+										gap={0}
+										className="selectable"
+									>
+										{logs
+											.slice()
+											.reverse()
+											.map((entry) => (
+												<LogLine
+													key={entry.id}
+													entry={entry}
+													isLight={isLight}
+												/>
+											))}
+									</Stack>
+								</ScrollArea>
+							)}
+						</Paper>
+					</Box>
 				</Stack>
 			</Popover.Dropdown>
 		</Popover>
 	);
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function StatTile({ label, value }: { label: string; value: string }) {
 	return (
-		<Box flex={1}>
-			<Text
-				size="xs"
-				opacity={0.7}
+		<Paper
+			p="sm"
+			radius="sm"
+			className={classes.statTile}
+		>
+			<Label
+				opacity={0.75}
+				mb={2}
 			>
 				{label}
-			</Text>
+			</Label>
 			<Text
-				size="sm"
+				c="bright"
 				fw={600}
+				size="sm"
 				className="selectable"
 			>
 				{value}
 			</Text>
-		</Box>
+		</Paper>
 	);
 }
 
-function MetricsTable({ metrics }: { metrics: SurqlLspMetrics }) {
-	const rows = Object.entries(metrics.perMethod)
-		.sort(([, a], [, b]) => b.count - a.count)
-		.slice(0, 6);
+function LogLine({ entry, isLight }: { entry: LogEntry; isLight: boolean }) {
+	const level = LOG_LEVEL_INFO[entry.level] ?? DEFAULT_LOG_LEVEL;
 
 	return (
-		<Table
-			withRowBorders={false}
-			verticalSpacing={2}
-			horizontalSpacing="xs"
-			fz="xs"
-			className="selectable"
+		<Group
+			gap="sm"
+			px="sm"
+			py={6}
+			wrap="nowrap"
+			align="flex-start"
+			className={classes.logLine}
+			data-level={entry.level}
+			bg={isLight ? undefined : "obsidian.8"}
 		>
-			<Table.Thead>
-				<Table.Tr>
-					<Table.Th>Method</Table.Th>
-					<Table.Th ta="right">N</Table.Th>
-					<Table.Th ta="right">P50</Table.Th>
-					<Table.Th ta="right">P95</Table.Th>
-				</Table.Tr>
-			</Table.Thead>
-			<Table.Tbody>
-				{rows.map(([method, sample]) => (
-					<Table.Tr key={method}>
-						<Table.Td>
-							<Text
-								size="xs"
-								ff="monospace"
-								truncate
-							>
-								{method}
-							</Text>
-						</Table.Td>
-						<Table.Td ta="right">{sample.count}</Table.Td>
-						<Table.Td ta="right">{formatMs(sample.p50)}</Table.Td>
-						<Table.Td ta="right">{formatMs(sample.p95)}</Table.Td>
-					</Table.Tr>
-				))}
-			</Table.Tbody>
-		</Table>
+			<Badge
+				variant="light"
+				color={level.color}
+				size="xs"
+				w={52}
+				styles={{ label: { overflow: "hidden", textOverflow: "ellipsis" } }}
+				leftSection={
+					<Icon
+						path={level.icon}
+						size="sm"
+					/>
+				}
+			>
+				{level.label}
+			</Badge>
+			<Text
+				className={classes.logTime}
+				w={72}
+			>
+				{format(entry.timestamp, "HH:mm:ss")}
+			</Text>
+			<Text
+				flex={1}
+				className={classes.logMessage}
+			>
+				{entry.message}
+			</Text>
+		</Group>
 	);
+}
+
+function formatLogLevel(level: number): string {
+	return LOG_LEVEL_INFO[level]?.label.toUpperCase() ?? "INFO";
+}
+
+function formatLogExport(
+	logs: LogEntry[],
+	state: SurqlLspState,
+	telemetry: SurqlLspTelemetry | null,
+	exportedAt: Date,
+): string {
+	const header = [
+		"SurrealQL Language Server Log",
+		`Exported: ${format(exportedAt, "yyyy-MM-dd HH:mm:ss")}`,
+		`State: ${state}`,
+		`Restarts: ${telemetry?.restartCount ?? 0}`,
+		`Entries: ${logs.length}`,
+		"",
+	];
+
+	const body = logs.map((entry) => {
+		const time = format(entry.timestamp, "yyyy-MM-dd HH:mm:ss");
+		return `[${time}] ${formatLogLevel(entry.level).padEnd(5)} ${entry.message}`;
+	});
+
+	return [...header, ...body].join("\n");
+}
+
+function formatMethodName(method: string): string {
+	return method.replace(/^textDocument\//, "");
 }
 
 function formatDuration(startedAt?: number, completedAt?: number | null): string {
@@ -373,7 +564,9 @@ function formatDuration(startedAt?: number, completedAt?: number | null): string
 }
 
 function formatMs(ms: number): string {
-	if (ms < 1) return `<1ms`;
+	if (ms < 1) return "<1ms";
 	if (ms < 1000) return `${Math.round(ms)}ms`;
 	return `${(ms / 1000).toFixed(2)}s`;
 }
+
+let nextLogId = 0;

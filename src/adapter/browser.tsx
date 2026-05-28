@@ -86,9 +86,17 @@ export class BrowserAdapter implements SurrealistAdapter {
 		filters: FileFilter[],
 		content: () => Result<string | Blob | Response | null>,
 	): Promise<boolean> {
-		// Attempt saving using the file picker
-		if (await openAndWriteFile(content, defaultPath, filters)) {
-			return true;
+		try {
+			// Attempt saving using the file picker
+			if (await openAndWriteFile(content, defaultPath, filters)) {
+				return true;
+			}
+		} catch (error) {
+			if (error instanceof DOMException && error.name === "AbortError") {
+				return false;
+			}
+
+			throw error;
 		}
 
 		// Fall back to browser download

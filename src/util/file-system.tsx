@@ -55,13 +55,20 @@ export async function openAndWriteFile(
 	const result = typeof content === "function" ? await content() : content;
 
 	if (!result) {
+		await writableStream.abort();
 		throw new Error("File is empty");
 	}
 
-	if (result instanceof Response) {
-		await result.body?.pipeTo(writableStream);
-	} else {
-		await writableStream.write(result);
+	try {
+		if (result instanceof Response) {
+			await result.body?.pipeTo(writableStream);
+		} else {
+			await writableStream.write(result);
+			await writableStream.close();
+		}
+	} catch (error) {
+		await writableStream.abort().catch(() => {});
+		throw error;
 	}
 
 	return true;

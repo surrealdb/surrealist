@@ -195,9 +195,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 		filters: any,
 		content: () => Result<string | Blob | null>,
 	): Promise<boolean> {
-		// Attempt saving using the file picker
-		if (await openAndWriteFile(content, defaultPath, filters)) {
-			return true;
+		try {
+			// Attempt saving using the file picker
+			if (await openAndWriteFile(content, defaultPath, filters)) {
+				return true;
+			}
+		} catch (error) {
+			if (error instanceof DOMException && error.name === "AbortError") {
+				return false;
+			}
+
+			throw error;
 		}
 
 		// Fall back to desktop dialog
