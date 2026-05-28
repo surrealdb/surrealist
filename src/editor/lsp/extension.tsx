@@ -136,60 +136,101 @@ export function surqlLanguageServer(options: SurqlLanguageServerOptions): Extens
 		options.inlayHints !== false
 			? inlayHintsExtension({ client: options.client, uri: options.uri })
 			: [],
-		hoverTooltip(async (view, pos) => {
-			const position = offsetToPosition(view.state, pos);
-			try {
-				const hover = await options.client.sendRequest<LspHover | null>(
-					"textDocument/hover",
-					{
-						textDocument: { uri: options.uri },
-						position,
-					},
-				);
-				if (!hover) return null;
-				const value =
-					typeof hover.contents === "string" ? hover.contents : hover.contents.value;
-				const range = hover.range;
-				return {
-					pos: range ? positionToOffset(view.state, range.start) : pos,
-					end: range ? positionToOffset(view.state, range.end) : pos,
-					create: () => ({ dom: createInfoTooltip(value) }),
-				};
-			} catch {
-				return null;
-			}
-		}),
+		hoverProvider(options),
 	];
+}
+
+/**
+ * Hover provider with a stale-response guard. Without the guard a
+ * slow hover at one position can land after the user has moved the
+ * cursor and the editor is asking about a new token, painting the
+ * wrong tooltip.
+ */
+function hoverProvider({ client, uri }: SurqlLanguageServerOptions): Extension {
+	let latestHoverId = 0;
+	return hoverTooltip(async (view, pos) => {
+		const requestId = ++latestHoverId;
+		const position = offsetToPosition(view.state, pos);
+		const controller = new AbortController();
+		try {
+			const hover = await client.sendRequest<LspHover | null>(
+				"textDocument/hover",
+				{
+					textDocument: { uri },
+					position,
+				},
+				{ signal: controller.signal },
+			);
+			if (requestId !== latestHoverId || !hover) return null;
+			const value =
+				typeof hover.contents === "string" ? hover.contents : hover.contents.value;
+			const range = hover.range;
+			return {
+				pos: range ? positionToOffset(view.state, range.start) : pos,
+				end: range ? positionToOffset(view.state, range.end) : pos,
+				create: () => ({ dom: createInfoTooltip(value) }),
+			};
+		} catch (error) {
+			if (import.meta.env.DEV && !isAbortError(error)) {
+				console.warn("surrealql language server: hover failed", error);
+			}
+			return null;
+		}
+	});
+}
+
+function isAbortError(error: unknown): boolean {
+	return (
+		typeof error === "object" &&
+		error !== null &&
+		"name" in error &&
+		(error as { name: string }).name === "AbortError"
+	);
 }
 
 function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOptions) {
 	return ViewPlugin.define((view) => {
 		let version = 0;
 		let unsubscribe: (() => void) | null = null;
+		let unsubscribeRestart: (() => void) | null = null;
 		let destroyed = false;
 		let opened = false;
-		let pendingOpen = false;
+		// Synchronous re-entrancy guard. Set to `true` the moment a
+		// caller commits to running `open()`; subsequent callers that
+		// see the flag bail out immediately so we never queue two
+		// concurrent `didOpen` notifications for the same URI.
+		let inFlightOpen = false;
+		// Set when a buffer is empty during the initial open. Cleared
+		// (and `open()` re-invoked) the next time the document gains
+		// content via an editor update.
+		let needsContentToOpen = false;
 
 		const open = async () => {
-			await client.ensureInitialized();
-			if (destroyed) return;
+			if (inFlightOpen || opened || destroyed) return;
+			inFlightOpen = true;
+			try {
+				await client.ensureInitialized();
+				if (destroyed || opened) return;
 
-			const text = view.state.doc.toString();
-			if (!opened && text.length === 0) {
-				pendingOpen = true;
-				return;
+				const text = view.state.doc.toString();
+				if (text.length === 0) {
+					needsContentToOpen = true;
+					return;
+				}
+
+				needsContentToOpen = false;
+				await client.sendNotification("textDocument/didOpen", {
+					textDocument: {
+						uri,
+						languageId: "surrealql",
+						version: ++version,
+						text,
+					},
+				});
+				opened = true;
+			} finally {
+				inFlightOpen = false;
 			}
-
-			pendingOpen = false;
-			await client.sendNotification("textDocument/didOpen", {
-				textDocument: {
-					uri,
-					languageId: "surrealql",
-					version: ++version,
-					text,
-				},
-			});
-			opened = true;
 		};
 
 		const sendChange = async () => {
@@ -202,7 +243,9 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 					contentChanges: [{ text: view.state.doc.toString() }],
 				});
 			} catch (error) {
-				console.warn("surrealql language server: didChange failed", error);
+				if (import.meta.env.DEV) {
+					console.warn("surrealql language server: didChange failed", error);
+				}
 			}
 		};
 
@@ -235,17 +278,30 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 			});
 		};
 
-		open().catch((error) => {
-			console.warn("surrealql language server: didOpen failed", error);
-		});
+		const triggerOpen = () => {
+			open().catch((error) => {
+				if (import.meta.env.DEV) {
+					console.warn("surrealql language server: didOpen failed", error);
+				}
+			});
+		};
+
+		triggerOpen();
 		wireDiagnostics();
+
+		// After a manual restart the new worker has no record of this
+		// document; re-send `didOpen` so completions and diagnostics
+		// resume without the user having to switch tabs.
+		unsubscribeRestart = client.onRestart(() => {
+			opened = false;
+			version = 0;
+			triggerOpen();
+		});
 
 		return {
 			update(update: ViewUpdate) {
-				if (pendingOpen && update.docChanged && update.state.doc.length > 0) {
-					open().catch((error) => {
-						console.warn("surrealql language server: didOpen failed", error);
-					});
+				if (needsContentToOpen && update.docChanged && update.state.doc.length > 0) {
+					triggerOpen();
 					return;
 				}
 				if (update.docChanged) {
@@ -257,6 +313,7 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 			destroy() {
 				destroyed = true;
 				unsubscribe?.();
+				unsubscribeRestart?.();
 				close().catch(() => {
 					/* worker may already be torn down */
 				});
@@ -267,20 +324,30 @@ function documentSyncPlugin({ client, uri, onValidate }: SurqlLanguageServerOpti
 
 function completionSource({ client, uri }: SurqlLanguageServerOptions) {
 	let latestRequestId = 0;
+	let latestController: AbortController | null = null;
 
 	return async (context: CompletionContext): Promise<CompletionResult | null> => {
 		const word = context.matchBefore(/[\w$:.<>-]+/);
 		if (!word && !context.explicit) return null;
 
 		const requestId = ++latestRequestId;
+		// Abort any previously in-flight completion so the worker
+		// queue and pending RPC slot are freed immediately.
+		latestController?.abort();
+		const controller = new AbortController();
+		latestController = controller;
 
 		try {
 			const result = await client.sendRequest<
 				LspCompletionItem[] | { items: LspCompletionItem[] } | null
-			>("textDocument/completion", {
-				textDocument: { uri },
-				position: offsetToPosition(context.state, context.pos),
-			});
+			>(
+				"textDocument/completion",
+				{
+					textDocument: { uri },
+					position: offsetToPosition(context.state, context.pos),
+				},
+				{ signal: controller.signal },
+			);
 
 			// Drop stale responses: a newer completion request was
 			// issued (the user kept typing) or CodeMirror cancelled.
@@ -313,7 +380,10 @@ function completionSource({ client, uri }: SurqlLanguageServerOptions) {
 				options,
 				validFor: /^[\w$:.<>-]*$/,
 			};
-		} catch {
+		} catch (error) {
+			if (import.meta.env.DEV && !isAbortError(error)) {
+				console.warn("surrealql language server: completion failed", error);
+			}
 			return null;
 		}
 	};

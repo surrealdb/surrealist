@@ -59,6 +59,11 @@ export function onLiveMetadataCount(listener: MetadataCountListener): () => void
  * Uses [`watchStore`] so we only re-stringify and post when the
  * `connectionSchema.database` slice actually changes (deep equality)
  * rather than on every database-store mutation.
+ *
+ * After a manual restart the new worker has no metadata snapshot;
+ * we listen for `client.onRestart` and re-push the latest schema so
+ * completions and diagnostics resume seamlessly without waiting for
+ * the next schema reload.
  */
 export function attachLiveMetadataPump(client: SurqlLspClient): () => void {
 	const flush = (schema: DatabaseSchema | undefined) => {
@@ -70,12 +75,21 @@ export function attachLiveMetadataPump(client: SurqlLspClient): () => void {
 		}
 	};
 
-	return watchStore({
+	const off = watchStore({
 		initial: true,
 		store: useDatabaseStore,
 		select: (state) => state.connectionSchema.database,
 		then: flush,
 	});
+
+	const offRestart = client.onRestart(() => {
+		flush(useDatabaseStore.getState().connectionSchema.database);
+	});
+
+	return () => {
+		off();
+		offRestart();
+	};
 }
 
 function buildDefineStrings(schema: DatabaseSchema): string[] {

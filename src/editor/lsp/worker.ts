@@ -65,6 +65,9 @@ const requestConfigurationFromHost = (): Promise<unknown> => {
 	});
 };
 
+/** Cached fatal init error; surfaced again to every queued task. */
+let initFailure: Error | null = null;
+
 const ready = (async () => {
 	try {
 		await initializeLanguageServer();
@@ -83,6 +86,7 @@ const ready = (async () => {
 		return server;
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
+		initFailure = error instanceof Error ? error : new Error(message);
 		post({ kind: "initError", message });
 		throw error;
 	}
@@ -93,11 +97,28 @@ const ready = (async () => {
  * sync can fire overlapping `didOpen`/`didClose`/workspace updates;
  * the WASM server mutates shared state and must not handle them
  * concurrently.
+ *
+ * Errors thrown inside a queued task are caught at the chain root and
+ * forwarded to the host as a level-1 `logMessage`, so the client can
+ * surface the failure (instead of silently dropping every subsequent
+ * message after a wasm panic).
  */
-let processing = Promise.resolve();
+let processing: Promise<void> = Promise.resolve();
 
 function enqueue(task: () => Promise<void>): void {
-	processing = processing.then(task, task);
+	processing = processing
+		.catch(() => {
+			/* root chain swallowed below; tasks must be independent */
+		})
+		.then(() => task())
+		.catch((error: unknown) => {
+			const message = error instanceof Error ? error.message : String(error);
+			post({
+				kind: "logMessage",
+				level: 1,
+				message: `worker task failed: ${message}`,
+			});
+		});
 }
 
 async function handleMessage(server: WasmLanguageServer, message: WorkerInbound): Promise<void> {
@@ -149,7 +170,35 @@ async function handleMessage(server: WasmLanguageServer, message: WorkerInbound)
 self.addEventListener("message", (event: MessageEvent<WorkerInbound>) => {
 	const message = event.data;
 	enqueue(async () => {
-		const server = await ready;
+		if (initFailure) {
+			// Drop the message but produce a clear signal so RPCs reject
+			// instead of hanging. Mutators (`pushWorkspaceDocument` etc.)
+			// have no caller to notify, so we just log and move on.
+			if (message.kind === "rpc") {
+				post({
+					kind: "rpcError",
+					id: message.id,
+					message: `language server failed to initialise: ${initFailure.message}`,
+				});
+			}
+			return;
+		}
+
+		let server: WasmLanguageServer;
+		try {
+			server = await ready;
+		} catch (error) {
+			const text = error instanceof Error ? error.message : String(error);
+			if (message.kind === "rpc") {
+				post({
+					kind: "rpcError",
+					id: message.id,
+					message: `language server failed to initialise: ${text}`,
+				});
+			}
+			return;
+		}
+
 		await handleMessage(server, message);
 	});
 });

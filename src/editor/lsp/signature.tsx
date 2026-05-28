@@ -94,7 +94,16 @@ function signatureHelpPlugin({ client, uri }: SignatureHelpOptions) {
 				view.dispatch({
 					effects: setSignatureState.of({ help: response, pos: head }),
 				});
-			} catch {
+			} catch (error) {
+				if (import.meta.env.DEV) {
+					const name =
+						typeof error === "object" && error && "name" in error
+							? (error as { name: string }).name
+							: undefined;
+					if (name !== "AbortError") {
+						console.warn("surrealql language server: signatureHelp failed", error);
+					}
+				}
 				view.dispatch({ effects: setSignatureState.of(null) });
 			}
 		};

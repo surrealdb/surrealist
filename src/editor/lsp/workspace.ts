@@ -63,10 +63,18 @@ export function attachWorkspaceSync(client: SurqlLspClient): () => void {
 	let scheduled: ReturnType<typeof setTimeout> | null = null;
 	let lastSnapshot = new Map<string, string>();
 	let disposed = false;
+	// Single-flight guard. A flush mutates `lastSnapshot`, so two
+	// concurrent runs can compute their diffs against stale state and
+	// either drop live URIs or duplicate pushes. We keep one in flight
+	// at a time and squash queued requests to the latest selection.
+	let isFlushing = false;
+	let pendingSelection: SyncSelector | null = null;
+	// Forces the next flush to use `replaceWorkspace` regardless of
+	// whether `lastSnapshot` is empty. Set after a manual restart so
+	// the new worker starts from a clean baseline.
+	let forceReplace = false;
 
-	const flush = async (selection: SyncSelector) => {
-		if (disposed) return;
-
+	const flushNow = async (selection: SyncSelector) => {
 		const projected = projectTabs([selection.sandbox, ...selection.connections]);
 		const next = new Map<string, string>();
 
@@ -77,25 +85,32 @@ export function attachWorkspaceSync(client: SurqlLspClient): () => void {
 
 		// Read each tab's contents. Config tabs resolve synchronously;
 		// file-backed tabs hit the desktop adapter and may fail.
+		// On failure we fall back to the previously cached body so a
+		// transient read error doesn't yank the document out of the
+		// LSP workspace and break cross-file analysis until restart.
 		await Promise.all(
 			projected.map(async ({ uri, tab }) => {
 				try {
 					const text = await Promise.resolve(readQuery(tab));
 					next.set(uri, text ?? "");
 				} catch {
-					// Surfaced inside the strategy itself.
+					const previous = lastSnapshot.get(uri);
+					if (previous !== undefined) {
+						next.set(uri, previous);
+					}
 				}
 			}),
 		);
 
 		if (disposed) return;
 
-		// Diff against the previous snapshot to minimise worker traffic.
-		// Initial flush always uses replaceWorkspace to guarantee the
-		// server starts from a clean slate.
-		const isInitial = lastSnapshot.size === 0;
+		// `replaceWorkspace` is used for the initial flush AND after a
+		// manual restart so the new worker doesn't accumulate stale
+		// state from before the crash.
+		const isInitial = lastSnapshot.size === 0 || forceReplace;
 		if (isInitial) {
 			client.replaceWorkspace(Array.from(next, ([uri, text]) => ({ uri, text })));
+			forceReplace = false;
 		} else {
 			for (const [uri, text] of next) {
 				if (lastSnapshot.get(uri) !== text) {
@@ -110,6 +125,25 @@ export function attachWorkspaceSync(client: SurqlLspClient): () => void {
 		}
 
 		lastSnapshot = next;
+	};
+
+	const flush = async (selection: SyncSelector) => {
+		if (disposed) return;
+		if (isFlushing) {
+			pendingSelection = selection;
+			return;
+		}
+		isFlushing = true;
+		try {
+			await flushNow(selection);
+		} finally {
+			isFlushing = false;
+			if (!disposed && pendingSelection) {
+				const next = pendingSelection;
+				pendingSelection = null;
+				void flush(next);
+			}
+		}
 	};
 
 	const schedule = (selection: SyncSelector) => {
@@ -143,9 +177,19 @@ export function attachWorkspaceSync(client: SurqlLspClient): () => void {
 		then: (selection) => schedule(selection),
 	});
 
+	// After a manual restart the new worker has no workspace; re-push
+	// from the current store state. We treat it as a fresh "initial"
+	// flush so the worker receives a single `replaceWorkspace`.
+	const offRestart = client.onRestart(() => {
+		lastSnapshot = new Map();
+		forceReplace = true;
+		void flush(select(useConfigStore.getState()));
+	});
+
 	return () => {
 		disposed = true;
 		offConfig();
+		offRestart();
 		if (scheduled !== null) {
 			clearTimeout(scheduled);
 			scheduled = null;

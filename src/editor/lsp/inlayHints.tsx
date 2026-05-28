@@ -131,7 +131,16 @@ function inlayHintsPlugin({ client, uri }: InlayHintOptions) {
 
 				const decorations = buildDecorations(view.state, hints ?? []);
 				view.dispatch({ effects: setHints.of(decorations) });
-			} catch {
+			} catch (error) {
+				if (import.meta.env.DEV) {
+					const name =
+						typeof error === "object" && error && "name" in error
+							? (error as { name: string }).name
+							: undefined;
+					if (name !== "AbortError") {
+						console.warn("surrealql language server: inlayHint failed", error);
+					}
+				}
 				view.dispatch({ effects: clearHints.of(null) });
 			}
 		};
