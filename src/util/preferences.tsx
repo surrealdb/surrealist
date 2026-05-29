@@ -488,6 +488,30 @@ export function useComputedPreferences(): PreferenceSection[] {
 						}),
 					},
 					{
+						id: "use-language-server",
+						name: "SurrealQL language server",
+						description:
+							"Power completions, hovers, and diagnostics in the query editor with the SurrealQL language server",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.behavior.useLanguageServer,
+							writer: (config, value) => {
+								config.settings.behavior.useLanguageServer = value;
+							},
+						}),
+					},
+					{
+						id: "inlay-hints",
+						name: "Inlay hints",
+						description:
+							"Show inferred type annotations inline next to LET bindings and projections",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.behavior.inlayHints,
+							writer: (config, value) => {
+								config.settings.behavior.inlayHints = value;
+							},
+						}),
+					},
+					{
 						id: "quick-query-closing",
 						name: "Quick query closing",
 						description: "Display query close buttons on hover",

@@ -16,6 +16,7 @@ export interface CloudContext {
 	isLoading: boolean;
 	sessionToken: string;
 	userId: string;
+	authProvider: string;
 	profile: CloudProfile;
 	syncCloudProfile: () => Promise<void>;
 	syncCloudResources: () => Promise<void>;

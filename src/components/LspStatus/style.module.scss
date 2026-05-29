@@ -1,0 +1,98 @@
+.stat-tile {
+	background-color: var(--mantine-color-obsidian-light);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-0);
+	}
+}
+
+.metrics-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--mantine-font-size-xs);
+
+	th {
+		color: var(--mantine-color-bright);
+		font-weight: 600;
+		text-align: start;
+		padding: 0.5rem 0.75rem;
+		border-bottom: 1px solid var(--mantine-color-obsidian-light);
+		background-color: var(--surreal-paper-background, var(--mantine-color-body));
+		position: sticky;
+		top: 0;
+		z-index: 1;
+	}
+
+	th:last-child,
+	td:last-child {
+		text-align: end;
+	}
+
+	td {
+		padding: 0.45rem 0.75rem;
+		color: var(--mantine-color-text);
+		border-bottom: 1px solid var(--mantine-color-obsidian-light);
+	}
+
+	tbody tr:nth-child(odd) td {
+		background-color: var(--mantine-color-obsidian-7);
+
+		@include light {
+			background-color: var(--mantine-color-obsidian-0);
+		}
+	}
+
+	tbody tr:last-child td {
+		border-bottom: none;
+	}
+}
+
+.method-cell {
+	font-family: var(--mantine-font-family-monospace);
+	max-width: 180px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.log-panel {
+	background-color: var(--mantine-color-obsidian-9);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-1);
+	}
+}
+
+.log-line {
+	position: relative;
+	border-bottom: 1px solid var(--mantine-color-obsidian-light);
+	user-select: text;
+	-webkit-user-select: text;
+
+	&:last-child {
+		border-bottom: none;
+	}
+
+	&[data-level="1"] .log-message {
+		color: var(--mantine-color-red-4, #ef5350);
+	}
+
+	&[data-level="2"] .log-message {
+		color: var(--mantine-color-orange-4, #ffa726);
+	}
+}
+
+.log-message {
+	font-family: var(--mantine-font-family-monospace);
+	font-size: var(--mantine-font-size-xs);
+	color: var(--mantine-color-bright);
+	word-break: break-word;
+	white-space: pre-wrap;
+}
+
+.log-time {
+	font-family: var(--mantine-font-family-monospace);
+	font-size: var(--mantine-font-size-xs);
+	color: var(--mantine-color-obsidian-4);
+	white-space: nowrap;
+}

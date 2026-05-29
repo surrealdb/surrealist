@@ -6,7 +6,7 @@ import {
 } from "@auth0/auth0-react";
 import { shutdown } from "@intercom/messenger-js-sdk";
 import { useStable } from "@surrealdb/ui";
-import { createContext, type PropsWithChildren, useContext, useEffect, useRef } from "react";
+import { createContext, type PropsWithChildren, useContext, useEffect } from "react";
 import { useSearchParams } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { SignInRedirect } from "~/components/SignInRedirect";
@@ -86,8 +86,6 @@ function TokenBridge({ children }: PropsWithChildren) {
 	const [params] = useSearchParams();
 	const [, navigate] = useAbsoluteLocation();
 
-	const signInRef = useRef(false);
-
 	const isVerifyPending = user?.email_verified === false;
 	const isSigninPrompt = params.get("signin") === "true";
 
@@ -112,6 +110,7 @@ function TokenBridge({ children }: PropsWithChildren) {
 	const signOut = useStable(async (options?: SignOutOptions) => {
 		const { localOnly } = options ?? {};
 
+		tagEvent("cloud_signout");
 		shutdown();
 		navigate("/");
 
@@ -136,7 +135,7 @@ function TokenBridge({ children }: PropsWithChildren) {
 		});
 	});
 
-	const handleSignIn = useStable((user: User) => {
+	const _handleSignIn = useStable((user: User) => {
 		tagEvent("auth_signin", {
 			provider: user.sub?.split("|")[0] ?? "unknown",
 			verified: user.email_verified,
@@ -144,7 +143,7 @@ function TokenBridge({ children }: PropsWithChildren) {
 		});
 	});
 
-	const handleSignOut = useStable(() => {
+	const _handleSignOut = useStable(() => {
 		tagEvent("auth_signout");
 	});
 
@@ -162,21 +161,6 @@ function TokenBridge({ children }: PropsWithChildren) {
 		_user = user;
 	}, [user]);
 
-	// Sign in detection
-	useEffect(() => {
-		if (!isAuthenticated) {
-			if (signInRef.current) handleSignOut();
-			signInRef.current = false;
-			return;
-		}
-
-		if (user) {
-			signInRef.current = true;
-			handleSignIn(user);
-		}
-	}, [isAuthenticated, user]);
-
-	// Email verification prompt
 	useEffect(() => {
 		if (isVerifyPending) {
 			openCloudOnboardingModal();

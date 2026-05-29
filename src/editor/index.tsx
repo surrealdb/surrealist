@@ -5,6 +5,7 @@ export * from "./graphql";
 export * from "./icons";
 export * from "./keybinds";
 export * from "./keymaps";
+export * from "./lsp";
 export * from "./records";
 export * from "./surrealql";
 export * from "./tables";

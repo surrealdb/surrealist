@@ -83,6 +83,7 @@ export function CloudProvider({ children }: PropsWithChildren) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [sessionToken, setSessionToken] = useState("");
 	const [userId, setUserId] = useState("");
+	const [authProvider, setAuthProvider] = useState("");
 	const [profile, setProfile] = useState<CloudProfile>(EMPTY_PROFILE);
 
 	const termsPending = useCloudStore((s) => s.termsAcceptancePending);
@@ -94,6 +95,7 @@ export function CloudProvider({ children }: PropsWithChildren) {
 		setTermsAcceptancePending(false);
 		setSessionToken("");
 		setUserId("");
+		setAuthProvider("");
 		setProfile(EMPTY_PROFILE);
 		setIsActive(false);
 	});
@@ -172,6 +174,7 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			setError("");
 			setSessionToken(result.token);
 			setUserId(result.id);
+			setAuthProvider(result.provider);
 			setIsActive(true);
 
 			const promptTerms = !result.terms_accepted_at;
@@ -289,11 +292,12 @@ export function CloudProvider({ children }: PropsWithChildren) {
 			isLoading,
 			sessionToken,
 			userId,
+			authProvider,
 			profile,
 			syncCloudProfile,
 			syncCloudResources,
 		}),
-		[error, isActive, isLoading, sessionToken, userId, profile],
+		[error, isActive, isLoading, sessionToken, userId, authProvider, profile],
 	);
 
 	useLayoutEffect(() => {

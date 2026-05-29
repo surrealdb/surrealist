@@ -27,7 +27,7 @@ import {
 	iconTune,
 	Spinner,
 } from "@surrealdb/ui";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { isDesktop } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
@@ -53,7 +53,7 @@ interface Category {
 	id: string;
 	name: string;
 	icon: string;
-	component: () => JSX.Element;
+	component: () => ReactElement;
 	disabled?: FeatureCondition;
 }
 

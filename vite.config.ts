@@ -126,10 +126,10 @@ export default defineConfig(({ mode }) => {
 			strictPort: true,
 		},
 		build: {
-			target: "es2020",
-			minify: process.env.TAURI_DEBUG ? false : "esbuild",
+			target: "es2022",
+			minify: !process.env.TAURI_DEBUG,
 			sourcemap: !!process.env.TAURI_DEBUG,
-			rollupOptions: {
+			rolldownOptions: {
 				input: !isTauri ? ENTRYPOINTS : undefined,
 				output: {
 					experimentalMinChunkSize: 5000,
@@ -148,13 +148,9 @@ export default defineConfig(({ mode }) => {
 							"@surrealdb/ql-wasm-2",
 							"@surrealdb/ql-wasm-3",
 						],
+						lsp: ["@surrealdb/surrealql-language-server"],
 					},
 				},
-			},
-		},
-		esbuild: {
-			supported: {
-				"top-level-await": true, //browsers can handle top-level-await features
 			},
 		},
 		resolve: {
@@ -183,15 +179,23 @@ export default defineConfig(({ mode }) => {
 		},
 		optimizeDeps: {
 			include: ["path-browserify"],
-			exclude: ["@surrealdb/wasm", "@surrealdb/ql-wasm-2", "@surrealdb/ql-wasm-3"],
-			esbuildOptions: {
-				target: "esnext",
+			exclude: [
+				"@surrealdb/wasm",
+				"@surrealdb/ql-wasm-2",
+				"@surrealdb/ql-wasm-3",
+				"@surrealdb/surrealql-language-server",
+			],
+			rolldownOptions: {
+				transform: {
+					target: "esnext",
+				},
 			},
 		},
 		assetsInclude: [
 			"**/@surrealdb/wasm/dist/*.wasm",
 			"**/@surrealdb/ql-wasm-2/dist/*.wasm",
 			"**/@surrealdb/ql-wasm-3/dist/*.wasm",
+			"**/@surrealdb/surrealql-language-server/*.wasm",
 		],
 	};
 });

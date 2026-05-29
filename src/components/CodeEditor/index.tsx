@@ -53,6 +53,7 @@ export function CodeEditor(props: CodeEditorProps) {
 	const editorRef = useRef<EditorView>(null);
 	const initializedRef = useRef(false);
 	const preventChangeNotificationsRef = useRef(true);
+	const skipExtensionsReconfigureRef = useRef(false);
 	const [editorScale] = useSetting("appearance", "editorScale");
 	const [defaultAutoCollapseDepth] = useSetting("appearance", "autoCollapseDepth");
 	const effectiveAutoCollapseDepth = autoCollapseDepth ?? defaultAutoCollapseDepth;
@@ -129,6 +130,10 @@ export function CodeEditor(props: CodeEditorProps) {
 		editor.setState(newState);
 		forceLinting(editor);
 
+		// `setState` already applied the latest extensions via the
+		// compartment; skip the dedicated reconfigure pass below.
+		skipExtensionsReconfigureRef.current = true;
+
 		// After state is set, allow change notifications to proceed
 		requestAnimationFrame(() => {
 			preventChangeNotificationsRef.current = false;
@@ -184,6 +189,11 @@ export function CodeEditor(props: CodeEditorProps) {
 	// Update external extension state
 	useEffect(() => {
 		if (!editorRef.current) return;
+
+		if (skipExtensionsReconfigureRef.current) {
+			skipExtensionsReconfigureRef.current = false;
+			return;
+		}
 
 		preventChangeNotificationsRef.current = true;
 

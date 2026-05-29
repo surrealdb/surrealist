@@ -36,3 +36,209 @@ a {
 .cm-focused {
 	outline: none !important;
 }
+
+.cm-tooltip-surql-lsp {
+	padding: 10px 12px;
+	max-width: 480px;
+	font-size: 13px;
+	line-height: 1.5;
+	word-break: break-word;
+
+	& > *:first-child {
+		margin-top: 0;
+	}
+
+	& > *:last-child {
+		margin-bottom: 0;
+	}
+
+	& h1,
+	& h2,
+	& h3,
+	& h4,
+	& h5,
+	& h6 {
+		margin: 0 0 6px 0;
+		padding: 0;
+		font-size: 14px;
+		font-weight: 600;
+	}
+
+	& p {
+		margin: 0 0 6px 0;
+		padding: 0;
+	}
+
+	& ul,
+	& ol {
+		margin: 0 0 6px 0;
+		padding-left: 18px;
+	}
+
+	& li {
+		margin: 0;
+		padding: 0;
+	}
+
+	& li + li {
+		margin-top: 2px;
+	}
+
+	& strong {
+		font-weight: 600;
+	}
+
+	& code {
+		font-family: var(--mantine-font-family-monospace, monospace);
+		font-size: 0.9em;
+		padding: 1px 4px;
+		background-color: rgba(255, 255, 255, 0.06);
+		border-radius: 3px;
+	}
+
+	& pre {
+		margin: 0 0 6px 0;
+		padding: 8px;
+		background-color: rgba(0, 0, 0, 0.2);
+		border-radius: 4px;
+		overflow-x: auto;
+
+		& code {
+			padding: 0;
+			background: none;
+		}
+	}
+
+	& a {
+		color: var(--mantine-color-surreal-4, #ff00a0);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	& hr {
+		margin: 8px 0;
+		border: none;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+	}
+}
+
+.cm-tooltip-surql-signature {
+	font-family: var(--mantine-font-family-monospace, monospace);
+	font-size: 12.5px;
+	line-height: 1.5;
+	max-width: 520px;
+
+	&__label {
+		white-space: pre-wrap;
+	}
+
+	&__param-active {
+		font-weight: 600;
+		color: var(--mantine-color-surreal-4, #ff00a0);
+		background-color: rgba(255, 0, 160, 0.12);
+		border-radius: 3px;
+		padding: 0 2px;
+	}
+
+	&__doc {
+		margin-top: 6px;
+		font-family: var(--mantine-font-family, inherit);
+		font-size: 12.5px;
+		opacity: 0.85;
+	}
+}
+
+.cm-inlay-hint {
+	display: inline-block;
+	margin: 0 4px;
+	padding: 0 6px;
+	font-family: var(--mantine-font-family-monospace, monospace);
+	font-size: 0.85em;
+	line-height: 1.2;
+	opacity: 0.65;
+	color: var(--mantine-color-text);
+	background-color: rgba(255, 255, 255, 0.06);
+	border-radius: 3px;
+	vertical-align: baseline;
+	pointer-events: none;
+	user-select: none;
+}
+
+// Style the autocompletion popup info section
+.cm-tooltip.cm-completionInfo {
+	padding: 0;
+	border: 1px solid var(--mantine-color-slate-6, #2c2e33);
+	background-color: var(--mantine-color-slate-9, #16181d);
+	border-radius: 6px;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+	max-width: 420px;
+
+	& .cm-tooltip-surql-lsp {
+		padding: 10px 12px;
+	}
+}
+
+// Style the autocompletion list
+.cm-tooltip-autocomplete {
+	border-radius: 6px !important;
+	overflow: hidden;
+	border: 1px solid var(--mantine-color-slate-6, #2c2e33) !important;
+	background-color: var(--mantine-color-slate-9, #16181d) !important;
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+	& > ul {
+		font-family: var(--mantine-font-family, inherit) !important;
+		font-size: 13px !important;
+		max-height: 280px;
+		min-width: 280px;
+
+		& > li {
+			padding-block: 5px !important;
+			line-height: 1.4;
+			display: flex;
+			align-items: center;
+
+			&[aria-selected],
+			&:hover {
+				
+			}
+		}
+	}
+
+	& .cm-completionLabel {
+		font-weight: 500;
+		flex: 0 0 auto;
+	}
+
+	& .cm-completionMatchedText {
+		text-decoration: none;
+		color: var(--mantine-color-surreal-4, #ff00a0);
+		font-weight: 600;
+	}
+
+	& .cm-completionDetail {
+		font-style: normal;
+		font-size: 12px;
+		opacity: 0.6;
+		margin-left: auto;
+		padding-left: 12px;
+		flex: 0 1 auto;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	& .cm-completionIcon {
+		width: 14px;
+		opacity: 0.7;
+		padding-right: 0;
+		margin-right: 0;
+
+		&::after {
+			font-size: 12px;
+		}
+	}
+}

@@ -23,11 +23,10 @@ import { ContentPane } from "~/components/Pane";
 import { Spacer } from "~/components/Spacer";
 import { MAX_HISTORY_QUERY_LENGTH } from "~/constants";
 import {
+	getSharedSurqlLspClient,
 	runQueryKeymap,
-	surqlCustomFunctionCompletion,
-	surqlLinting,
+	surqlLanguageServer,
 	surqlRecordLinks,
-	surqlTableCompletion,
 	surqlVariableCompletion,
 } from "~/editor";
 import { setEditorText } from "~/editor/helpers";
@@ -94,6 +93,8 @@ export function QueryPane({
 		"behavior",
 		"querySelectionExecutionWarning",
 	);
+	const [useLanguageServer] = useSetting("behavior", "useLanguageServer");
+	const [inlayHints] = useSetting("behavior", "inlayHints");
 
 	// Retrieve a cached editor state, or compute when missing
 	const queryState = useMemo(() => {
@@ -198,19 +199,30 @@ export function QueryPane({
 
 	const hasSelection = selection?.empty === false;
 
+	const lspClient = useMemo(
+		() => (useLanguageServer ? getSharedSurqlLspClient() : null),
+		[useLanguageServer],
+	);
+	const lspUri = useMemo(() => `surrealist:///query/${activeTab.id}.surql`, [activeTab.id]);
+
 	const extensions = useMemo(
 		() => [
 			surrealql(),
 			surqlVersion,
-			surqlLinting(updateValid),
+			lspClient
+				? surqlLanguageServer({
+						client: lspClient,
+						uri: lspUri,
+						onValidate: updateValid,
+						inlayHints,
+					})
+				: [],
 			surqlRecordLinks(inspect),
-			surqlTableCompletion(),
 			surqlVariableCompletion(resolveVariables),
-			surqlCustomFunctionCompletion(),
 			Prec.high(keymap.of(runQueryKeymap)),
 			scrollPastEnd(),
 		],
-		[inspect, surqlVersion],
+		[inspect, surqlVersion, lspClient, lspUri, inlayHints],
 	);
 
 	useIntent("format-query", handleFormat);
