@@ -6,7 +6,7 @@ import { BannerType, CloudBanner } from "~/types";
 const BANNER_INFO: Record<BannerType, [MantineColor, string, string]> = {
 	info: ["violet", "Service Update", iconBullhorn],
 	warning: ["orange", "Service Update", iconWarning],
-	important: ["red", "Important Service Update", iconWarning],
+	error: ["red", "Important Service Update", iconWarning],
 };
 
 export interface CloudAlertProps {
