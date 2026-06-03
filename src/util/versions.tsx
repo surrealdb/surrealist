@@ -12,3 +12,8 @@ export const SDB_3_0_0 = "3.0.0-alpha.1";
  * The first version supporting DEFINE CONFIG DEFAULT
  */
 export const SDB_DEFINE_CONFIG_DEFAULT = SDB_3_0_0;
+
+/**
+ * The first supported version of SurrealDB 3.1
+ */
+export const SDB_3_1_0 = "3.1.0";
