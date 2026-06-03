@@ -1,14 +1,9 @@
 import { Box, Button, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
 import { Icon, iconArrowUpRight } from "@surrealdb/ui";
-import { useLayoutEffect, useMemo } from "react";
+import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
-import {
-	getCloudPlanCardState,
-	getCloudPlanDisplayConfig,
-	isCloudPlanComingSoon,
-	PricingConfigCloud,
-	useCloudPricingQuery,
-} from "~/cloud/queries/pricing";
+import { isInstancePlan } from "~/cloud/helpers";
+import { PricingConfigCloud, useCloudPricingQuery } from "~/cloud/queries/pricing";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { useStable } from "~/hooks/stable";
 import { PricingCard } from "~/screens/surrealist/components/PricingCard";
@@ -23,21 +18,7 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 	const showEnterprise = useHasCloudFeature("distributed_storage");
 	const pricingQuery = useCloudPricingQuery();
 
-	const plans = useMemo(() => {
-		if (!pricingQuery.isSuccess) {
-			return [];
-		}
-
-		return pricingQuery.data.cloud.filter(
-			(plan) => plan.surrealist && (showFree || plan.surrealist.plan !== "free"),
-		);
-	}, [pricingQuery.data, pricingQuery.isSuccess, showFree]);
-
 	const onClickPlan = useStable((config: PricingConfigCloud) => {
-		if (isCloudPlanComingSoon(config)) {
-			return;
-		}
-
 		setStep(1);
 		setDetails((details) => {
 			details.plan = config.surrealist?.plan ?? "free";
@@ -51,23 +32,17 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 	useLayoutEffect(() => {
 		const initialPlan = search.get("plan");
 
-		if (!initialPlan || !pricingQuery.data) {
-			return;
+		if (initialPlan && isInstancePlan(initialPlan)) {
+			if (initialPlan === "free" && !showFree) {
+				return;
+			}
+
+			const config = pricingQuery.data?.cloud?.find((plan) => plan.id === initialPlan);
+
+			if (config) {
+				onClickPlan(config);
+			}
 		}
-
-		const config = pricingQuery.data.cloud.find(
-			(plan) => plan.id === initialPlan || plan.surrealist?.plan === initialPlan,
-		);
-
-		if (!config || isCloudPlanComingSoon(config)) {
-			return;
-		}
-
-		if (config.surrealist?.plan === "free" && !showFree) {
-			return;
-		}
-
-		onClickPlan(config);
 	}, [showFree, search, pricingQuery.data]);
 
 	return (
@@ -77,27 +52,67 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 				spacing="xl"
 				className={classes.content}
 			>
-				{pricingQuery.isSuccess
-					? plans.map((plan) => {
-							const comingSoon = isCloudPlanComingSoon(plan);
+				{showFree &&
+					(pricingQuery.isSuccess ? (
+						<PricingCard
+							state="available"
+							ctaText="Configure instance"
+							onClick={(config) => onClickPlan(config as PricingConfigCloud)}
+							config={pricingQuery.data.cloud?.find(
+								(plan) => plan.surrealist?.plan === "free",
+							)}
+						/>
+					) : (
+						<Skeleton h={650} />
+					))}
 
-							return (
-								<PricingCard
-									key={plan.id}
-									state={getCloudPlanCardState(plan, showEnterprise)}
-									disabled={comingSoon}
-									ctaText="Configure instance"
-									onClick={(config) => onClickPlan(config as PricingConfigCloud)}
-									config={getCloudPlanDisplayConfig(plan, showEnterprise)}
-								/>
-							);
-						})
-					: Array.from({ length: 3 }, (_, index) => (
-							<Skeleton
-								key={index}
-								h={650}
-							/>
-						))}
+				{pricingQuery.isSuccess ? (
+					<PricingCard
+						state="available"
+						ctaText="Configure instance"
+						onClick={(config) => onClickPlan(config as PricingConfigCloud)}
+						config={pricingQuery.data.cloud?.find(
+							(plan) => plan.surrealist?.plan === "start",
+						)}
+					/>
+				) : (
+					<Skeleton h={650} />
+				)}
+
+				{pricingQuery.isSuccess ? (
+					<PricingCard
+						state="future"
+						ctaText="Configure instance"
+						onClick={(config) => onClickPlan(config as PricingConfigCloud)}
+						config={pricingQuery.data.cloud?.find(
+							(plan) => plan.surrealist?.plan === "scale",
+						)}
+					/>
+				) : (
+					<Skeleton h={650} />
+				)}
+
+				{pricingQuery.isSuccess ? (
+					<PricingCard
+						state={showEnterprise ? "available" : "contact"}
+						ctaText="Configure instance"
+						onClick={(config) => onClickPlan(config as PricingConfigCloud)}
+						config={
+							{
+								...pricingQuery.data.cloud?.find(
+									(plan) => plan.surrealist?.plan === "enterprise",
+								),
+								price: showEnterprise
+									? "Available"
+									: pricingQuery.data.cloud?.find(
+											(plan) => plan.surrealist?.plan === "enterprise",
+										)?.price,
+							} as PricingConfigCloud
+						}
+					/>
+				) : (
+					<Skeleton h={650} />
+				)}
 			</SimpleGrid>
 
 			<Box mt="sm">

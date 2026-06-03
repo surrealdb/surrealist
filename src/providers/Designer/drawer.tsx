@@ -30,12 +30,14 @@ import { DrawerResizer } from "~/components/DrawerResizer";
 import { SaveBox } from "~/components/SaveBox";
 import { Spacer } from "~/components/Spacer";
 import { TABLE_VARIANT_ICONS } from "~/constants";
+import { useMinimumVersion } from "~/hooks/connection";
 import type { SaveableHandle } from "~/hooks/save";
 import { useConfirmation } from "~/providers/Confirmation";
 import { executeQuery } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import type { TableInfo } from "~/types";
 import { getTableVariant, syncConnectionSchema } from "~/util/schema";
+import { SDB_3_1_0 } from "~/util/versions";
 import { ChangefeedElement } from "./elements/changefeed";
 import { EventsElement } from "./elements/events";
 import { FieldsElement } from "./elements/fields";
@@ -65,6 +67,7 @@ export function DesignDrawer({
 
 	const [width, setWidth] = useState(650);
 	const openDesignerPanels = useConfigStore((s) => s.openDesignerPanels);
+	const [useAlter] = useMinimumVersion(SDB_3_1_0);
 
 	const removeTable = useConfirmation({
 		message:
@@ -203,6 +206,17 @@ export function DesignDrawer({
 				mt="sm"
 				flex="1 1 0"
 			>
+				{!useAlter && (
+					<Alert
+						icon={<Icon path={iconWarning} />}
+						color="yellow"
+						mb="xl"
+					>
+						This database version replaces whole definitions when you save; even parts
+						you did not change. Upgrade to SurrealDB 3.1 or later to apply only the
+						changes you make.
+					</Alert>
+				)}
 				{errors.map((error) => (
 					<Alert
 						key={error}

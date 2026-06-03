@@ -4,7 +4,7 @@ import type { Duration, RecordId } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
 export type AccessType = "JWT" | "RECORD";
-export type BannerType = "info" | "warning" | "important";
+export type BannerType = "info" | "warning" | "error";
 export type AuthLevel = "root" | "namespace" | "database";
 export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
