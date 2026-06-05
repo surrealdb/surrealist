@@ -70,6 +70,7 @@ export function ConversationUser({
 			gap="xl"
 			wrap="nowrap"
 			align="start"
+			w="100%"
 		>
 			{!icon && (
 				<Avatar
@@ -87,7 +88,10 @@ export function ConversationUser({
 
 			{icon && icon}
 
-			<Stack>
+			<Stack
+				flex={1}
+				miw={0}
+			>
 				<Stack gap={0}>
 					<Group gap="xs">
 						<Text
