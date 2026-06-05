@@ -141,95 +141,97 @@ function PageContent({ organisation, instances }: PageContentProps) {
 	}, [isBackupsSuccess, instances, backups, instanceId, backupId]);
 
 	return (
-		<CloudAdminGuard organisation={organisation}>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
+		<>
+			<PageBreadcrumbs
+				items={[
+					{
+						label: organisation.name,
+						href: `/o/${organisation.id}`,
+						selectable: true,
+					},
+					{
+						label: "Instances",
+						href: `/o/${organisation.id}/instances`,
+					},
+					{ label: "Deploy instance" },
+				]}
+			/>
+			<CloudAdminGuard organisation={organisation}>
+				<Box
+					flex={1}
+					pos="relative"
 				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
+					<ScrollArea
+						pos="absolute"
+						scrollbars="y"
+						type="scroll"
+						inset={0}
+						className={classes.scrollArea}
+						mt={18}
 					>
-						{organisation && (
-							<>
-								<Box>
-									<PageBreadcrumbs
-										items={[
-											{ label: "Surrealist", href: "/" },
-											{
-												label: organisation.name,
-												href: `/o/${organisation.id}`,
-											},
-											{
-												label: "Instances",
-												href: `/o/${organisation.id}/instances`,
-											},
-											{ label: "Deploy instance" },
-										]}
-									/>
-									<PrimaryTitle
-										mt="sm"
-										fz={32}
-									>
-										<Text
-											span
-											inherit
-											c="obsidian"
-											mr="sm"
+						<Stack
+							px="xl"
+							mx="auto"
+							maw={1200}
+							pb={68}
+						>
+							{organisation && (
+								<>
+									<Box>
+										<PrimaryTitle
+											mt="sm"
+											fz={32}
 										>
-											{step + 1}.
-										</Text>
-										{stepTitles[step]}
-									</PrimaryTitle>
-								</Box>
+											<Text
+												span
+												inherit
+												c="obsidian"
+												mr="sm"
+											>
+												{step + 1}.
+											</Text>
+											{stepTitles[step]}
+										</PrimaryTitle>
+									</Box>
 
-								<Box my="xl">
-									{step === 0 && (
-										<PlanStep
-											organisation={organisation}
-											instances={instances}
-											details={details}
-											setDetails={setDetails}
-											setStep={setStep}
-										/>
-									)}
+									<Box my="xl">
+										{step === 0 && (
+											<PlanStep
+												organisation={organisation}
+												instances={instances}
+												details={details}
+												setDetails={setDetails}
+												setStep={setStep}
+											/>
+										)}
 
-									{step === 1 && (
-										<ConfigureStep
-											organisation={organisation}
-											backups={backups}
-											instances={instances}
-											details={details}
-											setDetails={setDetails}
-											setStep={updateStep}
-										/>
-									)}
+										{step === 1 && (
+											<ConfigureStep
+												organisation={organisation}
+												backups={backups}
+												instances={instances}
+												details={details}
+												setDetails={setDetails}
+												setStep={updateStep}
+											/>
+										)}
 
-									{step === 2 && (
-										<CheckoutStep
-											organisation={organisation}
-											instances={instances}
-											details={details}
-											setDetails={setDetails}
-											setStep={updateStep}
-										/>
-									)}
-								</Box>
-							</>
-						)}
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</CloudAdminGuard>
+										{step === 2 && (
+											<CheckoutStep
+												organisation={organisation}
+												instances={instances}
+												details={details}
+												setDetails={setDetails}
+												setStep={updateStep}
+											/>
+										)}
+									</Box>
+								</>
+							)}
+						</Stack>
+					</ScrollArea>
+				</Box>
+			</CloudAdminGuard>
+		</>
 	);
 }

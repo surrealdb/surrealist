@@ -1,9 +1,10 @@
 import type { Update } from "@tauri-apps/plugin-updater";
 import { create } from "zustand";
-import type { ColorScheme, LiveMessage } from "~/types";
+import type { BreadcrumbItem, ColorScheme, LiveMessage } from "~/types";
 
 export type InterfaceStore = {
 	title: string;
+	pageBreadcrumbs: BreadcrumbItem[];
 	colorScheme: ColorScheme;
 	availableUpdate: null | Update;
 	showAvailableUpdate: boolean;
@@ -17,6 +18,7 @@ export type InterfaceStore = {
 	docsTable: string;
 
 	setWindowTitle: (title: string) => void;
+	setPageBreadcrumbs: (items: BreadcrumbItem[]) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
 	setAvailableUpdate: (update: Update, alert: boolean) => void;
 	hideAvailableUpdate: () => void;
@@ -35,6 +37,7 @@ export type InterfaceStore = {
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	title: "",
+	pageBreadcrumbs: [],
 	colorScheme: "dark",
 	availableUpdate: null,
 	showAvailableUpdate: false,
@@ -53,6 +56,8 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	docsTable: "",
 
 	setWindowTitle: (title) => set(() => ({ title })),
+
+	setPageBreadcrumbs: (pageBreadcrumbs) => set(() => ({ pageBreadcrumbs })),
 
 	setColorScheme: (colorScheme) =>
 		set(() => ({

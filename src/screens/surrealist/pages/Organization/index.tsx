@@ -72,125 +72,133 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 	}
 
 	return (
-		<CloudGuard>
-			{isAuthed ? (
-				<Box
-					flex={1}
-					pos="relative"
-				>
-					<ScrollArea
-						pos="absolute"
-						scrollbars="y"
-						type="scroll"
-						inset={0}
-						className={classes.scrollArea}
-						mt={18}
-					>
-						<Stack
-							px="xl"
-							mx="auto"
-							maw={1200}
-							pb={68}
-							className={classes.content}
-						>
-							{organization && (
-								<>
-									<PageBreadcrumbs
-										items={[
-											{ label: "Surrealist", href: "/" },
-											{
-												label: organization.name,
-												href: `/o/${organization.id}`,
-											},
-										]}
-									/>
-									{isTerminated ? (
-										<Alert
-											color="obsidian"
-											title="Organisation terminated"
-										>
-											<Text className="selectable">
-												This organisation has been terminated and is no
-												longer available for provisioning new instances.
-											</Text>
-										</Alert>
-									) : isRestricted ? (
-										<Alert
-											color="red"
-											title="Organisation restricted"
-											icon={<Icon path={iconCreditCard} />}
-										>
-											<Text className="selectable">
-												This organisation has been restricted due to failed
-												payments. Please update your billing and payment
-												information to restore access. If you believe this
-												is a mistake or need assistance, please use the
-												button below to contact support.
-											</Text>
-											<div>
-												<Button
-													mt="md"
-													color="red"
-													variant="light"
-													size="xs"
-													onClick={() => {
-														dispatchIntent("create-message", {
-															type: "conversation",
-															conversationType: "general",
-															subject: "Organisation restricted",
-															message: `My organisation (ID: ${organization.id}) was frozen. Can you please help me restore access?`,
-														});
-													}}
-												>
-													Contact support
-												</Button>
-											</div>
-										</Alert>
-									) : null}
-
-									{activeTab === "overview" && (
-										<OrganizationOverviewTab organization={organization} />
-									)}
-
-									{activeTab === "instances" && (
-										<OrganizationInstancesTab organization={organization} />
-									)}
-
-									{activeTab === "contexts" && (
-										<OrganizationContextsTab organization={organization} />
-									)}
-
-									{activeTab === "team" && (
-										<OrganizationTeamTab organization={organization} />
-									)}
-
-									{activeTab === "invoices" && isOwner && !isManagedBilling && (
-										<OrganizationInvoicesTab organization={organization} />
-									)}
-
-									{activeTab === "billing" && isOwner && (
-										<OrganizationBillingTab organization={organization} />
-									)}
-
-									{activeTab === "support" && isSupport && (
-										<OrganizationSupportTab organization={organization} />
-									)}
-
-									{activeTab === "usage" && isAdmin && (
-										<OrganizationUsageTab organization={organization} />
-									)}
-
-									{activeTab === "settings" && isAdmin && (
-										<OrganizationSettingsTab organization={organization} />
-									)}
-								</>
-							)}
-						</Stack>
-					</ScrollArea>
-				</Box>
-			) : (
-				<CloudSplash />
+		<>
+			{organization && (
+				<PageBreadcrumbs
+					items={[
+						{
+							label: organization.name,
+							href: `/o/${organization.id}`,
+							selectable: true,
+						},
+					]}
+				/>
 			)}
-		</CloudGuard>
+			<CloudGuard>
+				{isAuthed ? (
+					<Box
+						flex={1}
+						pos="relative"
+					>
+						<ScrollArea
+							pos="absolute"
+							scrollbars="y"
+							type="scroll"
+							inset={0}
+							className={classes.scrollArea}
+							mt={18}
+						>
+							<Stack
+								px="xl"
+								mx="auto"
+								maw={1200}
+								pb={68}
+								className={classes.content}
+							>
+								{organization && (
+									<>
+										{isTerminated ? (
+											<Alert
+												color="obsidian"
+												title="Organisation terminated"
+											>
+												<Text className="selectable">
+													This organisation has been terminated and is no
+													longer available for provisioning new instances.
+												</Text>
+											</Alert>
+										) : isRestricted ? (
+											<Alert
+												color="red"
+												title="Organisation restricted"
+												icon={<Icon path={iconCreditCard} />}
+											>
+												<Text className="selectable">
+													This organisation has been restricted due to
+													failed payments. Please update your billing and
+													payment information to restore access. If you
+													believe this is a mistake or need assistance,
+													please use the button below to contact support.
+												</Text>
+												<div>
+													<Button
+														mt="md"
+														color="red"
+														variant="light"
+														size="xs"
+														onClick={() => {
+															dispatchIntent("create-message", {
+																type: "conversation",
+																conversationType: "general",
+																subject: "Organisation restricted",
+																message: `My organisation (ID: ${organization.id}) was frozen. Can you please help me restore access?`,
+															});
+														}}
+													>
+														Contact support
+													</Button>
+												</div>
+											</Alert>
+										) : null}
+
+										{activeTab === "overview" && (
+											<OrganizationOverviewTab organization={organization} />
+										)}
+
+										{activeTab === "instances" && (
+											<OrganizationInstancesTab organization={organization} />
+										)}
+
+										{activeTab === "contexts" && (
+											<OrganizationContextsTab organization={organization} />
+										)}
+
+										{activeTab === "team" && (
+											<OrganizationTeamTab organization={organization} />
+										)}
+
+										{activeTab === "invoices" &&
+											isOwner &&
+											!isManagedBilling && (
+												<OrganizationInvoicesTab
+													organization={organization}
+												/>
+											)}
+
+										{activeTab === "billing" && isOwner && (
+											<OrganizationBillingTab organization={organization} />
+										)}
+
+										{activeTab === "support" && isSupport && (
+											<OrganizationSupportTab organization={organization} />
+										)}
+
+										{activeTab === "usage" && isAdmin && (
+											<OrganizationUsageTab organization={organization} />
+										)}
+
+										{activeTab === "settings" && isAdmin && (
+											<OrganizationSettingsTab organization={organization} />
+										)}
+									</>
+								)}
+							</Stack>
+						</ScrollArea>
+					</Box>
+				) : (
+					<CloudSplash />
+				)}
+			</CloudGuard>
+		</>
 	);
 }

@@ -11,15 +11,7 @@ import {
 	Text,
 	TextInput,
 } from "@mantine/core";
-import {
-	Icon,
-	iconCheck,
-	iconChevronRight,
-	iconCloud,
-	iconReset,
-	iconStar,
-	iconTable,
-} from "@surrealdb/ui";
+import { Icon, iconCheck, iconCloud, iconReset, iconStar, iconTable } from "@surrealdb/ui";
 import { compareVersions } from "compare-versions";
 import { useEffect, useState } from "react";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
@@ -69,9 +61,7 @@ import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { generateRandomName } from "~/util/random";
-import { ConnectionStatus } from "./components/ConnectionStatus";
-import { DatabaseList } from "./components/DatabaseList";
-import { NamespaceList } from "./components/NamespaceList";
+import { ToolbarBreadcrumbs } from "./components/ToolbarBreadcrumbs";
 import { requestDatabaseExport, resetConnection } from "./pages/Connection/connection/connection";
 
 export function SurrealistToolbar() {
@@ -328,8 +318,6 @@ export function SurrealistToolbar() {
 
 	const [isSupported, version] = useMinimumVersion(import.meta.env.SDB_VERSION);
 	const isSandbox = id === "sandbox";
-	const showNS = !isSandbox && id && isConnected;
-	const showDB = showNS && namespace;
 
 	const [dataset, setDataset] = useState("surreal-deal-store-mini");
 	const selectDataset = useRequireDatabase(() => datasetModalOpenHandle.open());
@@ -376,7 +364,7 @@ export function SurrealistToolbar() {
 		<>
 			<SidebarToggle />
 
-			<ConnectionStatus />
+			<ToolbarBreadcrumbs />
 
 			{!isAuthenticated && authMode === "cloud" && (
 				<Button
@@ -386,32 +374,6 @@ export function SurrealistToolbar() {
 				>
 					Sign in to SurrealDB Cloud
 				</Button>
-			)}
-
-			{showNS && (
-				<>
-					<Icon
-						path={iconChevronRight}
-						size="lg"
-						color="obsidian.5"
-						mx={-8}
-					/>
-
-					<NamespaceList />
-				</>
-			)}
-
-			{showDB && (
-				<>
-					<Icon
-						path={iconChevronRight}
-						size="lg"
-						color="obsidian.5"
-						mx={-8}
-					/>
-
-					<DatabaseList />
-				</>
 			)}
 
 			{isConnected && isSandbox && (

@@ -8,6 +8,11 @@ export type BannerType = "info" | "warning" | "important";
 export type AuthLevel = "root" | "namespace" | "database";
 export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
+export type BreadcrumbItem = {
+	label: string;
+	href?: string;
+	selectable?: boolean;
+};
 export type ColorScheme = "light" | "dark";
 export type DatabaseListMode = "list" | "grid";
 export type DiagramAlgorithm = "default" | "aligned" | "spaced";

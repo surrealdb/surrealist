@@ -25,7 +25,6 @@ import { adapter } from "~/adapter";
 import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
-import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsCloudEnabled } from "~/hooks/cloud";
@@ -105,13 +104,7 @@ export function OverviewPage() {
 							className={classes.content}
 						>
 							<Box>
-								<PageBreadcrumbs items={[{ label: "Surrealist", href: "/" }]} />
-								<PrimaryTitle
-									mt="sm"
-									fz={32}
-								>
-									Overview
-								</PrimaryTitle>
+								<PrimaryTitle fz={32}>Overview</PrimaryTitle>
 							</Box>
 
 							{bannerQuery.isSuccess &&

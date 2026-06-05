@@ -75,6 +75,14 @@ $sidebar-wide: 250px;
 	height: 100%;
 }
 
+.sidebar-toggle {
+	display: none;
+
+	.sidebar-wrapper:hover & {
+		display: block;
+	}
+}
+
 .page-content {
 	padding-top: calc(68px + var(--titlebar-offset));
 }

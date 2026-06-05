@@ -43,88 +43,87 @@ export function CreateOrganizationPage() {
 	});
 
 	return (
-		<CloudGuard>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
+		<>
+			<PageBreadcrumbs
+				items={[{ label: "Surrealist", href: "/" }, { label: "Create organisation" }]}
+			/>
+			<CloudGuard>
+				<Box
+					flex={1}
+					pos="relative"
 				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
+					<ScrollArea
+						pos="absolute"
+						scrollbars="y"
+						type="scroll"
+						inset={0}
+						className={classes.scrollArea}
+						mt={18}
 					>
-						<Box>
-							<PageBreadcrumbs
-								items={[
-									{ label: "Surrealist", href: "/" },
-									{ label: "Create organisation" },
-								]}
-							/>
-							<PrimaryTitle
-								fz={32}
-								mt="sm"
-							>
-								Create organisation
-							</PrimaryTitle>
-						</Box>
-
 						<Stack
-							mt={36}
-							maw={350}
+							px="xl"
+							mx="auto"
+							maw={1200}
+							pb={68}
 						>
-							<TextInput
-								autoFocus
-								label="Name"
-								description="Specify the name of your organisation"
-								placeholder="My organisation"
-								value={name}
-								onChange={setName}
-								leftSection={
-									<Icon
-										c="violet"
-										path={iconOrganization}
-									/>
-								}
-								error={
-									name.length > 30
-										? "Organisation name cannot exceed 30 characters"
-										: null
-								}
-							/>
-						</Stack>
-
-						<Group mt={24}>
-							<Link to="/">
-								<Button
-									color="obsidian"
-									variant="light"
+							<Box>
+								<PrimaryTitle
+									fz={32}
+									mt="sm"
 								>
-									Back
-								</Button>
-							</Link>
-							<Button
-								w={150}
-								type="submit"
-								variant="gradient"
-								disabled={name.length === 0 || name.length > 30}
-								onClick={handleCreate}
-								loading={isPending}
+									Create organisation
+								</PrimaryTitle>
+							</Box>
+
+							<Stack
+								mt={36}
+								maw={350}
 							>
-								Create organisation
-							</Button>
-						</Group>
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</CloudGuard>
+								<TextInput
+									autoFocus
+									label="Name"
+									description="Specify the name of your organisation"
+									placeholder="My organisation"
+									value={name}
+									onChange={setName}
+									leftSection={
+										<Icon
+											c="violet"
+											path={iconOrganization}
+										/>
+									}
+									error={
+										name.length > 30
+											? "Organisation name cannot exceed 30 characters"
+											: null
+									}
+								/>
+							</Stack>
+
+							<Group mt={24}>
+								<Link to="/">
+									<Button
+										color="obsidian"
+										variant="light"
+									>
+										Back
+									</Button>
+								</Link>
+								<Button
+									w={150}
+									type="submit"
+									variant="gradient"
+									disabled={name.length === 0 || name.length > 30}
+									onClick={handleCreate}
+									loading={isPending}
+								>
+									Create organisation
+								</Button>
+							</Group>
+						</Stack>
+					</ScrollArea>
+				</Box>
+			</CloudGuard>
+		</>
 	);
 }

@@ -13,75 +13,73 @@ export function RequestsPage() {
 	const { data: requests, isLoading } = useConversationsQuery();
 
 	return (
-		<CloudGuard>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				{isLoading && (
-					<Center
-						w="100%"
-						h="100%"
-						flex={1}
-					>
-						<Loader />
-					</Center>
-				)}
-
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
+		<>
+			<PageBreadcrumbs
+				items={[{ label: "Support", href: "/support" }, { label: "Requests" }]}
+			/>
+			<CloudGuard>
+				<Box
+					flex={1}
+					pos="relative"
 				>
-					<Stack
-						px="xl"
-						h="100%"
-						mx="auto"
-						maw={1000}
-						pb={68}
+					{isLoading && (
+						<Center
+							w="100%"
+							h="100%"
+							flex={1}
+						>
+							<Loader />
+						</Center>
+					)}
+
+					<ScrollArea
+						pos="absolute"
+						scrollbars="y"
+						type="scroll"
+						inset={0}
+						className={classes.scrollArea}
+						mt={18}
 					>
-						<Box>
-							<PageBreadcrumbs
-								items={[
-									{ label: "Surrealist", href: "/" },
-									{ label: "Support", href: "/support" },
-									{ label: "Requests" },
-								]}
+						<Stack
+							px="xl"
+							h="100%"
+							mx="auto"
+							maw={1000}
+							pb={68}
+						>
+							<Box>
+								<Group>
+									<PrimaryTitle
+										fz={32}
+										mt="sm"
+									>
+										Support tickets
+									</PrimaryTitle>
+									<Spacer />
+
+									<Button
+										variant="gradient"
+										size="xs"
+										rightSection={<Icon path={iconPlus} />}
+										onClick={() => {
+											dispatchIntent("create-message", { type: "ticket" });
+										}}
+									>
+										Create new ticket
+									</Button>
+								</Group>
+							</Box>
+
+							<ConversationTable
+								conversations={requests ?? []}
+								isLoading={isLoading}
+								defaultSortMode="updated_latest"
+								defaultType="open"
 							/>
-							<Group>
-								<PrimaryTitle
-									fz={32}
-									mt="sm"
-								>
-									Support tickets
-								</PrimaryTitle>
-								<Spacer />
-
-								<Button
-									variant="gradient"
-									size="xs"
-									rightSection={<Icon path={iconPlus} />}
-									onClick={() => {
-										dispatchIntent("create-message", { type: "ticket" });
-									}}
-								>
-									Create new ticket
-								</Button>
-							</Group>
-						</Box>
-
-						<ConversationTable
-							conversations={requests ?? []}
-							isLoading={isLoading}
-							defaultSortMode="updated_latest"
-							defaultType="open"
-						/>
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</CloudGuard>
+						</Stack>
+					</ScrollArea>
+				</Box>
+			</CloudGuard>
+		</>
 	);
 }

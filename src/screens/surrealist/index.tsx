@@ -1,13 +1,11 @@
 import { Box, Center, Drawer, Flex, Group, Loader, LoadingOverlay, Stack } from "@mantine/core";
-import { memo, useLayoutEffect } from "react";
+import { memo } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
 import { AppTitleBar } from "~/components/AppTitleBar";
 import { CloudGuard } from "~/components/CloudGuard";
-import { TopGlow } from "~/components/TopGlow";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
-import { useGlowOffset } from "~/hooks/glow";
 import { useStable } from "~/hooks/stable";
 import { useCloud } from "~/providers/Cloud";
 import { useInterfaceStore } from "~/stores/interface";
@@ -88,9 +86,6 @@ export function SurrealistScreen() {
 		setOverlaySidebar(false);
 	});
 
-	// const glowOffset = useGlowOffset();
-	// const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
-
 	return (
 		<SidebarProvider mode={sidebarMode}>
 			<Box className={classes.root}>
@@ -116,8 +111,6 @@ export function SurrealistScreen() {
 								{title}
 							</Flex>
 						)}
-
-						{/* <TopGlow offset={glowOffset} /> */}
 
 						<Stack
 							flex={1}

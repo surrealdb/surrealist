@@ -347,349 +347,359 @@ export function ConversationPage({ id }: ConversationPageProps) {
 	}, [conversation]);
 
 	return (
-		<CloudGuard>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				{isLoading && (
-					<Center
-						w="100%"
-						h="100%"
-						flex={1}
-					>
-						<Loader />
-					</Center>
-				)}
-
-				{!isLoading && !conversation && (
-					<Center
-						w="100%"
-						h="100%"
-						flex={1}
-					>
-						<Stack
-							gap={0}
-							align="center"
+		<>
+			<PageBreadcrumbs
+				items={
+					isLoading || !conversation
+						? []
+						: [
+								{ label: "Support", href: "/support" },
+								{ label: "Requests", href: "/support/requests" },
+								{ label: title, selectable: true },
+							]
+				}
+			/>
+			<CloudGuard>
+				<Box
+					flex={1}
+					pos="relative"
+				>
+					{isLoading && (
+						<Center
+							w="100%"
+							h="100%"
+							flex={1}
 						>
-							<PrimaryTitle>Conversation not found</PrimaryTitle>
-							<Text>The conversation you are looking for does not exist</Text>
-							<Button
-								mt="xl"
-								size="sm"
-								variant="gradient"
-								leftSection={<Icon path={iconArrowLeft} />}
-								onClick={() => navigate("/support")}
+							<Loader />
+						</Center>
+					)}
+
+					{!isLoading && !conversation && (
+						<Center
+							w="100%"
+							h="100%"
+							flex={1}
+						>
+							<Stack
+								gap={0}
+								align="center"
 							>
-								Back to Support
-							</Button>
-						</Stack>
-					</Center>
-				)}
+								<PrimaryTitle>Conversation not found</PrimaryTitle>
+								<Text>The conversation you are looking for does not exist</Text>
+								<Button
+									mt="xl"
+									size="sm"
+									variant="gradient"
+									leftSection={<Icon path={iconArrowLeft} />}
+									onClick={() => navigate("/support")}
+								>
+									Back to Support
+								</Button>
+							</Stack>
+						</Center>
+					)}
 
-				{!isLoading && conversation && (
-					<ScrollArea
-						pos="absolute"
-						scrollbars="y"
-						type="scroll"
-						inset={0}
-						className={classes.scrollArea}
-						mt={18}
-					>
-						<Stack
-							px="xl"
-							mx="auto"
-							maw={1000}
-							pb={68}
+					{!isLoading && conversation && (
+						<ScrollArea
+							pos="absolute"
+							scrollbars="y"
+							type="scroll"
+							inset={0}
+							className={classes.scrollArea}
+							mt={18}
 						>
-							<Box>
-								<PageBreadcrumbs
-									items={[
-										{ label: "Surrealist", href: "/" },
-										{ label: "Support", href: "/support" },
-										{ label: "Requests", href: "/support/requests" },
-										{ label: title ?? "Unnamed" },
-									]}
-								/>
-								<Group mt="sm">
-									<Group>
-										<PrimaryTitle fz={32}>{title ?? "Unnamed"}</PrimaryTitle>
+							<Stack
+								px="xl"
+								mx="auto"
+								maw={1000}
+								pb={68}
+							>
+								<Box>
+									<Group mt="sm">
+										<Group>
+											<PrimaryTitle fz={32}>
+												{title ?? "Unnamed"}
+											</PrimaryTitle>
+										</Group>
+
+										<Spacer />
+
+										<Button
+											color="obsidian"
+											variant="light"
+											leftSection={<Icon path={iconArrowLeft} />}
+											onClick={() => navigate(`/support/requests`)}
+										>
+											All tickets
+										</Button>
 									</Group>
+								</Box>
 
-									<Spacer />
-
-									<Button
-										color="obsidian"
-										variant="light"
-										leftSection={<Icon path={iconArrowLeft} />}
-										onClick={() => navigate(`/support/requests`)}
+								{conversation.hasTicket && (
+									<Stack
+										gap="md"
+										mb="lg"
+										style={{
+											userSelect: "text",
+										}}
 									>
-										All tickets
-									</Button>
-								</Group>
-							</Box>
+										<Group
+											gap="lg"
+											align="start"
+											wrap="nowrap"
+											w="100%"
+										>
+											<Paper
+												p="lg"
+												w="100%"
+											>
+												<Stack>
+													<PrimaryTitle
+														fz="lg"
+														fw={600}
+													>
+														Description
+													</PrimaryTitle>
+													<div
+														className={classes.intercomContainer}
+														// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
+														dangerouslySetInnerHTML={{
+															__html:
+																conversation.initial_part.body ??
+																"",
+														}}
+													/>
+												</Stack>
 
-							{conversation.hasTicket && (
+												{Object.entries(
+													conversation.ticketData?.attributes ?? {},
+												)
+													.filter(([name, value]) => {
+														const irrelevantNames = ["Organisation"];
+
+														if (
+															irrelevantNames.some((irrelevant) =>
+																name
+																	.toLowerCase()
+																	.includes(
+																		irrelevant.toLowerCase(),
+																	),
+															)
+														) {
+															return false;
+														}
+
+														if (value === null || value === undefined) {
+															return false;
+														}
+
+														if (
+															typeof value === "string" &&
+															value.trim() === ""
+														) {
+															return false;
+														}
+
+														if (
+															Array.isArray(value) &&
+															value.length === 0
+														) {
+															return false;
+														}
+
+														if (
+															typeof value === "object" &&
+															value !== null &&
+															Object.keys(value).length === 0
+														) {
+															return false;
+														}
+
+														return true;
+													})
+													.map(([name, value]) => (
+														<Stack
+															mt="lg"
+															key={name}
+															gap="xs"
+														>
+															<PrimaryTitle
+																fz="lg"
+																fw={600}
+															>
+																{name}
+															</PrimaryTitle>
+															<ConversationAttribute
+																name={name}
+																value={value}
+															/>
+														</Stack>
+													))}
+											</Paper>
+
+											<Paper
+												p="lg"
+												w="25rem"
+											>
+												<Stack>
+													<TicketData
+														title="State"
+														subtitle={
+															state?.label ??
+															conversation.ticketData?.state.label ??
+															"Unknown"
+														}
+														color={state?.color ?? "white"}
+														icon={state?.icon ?? iconChat}
+													/>
+													<Divider />
+													<TicketData
+														title="Type"
+														subtitle={
+															conversation.ticketData?.type.name ??
+															"Unknown"
+														}
+														color="violet"
+														icon={iconBullhorn}
+													/>
+													<TicketData
+														title="Last updated"
+														subtitle={formatRelativeDate(
+															conversation.updated_at * 1000,
+														)}
+														color="violet"
+														icon={iconClock}
+													/>
+												</Stack>
+											</Paper>
+										</Group>
+										<PrimaryTitle mt="lg">
+											{conversation.parts.length} Updates
+										</PrimaryTitle>
+										<Divider />
+									</Stack>
+								)}
+
 								<Stack
-									gap="md"
-									mb="lg"
+									gap="lg"
 									style={{
 										userSelect: "text",
 									}}
 								>
-									<Group
-										gap="lg"
-										align="start"
-										wrap="nowrap"
-										w="100%"
-									>
-										<Paper
-											p="lg"
-											w="100%"
-										>
-											<Stack>
-												<PrimaryTitle
-													fz="lg"
-													fw={600}
-												>
-													Description
-												</PrimaryTitle>
-												<div
-													className={classes.intercomContainer}
-													// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
-													dangerouslySetInnerHTML={{
-														__html:
-															conversation.initial_part.body ?? "",
-													}}
-												/>
-											</Stack>
-
-											{Object.entries(
-												conversation.ticketData?.attributes ?? {},
-											)
-												.filter(([name, value]) => {
-													const irrelevantNames = ["Organisation"];
-
-													if (
-														irrelevantNames.some((irrelevant) =>
-															name
-																.toLowerCase()
-																.includes(irrelevant.toLowerCase()),
-														)
-													) {
-														return false;
-													}
-
-													if (value === null || value === undefined) {
-														return false;
-													}
-
-													if (
-														typeof value === "string" &&
-														value.trim() === ""
-													) {
-														return false;
-													}
-
-													if (
-														Array.isArray(value) &&
-														value.length === 0
-													) {
-														return false;
-													}
-
-													if (
-														typeof value === "object" &&
-														value !== null &&
-														Object.keys(value).length === 0
-													) {
-														return false;
-													}
-
-													return true;
-												})
-												.map(([name, value]) => (
-													<Stack
-														mt="lg"
-														key={name}
-														gap="xs"
-													>
-														<PrimaryTitle
-															fz="lg"
-															fw={600}
-														>
-															{name}
-														</PrimaryTitle>
-														<ConversationAttribute
-															name={name}
-															value={value}
-														/>
-													</Stack>
-												))}
-										</Paper>
-
-										<Paper
-											p="lg"
-											w="25rem"
-										>
-											<Stack>
-												<TicketData
-													title="State"
-													subtitle={
-														state?.label ??
-														conversation.ticketData?.state.label ??
-														"Unknown"
-													}
-													color={state?.color ?? "white"}
-													icon={state?.icon ?? iconChat}
-												/>
-												<Divider />
-												<TicketData
-													title="Type"
-													subtitle={
-														conversation.ticketData?.type.name ??
-														"Unknown"
-													}
-													color="violet"
-													icon={iconBullhorn}
-												/>
-												<TicketData
-													title="Last updated"
-													subtitle={formatRelativeDate(
-														conversation.updated_at * 1000,
-													)}
-													color="violet"
-													icon={iconClock}
-												/>
-											</Stack>
-										</Paper>
-									</Group>
-									<PrimaryTitle mt="lg">
-										{conversation.parts.length} Updates
-									</PrimaryTitle>
-									<Divider />
-								</Stack>
-							)}
-
-							<Stack
-								gap="lg"
-								style={{
-									userSelect: "text",
-								}}
-							>
-								{!conversation.hasTicket && (
-									<ConversationPart
-										conversation={conversation}
-										part={conversation.initial_part}
-									/>
-								)}
-								{conversation.parts.map((part) => (
-									<ConversationPart
-										key={part.id}
-										conversation={conversation}
-										part={part}
-									/>
-								))}
-
-								{!isClosed && (
-									<Paper p="lg">
-										<Stack gap="xl">
-											<Group>
-												<AccountAvatar />
-												<Text
-													fz="lg"
-													fw={700}
-													c="bright"
-												>
-													{user?.name}
-												</Text>
-											</Group>
-											<PillGroup>
-												{attachedFiles.map((file) => (
-													<Pill
-														key={file.name}
-														withRemoveButton
-														onRemove={() =>
-															setAttachedFiles(
-																attachedFiles.filter(
-																	(f) => f.name !== file.name,
-																),
-															)
-														}
-													>
-														<Icon
-															size="sm"
-															mr={4}
-															path={iconFile}
-														/>
-														{file.name}
-													</Pill>
-												))}
-											</PillGroup>
-											<Textarea
-												spellCheck={true}
-												placeholder="Reply to this conversation"
-												minRows={4}
-												autosize
-												value={replyBody}
-												onChange={setReplyBody}
-											/>
-											<Group>
-												<ActionButton
-													label="Add attachments"
-													variant="light"
-													onClick={() => {
-														attachFile();
-													}}
-												>
-													<Icon path={iconPlus} />
-												</ActionButton>
-												<Spacer />
-												<Button
-													variant="gradient"
-													disabled={
-														attachedFiles.length === 0 && !replyBody
-													}
-													loading={replyMutation.isPending}
-													onClick={async () => {
-														await sendReply();
-													}}
-												>
-													Submit
-												</Button>
-											</Group>
-										</Stack>
-									</Paper>
-								)}
-
-								{isClosed && (
-									<Stack
-										align="center"
-										mt="xl"
-									>
-										<Divider
-											w="100%"
-											mb="md"
+									{!conversation.hasTicket && (
+										<ConversationPart
+											conversation={conversation}
+											part={conversation.initial_part}
 										/>
-										<Text fz="lg">
-											You cannot reply to this thread since the conversation
-											was closed
-										</Text>
-										<Button
-											variant="gradient"
-											onClick={() => {
-												openReopenTicketModal(conversation.id);
-											}}
+									)}
+									{conversation.parts.map((part) => (
+										<ConversationPart
+											key={part.id}
+											conversation={conversation}
+											part={part}
+										/>
+									))}
+
+									{!isClosed && (
+										<Paper p="lg">
+											<Stack gap="xl">
+												<Group>
+													<AccountAvatar />
+													<Text
+														fz="lg"
+														fw={700}
+														c="bright"
+													>
+														{user?.name}
+													</Text>
+												</Group>
+												<PillGroup>
+													{attachedFiles.map((file) => (
+														<Pill
+															key={file.name}
+															withRemoveButton
+															onRemove={() =>
+																setAttachedFiles(
+																	attachedFiles.filter(
+																		(f) => f.name !== file.name,
+																	),
+																)
+															}
+														>
+															<Icon
+																size="sm"
+																mr={4}
+																path={iconFile}
+															/>
+															{file.name}
+														</Pill>
+													))}
+												</PillGroup>
+												<Textarea
+													spellCheck={true}
+													placeholder="Reply to this conversation"
+													minRows={4}
+													autosize
+													value={replyBody}
+													onChange={setReplyBody}
+												/>
+												<Group>
+													<ActionButton
+														label="Add attachments"
+														variant="light"
+														onClick={() => {
+															attachFile();
+														}}
+													>
+														<Icon path={iconPlus} />
+													</ActionButton>
+													<Spacer />
+													<Button
+														variant="gradient"
+														disabled={
+															attachedFiles.length === 0 && !replyBody
+														}
+														loading={replyMutation.isPending}
+														onClick={async () => {
+															await sendReply();
+														}}
+													>
+														Submit
+													</Button>
+												</Group>
+											</Stack>
+										</Paper>
+									)}
+
+									{isClosed && (
+										<Stack
+											align="center"
+											mt="xl"
 										>
-											Reopen conversation
-										</Button>
-									</Stack>
-								)}
+											<Divider
+												w="100%"
+												mb="md"
+											/>
+											<Text fz="lg">
+												You cannot reply to this thread since the
+												conversation was closed
+											</Text>
+											<Button
+												variant="gradient"
+												onClick={() => {
+													openReopenTicketModal(conversation.id);
+												}}
+											>
+												Reopen conversation
+											</Button>
+										</Stack>
+									)}
+								</Stack>
 							</Stack>
-						</Stack>
-					</ScrollArea>
-				)}
-			</Box>
-		</CloudGuard>
+						</ScrollArea>
+					)}
+				</Box>
+			</CloudGuard>
+		</>
 	);
 }

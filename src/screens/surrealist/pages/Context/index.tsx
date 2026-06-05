@@ -64,63 +64,64 @@ export function ContextPage({ view }: ContextPageProps) {
 	const Component = VIEW_COMPONENTS[viewPage];
 
 	return (
-		<CloudGuard>
-			<ContextSidebar
-				contextId={contextId ?? ""}
-				organizationId={organizationId ?? ""}
+		<>
+			<PageBreadcrumbs
+				items={
+					isLoading
+						? []
+						: [
+								{
+									label: contextQuery.data?.name ?? "",
+									selectable: true,
+								},
+							]
+				}
 			/>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
+			<CloudGuard>
+				<ContextSidebar
+					contextId={contextId ?? ""}
+					organizationId={organizationId ?? ""}
+				/>
+				<Box
+					flex={1}
+					pos="relative"
 				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
+					<ScrollArea
+						pos="absolute"
+						scrollbars="y"
+						type="scroll"
+						inset={0}
+						className={classes.scrollArea}
+						mt={18}
 					>
-						{isLoading ? (
-							<Skeleton
-								width={350}
-								h={12}
-							/>
-						) : (
-							<PageBreadcrumbs
-								items={[
-									{ label: "Surrealist", href: "/" },
-									{ label: contextQuery.data?.name ?? "", selectable: true },
-								]}
-							/>
-						)}
-						{isLoading && (
-							<Skeleton
-								width={200}
-								h={50}
-								mt="sm"
-							/>
-						)}
-						{contextQuery.data && (
-							<Suspense
-								fallback={
-									<Center flex={1}>
-										<Loader />
-									</Center>
-								}
-							>
-								<Component context={contextQuery.data} />
-							</Suspense>
-						)}
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</CloudGuard>
+						<Stack
+							px="xl"
+							mx="auto"
+							maw={1200}
+							pb={68}
+						>
+							{isLoading && (
+								<Skeleton
+									width={200}
+									h={50}
+									mt="sm"
+								/>
+							)}
+							{contextQuery.data && (
+								<Suspense
+									fallback={
+										<Center flex={1}>
+											<Loader />
+										</Center>
+									}
+								>
+									<Component context={contextQuery.data} />
+								</Suspense>
+							)}
+						</Stack>
+					</ScrollArea>
+				</Box>
+			</CloudGuard>
+		</>
 	);
 }

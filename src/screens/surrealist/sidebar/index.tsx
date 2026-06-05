@@ -1,5 +1,7 @@
 import {
+	Box,
 	type BoxProps,
+	Center,
 	Flex,
 	Group,
 	Image,
@@ -52,70 +54,66 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 		setOverlaySidebar(false);
 	});
 
-	const toggleButton = (
-		<ActionButton
-			label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
-			onClick={toggleMode}
-		>
-			<Icon path={iconSidebar} />
-		</ActionButton>
-	);
-
-	const logoButton = (
-		<UnstyledButton onClick={goHome}>
-			<Group
-				gap="xs"
-				wrap="nowrap"
-				align="center"
-				style={{ flexShrink: 0 }}
-			>
-				<Image
-					my={-9}
-					src={pictoSurrealist}
-					w={34}
-					className={classes.hat}
-				/>
-				{!isCompact && (
-					<Image
-						src={logoUrl}
-						style={{ flexShrink: 0 }}
-						w={115}
-					/>
-				)}
-			</Group>
-		</UnstyledButton>
-	);
-
 	return (
-		<ScrollArea
-			scrollbars="y"
-			type="never"
+		<Box
 			pos="fixed"
 			component="aside"
 			top={0}
 			left={0}
 			bottom={0}
-			className={clsx(
-				classes.sidebar,
-				isCompact && classes.sidebarCollapsed,
-				fill && classes.sidebarFill,
-				className,
-			)}
-			{...other}
+			display="flex"
+			className={classes.sidebarWrapper}
 		>
-			<Flex
-				className={classes.sidebarInner}
-				direction="column"
-				px={16}
-				pt={14}
+			<ScrollArea
+				scrollbars="y"
+				type="never"
+				className={clsx(
+					classes.sidebar,
+					isCompact && classes.sidebarCollapsed,
+					fill && classes.sidebarFill,
+					className,
+				)}
+				{...other}
 			>
-				{isCompact ? (
+				<Flex
+					className={classes.sidebarInner}
+					direction="column"
+					px={16}
+					pt={14}
+				>
+					<UnstyledButton
+						onClick={goHome}
+						mb="xl"
+					>
+						<Group
+							gap="xs"
+							wrap="nowrap"
+							align="center"
+							style={{ flexShrink: 0 }}
+						>
+							<Image
+								my={-9}
+								src={pictoSurrealist}
+								w={42}
+								className={classes.hat}
+							/>
+							{!isCompact && (
+								<Image
+									src={logoUrl}
+									style={{ flexShrink: 0 }}
+									w={115}
+								/>
+							)}
+						</Group>
+					</UnstyledButton>
+
+					{/* {isCompact ? (
 					<Stack
 						gap="sm"
 						mb="xl"
 						align="center"
 					>
-						{toggleButton}
+						{logoButton}
 					</Stack>
 				) : (
 					<Group
@@ -126,45 +124,57 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 						{logoButton}
 						{toggleButton}
 					</Group>
-				)}
+				)} */}
 
-				<SidebarTarget />
+					<SidebarTarget />
 
-				<Stack
-					gap="sm"
-					mt={22}
-					pb={18}
+					<Stack
+						gap="sm"
+						mt={22}
+						pb={18}
+					>
+						<NavigationIcon
+							name={
+								<Group wrap="nowrap">
+									Search
+									{!isMobile() && <Shortcut value={["mod", "K"]} />}
+								</Group>
+							}
+							icon={iconSearch}
+							onClick={openCommands}
+							withTooltip={isCompact}
+						/>
+
+						<NavigationIcon
+							name="Support"
+							icon={iconHelp}
+							match={["/support", "/support/*"]}
+							onClick={() => navigate("/support")}
+							withTooltip={isCompact}
+							indicator={unreadConversations}
+						/>
+
+						<NavigationIcon
+							name="Settings"
+							icon={iconCog}
+							onClick={openSettings}
+							withTooltip={isCompact}
+							indicator={!!availableUpdate}
+						/>
+					</Stack>
+				</Flex>
+			</ScrollArea>
+			<Center w={5}>
+				<ActionButton
+					label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
+					onClick={toggleMode}
+					variant="filled"
+					style={{ zIndex: 1000 }}
+					className={classes.sidebarToggle}
 				>
-					<NavigationIcon
-						name={
-							<Group wrap="nowrap">
-								Search
-								{!isMobile() && <Shortcut value={["mod", "K"]} />}
-							</Group>
-						}
-						icon={iconSearch}
-						onClick={openCommands}
-						withTooltip={isCompact}
-					/>
-
-					<NavigationIcon
-						name="Support"
-						icon={iconHelp}
-						match={["/support", "/support/*"]}
-						onClick={() => navigate("/support")}
-						withTooltip={isCompact}
-						indicator={unreadConversations}
-					/>
-
-					<NavigationIcon
-						name="Settings"
-						icon={iconCog}
-						onClick={openSettings}
-						withTooltip={isCompact}
-						indicator={!!availableUpdate}
-					/>
-				</Stack>
-			</Flex>
-		</ScrollArea>
+					<Icon path={iconSidebar} />
+				</ActionButton>
+			</Center>
+		</Box>
 	);
 }

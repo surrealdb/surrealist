@@ -18,79 +18,83 @@ export function SupportPlansPage({ id }: SupportPlansPageProps) {
 	const supportPlans = pricingQuery.data?.support ?? [];
 
 	return (
-		<Box
-			flex={1}
-			pos="relative"
-		>
-			<ScrollArea
-				pos="absolute"
-				scrollbars="y"
-				type="scroll"
-				inset={0}
-				className={classes.scrollArea}
-				mt={18}
+		<>
+			{organisation && (
+				<PageBreadcrumbs
+					items={[
+						{
+							label: organisation.name,
+							href: `/o/${organisation.id}`,
+							selectable: true,
+						},
+						{ label: "Support plans" },
+					]}
+				/>
+			)}
+			<Box
+				flex={1}
+				pos="relative"
 			>
-				<Stack
-					px="xl"
-					mx="auto"
-					maw={1200}
-					pb={68}
+				<ScrollArea
+					pos="absolute"
+					scrollbars="y"
+					type="scroll"
+					inset={0}
+					className={classes.scrollArea}
+					mt={18}
 				>
-					{organisation && (
-						<>
-							<Box>
-								<PageBreadcrumbs
-									items={[
-										{ label: "Surrealist", href: "/" },
-										{
-											label: organisation.name,
-											href: `/o/${organisation.id}`,
-										},
-										{ label: "Support plans" },
-									]}
-								/>
-								<PrimaryTitle
-									mt="sm"
-									fz={32}
-								>
-									Support plans
-								</PrimaryTitle>
-							</Box>
-
-							<Box my="xl">
-								{pricingQuery.isLoading && (
-									<Center>
-										<Loader />
-									</Center>
-								)}
-								{pricingQuery.isSuccess && (
-									<SimpleGrid
-										cols={{ base: 1, sm: 2, lg: 3 }}
-										spacing="xl"
+					<Stack
+						px="xl"
+						mx="auto"
+						maw={1200}
+						pb={68}
+					>
+						{organisation && (
+							<>
+								<Box>
+									<PrimaryTitle
+										mt="sm"
+										fz={32}
 									>
-										{supportPlans.map((support) => (
-											<PricingCard
-												key={support.id}
-												config={support}
-												state="contact"
-												onClick={(config) => {
-													dispatchIntent("create-message", {
-														type: "conversation",
-														organisation: organisation.id,
-														subject: "Support plan enquiry",
-														message: `Hello! I was interested in learning more about the ${config.name} support plan for my organisation (ID: ${organisation.id}). Could you provide me with more information about the plan? Thanks!`,
-														conversationType: "sales-enquiry",
-													});
-												}}
-											/>
-										))}
-									</SimpleGrid>
-								)}
-							</Box>
-						</>
-					)}
-				</Stack>
-			</ScrollArea>
-		</Box>
+										Support plans
+									</PrimaryTitle>
+								</Box>
+
+								<Box my="xl">
+									{pricingQuery.isLoading && (
+										<Center>
+											<Loader />
+										</Center>
+									)}
+									{pricingQuery.isSuccess && (
+										<SimpleGrid
+											cols={{ base: 1, sm: 2, lg: 3 }}
+											spacing="xl"
+										>
+											{supportPlans.map((support) => (
+												<PricingCard
+													key={support.id}
+													config={support}
+													state="contact"
+													onClick={(config) => {
+														dispatchIntent("create-message", {
+															type: "conversation",
+															organisation: organisation.id,
+															subject: "Support plan enquiry",
+															message: `Hello! I was interested in learning more about the ${config.name} support plan for my organisation (ID: ${organisation.id}). Could you provide me with more information about the plan? Thanks!`,
+															conversationType: "sales-enquiry",
+														});
+													}}
+												/>
+											))}
+										</SimpleGrid>
+									)}
+								</Box>
+							</>
+						)}
+					</Stack>
+				</ScrollArea>
+			</Box>
+		</>
 	);
 }
