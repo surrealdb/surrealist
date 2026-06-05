@@ -79,7 +79,8 @@ export function SurrealistScreen() {
 	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
-	const [sidebarMode] = useSetting("appearance", "sidebarMode");
+	const [storedSidebarMode] = useSetting("appearance", "sidebarMode");
+	const sidebarMode = storedSidebarMode === "compact" ? "compact" : "wide";
 	const isMacos = adapter.platform === "darwin" && isDesktop;
 	const isOtherOS = adapter.platform !== "darwin" && isDesktop;
 
@@ -87,22 +88,12 @@ export function SurrealistScreen() {
 		setOverlaySidebar(false);
 	});
 
-	const glowOffset = useGlowOffset();
-	const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
-
-	useLayoutEffect(() => {
-		const body = document.body;
-
-		body.style.setProperty("--sidebar-offset", `${sidebarOffset}px`);
-		body.style.setProperty("--titlebar-offset", `${adapter.titlebarOffset}px`);
-	}, [sidebarOffset]);
+	// const glowOffset = useGlowOffset();
+	// const sidebarOffset = 25 + (sidebarMode === "wide" ? 190 : 49);
 
 	return (
-		<SidebarProvider sidebarMode={sidebarMode}>
-			<Box
-				className={classes.root}
-				bg="var(--mantine-color-body)"
-			>
+		<SidebarProvider mode={sidebarMode}>
+			<Box className={classes.root}>
 				{isOtherOS && <AppTitleBar />}
 				<Flex
 					direction="column"
@@ -111,7 +102,10 @@ export function SurrealistScreen() {
 				>
 					<DatabaseSidebarLazy visibleFrom="md" />
 
-					<Box className={classes.wrapper}>
+					<Box
+						className={classes.wrapper}
+						mod={{ sidebarMode }}
+					>
 						{isMacos && (
 							<Flex
 								data-tauri-drag-region
@@ -123,7 +117,7 @@ export function SurrealistScreen() {
 							</Flex>
 						)}
 
-						<TopGlow offset={glowOffset} />
+						{/* <TopGlow offset={glowOffset} /> */}
 
 						<Stack
 							flex={1}
@@ -144,213 +138,223 @@ export function SurrealistScreen() {
 								<SurrealistToolbar />
 							</Group>
 
-							<Switch>
-								{/* Overview page */}
-								<Route path="/">
-									<GlobalSidebar />
-									<OverviewPageLazy />
-								</Route>
+							<Box
+								flex={1}
+								display="flex"
+								className={classes.pageContentInner}
+							>
+								<Switch>
+									{/* Overview page */}
+									<Route path="/">
+										<GlobalSidebar />
+										<OverviewPageLazy />
+									</Route>
 
-								{/* Legacy overview URL */}
-								<Route path="/overview">
-									<Redirect to="/" />
-								</Route>
+									{/* Legacy overview URL */}
+									<Route path="/overview">
+										<Redirect to="/" />
+									</Route>
 
-								{/* Legacy sign-in URL: onboarding is a global modal */}
-								<Route path="/signin">
-									<Redirect to="/" />
-								</Route>
+									{/* Legacy sign-in URL: onboarding is a global modal */}
+									<Route path="/signin">
+										<Redirect to="/" />
+									</Route>
 
-								{/* New embed page */}
-								<Route path="/mini/new">
-									<GlobalSidebar />
-									<NewEmbedPageLazy />
-								</Route>
+									{/* New embed page */}
+									<Route path="/mini/new">
+										<GlobalSidebar />
+										<NewEmbedPageLazy />
+									</Route>
 
-								{/* Create connection page */}
-								<Route path="/c/create">
-									<GlobalSidebar />
-									<CreateConnectionPageLazy />
-								</Route>
+									{/* Create connection page */}
+									<Route path="/c/create">
+										<GlobalSidebar />
+										<CreateConnectionPageLazy />
+									</Route>
 
-								{/* Support page */}
-								<Route path="/support">
-									<GlobalSidebar />
-									<SupportPageLazy />
-								</Route>
+									{/* Support page */}
+									<Route path="/support">
+										<GlobalSidebar />
+										<SupportPageLazy />
+									</Route>
 
-								{/* Support collections page */}
-								<Route path="/support/collections/:collection">
-									{({ collection }) => (
+									{/* Support collections page */}
+									<Route path="/support/collections/:collection">
+										{({ collection }) => (
+											<>
+												<GlobalSidebar />
+												<CollectionPage id={collection} />
+											</>
+										)}
+									</Route>
+
+									{/* Support articles page */}
+									<Route path="/support/articles/:article">
+										{({ article }) => (
+											<>
+												<GlobalSidebar />
+												<ArticlePage id={article} />
+											</>
+										)}
+									</Route>
+
+									{/* Support requests page */}
+									<Route path="/support/requests">
+										<GlobalSidebar />
+										<RequestsPageLazy />
+									</Route>
+
+									{/* Support conversations page */}
+									<Route path="/support/conversations/:conversation">
+										{({ conversation }) => (
+											<>
+												<GlobalSidebar />
+												<ConversationPage id={conversation} />
+											</>
+										)}
+									</Route>
+
+									{showCloud && (
 										<>
-											<GlobalSidebar />
-											<CollectionPage id={collection} />
+											{/* Create organization page */}
+											<Route path="/o/create">
+												<GlobalSidebar />
+												<CreateOrganizationsPageLazy />
+											</Route>
+
+											{/* Default organization redirect */}
+											<Route path="/o/default/*">
+												{(params: { "*": string }) => (
+													<>
+														<GlobalSidebar />
+														<CloudGuard>
+															<DefaultOrgRedirect
+																rest={params["*"]}
+															/>
+														</CloudGuard>
+													</>
+												)}
+											</Route>
+
+											{/* Organization deploy page */}
+											<Route path="/o/:organization/instances/deploy">
+												{({ organization }) => (
+													<>
+														<OrganisationSidebar
+															organizationId={organization}
+														/>
+														<OrganizationDeployPageLazy
+															id={organization}
+														/>
+													</>
+												)}
+											</Route>
+
+											{/* Organization contexts deploy page */}
+											<Route path="/o/:organization/contexts/deploy">
+												{({ organization }) => (
+													<>
+														<OrganisationSidebar
+															organizationId={organization}
+														/>
+														<OrganizationContextDeployPageLazy
+															id={organization}
+														/>
+													</>
+												)}
+											</Route>
+
+											{/* Organization context plan selection page */}
+											<Route path="/o/:organization/contexts/plan">
+												{({ organization }) => (
+													<>
+														<OrganisationSidebar
+															organizationId={organization}
+														/>
+														<OrganizationContextPlanPageLazy
+															id={organization}
+														/>
+													</>
+												)}
+											</Route>
+
+											{/* Organization context checkout page */}
+											<Route path="/o/:organization/contexts/checkout">
+												{({ organization }) => (
+													<>
+														<OrganisationSidebar
+															organizationId={organization}
+														/>
+														<OrganizationContextCheckoutPageLazy
+															id={organization}
+														/>
+													</>
+												)}
+											</Route>
+
+											{/* Organization support plans page */}
+											<Route path="/o/:organization/support-plans">
+												{({ organization }) => (
+													<>
+														<OrganisationSidebar
+															organizationId={organization}
+														/>
+														<SupportPlansPageLazy id={organization} />
+													</>
+												)}
+											</Route>
+
+											{/* Organization view page */}
+											<Route path="/o/:organization/:tab">
+												{({ organization, tab }) => (
+													<>
+														<OrganisationSidebar
+															organizationId={organization}
+														/>
+														<OrganizationPageLazy
+															id={organization}
+															tab={tab}
+														/>
+													</>
+												)}
+											</Route>
+
+											{/* Organization overview redirect */}
+											<Route path="/o/:organization">
+												{({ organization }) => (
+													<Redirect to={`/o/${organization}/overview`} />
+												)}
+											</Route>
+
+											{/* Referrals page */}
+											<Route path="/referrals">
+												<GlobalSidebar />
+												<ReferralPageLazy />
+											</Route>
 										</>
 									)}
-								</Route>
 
-								{/* Support articles page */}
-								<Route path="/support/articles/:article">
-									{({ article }) => (
-										<>
-											<GlobalSidebar />
-											<ArticlePage id={article} />
-										</>
-									)}
-								</Route>
+									{/* Connection view page */}
+									<Route path="/c/:connection/:view">
+										{({ view }) => (
+											<>
+												<ConnectionSidebar />
+												<ConnectionPageLazy view={view as ViewPage} />
+											</>
+										)}
+									</Route>
 
-								{/* Support requests page */}
-								<Route path="/support/requests">
-									<GlobalSidebar />
-									<RequestsPageLazy />
-								</Route>
+									{/* Context view page (Spectron) */}
+									<Route path="/s/:organization/:context/:view">
+										{({ view }) => <ContextPageLazy view={view} />}
+									</Route>
 
-								{/* Support conversations page */}
-								<Route path="/support/conversations/:conversation">
-									{({ conversation }) => (
-										<>
-											<GlobalSidebar />
-											<ConversationPage id={conversation} />
-										</>
-									)}
-								</Route>
-
-								{showCloud && (
-									<>
-										{/* Create organization page */}
-										<Route path="/o/create">
-											<GlobalSidebar />
-											<CreateOrganizationsPageLazy />
-										</Route>
-
-										{/* Default organization redirect */}
-										<Route path="/o/default/*">
-											{(params: { "*": string }) => (
-												<>
-													<GlobalSidebar />
-													<CloudGuard>
-														<DefaultOrgRedirect rest={params["*"]} />
-													</CloudGuard>
-												</>
-											)}
-										</Route>
-
-										{/* Organization deploy page */}
-										<Route path="/o/:organization/instances/deploy">
-											{({ organization }) => (
-												<>
-													<OrganisationSidebar
-														organizationId={organization}
-													/>
-													<OrganizationDeployPageLazy id={organization} />
-												</>
-											)}
-										</Route>
-
-										{/* Organization contexts deploy page */}
-										<Route path="/o/:organization/contexts/deploy">
-											{({ organization }) => (
-												<>
-													<OrganisationSidebar
-														organizationId={organization}
-													/>
-													<OrganizationContextDeployPageLazy
-														id={organization}
-													/>
-												</>
-											)}
-										</Route>
-
-										{/* Organization context plan selection page */}
-										<Route path="/o/:organization/contexts/plan">
-											{({ organization }) => (
-												<>
-													<OrganisationSidebar
-														organizationId={organization}
-													/>
-													<OrganizationContextPlanPageLazy
-														id={organization}
-													/>
-												</>
-											)}
-										</Route>
-
-										{/* Organization context checkout page */}
-										<Route path="/o/:organization/contexts/checkout">
-											{({ organization }) => (
-												<>
-													<OrganisationSidebar
-														organizationId={organization}
-													/>
-													<OrganizationContextCheckoutPageLazy
-														id={organization}
-													/>
-												</>
-											)}
-										</Route>
-
-										{/* Organization support plans page */}
-										<Route path="/o/:organization/support-plans">
-											{({ organization }) => (
-												<>
-													<OrganisationSidebar
-														organizationId={organization}
-													/>
-													<SupportPlansPageLazy id={organization} />
-												</>
-											)}
-										</Route>
-
-										{/* Organization view page */}
-										<Route path="/o/:organization/:tab">
-											{({ organization, tab }) => (
-												<>
-													<OrganisationSidebar
-														organizationId={organization}
-													/>
-													<OrganizationPageLazy
-														id={organization}
-														tab={tab}
-													/>
-												</>
-											)}
-										</Route>
-
-										{/* Organization overview redirect */}
-										<Route path="/o/:organization">
-											{({ organization }) => (
-												<Redirect to={`/o/${organization}/overview`} />
-											)}
-										</Route>
-
-										{/* Referrals page */}
-										<Route path="/referrals">
-											<GlobalSidebar />
-											<ReferralPageLazy />
-										</Route>
-									</>
-								)}
-
-								{/* Connection view page */}
-								<Route path="/c/:connection/:view">
-									{({ view }) => (
-										<>
-											<ConnectionSidebar />
-											<ConnectionPageLazy view={view as ViewPage} />
-										</>
-									)}
-								</Route>
-
-								{/* Context view page (Spectron) */}
-								<Route path="/s/:organization/:context/:view">
-									{({ view }) => <ContextPageLazy view={view} />}
-								</Route>
-
-								{/* Fallback redirect to overview page */}
-								<Route>
-									<Redirect to="/" />
-								</Route>
-							</Switch>
+									{/* Fallback redirect to overview page */}
+									<Route>
+										<Redirect to="/" />
+									</Route>
+								</Switch>
+							</Box>
 						</Stack>
 					</Box>
 				</Flex>
@@ -361,7 +365,7 @@ export function SurrealistScreen() {
 					onClose={onCloseSidebar}
 					size={215}
 				>
-					<DatabaseSidebarLazy forceMode="fill" />
+					<DatabaseSidebarLazy fill />
 				</Drawer>
 
 				<LoadingOverlay

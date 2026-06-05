@@ -1,5 +1,5 @@
-import { Divider, Group, Stack } from "@mantine/core";
-import { iconArrowLeft } from "@surrealdb/ui";
+import { Box, Collapse, Divider, type IndicatorProps, Menu, Stack, Text } from "@mantine/core";
+import { Icon, iconArrowLeft, iconChevronDown } from "@surrealdb/ui";
 import {
 	createContext,
 	Fragment,
@@ -7,40 +7,76 @@ import {
 	type ReactNode,
 	useCallback,
 	useContext,
+	useEffect,
+	useMemo,
 	useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { Entry } from "~/components/Entry";
 import { NavigationIcon } from "~/components/NavigationIcon";
+import navClasses from "~/components/NavigationIcon/style.module.scss";
 import { useBoolean } from "~/hooks/boolean";
-import { useAbsoluteLocation } from "~/hooks/routing";
+import { useAbsoluteLocation, useRouteMatcher } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import type { SidebarMode } from "~/types";
 
-export interface NavigationItem {
+/**
+ * A sidebar entry which directly navigates to a single destination.
+ */
+export interface SidebarLink {
 	name: string;
 	icon: string;
-	match: string[];
-	navigate: () => void;
+	match?: string[];
+	disabled?: boolean;
+	indicator?: boolean | IndicatorProps;
+	onClick: () => void;
+}
+
+/**
+ * A single destination nested within a {@link SidebarGroup}.
+ * Sub entries never feature an icon of their own.
+ */
+export interface SidebarSubLink {
+	name: string;
+	match?: string[];
+	disabled?: boolean;
+	onClick: () => void;
+}
+
+/**
+ * A sidebar entry which does not navigate anywhere itself, but instead
+ * reveals a list of sub entries when interacted with.
+ */
+export interface SidebarGroup {
+	name: string;
+	icon: string;
+	items: SidebarSubLink[];
+}
+
+/**
+ * A top level sidebar entry, either a direct link or a group of sub links.
+ */
+export type SidebarEntry = SidebarLink | SidebarGroup;
+
+/**
+ * Type guard distinguishing groups from plain links.
+ */
+export function isSidebarGroup(entry: SidebarEntry): entry is SidebarGroup {
+	return "items" in entry;
 }
 
 interface SidebarContextValue {
 	target: HTMLDivElement | null;
 	setTarget: (el: HTMLDivElement | null) => void;
-	sidebarMode: SidebarMode;
-	canHoverSidebar: boolean;
-	onHoverEnter: () => void;
-	onHoverClose: () => void;
+	mode: SidebarMode;
 	setLocation: (path: string) => void;
 }
 
 const SidebarContext = createContext<SidebarContextValue>({
 	target: null,
 	setTarget: () => {},
-	sidebarMode: "wide",
-	canHoverSidebar: true,
-	onHoverEnter: () => {},
-	onHoverClose: () => {},
+	mode: "wide",
 	setLocation: () => {},
 });
 
@@ -49,26 +85,21 @@ export function useSidebar() {
 }
 
 export interface SidebarProviderProps extends PropsWithChildren {
-	sidebarMode: SidebarMode;
+	mode: SidebarMode;
 }
 
-export function SidebarProvider({ sidebarMode, children }: SidebarProviderProps) {
+export function SidebarProvider({ mode, children }: SidebarProviderProps) {
 	const [target, setTarget] = useState<HTMLDivElement | null>(null);
-	const [canHoverSidebar, hoverSidebarHandle] = useBoolean(true);
 	const [, navigate] = useAbsoluteLocation();
 
 	const setLocation = useStable((location: string) => {
-		hoverSidebarHandle.close();
 		navigate(location);
 	});
 
 	const value: SidebarContextValue = {
 		target,
 		setTarget,
-		sidebarMode,
-		canHoverSidebar,
-		onHoverEnter: hoverSidebarHandle.open,
-		onHoverClose: hoverSidebarHandle.close,
+		mode,
 		setLocation,
 	};
 
@@ -104,7 +135,7 @@ export function SidebarPortal({ children }: PropsWithChildren) {
 }
 
 export interface SidebarNavigationProps {
-	items: NavigationItem[][];
+	items: SidebarEntry[][];
 	backButton?: {
 		name: ReactNode;
 		onClick: () => void;
@@ -112,8 +143,10 @@ export interface SidebarNavigationProps {
 }
 
 export function SidebarNavigation({ items, backButton }: SidebarNavigationProps) {
-	const { sidebarMode, onHoverEnter } = useSidebar();
+	const { mode } = useSidebar();
 	const isLight = useIsLight();
+
+	const dividerColor = isLight ? "obsidian.2" : "obsidian.7";
 
 	return (
 		<>
@@ -123,35 +156,181 @@ export function SidebarNavigation({ items, backButton }: SidebarNavigationProps)
 						name={backButton.name}
 						icon={iconArrowLeft}
 						onClick={backButton.onClick}
-						onMouseEnter={onHoverEnter}
-						withTooltip={sidebarMode === "compact"}
+						withTooltip={mode === "compact"}
 					/>
-					<Divider color={isLight ? "obsidian.2" : "obsidian.7"} />
+					<Divider color={dividerColor} />
 				</>
 			)}
 			{items.map((group, i) => (
 				<Fragment key={i}>
-					{group.map((info) => (
-						<Group
-							key={info.name}
-							gap="lg"
-							wrap="nowrap"
-						>
-							<NavigationIcon
-								name={info.name}
-								icon={info.icon}
-								match={info.match}
-								onClick={info.navigate}
-								onMouseEnter={onHoverEnter}
-								withTooltip={sidebarMode === "compact"}
-							/>
-						</Group>
+					{group.map((entry) => (
+						<SidebarEntryView
+							key={entry.name}
+							entry={entry}
+						/>
 					))}
-					{i < items.length - 1 && (
-						<Divider color={isLight ? "obsidian.2" : "obsidian.7"} />
-					)}
+					{i < items.length - 1 && <Divider color={dividerColor} />}
 				</Fragment>
 			))}
 		</>
+	);
+}
+
+function SidebarEntryView({ entry }: { entry: SidebarEntry }) {
+	const { mode } = useSidebar();
+
+	if (isSidebarGroup(entry)) {
+		return mode === "compact" ? <CompactGroup group={entry} /> : <WideGroup group={entry} />;
+	}
+
+	return (
+		<NavigationIcon
+			name={entry.name}
+			icon={entry.icon}
+			match={entry.match}
+			indicator={entry.indicator}
+			disabled={entry.disabled}
+			onClick={entry.onClick}
+			withTooltip={mode === "compact"}
+		/>
+	);
+}
+
+/**
+ * A group rendered while the sidebar is compact. The top level icon opens
+ * a menu listing the sub entries, labelled with the group name.
+ */
+function CompactGroup({ group }: { group: SidebarGroup }) {
+	const matches = useMemo(() => group.items.flatMap((item) => item.match ?? []), [group.items]);
+
+	return (
+		<Menu
+			position="right-start"
+			offset={14}
+			trigger="click-hover"
+			openDelay={150}
+			transitionProps={{ transition: "scale-x" }}
+		>
+			<Menu.Target>
+				<Box w="100%">
+					<NavigationIcon
+						name={group.name}
+						icon={group.icon}
+						match={matches}
+						onClick={() => {}}
+						withTooltip={false}
+					/>
+				</Box>
+			</Menu.Target>
+			<Menu.Dropdown>
+				<Menu.Label>{group.name}</Menu.Label>
+				{group.items.map((item) => (
+					<CompactSubItem
+						key={item.name}
+						item={item}
+					/>
+				))}
+			</Menu.Dropdown>
+		</Menu>
+	);
+}
+
+function CompactSubItem({ item }: { item: SidebarSubLink }) {
+	const active = useRouteMatcher(item.match ?? []);
+
+	return (
+		<Menu.Item
+			disabled={item.disabled}
+			variant={active ? "gradient" : undefined}
+			onClick={item.onClick}
+		>
+			{item.name}
+		</Menu.Item>
+	);
+}
+
+/**
+ * A group rendered while the sidebar is wide. The top level entry shows a
+ * chevron and expands inline to reveal its sub entries when clicked.
+ */
+function WideGroup({ group }: { group: SidebarGroup }) {
+	const matches = useMemo(() => group.items.flatMap((item) => item.match ?? []), [group.items]);
+	const active = useRouteMatcher(matches);
+	const [opened, openHandle] = useBoolean(active);
+
+	useEffect(() => {
+		if (active) {
+			openHandle.open();
+		}
+	}, [active]);
+
+	return (
+		<Box>
+			<Entry
+				className={navClasses.viewButton}
+				onClick={openHandle.toggle}
+				leftSection={
+					<Icon
+						path={group.icon}
+						size="lg"
+					/>
+				}
+				rightSection={
+					<Icon
+						path={iconChevronDown}
+						size="sm"
+						style={{
+							transform: opened ? undefined : "rotate(-90deg)",
+							transition: "transform .15s ease",
+						}}
+					/>
+				}
+			>
+				<Text
+					truncate
+					inherit
+					span
+					lh="normal"
+				>
+					{group.name}
+				</Text>
+			</Entry>
+			<Collapse expanded={opened}>
+				<Stack
+					gap="xs"
+					mt="xs"
+				>
+					{group.items.map((item) => (
+						<WideSubEntry
+							key={item.name}
+							item={item}
+						/>
+					))}
+				</Stack>
+			</Collapse>
+		</Box>
+	);
+}
+
+function WideSubEntry({ item }: { item: SidebarSubLink }) {
+	const active = useRouteMatcher(item.match ?? []);
+
+	return (
+		<Entry
+			compact
+			isActive={active}
+			disabled={item.disabled}
+			onClick={item.onClick}
+			pl={42}
+		>
+			<Text
+				truncate
+				inherit
+				span
+				lh="normal"
+			>
+				{item.name}
+			</Text>
+		</Entry>
 	);
 }

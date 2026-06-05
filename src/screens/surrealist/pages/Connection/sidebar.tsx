@@ -5,7 +5,7 @@ import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
 import { useConfigStore } from "~/stores/config";
 import type { ViewPage } from "~/types";
 import {
-	type NavigationItem,
+	type SidebarEntry,
 	SidebarNavigation,
 	SidebarPortal,
 	useSidebar,
@@ -19,7 +19,7 @@ const VIEW_NAVIGATION: ViewPage[][] = [
 ];
 
 export function ConnectionSidebar() {
-	const { setLocation, onHoverClose } = useSidebar();
+	const { setLocation } = useSidebar();
 	const [connection] = useConnectionAndView();
 	const navigateConnection = useConnectionNavigator();
 	const sidebarViews = useConfigStore((s) => s.settings.appearance.sidebarViews);
@@ -28,7 +28,7 @@ export function ConnectionSidebar() {
 	const instanceId = useConnection((s) => s?.authentication.cloudInstance);
 	const instanceQuery = useCloudInstanceQuery(instanceId);
 
-	const navigation: NavigationItem[][] = useMemo(() => {
+	const navigation: SidebarEntry[][] = useMemo(() => {
 		if (!connection) {
 			return [];
 		}
@@ -42,13 +42,11 @@ export function ConnectionSidebar() {
 				}
 
 				return {
-					id: info.id,
 					name: info.name,
 					icon: info.icon,
 					match: [`/c/*/${info.id}`],
 					disabled: !connection,
-					navigate: () => {
-						onHoverClose();
+					onClick: () => {
 						navigateConnection(connection, info.id);
 					},
 				};
@@ -56,7 +54,7 @@ export function ConnectionSidebar() {
 
 			return items.length > 0 ? [items] : [];
 		});
-	}, [views, sidebarViews, connection, onHoverClose]);
+	}, [views, sidebarViews, connection]);
 
 	const backButton = instanceId
 		? {

@@ -95,9 +95,9 @@ export function OverviewPage() {
 						scrollbars="y"
 						type="scroll"
 						inset={0}
-						mt={18}
 					>
 						<Stack
+							mt={24}
 							px="xl"
 							mx="auto"
 							maw={1200}

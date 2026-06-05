@@ -1,3 +1,6 @@
+$sidebar-thin: 74px;
+$sidebar-wide: 250px;
+
 .root {
 	height: 100%;
 	display: flex;
@@ -12,7 +15,15 @@
 	flex-wrap: nowrap;
 
 	@include md-and-up {
-		margin-left: var(--sidebar-offset) !important;
+		transition: margin-left .15s ease-out;
+
+		&[data-sidebar-mode="wide"] {
+			margin-left: $sidebar-wide;
+		}
+
+		&[data-sidebar-mode="compact"] {
+			margin-left: $sidebar-thin;
+		}
 	}
 }
 
@@ -42,13 +53,9 @@
 	}
 }
 
-$sidebar-thin: 74px;
-$sidebar-wide: 215px;
-
 .sidebar {
 	z-index: 10;
 	transition: all .15s ease-out;
-	border-right: 1px solid transparent;
 	width: $sidebar-wide;
 
 	&-fill {
@@ -57,16 +64,6 @@ $sidebar-wide: 215px;
 
 	&-collapsed {
 		width: $sidebar-thin;
-	}
-
-	&-hoverable:hover {
-		width: 230px;
-		border-color: var(--mantine-color-obsidian-7);
-		background-color: var(--mantine-color-body);
-
-		@include light {
-			border-color: var(--mantine-color-obsidian-1);
-		}
 	}
 
 	:global(.mantine-ScrollArea-viewport)>div {
@@ -81,4 +78,10 @@ $sidebar-wide: 215px;
 
 .page-content {
 	padding-top: calc(68px + var(--titlebar-offset));
+}
+
+.page-content-inner {
+	background-color: rgba(from var(--mantine-color-obsidian-8) r g b/.4);
+	border-radius: var(--mantine-radius-md);
+	border: 1px solid var(--mantine-color-obsidian-7);
 }

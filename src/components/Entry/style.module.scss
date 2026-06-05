@@ -1,6 +1,7 @@
 .root {
 	transition: all .1s;
 	background-origin: border-box;
+	border: none;
 
 	:global(.mantine-Button-label) {
 		color: var(--mantine-color-obsidian-0);
@@ -62,7 +63,6 @@
 
 		&.active {
 			box-shadow: 0 12px 15px -10px rgba(40, 48, 182, 0.15);
-			border: none;
 
 			:global(.mantine-Button-label),
 			:global(.mantine-Button-label) * {

@@ -21,7 +21,7 @@ import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { optional } from "~/util/helpers";
 import {
-	type NavigationItem,
+	type SidebarEntry,
 	SidebarNavigation,
 	SidebarPortal,
 	useSidebar,
@@ -41,38 +41,38 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 	const isOrgOwner = orgData ? hasOrganizationRoles(orgData, ORG_ROLES_OWNER, true) : false;
 	const isOrgManagedBilling = orgData ? isBillingManaged(orgData) : false;
 
-	const navigation: NavigationItem[][] = useMemo(() => {
+	const navigation: SidebarEntry[][] = useMemo(() => {
 		const base = `/o/${organizationId}`;
 
-		const resources: NavigationItem[] = [
+		const resources: SidebarEntry[] = [
 			{
 				name: "Overview",
 				icon: iconServer,
 				match: [`${base}/overview`],
-				navigate: () => setLocation(`${base}/overview`),
+				onClick: () => setLocation(`${base}/overview`),
 			},
 			{
 				name: "Instances",
 				icon: iconSurreal,
 				match: [`${base}/instances`],
-				navigate: () => setLocation(`${base}/instances`),
+				onClick: () => setLocation(`${base}/instances`),
 			},
 			...optional(
 				showContexts && {
 					name: "Contexts",
 					icon: iconSpectron,
 					match: [`${base}/contexts`],
-					navigate: () => setLocation(`${base}/contexts`),
+					onClick: () => setLocation(`${base}/contexts`),
 				},
 			),
 		];
 
-		const manage: NavigationItem[] = [
+		const manage: SidebarEntry[] = [
 			{
 				name: "Team",
 				icon: iconOrganization,
 				match: [`${base}/team`],
-				navigate: () => setLocation(`${base}/team`),
+				onClick: () => setLocation(`${base}/team`),
 			},
 			...optional(
 				isOrgOwner &&
@@ -80,7 +80,7 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 						name: "Invoices",
 						icon: iconDollar,
 						match: [`${base}/invoices`],
-						navigate: () => setLocation(`${base}/invoices`),
+						onClick: () => setLocation(`${base}/invoices`),
 					},
 			),
 			...optional(
@@ -88,7 +88,7 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 					name: "Billing",
 					icon: iconCreditCard,
 					match: [`${base}/billing`],
-					navigate: () => setLocation(`${base}/billing`),
+					onClick: () => setLocation(`${base}/billing`),
 				},
 			),
 			...optional(
@@ -96,7 +96,7 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 					name: "Support",
 					icon: iconChat,
 					match: [`${base}/support`],
-					navigate: () => setLocation(`${base}/support`),
+					onClick: () => setLocation(`${base}/support`),
 				},
 			),
 			...optional(
@@ -104,17 +104,17 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 					name: "Usage",
 					icon: iconProgressClock,
 					match: [`${base}/usage`],
-					navigate: () => setLocation(`${base}/usage`),
+					onClick: () => setLocation(`${base}/usage`),
 				},
 			),
 		];
 
-		const admin: NavigationItem[] = optional(
+		const admin: SidebarEntry[] = optional(
 			isOrgAdmin && {
 				name: "Settings",
 				icon: iconCog,
 				match: [`${base}/settings`],
-				navigate: () => setLocation(`${base}/settings`),
+				onClick: () => setLocation(`${base}/settings`),
 			},
 		);
 

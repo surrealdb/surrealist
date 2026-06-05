@@ -7,12 +7,14 @@ import {
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
-import { iconCog, iconHelp, iconSearch, pictoSurrealist } from "@surrealdb/ui";
+import { Icon, iconCog, iconHelp, iconSearch, iconSidebar, pictoSurrealist } from "@surrealdb/ui";
 import clsx from "clsx";
 import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
+import { ActionButton } from "~/components/ActionButton";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { useLogoUrl } from "~/hooks/brand";
+import { useSetting } from "~/hooks/config";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
@@ -22,13 +24,15 @@ import classes from "../style.module.scss";
 import { SidebarTarget, useSidebar } from "./portal";
 
 export interface SurrealistSidebarProps extends BoxProps {
-	forceMode?: string;
+	/** Force the sidebar to fill its container, used by the mobile overlay */
+	fill?: boolean;
 }
 
-export function SurrealistSidebar({ className, forceMode, ...other }: SurrealistSidebarProps) {
+export function SurrealistSidebar({ className, fill, ...other }: SurrealistSidebarProps) {
 	const logoUrl = useLogoUrl();
 	const [, navigate] = useAbsoluteLocation();
-	const { sidebarMode, canHoverSidebar, onHoverEnter, setLocation } = useSidebar();
+	const { mode, setLocation } = useSidebar();
+	const [, setSidebarMode] = useSetting("appearance", "sidebarMode");
 
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const { data: unreadConversations } = useCloudUnreadConversationsQuery();
@@ -37,10 +41,50 @@ export function SurrealistSidebar({ className, forceMode, ...other }: Surrealist
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
 
-	const mode = forceMode || sidebarMode;
-	const isHoverable = mode === "expandable" && canHoverSidebar;
-	const isCollapsed = mode === "compact" || mode === "expandable";
-	const isFilled = mode === "fill";
+	const toggleMode = useStable(() => {
+		setSidebarMode(mode === "compact" ? "wide" : "compact");
+	});
+
+	const isCompact = !fill && mode === "compact";
+
+	const goHome = useStable(() => {
+		setLocation("/");
+		setOverlaySidebar(false);
+	});
+
+	const toggleButton = (
+		<ActionButton
+			label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
+			onClick={toggleMode}
+		>
+			<Icon path={iconSidebar} />
+		</ActionButton>
+	);
+
+	const logoButton = (
+		<UnstyledButton onClick={goHome}>
+			<Group
+				gap="xs"
+				wrap="nowrap"
+				align="center"
+				style={{ flexShrink: 0 }}
+			>
+				<Image
+					my={-9}
+					src={pictoSurrealist}
+					w={34}
+					className={classes.hat}
+				/>
+				{!isCompact && (
+					<Image
+						src={logoUrl}
+						style={{ flexShrink: 0 }}
+						w={115}
+					/>
+				)}
+			</Group>
+		</UnstyledButton>
+	);
 
 	return (
 		<ScrollArea
@@ -51,12 +95,10 @@ export function SurrealistSidebar({ className, forceMode, ...other }: Surrealist
 			top={0}
 			left={0}
 			bottom={0}
-			onMouseEnter={onHoverEnter}
 			className={clsx(
 				classes.sidebar,
-				isHoverable && classes.sidebarHoverable,
-				isCollapsed && classes.sidebarCollapsed,
-				isFilled && classes.sidebarFill,
+				isCompact && classes.sidebarCollapsed,
+				fill && classes.sidebarFill,
 				className,
 			)}
 			{...other}
@@ -66,32 +108,24 @@ export function SurrealistSidebar({ className, forceMode, ...other }: Surrealist
 				direction="column"
 				px={16}
 			>
-				<UnstyledButton
-					mb="xl"
-					onClick={() => {
-						setLocation("/");
-						setOverlaySidebar(false);
-					}}
-				>
-					<Group
-						gap="lg"
-						wrap="nowrap"
+				{isCompact ? (
+					<Stack
+						gap="sm"
+						mb="xl"
 						align="center"
-						style={{ flexShrink: 0 }}
 					>
-						<Image
-							my={-9}
-							src={pictoSurrealist}
-							w={42}
-							className={classes.hat}
-						/>
-						<Image
-							src={logoUrl}
-							style={{ flexShrink: 0 }}
-							w={118}
-						/>
+						{toggleButton}
+					</Stack>
+				) : (
+					<Group
+						justify="space-between"
+						wrap="nowrap"
+						mb="xl"
+					>
+						{logoButton}
+						{toggleButton}
 					</Group>
-				</UnstyledButton>
+				)}
 
 				<SidebarTarget />
 
@@ -109,8 +143,7 @@ export function SurrealistSidebar({ className, forceMode, ...other }: Surrealist
 						}
 						icon={iconSearch}
 						onClick={openCommands}
-						onMouseEnter={onHoverEnter}
-						withTooltip={mode === "compact"}
+						withTooltip={isCompact}
 					/>
 
 					<NavigationIcon
@@ -118,8 +151,7 @@ export function SurrealistSidebar({ className, forceMode, ...other }: Surrealist
 						icon={iconHelp}
 						match={["/support", "/support/*"]}
 						onClick={() => navigate("/support")}
-						onMouseEnter={onHoverEnter}
-						withTooltip={mode === "compact"}
+						withTooltip={isCompact}
 						indicator={unreadConversations}
 					/>
 
@@ -127,8 +159,7 @@ export function SurrealistSidebar({ className, forceMode, ...other }: Surrealist
 						name="Settings"
 						icon={iconCog}
 						onClick={openSettings}
-						onMouseEnter={onHoverEnter}
-						withTooltip={mode === "compact"}
+						withTooltip={isCompact}
 						indicator={!!availableUpdate}
 					/>
 				</Stack>

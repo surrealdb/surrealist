@@ -232,7 +232,6 @@ export const AUTH_MODES: Selectable<AuthMode>[] = [
 ];
 
 export const SIDEBAR_MODES: Selectable<SidebarMode>[] = [
-	{ label: "Expandable", value: "expandable" },
 	{ label: "Compact", value: "compact" },
 	{ label: "Wide", value: "wide" },
 ];
