@@ -45,8 +45,7 @@ $sidebar-wide: 250px;
 
 .toolbar {
 	z-index: 1;
-	padding: var(--mantine-spacing-lg);
-	padding-top: calc(var(--mantine-spacing-lg) + var(--titlebar-offset));
+	padding: var(--mantine-spacing-md);
 
 	@include md-and-up {
 		padding-left: 0;
@@ -82,6 +81,10 @@ $sidebar-wide: 250px;
 
 .page-content-inner {
 	background-color: rgba(from var(--mantine-color-obsidian-8) r g b/.4);
-	border-radius: var(--mantine-radius-md);
-	border: 1px solid var(--mantine-color-obsidian-7);
+	border-top: 1px solid var(--mantine-color-obsidian-7);
+
+	@include md-and-up {
+		border-top-left-radius: var(--mantine-radius-md);
+		border-left: 1px solid var(--mantine-color-obsidian-7);
+	}
 }

@@ -123,14 +123,10 @@ export function SurrealistScreen() {
 							flex={1}
 							className={classes.pageContent}
 							pos="relative"
-							gap="lg"
+							gap={0}
 						>
 							<Group
 								gap="md"
-								pos="absolute"
-								left={0}
-								right={0}
-								top={0}
 								align="center"
 								wrap="nowrap"
 								className={classes.toolbar}

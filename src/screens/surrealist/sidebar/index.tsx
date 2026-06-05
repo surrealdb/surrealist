@@ -107,6 +107,7 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 				className={classes.sidebarInner}
 				direction="column"
 				px={16}
+				pt={14}
 			>
 				{isCompact ? (
 					<Stack
