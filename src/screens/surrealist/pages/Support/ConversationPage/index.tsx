@@ -437,7 +437,7 @@ export function ConversationPage({ id }: ConversationPageProps) {
 												Description
 											</PrimaryTitle>
 											<div
-												className={classes.intercomContainer}
+												className={`selectable ${classes.intercomContainer}`}
 												// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
 												dangerouslySetInnerHTML={{
 													__html: conversation.initial_part.body ?? "",

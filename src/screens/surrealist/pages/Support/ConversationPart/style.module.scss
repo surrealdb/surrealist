@@ -1,4 +1,19 @@
-.intercom-container img {
-    max-width: 100%;
-    border-radius: 12px;
+.intercom-container {
+	max-width: 100%;
+	overflow-wrap: anywhere;
+	word-break: break-word;
+
+	img {
+		max-width: 100%;
+		border-radius: 12px;
+	}
+
+	pre,
+	code {
+		white-space: pre-wrap;
+		word-break: break-word;
+		overflow-wrap: anywhere;
+		max-width: 100%;
+		overflow-x: auto;
+	}
 }
