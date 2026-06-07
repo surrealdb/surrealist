@@ -12,6 +12,16 @@ const TABLE_TYPES: Selectable<TableType>[] = [
 
 export function GeneralElement({ data, setData }: ElementProps) {
 	const tables = useTableNames();
+	const incoming = Array.isArray(data.schema.kind.in)
+		? data.schema.kind.in
+		: data.schema.kind.in
+			? [String(data.schema.kind.in)]
+			: [];
+	const outgoing = Array.isArray(data.schema.kind.out)
+		? data.schema.kind.out
+		: data.schema.kind.out
+			? [String(data.schema.kind.out)]
+			: [];
 
 	return (
 		<Accordion.Item value="general">
@@ -52,7 +62,7 @@ export function GeneralElement({ data, setData }: ElementProps) {
 								data={tables}
 								label="Incoming tables"
 								searchable
-								value={data.schema.kind.in || []}
+								value={incoming.filter((name) => tables.includes(name))}
 								onChange={(value) =>
 									setData((draft) => {
 										draft.schema.kind.in = value;
@@ -64,7 +74,7 @@ export function GeneralElement({ data, setData }: ElementProps) {
 								data={tables}
 								label="Outgoing tables"
 								searchable
-								value={data.schema.kind.out || []}
+								value={outgoing.filter((name) => tables.includes(name))}
 								onChange={(value) =>
 									setData((draft) => {
 										draft.schema.kind.out = value;

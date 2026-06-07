@@ -75,9 +75,7 @@ export function DesignDrawer({
 			onClose(true);
 
 			await executeQuery(`REMOVE TABLE ${escapeIdent(value.schema.name)}`);
-			await syncConnectionSchema({
-				tables: [value.schema.name],
-			});
+			await syncConnectionSchema();
 		},
 	});
 

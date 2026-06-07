@@ -299,16 +299,36 @@ function parseTable(input: unknown): string {
 	return input as string;
 }
 
+function normalizeTableList(value: unknown): string[] {
+	if (!value) {
+		return [];
+	}
+
+	if (Array.isArray(value)) {
+		return value.map(parseTable);
+	}
+
+	return [parseTable(value)];
+}
+
 /**
  * Returns true if the table is an edge table
  *
  * @param table The table to check
  * @returns True if the table is an edge table
  */
-export function extractEdgeRecords(table: TableInfo): [string[], string[]] {
+export function extractEdgeRecords(
+	table: TableInfo,
+	tableNames?: ReadonlySet<string>,
+): [string[], string[]] {
 	const { kind } = table.schema;
-	const inputs = kind.in?.map(parseTable) ?? [];
-	const outputs = kind.out?.map(parseTable) ?? [];
+	let inputs = normalizeTableList(kind.in);
+	let outputs = normalizeTableList(kind.out);
+
+	if (tableNames) {
+		inputs = inputs.filter((name) => tableNames.has(name));
+		outputs = outputs.filter((name) => tableNames.has(name));
+	}
 
 	return [inputs, outputs];
 }

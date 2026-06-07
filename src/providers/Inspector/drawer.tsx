@@ -26,7 +26,7 @@ import {
 import { useConfirmation } from "../Confirmation";
 import classes from "./style.module.scss";
 import { ContentTab } from "./tabs/content";
-import { RelationsTab } from "./tabs/relations";
+import { normalizeRelations, RelationsTab } from "./tabs/relations";
 
 const DEFAULT_RECORD: ActiveRecord = {
 	isEdge: false,
@@ -113,8 +113,8 @@ export function InspectorDrawer({ opened, history, onClose, onRefresh }: Inspect
 			isEdge: !!content?.in && !!content?.out,
 			exists: !!content,
 			initial: formatted,
-			inputs: Array.isArray(inputs) ? inputs : inputs ? [inputs] : [],
-			outputs: Array.isArray(outputs) ? outputs : outputs ? [outputs] : [],
+			inputs: normalizeRelations(inputs),
+			outputs: normalizeRelations(outputs),
 		});
 
 		if (content) {

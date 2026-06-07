@@ -1,7 +1,19 @@
 import { Group, Paper, ScrollArea, Text } from "@mantine/core";
 import { Icon, iconCircle } from "@surrealdb/ui";
-import type { RecordId } from "surrealdb";
+import { RecordId } from "surrealdb";
 import { RecordLink } from "~/components/RecordLink";
+
+export function normalizeRelations(relations: unknown): RecordId[] {
+	if (!relations) {
+		return [];
+	}
+
+	if (Array.isArray(relations)) {
+		return relations.filter((relation): relation is RecordId => relation instanceof RecordId);
+	}
+
+	return relations instanceof RecordId ? [relations] : [];
+}
 
 interface RelationsListProps {
 	name: string;
@@ -9,13 +21,15 @@ interface RelationsListProps {
 }
 
 function RelationsList({ name, relations }: RelationsListProps) {
+	const items = normalizeRelations(relations);
+
 	return (
 		<Paper
 			p="xs"
 			bg="var(--mantine-color-body)"
 			mt={6}
 		>
-			{relations.length === 0 && (
+			{items.length === 0 && (
 				<Text
 					pl={6}
 					c="dimmed"
@@ -24,7 +38,7 @@ function RelationsList({ name, relations }: RelationsListProps) {
 				</Text>
 			)}
 
-			{relations.map((relation, _i) => (
+			{items.map((relation) => (
 				<Group
 					key={relation.toString()}
 					gap="xs"
