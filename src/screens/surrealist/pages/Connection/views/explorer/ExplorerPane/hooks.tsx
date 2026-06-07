@@ -18,6 +18,55 @@ export interface RecordQueryInput {
 	filter: string;
 }
 
+function buildRecordQuery(
+	activeTable: string,
+	filter: string,
+	sortMode: SortMode,
+	limitBy: number,
+	startAt: number,
+	includeSort = true,
+) {
+	let fetchQuery = `SELECT * FROM ${escapeIdent(activeTable)}`;
+
+	if (filter) {
+		fetchQuery += ` WHERE ${filter}`;
+	}
+
+	if (includeSort && sortMode) {
+		const [sortField, sortDir] = sortMode;
+
+		fetchQuery += ` ORDER BY ${escapeIdent(sortField)} ${sortDir}`;
+
+		if (sortField !== "id") {
+			fetchQuery += `, id ${sortDir}`;
+		}
+	} else if (filter) {
+		fetchQuery += ` ORDER BY id ASC`;
+	}
+
+	fetchQuery += ` LIMIT ${limitBy}`;
+
+	if (startAt > 0) {
+		fetchQuery += ` START ${startAt}`;
+	}
+
+	return fetchQuery;
+}
+
+async function countTableRecords(activeTable: string, filter: string) {
+	let countQuery = `SELECT count() AS count FROM ${escapeIdent(activeTable)}`;
+
+	if (filter) {
+		countQuery += ` WHERE ${filter}`;
+	}
+
+	countQuery += " GROUP ALL";
+
+	const response = await executeQuerySingle(countQuery);
+
+	return response?.count || 0;
+}
+
 export function useRecordQuery(input: RecordQueryInput) {
 	const schema = useDatabaseSchema();
 
@@ -35,31 +84,29 @@ export function useRecordQuery(input: RecordQueryInput) {
 			const limitBy = pageSize;
 			const startAt = (currentPage - 1) * pageSize;
 
-			let fetchQuery = `SELECT * FROM ${escapeIdent(activeTable)}`;
+			let fetchQuery = buildRecordQuery(activeTable, filter, sortMode, limitBy, startAt);
 
-			if (filter) {
-				fetchQuery += ` WHERE ${filter}`;
-			}
+			let records = (await executeQueryFirst(fetchQuery)) || [];
 
-			if (sortMode) {
-				const [sortField, sortDir] = sortMode;
+			// Sorting on a column with no values causes SurrealDB to return zero rows.
+			// Fall back to an unsorted query when records exist but the sort yields none.
+			if (records.length === 0 && sortMode && sortMode[0] !== "id") {
+				const recordCount = await countTableRecords(activeTable, filter);
 
-				fetchQuery += ` ORDER BY ${sortField} ${sortDir}`;
+				if (recordCount > 0) {
+					fetchQuery = buildRecordQuery(
+						activeTable,
+						filter,
+						sortMode,
+						limitBy,
+						startAt,
+						false,
+					);
 
-				if (sortField !== "id") {
-					fetchQuery += `, id ${sortDir}`;
+					records = (await executeQueryFirst(fetchQuery)) || [];
 				}
-			} else if (filter) {
-				fetchQuery += ` ORDER BY id ASC`;
 			}
 
-			fetchQuery += ` LIMIT ${limitBy}`;
-
-			if (startAt > 0) {
-				fetchQuery += ` START ${startAt}`;
-			}
-
-			const records = (await executeQueryFirst(fetchQuery)) || [];
 			const table = schema.tables.find((t) => t.schema.name === activeTable);
 			const fields = table?.fields || [];
 			const headers = fields
@@ -91,17 +138,7 @@ export function usePaginationQuery(input: PaginationQueryInput) {
 			}
 
 			try {
-				let countQuery = `SELECT count() AS count FROM ${escapeIdent(activeTable)}`;
-
-				if (filter) {
-					countQuery += ` WHERE ${filter}`;
-				}
-
-				countQuery += " GROUP ALL";
-
-				const response = await executeQuerySingle(countQuery);
-
-				return response?.count || 0;
+				return await countTableRecords(activeTable, filter);
 			} catch {
 				return 0;
 			}

@@ -143,7 +143,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		}
 
 		if (sortMode) {
-			fetchQuery += ` ORDER BY ${sortMode[0]} ${sortMode[1]}`;
+			fetchQuery += ` ORDER BY ${escapeIdent(sortMode[0])} ${sortMode[1]}`;
 		}
 
 		const allRecords = await executeQueryFirst(fetchQuery);
