@@ -1,7 +1,6 @@
 import { getHotkeyHandler } from "@mantine/hooks";
 import { invoke } from "@tauri-apps/api/core";
 import { Event, listen } from "@tauri-apps/api/event";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { open, save } from "@tauri-apps/plugin-dialog";
 import { readFile, writeFile, writeTextFile } from "@tauri-apps/plugin-fs";
@@ -22,6 +21,7 @@ import { openAndReadFiles, openAndWriteFile } from "~/util/file-system";
 import { DeepLinkAuthEvent, NavigateViewEvent } from "~/util/global-events";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
+import { applyWindowScale } from "~/util/window-scale";
 import { adapter } from ".";
 import type { FileFilter, SurrealistAdapter } from "./base";
 
@@ -107,7 +107,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 			initial: true,
 			store: useConfigStore,
 			select: (s) => s.settings.appearance.windowScale,
-			then: (scale) => getCurrentWebview().setZoom(scale / 100),
+			then: applyWindowScale,
 		});
 
 		watchStore({

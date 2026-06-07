@@ -488,22 +488,22 @@ export function useInternalCommandBuilder(): CommandCategory[] {
 			{
 				name: "Settings",
 				commands: [
+					{
+						id: "inc-win-scale",
+						name: "Increase interface zoom",
+						icon: iconMagnifyPlus,
+						binding: ["mod", "equal"],
+						action: intent("increase-window-scale"),
+					},
+					{
+						id: "dec-win-scale",
+						name: "Decrease interface zoom",
+						icon: iconMagnifyMinus,
+						binding: ["mod", "minus"],
+						action: intent("decrease-window-scale"),
+					},
 					...optional(
 						isDesktop && [
-							{
-								id: "inc-win-scale",
-								name: "Increase interface zoom",
-								icon: iconMagnifyPlus,
-								binding: ["mod", "equal"],
-								action: intent("increase-window-scale"),
-							},
-							{
-								id: "dec-win-scale",
-								name: "Decrease interface zoom",
-								icon: iconMagnifyMinus,
-								binding: ["mod", "minus"],
-								action: intent("decrease-window-scale"),
-							},
 							{
 								id: "toggle-win-pinned",
 								name: "Toggle window always on top",

@@ -152,7 +152,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		[diagramLodEnabled, diagramLodThreshold],
 	);
 
-	const { fitView, zoomIn, zoomOut, getViewport, setViewport } = useReactFlow();
+	const { fitView, getViewport, setViewport } = useReactFlow();
 	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
 	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -374,11 +374,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const handleZoomIn = useStable(() => {
-		zoomIn({ duration: 150 });
+		const { zoom, x, y } = getViewport();
+		const nextZoom = Math.min(zoom * 1.2, 2);
+
+		setViewport({ x, y, zoom: nextZoom }, { duration: 150 });
 	});
 
 	const handleZoomOut = useStable(() => {
-		zoomOut({ duration: 150 });
+		const { zoom, x, y } = getViewport();
+		const nextZoom = Math.max(zoom / 1.2, 0.05);
+
+		setViewport({ x, y, zoom: nextZoom }, { duration: 150 });
 	});
 
 	const handleResetZoom = useStable(() => {
