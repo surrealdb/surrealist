@@ -599,6 +599,35 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "diagram-lod-enabled",
+						name: "Simplify tables when zoomed out",
+						description:
+							"Reduce table detail at low zoom levels to improve performance",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.appearance.diagramLodEnabled,
+							writer: (config, value) => {
+								config.settings.appearance.diagramLodEnabled = value;
+							},
+						}),
+					},
+					{
+						id: "diagram-lod-threshold",
+						name: "LOD zoom threshold",
+						description:
+							"The zoom level below which table detail is simplified (0.05–0.5)",
+						controller: new NumberController({
+							min: 0.05,
+							max: 0.5,
+							reader: (config) => config.settings.appearance.diagramLodThreshold,
+							writer: (config, value) => {
+								config.settings.appearance.diagramLodThreshold = Math.max(
+									0.05,
+									Math.min(0.5, value),
+								);
+							},
+						}),
+					},
 				],
 			},
 			{

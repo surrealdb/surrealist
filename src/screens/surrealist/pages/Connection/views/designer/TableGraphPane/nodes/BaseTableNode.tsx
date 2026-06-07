@@ -16,6 +16,7 @@ import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { getSurrealQL } from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { DiagramDirection, DiagramMode, TableInfo } from "~/types";
+import { computeLodLevel, type DiagramLodSettings } from "~/util/designer-lod";
 import { ON_STOP_PROPAGATION } from "~/util/helpers";
 import { themeColor } from "~/util/mantine";
 import { getTableVariant } from "~/util/schema";
@@ -26,6 +27,7 @@ export type DiagramContextProps = {
 	warnings?: GraphWarning[];
 	isTiny?: boolean;
 	zoomLevel?: number;
+	lodSettings?: DiagramLodSettings;
 };
 export const DiagramContext = createContext<DiagramContextProps>({});
 
@@ -348,18 +350,19 @@ interface BaseTableNodeProps {
 }
 
 export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: BaseTableNodeProps) {
-	const { zoomLevel = 1 } = useContext(DiagramContext);
+	const { zoomLevel = 1, lodSettings = { enabled: true, threshold: 0.2 } } =
+		useContext(DiagramContext);
 	const isLight = useIsLight();
 	const isLTR = direction === "ltr";
 	const showMore = mode === "summary" || (mode === "fields" && table.fields.length > 0);
 	const variant = getTableVariant(table);
 
 	// Calculate LOD level based on zoom (use zoomLevel from context to trigger re-renders)
-	// Level 1: zoom > 0.5 - full detail
-	// Level 2: 0.35 < zoom <= 0.5 - partial detail (skeleton placeholders)
-	// Level 3: 0.2 < zoom <= 0.35 - low detail (table name with inverse scaling)
-	// Level 4: zoom <= 0.2- no detail (just rectangle)
-	const lodLevel = zoomLevel > 0.5 ? 1 : zoomLevel > 0.35 ? 2 : zoomLevel > 0.2 ? 3 : 4;
+	// Level 1: full detail
+	// Level 2: partial detail (skeleton placeholders)
+	// Level 3: low detail (table name with inverse scaling)
+	// Level 4: no detail (just rectangle)
+	const lodLevel = computeLodLevel(zoomLevel, lodSettings);
 
 	// Calculate inverse scale for dashed borders in levels 2 and 3
 	const borderInverseScale =

@@ -46,6 +46,7 @@ import {
 	type MouseEvent,
 	useEffect,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react";
@@ -139,6 +140,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const [zoomLevel, setZoomLevel] = useState(1);
 	const ref = useRef<ElementRef<"div">>(null);
 	const isLight = useIsLight();
+
+	const [diagramLodEnabled] = useSetting("appearance", "diagramLodEnabled");
+	const [diagramLodThreshold] = useSetting("appearance", "diagramLodThreshold");
+
+	const lodSettings = useMemo(
+		() => ({
+			enabled: diagramLodEnabled,
+			threshold: diagramLodThreshold,
+		}),
+		[diagramLodEnabled, diagramLodThreshold],
+	);
 
 	const { fitView, zoomIn, zoomOut, getViewport, setViewport } = useReactFlow();
 	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
@@ -562,7 +574,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	return (
-		<DiagramContext.Provider value={{ warnings, isTiny: isTiny && !isExporting, zoomLevel }}>
+		<DiagramContext.Provider
+			value={{ warnings, isTiny: isTiny && !isExporting, zoomLevel, lodSettings }}
+		>
 			<ContentPane
 				title="Table Graph"
 				icon={iconRelation}
