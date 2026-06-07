@@ -85,7 +85,10 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Message</Title>
 
-							<CodeBlock value={message} />
+							<CodeBlock
+								value={message}
+								className="selectable"
+							/>
 						</Box>
 					)}
 
@@ -93,7 +96,10 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Cause</Title>
 
-							<CodeBlock value={error.cause} />
+							<CodeBlock
+								value={error.cause}
+								className="selectable"
+							/>
 						</Box>
 					)}
 
@@ -101,7 +107,10 @@ export function ScaffoldErrorHandler({ error, resetErrorBoundary }: FallbackProp
 						<Box>
 							<Title order={3}>Stack trace</Title>
 
-							<CodeBlock value={error.stack} />
+							<CodeBlock
+								value={error.stack}
+								className="selectable"
+							/>
 						</Box>
 					)}
 				</Stack>

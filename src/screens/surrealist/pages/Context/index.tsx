@@ -2,10 +2,12 @@ import { Box, Center, Loader, ScrollArea, Skeleton, Stack } from "@mantine/core"
 import { lazy, memo, Suspense } from "react";
 import { Redirect } from "wouter";
 import { useCloudContextQuery } from "~/cloud/queries/contexts";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useContextAndView } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
+import { loadingCrumb, orgCrumb } from "~/util/breadcrumbs";
 import { ContextSidebar } from "./sidebar";
 import classes from "./style.module.scss";
 import type { ContextViewProps } from "./types";
@@ -48,9 +50,11 @@ export function ContextPage({ view }: ContextPageProps) {
 	const [organizationId, contextId] = useContextAndView();
 
 	const contextQuery = useCloudContextQuery(organizationId ?? undefined, contextId ?? undefined);
+	const orgQuery = useCloudOrganizationQuery(organizationId ?? undefined);
 
 	const isSuccess = contextQuery.isSuccess;
 	const isLoading = contextQuery.isLoading || contextQuery.isPending;
+	const isOrgLoading = orgQuery.isLoading || orgQuery.isPending;
 
 	if (isSuccess && !contextQuery.data) {
 		return <Redirect to="/" />;
@@ -66,16 +70,15 @@ export function ContextPage({ view }: ContextPageProps) {
 	return (
 		<>
 			<PageBreadcrumbs
-				items={
-					isLoading
-						? []
-						: [
-								{
-									label: contextQuery.data?.name ?? "",
-									selectable: true,
-								},
-							]
-				}
+				items={[
+					isOrgLoading || !orgQuery.data ? loadingCrumb() : orgCrumb(orgQuery.data),
+					isLoading || !contextQuery.data
+						? loadingCrumb()
+						: {
+								label: contextQuery.data.name,
+								selectable: true,
+							},
+				]}
 			/>
 			<CloudGuard>
 				<ContextSidebar

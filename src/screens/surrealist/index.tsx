@@ -1,12 +1,12 @@
-import { Box, Center, Drawer, Flex, Group, Loader, LoadingOverlay, Stack } from "@mantine/core";
+import { Box, Center, Flex, Group, Loader, LoadingOverlay, Stack } from "@mantine/core";
 import { memo } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
+import globulesImg from "~/assets/images/globules.webp";
 import { AppTitleBar } from "~/components/AppTitleBar";
 import { CloudGuard } from "~/components/CloudGuard";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
-import { useStable } from "~/hooks/stable";
 import { useCloud } from "~/providers/Cloud";
 import { useInterfaceStore } from "~/stores/interface";
 import { ViewPage } from "~/types";
@@ -70,11 +70,8 @@ function DefaultOrgRedirect({ rest }: { rest?: string }) {
 }
 
 export function SurrealistScreen() {
-	const { setOverlaySidebar } = useInterfaceStore.getState();
-
 	const showCloud = useIsCloudEnabled();
 	const { isLoading: isProcessingAuth } = useCloud();
-	const overlaySidebar = useInterfaceStore((s) => s.overlaySidebar);
 	const title = useInterfaceStore((s) => s.title);
 
 	const [storedSidebarMode] = useSetting("appearance", "sidebarMode");
@@ -82,13 +79,15 @@ export function SurrealistScreen() {
 	const isMacos = adapter.platform === "darwin" && isDesktop;
 	const isOtherOS = adapter.platform !== "darwin" && isDesktop;
 
-	const onCloseSidebar = useStable(() => {
-		setOverlaySidebar(false);
-	});
-
 	return (
 		<SidebarProvider mode={sidebarMode}>
-			<Box className={classes.root}>
+			<Box
+				className={classes.root}
+				style={{
+					"--bg-image": `url(${globulesImg})`,
+					"--bg-opacity": "0.35",
+				}}
+			>
 				{isOtherOS && <AppTitleBar />}
 				<Flex
 					direction="column"
@@ -348,14 +347,12 @@ export function SurrealistScreen() {
 					</Box>
 				</Flex>
 
-				<Drawer
+				{/* <Drawer
 					withCloseButton={false}
-					opened={overlaySidebar}
-					onClose={onCloseSidebar}
 					size={215}
 				>
 					<DatabaseSidebarLazy fill />
-				</Drawer>
+				</Drawer> */}
 
 				<LoadingOverlay
 					visible={isProcessingAuth}

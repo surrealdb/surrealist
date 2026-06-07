@@ -44,6 +44,7 @@ import { useAbsoluteLocation, useContextNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import type { CloudOrganization } from "~/types";
+import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
 import { ON_FOCUS_SELECT, showErrorNotification } from "~/util/helpers";
 import classes from "./style.module.scss";
 
@@ -164,18 +165,7 @@ function PageContent({ organisation }: PageContentProps) {
 	return (
 		<>
 			<PageBreadcrumbs
-				items={[
-					{
-						label: organisation.name,
-						href: `/o/${organisation.id}`,
-						selectable: true,
-					},
-					{
-						label: "Contexts",
-						href: `/o/${organisation.id}/contexts`,
-					},
-					{ label: "Create" },
-				]}
+				items={orgSectionBreadcrumbs(organisation, "contexts", { label: "Create" })}
 			/>
 			<CloudAdminGuard organisation={organisation}>
 				<Box

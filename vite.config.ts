@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync, realpathSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
@@ -11,6 +11,12 @@ import { surreal, version } from "./package.json";
 /** Project root (directory containing this config). */
 const projectDir = dirname(fileURLToPath(import.meta.url));
 
+// bun link: share one copy of @surrealdb/ui peers (react, mantine, codemirror, …)
+const uiRoot = realpathSync(resolve(projectDir, "node_modules/@surrealdb/ui"));
+const uiPeers = Object.keys(
+	JSON.parse(readFileSync(resolve(uiRoot, "package.json"), "utf8")).peerDependencies ?? {},
+);
+
 /**
  * Some dependencies import Node builtins in code paths that still run in the
  * browser (`dom-to-svg` → PostCSS, `@surrealdb/ql-wasm` → optional `node:crypto`).
@@ -21,12 +27,12 @@ const projectDir = dirname(fileURLToPath(import.meta.url));
 const browserNodeBuiltinAliases = {
 	path: resolve(projectDir, "node_modules/path-browserify/index.js"),
 	"node:path": resolve(projectDir, "node_modules/path-browserify/index.js"),
-	fs: resolve(projectDir, "src/util/node-fs-postcss-shim.ts"),
-	"node:fs": resolve(projectDir, "src/util/node-fs-postcss-shim.ts"),
-	url: resolve(projectDir, "src/util/node-url-postcss-shim.ts"),
-	"node:url": resolve(projectDir, "src/util/node-url-postcss-shim.ts"),
+	fs: resolve(projectDir, "shims/node-fs-postcss-shim.ts"),
+	"node:fs": resolve(projectDir, "shims/node-fs-postcss-shim.ts"),
+	url: resolve(projectDir, "shims/node-url-postcss-shim.ts"),
+	"node:url": resolve(projectDir, "shims/node-url-postcss-shim.ts"),
 	"source-map-js": resolve(projectDir, "node_modules/source-map-js/source-map.js"),
-	"node:crypto": resolve(projectDir, "src/util/node-crypto-web-shim.ts"),
+	"node:crypto": resolve(projectDir, "shims/node-crypto-web-shim.ts"),
 } as const;
 
 const isTauri = !!process.env.TAURI_ENV_PLATFORM;
@@ -34,7 +40,7 @@ const isCompress = process.env.VITE_SURREALIST_COMPRESS !== "false";
 const isPreview = process.env.VITE_SURREALIST_PREVIEW === "true";
 const isDocker = process.env.VITE_SURREALIST_DOCKER === "true";
 
-const ENTRYPOINTS = {
+const ENTRYPOINTS: Record<string, string> = {
 	surrealist: "/index.html",
 	mini_embed: "/tools/mini-embed.html",
 	auth_return: "/tools/auth-return.html",
@@ -43,7 +49,7 @@ const ENTRYPOINTS = {
 	cloud_referral: "/tools/cloud-referral.html",
 };
 
-const TOOLS = {
+const TOOLS: Record<string, string> = {
 	"tools/mini-embed.html": "mini/run/index.html",
 	"tools/auth-return.html": "auth/return/index.html",
 	"tools/auth-launch.html": "auth/launch/index.html",
@@ -51,7 +57,7 @@ const TOOLS = {
 	"tools/cloud-referral.html": "cloud/referral/index.html",
 };
 
-const REWRITES = {
+const REWRITES: Record<string, string> = {
 	"/auth/return": "/tools/auth-return.html",
 	"/auth/launch": "/tools/auth-launch.html",
 	"/cloud/callback": "/tools/cloud-callback.html",
@@ -124,6 +130,9 @@ export default defineConfig(({ mode }) => {
 		server: {
 			port: 1420,
 			strictPort: true,
+			fs: {
+				allow: [projectDir, uiRoot],
+			},
 		},
 		build: {
 			target: "es2020",
@@ -158,6 +167,7 @@ export default defineConfig(({ mode }) => {
 			},
 		},
 		resolve: {
+			dedupe: ["react", "react-dom", ...uiPeers],
 			alias: {
 				...browserNodeBuiltinAliases,
 				"~": fileURLToPath(new URL("src", import.meta.url)),
@@ -182,7 +192,7 @@ export default defineConfig(({ mode }) => {
 			"import.meta.env.GTM_ID": JSON.stringify("G-PVD8NEJ3Z2"),
 		},
 		optimizeDeps: {
-			include: ["path-browserify"],
+			include: ["path-browserify", "@surrealdb/ui"],
 			exclude: ["@surrealdb/wasm", "@surrealdb/ql-wasm-2", "@surrealdb/ql-wasm-3"],
 			esbuildOptions: {
 				target: "esnext",

@@ -14,7 +14,6 @@ export type InterfaceStore = {
 	showAccessSignup: boolean;
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
-	overlaySidebar: boolean;
 	docsTable: string;
 
 	setWindowTitle: (title: string) => void;
@@ -31,7 +30,6 @@ export type InterfaceStore = {
 	closeAccessSignup: () => void;
 	showChangelog: () => void;
 	readChangelog: () => void;
-	setOverlaySidebar: (overlaySidebar: boolean) => void;
 	setDocsTable: (table: string) => void;
 };
 
@@ -137,11 +135,6 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	readChangelog: () =>
 		set(() => ({
 			hasReadChangelog: true,
-		})),
-
-	setOverlaySidebar: (overlaySidebar) =>
-		set(() => ({
-			overlaySidebar,
 		})),
 
 	setDocsTable: (docsTable) => set(() => ({ docsTable })),

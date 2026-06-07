@@ -44,9 +44,7 @@ export function CreateOrganizationPage() {
 
 	return (
 		<>
-			<PageBreadcrumbs
-				items={[{ label: "Surrealist", href: "/" }, { label: "Create organisation" }]}
-			/>
+			<PageBreadcrumbs items={[{ label: "Create organisation" }]} />
 			<CloudGuard>
 				<Box
 					flex={1}

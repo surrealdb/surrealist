@@ -4,6 +4,7 @@ import { navigate } from "wouter/use-browser-location";
 import { useSupportCollectionQuery } from "~/cloud/queries/context";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { loadingCrumb, supportBreadcrumbs } from "~/util/breadcrumbs";
 import { ArticleCard } from "../ArticleCard";
 import classes from "../style.module.scss";
 
@@ -17,14 +18,11 @@ export function CollectionPage({ id }: CollectionPageProps) {
 	return (
 		<>
 			<PageBreadcrumbs
-				items={
+				items={supportBreadcrumbs(
 					isLoading || !collection
-						? []
-						: [
-								{ label: "Support", href: "/support" },
-								{ label: collection.name, selectable: true },
-							]
-				}
+						? loadingCrumb()
+						: { label: collection.name, selectable: true },
+				)}
 			/>
 			<Box
 				flex={1}

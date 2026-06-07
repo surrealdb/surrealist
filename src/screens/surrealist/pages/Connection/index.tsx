@@ -2,8 +2,13 @@ import { Stack } from "@mantine/core";
 import { FC, memo, Suspense } from "react";
 import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
 import { Redirect } from "wouter";
-import { useAvailableViews } from "~/hooks/connection";
+import { useCloudInstanceQuery } from "~/cloud/queries/instances";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
+import { useAvailableViews, useConnection } from "~/hooks/connection";
 import { ViewPage } from "~/types";
+import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
+import { ViewPageProps } from "./types";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DashboardView from "./views/dashboard/DashboardView";
 import DesignerView from "./views/designer/DesignerView";
@@ -36,7 +41,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	migrations: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
-const VIEW_COMPONENTS: Record<ViewPage, FC> = {
+const VIEW_COMPONENTS: Record<ViewPage, FC<ViewPageProps>> = {
 	dashboard: memo(DashboardView),
 	monitor: memo(MonitorView),
 	query: memo(QueryView),
@@ -56,11 +61,22 @@ export interface ConnectionPageProps {
 
 export function ConnectionPage({ view }: ConnectionPageProps) {
 	const views = useAvailableViews();
+	const instanceId = useConnection((c) => c?.authentication.cloudInstance);
 
 	const portal = views[view] ? VIEW_PORTALS[view] : undefined;
 
+	const instanceQuery = useCloudInstanceQuery(instanceId);
+	const organisationQuery = useCloudOrganizationQuery(instanceQuery.data?.organization_id);
+
+	const breadcrumb = {
+		id: organisationQuery.data?.id ?? "",
+		name: organisationQuery.data?.name ?? "",
+	};
+
 	return (
 		<>
+			<PageBreadcrumbs items={orgSectionBreadcrumbs(breadcrumb, "instances")} />
+
 			{Object.values(views).map((mode) => {
 				const Content = VIEW_COMPONENTS[mode.id];
 
@@ -70,7 +86,10 @@ export function ConnectionPage({ view }: ConnectionPageProps) {
 						node={VIEW_PORTALS[mode.id]}
 					>
 						<Suspense fallback={null}>
-							<Content />
+							<Content
+								instanceQuery={instanceQuery}
+								organisationQuery={organisationQuery}
+							/>
 						</Suspense>
 					</InPortal>
 				);

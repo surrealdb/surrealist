@@ -18,6 +18,7 @@ import { useSupportArticleQuery } from "~/cloud/queries/context";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { loadingCrumb, supportBreadcrumbs } from "~/util/breadcrumbs";
 import { formatRelativeDate } from "~/util/helpers";
 import classes from "../style.module.scss";
 
@@ -33,9 +34,8 @@ export function ArticlePage({ id }: ArticlePageProps) {
 			<PageBreadcrumbs
 				items={
 					isLoading || !article
-						? []
-						: [
-								{ label: "Support", href: "/support" },
+						? supportBreadcrumbs(loadingCrumb())
+						: supportBreadcrumbs(
 								{
 									label: article.collection?.name ?? "Collection",
 									href: `/support/collections/${article.collection?.id}`,
@@ -45,7 +45,7 @@ export function ArticlePage({ id }: ArticlePageProps) {
 									label: article.title ?? "Unnamed Article",
 									selectable: true,
 								},
-							]
+							)
 				}
 			/>
 			<Box

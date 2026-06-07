@@ -5,9 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Fragment, useMemo } from "react";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
-import { openCreateDatabaseModal } from "~/modals/create-database";
-import { openCreateNamespaceModal } from "~/modals/create-namespace";
-import { getAuthLevel } from "~/util/connection";
+import { openNewDatabaseModal } from "~/modals/new-database";
 import { fetchDatabaseList, fetchNamespaceList } from "~/util/databases";
 import { createBaseAuthentication } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
@@ -21,14 +19,12 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 	const connected = useIsConnected();
 	const [search, setSearch] = useInputState("");
 
-	const [connectionId, namespace, database, authentication] = useConnection((c) => [
+	const [connectionId, namespace, database] = useConnection((c) => [
 		c?.id ?? "",
 		c?.lastNamespace ?? "",
 		c?.lastDatabase ?? "",
 		c?.authentication ?? createBaseAuthentication(),
 	]);
-
-	const level = getAuthLevel(authentication);
 
 	const hierarchyQuery = useQuery({
 		queryKey: ["database-hierarchy", connectionId],
@@ -67,12 +63,8 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 		setSearch("");
 	});
 
-	const openNamespaceCreator = useStable(() => {
-		openCreateNamespaceModal();
-	});
-
 	const openDatabaseCreator = useStable(() => {
-		openCreateDatabaseModal();
+		openNewDatabaseModal();
 	});
 
 	return (
@@ -157,20 +149,12 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 			<Menu.Divider />
 
 			<Box p="sm">
-				{(level === "root" || level === "namespace") && (
-					<Menu.Item
-						leftSection={<Icon path={iconPlus} />}
-						onClick={openNamespaceCreator}
-					>
-						New namespace
-					</Menu.Item>
-				)}
 				<Menu.Item
 					leftSection={<Icon path={iconPlus} />}
-					disabled={!connected || (level !== "root" && level !== "namespace")}
+					disabled={!connected}
 					onClick={openDatabaseCreator}
 				>
-					New database
+					Create database
 				</Menu.Item>
 			</Box>
 		</>

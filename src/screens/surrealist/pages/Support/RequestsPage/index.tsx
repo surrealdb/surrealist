@@ -6,6 +6,7 @@ import { ConversationTable } from "~/components/ConversationTable";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { supportBreadcrumbs } from "~/util/breadcrumbs";
 import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
 
@@ -14,9 +15,7 @@ export function RequestsPage() {
 
 	return (
 		<>
-			<PageBreadcrumbs
-				items={[{ label: "Support", href: "/support" }, { label: "Requests" }]}
-			/>
+			<PageBreadcrumbs items={supportBreadcrumbs({ label: "Requests" })} />
 			<CloudGuard>
 				<Box
 					flex={1}

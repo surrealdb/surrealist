@@ -30,6 +30,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useSearchParams } from "~/hooks/routing";
 import { ContextPlanCard } from "~/screens/surrealist/components/ContextPlanCard";
 import type { CloudOrganization, PlanPeriod } from "~/types";
+import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
 import classes from "./style.module.scss";
 
 export interface OrganizationContextPlanPageProps {
@@ -89,22 +90,7 @@ function PageContent({ organisation }: PageContentProps) {
 	return (
 		<>
 			<PageBreadcrumbs
-				items={[
-					{
-						label: organisation.name,
-						href: `/o/${organisation.id}`,
-						selectable: true,
-					},
-					...(isOrgOwner
-						? [
-								{
-									label: "Billing",
-									href: `/o/${organisation.id}/billing`,
-								},
-							]
-						: []),
-					{ label: "Select plan" },
-				]}
+				items={orgSectionBreadcrumbs(organisation, "contexts", { label: "Select plan" })}
 			/>
 			<CloudAdminGuard organisation={organisation}>
 				<Box

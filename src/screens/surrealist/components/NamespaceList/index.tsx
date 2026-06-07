@@ -20,7 +20,7 @@ import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useRootSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { openCreateNamespaceModal } from "~/modals/create-namespace";
+import { openNewDatabaseModal } from "~/modals/new-database";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthLevel, getAuthNS } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
@@ -182,7 +182,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 	});
 
 	const openCreator = useStable(() => {
-		openCreateNamespaceModal();
+		openNewDatabaseModal();
 		openHandle.close();
 	});
 
@@ -194,7 +194,7 @@ export function NamespaceList({ buttonProps }: NamespaceListProps) {
 			color="obsidian"
 			variant="light"
 			leftSection={<Icon path={iconNamespace} />}
-			onClick={openCreateNamespaceModal}
+			onClick={openNewDatabaseModal}
 			{...buttonProps}
 		>
 			<Text

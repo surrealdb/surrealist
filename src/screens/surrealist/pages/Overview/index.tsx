@@ -25,6 +25,7 @@ import { adapter } from "~/adapter";
 import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsCloudEnabled } from "~/hooks/cloud";
@@ -82,6 +83,7 @@ export function OverviewPage() {
 			flex={1}
 			pos="relative"
 		>
+			<PageBreadcrumbs items={[{ label: "Overview" }]} />
 			<Transition
 				duration={250}
 				transition="fade-up"

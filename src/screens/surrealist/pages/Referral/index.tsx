@@ -104,9 +104,7 @@ export function ReferralPage() {
 
 	return (
 		<>
-			<PageBreadcrumbs
-				items={[{ label: "Surrealist", href: "/" }, { label: "Referral Program" }]}
-			/>
+			<PageBreadcrumbs items={[{ label: "Referral Program" }]} />
 			<CloudGuard>
 				<Box
 					flex={1}

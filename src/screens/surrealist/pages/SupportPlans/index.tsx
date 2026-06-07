@@ -4,6 +4,7 @@ import { useCloudPricingQuery } from "~/cloud/queries/pricing";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { PricingCard } from "~/screens/surrealist/components/PricingCard";
+import { orgCrumb } from "~/util/breadcrumbs";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 
@@ -20,16 +21,7 @@ export function SupportPlansPage({ id }: SupportPlansPageProps) {
 	return (
 		<>
 			{organisation && (
-				<PageBreadcrumbs
-					items={[
-						{
-							label: organisation.name,
-							href: `/o/${organisation.id}`,
-							selectable: true,
-						},
-						{ label: "Support plans" },
-					]}
-				/>
+				<PageBreadcrumbs items={[orgCrumb(organisation), { label: "Support plans" }]} />
 			)}
 			<Box
 				flex={1}

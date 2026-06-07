@@ -21,9 +21,6 @@ export function SidekickAction() {
 				hidden={hasExplored}
 			>
 				<ActionButton
-					w={36}
-					h={36}
-					variant="subtle"
 					label="Sidekick AI"
 					tooltipProps={{
 						position: "bottom",
@@ -34,7 +31,7 @@ export function SidekickAction() {
 				>
 					<Icon
 						path={iconSidekick}
-						size="xl"
+						size="lg"
 					/>
 				</ActionButton>
 			</StarSparkles>

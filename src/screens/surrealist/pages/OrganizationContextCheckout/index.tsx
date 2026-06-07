@@ -41,6 +41,7 @@ import { useSearchParams } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { ContextPlanCard } from "~/screens/surrealist/components/ContextPlanCard";
 import type { CloudOrganization } from "~/types";
+import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 
 export interface OrganizationContextCheckoutPageProps {
@@ -132,18 +133,12 @@ function PageContent({ organisation }: PageContentProps) {
 	return (
 		<>
 			<PageBreadcrumbs
-				items={[
-					{
-						label: organisation.name,
-						href: `/o/${organisation.id}`,
-						selectable: true,
-					},
-					{
-						label: "Select plan",
-						href: `/o/${organisation.id}/contexts/plan`,
-					},
+				items={orgSectionBreadcrumbs(
+					organisation,
+					"contexts",
+					{ label: "Select plan", href: `/o/${organisation.id}/contexts/plan` },
 					{ label: "Checkout" },
-				]}
+				)}
 			/>
 			<CloudAdminGuard organisation={organisation}>
 				<Box

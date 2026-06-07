@@ -43,6 +43,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { SUPPORT_STATES } from "~/constants";
 import { useAuthentication } from "~/providers/Auth";
+import { loadingCrumb, supportBreadcrumbs } from "~/util/breadcrumbs";
 import { fileToBase64 } from "~/util/file-system";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
 import { ConversationPart } from "../ConversationPart";
@@ -351,12 +352,14 @@ export function ConversationPage({ id }: ConversationPageProps) {
 			<PageBreadcrumbs
 				items={
 					isLoading || !conversation
-						? []
-						: [
-								{ label: "Support", href: "/support" },
+						? supportBreadcrumbs(
+								{ label: "Requests", href: "/support/requests" },
+								loadingCrumb(),
+							)
+						: supportBreadcrumbs(
 								{ label: "Requests", href: "/support/requests" },
 								{ label: title, selectable: true },
-							]
+							)
 				}
 			/>
 			<CloudGuard>

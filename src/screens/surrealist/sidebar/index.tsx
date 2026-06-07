@@ -1,7 +1,6 @@
 import {
 	Box,
 	type BoxProps,
-	Center,
 	Flex,
 	Group,
 	Image,
@@ -9,14 +8,12 @@ import {
 	Stack,
 	UnstyledButton,
 } from "@mantine/core";
-import { Icon, iconCog, iconHelp, iconSearch, iconSidebar, pictoSurrealist } from "@surrealdb/ui";
+import { iconCog, iconHelp, iconSearch, pictoSurrealist } from "@surrealdb/ui";
 import clsx from "clsx";
 import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
-import { ActionButton } from "~/components/ActionButton";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { useLogoUrl } from "~/hooks/brand";
-import { useSetting } from "~/hooks/config";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
@@ -34,24 +31,17 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 	const logoUrl = useLogoUrl();
 	const [, navigate] = useAbsoluteLocation();
 	const { mode, setLocation } = useSidebar();
-	const [, setSidebarMode] = useSetting("appearance", "sidebarMode");
 
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const { data: unreadConversations } = useCloudUnreadConversationsQuery();
-	const { setOverlaySidebar } = useInterfaceStore.getState();
 
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
-
-	const toggleMode = useStable(() => {
-		setSidebarMode(mode === "compact" ? "wide" : "compact");
-	});
 
 	const isCompact = !fill && mode === "compact";
 
 	const goHome = useStable(() => {
 		setLocation("/");
-		setOverlaySidebar(false);
 	});
 
 	return (
@@ -79,7 +69,7 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 					className={classes.sidebarInner}
 					direction="column"
 					px={16}
-					pt={14}
+					pt={18}
 				>
 					<UnstyledButton
 						onClick={goHome}
@@ -164,17 +154,6 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 					</Stack>
 				</Flex>
 			</ScrollArea>
-			<Center w={5}>
-				<ActionButton
-					label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
-					onClick={toggleMode}
-					variant="filled"
-					style={{ zIndex: 1000 }}
-					className={classes.sidebarToggle}
-				>
-					<Icon path={iconSidebar} />
-				</ActionButton>
-			</Center>
 		</Box>
 	);
 }

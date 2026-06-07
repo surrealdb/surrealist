@@ -5,7 +5,6 @@ import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
 import { useRouteMatcher } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useInterfaceStore } from "~/stores/interface";
 import { Entry, type EntryProps } from "../Entry";
 import classes from "./style.module.scss";
 
@@ -29,7 +28,6 @@ export function NavigationIcon({
 	indicator,
 	...rest
 }: NavigationIconProps) {
-	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const active = useRouteMatcher(match || []);
 	const isActive = match && active && match?.length > 0;
 
@@ -39,7 +37,6 @@ export function NavigationIcon({
 	// });
 
 	const handleClick = useStable(() => {
-		setOverlaySidebar(false);
 		onClick();
 	});
 

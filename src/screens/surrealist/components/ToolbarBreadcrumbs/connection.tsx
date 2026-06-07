@@ -1,7 +1,7 @@
-import { Box, Indicator, Loader, Menu, Text } from "@mantine/core";
+import { Box, Menu, Text } from "@mantine/core";
 import {
-	BreadcrumbButton,
 	Icon,
+	iconChevronDown,
 	iconClose,
 	iconDownload,
 	iconEdit,
@@ -13,6 +13,7 @@ import {
 	iconWrench,
 } from "@surrealdb/ui";
 import { useState } from "react";
+import { BreadcrumbCrumb } from "~/components/BreadcrumbCrumb";
 import { SANDBOX } from "~/constants";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
 import { useConnectionAndView } from "~/hooks/routing";
@@ -66,10 +67,9 @@ export function ConnectionCrumb() {
 		return null;
 	}
 
+	const displayName = name || connection;
 	const isSandbox = connectionId === SANDBOX;
 	const isManaged = isSandbox || instance;
-	const isLoading = currentState === "connecting" || currentState === "retrying";
-	const pulse = currentState === "connected";
 
 	const statusInfo = {
 		disconnected: ["Disconnected", "red"],
@@ -78,7 +78,7 @@ export function ConnectionCrumb() {
 		connecting: ["Connecting...", ""],
 	} as const;
 
-	const [statusText, color] = statusInfo[currentState];
+	const [statusText] = statusInfo[currentState];
 
 	return (
 		<Menu
@@ -91,39 +91,30 @@ export function ConnectionCrumb() {
 			}}
 		>
 			<Menu.Target>
-				<BreadcrumbButton
+				<BreadcrumbCrumb
+					item={{ label: displayName, selectable: true }}
 					onClick={openConnections}
 					leftSection={
-						isSandbox ? <Icon path={iconSandbox} /> : <Icon path={USER_ICONS[icon]} />
-					}
-					rightSection={
-						isLoading ? (
-							<Loader
-								size={14}
-								ml={2}
-								mr={-7}
+						isSandbox ? (
+							<Icon
+								path={iconSandbox}
+								opacity={0.6}
 							/>
 						) : (
-							<Indicator
-								processing={pulse}
-								color={color}
-								size={9}
-								ml="sm"
+							<Icon
+								path={USER_ICONS[icon]}
+								opacity={0.6}
 							/>
 						)
 					}
-				>
-					<Text
-						truncate
-						fw={600}
-						maw={200}
-						c="bright"
-						ml={2}
-						className="selectable"
-					>
-						{name}
-					</Text>
-				</BreadcrumbButton>
+					rightSection={
+						<Icon
+							path={iconChevronDown}
+							size="xs"
+							opacity={0.6}
+						/>
+					}
+				/>
 			</Menu.Target>
 			<Menu.Dropdown w={225}>
 				<Box p="sm">

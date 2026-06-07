@@ -12,6 +12,7 @@ export type BreadcrumbItem = {
 	label: string;
 	href?: string;
 	selectable?: boolean;
+	dimmed?: boolean;
 };
 export type ColorScheme = "light" | "dark";
 export type DatabaseListMode = "list" | "grid";

@@ -15,6 +15,7 @@ import { CloudGuard } from "~/components/CloudGuard";
 import { CloudSplash } from "~/components/CloudSplash";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useAuthentication } from "~/providers/Auth";
+import { orgPageBreadcrumbs } from "~/util/breadcrumbs";
 import { dispatchIntent } from "~/util/intents";
 import classes from "./style.module.scss";
 import { OrganizationBillingTab } from "./tabs/billing";
@@ -73,16 +74,8 @@ export function OrganizationPage({ id, tab }: OrganizationPageProps) {
 
 	return (
 		<>
-			{organization && (
-				<PageBreadcrumbs
-					items={[
-						{
-							label: organization.name,
-							href: `/o/${organization.id}`,
-							selectable: true,
-						},
-					]}
-				/>
+			{organization && activeTab && (
+				<PageBreadcrumbs items={orgPageBreadcrumbs(organization, activeTab)} />
 			)}
 			<CloudGuard>
 				{isAuthed ? (

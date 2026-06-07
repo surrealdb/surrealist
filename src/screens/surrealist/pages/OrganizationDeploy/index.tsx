@@ -20,6 +20,7 @@ import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useSearchParams } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
+import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
 import { clamp, showErrorNotification } from "~/util/helpers";
 import { generateRandomName } from "~/util/random";
 import { PlanStep } from "./steps/1-plan";
@@ -143,18 +144,9 @@ function PageContent({ organisation, instances }: PageContentProps) {
 	return (
 		<>
 			<PageBreadcrumbs
-				items={[
-					{
-						label: organisation.name,
-						href: `/o/${organisation.id}`,
-						selectable: true,
-					},
-					{
-						label: "Instances",
-						href: `/o/${organisation.id}/instances`,
-					},
-					{ label: "Deploy instance" },
-				]}
+				items={orgSectionBreadcrumbs(organisation, "instances", {
+					label: "Deploy instance",
+				})}
 			/>
 			<CloudAdminGuard organisation={organisation}>
 				<Box

@@ -126,7 +126,7 @@ export function CreateConnectionPage() {
 
 	return (
 		<>
-			<PageBreadcrumbs items={[{ label: "Connections" }, { label: "Create" }]} />
+			<PageBreadcrumbs items={[{ label: "Connections", href: "/" }, { label: "Create" }]} />
 			<Box
 				flex={1}
 				pos="relative"
