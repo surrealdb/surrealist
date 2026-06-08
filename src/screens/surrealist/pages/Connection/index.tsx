@@ -1,4 +1,3 @@
-import { Stack } from "@mantine/core";
 import { FC, memo, Suspense } from "react";
 import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react-reverse-portal";
 import { Redirect } from "wouter";
@@ -23,7 +22,7 @@ import QueryView from "./views/query/QueryView";
 
 const PORTAL_OPTIONS = {
 	attributes: {
-		style: "height: 100%; display: flex; flex-direction: column;",
+		style: "flex: 1; display: flex; flex-direction: column;",
 	},
 };
 
@@ -95,16 +94,7 @@ export function ConnectionPage({ view }: ConnectionPageProps) {
 				);
 			})}
 
-			{portal ? (
-				<Stack
-					flex={1}
-					gap={0}
-				>
-					<OutPortal node={portal} />
-				</Stack>
-			) : (
-				<Redirect to="/" />
-			)}
+			{portal ? <OutPortal node={portal} /> : <Redirect to="/" />}
 		</>
 	);
 }

@@ -1,4 +1,4 @@
-import { Box, Center, Loader, ScrollArea, Skeleton, Stack } from "@mantine/core";
+import { Center, Loader, Skeleton } from "@mantine/core";
 import { lazy, memo, Suspense } from "react";
 import { Redirect } from "wouter";
 import { useCloudContextQuery } from "~/cloud/queries/contexts";
@@ -8,8 +8,8 @@ import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useContextAndView } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
 import { loadingCrumb, orgCrumb } from "~/util/breadcrumbs";
+import { PageContainer } from "../../components/PageContainer";
 import { ContextSidebar } from "./sidebar";
-import classes from "./style.module.scss";
 import type { ContextViewProps } from "./types";
 
 function isContextViewPage(view: string): view is ContextViewPage {
@@ -85,45 +85,26 @@ export function ContextPage({ view }: ContextPageProps) {
 					contextId={contextId ?? ""}
 					organizationId={organizationId ?? ""}
 				/>
-				<Box
-					flex={1}
-					pos="relative"
-				>
-					<ScrollArea
-						pos="absolute"
-						scrollbars="y"
-						type="scroll"
-						inset={0}
-						className={classes.scrollArea}
-						mt={18}
-					>
-						<Stack
-							px="xl"
-							mx="auto"
-							maw={1200}
-							pb={68}
+				<PageContainer>
+					{isLoading && (
+						<Skeleton
+							width={200}
+							h={50}
+							mt="sm"
+						/>
+					)}
+					{contextQuery.data && (
+						<Suspense
+							fallback={
+								<Center flex={1}>
+									<Loader />
+								</Center>
+							}
 						>
-							{isLoading && (
-								<Skeleton
-									width={200}
-									h={50}
-									mt="sm"
-								/>
-							)}
-							{contextQuery.data && (
-								<Suspense
-									fallback={
-										<Center flex={1}>
-											<Loader />
-										</Center>
-									}
-								>
-									<Component context={contextQuery.data} />
-								</Suspense>
-							)}
-						</Stack>
-					</ScrollArea>
-				</Box>
+							<Component context={contextQuery.data} />
+						</Suspense>
+					)}
+				</PageContainer>
 			</CloudGuard>
 		</>
 	);

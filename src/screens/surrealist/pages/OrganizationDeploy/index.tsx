@@ -1,4 +1,4 @@
-import { Box, ScrollArea, Stack, Text } from "@mantine/core";
+import { Box, Text } from "@mantine/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
@@ -23,10 +23,10 @@ import { CloudDeployConfig, CloudInstance, CloudOrganization } from "~/types";
 import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
 import { clamp, showErrorNotification } from "~/util/helpers";
 import { generateRandomName } from "~/util/random";
+import { PageContainer } from "../../components/PageContainer";
 import { PlanStep } from "./steps/1-plan";
 import { ConfigureStep } from "./steps/2-configure";
 import { CheckoutStep } from "./steps/3-checkout";
-import classes from "./style.module.scss";
 
 export interface OrganizationDeployPageProps {
 	id: string;
@@ -149,80 +149,61 @@ function PageContent({ organisation, instances }: PageContentProps) {
 				})}
 			/>
 			<CloudAdminGuard organisation={organisation}>
-				<Box
-					flex={1}
-					pos="relative"
-				>
-					<ScrollArea
-						pos="absolute"
-						scrollbars="y"
-						type="scroll"
-						inset={0}
-						className={classes.scrollArea}
-						mt={18}
-					>
-						<Stack
-							px="xl"
-							mx="auto"
-							maw={1200}
-							pb={68}
-						>
-							{organisation && (
-								<>
-									<Box>
-										<PrimaryTitle
-											mt="sm"
-											fz={32}
-										>
-											<Text
-												span
-												inherit
-												c="obsidian"
-												mr="sm"
-											>
-												{step + 1}.
-											</Text>
-											{stepTitles[step]}
-										</PrimaryTitle>
-									</Box>
+				<PageContainer>
+					{organisation && (
+						<>
+							<Box>
+								<PrimaryTitle
+									mt="sm"
+									fz={32}
+								>
+									<Text
+										span
+										inherit
+										c="obsidian"
+										mr="sm"
+									>
+										{step + 1}.
+									</Text>
+									{stepTitles[step]}
+								</PrimaryTitle>
+							</Box>
 
-									<Box my="xl">
-										{step === 0 && (
-											<PlanStep
-												organisation={organisation}
-												instances={instances}
-												details={details}
-												setDetails={setDetails}
-												setStep={setStep}
-											/>
-										)}
+							<Box my="xl">
+								{step === 0 && (
+									<PlanStep
+										organisation={organisation}
+										instances={instances}
+										details={details}
+										setDetails={setDetails}
+										setStep={setStep}
+									/>
+								)}
 
-										{step === 1 && (
-											<ConfigureStep
-												organisation={organisation}
-												backups={backups}
-												instances={instances}
-												details={details}
-												setDetails={setDetails}
-												setStep={updateStep}
-											/>
-										)}
+								{step === 1 && (
+									<ConfigureStep
+										organisation={organisation}
+										backups={backups}
+										instances={instances}
+										details={details}
+										setDetails={setDetails}
+										setStep={updateStep}
+									/>
+								)}
 
-										{step === 2 && (
-											<CheckoutStep
-												organisation={organisation}
-												instances={instances}
-												details={details}
-												setDetails={setDetails}
-												setStep={updateStep}
-											/>
-										)}
-									</Box>
-								</>
-							)}
-						</Stack>
-					</ScrollArea>
-				</Box>
+								{step === 2 && (
+									<CheckoutStep
+										organisation={organisation}
+										instances={instances}
+										details={details}
+										setDetails={setDetails}
+										setStep={updateStep}
+									/>
+								)}
+							</Box>
+						</>
+					)}
+				</PageContainer>
 			</CloudAdminGuard>
 		</>
 	);

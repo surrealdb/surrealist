@@ -1,21 +1,11 @@
-import {
-	Box,
-	Button,
-	Group,
-	Image,
-	Menu,
-	Paper,
-	ScrollArea,
-	Stack,
-	Text,
-	ThemeIcon,
-} from "@mantine/core";
+import { Box, Button, Group, Image, Menu, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import {
 	Icon,
 	iconChevronDown,
 	iconChevronRight,
 	iconHomePlus,
 	pictoSDBCloud,
+	SectionTitle,
 } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
@@ -27,7 +17,6 @@ import { ConnectionAuthDetails } from "~/components/ConnectionDetails/authentica
 import { ConnectionNameDetails } from "~/components/ConnectionDetails/connection";
 import { ConnectionLabelsDetails } from "~/components/ConnectionDetails/labels";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
@@ -38,6 +27,7 @@ import { getConnectionVariant, isConnectionValid } from "~/util/connection";
 import { createBaseConnection } from "~/util/defaults";
 import { dispatchIntent } from "~/util/intents";
 import { USER_ICONS } from "~/util/user-icons";
+import { PageContainer } from "../../components/PageContainer";
 import classes from "./style.module.scss";
 
 export function CreateConnectionPage() {
@@ -127,251 +117,213 @@ export function CreateConnectionPage() {
 	return (
 		<>
 			<PageBreadcrumbs items={[{ label: "Connections", href: "/" }, { label: "Create" }]} />
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
-					>
-						<Box>
-							<Group mt="sm">
-								<PrimaryTitle
-									fz={32}
-									flex={1}
-								>
-									Create connection
-								</PrimaryTitle>
-								<Menu position="bottom-end">
-									<Menu.Target>
-										<Button
-											rightSection={<Icon path={iconChevronDown} />}
-											color="violet"
-											variant="light"
-										>
-											Apply template
-										</Button>
-									</Menu.Target>
-									<Menu.Dropdown miw={200}>
-										{adapter.isServeSupported && (
-											<>
-												<Menu.Item
-													onClick={() => applyTemplate(localhost)}
-													leftSection={
-														<ThemeIcon
-															color="obsidian"
-															variant="light"
-															radius="xs"
-															mr="xs"
-														>
-															<Icon path={iconHomePlus} />
-														</ThemeIcon>
-													}
-												>
-													<Box>
-														<Text
-															c="bright"
-															fw={500}
-															lh={1}
-														>
-															Localhost
-														</Text>
-														<Text fz="sm">Automatic template</Text>
-													</Box>
-												</Menu.Item>
-												<Menu.Divider />
-											</>
-										)}
-										{templates.length > 0 && (
-											<>
-												{templates.map((template) => (
-													<Menu.Item
-														key={template.id}
-														onClick={() => applyTemplate(template)}
-														leftSection={
-															<ThemeIcon
-																color="obsidian"
-																variant="light"
-																radius="xs"
-																mr="xs"
-															>
-																<Icon
-																	path={USER_ICONS[template.icon]}
-																/>
-															</ThemeIcon>
-														}
-													>
-														<Text
-															c="bright"
-															fw={500}
-														>
-															{template.name}
-														</Text>
-													</Menu.Item>
-												))}
-												<Menu.Divider />
-											</>
-										)}
-										<Menu.Item
-											rightSection={<Icon path={iconChevronRight} />}
-											onClick={openTemplates}
-										>
-											Manage templates
-										</Menu.Item>
-									</Menu.Dropdown>
-								</Menu>
-							</Group>
-						</Box>
-						{isCloudEnabled && (
-							<Paper
-								p="xl"
-								pos="relative"
-								className={classes.cloudBox}
-							>
-								<Stack flex={1}>
-									<Text
-										maw={650}
-										fz="lg"
-										className="selectable"
-									>
-										Looking for the most hassle-free SurrealDB experience?{" "}
-										<Text
-											span
-											inherit
-											c="bright"
-										>
-											SurrealDB Cloud
-										</Text>{" "}
-										is the easiest way to deploy and manage your database-no
-										infrastructure setup or maintenance required.
-									</Text>
-									<Group mt="md">
-										<Link href="/o/default/instances/deploy">
-											<Button
-												size="xs"
-												variant="gradient"
-												rightSection={<Icon path={iconChevronRight} />}
-											>
-												Deploy now
-											</Button>
-										</Link>
-										<a href="https://surrealdb.com/cloud">
-											<Button
-												size="xs"
+			<PageContainer>
+				<Group>
+					<SectionTitle flex={1}>Create connection</SectionTitle>
+					<Menu position="bottom-end">
+						<Menu.Target>
+							<Button rightSection={<Icon path={iconChevronDown} />}>
+								Apply template
+							</Button>
+						</Menu.Target>
+						<Menu.Dropdown miw={200}>
+							{adapter.isServeSupported && (
+								<>
+									<Menu.Item
+										onClick={() => applyTemplate(localhost)}
+										leftSection={
+											<ThemeIcon
 												color="obsidian"
 												variant="light"
+												radius="xs"
+												mr="xs"
 											>
-												Learn more
-											</Button>
-										</a>
-									</Group>
-								</Stack>
-								<Image
-									src={pictoSDBCloud}
-									className={classes.cloudImage}
-								/>
-								<Image
-									src={glowUrl}
-									className={classes.cloudGlow}
-								/>
-							</Paper>
-						)}
-						<Box mt={24}>
-							<Text
-								fz="xl"
-								fw={600}
-								c="bright"
+												<Icon path={iconHomePlus} />
+											</ThemeIcon>
+										}
+									>
+										<Box>
+											<Text
+												c="bright"
+												fw={500}
+												lh={1}
+											>
+												Localhost
+											</Text>
+											<Text fz="sm">Automatic template</Text>
+										</Box>
+									</Menu.Item>
+									<Menu.Divider />
+								</>
+							)}
+							{templates.length > 0 && (
+								<>
+									{templates.map((template) => (
+										<Menu.Item
+											key={template.id}
+											onClick={() => applyTemplate(template)}
+											leftSection={
+												<ThemeIcon
+													color="obsidian"
+													variant="light"
+													radius="xs"
+													mr="xs"
+												>
+													<Icon path={USER_ICONS[template.icon]} />
+												</ThemeIcon>
+											}
+										>
+											<Text
+												c="bright"
+												fw={500}
+											>
+												{template.name}
+											</Text>
+										</Menu.Item>
+									))}
+									<Menu.Divider />
+								</>
+							)}
+							<Menu.Item
+								rightSection={<Icon path={iconChevronRight} />}
+								onClick={openTemplates}
 							>
-								Connection
-							</Text>
-							<Text className="selectable">
-								Specify an icon and name for this connection
-							</Text>
-						</Box>
-						<ConnectionNameDetails
-							value={connection}
-							onChange={setConnection}
-						/>
-						<Box mt={32}>
+								Manage templates
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
+				</Group>
+				{isCloudEnabled && (
+					<Paper
+						p="xl"
+						pos="relative"
+						className={classes.cloudBox}
+					>
+						<Stack flex={1}>
 							<Text
-								fz="xl"
-								fw={600}
-								c="bright"
+								maw={650}
+								fz="lg"
+								className="selectable"
 							>
-								Remote address
-							</Text>
-							<Text className="selectable">
-								Select a communication protocol and specify instance address
-							</Text>
-						</Box>
-						<ConnectionAddressDetails
-							value={connection}
-							onChange={setConnection}
-						/>
-						<Box mt={24}>
-							<Text
-								fz="xl"
-								fw={600}
-								c="bright"
-							>
-								Authentication
-							</Text>
-							<Text className="selectable">
-								Specify how you want to access your instance
-							</Text>
-						</Box>
-						<ConnectionAuthDetails
-							value={connection}
-							onChange={setConnection}
-						/>
-						<Box mt={24}>
-							<Text
-								fz="xl"
-								fw={600}
-								c="bright"
-							>
-								Labels
-							</Text>
-							<Text className="selectable">
-								Add filtering labels to this connection
-							</Text>
-						</Box>
-						<ConnectionLabelsDetails
-							value={connection}
-							onChange={setConnection}
-						/>
-						<Group mt={24}>
-							<Link to="/">
-								<Button
-									color="obsidian"
-									variant="light"
+								Looking for the most hassle-free SurrealDB experience?{" "}
+								<Text
+									span
+									inherit
+									c="bright"
 								>
-									Back
-								</Button>
-							</Link>
-							<Button
-								type="submit"
-								variant="gradient"
-								disabled={!isValid}
-								onClick={handleCreate}
-							>
-								Create connection
-							</Button>
-						</Group>
-					</Stack>
-				</ScrollArea>
-			</Box>
+									SurrealDB Cloud
+								</Text>{" "}
+								is the easiest way to deploy and manage your database-no
+								infrastructure setup or maintenance required.
+							</Text>
+							<Group mt="md">
+								<Link href="/o/default/instances/deploy">
+									<Button
+										size="xs"
+										variant="gradient"
+										rightSection={<Icon path={iconChevronRight} />}
+									>
+										Deploy now
+									</Button>
+								</Link>
+								<a href="https://surrealdb.com/cloud">
+									<Button
+										size="xs"
+										color="obsidian"
+										variant="light"
+									>
+										Learn more
+									</Button>
+								</a>
+							</Group>
+						</Stack>
+						<Image
+							src={pictoSDBCloud}
+							className={classes.cloudImage}
+						/>
+						<Image
+							src={glowUrl}
+							className={classes.cloudGlow}
+						/>
+					</Paper>
+				)}
+				<Box mt={24}>
+					<Text
+						fz="xl"
+						fw={600}
+						c="bright"
+					>
+						Connection
+					</Text>
+					<Text className="selectable">Specify an icon and name for this connection</Text>
+				</Box>
+				<ConnectionNameDetails
+					value={connection}
+					onChange={setConnection}
+				/>
+				<Box mt={32}>
+					<Text
+						fz="xl"
+						fw={600}
+						c="bright"
+					>
+						Remote address
+					</Text>
+					<Text className="selectable">
+						Select a communication protocol and specify instance address
+					</Text>
+				</Box>
+				<ConnectionAddressDetails
+					value={connection}
+					onChange={setConnection}
+				/>
+				<Box mt={24}>
+					<Text
+						fz="xl"
+						fw={600}
+						c="bright"
+					>
+						Authentication
+					</Text>
+					<Text className="selectable">Specify how you want to access your instance</Text>
+				</Box>
+				<ConnectionAuthDetails
+					value={connection}
+					onChange={setConnection}
+				/>
+				<Box mt={24}>
+					<Text
+						fz="xl"
+						fw={600}
+						c="bright"
+					>
+						Labels
+					</Text>
+					<Text className="selectable">Add filtering labels to this connection</Text>
+				</Box>
+				<ConnectionLabelsDetails
+					value={connection}
+					onChange={setConnection}
+				/>
+				<Group mt={24}>
+					<Link to="/">
+						<Button
+							color="obsidian"
+							variant="light"
+						>
+							Back
+						</Button>
+					</Link>
+					<Button
+						type="submit"
+						variant="gradient"
+						disabled={!isValid}
+						onClick={handleCreate}
+					>
+						Create connection
+					</Button>
+				</Group>
+			</PageContainer>
 		</>
 	);
 }

@@ -9,7 +9,6 @@ import {
 	Paper,
 	Pill,
 	PillGroup,
-	ScrollArea,
 	Stack,
 	Text,
 	Textarea,
@@ -46,6 +45,7 @@ import { useAuthentication } from "~/providers/Auth";
 import { loadingCrumb, supportBreadcrumbs } from "~/util/breadcrumbs";
 import { fileToBase64 } from "~/util/file-system";
 import { formatRelativeDate, showErrorNotification } from "~/util/helpers";
+import { PageContainer } from "../../../components/PageContainer";
 import { ConversationPart } from "../ConversationPart";
 import classes from "../style.module.scss";
 
@@ -363,345 +363,304 @@ export function ConversationPage({ id }: ConversationPageProps) {
 				}
 			/>
 			<CloudGuard>
-				<Box
-					flex={1}
-					pos="relative"
-				>
-					{isLoading && (
-						<Center
-							w="100%"
-							h="100%"
-							flex={1}
-						>
-							<Loader />
-						</Center>
-					)}
+				{isLoading && (
+					<Center flex={1}>
+						<Loader />
+					</Center>
+				)}
 
-					{!isLoading && !conversation && (
-						<Center
-							w="100%"
-							h="100%"
-							flex={1}
+				{!isLoading && !conversation && (
+					<Center flex={1}>
+						<Stack
+							gap={0}
+							align="center"
 						>
-							<Stack
-								gap={0}
-								align="center"
+							<PrimaryTitle>Conversation not found</PrimaryTitle>
+							<Text>The conversation you are looking for does not exist</Text>
+							<Button
+								mt="xl"
+								size="sm"
+								variant="gradient"
+								leftSection={<Icon path={iconArrowLeft} />}
+								onClick={() => navigate("/support")}
 							>
-								<PrimaryTitle>Conversation not found</PrimaryTitle>
-								<Text>The conversation you are looking for does not exist</Text>
+								Back to Support
+							</Button>
+						</Stack>
+					</Center>
+				)}
+
+				{!isLoading && conversation && (
+					<PageContainer>
+						<Box>
+							<Group mt="sm">
+								<Group>
+									<PrimaryTitle fz={32}>{title ?? "Unnamed"}</PrimaryTitle>
+								</Group>
+
+								<Spacer />
+
 								<Button
-									mt="xl"
-									size="sm"
-									variant="gradient"
+									color="obsidian"
+									variant="light"
 									leftSection={<Icon path={iconArrowLeft} />}
-									onClick={() => navigate("/support")}
+									onClick={() => navigate(`/support/requests`)}
 								>
-									Back to Support
+									All tickets
 								</Button>
-							</Stack>
-						</Center>
-					)}
+							</Group>
+						</Box>
 
-					{!isLoading && conversation && (
-						<ScrollArea
-							pos="absolute"
-							scrollbars="y"
-							type="scroll"
-							inset={0}
-							className={classes.scrollArea}
-							mt={18}
-						>
+						{conversation.hasTicket && (
 							<Stack
-								px="xl"
-								mx="auto"
-								maw={1000}
-								pb={68}
+								gap="md"
+								mb="lg"
+								style={{
+									userSelect: "text",
+								}}
 							>
-								<Box>
-									<Group mt="sm">
-										<Group>
-											<PrimaryTitle fz={32}>
-												{title ?? "Unnamed"}
-											</PrimaryTitle>
-										</Group>
-
-										<Spacer />
-
-										<Button
-											color="obsidian"
-											variant="light"
-											leftSection={<Icon path={iconArrowLeft} />}
-											onClick={() => navigate(`/support/requests`)}
-										>
-											All tickets
-										</Button>
-									</Group>
-								</Box>
-
-								{conversation.hasTicket && (
-									<Stack
-										gap="md"
-										mb="lg"
-										style={{
-											userSelect: "text",
-										}}
+								<Group
+									gap="lg"
+									align="start"
+									wrap="nowrap"
+									w="100%"
+								>
+									<Paper
+										p="lg"
+										w="100%"
 									>
-										<Group
-											gap="lg"
-											align="start"
-											wrap="nowrap"
-											w="100%"
-										>
-											<Paper
-												p="lg"
-												w="100%"
+										<Stack>
+											<PrimaryTitle
+												fz="lg"
+												fw={600}
 											>
-												<Stack>
+												Description
+											</PrimaryTitle>
+											<div
+												className={classes.intercomContainer}
+												// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
+												dangerouslySetInnerHTML={{
+													__html: conversation.initial_part.body ?? "",
+												}}
+											/>
+										</Stack>
+
+										{Object.entries(conversation.ticketData?.attributes ?? {})
+											.filter(([name, value]) => {
+												const irrelevantNames = ["Organisation"];
+
+												if (
+													irrelevantNames.some((irrelevant) =>
+														name
+															.toLowerCase()
+															.includes(irrelevant.toLowerCase()),
+													)
+												) {
+													return false;
+												}
+
+												if (value === null || value === undefined) {
+													return false;
+												}
+
+												if (
+													typeof value === "string" &&
+													value.trim() === ""
+												) {
+													return false;
+												}
+
+												if (Array.isArray(value) && value.length === 0) {
+													return false;
+												}
+
+												if (
+													typeof value === "object" &&
+													value !== null &&
+													Object.keys(value).length === 0
+												) {
+													return false;
+												}
+
+												return true;
+											})
+											.map(([name, value]) => (
+												<Stack
+													mt="lg"
+													key={name}
+													gap="xs"
+												>
 													<PrimaryTitle
 														fz="lg"
 														fw={600}
 													>
-														Description
+														{name}
 													</PrimaryTitle>
-													<div
-														className={classes.intercomContainer}
-														// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
-														dangerouslySetInnerHTML={{
-															__html:
-																conversation.initial_part.body ??
-																"",
-														}}
+													<ConversationAttribute
+														name={name}
+														value={value}
 													/>
 												</Stack>
+											))}
+									</Paper>
 
-												{Object.entries(
-													conversation.ticketData?.attributes ?? {},
-												)
-													.filter(([name, value]) => {
-														const irrelevantNames = ["Organisation"];
-
-														if (
-															irrelevantNames.some((irrelevant) =>
-																name
-																	.toLowerCase()
-																	.includes(
-																		irrelevant.toLowerCase(),
-																	),
-															)
-														) {
-															return false;
-														}
-
-														if (value === null || value === undefined) {
-															return false;
-														}
-
-														if (
-															typeof value === "string" &&
-															value.trim() === ""
-														) {
-															return false;
-														}
-
-														if (
-															Array.isArray(value) &&
-															value.length === 0
-														) {
-															return false;
-														}
-
-														if (
-															typeof value === "object" &&
-															value !== null &&
-															Object.keys(value).length === 0
-														) {
-															return false;
-														}
-
-														return true;
-													})
-													.map(([name, value]) => (
-														<Stack
-															mt="lg"
-															key={name}
-															gap="xs"
-														>
-															<PrimaryTitle
-																fz="lg"
-																fw={600}
-															>
-																{name}
-															</PrimaryTitle>
-															<ConversationAttribute
-																name={name}
-																value={value}
-															/>
-														</Stack>
-													))}
-											</Paper>
-
-											<Paper
-												p="lg"
-												w="25rem"
-											>
-												<Stack>
-													<TicketData
-														title="State"
-														subtitle={
-															state?.label ??
-															conversation.ticketData?.state.label ??
-															"Unknown"
-														}
-														color={state?.color ?? "white"}
-														icon={state?.icon ?? iconChat}
-													/>
-													<Divider />
-													<TicketData
-														title="Type"
-														subtitle={
-															conversation.ticketData?.type.name ??
-															"Unknown"
-														}
-														color="violet"
-														icon={iconBullhorn}
-													/>
-													<TicketData
-														title="Last updated"
-														subtitle={formatRelativeDate(
-															conversation.updated_at * 1000,
-														)}
-														color="violet"
-														icon={iconClock}
-													/>
-												</Stack>
-											</Paper>
-										</Group>
-										<PrimaryTitle mt="lg">
-											{conversation.parts.length} Updates
-										</PrimaryTitle>
-										<Divider />
-									</Stack>
-								)}
-
-								<Stack
-									gap="lg"
-									style={{
-										userSelect: "text",
-									}}
-								>
-									{!conversation.hasTicket && (
-										<ConversationPart
-											conversation={conversation}
-											part={conversation.initial_part}
-										/>
-									)}
-									{conversation.parts.map((part) => (
-										<ConversationPart
-											key={part.id}
-											conversation={conversation}
-											part={part}
-										/>
-									))}
-
-									{!isClosed && (
-										<Paper p="lg">
-											<Stack gap="xl">
-												<Group>
-													<AccountAvatar />
-													<Text
-														fz="lg"
-														fw={700}
-														c="bright"
-													>
-														{user?.name}
-													</Text>
-												</Group>
-												<PillGroup>
-													{attachedFiles.map((file) => (
-														<Pill
-															key={file.name}
-															withRemoveButton
-															onRemove={() =>
-																setAttachedFiles(
-																	attachedFiles.filter(
-																		(f) => f.name !== file.name,
-																	),
-																)
-															}
-														>
-															<Icon
-																size="sm"
-																mr={4}
-																path={iconFile}
-															/>
-															{file.name}
-														</Pill>
-													))}
-												</PillGroup>
-												<Textarea
-													spellCheck={true}
-													placeholder="Reply to this conversation"
-													minRows={4}
-													autosize
-													value={replyBody}
-													onChange={setReplyBody}
-												/>
-												<Group>
-													<ActionButton
-														label="Add attachments"
-														variant="light"
-														onClick={() => {
-															attachFile();
-														}}
-													>
-														<Icon path={iconPlus} />
-													</ActionButton>
-													<Spacer />
-													<Button
-														variant="gradient"
-														disabled={
-															attachedFiles.length === 0 && !replyBody
-														}
-														loading={replyMutation.isPending}
-														onClick={async () => {
-															await sendReply();
-														}}
-													>
-														Submit
-													</Button>
-												</Group>
-											</Stack>
-										</Paper>
-									)}
-
-									{isClosed && (
-										<Stack
-											align="center"
-											mt="xl"
-										>
-											<Divider
-												w="100%"
-												mb="md"
+									<Paper
+										p="lg"
+										w="25rem"
+									>
+										<Stack>
+											<TicketData
+												title="State"
+												subtitle={
+													state?.label ??
+													conversation.ticketData?.state.label ??
+													"Unknown"
+												}
+												color={state?.color ?? "white"}
+												icon={state?.icon ?? iconChat}
 											/>
-											<Text fz="lg">
-												You cannot reply to this thread since the
-												conversation was closed
+											<Divider />
+											<TicketData
+												title="Type"
+												subtitle={
+													conversation.ticketData?.type.name ?? "Unknown"
+												}
+												color="violet"
+												icon={iconBullhorn}
+											/>
+											<TicketData
+												title="Last updated"
+												subtitle={formatRelativeDate(
+													conversation.updated_at * 1000,
+												)}
+												color="violet"
+												icon={iconClock}
+											/>
+										</Stack>
+									</Paper>
+								</Group>
+								<PrimaryTitle mt="lg">
+									{conversation.parts.length} Updates
+								</PrimaryTitle>
+								<Divider />
+							</Stack>
+						)}
+
+						<Stack
+							gap="lg"
+							style={{
+								userSelect: "text",
+							}}
+						>
+							{!conversation.hasTicket && (
+								<ConversationPart
+									conversation={conversation}
+									part={conversation.initial_part}
+								/>
+							)}
+							{conversation.parts.map((part) => (
+								<ConversationPart
+									key={part.id}
+									conversation={conversation}
+									part={part}
+								/>
+							))}
+
+							{!isClosed && (
+								<Paper p="lg">
+									<Stack gap="xl">
+										<Group>
+											<AccountAvatar />
+											<Text
+												fz="lg"
+												fw={700}
+												c="bright"
+											>
+												{user?.name}
 											</Text>
-											<Button
-												variant="gradient"
+										</Group>
+										<PillGroup>
+											{attachedFiles.map((file) => (
+												<Pill
+													key={file.name}
+													withRemoveButton
+													onRemove={() =>
+														setAttachedFiles(
+															attachedFiles.filter(
+																(f) => f.name !== file.name,
+															),
+														)
+													}
+												>
+													<Icon
+														size="sm"
+														mr={4}
+														path={iconFile}
+													/>
+													{file.name}
+												</Pill>
+											))}
+										</PillGroup>
+										<Textarea
+											spellCheck={true}
+											placeholder="Reply to this conversation"
+											minRows={4}
+											autosize
+											value={replyBody}
+											onChange={setReplyBody}
+										/>
+										<Group>
+											<ActionButton
+												label="Add attachments"
+												variant="light"
 												onClick={() => {
-													openReopenTicketModal(conversation.id);
+													attachFile();
 												}}
 											>
-												Reopen conversation
+												<Icon path={iconPlus} />
+											</ActionButton>
+											<Spacer />
+											<Button
+												variant="gradient"
+												disabled={attachedFiles.length === 0 && !replyBody}
+												loading={replyMutation.isPending}
+												onClick={async () => {
+													await sendReply();
+												}}
+											>
+												Submit
 											</Button>
-										</Stack>
-									)}
+										</Group>
+									</Stack>
+								</Paper>
+							)}
+
+							{isClosed && (
+								<Stack
+									align="center"
+									mt="xl"
+								>
+									<Divider
+										w="100%"
+										mb="md"
+									/>
+									<Text fz="lg">
+										You cannot reply to this thread since the conversation was
+										closed
+									</Text>
+									<Button
+										variant="gradient"
+										onClick={() => {
+											openReopenTicketModal(conversation.id);
+										}}
+									>
+										Reopen conversation
+									</Button>
 								</Stack>
-							</Stack>
-						</ScrollArea>
-					)}
-				</Box>
+							)}
+						</Stack>
+					</PageContainer>
+				)}
 			</CloudGuard>
 		</>
 	);

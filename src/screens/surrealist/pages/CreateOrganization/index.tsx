@@ -1,17 +1,16 @@
-import { Box, Button, Group, ScrollArea, Stack, TextInput } from "@mantine/core";
+import { Button, Group, Stack, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon, iconOrganization } from "@surrealdb/ui";
+import { Icon, iconOrganization, SectionTitle } from "@surrealdb/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { fetchAPI } from "~/cloud/api";
 import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import classes from "./style.module.scss";
+import { PageContainer } from "../../components/PageContainer";
 
 export function CreateOrganizationPage() {
 	const [, navigate] = useAbsoluteLocation();
@@ -46,81 +45,54 @@ export function CreateOrganizationPage() {
 		<>
 			<PageBreadcrumbs items={[{ label: "Create organisation" }]} />
 			<CloudGuard>
-				<Box
-					flex={1}
-					pos="relative"
-				>
-					<ScrollArea
-						pos="absolute"
-						scrollbars="y"
-						type="scroll"
-						inset={0}
-						className={classes.scrollArea}
-						mt={18}
+				<PageContainer>
+					<SectionTitle>Create organisation</SectionTitle>
+
+					<Stack
+						mt="xl"
+						maw={350}
 					>
-						<Stack
-							px="xl"
-							mx="auto"
-							maw={1200}
-							pb={68}
-						>
-							<Box>
-								<PrimaryTitle
-									fz={32}
-									mt="sm"
-								>
-									Create organisation
-								</PrimaryTitle>
-							</Box>
-
-							<Stack
-								mt={36}
-								maw={350}
-							>
-								<TextInput
-									autoFocus
-									label="Name"
-									description="Specify the name of your organisation"
-									placeholder="My organisation"
-									value={name}
-									onChange={setName}
-									leftSection={
-										<Icon
-											c="violet"
-											path={iconOrganization}
-										/>
-									}
-									error={
-										name.length > 30
-											? "Organisation name cannot exceed 30 characters"
-											: null
-									}
+						<TextInput
+							autoFocus
+							label="Name"
+							description="Specify the name of your organisation"
+							placeholder="My organisation"
+							value={name}
+							onChange={setName}
+							leftSection={
+								<Icon
+									c="violet"
+									path={iconOrganization}
 								/>
-							</Stack>
+							}
+							error={
+								name.length > 30
+									? "Organisation name cannot exceed 30 characters"
+									: null
+							}
+						/>
+					</Stack>
 
-							<Group mt={24}>
-								<Link to="/">
-									<Button
-										color="obsidian"
-										variant="light"
-									>
-										Back
-									</Button>
-								</Link>
-								<Button
-									w={150}
-									type="submit"
-									variant="gradient"
-									disabled={name.length === 0 || name.length > 30}
-									onClick={handleCreate}
-									loading={isPending}
-								>
-									Create organisation
-								</Button>
-							</Group>
-						</Stack>
-					</ScrollArea>
-				</Box>
+					<Group mt="xl">
+						<Link to="/">
+							<Button
+								color="obsidian"
+								variant="light"
+							>
+								Back
+							</Button>
+						</Link>
+						<Button
+							type="submit"
+							variant="gradient"
+							disabled={name.length === 0 || name.length > 30}
+							onClick={handleCreate}
+							loading={isPending}
+						>
+							Create organisation
+						</Button>
+					</Group>
+				</PageContainer>
 			</CloudGuard>
 		</>
 	);

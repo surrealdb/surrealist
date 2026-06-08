@@ -256,7 +256,7 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 	},
 	"/mini/new": {
 		id: "/mini/new",
-		name: "Embed Surrealist",
+		name: "Embed Creator",
 		icon: iconXml,
 	},
 };

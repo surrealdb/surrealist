@@ -10,7 +10,6 @@ import {
 	Indicator,
 	Loader,
 	Paper,
-	ScrollArea,
 	SimpleGrid,
 	Skeleton,
 	Stack,
@@ -29,8 +28,9 @@ import {
 	pictoHandsOn,
 	pictoPlay,
 	pictoSDBCloud,
+	SectionTitle,
 } from "@surrealdb/ui";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
@@ -50,6 +50,7 @@ import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/conne
 import { useDatasets } from "~/hooks/dataset";
 import { useStable } from "~/hooks/stable";
 import { openBillingRequiredModal } from "~/modals/billing-required";
+import { PageContainer } from "~/screens/surrealist/components/PageContainer";
 import { ComputeUsageChart } from "~/screens/surrealist/metrics/ComputeUsageChart";
 import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart";
 import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressChart";
@@ -343,280 +344,247 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 
 	return (
 		<CloudGuard>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
-					>
-						{details?.state === "creating" ? (
-							<LoadingScreen />
-						) : (
-							<>
-								<Box mb={18}>
-									{isLoading ? (
-										<Group mt="sm">
-											<Skeleton
-												width={200}
-												h={50}
-											/>
-											<Spacer />
-											<Skeleton
-												width={145}
-												h={36}
-											/>
-										</Group>
-									) : (
-										<Group mt="sm">
-											<PrimaryTitle fz={32}>{details?.name}</PrimaryTitle>
-											{details?.state && (
-												<StateBadge
-													size={14}
-													state={details.state}
-												/>
-											)}
-											<Spacer />
-											{details && organisation && (
-												<InstanceActions
-													instance={details}
-													organisation={organisation}
-												>
-													<Button
-														color="violet"
-														variant="light"
-														rightSection={
-															<Icon path={iconChevronDown} />
-														}
-													>
-														Instance actions
-													</Button>
-												</InstanceActions>
-											)}
-										</Group>
+			<PageContainer>
+				{details?.state === "creating" ? (
+					<LoadingScreen />
+				) : (
+					<>
+						<Box mb={18}>
+							{isLoading ? (
+								<Group mt="sm">
+									<Skeleton
+										width={200}
+										h={50}
+									/>
+									<Spacer />
+									<Skeleton
+										width={145}
+										h={36}
+									/>
+								</Group>
+							) : (
+								<Group>
+									<SectionTitle>{details?.name}</SectionTitle>
+									{details?.state && (
+										<StateBadge
+											size={14}
+											state={details.state}
+										/>
 									)}
+									<Spacer />
+									{details && organisation && (
+										<InstanceActions
+											instance={details}
+											organisation={organisation}
+										>
+											<Button
+												color="violet"
+												variant="light"
+												rightSection={<Icon path={iconChevronDown} />}
+											>
+												Instance actions
+											</Button>
+										</InstanceActions>
+									)}
+								</Group>
+							)}
+						</Box>
+
+						<NavigationBlock isLoading={isLoading} />
+
+						{!isLoading && details && instance && organisation ? (
+							<>
+								<MajorUpdateSectionLazy
+									instance={details}
+									organisation={organisation}
+								/>
+
+								<Box mt={32}>
+									<PrimaryTitle>Your instance</PrimaryTitle>
+									<Text>
+										Customise and connect to your SurrealDB Cloud instance
+									</Text>
 								</Box>
 
-								<NavigationBlock isLoading={isLoading} />
+								<UpdateBlockLazy
+									instance={details}
+									organisation={organisation}
+									isLoading={isLoading}
+									onUpdate={handleUpdate}
+									onVersions={handleVersions}
+								/>
 
-								{!isLoading && details && instance && organisation ? (
-									<>
-										<MajorUpdateSectionLazy
-											instance={details}
-											organisation={organisation}
-										/>
-
-										<Box mt={32}>
-											<PrimaryTitle>Your instance</PrimaryTitle>
-											<Text>
-												Customise and connect to your SurrealDB Cloud
-												instance
-											</Text>
-										</Box>
-
-										<UpdateBlockLazy
-											instance={details}
-											organisation={organisation}
-											isLoading={isLoading}
-											onUpdate={handleUpdate}
-											onVersions={handleVersions}
-										/>
-
-										{organisation.privatelink_enabled ? (
-											<Stack gap="xs">
-												{publicAccess && (
-													<HostnameEntry
-														host={details.host}
-														accessLabel="Public"
-														accessColor="orange"
-													/>
-												)}
-												{privateAccess && (
-													<HostnameEntry
-														host={details.private_host ?? ""}
-														accessLabel="Private"
-														accessColor="violet"
-													/>
-												)}
-											</Stack>
-										) : (
-											<HostnameEntry host={details.host} />
+								{organisation.privatelink_enabled ? (
+									<Stack gap="xs">
+										{publicAccess && (
+											<HostnameEntry
+												host={details.host}
+												accessLabel="Public"
+												accessColor="orange"
+											/>
 										)}
-
-										<SimpleGrid
-											mt="md"
-											cols={2}
-											spacing="xl"
-										>
-											<ConfigurationBlockLazy
-												instance={details}
-												organisation={organisation}
-												isLoading={isLoading}
-												onUpgrade={handleUpgradeType}
-												onConfigure={handleConfigure}
+										{privateAccess && (
+											<HostnameEntry
+												host={details.private_host ?? ""}
+												accessLabel="Private"
+												accessColor="violet"
 											/>
-
-											{!isLoading && details.state === "paused" ? (
-												<ResumeBlockLazy
-													instance={details}
-													organisation={organisation}
-												/>
-											) : (
-												<ConnectBlockLazy
-													instance={details}
-													isLoading={isLoading}
-												/>
-											)}
-										</SimpleGrid>
-
-										<Group mt={32}>
-											<Box>
-												<Group gap="lg">
-													<PrimaryTitle>Metrics</PrimaryTitle>
-													{!isLoading && instance?.state === "ready" && (
-														<Tooltip label="Metrics update live every 60 seconds">
-															<Indicator
-																processing={true}
-																size={10}
-															/>
-														</Tooltip>
-													)}
-												</Group>
-
-												<Text>
-													View and track instance activity metrics
-												</Text>
-											</Box>
-
-											<Spacer />
-
-											<MetricActions
-												options={metricOptions}
-												onChange={setMetricOptions}
-											/>
-										</Group>
-
-										<SimpleGrid
-											cols={2}
-											spacing="xl"
-										>
-											<MemoryUsageChartLazy
-												instance={instanceId}
-												duration={metricOptions.duration}
-												nodeFilter={metricOptions.nodeFilter}
-												onCalculateMetricsNodes={(metrics) => {
-													setMemoryLabels(
-														metrics.values.metrics.map(
-															(it) => it.labels,
-														),
-													);
-												}}
-											/>
-											<ComputeUsageChartLazy
-												instance={instanceId}
-												duration={metricOptions.duration}
-												nodeFilter={metricOptions.nodeFilter}
-												onCalculateMetricsNodes={(metrics) => {
-													setCpuLabels(
-														metrics.values.metrics.map(
-															(it) => it.labels,
-														),
-													);
-												}}
-											/>
-											<NetworkIngressChartLazy
-												instance={instanceId}
-												duration={metricOptions.duration}
-												nodeFilter={metricOptions.nodeFilter}
-												onCalculateMetricsNodes={(metrics) => {
-													setNetworkIngressLabels(
-														metrics.values.metrics.map(
-															(it) => it.labels,
-														),
-													);
-												}}
-											/>
-											<NetworkEgressChartLazy
-												instance={instanceId}
-												duration={metricOptions.duration}
-												nodeFilter={metricOptions.nodeFilter}
-												onCalculateMetricsNodes={(metrics) => {
-													setNetworkEgressLabels(
-														metrics.values.metrics.map(
-															(it) => it.labels,
-														),
-													);
-												}}
-											/>
-										</SimpleGrid>
-										<Group pt="xs">
-											<Spacer />
-											<Button
-												variant="light"
-												color="obsidian"
-												rightSection={<Icon path={iconChevronRight} />}
-												onClick={() => {
-													navigate("monitor");
-												}}
-											>
-												View more
-											</Button>
-										</Group>
-
-										<Box mt={32}>
-											<PrimaryTitle>Resources</PrimaryTitle>
-											<Text>Monitor and explore instance resources</Text>
-										</Box>
-
-										<SimpleGrid
-											cols={3}
-											spacing="xl"
-										>
-											<ComputeUsageBlockLazy
-												usage={usage}
-												isLoading={isLoading}
-											/>
-											<DiskUsageBlockLazy
-												usage={usage}
-												instance={details}
-												organisation={organisation}
-												isLoading={isLoading}
-												onUpgrade={handleUpgradeStorage}
-											/>
-											<BackupsBlockLazy
-												instance={details}
-												organisation={organisation}
-												backups={backups}
-												isLoading={isLoading}
-												onUpgrade={handleUpgradeType}
-												onOpenBackups={handleOpenBackups}
-												onBackupPolicy={handleBackupPolicy}
-											/>
-										</SimpleGrid>
-									</>
+										)}
+									</Stack>
 								) : (
-									<Loader
-										mx="auto"
-										type="dots"
-										mt={96}
-									/>
+									<HostnameEntry host={details.host} />
 								)}
-							</>
-						)}
-					</Stack>
-				</ScrollArea>
 
+								<SimpleGrid
+									mt="md"
+									cols={2}
+									spacing="xl"
+								>
+									<ConfigurationBlockLazy
+										instance={details}
+										organisation={organisation}
+										isLoading={isLoading}
+										onUpgrade={handleUpgradeType}
+										onConfigure={handleConfigure}
+									/>
+
+									{!isLoading && details.state === "paused" ? (
+										<ResumeBlockLazy
+											instance={details}
+											organisation={organisation}
+										/>
+									) : (
+										<ConnectBlockLazy
+											instance={details}
+											isLoading={isLoading}
+										/>
+									)}
+								</SimpleGrid>
+
+								<Group mt={32}>
+									<Box>
+										<Group gap="lg">
+											<PrimaryTitle>Metrics</PrimaryTitle>
+											{!isLoading && instance?.state === "ready" && (
+												<Tooltip label="Metrics update live every 60 seconds">
+													<Indicator
+														processing={true}
+														size={10}
+													/>
+												</Tooltip>
+											)}
+										</Group>
+
+										<Text>View and track instance activity metrics</Text>
+									</Box>
+
+									<Spacer />
+
+									<MetricActions
+										options={metricOptions}
+										onChange={setMetricOptions}
+									/>
+								</Group>
+
+								<SimpleGrid
+									cols={2}
+									spacing="xl"
+								>
+									<MemoryUsageChartLazy
+										instance={instanceId}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
+										onCalculateMetricsNodes={(metrics) => {
+											setMemoryLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<ComputeUsageChartLazy
+										instance={instanceId}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
+										onCalculateMetricsNodes={(metrics) => {
+											setCpuLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<NetworkIngressChartLazy
+										instance={instanceId}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
+										onCalculateMetricsNodes={(metrics) => {
+											setNetworkIngressLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<NetworkEgressChartLazy
+										instance={instanceId}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
+										onCalculateMetricsNodes={(metrics) => {
+											setNetworkEgressLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+								</SimpleGrid>
+								<Group pt="xs">
+									<Spacer />
+									<Button
+										variant="light"
+										color="obsidian"
+										rightSection={<Icon path={iconChevronRight} />}
+										onClick={() => {
+											navigate("monitor");
+										}}
+									>
+										View more
+									</Button>
+								</Group>
+
+								<Box mt={32}>
+									<PrimaryTitle>Resources</PrimaryTitle>
+									<Text>Monitor and explore instance resources</Text>
+								</Box>
+
+								<SimpleGrid
+									cols={3}
+									spacing="xl"
+								>
+									<ComputeUsageBlockLazy
+										usage={usage}
+										isLoading={isLoading}
+									/>
+									<DiskUsageBlockLazy
+										usage={usage}
+										instance={details}
+										organisation={organisation}
+										isLoading={isLoading}
+										onUpgrade={handleUpgradeStorage}
+									/>
+									<BackupsBlockLazy
+										instance={details}
+										organisation={organisation}
+										backups={backups}
+										isLoading={isLoading}
+										onUpgrade={handleUpgradeType}
+										onOpenBackups={handleOpenBackups}
+										onBackupPolicy={handleBackupPolicy}
+									/>
+								</SimpleGrid>
+							</>
+						) : (
+							<Loader
+								mx="auto"
+								type="dots"
+								mt={96}
+							/>
+						)}
+					</>
+				)}
 				{details && organisation && (
 					<>
 						<BackupsDrawerLazy
@@ -646,7 +614,7 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 						/>
 					</>
 				)}
-			</Box>
+			</PageContainer>
 		</CloudGuard>
 	);
 }
@@ -664,15 +632,13 @@ function LoadingScreen() {
 			>
 				<Loader
 					className={classes.provisionLoader}
-					inset={0}
-					size="100%"
+					inset={-12}
+					size={112 + 24}
 					pos="absolute"
 				/>
 				<Image
 					className={classes.provisionIcon}
 					src={pictoSDBCloud}
-					w={68}
-					h={68}
 					mt={-8}
 				/>
 			</Center>
@@ -775,17 +741,33 @@ interface HostnameEntryProps {
 }
 
 function HostnameEntry({ host, accessColor, accessLabel }: HostnameEntryProps) {
+	const fieldRef = useRef<HTMLDivElement>(null);
+
+	const animate = () => {
+		fieldRef.current?.animate(
+			[
+				{ outlineColor: "var(--mantine-color-violet-text)", outlineOffset: "0" },
+				{ outlineColor: "transparent", outlineOffset: "5px" },
+			],
+			{
+				duration: 750,
+				easing: "ease-out",
+			},
+		);
+	};
+
 	return (
 		<CopyButton value={`https://${host}/`}>
 			{({ copied, copy }) => (
-				<UnstyledButton onClick={copy}>
+				<UnstyledButton
+					onClick={() => {
+						copy();
+						animate();
+					}}
+				>
 					<Paper
-						bg={
-							copied
-								? "var(--mantine-color-violet-light)"
-								: "var(--mantine-color-obsidian-light)"
-						}
-						withBorder={false}
+						className={classes.hostnameEntry}
+						ref={fieldRef}
 						p={8}
 					>
 						<Group

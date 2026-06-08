@@ -7,7 +7,6 @@ import "../assets/styles/global.scss";
 
 import { createRoot } from "react-dom/client";
 import { AuthLaunchScreen } from "~/screens/auth-launch";
-import { HeadInjector } from "~/util/head";
 
 (async () => {
 	const root = document.querySelector("#root");
@@ -16,10 +15,5 @@ import { HeadInjector } from "~/util/head";
 		throw new Error("Root element not found");
 	}
 
-	createRoot(root).render(
-		<>
-			<HeadInjector />
-			<AuthLaunchScreen />
-		</>,
-	);
+	createRoot(root).render(<AuthLaunchScreen />);
 })();

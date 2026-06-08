@@ -1,4 +1,4 @@
-import { Box, Button, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
+import { Box, Button, Group, SimpleGrid, Skeleton, Stack, Text } from "@mantine/core";
 import { Icon, iconArrowUpRight } from "@surrealdb/ui";
 import { useLayoutEffect, useMemo } from "react";
 import { useSearchParams } from "wouter";
@@ -9,7 +9,9 @@ import {
 	PricingConfigCloud,
 	useCloudPricingQuery,
 } from "~/cloud/queries/pricing";
+import { Spacer } from "~/components/Spacer";
 import { useHasCloudFeature } from "~/hooks/cloud";
+import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { PricingCard } from "~/screens/surrealist/components/PricingCard";
 import classes from "../style.module.scss";
@@ -17,6 +19,7 @@ import { StepProps } from "../types";
 
 export function PlanStep({ organisation, instances, setDetails, setStep }: StepProps) {
 	const [search] = useSearchParams();
+	const [, setLocation] = useAbsoluteLocation();
 
 	const freeCount = instances.filter((instance) => instance.type.price_hour === 0).length;
 	const showFree = freeCount < organisation.max_free_instances;
@@ -109,28 +112,40 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 				</Text>
 			</Box>
 
-			<Stack
-				align="center"
-				mt={36}
-			>
-				<Text className="selectable">
-					Looking for more pricing options and information?
-				</Text>
-				<a
-					href="https://surrealdb.com/pricing"
-					target="_blank"
-					rel="noreferrer"
-				>
+			<Group justify="center">
+				<Box flex={1}>
 					<Button
-						size="xs"
 						color="obsidian"
 						variant="light"
-						rightSection={<Icon path={iconArrowUpRight} />}
+						onClick={() => setLocation(`/o/${organisation.id}/instances`)}
 					>
-						View pricing information
+						Back
 					</Button>
-				</a>
-			</Stack>
+				</Box>
+				<Stack
+					align="center"
+					mt={36}
+				>
+					<Text className="selectable">
+						Looking for more pricing options and information?
+					</Text>
+					<a
+						href="https://surrealdb.com/pricing"
+						target="_blank"
+						rel="noreferrer"
+					>
+						<Button
+							size="xs"
+							color="obsidian"
+							variant="light"
+							rightSection={<Icon path={iconArrowUpRight} />}
+						>
+							View pricing information
+						</Button>
+					</a>
+				</Stack>
+				<Spacer />
+			</Group>
 		</>
 	);
 }

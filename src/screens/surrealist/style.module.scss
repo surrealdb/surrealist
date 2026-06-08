@@ -88,6 +88,23 @@ $sidebar-wide: 250px;
 	height: 100%;
 }
 
+.logo {
+	&-hat {
+		z-index: 1;
+		transition: all 0.2s ease;
+	}
+
+	&:is(:hover, :focus) &-hat {
+		filter: brightness(1.2);
+		transform: translateY(-1px);
+	}
+
+	&:active &-hat {
+		filter: brightness(0.9);
+		transform: translateY(0);
+	}
+}
+
 .page-content {
 	padding-top: calc(68px + var(--titlebar-offset));
 }

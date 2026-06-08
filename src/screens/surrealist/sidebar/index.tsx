@@ -6,6 +6,7 @@ import {
 	Image,
 	ScrollArea,
 	Stack,
+	Transition,
 	UnstyledButton,
 } from "@mantine/core";
 import { iconCog, iconHelp, iconSearch, pictoSurrealist } from "@surrealdb/ui";
@@ -69,52 +70,41 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 					className={classes.sidebarInner}
 					direction="column"
 					px={16}
-					pt={18}
+					pt={12}
 				>
 					<UnstyledButton
 						onClick={goHome}
-						mb="xl"
+						className={classes.logo}
+						mb="lg"
 					>
 						<Group
-							gap="xs"
+							ml={3}
+							gap="sm"
 							wrap="nowrap"
 							align="center"
 							style={{ flexShrink: 0 }}
 						>
 							<Image
-								my={-9}
 								src={pictoSurrealist}
-								w={42}
-								className={classes.hat}
+								w={36}
+								className={classes.logoHat}
 							/>
-							{!isCompact && (
-								<Image
-									src={logoUrl}
-									style={{ flexShrink: 0 }}
-									w={115}
-								/>
-							)}
+							<Transition
+								mounted={!isCompact}
+								timingFunction="ease-out"
+								transition="fade-right"
+								duration={150}
+							>
+								{(style) => (
+									<Image
+										src={logoUrl}
+										style={{ flexShrink: 0, ...style }}
+										w={115}
+									/>
+								)}
+							</Transition>
 						</Group>
 					</UnstyledButton>
-
-					{/* {isCompact ? (
-					<Stack
-						gap="sm"
-						mb="xl"
-						align="center"
-					>
-						{logoButton}
-					</Stack>
-				) : (
-					<Group
-						justify="space-between"
-						wrap="nowrap"
-						mb="xl"
-					>
-						{logoButton}
-						{toggleButton}
-					</Group>
-				)} */}
 
 					<SidebarTarget />
 
@@ -123,18 +113,6 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 						mt={22}
 						pb={18}
 					>
-						<NavigationIcon
-							name={
-								<Group wrap="nowrap">
-									Search
-									{!isMobile() && <Shortcut value={["mod", "K"]} />}
-								</Group>
-							}
-							icon={iconSearch}
-							onClick={openCommands}
-							withTooltip={isCompact}
-						/>
-
 						<NavigationIcon
 							name="Support"
 							icon={iconHelp}
@@ -145,7 +123,16 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 						/>
 
 						<NavigationIcon
+							name="Search"
+							rightSection={!isMobile() && <Shortcut value={["mod", "K"]} />}
+							icon={iconSearch}
+							onClick={openCommands}
+							withTooltip={isCompact}
+						/>
+
+						<NavigationIcon
 							name="Settings"
+							rightSection={!isMobile() && <Shortcut value={["mod", ","]} />}
 							icon={iconCog}
 							onClick={openSettings}
 							withTooltip={isCompact}
