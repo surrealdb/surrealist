@@ -3,7 +3,7 @@ import { Icon, iconChevronY, iconDatabase } from "@surrealdb/ui";
 import { useState } from "react";
 import { BreadcrumbCrumb } from "~/components/BreadcrumbCrumb";
 import { useConnection } from "~/hooks/connection";
-import { DatabaseSelector } from "../DatabaseSelector";
+import { DatabaseSelector } from "~/screens/surrealist/components/DatabaseSelector";
 
 export function DatabaseCrumb() {
 	const [isDropped, setIsDropped] = useState(false);

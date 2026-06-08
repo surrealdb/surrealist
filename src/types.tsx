@@ -1,5 +1,6 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import { AboutMetadata } from "@tauri-apps/api/menu";
+import type { ReactNode } from "react";
 import type { Duration, RecordId } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
@@ -13,6 +14,7 @@ export type BreadcrumbItem = {
 	href?: string;
 	selectable?: boolean;
 	dimmed?: boolean;
+	content?: ReactNode;
 };
 export type ColorScheme = "light" | "dark";
 export type DatabaseListMode = "list" | "grid";

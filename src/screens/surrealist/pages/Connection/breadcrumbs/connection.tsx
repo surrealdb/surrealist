@@ -11,6 +11,7 @@ import {
 	iconSandbox,
 	iconUpload,
 	iconWrench,
+	Spinner,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import { BreadcrumbCrumb } from "~/components/BreadcrumbCrumb";
@@ -26,7 +27,7 @@ import { getConnectionById } from "~/util/connection";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
-import { closeConnection, openConnection } from "../../pages/Connection/connection/connection";
+import { closeConnection, openConnection } from "../connection/connection";
 
 export function ConnectionCrumb() {
 	const [isDropped, setIsDropped] = useState(false);
@@ -70,6 +71,7 @@ export function ConnectionCrumb() {
 	const displayName = name || connection;
 	const isSandbox = connectionId === SANDBOX;
 	const isManaged = isSandbox || instance;
+	const isPending = currentState === "retrying" || currentState === "connecting";
 
 	const statusInfo = {
 		disconnected: ["Disconnected", "red"],
@@ -95,7 +97,9 @@ export function ConnectionCrumb() {
 					item={{ label: displayName, selectable: true }}
 					onClick={openConnections}
 					leftSection={
-						isSandbox ? (
+						isPending ? (
+							<Spinner size="xs" />
+						) : isSandbox ? (
 							<Icon
 								path={iconSandbox}
 								opacity={0.6}

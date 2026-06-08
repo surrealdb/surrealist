@@ -3,10 +3,9 @@ import { createHtmlPortalNode, HtmlPortalNode, InPortal, OutPortal } from "react
 import { Redirect } from "wouter";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
-import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useAvailableViews, useConnection } from "~/hooks/connection";
 import { ViewPage } from "~/types";
-import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
+import { ConnectionBreadcrumbs } from "./breadcrumbs";
 import { ViewPageProps } from "./types";
 import AuthenticationView from "./views/authentication/AuthenticationView";
 import DashboardView from "./views/dashboard/DashboardView";
@@ -67,14 +66,9 @@ export function ConnectionPage({ view }: ConnectionPageProps) {
 	const instanceQuery = useCloudInstanceQuery(instanceId);
 	const organisationQuery = useCloudOrganizationQuery(instanceQuery.data?.organization_id);
 
-	const breadcrumb = {
-		id: organisationQuery.data?.id ?? "",
-		name: organisationQuery.data?.name ?? "",
-	};
-
 	return (
 		<>
-			<PageBreadcrumbs items={orgSectionBreadcrumbs(breadcrumb, "instances")} />
+			<ConnectionBreadcrumbs organisation={organisationQuery.data} />
 
 			{Object.values(views).map((mode) => {
 				const Content = VIEW_COMPONENTS[mode.id];

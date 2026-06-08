@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useLayoutEffect } from "react";
 import { useInterfaceStore } from "~/stores/interface";
 import type { BreadcrumbItem } from "~/types";
@@ -15,4 +16,19 @@ export function usePageBreadcrumbs(items: BreadcrumbItem[]) {
 			setPageBreadcrumbs([]);
 		};
 	}, [items, setPageBreadcrumbs]);
+}
+
+/**
+ * Register supplementary toolbar content shown after the breadcrumb trail.
+ */
+export function useToolbarInset(inset: ReactNode) {
+	const setToolbarInset = useInterfaceStore((s) => s.setToolbarInset);
+
+	useLayoutEffect(() => {
+		setToolbarInset(inset);
+
+		return () => {
+			setToolbarInset(null);
+		};
+	}, [inset, setToolbarInset]);
 }

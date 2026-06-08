@@ -1,10 +1,12 @@
 import type { Update } from "@tauri-apps/plugin-updater";
+import type { ReactNode } from "react";
 import { create } from "zustand";
 import type { BreadcrumbItem, ColorScheme, LiveMessage } from "~/types";
 
 export type InterfaceStore = {
 	title: string;
 	pageBreadcrumbs: BreadcrumbItem[];
+	toolbarInset: ReactNode;
 	colorScheme: ColorScheme;
 	availableUpdate: null | Update;
 	showAvailableUpdate: boolean;
@@ -18,6 +20,7 @@ export type InterfaceStore = {
 
 	setWindowTitle: (title: string) => void;
 	setPageBreadcrumbs: (items: BreadcrumbItem[]) => void;
+	setToolbarInset: (inset: ReactNode) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
 	setAvailableUpdate: (update: Update, alert: boolean) => void;
 	hideAvailableUpdate: () => void;
@@ -36,6 +39,7 @@ export type InterfaceStore = {
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	title: "",
 	pageBreadcrumbs: [],
+	toolbarInset: null,
 	colorScheme: "dark",
 	availableUpdate: null,
 	showAvailableUpdate: false,
@@ -56,6 +60,8 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	setWindowTitle: (title) => set(() => ({ title })),
 
 	setPageBreadcrumbs: (pageBreadcrumbs) => set(() => ({ pageBreadcrumbs })),
+
+	setToolbarInset: (toolbarInset) => set(() => ({ toolbarInset })),
 
 	setColorScheme: (colorScheme) =>
 		set(() => ({
