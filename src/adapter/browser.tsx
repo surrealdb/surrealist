@@ -1,11 +1,8 @@
 import { isFunction, shake } from "radash";
-import { useConfigStore } from "~/stores/config";
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
-import { watchStore } from "~/util/config";
 import { createFileDefinition, openAndReadFiles, openAndWriteFile } from "~/util/file-system";
 import * as idxdb from "~/util/idxdb";
 import { CONFIG_KEY } from "~/util/storage";
-import { applyWindowScale } from "~/util/window-scale";
 import type { FileFilter, SurrealistAdapter } from "./base";
 
 /**
@@ -31,13 +28,6 @@ export class BrowserAdapter implements SurrealistAdapter {
 		} else if (platform.includes("linux")) {
 			this.platform = "linux";
 		}
-
-		watchStore({
-			initial: true,
-			store: useConfigStore,
-			select: (s) => s.settings.appearance.windowScale,
-			then: applyWindowScale,
-		});
 	}
 
 	public dumpDebug = () => ({

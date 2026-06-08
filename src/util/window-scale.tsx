@@ -3,21 +3,18 @@ import { isDesktop } from "~/adapter";
 import { useConfigStore } from "~/stores/config";
 
 export function applyWindowScale(scale: number) {
-	const zoom = scale / 100;
-
-	if (isDesktop) {
-		getCurrentWebview()
-			.setZoom(zoom)
-			.catch(() => {
-				document.documentElement.style.zoom = `${zoom}`;
-			});
+	if (!isDesktop) {
 		return;
 	}
 
-	document.documentElement.style.zoom = `${zoom}`;
+	getCurrentWebview().setZoom(scale / 100);
 }
 
 export function increaseWindowScale() {
+	if (!isDesktop) {
+		return;
+	}
+
 	const state = useConfigStore.getState();
 	const next = Math.min(state.settings.appearance.windowScale + 10, 150);
 
@@ -26,6 +23,10 @@ export function increaseWindowScale() {
 }
 
 export function decreaseWindowScale() {
+	if (!isDesktop) {
+		return;
+	}
+
 	const state = useConfigStore.getState();
 	const next = Math.max(state.settings.appearance.windowScale - 10, 75);
 
