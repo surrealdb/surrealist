@@ -4,7 +4,9 @@ import { SANDBOX } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import type { Authentication, AuthLevel, CloudInstance, Connection } from "~/types";
 import { createBaseConnection } from "./defaults";
+import { isOAuthFeatureEnabled } from "./feature-flags";
 import { connectionUri, fastParseJwt } from "./helpers";
+import { isOAuthConnectionValid } from "./surreal-oauth";
 
 /**
  * Returns the currently active connection
@@ -86,7 +88,7 @@ export function getAuthLevel(auth: Authentication): AuthLevel {
  * Extract the database from the given authentication
  */
 export function getAuthDB(auth: Authentication) {
-	if (auth.mode === "token") {
+	if (auth.mode === "token" || auth.mode === "oauth") {
 		const payload = fastParseJwt(auth.token);
 
 		if (!payload || !payload.DB) {
@@ -107,7 +109,7 @@ export function getAuthDB(auth: Authentication) {
  * Extract the namespace from the given authentication
  */
 export function getAuthNS(auth: Authentication) {
-	if (auth.mode === "token") {
+	if (auth.mode === "token" || auth.mode === "oauth") {
 		const payload = fastParseJwt(auth.token);
 
 		if (!payload || !payload.NS) {
@@ -179,6 +181,10 @@ export function isConnectionValid(auth: Authentication | undefined) {
 	// Check for access
 	if (auth.mode === "access" && !auth.access) {
 		return false;
+	}
+
+	if (auth.mode === "oauth") {
+		return isOAuthFeatureEnabled() && isOAuthConnectionValid(auth);
 	}
 
 	return true;

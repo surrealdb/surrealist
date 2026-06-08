@@ -2,6 +2,7 @@ import { isDesktop } from "~/adapter";
 import { DesignerProvider } from "~/providers/Designer";
 import { InspectorProvider } from "~/providers/Inspector";
 import { SurrealistScreen } from "~/screens/surrealist";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { Scaffold } from "../Scaffold";
 import { Globals } from "./globals";
 import { ChangelogModal } from "./modals/changelog";
@@ -17,6 +18,7 @@ import { FailedConnectDialog } from "./modals/failed-connect";
 import { HelpSearchModal } from "./modals/help-center";
 import { HighlightToolModal } from "./modals/highlight-tool";
 import { NewsFeedDrawer } from "./modals/newsfeed";
+import { OAuthSignInModal } from "./modals/oauth-signin";
 import { RegisterUserModal } from "./modals/register";
 import { SandboxModal } from "./modals/sandbox";
 import { SidekickDrawer } from "./modals/sidekick";
@@ -36,6 +38,8 @@ function Surrealist() {
 }
 
 export function App() {
+	const oauthEnabled = useOAuthFeatureEnabled();
+
 	return (
 		<Scaffold authentication>
 			<Globals />
@@ -51,6 +55,7 @@ export function App() {
 			<ChangelogModal />
 			<SandboxModal />
 			<AccessSignupModal />
+			{oauthEnabled && <OAuthSignInModal />}
 			<TableCreatorModal />
 			<HighlightToolModal />
 			<DataExportModal />

@@ -13,14 +13,24 @@ import {
 } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { fork, sleep } from "radash";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Updater } from "use-immer";
 import { CONNECTION_PROTOCOLS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
 import { createSurreal } from "~/screens/surrealist/pages/Connection/connection/surreal";
 import { Connection, Protocol } from "~/types";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { connectionUri, isHostLocal } from "~/util/helpers";
+import {
+	dismissOAuthDiscovery,
+	fetchOAuthDiscovery,
+	hasDefaultOAuthDiscovery,
+	httpBaseFromConnection,
+	isOAuthDiscoveryDismissed,
+	isRemoteProtocol,
+	oauthDiscoverySupportsRefresh,
+} from "~/util/surreal-oauth";
 
 const ENDPOINT_PATTERN = /^(.+?):\/\/(.+)$/;
 
@@ -38,6 +48,7 @@ export function ConnectionAddressDetails({
 	onChange,
 }: ConnectionAddressDetailsProps) {
 	const isLight = useIsLight();
+	const oauthEnabled = useOAuthFeatureEnabled();
 
 	const { protocol, hostname } = value.authentication;
 
@@ -121,6 +132,68 @@ export function ConnectionAddressDetails({
 
 	const showStatus = protocol !== "indxdb" && protocol !== "mem" && statusReady;
 
+	const httpBase = useMemo(
+		() => httpBaseFromConnection(protocol, hostname),
+		[protocol, hostname],
+	);
+
+	const discoveryEnabled = oauthEnabled && !!httpBase && isRemoteProtocol(protocol);
+
+	const { data: oauthDiscovery } = useQuery({
+		queryKey: ["oauth-discovery", httpBase],
+		enabled: discoveryEnabled,
+		staleTime: 60_000,
+		queryFn: async ({ signal }) => {
+			await sleep(400);
+			if (signal.aborted || !httpBase) {
+				return null;
+			}
+
+			return fetchOAuthDiscovery(httpBase, signal);
+		},
+	});
+
+	const [oauthPromptDismissed, setOauthPromptDismissed] = useState(() =>
+		isOAuthDiscoveryDismissed(httpBase),
+	);
+
+	useEffect(() => {
+		setOauthPromptDismissed(isOAuthDiscoveryDismissed(httpBase));
+	}, [httpBase]);
+
+	const showOAuthPrompt =
+		discoveryEnabled &&
+		hasDefaultOAuthDiscovery(oauthDiscovery ?? null) &&
+		!oauthPromptDismissed &&
+		value.authentication.mode !== "oauth";
+
+	const applyDefaultOAuth = useStable(() => {
+		if (!oauthDiscovery) {
+			return;
+		}
+
+		onChange((draft) => {
+			draft.authentication.mode = "oauth";
+			draft.authentication.oauthUseDefault = true;
+			draft.authentication.oauthAuthorizationEndpoint = oauthDiscovery.authorization_endpoint;
+			draft.authentication.oauthTokenEndpoint = oauthDiscovery.token_endpoint;
+			draft.authentication.oauthUseRefreshToken =
+				oauthDiscoverySupportsRefresh(oauthDiscovery);
+			draft.authentication.access = "";
+			draft.authentication.token = "";
+			draft.authentication.oauthRefreshToken = "";
+			draft.authentication.namespace = "";
+			draft.authentication.database = "";
+			draft.authentication.username = "";
+			draft.authentication.password = "";
+		});
+	});
+
+	const dismissOAuthPrompt = useStable(() => {
+		dismissOAuthDiscovery(httpBase);
+		setOauthPromptDismissed(true);
+	});
+
 	return (
 		<Box>
 			<Group maw={500}>
@@ -177,6 +250,35 @@ export function ConnectionAddressDetails({
 					/>
 				)}
 			</Group>
+
+			<Collapse expanded={showOAuthPrompt}>
+				<Alert
+					title="OAuth available"
+					color="violet"
+					mt="md"
+				>
+					<Text>
+						This server supports OAuth with a default configuration. You can sign in
+						without specifying an access method name.
+					</Text>
+					<Group mt="md">
+						<Button
+							size="xs"
+							variant="gradient"
+							onClick={applyDefaultOAuth}
+						>
+							Use OAuth
+						</Button>
+						<Button
+							size="xs"
+							variant="light"
+							onClick={dismissOAuthPrompt}
+						>
+							Not now
+						</Button>
+					</Group>
+				</Alert>
+			</Collapse>
 
 			<Collapse expanded={showSslNotice}>
 				<Alert

@@ -75,6 +75,7 @@ export type AuthMode =
 	| "token"
 	| "access"
 	| "access-signup"
+	| "oauth"
 	| "cloud";
 export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new";
 export type ViewPage =
@@ -152,6 +153,19 @@ export interface Authentication {
 	token: string;
 	access: string;
 	accessFields: AccessField[];
+	/** IdP refresh token (client-held); separate from SurrealDB bearer keys. */
+	oauthRefreshToken?: string;
+	/** Use server `DEFINE CONFIG DEFAULT OAUTH` (omit client_id on authorize/token). */
+	oauthUseDefault?: boolean;
+	/** Store and use IdP refresh tokens when the server supports `refresh_token` grant. */
+	oauthUseRefreshToken?: boolean;
+	/** Cached from RFC 8414 discovery when default OAuth is configured. */
+	oauthAuthorizationEndpoint?: string;
+	oauthTokenEndpoint?: string;
+	/** Unix ms when the IdP access token expires (`expires_in` from token response). */
+	oauthTokenExpiresAt?: number;
+	/** Unix ms when the refresh token expires (`refresh_token_expires_in` when provided). */
+	oauthRefreshTokenExpiresAt?: number;
 	cloudInstance?: string;
 }
 
@@ -341,8 +355,27 @@ export interface AccessField {
 	value: string;
 }
 
+/** OAuth broker config from `INFO FOR … STRUCTURE` (`kind.jwt.oauth`). */
+export interface AccessJwtOAuth {
+	authorize_url?: string;
+	token_url?: string;
+	client_id: string;
+	client_secret?: string;
+	scopes: string[];
+	audience?: string;
+	redirect_uris: string[];
+}
+
 export interface AccessJwt {
-	issuer: {
+	/** OIDC issuer URL (`TYPE JWT ISSUER "…"`). */
+	oidc_issuer?: string;
+	/** Optional token signing key (`WITH ISSUER KEY`). */
+	issue?: {
+		alg: string;
+		key: string;
+	};
+	/** @deprecated Use `issue`; kept for older parsed structure shapes. */
+	issuer?: {
 		alg: string;
 		key: string;
 	};
@@ -354,6 +387,7 @@ export interface AccessJwt {
 				alg: string;
 				key: string;
 		  };
+	oauth?: AccessJwtOAuth;
 }
 
 export interface TableView {

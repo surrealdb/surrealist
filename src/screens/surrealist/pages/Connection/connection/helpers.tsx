@@ -22,7 +22,10 @@ export async function composeAuthentication(connection: Authentication): Promise
 		case "access": {
 			return buildAccessAuth(connection) as any; // TODO Horrible unforgivable temporary hack
 		}
-		case "token": {
+		case "token":
+		case "oauth": {
+			// For broker-mode OAuth this is a SurrealDB JWT minted by /access/*/token;
+			// for `oauthUseDefault` it's the raw IdP access token forwarded as bearer.
 			return token;
 		}
 		case "cloud": {

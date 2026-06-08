@@ -50,7 +50,7 @@ export function AuthenticationView() {
 						icon={iconServerSecure}
 						users={rootUsers}
 						accesses={rootAccesses}
-						filterAccesses={(access) => isCloud && access.name !== "cloud"}
+						filterAccesses={(access) => !isCloud || access.name !== "cloud"}
 					/>
 				</Panel>
 				<PanelDragger />

@@ -17,9 +17,13 @@ import { useInterfaceStore } from "~/stores/interface";
 import type { Platform, QueryTab, SurrealistConfig, ViewPage } from "~/types";
 import { getSetting, overwriteConfig, watchStore } from "~/util/config";
 import { getConnection } from "~/util/connection";
-import { featureFlags } from "~/util/feature-flags";
+import { featureFlags, isOAuthFeatureEnabled } from "~/util/feature-flags";
 import { openAndReadFiles, openAndWriteFile } from "~/util/file-system";
-import { DeepLinkAuthEvent, NavigateViewEvent } from "~/util/global-events";
+import {
+	DeepLinkAuthEvent,
+	DeepLinkSurrealOAuthEvent,
+	NavigateViewEvent,
+} from "~/util/global-events";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent, handleIntentRequest } from "~/util/intents";
 import { adapter } from ".";
@@ -445,6 +449,17 @@ export class DesktopAdapter implements SurrealistAdapter {
 					if (search.has("code") || search.has("error")) {
 						const callbackUrl = `${window.location.origin}/auth/return?${params}`;
 						DeepLinkAuthEvent.dispatch(callbackUrl);
+						await invoke("clear_opened_resources");
+						continue;
+					}
+				}
+
+				if (host === "surreal-oauth" && params && isOAuthFeatureEnabled()) {
+					const search = new URLSearchParams(params);
+
+					if (search.has("code") || search.has("error")) {
+						const callbackUrl = `${window.location.origin}/auth/surreal/callback?${params}`;
+						DeepLinkSurrealOAuthEvent.dispatch(callbackUrl);
 						await invoke("clear_opened_resources");
 						continue;
 					}

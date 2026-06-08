@@ -1,6 +1,7 @@
 import {
 	Alert,
 	Button,
+	Checkbox,
 	Group,
 	Modal,
 	PasswordInput,
@@ -19,12 +20,65 @@ import { Updater } from "use-immer";
 import { AUTH_MODES, SENSITIVE_ACCESS_FIELDS } from "~/constants";
 import { useStable } from "~/hooks/stable";
 import { AuthMode, Connection } from "~/types";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { fastParseJwt } from "~/util/helpers";
+import { isOAuthAccessRequired } from "~/util/surreal-oauth";
 import { ActionButton } from "../ActionButton";
 import { PrimaryTitle } from "../PrimaryTitle";
 
 const SYSTEM_METHODS = new Set<AuthMode>(["root", "namespace", "database"]);
-const EXPIRE_WARNING = 1000 * 60 * 60 * 3;
+
+function clearOAuthAuthFields(auth: Connection["authentication"]) {
+	auth.token = "";
+	auth.oauthRefreshToken = "";
+	auth.oauthUseDefault = undefined;
+	auth.oauthUseRefreshToken = undefined;
+	auth.oauthAuthorizationEndpoint = "";
+	auth.oauthTokenEndpoint = "";
+	auth.oauthTokenExpiresAt = undefined;
+	auth.oauthRefreshTokenExpiresAt = undefined;
+}
+
+function normalizeAuthModeSwitch(
+	auth: Connection["authentication"],
+	prevMode: AuthMode,
+	nextMode: AuthMode,
+) {
+	if (prevMode === nextMode) {
+		return;
+	}
+
+	if (prevMode === "oauth") {
+		clearOAuthAuthFields(auth);
+	}
+
+	if (prevMode === "token") {
+		auth.token = "";
+	}
+
+	if (SYSTEM_METHODS.has(prevMode)) {
+		auth.username = "";
+		auth.password = "";
+	}
+
+	if (nextMode === "oauth") {
+		auth.username = "";
+		auth.password = "";
+		auth.accessFields = [];
+	}
+
+	if (nextMode === "token") {
+		clearOAuthAuthFields(auth);
+	}
+
+	if (SYSTEM_METHODS.has(nextMode)) {
+		clearOAuthAuthFields(auth);
+		auth.access = "";
+		auth.accessFields = [];
+	}
+
+	auth.mode = nextMode;
+}
 
 export interface ConnectionAuthDetailsProps {
 	value: Connection;
@@ -33,15 +87,19 @@ export interface ConnectionAuthDetailsProps {
 
 export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetailsProps) {
 	const [editingAccess, editingAccessHandle] = useDisclosure();
+	const oauthEnabled = useOAuthFeatureEnabled();
+
+	const authModes = useMemo(
+		() => AUTH_MODES.filter((entry) => entry.value !== "oauth" || oauthEnabled),
+		[oauthEnabled],
+	);
 
 	const { mode, token } = value.authentication;
 
 	const isSystemMethod = SYSTEM_METHODS.has(mode);
 	const showDatabase = mode === "database" || mode === "access";
 	const showNamespace = showDatabase || mode === "namespace";
-	const tokenPayload = useMemo(() => fastParseJwt(token), [token]);
-	const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
-	const tokenExpireSoon = tokenExpire > 0 && tokenExpire - Date.now() < EXPIRE_WARNING;
+	const oauthAccessRequired = mode === "oauth" && isOAuthAccessRequired(value.authentication);
 
 	const addAccessField = useStable(() => {
 		onChange((draft) => {
@@ -57,13 +115,27 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 			<SegmentedControl
 				mb="sm"
 				value={value.authentication.mode}
-				data={AUTH_MODES}
+				data={authModes}
 				onChange={(value) =>
 					onChange((draft) => {
-						draft.authentication.mode = value as AuthMode;
+						normalizeAuthModeSwitch(
+							draft.authentication,
+							draft.authentication.mode,
+							value as AuthMode,
+						);
 					})
 				}
 			/>
+
+			{mode === "oauth" && !oauthEnabled && (
+				<Alert
+					color="orange"
+					title="OAuth unavailable"
+				>
+					Instance OAuth is not enabled in this environment. Choose another authentication
+					method or use a development build.
+				</Alert>
+			)}
 
 			{isSystemMethod && (
 				<SimpleGrid cols={2}>
@@ -149,6 +221,94 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 				</Group>
 			)}
 
+			{value.authentication.mode === "oauth" && oauthEnabled && (
+				<Stack gap="sm">
+					{value.authentication.oauthUseDefault ? (
+						<>
+							<Text size="sm">
+								Using the server&apos;s default OAuth configuration. You will be
+								asked to sign in when connecting.
+							</Text>
+							<Button
+								variant="light"
+								color="violet"
+								size="xs"
+								w="fit-content"
+								onClick={() =>
+									onChange((draft) => {
+										draft.authentication.oauthUseDefault = false;
+										draft.authentication.oauthAuthorizationEndpoint = "";
+										draft.authentication.oauthTokenEndpoint = "";
+									})
+								}
+							>
+								Specify access method manually
+							</Button>
+						</>
+					) : (
+						<>
+							<Text size="sm">
+								Leave the access method empty to use the server default (when
+								configured). Sign-in happens when you connect.
+							</Text>
+							<TextInput
+								label="Access method (optional)"
+								placeholder="my_access_method"
+								required={oauthAccessRequired}
+								value={value.authentication.access}
+								spellCheck={false}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.authentication.access = e.target.value;
+									})
+								}
+							/>
+							<SimpleGrid cols={2}>
+								<TextInput
+									label="Namespace (optional)"
+									placeholder="my_namespace"
+									value={value.authentication.namespace}
+									spellCheck={false}
+									onChange={(e) =>
+										onChange((draft) => {
+											draft.authentication.namespace = e.target.value;
+										})
+									}
+								/>
+								<TextInput
+									label="Database (optional)"
+									placeholder="my_database"
+									value={value.authentication.database}
+									spellCheck={false}
+									onChange={(e) =>
+										onChange((draft) => {
+											draft.authentication.database = e.target.value;
+										})
+									}
+								/>
+							</SimpleGrid>
+							<Checkbox
+								label="Use refresh tokens"
+								description="Store refresh tokens from sign-in and renew the session before connect. You must sign in again after changing this. The SurrealDB access method must request them from the IdP (e.g. include offline_access in DEFINE ACCESS … SCOPES)."
+								checked={value.authentication.oauthUseRefreshToken ?? false}
+								onChange={(e) =>
+									onChange((draft) => {
+										draft.authentication.oauthUseRefreshToken =
+											e.currentTarget.checked;
+
+										if (!e.currentTarget.checked) {
+											draft.authentication.oauthRefreshToken = "";
+											draft.authentication.oauthRefreshTokenExpiresAt =
+												undefined;
+										}
+									})
+								}
+							/>
+						</>
+					)}
+				</Stack>
+			)}
+
 			{value.authentication.mode === "token" && (
 				<>
 					<TextInput
@@ -168,35 +328,47 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 					/>
 
 					{value.authentication.token &&
-						(tokenPayload === null ? (
-							<Alert
-								color="red"
-								icon={<Icon path={iconWarning} />}
-							>
-								The provided token does not appear to be a valid JWT
-							</Alert>
-						) : (
-							tokenExpireSoon &&
-							(tokenExpire > Date.now() ? (
-								<Text c="obsidian">
-									<Icon
-										path={iconWarning}
-										c="yellow"
-										size="sm"
-									/>
-									This token expires in {dayjs(tokenExpire).fromNow()}
-								</Text>
-							) : (
-								<Text c="obsidian">
-									<Icon
-										path={iconWarning}
-										c="red"
-										size="sm"
-									/>
-									This token has expired
-								</Text>
-							))
-						))}
+						(() => {
+							const tokenPayload = fastParseJwt(token);
+							const tokenExpire = tokenPayload ? tokenPayload.exp * 1000 : 0;
+							const tokenExpireSoon =
+								tokenExpire > 0 && tokenExpire - Date.now() < 1000 * 60 * 60 * 3;
+
+							if (tokenPayload === null) {
+								return (
+									<Alert
+										color="red"
+										icon={<Icon path={iconWarning} />}
+									>
+										The provided token does not appear to be a valid JWT
+									</Alert>
+								);
+							}
+
+							if (tokenExpireSoon) {
+								return tokenExpire > Date.now() ? (
+									<Text c="obsidian">
+										<Icon
+											path={iconWarning}
+											c="yellow"
+											size="sm"
+										/>
+										This token expires in {dayjs(tokenExpire).fromNow()}
+									</Text>
+								) : (
+									<Text c="obsidian">
+										<Icon
+											path={iconWarning}
+											c="red"
+											size="sm"
+										/>
+										This token has expired
+									</Text>
+								);
+							}
+
+							return null;
+						})()}
 				</>
 			)}
 

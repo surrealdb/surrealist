@@ -21,21 +21,24 @@ import { openConnectionEditModal } from "~/modals/edit-connection";
 import { showNodeStatus } from "~/modals/node-status";
 import { useDatabaseStore } from "~/stores/database";
 import { getConnectionById } from "~/util/connection";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
 import { USER_ICONS } from "~/util/user-icons";
 import { closeConnection, openConnection } from "../../pages/Connection/connection/connection";
+import { OAuthSessionSection } from "./OAuthSessionMenu";
 
 export function ConnectionStatus() {
 	const [isDropped, setIsDropped] = useState(false);
 
 	const [connection] = useConnectionAndView();
-	const [connectionId, name, icon, _database, instance] = useConnection((c) => [
+	const [connectionId, name, icon, _database, instance, authMode] = useConnection((c) => [
 		c?.id ?? "",
 		c?.name ?? "",
 		c?.icon ?? 0,
 		c?.lastDatabase,
 		c?.instance ?? false,
+		c?.authentication.mode,
 	]);
 
 	const currentState = useDatabaseStore((s) => s.currentState);
@@ -64,6 +67,8 @@ export function ConnectionStatus() {
 
 	const isSandbox = connectionId === SANDBOX;
 	const isManaged = isSandbox || instance;
+	const oauthEnabled = useOAuthFeatureEnabled();
+	const showOAuthSession = oauthEnabled && authMode === "oauth" && !isSandbox;
 	const isLoading = currentState === "connecting" || currentState === "retrying";
 	const pulse = currentState === "connected";
 
@@ -170,6 +175,9 @@ export function ConnectionStatus() {
 								>
 									Diagnostics
 								</Menu.Item>
+								{showOAuthSession && (
+									<OAuthSessionSection connectionId={connectionId} />
+								)}
 							</>
 						)}
 						<Menu.Label mt="sm">Database</Menu.Label>

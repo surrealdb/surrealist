@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Button,
 	Checkbox,
 	Divider,
@@ -8,26 +9,33 @@ import {
 	Select,
 	Stack,
 	Tabs,
+	Text,
 	Textarea,
 	TextInput,
 } from "@mantine/core";
 
-import { useInputState } from "@mantine/hooks";
-import { Icon, iconPlus } from "@surrealdb/ui";
+import { Icon, iconCheck, iconPlus } from "@surrealdb/ui";
 import { useLayoutEffect, useMemo, useState } from "react";
-import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
 import { CodeInput } from "~/components/Inputs";
 import { LearnMore } from "~/components/LearnMore";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
 import { useStable } from "~/hooks/stable";
 import { executeQuery } from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { AccessType, Base, SchemaAccess } from "~/types";
+import {
+	type AccessDefineForm,
+	accessDefineFormFromSchema,
+	accessHasOAuth,
+	buildDefineAccessQuery,
+	defaultAccessDefineForm,
+	validateAccessDefineForm,
+} from "~/util/access-define";
+import { useOAuthFeatureEnabled } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
-import { readBlock, syncConnectionSchema } from "~/util/schema";
-
-type VerifyMode = "url" | "keyalg";
+import { syncConnectionSchema } from "~/util/schema";
+import { AccessJwksValidation } from "./access-jwks-validation";
+import { AccessOAuthFields } from "./access-oauth-fields";
 
 const ALGORITHMS = [
 	"EDDSA",
@@ -60,65 +68,16 @@ export function AccessEditorModal({
 	list,
 	onClose,
 }: AccessEditorModalProps) {
-	const [target, setTarget] = useState<SchemaAccess | null>(null);
-	const [name, setName] = useInputState("");
-	const [type, setType] = useState<AccessType>("RECORD");
-	const [authClause, setAuthClause] = useState("");
-	const [signupClause, setSignupClause] = useState("");
-	const [signinClause, setSigninClause] = useState("");
-	const [sessionDuration, setSessionDuration] = useInputState("");
-	const [tokenDuration, setTokenDuration] = useInputState("");
-	const [jwtIssuerKey, setJwtIssuerKey] = useInputState("");
-	const [jwtVerifyAlg, setJwtVerifyAlg] = useInputState("");
-	const [jwtVerifyKey, setJwtVerifyKey] = useInputState("");
-	const [jwtVerifyUrl, setJwtVerifyUrl] = useInputState("");
-	const [jwtVerifyMode, setJwtVerifyMode] = useState<VerifyMode>("keyalg");
-	const [comment, setComment] = useInputState("");
-
+	const oauthEnabled = useOAuthFeatureEnabled();
+	const [form, setForm] = useState<AccessDefineForm>(() => defaultAccessDefineForm(level));
 	const [activeTab, setActiveTab] = useState("general");
+	const [validationError, setValidationError] = useState<string | null>(null);
 
 	useLayoutEffect(() => {
 		if (opened) {
-			const defaultType = level === "DATABASE" ? "RECORD" : "JWT";
-
-			setTarget(existing);
-			setName(existing?.name ?? "");
-			setType(existing?.kind?.kind ?? defaultType);
-			setAuthClause(readBlock(existing?.authenticate ?? ""));
-			setComment(existing?.comment ?? "");
-			setJwtIssuerKey(existing?.kind?.jwt?.issuer?.key ?? "");
-			setJwtVerifyMode("keyalg");
-			setSigninClause("");
-			setSignupClause("");
-			setJwtVerifyAlg("HS256");
-			setJwtVerifyKey("");
-			setJwtVerifyUrl("");
-
-			if (existing?.kind?.kind === "RECORD") {
-				setSignupClause(readBlock(existing.kind.signup));
-				setSigninClause(readBlock(existing.kind.signin));
-			}
-
-			if (existing) {
-				setTokenDuration(existing.duration.token?.toString() ?? "");
-				setSessionDuration(existing.duration.session?.toString() ?? "");
-			} else {
-				setTokenDuration("1h");
-				setSessionDuration("");
-			}
-
-			const verify = existing?.kind?.jwt?.verify;
-
-			if (verify) {
-				if ("url" in verify) {
-					setJwtVerifyMode("url");
-					setJwtVerifyUrl(verify.url);
-				} else {
-					setJwtVerifyMode("keyalg");
-					setJwtVerifyAlg(verify.alg);
-					setJwtVerifyKey(verify.key);
-				}
-			}
+			setForm(accessDefineFormFromSchema(existing, level));
+			setActiveTab("general");
+			setValidationError(null);
 		}
 	}, [level, opened, existing]);
 
@@ -131,94 +90,65 @@ export function AccessEditorModal({
 		return [{ label: "JWT", value: "JWT" }, record];
 	}, [level]);
 
-	const saveUser = useStable(async () => {
+	const patchForm = (partial: Partial<AccessDefineForm>) => {
+		setForm((current) => ({ ...current, ...partial }));
+		setValidationError(null);
+	};
+
+	const saveAccess = useStable(async () => {
+		const error = validateAccessDefineForm(form);
+
+		if (error) {
+			setValidationError(error);
+			return;
+		}
+
 		try {
-			let query = `DEFINE ACCESS OVERWRITE ${escapeIdent(name)} ON ${level} TYPE`;
-
-			if (type === "RECORD") {
-				query += ` RECORD`;
-
-				if (signupClause) {
-					query += ` SIGNUP { ${signupClause} }`;
-				}
-
-				if (signinClause) {
-					query += ` SIGNIN { ${signinClause} }`;
-				}
-
-				if (jwtIssuerKey || jwtVerifyKey || jwtVerifyUrl) {
-					query += ` WITH JWT`;
-
-					if (jwtVerifyMode === "url") {
-						query += ` URL "${jwtVerifyUrl}"`;
-					} else {
-						query += ` ALGORITHM ${jwtVerifyAlg} KEY "${jwtVerifyKey}"`;
-					}
-
-					if (jwtIssuerKey) {
-						query += ` WITH ISSUER KEY "${jwtIssuerKey}"`;
-					}
-				}
-			} else if (type === "JWT") {
-				query += ` JWT`;
-
-				if (jwtVerifyMode === "url") {
-					query += ` URL "${jwtVerifyUrl}"`;
-				} else {
-					query += ` ALGORITHM ${jwtVerifyAlg} KEY "${jwtVerifyKey}"`;
-				}
-			}
-
-			if (authClause) {
-				query += ` AUTHENTICATE { ${authClause} }`;
-			}
-
-			query += ` DURATION FOR TOKEN ${tokenDuration || "NONE"} FOR SESSION ${sessionDuration || "NONE"}`;
-
-			if (comment) {
-				query += ` COMMENT "${comment}"`;
-			}
-
-			await executeQuery(query);
+			await executeQuery(buildDefineAccessQuery(form));
 			await syncConnectionSchema();
-		} catch (err: any) {
-			showErrorNotification({
-				title: "Failed to save user",
-				content: err,
-			});
-		} finally {
 			onClose();
+		} catch (err: unknown) {
+			showErrorNotification({
+				title: "Failed to save access method",
+				content: err instanceof Error ? err.message : String(err),
+			});
 		}
 	});
 
-	const isConflicting = !existing && list.some((access) => access.name === name);
-	const isValid = !isConflicting && name.length > 0;
+	const isConflicting = !existing && list.some((access) => access.name === form.name);
+	const formValidation = validateAccessDefineForm(form);
+	const isValid =
+		!isConflicting && form.name.length > 0 && formValidation === null && !validationError;
+
+	const showJwtBlock = form.type === "JWT" || (form.type === "RECORD" && form.recordJwtEnabled);
+	const showOAuthFields = oauthEnabled || (!!existing && accessHasOAuth(existing));
+	const oauthFieldsReadOnly = !oauthEnabled && form.oauth.enabled;
 
 	return (
 		<Modal
 			opened={opened}
 			onClose={onClose}
 			scrollAreaComponent={ScrollArea.Autosize}
-			size={500}
+			size={560}
 			title={
 				<PrimaryTitle>
 					{existing
-						? `Viewing access method ${existing.name}`
+						? `Edit access method ${existing.name}`
 						: `Create ${level.toLowerCase()} access method`}
 				</PrimaryTitle>
 			}
 		>
-			<Form onSubmit={saveUser}>
+			<Form onSubmit={saveAccess}>
 				<Tabs
 					value={activeTab}
-					onChange={setActiveTab as any}
+					onChange={(value) => value && setActiveTab(value)}
 					variant="surreal"
 				>
 					<Tabs.List>
 						<Tabs.Tab value="general">General</Tabs.Tab>
 						<Tabs.Tab value="durations">Durations</Tabs.Tab>
 						<Tabs.Tab value="jwt">JWT</Tabs.Tab>
-						{type === "RECORD" && <Tabs.Tab value="session">Session</Tabs.Tab>}
+						{form.type === "RECORD" && <Tabs.Tab value="session">Session</Tabs.Tab>}
 						<Tabs.Tab value="comment">Comment</Tabs.Tab>
 					</Tabs.List>
 
@@ -226,13 +156,13 @@ export function AccessEditorModal({
 
 					<Tabs.Panel value="general">
 						<Stack gap="lg">
-							{!target && (
+							{!existing && (
 								<TextInput
 									label="Access method name"
-									placeholder="admin"
-									value={name}
+									placeholder="okta"
+									value={form.name}
 									spellCheck={false}
-									onChange={setName}
+									onChange={(e) => patchForm({ name: e.target.value })}
 									error={isConflicting && "This name is already in use"}
 									data-autofocus
 									required
@@ -241,22 +171,30 @@ export function AccessEditorModal({
 
 							<Select
 								withAsterisk
-								readOnly={!!existing} // NOTE temp
+								disabled={!!existing}
 								label="Access type"
-								value={type}
-								onChange={setType as any}
+								value={form.type}
+								onChange={(value) => patchForm({ type: value as AccessType })}
 								data={accessTypes}
 							/>
 
 							<CodeInput
 								label="Authentication query"
-								placeholder="Enter authentication clause"
-								readOnly={!!existing} // NOTE temp
-								value={authClause}
-								onChange={setAuthClause}
+								placeholder="RETURN …"
+								value={form.authenticate}
+								onChange={(value) => patchForm({ authenticate: value })}
 								multiline
 								height={96}
 							/>
+
+							{(validationError ?? formValidation) && (
+								<Text
+									size="sm"
+									c="red"
+								>
+									{validationError ?? formValidation}
+								</Text>
+							)}
 						</Stack>
 					</Tabs.Panel>
 
@@ -264,20 +202,18 @@ export function AccessEditorModal({
 						<Stack gap="lg">
 							<CodeInput
 								label="Sign up query"
-								placeholder="CREATE ..."
-								value={signupClause}
-								onChange={setSignupClause}
-								readOnly={!!existing} // NOTE temp
+								placeholder="CREATE …"
+								value={form.signup}
+								onChange={(value) => patchForm({ signup: value })}
 								multiline
 								height={96}
 							/>
 
 							<CodeInput
 								label="Sign in query"
-								placeholder="SELECT * FROM ..."
-								value={signinClause}
-								onChange={setSigninClause}
-								readOnly={!!existing} // NOTE temp
+								placeholder="SELECT …"
+								value={form.signin}
+								onChange={(value) => patchForm({ signin: value })}
 								multiline
 								height={96}
 							/>
@@ -292,20 +228,18 @@ export function AccessEditorModal({
 						<Stack gap="lg">
 							<CodeInput
 								label="Token duration"
-								description="The duration of the token used to establish an authenticated session"
-								placeholder="No duration set"
-								value={tokenDuration}
-								onChange={setTokenDuration}
-								readOnly={!!existing} // NOTE temp
+								description="Duration of the token used to establish an authenticated session"
+								placeholder="1h"
+								value={form.tokenDuration}
+								onChange={(value) => patchForm({ tokenDuration: value })}
 							/>
 
 							<CodeInput
 								label="Session duration"
-								description="The duration of the authenticated session established with the token"
-								placeholder="No duration set"
-								value={sessionDuration}
-								onChange={setSessionDuration}
-								readOnly={!!existing} // NOTE temp
+								description="Duration of the authenticated session"
+								placeholder="8h"
+								value={form.sessionDuration}
+								onChange={(value) => patchForm({ sessionDuration: value })}
 							/>
 
 							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
@@ -316,50 +250,122 @@ export function AccessEditorModal({
 
 					<Tabs.Panel value="jwt">
 						<Stack gap="lg">
-							{type === "JWT" && (
-								<TextInput
-									label="Issuer key"
-									placeholder="secret key"
-									value={jwtIssuerKey}
-									onChange={setJwtIssuerKey}
-									readOnly={!!existing} // NOTE temp
+							{form.type === "RECORD" && (
+								<Checkbox
+									label="Use JWT verification"
+									checked={form.recordJwtEnabled}
+									onChange={(e) =>
+										patchForm({ recordJwtEnabled: e.currentTarget.checked })
+									}
 								/>
 							)}
 
-							<Checkbox
-								label="Use JWKS verification"
-								checked={jwtVerifyMode === "url"}
-								disabled={!!existing} // NOTE temp
-								onChange={(e) => {
-									setJwtVerifyMode(e.target.checked ? "url" : "keyalg");
-								}}
-							/>
-
-							{jwtVerifyMode === "url" ? (
-								<TextInput
-									label="JWKS Endpoint"
-									placeholder="https://example.com/.well-known/jwks.json"
-									readOnly={!!existing} // NOTE temp
-									value={jwtVerifyUrl}
-									onChange={setJwtVerifyUrl}
-								/>
-							) : (
+							{showJwtBlock && (
 								<>
-									<Select
-										data={ALGORITHMS}
-										label="Verify algorithm"
-										value={jwtVerifyAlg}
-										onChange={setJwtVerifyAlg}
-										readOnly={!!existing} // NOTE temp
+									<TextInput
+										label="OIDC issuer URL"
+										description="Used for OIDC discovery and OAuth broker (TYPE JWT ISSUER)"
+										placeholder="https://your-org.okta.com"
+										value={form.oidcIssuer}
+										spellCheck={false}
+										onChange={(e) => patchForm({ oidcIssuer: e.target.value })}
 									/>
 
-									<TextInput
-										label="Verify key"
-										placeholder="secret key"
-										value={jwtVerifyKey}
-										onChange={setJwtVerifyKey}
-										readOnly={!!existing} // NOTE temp
-									/>
+									{!form.oidcIssuer.trim() && (
+										<>
+											<Checkbox
+												label="Use JWKS URL for verification"
+												checked={form.jwtVerifyMode === "url"}
+												onChange={(e) =>
+													patchForm({
+														jwtVerifyMode: e.currentTarget.checked
+															? "url"
+															: "keyalg",
+													})
+												}
+											/>
+
+											{form.jwtVerifyMode === "url" ? (
+												<>
+													<TextInput
+														label="JWKS endpoint"
+														placeholder="https://example.com/.well-known/jwks.json"
+														value={form.jwtVerifyUrl}
+														spellCheck={false}
+														onChange={(e) =>
+															patchForm({
+																jwtVerifyUrl: e.target.value,
+															})
+														}
+													/>
+													<AccessJwksValidation
+														jwksUrl={form.jwtVerifyUrl}
+													/>
+												</>
+											) : (
+												<>
+													<Select
+														data={ALGORITHMS}
+														label="Verify algorithm"
+														value={form.jwtVerifyAlg}
+														onChange={(value) =>
+															patchForm({
+																jwtVerifyAlg: value ?? "HS256",
+															})
+														}
+													/>
+
+													<TextInput
+														label="Verify key"
+														placeholder="shared secret"
+														value={form.jwtVerifyKey}
+														spellCheck={false}
+														onChange={(e) =>
+															patchForm({
+																jwtVerifyKey: e.target.value,
+															})
+														}
+													/>
+												</>
+											)}
+										</>
+									)}
+
+									{form.type === "RECORD" && (
+										<TextInput
+											label="Issuer signing key (optional)"
+											description="WITH ISSUER KEY for record access JWT"
+											placeholder="secret key"
+											value={form.issueKey}
+											spellCheck={false}
+											onChange={(e) =>
+												patchForm({ issueKey: e.target.value })
+											}
+										/>
+									)}
+
+									{showOAuthFields && (
+										<>
+											<Divider
+												label="OAuth"
+												labelPosition="left"
+											/>
+
+											{oauthFieldsReadOnly && (
+												<Alert color="orange">
+													Instance OAuth editing is not enabled in this
+													environment. Configuration is shown read-only.
+												</Alert>
+											)}
+
+											<AccessOAuthFields
+												value={form.oauth}
+												oidcIssuer={form.oidcIssuer}
+												readOnly={oauthFieldsReadOnly}
+												onChange={(oauth) => patchForm({ oauth })}
+											/>
+										</>
+									)}
 								</>
 							)}
 						</Stack>
@@ -367,10 +373,9 @@ export function AccessEditorModal({
 
 					<Tabs.Panel value="comment">
 						<Textarea
-							placeholder="Enter optional description for this access method"
-							value={comment}
-							onChange={setComment}
-							readOnly={!!existing} // NOTE temp
+							placeholder="Optional description"
+							value={form.comment}
+							onChange={(e) => patchForm({ comment: e.target.value })}
 							rows={5}
 						/>
 					</Tabs.Panel>
@@ -383,30 +388,17 @@ export function AccessEditorModal({
 						variant="light"
 						flex={1}
 					>
-						Close
+						Cancel
 					</Button>
-					{/* <Button
+					<Button
 						type="submit"
 						variant="gradient"
 						flex={1}
-						disabled
-						rightSection={<Icon path={target ? iconCheck : iconPlus} />}
+						disabled={!isValid}
+						rightSection={<Icon path={existing ? iconCheck : iconPlus} />}
 					>
-						{target ? "Save access method" : "Create access method"}
-					</Button> */}
-					{target ? (
-						<Spacer />
-					) : (
-						<Button
-							type="submit"
-							variant="gradient"
-							flex={1}
-							disabled={!isValid}
-							rightSection={<Icon path={iconPlus} />}
-						>
-							Create access method
-						</Button>
-					)}
+						{existing ? "Save access method" : "Create access method"}
+					</Button>
 				</Group>
 			</Form>
 		</Modal>
