@@ -2,7 +2,6 @@ import {
 	Box,
 	type BoxProps,
 	Flex,
-	Group,
 	Image,
 	ScrollArea,
 	Stack,
@@ -15,6 +14,7 @@ import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { useLogoUrl } from "~/hooks/brand";
+import { useSetting } from "~/hooks/config";
 import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
@@ -35,6 +35,7 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 
 	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 	const { data: unreadConversations } = useCloudUnreadConversationsQuery();
+	const [hasGreeting] = useSetting("appearance", "logoGreetAnimation");
 
 	const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
@@ -76,41 +77,42 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 						onClick={goHome}
 						className={classes.logo}
 						mb="lg"
+						pos="relative"
+						h={42}
 					>
-						<Group
-							ml={3}
-							gap="sm"
-							wrap="nowrap"
-							align="center"
-							style={{ flexShrink: 0 }}
+						<Image
+							src={pictoSurrealist}
+							w={36}
+							className={classes.logoHat}
+							pos="absolute"
+							top={0}
+							left={3}
+							mod={{ greet: hasGreeting && !isCompact }}
+						/>
+						<Transition
+							mounted={!isCompact}
+							keepMounted
+							timingFunction="ease-out"
+							transition={hasGreeting ? "scale-x" : "fade-right"}
+							duration={150}
 						>
-							<Image
-								src={pictoSurrealist}
-								w={36}
-								className={classes.logoHat}
-							/>
-							<Transition
-								mounted={!isCompact}
-								timingFunction="ease-out"
-								transition="fade-right"
-								duration={150}
-							>
-								{(style) => (
-									<Image
-										src={logoUrl}
-										style={{ flexShrink: 0, ...style }}
-										w={115}
-									/>
-								)}
-							</Transition>
-						</Group>
+							{(style) => (
+								<Image
+									src={logoUrl}
+									style={{ flexShrink: 0, ...style }}
+									w={125}
+									ml={hasGreeting ? "sm" : 48}
+									mt="-xs"
+								/>
+							)}
+						</Transition>
 					</UnstyledButton>
 
 					<SidebarTarget />
 
 					<Stack
 						gap="sm"
-						mt={22}
+						mt={hasGreeting ? undefined : 22}
 						pb={18}
 					>
 						<NavigationIcon

@@ -103,6 +103,10 @@ $sidebar-wide: 250px;
 		filter: brightness(0.9);
 		transform: translateY(0);
 	}
+
+	&-hat[data-greet] {
+		transform: translateY(-12px) translateX(-6px) rotate(-25deg) scale(0.6) !important;
+	}
 }
 
 .page-content {

@@ -247,6 +247,7 @@ export interface SurrealistAppearanceSettings {
 	formatIndentSize: number;
 	formatIndentMode: "space" | "tab";
 	formatMaxLineLength: number;
+	logoGreetAnimation: boolean;
 }
 
 export interface SurrealistTemplateSettings {
