@@ -29,9 +29,7 @@ export function DocumentationView() {
 			h="100%"
 			wrap="nowrap"
 			gap="var(--surrealist-divider-size)"
-			pr="lg"
-			pb="lg"
-			pl={{ base: "lg", md: 0 }}
+			p="sm"
 		>
 			<TocPaneLazy
 				active={active}

@@ -244,9 +244,7 @@ export function MigrationView() {
 	return (
 		<Box
 			h="100%"
-			pr="lg"
-			pb="lg"
-			pl={{ base: "lg", md: 0 }}
+			p="sm"
 		>
 			{selectedResource ? (
 				<ResourceDetailPanel

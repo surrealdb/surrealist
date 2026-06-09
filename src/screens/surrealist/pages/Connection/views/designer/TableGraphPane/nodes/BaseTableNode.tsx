@@ -37,7 +37,7 @@ interface SummaryProps {
 }
 
 function Summary(props: SummaryProps) {
-	const valueColor = props.value > 0 ? "surreal" : "dimmed";
+	const valueColor = props.value > 0 ? "violet" : "dimmed";
 
 	return (
 		<Group
@@ -511,7 +511,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						style={{
 							"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-obsidian-6"})`,
 							"--diagonal-color-2": `var(${isLight ? "--mantine-color-obsidian-1" : "--mantine-color-obsidian-5"})`,
-							border: `2px solid ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+							border: `2px solid ${themeColor(isSelected ? "violet" : isLight ? "obsidian.2" : "obsidian.5")}`,
 							userSelect: "none",
 							overflow: "hidden",
 							height: "100%",
@@ -537,7 +537,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 					bg={isLight ? "white" : "obsidian.6"}
 					shadow={`0 4px 8px rgba(0, 0, 0, ${isLight ? 0.1 : 0.35})`}
 					style={{
-						border: `${borderWidth}px ${borderStyle} ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+						border: `${borderWidth}px ${borderStyle} ${themeColor(isSelected ? "violet" : isLight ? "obsidian.2" : "obsidian.5")}`,
 						userSelect: "none",
 						overflow: "hidden",
 						height: "100%",
@@ -560,7 +560,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 						<Icon
 							path={TABLE_VARIANT_ICONS[variant]}
 							size="xs"
-							color={isSelected ? "surreal" : isLight ? "obsidian.7" : "obsidian.2"}
+							color={isSelected ? "violet" : isLight ? "obsidian.7" : "obsidian.2"}
 						/>
 						<Text
 							fz="xs"
@@ -596,7 +596,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 					style={{
 						"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-obsidian-7"})`,
 						"--diagonal-color-2": `var(${isLight ? "--mantine-color-obsidian-1" : "--mantine-color-obsidian-6"})`,
-						border: `${borderWidth}px ${borderStyle} ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+						border: `${borderWidth}px ${borderStyle} ${themeColor(isSelected ? "violet" : isLight ? "obsidian.2" : "obsidian.5")}`,
 						userSelect: "none",
 						backgroundSize: "8px 8px",
 						overflow: "hidden",
@@ -616,7 +616,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 					>
 						<Icon
 							path={TABLE_VARIANT_ICONS[variant]}
-							color={isSelected ? "surreal" : isLight ? "obsidian.7" : "obsidian.2"}
+							color={isSelected ? "violet" : isLight ? "obsidian.7" : "obsidian.2"}
 						/>
 						<Text
 							style={{
@@ -831,7 +831,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 				style={{
 					"--diagonal-color-1": `var(${isLight ? "white" : "--mantine-color-obsidian-7"})`,
 					"--diagonal-color-2": `var(${isLight ? "--mantine-color-obsidian-1" : "--mantine-color-obsidian-6"})`,
-					border: `${table.schema.full ? "2px solid" : "2px dashed"} ${themeColor(isSelected ? "surreal" : isLight ? "obsidian.2" : "obsidian.5")}`,
+					border: `${table.schema.full ? "2px solid" : "2px dashed"} ${themeColor(isSelected ? "violet" : isLight ? "obsidian.2" : "obsidian.5")}`,
 					userSelect: "none",
 					backgroundSize: "8px 8px",
 					overflow: "hidden",
@@ -845,7 +845,7 @@ export function BaseTableNode({ table, direction, mode, isSelected, isEdge }: Ba
 				>
 					<Icon
 						path={TABLE_VARIANT_ICONS[variant]}
-						color={isSelected ? "surreal" : isLight ? "obsidian.7" : "obsidian.2"}
+						color={isSelected ? "violet" : isLight ? "obsidian.7" : "obsidian.2"}
 					/>
 					<Text
 						style={{
