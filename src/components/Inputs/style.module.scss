@@ -2,7 +2,7 @@
 
 	input,
 	textarea {
-		font-family: 'JetBrains Mono';
+		font-family: var(--mantine-font-family-monospace);
 		scrollbar-width: none;
 	}
 

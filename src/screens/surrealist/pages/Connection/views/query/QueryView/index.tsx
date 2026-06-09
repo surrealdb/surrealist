@@ -205,9 +205,7 @@ export function QueryView() {
 			<Box
 				h="100%"
 				ref={rootRef}
-				pr="lg"
-				pb="lg"
-				pl={{ base: "lg", md: 0 }}
+				p="sm"
 			>
 				<PanelGroup
 					direction="horizontal"

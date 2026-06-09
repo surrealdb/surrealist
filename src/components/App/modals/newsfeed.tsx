@@ -1,5 +1,4 @@
 import {
-	Alert,
 	Badge,
 	Box,
 	Divider,
@@ -8,29 +7,23 @@ import {
 	Group,
 	Image,
 	Loader,
+	Paper,
 	ScrollArea,
 	Stack,
 	Text,
 	Title,
-	Transition,
 	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import {
-	BlockRenderer,
-	BlockRendererProps,
-	Icon,
-	iconArrowLeft,
-	iconArrowUpRight,
-	iconClose,
-} from "@surrealdb/ui";
-import { format } from "date-fns";
+import { Icon, iconArrowLeft, iconClose } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { Fragment, useState } from "react";
+import { Fragment, useLayoutEffect, useMemo, useRef } from "react";
+import { adapter } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
-import { Link } from "~/components/Link";
+import { Pagination } from "~/components/Pagination";
+import { usePagination } from "~/components/Pagination/hook";
 import { Spacer } from "~/components/Spacer";
-import { useBlogPostContentQuery, useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
+import { useLatestNewsQuery, useUnreadNewsPosts } from "~/hooks/newsfeed";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useConfigStore } from "~/stores/config";
@@ -52,34 +45,44 @@ export function NewsFeedDrawer() {
 	const { updateViewedNews } = useConfigStore.getState();
 	const newsQuery = useLatestNewsQuery();
 	const unread = useUnreadNewsPosts();
+	const pagination = usePagination();
+	const viewportRef = useRef<HTMLDivElement>(null);
 
 	const [isOpen, openHandle] = useDisclosure();
 
-	const [isReading, readingHandle] = useDisclosure();
-	const [reading, setReading] = useState<NewsItem | null>(null);
-	const [pendingEvent, setPendingEvent] = useState<object>();
-	const contentQuery = useBlogPostContentQuery(reading?.slug ?? null);
+	const posts = newsQuery.data ?? [];
+	const startAt = (pagination.currentPage - 1) * pagination.pageSize;
+	const pageSlice = useMemo(
+		() => posts.slice(startAt, startAt + pagination.pageSize),
+		[posts, startAt, pagination.pageSize],
+	);
+
+	useLayoutEffect(() => {
+		pagination.setTotal(posts.length);
+	}, [pagination.setTotal, posts.length]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Scroll to top on page change
+	useLayoutEffect(() => {
+		viewportRef.current?.scrollTo({ top: 0 });
+	}, [pagination.currentPage]);
 
 	const readArticle = (item: NewsItem) => {
-		setReading(item);
-		readingHandle.open();
+		const timestamp = new Date().toISOString();
 
-		setPendingEvent({
+		adapter.openUrl(item.link);
+
+		tagEvent("blog_opened", {
 			blog_id: item.id,
 			blog_name: item.title,
-			open_time: new Date().toISOString(),
+			open_time: timestamp,
+			close_time: timestamp,
 		});
 	};
 
 	const handleClose = useStable(() => {
 		openHandle.close();
-		readingHandle.close();
 		updateViewedNews();
-
-		tagEvent("blog_opened", {
-			...pendingEvent,
-			close_time: new Date().toISOString(),
-		});
+		pagination.setCurrentPage(1);
 	});
 
 	useIntent("open-news", ({ id }) => {
@@ -101,229 +104,133 @@ export function NewsFeedDrawer() {
 			onClose={handleClose}
 			position="right"
 			trapFocus={false}
-			size={isReading ? "lg" : "md"}
 			classNames={{
 				content: classes.newsDrawerContent,
 				body: classes.newsDrawerBody,
 			}}
 		>
-			<Transition
-				mounted={isReading}
-				transition="fade"
+			<Box
+				pos="absolute"
+				inset={0}
 			>
-				{(styles) => (
-					<Box
-						pos="absolute"
-						style={styles}
-						inset={0}
+				<Group>
+					<Title
+						fz={20}
+						c="bright"
+						m="xl"
 					>
-						{reading && (
-							<ScrollArea
-								className={classes.articleDrawer__scroll}
-								pos="absolute"
-								style={{ width: "var(--drawer-size-lg)" }}
-								left={0}
-								bottom={0}
-								top={0}
-							>
-								<Box
-									w="100%"
-									h={250}
-									pos="relative"
-									className={classes.newsPostHeader}
-									__vars={{
-										"--image-url": `url("${reading.thumbnail}")`,
-									}}
-								>
-									<ActionButton
-										pos="absolute"
-										size="lg"
-										top={20}
-										left={20}
-										label="All articles"
-										onClick={readingHandle.close}
-										style={{ zIndex: 1, backdropFilter: "blur(4px)" }}
-									>
-										<Icon path={iconArrowLeft} />
-									</ActionButton>
-
-									<ActionButton
-										pos="absolute"
-										size="lg"
-										top={20}
-										right={20}
-										label="Close"
-										onClick={openHandle.close}
-										style={{ zIndex: 1, backdropFilter: "blur(4px)" }}
-									>
-										<Icon path={iconClose} />
-									</ActionButton>
-								</Box>
-								<Box
-									p="xl"
-									pt="xs"
-									mt={-42}
-								>
-									<Title
-										fz={28}
-										c="bright"
-										pos="relative"
-									>
-										{reading.title}
-									</Title>
-									<Text
-										mt="lg"
-										fz="lg"
-									>
-										{format(reading.published, "MMMM d, yyyy - h:mm a")}
-									</Text>
-									<Divider my="xl" />
-									{contentQuery.isPending ? (
-										<Loader
-											mt={32}
-											mx="auto"
-											display="block"
-										/>
-									) : (
-										<BlockRenderer
-											value={contentQuery.data as BlockRendererProps["value"]}
-										/>
-									)}
-									{reading.link && (
-										<Alert
-											mt="xl"
-											color="violet.2"
-											py={0}
-										>
-											<Link
-												my="lg"
-												display="block"
-												href={reading.link}
-											>
-												<Text
-													c="violet"
-													fw={600}
-													fz={14}
-												>
-													Read on surrealdb.com
-													<Icon path={iconArrowUpRight} />
-												</Text>
-											</Link>
-										</Alert>
-									)}
-								</Box>
-							</ScrollArea>
-						)}
-					</Box>
-				)}
-			</Transition>
-
-			<Transition
-				mounted={!isReading}
-				transition="fade"
-			>
-				{(styles) => (
-					<Box
-						pos="absolute"
-						style={styles}
-						inset={0}
+						Latest news
+					</Title>
+					<Spacer />
+					<ActionButton
+						variant="light"
+						label="Close"
+						mr="lg"
+						onClick={handleClose}
 					>
-						<Group>
-							<Title
-								fz={20}
-								c="bright"
-								m="xl"
-							>
-								Latest news
-							</Title>
-							<Spacer />
-							<ActionButton
-								variant="light"
-								label="Close"
-								mr="lg"
-								onClick={handleClose}
-							>
-								<Icon path={iconClose} />
-							</ActionButton>
-						</Group>
-						<ScrollArea
-							pos="absolute"
-							style={{ width: "var(--drawer-size-md)" }}
-							left={0}
-							bottom={0}
-							top={64}
-							p="lg"
+						<Icon path={iconClose} />
+					</ActionButton>
+				</Group>
+				<ScrollArea
+					viewportRef={viewportRef}
+					pos="absolute"
+					style={{ width: "var(--drawer-size-md)" }}
+					left={0}
+					bottom={0}
+					top={64}
+					p="lg"
+				>
+					{newsQuery.isPending ? (
+						<Loader
+							mt={32}
+							mx="auto"
+							display="block"
+						/>
+					) : isEmpty ? (
+						<Text
+							mt={68}
+							c="obsidian"
+							ta="center"
 						>
-							{newsQuery.isPending ? (
-								<Loader
-									mt={32}
-									mx="auto"
-									display="block"
-								/>
-							) : isEmpty ? (
-								<Text
-									mt={68}
-									c="obsidian"
-									ta="center"
-								>
-									No blog articles available
-								</Text>
-							) : (
-								<Stack gap="xl">
-									{newsQuery.data?.map((item, i) => (
-										<Fragment key={i}>
-											<UnstyledButton
-												onClick={() => readArticle(item)}
-												className={classes.newsItem}
-											>
-												<Image
-													src={item.thumbnail}
-													radius="lg"
-													mb="lg"
-												/>
-												<Flex align="center">
-													<Text py="xs">
-														{dayjs(item.published).fromNow()}
-													</Text>
-													{unread.includes(item.id) && (
-														<Badge
-															variant="light"
-															color="violet"
-															ml="sm"
-														>
-															New
-														</Badge>
-													)}
-												</Flex>
-												<Title
-													fz={18}
-													c="bright"
-													mt={4}
+							No blog articles available
+						</Text>
+					) : (
+						<Stack
+							gap="xl"
+							pb={86}
+						>
+							{pageSlice.map((item, i) => (
+								<Fragment key={item.id}>
+									<UnstyledButton
+										onClick={() => readArticle(item)}
+										className={classes.newsItem}
+									>
+										<Image
+											src={item.thumbnail}
+											radius="lg"
+											mb="lg"
+											h={225}
+										/>
+										<Flex align="center">
+											<Text py="xs">{dayjs(item.published).fromNow()}</Text>
+											{unread.includes(item.id) && (
+												<Badge
+													variant="light"
+													color="violet"
+													ml="sm"
 												>
-													{item.title}
-												</Title>
-												<Text py="sm">{item.description}</Text>
-												<Group
-													mt="sm"
-													gap="xs"
-												>
-													<Text c="violet">Read article</Text>
-													<Icon
-														className={classes.newsItemArrow}
-														path={iconArrowLeft}
-														c="violet"
-													/>
-												</Group>
-											</UnstyledButton>
-											{i < newsQuery.data?.length - 1 && <Divider />}
-										</Fragment>
-									))}
-								</Stack>
-							)}
-						</ScrollArea>
-					</Box>
+													New
+												</Badge>
+											)}
+										</Flex>
+										<Title
+											fz={18}
+											c="bright"
+											mt={4}
+										>
+											{item.title}
+										</Title>
+										<Text py="sm">{item.description}</Text>
+										<Group
+											mt="sm"
+											gap="xs"
+										>
+											<Text c="violet">Read article</Text>
+											<Icon
+												className={classes.newsItemArrow}
+												path={iconArrowLeft}
+												c="violet"
+											/>
+										</Group>
+									</UnstyledButton>
+									{i < pageSlice.length - 1 && <Divider />}
+								</Fragment>
+							))}
+						</Stack>
+					)}
+				</ScrollArea>
+				{!newsQuery.isPending && !isEmpty && pagination.pageCount > 1 && (
+					<Paper
+						pos="absolute"
+						left={0}
+						right={0}
+						bottom={0}
+					>
+						<Divider />
+						<Group
+							p="lg"
+							justify="center"
+							gap="xs"
+							wrap="nowrap"
+						>
+							<Pagination
+								store={pagination}
+								withResultsPerPage={false}
+							/>
+						</Group>
+					</Paper>
 				)}
-			</Transition>
+			</Box>
 		</Drawer>
 	);
 }

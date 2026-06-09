@@ -16,20 +16,6 @@ interface RemoteListPost {
 	blog_url: string;
 }
 
-interface RemoteBlogPost {
-	id: string;
-	slug: string;
-	title: string;
-	summary: string;
-	content: Record<string, unknown>;
-	image_code: string;
-	categories: string[];
-	authors: unknown[];
-	created_at: string;
-	updated_at: string;
-	publish_date: string;
-}
-
 export interface NewsPost {
 	id: string;
 	slug: string;
@@ -76,31 +62,6 @@ export function useLatestNewsQuery() {
 
 			const posts = (await response.json()) as RemoteListPost[];
 			return posts.map(convertRemoteListPost);
-		},
-	});
-}
-
-/**
- * Fetch the full content of a single blog post by slug.
- */
-export function useBlogPostContentQuery(slug: string | null) {
-	return useQuery<Record<string, unknown>>({
-		queryKey: ["newsfeed", "post", slug],
-		enabled: !!slug,
-		queryFn: async () => {
-			if (!slug) throw new Error("No slug provided");
-
-			const response = await fetch(`${API_BASE}/feed/${encodeURIComponent(slug)}`, {
-				headers: { Accept: "application/json" },
-			});
-
-			if (!response.ok) {
-				throw new Error(`Failed to fetch blog post: ${response.statusText}`);
-			}
-
-			const post = (await response.json()) as RemoteBlogPost | null;
-			const live = (post?.content as { live?: { json?: Record<string, unknown> } })?.live;
-			return live?.json ?? {};
 		},
 	});
 }

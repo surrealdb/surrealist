@@ -16,9 +16,10 @@ const PAGE_SIZES: ComboboxData = [
 export interface PaginationProps {
 	store: PaginationStore;
 	loading?: boolean;
+	withResultsPerPage?: boolean;
 }
 
-export function Pagination({ store, loading }: PaginationProps) {
+export function Pagination({ store, loading, withResultsPerPage = true }: PaginationProps) {
 	const [customPage, setCustomPage] = useInputState("");
 
 	const gotoPage = useStable((e: FocusEvent | KeyboardEvent) => {
@@ -87,12 +88,14 @@ export function Pagination({ store, loading }: PaginationProps) {
 				</ActionButton>
 			</Group>
 
-			<Select
-				value={store.pageSize.toString()}
-				onChange={(v) => store.setPageSize(Number.parseInt(v ?? "0"))}
-				data={PAGE_SIZES}
-				size="xs"
-			/>
+			{withResultsPerPage && (
+				<Select
+					value={store.pageSize.toString()}
+					onChange={(v) => store.setPageSize(Number.parseInt(v ?? "0"))}
+					data={PAGE_SIZES}
+					size="xs"
+				/>
+			)}
 		</>
 	);
 }

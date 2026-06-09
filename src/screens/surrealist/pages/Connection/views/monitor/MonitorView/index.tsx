@@ -91,8 +91,7 @@ export default function MonitorView() {
 		<Box
 			h="100%"
 			ref={rootRef}
-			pr="lg"
-			pb="lg"
+			p="sm"
 		>
 			<PanelGroup
 				direction="horizontal"

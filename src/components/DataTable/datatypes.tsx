@@ -38,7 +38,7 @@ function NullishCell(props: { value: null | undefined }) {
 	return (
 		<Text
 			c="obsidian"
-			ff="JetBrains Mono"
+			ff="monospace"
 		>
 			{props.value === null ? "null" : "—"}
 		</Text>
@@ -82,7 +82,7 @@ function BytesCell(props: { value: ArrayBuffer }) {
 	return (
 		<Text
 			span
-			ff="JetBrains Mono"
+			ff="monospace"
 		>
 			Bytes({props.value.byteLength})
 		</Text>
@@ -176,7 +176,7 @@ function ArrayCell(props: { value: any[] }) {
 				<HoverCard.Target>
 					<Text
 						span
-						ff="JetBrains Mono"
+						ff="monospace"
 						style={{ cursor: "help" }}
 					>
 						Array({props.value.length})
@@ -245,7 +245,7 @@ function ObjectCell(props: { value: any }) {
 				<HoverCard.Target>
 					<Text
 						span
-						ff="JetBrains Mono"
+						ff="monospace"
 						style={{ cursor: "help" }}
 					>
 						Object({Object.keys(props.value).length})
@@ -254,7 +254,7 @@ function ObjectCell(props: { value: any }) {
 				<HoverCard.Dropdown>
 					<Text
 						size="sm"
-						ff="JetBrains Mono"
+						ff="monospace"
 						lineClamp={10}
 						className={classes.sourceCode}
 					>

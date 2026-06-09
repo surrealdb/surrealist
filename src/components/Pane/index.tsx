@@ -40,6 +40,7 @@ export function ContentPane({
 		<Paper
 			className={clsx(classes.root, className)}
 			pos="relative"
+			bdrs="sm"
 			opacity={disabled ? 0.5 : 1}
 			style={{ pointerEvents: disabled ? "none" : undefined }}
 			{...rest}
