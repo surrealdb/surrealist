@@ -74,7 +74,7 @@ $db->query('
 			<Box>
 				<Box component="p">
 					System users authenticate at the root, namespace, or database level. Assign
-					roles — <code>OWNER</code>, <code>EDITOR</code>, or <code>VIEWER</code> — to
+					roles - <code>OWNER</code>, <code>EDITOR</code>, or <code>VIEWER</code> - to
 					control what each user can do within the scope they are defined on.
 				</Box>
 			</Box>

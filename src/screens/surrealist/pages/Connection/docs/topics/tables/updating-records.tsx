@@ -120,7 +120,7 @@ $db->upsert("${tableName}:tobie", ["name" => "Tobie", "active" => true]);
 		>
 			<Box component="p">
 				Update existing records in <b>{tableName}</b>. <code>UPDATE</code> modifies existing
-				records only — use <code>UPSERT</code> to create a record when it does not exist.
+				records only - use <code>UPSERT</code> to create a record when it does not exist.
 			</Box>
 			<Box>
 				<DocsPreview

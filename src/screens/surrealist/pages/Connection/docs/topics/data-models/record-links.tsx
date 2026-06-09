@@ -67,7 +67,7 @@ $db->query("SELECT name, comments.{ created_at, text } FROM user");
 			<Box>
 				<Box component="p">
 					Record links are lightweight <code>record&lt;table&gt;</code> pointers stored in
-					fields — simpler than graph edges when you do not need edge properties. Use{" "}
+					fields - simpler than graph edges when you do not need edge properties. Use{" "}
 					<code>REFERENCE</code> for bidirectional tracking and <code>&lt;~</code> to
 					traverse inbound links.
 				</Box>

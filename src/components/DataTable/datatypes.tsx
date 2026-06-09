@@ -40,7 +40,7 @@ function NullishCell(props: { value: null | undefined }) {
 			c="obsidian"
 			ff="monospace"
 		>
-			{props.value === null ? "null" : "—"}
+			{props.value === null ? "null" : "-"}
 		</Text>
 	);
 }

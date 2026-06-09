@@ -94,7 +94,7 @@ $jwt = $db->signup([
 				<Box component="p">
 					Record access methods let anonymous users create accounts in your database. The
 					SIGNUP clause in a <code>DEFINE ACCESS TYPE RECORD</code> statement defines
-					which variables are required — typically <code>email</code> and{" "}
+					which variables are required - typically <code>email</code> and{" "}
 					<code>pass</code>.
 				</Box>
 			</Box>

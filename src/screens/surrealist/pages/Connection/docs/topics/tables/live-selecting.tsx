@@ -25,7 +25,7 @@ LIVE SELECT * FROM ${tableName} WHERE age > $min_age;
 			js: `
 import { Table, gt } from 'surrealdb';
 
-// Managed live query — automatically restarts on reconnect
+// Managed live query - automatically restarts on reconnect
 const live = await db.live(new Table('${tableName}'))
 	.diff()
 	.where(gt('age', 18));

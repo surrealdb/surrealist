@@ -56,7 +56,7 @@ const SPECTRON_HIGHLIGHTS: { label: string; description: string; icon: string }[
 	},
 	{
 		label: "Temporal facts",
-		description: "Bi-temporal history — know what was true and when.",
+		description: "Bi-temporal history - know what was true and when.",
 		icon: iconCloudClock,
 	},
 	{

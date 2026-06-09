@@ -362,7 +362,7 @@ export default function PlaygroundView(_props: ContextViewProps) {
 														mt={4}
 														className="selectable"
 													>
-														Say something about yourself — your name, a
+														Say something about yourself - your name, a
 														preference, where you are. Watch it appear
 														on the right as a new memory.
 													</Text>

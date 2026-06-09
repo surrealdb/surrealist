@@ -49,7 +49,7 @@ const MEMORY_TYPES: MemoryTypeCard[] = [
 		type: "Semantic",
 		title: "Facts and entities",
 		description:
-			"Structured knowledge extracted from interactions — people, places, preferences, and the relationships between them.",
+			"Structured knowledge extracted from interactions - people, places, preferences, and the relationships between them.",
 		icon: iconRelation,
 		picto: pictoKnowledgeGraph,
 	},
@@ -155,7 +155,7 @@ export default function MemoriesView({ context }: ContextViewProps) {
 							lh={1.55}
 							className="selectable"
 						>
-							The structured memory your agents accumulate over time — episodic
+							The structured memory your agents accumulate over time - episodic
 							traces, semantic facts, and learned preferences, all organised into a
 							queryable knowledge graph.
 						</Text>
@@ -304,7 +304,7 @@ export default function MemoriesView({ context }: ContextViewProps) {
 							className="selectable"
 							lh={1.6}
 						>
-							Between interactions, background processes deepen the graph —
+							Between interactions, background processes deepen the graph -
 							discovering connections, consolidating fragmented facts, and resolving
 							ambiguous references as more context accumulates.
 						</Text>
