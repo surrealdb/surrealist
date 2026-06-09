@@ -1,6 +1,6 @@
 import equal from "fast-deep-equal";
 import { klona } from "klona";
-import { escapeIdent, Table } from "surrealdb";
+import { escapeIdent, jsonify, Table } from "surrealdb";
 import { adapter } from "~/adapter";
 import {
 	executeQuery,
@@ -73,7 +73,7 @@ export async function syncConnectionSchema(
 		]);
 
 		if (kvInfoTask.status === "fulfilled") {
-			const { namespaces, accesses, users } = kvInfoTask.value;
+			const { namespaces, accesses, users } = jsonify(kvInfoTask.value);
 
 			schema.root.namespaces = namespaces ?? [];
 			schema.root.accesses = accesses ?? [];
@@ -83,7 +83,7 @@ export async function syncConnectionSchema(
 		}
 
 		if (nsInfoTask.status === "fulfilled") {
-			const { databases, accesses, users } = nsInfoTask.value;
+			const { databases, accesses, users } = jsonify(nsInfoTask.value);
 
 			schema.namespace.databases = databases ?? [];
 			schema.namespace.accesses = accesses ?? [];
@@ -93,7 +93,9 @@ export async function syncConnectionSchema(
 		}
 
 		if (dbInfoTask.status === "fulfilled") {
-			const { accesses, models, users, functions, tables, params } = dbInfoTask.value;
+			const { accesses, models, users, functions, tables, params } = jsonify(
+				dbInfoTask.value,
+			);
 
 			schema.database.accesses = accesses ?? [];
 			schema.database.models = models ?? [];
@@ -127,8 +129,6 @@ export async function syncConnectionSchema(
 					.join("\n"),
 			);
 
-			// adapter.log("Schema", `Table structures: ${JSON.stringify(tbInfoMap)}`);
-
 			if (isLimited) {
 				schema.database.tables = klona(connectionSchema.database.tables);
 			}
@@ -149,7 +149,7 @@ export async function syncConnectionSchema(
 					continue;
 				}
 
-				const tableStruct = tbInfoMap[idx].result as SchemaInfoTB;
+				const tableStruct = jsonify(tbInfoMap[idx].result) as SchemaInfoTB;
 				const tableInfo = (tables ?? []).find((t) => t.name === tableName);
 				const existingIndex = schema.database.tables.findIndex(
 					(t) => t.schema.name === tableName,
