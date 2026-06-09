@@ -1,0 +1,30 @@
+.database {
+	border-radius: var(--mantine-radius-sm);
+	position: relative;
+	padding-left: var(--mantine-spacing-lg);
+	transition: background-color 0.1s;
+
+	&::before {
+		content: "";
+		position: absolute;
+		left: 5px;
+		top: 4px;
+		width: 4px;
+		bottom: 4px;
+		background-color: transparent;
+		border-radius: var(--mantine-radius-sm);
+		transition: background-color 0.1s;
+	}
+
+	&[data-active] {
+		background-color: var(--mantine-color-violet-light);
+
+		.database-name {
+			font-weight: 600 !important;
+		}
+
+		&::before {
+			background-color: var(--mantine-color-violet-text);
+		}
+	}
+}

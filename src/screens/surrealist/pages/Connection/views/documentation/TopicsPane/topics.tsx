@@ -86,11 +86,14 @@ export function LinkTopic({ entry }: TopicProps<DocsLinkTopic>) {
 			h={24}
 			className={classes.topic}
 			onClick={() => adapter.openUrl(entry.link)}
+			fw={400}
+			opacity={0.75}
 		>
 			{entry.title}
 			<Icon
 				path={iconOpen}
 				size="sm"
+				ml="xs"
 			/>
 		</Entry>
 	);

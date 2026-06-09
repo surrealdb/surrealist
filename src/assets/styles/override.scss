@@ -3,6 +3,8 @@
 	--surreal-focus-background: color-mix(in srgb, var(--mantine-color-violet-3) 7%, var(--surreal-glass-subtle));
 	--surreal-gradient: linear-gradient(135deg, var(--surreal-energy), var(--surreal-passion));
 	--surrealist-divider-size: var(--mantine-spacing-sm);
+
+	--mantine-color-error: var(--mantine-color-red-text);
 }
 
 :root[data-mantine-color-scheme="light"] {

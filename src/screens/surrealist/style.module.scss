@@ -7,6 +7,10 @@ $sidebar-wide: 250px;
 	flex-direction: column;
 	background-color: rgba(from var(--mantine-color-obsidian-8) r g b / 0.25);
 
+	@include light {
+		background-color: rgba(from var(--mantine-color-obsidian-0) r g b / 0.5);
+	}
+
 	&::before {
 		content: "";
 		position: absolute;
@@ -17,6 +21,10 @@ $sidebar-wide: 250px;
 		background-size: cover;
 		opacity: var(--bg-opacity);
 		z-index: 0;
+
+		@include light {
+			display: none;
+		}
 	}
 }
 
@@ -121,5 +129,10 @@ $sidebar-wide: 250px;
 	@include md-and-up {
 		border-top-left-radius: var(--mantine-radius-md);
 		border-left: 1px solid var(--mantine-color-obsidian-7);
+	}
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-1);
+		border-color: var(--mantine-color-obsidian-2);
 	}
 }

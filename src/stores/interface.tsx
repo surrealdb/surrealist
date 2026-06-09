@@ -17,6 +17,7 @@ export type InterfaceStore = {
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
 	docsTable: string;
+	databaseSearch: string;
 
 	setWindowTitle: (title: string) => void;
 	setPageBreadcrumbs: (items: BreadcrumbItem[]) => void;
@@ -34,6 +35,7 @@ export type InterfaceStore = {
 	showChangelog: () => void;
 	readChangelog: () => void;
 	setDocsTable: (table: string) => void;
+	setDatabaseSearch: (search: string) => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
@@ -56,6 +58,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	showGraphqlVariables: false,
 	overlaySidebar: false,
 	docsTable: "",
+	databaseSearch: "",
 
 	setWindowTitle: (title) => set(() => ({ title })),
 
@@ -144,4 +147,6 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 		})),
 
 	setDocsTable: (docsTable) => set(() => ({ docsTable })),
+
+	setDatabaseSearch: (databaseSearch) => set(() => ({ databaseSearch })),
 }));

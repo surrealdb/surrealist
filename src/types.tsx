@@ -507,10 +507,14 @@ export interface TableInfo {
 
 export interface SchemaNamespace {
 	name: string;
+	id: number;
+	comment?: string;
 }
 
 export interface SchemaDatabase {
 	name: string;
+	id: number;
+	comment?: string;
 }
 
 export interface SchemaInfoKV {

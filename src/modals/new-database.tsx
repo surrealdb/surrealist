@@ -6,12 +6,13 @@ import {
 	SimpleGrid,
 	Stack,
 	Text,
+	Textarea,
 	TextInput,
 } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
+import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
 import { Icon, iconDatabase, iconNamespace } from "@surrealdb/ui";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
@@ -24,6 +25,7 @@ import {
 	activateDatabase,
 	executeQuery,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
+import { SchemaInfoNS } from "~/types";
 import { parseIdent } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -32,7 +34,6 @@ export function openNewDatabaseModal() {
 		modalId: "new-database",
 		title: <PrimaryTitle>Create new database</PrimaryTitle>,
 		withCloseButton: true,
-		trapFocus: false,
 		children: <NewDatabaseModal />,
 	});
 }
@@ -48,18 +49,41 @@ function NewDatabaseModal() {
 
 	const [namespace, setNamespace] = useInputState(currentNamespace);
 	const [database, setDatabase] = useInputState("");
+	const [description, setDescription] = useInputState("");
+
+	const [debouncedDatabase] = useDebouncedValue(database, 150);
 
 	const handleClose = useStable(() => {
 		closeModal("new-database");
 	});
 
+	const existsQuery = useQuery({
+		queryKey: ["database-exists", namespace, debouncedDatabase],
+		enabled: !!namespace && !!debouncedDatabase,
+		queryFn: async () => {
+			const [_, result] = await executeQuery(`
+				USE NS ${escapeIdent(namespace)};
+				INFO FOR NS STRUCTURE;
+			`);
+
+			const { databases } = result.result as SchemaInfoNS;
+
+			return databases.some((db) => db.name === debouncedDatabase);
+		},
+	});
+
 	const submitMutation = useMutation({
 		mutationFn: async () => {
-			await executeQuery(`
+			await executeQuery(
+				`
 				DEFINE NAMESPACE IF NOT EXISTS ${escapeIdent(namespace)};
 				USE NS ${escapeIdent(namespace)};
-				DEFINE DATABASE IF NOT EXISTS ${escapeIdent(database)};
-			`);
+				DEFINE DATABASE IF NOT EXISTS ${escapeIdent(debouncedDatabase)} COMMENT $comment;
+			`,
+				{
+					comment: description || undefined,
+				},
+			);
 
 			await syncConnectionSchema({
 				clearRoot: true,
@@ -67,11 +91,15 @@ function NewDatabaseModal() {
 				clearDatabase: true,
 			});
 
-			await activateDatabase(namespace, database);
+			await activateDatabase(namespace, debouncedDatabase);
 
 			handleClose();
 		},
 	});
+
+	const databaseError = existsQuery.data
+		? "Database already exists in this namespace"
+		: undefined;
 
 	return (
 		<Form onSubmit={submitMutation.mutate}>
@@ -88,6 +116,7 @@ function NewDatabaseModal() {
 						value={namespace}
 						onChange={setNamespace}
 						leftSection={<Icon path={iconNamespace} />}
+						required
 					/>
 					<TextInput
 						label="Database"
@@ -96,8 +125,19 @@ function NewDatabaseModal() {
 						onChange={setDatabase}
 						leftSection={<Icon path={iconDatabase} />}
 						data-autofocus
+						required
+						withAsterisk
+						error={databaseError}
+						withErrorStyles
 					/>
 				</SimpleGrid>
+
+				<Textarea
+					label="Description"
+					placeholder="A description of the database (optional)"
+					value={description}
+					onChange={setDescription}
+				/>
 
 				<Divider mx="-xl" />
 
@@ -117,7 +157,12 @@ function NewDatabaseModal() {
 					</Button>
 					<Button
 						loading={submitMutation.isPending}
-						disabled={!namespace || !database}
+						disabled={
+							!namespace ||
+							!debouncedDatabase ||
+							existsQuery.isPending ||
+							existsQuery.data
+						}
 						variant="gradient"
 						type="submit"
 					>

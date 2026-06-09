@@ -1,23 +1,26 @@
 import { Box, Center, Group, Loader, Menu, ScrollArea, Text, TextInput } from "@mantine/core";
-import { useInputState } from "@mantine/hooks";
-import { Icon, iconCheck, iconCircleFilled, iconPlus, iconSearch } from "@surrealdb/ui";
+import { Icon, iconList, iconPlus, iconSearch } from "@surrealdb/ui";
 import { useQuery } from "@tanstack/react-query";
-import { Fragment, useMemo } from "react";
+import { ChangeEvent, Fragment, useEffect, useMemo, useRef } from "react";
 import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { openNewDatabaseModal } from "~/modals/new-database";
+import { useInterfaceStore } from "~/stores/interface";
 import { fetchDatabaseList, fetchNamespaceList } from "~/util/databases";
 import { createBaseAuthentication } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
 import { activateDatabase } from "../../pages/Connection/connection/connection";
+import classes from "./style.module.scss";
 
 export interface DatabaseSelectorProps {
 	opened: boolean;
 }
 
 export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
+	const { setDatabaseSearch } = useInterfaceStore.getState();
+
 	const connected = useIsConnected();
-	const [search, setSearch] = useInputState("");
+	const search = useInterfaceStore((state) => state.databaseSearch);
 
 	const [connectionId, namespace, database] = useConnection((c) => [
 		c?.id ?? "",
@@ -34,7 +37,7 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 			return Promise.all(
 				namespaces.map(async (ns) => ({
 					namespace: ns,
-					databases: await fetchDatabaseList(ns),
+					databases: await fetchDatabaseList(ns.name),
 				})),
 			);
 		},
@@ -45,7 +48,7 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 		const hierarchy = hierarchyQuery.data ?? [];
 
 		return hierarchy.flatMap((entry) => {
-			const databases = entry.databases.filter((db) => fuzzyMatch(search, db));
+			const databases = entry.databases.filter((db) => fuzzyMatch(search, db.name));
 
 			if (databases.length === 0) {
 				return [];
@@ -59,13 +62,29 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 		if (namespace !== ns || database !== db) {
 			await activateDatabase(ns, db);
 		}
+	});
 
-		setSearch("");
+	const setSearch = useStable((event: ChangeEvent<HTMLInputElement>) => {
+		setDatabaseSearch(event.target.value);
 	});
 
 	const openDatabaseCreator = useStable(() => {
 		openNewDatabaseModal();
 	});
+
+	const openSettings = useStable(() => {
+		// TODO Link to /c/id/settings/databases
+	});
+
+	const searchRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (opened) {
+			setTimeout(() => {
+				searchRef.current?.focus();
+			}, 10);
+		}
+	}, [opened]);
 
 	return (
 		<>
@@ -78,15 +97,8 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 					onChange={setSearch}
 					placeholder="Search databases"
 					leftSection={<Icon path={iconSearch} />}
-					variant="unstyled"
-					styles={{
-						input: {
-							backgroundColor: "rgba(0, 0, 0, 0.15)",
-							border: "1px solid rgba(255, 255, 255, 0.125)",
-						},
-					}}
-					radius="xl"
-					autoFocus
+					ref={searchRef}
+					size="xs"
 				/>
 			</Box>
 
@@ -105,56 +117,75 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 			) : (
 				<ScrollArea.Autosize mah={350}>
 					<Box
-						p="sm"
 						mih={72}
+						pb="sm"
 					>
 						{filteredHierarchy.map((entry) => (
-							<Fragment key={entry.namespace}>
+							<Fragment key={entry.namespace.name}>
 								<Group>
-									<Menu.Label flex={1}>{entry.namespace}</Menu.Label>
-								</Group>
-								{entry.databases.map((db) => (
-									<Menu.Item
-										key={`${entry.namespace}-${db}`}
-										leftSection={
-											<Icon
-												path={iconCircleFilled}
-												color="violet.3"
-											/>
-										}
-										rightSection={
-											namespace === entry.namespace && database === db ? (
-												<Icon
-													path={iconCheck}
-													color="violet.3"
-												/>
-											) : undefined
-										}
-										onClick={() => selectDatabase(entry.namespace, db)}
+									<Menu.Label
+										flex={1}
+										mt="md"
 									>
-										<Text
-											truncate
-											maw={180}
+										{entry.namespace.name}
+									</Menu.Label>
+								</Group>
+								<Box px="xs">
+									{entry.databases.map((db) => (
+										<Menu.Item
+											key={`${entry.namespace.name}-${db.name}`}
+											className={classes.database}
+											mod={{
+												active:
+													namespace === entry.namespace.name &&
+													database === db.name,
+											}}
+											onClick={() =>
+												selectDatabase(entry.namespace.name, db.name)
+											}
 										>
-											{db}
-										</Text>
-									</Menu.Item>
-								))}
+											<Text
+												truncate
+												maw={400}
+												className={classes.databaseName}
+											>
+												{db.name}
+											</Text>
+											{db.comment && (
+												<Text
+													truncate
+													maw={400}
+													fz="xs"
+													opacity={0.5}
+												>
+													{db.comment}
+												</Text>
+											)}
+										</Menu.Item>
+									))}
+								</Box>
 							</Fragment>
 						))}
 					</Box>
 				</ScrollArea.Autosize>
 			)}
 
-			<Menu.Divider />
+			<Menu.Divider mt={0} />
 
-			<Box p="sm">
+			<Box p="xs">
 				<Menu.Item
 					leftSection={<Icon path={iconPlus} />}
 					disabled={!connected}
 					onClick={openDatabaseCreator}
 				>
 					Create database
+				</Menu.Item>
+				<Menu.Item
+					leftSection={<Icon path={iconList} />}
+					disabled={!connected}
+					onClick={openSettings}
+				>
+					Manage databases
 				</Menu.Item>
 			</Box>
 		</>

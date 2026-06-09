@@ -40,7 +40,7 @@ export function DatabaseCrumb() {
 					}
 				/>
 			</Menu.Target>
-			<Menu.Dropdown w={250}>
+			<Menu.Dropdown miw={300}>
 				<DatabaseSelector opened={isDropped} />
 			</Menu.Dropdown>
 		</Menu>
