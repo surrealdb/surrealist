@@ -1,25 +1,45 @@
-import { iconAuth, iconBook, iconDesigner, iconStar, iconTable } from "@surrealdb/ui";
+import {
+	iconAPI,
+	iconAuth,
+	iconBook,
+	iconDatabase,
+	iconDesigner,
+	iconPackageClosed,
+	iconQuery,
+	iconTable,
+} from "@surrealdb/ui";
 import type { ConnectionSchema } from "~/types";
 import { newId } from "~/util/helpers";
 import { DocsAuthAccessUserData } from "./topics/authentication/access-user-data";
 import { DocsAuthSignIn } from "./topics/authentication/sign-in";
-// import {DocsGlobalAuthentication} from "./topics/global/authentication";
-// import {DocsGlobalSystemUsers} from "./topics/global/system-users";
 import { DocsAuthSignUp } from "./topics/authentication/sign-up";
 import { DocsAuthTokens } from "./topics/authentication/tokens";
+import { DocsConceptsFiles } from "./topics/concepts/files";
 import { DocsConceptsFullTextSearch } from "./topics/concepts/full-text-search";
-import { DocsConceptsSurrealML } from "./topics/concepts/surrealml";
+import { DocsConceptsGraphRelations } from "./topics/concepts/graph-relations";
+import { DocsConceptsGraphTraversal } from "./topics/concepts/graph-traversal";
+import { DocsDataModelsDocument } from "./topics/data-models/document-model";
+import { DocsDataModelsGeospatial } from "./topics/data-models/geospatial";
+import { DocsDataModelsRecordLinks } from "./topics/data-models/record-links";
+import { DocsDataModelsTimeSeries } from "./topics/data-models/time-series";
+import { DocsDataModelsVectorSearch } from "./topics/data-models/vector-search";
+import { DocsExtensionsSurrealism } from "./topics/extensions/surrealism";
 import { DocsGlobalConnecting } from "./topics/global/connecting";
-import { DocsGlobalDatabases } from "./topics/global/databases";
 import { DocsGlobalInit } from "./topics/global/initialize";
 import { DocsGlobalIntroduction } from "./topics/global/introduction";
-// import { DocsGlobalHandlingErrors } from "./topics/global/handling-errors";
-import { DocsGlobalNamespaces } from "./topics/global/namespaces";
+import { DocsGlobalNamespacesAndDatabases } from "./topics/global/namespaces-and-databases";
+import { DocsGlobalQuerying } from "./topics/global/querying";
+import { DocsQueryingChangefeeds } from "./topics/querying/changefeeds";
+import { DocsQueryingGraphql } from "./topics/querying/graphql";
+import { DocsSchemaAccess } from "./topics/schema/access";
 import { DocsSchemaAnalyzers } from "./topics/schema/analyzers";
+import { DocsSchemaComputedFields } from "./topics/schema/computed-fields";
 import { DocsSchemaFunctions } from "./topics/schema/functions";
 import { DocsSchemaParams } from "./topics/schema/params";
-import { DocsSchemaScopes } from "./topics/schema/scopes";
 import { DocsSchemaUsers } from "./topics/schema/users";
+import { DocsSdkImportExport } from "./topics/sdk/import-export";
+import { DocsSdkMultipleSessions } from "./topics/sdk/multiple-sessions";
+import { DocsSdkTransactions } from "./topics/sdk/transactions";
 import { DocsTablesCreatingRecords } from "./topics/tables/creating-records";
 import { DocsTablesDeletingRecords } from "./topics/tables/deleting-records";
 import { DocsTablesInsertingRecords } from "./topics/tables/inserting-records";
@@ -33,74 +53,77 @@ import type { DocsTopic } from "./types";
 
 /**
  * Build the structure of the documentation based on the given schema.
- *
- * @param schema The schema to build the documentation for.
- * @returns The structure of the documentation.
  */
 export function buildDocumentation(_schema: ConnectionSchema): DocsTopic[] {
 	return [
 		{
 			id: newId(),
-			title: "Introduction",
-			component: DocsGlobalIntroduction,
+			title: "Getting started",
+			icon: iconBook,
+			excludeLanguages: ["c"],
+			topics: [
+				{
+					id: newId(),
+					title: "Introduction",
+					component: DocsGlobalIntroduction,
+				},
+				{
+					id: newId(),
+					title: "Initialising",
+					component: DocsGlobalInit,
+					excludeLanguages: ["cli"],
+				},
+				{
+					id: newId(),
+					title: "Connecting",
+					component: DocsGlobalConnecting,
+				},
+				{
+					id: newId(),
+					title: "Namespaces and databases",
+					component: DocsGlobalNamespacesAndDatabases,
+				},
+			],
 		},
 		{
 			id: newId(),
-			title: "Initialising",
-			component: DocsGlobalInit,
-			excludeLanguages: ["cli", "java", "c"],
-		},
-		{
-			id: newId(),
-			title: "Connecting",
-			component: DocsGlobalConnecting,
-			excludeLanguages: ["java", "c"],
-		},
-		// {
-		// 	id: newId(),
-		// 	title: "Handling errors",
-		// 	component: DocsGlobalHandlingErrors,
-		// 	languagesExclude: ['cli']
-		// },
-		{
-			id: newId(),
-			title: "Namespaces",
-			component: DocsGlobalNamespaces,
-			excludeLanguages: ["java", "c"],
-		},
-		{
-			id: newId(),
-			title: "Databases",
-			component: DocsGlobalDatabases,
-			excludeLanguages: ["java", "c"],
+			title: "Querying",
+			icon: iconQuery,
+			excludeLanguages: ["c"],
+			topics: [
+				{
+					id: newId(),
+					title: "SurrealQL queries",
+					component: DocsGlobalQuerying,
+				},
+				{
+					id: newId(),
+					title: "Changefeeds",
+					component: DocsQueryingChangefeeds,
+				},
+				{
+					id: newId(),
+					title: "GraphQL API",
+					component: DocsQueryingGraphql,
+				},
+			],
 		},
 		{
 			id: newId(),
 			title: "Authentication",
 			icon: iconAuth,
-			excludeLanguages: ["java", "c"],
+			excludeLanguages: ["c"],
 			topics: [
-				// {
-				// 	id: newId(),
-				// 	title: "Introduction",
-				// 	component: DocsGlobalAuthentication
-				// },
-				// {
-				// 	id: newId(),
-				// 	title: "System users",
-				// 	component: DocsGlobalSystemUsers,
-				// 	languagesExclude: ['cli']
-				// },
+				{
+					id: newId(),
+					title: "Sign in",
+					component: DocsAuthSignIn,
+				},
 				{
 					id: newId(),
 					title: "Sign up",
 					component: DocsAuthSignUp,
 					excludeLanguages: ["cli"],
-				},
-				{
-					id: newId(),
-					title: "Sign in",
-					component: DocsAuthSignIn,
 				},
 				{
 					id: newId(),
@@ -112,7 +135,7 @@ export function buildDocumentation(_schema: ConnectionSchema): DocsTopic[] {
 					id: newId(),
 					title: "Access user data",
 					component: DocsAuthAccessUserData,
-					excludeLanguages: ["rust", "py", "go", "java", "c"],
+					excludeLanguages: ["rust", "py", "go", "c"],
 				},
 			],
 		},
@@ -120,54 +143,50 @@ export function buildDocumentation(_schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Schema",
 			icon: iconDesigner,
-			excludeLanguages: ["java", "c"],
+			excludeLanguages: ["c"],
 			topics: [
-				// {
-				// 	id: newId(),
-				// 	title: "Introduction",
-				// 	component: DocsGlobalSchema
-				// },
-				// {
-				// 	id: newId(),
-				// 	title: "Tables",
-				// 	component: DocsGlobalSchemaTables
-				// },
 				{
 					id: newId(),
-					title: "Params",
-					component: DocsSchemaParams,
+					title: "Access methods",
+					component: DocsSchemaAccess,
+					excludeLanguages: ["rust", "py", "go", "c", "js", "php"],
 				},
 				{
 					id: newId(),
-					title: "Scopes",
-					component: DocsSchemaScopes,
-					excludeLanguages: ["rust", "py", "go", "java", "c", "js"],
-				},
-				{
-					id: newId(),
-					title: "Users",
+					title: "System users",
 					component: DocsSchemaUsers,
-					excludeLanguages: ["rust", "py", "go", "java", "c", "js", "php"],
+					excludeLanguages: ["rust", "py", "go", "c", "js", "php"],
+				},
+				{
+					id: newId(),
+					title: "Parameters",
+					component: DocsSchemaParams,
 				},
 				{
 					id: newId(),
 					title: "Functions",
 					component: DocsSchemaFunctions,
-					excludeLanguages: ["rust", "py", "go", "java", "c", "js", "php"],
+					excludeLanguages: ["rust", "py", "go", "c", "js", "php"],
 				},
 				{
 					id: newId(),
 					title: "Analyzers",
 					component: DocsSchemaAnalyzers,
-					excludeLanguages: ["rust", "py", "go", "java", "c"],
+					excludeLanguages: ["rust", "py", "go", "c"],
+				},
+				{
+					id: newId(),
+					title: "Computed fields",
+					component: DocsSchemaComputedFields,
+					excludeLanguages: ["rust", "py", "go", "c", "js", "php"],
 				},
 			],
 		},
 		{
 			id: newId(),
-			title: `Tables`,
+			title: "Tables",
 			icon: iconTable,
-			excludeLanguages: ["java", "c"],
+			excludeLanguages: ["c"],
 			component: DocsTablesSelector,
 			topics: [
 				{
@@ -177,13 +196,13 @@ export function buildDocumentation(_schema: ConnectionSchema): DocsTopic[] {
 				},
 				{
 					id: newId(),
-					title: "Selecting fields",
-					component: DocsTablesSelect,
+					title: "Selecting all fields",
+					component: DocsTablesSelectAllFields,
 				},
 				{
 					id: newId(),
-					title: "Selecting all fields",
-					component: DocsTablesSelectAllFields,
+					title: "Selecting fields",
+					component: DocsTablesSelect,
 				},
 				{
 					id: newId(),
@@ -207,51 +226,100 @@ export function buildDocumentation(_schema: ConnectionSchema): DocsTopic[] {
 				},
 				{
 					id: newId(),
-					title: "Live selecting",
+					title: "Live queries",
 					component: DocsTablesLiveSelecting,
 					excludeLanguages: ["php"],
 				},
-
-				// {
-				// 	id: newId(),
-				// 	title: "Manage indexes",
-				// 	component: DocsTablesManageIndexes,
-				// 	extra: { table }
-				// },
-				// {
-				// 	id: newId(),
-				// 	title: "Manage fields",
-				// 	component: DocsTablesManageFields,
-				// 	extra: { table }
-				// },
-				// {
-				// 	id: newId(),
-				// 	title: "Manage events",
-				// 	component: DocsTablesManageEvents,
-				// 	extra: { table }
-				// }
 			],
 		},
 		{
 			id: newId(),
-			title: "Concepts",
-			icon: iconStar,
-			excludeLanguages: ["java", "c"],
+			title: "Data models",
+			icon: iconDatabase,
+			excludeLanguages: ["c"],
 			topics: [
+				{
+					id: newId(),
+					title: "Document model",
+					component: DocsDataModelsDocument,
+				},
+				{
+					id: newId(),
+					title: "Record links",
+					component: DocsDataModelsRecordLinks,
+				},
+				{
+					id: newId(),
+					title: "Graph relations",
+					component: DocsConceptsGraphRelations,
+				},
+				{
+					id: newId(),
+					title: "Graph traversal",
+					component: DocsConceptsGraphTraversal,
+				},
 				{
 					id: newId(),
 					title: "Full-text search",
 					component: DocsConceptsFullTextSearch,
 				},
-				// {
-				// 	id: newId(),
-				// 	title: "Graph traversal",
-				// 	component: DocsGlobalGraphTraversal
-				// },
 				{
 					id: newId(),
-					title: "SurrealML",
-					component: DocsConceptsSurrealML,
+					title: "Geospatial",
+					component: DocsDataModelsGeospatial,
+					excludeLanguages: ["php"],
+				},
+				{
+					id: newId(),
+					title: "Time series",
+					component: DocsDataModelsTimeSeries,
+				},
+				{
+					id: newId(),
+					title: "Vector search",
+					component: DocsDataModelsVectorSearch,
+				},
+				{
+					id: newId(),
+					title: "Files",
+					component: DocsConceptsFiles,
+				},
+			],
+		},
+		{
+			id: newId(),
+			title: "Extensions",
+			icon: iconPackageClosed,
+			excludeLanguages: ["c"],
+			topics: [
+				{
+					id: newId(),
+					title: "Surrealism plugins",
+					component: DocsExtensionsSurrealism,
+				},
+			],
+		},
+		{
+			id: newId(),
+			title: "SDK",
+			icon: iconAPI,
+			excludeLanguages: ["c"],
+			topics: [
+				{
+					id: newId(),
+					title: "Transactions",
+					component: DocsSdkTransactions,
+				},
+				{
+					id: newId(),
+					title: "Multiple sessions",
+					component: DocsSdkMultipleSessions,
+					excludeLanguages: ["cli", "rust", "php"],
+				},
+				{
+					id: newId(),
+					title: "Import and export",
+					component: DocsSdkImportExport,
 				},
 			],
 		},
@@ -259,22 +327,37 @@ export function buildDocumentation(_schema: ConnectionSchema): DocsTopic[] {
 			id: newId(),
 			title: "Learn more",
 			icon: iconBook,
-			excludeLanguages: ["java", "c"],
+			excludeLanguages: ["c"],
 			topics: [
 				{
 					id: newId(),
 					title: "Documentation",
-					link: "https://surrealdb.com/docs/surrealdb/",
+					link: "https://surrealdb.com/docs/",
 				},
 				{
 					id: newId(),
-					title: "SurrealQL",
-					link: "https://surrealdb.com/docs/surrealql/",
+					title: "SurrealQL reference",
+					link: "https://surrealdb.com/docs/reference/query-language",
 				},
 				{
 					id: newId(),
-					title: "Integration",
-					link: "https://surrealdb.com/docs/surrealdb/integration/",
+					title: "SDK integration",
+					link: "https://surrealdb.com/docs/learn/querying/surrealql/executing-queries/via-sdks",
+				},
+				{
+					id: newId(),
+					title: "Java SDK",
+					link: "https://surrealdb.com/docs/languages/java",
+				},
+				{
+					id: newId(),
+					title: "Extensions guide",
+					link: "https://surrealdb.com/docs/learn/extensions/plugins/overview",
+				},
+				{
+					id: newId(),
+					title: "Migration guide",
+					link: "https://surrealdb.com/docs/build/migrating/from-old-surrealdb-versions/2x-to-3x",
 				},
 			],
 		},

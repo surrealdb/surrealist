@@ -8,76 +8,104 @@ export function DocsSchemaAnalyzers({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3);
-		`,
+-- Define an analyzer for full-text search tokenisation
+DEFINE ANALYZER english
+	TOKENIZERS blank, class, camel, punct
+	FILTERS snowball(english);
+
+-- Create a full-text index
+DEFINE INDEX article_title ON article FIELDS title FULLTEXT ANALYZER english BM25;
+`,
 			js: `
-		import { Surreal } from 'surrealdb';
+await db.query(\`
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
 
-		const db = new Surreal();
-
-		import { Surreal } from 'surrealdb';
-		const db = new Surreal();
-		await db.connect('<the actual address of the connection>/rpc', {
-			namespace: '<the actual ns of the connection>',
-			database: '<the action db of the connection>'
-		});
-
-		`,
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+\`);
+`,
 			rust: `
-		//Connect to a local endpoint
-		DB.connect::<Ws>("127.0.0.1:8000").await?;
-		//Connect to a remote endpoint
-		DB.connect::<Wss>("cloud.surrealdb.com").await?;
-		`,
+db.query(r#"
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+"#).await?;
+`,
 			py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
-		`,
+await db.query("""
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+""")
+`,
 			go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc");
-		`,
+_, err := surrealdb.Query[any](ctx, db, \`
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+\`, nil)
+`,
 			csharp: `
-		await db.RawQuery(
-			"""
-				DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3);
-			"""
-		);
-		`,
+await db.RawQuery("""
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+""");
+`,
 			java: `
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
-		`,
+db.query("""
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+""");
+`,
 			php: `
-		$db->query("DEFINE ANALYZER example_ngram TOKENIZERS class FILTERS ngram(1,3)");
-		`,
+$db->query('
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+');
+`,
 		}),
 		[],
 	);
 
 	return (
 		<Article title="Analyzers">
-			<div>
-				<p>
-					Analyzers are used to enable full-text search on a table within your database.
-					If you have any analyzers defined for a table, you can use the full-text search
-					capabilities of SurrealDB. Check out the section on{" "}
-					<Link href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
-						{" "}
-						Full Text Search for more information.
-					</Link>
-				</p>
-			</div>
+			<Box>
+				<Box component="p">
+					Analyzers configure how text is tokenised and filtered for full-text search.
+					Combine them with <code>FULLTEXT ANALYZER</code> indexes. See the{" "}
+					<Link href="https://surrealdb.com/docs/learn/data-models/full-text-search">
+						full-text search guide
+					</Link>{" "}
+					for more.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Analyzers"
+					title="Define an analyzer"
 					values={snippets}
 				/>
 			</Box>

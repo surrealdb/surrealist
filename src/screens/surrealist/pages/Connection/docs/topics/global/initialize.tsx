@@ -1,92 +1,99 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { useConnection } from "~/hooks/connection";
 import { Article, DocsPreview } from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsConnection } from "~/screens/surrealist/pages/Connection/docs/hooks/connection";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
-import { createBaseAuthentication } from "~/util/defaults";
-import { connectionUri } from "~/util/helpers";
 
 export function DocsGlobalInit({ language }: TopicProps) {
-	const auth = useConnection((c) => c?.authentication ?? createBaseAuthentication());
-	const endpoint = connectionUri(auth.protocol, auth.hostname);
-	const esc_endpoint = JSON.stringify(endpoint);
-	const esc_namespace = JSON.stringify(auth.namespace);
-	const esc_database = JSON.stringify(auth.database);
+	const { esc_endpoint, esc_endpoint_java, esc_namespace, esc_database } = useDocsConnection();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-			surreal sql --endpoint ${esc_endpoint} --namespace ${esc_namespace} --database ${esc_database}
-		`,
+# Start a local SurrealDB instance
+surreal start --user root --pass secret memory
+
+# Open an interactive SQL shell
+surreal sql --endpoint ${esc_endpoint} --namespace ${esc_namespace} --database ${esc_database}
+`,
 			js: `
-			import Surreal from 'surrealdb';
+import { Surreal } from 'surrealdb';
 
-			// Create a new Surreal instance
-			const db = new Surreal();
+// Create a new Surreal instance
+const db = new Surreal();
 
-			// Connect to the database
-			await db.connect(${esc_endpoint}, {
-				namespace: ${esc_namespace},
-				database: ${esc_database}
-			});
-		`,
+// Connect to the database
+await db.connect(${esc_endpoint}, {
+	namespace: ${esc_namespace},
+	database: ${esc_database},
+});
+`,
 			rust: `
-			use surrealdb::engine::any;
+use surrealdb::engine::any;
+use surrealdb::Surreal;
 
-			// Connect to the database
-			let db = any::connect(${esc_endpoint}).await?;
+// Create a new Surreal instance
+let db = Surreal::init();
 
-			// Specify namespace and database
-			db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
-		`,
+// Connect to the database
+db.connect(${esc_endpoint}).await?;
+
+// Specify namespace and database
+db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
+`,
 			py: `
-			# Connect to a local endpoint with http protocol
-			db = Surreal('http://127.0.0.1:8000')
+from surrealdb import AsyncSurreal
 
-			# Connect to a remote endpoint with ws protocol
-			db = AsyncSurreal('wss://cloud.surrealdb.com')
-		`,
+# Connect using an async context manager
+async with AsyncSurreal(${esc_endpoint}) as db:
+	await db.use(${esc_namespace}, ${esc_database})
+	# Sign in and run queries...
+`,
 			go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("wss://cloud.surrealdb.com/rpc");
-		`,
-			csharp: `
-			using SurrealDb.Net;
-			
-			// Connect to a local endpoint
-			var db = new SurrealDbClient("http://127.0.0.1:8000");
+import (
+	"context"
+	"github.com/surrealdb/surrealdb.go"
+)
 
-			// Connect to a remote endpoint
-			var db = new SurrealDbClient("wss://cloud.surrealdb.com/rpc");
-		`,
+ctx := context.Background()
+db := surrealdb.New(${esc_endpoint})
+`,
+			csharp: `
+using SurrealDb.Net;
+
+// Connect to a local or remote endpoint
+var db = new SurrealDbClient(${esc_endpoint});
+`,
 			java: `
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
-		`,
+import com.surrealdb.Surreal;
+
+try (Surreal db = new Surreal()) {
+	db.connect(${esc_endpoint_java});
+	db.useNs(${esc_namespace}).useDb(${esc_database});
+}
+`,
 			php: `
-		$db = new \\Surreal\\Surreal();
-		`,
+use Surreal\\Surreal;
+
+$db = new Surreal();
+`,
 		}),
-		[esc_endpoint, esc_namespace, esc_database],
+		[esc_endpoint, esc_endpoint_java, esc_namespace, esc_database],
 	);
 
 	return (
 		<Article title="Initialising">
-			<div>
-				<p>
-					To initialise a connection to SurrealDB, you need to create a new instance of a
-					SurrealDB client and connect. This will allow you to interact with the database
-					and run queries to the database. Do this by importing the Surreal class and
-					create a new instance of the class. Then, use the connect method to connect to
-					the database.
-				</p>
-			</div>
+			<Box>
+				<Box component="p">
+					To initialise a connection to SurrealDB, create a new client instance and
+					connect to your endpoint. Once connected, select a namespace and database before
+					running queries or authenticating.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="initialise"
+					title="Initialise"
 					values={snippets}
 				/>
 			</Box>

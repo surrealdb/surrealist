@@ -5,85 +5,101 @@ import {
 	DocsPreview,
 	TableTitle,
 } from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsTable } from "~/screens/surrealist/pages/Connection/docs/hooks/table";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
-import { useDocsTable } from "../../hooks/table";
 
 export function DocsTablesInsertingRecords({ language }: TopicProps) {
 	const table = useDocsTable();
-
-	const fieldName =
-		table.fields.find(({ name }: { name: string }) => !["id", "in", "out"].includes(name))
-			?.name ?? "id";
+	const tableName = table.schema.name;
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		INSERT INTO ${table.schema.name} {
-			field: value
-		};
-		`,
+-- Insert a single record
+INSERT INTO ${tableName} { name: "Tobie" };
+
+-- Insert multiple records
+INSERT INTO ${tableName} [
+	{ name: "Tobie" },
+	{ name: "Jaime" },
+];
+`,
 			js: `
-		await db.insert('${table.schema.name}', {
-			field: value
-		});
-		`,
+import { Table } from 'surrealdb';
+
+// Insert a single record
+await db.insert(new Table('${tableName}'), { name: 'Tobie' });
+
+// Insert multiple records
+await db.insert(new Table('${tableName}'), [
+	{ name: 'Tobie' },
+	{ name: 'Jaime' },
+]);
+`,
 			rust: `
-		db.update("${table.schema.name}").merge(Document {
-        updated_at: Datetime::default(),
-	}).await?;
-		`,
+// Insert a single record
+db.insert("${tableName}")
+	.content(Person { name: "Tobie".into() })
+	.await?;
+
+// Insert multiple records
+db.insert("${tableName}")
+	.content(vec![
+		Person { name: "Tobie".into() },
+		Person { name: "Jaime".into() },
+	])
+	.await?;
+`,
 			py: `
-		# Insert a single record
-db.insert('${table.schema.name}', {
-	"name": 'Tobie',
-	"settings": {
-		"active": True,
-		"marketing": True,
-	},
-})
+# Insert a single record
+await db.insert('${tableName}', {"name": "Tobie"})
 
 # Insert multiple records
-db.insert('${table.schema.name}', [
-	{
-		"name": 'Tobie',
-		"settings": {
-			"active": True,
-			"marketing": True,
-		},
-	},
-	{
-		"name": 'Jaime',
-		"settings": {
-			"active": True,
-			"marketing": True,
-		},
-	},
+await db.insert('${tableName}', [
+	{"name": "Tobie"},
+	{"name": "Jaime"},
 ])
-		`,
+`,
 			go: `
-		// Insert an entry
-		person2, err := surrealdb.Insert[${fieldName}](db, models.Table("${table.schema.name}"), map[interface{}]interface{}{
-			"Name":     "Jane",
-			"Surname":  "Smith",
-			"Location": models.NewGeometryPoint(-0.12, 22.01),
-		})
-		if err != nil {
-			panic(err)
-		}
-		`,
+import "github.com/surrealdb/surrealdb.go/pkg/models"
+
+// Insert a single record
+_, err := surrealdb.Insert[Person](ctx, db,
+	models.Table("${tableName}"),
+	map[string]any{"name": "Tobie"},
+)
+
+// Insert multiple records
+_, err = surrealdb.Insert[[]Person](ctx, db,
+	models.Table("${tableName}"),
+	[]map[string]any{
+		{"name": "Tobie"},
+		{"name": "Jaime"},
+	},
+)
+`,
 			csharp: `
-		await db.Merge("${table.schema.name}", data);
-		`,
+await db.Insert("${tableName}", new { name = "Tobie" });
+
+await db.Insert("${tableName}", new[]
+{
+	new { name = "Tobie" },
+	new { name = "Jaime" },
+});
+`,
 			java: `
-		`,
+List<Value> inserted = db.insert("${tableName}", recordOne, recordTwo);
+`,
 			php: `
-		$db->insert("${table.schema.name}", [
-			["field" => "value"],
-			["field" => "value"]
-		]);
-		`,
+$db->insert("${tableName}", ["name" => "Tobie"]);
+
+$db->insert("${tableName}", [
+	["name" => "Tobie"],
+	["name" => "Jaime"],
+]);
+`,
 		}),
-		[table.schema.name, fieldName],
+		[tableName],
 	);
 
 	return (
@@ -91,20 +107,19 @@ db.insert('${table.schema.name}', [
 			title={
 				<TableTitle
 					title="Inserting records"
-					table={table.schema.name}
+					table={tableName}
 				/>
 			}
 		>
-			<div>
-				<p>
-					Insert records into a table in the database. It could also be used to update
-					existing fields in records within a table.
-				</p>
-			</div>
+			<Box component="p">
+				Insert one or more records into <b>{tableName}</b>. Unlike <code>CREATE</code>,{" "}
+				<code>INSERT</code> adds content to existing tables without generating new record
+				IDs when omitted.
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Inserting Records"
+					title="Insert records"
 					values={snippets}
 				/>
 			</Box>

@@ -154,7 +154,7 @@ export const featureFlags = new FeatureFlags({
 			auth_view: true,
 			functions_view: true,
 			parameters_view: true,
-			apidocs_view: false, // TODO fix api docs
+			apidocs_view: true,
 			database_version_check: true,
 			cloud_enabled: true,
 			cloud_killswitch: true,

@@ -1,57 +1,124 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { Article, DocsPreview } from "~/screens/surrealist/pages/Connection/docs/components";
+import {
+	Article,
+	DocsPreview,
+	TableTitle,
+} from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsTable } from "~/screens/surrealist/pages/Connection/docs/hooks/table";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
-import { useInterfaceStore } from "~/stores/interface";
 
 export function DocsTablesIntroduction({ language }: TopicProps) {
-	const activeTable = useInterfaceStore((state) => state.docsTable);
+	const table = useDocsTable();
+	const tableName = table.schema.name;
+	const isRelation = table.schema.kind.kind === "RELATION";
+	const isView = !!table.schema.view;
+	const isSchemafull = table.schema.schemafull ?? table.schema.full;
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
+-- Inspect the table definition
+INFO FOR TABLE ${tableName};
 
-		-- Create schemafull user table.
-		DEFINE TABLE ${activeTable} SCHEMAFULL;
-		`,
+-- Define a schemafull table
+DEFINE TABLE ${tableName} SCHEMAFULL;
+`,
 			js: `
-		db.create('${activeTable}');
-		`,
+import { Table } from 'surrealdb';
+
+// Select all records from the table
+const records = await db.select(new Table('${tableName}'));
+
+// Get table info via SurrealQL
+const info = await db.query('INFO FOR TABLE type::table($table)', {
+	table: '${tableName}',
+});
+`,
 			rust: `
-		db.create("${activeTable}").await?;
-		`,
+let records: Vec<Value> = db.select("${tableName}").await?;
+
+let info = db
+	.query("INFO FOR TABLE type::table($table)")
+	.bind(("table", "${tableName}"))
+	.await?;
+`,
 			py: `
-		db.create('${activeTable}')
-		`,
+records = await db.select('${tableName}')
+
+info = await db.query(
+	"INFO FOR TABLE type::table($table)",
+	{"table": "${tableName}"},
+)
+`,
 			go: `
-		db.Create("${activeTable}", map[string]interface{}{})
-		`,
+import "github.com/surrealdb/surrealdb.go/pkg/models"
+
+records, err := surrealdb.Select[[]map[string]any](ctx, db,
+	models.Table("${tableName}"),
+)
+
+info, err := surrealdb.Query[any](ctx, db,
+	"INFO FOR TABLE type::table($table)",
+	map[string]any{"table": "${tableName}"},
+)
+`,
 			csharp: `
-		await db.Create<TableName>("${activeTable}");
-		`,
+var records = await db.Select<dynamic>("${tableName}");
+
+var info = await db.RawQuery(
+	"INFO FOR TABLE type::table($table)",
+	new Dictionary<string, object?> { { "table", "${tableName}" } },
+);
+`,
 			java: `
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
-		`,
+Iterator<Person> records = db.select(Person.class, "${tableName}");
+
+Response info = db.queryBind(
+	"INFO FOR TABLE type::table($table)",
+	Map.of("table", "${tableName}")
+);
+`,
 			php: `
-		$db->create("${activeTable}");
-		`,
+$records = $db->select("${tableName}");
+
+$info = $db->query(
+	"INFO FOR TABLE type::table($table)",
+	["table" => "${tableName}"],
+);
+`,
 		}),
-		[activeTable],
+		[tableName],
 	);
 
 	return (
-		<Article title="Tables">
-			<div>
-				<p>
-					Tables are the primary data structure in a database. They store data in the form
-					of records, and can be further configured with indexes and events.
-				</p>
-			</div>
+		<Article
+			title={
+				<TableTitle
+					title="Tables"
+					table={tableName}
+				/>
+			}
+		>
+			<Box>
+				<Box component="p">
+					Tables store records in your database. The active table <b>{tableName}</b> is a{" "}
+					{isView
+						? "view"
+						: isRelation
+							? "relation"
+							: isSchemafull
+								? "schemafull"
+								: "schemaless"}{" "}
+					table with {table.fields.length} defined field
+					{table.fields.length === 1 ? "" : "s"}. Use the topics below for CRUD operations
+					personalised to this table.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Tables"
+					title="Table overview"
 					values={snippets}
 				/>
 			</Box>

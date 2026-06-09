@@ -5,49 +5,97 @@ import {
 	DocsPreview,
 	TableTitle,
 } from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsTable } from "~/screens/surrealist/pages/Connection/docs/hooks/table";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
-import { useDocsTable } from "../../hooks/table";
 
 export function DocsTablesCreatingRecords({ language }: TopicProps) {
 	const table = useDocsTable();
+	const tableName = table.schema.name;
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		CREATE ${table.schema.name}:demo
-		`,
+-- Create a record with a random ID
+CREATE ${tableName} SET name = "Tobie";
+
+-- Create a record with a specific ID
+CREATE ${tableName}:tobie SET name = "Tobie";
+`,
 			js: `
-		db.create('${table.schema.name}');
-		`,
+import { RecordId, Table } from 'surrealdb';
+
+// Create a record with a random ID
+const record = await db.create(new Table('${tableName}'))
+	.content({ name: 'Tobie' });
+
+// Create a record with a specific ID
+const tobie = await db.create(new RecordId('${tableName}', 'tobie'))
+	.content({ name: 'Tobie' });
+`,
 			rust: `
-		db.create("${table.schema.name}").await?;
-		`,
+// Create a record with a random ID
+let person: Option<Person> = db.create("${tableName}")
+	.content(Person { name: "Tobie".into() })
+	.await?;
+
+// Create a record with a specific ID
+let tobie: Option<Person> = db.create(("${tableName}", "tobie"))
+	.content(Person { name: "Tobie".into() })
+	.await?;
+`,
 			py: `
-		# Create a record with a random ID
-person = db.create('${table.schema.name}')
+from surrealdb import RecordID
+
+# Create a record with a random ID
+person = await db.create('${tableName}', {"name": "Tobie"})
+
 # Create a record with a specific ID
-person = db.create(RecordID('${table.schema.name}', 'tobie'), {
-	"name": 'Tobie',
-	"settings": {
-		"active": True,
-		"marketing": True,
-	}
-})
-		`,
+tobie = await db.create(RecordID('${tableName}', 'tobie'), {"name": "Tobie"})
+`,
 			go: `
-		db.Create("${table.schema.name}", map[string]interface{}{})
-		`,
+import "github.com/surrealdb/surrealdb.go/pkg/models"
+
+// Create a record with a random ID
+created, err := surrealdb.Create[Person](ctx, db,
+	models.Table("${tableName}"),
+	map[string]any{"name": "Tobie"},
+)
+
+// Create a record with a specific ID
+tobie, err := surrealdb.Create[Person](ctx, db,
+	models.RecordID{Table: "${tableName}", ID: "tobie"},
+	map[string]any{"name": "Tobie"},
+)
+`,
 			csharp: `
-		await db.Create("${table.schema.name}", data);
-		`,
+// Create a record with a random ID
+var created = await db.Create("${tableName}", new { name = "Tobie" });
+
+// Create a record with a specific ID
+var tobie = await db.Create("${tableName}:tobie", new { name = "Tobie" });
+`,
 			java: `
-		driver.create(thing, data)
-		`,
+import com.surrealdb.RecordId;
+
+// Create a record with a random ID
+List<Person> created = db.create(Person.class, "${tableName}", person);
+
+// Create a record with a specific ID
+Person tobie = db.create(
+	Person.class,
+	new RecordId("${tableName}", "tobie"),
+	person
+);
+`,
 			php: `
-		$db->create("${table.schema.name}")
-		`,
+// Create a record with a random ID
+$person = $db->create("${tableName}", ["name" => "Tobie"]);
+
+// Create a record with a specific ID
+$tobie = $db->create("${tableName}:tobie", ["name" => "Tobie"]);
+`,
 		}),
-		[table.schema.name],
+		[tableName],
 	);
 
 	return (
@@ -55,19 +103,18 @@ person = db.create(RecordID('${table.schema.name}', 'tobie'), {
 			title={
 				<TableTitle
 					title="Creating records"
-					table={table.schema.name}
+					table={tableName}
 				/>
 			}
 		>
-			<p>
-				Add a new record to the table<b> {table.schema.name} </b>. The record will have a
-				random record ID if not specified after the table name. You can also specify the
-				fields of the record.
-			</p>
+			<Box component="p">
+				Add a new record to <b>{tableName}</b>. Omit the record ID to generate one
+				automatically, or specify an ID after the table name.
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Creating Records"
+					title="Create records"
 					values={snippets}
 				/>
 			</Box>

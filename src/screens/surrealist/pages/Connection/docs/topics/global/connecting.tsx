@@ -1,83 +1,121 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { useConnection } from "~/hooks/connection";
 import { Article, DocsPreview } from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsConnection } from "~/screens/surrealist/pages/Connection/docs/hooks/connection";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
-import { createBaseAuthentication } from "~/util/defaults";
-import { connectionUri } from "~/util/helpers";
 
 export function DocsGlobalConnecting({ language }: TopicProps) {
-	const auth = useConnection((c) => c?.authentication ?? createBaseAuthentication());
-	const endpoint = connectionUri(auth.protocol, auth.hostname);
-	const esc_endpoint = JSON.stringify(endpoint);
-	const esc_namespace = JSON.stringify(auth.namespace);
-	const esc_database = JSON.stringify(auth.database);
+	const { esc_endpoint, esc_endpoint_java, esc_namespace, esc_database } = useDocsConnection();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-			surreal sql --endpoint ${esc_endpoint} --namespace ${esc_namespace} --database ${esc_database}
-		`,
+surreal sql --endpoint ${esc_endpoint} --namespace ${esc_namespace} --database ${esc_database} --user root --pass secret
+`,
 			js: `
-			await db.connect(${esc_endpoint}, {
-				namespace: ${esc_namespace},
-				database: ${esc_database}
-			});
-		`,
-			rust: `
-			let db = any::connect(${esc_endpoint}).await?;
-			db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
-		`,
-			py: `
-			# update Surreal to AsyncSurreal if using async code
-					from surrealdb import Surreal
-			# Without using a context manager
-					db = Surreal('ws://localhost:8000')
-					db.use('${esc_namespace}', '${esc_database}')
-			# Sign in and your code...
-					db.close()	
+import { Surreal } from 'surrealdb';
 
-			# Using a context manager
-			with Surreal('ws://localhost:8000') as db:
-				db.use('${esc_namespace}', '${esc_database}')
-				# Sign in and your code...
-					db = Surreal()
-					await db.connect('https://cloud.surrealdb.com/rpc')
-		`,
+const db = new Surreal();
+
+// Connect with namespace, database, and authentication
+await db.connect(${esc_endpoint}, {
+	namespace: ${esc_namespace},
+	database: ${esc_database},
+	authentication: {
+		username: 'root',
+		password: 'secret',
+	},
+});
+`,
+			rust: `
+use surrealdb::engine::any;
+use surrealdb::opt::auth::Root;
+use surrealdb::Surreal;
+
+let db = Surreal::init();
+db.connect(${esc_endpoint}).await?;
+db.use_ns(${esc_namespace}).use_db(${esc_database}).await?;
+
+// Authenticate as a system user
+db.signin(Root {
+	username: "root".into(),
+	password: "secret".into(),
+}).await?;
+`,
+			py: `
+from surrealdb import AsyncSurreal
+
+async with AsyncSurreal(${esc_endpoint}) as db:
+	await db.use(${esc_namespace}, ${esc_database})
+	await db.signin({"username": "root", "password": "secret"})
+`,
 			go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("wss://cloud.surrealdb.com/rpc");
-		`,
+import (
+	"context"
+	"github.com/surrealdb/surrealdb.go"
+)
+
+ctx := context.Background()
+db := surrealdb.New(${esc_endpoint})
+
+_, err := db.SignIn(ctx, &surrealdb.Auth{
+	Username: "root",
+	Password: "secret",
+})
+if err != nil {
+	panic(err)
+}
+
+err = db.Use(ctx, ${esc_namespace}, ${esc_database})
+`,
 			csharp: `
-		await db.Connect();
-		`,
+using SurrealDb.Net;
+using SurrealDb.Net.Models.Auth;
+
+var db = new SurrealDbClient(${esc_endpoint});
+
+await db.SignIn(new RootAuth
+{
+	Username = "root",
+	Password = "secret",
+});
+
+await db.Use(${esc_namespace}, ${esc_database});
+`,
 			java: `
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
-		`,
+import com.surrealdb.Surreal;
+import com.surrealdb.signin.RootCredential;
+
+try (Surreal db = new Surreal()) {
+	db.connect(${esc_endpoint_java});
+	db.useNs(${esc_namespace}).useDb(${esc_database});
+	db.signin(new RootCredential("root", "secret"));
+}
+`,
 			php: `
-		$db->connect("http://localhost:8000", [
-			"namespace" => "test",
-			"database" => "test"
-		]);
-		`,
+$db->connect(${esc_endpoint}, [
+	"namespace" => ${esc_namespace},
+	"database" => ${esc_database},
+]);
+
+$db->signin([
+	"username" => "root",
+	"password" => "secret",
+]);
+`,
 		}),
-		[esc_endpoint, esc_namespace, esc_database],
+		[esc_endpoint, esc_endpoint_java, esc_namespace, esc_database],
 	);
 
 	return (
 		<Article title="Connecting">
-			<div>
-				<p>
-					The connection API is used to establish a connection to a SurrealDB instance.
-					The connection is used to interact with the database and perform operations on
-					the data. While connecting to the database, the user can specify the namespace
-					and database to connect to, as well as the authentication details for the
-					connection.
-				</p>
-			</div>
+			<Box>
+				<Box component="p">
+					Establish a connection to your SurrealDB instance, select the namespace and
+					database to use, and authenticate. Passing authentication details to{" "}
+					<code>.connect()</code> in the JavaScript SDK enables automatic reconnection.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}

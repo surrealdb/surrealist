@@ -5,44 +5,77 @@ import {
 	DocsPreview,
 	TableTitle,
 } from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsTable } from "~/screens/surrealist/pages/Connection/docs/hooks/table";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
-import { useDocsTable } from "../../hooks/table";
 
 export function DocsTablesDeletingRecords({ language }: TopicProps) {
 	const table = useDocsTable();
+	const tableName = table.schema.name;
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		DELETE ${table.schema.name}:demo
-		`,
-			js: `
-		db.delete('${table.schema.name}');
-		`,
-			rust: `
-		db.delete("${table.schema.name}").await?;
-		`,
-			py: `
-		# Delete all records in a table
-db.delete('${table.schema.name}')
+-- Delete all records in a table
+DELETE ${tableName};
 
-# Delete a record with a specific ID
-db.delete(RecordID('${table.schema.name}', 'h5wxrf2ewk8xjxosxtyc'))
-		`,
+-- Delete a specific record
+DELETE ${tableName}:tobie;
+`,
+			js: `
+import { RecordId, Table } from 'surrealdb';
+
+// Delete all records in a table
+await db.delete(new Table('${tableName}'));
+
+// Delete a specific record
+await db.delete(new RecordId('${tableName}', 'tobie'));
+`,
+			rust: `
+// Delete all records
+db.delete("${tableName}").await?;
+
+// Delete a specific record
+db.delete(("${tableName}", "tobie")).await?;
+`,
+			py: `
+from surrealdb import RecordID
+
+# Delete all records in a table
+await db.delete('${tableName}')
+
+# Delete a specific record
+await db.delete(RecordID('${tableName}', 'tobie'))
+`,
 			go: `
-		db.Delete[models.Table](db, models.Table("${table.schema.name}"));
-		`,
+import "github.com/surrealdb/surrealdb.go/pkg/models"
+
+// Delete all records
+_, err := surrealdb.Delete[any](ctx, db, models.Table("${tableName}"))
+
+// Delete a specific record
+_, err = surrealdb.Delete[any](ctx, db,
+	models.RecordID{Table: "${tableName}", ID: "tobie"},
+)
+`,
 			csharp: `
-		await db.Delete("${table.schema.name}");
-		`,
+await db.Delete("${tableName}");
+await db.Delete("${tableName}:tobie");
+`,
 			java: `
-		driver.delete(thing, data)
-		`,
+import com.surrealdb.RecordId;
+
+// Delete all records in a table
+db.delete("${tableName}");
+
+// Delete a specific record
+db.delete(new RecordId("${tableName}", "tobie"));
+`,
 			php: `
-		$db->delete("${table.schema.name}");
-		`,
+$db->delete("${tableName}");
+$db->delete("${tableName}:tobie");
+`,
 		}),
-		[table.schema.name],
+		[tableName],
 	);
 
 	return (
@@ -50,21 +83,17 @@ db.delete(RecordID('${table.schema.name}', 'h5wxrf2ewk8xjxosxtyc'))
 			title={
 				<TableTitle
 					title="Deleting records"
-					table={table.schema.name}
+					table={tableName}
 				/>
 			}
 		>
-			<div>
-				<p>
-					Deleting records is a common operation when you want to remove records from a
-					table. This operation is useful when you want to remove records from a table and
-					can also be based on certain conditions using the Where clause.
-				</p>
-			</div>
+			<Box component="p">
+				Remove all records from <b>{tableName}</b>, or delete a single record by ID.
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Deleting Records"
+					title="Delete records"
 					values={snippets}
 				/>
 			</Box>

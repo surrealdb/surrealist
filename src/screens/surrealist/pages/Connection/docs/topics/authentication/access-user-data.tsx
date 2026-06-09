@@ -7,30 +7,74 @@ export function DocsAuthAccessUserData({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-			RETURN $auth;
-		`,
+-- Access the authenticated record user in SurrealQL
+RETURN $auth;
+
+-- Use $auth in queries to scope data to the current user
+SELECT * FROM post WHERE author = $auth.id;
+`,
 			js: `
-			await db.info();
-		`,
+// Get connection and authentication info
+const info = await db.info();
+
+// Use $auth in SurrealQL queries
+const posts = await db.query(
+	'SELECT * FROM post WHERE author = $auth.id',
+);
+`,
+			rust: `
+let info = db.info().await?;
+
+let posts: Vec<Post> = db
+	.query("SELECT * FROM post WHERE author = $auth.id")
+	.await?
+	.take(0)?;
+`,
+			py: `
+info = await db.info()
+
+posts = await db.query("SELECT * FROM post WHERE author = $auth.id")
+`,
+			go: `
+info, err := db.Info(ctx)
+
+posts, err := surrealdb.Query[[]Post](ctx, db,
+	"SELECT * FROM post WHERE author = $auth.id", nil,
+)
+`,
 			csharp: `
-		await db.Info<User>();
-		`,
+var info = await db.Info<User>();
+
+var posts = await db.RawQuery("SELECT * FROM post WHERE author = $auth.id");
+`,
+			java: `
+// Access the authenticated record user in SurrealQL
+Response auth = db.query("RETURN $auth");
+
+// Scope queries to the current user
+List<Post> posts = db.queryBind(
+	"SELECT * FROM post WHERE author = $auth.id",
+	Map.of()
+).take(Post.class, 0);
+`,
 			php: `
-		$info = $db->info();
-		`,
+$info = $db->info();
+
+$posts = $db->query("SELECT * FROM post WHERE author = $auth.id");
+`,
 		}),
 		[],
 	);
 
 	return (
 		<Article title="Access user data">
-			<div>
-				<p>
-					You can access information about a user that is currently authenticated with an
-					access method. This information may include the user's name, email, and other
-					details.
-				</p>
-			</div>
+			<Box>
+				<Box component="p">
+					When authenticated via a record access method, use <code>$auth</code> in
+					SurrealQL to reference the current user&apos;s record. Call <code>info()</code>{" "}
+					in SDKs to retrieve connection and authentication metadata.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}

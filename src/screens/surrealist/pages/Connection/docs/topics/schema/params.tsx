@@ -7,109 +7,93 @@ export function DocsSchemaParams({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		// Assign a variable on the connection
-		DEFINE PARAM $endpointBase VALUE "https://dummyjson.com";
+-- Define a persistent parameter in the schema
+DEFINE PARAM $endpointBase VALUE "https://api.example.com";
 
-		// Remove a parameter from the connection
-		REMOVE PARAM $endpointBase;
+-- Assign a session parameter
+LET $name = { first: "Tobie", last: "Morgan Hitchcock" };
 
-		`,
+-- Remove a schema parameter
+REMOVE PARAM $endpointBase;
+`,
 			js: `
-			// Assign a variable on the connection
-			await db.let('name', {
-				first: 'Tobie',
-				last: 'Morgan Hitchcock',
-			});
+// Assign a session variable on the connection
+await db.let('name', {
+	first: 'Tobie',
+	last: 'Morgan Hitchcock',
+});
 
-			// Use the variable in a subsequent query
-			await db.query('CREATE person SET name = $name');
+// Use the variable in a subsequent query
+await db.query('CREATE person SET name = $name');
 
-			// Use the variable in a subsequent query
-			await db.query('SELECT * FROM person WHERE name.first = $name.first');
-
-			// Remove a parameter from the connection
-			async db.unset(name);
-
-		`,
+// Remove a session variable
+await db.unset('name');
+`,
 			rust: `
-		// Assign a variable on the connection
-		db.set("name", Name {
-			first: "Tobie",
-			last: "Morgan Hitchcock",
-		}).await?;
+db.set("name", Name {
+	first: "Tobie".into(),
+	last: "Morgan Hitchcock".into(),
+}).await?;
 
-
-		// Use the variable in a subsequent query
-		db.query("CREATE person SET name = $name").await?;
-
-
-		// Use the variable in a subsequent query
-		db.query("SELECT * FROM person WHERE name.first = $name.first").await?;
-		`,
+db.query("CREATE person SET name = $name").await?;
+db.unset("name").await?;
+`,
 			py: `
-		# Assign a variable on the connection
-		await db.let('name', {
-		 "first": 'Tobie',
-		 "last": 'Morgan Hitchcock',
-		})
-		# Use the variable in a subsequent query
-		await db.query('CREATE person SET name = $name')
-		# Use the variable in a subsequent query
-		await db.query('SELECT * FROM person WHERE name.first = $name.first')
-		# Remove a parameter from the connection
-		await db.unset('name')
-		`,
+await db.let('name', {
+	"first": "Tobie",
+	"last": "Morgan Hitchcock",
+})
+
+await db.query('CREATE person SET name = $name')
+await db.unset('name')
+`,
 			go: `
-		// Assign the variable on the connection
-		db.Let("name", new Name { 
-			FirstName = "Tobie", 
-			LastName = "Morgan Hitchcock" 
-		});
+db.Let("name", map[string]any{
+	"first": "Tobie",
+	"last":  "Morgan Hitchcock",
+})
 
-		// Use the variable in a subsequent query
-		db.Query("CREATE person SET name = $name", nil);
-
-		// Use the variable in a subsequent query
-		db.Query("SELECT * FROM person WHERE name.first = $name.first", nil);
-		`,
+surrealdb.Query[any](ctx, db, "CREATE person SET name = $name", nil)
+db.Unset("name")
+`,
 			csharp: `
-		// Assign a variable on the connection
-		await db.Set("name", new { FirstName = "Tobie", LastName = "Morgan Hitchcock" });
-
-		// Use the variable in a subsequent query
-		await db.Query($"CREATE person SET name = $name");
-
-		// Use the variable in a subsequent query
-		await db.Query($"SELECT * FROM person WHERE name.first_name = $name.first_name");
-		`,
+await db.Set("name", new { First = "Tobie", Last = "Morgan Hitchcock" });
+await db.Query("CREATE person SET name = $name");
+await db.Unset("name");
+`,
 			java: `
-		driver.let(key, value)
-		`,
+// Assign a session parameter via SurrealQL
+db.query("""
+	LET $name = { first: "Tobie", last: "Morgan Hitchcock" };
+	CREATE person SET name = $name;
+""");
+`,
 			php: `
-		$db->let("name", [
-			"firstname" => "Tobie",
-			"lastname" => "Morgan Hitchcock"
-		]);
+$db->let("name", [
+	"first" => "Tobie",
+	"last" => "Morgan Hitchcock",
+]);
 
-		$db->query('SELECT * FROM person WHERE name.firstname = $name.firstname');
-		`,
+$db->query('CREATE person SET name = $name');
+$db->unset("name");
+`,
 		}),
 		[],
 	);
 
 	return (
-		<Article title="Params">
-			<div>
-				<p>
-					In your database you can define parameters that can be used in your queries.
-					These parameters can be used to store values that are used in multiple queries,
-					or to store values that are used in other parts of your application.
-				</p>
-			</div>
+		<Article title="Parameters">
+			<Box>
+				<Box component="p">
+					Parameters store reusable values in queries. Schema parameters persist in the
+					database via <code>DEFINE PARAM</code>, while session parameters are set per
+					connection with <code>LET $variable =</code>.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Params"
+					title="Parameters"
 					values={snippets}
 				/>
 			</Box>

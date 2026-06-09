@@ -1,99 +1,101 @@
 import { Box } from "@mantine/core";
-import { pascal } from "radash";
 import { useMemo } from "react";
 import {
 	Article,
 	DocsPreview,
 	TableTitle,
 } from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsTable } from "~/screens/surrealist/pages/Connection/docs/hooks/table";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
-import { useDocsTable } from "../../hooks/table";
 
 export function DocsTablesLiveSelecting({ language }: TopicProps) {
 	const table = useDocsTable();
+	const tableName = table.schema.name;
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		LIVE SELECT DIFF FROM ${table.schema.name};
-		`,
+-- Live query with diff mode
+LIVE SELECT DIFF FROM ${tableName};
+
+-- Live query with a WHERE clause and session parameters
+LET $min_age = 18;
+LIVE SELECT * FROM ${tableName} WHERE age > $min_age;
+`,
 			js: `
-		// The uuid of the live query will be returned
-		const queryUuid = await db.live(
-			"${table.schema.name}",
-			// The callback function takes an object with the 'action' and 'result' properties
-			({ action, result }) => {
-				// action can be: 'CREATE', 'UPDATE', 'DELETE' or 'CLOSE'
-				if (action === 'CLOSE') return;
-table_name
-				// result contains either the entire record, or a set of JSON patches when diff mode is enabled
-						processSomeLiveQueryUpdate(result);
-			}
-		)
+import { Table, gt } from 'surrealdb';
 
+// Managed live query — automatically restarts on reconnect
+const live = await db.live(new Table('${tableName}'))
+	.diff()
+	.where(gt('age', 18));
 
-		// Registers a callback function for a running live query.
-		await db.listenLive(
-			queryUuid,
-			// The callback function takes an object with the "action" and "result" properties
-			({ action, result }) => {
-				// action can be: "CREATE", "UPDATE", "DELETE" or "CLOSE"
-				if (action === 'CLOSE') return;
+live.subscribe((action, result, record) => {
+	switch (action) {
+		case 'CREATE':
+			console.log('New record:', result);
+			break;
+		case 'UPDATE':
+			console.log('Updated:', record, result);
+			break;
+		case 'DELETE':
+			console.log('Deleted:', record);
+			break;
+	}
+});
 
-				// result contains either the entire record, or a set of JSON patches when diff mode is enabled
-				processSomeLiveQueryUpdate(result);
-			}
-		)
-
-		`,
+// Stop the live query
+await live.kill();
+`,
 			rust: `
-		//Connect to a local endpoint
-		DB.connect::<Ws>("127.0.0.1:8000").await?;
-		//Connect to a remote endpoint
-		DB.connect::<Wss>("cloud.surrealdb.com").await?;
-		`,
+// Create a live query via SurrealQL
+let mut result = db.query("LIVE SELECT * FROM type::table($table)")
+	.bind(("table", "${tableName}"))
+	.await?;
+
+let live_id = result.take::<Option<String>>(0)?;
+`,
 			py: `
+# Create a live query via SurrealQL
+result = await db.live('${tableName}')
 
-		`,
+# Process notifications
+async for notification in result:
+	print(notification)
+`,
 			go: `
+import "github.com/surrealdb/surrealdb.go/pkg/models"
 
-		`,
+liveID, err := surrealdb.Live(ctx, db, models.Table("${tableName}"), false)
+ch, _ := db.LiveNotifications(liveID.String())
+
+for notification := range ch {
+	// notification.Action: "CREATE", "UPDATE", "DELETE", or "CLOSE"
+	fmt.Println(notification.Action, notification.Result)
+}
+`,
 			csharp: `
-		await using var liveQuery = db.ListenLive<${pascal(table.schema.name)}>(queryUuid);
+var liveQuery = await db.LiveQuery<Person>($"LIVE SELECT * FROM type::table($table)",
+	new Dictionary<string, object> { { "table", "${tableName}" } });
 
-		// Option 1
-		// Consume the live query via an IAsyncEnumerable,
-		// blocking the current thread until the query is killed.
-		await foreach (var response in liveQuery)
-		{
-			// Either a Create, Update, Delete or Close response...
-		}
-
-
-		// Option 2
-		// Consume the live query via an Observable.
-		liveQuery
-			.ToObservable()
-			.Subscribe(() =>
-			{
-				// Either a Create, Update, Delete or Close response...
-			});
-
-
-		await using var liveQuery = await db.LiveQuery<${pascal(table.schema.name)}>($"LIVE SELECT * FROM type::table({table});");
-
-// Consume the live query...
-		`,
+await foreach (var response in liveQuery)
+{
+	// CREATE, UPDATE, DELETE, or CLOSE
+}
+`,
 			java: `
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
-		`,
-			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
-		`,
+import com.surrealdb.LiveStream;
+import com.surrealdb.LiveNotification;
+
+try (LiveStream stream = db.selectLive("${tableName}")) {
+	Optional<LiveNotification> notification = stream.next();
+	notification.ifPresent(n ->
+		System.out.println(n.getAction() + ": " + n.getValue())
+	);
+}
+`,
 		}),
-		[table.schema.name],
+		[tableName],
 	);
 
 	return (
@@ -101,21 +103,18 @@ table_name
 			title={
 				<TableTitle
 					title="Live queries"
-					table={table.schema.name}
+					table={tableName}
 				/>
 			}
 		>
-			<div>
-				<p>
-					Create realtime query notifications for changes to selected records on{" "}
-					<b>{table.schema.name}</b> and see live updates in the live message view in the
-					console.
-				</p>
-			</div>
+			<Box component="p">
+				Subscribe to real-time changes on <b>{tableName}</b>. Live queries require a
+				WebSocket connection and stream CREATE, UPDATE, and DELETE events as they happen.
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Live Selecting"
+					title="Live queries"
 					values={snippets}
 				/>
 			</Box>
