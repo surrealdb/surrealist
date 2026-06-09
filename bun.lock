@@ -46,7 +46,7 @@
         "@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
         "@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.1",
         "@surrealdb/surql-fmt": "^0.1.0-beta.2",
-        "@surrealdb/ui": "^1.2.0",
+        "@surrealdb/ui": "^1.2.1",
         "@surrealdb/wasm": "^3.0.3",
         "@tanstack/react-query": "^5.37.1",
         "@tauri-apps/api": "2.10.1",
@@ -523,7 +523,7 @@
 
     "@surrealdb/surql-fmt": ["@surrealdb/surql-fmt@0.1.0-beta.2", "", { "dependencies": { "@lezer/common": "^1.5.1", "@surrealdb/lezer": "^1.0.4" }, "peerDependencies": { "typescript": "^5.9.3" }, "bin": { "surqlfmt": "dist/surql-fmt-cli.js" } }, "sha512-uibW3TucV9/P99LtAOpBPnDiN4joPqlCiLEUpK7EOWrrH2T2jWg6uPMI1JlgVun65lBmi4xloxvdeMMNxa2uKA=="],
 
-    "@surrealdb/ui": ["@surrealdb/ui@1.2.0", "", { "dependencies": { "@codemirror/lang-markdown": "^6.5.0", "@codemirror/legacy-modes": "^6.4.2", "@fontsource-variable/geist": "^5.2.9", "@fontsource-variable/jetbrains-mono": "^5.2.8", "@lezer/common": "^1.2.1", "@lezer/go": "^1.0.0", "@lezer/highlight": "^1.2.1", "@lezer/html": "^1.3.10", "@lezer/javascript": "^1.4.17", "@lezer/json": "^1.0.3", "@lezer/markdown": "^1.6.3", "@lezer/php": "^1.0.2", "@lezer/python": "^1.1.14", "@lezer/rust": "^1.0.2", "@lezer/yaml": "^1.0.3", "@replit/codemirror-indentation-markers": "^6.5.3", "@surrealdb/lezer": "1.0.0-beta.23", "acorn": "^8.16.0", "github-slugger": "^2.0.0", "vite-tsconfig-paths": "^6.0.5" }, "peerDependencies": { "@codemirror/autocomplete": "^6.13.0", "@codemirror/commands": "^6.3.3", "@codemirror/language": "^6.10.1", "@codemirror/lint": "^6.5.0", "@codemirror/search": "^6.5.6", "@codemirror/state": "^6.4.1", "@codemirror/view": "^6.24.1", "@mantine/core": "^9.2.2", "@mantine/hooks": "^9.2.2", "mermaid": "^11", "react": "^19", "slate": "^0.120.0", "slate-dom": "^0.119.0", "slate-react": "^0.120.0" }, "optionalPeers": ["mermaid"] }, "sha512-3ASlqrRYJEN8VHzGEwH0DlH1+MZd6UnTZ4oMU4JKVkjc8hnkGBQkZ+27MUd9fKqEAIyw5zfaiVlGCs86JJTh0g=="],
+    "@surrealdb/ui": ["@surrealdb/ui@1.2.1", "", { "dependencies": { "@codemirror/lang-markdown": "^6.5.0", "@codemirror/legacy-modes": "^6.4.2", "@fontsource-variable/geist": "^5.2.9", "@fontsource-variable/jetbrains-mono": "^5.2.8", "@lezer/common": "^1.2.1", "@lezer/go": "^1.0.0", "@lezer/highlight": "^1.2.1", "@lezer/html": "^1.3.10", "@lezer/javascript": "^1.4.17", "@lezer/json": "^1.0.3", "@lezer/markdown": "^1.6.3", "@lezer/php": "^1.0.2", "@lezer/python": "^1.1.14", "@lezer/rust": "^1.0.2", "@lezer/yaml": "^1.0.3", "@replit/codemirror-indentation-markers": "^6.5.3", "@surrealdb/lezer": "1.0.0-beta.23", "acorn": "^8.16.0", "github-slugger": "^2.0.0", "vite-tsconfig-paths": "^6.0.5" }, "peerDependencies": { "@codemirror/autocomplete": "^6.13.0", "@codemirror/commands": "^6.3.3", "@codemirror/language": "^6.10.1", "@codemirror/lint": "^6.5.0", "@codemirror/search": "^6.5.6", "@codemirror/state": "^6.4.1", "@codemirror/view": "^6.24.1", "@mantine/core": "^9.2.2", "@mantine/hooks": "^9.2.2", "mermaid": "^11", "react": "^19", "slate": "^0.120.0", "slate-dom": "^0.119.0", "slate-react": "^0.120.0" }, "optionalPeers": ["mermaid"] }, "sha512-XOSKs7XUAMC0hrPUq7ppYabRIsccZdpGu1vqR0yf6ZD+Ixs+Nq/5ByED4eaQPsZC4Q7cGjtYOU/Av9VgupZ0fg=="],
 
     "@surrealdb/wasm": ["@surrealdb/wasm@3.0.3", "", { "peerDependencies": { "surrealdb": "^2.0.1" } }, "sha512-7tUOiQB2eZY80oNKfLvwqZLgANun04ubKXqfanAZmAnwJMB/nKetk7eh6dRd+PFzmLla1Ns2m6Fku+H/DSFjbA=="],
 
