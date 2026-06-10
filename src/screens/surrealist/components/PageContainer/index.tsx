@@ -15,7 +15,7 @@ export function PageContainer({ children, ...other }: PropsWithChildren<BoxProps
 				inset={0}
 			>
 				<Stack
-					py="2xl"
+					py="3xl"
 					px="xl"
 					mx="auto"
 					maw={1200}
