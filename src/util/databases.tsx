@@ -1,3 +1,4 @@
+import type { QueryClient } from "@tanstack/react-query";
 import { escapeIdent } from "surrealdb";
 import {
 	executeQuery,
@@ -8,9 +9,34 @@ import { SchemaInfoKV, SchemaInfoNS } from "~/types";
 import { getAuthDB, getAuthNS, getConnection } from "./connection";
 import { parseIdent } from "./language";
 
+export const databaseHierarchyQueryKey = (connectionId: string) =>
+	["database-hierarchy", connectionId] as const;
+
+export function invalidateDatabaseHierarchy(queryClient: QueryClient, connectionId: string) {
+	return queryClient.invalidateQueries({
+		queryKey: databaseHierarchyQueryKey(connectionId),
+	});
+}
+
 export interface NamespaceOrDatabase {
 	name: string;
 	comment?: string;
+}
+
+export interface DatabaseHierarchyEntry {
+	namespace: NamespaceOrDatabase;
+	databases: NamespaceOrDatabase[];
+}
+
+export async function fetchDatabaseHierarchy(): Promise<DatabaseHierarchyEntry[]> {
+	const namespaces = await fetchNamespaceList();
+
+	return Promise.all(
+		namespaces.map(async (namespace) => ({
+			namespace,
+			databases: await fetchDatabaseList(namespace.name),
+		})),
+	);
 }
 
 /**

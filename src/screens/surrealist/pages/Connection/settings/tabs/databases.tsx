@@ -1,7 +1,7 @@
 import { Button, Center, Group, Loader, Paper, Stack, Table, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Icon, iconDatabase, iconPlus, iconSearch, iconTrash } from "@surrealdb/ui";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Fragment, type SyntheticEvent } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
@@ -15,12 +15,17 @@ import {
 	activateDatabase,
 	executeQuery,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
-import { fetchDatabaseList, fetchNamespaceList } from "~/util/databases";
+import {
+	databaseHierarchyQueryKey,
+	fetchDatabaseHierarchy,
+	invalidateDatabaseHierarchy,
+} from "~/util/databases";
 import { fuzzyMatch } from "~/util/helpers";
 import classes from "../style.module.scss";
 import type { ConnectionSettingsTabProps } from "../types";
 
 export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
+	const queryClient = useQueryClient();
 	const connected = useIsConnected();
 	const [search, setSearch] = useInputState("");
 
@@ -31,17 +36,8 @@ export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
 	]);
 
 	const hierarchyQuery = useQuery({
-		queryKey: ["settings-database-hierarchy", connectionId],
-		queryFn: async () => {
-			const namespaces = await fetchNamespaceList();
-
-			return Promise.all(
-				namespaces.map(async (ns) => ({
-					namespace: ns.name,
-					databases: await fetchDatabaseList(ns.name),
-				})),
-			);
-		},
+		queryKey: databaseHierarchyQueryKey(connectionId),
+		queryFn: fetchDatabaseHierarchy,
 		enabled: connected,
 	});
 
@@ -150,21 +146,27 @@ export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
 							</Table.Thead>
 							<Table.Tbody>
 								{filteredHierarchy?.map((entry) => (
-									<Fragment key={entry.namespace}>
+									<Fragment key={entry.namespace.name}>
 										{entry.databases.map((db) => {
 											const isActive =
-												namespace === entry.namespace &&
+												namespace === entry.namespace.name &&
 												database === db.name;
 
 											return (
 												<DatabaseRow
-													key={`${entry.namespace}-${db.name}`}
-													namespace={entry.namespace}
+													key={`${entry.namespace.name}-${db.name}`}
+													namespace={entry.namespace.name}
 													database={db.name}
 													comment={db.comment}
 													isActive={isActive}
 													onActivate={() =>
-														activate(entry.namespace, db.name)
+														activate(entry.namespace.name, db.name)
+													}
+													onRemove={() =>
+														invalidateDatabaseHierarchy(
+															queryClient,
+															connectionId,
+														)
 													}
 												/>
 											);
@@ -186,9 +188,17 @@ interface DatabaseRowProps {
 	comment?: string;
 	isActive: boolean;
 	onActivate: () => void;
+	onRemove: () => void;
 }
 
-function DatabaseRow({ namespace, database, comment, isActive, onActivate }: DatabaseRowProps) {
+function DatabaseRow({
+	namespace,
+	database,
+	comment,
+	isActive,
+	onActivate,
+	onRemove,
+}: DatabaseRowProps) {
 	const remove = useConfirmation({
 		message: () => (
 			<Stack className="selectable">
@@ -224,6 +234,8 @@ function DatabaseRow({ namespace, database, comment, isActive, onActivate }: Dat
 				USE NS ${escapeIdent(namespace)};
 				REMOVE DATABASE ${escapeIdent(database)};
 			`);
+
+			onRemove();
 		},
 	});
 

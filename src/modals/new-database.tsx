@@ -12,7 +12,7 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
 import { Icon, iconDatabase, iconNamespace } from "@surrealdb/ui";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
@@ -26,6 +26,7 @@ import {
 	executeQuery,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { SchemaInfoNS } from "~/types";
+import { invalidateDatabaseHierarchy } from "~/util/databases";
 import { parseIdent } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -39,8 +40,12 @@ export function openNewDatabaseModal() {
 }
 
 function NewDatabaseModal() {
+	const queryClient = useQueryClient();
 	const rootSchema = useRootSchema();
-	const [currentNamespace] = useConnection((c) => [c?.lastNamespace ?? ""]);
+	const [connectionId, currentNamespace] = useConnection((c) => [
+		c?.id ?? "",
+		c?.lastNamespace ?? "",
+	]);
 
 	const existingNamespaces = useMemo(
 		() => rootSchema.namespaces.map((ns) => parseIdent(ns.name)),
@@ -94,6 +99,8 @@ function NewDatabaseModal() {
 			});
 
 			await activateDatabase(namespace, debouncedDatabase);
+
+			await invalidateDatabaseHierarchy(queryClient, connectionId);
 
 			handleClose();
 		},
