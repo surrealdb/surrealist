@@ -1,4 +1,4 @@
-import { Badge, Box, Divider, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
+import { Badge, Box, Divider, Group, Paper, SimpleGrid, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon, iconAuth } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
@@ -19,6 +19,7 @@ export interface InstanceTypesProps {
 	plan: InstancePlan;
 	organization: CloudOrganization;
 	withPrices?: boolean;
+	columns?: 1 | 2;
 	onChange: (value: CloudInstanceType) => void;
 }
 
@@ -29,6 +30,7 @@ export function InstanceTypes({
 	plan,
 	organization,
 	withPrices,
+	columns = 1,
 	onChange,
 }: InstanceTypesProps) {
 	const instanceTypes = useInstanceTypeRegistry(organization, variant);
@@ -57,32 +59,34 @@ export function InstanceTypes({
 		});
 	}, [instanceTypes, available]);
 
-	return (
-		<Stack gap={28}>
-			{categories.map(({ category, types }) => (
-				<Box key={category}>
-					<Box>
-						<PrimaryTitle>{getTypeCategoryName(category)}</PrimaryTitle>
-						<Text>{getTypeCategoryDescription(category)}</Text>
-					</Box>
-					<Stack mt="xl">
-						{types.map((type) => (
-							<InstanceTypeRow
-								selected={value === type.slug}
-								active={active === type.slug}
-								key={type.slug}
-								limited={false}
-								restricted={false}
-								instanceType={type}
-								withPrices={withPrices}
-								onSelect={onChange}
-							/>
-						))}
-					</Stack>
-				</Box>
-			))}
-		</Stack>
-	);
+	const categoryGroups = categories.map(({ category, types }) => (
+		<Box key={category}>
+			<Box>
+				<PrimaryTitle>{getTypeCategoryName(category)}</PrimaryTitle>
+				<Text>{getTypeCategoryDescription(category)}</Text>
+			</Box>
+			<Stack mt="xl">
+				{types.map((type) => (
+					<InstanceTypeRow
+						selected={value === type.slug}
+						active={active === type.slug}
+						key={type.slug}
+						limited={false}
+						restricted={false}
+						instanceType={type}
+						withPrices={withPrices}
+						onSelect={onChange}
+					/>
+				))}
+			</Stack>
+		</Box>
+	));
+
+	if (columns === 2) {
+		return <SimpleGrid cols={2}>{categoryGroups}</SimpleGrid>;
+	}
+
+	return <Stack gap={28}>{categoryGroups}</Stack>;
 }
 
 interface InstanceTypeRowProps {
@@ -111,10 +115,10 @@ function InstanceTypeRow({
 
 	return (
 		<Paper
-			bg={isLight ? "obsidian.1" : "obsidian.9"}
+			bg={isLight ? "obsidian.1" : "obsidian.8"}
 			p="lg"
-			withBorder
 			radius="md"
+			withBorder={selected}
 			style={{
 				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
 				cursor: active ? "not-allowed" : "pointer",

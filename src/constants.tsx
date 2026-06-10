@@ -371,7 +371,7 @@ export const CONNECTION_SETTINGS_TAB_LABELS: Record<ConnectionSettingsTab, strin
 	"import-export": "Import & export",
 	capabilities: "Capabilities",
 	version: "Version",
-	compute: "Compute & storage",
+	compute: "Instance configuration",
 	backups: "Backups",
 };
 

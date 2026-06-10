@@ -1,4 +1,4 @@
-import { Button, Group, Paper, Stack, Text } from "@mantine/core";
+import { Button, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Icon, iconHistory } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -48,59 +48,57 @@ export function ConnectionBackupsTab({
 				title="Available backups"
 				description="Create a new instance from a backup snapshot"
 			>
-				<Paper p="md">
-					{!backups?.length ? (
-						<Stack
-							align="center"
-							py="xl"
-							gap="xs"
+				{!backups?.length ? (
+					<Stack
+						align="center"
+						py="xl"
+						gap="xs"
+					>
+						<Icon path={iconHistory} />
+						<Text
+							fz="lg"
+							c="bright"
+							fw={600}
 						>
-							<Icon path={iconHistory} />
-							<Text
-								fz="lg"
-								c="bright"
-								fw={600}
-							>
-								No backups available
-							</Text>
-							<Text>There are no backups available for this instance.</Text>
-						</Stack>
-					) : (
-						<Stack gap="sm">
-							{backups
-								.slice()
-								.sort((a, b) => {
-									const dateA = dayjs(a.snapshot_started_at);
-									const dateB = dayjs(b.snapshot_started_at);
+							No backups available
+						</Text>
+						<Text>There are no backups available for this instance.</Text>
+					</Stack>
+				) : (
+					<SimpleGrid cols={{ base: 1, xs: 2, md: 3 }}>
+						{backups
+							.slice()
+							.sort((a, b) => {
+								const dateA = dayjs(a.snapshot_started_at);
+								const dateB = dayjs(b.snapshot_started_at);
 
-									return dateB.valueOf() - dateA.valueOf();
-								})
-								.map((backup) => (
-									<InstanceBackup
-										key={backup.snapshot_id}
-										selected={selected === backup.snapshot_id}
-										backup={backup}
-										onSelect={() => setSelected(backup.snapshot_id)}
-									/>
-								))}
-						</Stack>
-					)}
+								return dateB.valueOf() - dateA.valueOf();
+							})
+							.map((backup) => (
+								<InstanceBackup
+									key={backup.snapshot_id}
+									selected={selected === backup.snapshot_id}
+									backup={backup}
+									onSelect={() => setSelected(backup.snapshot_id)}
+								/>
+							))}
+					</SimpleGrid>
+				)}
 
-					{isAdmin && backups && backups.length > 0 && (
-						<Group
-							mt="md"
-							justify="flex-end"
+				{isAdmin && backups && backups.length > 0 && (
+					<Group
+						mt="md"
+						justify="flex-end"
+					>
+						<Button
+							variant="gradient"
+							disabled={!selected}
+							onClick={handleRestore}
 						>
-							<Button
-								variant="gradient"
-								disabled={!selected}
-								onClick={handleRestore}
-							>
-								Create from selected
-							</Button>
-						</Group>
-					)}
-				</Paper>
+							Create from selected
+						</Button>
+					</Group>
+				)}
 			</Section>
 
 			<Section

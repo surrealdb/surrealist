@@ -13,9 +13,15 @@ export interface ConfigurationStorageProps {
 	instance: CloudInstance;
 	onClose: () => void;
 	onUpgrade: () => void;
+	variant?: "drawer" | "page";
 }
 
-export function ConfigurationStorage({ instance, onClose, onUpgrade }: ConfigurationStorageProps) {
+export function ConfigurationStorage({
+	instance,
+	onClose,
+	onUpgrade,
+	variant = "drawer",
+}: ConfigurationStorageProps) {
 	const { storage_size, storage_size_update_cooloff_hours, storage_size_updated_at } = instance;
 
 	const [value, setValue] = useState(storage_size);
@@ -58,9 +64,157 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 	const confirmUpdate = useUpdateConfirmation(mutateAsync);
 
 	const handleUpdate = useStable(() => {
-		onClose();
+		if (variant === "drawer") {
+			onClose();
+		}
+
 		confirmUpdate(value);
 	});
+
+	const content = (
+		<Stack
+			gap="sm"
+			p={variant === "drawer" ? "xl" : undefined}
+			mih={variant === "drawer" ? "100%" : undefined}
+		>
+			{variant === "drawer" && (
+				<Box mb="xl">
+					<Text
+						fz="xl"
+						c="bright"
+						fw={600}
+					>
+						Increase storage capacity
+					</Text>
+
+					<Text
+						mt="sm"
+						fz="lg"
+					>
+						You can increase your storage size to accommodate more data within your
+						database.
+					</Text>
+				</Box>
+			)}
+
+			{isFree ? (
+				<Alert
+					title="Upgrade your instance"
+					color="red"
+				>
+					<Box>
+						Storage expansion is unavailable for free instances. Upgrade your instance
+						to unlock the ability to increase your storage capacity.
+					</Box>
+					<Button
+						mt="md"
+						size="xs"
+						rightSection={<Icon path={iconChevronRight} />}
+						variant="gradient"
+						onClick={onUpgrade}
+					>
+						Upgrade instance type
+					</Button>
+				</Alert>
+			) : (
+				<>
+					{isMaximized ? (
+						<Alert
+							mb="md"
+							color="obsidian"
+							title="Maximum storage capacity reached"
+							icon={<Icon path={iconHelp} />}
+						>
+							If you require more storage space, please contact support at{" "}
+							<Link href="mailto:support@surrealdb.com">support@surrealdb.com</Link>
+						</Alert>
+					) : (
+						isCoolingDown && (
+							<Alert
+								mb="md"
+								color="orange"
+								title="Please wait"
+								icon={<Icon path={iconClock} />}
+							>
+								You have recently updated your storage capacity. You can update it
+								again in {timeLeft}.
+							</Alert>
+						)
+					)}
+
+					<Slider
+						mx={variant === "drawer" ? "xl" : undefined}
+						color="violet"
+						min={minimum}
+						max={maximum}
+						step={1}
+						value={value}
+						onChange={setValue}
+						marks={marks}
+						label={(value) => `${value} GB`}
+						disabled={isDisabled}
+						styles={{
+							label: {
+								paddingInline: 10,
+								fontSize: "var(--mantine-font-size-lg)",
+								fontWeight: 600,
+							},
+							bar: {
+								background: isDisabled
+									? "var(--mantine-color-obsidian-4)"
+									: undefined,
+							},
+						}}
+					/>
+
+					{isTooLow && (
+						<Alert
+							mt="md"
+							color="red"
+							title="Warning"
+							icon={<Icon path={iconWarning} />}
+						>
+							You cannot decrease the storage capacity of your instance
+						</Alert>
+					)}
+				</>
+			)}
+		</Stack>
+	);
+
+	const footer = !isFree && (
+		<Group p={variant === "drawer" ? "xl" : undefined}>
+			{variant === "drawer" && (
+				<Button
+					onClick={onClose}
+					color="obsidian"
+					variant="light"
+					flex={1}
+				>
+					Close
+				</Button>
+			)}
+			<Button
+				mt="xl"
+				type="submit"
+				variant="gradient"
+				disabled={isMaximized || isTooLow || value === instance.storage_size}
+				onClick={handleUpdate}
+				flex={variant === "drawer" ? 1 : undefined}
+			>
+				Apply storage expansion
+			</Button>
+		</Group>
+	);
+
+	if (variant === "page") {
+		return (
+			<Stack gap="md">
+				{content}
+				{footer}
+			</Stack>
+		);
+	}
 
 	return (
 		<Stack
@@ -78,137 +232,11 @@ export function ConfigurationStorage({ instance, onClose, onUpgrade }: Configura
 					inset={0}
 					className={classes.scrollArea}
 				>
-					<Stack
-						gap="sm"
-						p="xl"
-						mih="100%"
-					>
-						<Box mb="xl">
-							<Text
-								fz="xl"
-								c="bright"
-								fw={600}
-							>
-								Increase storage capacity
-							</Text>
-
-							<Text
-								mt="sm"
-								fz="lg"
-							>
-								You can increase your storage size to accommodate more data within
-								your database.
-							</Text>
-						</Box>
-
-						{isFree ? (
-							<Alert
-								title="Upgrade your instance"
-								color="red"
-							>
-								<Box>
-									Storage expansion is unavailable for free instances. Upgrade
-									your instance to unlock the ability to increase your storage
-									capacity.
-								</Box>
-								<Button
-									mt="md"
-									size="xs"
-									rightSection={<Icon path={iconChevronRight} />}
-									variant="gradient"
-									onClick={onUpgrade}
-								>
-									Upgrade instance type
-								</Button>
-							</Alert>
-						) : (
-							<>
-								{isMaximized ? (
-									<Alert
-										mb="md"
-										color="obsidian"
-										title="Maximum storage capacity reached"
-										icon={<Icon path={iconHelp} />}
-									>
-										If you require more storage space, please contact support at{" "}
-										<Link href="mailto:support@surrealdb.com">
-											support@surrealdb.com
-										</Link>
-									</Alert>
-								) : (
-									isCoolingDown && (
-										<Alert
-											mb="md"
-											color="orange"
-											title="Please wait"
-											icon={<Icon path={iconClock} />}
-										>
-											You have recently updated your storage capacity. You can
-											update it again in {timeLeft}.
-										</Alert>
-									)
-								)}
-
-								<Slider
-									mx="xl"
-									color="violet"
-									min={minimum}
-									max={maximum}
-									step={1}
-									value={value}
-									onChange={setValue}
-									marks={marks}
-									label={(value) => `${value} GB`}
-									disabled={isDisabled}
-									styles={{
-										label: {
-											paddingInline: 10,
-											fontSize: "var(--mantine-font-size-lg)",
-											fontWeight: 600,
-										},
-										bar: {
-											background: isDisabled
-												? "var(--mantine-color-obsidian-4)"
-												: undefined,
-										},
-									}}
-								/>
-
-								{isTooLow && (
-									<Alert
-										mt="md"
-										color="red"
-										title="Warning"
-										icon={<Icon path={iconWarning} />}
-									>
-										You cannot decrease the storage capacity of your instance
-									</Alert>
-								)}
-							</>
-						)}
-					</Stack>
+					{content}
 				</ScrollArea>
 			</Box>
 
-			<Group p="xl">
-				<Button
-					onClick={onClose}
-					color="obsidian"
-					variant="light"
-					flex={1}
-				>
-					Close
-				</Button>
-				<Button
-					type="submit"
-					variant="gradient"
-					disabled={isMaximized || isTooLow || value === instance.storage_size}
-					onClick={handleUpdate}
-					flex={1}
-				>
-					Apply storage expansion
-				</Button>
-			</Group>
+			{footer}
 		</Stack>
 	);
 }

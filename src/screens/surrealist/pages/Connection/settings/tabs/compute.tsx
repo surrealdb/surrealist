@@ -1,7 +1,9 @@
-import { Paper, Stack } from "@mantine/core";
+import { Box, Paper, Stack } from "@mantine/core";
+import { useRef } from "react";
 import { hasOrganizationRoles, INSTANCE_CATEGORY_PLANS, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
+import { useStable } from "~/hooks/stable";
 import { ConfigurationNodes } from "../../views/dashboard/UpgradeDrawer/configs/nodes";
 import { ConfigurationStorage } from "../../views/dashboard/UpgradeDrawer/configs/storage";
 import { ConfigurationInstanceType } from "../../views/dashboard/UpgradeDrawer/configs/type";
@@ -13,6 +15,11 @@ export function ConnectionComputeTab({
 }: ConnectionSettingsTabProps) {
 	const instance = instanceQuery.data;
 	const organisation = organisationQuery.data;
+	const instanceTypeRef = useRef<HTMLDivElement>(null);
+
+	const scrollToInstanceType = useStable(() => {
+		instanceTypeRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+	});
 
 	if (!instance || !organisation) {
 		return null;
@@ -26,10 +33,10 @@ export function ConnectionComputeTab({
 	if (!isAdmin || isIdle) {
 		return (
 			<Stack>
-				<PrimaryTitle fz={32}>Compute & storage</PrimaryTitle>
+				<PrimaryTitle fz={32}>Instance configuration</PrimaryTitle>
 				<Section title="Unavailable">
 					<Paper p="md">
-						Instance upgrades are unavailable while the instance is not ready or you
+						Instance configuration is unavailable while the instance is not ready or you
 						lack admin permissions.
 					</Paper>
 				</Section>
@@ -39,46 +46,44 @@ export function ConnectionComputeTab({
 
 	return (
 		<Stack>
-			<PrimaryTitle fz={32}>Compute & storage</PrimaryTitle>
+			<PrimaryTitle fz={32}>Instance configuration</PrimaryTitle>
 
-			<Section
-				title="Instance type"
-				description="Change your instance plan or compute tier"
-			>
-				<Paper p="md">
-					<ConfigurationInstanceType
-						instance={instance}
-						organisation={organisation}
-						onClose={() => {}}
-					/>
-				</Paper>
-			</Section>
+			<Box ref={instanceTypeRef}>
+				<ConfigurationInstanceType
+					instance={instance}
+					organisation={organisation}
+					variant="page"
+					onClose={() => {}}
+				/>
+			</Box>
 
-			<Section
-				title="Storage capacity"
-				description="Increase the storage limit for this instance"
-			>
-				<Paper p="md">
+			<Box mt="xl">
+				<Section
+					title="Storage capacity"
+					description="Increase the storage limit for this instance"
+				>
 					<ConfigurationStorage
 						instance={instance}
+						variant="page"
 						onClose={() => {}}
-						onUpgrade={() => {}}
+						onUpgrade={scrollToInstanceType}
 					/>
-				</Paper>
-			</Section>
+				</Section>
+			</Box>
 
 			{showComputeNodes && (
-				<Section
-					title="Compute nodes"
-					description="Configure dedicated compute nodes for scale deployments"
-				>
-					<Paper p="md">
+				<Box mt="xl">
+					<Section
+						title="Compute nodes"
+						description="Configure dedicated compute nodes for scale deployments"
+					>
 						<ConfigurationNodes
 							instance={instance}
+							variant="page"
 							onClose={() => {}}
 						/>
-					</Paper>
-				</Section>
+					</Section>
+				</Box>
 			)}
 		</Stack>
 	);

@@ -16,8 +16,8 @@ export function InstanceBackup({ selected, backup, onSelect }: InstanceBackupPro
 	return (
 		<Paper
 			p="lg"
-			bg={isLight ? "obsidian.1" : "obsidian.9"}
-			withBorder
+			bg={isLight ? "obsidian.1" : "obsidian.8"}
+			withBorder={selected}
 			radius="md"
 			style={{
 				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,

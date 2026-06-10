@@ -41,8 +41,7 @@ function CapabilitiesContent({ instance, organisation }: CapabilitiesContentProp
 				<PrimaryTitle fz={32}>Capabilities</PrimaryTitle>
 				<Section title="Unavailable">
 					<Paper p="md">
-						Instance capabilities are unavailable while the instance is not ready or you
-						lack admin permissions.
+						Instance capabilities are unavailable while the instance is loading
 					</Paper>
 				</Section>
 			</Stack>

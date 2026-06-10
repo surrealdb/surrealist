@@ -12,12 +12,14 @@ export interface ConfigurationInstanceTypeProps {
 	instance: CloudInstance;
 	organisation: CloudOrganization;
 	onClose: () => void;
+	variant?: "drawer" | "page";
 }
 
 export function ConfigurationInstanceType({
 	instance,
 	organisation,
 	onClose,
+	variant = "drawer",
 }: ConfigurationInstanceTypeProps) {
 	const [selected, setSelected] = useState("");
 
@@ -28,9 +30,83 @@ export function ConfigurationInstanceType({
 	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
 
 	const handleUpdate = useStable(() => {
-		onClose();
+		if (variant === "drawer") {
+			onClose();
+		}
+
 		confirmUpdate(selected);
 	});
+
+	const content = (
+		<Stack
+			gap="sm"
+			p={variant === "drawer" ? "xl" : undefined}
+			mih={variant === "drawer" ? "100%" : undefined}
+		>
+			{variant === "drawer" && (
+				<Box mb="xl">
+					<Text
+						fz="xl"
+						c="bright"
+						fw={600}
+					>
+						Change instance type
+					</Text>
+
+					<Text
+						mt="sm"
+						fz="lg"
+					>
+						Change the active instance type to adjust the resources available to your
+						instance, including memory and CPU.
+					</Text>
+				</Box>
+			)}
+			{organisation && (
+				<InstanceTypes
+					value={selected}
+					active={instanceType === "free" ? "development" : instanceType}
+					plan={guessedPlan}
+					columns={2}
+					organization={organisation}
+					onChange={(type) => setSelected(type.slug)}
+				/>
+			)}
+		</Stack>
+	);
+
+	const footer = (
+		<Group p={variant === "drawer" ? "xl" : undefined}>
+			{variant === "drawer" && (
+				<Button
+					onClick={onClose}
+					color="obsidian"
+					variant="light"
+					flex={1}
+				>
+					Close
+				</Button>
+			)}
+			<Button
+				flex={variant === "drawer" ? 1 : undefined}
+				type="submit"
+				variant="gradient"
+				disabled={!selected}
+				onClick={handleUpdate}
+			>
+				Apply instance type
+			</Button>
+		</Group>
+	);
+
+	if (variant === "page") {
+		return (
+			<Stack gap="md">
+				{content}
+				{footer}
+			</Stack>
+		);
+	}
 
 	return (
 		<Stack
@@ -48,60 +124,11 @@ export function ConfigurationInstanceType({
 					inset={0}
 					className={classes.scrollArea}
 				>
-					<Stack
-						gap="sm"
-						p="xl"
-						mih="100%"
-					>
-						<Box mb="xl">
-							<Text
-								fz="xl"
-								c="bright"
-								fw={600}
-							>
-								Change instance type
-							</Text>
-
-							<Text
-								mt="sm"
-								fz="lg"
-							>
-								Change the active instance type to adjust the resources available to
-								your instance, including memory and CPU.
-							</Text>
-						</Box>
-						{organisation && (
-							<InstanceTypes
-								value={selected}
-								active={instanceType}
-								plan={guessedPlan}
-								organization={organisation}
-								onChange={(type) => setSelected(type.slug)}
-							/>
-						)}
-					</Stack>
+					{content}
 				</ScrollArea>
 			</Box>
 
-			<Group p="xl">
-				<Button
-					onClick={onClose}
-					color="obsidian"
-					variant="light"
-					flex={1}
-				>
-					Close
-				</Button>
-				<Button
-					flex={1}
-					type="submit"
-					variant="gradient"
-					disabled={!selected}
-					onClick={handleUpdate}
-				>
-					Apply instance type
-				</Button>
-			</Group>
+			{footer}
 		</Stack>
 	);
 }
