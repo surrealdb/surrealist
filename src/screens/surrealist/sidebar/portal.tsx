@@ -328,6 +328,7 @@ function WideSubEntry({ item }: { item: SidebarSubLink }) {
 				inherit
 				span
 				lh="normal"
+				fw={500}
 			>
 				{item.name}
 			</Text>

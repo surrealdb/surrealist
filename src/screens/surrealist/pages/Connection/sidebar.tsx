@@ -1,4 +1,4 @@
-import { iconTune } from "@surrealdb/ui";
+import { iconCog } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
@@ -89,7 +89,7 @@ export function ConnectionSidebar() {
 		const settingsGroup: SidebarEntry[] = [
 			{
 				name: "Settings",
-				icon: iconTune,
+				icon: iconCog,
 				items: settingsTabs.map(subLink),
 			},
 		];
