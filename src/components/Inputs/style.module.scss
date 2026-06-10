@@ -48,3 +48,28 @@
 	}
 
 }
+
+.search-input {
+	min-width: 0;
+	transition: max-width 0.5s ease;
+	max-width: 36px;
+
+	:global(.mantine-Input-input) {
+		background-color: transparent;
+		transition: all 0.5s ease;
+		padding-inline: 0px;
+		pointer-events: none;
+		opacity: 0;
+	}
+
+	&:focus-within,
+	&[data-searching] {
+		max-width: 280px;
+
+		:global(.mantine-Input-input) {
+			padding-inline: var(--mantine-spacing-2xl);
+			opacity: 1;
+			pointer-events: auto;
+		}
+	}
+}

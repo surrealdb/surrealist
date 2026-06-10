@@ -10,23 +10,25 @@ import {
 	pictoUniversity,
 	SectionTitle,
 } from "@surrealdb/ui";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { adapter } from "~/adapter";
 import { isOrganisationTerminated } from "~/cloud/helpers";
 import { useCloudBannerQuery } from "~/cloud/queries/banner";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
+import { SearchInput } from "~/components/Inputs/search";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useIsCloudEnabled } from "~/hooks/cloud";
-import { useConnectionList } from "~/hooks/connection";
+import { filterConnections, useConnectionList } from "~/hooks/connection";
 import { useLatestNewsQuery } from "~/hooks/newsfeed";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useAuthentication } from "~/providers/Auth";
 import { useConfigStore } from "~/stores/config";
 import { Connection } from "~/types";
+import { fuzzyMatch } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { PageContainer } from "../../components/PageContainer";
 import { CloudAlert } from "./banner";
@@ -65,9 +67,32 @@ export function OverviewPage() {
 	const dismissedBanners = useConfigStore((s) => s.dismissedBanners);
 	const newsPosts = newsQuery.data?.slice(0, 2) ?? [];
 
+	const [orgSearch, setOrgSearch] = useState("");
+	const [connectionSearch, setConnectionSearch] = useState("");
+
 	const orgsQuery = useCloudOrganizationsQuery();
 	const activeOrgs = orgsQuery.data?.filter((org) => !isOrganisationTerminated(org)) ?? [];
 	const isOrgsLoading = isAuthenticated && orgsQuery.isPending;
+
+	const filteredOrgs = useMemo(() => {
+		if (!orgSearch) {
+			return activeOrgs;
+		}
+
+		const needle = orgSearch.toLowerCase();
+
+		return activeOrgs.filter((org) => fuzzyMatch(needle, org.name));
+	}, [activeOrgs, orgSearch]);
+
+	const filteredConnections = useMemo(
+		() => filterConnections(userConnections, connectionSearch, []),
+		[userConnections, connectionSearch],
+	);
+
+	const showSandbox = useMemo(
+		() => filterConnections([sandbox], connectionSearch, []).length > 0,
+		[sandbox, connectionSearch],
+	);
 
 	return (
 		<>
@@ -107,6 +132,11 @@ export function OverviewPage() {
 								<Group>
 									<PrimaryTitle fz={22}>Organisations</PrimaryTitle>
 									<Spacer />
+									<SearchInput
+										placeholder="Search organisations..."
+										value={orgSearch}
+										onChange={setOrgSearch}
+									/>
 									<Link href="/o/create">
 										<Button
 											size="xs"
@@ -145,12 +175,12 @@ export function OverviewPage() {
 											</SimpleGrid>
 										)}
 
-										{isAuthenticated && activeOrgs.length > 0 && (
+										{isAuthenticated && filteredOrgs.length > 0 && (
 											<SimpleGrid
 												cols={GRID_COLUMNS}
 												mt="sm"
 											>
-												{activeOrgs.map((org) => (
+												{filteredOrgs.map((org) => (
 													<OrganizationTile
 														key={org.id}
 														organization={org}
@@ -168,6 +198,12 @@ export function OverviewPage() {
 
 							<Spacer />
 
+							<SearchInput
+								placeholder="Search connections..."
+								value={connectionSearch}
+								onChange={setConnectionSearch}
+							/>
+
 							<Link href="/c/create">
 								<Button
 									size="xs"
@@ -183,11 +219,13 @@ export function OverviewPage() {
 							cols={GRID_COLUMNS}
 							mt="sm"
 						>
-							<StartConnection
-								connection={sandbox}
-								onConnect={activateConnection}
-							/>
-							{userConnections.map((connection) => (
+							{showSandbox && (
+								<StartConnection
+									connection={sandbox}
+									onConnect={activateConnection}
+								/>
+							)}
+							{filteredConnections.map((connection) => (
 								<StartConnection
 									key={connection.id}
 									connection={connection}

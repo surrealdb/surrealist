@@ -303,7 +303,7 @@ export function useConnectionOverview({
 /**
  * Filters connections based on search term and selected labels with filtering modes
  */
-function filterConnections(
+export function filterConnections(
 	list: Connection[],
 	search: string,
 	labels: string[],
