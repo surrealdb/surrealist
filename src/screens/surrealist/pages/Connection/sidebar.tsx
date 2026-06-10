@@ -27,7 +27,7 @@ const VIEW_NAVIGATION: ViewPage[][] = [
 
 const ALWAYS_SETTINGS_TABS: ConnectionSettingsTab[] = ["general", "databases", "import-export"];
 
-const ADMIN_CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = ["compute", "lifecycle"];
+const ADMIN_CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = ["compute"];
 
 export function ConnectionSidebar() {
 	const { setLocation } = useSidebar();

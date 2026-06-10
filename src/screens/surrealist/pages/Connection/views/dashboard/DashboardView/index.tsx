@@ -21,6 +21,7 @@ import { showNotification } from "@mantine/notifications";
 import {
 	Icon,
 	iconCheck,
+	iconChevronDown,
 	iconChevronRight,
 	iconCopy,
 	pictoDocumentGradient,
@@ -41,6 +42,7 @@ import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { CloudGuard } from "~/components/CloudGuard";
+import { InstanceActions } from "~/components/InstanceActions";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
@@ -339,6 +341,21 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 											state={details.state}
 										/>
 									)}
+									<Spacer />
+									{details && organisation && (
+										<InstanceActions
+											instance={details}
+											organisation={organisation}
+										>
+											<Button
+												color="violet"
+												variant="light"
+												rightSection={<Icon path={iconChevronDown} />}
+											>
+												Instance actions
+											</Button>
+										</InstanceActions>
+									)}
 								</Group>
 							)}
 						</Box>
@@ -405,7 +422,6 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 										<ResumeBlockLazy
 											instance={details}
 											organisation={organisation}
-											connectionId={connectionId}
 										/>
 									) : (
 										<ConnectBlockLazy

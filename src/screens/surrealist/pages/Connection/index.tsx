@@ -18,7 +18,6 @@ import { ConnectionComputeTab } from "./settings/tabs/compute";
 import { ConnectionDatabasesTab } from "./settings/tabs/databases";
 import { ConnectionGeneralTab } from "./settings/tabs/general";
 import { ConnectionImportExportTab } from "./settings/tabs/import-export";
-import { ConnectionLifecycleTab } from "./settings/tabs/lifecycle";
 import { ConnectionVersionTab } from "./settings/tabs/version";
 import { ConnectionSettingsTabProps } from "./settings/types";
 import { ViewPageProps } from "./types";
@@ -62,7 +61,6 @@ const SETTINGS_PORTALS: Record<ConnectionSettingsTab, HtmlPortalNode> = {
 	version: createHtmlPortalNode(PORTAL_OPTIONS),
 	compute: createHtmlPortalNode(PORTAL_OPTIONS),
 	backups: createHtmlPortalNode(PORTAL_OPTIONS),
-	lifecycle: createHtmlPortalNode(PORTAL_OPTIONS),
 };
 
 const VIEW_COMPONENTS: Record<ViewPage, FC<ViewPageProps>> = {
@@ -87,7 +85,6 @@ const SETTINGS_COMPONENTS: Record<ConnectionSettingsTab, FC<ConnectionSettingsTa
 	version: memo(ConnectionVersionTab),
 	compute: memo(ConnectionComputeTab),
 	backups: memo(ConnectionBackupsTab),
-	lifecycle: memo(ConnectionLifecycleTab),
 };
 
 export interface ConnectionPageProps {

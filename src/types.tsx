@@ -106,8 +106,7 @@ export type ConnectionSettingsTab =
 	| "capabilities"
 	| "version"
 	| "compute"
-	| "backups"
-	| "lifecycle";
+	| "backups";
 
 export type ContextViewPage =
 	| "dashboard"

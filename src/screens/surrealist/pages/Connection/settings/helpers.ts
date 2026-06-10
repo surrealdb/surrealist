@@ -3,14 +3,9 @@ import { CONNECTION_SETTINGS_TABS } from "~/constants";
 import type { CloudInstance, CloudOrganization, ConnectionSettingsTab } from "~/types";
 import { getConnectionById } from "~/util/connection";
 
-const CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = [
-	"capabilities",
-	"compute",
-	"backups",
-	"lifecycle",
-];
+const CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = ["capabilities", "compute", "backups"];
 
-const ADMIN_CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = ["capabilities", "compute", "lifecycle"];
+const ADMIN_CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = ["capabilities", "compute"];
 
 export function canChangeInstanceVersion(instance: CloudInstance, organisation: CloudOrganization) {
 	if (!hasOrganizationRoles(organisation, ORG_ROLES_ADMIN)) {

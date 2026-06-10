@@ -357,14 +357,12 @@ export const CONNECTION_SETTINGS_TABS = [
 	"version",
 	"compute",
 	"backups",
-	"lifecycle",
 ] as const satisfies readonly ConnectionSettingsTab[];
 
 export const CLOUD_CONNECTION_SETTINGS_TABS = [
 	"capabilities",
 	"compute",
 	"backups",
-	"lifecycle",
 ] as const satisfies readonly ConnectionSettingsTab[];
 
 export const CONNECTION_SETTINGS_TAB_LABELS: Record<ConnectionSettingsTab, string> = {
@@ -375,7 +373,6 @@ export const CONNECTION_SETTINGS_TAB_LABELS: Record<ConnectionSettingsTab, strin
 	version: "Version",
 	compute: "Compute & storage",
 	backups: "Backups",
-	lifecycle: "Lifecycle",
 };
 
 export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = {
