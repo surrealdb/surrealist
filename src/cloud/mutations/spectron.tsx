@@ -1,6 +1,17 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import type { CloudContext, ContextApiKey, OrganizationContextPackage } from "~/types";
+import type {
+	CloudContext,
+	ContextApiKey,
+	OrganizationContextPackage,
+	SpectronContextConfig,
+	SpectronGrants,
+	SpectronPrincipal,
+	SpectronPrincipalKind,
+} from "~/types";
 import { fetchAPI } from "../api";
+
+const spectronBase = (organization: string, contextId: string) =>
+	`/organizations/${organization}/spectron_contexts/${contextId}`;
 
 export interface CreateContextRequest {
 	name: string;
@@ -143,6 +154,261 @@ export function useDeleteContextApiKeyMutation(
 			client.invalidateQueries({
 				queryKey: ["cloud", "context", organization, contextId, "api-keys"],
 			});
+		},
+	});
+}
+
+// ─── Principals, grants, scoped keys (admin / Cloud control plane) ───
+
+export interface CreatePrincipalRequest {
+	kind: SpectronPrincipalKind;
+	display_name: string;
+	grants?: SpectronGrants;
+}
+
+export interface UpdatePrincipalRequest {
+	principalId: string;
+	body: {
+		kind?: SpectronPrincipalKind;
+		display_name?: string;
+	};
+}
+
+export interface MintScopedKeyRequest {
+	name: string;
+	principal_id: string;
+	grants?: SpectronGrants;
+	ttl_seconds?: number;
+}
+
+export interface AddContextUserRequest {
+	user_id: string;
+}
+
+function invalidatePrincipals(
+	client: ReturnType<typeof useQueryClient>,
+	organization: string,
+	contextId: string,
+) {
+	client.invalidateQueries({
+		queryKey: ["cloud", "context", organization, contextId, "principals"],
+	});
+}
+
+export function useCreatePrincipalMutation(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: CreatePrincipalRequest) => {
+			if (!organization || !contextId) {
+				throw new Error("Organization and context ID are required");
+			}
+
+			const result = await fetchAPI<SpectronPrincipal>(
+				`${spectronBase(organization, contextId)}/principals`,
+				{
+					method: "POST",
+					body: JSON.stringify(body),
+				},
+			);
+
+			invalidatePrincipals(client, organization, contextId);
+			return result;
+		},
+	});
+}
+
+export function useUpdatePrincipalMutation(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async ({ principalId, body }: UpdatePrincipalRequest) => {
+			if (!organization || !contextId) {
+				throw new Error("Organization and context ID are required");
+			}
+
+			const result = await fetchAPI<SpectronPrincipal>(
+				`${spectronBase(organization, contextId)}/principals/${principalId}`,
+				{
+					method: "PATCH",
+					body: JSON.stringify(body),
+				},
+			);
+
+			invalidatePrincipals(client, organization, contextId);
+			return result;
+		},
+	});
+}
+
+export function useDeletePrincipalMutation(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (principalId: string) => {
+			if (!organization || !contextId) {
+				throw new Error("Organization and context ID are required");
+			}
+
+			await fetchAPI(`${spectronBase(organization, contextId)}/principals/${principalId}`, {
+				method: "DELETE",
+			});
+
+			invalidatePrincipals(client, organization, contextId);
+		},
+	});
+}
+
+export function useReplacePrincipalGrantsMutation(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async ({
+			principalId,
+			grants,
+		}: {
+			principalId: string;
+			grants: SpectronGrants;
+		}) => {
+			if (!organization || !contextId) {
+				throw new Error("Organization and context ID are required");
+			}
+
+			const result = await fetchAPI<SpectronPrincipal>(
+				`${spectronBase(organization, contextId)}/principals/${principalId}/grants`,
+				{
+					method: "PUT",
+					body: JSON.stringify({ grants }),
+				},
+			);
+
+			invalidatePrincipals(client, organization, contextId);
+			return result;
+		},
+	});
+}
+
+export function useMintScopedKeyMutation(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: MintScopedKeyRequest) => {
+			if (!organization || !contextId) {
+				throw new Error("Organization and context ID are required");
+			}
+
+			const result = await fetchAPI<ContextApiKey>(
+				`${spectronBase(organization, contextId)}/scoped_keys`,
+				{
+					method: "POST",
+					body: JSON.stringify(body),
+				},
+			);
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "context", organization, contextId, "api-keys"],
+			});
+			return result;
+		},
+	});
+}
+
+export function useRotateContextApiKeyMutation(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (apiKeyId: string) => {
+			if (!organization || !contextId) {
+				throw new Error("Organization and context ID are required");
+			}
+
+			const result = await fetchAPI<ContextApiKey>(
+				`${spectronBase(organization, contextId)}/api_keys/${apiKeyId}/rotate`,
+				{
+					method: "POST",
+				},
+			);
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "context", organization, contextId, "api-keys"],
+			});
+			return result;
+		},
+	});
+}
+
+export function useAddContextUserMutation(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (body: AddContextUserRequest) => {
+			if (!organization || !contextId) {
+				throw new Error("Organization and context ID are required");
+			}
+
+			await fetchAPI(`${spectronBase(organization, contextId)}/users`, {
+				method: "POST",
+				body: JSON.stringify(body),
+			});
+
+			invalidatePrincipals(client, organization, contextId);
+		},
+	});
+}
+
+/**
+ * Applies a partial config update (deep-merge) to the context. Mirrors the
+ * Spectron management `PATCH /contexts/{id}` config surface; the Cloud API
+ * proxies it through the `spectron_contexts/{id}` PATCH endpoint.
+ */
+export function usePatchContextConfigMutation(
+	organization: string | undefined,
+	contextId: string | undefined,
+) {
+	const client = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (config: Partial<SpectronContextConfig>) => {
+			if (!organization || !contextId) {
+				throw new Error("Organization and context ID are required");
+			}
+
+			const result = await fetchAPI<CloudContext>(
+				`${spectronBase(organization, contextId)}`,
+				{
+					method: "PATCH",
+					body: JSON.stringify({ config }),
+				},
+			);
+
+			client.invalidateQueries({
+				queryKey: ["cloud", "context", organization, contextId, "config"],
+			});
+			client.invalidateQueries({
+				queryKey: ["cloud", "context", organization, contextId, "providers"],
+			});
+			return result;
 		},
 	});
 }

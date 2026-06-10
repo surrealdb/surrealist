@@ -2,7 +2,6 @@ import type { MantineColor, MantineColorScheme } from "@mantine/core";
 import {
 	iconAPI,
 	iconAuth,
-	iconBook,
 	iconBraces,
 	iconChart,
 	iconChat,
@@ -17,14 +16,16 @@ import {
 	iconExplorer,
 	iconEye,
 	iconEyeOff,
+	iconFile,
+	iconFolderSecure,
 	iconFunction,
 	iconGraphql,
 	iconGrid,
 	iconHelp,
+	iconIntegration,
 	iconKey,
 	iconLive,
-	iconModel,
-	iconPackageClosed,
+	iconMemory,
 	iconPause,
 	iconQuery,
 	iconReferral,
@@ -46,6 +47,7 @@ import flagUS from "flag-icons/flags/4x3/us.svg";
 import type {
 	AuthMode,
 	ConnectionSettingsTab,
+	ContextSettingsTab,
 	ContextViewPage,
 	ContextViewPageInfo,
 	DiagramAlgorithm,
@@ -384,39 +386,59 @@ export const CONNECTION_SETTINGS_TAB_LABELS: Record<ConnectionSettingsTab, strin
 export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = {
 	dashboard: {
 		id: "dashboard",
-		name: "Dashboard",
+		name: "Overview",
 		icon: iconGrid,
+		description: "Your principal, access, and a summary of what lives in this context.",
 	},
 	playground: {
 		id: "playground",
 		name: "Playground",
 		icon: iconChat,
+		description: "Chat with the agent and watch memories recalled and learned in real time.",
 	},
-	memories: {
-		id: "memories",
-		name: "Memories",
-		icon: iconModel,
+	memory: {
+		id: "memory",
+		name: "Memory",
+		icon: iconMemory,
+		description: "Explore the agent-learned memory graph: state, entities, and traces.",
 	},
-	knowledge: {
-		id: "knowledge",
-		name: "Knowledge",
-		icon: iconBook,
+	documents: {
+		id: "documents",
+		name: "Documents",
+		icon: iconFile,
+		description: "Upload, browse, and search the documents grounding this context.",
+	},
+	scopes: {
+		id: "scopes",
+		name: "Scopes",
+		icon: iconFolderSecure,
+		description: "Browse and manage the scope hierarchy that partitions and gates memory.",
 	},
 	integration: {
 		id: "integration",
-		name: "Integration",
-		icon: iconPackageClosed,
+		name: "Integrations",
+		icon: iconIntegration,
+		description: "SDKs, REST, MCP, and framework quickstarts for connecting to this context.",
 	},
 	"api-keys": {
 		id: "api-keys",
 		name: "API Keys",
 		icon: iconKey,
+		description: "Manage the API keys you use to authenticate with this context.",
 	},
 	settings: {
 		id: "settings",
 		name: "Settings",
 		icon: iconCog,
+		description: "Administer principals, configuration, and usage for this context.",
 	},
+};
+
+export const CONTEXT_SETTINGS_TAB_LABELS: Record<ContextSettingsTab, string> = {
+	general: "General",
+	principals: "Principals",
+	configuration: "Configuration",
+	usage: "Usage",
 };
 
 export const SURREAL_KINDS = [
