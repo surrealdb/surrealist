@@ -1,7 +1,31 @@
+$sidebar-thin: 74px;
+$sidebar-wide: 250px;
+
 .root {
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	background-color: rgba(from var(--mantine-color-obsidian-8) r g b / 0.25);
+
+	@include light {
+		background-color: rgba(from var(--mantine-color-obsidian-0) r g b / 0.5);
+	}
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background-image: var(--bg-image);
+		background-position: cover;
+		background-repeat: no-repeat;
+		background-size: cover;
+		opacity: var(--bg-opacity);
+		z-index: 0;
+
+		@include light {
+			display: none;
+		}
+	}
 }
 
 .wrapper {
@@ -12,7 +36,15 @@
 	flex-wrap: nowrap;
 
 	@include md-and-up {
-		margin-left: var(--sidebar-offset) !important;
+		transition: margin-left .15s ease-out;
+
+		&[data-sidebar-mode="wide"] {
+			margin-left: $sidebar-wide;
+		}
+
+		&[data-sidebar-mode="compact"] {
+			margin-left: $sidebar-thin;
+		}
 	}
 }
 
@@ -33,52 +65,150 @@
 }
 
 .toolbar {
+	container-type: inline-size;
+	container-name: toolbar;
 	z-index: 1;
-	padding: var(--mantine-spacing-lg);
-	padding-top: calc(var(--mantine-spacing-lg) + var(--titlebar-offset));
+	padding: var(--mantine-spacing-md);
 
 	@include md-and-up {
 		padding-left: 0;
 	}
 }
 
-$sidebar-thin: 74px;
-$sidebar-wide: 215px;
-
 .sidebar {
 	z-index: 10;
 	transition: all .15s ease-out;
-	border-right: 1px solid transparent;
+	padding-top: var(--titlebar-offset);
 	width: $sidebar-wide;
 
-	&-fill {
+	&[data-fill] {
 		width: 100%;
 	}
 
-	&-collapsed {
+	&[data-is-compact] {
 		width: $sidebar-thin;
-	}
-
-	&-hoverable:hover {
-		width: 230px;
-		border-color: var(--mantine-color-obsidian-7);
-		background-color: var(--mantine-color-body);
-
-		@include light {
-			border-color: var(--mantine-color-obsidian-1);
-		}
-	}
-
-	:global(.mantine-ScrollArea-viewport)>div {
-		display: unset !important;
 	}
 }
 
-.sidebar-inner {
-	padding-top: calc(22px + var(--titlebar-offset));
-	height: 100%;
+.sidebar-navigation {
+	--fade-amount: 18px;
+
+	mask: linear-gradient(to bottom, transparent, black var(--fade-amount), black calc(100% - var(--fade-amount)), transparent);
+}
+
+.sidebar-update {
+	overflow: visible;
+
+	:global(.mantine-Button-section):where([data-position="left"]) {
+		position: relative;
+
+		>div {
+			animation: update-wiggle 4s linear infinite;
+			transform-origin: center bottom;
+			transition: none;
+		}
+
+		&::before {
+			content: "●";
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--mantine-color-violet-light);
+			pointer-events: none;
+			animation: update-ripple 4s linear infinite;
+		}
+	}
+}
+
+.logo {
+	&-hat {
+		z-index: 1;
+		transition: all 0.2s ease;
+	}
+
+	&:is(:hover, :focus) &-hat {
+		filter: brightness(1.2);
+		transform: translateY(-1px);
+	}
+
+	&:active &-hat {
+		filter: brightness(0.9);
+		transform: translateY(0);
+	}
+
+	&-hat[data-greet] {
+		transform: translateY(-12px) translateX(-6px) rotate(-25deg) scale(0.6) !important;
+	}
 }
 
 .page-content {
-	padding-top: calc(68px + var(--titlebar-offset));
+	padding-top: var(--titlebar-offset);
+}
+
+.page-content-inner {
+	background-color: color-mix(in srgb, var(--mantine-color-obsidian-9) 75%, transparent);
+	border-top: 1px solid var(--mantine-color-obsidian-7);
+	overflow: hidden;
+
+	@include md-and-up {
+		border-top-left-radius: var(--mantine-radius-md);
+		border-left: 1px solid var(--mantine-color-obsidian-7);
+	}
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-1);
+		border-color: var(--mantine-color-obsidian-2);
+	}
+}
+
+@keyframes update-ripple {
+	0% {
+		transform: scale(0);
+		opacity: 1;
+	}
+
+	14%,
+	100% {
+		transform: scale(6);
+		opacity: 0;
+	}
+}
+
+@keyframes update-wiggle {
+
+	0%,
+	18%,
+	100% {
+		transform: rotate(0deg);
+	}
+
+	2% {
+		transform: rotate(10deg);
+	}
+
+	4% {
+		transform: rotate(-8deg);
+	}
+
+	6% {
+		transform: rotate(5deg);
+	}
+
+	8% {
+		transform: rotate(-3deg);
+	}
+
+	10% {
+		transform: rotate(1.5deg);
+	}
+
+	12% {
+		transform: rotate(-0.75deg);
+	}
+
+	14% {
+		transform: rotate(0deg);
+	}
 }

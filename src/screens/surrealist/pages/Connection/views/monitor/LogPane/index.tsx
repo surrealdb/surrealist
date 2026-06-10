@@ -78,7 +78,6 @@ export function LogPane({
 						<ActionButton
 							label="Reveal monitors"
 							mr="sm"
-							variant="light"
 							onClick={onRevealSidebar}
 							aria-label="Reveal observables"
 						>

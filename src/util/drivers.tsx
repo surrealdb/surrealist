@@ -16,14 +16,14 @@ export function SurrealIcon(props: ElementProps<"svg">) {
 				y2="122"
 				gradientUnits="userSpaceOnUse"
 			>
-				<stop stopColor="#FF00A0" />
+				<stop stopColor="var(--surreal-energy)" />
 				<stop
 					offset="1"
-					stopColor="#9600FF"
+					stopColor="var(--surreal-passion)"
 				/>
 			</linearGradient>
 			<path
-				fill="url(#surreal)"
+				fill="url(#violet)"
 				d="M48.9819 45.8954L10.1163 6.4375L1.49123 15.194L40.3037 54.5981C43.9144 58.2638 43.9144 64.2225 40.3037 67.8881L1.49121 107.292L10.1163 116.049L48.9819 76.5908C57.3351 68.1102 57.3351 54.376 48.9819 45.8954ZM126.5 108.315H44.9116V121.5H126.5V108.315Z"
 			/>
 		</svg>

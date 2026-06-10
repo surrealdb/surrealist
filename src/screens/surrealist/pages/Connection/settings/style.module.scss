@@ -1,0 +1,18 @@
+.table {
+	tbody tr:nth-child(odd) {
+		background-color: light-dark(
+			var(--mantine-color-obsidian-0),
+			var(--mantine-color-obsidian-8)
+		);
+	}
+
+	thead th {
+		position: sticky;
+		top: 0;
+		z-index: 1;
+		background-color: light-dark(
+			var(--mantine-color-obsidian-1),
+			var(--mantine-color-obsidian-7)
+		);
+	}
+}

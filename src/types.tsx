@@ -1,5 +1,6 @@
 import type { ElementProps, MantineColorScheme } from "@mantine/core";
 import { AboutMetadata } from "@tauri-apps/api/menu";
+import type { ReactNode } from "react";
 import type { Duration, RecordId } from "surrealdb";
 import type { FeatureFlagMap } from "./util/feature-flags";
 
@@ -8,6 +9,13 @@ export type BannerType = "info" | "warning" | "important";
 export type AuthLevel = "root" | "namespace" | "database";
 export type AuthType = "user" | "access";
 export type Base = "ROOT" | "NAMESPACE" | "DATABASE";
+export type BreadcrumbItem = {
+	label: string;
+	href?: string;
+	selectable?: boolean;
+	dimmed?: boolean;
+	content?: ReactNode;
+};
 export type ColorScheme = "light" | "dark";
 export type DatabaseListMode = "list" | "grid";
 export type DiagramAlgorithm = "default" | "aligned" | "spaced";
@@ -31,7 +39,7 @@ export type ResultMode = "table" | "single" | "combined" | "graph" | "live";
 export type SupportRequestType = "conversation" | "ticket";
 export type ScaleStep = "75" | "90" | "100" | "110" | "125" | "150";
 export type SchemaMode = "schemaless" | "schemafull";
-export type SidebarMode = "expandable" | "compact" | "wide" | "fill";
+export type SidebarMode = "compact" | "wide";
 export type InstancePlan = "free" | "start" | "scale" | "enterprise";
 export type SourceMode = "schema" | "infer";
 export type SyntaxTheme = "default" | "vivid";
@@ -76,7 +84,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new";
+export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new" | "/support";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -89,6 +97,15 @@ export type ViewPage =
 	| "parameters"
 	| "documentation"
 	| "migrations";
+
+export type ConnectionSettingsTab =
+	| "general"
+	| "databases"
+	| "import-export"
+	| "configuration"
+	| "compute"
+	| "backups"
+	| "lifecycle";
 
 export type ContextViewPage =
 	| "dashboard"
@@ -239,6 +256,7 @@ export interface SurrealistAppearanceSettings {
 	formatIndentSize: number;
 	formatIndentMode: "space" | "tab";
 	formatMaxLineLength: number;
+	logoGreetAnimation: boolean;
 }
 
 export interface SurrealistTemplateSettings {
@@ -326,6 +344,7 @@ export interface SurrealistConfig {
 	sandbox: Connection;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
+	dismissedUpdateVersion: string | null;
 	lastViewedNewsAt: number | null;
 	settings: SurrealistSettings; // TODO Rename to preferences and flatten inner objects
 	keybindings: KeyBindings;
@@ -498,10 +517,14 @@ export interface TableInfo {
 
 export interface SchemaNamespace {
 	name: string;
+	id: number;
+	comment?: string;
 }
 
 export interface SchemaDatabase {
 	name: string;
+	id: number;
+	comment?: string;
 }
 
 export interface SchemaInfoKV {

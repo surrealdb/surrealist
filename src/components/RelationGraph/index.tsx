@@ -147,7 +147,7 @@ export function RelationGraph({
 			defaultEdgeColor: edgeColor,
 			allowInvalidContainer: true,
 			renderEdgeLabels: true,
-			labelFont: "JetBrains Mono",
+			labelFont: "JetBrains Mono Variable",
 			labelColor: { color: nodeLabelColor },
 			labelSize: 10,
 			edgeLabelColor: { color: edgeLabelColor },

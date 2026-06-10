@@ -46,7 +46,7 @@ const CAPABILITIES: Capability[] = [
 	{
 		title: "Ingest anything",
 		description:
-			"Files, pages, API payloads, transcripts — everything is normalised into the same pipeline as your conversations.",
+			"Files, pages, API payloads, transcripts - everything is normalised into the same pipeline as your conversations.",
 		icon: iconUpload,
 	},
 	{
@@ -147,7 +147,7 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 							className="selectable"
 						>
 							The factual layer you control. Upload documents, stream data, and
-							connect sources that ground your agents in source material — not only
+							connect sources that ground your agents in source material - not only
 							the last few messages.
 						</Text>
 					</Box>

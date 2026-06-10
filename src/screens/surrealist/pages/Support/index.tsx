@@ -5,7 +5,6 @@ import {
 	Group,
 	Loader,
 	Paper,
-	ScrollArea,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -29,14 +28,15 @@ import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { useConversationsQuery, useSupportCollectionsQuery } from "~/cloud/queries/context";
-import { CloudGuard } from "~/components/CloudGuard";
 import { ConversationTable } from "~/components/ConversationTable";
+import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { openSelectOrganizationModal } from "~/modals/select-organization";
 import { useAuthentication } from "~/providers/Auth";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
+import { PageContainer } from "../../components/PageContainer";
 import { StartCloud } from "../Overview/content/cloud";
 import { ResourceTile } from "./ResourceTile";
 import { SupportCollection } from "./SupportCollection";
@@ -58,273 +58,246 @@ export function SupportPage() {
 	}, [search]);
 
 	return (
-		<CloudGuard>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1000}
-						pb={68}
-						gap="xl"
+		<>
+			<PageBreadcrumbs items={[{ label: "Support" }]} />
+			<PageContainer>
+				<Stack gap="xl">
+					<PrimaryTitle
+						ta="center"
+						fz={32}
 					>
-						<PrimaryTitle
-							ta="center"
-							fz={32}
-						>
-							SurrealDB Help Centre
-						</PrimaryTitle>
+						SurrealDB Help Centre
+					</PrimaryTitle>
 
-						<TextInput
-							placeholder="Search for a collection or article"
-							leftSection={<Icon path={iconSearch} />}
-							flex={1}
-							size="lg"
-							onChange={(e) => setSearch(e.target.value)}
-						/>
+					<TextInput
+						placeholder="Search for a collection or article"
+						leftSection={<Icon path={iconSearch} />}
+						flex={1}
+						size="md"
+						onChange={(e) => setSearch(e.target.value)}
+					/>
 
-						{isChatsLoading && (
+					{isChatsLoading && (
+						<Center my="xl">
+							<Loader />
+						</Center>
+					)}
+
+					{flags.support_tickets && (
+						<>
+							{isAuthenticated && chats && chats.length !== 0 && !isChatsLoading && (
+								<Paper p="lg">
+									<Group p="sm">
+										<Text
+											c="bright"
+											fw={600}
+											fz={20}
+											lh={1}
+										>
+											Open support tickets
+										</Text>
+										<Spacer />
+										<Button
+											variant="light"
+											size="xs"
+											color="obsidian"
+											onClick={() => navigate("/support/requests")}
+										>
+											View all tickets
+										</Button>
+
+										<Button
+											variant="gradient"
+											size="xs"
+											rightSection={<Icon path={iconPlus} />}
+											onClick={() => {
+												dispatchIntent("create-message", {
+													type: "ticket",
+												});
+											}}
+										>
+											Create new ticket
+										</Button>
+									</Group>
+
+									<ConversationTable
+										conversations={chats.sort(
+											(a, b) => b.updated_at - a.updated_at,
+										)}
+										defaultSortMode="updated_latest"
+										defaultType="open"
+										withHeader={false}
+									/>
+								</Paper>
+							)}
+
+							{!isChatsLoading &&
+								(!isAuthenticated || !chats || chats.length === 0) && (
+									<StartCloud
+										action={isAuthenticated ? "Explore plans" : "Sign in"}
+										image={pictoHealthChat}
+										onClick={() => {
+											if (isAuthenticated) {
+												openSelectOrganizationModal({
+													description:
+														"Select an organisation to view available support plans.",
+													action: "View plans",
+													onSelect: (org) => {
+														navigate(`/o/${org.id}/support-plans`);
+													},
+												});
+											} else {
+												signIn();
+											}
+										}}
+									>
+										<Group>
+											<PrimaryTitle>Need expert answers fast?</PrimaryTitle>
+											<Text>
+												Upgrade your organisation's Support Plan to get
+												expedited support from the SurrealDB team, so you're
+												never left stramded when it matters the most.
+											</Text>
+										</Group>
+									</StartCloud>
+								)}
+						</>
+					)}
+
+					<Box
+						mt="xl"
+						w="100%"
+						className={classes.content}
+					>
+						<PrimaryTitle fz={22}>Support Collections</PrimaryTitle>
+						{isLoading && (
 							<Center my="xl">
 								<Loader />
 							</Center>
 						)}
 
-						{flags.support_tickets && (
-							<>
-								{isAuthenticated &&
-									chats &&
-									chats.length !== 0 &&
-									!isChatsLoading && (
-										<Paper p="lg">
-											<Group p="sm">
-												<Text
-													c="bright"
-													fw={600}
-													fz={20}
-													lh={1}
-												>
-													Open support tickets
-												</Text>
-												<Spacer />
-												<Button
-													variant="light"
-													size="xs"
-													color="obsidian"
-													onClick={() => navigate("/support/requests")}
-												>
-													View all tickets
-												</Button>
-
-												<Button
-													variant="gradient"
-													size="xs"
-													rightSection={<Icon path={iconPlus} />}
-													onClick={() => {
-														dispatchIntent("create-message", {
-															type: "ticket",
-														});
-													}}
-												>
-													Create new ticket
-												</Button>
-											</Group>
-
-											<ConversationTable
-												conversations={chats.sort(
-													(a, b) => b.updated_at - a.updated_at,
-												)}
-												defaultSortMode="updated_latest"
-												defaultType="open"
-												withHeader={false}
-											/>
-										</Paper>
-									)}
-
-								{!isChatsLoading &&
-									(!isAuthenticated || !chats || chats.length === 0) && (
-										<StartCloud
-											action={isAuthenticated ? "Explore plans" : "Sign in"}
-											image={pictoHealthChat}
-											onClick={() => {
-												if (isAuthenticated) {
-													openSelectOrganizationModal({
-														description:
-															"Select an organisation to view available support plans.",
-														action: "View plans",
-														onSelect: (org) => {
-															navigate(`/o/${org.id}/support-plans`);
-														},
-													});
-												} else {
-													signIn();
-												}
-											}}
-										>
-											<Group>
-												<PrimaryTitle>
-													Need expert answers fast?
-												</PrimaryTitle>
-												<Text>
-													Upgrade your organisation's Support Plan to get
-													expedited support from the SurrealDB team, so
-													you're never left stramded when it matters the
-													most.
-												</Text>
-											</Group>
-										</StartCloud>
-									)}
-							</>
+						{!isLoading && (
+							<SimpleGrid
+								mt="md"
+								cols={{ base: 1, md: 2 }}
+								spacing="md"
+								mx="auto"
+							>
+								{collections
+									?.sort((a, b) => a.order - b.order)
+									.map((collection) => (
+										<SupportCollection
+											key={collection.id}
+											collection={collection}
+										/>
+									))}
+							</SimpleGrid>
 						)}
+					</Box>
 
-						<Box
-							mt="xl"
-							w="100%"
-							className={classes.content}
+					<Box
+						mt="xl"
+						w="100%"
+						className={classes.content}
+					>
+						<PrimaryTitle fz={22}>Helpful Resources</PrimaryTitle>
+
+						<SimpleGrid
+							mt="md"
+							cols={{ base: 1, md: 2 }}
+							spacing="md"
+							mx="auto"
 						>
-							<PrimaryTitle fz={22}>Support Collections</PrimaryTitle>
-							{isLoading && (
-								<Center my="xl">
-									<Loader />
-								</Center>
+							<ResourceTile
+								name="SurrealDB Documentation"
+								description="Learn everything there is to know about all SurrealDB products"
+								image={pictoSurrealDB}
+								onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
+							/>
+							<ResourceTile
+								name="SurrealDB YouTube"
+								description="Learn about SurrealDB through live streams and video tutorials"
+								image={pictoPlay}
+								onClick={() =>
+									adapter.openUrl("https://www.youtube.com/@SurrealDB")
+								}
+							/>
+							<ResourceTile
+								name="University: Fundamentals"
+								description="Learn the fundamentals of SurrealDB in as little as 3 hours"
+								image={pictoUniversity}
+								onClick={() =>
+									adapter.openUrl("https://surrealdb.com/learn/fundamentals")
+								}
+							/>
+							<ResourceTile
+								name="University: Book"
+								description="Become a SurrealQL expert through Aeon's Surreal Renaissance"
+								image={pictoDocument}
+								onClick={() => adapter.openUrl("https://surrealdb.com/learn/book")}
+							/>
+						</SimpleGrid>
+					</Box>
+
+					<Box
+						mt="xl"
+						w="100%"
+						className={classes.content}
+					>
+						<PrimaryTitle fz={22}>Reach Out</PrimaryTitle>
+
+						<SimpleGrid
+							mt="md"
+							cols={{ base: 1, md: 2 }}
+							spacing="md"
+							mx="auto"
+						>
+							<ResourceTile
+								name="Discord Community"
+								description="Join our active community for ideas, discussions, and support"
+								image={pictoDiscord}
+								onClick={() =>
+									adapter.openUrl("https://discord.com/invite/dc4JNWrrMc")
+								}
+							/>
+							<ResourceTile
+								name="Sidekick"
+								description="Chat with Sidekick for the quickest answers to your questions"
+								image={pictoSidekick}
+								onClick={() => dispatchIntent("open-sidekick")}
+							/>
+							<ResourceTile
+								name="GitHub"
+								description="Report issues or submit feature requests"
+								image={pictoGitHub}
+								onClick={() => adapter.openUrl("https://github.com/surrealdb")}
+							/>
+							{flags.support_tickets && (
+								<ResourceTile
+									name="Account Support"
+									description="Contact us for account and billing issues"
+									image={pictoHealthChat}
+									onClick={() =>
+										dispatchIntent("create-message", {
+											type: "conversation",
+											conversationType: "general",
+											subject: "Account / billing enquiry",
+										})
+									}
+								/>
 							)}
-
-							{!isLoading && (
-								<SimpleGrid
-									mt="md"
-									cols={{ base: 1, md: 2 }}
-									spacing="md"
-									mx="auto"
-								>
-									{collections
-										?.sort((a, b) => a.order - b.order)
-										.map((collection) => (
-											<SupportCollection
-												key={collection.id}
-												collection={collection}
-											/>
-										))}
-								</SimpleGrid>
+							{!flags.support_tickets && (
+								<ResourceTile
+									name="Contact Support"
+									description="For account and billing issues, email support"
+									image={pictoHealthChat}
+									onClick={() => adapter.openUrl("mailto:support@surrealdb.com")}
+								/>
 							)}
-						</Box>
-
-						<Box
-							mt="xl"
-							w="100%"
-							className={classes.content}
-						>
-							<PrimaryTitle fz={22}>Helpful Resources</PrimaryTitle>
-
-							<SimpleGrid
-								mt="md"
-								cols={{ base: 1, md: 2 }}
-								spacing="md"
-								mx="auto"
-							>
-								<ResourceTile
-									name="SurrealDB Documentation"
-									description="Learn everything there is to know about all SurrealDB products"
-									image={pictoSurrealDB}
-									onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
-								/>
-								<ResourceTile
-									name="SurrealDB YouTube"
-									description="Learn about SurrealDB through live streams and video tutorials"
-									image={pictoPlay}
-									onClick={() =>
-										adapter.openUrl("https://www.youtube.com/@SurrealDB")
-									}
-								/>
-								<ResourceTile
-									name="University: Fundamentals"
-									description="Learn the fundamentals of SurrealDB in as little as 3 hours"
-									image={pictoUniversity}
-									onClick={() =>
-										adapter.openUrl("https://surrealdb.com/learn/fundamentals")
-									}
-								/>
-								<ResourceTile
-									name="University: Book"
-									description="Become a SurrealQL expert through Aeon's Surreal Renaissance"
-									image={pictoDocument}
-									onClick={() =>
-										adapter.openUrl("https://surrealdb.com/learn/book")
-									}
-								/>
-							</SimpleGrid>
-						</Box>
-
-						<Box
-							mt="xl"
-							w="100%"
-							className={classes.content}
-						>
-							<PrimaryTitle fz={22}>Reach Out</PrimaryTitle>
-
-							<SimpleGrid
-								mt="md"
-								cols={{ base: 1, md: 2 }}
-								spacing="md"
-								mx="auto"
-							>
-								<ResourceTile
-									name="Discord Community"
-									description="Join our active community for ideas, discussions, and support"
-									image={pictoDiscord}
-									onClick={() =>
-										adapter.openUrl("https://discord.com/invite/dc4JNWrrMc")
-									}
-								/>
-								<ResourceTile
-									name="Sidekick"
-									description="Chat with Sidekick for the quickest answers to your questions"
-									image={pictoSidekick}
-									onClick={() => dispatchIntent("open-sidekick")}
-								/>
-								<ResourceTile
-									name="GitHub"
-									description="Report issues or submit feature requests"
-									image={pictoGitHub}
-									onClick={() => adapter.openUrl("https://github.com/surrealdb")}
-								/>
-								{flags.support_tickets && (
-									<ResourceTile
-										name="Account Support"
-										description="Contact us for account and billing issues"
-										image={pictoHealthChat}
-										onClick={() =>
-											dispatchIntent("create-message", {
-												type: "conversation",
-												conversationType: "general",
-												subject: "Account / billing enquiry",
-											})
-										}
-									/>
-								)}
-								{!flags.support_tickets && (
-									<ResourceTile
-										name="Contact Support"
-										description="For account and billing issues, email support"
-										image={pictoHealthChat}
-										onClick={() =>
-											adapter.openUrl("mailto:support@surrealdb.com")
-										}
-									/>
-								)}
-							</SimpleGrid>
-						</Box>
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</CloudGuard>
+						</SimpleGrid>
+					</Box>
+				</Stack>
+			</PageContainer>
+		</>
 	);
 }

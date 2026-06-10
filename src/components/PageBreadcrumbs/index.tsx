@@ -1,33 +1,15 @@
-import { BoxProps, Breadcrumbs } from "@mantine/core";
-import clsx from "clsx";
-import { Link } from "wouter";
-import classes from "./style.module.scss";
+import { usePageBreadcrumbs } from "~/hooks/breadcrumbs";
+import type { BreadcrumbItem } from "~/types";
 
-export interface PageBreadcrumbsProps extends BoxProps {
-	items: { label: string; href?: string; selectable?: boolean }[];
+export interface PageBreadcrumbsProps {
+	items: BreadcrumbItem[];
 }
 
-export function PageBreadcrumbs({ items, ...other }: PageBreadcrumbsProps) {
-	return (
-		<Breadcrumbs {...other}>
-			{items.map((item, index) =>
-				item.href ? (
-					<Link
-						key={index}
-						href={item.href}
-						className={clsx(classes.link, item.selectable && "selectable")}
-					>
-						{item.label}
-					</Link>
-				) : (
-					<span
-						key={index}
-						className={clsx(classes.link, item.selectable && "selectable")}
-					>
-						{item.label}
-					</span>
-				),
-			)}
-		</Breadcrumbs>
-	);
+/**
+ * Registers page breadcrumbs in the toolbar. Renders nothing.
+ */
+export function PageBreadcrumbs({ items }: PageBreadcrumbsProps) {
+	usePageBreadcrumbs(items);
+
+	return null;
 }

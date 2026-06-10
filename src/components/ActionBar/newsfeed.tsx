@@ -8,11 +8,11 @@ export function NewsFeed() {
 	const unread = useUnreadNewsPosts();
 
 	return (
-		<Indicator disabled={unread.length === 0}>
+		<Indicator
+			disabled={unread.length === 0}
+			offset={5}
+		>
 			<ActionButton
-				w={36}
-				h={36}
-				variant="subtle"
 				label="Latest news"
 				tooltipProps={{
 					position: "bottom",
@@ -23,7 +23,7 @@ export function NewsFeed() {
 			>
 				<Icon
 					path={iconNewspaper}
-					size="xl"
+					size="lg"
 				/>
 			</ActionButton>
 		</Indicator>

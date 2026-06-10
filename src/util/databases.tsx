@@ -4,13 +4,19 @@ import {
 	executeQuerySingle,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
+import { SchemaInfoKV, SchemaInfoNS } from "~/types";
 import { getAuthDB, getAuthNS, getConnection } from "./connection";
 import { parseIdent } from "./language";
+
+export interface NamespaceOrDatabase {
+	name: string;
+	comment?: string;
+}
 
 /**
  * Fetch a list of available namespaces
  */
-export async function fetchNamespaceList() {
+export async function fetchNamespaceList(): Promise<NamespaceOrDatabase[]> {
 	const { currentState } = useDatabaseStore.getState();
 	const connection = getConnection();
 
@@ -24,15 +30,18 @@ export async function fetchNamespaceList() {
 		return [authNS];
 	}
 
-	const { namespaces } = await executeQuerySingle("INFO FOR KV");
+	const { namespaces } = await executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE");
 
-	return Object.keys(namespaces).map((ns) => parseIdent(ns));
+	return namespaces.map((ns) => ({
+		name: parseIdent(ns.name),
+		comment: ns.comment,
+	}));
 }
 
 /**
  * Fetch a list of available namespaces
  */
-export async function fetchDatabaseList(namespace: string) {
+export async function fetchDatabaseList(namespace: string): Promise<NamespaceOrDatabase[]> {
 	const { currentState } = useDatabaseStore.getState();
 	const connection = getConnection();
 
@@ -46,7 +55,13 @@ export async function fetchDatabaseList(namespace: string) {
 		return [authDB];
 	}
 
-	const [_, { result }] = await executeQuery(`USE NS ${escapeIdent(namespace)}; INFO FOR NS`);
+	const [_, result] = await executeQuery(
+		`USE NS ${escapeIdent(namespace)}; INFO FOR NS STRUCTURE`,
+	);
+	const { databases } = result.result as SchemaInfoNS;
 
-	return Object.keys(result.databases).map((db) => parseIdent(db));
+	return databases.map((db) => ({
+		name: parseIdent(db.name),
+		comment: db.comment,
+	}));
 }

@@ -7,89 +7,106 @@ export function DocsSchemaFunctions({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		-- It is necessary to prefix the name of your function with "fn::"
-		-- This indicates that it's a custom function
-		DEFINE FUNCTION fn::greet($name: string) {
-			RETURN "Hello, " + $name + "!";
-		};
+-- Custom functions are prefixed with fn::
+DEFINE FUNCTION fn::greet($name: string) {
+	RETURN "Hello, " + $name + "!";
+};
 
-		-- Returns: "Hello, BOB!"
-		RETURN fn::greet("BOB");
-		`,
+RETURN fn::greet("Tobie");
+`,
 			js: `
-		import { Surreal } from 'surrealdb';
+await db.query(\`
+	DEFINE FUNCTION fn::greet($name: string) {
+		RETURN "Hello, " + $name + "!";
+	};
+\`);
 
-		const db = new Surreal();
-
-		import { Surreal } from 'surrealdb';
-		const db = new Surreal();
-		await db.connect('<the actual address of the connection>/rpc', {
-			namespace: '<the actual ns of the connection>',
-			database: '<the action db of the connection>'
-		});
-
-		`,
+const result = await db.query('RETURN fn::greet($name)', { name: 'Tobie' });
+`,
 			rust: `
-		//Connect to a local endpoint
-		DB.connect::<Ws>("127.0.0.1:8000").await?;
-		//Connect to a remote endpoint
-		DB.connect::<Wss>("cloud.surrealdb.com").await?;
-		`,
-			py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
-		`,
-			go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc");
-		`,
-			csharp: `
-			await db.RawQuery(
-				"""
-					-- It is necessary to prefix the name of your function with "fn::"
-					-- This indicates that it's a custom function
-					DEFINE FUNCTION fn::greet($name: string) {
-						RETURN "Hello, " + $name + "!";
-					}
+db.query(r#"
+	DEFINE FUNCTION fn::greet($name: string) {
+		RETURN "Hello, " + $name + "!";
+	};
+"#).await?;
 
-					-- Returns: "Hello, BOB!"
-					RETURN fn::greet("BOB");
-				"""
-			);
-		`,
+let greeting: String = db
+	.query("RETURN fn::greet($name)")
+	.bind(("name", "Tobie"))
+	.await?
+	.take(0)?;
+`,
+			py: `
+await db.query("""
+	DEFINE FUNCTION fn::greet($name: string) {
+		RETURN "Hello, " + $name + "!";
+	};
+""")
+
+result = await db.query("RETURN fn::greet($name)", {"name": "Tobie"})
+`,
+			go: `
+_, err := surrealdb.Query[any](ctx, db, \`
+	DEFINE FUNCTION fn::greet($name: string) {
+		RETURN "Hello, " + $name + "!";
+	};
+\`, nil)
+
+greeting, err := surrealdb.Query[string](ctx, db,
+	"RETURN fn::greet($name)",
+	map[string]any{"name": "Tobie"},
+)
+`,
+			csharp: `
+await db.RawQuery("""
+	DEFINE FUNCTION fn::greet($name: string) {
+		RETURN "Hello, " + $name + "!";
+	};
+""");
+
+var result = await db.RawQuery(
+	"RETURN fn::greet($name)",
+	new Dictionary<string, object?> { { "name", "Tobie" } },
+);
+`,
 			java: `
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
-		`,
+db.query("""
+	DEFINE FUNCTION fn::greet($name: string) {
+		RETURN "Hello, " + $name + "!";
+	};
+""");
+
+Response response = db.queryBind(
+	"RETURN fn::greet($name)",
+	Map.of("name", "Tobie")
+);
+`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
-		`,
+$db->query('
+	DEFINE FUNCTION fn::greet($name: string) {
+		RETURN "Hello, " + $name + "!";
+	};
+');
+
+$result = $db->query("RETURN fn::greet($name)", ["name" => "Tobie"]);
+`,
 		}),
 		[],
 	);
 
 	return (
 		<Article title="Functions">
-			<div>
-				<p>
-					Functions are a way to encapsulate logic in a database. To define functions you
-					have to be a system user (namespace, database, or root). They can be used to
-					perform calculations, manipulate data, or perform other operations. In SurrealDB
-					functions can be written just as you would in your programming language of
-					choice.
-				</p>
-			</div>
+			<Box>
+				<Box component="p">
+					Custom functions encapsulate reusable logic in your database schema. Prefix
+					function names with <code>fn::</code> and call them from SurrealQL queries or
+					other functions.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Functions"
+					title="Define a function"
 					values={snippets}
 				/>
 			</Box>

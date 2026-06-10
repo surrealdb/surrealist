@@ -57,7 +57,7 @@ client = ContextClient(api_key="your-api-key")`,
 			description: "Store a turn that the agent should remember.",
 			code: `messages = [
     {"role": "user", "content": "Hi, I'm Alex. I prefer dark mode."},
-    {"role": "assistant", "content": "Got it, Alex — noted."},
+    {"role": "assistant", "content": "Got it, Alex - noted."},
 ]
 
 client.add(messages, user_id="alex")`,
@@ -93,7 +93,7 @@ const client = new ContextClient({ apiKey: "your-api-key" });`,
 			description: "Store a turn that the agent should remember.",
 			code: `const messages = [
     { role: "user", content: "Hi, I'm Alex. I prefer dark mode." },
-    { role: "assistant", content: "Got it, Alex — noted." },
+    { role: "assistant", content: "Got it, Alex - noted." },
 ];
 
 await client.add(messages, { userId: "alex" });`,

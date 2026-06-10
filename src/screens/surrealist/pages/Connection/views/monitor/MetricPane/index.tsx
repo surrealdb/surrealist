@@ -1,7 +1,6 @@
-import { Paper, ScrollArea, Stack } from "@mantine/core";
-import { Icon, iconChart, iconChevronRight } from "@surrealdb/ui";
+import { Box, Group, ScrollArea, Stack } from "@mantine/core";
+import { Icon, iconChevronRight, SectionTitle, Spacer } from "@surrealdb/ui";
 import { ActionButton } from "~/components/ActionButton";
-import { ContentPane } from "~/components/Pane";
 import { CloudMetrics } from "~/types";
 import { MonitorContentProps, MonitorMetricOptions } from "../helpers";
 import { MetricActions } from "./actions";
@@ -26,66 +25,64 @@ export function MetricPane({
 }: MonitorContentProps) {
 	return (
 		<Stack h="100%">
-			<ContentPane
-				h="unset"
-				icon={iconChart}
-				title={info.name}
-				withDivider={false}
-				leftSection={
-					sidebarMinimized && (
-						<ActionButton
-							label="Reveal monitors"
-							mr="sm"
-							variant="light"
-							onClick={onRevealSidebar}
-							aria-label="Reveal observables"
-						>
-							<Icon path={iconChevronRight} />
-						</ActionButton>
-					)
-				}
-				rightSection={
-					<MetricActions
-						options={metricOptions}
-						onChange={onChangeMetricsOptions}
-					/>
-				}
-			/>
-			<Paper
-				bg="transparent"
+			<Box
 				pos="relative"
 				flex={1}
-				withBorder
 			>
 				<ScrollArea
 					scrollbars="y"
 					pos="absolute"
-					p="xl"
 					inset={0}
 				>
-					{info.id === "system" && (
-						<SystemPanel
-							instance={instance}
-							metricOptions={metricOptions}
-							onCalculateMetricsNodes={onCalculateMetricsNodes}
-						/>
-					)}
-					{info.id === "network" && (
-						<NetworkPanel
-							instance={instance}
-							metricOptions={metricOptions}
-							onCalculateMetricsNodes={onCalculateMetricsNodes}
-						/>
-					)}
-					{info.id === "connections" && (
-						<ConnectionsPanel
-							instance={instance}
-							metricOptions={metricOptions}
-							onCalculateMetricsNodes={onCalculateMetricsNodes}
-						/>
-					)}
+					<Box
+						pt="2xl"
+						px="xl"
+						maw={960}
+						mx="auto"
+					>
+						<Group mb="xl">
+							{sidebarMinimized && (
+								<ActionButton
+									label="Reveal monitors"
+									mr="sm"
+									onClick={onRevealSidebar}
+									aria-label="Reveal observables"
+								>
+									<Icon path={iconChevronRight} />
+								</ActionButton>
+							)}
+							<SectionTitle kicker="Metrics">{info.name}</SectionTitle>
+							<Spacer />
+							<MetricActions
+								options={metricOptions}
+								onChange={onChangeMetricsOptions}
+							/>
+						</Group>
+
+						{info.id === "system" && (
+							<SystemPanel
+								instance={instance}
+								metricOptions={metricOptions}
+								onCalculateMetricsNodes={onCalculateMetricsNodes}
+							/>
+						)}
+						{info.id === "network" && (
+							<NetworkPanel
+								instance={instance}
+								metricOptions={metricOptions}
+								onCalculateMetricsNodes={onCalculateMetricsNodes}
+							/>
+						)}
+						{info.id === "connections" && (
+							<ConnectionsPanel
+								instance={instance}
+								metricOptions={metricOptions}
+								onCalculateMetricsNodes={onCalculateMetricsNodes}
+							/>
+						)}
+					</Box>
 				</ScrollArea>
-			</Paper>
+			</Box>
 		</Stack>
 	);
 }

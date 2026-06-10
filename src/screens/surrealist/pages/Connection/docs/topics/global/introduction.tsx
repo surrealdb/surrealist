@@ -12,38 +12,34 @@ export function DocsGlobalIntroduction() {
 
 	return (
 		<Article>
-			<div>
-				<p>
-					SurrealDB offers a rich set of client libraries and connection protocols to make
-					it easy to integrate SurrealDB into your application. This page provides
-					documentation for using these libraries and protocols within the context of your
-					database and schema. You can change the language of the code examples by
-					selecting a different language from the dropdown in the top right corner of this
-					panel.
-				</p>
+			<Box>
+				<Box component="p">
+					SurrealDB provides official SDKs for Rust, JavaScript, Python, Go, Java, .NET,
+					PHP, and more. This documentation shows how to connect to your active database
+					and interact with its schema using your preferred language. Code examples are
+					personalised with your connection details and table names.
+				</Box>
+
 				<Title
 					order={2}
 					mt="xl"
 				>
 					Client libraries
 				</Title>
-				<p>
-					Client libraries provide the most streamlined way to interact with SurrealDB.
-					They handle the low-level details of the connection and provide a high-level API
-					for interacting with the database. We provide client libraries for a variety of
-					languages, including Rust, JavaScript, Python, and many more.
-				</p>
+				<Box component="p">
+					Client libraries handle connection management and provide high-level methods for
+					CRUD, authentication, live queries, and raw SurrealQL execution.
+				</Box>
 				<Title
 					order={2}
 					mt="xl"
 				>
-					Using the CLI
+					CLI and SurrealQL
 				</Title>
-				<p>
-					The SurrealDB CLI provides a convenient way to interact with your database on
-					the command line. It provides a simple interface for executing queries, which is
-					especially useful for limited environments.
-				</p>
+				<Box component="p">
+					Select CLI from the language picker to see raw SurrealQL and command-line
+					examples. This is useful for scripting, migrations, and quick experimentation.
+				</Box>
 				{active && (
 					<>
 						<Title
@@ -52,10 +48,9 @@ export function DocsGlobalIntroduction() {
 						>
 							Learn more
 						</Title>
-						<p>
-							You can learn more about the selected language by visiting the official
-							documentation.
-						</p>
+						<Box component="p">
+							Visit the official documentation for the selected SDK.
+						</Box>
 						<Button
 							variant="gradient"
 							rightSection={<Icon path={iconOpen} />}
@@ -66,7 +61,7 @@ export function DocsGlobalIntroduction() {
 						</Button>
 					</>
 				)}
-			</div>
+			</Box>
 			<Box>
 				<Text
 					fz="lg"
@@ -85,7 +80,7 @@ export function DocsGlobalIntroduction() {
 					<DriverSelector
 						value={language}
 						onChange={setLanguage}
-						disabled={["java", "c"]}
+						exclude={["c"]}
 						cols={{
 							xs: 1,
 							sm: 2,

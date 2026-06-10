@@ -3,69 +3,111 @@ import { useMemo } from "react";
 import { Article, DocsPreview } from "~/screens/surrealist/pages/Connection/docs/components";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
 
-export function DocsConceptsGraphTraversal({ language, topic }: TopicProps) {
+export function DocsConceptsGraphTraversal({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-			surreal sql --endpoint ${topic.extra?.connectionUri} --namespace ${topic.extra?.namespace} --database ${topic.extra?.database}
-		`,
+-- Forward traversal: find posts written by a user
+SELECT ->wrote->post.* AS posts FROM user:alice;
+
+-- Reverse traversal: find authors of a post
+SELECT <-wrote<-user.* AS authors FROM post:hello;
+
+-- Chain multiple hops
+SELECT <-wrote<-user->wrote->comment.* FROM comment:one;
+
+-- Bidirectional traversal on symmetric relations
+SELECT <->friends_with<->person AS friends FROM person:one;
+`,
 			js: `
-		import { Surreal } from 'surrealdb';
+// Traverse a graph using SurrealQL arrow syntax
+const posts = await db.query(
+	'SELECT ->wrote->post.* AS posts FROM user:alice',
+);
 
-		const db = new Surreal();
+const authors = await db.query(
+	'SELECT <-wrote<-user.* AS authors FROM type::record($post)',
+	{ post: 'post:hello' },
+);
 
-		import { Surreal } from 'surrealdb';
-		const db = new Surreal();
-		await db.connect('<the actual address of the connection>/rpc', {
-			namespace: '<the actual ns of the connection>',
-			database: '<the action db of the connection>'
-		});
-
-		`,
+// Traverse directly from a record ID
+const writer = await db.query('RETURN comment:one<-wrote<-user');
+`,
 			rust: `
-		//Connect to a local endpoint
-		DB.connect::<Ws>("127.0.0.1:8000").await?;
-		//Connect to a remote endpoint
-		DB.connect::<Wss>("cloud.surrealdb.com").await?;
-		`,
+let posts: Vec<Post> = db
+	.query("SELECT ->wrote->post.* AS posts FROM user:alice")
+	.await?
+	.take(0)?;
+
+let authors: Vec<User> = db
+	.query("SELECT <-wrote<-user.* AS authors FROM type::record($post)")
+	.bind(("post", "post:hello"))
+	.await?
+	.take(0)?;
+`,
 			py: `
-		# Connect to a local endpoint
-		db = Surreal()
-		await db.connect('http://127.0.0.1:8000/rpc')
-		# Connect to a remote endpoint
-		db = Surreal()
-		await db.connect('https://cloud.surrealdb.com/rpc')
-		`,
+posts = await db.query(
+	"SELECT ->wrote->post.* AS posts FROM user:alice"
+)
+
+authors = await db.query(
+	"SELECT <-wrote<-user.* AS authors FROM type::record($post)",
+	{"post": "post:hello"},
+)
+`,
 			go: `
-		// Connect to a local endpoint
-		surrealdb.New("ws://localhost:8000/rpc");
-		// Connect to a remote endpoint
-		surrealdb.New("ws://cloud.surrealdb.com/rpc");
-		`,
+posts, err := surrealdb.Query[[]Post](ctx, db,
+	"SELECT ->wrote->post.* AS posts FROM user:alice", nil,
+)
+
+authors, err := surrealdb.Query[[]User](ctx, db,
+	"SELECT <-wrote<-user.* AS authors FROM type::record($post)",
+	map[string]any{"post": "post:hello"},
+)
+`,
 			csharp: `
-		await db.Connect();
-		`,
+var posts = await db.RawQuery("SELECT ->wrote->post.* AS posts FROM user:alice");
+
+var authors = await db.RawQuery(
+	"SELECT <-wrote<-user.* AS authors FROM type::record($post)",
+	new Dictionary<string, object?> { { "post", "post:hello" } },
+);
+`,
 			java: `
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
-		`,
+List<Post> posts = db.query(
+	"SELECT ->wrote->post.* AS posts FROM user:alice"
+).take(Post.class, 0);
+
+List<User> authors = db.queryBind(
+	"SELECT <-wrote<-user.* AS authors FROM type::record($post)",
+	Map.of("post", "post:hello")
+).take(User.class, 0);
+`,
 			php: `
-		// Connect to a local endpoint
-		$db = new SurrealDB();
-		`,
+$posts = $db->query("SELECT ->wrote->post.* AS posts FROM user:alice");
+
+$authors = $db->query(
+	"SELECT <-wrote<-user.* AS authors FROM type::record($post)",
+	["post" => "post:hello"],
+);
+`,
 		}),
-		[topic.extra],
+		[],
 	);
 
 	return (
-		<Article title="Graph Traversal">
-			<div>
-				<p>Signing up a new user</p>
-			</div>
+		<Article title="Graph traversal">
+			<Box>
+				<Box component="p">
+					Graph queries use SurrealQL arrow syntax to walk relationships between records.
+					Use <code>-&gt;</code> for forward traversal, <code>&lt;-</code> for reverse,
+					and <code>&lt;-&gt;</code> for bidirectional edges on symmetric relations.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Graph Traversal"
+					title="Graph traversal"
 					values={snippets}
 				/>
 			</Box>

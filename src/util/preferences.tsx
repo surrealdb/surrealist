@@ -190,6 +190,17 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
+					{
+						id: "logo-greet-animation",
+						name: "Bowler animation",
+						description: "Hats off to you",
+						controller: new CheckboxController({
+							reader: (config) => config.settings.appearance.logoGreetAnimation,
+							writer: (config, value) => {
+								config.settings.appearance.logoGreetAnimation = value;
+							},
+						}),
+					},
 				],
 			},
 			{

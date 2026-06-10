@@ -20,7 +20,7 @@ import { useConnection, useIsConnected } from "~/hooks/connection";
 import { useKeyNavigation } from "~/hooks/keys";
 import { useNamespaceSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
-import { openCreateDatabaseModal } from "~/modals/create-database";
+import { openNewDatabaseModal } from "~/modals/new-database";
 import { useConfirmation } from "~/providers/Confirmation";
 import { getAuthDB, getAuthLevel } from "~/util/connection";
 import { createBaseAuthentication } from "~/util/defaults";
@@ -191,7 +191,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 	});
 
 	const openCreator = useStable(() => {
-		openCreateDatabaseModal();
+		openNewDatabaseModal();
 		openHandle.close();
 	});
 
@@ -204,7 +204,7 @@ export function DatabaseList({ buttonProps }: DatabaseListProps) {
 			color="obsidian"
 			variant="light"
 			leftSection={<Icon path={iconDatabase} />}
-			onClick={openCreateDatabaseModal}
+			onClick={openNewDatabaseModal}
 			{...buttonProps}
 		>
 			<Text

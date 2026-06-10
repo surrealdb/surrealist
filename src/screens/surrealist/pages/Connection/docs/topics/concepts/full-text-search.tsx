@@ -8,102 +8,163 @@ export function DocsConceptsFullTextSearch({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
-		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
-		DEFINE INDEX page_hostname ON page FIELDS hostname;
-		DEFINE INDEX page_date_indexed ON page FIELDS date;
-		DEFINE INDEX unique_page ON page FIELDS hostname, path UNIQUE;
-		DEFINE INDEX page_title ON page FIELDS title SEARCH ANALYZER simple BM25(1.2,0.75);
-		DEFINE INDEX page_path ON page FIELDS path SEARCH ANALYZER simple BM25(1.2,0.75);
-		DEFINE INDEX page_h1 ON page FIELDS h1 SEARCH ANALYZER simple BM25(1.2,0.75);
-		DEFINE INDEX page_h2 ON page FIELDS h2 SEARCH ANALYZER simple BM25(1.2,0.75);
-		DEFINE INDEX page_h3 ON page FIELDS h3 SEARCH ANALYZER simple BM25(1.2,0.75);
-		DEFINE INDEX page_h4 ON page FIELDS h4 SEARCH ANALYZER simple BM25(1.2,0.75);
-		DEFINE INDEX page_content ON page FIELDS content SEARCH ANALYZER simple BM25(1.2,0.75) HIGHLIGHTS;
-		DEFINE INDEX page_code ON page FIELDS code SEARCH ANALYZER simple BM25(1.2,0.75);
-		`,
-			js: `
-		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
-		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
-		DEFINE INDEX page_hostname ON page FIELDS hostname;
-		DEFINE INDEX page_date_indexed ON page FIELDS date;');
-		`,
-			rust: `
-		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
-		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
-		DEFINE INDEX page_hostname ON page FIELDS hostname;
-		DEFINE INDEX page_date_indexed ON page FIELDS date;');
-		`,
-			py: `
-		db.query('DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
-		DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
-		DEFINE INDEX page_hostname ON page FIELDS hostname;
-		DEFINE INDEX page_date_indexed ON page FIELDS date;');
-		`,
-			go: `
-		await db.RawQuery(
-			" 
-			DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
-			DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
-			DEFINE INDEX page_hostname ON page FIELDS hostname;
-			DEFINE INDEX page_date_indexed ON page FIELDS date;
-			"
-		);
-		`,
-			csharp: `
-		await db.RawQuery(
-			"""
-				DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
+-- Define an analyzer
+DEFINE ANALYZER english
+	TOKENIZERS blank, class, camel, punct
+	FILTERS snowball(english);
 
-				DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
-				DEFINE INDEX page_hostname ON page FIELDS hostname;
-				DEFINE INDEX page_date_indexed ON page FIELDS date;
-			"""
-		);
-		`,
+-- Create a full-text index
+DEFINE INDEX article_title ON article
+	FIELDS title FULLTEXT ANALYZER english BM25;
+
+-- Search with the search::score function
+SELECT title, search::score(1) AS score
+FROM article
+WHERE title @1@ 'database'
+ORDER BY score DESC;
+`,
+			js: `
+await db.query(\`
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+\`);
+
+const results = await db.query(\`
+	SELECT title, search::score(1) AS score
+	FROM article
+	WHERE title @1@ 'database'
+	ORDER BY score DESC
+\`);
+`,
+			rust: `
+db.query(r#"
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+"#).await?;
+
+let results: Vec<Article> = db
+	.query(r#"
+		SELECT title, search::score(1) AS score
+		FROM article
+		WHERE title @1@ 'database'
+		ORDER BY score DESC
+	"#)
+	.await?
+	.take(0)?;
+`,
+			py: `
+await db.query("""
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+""")
+
+results = await db.query("""
+	SELECT title, search::score(1) AS score
+	FROM article
+	WHERE title @1@ 'database'
+	ORDER BY score DESC
+""")
+`,
+			go: `
+_, err := surrealdb.Query[any](ctx, db, \`
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+\`, nil)
+
+results, err := surrealdb.Query[[]Article](ctx, db, \`
+	SELECT title, search::score(1) AS score
+	FROM article
+	WHERE title @1@ 'database'
+	ORDER BY score DESC
+\`, nil)
+`,
+			csharp: `
+await db.RawQuery("""
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+""");
+
+var results = await db.RawQuery("""
+	SELECT title, search::score(1) AS score
+	FROM article
+	WHERE title @1@ 'database'
+	ORDER BY score DESC
+""");
+`,
 			java: `
-		// Connect to a local endpoint
-		SurrealWebSocketConnection.connect(timeout)
-		`,
+db.query("""
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+""");
+
+List<Article> results = db.query("""
+	SELECT title, search::score(1) AS score
+	FROM article
+	WHERE title @1@ 'database'
+	ORDER BY score DESC
+""").take(Article.class, 0);
+`,
 			php: `
-		$db->query('
-			DEFINE TABLE page SCHEMALESS PERMISSIONS FOR select FULL;
-			DEFINE ANALYZER simple TOKENIZERS blank,class,camel,punct FILTERS snowball(english);
-			DEFINE INDEX page_hostname ON page FIELDS hostname;
-			DEFINE INDEX page_date_indexed ON page FIELDS date;
-		');
-		`,
+$db->query('
+	DEFINE ANALYZER english
+		TOKENIZERS blank, class, camel, punct
+		FILTERS snowball(english);
+
+	DEFINE INDEX article_title ON article
+		FIELDS title FULLTEXT ANALYZER english BM25;
+');
+
+$results = $db->query('
+	SELECT title, search::score(1) AS score
+	FROM article
+	WHERE title @1@ "database"
+	ORDER BY score DESC
+');
+`,
 		}),
 		[],
 	);
 
 	return (
-		<Article title="Full Text Search">
-			<div>
-				<p>
-					Full Text Search enables search capabilities within your database connection.
-					This enables text matching, proximity matching, proximity search, and more. In
-					SurrealDB Full-Text Search is ACID-compliant and can be accessed using{" "}
-					<Link href="https://surrealdb.com/docs/surrealql/functions/database/search">
-						{" "}
-						Search functions
+		<Article title="Full-text search">
+			<Box>
+				<Box component="p">
+					Full-text search is ACID-compliant. Define an analyzer, create a{" "}
+					<code>FULLTEXT ANALYZER</code> index, then query with the <code>@n@</code>{" "}
+					operator and <code>search::score()</code>.{" "}
+					<Link href="https://surrealdb.com/docs/learn/data-models/full-text-search">
+						Learn more
 					</Link>
-					,{" "}
-					<Link href="https://surrealdb.com/docs/surrealql/statements/define/indexes/">
-						{" "}
-						Indexes
-					</Link>
-					. To learn more, check out this{" "}
-					<Link href="https://surrealdb.com/docs/surrealdb/reference-guide/full-text-search">
-						{" "}
-						Reference guide
-					</Link>
-				</p>
-			</div>
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Full Text Search"
+					title="Full-text search"
 					values={snippets}
 				/>
 			</Box>

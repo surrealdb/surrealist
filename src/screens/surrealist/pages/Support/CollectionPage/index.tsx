@@ -1,9 +1,11 @@
-import { Box, Button, Center, Loader, ScrollArea, Stack, Text } from "@mantine/core";
+import { Button, Center, Loader, Stack, Text } from "@mantine/core";
 import { Icon, iconArrowLeft } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { useSupportCollectionQuery } from "~/cloud/queries/context";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
+import { loadingCrumb, supportBreadcrumbs } from "~/util/breadcrumbs";
+import { PageContainer } from "../../../components/PageContainer";
 import { ArticleCard } from "../ArticleCard";
 import classes from "../style.module.scss";
 
@@ -15,26 +17,22 @@ export function CollectionPage({ id }: CollectionPageProps) {
 	const { data: collection, isLoading } = useSupportCollectionQuery(id);
 
 	return (
-		<Box
-			flex={1}
-			pos="relative"
-		>
+		<>
+			<PageBreadcrumbs
+				items={supportBreadcrumbs(
+					isLoading || !collection
+						? loadingCrumb()
+						: { label: collection.name, selectable: true },
+				)}
+			/>
 			{isLoading && (
-				<Center
-					w="100%"
-					h="100%"
-					flex={1}
-				>
+				<Center flex={1}>
 					<Loader />
 				</Center>
 			)}
 
 			{!isLoading && !collection && (
-				<Center
-					w="100%"
-					h="100%"
-					flex={1}
-				>
+				<Center flex={1}>
 					<Stack
 						gap={0}
 						align="center"
@@ -55,52 +53,24 @@ export function CollectionPage({ id }: CollectionPageProps) {
 			)}
 
 			{!isLoading && collection && collection.articles.length > 0 && (
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1000}
-						pb={68}
-					>
-						<Box>
-							<PageBreadcrumbs
-								items={[
-									{ label: "Surrealist", href: "/" },
-									{ label: "Support", href: "/support" },
-									{ label: collection.name },
-								]}
-							/>
-							<PrimaryTitle
-								fz={32}
-								mt="sm"
-							>
-								{collection.name}
-							</PrimaryTitle>
-						</Box>
+				<PageContainer>
+					<PrimaryTitle fz={32}>{collection.name}</PrimaryTitle>
 
-						<Stack
-							gap="lg"
-							className={classes.content}
-						>
-							{collection.articles
-								.sort((a, b) => a.created_at - b.created_at)
-								.map((article) => (
-									<ArticleCard
-										key={article.id}
-										article={article}
-									/>
-								))}
-						</Stack>
+					<Stack
+						gap="lg"
+						className={classes.content}
+					>
+						{collection.articles
+							.sort((a, b) => a.created_at - b.created_at)
+							.map((article) => (
+								<ArticleCard
+									key={article.id}
+									article={article}
+								/>
+							))}
 					</Stack>
-				</ScrollArea>
+				</PageContainer>
 			)}
-		</Box>
+		</>
 	);
 }

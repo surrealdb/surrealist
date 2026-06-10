@@ -18,7 +18,6 @@ import { pictoDownload } from "@surrealdb/ui";
 import { createRoot } from "react-dom/client";
 import { useThemePreference } from "~/hooks/theme";
 import authReturnClasses from "~/screens/auth-return/style.module.scss";
-import { HeadInjector } from "~/util/head";
 import { SURREALIST_THEME } from "~/util/mantine";
 
 const DOWNLOAD_URL = "https://surrealdb.com/surrealist?download=true";
@@ -72,10 +71,5 @@ function AuthCallbackScreen() {
 		throw new Error("Root element not found");
 	}
 
-	createRoot(root).render(
-		<>
-			<HeadInjector />
-			<AuthCallbackScreen />
-		</>,
-	);
+	createRoot(root).render(<AuthCallbackScreen />);
 })();

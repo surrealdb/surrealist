@@ -1,13 +1,15 @@
-import { Box, Center, Loader, ScrollArea, Skeleton, Stack } from "@mantine/core";
+import { Center, Loader, Skeleton } from "@mantine/core";
 import { lazy, memo, Suspense } from "react";
 import { Redirect } from "wouter";
 import { useCloudContextQuery } from "~/cloud/queries/contexts";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { useContextAndView } from "~/hooks/routing";
 import type { ContextViewPage } from "~/types";
+import { loadingCrumb, orgCrumb } from "~/util/breadcrumbs";
+import { PageContainer } from "../../components/PageContainer";
 import { ContextSidebar } from "./sidebar";
-import classes from "./style.module.scss";
 import type { ContextViewProps } from "./types";
 
 function isContextViewPage(view: string): view is ContextViewPage {
@@ -48,9 +50,11 @@ export function ContextPage({ view }: ContextPageProps) {
 	const [organizationId, contextId] = useContextAndView();
 
 	const contextQuery = useCloudContextQuery(organizationId ?? undefined, contextId ?? undefined);
+	const orgQuery = useCloudOrganizationQuery(organizationId ?? undefined);
 
 	const isSuccess = contextQuery.isSuccess;
 	const isLoading = contextQuery.isLoading || contextQuery.isPending;
+	const isOrgLoading = orgQuery.isLoading || orgQuery.isPending;
 
 	if (isSuccess && !contextQuery.data) {
 		return <Redirect to="/" />;
@@ -64,63 +68,44 @@ export function ContextPage({ view }: ContextPageProps) {
 	const Component = VIEW_COMPONENTS[viewPage];
 
 	return (
-		<CloudGuard>
-			<ContextSidebar
-				contextId={contextId ?? ""}
-				organizationId={organizationId ?? ""}
+		<>
+			<PageBreadcrumbs
+				items={[
+					isOrgLoading || !orgQuery.data ? loadingCrumb() : orgCrumb(orgQuery.data),
+					isLoading || !contextQuery.data
+						? loadingCrumb()
+						: {
+								label: contextQuery.data.name,
+								selectable: true,
+							},
+				]}
 			/>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
-					>
-						{isLoading ? (
-							<Skeleton
-								width={350}
-								h={12}
-							/>
-						) : (
-							<PageBreadcrumbs
-								items={[
-									{ label: "Surrealist", href: "/" },
-									{ label: contextQuery.data?.name ?? "", selectable: true },
-								]}
-							/>
-						)}
-						{isLoading && (
-							<Skeleton
-								width={200}
-								h={50}
-								mt="sm"
-							/>
-						)}
-						{contextQuery.data && (
-							<Suspense
-								fallback={
-									<Center flex={1}>
-										<Loader />
-									</Center>
-								}
-							>
-								<Component context={contextQuery.data} />
-							</Suspense>
-						)}
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</CloudGuard>
+			<CloudGuard>
+				<ContextSidebar
+					contextId={contextId ?? ""}
+					organizationId={organizationId ?? ""}
+				/>
+				<PageContainer>
+					{isLoading && (
+						<Skeleton
+							width={200}
+							h={50}
+							mt="sm"
+						/>
+					)}
+					{contextQuery.data && (
+						<Suspense
+							fallback={
+								<Center flex={1}>
+									<Loader />
+								</Center>
+							}
+						>
+							<Component context={contextQuery.data} />
+						</Suspense>
+					)}
+				</PageContainer>
+			</CloudGuard>
+		</>
 	);
 }

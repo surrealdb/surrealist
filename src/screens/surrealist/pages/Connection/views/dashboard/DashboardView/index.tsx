@@ -10,7 +10,6 @@ import {
 	Indicator,
 	Loader,
 	Paper,
-	ScrollArea,
 	SimpleGrid,
 	Skeleton,
 	Stack,
@@ -22,15 +21,15 @@ import { showNotification } from "@mantine/notifications";
 import {
 	Icon,
 	iconCheck,
-	iconChevronDown,
 	iconChevronRight,
 	iconCopy,
 	pictoDocument,
 	pictoHandsOn,
 	pictoPlay,
 	pictoSDBCloud,
+	SectionTitle,
 } from "@surrealdb/ui";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
@@ -39,19 +38,17 @@ import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { useCloudInstanceQuery } from "~/cloud/queries/instances";
-import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { CloudGuard } from "~/components/CloudGuard";
-import { InstanceActions } from "~/components/InstanceActions";
-import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
+import { useConnectionSettingsNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openBillingRequiredModal } from "~/modals/billing-required";
+import { PageContainer } from "~/screens/surrealist/components/PageContainer";
 import { ComputeUsageChart } from "~/screens/surrealist/metrics/ComputeUsageChart";
 import { MemoryUsageChart } from "~/screens/surrealist/metrics/MemoryUsageChart";
 import { NetworkEgressChart } from "~/screens/surrealist/metrics/NetworkEgressChart";
@@ -66,20 +63,18 @@ import { useDeployStore } from "~/stores/deploy";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
+import { ViewPageProps } from "../../../types";
 import { MonitorMetricOptions } from "../../monitor/helpers";
 import { MetricActions } from "../../monitor/MetricPane/actions";
 import { BackupsBlock } from "../BackupsBlock";
-import { BackupsDrawer } from "../BackupsDrawer";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
-import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { MajorUpdateSection } from "../MajorUpdateSection";
 import { NavigationBlock } from "../NavigationBlock";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
-import { UpgradeDrawer } from "../UpgradeDrawer";
 import classes from "./style.module.scss";
 
 const MajorUpdateSectionLazy = memo(MajorUpdateSection);
@@ -90,29 +85,21 @@ const ConnectBlockLazy = memo(ConnectBlock);
 const ComputeUsageBlockLazy = memo(ComputeHoursBlock);
 const DiskUsageBlockLazy = memo(DiskUsageBlock);
 const BackupsBlockLazy = memo(BackupsBlock);
-const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
-const BackupsDrawerLazy = memo(BackupsDrawer);
-const UpgradeDrawerLazy = memo(UpgradeDrawer);
 const MemoryUsageChartLazy = memo(MemoryUsageChart);
 const ComputeUsageChartLazy = memo(ComputeUsageChart);
 const NetworkIngressChartLazy = memo(NetworkIngressChart);
 const NetworkEgressChartLazy = memo(NetworkEgressChart);
 
-export function DashboardView() {
+export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProps) {
 	const isConnected = useIsConnected();
-	const [conn, isCloud, instanceId] = useConnection((c) => [
+	const [conn, isCloud, instanceId, connectionId] = useConnection((c) => [
 		c,
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
+		c?.id ?? "",
 	]);
 
-	const [upgrading, upgradingHandle] = useBoolean();
-	const [configuring, configuringHandle] = useBoolean();
-	const [backupsOpened, backupsHandle] = useBoolean();
-
-	const [upgradeTab, setUpgradeTab] = useState("type");
-	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
-	const [backupsTab, setBackupsTab] = useState("backups");
+	const navigateSettings = useConnectionSettingsNavigator();
 
 	const [metricOptions, setMetricOptions] = useImmer<MonitorMetricOptions>({
 		duration: "hour",
@@ -120,13 +107,12 @@ export function DashboardView() {
 		nodes: [],
 	});
 
-	const { data: instance, isPending: instancePending } = useCloudInstanceQuery(instanceId);
+	const { data: instance, isPending: instancePending } = instanceQuery;
+	const { data: organisation, isPending: organisationPending } = organisationQuery;
+
 	const { data: usage, isPending: usagePending } = useCloudUsageQuery(instanceId);
 	const { data: details, isPending: detailsPending } = useCloudInstanceQuery(instanceId);
 	const { data: backups, isPending: backupsPending } = useCloudBackupsQuery(instanceId);
-	const { data: organisation, isPending: organisationPending } = useCloudOrganizationQuery(
-		details?.organization_id,
-	);
 
 	const [networkIngressLabels, setNetworkIngressLabels] = useState<string[]>([]);
 	const [networkEgressLabels, setNetworkEgressLabels] = useState<string[]>([]);
@@ -266,68 +252,49 @@ export function DashboardView() {
 		}
 	}, [details?.state, details, isConnected, importDatabase]);
 
-	const handleUpgradeType = useStable(() => {
-		if (!organisation) return;
+	const navigateUpgrade = useStable(() => {
+		if (!organisation || !connectionId) return;
 
-		setUpgradeTab("type");
-
-		if (organisation.resources_locked) {
-			openResourcesLockedModal(organisation);
-		} else {
-			if (isOrganisationBillable(organisation)) {
-				upgradingHandle.open();
-			} else {
-				openBillingRequiredModal({
-					organization: organisation,
-					onClose: () => {},
-					onContinue: () => {
-						upgradingHandle.open();
-					},
-				});
-			}
-		}
-	});
-
-	const handleUpgradeStorage = useStable(() => {
-		if (!organisation) return;
-
-		setUpgradeTab("disk");
+		const go = () => navigateSettings(connectionId, "compute");
 
 		if (organisation.resources_locked) {
 			openResourcesLockedModal(organisation);
+		} else if (isOrganisationBillable(organisation)) {
+			go();
 		} else {
-			if (isOrganisationBillable(organisation)) {
-				upgradingHandle.open();
-			} else {
-				openBillingRequiredModal({
-					organization: organisation,
-					onClose: () => {},
-					onContinue: () => {
-						upgradingHandle.open();
-					},
-				});
-			}
+			openBillingRequiredModal({
+				organization: organisation,
+				onClose: () => {},
+				onContinue: go,
+			});
 		}
 	});
+
+	const handleUpgradeType = navigateUpgrade;
+	const handleUpgradeStorage = navigateUpgrade;
 
 	const handleConfigure = useStable(() => {
-		setConfiguratorTab("capabilities");
-		configuringHandle.open();
+		if (connectionId) {
+			navigateSettings(connectionId, "configuration");
+		}
 	});
 
 	const handleVersions = useStable(() => {
-		setConfiguratorTab("version");
-		configuringHandle.open();
+		if (connectionId) {
+			navigateSettings(connectionId, "configuration");
+		}
 	});
 
 	const handleOpenBackups = useStable(() => {
-		setBackupsTab("backups");
-		backupsHandle.open();
+		if (connectionId) {
+			navigateSettings(connectionId, "backups");
+		}
 	});
 
 	const handleBackupPolicy = useStable(() => {
-		setBackupsTab("retention");
-		backupsHandle.open();
+		if (connectionId) {
+			navigateSettings(connectionId, "backups");
+		}
 	});
 
 	const publicAccess = details?.access_type === "public" || details?.access_type === "dual";
@@ -345,331 +312,234 @@ export function DashboardView() {
 
 	return (
 		<CloudGuard>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
-					>
-						{details?.state === "creating" ? (
-							<LoadingScreen />
-						) : (
+			<PageContainer>
+				{details?.state === "creating" ? (
+					<LoadingScreen />
+				) : (
+					<>
+						<Box mb={18}>
+							{isLoading ? (
+								<Group mt="sm">
+									<Skeleton
+										width={200}
+										h={50}
+									/>
+									<Spacer />
+									<Skeleton
+										width={145}
+										h={36}
+									/>
+								</Group>
+							) : (
+								<Group>
+									<SectionTitle>{details?.name}</SectionTitle>
+									{details?.state && (
+										<StateBadge
+											size={14}
+											state={details.state}
+										/>
+									)}
+								</Group>
+							)}
+						</Box>
+
+						<NavigationBlock isLoading={isLoading} />
+
+						{!isLoading && details && instance && organisation ? (
 							<>
-								<Box mb={18}>
-									{isLoading ? (
-										<Skeleton
-											width={350}
-											h={12}
-										/>
-									) : (
-										<PageBreadcrumbs
-											items={[
-												{ label: "Surrealist", href: "/" },
-												{
-													label: organisation?.name ?? "",
-													href: `/o/${details?.organization_id}`,
-												},
-												{
-													label: "Instances",
-													href: `/o/${details?.organization_id}/instances`,
-												},
-												{ label: details?.name ?? "" },
-											]}
-										/>
-									)}
-									{isLoading ? (
-										<Group mt="sm">
-											<Skeleton
-												width={200}
-												h={50}
-											/>
-											<Spacer />
-											<Skeleton
-												width={145}
-												h={36}
-											/>
-										</Group>
-									) : (
-										<Group mt="sm">
-											<PrimaryTitle fz={32}>{details?.name}</PrimaryTitle>
-											{details?.state && (
-												<StateBadge
-													size={14}
-													state={details.state}
-												/>
-											)}
-											<Spacer />
-											{details && organisation && (
-												<InstanceActions
-													instance={details}
-													organisation={organisation}
-												>
-													<Button
-														color="violet"
-														variant="light"
-														rightSection={
-															<Icon path={iconChevronDown} />
-														}
-													>
-														Instance actions
-													</Button>
-												</InstanceActions>
-											)}
-										</Group>
-									)}
+								<MajorUpdateSectionLazy
+									instance={details}
+									organisation={organisation}
+								/>
+
+								<Box mt={32}>
+									<PrimaryTitle>Your instance</PrimaryTitle>
+									<Text>
+										Customise and connect to your SurrealDB Cloud instance
+									</Text>
 								</Box>
 
-								<NavigationBlock isLoading={isLoading} />
+								<UpdateBlockLazy
+									instance={details}
+									organisation={organisation}
+									isLoading={isLoading}
+									onUpdate={handleUpdate}
+									onVersions={handleVersions}
+								/>
 
-								{!isLoading && details && instance && organisation ? (
-									<>
-										<MajorUpdateSectionLazy
-											instance={details}
-											organisation={organisation}
-										/>
-
-										<Box mt={32}>
-											<PrimaryTitle>Your instance</PrimaryTitle>
-											<Text>
-												Customise and connect to your SurrealDB Cloud
-												instance
-											</Text>
-										</Box>
-
-										<UpdateBlockLazy
-											instance={details}
-											organisation={organisation}
-											isLoading={isLoading}
-											onUpdate={handleUpdate}
-											onVersions={handleVersions}
-										/>
-
-										{organisation.privatelink_enabled ? (
-											<Stack gap="xs">
-												{publicAccess && (
-													<HostnameEntry
-														host={details.host}
-														accessLabel="Public"
-														accessColor="orange"
-													/>
-												)}
-												{privateAccess && (
-													<HostnameEntry
-														host={details.private_host ?? ""}
-														accessLabel="Private"
-														accessColor="violet"
-													/>
-												)}
-											</Stack>
-										) : (
-											<HostnameEntry host={details.host} />
+								{organisation.privatelink_enabled ? (
+									<Stack gap="xs">
+										{publicAccess && (
+											<HostnameEntry
+												host={details.host}
+												accessLabel="Public"
+												accessColor="orange"
+											/>
 										)}
-
-										<SimpleGrid
-											mt="md"
-											cols={2}
-											spacing="xl"
-										>
-											<ConfigurationBlockLazy
-												instance={details}
-												organisation={organisation}
-												isLoading={isLoading}
-												onUpgrade={handleUpgradeType}
-												onConfigure={handleConfigure}
+										{privateAccess && (
+											<HostnameEntry
+												host={details.private_host ?? ""}
+												accessLabel="Private"
+												accessColor="violet"
 											/>
-
-											{!isLoading && details.state === "paused" ? (
-												<ResumeBlockLazy
-													instance={details}
-													organisation={organisation}
-												/>
-											) : (
-												<ConnectBlockLazy
-													instance={details}
-													isLoading={isLoading}
-												/>
-											)}
-										</SimpleGrid>
-
-										<Group mt={32}>
-											<Box>
-												<Group gap="lg">
-													<PrimaryTitle>Metrics</PrimaryTitle>
-													{!isLoading && instance?.state === "ready" && (
-														<Tooltip label="Metrics update live every 60 seconds">
-															<Indicator
-																processing={true}
-																size={10}
-															/>
-														</Tooltip>
-													)}
-												</Group>
-
-												<Text>
-													View and track instance activity metrics
-												</Text>
-											</Box>
-
-											<Spacer />
-
-											<MetricActions
-												options={metricOptions}
-												onChange={setMetricOptions}
-											/>
-										</Group>
-
-										<SimpleGrid
-											cols={2}
-											spacing="xl"
-										>
-											<MemoryUsageChartLazy
-												instance={instanceId}
-												duration={metricOptions.duration}
-												nodeFilter={metricOptions.nodeFilter}
-												onCalculateMetricsNodes={(metrics) => {
-													setMemoryLabels(
-														metrics.values.metrics.map(
-															(it) => it.labels,
-														),
-													);
-												}}
-											/>
-											<ComputeUsageChartLazy
-												instance={instanceId}
-												duration={metricOptions.duration}
-												nodeFilter={metricOptions.nodeFilter}
-												onCalculateMetricsNodes={(metrics) => {
-													setCpuLabels(
-														metrics.values.metrics.map(
-															(it) => it.labels,
-														),
-													);
-												}}
-											/>
-											<NetworkIngressChartLazy
-												instance={instanceId}
-												duration={metricOptions.duration}
-												nodeFilter={metricOptions.nodeFilter}
-												onCalculateMetricsNodes={(metrics) => {
-													setNetworkIngressLabels(
-														metrics.values.metrics.map(
-															(it) => it.labels,
-														),
-													);
-												}}
-											/>
-											<NetworkEgressChartLazy
-												instance={instanceId}
-												duration={metricOptions.duration}
-												nodeFilter={metricOptions.nodeFilter}
-												onCalculateMetricsNodes={(metrics) => {
-													setNetworkEgressLabels(
-														metrics.values.metrics.map(
-															(it) => it.labels,
-														),
-													);
-												}}
-											/>
-										</SimpleGrid>
-										<Group pt="xs">
-											<Spacer />
-											<Button
-												variant="light"
-												color="obsidian"
-												rightSection={<Icon path={iconChevronRight} />}
-												onClick={() => {
-													navigate("monitor");
-												}}
-											>
-												View more
-											</Button>
-										</Group>
-
-										<Box mt={32}>
-											<PrimaryTitle>Resources</PrimaryTitle>
-											<Text>Monitor and explore instance resources</Text>
-										</Box>
-
-										<SimpleGrid
-											cols={3}
-											spacing="xl"
-										>
-											<ComputeUsageBlockLazy
-												usage={usage}
-												isLoading={isLoading}
-											/>
-											<DiskUsageBlockLazy
-												usage={usage}
-												instance={details}
-												organisation={organisation}
-												isLoading={isLoading}
-												onUpgrade={handleUpgradeStorage}
-											/>
-											<BackupsBlockLazy
-												instance={details}
-												organisation={organisation}
-												backups={backups}
-												isLoading={isLoading}
-												onUpgrade={handleUpgradeType}
-												onOpenBackups={handleOpenBackups}
-												onBackupPolicy={handleBackupPolicy}
-											/>
-										</SimpleGrid>
-									</>
+										)}
+									</Stack>
 								) : (
-									<Loader
-										mx="auto"
-										type="dots"
-										mt={96}
-									/>
+									<HostnameEntry host={details.host} />
 								)}
-							</>
-						)}
-					</Stack>
-				</ScrollArea>
 
-				{details && organisation && (
-					<>
-						<BackupsDrawerLazy
-							opened={backupsOpened}
-							tab={backupsTab}
-							backups={backups}
-							instance={details}
-							onChangeTab={setBackupsTab}
-							onClose={backupsHandle.close}
-						/>
-						<ConfiguratorDrawerLazy
-							opened={configuring}
-							tab={configuratorTab}
-							organisation={organisation}
-							instance={details}
-							onChangeTab={setConfiguratorTab}
-							onClose={configuringHandle.close}
-							onUpdate={handleUpdate}
-						/>
-						<UpgradeDrawerLazy
-							opened={upgrading}
-							instance={details}
-							organisation={organisation}
-							tab={upgradeTab}
-							onChangeTab={setUpgradeTab}
-							onClose={upgradingHandle.close}
-						/>
+								<SimpleGrid
+									mt="md"
+									cols={2}
+									spacing="xl"
+								>
+									<ConfigurationBlockLazy
+										instance={details}
+										organisation={organisation}
+										isLoading={isLoading}
+										onUpgrade={handleUpgradeType}
+										onConfigure={handleConfigure}
+									/>
+
+									{!isLoading && details.state === "paused" ? (
+										<ResumeBlockLazy
+											instance={details}
+											organisation={organisation}
+											connectionId={connectionId}
+										/>
+									) : (
+										<ConnectBlockLazy
+											instance={details}
+											isLoading={isLoading}
+										/>
+									)}
+								</SimpleGrid>
+
+								<Group mt={32}>
+									<Box>
+										<Group gap="lg">
+											<PrimaryTitle>Metrics</PrimaryTitle>
+											{!isLoading && instance?.state === "ready" && (
+												<Tooltip label="Metrics update live every 60 seconds">
+													<Indicator
+														processing={true}
+														size={10}
+													/>
+												</Tooltip>
+											)}
+										</Group>
+
+										<Text>View and track instance activity metrics</Text>
+									</Box>
+
+									<Spacer />
+
+									<MetricActions
+										options={metricOptions}
+										onChange={setMetricOptions}
+									/>
+								</Group>
+
+								<SimpleGrid
+									cols={2}
+									spacing="xl"
+								>
+									<MemoryUsageChartLazy
+										instance={instanceId}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
+										onCalculateMetricsNodes={(metrics) => {
+											setMemoryLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<ComputeUsageChartLazy
+										instance={instanceId}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
+										onCalculateMetricsNodes={(metrics) => {
+											setCpuLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<NetworkIngressChartLazy
+										instance={instanceId}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
+										onCalculateMetricsNodes={(metrics) => {
+											setNetworkIngressLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+									<NetworkEgressChartLazy
+										instance={instanceId}
+										duration={metricOptions.duration}
+										nodeFilter={metricOptions.nodeFilter}
+										onCalculateMetricsNodes={(metrics) => {
+											setNetworkEgressLabels(
+												metrics.values.metrics.map((it) => it.labels),
+											);
+										}}
+									/>
+								</SimpleGrid>
+								<Group pt="xs">
+									<Spacer />
+									<Button
+										variant="light"
+										color="obsidian"
+										rightSection={<Icon path={iconChevronRight} />}
+										onClick={() => {
+											navigate("monitor");
+										}}
+									>
+										View more
+									</Button>
+								</Group>
+
+								<Box mt={32}>
+									<PrimaryTitle>Resources</PrimaryTitle>
+									<Text>Monitor and explore instance resources</Text>
+								</Box>
+
+								<SimpleGrid
+									cols={3}
+									spacing="xl"
+								>
+									<ComputeUsageBlockLazy
+										usage={usage}
+										isLoading={isLoading}
+									/>
+									<DiskUsageBlockLazy
+										usage={usage}
+										instance={details}
+										organisation={organisation}
+										isLoading={isLoading}
+										onUpgrade={handleUpgradeStorage}
+									/>
+									<BackupsBlockLazy
+										instance={details}
+										organisation={organisation}
+										backups={backups}
+										isLoading={isLoading}
+										onUpgrade={handleUpgradeType}
+										onOpenBackups={handleOpenBackups}
+										onBackupPolicy={handleBackupPolicy}
+									/>
+								</SimpleGrid>
+							</>
+						) : (
+							<Loader
+								mx="auto"
+								type="dots"
+								mt={96}
+							/>
+						)}
 					</>
 				)}
-			</Box>
+			</PageContainer>
 		</CloudGuard>
 	);
 }
@@ -687,15 +557,13 @@ function LoadingScreen() {
 			>
 				<Loader
 					className={classes.provisionLoader}
-					inset={0}
-					size="100%"
+					inset={-12}
+					size={112 + 24}
 					pos="absolute"
 				/>
 				<Image
 					className={classes.provisionIcon}
 					src={pictoSDBCloud}
-					w={68}
-					h={68}
 					mt={-8}
 				/>
 			</Center>
@@ -798,17 +666,33 @@ interface HostnameEntryProps {
 }
 
 function HostnameEntry({ host, accessColor, accessLabel }: HostnameEntryProps) {
+	const fieldRef = useRef<HTMLDivElement>(null);
+
+	const animate = () => {
+		fieldRef.current?.animate(
+			[
+				{ outlineColor: "var(--mantine-color-violet-text)", outlineOffset: "0" },
+				{ outlineColor: "transparent", outlineOffset: "5px" },
+			],
+			{
+				duration: 750,
+				easing: "ease-out",
+			},
+		);
+	};
+
 	return (
 		<CopyButton value={`https://${host}/`}>
 			{({ copied, copy }) => (
-				<UnstyledButton onClick={copy}>
+				<UnstyledButton
+					onClick={() => {
+						copy();
+						animate();
+					}}
+				>
 					<Paper
-						bg={
-							copied
-								? "var(--mantine-color-violet-light)"
-								: "var(--mantine-color-obsidian-light)"
-						}
-						withBorder={false}
+						className={classes.hostnameEntry}
+						ref={fieldRef}
 						p={8}
 					>
 						<Group

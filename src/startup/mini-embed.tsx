@@ -1,9 +1,9 @@
 import "@mantine/core/styles.layer.css";
 import "@mantine/notifications/styles.css";
 import "@surrealdb/ui/styles.css";
+import "@surrealdb/ui/fonts.css";
 
 import "../assets/styles/layers.scss";
-import "../assets/styles/fonts.scss";
 import "../assets/styles/global.scss";
 import "../assets/styles/override.scss";
 import "../assets/styles/variants.scss";
@@ -16,7 +16,6 @@ import { createRoot } from "react-dom/client";
 import { MiniRunScreen } from "~/screens/mini-embed";
 import { openConnection } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { startConfigSync } from "~/util/config";
-import { HeadInjector } from "~/util/head";
 import { handleWindowMessage } from "~/util/messaging";
 import { adapter } from "../adapter";
 import type { MiniAdapter } from "../adapter/mini";
@@ -37,12 +36,7 @@ import type { MiniAdapter } from "../adapter/mini";
 		throw new Error("Root element not found");
 	}
 
-	createRoot(root).render(
-		<>
-			<HeadInjector />
-			<MiniRunScreen />
-		</>,
-	);
+	createRoot(root).render(<MiniRunScreen />);
 
 	// Connect and initialize the dataset
 	openConnection().then(() => {

@@ -11,7 +11,10 @@ export function SignInRedirect() {
 	}, [signIn]);
 
 	return (
-		<Center h="100%">
+		<Center
+			h="100%"
+			flex={1}
+		>
 			<Spinner />
 		</Center>
 	);

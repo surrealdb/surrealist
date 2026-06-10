@@ -3,8 +3,9 @@ import { matchRoute, PathPattern, useRouter, useSearch } from "wouter";
 import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
-import type { ContextViewPage, ViewPage } from "~/types";
+import type { ConnectionSettingsTab, ContextViewPage, ViewPage } from "~/types";
 import { getConnectionById } from "~/util/connection";
+import { connectionSettingsPath } from "~/util/connection-settings";
 import { IntentEvent } from "~/util/global-events";
 import { consumeIntent, type IntentPayload, type IntentType } from "~/util/intents";
 import { useEventSubscription } from "./event";
@@ -39,6 +40,28 @@ export function useRouteMatcher(match: string[]) {
 }
 
 /**
+ * Returns the active connection id from either a view or settings route.
+ */
+export function useConnectionFromRoute() {
+	const [settingsMatch, settingsParams] = useAbsoluteRoute("/c/:connection/settings/:tab");
+	const [viewMatch, viewParams] = useAbsoluteRoute("/c/:connection/:view");
+
+	if (adapter instanceof MiniAdapter) {
+		return SANDBOX;
+	}
+
+	if (settingsMatch) {
+		return settingsParams.connection;
+	}
+
+	if (viewMatch) {
+		return viewParams.connection;
+	}
+
+	return null;
+}
+
+/**
  * Returns the active connection and view
  */
 export function useConnectionAndView() {
@@ -52,7 +75,41 @@ export function useConnectionAndView() {
 		return [null, null] as const;
 	}
 
+	if (params.view === "settings") {
+		return [params.connection, null] as const;
+	}
+
 	return [params.connection, params.view as ViewPage] as const;
+}
+
+/**
+ * Returns the active connection settings tab, if any.
+ */
+export function useConnectionSettingsTab() {
+	const [match, params] = useAbsoluteRoute("/c/:connection/settings/:tab");
+
+	if (!match) {
+		return [null, null] as const;
+	}
+
+	return [params.connection, params.tab as ConnectionSettingsTab] as const;
+}
+
+/**
+ * Returns a function used to navigate to a connection settings tab.
+ */
+export function useConnectionSettingsNavigator() {
+	const [, navigate] = useAbsoluteLocation();
+
+	return useStable(
+		(
+			connection: string,
+			tab: ConnectionSettingsTab,
+			params?: Record<string, string | undefined>,
+		) => {
+			navigate(connectionSettingsPath(connection, tab, params));
+		},
+	);
 }
 
 /**

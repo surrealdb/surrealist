@@ -1,27 +1,24 @@
 import {
 	ActionIcon,
-	Box,
 	Button,
 	CopyButton,
 	Grid,
 	Group,
 	Modal,
 	Paper,
-	ScrollArea,
 	SimpleGrid,
 	Stack,
 	Text,
 	TextInput,
 } from "@mantine/core";
 import { useDebouncedState, useDisclosure } from "@mantine/hooks";
-import { Icon, iconCheck, iconClose, iconTransfer, iconXml } from "@surrealdb/ui";
+import { Icon, iconCheck, iconClose, iconTransfer, iconXml, SectionTitle } from "@surrealdb/ui";
 import { useMemo, useRef, useState } from "react";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
 import { dedent } from "~/util/dedent";
+import { PageContainer } from "../../components/PageContainer";
 import { DEFAULT_STATE, Embedder, EmbedState } from "./embedder";
-import classes from "./style.module.scss";
 
 export function NewEmbedPage() {
 	const [url, setUrl] = useDebouncedState("", 250);
@@ -62,162 +59,136 @@ export function NewEmbedPage() {
 	}, [url]);
 
 	return (
-		<Box
-			flex={1}
-			pos="relative"
-		>
-			<ScrollArea
-				pos="absolute"
-				scrollbars="y"
-				type="scroll"
-				inset={0}
-				className={classes.scrollArea}
-				mt={18}
-			>
-				<Stack
-					px="xl"
-					mx="auto"
-					maw={1200}
-					pb={68}
-				>
-					<Box>
-						<PageBreadcrumbs
-							items={[
-								{ label: "Surrealist", href: "/" },
-								{ label: "Embed Surrealist" },
-							]}
-						/>
-						<PrimaryTitle
-							fz={32}
-							mt="sm"
-						>
-							Embed Surrealist
-						</PrimaryTitle>
-					</Box>
+		<>
+			<PageBreadcrumbs items={[{ label: "Embed Creator" }]} />
+			<PageContainer>
+				<SectionTitle>Embed Creator</SectionTitle>
 
-					<Grid
-						gap="xl"
-						mt="xl"
-					>
-						<Grid.Col span={5}>
-							<Stack gap="xl">
-								<Paper p="xl">
-									<Embedder
-										value={parsedState}
-										onChangeURL={setUrl}
-									/>
-								</Paper>
-								<Paper p="xl">
-									<Text
-										fw={600}
-										fz="lg"
-										mb={2}
-										c="bright"
-									>
-										Restore configuration
-									</Text>
-									<Text>
-										Optionally paste in an existing mini URL to restore the
-										configuration
-									</Text>
-									<Button
-										mt="xl"
-										size="sm"
-										color="obsidian"
-										variant="light"
-										onClick={showParseHandle.open}
-									>
-										Restore from URL
-									</Button>
-									<Modal
-										opened={showParse}
-										onClose={showParseHandle.close}
-									>
-										<Group>
-											<TextInput
-												onChange={parseUrl}
-												spellCheck={false}
-												placeholder="Paste your mini URL here"
-												flex={1}
-											/>
-											<ActionIcon onClick={showParseHandle.close}>
-												<Icon path={iconClose} />
-											</ActionIcon>
-										</Group>
-									</Modal>
-								</Paper>
-							</Stack>
-						</Grid.Col>
-						<Grid.Col span={7}>
-							<Stack gap="xl">
-								<Paper style={{ overflow: "hidden" }}>
-									<iframe
-										ref={frame}
-										width="100%"
-										height="500"
-										src={url}
-										title="Surrealist Mini"
-										referrerPolicy="strict-origin-when-cross-origin"
-										style={{
-											border: "none",
-											display: "block",
-										}}
-									/>
-								</Paper>
-								<Paper p="xl">
-									<Text
-										fw={600}
-										fz="lg"
-										mb={2}
-										c="bright"
-									>
-										Integrate your Surrealist Mini
-									</Text>
-									<Text>
-										Copy your Surrealist Mini as an embeddable iframe snippet or
-										as direct URL
-									</Text>
-									<SimpleGrid
-										cols={2}
-										mt="xl"
-									>
-										<CopyButton value={snippet}>
-											{({ copied, copy }) => (
-												<Button
-													color="obsidian"
-													variant={copied ? "gradient" : "light"}
-													leftSection={
-														<Icon path={copied ? iconCheck : iconXml} />
-													}
-													onClick={copy}
-												>
-													Copy iframe
-												</Button>
-											)}
-										</CopyButton>
-										<CopyButton value={url}>
-											{({ copied, copy }) => (
-												<Button
-													color="obsidian"
-													variant={copied ? "gradient" : "light"}
-													leftSection={
-														<Icon
-															path={copied ? iconCheck : iconTransfer}
-														/>
-													}
-													onClick={copy}
-												>
-													Copy URL
-												</Button>
-											)}
-										</CopyButton>
-									</SimpleGrid>
-								</Paper>
-							</Stack>
-						</Grid.Col>
-					</Grid>
-				</Stack>
-			</ScrollArea>
-		</Box>
+				<Grid
+					gap="xl"
+					mt="xl"
+				>
+					<Grid.Col span={{ base: 12, md: 5 }}>
+						<Stack gap="xl">
+							<Paper p="xl">
+								<Embedder
+									value={parsedState}
+									onChangeURL={setUrl}
+								/>
+							</Paper>
+							<Paper p="xl">
+								<Text
+									fw={600}
+									fz="lg"
+									mb={2}
+									c="bright"
+								>
+									Restore configuration
+								</Text>
+								<Text>
+									Optionally paste in an existing mini URL to restore the
+									configuration
+								</Text>
+								<Button
+									mt="xl"
+									size="sm"
+									color="obsidian"
+									variant="light"
+									onClick={showParseHandle.open}
+								>
+									Restore from URL
+								</Button>
+								<Modal
+									opened={showParse}
+									onClose={showParseHandle.close}
+								>
+									<Group>
+										<TextInput
+											onChange={parseUrl}
+											spellCheck={false}
+											placeholder="Paste your mini URL here"
+											flex={1}
+										/>
+										<ActionIcon onClick={showParseHandle.close}>
+											<Icon path={iconClose} />
+										</ActionIcon>
+									</Group>
+								</Modal>
+							</Paper>
+						</Stack>
+					</Grid.Col>
+					<Grid.Col span={{ base: 12, md: 7 }}>
+						<Stack gap="xl">
+							<Paper
+								style={{ overflow: "hidden" }}
+								withBorder
+							>
+								<iframe
+									ref={frame}
+									width="100%"
+									height="500"
+									src={url}
+									title="Surrealist Mini"
+									referrerPolicy="strict-origin-when-cross-origin"
+									style={{
+										border: "none",
+										display: "block",
+									}}
+								/>
+							</Paper>
+							<Paper p="xl">
+								<Text
+									fw={600}
+									fz="lg"
+									mb={2}
+									c="bright"
+								>
+									Integrate your Surrealist Mini
+								</Text>
+								<Text>
+									Copy your Surrealist Mini as an embeddable iframe snippet or as
+									direct URL
+								</Text>
+								<SimpleGrid
+									cols={2}
+									mt="xl"
+								>
+									<CopyButton value={snippet}>
+										{({ copied, copy }) => (
+											<Button
+												color="obsidian"
+												variant={copied ? "gradient" : "light"}
+												leftSection={
+													<Icon path={copied ? iconCheck : iconXml} />
+												}
+												onClick={copy}
+											>
+												Copy iframe
+											</Button>
+										)}
+									</CopyButton>
+									<CopyButton value={url}>
+										{({ copied, copy }) => (
+											<Button
+												color="obsidian"
+												variant={copied ? "gradient" : "light"}
+												leftSection={
+													<Icon
+														path={copied ? iconCheck : iconTransfer}
+													/>
+												}
+												onClick={copy}
+											>
+												Copy URL
+											</Button>
+										)}
+									</CopyButton>
+								</SimpleGrid>
+							</Paper>
+						</Stack>
+					</Grid.Col>
+				</Grid>
+			</PageContainer>
+		</>
 	);
 }

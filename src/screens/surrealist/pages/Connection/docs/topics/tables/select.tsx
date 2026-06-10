@@ -5,68 +5,85 @@ import {
 	DocsPreview,
 	TableTitle,
 } from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsTable } from "~/screens/surrealist/pages/Connection/docs/hooks/table";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
-import { useDocsTable } from "../../hooks/table";
 
 export function DocsTablesSelect({ language }: TopicProps) {
 	const table = useDocsTable();
+	const tableName = table.schema.name;
 
 	const fieldName =
 		table.fields.find(({ name }: { name: string }) => !["id", "in", "out"].includes(name))
-			?.name ?? "id";
+			?.name ?? "name";
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			cli: `
-		SELECT ${fieldName} FROM ${table.schema.name}
-		`,
+SELECT ${fieldName} FROM ${tableName};
+`,
 			js: `
-		// Select a specific record from a table
-		const [person] = await db.select('${fieldName}');
-		`,
-			rust: `
+import { Table } from 'surrealdb';
 
-		`,
+const records = await db.select(new Table('${tableName}'))
+	.fields('${fieldName}');
+`,
+			rust: `
+let names: Vec<String> = db
+	.query("SELECT ${fieldName} FROM type::table($table)")
+	.bind(("table", "${tableName}"))
+	.await?
+	.take(0)?;
+`,
 			py: `
-		db.select('${fieldName}')
-		`,
+result = await db.query(
+	"SELECT $field FROM type::table($table)",
+	{"field": "${fieldName}", "table": "${tableName}"},
+)
+`,
 			go: `
-		db.Select[[]${table.schema.name}, models.Table](db, models.Table("${fieldName}"))
-		`,
+results, err := surrealdb.Query[[]map[string]any](ctx, db,
+	"SELECT $field FROM type::table($table)",
+	map[string]any{"field": "${fieldName}", "table": "${tableName}"},
+)
+`,
 			csharp: `
-		await db.Select<Person>(new StringRecordId("person:h5wxrf2ewk8xjxosxtyc"));
-		`,
+var result = await db.RawQuery(
+	$"SELECT {fieldName} FROM type::table($table)",
+	new Dictionary<string, object?> { { "table", "${tableName}" } },
+);
+`,
 			java: `
-		driver.select("${fieldName}", rowType)
-		`,
+List<Map<String, Object>> records = db.queryBind(
+	"SELECT $field FROM type::table($table)",
+	Map.of("field", "${fieldName}", "table", "${tableName}")
+).take(List.class, 0);
+`,
 			php: `
-		$record = new \\Surreal\\Cbor\\Types\\StringRecordId("${fieldName}");
-		$db->select($record);
-		`,
+$results = $db->query(
+	"SELECT $field FROM type::table($table)",
+	["field" => "${fieldName}", "table" => "${tableName}"],
+);
+`,
 		}),
-		[fieldName, table],
+		[tableName, fieldName],
 	);
 
 	return (
 		<Article
 			title={
 				<TableTitle
-					title="Selecting individual fields"
-					table={table.schema.name}
+					title="Selecting fields"
+					table={tableName}
 				/>
 			}
 		>
-			<div>
-				<p>
-					Selecting fields operation is useful when you want to retrieve specific fields
-					in a table without retrieving all the fields. To do this, you need to know the
-					field name in the table you want to retrieve.
-				</p>
-			</div>
+			<Box component="p">
+				Select specific fields from <b>{tableName}</b> instead of retrieving every column.
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Selecting Fields"
+					title="Select fields"
 					values={snippets}
 				/>
 			</Box>

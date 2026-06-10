@@ -1,0 +1,154 @@
+.root {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--mantine-spacing-md);
+	width: 100%;
+	min-width: 0;
+}
+
+.primary {
+	display: flex;
+	align-items: center;
+	gap: var(--mantine-spacing-md);
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.breadcrumbs {
+	--fade-amount: 48px;
+	--scroller-control-size: var(--fade-amount);
+	--scroller-background-color: var(--mantine-color-obsidian-8);
+	--start-fade: 0px;
+	--end-fade: 0px;
+
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex: 1 1 auto;
+	min-width: 0;
+	overflow: hidden;
+
+	&[data-scroll-start] {
+		--start-fade: var(--fade-amount);
+	}
+
+	&[data-scroll-end] {
+		--end-fade: var(--fade-amount);
+	}
+
+	:global(.mantine-Breadcrumbs-root) {
+		flex-wrap: nowrap;
+		width: max-content;
+	}
+
+	:global(.mantine-Breadcrumbs-breadcrumb) {
+		flex-shrink: 0;
+	}
+}
+
+.scroller-control {
+	display: flex;
+	align-items: center;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: var(--scroller-control-size);
+	z-index: 2;
+	opacity: 1;
+	color: var(--mantine-color-bright);
+	pointer-events: auto;
+	transition:
+		opacity 200ms ease,
+		color 150ms ease;
+
+	&[data-position="start"] {
+		inset-inline-start: 0;
+		justify-content: flex-start;
+		padding-inline-start: 2px;
+	}
+
+	&[data-position="end"] {
+		inset-inline-end: 0;
+		justify-content: flex-end;
+		padding-inline-end: 2px;
+	}
+
+	&[data-hidden] {
+		opacity: 0;
+		pointer-events: none;
+	}
+}
+
+.scroller {
+	flex: 1;
+	min-width: 0;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	cursor: grab;
+	mask: linear-gradient(to right,
+			transparent,
+			black var(--start-fade),
+			black calc(100% - var(--end-fade)),
+			transparent);
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+
+	&[data-dragging] {
+		cursor: grabbing;
+	}
+}
+
+.scroller-content {
+	display: inline-flex;
+	white-space: nowrap;
+}
+
+.secondary {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--mantine-spacing-md);
+	flex: 0 1 auto;
+	margin-left: auto;
+	min-width: 0;
+}
+
+.inset,
+.actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: nowrap;
+	gap: var(--mantine-spacing-md);
+	min-width: 0;
+}
+
+.changelog-label {
+	white-space: nowrap;
+}
+
+@container toolbar (width < 720px) {
+	.primary {
+		flex-basis: 100%;
+	}
+
+	.secondary {
+		flex-basis: 100%;
+		margin-left: 0;
+		justify-content: space-between;
+	}
+}
+
+@container toolbar (width < 560px) {
+	.changelog-label {
+		display: none;
+	}
+
+	.changelog:global(.mantine-Button-root) {
+		--button-padding-x: var(--mantine-spacing-xs);
+	}
+}

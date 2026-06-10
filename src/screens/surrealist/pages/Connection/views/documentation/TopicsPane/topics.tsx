@@ -27,16 +27,20 @@ interface TopicProps<T> {
 }
 
 export function ArticleTopic({ active, entry, onOpen }: TopicProps<DocsArticleTopic>) {
+	const isActive = active === entry.id;
+
 	const onClick = useStable(() => {
 		onOpen(entry.id);
 	});
 
 	return (
 		<Entry
-			isActive={active === entry.id}
+			isActive={isActive}
 			className={classes.topic}
 			onClick={onClick}
 			h={24}
+			fw={400}
+			opacity={isActive ? 1 : 0.75}
 		>
 			{entry.title}
 		</Entry>
@@ -44,6 +48,8 @@ export function ArticleTopic({ active, entry, onOpen }: TopicProps<DocsArticleTo
 }
 
 export function GroupTopic({ active, entry, lang, onOpen }: TopicProps<DocsGroupTopic>) {
+	const isActive = active === entry.id;
+
 	const onClick = useStable(() => {
 		onOpen(entry.children[0].id);
 	});
@@ -53,10 +59,12 @@ export function GroupTopic({ active, entry, lang, onOpen }: TopicProps<DocsGroup
 	return (
 		<>
 			<Entry
-				isActive={active === entry.id}
+				isActive={isActive}
 				className={classes.topic}
 				onClick={onClick}
 				h={24}
+				fw={400}
+				opacity={isActive ? 1 : 0.75}
 			>
 				{entry.title}
 			</Entry>
@@ -78,18 +86,28 @@ export function LinkTopic({ entry }: TopicProps<DocsLinkTopic>) {
 			h={24}
 			className={classes.topic}
 			onClick={() => adapter.openUrl(entry.link)}
+			fw={400}
+			opacity={0.75}
 		>
 			{entry.title}
 			<Icon
 				path={iconOpen}
 				size="sm"
+				ml="xs"
 			/>
 		</Entry>
 	);
 }
 
-export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSectionTopic>) {
+export function SectionTopic({
+	entry,
+	active,
+	lang,
+	onOpen,
+	forceOpen,
+}: TopicProps<DocsSectionTopic> & { forceOpen?: boolean }) {
 	const [opened, { toggle }] = useDisclosure(true);
+	const isOpen = forceOpen || opened;
 
 	return (
 		<>
@@ -99,8 +117,11 @@ export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSec
 				style={{ cursor: "pointer" }}
 			>
 				<Text
+					component="h3"
+					fz="md"
+					fw={600}
+					ml="sm"
 					c="bright"
-					fw={500}
 				>
 					{entry.title}
 				</Text>
@@ -108,15 +129,15 @@ export function SectionTopic({ entry, active, lang, onOpen }: TopicProps<DocsSec
 				<ActionIcon
 					size="xs"
 					variant="subtle"
-					aria-label={opened ? "Collapse section" : "Expand section"}
+					aria-label={isOpen ? "Collapse section" : "Expand section"}
 				>
 					<Icon
-						path={opened ? iconChevronDown : iconChevronUp}
+						path={isOpen ? iconChevronDown : iconChevronUp}
 						size="sm"
 					/>
 				</ActionIcon>
 			</Group>
-			<Collapse expanded={opened}>
+			<Collapse expanded={isOpen}>
 				<Stack gap="xs">{renderTopics(entry.topics, active, lang, onOpen)}</Stack>
 			</Collapse>
 		</>
@@ -128,6 +149,7 @@ export function renderTopics(
 	active: string,
 	lang: CodeLang,
 	onOpen: (topic: string) => void,
+	forceOpen = false,
 ) {
 	return entries
 		.filter((entry) => {
@@ -142,6 +164,7 @@ export function renderTopics(
 						entry={entry}
 						lang={lang}
 						onOpen={onOpen}
+						forceOpen={forceOpen}
 					/>
 				);
 			}

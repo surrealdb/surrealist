@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useConnectionAndView } from "~/hooks/routing";
+import { useConnectionFromRoute } from "~/hooks/routing";
 import {
 	closeConnection,
 	openConnection,
@@ -9,7 +9,7 @@ import {
  * Watch for connection changes and open the connection
  */
 export function useConnectionSwitch() {
-	const [connection] = useConnectionAndView();
+	const connection = useConnectionFromRoute();
 
 	useEffect(() => {
 		if (connection) {

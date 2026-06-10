@@ -1,165 +1,107 @@
 import { Box } from "@mantine/core";
 import { useMemo } from "react";
-import { useConnection } from "~/hooks/connection";
 import { Article, DocsPreview } from "~/screens/surrealist/pages/Connection/docs/components";
+import { useDocsConnection } from "~/screens/surrealist/pages/Connection/docs/hooks/connection";
 import type { Snippets, TopicProps } from "~/screens/surrealist/pages/Connection/docs/types";
 
 export function DocsAuthSignUp({ language }: TopicProps) {
-	const [namespace, database] = useConnection((c) => [
-		c?.authentication.namespace ?? "",
-		c?.authentication.database ?? "",
-	]);
-
-	const esc_namespace = JSON.stringify(namespace);
-	const esc_database = JSON.stringify(database);
+	const { esc_namespace, esc_database } = useDocsConnection();
 
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `
-			// Sign up with a Scope user in version < 2.0
-			await db.signup({
-				namespace: ${esc_namespace},
-				database: ${esc_database},
-				scope: "user",
-				variables: {
-					email: 'info@surrealdb.com',
-					pass: '123456',
-				},
-			});
-
-			// With Record Access
-			 await db.signup({
-				namespace: 'surrealdb',
-				database: 'docs',
-				access: 'user',
-
-				// Also pass any properties required by the scope definition
-				variables: {
-					email: 'info@surrealdb.com',
-					pass: '123456',
-				},
-			});
-					`,
+// Sign up a new record user via DEFINE ACCESS
+const tokens = await db.signup({
+	namespace: ${esc_namespace},
+	database: ${esc_database},
+	access: 'account',
+	variables: {
+		email: 'user@example.com',
+		pass: 'secret',
+	},
+});
+`,
 			rust: `
-			use serde::Serialize;
-			use surrealdb::opt::auth::Record;
+use surrealdb::opt::auth::Record;
 
-			#[derive(Serialize)]
-			struct Credentials<'a> {
-				email: &'a str,
-				pass: &'a str,
-			}
-
-			let jwt = db.signup(Record {
-				namespace: ${esc_namespace},
-				database: ${esc_database},
-				access: "user",
-				params: Credentials {
-					email: "info@surrealdb.com",
-					pass: "123456",
-				},
-			}).await?;
-
-			let token = jwt.as_insecure_token();
-		`,
+let jwt = db.signup(Record {
+	namespace: ${esc_namespace},
+	database: ${esc_database},
+	access: "account".into(),
+	params: Credentials {
+		email: "user@example.com".into(),
+		pass: "secret".into(),
+	},
+}).await?;
+`,
 			py: `
-		# With Record Access
-		db.signup({
-			"namespace": ${esc_namespace},
-			"database": ${esc_database},
-			"access": 'account',
-
-			# Also pass any properties required by the access definition
-			"variables": {
-				"email": 'info@surrealdb.com',
-				"password": '123456'
-			}
-		})
-		`,
+await db.signup({
+	"namespace": ${esc_namespace},
+	"database": ${esc_database},
+	"access": "account",
+	"variables": {
+		"email": "user@example.com",
+		"password": "secret",
+	},
+})
+`,
 			go: `
-		authData := &surrealdb.Auth{
-			Username: "root",
-			Password: "root", 
-			Namespace = "test", 
-			Database = "test", 
-			Access = "user",
-			Email = "info@surrealdb.com",
-			Password = "123456"
-		}
-		token, err := db.SignUp(authData)
-		if err != nil {
-			panic(err)
-		}
-		`,
+token, err := db.SignUp(ctx, &surrealdb.Auth{
+	Namespace: ${esc_namespace},
+	Database:  ${esc_database},
+	Access:    "account",
+	Email:     "user@example.com",
+	Password:  "secret",
+})
+`,
 			csharp: `
-			// With Record Access
-			var authParams = new AuthParams
-			{
-				Namespace = "test",
-				Database = "test",
-				Access = "user",
-				Email = "info@surrealdb.com",
-				Password = "123456"
-			};
-
-			Jwt jwt = await db.SignUp(authParams);
-
-			public class AuthParams : ScopeAuth
-			{
-				public string? Username { get; set; }
-				public string? Email { get; set; }
-				public string? Password { get; set; }
-			}
-
-		// Sign up with a Scope user in version < 2.0
-		var authParams = new AuthParams
-		{
-			Namespace = "test",
-			Database = "test",
-			Scope = "user",
-			Email = "info@surrealdb.com",
-			Password = "123456"
-		};
-
-		Jwt jwt = await db.SignUp(authParams);
-
-		public class AuthParams : ScopeAuth
-		{
-			public string? Username { get; set; }
-			public string? Email { get; set; }
-			public string? Password { get; set; }
-		}
-		`,
+var tokens = await db.SignUp(new AuthParams
+{
+	Namespace = ${esc_namespace},
+	Database = ${esc_database},
+	Access = "account",
+	Email = "user@example.com",
+	Password = "secret",
+});
+`,
 			java: `
-		driver.signUp(namespace, database, scope, email, password)
-		`,
+import com.surrealdb.signin.RecordCredential;
+import com.surrealdb.signin.Token;
+
+Token token = db.signup(new RecordCredential(
+	${esc_namespace},
+	${esc_database},
+	"account",
+	Map.of("email", "user@example.com", "password", "secret")
+));
+`,
 			php: `
-		$jwt = $db->signup([
-			"user" => "user",
-			"pass" => "password",
-			"namespace" => "test",
-			"database" => "test",
-			"scope" => "user"
-		]);
-		`,
+$jwt = $db->signup([
+	"namespace" => ${esc_namespace},
+	"database" => ${esc_database},
+	"access" => "account",
+	"email" => "user@example.com",
+	"pass" => "secret",
+]);
+`,
 		}),
 		[esc_namespace, esc_database],
 	);
 
 	return (
-		<Article title="Sign Up">
-			<div>
-				<p>
-					When working with SurrealDB Scopes, you can let anonymous users signup and
-					create an account in your database. In a scope's SIGNUP-clause, you can specify
-					variables which later need to be passed in an SDK or Web Request, email and pass
-					in this case. The scope is called user for this example.
-				</p>
-			</div>
+		<Article title="Sign up">
+			<Box>
+				<Box component="p">
+					Record access methods let anonymous users create accounts in your database. The
+					SIGNUP clause in a <code>DEFINE ACCESS TYPE RECORD</code> statement defines
+					which variables are required - typically <code>email</code> and{" "}
+					<code>pass</code>.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Sign Up"
+					title="Sign up"
 					values={snippets}
 				/>
 			</Box>

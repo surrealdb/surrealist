@@ -1,4 +1,5 @@
-import { Badge, Box, Group, SimpleGrid, Title } from "@mantine/core";
+import { Badge, Box, Group, SimpleGrid } from "@mantine/core";
+import { SectionTitle } from "@surrealdb/ui";
 import classes from "./style.module.scss";
 
 export {
@@ -14,14 +15,7 @@ export interface ArticleProps {
 export function Article({ title, children }: ArticleProps) {
 	return (
 		<Box className={classes.article}>
-			{title && (
-				<Title
-					mb="sm"
-					c="bright"
-				>
-					{title}
-				</Title>
-			)}
+			{title && <SectionTitle order={2}>{title}</SectionTitle>}
 			<SimpleGrid
 				cols={2}
 				spacing={64}

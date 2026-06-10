@@ -2,7 +2,7 @@ import {
 	Alert,
 	Box,
 	Button,
-	ScrollArea,
+	Group,
 	SegmentedControl,
 	SimpleGrid,
 	Skeleton,
@@ -10,7 +10,7 @@ import {
 	Text,
 	UnstyledButton,
 } from "@mantine/core";
-import { HoverGlow, Icon, iconArrowUpRight } from "@surrealdb/ui";
+import { HoverGlow, Icon, iconArrowUpRight, Spacer } from "@surrealdb/ui";
 import { useState } from "react";
 import { Redirect } from "wouter";
 import { navigate } from "wouter/use-browser-location";
@@ -27,9 +27,11 @@ import { CloudAdminGuard } from "~/components/CloudAdminGuard";
 import { CloudGuard } from "~/components/CloudGuard";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useSearchParams } from "~/hooks/routing";
+import { useAbsoluteLocation, useSearchParams } from "~/hooks/routing";
 import { ContextPlanCard } from "~/screens/surrealist/components/ContextPlanCard";
 import type { CloudOrganization, PlanPeriod } from "~/types";
+import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
+import { PageContainer } from "../../components/PageContainer";
 import classes from "./style.module.scss";
 
 export interface OrganizationContextPlanPageProps {
@@ -58,6 +60,7 @@ interface PageContentProps {
 function PageContent({ organisation }: PageContentProps) {
 	const params = useSearchParams();
 	const redirect = params.redirect;
+	const [, setLocation] = useAbsoluteLocation();
 
 	const isOrgOwner = hasOrganizationRoles(organisation, ORG_ROLES_OWNER, true);
 
@@ -87,140 +90,115 @@ function PageContent({ organisation }: PageContentProps) {
 	);
 
 	return (
-		<CloudAdminGuard organisation={organisation}>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
-					>
-						<Box>
-							<PageBreadcrumbs
-								items={[
-									{ label: "Surrealist", href: "/" },
-									{
-										label: organisation.name,
-										href: `/o/${organisation.id}`,
-									},
-									...(isOrgOwner
-										? [
-												{
-													label: "Billing",
-													href: `/o/${organisation.id}/billing`,
-												},
-											]
-										: []),
-									{ label: "Select plan" },
+		<>
+			<PageBreadcrumbs
+				items={orgSectionBreadcrumbs(organisation, "contexts", { label: "Select plan" })}
+			/>
+			<CloudAdminGuard organisation={organisation}>
+				<PageContainer>
+					<Box my="xl">
+						{!isOrgOwner && (
+							<Alert
+								mb="xl"
+								color="orange"
+								title="Owner access required"
+							>
+								<Text className="selectable">
+									Only the organisation owner can subscribe to a Spectron plan and
+									open checkout. Contact your organisation owner if you need a
+									plan for this organisation.
+								</Text>
+							</Alert>
+						)}
+						<Stack
+							align="center"
+							gap={0}
+						>
+							<PrimaryTitle
+								mt="sm"
+								fz={32}
+							>
+								Plans and pricing
+							</PrimaryTitle>
+							<Text
+								fz="lg"
+								className="selectable"
+							>
+								Choose the Spectron plan that's right for you
+							</Text>
+							<SegmentedControl
+								mt="xl"
+								size="md"
+								value={billingPeriod}
+								onChange={(value) => setBillingPeriod(value as PlanPeriod)}
+								data={[
+									{ label: "Monthly", value: "monthly" },
+									{ label: "Yearly", value: "yearly" },
 								]}
 							/>
-						</Box>
-
-						<Box my="xl">
-							{!isOrgOwner && (
-								<Alert
-									mb="xl"
-									color="orange"
-									title="Owner access required"
-								>
-									<Text className="selectable">
-										Only the organisation owner can subscribe to a Spectron plan
-										and open checkout. Contact your organisation owner if you
-										need a plan for this organisation.
-									</Text>
-								</Alert>
-							)}
-							<Stack
-								align="center"
-								gap={0}
+						</Stack>
+						{packagesPending ? (
+							<SimpleGrid
+								mt="xl"
+								cols={{ base: 1, sm: 2, lg: 3 }}
+								spacing="xl"
+								className={classes.content}
 							>
-								<PrimaryTitle
-									mt="sm"
-									fz={32}
-								>
-									Plans and pricing
-								</PrimaryTitle>
-								<Text
-									fz="lg"
-									className="selectable"
-								>
-									Choose the Spectron plan that's right for you
-								</Text>
-								<SegmentedControl
-									mt="xl"
-									size="md"
-									value={billingPeriod}
-									onChange={(value) => setBillingPeriod(value as PlanPeriod)}
-									data={[
-										{ label: "Monthly", value: "monthly" },
-										{ label: "Yearly", value: "yearly" },
-									]}
-								/>
-							</Stack>
-							{packagesPending ? (
-								<SimpleGrid
-									mt="xl"
-									cols={{ base: 1, sm: 2, lg: 3 }}
-									spacing="xl"
-									className={classes.content}
-								>
-									<Skeleton h={300} />
-									<Skeleton h={300} />
-									<Skeleton h={300} />
-								</SimpleGrid>
-							) : (
-								<SimpleGrid
-									mt="xl"
-									cols={{ base: 1, sm: 2, lg: 3 }}
-									spacing="xl"
-									className={classes.content}
-								>
-									{displayedPackages.map((pkg) => {
-										const isCurrent = pkg.id === activePackageId;
-										const isDisabled = isCurrent || !isOrgOwner;
+								<Skeleton h={300} />
+								<Skeleton h={300} />
+								<Skeleton h={300} />
+							</SimpleGrid>
+						) : (
+							<SimpleGrid
+								mt="xl"
+								cols={{ base: 1, sm: 2, lg: 3 }}
+								spacing="xl"
+								className={classes.content}
+							>
+								{displayedPackages.map((pkg) => {
+									const isCurrent = pkg.id === activePackageId;
+									const isDisabled = isCurrent || !isOrgOwner;
 
-										return (
-											<UnstyledButton
-												key={pkg.id}
-												disabled={isDisabled}
-												onClick={() => handleSelect(pkg.id)}
-												renderRoot={
-													isDisabled
-														? undefined
-														: (props) => <HoverGlow {...props} />
+									return (
+										<UnstyledButton
+											key={pkg.id}
+											disabled={isDisabled}
+											onClick={() => handleSelect(pkg.id)}
+											renderRoot={
+												isDisabled
+													? undefined
+													: (props) => <HoverGlow {...props} />
+											}
+										>
+											<ContextPlanCard
+												pkg={pkg}
+												footer={
+													<Button
+														mt="md"
+														size="lg"
+														disabled={isDisabled}
+													>
+														{isCurrent ? "Current plan" : "Choose plan"}
+													</Button>
 												}
-											>
-												<ContextPlanCard
-													pkg={pkg}
-													footer={
-														<Button
-															mt="md"
-															size="lg"
-															disabled={isDisabled}
-														>
-															{isCurrent
-																? "Current plan"
-																: "Choose plan"}
-														</Button>
-													}
-												/>
-											</UnstyledButton>
-										);
-									})}
-								</SimpleGrid>
-							)}
-						</Box>
+											/>
+										</UnstyledButton>
+									);
+								})}
+							</SimpleGrid>
+						)}
+					</Box>
 
+					<Group justify="center">
+						<Box flex={1}>
+							<Button
+								color="obsidian"
+								variant="light"
+								onClick={() => setLocation(`/o/${organisation.id}/billing`)}
+							>
+								Back
+							</Button>
+						</Box>
 						<Stack
 							align="center"
 							mt={36}
@@ -243,9 +221,10 @@ function PageContent({ organisation }: PageContentProps) {
 								</Button>
 							</a>
 						</Stack>
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</CloudAdminGuard>
+						<Spacer />
+					</Group>
+				</PageContainer>
+			</CloudAdminGuard>
+		</>
 	);
 }

@@ -13,13 +13,13 @@ import {
 	UnstyledButton,
 } from "@mantine/core";
 import {
-	Header,
 	HoverGlow,
 	Icon,
 	iconArrowUpRight,
 	iconPackageClosed,
 	iconPlay,
 	pictoSpectron,
+	SectionTitle,
 } from "@surrealdb/ui";
 import { useMemo } from "react";
 import { CONTEXT_VIEW_PAGES, REGION_FLAGS } from "~/constants";
@@ -151,12 +151,12 @@ export default function DashboardView({ context }: ContextViewProps) {
 				</Stack>
 			</Paper>
 			<Box>
-				<Header
+				<SectionTitle
 					kicker="Explore"
 					order={2}
 				>
 					All knowledge in one place
-				</Header>
+				</SectionTitle>
 				<SimpleGrid
 					mt="xl"
 					cols={{ base: 1, sm: 3 }}
@@ -172,12 +172,12 @@ export default function DashboardView({ context }: ContextViewProps) {
 				</SimpleGrid>
 			</Box>
 			<Box>
-				<Header
+				<SectionTitle
 					kicker="Integrate"
 					order={2}
 				>
 					Connect your tools and services
-				</Header>
+				</SectionTitle>
 				<SimpleGrid
 					mt="xl"
 					cols={{ base: 1, sm: 2 }}

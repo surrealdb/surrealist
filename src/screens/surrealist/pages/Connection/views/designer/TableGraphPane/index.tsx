@@ -573,8 +573,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 						<ActionButton
 							label="Reveal tables"
 							mr="sm"
-							color="obsidian"
-							variant="light"
 							onClick={openTableList}
 						>
 							<Icon path={iconChevronRight} />

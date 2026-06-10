@@ -6,7 +6,6 @@ import {
 	Group,
 	Loader,
 	Paper,
-	ScrollArea,
 	Stack,
 	Text,
 	UnstyledButton,
@@ -18,8 +17,9 @@ import { useSupportArticleQuery } from "~/cloud/queries/context";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
+import { loadingCrumb, supportBreadcrumbs } from "~/util/breadcrumbs";
 import { formatRelativeDate } from "~/util/helpers";
-import classes from "../style.module.scss";
+import { PageContainer } from "../../../components/PageContainer";
 
 export interface ArticlePageProps {
 	id: string;
@@ -29,26 +29,32 @@ export function ArticlePage({ id }: ArticlePageProps) {
 	const { data: article, isLoading } = useSupportArticleQuery(id);
 
 	return (
-		<Box
-			flex={1}
-			pos="relative"
-		>
+		<>
+			<PageBreadcrumbs
+				items={
+					isLoading || !article
+						? supportBreadcrumbs(loadingCrumb())
+						: supportBreadcrumbs(
+								{
+									label: article.collection?.name ?? "Collection",
+									href: `/support/collections/${article.collection?.id}`,
+									selectable: true,
+								},
+								{
+									label: article.title ?? "Unnamed Article",
+									selectable: true,
+								},
+							)
+				}
+			/>
 			{isLoading && (
-				<Center
-					w="100%"
-					h="100%"
-					flex={1}
-				>
+				<Center flex={1}>
 					<Loader />
 				</Center>
 			)}
 
 			{!isLoading && !article && (
-				<Center
-					w="100%"
-					h="100%"
-					flex={1}
-				>
+				<Center flex={1}>
 					<Stack
 						gap={0}
 						align="center"
@@ -69,112 +75,87 @@ export function ArticlePage({ id }: ArticlePageProps) {
 			)}
 
 			{!isLoading && article && (
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					className={classes.scrollArea}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1000}
-						pb={68}
-					>
-						<Box>
-							<PageBreadcrumbs
-								items={[
-									{ label: "Surrealist", href: "/" },
-									{ label: "Support", href: "/support" },
-									{
-										label: article?.collection?.name ?? "Collection",
-										href: `/support/collections/${article?.collection?.id}`,
-									},
-									{ label: article?.title ?? "Unnamed Article" },
-								]}
-							/>
-							<PrimaryTitle
-								fz={32}
-								mt="sm"
-							>
-								{article?.title ?? "Unnamed Article"}
-							</PrimaryTitle>
-							<Text>{article?.description}</Text>
-							<Group
-								mt="md"
-								mb="lg"
-							>
-								{article?.author && (
-									<Avatar
-										size={35}
-										name={article.author.name}
-										src={article.author.avatar}
-										component={UnstyledButton}
-										style={{
-											cursor: "default",
-										}}
-									>
-										{isLoading && (
-											<Loader
-												size="sm"
-												color="obsidian.4"
-											/>
-										)}
-									</Avatar>
-								)}
-								<Stack gap={0}>
-									<Group gap={4}>
-										<Text fz="sm">Written by</Text>
-										<Text
-											fz="sm"
-											fw={600}
-											c="surreal"
-										>
-											{article?.author?.name ?? "SurrealDB Team"}
-										</Text>
-									</Group>
+				<PageContainer>
+					<Box>
+						<PrimaryTitle
+							fz={32}
+							mt="sm"
+						>
+							{article?.title ?? "Unnamed Article"}
+						</PrimaryTitle>
+						<Text>{article?.description}</Text>
+						<Group
+							mt="md"
+							mb="lg"
+						>
+							{article?.author && (
+								<Avatar
+									size={35}
+									name={article.author.name}
+									src={article.author.avatar}
+									component={UnstyledButton}
+									style={{
+										cursor: "default",
+									}}
+								>
+									{isLoading && (
+										<Loader
+											size="sm"
+											color="obsidian.4"
+										/>
+									)}
+								</Avatar>
+							)}
+							<Stack gap={0}>
+								<Group gap={4}>
+									<Text fz="sm">Written by</Text>
 									<Text
 										fz="sm"
-										c="obsidian"
+										fw={600}
+										c="surreal"
 									>
-										Last updated{" "}
-										{formatRelativeDate((article?.updated_at ?? 0) * 1000)}
+										{article?.author?.name ?? "SurrealDB Team"}
 									</Text>
-								</Stack>
-							</Group>
-						</Box>
-
-						<Paper p="xl">
-							{/** biome-ignore lint/security/noDangerouslySetInnerHtml: It's safe since its Intercom */}
-							<div dangerouslySetInnerHTML={{ __html: article?.body ?? "" }} />
-						</Paper>
-
-						<Group>
-							<Button
-								color="obsidian"
-								variant="light"
-								leftSection={<Icon path={iconArrowLeft} />}
-								onClick={() =>
-									navigate(`/support/collections/${article?.collection?.id}`)
-								}
-							>
-								Go back
-							</Button>
-							<Spacer />
-							<Button
-								variant="light"
-								color="violet"
-								rightSection={<Icon path={iconOpen} />}
-								onClick={() => adapter.openUrl(article.url)}
-							>
-								View on SurrealDB Support
-							</Button>
+								</Group>
+								<Text
+									fz="sm"
+									c="obsidian"
+								>
+									Last updated{" "}
+									{formatRelativeDate((article?.updated_at ?? 0) * 1000)}
+								</Text>
+							</Stack>
 						</Group>
-					</Stack>
-				</ScrollArea>
+					</Box>
+
+					<Paper p="xl">
+						{/** biome-ignore lint/security/noDangerouslySetInnerHtml: It's safe since its Intercom */}
+						<div dangerouslySetInnerHTML={{ __html: article?.body ?? "" }} />
+					</Paper>
+
+					<Group>
+						<Button
+							color="obsidian"
+							variant="light"
+							leftSection={<Icon path={iconArrowLeft} />}
+							onClick={() =>
+								navigate(`/support/collections/${article?.collection?.id}`)
+							}
+						>
+							Go back
+						</Button>
+						<Spacer />
+						<Button
+							variant="light"
+							color="violet"
+							rightSection={<Icon path={iconOpen} />}
+							onClick={() => adapter.openUrl(article.url)}
+						>
+							View on SurrealDB Support
+						</Button>
+					</Group>
+				</PageContainer>
 			)}
-		</Box>
+		</>
 	);
 }

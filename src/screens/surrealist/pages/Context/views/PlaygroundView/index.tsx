@@ -23,7 +23,7 @@ import {
 	iconSearch,
 	iconSend,
 	iconSpectron,
-	Markdown,
+	MarkdownViewer,
 	pictoBrain,
 	pictoMemory,
 	pictoSpectron,
@@ -362,7 +362,7 @@ export default function PlaygroundView(_props: ContextViewProps) {
 														mt={4}
 														className="selectable"
 													>
-														Say something about yourself — your name, a
+														Say something about yourself - your name, a
 														preference, where you are. Watch it appear
 														on the right as a new memory.
 													</Text>
@@ -399,7 +399,9 @@ export default function PlaygroundView(_props: ContextViewProps) {
 															maw="80%"
 														>
 															<Box className={classes.userBubble}>
-																<Markdown content={msg.content} />
+																<MarkdownViewer
+																	content={msg.content}
+																/>
 															</Box>
 															<Text
 																fz="xs"
@@ -440,7 +442,9 @@ export default function PlaygroundView(_props: ContextViewProps) {
 																	classes.assistantBubbleContent
 																}
 															>
-																<Markdown content={msg.content} />
+																<MarkdownViewer
+																	content={msg.content}
+																/>
 															</Box>
 															<Text
 																fz="xs"

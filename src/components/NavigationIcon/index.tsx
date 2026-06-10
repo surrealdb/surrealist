@@ -5,7 +5,6 @@ import { isObject } from "radash";
 import type { HTMLProps, ReactNode } from "react";
 import { useRouteMatcher } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useInterfaceStore } from "~/stores/interface";
 import { Entry, type EntryProps } from "../Entry";
 import classes from "./style.module.scss";
 
@@ -27,9 +26,9 @@ export function NavigationIcon({
 	withTooltip,
 	onClick,
 	indicator,
+	className,
 	...rest
 }: NavigationIconProps) {
-	const { setOverlaySidebar } = useInterfaceStore.getState();
 	const active = useRouteMatcher(match || []);
 	const isActive = match && active && match?.length > 0;
 
@@ -39,7 +38,6 @@ export function NavigationIcon({
 	// });
 
 	const handleClick = useStable(() => {
-		setOverlaySidebar(false);
 		onClick();
 	});
 
@@ -53,7 +51,11 @@ export function NavigationIcon({
 		>
 			<Box w="100%">
 				<Entry
-					className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
+					className={clsx(
+						classes.viewButton,
+						isActive && classes.viewButtonActive,
+						className,
+					)}
 					isActive={isActive}
 					onClick={handleClick}
 					leftSection={

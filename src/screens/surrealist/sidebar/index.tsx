@@ -1,138 +1,160 @@
 import {
 	type BoxProps,
-	Flex,
-	Group,
+	Divider,
 	Image,
 	ScrollArea,
 	Stack,
+	Transition,
 	UnstyledButton,
 } from "@mantine/core";
-import { iconCog, iconHelp, iconSearch, pictoSurrealist } from "@surrealdb/ui";
+import { iconDownload, iconSearch, pictoSurrealist } from "@surrealdb/ui";
 import clsx from "clsx";
-import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { useLogoUrl } from "~/hooks/brand";
-import { useAbsoluteLocation } from "~/hooks/routing";
+import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
-import { useInterfaceStore } from "~/stores/interface";
+import { useDesktopUpdateState } from "~/hooks/updater";
 import { isMobile } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
 import { SidebarTarget, useSidebar } from "./portal";
 
 export interface SurrealistSidebarProps extends BoxProps {
-	forceMode?: string;
+	/** Force the sidebar to fill its container, used by the mobile overlay */
+	fill?: boolean;
 }
 
-export function SurrealistSidebar({ className, forceMode, ...other }: SurrealistSidebarProps) {
+export function SurrealistSidebar({ className, fill, ...other }: SurrealistSidebarProps) {
 	const logoUrl = useLogoUrl();
-	const [, navigate] = useAbsoluteLocation();
-	const { sidebarMode, canHoverSidebar, onHoverEnter, setLocation } = useSidebar();
+	// const [, navigate] = useAbsoluteLocation();
+	const { mode, setLocation } = useSidebar();
 
-	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
-	const { data: unreadConversations } = useCloudUnreadConversationsQuery();
-	const { setOverlaySidebar } = useInterfaceStore.getState();
+	// const { data: unreadConversations } = useCloudUnreadConversationsQuery();
+	const [hasGreeting] = useSetting("appearance", "logoGreetAnimation");
+	const { showInNavigation } = useDesktopUpdateState();
 
-	const openSettings = useStable(() => dispatchIntent("open-settings"));
+	// const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
+	const openUpdate = useStable(() => dispatchIntent("open-update"));
 
-	const mode = forceMode || sidebarMode;
-	const isHoverable = mode === "expandable" && canHoverSidebar;
-	const isCollapsed = mode === "compact" || mode === "expandable";
-	const isFilled = mode === "fill";
+	const isCompact = !fill && mode === "compact";
+
+	const goHome = useStable(() => {
+		setLocation("/");
+	});
 
 	return (
-		<ScrollArea
-			scrollbars="y"
-			type="never"
+		<Stack
 			pos="fixed"
 			component="aside"
+			gap={0}
 			top={0}
 			left={0}
 			bottom={0}
-			onMouseEnter={onHoverEnter}
-			className={clsx(
-				classes.sidebar,
-				isHoverable && classes.sidebarHoverable,
-				isCollapsed && classes.sidebarCollapsed,
-				isFilled && classes.sidebarFill,
-				className,
-			)}
+			className={clsx(classes.sidebar, className)}
+			mod={{
+				fill,
+				isCompact,
+			}}
 			{...other}
 		>
-			<Flex
-				className={classes.sidebarInner}
-				direction="column"
+			<Stack
+				gap={0}
 				px={16}
+				pt={12}
 			>
 				<UnstyledButton
-					mb="xl"
-					onClick={() => {
-						setLocation("/");
-						setOverlaySidebar(false);
-					}}
+					onClick={goHome}
+					className={classes.logo}
+					pos="relative"
+					h={42}
 				>
-					<Group
-						gap="lg"
-						wrap="nowrap"
-						align="center"
-						style={{ flexShrink: 0 }}
+					<Image
+						src={pictoSurrealist}
+						w={36}
+						className={classes.logoHat}
+						pos="absolute"
+						top={0}
+						left={3}
+						mod={{ greet: hasGreeting && !isCompact }}
+					/>
+					<Transition
+						mounted={!isCompact}
+						keepMounted
+						timingFunction="ease-out"
+						transition={hasGreeting ? "scale-x" : "fade-right"}
+						duration={150}
 					>
-						<Image
-							my={-9}
-							src={pictoSurrealist}
-							w={42}
-							className={classes.hat}
-						/>
-						<Image
-							src={logoUrl}
-							style={{ flexShrink: 0 }}
-							w={118}
-						/>
-					</Group>
+						{(style) => (
+							<Image
+								src={logoUrl}
+								style={{ flexShrink: 0, ...style }}
+								w={125}
+								ml={hasGreeting ? "sm" : 48}
+								mt="-xs"
+							/>
+						)}
+					</Transition>
 				</UnstyledButton>
+			</Stack>
 
-				<SidebarTarget />
-
+			<ScrollArea
+				flex={1}
+				scrollbars="y"
+				type="never"
+				className={classes.sidebarNavigation}
+			>
 				<Stack
-					gap="sm"
-					mt={22}
-					pb={18}
+					px={16}
+					py="lg"
 				>
-					<NavigationIcon
-						name={
-							<Group wrap="nowrap">
-								Search
-								{!isMobile() && <Shortcut value={["mod", "K"]} />}
-							</Group>
-						}
-						icon={iconSearch}
-						onClick={openCommands}
-						onMouseEnter={onHoverEnter}
-						withTooltip={mode === "compact"}
-					/>
-
-					<NavigationIcon
-						name="Support"
-						icon={iconHelp}
-						match={["/support", "/support/*"]}
-						onClick={() => navigate("/support")}
-						onMouseEnter={onHoverEnter}
-						withTooltip={mode === "compact"}
-						indicator={unreadConversations}
-					/>
-
-					<NavigationIcon
-						name="Settings"
-						icon={iconCog}
-						onClick={openSettings}
-						onMouseEnter={onHoverEnter}
-						withTooltip={mode === "compact"}
-						indicator={!!availableUpdate}
-					/>
+					<SidebarTarget />
 				</Stack>
-			</Flex>
-		</ScrollArea>
+			</ScrollArea>
+
+			<Stack
+				px={16}
+				pb={18}
+			>
+				<Divider />
+
+				{/* <NavigationIcon
+					name="Support"
+					icon={iconHelp}
+					match={["/support", "/support/*"]}
+					onClick={() => navigate("/support")}
+					withTooltip={isCompact}
+					indicator={unreadConversations}
+				/> */}
+
+				{showInNavigation && (
+					<NavigationIcon
+						name="Update Surrealist"
+						icon={iconDownload}
+						onClick={openUpdate}
+						withTooltip={isCompact}
+						className={classes.sidebarUpdate}
+					/>
+				)}
+
+				<NavigationIcon
+					name="Search"
+					rightSection={!isMobile() && <Shortcut value={["mod", "K"]} />}
+					icon={iconSearch}
+					onClick={openCommands}
+					withTooltip={isCompact}
+				/>
+
+				{/* <NavigationIcon
+					name="Settings"
+					rightSection={!isMobile() && <Shortcut value={["mod", ","]} />}
+					icon={iconCog}
+					onClick={openSettings}
+					withTooltip={isCompact}
+					indicator={!!availableUpdate}
+				/> */}
+			</Stack>
+		</Stack>
 	);
 }

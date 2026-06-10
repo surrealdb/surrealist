@@ -4,7 +4,6 @@ import {
 	Divider,
 	Group,
 	Loader,
-	Modal,
 	Stack,
 	Switch,
 	Text,
@@ -20,10 +19,9 @@ import { Duration, RecordId, StringRecordId, Table, Uuid } from "surrealdb";
 import { adapter } from "~/adapter";
 import { FieldKindInputCore } from "~/components/Inputs";
 import { Label } from "~/components/Label";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SURQL_FILTER } from "~/constants";
-import { useBoolean } from "~/hooks/boolean";
-import { useIntent } from "~/hooks/routing";
+import { useConnection } from "~/hooks/connection";
+import { useConnectionSettingsNavigator, useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useIsLight } from "~/hooks/theme";
@@ -1016,14 +1014,26 @@ const NdJsonImportForm = ({
 };
 
 export function DataImportModal() {
-	const [isOpen, openedHandle] = useBoolean();
+	const [connectionId] = useConnection((c) => [c?.id]);
+	const navigateSettings = useConnectionSettingsNavigator();
 
+	useIntent("import-database", () => {
+		if (connectionId) {
+			navigateSettings(connectionId, "import-export", { mode: "import" });
+		}
+	});
+
+	return null;
+}
+
+export function DatabaseImportPanel() {
 	const [importType, setImportType] = useState<ImportType>("sql");
 	const [defaultTableName, setDefaultTableName] = useState("");
+	const [hasFile, setHasFile] = useState(false);
 
 	const importFile = useRef<File | null>(null);
 
-	const startImport = useStable(async () => {
+	const pickFile = useStable(async () => {
 		const [file] = await adapter.openFile(
 			"Import query file",
 			[
@@ -1049,7 +1059,7 @@ export function DataImportModal() {
 		}
 
 		importFile.current = file;
-		openedHandle.open();
+		setHasFile(true);
 
 		const configureImportType = (type: ImportType) => {
 			setImportType(type);
@@ -1080,8 +1090,6 @@ export function DataImportModal() {
 		async (executeTransformAndImport: ExecuteTransformAndImportFn) => {
 			if (!importFile.current) return;
 
-			openedHandle.close();
-
 			const messageId = showNotification({
 				title: "Importing database",
 				message: "Please wait while the database is imported",
@@ -1106,6 +1114,9 @@ export function DataImportModal() {
 					autoClose: 2000,
 					color: "green",
 				});
+
+				setHasFile(false);
+				importFile.current = null;
 			} catch (err: any) {
 				updateNotification({
 					id: messageId,
@@ -1119,25 +1130,31 @@ export function DataImportModal() {
 		},
 	);
 
-	useIntent("import-database", startImport);
+	const cancelImport = useStable(() => {
+		setHasFile(false);
+		importFile.current = null;
+	});
 
 	return (
-		<Modal
-			opened={isOpen}
-			onClose={openedHandle.close}
-			title={
-				<PrimaryTitle>Import {importType === "sql" ? "database" : "table"}</PrimaryTitle>
-			}
-		>
-			{importType === "sql" ? (
+		<Stack gap="md">
+			<Button
+				variant="light"
+				color="obsidian"
+				leftSection={<Icon path={iconUpload} />}
+				onClick={pickFile}
+			>
+				Choose file to import
+			</Button>
+
+			{hasFile && importType === "sql" ? (
 				<SqlImportForm
 					fileName={importFile.current?.name}
 					importFile={importFile}
 					confirmImport={confirmImport}
-					cancelImport={openedHandle.close}
+					cancelImport={cancelImport}
 				/>
 			) : null}
-			{importType === "csv" ? (
+			{hasFile && importType === "csv" ? (
 				<CsvImportForm
 					fileFormat={importType}
 					defaultTableName={defaultTableName}
@@ -1145,7 +1162,7 @@ export function DataImportModal() {
 					confirmImport={confirmImport}
 				/>
 			) : null}
-			{importType === "json" ? (
+			{hasFile && importType === "json" ? (
 				<JsonImportForm
 					fileFormat={importType}
 					defaultTableName={defaultTableName}
@@ -1153,7 +1170,7 @@ export function DataImportModal() {
 					confirmImport={confirmImport}
 				/>
 			) : null}
-			{importType === "ndjson" ? (
+			{hasFile && importType === "ndjson" ? (
 				<NdJsonImportForm
 					fileFormat={importType}
 					defaultTableName={defaultTableName}
@@ -1161,6 +1178,6 @@ export function DataImportModal() {
 					confirmImport={confirmImport}
 				/>
 			) : null}
-		</Modal>
+		</Stack>
 	);
 }

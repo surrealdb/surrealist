@@ -62,8 +62,6 @@ export function DatabaseServing() {
 	return (
 		<>
 			<ActionButton
-				w={36}
-				h={36}
 				onClick={handleToggle}
 				loading={isPending}
 				label={isServing ? "Stop serving" : "Start serving"}
@@ -72,22 +70,19 @@ export function DatabaseServing() {
 					label: isServing ? "Stop serving" : "Start serving",
 					children: null,
 				}}
-				color={isServing ? "pink.7" : undefined}
+				color={isServing ? "pink.6" : undefined}
 				aria-label={
 					isServing ? "Stop serving local database" : "Start serving local database"
 				}
-				variant="subtle"
 			>
 				<Icon
 					path={isServing ? iconStop : iconPlay}
-					size="xl"
+					size="lg"
 				/>
 			</ActionButton>
 
 			{hasStarted && (
 				<ActionButton
-					w={36}
-					h={36}
 					onClick={openConsole}
 					label="Open console"
 					tooltipProps={{
@@ -95,11 +90,10 @@ export function DatabaseServing() {
 						label: "Open console",
 						children: null,
 					}}
-					variant="subtle"
 				>
 					<Icon
 						path={iconConsole}
-						size="xl"
+						size="lg"
 					/>
 				</ActionButton>
 			)}

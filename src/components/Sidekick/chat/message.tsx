@@ -18,7 +18,7 @@ import {
 	iconChevronDown,
 	iconChevronUp,
 	iconCopy,
-	Markdown,
+	MarkdownViewer,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import { ActionButton } from "~/components/ActionButton";
@@ -49,7 +49,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 						p="md"
 						bg={isLight ? "obsidian.1" : "obsidian.6"}
 					>
-						<Markdown content={message.content} />
+						<MarkdownViewer content={message.content} />
 					</Paper>
 					<Group
 						mt={2}
@@ -82,7 +82,7 @@ export function SidekickMessage({ message, thinkingText, isResponding }: Sidekic
 			) : (
 				<Box mb="xl">
 					{message.content ? (
-						<Markdown content={message.content} />
+						<MarkdownViewer content={message.content} />
 					) : (
 						<Group
 							gap="xs"

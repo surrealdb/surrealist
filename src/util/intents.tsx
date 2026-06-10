@@ -11,6 +11,7 @@ const INTENT_REGISTRY = {
 	"open-messages": null,
 	"create-message": null,
 	"open-changelog": null,
+	"open-update": null,
 	"open-settings": null,
 	"open-embedder": null,
 	"open-desktop-download": null,

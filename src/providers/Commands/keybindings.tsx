@@ -116,7 +116,7 @@ export function displayKey(key: string) {
 			return (
 				<Text
 					key={key}
-					fz="lg"
+					inherit
 				>
 					{capitalize(beautifyKey(key))}
 				</Text>

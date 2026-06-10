@@ -1,7 +1,7 @@
 ; Surrealist NSIS installer (fork of Tauri's template)
 ;
 ; Customisations on top of upstream `crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi`:
-; - MUI_HEADERIMAGE_RIGHT — show the header bitmap on the right of the wizard
+; - MUI_HEADERIMAGE_RIGHT - show the header bitmap on the right of the wizard
 ; - Legacy app data: also remove $APPDATA\SurrealDB\Surrealist when deleting app data
 
 Unicode true

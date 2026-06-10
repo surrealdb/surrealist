@@ -1,8 +1,7 @@
-import { Box, Group, ScrollArea, Select, Title } from "@mantine/core";
-import { Icon, iconCheck, iconList } from "@surrealdb/ui";
+import { Box, Group, ScrollArea, Select, ThemeIcon } from "@mantine/core";
+import { Icon, iconCheck, iconList, SectionTitle } from "@surrealdb/ui";
 import { type RefObject, useMemo } from "react";
 import { ContentPane } from "~/components/Pane";
-import { ScrollFader } from "~/components/ScrollFader";
 import { Spacer } from "~/components/Spacer";
 import { DRIVERS } from "~/constants";
 import { useIntent } from "~/hooks/routing";
@@ -17,6 +16,7 @@ import {
 	isSection,
 } from "~/screens/surrealist/pages/Connection/docs/types";
 import type { CodeLang } from "~/types";
+import classes from "./style.module.scss";
 
 type ReadableArticle = DocsArticleTopic | DocsSectionTopic;
 
@@ -138,11 +138,10 @@ export function ArticlePane({
 				/>
 			}
 		>
-			<ScrollFader />
-
 			<ScrollArea
 				viewportRef={scrollRef}
 				onScrollPositionChange={onScroll}
+				className={classes.scroller}
 				viewportProps={{
 					style: {
 						paddingBottom: "50vh",
@@ -173,16 +172,13 @@ export function ArticlePane({
 									c="bright"
 									my="xl"
 								>
-									<Icon
-										path={doc.icon}
-										size={1.65}
-									/>
-									<Title
-										order={1}
-										fz={28}
+									<ThemeIcon
+										variant="light"
+										color="obsidian"
 									>
-										{doc.title}
-									</Title>
+										<Icon path={doc.icon} />
+									</ThemeIcon>
+									<SectionTitle>{doc.title}</SectionTitle>
 								</Group>
 								{Content && (
 									<Box maw={1500}>

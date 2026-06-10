@@ -5,9 +5,9 @@ import "@mantine/charts/styles.css";
 import "@mantine/dates/styles.css";
 import "mantine-contextmenu/styles.layer.css";
 import "@surrealdb/ui/styles.css";
+import "@surrealdb/ui/fonts.css";
 
 import "../assets/styles/layers.scss";
-import "../assets/styles/fonts.scss";
 import "../assets/styles/global.scss";
 import "../assets/styles/override.scss";
 import "../assets/styles/variants.scss";
@@ -18,9 +18,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { clearCachedConnections } from "~/cloud/helpers";
-import { NewDomainScreen } from "~/screens/new-domain";
 import { startConfigSync } from "~/util/config";
-import { HeadInjector } from "~/util/head";
 import { exposeDebug } from "~/util/helpers";
 import { preloadImages } from "~/util/preloader";
 import { adapter } from "../adapter";
@@ -47,23 +45,8 @@ import { promptChangelog } from "../util/changelogs";
 		throw new Error("Root element not found");
 	}
 
-	// TODO - Temporary redirect notice
-	if (location.host.endsWith("surrealist.app")) {
-		createRoot(root).render(
-			<>
-				<HeadInjector />
-				<NewDomainScreen />
-			</>,
-		);
-		return;
-	}
-
-	createRoot(root).render(
-		<>
-			<HeadInjector />
-			<App />
-		</>,
-	);
+	// Render Surrealist app
+	createRoot(root).render(<App />);
 
 	// Check for new release
 	promptChangelog();

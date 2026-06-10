@@ -63,6 +63,7 @@ export type ConfigStore = SurrealistConfig & {
 	removeSavedQuery: (savedId: string) => void;
 	setSavedQueries: (queries: SavedQuery[]) => void;
 	setLastPromptedVersion: (lastPromptedVersion: string) => void;
+	setDismissedUpdateVersion: (dismissedUpdateVersion: string) => void;
 	addHistoryEntry: (connectionId: string, entry: HistoryQuery) => void;
 	toggleTablePin: (connectionId: string, table: string) => void;
 	updateBehaviorSettings: (settings: Partial<SurrealistBehaviorSettings>) => void;
@@ -215,6 +216,9 @@ export const useConfigStore = create<ConfigStore>()(
 			})),
 
 		setLastPromptedVersion: (lastPromptedVersion) => set(() => ({ lastPromptedVersion })),
+
+		setDismissedUpdateVersion: (dismissedUpdateVersion) =>
+			set(() => ({ dismissedUpdateVersion })),
 
 		addHistoryEntry: (connectionId, entry) =>
 			set((state) =>

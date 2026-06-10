@@ -226,8 +226,6 @@ export function QueryPane({
 					<ActionButton
 						label="Reveal queries"
 						mr="sm"
-						color="slate"
-						variant="light"
 						onClick={openQueryList}
 					>
 						<Icon path={iconChevronRight} />

@@ -22,7 +22,13 @@
 			"@mantine/hooks": ["./node_modules/@mantine/hooks"]
 		}
 	},
-	"include": ["src", "env.d.ts"],
+	"include": [
+		"src",
+		"env.d.ts",
+		"shims/node-crypto-web-shim.tsx",
+		"shims/node-fs-postcss-shim.tsx",
+		"shims/node-url-postcss-shim.tsx"
+	],
 	"references": [
 		{
 			"path": "./tsconfig.node.json"

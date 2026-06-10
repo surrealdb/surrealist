@@ -1,25 +1,28 @@
 import type { Update } from "@tauri-apps/plugin-updater";
+import type { ReactNode } from "react";
 import { create } from "zustand";
-import type { ColorScheme, LiveMessage } from "~/types";
+import type { BreadcrumbItem, ColorScheme, LiveMessage } from "~/types";
 
 export type InterfaceStore = {
 	title: string;
+	pageBreadcrumbs: BreadcrumbItem[];
+	toolbarInset: ReactNode;
 	colorScheme: ColorScheme;
 	availableUpdate: null | Update;
-	showAvailableUpdate: boolean;
 	showTableCreator: boolean;
 	liveTabs: Set<string>;
 	liveQueryMessages: Record<string, LiveMessage[]>;
 	showAccessSignup: boolean;
 	showChangelogAlert: boolean;
 	hasReadChangelog: boolean;
-	overlaySidebar: boolean;
 	docsTable: string;
+	databaseSearch: string;
 
 	setWindowTitle: (title: string) => void;
+	setPageBreadcrumbs: (items: BreadcrumbItem[]) => void;
+	setToolbarInset: (inset: ReactNode) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
-	setAvailableUpdate: (update: Update, alert: boolean) => void;
-	hideAvailableUpdate: () => void;
+	setAvailableUpdate: (update: Update) => void;
 	setIsLive: (id: string, live: boolean) => void;
 	openTableCreator: () => void;
 	closeTableCreator: () => void;
@@ -29,15 +32,16 @@ export type InterfaceStore = {
 	closeAccessSignup: () => void;
 	showChangelog: () => void;
 	readChangelog: () => void;
-	setOverlaySidebar: (overlaySidebar: boolean) => void;
 	setDocsTable: (table: string) => void;
+	setDatabaseSearch: (search: string) => void;
 };
 
 export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	title: "",
+	pageBreadcrumbs: [],
+	toolbarInset: null,
 	colorScheme: "dark",
 	availableUpdate: null,
-	showAvailableUpdate: false,
 	showConnectionEditor: false,
 	isCreatingConnection: false,
 	editingConnectionId: "",
@@ -51,23 +55,22 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	showGraphqlVariables: false,
 	overlaySidebar: false,
 	docsTable: "",
+	databaseSearch: "",
 
 	setWindowTitle: (title) => set(() => ({ title })),
+
+	setPageBreadcrumbs: (pageBreadcrumbs) => set(() => ({ pageBreadcrumbs })),
+
+	setToolbarInset: (toolbarInset) => set(() => ({ toolbarInset })),
 
 	setColorScheme: (colorScheme) =>
 		set(() => ({
 			colorScheme,
 		})),
 
-	setAvailableUpdate: (availableUpdate, showAvailableUpdate) =>
+	setAvailableUpdate: (availableUpdate) =>
 		set(() => ({
 			availableUpdate,
-			showAvailableUpdate,
-		})),
-
-	hideAvailableUpdate: () =>
-		set(() => ({
-			showAvailableUpdate: false,
 		})),
 
 	openTableCreator: () =>
@@ -134,10 +137,7 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 			hasReadChangelog: true,
 		})),
 
-	setOverlaySidebar: (overlaySidebar) =>
-		set(() => ({
-			overlaySidebar,
-		})),
-
 	setDocsTable: (docsTable) => set(() => ({ docsTable })),
+
+	setDatabaseSearch: (databaseSearch) => set(() => ({ databaseSearch })),
 }));

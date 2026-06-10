@@ -6,7 +6,6 @@ import {
 	Flex,
 	Group,
 	Paper,
-	ScrollArea,
 	SimpleGrid,
 	Stack,
 	Text,
@@ -41,7 +40,9 @@ import { useSearchParams } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { ContextPlanCard } from "~/screens/surrealist/components/ContextPlanCard";
 import type { CloudOrganization } from "~/types";
+import { orgSectionBreadcrumbs } from "~/util/breadcrumbs";
 import { showErrorNotification, showInfo } from "~/util/helpers";
+import { PageContainer } from "../../components/PageContainer";
 
 export interface OrganizationContextCheckoutPageProps {
 	id: string;
@@ -130,225 +131,201 @@ function PageContent({ organisation }: PageContentProps) {
 	}
 
 	return (
-		<CloudAdminGuard organisation={organisation}>
-			<Box
-				flex={1}
-				pos="relative"
-			>
-				<ScrollArea
-					pos="absolute"
-					scrollbars="y"
-					type="scroll"
-					inset={0}
-					mt={18}
-				>
-					<Stack
-						px="xl"
-						mx="auto"
-						maw={1200}
-						pb={68}
-					>
-						<Box>
-							<PageBreadcrumbs
-								items={[
-									{ label: "Surrealist", href: "/" },
-									{
-										label: organisation.name,
-										href: `/o/${organisation.id}`,
-									},
-									{
-										label: "Select plan",
-										href: `/o/${organisation.id}/contexts/plan`,
-									},
-									{ label: "Checkout" },
-								]}
-							/>
-							<PrimaryTitle
-								mt="sm"
-								fz={32}
-							>
-								Checkout
-							</PrimaryTitle>
-						</Box>
+		<>
+			<PageBreadcrumbs
+				items={orgSectionBreadcrumbs(
+					organisation,
+					"contexts",
+					{ label: "Select plan", href: `/o/${organisation.id}/contexts/plan` },
+					{ label: "Checkout" },
+				)}
+			/>
+			<CloudAdminGuard organisation={organisation}>
+				<PageContainer>
+					<Box>
+						<PrimaryTitle
+							mt="sm"
+							fz={32}
+						>
+							Checkout
+						</PrimaryTitle>
+					</Box>
 
-						<Box my="xl">
-							<Flex
-								align="flex-start"
-								direction={{ base: "column-reverse", md: "row" }}
-								gap={{ base: "xl", md: "xl" }}
+					<Box my="xl">
+						<Flex
+							align="flex-start"
+							direction={{ base: "column-reverse", md: "row" }}
+							gap={{ base: "xl", md: "xl" }}
+						>
+							<Box
+								flex={1}
+								miw={0}
 							>
-								<Box
-									flex={1}
-									miw={0}
-								>
-									<Box>
-										<PrimaryTitle>Billing & payment information</PrimaryTitle>
-										<Text className="selectable">{organisation.name}</Text>
-									</Box>
+								<Box>
+									<PrimaryTitle>Billing & payment information</PrimaryTitle>
+									<Text className="selectable">{organisation.name}</Text>
+								</Box>
 
-									{isManaged ? (
+								{isManaged ? (
+									<Alert
+										mt="md"
+										color="orange"
+										icon={<Icon path={iconCreditCard} />}
+										title="Billing provider not supported"
+									>
+										<Text
+											fz="sm"
+											className="selectable"
+										>
+											Spectron context packages are only available for
+											organisations using Stripe billing.{" "}
+											{getBillingProviderAction(organisation)}
+										</Text>
+										<Button
+											mt="md"
+											size="xs"
+											variant="gradient"
+											onClick={() => navigate("/o/create")}
+										>
+											Create new organisation
+										</Button>
+									</Alert>
+								) : !isBillable ? (
+									<>
 										<Alert
 											mt="md"
 											color="orange"
 											icon={<Icon path={iconCreditCard} />}
-											title="Billing provider not supported"
+											title="Billing & payment information required"
 										>
-											<Text
-												fz="sm"
-												className="selectable"
-											>
-												Spectron context packages are only available for
-												organisations using Stripe billing.{" "}
+											<Text className="selectable">
 												{getBillingProviderAction(organisation)}
 											</Text>
-											<Button
-												mt="md"
-												size="xs"
-												variant="gradient"
-												onClick={() => navigate("/o/create")}
-											>
-												Create new organisation
-											</Button>
 										</Alert>
-									) : !isBillable ? (
-										<>
-											<Alert
-												mt="md"
-												color="orange"
-												icon={<Icon path={iconCreditCard} />}
-												title="Billing & payment information required"
-											>
-												<Text className="selectable">
-													{getBillingProviderAction(organisation)}
-												</Text>
-											</Alert>
-											<SimpleGrid
-												mt="xl"
-												spacing="xl"
-												cols={{ xs: 1, md: 2 }}
-											>
-												<BillingDetails organisation={organisation} />
-												<PaymentDetails organisation={organisation} />
-											</SimpleGrid>
-										</>
-									) : (
-										<Paper
-											mt="md"
-											p={4}
-											pr="xl"
+										<SimpleGrid
+											mt="xl"
+											spacing="xl"
+											cols={{ xs: 1, md: 2 }}
 										>
-											<Flex
-												wrap="nowrap"
-												direction={{ base: "column", sm: "row" }}
-												align={{ base: "start", sm: "center" }}
+											<BillingDetails organisation={organisation} />
+											<PaymentDetails organisation={organisation} />
+										</SimpleGrid>
+									</>
+								) : (
+									<Paper
+										mt="md"
+										p={4}
+										pr="xl"
+									>
+										<Flex
+											wrap="nowrap"
+											direction={{ base: "column", sm: "row" }}
+											align={{ base: "start", sm: "center" }}
+										>
+											<Group
+												w="100%"
+												p="md"
+												gap="lg"
+												align="start"
 											>
-												<Group
-													w="100%"
-													p="md"
-													gap="lg"
-													align="start"
-												>
-													<Icon path={iconCreditCard} />
-													<Stack gap="xs">
-														<Text
-															fw={600}
-															c="bright"
-														>
-															Billing & payment information available
-														</Text>
-														<Text
-															fz="xs"
-															className="selectable"
-														>
-															Your billing and payment information is
-															already set up for this organisation.
-														</Text>
-													</Stack>
-													<Spacer />
-													<Button
-														mt="md"
-														size="xs"
-														color="obsidian"
-														variant="light"
-														rightSection={
-															<Icon
-																size="sm"
-																path={iconArrowUpRight}
-															/>
-														}
-														onClick={() =>
-															navigate(
-																`/o/${organisation.id}/billing`,
-															)
-														}
+												<Icon path={iconCreditCard} />
+												<Stack gap="xs">
+													<Text
+														fw={600}
+														c="bright"
 													>
-														Update billing details
-													</Button>
-												</Group>
-											</Flex>
-										</Paper>
-									)}
+														Billing & payment information available
+													</Text>
+													<Text
+														fz="xs"
+														className="selectable"
+													>
+														Your billing and payment information is
+														already set up for this organisation.
+													</Text>
+												</Stack>
+												<Spacer />
+												<Button
+													mt="md"
+													size="xs"
+													color="obsidian"
+													variant="light"
+													rightSection={
+														<Icon
+															size="sm"
+															path={iconArrowUpRight}
+														/>
+													}
+													onClick={() =>
+														navigate(`/o/${organisation.id}/billing`)
+													}
+												>
+													Update billing details
+												</Button>
+											</Group>
+										</Flex>
+									</Paper>
+								)}
 
-									{!isManaged && !!selectedPackage && (
-										<Box mt="xl">
-											<TextInput
-												label="Coupon code"
-												placeholder="Promotional code"
-												value={couponCode}
-												onChange={setCouponCode}
-												maw={420}
-											/>
-										</Box>
-									)}
+								{!isManaged && !!selectedPackage && (
+									<Box mt="xl">
+										<TextInput
+											label="Coupon code"
+											placeholder="Promotional code"
+											value={couponCode}
+											onChange={setCouponCode}
+											maw={420}
+										/>
+									</Box>
+								)}
 
-									<Divider my={36} />
+								<Divider my={36} />
 
-									<Group>
-										<Button
-											color="obsidian"
-											variant="light"
-											onClick={() =>
-												navigate(
-													`/o/${organisation.id}/contexts/plan${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`,
-												)
-											}
-										>
-											Back
-										</Button>
-										<Button
-											variant="gradient"
-											disabled={!canConfirm}
-											loading={isConfirming}
-											onClick={handleConfirm}
-										>
-											Confirm subscription
-										</Button>
-									</Group>
-								</Box>
+								<Group>
+									<Button
+										color="obsidian"
+										variant="light"
+										onClick={() =>
+											navigate(
+												`/o/${organisation.id}/contexts/plan${redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""}`,
+											)
+										}
+									>
+										Back
+									</Button>
+									<Button
+										variant="gradient"
+										disabled={!canConfirm}
+										loading={isConfirming}
+										onClick={handleConfirm}
+									>
+										Confirm subscription
+									</Button>
+								</Group>
+							</Box>
 
-								<Box
-									maw={420}
-									miw={{ base: "100%", md: 320 }}
-									w={{ base: "100%", md: "auto" }}
-									style={{ flexShrink: 0 }}
-								>
-									{selectedPackage ? (
-										<ContextPlanCard pkg={selectedPackage} />
-									) : (
-										<Text
-											c="red"
-											className="selectable"
-										>
-											Selected package not found. Please go back and select a
-											valid package.
-										</Text>
-									)}
-								</Box>
-							</Flex>
-						</Box>
-					</Stack>
-				</ScrollArea>
-			</Box>
-		</CloudAdminGuard>
+							<Box
+								maw={420}
+								miw={{ base: "100%", md: 320 }}
+								w={{ base: "100%", md: "auto" }}
+								style={{ flexShrink: 0 }}
+							>
+								{selectedPackage ? (
+									<ContextPlanCard pkg={selectedPackage} />
+								) : (
+									<Text
+										c="red"
+										className="selectable"
+									>
+										Selected package not found. Please go back and select a
+										valid package.
+									</Text>
+								)}
+							</Box>
+						</Flex>
+					</Box>
+				</PageContainer>
+			</CloudAdminGuard>
+		</>
 	);
 }

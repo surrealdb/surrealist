@@ -38,9 +38,7 @@ export function AuthenticationView() {
 	return (
 		<Box
 			h="100%"
-			pr="lg"
-			pb="lg"
-			pl={{ base: "lg", md: 0 }}
+			p="sm"
 		>
 			<PanelGroup direction="horizontal">
 				<Panel minSize={15}>

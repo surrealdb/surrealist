@@ -7,51 +7,90 @@ export function DocsAuthTokens({ language }: TopicProps) {
 	const snippets = useMemo<Snippets>(
 		() => ({
 			js: `
-			await db.authenticate("...");
-		`,
+// Sign in returns a token pair (access + refresh)
+const tokens = await db.signin({
+	username: 'root',
+	password: 'secret',
+});
+
+// Authenticate a future session with an existing token
+await db.authenticate(tokens.access);
+
+// Invalidate the current session
+await db.invalidate();
+`,
 			rust: `
-			use surrealdb::opt::auth::Jwt;
+use surrealdb::opt::auth::Jwt;
 
-			let jwt = Jwt::from("...");
-			db.authenticate(jwt).await?;
-		`,
+let jwt = db.signin(Root {
+	username: "root".into(),
+	password: "secret".into(),
+}).await?;
+
+// Authenticate with an existing token
+db.authenticate(jwt).await?;
+
+// Invalidate the current session
+db.invalidate().await?;
+`,
 			py: `
-		db.authenticate("jwt")
-		`,
+tokens = await db.signin({"username": "root", "password": "secret"})
+await db.authenticate(tokens["access"])
+await db.invalidate()
+`,
 			go: `
-		db.Authenticate("jwt")
-		`,
-			csharp: `
-		// Sign in or sign up as a scoped user
-		Jwt jwt = await db.SignUp(authParams);
+token, err := db.SignIn(ctx, &surrealdb.Auth{
+	Username: "root",
+	Password: "secret",
+})
 
-		await db.Authenticate(jwt);
-		`,
+err = db.Authenticate(ctx, token)
+err = db.Invalidate(ctx)
+`,
+			csharp: `
+var tokens = await db.SignIn(new RootAuth
+{
+	Username = "root",
+	Password = "secret",
+});
+
+await db.Authenticate(tokens.Access);
+await db.Invalidate();
+`,
 			java: `
-		// Connect to a local endpoint
-		driver.authenticate(token)
-		`,
+import com.surrealdb.signin.RootCredential;
+import com.surrealdb.signin.Token;
+
+Token token = db.signin(new RootCredential("root", "secret"));
+
+// Re-authenticate with a stored access token
+db.authenticate(token.getAccess());
+
+// Invalidate the current session
+db.invalidate();
+`,
 			php: `
-		$db->authenticate($token);
-		`,
+$tokens = $db->signin(["username" => "root", "password" => "secret"]);
+$db->authenticate($tokens["access"]);
+$db->invalidate();
+`,
 		}),
 		[],
 	);
 
 	return (
 		<Article title="Tokens">
-			<div>
-				<p>
-					When signin in or up to SurrealDB, you receive a JWT token. This JWT, for the
-					time it lives, can be used to authenticate future sessions to SurrealDB. As an
-					integrator, you are expected yourself to persist this token, if you need to
-					retrieve it at a later moment in time.
-				</p>
-			</div>
+			<Box>
+				<Box component="p">
+					Signing in or signing up returns a JWT token pair. Persist the access token to
+					restore sessions, and use <code>authenticate</code> to apply it to a connection.
+					Call <code>invalidate</code> to end the current session.
+				</Box>
+			</Box>
 			<Box>
 				<DocsPreview
 					language={language}
-					title="Authenticate with an issued token"
+					title="Authenticate with a token"
 					values={snippets}
 				/>
 			</Box>

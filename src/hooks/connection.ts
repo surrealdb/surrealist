@@ -20,8 +20,10 @@ import {
 } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { fuzzyMatch } from "~/util/helpers";
-import { useConnectionAndView } from "./routing";
+import { useConnectionAndView, useConnectionFromRoute } from "./routing";
 import { useStable } from "./stable";
+
+export type ConnectionType = "cloud" | "local" | "sandbox";
 
 /**
  * Returns whether Surrealist is connected to a database
@@ -52,7 +54,7 @@ export function useConnectionList() {
  * @param selector A function to select fields from the connection
  */
 export function useConnection<T>(selector: (con?: Connection) => T): T {
-	const [connection] = useConnectionAndView();
+	const connection = useConnectionFromRoute();
 
 	return useConfigStore(
 		useShallow((s) => {
@@ -76,6 +78,28 @@ export function useConnections<T>(selector: (con: Connection) => T): T[] {
 			return s.connections.map(selector);
 		}),
 	);
+}
+
+/**
+ * Returns the type of the current connection
+ */
+export function useConnectionType() {
+	const [connectionId, instanceId] = useConnection((c) => [
+		c?.id ?? "",
+		c?.authentication.cloudInstance ?? "",
+	]);
+
+	switch (true) {
+		case !!instanceId: {
+			return "cloud";
+		}
+		case connectionId === SANDBOX: {
+			return "sandbox";
+		}
+		default: {
+			return "local";
+		}
+	}
 }
 
 /**
@@ -279,7 +303,7 @@ export function useConnectionOverview({
 /**
  * Filters connections based on search term and selected labels with filtering modes
  */
-function filterConnections(
+export function filterConnections(
 	list: Connection[],
 	search: string,
 	labels: string[],
