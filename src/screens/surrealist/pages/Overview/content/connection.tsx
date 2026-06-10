@@ -119,7 +119,10 @@ export function StartConnection({
 						flex={1}
 						mt={-3}
 					>
-						<Group wrap="nowrap">
+						<Group
+							wrap="nowrap"
+							miw={0}
+						>
 							<ThemeIcon
 								size="xl"
 								variant="light"
@@ -129,7 +132,10 @@ export function StartConnection({
 									path={isSandbox ? iconSurreal : USER_ICONS[connection.icon]}
 								/>
 							</ThemeIcon>
-							<Stack gap={0}>
+							<Stack
+								gap={0}
+								miw={0}
+							>
 								<Group gap="sm">
 									<Text
 										c="bright"
@@ -155,6 +161,7 @@ export function StartConnection({
 								<Text
 									truncate
 									className="selectable"
+									title={target}
 								>
 									{isSandbox ? "Your personal offline playground" : target}
 								</Text>
