@@ -192,7 +192,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 				<Group gap="xs">
 					<Button
 						component="a"
-						href="https://surrealdb.com/docs/context"
+						href="https://surrealdb.com/docs/spectron"
 						target="_blank"
 						rel="noopener noreferrer"
 						variant="subtle"

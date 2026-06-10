@@ -355,24 +355,24 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 		const links: DocLinkProps[] = [
 			{
 				label: "SurrealDB Cloud documentation",
-				href: "https://surrealdb.com/docs/cloud",
+				href: "https://surrealdb.com/docs/manage/cloud",
 			},
 			{
 				label: "Connecting to your instance",
-				href: "https://surrealdb.com/docs/cloud/connecting",
+				href: "https://surrealdb.com/docs/build/deployment/surrealdb-cloud/connecting",
 			},
 		];
 
 		if (showContexts) {
 			links.push({
 				label: "Spectron Context documentation",
-				href: "https://surrealdb.com/docs/context",
+				href: "https://surrealdb.com/docs/spectron",
 			});
 		}
 
 		links.push({
 			label: "SDK reference",
-			href: "https://surrealdb.com/docs/sdk",
+			href: "https://surrealdb.com/docs",
 		});
 
 		return links;

@@ -96,7 +96,7 @@ $db->query('
 				<Box component="p">
 					Analyzers configure how text is tokenised and filtered for full-text search.
 					Combine them with <code>FULLTEXT ANALYZER</code> indexes. See the{" "}
-					<Link href="https://surrealdb.com/docs/learn/data-models/full-text-search">
+					<Link href="https://surrealdb.com/docs/learn/data-models/full-text-search/overview">
 						full-text search guide
 					</Link>{" "}
 					for more.

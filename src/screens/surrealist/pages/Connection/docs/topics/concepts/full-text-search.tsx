@@ -156,7 +156,7 @@ $results = $db->query('
 					Full-text search is ACID-compliant. Define an analyzer, create a{" "}
 					<code>FULLTEXT ANALYZER</code> index, then query with the <code>@n@</code>{" "}
 					operator and <code>search::score()</code>.{" "}
-					<Link href="https://surrealdb.com/docs/learn/data-models/full-text-search">
+					<Link href="https://surrealdb.com/docs/learn/data-models/full-text-search/overview">
 						Learn more
 					</Link>
 				</Box>

@@ -216,7 +216,7 @@ function PageContent({ organisation }: PageContentProps) {
 							</Button>
 							<Button
 								component="a"
-								href="https://surrealdb.com/docs/build/spectron"
+								href="https://surrealdb.com/docs/spectron"
 								target="_blank"
 								rel="noopener noreferrer"
 								variant="subtle"

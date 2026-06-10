@@ -70,7 +70,7 @@ export function AboutTab() {
 				<LearnMore href="https://github.com/surrealdb/surrealist/">
 					GitHub Repository
 				</LearnMore>
-				<LearnMore href="https://surrealdb.com/docs/surrealist">
+				<LearnMore href="https://surrealdb.com/docs/explore/surrealist">
 					Surrealist Documentation
 				</LearnMore>
 			</Stack>

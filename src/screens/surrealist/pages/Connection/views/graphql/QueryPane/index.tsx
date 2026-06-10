@@ -237,7 +237,7 @@ export function QueryPane({
 					<Stack>
 						Visit the SurrealDB documentation to learn how to enable GraphQL on your
 						instance
-						<Link href="https://surrealdb.com/docs/surrealdb/querying/graphql/surrealist">
+						<Link href="https://surrealdb.com/docs/learn/querying/graphql/via-surrealist">
 							<Button
 								color="obsidian"
 								variant="light"

@@ -145,7 +145,7 @@ function NewDatabaseModal() {
 
 				<Group>
 					<LearnMore
-						href="https://surrealdb.com/docs/surrealdb/introduction/concepts/database"
+						href="https://surrealdb.com/docs/learn/schema-management/multi-tenancy/namespace-and-database-architecture"
 						flex={1}
 					>
 						Learn more about databases

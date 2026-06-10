@@ -282,7 +282,7 @@ export function AccessEditorModal({
 								height={96}
 							/>
 
-							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#record-users">
+							<LearnMore href="https://surrealdb.com/docs/learn/security/authentication/authentication#record-users">
 								Learn more about sign up and sign in queries
 							</LearnMore>
 						</Stack>
@@ -308,7 +308,7 @@ export function AccessEditorModal({
 								readOnly={!!existing} // NOTE temp
 							/>
 
-							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
+							<LearnMore href="https://surrealdb.com/docs/learn/security/authentication/authentication#expiration">
 								Learn more about session and token durations
 							</LearnMore>
 						</Stack>
