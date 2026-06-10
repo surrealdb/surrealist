@@ -1,6 +1,11 @@
 import { isFunction, shake } from "radash";
 import type { Platform, SurrealistConfig, UrlTarget } from "~/types";
-import { createFileDefinition, openAndReadFiles, openAndWriteFile } from "~/util/file-system";
+import {
+	createFileDefinition,
+	filtersToAccept,
+	openAndReadFiles,
+	openAndWriteFile,
+} from "~/util/file-system";
 import * as idxdb from "~/util/idxdb";
 import { CONFIG_KEY } from "~/util/storage";
 import type { FileFilter, SurrealistAdapter } from "./base";
@@ -131,15 +136,30 @@ export class BrowserAdapter implements SurrealistAdapter {
 		el.type = "file";
 		el.style.display = "none";
 
+		if (filters.length > 0) {
+			el.accept = filtersToAccept(filters);
+		}
+
+		if (multiple) {
+			el.multiple = true;
+		}
+
+		document.body.append(el);
 		el.click();
 
 		return new Promise((resolve, reject) => {
 			el.addEventListener("change", async () => {
 				resolve([...(el.files ?? [])]);
+				el.remove();
 			});
 
 			el.addEventListener("error", async () => {
 				reject(new Error("Failed to read file"));
+				el.remove();
+			});
+
+			el.addEventListener("cancel", () => {
+				el.remove();
 			});
 		});
 	}

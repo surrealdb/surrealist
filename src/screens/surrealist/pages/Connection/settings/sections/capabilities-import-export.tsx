@@ -16,14 +16,14 @@ export interface CapabilitiesImportExportProps {
 	instance: CloudInstance;
 }
 
-interface ImportExportCardProps {
+export interface ImportExportCardProps {
 	title: string;
 	description: string;
 	icon: string;
 	onClick: () => void;
 }
 
-function ImportExportCard({ title, description, icon, onClick }: ImportExportCardProps) {
+export function ImportExportCard({ title, description, icon, onClick }: ImportExportCardProps) {
 	const isLight = useIsLight();
 
 	return (
@@ -77,6 +77,14 @@ export function CapabilitiesImportExport({ instance }: CapabilitiesImportExportP
 			);
 
 			if (!file) return;
+
+			if (!file.name.toLowerCase().endsWith(".json")) {
+				showErrorNotification({
+					title: "Import failed",
+					content: "Capabilities configuration must be a JSON file",
+				});
+				return;
+			}
 
 			const text = await file.text();
 			const parsed = JSON.parse(text);

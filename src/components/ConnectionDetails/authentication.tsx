@@ -53,7 +53,7 @@ export function ConnectionAuthDetails({ value, onChange }: ConnectionAuthDetails
 	});
 
 	return (
-		<Stack maw={750}>
+		<Stack>
 			<SegmentedControl
 				mb="sm"
 				value={value.authentication.mode}

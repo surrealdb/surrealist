@@ -64,10 +64,9 @@ export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
 	return (
 		<Stack>
 			<PrimaryTitle fz={32}>Databases</PrimaryTitle>
-
 			<Section
-				title="Active selection"
-				description="The namespace and database used for queries and explorer views"
+				title="Namespaces and databases"
+				description="Manage, activate, or remove namespaces and databases on this connection"
 				rightSection={
 					<Button
 						size="xs"
@@ -79,36 +78,6 @@ export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
 						Create database
 					</Button>
 				}
-			>
-				<Paper p="md">
-					<Group gap="xl">
-						<Stack gap={4}>
-							<Text
-								fz="xs"
-								fw={600}
-								tt="uppercase"
-							>
-								Namespace
-							</Text>
-							<Text className="selectable">{namespace || "None selected"}</Text>
-						</Stack>
-						<Stack gap={4}>
-							<Text
-								fz="xs"
-								fw={600}
-								tt="uppercase"
-							>
-								Database
-							</Text>
-							<Text className="selectable">{database || "None selected"}</Text>
-						</Stack>
-					</Group>
-				</Paper>
-			</Section>
-
-			<Section
-				title="Namespaces and databases"
-				description="Manage, activate, or remove namespaces and databases on this connection"
 			>
 				<Paper p="md">
 					<TextInput
@@ -271,14 +240,6 @@ function DatabaseRow({
 					gap="xs"
 					justify="flex-end"
 				>
-					{isActive && (
-						<Text
-							fz="xs"
-							c="violet"
-						>
-							Active
-						</Text>
-					)}
 					<ActionButton
 						variant="subtle"
 						color="red"

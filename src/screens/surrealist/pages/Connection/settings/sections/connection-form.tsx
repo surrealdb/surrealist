@@ -1,4 +1,4 @@
-import { Box, Button, Group, Stack, Text } from "@mantine/core";
+import { Button, Group, Stack } from "@mantine/core";
 import { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { ConnectionAddressDetails } from "~/components/ConnectionDetails/address";
@@ -105,28 +105,5 @@ export function ConnectionForm({ value }: ConnectionFormProps) {
 				</Group>
 			</Stack>
 		</Form>
-	);
-}
-
-export interface ConnectionDetailsReadoutProps {
-	connection: Connection;
-}
-
-export function ConnectionDetailsReadout({ connection }: ConnectionDetailsReadoutProps) {
-	return (
-		<Box>
-			<Text
-				fz="sm"
-				fw={600}
-			>
-				Connection ID
-			</Text>
-			<Text
-				className="selectable"
-				mt={4}
-			>
-				{connection.id}
-			</Text>
-		</Box>
 	);
 }

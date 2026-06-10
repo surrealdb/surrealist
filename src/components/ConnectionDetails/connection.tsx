@@ -24,10 +24,7 @@ export function ConnectionNameDetails({ value, onChange }: ConnectionNameDetails
 	};
 
 	return (
-		<Group
-			gap="md"
-			maw={500}
-		>
+		<Group gap="md">
 			<Box>
 				<Popover
 					opened={showIcons}

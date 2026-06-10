@@ -5,6 +5,7 @@ import {
 	Checkbox,
 	Group,
 	Loader,
+	Modal,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
@@ -33,13 +34,15 @@ import {
 	iconWrench,
 } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SqlExportOptions } from "surrealdb";
 import { adapter, isBrowser } from "~/adapter";
 import { Option } from "~/components/Option";
+import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { SURQL_FILTER } from "~/constants";
+import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useMinimumVersion } from "~/hooks/connection";
-import { useConnectionSettingsNavigator, useIntent } from "~/hooks/routing";
+import { useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import {
@@ -48,6 +51,7 @@ import {
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { fuzzyMatch, slugify } from "~/util/helpers";
+import { syncConnectionSchema } from "~/util/schema";
 
 function toggleSet<T>(set: Set<T>, item: T) {
 	if (set.has(item)) {
@@ -102,12 +106,14 @@ export interface DatabaseExportPanelProps {
 	exportV3?: boolean;
 	selectAllTables?: boolean;
 	selectAllResources?: boolean;
+	onClose?: () => void;
 }
 
 export function DatabaseExportPanel({
 	exportV3 = false,
 	selectAllTables = false,
 	selectAllResources = false,
+	onClose,
 }: DatabaseExportPanelProps) {
 	const tables = useTableNames();
 	const name = useConnection((c) => c?.name ?? "");
@@ -135,6 +141,8 @@ export function DatabaseExportPanel({
 	}, [selectAllTables, exportTables, tables]);
 
 	const handleExport = useStable(async () => {
+		onClose?.();
+
 		const messageId = showNotification({
 			title: "Exporting database",
 			message: "Please wait while the database is exported",
@@ -416,8 +424,19 @@ export function DatabaseExportPanel({
 				</>
 			)}
 
-			<Group justify="flex-end">
+			<Group mt="xs">
+				{onClose && (
+					<Button
+						flex={1}
+						color="obsidian"
+						variant="light"
+						onClick={onClose}
+					>
+						Cancel
+					</Button>
+				)}
 				<Button
+					flex={onClose ? 1 : undefined}
 					onClick={handleExport}
 					variant="gradient"
 					disabled={isEmpty}
@@ -431,19 +450,36 @@ export function DatabaseExportPanel({
 }
 
 export function DataExportModal() {
-	const [connectionId] = useConnection((c) => [c?.id]);
-	const navigateSettings = useConnectionSettingsNavigator();
+	const [isOpen, openedHandle] = useBoolean();
+	const [exportV3, setExportV3] = useState(false);
+	const [selectAllTables, setSelectAllTables] = useState(false);
+	const [selectAllResources, setSelectAllResources] = useState(false);
+	const [panelKey, setPanelKey] = useState(0);
 
-	useIntent("export-database", ({ v3, tables, resources }) => {
-		if (!connectionId) return;
+	useIntent("export-database", async ({ v3, tables, resources }) => {
+		await syncConnectionSchema();
 
-		navigateSettings(connectionId, "import-export", {
-			mode: "export",
-			v3: v3 != null && String(v3) === "true" ? "true" : undefined,
-			tables: tables === "*" ? "*" : undefined,
-			resources: resources === "*" ? "*" : undefined,
-		});
+		setExportV3(v3 === "true");
+		setSelectAllTables(tables === "*");
+		setSelectAllResources(resources === "*");
+		setPanelKey((key) => key + 1);
+		openedHandle.open();
 	});
 
-	return null;
+	return (
+		<Modal
+			opened={isOpen}
+			onClose={openedHandle.close}
+			size="xl"
+			title={<PrimaryTitle>Export database</PrimaryTitle>}
+		>
+			<DatabaseExportPanel
+				key={panelKey}
+				exportV3={exportV3}
+				selectAllTables={selectAllTables}
+				selectAllResources={selectAllResources}
+				onClose={openedHandle.close}
+			/>
+		</Modal>
+	);
 }
