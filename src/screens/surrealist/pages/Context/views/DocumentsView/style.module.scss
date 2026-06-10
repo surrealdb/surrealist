@@ -1,0 +1,55 @@
+.file-card {
+	height: 100%;
+	transition: border-color 180ms ease, transform 180ms ease;
+
+	&:hover {
+		transform: translateY(-1px);
+		border-color: color-mix(in srgb, var(--mantine-color-violet-4) 45%, transparent);
+	}
+}
+
+.crumb {
+	transition: color 120ms ease;
+
+	&:hover {
+		color: var(--mantine-color-bright);
+	}
+}
+
+.snippet {
+	color: var(--mantine-color-text);
+	line-height: 1.55;
+}
+
+.mono {
+	font-family: var(--mantine-font-family-monospace);
+	font-size: var(--mantine-font-size-xs);
+}
+
+.drop-zone {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 32px 24px;
+	border-radius: var(--mantine-radius-md);
+	border: 1px dashed var(--mantine-color-obsidian-5);
+	background: color-mix(in srgb, var(--mantine-color-obsidian-6) 50%, transparent);
+	transition: border-color 150ms ease, background 150ms ease;
+
+	&:hover,
+	&[data-dragging] {
+		border-color: color-mix(in srgb, var(--mantine-color-violet-4) 60%, transparent);
+		background: color-mix(in srgb, var(--mantine-color-violet-6) 12%, transparent);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.file-card {
+		transition: none;
+	}
+
+	.file-card:hover {
+		transform: none;
+	}
+}
