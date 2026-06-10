@@ -51,7 +51,7 @@ function NewDatabaseModal() {
 	const [database, setDatabase] = useInputState("");
 	const [description, setDescription] = useInputState("");
 
-	const [debouncedDatabase] = useDebouncedValue(database, 150);
+	const [debouncedDatabase] = useDebouncedValue(database, 300);
 
 	const handleClose = useStable(() => {
 		closeModal("new-database");
@@ -74,6 +74,8 @@ function NewDatabaseModal() {
 
 	const submitMutation = useMutation({
 		mutationFn: async () => {
+			if (existsQuery.isPending) return;
+
 			await executeQuery(
 				`
 				DEFINE NAMESPACE IF NOT EXISTS ${escapeIdent(namespace)};
@@ -157,12 +159,7 @@ function NewDatabaseModal() {
 					</Button>
 					<Button
 						loading={submitMutation.isPending}
-						disabled={
-							!namespace ||
-							!debouncedDatabase ||
-							existsQuery.isPending ||
-							existsQuery.data
-						}
+						disabled={!namespace || !debouncedDatabase || existsQuery.data}
 						variant="gradient"
 						type="submit"
 					>

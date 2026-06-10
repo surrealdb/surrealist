@@ -1,4 +1,4 @@
-import { Box, Center, Flex, Group, Loader, LoadingOverlay, Stack } from "@mantine/core";
+import { Box, Center, Flex, Loader, LoadingOverlay, Stack } from "@mantine/core";
 import { memo } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
@@ -118,14 +118,9 @@ export function SurrealistScreen() {
 							pos="relative"
 							gap={0}
 						>
-							<Group
-								gap="md"
-								align="center"
-								wrap="nowrap"
-								className={classes.toolbar}
-							>
+							<Box className={classes.toolbar}>
 								<SurrealistToolbar />
-							</Group>
+							</Box>
 
 							<Box
 								flex={1}

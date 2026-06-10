@@ -12,7 +12,6 @@ export function ToolbarBreadcrumbs() {
 
 	return (
 		<Breadcrumbs
-			miw={0}
 			separator={
 				<Text
 					opacity={0.3}

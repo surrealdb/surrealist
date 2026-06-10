@@ -65,6 +65,8 @@ $sidebar-wide: 250px;
 }
 
 .toolbar {
+	container-type: inline-size;
+	container-name: toolbar;
 	z-index: 1;
 	padding: var(--mantine-spacing-md);
 
