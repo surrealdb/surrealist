@@ -18,17 +18,17 @@ import { useUpdateInstanceCapabilitiesMutation } from "~/cloud/mutations/capabil
 import { useStable } from "~/hooks/stable";
 import { CloudInstance, CloudInstanceCapabilities } from "~/types";
 import { filterOptions, parseCapabilities, transformCapabilities } from "~/util/capabilities";
-import { BooleanCapability } from "../capabilities/boolean";
-import { FixedRuleSetCapability } from "../capabilities/fixed-rule-set";
-import { FreeRuleSetCapability } from "../capabilities/free-rule-set";
+import classes from "../style.module.scss";
+import { BooleanCapability } from "./boolean";
+import { FixedRuleSetCapability } from "./fixed-rule-set";
+import { FreeRuleSetCapability } from "./free-rule-set";
 import {
 	ARBITRARY_QUERY_TARGETS,
 	ENDPOINT_TARGETS,
 	EXPERIMENT_TARGETS,
 	RPC_TARGETS,
-} from "../capabilities/registry";
-import { SupportCapability } from "../capabilities/support";
-import classes from "../style.module.scss";
+} from "./registry";
+import { SupportCapability } from "./support";
 
 export interface ConfigurationCapabilitiesProps {
 	instance: CloudInstance;

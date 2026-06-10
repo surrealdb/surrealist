@@ -5,7 +5,7 @@ import { Tile } from "~/components/Tile";
 import { useStable } from "~/hooks/stable";
 import { CloudInstance } from "~/types";
 import { openSurrealChangelog } from "~/util/cloud";
-import classes from "../style.module.scss";
+import classes from "./style.module.scss";
 
 export interface ConfigurationVersionProps {
 	instance: CloudInstance;

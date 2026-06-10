@@ -18,7 +18,7 @@ import { useCloudBackupPolicyQuery } from "~/cloud/queries/backup-policy";
 import { useStable } from "~/hooks/stable";
 import { CloudBackupPolicyResponse, CloudInstance, CloudUpdateBackupPolicyRequest } from "~/types";
 import { dispatchIntent } from "~/util/intents";
-import classes from "./style.module.scss";
+import classes from "../style.module.scss";
 
 export interface BackupRetentionProps {
 	instance: CloudInstance;

@@ -8,8 +8,8 @@ import { useCloudBackupsQuery } from "~/cloud/queries/backups";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
-import { BackupRetention } from "../../views/dashboard/BackupsDrawer/BackupRetention";
-import { InstanceBackup } from "../../views/dashboard/BackupsDrawer/InstanceBackup";
+import { BackupRetention } from "../sections/backups/BackupRetention";
+import { InstanceBackup } from "../sections/backups/InstanceBackup";
 import type { ConnectionSettingsTabProps } from "../types";
 
 export function ConnectionBackupsTab({

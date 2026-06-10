@@ -4,9 +4,9 @@ import { hasOrganizationRoles, INSTANCE_CATEGORY_PLANS, ORG_ROLES_ADMIN } from "
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
-import { ConfigurationNodes } from "../../views/dashboard/UpgradeDrawer/configs/nodes";
-import { ConfigurationStorage } from "../../views/dashboard/UpgradeDrawer/configs/storage";
-import { ConfigurationInstanceType } from "../../views/dashboard/UpgradeDrawer/configs/type";
+import { ConfigurationNodes } from "../sections/compute/nodes";
+import { ConfigurationStorage } from "../sections/compute/storage";
+import { ConfigurationInstanceType } from "../sections/compute/type";
 import type { ConnectionSettingsTabProps } from "../types";
 
 export function ConnectionComputeTab({

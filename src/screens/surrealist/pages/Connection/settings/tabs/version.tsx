@@ -4,7 +4,7 @@ import { useUpdateInstanceVersionMutation } from "~/cloud/mutations/version";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useStable } from "~/hooks/stable";
-import { ConfigurationVersion } from "../../views/dashboard/ConfiguratorDrawer/configs/version";
+import { ConfigurationVersion } from "../sections/version";
 import type { ConnectionSettingsTabProps } from "../types";
 
 export function ConnectionVersionTab({ instanceQuery }: ConnectionSettingsTabProps) {

@@ -3,8 +3,8 @@ import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import type { CloudInstance, CloudOrganization } from "~/types";
-import { ConfigurationCapabilities } from "../../views/dashboard/ConfiguratorDrawer/configs/capabilities";
-import { ConfigurationNetwork } from "../../views/dashboard/ConfiguratorDrawer/configs/network";
+import { ConfigurationCapabilities } from "../sections/capabilities/capabilities";
+import { ConfigurationNetwork } from "../sections/capabilities/network";
 import type { ConnectionSettingsTabProps } from "../types";
 
 export function ConnectionCapabilitiesTab({
