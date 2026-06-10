@@ -1,4 +1,4 @@
-import { Button, Group, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Button, Group, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Icon, iconHistory } from "@surrealdb/ui";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -86,10 +86,7 @@ export function ConnectionBackupsTab({
 				)}
 
 				{isAdmin && backups && backups.length > 0 && (
-					<Group
-						mt="md"
-						justify="flex-end"
-					>
+					<Group mt="md">
 						<Button
 							variant="gradient"
 							disabled={!selected}
@@ -105,12 +102,10 @@ export function ConnectionBackupsTab({
 				title="Retention policy"
 				description="Configure how long backups are retained"
 			>
-				<Paper p="md">
-					<BackupRetention
-						instance={instance}
-						onClose={() => {}}
-					/>
-				</Paper>
+				<BackupRetention
+					instance={instance}
+					variant="page"
+				/>
 			</Section>
 		</Stack>
 	);

@@ -22,7 +22,13 @@ import classes from "./style.module.scss";
 
 export interface BackupRetentionProps {
 	instance: CloudInstance;
-	onClose: () => void;
+	/**
+	 * Layout variant. "drawer" (default) fills its parent height with a scroll
+	 * area and a Close/Apply footer. "page" renders as a plain stack suitable
+	 * for embedding within a settings page section.
+	 */
+	variant?: "drawer" | "page";
+	onClose?: () => void;
 }
 
 interface BackupPolicyFormValues {
@@ -60,7 +66,7 @@ function buildUpdateRequest(
 	return request;
 }
 
-export function BackupRetention({ instance, onClose }: BackupRetentionProps) {
+export function BackupRetention({ instance, variant = "drawer", onClose }: BackupRetentionProps) {
 	const { data: policy, isPending } = useCloudBackupPolicyQuery(instance.id);
 	const [values, setValues] = useState<BackupPolicyFormValues | null>(null);
 	const [initialValues, setInitialValues] = useState<BackupPolicyFormValues | null>(null);
@@ -104,7 +110,7 @@ export function BackupRetention({ instance, onClose }: BackupRetentionProps) {
 		}
 
 		confirmUpdate(request);
-		onClose();
+		onClose?.();
 	});
 
 	const handleContactSales = useStable(() => {
@@ -116,6 +122,87 @@ export function BackupRetention({ instance, onClose }: BackupRetentionProps) {
 			message: `Hello! I would like to discuss backup retention options for my instance (ID: ${instance.id}). Could you help me explore additional retention tiers? Thanks!`,
 		});
 	});
+
+	const applyDisabled = !hasEditableTier || isUnchanged || isPending || !values;
+
+	const tierFields = policy && values && (
+		<>
+			<BackupTierInput
+				title="Daily backups"
+				description="Automated daily backups retained for the specified number of days."
+				value={values.daily_retention_days}
+				min={policy.daily.min_days}
+				max={policy.daily.max_days}
+				unit="days"
+				editable={policy.daily.editable}
+				onContact={handleContactSales}
+				onChange={(daily_retention_days) =>
+					setValues((current) =>
+						current ? { ...current, daily_retention_days } : current,
+					)
+				}
+			/>
+
+			<BackupTierInput
+				title="Weekly backups"
+				description="Backups taken each Sunday and retained for the specified number of weeks."
+				value={values.weekly_retention_weeks}
+				min={policy.weekly.min_weeks}
+				max={policy.weekly.max_weeks}
+				unit="weeks"
+				editable={policy.weekly.editable}
+				onContact={handleContactSales}
+				onChange={(weekly_retention_weeks) =>
+					setValues((current) =>
+						current ? { ...current, weekly_retention_weeks } : current,
+					)
+				}
+			/>
+
+			<BackupTierInput
+				title="Monthly backups"
+				description="Backups taken on the 1st of each month and retained for the specified number of months."
+				value={values.monthly_retention_months}
+				min={policy.monthly.min_months}
+				max={policy.monthly.max_months}
+				unit="months"
+				editable={policy.monthly.editable}
+				onContact={handleContactSales}
+				onChange={(monthly_retention_months) =>
+					setValues((current) =>
+						current ? { ...current, monthly_retention_months } : current,
+					)
+				}
+			/>
+		</>
+	);
+
+	if (variant === "page") {
+		return (
+			<Stack gap="xl">
+				{isPending || !policy || !values ? (
+					<Center py="xl">
+						<Loader type="dots" />
+					</Center>
+				) : (
+					<>
+						{tierFields}
+
+						<Group mt="xl">
+							<Button
+								type="submit"
+								variant="gradient"
+								disabled={applyDisabled}
+								onClick={handleUpdate}
+							>
+								Apply retention
+							</Button>
+						</Group>
+					</>
+				)}
+			</Stack>
+		);
+	}
 
 	return (
 		<Stack
@@ -159,55 +246,7 @@ export function BackupRetention({ instance, onClose }: BackupRetentionProps) {
 								</Text>
 							</Box>
 
-							<BackupTierInput
-								title="Daily backups"
-								description="Automated daily backups retained for the specified number of days."
-								value={values.daily_retention_days}
-								min={policy.daily.min_days}
-								max={policy.daily.max_days}
-								unit="days"
-								editable={policy.daily.editable}
-								onContact={handleContactSales}
-								onChange={(daily_retention_days) =>
-									setValues((current) =>
-										current ? { ...current, daily_retention_days } : current,
-									)
-								}
-							/>
-
-							<BackupTierInput
-								title="Weekly backups"
-								description="Backups taken each Sunday and retained for the specified number of weeks."
-								value={values.weekly_retention_weeks}
-								min={policy.weekly.min_weeks}
-								max={policy.weekly.max_weeks}
-								unit="weeks"
-								editable={policy.weekly.editable}
-								onContact={handleContactSales}
-								onChange={(weekly_retention_weeks) =>
-									setValues((current) =>
-										current ? { ...current, weekly_retention_weeks } : current,
-									)
-								}
-							/>
-
-							<BackupTierInput
-								title="Monthly backups"
-								description="Backups taken on the 1st of each month and retained for the specified number of months."
-								value={values.monthly_retention_months}
-								min={policy.monthly.min_months}
-								max={policy.monthly.max_months}
-								unit="months"
-								editable={policy.monthly.editable}
-								onContact={handleContactSales}
-								onChange={(monthly_retention_months) =>
-									setValues((current) =>
-										current
-											? { ...current, monthly_retention_months }
-											: current,
-									)
-								}
-							/>
+							{tierFields}
 						</Stack>
 					</ScrollArea>
 				)}
@@ -224,7 +263,7 @@ export function BackupRetention({ instance, onClose }: BackupRetentionProps) {
 				<Button
 					type="submit"
 					variant="gradient"
-					disabled={!hasEditableTier || isUnchanged || isPending || !values}
+					disabled={applyDisabled}
 					onClick={handleUpdate}
 					flex={1}
 				>
