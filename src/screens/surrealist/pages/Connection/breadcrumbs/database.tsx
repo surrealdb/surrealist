@@ -9,6 +9,8 @@ export function DatabaseCrumb() {
 	const [isDropped, setIsDropped] = useState(false);
 
 	const database = useConnection((c) => c?.lastDatabase);
+	const label = database || "Select a database";
+	const displayLabel = label.length > 50 ? `${label.slice(0, 47)}...` : label;
 
 	return (
 		<Menu
@@ -21,7 +23,7 @@ export function DatabaseCrumb() {
 			<Menu.Target>
 				<BreadcrumbCrumb
 					item={{
-						label: database || "Select a database",
+						label: displayLabel,
 						selectable: !!database,
 						dimmed: !database,
 					}}
