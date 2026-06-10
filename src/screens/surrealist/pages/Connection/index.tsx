@@ -13,12 +13,13 @@ import { PageContainer } from "../../components/PageContainer";
 import { ConnectionBreadcrumbs } from "./breadcrumbs";
 import { connectionSettingsRedirect, resolveConnectionSettingsTab } from "./settings/helpers";
 import { ConnectionBackupsTab } from "./settings/tabs/backups";
+import { ConnectionCapabilitiesTab } from "./settings/tabs/capabilities";
 import { ConnectionComputeTab } from "./settings/tabs/compute";
-import { ConnectionConfigurationTab } from "./settings/tabs/configuration";
 import { ConnectionDatabasesTab } from "./settings/tabs/databases";
 import { ConnectionGeneralTab } from "./settings/tabs/general";
 import { ConnectionImportExportTab } from "./settings/tabs/import-export";
 import { ConnectionLifecycleTab } from "./settings/tabs/lifecycle";
+import { ConnectionVersionTab } from "./settings/tabs/version";
 import { ConnectionSettingsTabProps } from "./settings/types";
 import { ViewPageProps } from "./types";
 import AuthenticationView from "./views/authentication/AuthenticationView";
@@ -57,7 +58,8 @@ const SETTINGS_PORTALS: Record<ConnectionSettingsTab, HtmlPortalNode> = {
 	general: createHtmlPortalNode(PORTAL_OPTIONS),
 	databases: createHtmlPortalNode(PORTAL_OPTIONS),
 	"import-export": createHtmlPortalNode(PORTAL_OPTIONS),
-	configuration: createHtmlPortalNode(PORTAL_OPTIONS),
+	capabilities: createHtmlPortalNode(PORTAL_OPTIONS),
+	version: createHtmlPortalNode(PORTAL_OPTIONS),
 	compute: createHtmlPortalNode(PORTAL_OPTIONS),
 	backups: createHtmlPortalNode(PORTAL_OPTIONS),
 	lifecycle: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -81,7 +83,8 @@ const SETTINGS_COMPONENTS: Record<ConnectionSettingsTab, FC<ConnectionSettingsTa
 	general: memo(ConnectionGeneralTab),
 	databases: memo(ConnectionDatabasesTab),
 	"import-export": memo(ConnectionImportExportTab),
-	configuration: memo(ConnectionConfigurationTab),
+	capabilities: memo(ConnectionCapabilitiesTab),
+	version: memo(ConnectionVersionTab),
 	compute: memo(ConnectionComputeTab),
 	backups: memo(ConnectionBackupsTab),
 	lifecycle: memo(ConnectionLifecycleTab),
@@ -129,9 +132,17 @@ export function ConnectionPage({ view, settingsTab }: ConnectionPageProps) {
 	const organisation = organisationQuery.data;
 	const isAdmin = organisation ? hasOrganizationRoles(organisation, ORG_ROLES_ADMIN) : false;
 
+	const instance = instanceQuery.data;
 	const resolvedSettingsTab =
 		settingsTab && connectionId
-			? resolveConnectionSettingsTab(connectionId, settingsTab, isCloud, isAdmin)
+			? resolveConnectionSettingsTab(
+					connectionId,
+					settingsTab,
+					isCloud,
+					isAdmin,
+					instance,
+					organisation,
+				)
 			: null;
 
 	const viewPortal = view && views[view] ? VIEW_PORTALS[view] : undefined;

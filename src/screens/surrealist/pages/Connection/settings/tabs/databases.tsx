@@ -1,4 +1,4 @@
-import { Button, Center, Group, Loader, Paper, Stack, Table, Text, TextInput } from "@mantine/core";
+import { Button, Center, Group, Loader, Stack, Table, Text, TextInput } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import { Icon, iconDatabase, iconPlus, iconSearch, iconTrash } from "@surrealdb/ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +21,6 @@ import {
 	invalidateDatabaseHierarchy,
 } from "~/util/databases";
 import { fuzzyMatch } from "~/util/helpers";
-import classes from "../style.module.scss";
 import type { ConnectionSettingsTabProps } from "../types";
 
 export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
@@ -79,73 +78,68 @@ export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
 					</Button>
 				}
 			>
-				<Paper p="md">
-					<TextInput
-						mb="md"
-						placeholder="Search databases"
-						leftSection={<Icon path={iconSearch} />}
-						value={search}
-						onChange={setSearch}
-					/>
+				<TextInput
+					mb="md"
+					placeholder="Search databases"
+					leftSection={<Icon path={iconSearch} />}
+					value={search}
+					onChange={setSearch}
+				/>
 
-					{!connected ? (
-						<Center py="xl">
-							<Text>Connect to manage databases</Text>
-						</Center>
-					) : hierarchyQuery.isPending ? (
-						<Center py="xl">
-							<Loader size="sm" />
-						</Center>
-					) : filteredHierarchy?.length === 0 ? (
-						<Center py="xl">
-							<Text fz="sm">No databases found</Text>
-						</Center>
-					) : (
-						<Table
-							className={classes.table}
-							verticalSpacing="md"
-						>
-							<Table.Thead>
-								<Table.Tr>
-									<Table.Th>Namespace</Table.Th>
-									<Table.Th>Database</Table.Th>
-									<Table.Th>Comment</Table.Th>
-									<Table.Th w={120} />
-								</Table.Tr>
-							</Table.Thead>
-							<Table.Tbody>
-								{filteredHierarchy?.map((entry) => (
-									<Fragment key={entry.namespace.name}>
-										{entry.databases.map((db) => {
-											const isActive =
-												namespace === entry.namespace.name &&
-												database === db.name;
+				{!connected ? (
+					<Center py="xl">
+						<Text>Connect to manage databases</Text>
+					</Center>
+				) : hierarchyQuery.isPending ? (
+					<Center py="xl">
+						<Loader size="sm" />
+					</Center>
+				) : filteredHierarchy?.length === 0 ? (
+					<Center py="xl">
+						<Text fz="sm">No databases found</Text>
+					</Center>
+				) : (
+					<Table verticalSpacing="md">
+						<Table.Thead>
+							<Table.Tr>
+								<Table.Th>Namespace</Table.Th>
+								<Table.Th>Database</Table.Th>
+								<Table.Th>Comment</Table.Th>
+								<Table.Th w={120} />
+							</Table.Tr>
+						</Table.Thead>
+						<Table.Tbody>
+							{filteredHierarchy?.map((entry) => (
+								<Fragment key={entry.namespace.name}>
+									{entry.databases.map((db) => {
+										const isActive =
+											namespace === entry.namespace.name &&
+											database === db.name;
 
-											return (
-												<DatabaseRow
-													key={`${entry.namespace.name}-${db.name}`}
-													namespace={entry.namespace.name}
-													database={db.name}
-													comment={db.comment}
-													isActive={isActive}
-													onActivate={() =>
-														activate(entry.namespace.name, db.name)
-													}
-													onRemove={() =>
-														invalidateDatabaseHierarchy(
-															queryClient,
-															connectionId,
-														)
-													}
-												/>
-											);
-										})}
-									</Fragment>
-								))}
-							</Table.Tbody>
-						</Table>
-					)}
-				</Paper>
+										return (
+											<DatabaseRow
+												key={`${entry.namespace.name}-${db.name}`}
+												namespace={entry.namespace.name}
+												database={db.name}
+												comment={db.comment}
+												isActive={isActive}
+												onActivate={() =>
+													activate(entry.namespace.name, db.name)
+												}
+												onRemove={() =>
+													invalidateDatabaseHierarchy(
+														queryClient,
+														connectionId,
+													)
+												}
+											/>
+										);
+									})}
+								</Fragment>
+							))}
+						</Table.Tbody>
+					</Table>
+				)}
 			</Section>
 		</Stack>
 	);

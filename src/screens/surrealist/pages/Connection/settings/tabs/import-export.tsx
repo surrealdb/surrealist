@@ -1,4 +1,4 @@
-import { Button, Paper, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Button, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Icon, iconDatabase, iconDownload, iconUpload } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
@@ -47,9 +47,7 @@ export function ConnectionImportExportTab({ instanceQuery }: ConnectionSettingsT
 					title="Capabilities"
 					description="Save or restore your instance's capabilities configuration from a json file"
 				>
-					<Paper p="md">
-						<CapabilitiesImportExport instance={instance} />
-					</Paper>
+					<CapabilitiesImportExport instance={instance} />
 				</Section>
 			)}
 
@@ -74,38 +72,36 @@ export function ConnectionImportExportTab({ instanceQuery }: ConnectionSettingsT
 					) : undefined
 				}
 			>
-				<Paper p="md">
-					{namespace && database ? (
-						<SimpleGrid cols={{ base: 1, sm: 2 }}>
-							<ImportExportCard
-								title="Import"
-								description="Import data into the selected database from a surql file"
-								icon={iconUpload}
-								onClick={handleSchemaImport}
-							/>
-							<ImportExportCard
-								title="Export"
-								description="Export the selected database to a surql file"
-								icon={iconDownload}
-								onClick={handleSchemaExport}
-							/>
-						</SimpleGrid>
-					) : (
-						<Stack gap="md">
-							<Text fz="sm">
-								Select a namespace and database to import or export data.
-							</Text>
-							<Button
-								variant="light"
-								color="obsidian"
-								leftSection={<Icon path={iconDatabase} />}
-								onClick={openDatabaseSelector}
-							>
-								Select namespace & database
-							</Button>
-						</Stack>
-					)}
-				</Paper>
+				{namespace && database ? (
+					<SimpleGrid cols={{ base: 1, sm: 2 }}>
+						<ImportExportCard
+							title="Import"
+							description="Import data into the selected database from a surql file"
+							icon={iconUpload}
+							onClick={handleSchemaImport}
+						/>
+						<ImportExportCard
+							title="Export"
+							description="Export the selected database to a surql file"
+							icon={iconDownload}
+							onClick={handleSchemaExport}
+						/>
+					</SimpleGrid>
+				) : (
+					<Stack gap="md">
+						<Text fz="sm">
+							Select a namespace and database to import or export data.
+						</Text>
+						<Button
+							variant="light"
+							color="obsidian"
+							leftSection={<Icon path={iconDatabase} />}
+							onClick={openDatabaseSelector}
+						>
+							Select namespace & database
+						</Button>
+					</Stack>
+				)}
 			</Section>
 		</Stack>
 	);

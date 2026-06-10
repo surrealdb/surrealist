@@ -103,7 +103,8 @@ export type ConnectionSettingsTab =
 	| "general"
 	| "databases"
 	| "import-export"
-	| "configuration"
+	| "capabilities"
+	| "version"
 	| "compute"
 	| "backups"
 	| "lifecycle";

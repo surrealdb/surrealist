@@ -29,7 +29,7 @@ export function ImportExportCard({ title, description, icon, onClick }: ImportEx
 	return (
 		<Paper
 			p="md"
-			bg={isLight ? "obsidian.0" : "obsidian.7"}
+			bg={isLight ? "obsidian.2" : "obsidian.8"}
 			onClick={onClick}
 			style={{ cursor: "pointer" }}
 		>

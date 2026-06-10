@@ -353,14 +353,15 @@ export const CONNECTION_SETTINGS_TABS = [
 	"general",
 	"databases",
 	"import-export",
-	"configuration",
+	"capabilities",
+	"version",
 	"compute",
 	"backups",
 	"lifecycle",
 ] as const satisfies readonly ConnectionSettingsTab[];
 
 export const CLOUD_CONNECTION_SETTINGS_TABS = [
-	"configuration",
+	"capabilities",
 	"compute",
 	"backups",
 	"lifecycle",
@@ -370,7 +371,8 @@ export const CONNECTION_SETTINGS_TAB_LABELS: Record<ConnectionSettingsTab, strin
 	general: "General",
 	databases: "Databases",
 	"import-export": "Import & export",
-	configuration: "Configuration",
+	capabilities: "Capabilities",
+	version: "Version",
 	compute: "Compute & storage",
 	backups: "Backups",
 	lifecycle: "Lifecycle",

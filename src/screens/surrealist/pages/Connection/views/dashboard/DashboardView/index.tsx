@@ -275,13 +275,13 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 
 	const handleConfigure = useStable(() => {
 		if (connectionId) {
-			navigateSettings(connectionId, "configuration");
+			navigateSettings(connectionId, "capabilities");
 		}
 	});
 
 	const handleVersions = useStable(() => {
 		if (connectionId) {
-			navigateSettings(connectionId, "configuration");
+			navigateSettings(connectionId, "version");
 		}
 	});
 
