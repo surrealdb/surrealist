@@ -23,3 +23,35 @@
 	border: 1px solid color-mix(in srgb, var(--mantine-color-red-5) 33%, transparent);
 	background-color: color-mix(in srgb, var(--mantine-color-red-5) 3%, var(--surreal-paper-background));
 }
+
+.preview {
+	background-color: var(--surreal-glass-subtle);
+	border-radius: var(--mantine-radius-xs);
+	cursor: pointer;
+
+	input {
+		font-family: var(--mantine-font-family-monospace);
+		color: var(--mantine-color-bright);
+	}
+}
+
+.principal-row {
+	transition: border-color 0.15s ease;
+
+	&:hover {
+		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 40%, transparent);
+	}
+}
+
+.nested-principal {
+	border-left: 2px solid color-mix(in srgb, var(--mantine-color-violet-5) 35%, transparent);
+	margin-left: var(--mantine-spacing-md);
+}
+
+.mono-value {
+	font-family: var(--mantine-font-family-monospace);
+	font-size: var(--mantine-font-size-sm);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

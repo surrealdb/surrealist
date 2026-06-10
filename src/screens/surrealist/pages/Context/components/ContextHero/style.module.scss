@@ -1,0 +1,18 @@
+.hero {
+	position: relative;
+	overflow: hidden;
+}
+
+.art {
+	position: absolute;
+	bottom: -58px;
+	right: 10px;
+	width: 220px;
+	pointer-events: none;
+	mix-blend-mode: plus-lighter;
+	opacity: 0.1;
+
+	@include md-and-up {
+		opacity: 0.45;
+	}
+}

@@ -110,11 +110,14 @@ export type ConnectionSettingsTab =
 export type ContextViewPage =
 	| "dashboard"
 	| "playground"
-	| "memories"
-	| "knowledge"
+	| "memory"
+	| "documents"
+	| "scopes"
 	| "integration"
 	| "api-keys"
 	| "settings";
+
+export type ContextSettingsTab = "general" | "principals" | "configuration" | "usage";
 
 export type AppMenuItemType =
 	| "Separator"
@@ -608,6 +611,7 @@ export interface ContextViewPageInfo {
 	id: ContextViewPage;
 	name: string;
 	icon: string;
+	description?: string;
 	permissions?: string[];
 }
 
@@ -769,6 +773,134 @@ export interface ContextApiKey {
 	spectron_context_id: string;
 	name: string;
 	key?: string;
+}
+
+/**
+ * A Cloud-brokered, TTL-bounded access token used to authenticate the
+ * Spectron SDK as the calling user's own principal. Minted by
+ * `POST /organizations/{org}/spectron_contexts/{id}/access_tokens`.
+ *
+ * NOTE: the staging Cloud API spec hides the exact field names behind auth,
+ * so the SDK provider reads this defensively (`token` / `access_token` / `key`).
+ */
+export interface SpectronAccessToken {
+	token?: string;
+	access_token?: string;
+	key?: string;
+	expires_at?: string;
+	expires_in?: number;
+}
+
+/** The seven Spectron grant verbs (design-scope-model §6.1). */
+export type SpectronVerb =
+	| "read"
+	| "write"
+	| "create_scope"
+	| "delete_scope"
+	| "grant"
+	| "manage"
+	| "forget";
+
+export const SPECTRON_VERBS: SpectronVerb[] = [
+	"read",
+	"write",
+	"create_scope",
+	"delete_scope",
+	"grant",
+	"manage",
+	"forget",
+];
+
+/** Identity kind for a principal (design-scope-model §5.2). */
+export type SpectronPrincipalKind = "human" | "agent" | "service" | "unknown";
+
+/** Per-verb scope-pattern map carried by a principal or key. */
+export type SpectronGrants = Partial<Record<SpectronVerb, string[]>>;
+
+export interface SpectronPrincipal {
+	id: string;
+	kind: SpectronPrincipalKind;
+	display_name: string;
+	grants: SpectronGrants;
+	metadata?: Record<string, unknown> | null;
+}
+
+/** A registered scope node, mirroring the management `ScopeResponse` (camelCase). */
+export interface SpectronScope {
+	path: string;
+	name: string;
+	depth: number;
+	valuePolicy: "open" | "closed";
+	childrenCount: number;
+	createdAt: string;
+	createdBy?: string | null;
+	displayName?: string | null;
+	description?: string | null;
+	maxChildren?: number | null;
+	parent?: string | null;
+	tombstonedAt?: string | null;
+}
+
+export type SpectronTokenKind = "input" | "output" | "embedding";
+export type SpectronCallOrigin = "public" | "system";
+
+export interface SpectronUsageRow {
+	model: string;
+	token_kind: SpectronTokenKind;
+	origin: SpectronCallOrigin;
+	tokens: number;
+}
+
+export interface SpectronContextUsage {
+	context_id: string;
+	period_start: string;
+	period_end: string;
+	tokens_used: number;
+	token_limit?: number | null;
+	breakdown: SpectronUsageRow[];
+}
+
+export type SpectronModelProvider = "openai" | "anthropic" | "google";
+
+export interface SpectronProviderModels {
+	provider: SpectronModelProvider;
+	models: string[];
+}
+
+export interface SpectronProviders {
+	providers: SpectronProviderModels[];
+}
+
+export interface SpectronStageModel {
+	provider: SpectronModelProvider;
+	model: string;
+}
+
+export interface SpectronContextModels {
+	extraction?: SpectronStageModel | null;
+	reconciliation?: SpectronStageModel | null;
+	synthesis?: SpectronStageModel | null;
+	elaboration_consolidation?: SpectronStageModel | null;
+	embedding?: string | null;
+}
+
+export interface SpectronLabelDimension {
+	key: string;
+	value_policy?: "open" | "closed";
+	max_values?: number | null;
+	description?: string | null;
+}
+
+export interface SpectronContextConfig {
+	token_limit?: number | null;
+	models?: SpectronContextModels;
+	providers_configured?: string[];
+	ingestion_profile?: string | null;
+	llm_extraction_enabled?: boolean;
+	pii_redaction_enabled?: boolean;
+	reject_unbound_keys?: boolean;
+	label_dimensions?: SpectronLabelDimension[];
+	billing_anchor_day?: number | null;
 }
 
 export interface ContextPackage {

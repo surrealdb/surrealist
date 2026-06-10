@@ -1,0 +1,38 @@
+.unknowns-card {
+	background: color-mix(in srgb, var(--mantine-color-slate-9) 40%, transparent);
+	border-style: dashed;
+}
+
+.entity-row {
+	display: block;
+	width: 100%;
+	text-align: left;
+	padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+	background: transparent;
+	border: none;
+	border-bottom: 1px solid var(--mantine-color-default-border);
+	cursor: pointer;
+	transition: background-color 120ms ease;
+
+	&:last-of-type {
+		border-bottom: none;
+	}
+
+	&:hover {
+		background: color-mix(in srgb, var(--mantine-color-violet-5) 8%, transparent);
+	}
+
+	&[data-active] {
+		background: color-mix(in srgb, var(--mantine-color-violet-5) 14%, transparent);
+	}
+}
+
+.history-current {
+	border-color: color-mix(in srgb, var(--mantine-color-green-5) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.entity-row {
+		transition: none;
+	}
+}

@@ -19,16 +19,17 @@ import {
 	brandPython,
 	brandVercel,
 	CodeBlock,
-	Header,
 	Icon,
 	iconAPI,
 	iconArrowUpRight,
 	iconMCP,
+	pictoSDKs,
 } from "@surrealdb/ui";
 import { useEffect, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
 import { useContextNavigator, useSearchParams } from "~/hooks/routing";
 import type { CloudContext, ContextViewPage } from "~/types";
+import { ContextHero } from "../../components/ContextHero";
 import type { ContextViewProps } from "../../types";
 import { buildClaudeCodeSteps } from "./integrations/claude-code";
 import { buildLangChainSteps } from "./integrations/langchain";
@@ -263,135 +264,140 @@ export default function IntegrationView({ context }: ContextViewProps) {
 	};
 
 	return (
-		<Paper
-			p="lg"
-			radius="md"
-			className={classes.integrationPane}
-		>
-			<Header
+		<Stack gap={32}>
+			<ContextHero
 				kicker="Quick start"
-				order={2}
-			>
-				Connect to your context
-			</Header>
+				title="Connect to your context"
+				description="Wire this context into your agent — through the Python and JavaScript SDKs, the REST API, MCP, or a framework like LangChain, n8n, and the OpenAI and Vercel AI toolkits."
+				art={pictoSDKs}
+			/>
 
-			<Stack
-				gap="lg"
-				mt="lg"
+			<Paper
+				p="lg"
+				radius="md"
+				className={classes.integrationPane}
 			>
-				<Tabs
-					value={activeTab}
-					onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
-				>
-					<Box
-						style={{
-							overflowX: "auto",
-							marginInline: -4,
-							paddingInline: 4,
+				<Stack gap="lg">
+					<Tabs
+						value={activeTab}
+						onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
+					>
+						<Box
+							style={{
+								overflowX: "auto",
+								marginInline: -4,
+								paddingInline: 4,
+							}}
+						>
+							<Tabs.List
+								style={{
+									flexWrap: "nowrap",
+									width: "max-content",
+									gap: 4,
+								}}
+							>
+								{INTEGRATION_TABS.map((tab) => (
+									<Tabs.Tab
+										key={tab}
+										value={tab}
+										leftSection={
+											TAB_META[tab].img ? (
+												<Image
+													src={TAB_META[tab].img}
+													w={14}
+													alt=""
+												/>
+											) : TAB_META[tab].icon ? (
+												<Icon
+													path={TAB_META[tab].icon}
+													c="bright"
+													size="sm"
+												/>
+											) : undefined
+										}
+									>
+										{TAB_META[tab].label}
+									</Tabs.Tab>
+								))}
+							</Tabs.List>
+						</Box>
+						<Divider />
+					</Tabs>
+
+					<Timeline
+						mt="md"
+						bulletSize={24}
+						lineWidth={2}
+						styles={{
+							itemTitle: {
+								color: "var(--mantine-color-bright)",
+								fontWeight: 600,
+								fontSize: "14px",
+							},
+							itemBullet: {
+								backgroundColor: "var(--mantine-color-obsidian-filled)",
+								color: "var(--mantine-color-white)",
+								border: "none",
+							},
+							item: {
+								"--item-border-color": "var(--mantine-color-obsidian-7)",
+							},
 						}}
 					>
-						<Tabs.List style={{ flexWrap: "nowrap", width: "max-content", gap: 4 }}>
-							{INTEGRATION_TABS.map((tab) => (
-								<Tabs.Tab
-									key={tab}
-									value={tab}
-									leftSection={
-										TAB_META[tab].img ? (
-											<Image
-												src={TAB_META[tab].img}
-												w={14}
-												alt=""
-											/>
-										) : TAB_META[tab].icon ? (
-											<Icon
-												path={TAB_META[tab].icon}
-												c="bright"
-												size="sm"
-											/>
-										) : undefined
-									}
-								>
-									{TAB_META[tab].label}
-								</Tabs.Tab>
-							))}
-						</Tabs.List>
-					</Box>
-					<Divider />
-				</Tabs>
-
-				<Timeline
-					mt="md"
-					bulletSize={24}
-					lineWidth={2}
-					styles={{
-						itemTitle: {
-							color: "var(--mantine-color-bright)",
-							fontWeight: 600,
-							fontSize: "14px",
-						},
-						itemBullet: {
-							backgroundColor: "var(--mantine-color-obsidian-filled)",
-							color: "var(--mantine-color-white)",
-							border: "none",
-						},
-						item: {
-							"--item-border-color": "var(--mantine-color-obsidian-7)",
-						},
-					}}
-				>
-					{steps.map((step, idx) => (
-						<Timeline.Item
-							key={idx}
-							bullet={idx + 1}
-						>
-							<SimpleGrid cols={2}>
-								<Box>
-									<Title
-										order={3}
-										fz="lg"
-									>
-										{step.title}
-									</Title>
-									<Text>{step.description}</Text>
-									{step.action === "api_keys" ? (
-										<Button
-											mt="sm"
-											ml="-xs"
-											size="xs"
-											color="violet"
-											rightSection={<Icon path={iconArrowUpRight} />}
-											onClick={() => goToPage("api-keys")}
+						{steps.map((step, idx) => (
+							<Timeline.Item
+								key={idx}
+								bullet={idx + 1}
+							>
+								<SimpleGrid cols={2}>
+									<Box>
+										<Title
+											order={3}
+											fz="lg"
 										>
-											Get API key
-										</Button>
-									) : step.action === "documentation" ? (
-										<Button
-											mt="sm"
-											ml="-xs"
-											size="xs"
-											color="violet"
-											rightSection={<Icon path={iconArrowUpRight} />}
-											onClick={() =>
-												adapter.openUrl(
-													step.documentationUrl ?? DOCS_FALLBACK,
-												)
-											}
-										>
-											Read the documentation
-										</Button>
-									) : undefined}
-								</Box>
-								{step.code && (
-									<CodeBlock
-										value={step.code}
-										lang={step.lang}
-									/>
-								)}
-							</SimpleGrid>
-						</Timeline.Item>
-					))}
-				</Timeline>
-			</Stack>
-		</Paper>
+											{step.title}
+										</Title>
+										<Text>{step.description}</Text>
+										{step.action === "api_keys" ? (
+											<Button
+												mt="sm"
+												ml="-xs"
+												size="xs"
+												color="violet"
+												rightSection={<Icon path={iconArrowUpRight} />}
+												onClick={() => goToPage("api-keys")}
+											>
+												Get API key
+											</Button>
+										) : step.action === "documentation" ? (
+											<Button
+												mt="sm"
+												ml="-xs"
+												size="xs"
+												color="violet"
+												rightSection={<Icon path={iconArrowUpRight} />}
+												onClick={() =>
+													adapter.openUrl(
+														step.documentationUrl ?? DOCS_FALLBACK,
+													)
+												}
+											>
+												Read the documentation
+											</Button>
+										) : undefined}
+									</Box>
+									{step.code && (
+										<CodeBlock
+											value={step.code}
+											lang={step.lang}
+										/>
+									)}
+								</SimpleGrid>
+							</Timeline.Item>
+						))}
+					</Timeline>
+				</Stack>
+			</Paper>
+		</Stack>
 	);
 }

@@ -20,7 +20,7 @@ import { useDisclosure } from "@mantine/hooks";
 import {
 	brandJavaScript,
 	brandPython,
-	Header as Heading,
+	SectionTitle as Heading,
 	HoverGlow,
 	Icon,
 	iconAPI,
@@ -29,6 +29,7 @@ import {
 	iconCopy,
 	iconKey,
 	iconPlus,
+	iconRefresh,
 	iconTrash,
 	pictoKey,
 } from "@surrealdb/ui";
@@ -37,10 +38,12 @@ import { Link } from "wouter";
 import {
 	useCreateContextApiKeyMutation,
 	useDeleteContextApiKeyMutation,
+	useRotateContextApiKeyMutation,
 } from "~/cloud/mutations/spectron";
 import { useCloudContextApiKeysQuery } from "~/cloud/queries/contexts";
 import type { ContextApiKey } from "~/types";
-import { ON_FOCUS_SELECT } from "~/util/helpers";
+import { ON_FOCUS_SELECT, showErrorNotification, showInfo } from "~/util/helpers";
+import { ContextHero } from "../../components/ContextHero";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
 
@@ -80,6 +83,7 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 	const { data: apiKeys } = useCloudContextApiKeysQuery(organization, context.id);
 	const createKeyMutation = useCreateContextApiKeyMutation(organization, context.id);
 	const deleteKeyMutation = useDeleteContextApiKeyMutation(organization, context.id);
+	const rotateKeyMutation = useRotateContextApiKeyMutation(organization, context.id);
 
 	const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false);
 	const [newKeyName, setNewKeyName] = useState("");
@@ -100,38 +104,38 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 		deleteKeyMutation.mutate(keyId);
 	};
 
+	const handleRotate = async (keyId: string) => {
+		try {
+			const result = await rotateKeyMutation.mutateAsync(keyId);
+			setCreatedKey(result);
+			showInfo({
+				title: "API key rotated",
+				subtitle: "The previous secret has been revoked. Copy the new value below.",
+			});
+		} catch (err) {
+			showErrorNotification({
+				title: "Failed to rotate API key",
+				content: err,
+			});
+		}
+	};
+
 	const integrationBasePath = `/s/${context.organization_id}/${context.id}/integration`;
 
 	return (
 		<Stack gap={32}>
-			{/* HERO */}
-			<Paper
-				p="xl"
-				radius="lg"
-				variant="glass"
-				className={classes.hero}
-			>
-				<Image
-					src={pictoKey}
-					className={classes.heroArt}
-					alt=""
-					aria-hidden
-				/>
-				<Heading
-					kicker="Access"
-					description="Connect agents, SDKs, and automations to this context. Create a key, then follow the integration guide for your stack."
-					titleProps={{ variant: "gradient" }}
-					descriptionProps={{ maw: 640 }}
-				>
-					API keys
-				</Heading>
-			</Paper>
+			<ContextHero
+				kicker="Access"
+				title="API keys"
+				description="These keys authenticate you — your principal — to this context. Use them to connect your own SDK, REST, and MCP clients. Manage your keys here, then follow the integration guide for your stack."
+				art={pictoKey}
+			/>
 
 			{createdKey?.key && (
 				<Alert
 					color="blue"
 					variant="light"
-					title="API key created"
+					title="Your API key is ready"
 					withCloseButton
 					onClose={handleDismissCreatedKey}
 					icon={<Icon path={iconKey} />}
@@ -185,9 +189,11 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 					<Heading
 						kicker="Credentials"
 						order={2}
+						description="Keys are tied to your principal. Rotate a key to roll its secret, or revoke one you no longer use."
 						titleProps={{ fz: 22, mt: 4 }}
+						descriptionProps={{ maw: 560 }}
 					>
-						Manage API keys
+						Your API keys
 					</Heading>
 					<Button
 						size="sm"
@@ -213,7 +219,7 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 							<Table.Thead>
 								<Table.Tr>
 									<Table.Th>Name</Table.Th>
-									<Table.Th style={{ width: 80 }}>Actions</Table.Th>
+									<Table.Th style={{ width: 120 }}>Actions</Table.Th>
 								</Table.Tr>
 							</Table.Thead>
 							<Table.Tbody>
@@ -242,18 +248,44 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 											</Group>
 										</Table.Td>
 										<Table.Td w={0}>
-											<Tooltip label="Revoke key">
-												<ActionIcon
-													variant="subtle"
-													size="sm"
-													color="red"
-													aria-label={`Revoke ${apiKey.name}`}
-													onClick={() => handleRevoke(apiKey.id)}
-													loading={deleteKeyMutation.isPending}
-												>
-													<Icon path={iconTrash} />
-												</ActionIcon>
-											</Tooltip>
+											<Group
+												gap="xs"
+												wrap="nowrap"
+												justify="flex-end"
+											>
+												<Tooltip label="Rotate">
+													<ActionIcon
+														variant="subtle"
+														size="sm"
+														color="slate"
+														aria-label={`Rotate ${apiKey.name}`}
+														onClick={() => handleRotate(apiKey.id)}
+														loading={
+															rotateKeyMutation.isPending &&
+															rotateKeyMutation.variables ===
+																apiKey.id
+														}
+													>
+														<Icon path={iconRefresh} />
+													</ActionIcon>
+												</Tooltip>
+												<Tooltip label="Revoke key">
+													<ActionIcon
+														variant="subtle"
+														size="sm"
+														color="red"
+														aria-label={`Revoke ${apiKey.name}`}
+														onClick={() => handleRevoke(apiKey.id)}
+														loading={
+															deleteKeyMutation.isPending &&
+															deleteKeyMutation.variables ===
+																apiKey.id
+														}
+													>
+														<Icon path={iconTrash} />
+													</ActionIcon>
+												</Tooltip>
+											</Group>
 										</Table.Td>
 									</Table.Tr>
 								))}
@@ -275,7 +307,8 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 													fz="sm"
 													className="selectable"
 												>
-													Create your first key to connect an agent.
+													Create your first key to connect your SDK, REST,
+													or MCP client.
 												</Text>
 												<Button
 													mt="sm"

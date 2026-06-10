@@ -344,6 +344,11 @@ export function SurrealistScreen() {
 										)}
 									</Route>
 
+									{/* Context settings sub-pages (Spectron) */}
+									<Route path="/s/:organization/:context/settings/:tab">
+										{() => <ContextPageLazy view="settings" />}
+									</Route>
+
 									{/* Context view page (Spectron) */}
 									<Route path="/s/:organization/:context/:view">
 										{({ view }) => <ContextPageLazy view={view} />}
