@@ -115,7 +115,7 @@ export const SURREAL_START_BASICS = {
 		-- knowledge graphs, as a backend, a BaaS, or embed it directly into your apps
 		-- One engine, every model.
 		--
-		-- Learn more at https://surrealdb.com/docs/surrealdb/introduction/start
+		-- Learn more at https://surrealdb.com/docs/what-is-surrealdb
 		--
 		-- *****************************************************************************
 
@@ -257,7 +257,7 @@ export const SURREAL_START_GRAPH_V2 = {
 		};
 
 		// To learn more about graph queries, go to the Using SurrealDB as a Graph Database page:
-		// https://surrealdb.com/docs/surrealdb/models/graph
+		// https://surrealdb.com/docs/learn/data-models/graph/overview
 	`,
 };
 
@@ -362,7 +362,7 @@ export const SURREAL_START_GRAPH_V3 = {
 		};
 
 		// To learn more about graph queries, go to the Using SurrealDB as a Graph Database page:
-		// https://surrealdb.com/docs/surrealdb/models/graph
+		// https://surrealdb.com/docs/learn/data-models/graph/overview
 	`,
 };
 
@@ -377,7 +377,7 @@ export const SURREAL_START_VECTOR_V2 = {
 		};
 
 		-- Vector index
-		-- Reference: https://surrealdb.com/docs/surrealdb/models/vector
+		-- Reference: https://surrealdb.com/docs/learn/data-models/vector-search/overview
 		DEFINE INDEX IF NOT EXISTS documents_vec_index
 			ON TABLE documents
 			FIELDS embedding
@@ -442,7 +442,7 @@ export const SURREAL_START_VECTOR_V3 = {
 		};
 
 		-- Vector index
-		-- Reference: https://surrealdb.com/docs/surrealdb/models/vector
+		-- Reference: https://surrealdb.com/docs/learn/data-models/vector-search/overview
 		DEFINE INDEX OVERWRITE documents_vec_index
 			ON TABLE documents
 			FIELDS embedding

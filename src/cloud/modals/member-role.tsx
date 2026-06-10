@@ -84,7 +84,7 @@ function RoleModal({ organization, member }: RoleModalProps) {
 					onChange={setRole as any}
 				/>
 
-				<LearnMore href="https://surrealdb.com/docs/cloud/advanced-topics/manage-organisation-permissions">
+				<LearnMore href="https://surrealdb.com/docs/build/deployment/surrealdb-cloud/getting-started/create-an-organisation#manage-organisation-permissions">
 					Learn more about roles and permissions
 				</LearnMore>
 

@@ -251,9 +251,7 @@ export function OverviewPage() {
 								title="Documentation"
 								subtitle="Explore the SurrealDB documentation"
 								image={pictoSurrealDB}
-								onClick={() =>
-									adapter.openUrl("https://surrealdb.com/docs/surrealdb")
-								}
+								onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
 							/>
 							<StartResource
 								title="Community"

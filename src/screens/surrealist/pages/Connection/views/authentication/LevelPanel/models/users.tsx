@@ -197,7 +197,7 @@ export function UserEditorModal({ level, existing, opened, list, onClose }: User
 								onChange={setSessionDuration}
 							/>
 
-							<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication#expiration">
+							<LearnMore href="https://surrealdb.com/docs/learn/security/authentication/authentication#expiration">
 								Learn more about session and token durations
 							</LearnMore>
 						</Stack>

@@ -209,7 +209,7 @@ export function GraphqlView() {
 				variant="light"
 				rightSection={<Icon path={iconOpen} />}
 				onClick={() =>
-					adapter.openUrl("https://surrealdb.com/docs/surrealdb/querying/graphql")
+					adapter.openUrl("https://surrealdb.com/docs/learn/querying/graphql/overview")
 				}
 			>
 				Learn more

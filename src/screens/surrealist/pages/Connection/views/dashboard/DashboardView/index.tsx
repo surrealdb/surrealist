@@ -593,7 +593,7 @@ function LoadingScreen() {
 					title="Cloud Documentation"
 					description="Learn more about SurrealDB Cloud features and capabilities."
 					image={pictoDocument}
-					href="https://surrealdb.com/docs/cloud"
+					href="https://surrealdb.com/docs/manage/cloud"
 				/>
 				<GettingStartedLink
 					title="Join the Community"

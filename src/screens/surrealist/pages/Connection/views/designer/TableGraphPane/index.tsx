@@ -699,7 +699,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 								</Text>
 							</Popover.Dropdown>
 						</Popover>
-						<Link href="https://surrealdb.com/docs/surrealist/concepts/designing-the-database-schema">
+						<Link href="https://surrealdb.com/docs/explore/surrealist/concepts/designing-the-database-schema">
 							<ActionButton label="Designer help">
 								<Icon path={iconHelp} />
 							</ActionButton>

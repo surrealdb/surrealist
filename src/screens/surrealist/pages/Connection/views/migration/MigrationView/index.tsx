@@ -139,7 +139,7 @@ export function MigrationView() {
 							>
 								Check compatibility
 							</Button>
-							<Anchor href="https://surrealdb.com/docs/surrealdb/installation/upgrading/migrating-data-to-3x">
+							<Anchor href="https://surrealdb.com/docs/build/migrating/from-old-surrealdb-versions/2x-to-3x">
 								<Button
 									variant="light"
 									color="slate"
@@ -206,7 +206,7 @@ export function MigrationView() {
 						</Text>
 						<LearnMore
 							my="md"
-							href="https://surrealdb.com/docs/surrealdb/installation/upgrading/migrating-data-to-3x"
+							href="https://surrealdb.com/docs/build/migrating/from-old-surrealdb-versions/2x-to-3x"
 						>
 							Learn more about upgrading to SurrealDB 3.0
 						</LearnMore>

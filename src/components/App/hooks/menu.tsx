@@ -222,7 +222,7 @@ export function getMenuItems(): AppMenu[] {
 				type: "Custom",
 				name: "SurrealDB Docs",
 				action: () => {
-					adapter.openUrl("https://surrealdb.com/docs/surrealdb");
+					adapter.openUrl("https://surrealdb.com/docs");
 				},
 			},
 			{
@@ -230,7 +230,7 @@ export function getMenuItems(): AppMenu[] {
 				type: "Custom",
 				name: "Surrealist Docs",
 				action: () => {
-					adapter.openUrl("https://surrealdb.com/docs/surrealist");
+					adapter.openUrl("https://surrealdb.com/docs/explore/surrealist");
 				},
 			},
 			SEPARATOR,

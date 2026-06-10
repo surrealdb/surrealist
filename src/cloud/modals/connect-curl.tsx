@@ -58,7 +58,7 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 		<Stack>
 			<Text size="lg">
 				You can connect to this instance using{" "}
-				<Link href="https://surrealdb.com/docs/surrealdb/integration/http">
+				<Link href="https://surrealdb.com/docs/reference/rest-api/http-protocol">
 					HTTP requests
 				</Link>
 				. The following example demonstrates how to use cURL to communicate with this
@@ -100,7 +100,7 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 					/>
 				</SimpleGrid>
 
-				<LearnMore href="https://surrealdb.com/docs/surrealdb/security/authentication">
+				<LearnMore href="https://surrealdb.com/docs/learn/security/authentication/overview">
 					Learn more about authentication
 				</LearnMore>
 			</Paper>
@@ -123,7 +123,7 @@ function ConnectCurlModal({ instance, namespace, database }: ConnectCurlModalPro
 
 			<LearnMore
 				mt="sm"
-				href="https://surrealdb.com/docs/surrealdb/integration/http"
+				href="https://surrealdb.com/docs/reference/rest-api/http-protocol"
 			>
 				Learn more about the HTTP protocol
 			</LearnMore>

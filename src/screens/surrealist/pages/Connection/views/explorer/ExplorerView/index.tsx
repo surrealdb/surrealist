@@ -208,7 +208,7 @@ export function ExplorerView() {
 										rightSection={<Icon path={iconOpen} />}
 										onClick={() =>
 											adapter.openUrl(
-												"https://surrealdb.com/docs/surrealql/statements/define/table",
+												"https://surrealdb.com/docs/reference/query-language/statements/define/table",
 											)
 										}
 									>

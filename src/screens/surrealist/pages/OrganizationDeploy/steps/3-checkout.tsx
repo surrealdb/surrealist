@@ -412,7 +412,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 			/>
 
 			<Box mt="xl">
-				<LearnMore href="https://surrealdb.com/docs/surrealdb/installation/upgrading/migrating-data-to-3x">
+				<LearnMore href="https://surrealdb.com/docs/build/migrating/from-old-surrealdb-versions/2x-to-3x">
 					Learn more about the migration process
 				</LearnMore>
 			</Box>

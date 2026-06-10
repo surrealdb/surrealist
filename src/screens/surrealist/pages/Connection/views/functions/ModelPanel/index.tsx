@@ -50,7 +50,7 @@ export function ModelPanel({ details, onDownload }: ModelPanelProps) {
 					color="obsidian"
 					variant="light"
 					rightSection={<Icon path={iconOpen} />}
-					onClick={() => adapter.openUrl("https://surrealdb.com/docs/surrealml")}
+					onClick={() => adapter.openUrl("https://surrealdb.com/docs/explore/ml-models")}
 				>
 					Learn more
 				</Button>
