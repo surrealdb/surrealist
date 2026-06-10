@@ -134,3 +134,11 @@
 		color: var(--mantine-color-bright);
 	}
 }
+
+.update-header {
+	background: rgba(0, 0, 0, 0.25);
+
+	@include light {
+		background: var(--mantine-color-obsidian-1);
+	}
+}

@@ -26,6 +26,7 @@ export function NavigationIcon({
 	withTooltip,
 	onClick,
 	indicator,
+	className,
 	...rest
 }: NavigationIconProps) {
 	const active = useRouteMatcher(match || []);
@@ -50,7 +51,11 @@ export function NavigationIcon({
 		>
 			<Box w="100%">
 				<Entry
-					className={clsx(classes.viewButton, isActive && classes.viewButtonActive)}
+					className={clsx(
+						classes.viewButton,
+						isActive && classes.viewButtonActive,
+						className,
+					)}
 					isActive={isActive}
 					onClick={handleClick}
 					leftSection={

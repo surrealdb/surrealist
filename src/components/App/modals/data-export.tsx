@@ -5,7 +5,6 @@ import {
 	Checkbox,
 	Group,
 	Loader,
-	Modal,
 	Paper,
 	ScrollArea,
 	SimpleGrid,
@@ -34,16 +33,13 @@ import {
 	iconWrench,
 } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { useMemo, useState } from "react";
-import { SqlExportOptions } from "surrealdb";
+import { useEffect, useMemo } from "react";
+import type { SqlExportOptions } from "surrealdb";
 import { adapter, isBrowser } from "~/adapter";
 import { Option } from "~/components/Option";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { Spacer } from "~/components/Spacer";
 import { SURQL_FILTER } from "~/constants";
-import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useMinimumVersion } from "~/hooks/connection";
-import { useIntent } from "~/hooks/routing";
+import { useConnectionSettingsNavigator, useIntent } from "~/hooks/routing";
 import { useTableNames } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import {
@@ -52,7 +48,6 @@ import {
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { tagEvent } from "~/util/analytics";
 import { fuzzyMatch, slugify } from "~/util/helpers";
-import { syncConnectionSchema } from "~/util/schema";
 
 function toggleSet<T>(set: Set<T>, item: T) {
 	if (set.has(item)) {
@@ -103,13 +98,21 @@ const RESOURCE_DETAILS: Record<ExportFlag, { icon: string; label: string }> = {
 	sequences: { icon: iconFilter, label: "Sequences" },
 };
 
-export function DataExportModal() {
+export interface DatabaseExportPanelProps {
+	exportV3?: boolean;
+	selectAllTables?: boolean;
+	selectAllResources?: boolean;
+}
+
+export function DatabaseExportPanel({
+	exportV3 = false,
+	selectAllTables = false,
+	selectAllResources = false,
+}: DatabaseExportPanelProps) {
 	const tables = useTableNames();
 	const name = useConnection((c) => c?.name ?? "");
 
 	const [configSupport] = useMinimumVersion("2.1.0");
-	const [isOpen, openedHandle] = useBoolean();
-	const [exportV3, setExportV3] = useState(false);
 	const [search, setSearch] = useInputState("");
 
 	const exportFlags = useSet<ExportFlag>();
@@ -117,9 +120,21 @@ export function DataExportModal() {
 
 	const fileName = `${slugify(name)}-${dayjs().format("YYYY-MM-DD")}.surql`;
 
-	const handleExport = useStable(async () => {
-		openedHandle.close();
+	useEffect(() => {
+		if (selectAllResources) {
+			exportFlags.clear();
+			RESOURCES.forEach((resource) => exportFlags.add(resource));
+		}
+	}, [selectAllResources, exportFlags]);
 
+	useEffect(() => {
+		if (selectAllTables) {
+			exportTables.clear();
+			tables.forEach((table) => exportTables.add(table));
+		}
+	}, [selectAllTables, exportTables, tables]);
+
+	const handleExport = useStable(async () => {
 		const messageId = showNotification({
 			title: "Exporting database",
 			message: "Please wait while the database is exported",
@@ -221,71 +236,104 @@ export function DataExportModal() {
 	const isEmpty = exportFlags.size === 0 && exportTables.size === 0;
 	const streamSupport = isStreamingSupported();
 
-	useIntent("export-database", async ({ v3, tables, resources }) => {
-		const schema = await syncConnectionSchema();
-
-		if (tables === "*") {
-			exportTables.clear();
-			schema?.database.tables.forEach((t) => exportTables.add(t.schema.name));
-		}
-
-		if (resources === "*") {
-			exportFlags.clear();
-			RESOURCES.forEach((resource) => exportFlags.add(resource));
-		}
-
-		openedHandle.open();
-		setExportV3(v3 === "true");
-	});
-
 	return (
-		<Modal
-			opened={isOpen}
-			onClose={openedHandle.close}
-			size="xl"
-			title={<PrimaryTitle>Export database</PrimaryTitle>}
-		>
-			<Stack gap="xl">
-				{exportV3 && (
-					<Alert
-						icon={<Icon path={iconHelp} />}
-						color="blue"
-					>
-						You are exporting your database for use with SurrealDB 3.0.
-					</Alert>
-				)}
+		<Stack gap="xl">
+			{exportV3 && (
+				<Alert
+					icon={<Icon path={iconHelp} />}
+					color="blue"
+				>
+					You are exporting your database for use with SurrealDB 3.0.
+				</Alert>
+			)}
 
-				<Text>
-					Select which schema resources and tables you want to include in your export.
-				</Text>
+			<Text>
+				Select which schema resources and tables you want to include in your export.
+			</Text>
 
-				{streamSupport === "unsupported-browser" ? (
-					<Alert
-						icon={<Icon path={iconWarning} />}
-						color="orange"
-					>
-						Your {isBrowser ? "browser" : "environment"} does not support streaming
-						exports. For larger exports, please use the SurrealDB CLI.
-					</Alert>
-				) : streamSupport === "unsupported-engine" ? (
-					<Alert
-						icon={<Icon path={iconWarning} />}
-						color="orange"
-					>
-						The current connection does not support streaming exports. Performance may
-						be degraded.
-					</Alert>
-				) : null}
+			{streamSupport === "unsupported-browser" ? (
+				<Alert
+					icon={<Icon path={iconWarning} />}
+					color="orange"
+				>
+					Your {isBrowser ? "browser" : "environment"} does not support streaming exports.
+					For larger exports, please use the SurrealDB CLI.
+				</Alert>
+			) : streamSupport === "unsupported-engine" ? (
+				<Alert
+					icon={<Icon path={iconWarning} />}
+					color="orange"
+				>
+					The current connection does not support streaming exports. Performance may be
+					degraded.
+				</Alert>
+			) : null}
 
-				{!configSupport ? (
-					<Alert
-						icon={<Icon path={iconWarning} />}
-						color="orange"
-					>
-						The remote database does not support export customization
-					</Alert>
-				) : (
-					<>
+			{!configSupport ? (
+				<Alert
+					icon={<Icon path={iconWarning} />}
+					color="orange"
+				>
+					The remote database does not support export customization
+				</Alert>
+			) : (
+				<>
+					<Box>
+						<Group mb="xs">
+							<Text
+								c="bright"
+								fw={600}
+								fz="lg"
+							>
+								Resources
+							</Text>
+							<Text fz="xs">
+								{exportFlags.size} of {RESOURCES.length} selected
+							</Text>
+							<Box flex={1} />
+							<Checkbox
+								py="sm"
+								label="Select all resources"
+								labelPosition="left"
+								checked={RESOURCES.every((v) => exportFlags.has(v))}
+								onChange={toggleAllResources}
+								disabled={!configSupport}
+								indeterminate={RESOURCES.some(
+									(v) =>
+										exportFlags.has(v) && exportFlags.size < RESOURCES.length,
+								)}
+							/>
+						</Group>
+
+						<Paper
+							mt="xs"
+							withBorder
+							bg="none"
+							p="sm"
+						>
+							<SimpleGrid
+								cols={3}
+								spacing="xs"
+							>
+								{RESOURCES.map((resource) => {
+									const { icon, label } = RESOURCE_DETAILS[resource];
+
+									return (
+										<Option
+											key={resource}
+											label={label}
+											checked={exportFlags.has(resource)}
+											disabled={!configSupport}
+											icon={<Icon path={icon} />}
+											onChange={() => toggleSet(exportFlags, resource)}
+										/>
+									);
+								})}
+							</SimpleGrid>
+						</Paper>
+					</Box>
+
+					{tables.length > 0 && (
 						<Box>
 							<Group mb="xs">
 								<Text
@@ -293,24 +341,22 @@ export function DataExportModal() {
 									fw={600}
 									fz="lg"
 								>
-									Resources
+									Tables
 								</Text>
 								<Text fz="xs">
-									{exportFlags.size} of {RESOURCES.length} selected
+									{exportTables.size} of {tables.length} selected
 								</Text>
-								<Spacer />
+								<Box flex={1} />
 								<Checkbox
 									py="sm"
-									label="Select all resources"
+									label="Select all tables"
 									labelPosition="left"
-									checked={RESOURCES.every((v) => exportFlags.has(v))}
-									onChange={toggleAllResources}
+									checked={exportTables.size === tables.length}
+									onChange={toggleAllRecords}
 									disabled={!configSupport}
-									indeterminate={RESOURCES.some(
-										(v) =>
-											exportFlags.has(v) &&
-											exportFlags.size < RESOURCES.length,
-									)}
+									indeterminate={
+										exportTables.size > 0 && exportTables.size < tables.length
+									}
 								/>
 							</Group>
 
@@ -318,134 +364,86 @@ export function DataExportModal() {
 								mt="xs"
 								withBorder
 								bg="none"
-								p="sm"
 							>
-								<SimpleGrid
-									cols={3}
-									spacing="xs"
-								>
-									{RESOURCES.map((resource) => {
-										const { icon, label } = RESOURCE_DETAILS[resource];
+								<ScrollArea.Autosize mah={250}>
+									<Box
+										px="sm"
+										pb="sm"
+										pt="xs"
+									>
+										<TextInput
+											variant="unstyled"
+											value={search}
+											onChange={setSearch}
+											placeholder="Search tables..."
+											leftSection={<Icon path={iconSearch} />}
+										/>
+										<SimpleGrid
+											cols={3}
+											spacing="xs"
+											mt="xs"
+										>
+											{filteredTables.length === 0 && (
+												<Text
+													py="sm"
+													pl="sm"
+												>
+													No tables matched your search
+												</Text>
+											)}
 
-										return (
-											<Option
-												key={resource}
-												label={label}
-												checked={exportFlags.has(resource)}
-												disabled={!configSupport}
-												icon={<Icon path={icon} />}
-												onChange={() => toggleSet(exportFlags, resource)}
-											/>
-										);
-									})}
-								</SimpleGrid>
+											{filteredTables.map((table) => (
+												<Option
+													key={table}
+													label={table}
+													checked={exportTables.has(table)}
+													disabled={!configSupport}
+													onChange={() => {
+														if (exportTables.has(table)) {
+															exportTables.delete(table);
+														} else {
+															exportTables.add(table);
+														}
+													}}
+												/>
+											))}
+										</SimpleGrid>
+									</Box>
+								</ScrollArea.Autosize>
 							</Paper>
 						</Box>
+					)}
+				</>
+			)}
 
-						{tables.length > 0 && (
-							<Box>
-								<Group mb="xs">
-									<Text
-										c="bright"
-										fw={600}
-										fz="lg"
-									>
-										Tables
-									</Text>
-									<Text fz="xs">
-										{exportTables.size} of {tables.length} selected
-									</Text>
-									<Spacer />
-									<Checkbox
-										py="sm"
-										label="Select all tables"
-										labelPosition="left"
-										checked={exportTables.size === tables.length}
-										onChange={toggleAllRecords}
-										disabled={!configSupport}
-										indeterminate={
-											exportTables.size > 0 &&
-											exportTables.size < tables.length
-										}
-									/>
-								</Group>
-
-								<Paper
-									mt="xs"
-									withBorder
-									bg="none"
-								>
-									<ScrollArea.Autosize mah={250}>
-										<Box
-											px="sm"
-											pb="sm"
-											pt="xs"
-										>
-											<TextInput
-												variant="unstyled"
-												value={search}
-												onChange={setSearch}
-												placeholder="Search tables..."
-												leftSection={<Icon path={iconSearch} />}
-											/>
-											<SimpleGrid
-												cols={3}
-												spacing="xs"
-												mt="xs"
-											>
-												{filteredTables.length === 0 && (
-													<Text
-														py="sm"
-														pl="sm"
-													>
-														No tables matched your search
-													</Text>
-												)}
-
-												{filteredTables.map((table) => (
-													<Option
-														key={table}
-														label={table}
-														checked={exportTables.has(table)}
-														disabled={!configSupport}
-														onChange={() => {
-															if (exportTables.has(table)) {
-																exportTables.delete(table);
-															} else {
-																exportTables.add(table);
-															}
-														}}
-													/>
-												))}
-											</SimpleGrid>
-										</Box>
-									</ScrollArea.Autosize>
-								</Paper>
-							</Box>
-						)}
-					</>
-				)}
-
-				<Group mt="xs">
-					<Button
-						flex={1}
-						color="obsidian"
-						variant="light"
-						onClick={openedHandle.close}
-					>
-						Cancel
-					</Button>
-					<Button
-						flex={1}
-						onClick={handleExport}
-						variant="gradient"
-						disabled={isEmpty}
-						rightSection={<Icon path={iconDownload} />}
-					>
-						Save export
-					</Button>
-				</Group>
-			</Stack>
-		</Modal>
+			<Group justify="flex-end">
+				<Button
+					onClick={handleExport}
+					variant="gradient"
+					disabled={isEmpty}
+					rightSection={<Icon path={iconDownload} />}
+				>
+					Save export
+				</Button>
+			</Group>
+		</Stack>
 	);
+}
+
+export function DataExportModal() {
+	const [connectionId] = useConnection((c) => [c?.id]);
+	const navigateSettings = useConnectionSettingsNavigator();
+
+	useIntent("export-database", ({ v3, tables, resources }) => {
+		if (!connectionId) return;
+
+		navigateSettings(connectionId, "import-export", {
+			mode: "export",
+			v3: v3 != null && String(v3) === "true" ? "true" : undefined,
+			tables: tables === "*" ? "*" : undefined,
+			resources: resources === "*" ? "*" : undefined,
+		});
+	});
+
+	return null;
 }

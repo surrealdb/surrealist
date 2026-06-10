@@ -98,7 +98,7 @@ export class DesktopAdapter implements SurrealistAdapter {
 		this.checkForUpdates();
 
 		if (this.platform === "darwin") {
-			this.titlebarOffset = 15;
+			this.titlebarOffset = 18;
 		} else {
 			this.titlebarOffset = 32;
 		}
@@ -269,7 +269,10 @@ export class DesktopAdapter implements SurrealistAdapter {
 	}
 
 	public async checkForUpdates(force?: boolean) {
-		const { lastPromptedVersion, setLastPromptedVersion } = useConfigStore.getState();
+		if (!this.isUpdateCheckSupported) {
+			return;
+		}
+
 		const { setAvailableUpdate } = useInterfaceStore.getState();
 
 		adapter.log("Updater", "Checking for updates");
@@ -284,10 +287,11 @@ export class DesktopAdapter implements SurrealistAdapter {
 				adapter.log("Updater", `Current: ${currentVersion}, Latest: ${latestVersion}`);
 
 				if (compareVersions(latestVersion, currentVersion) > 0) {
-					const showAlert = force || result.version !== lastPromptedVersion;
+					setAvailableUpdate(result);
 
-					setAvailableUpdate(result, showAlert);
-					setLastPromptedVersion(result.version);
+					if (force) {
+						dispatchIntent("open-update");
+					}
 				}
 			} else {
 				adapter.log("Updater", "No updates available");

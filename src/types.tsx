@@ -84,7 +84,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new";
+export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new" | "/support";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -97,6 +97,15 @@ export type ViewPage =
 	| "parameters"
 	| "documentation"
 	| "migrations";
+
+export type ConnectionSettingsTab =
+	| "general"
+	| "databases"
+	| "import-export"
+	| "configuration"
+	| "compute"
+	| "backups"
+	| "lifecycle";
 
 export type ContextViewPage =
 	| "dashboard"
@@ -335,6 +344,7 @@ export interface SurrealistConfig {
 	sandbox: Connection;
 	savedQueries: SavedQuery[];
 	lastPromptedVersion: string | null;
+	dismissedUpdateVersion: string | null;
 	lastViewedNewsAt: number | null;
 	settings: SurrealistSettings; // TODO Rename to preferences and flatten inner objects
 	keybindings: KeyBindings;

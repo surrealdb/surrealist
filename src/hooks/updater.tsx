@@ -3,6 +3,7 @@ import { Icon, iconDownload } from "@surrealdb/ui";
 import { invoke } from "@tauri-apps/api/core";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { useState } from "react";
+import { adapter } from "~/adapter";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
@@ -16,11 +17,27 @@ function extractMajor(version: string) {
 }
 
 /**
+ * Returns whether a desktop update is available and if it should appear in navigation.
+ */
+export function useDesktopUpdateState() {
+	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
+	const dismissedUpdateVersion = useConfigStore((s) => s.dismissedUpdateVersion);
+
+	const version = availableUpdate?.version ?? "";
+	const hasUpdate = adapter.isUpdateCheckSupported && !!availableUpdate;
+	const showInNavigation = hasUpdate && dismissedUpdateVersion !== version;
+
+	return {
+		hasUpdate,
+		showInNavigation,
+		version,
+	} as const;
+}
+
+/**
  * Provides the updater dialog logic for the desktop app.
  */
 export function useDesktopUpdater() {
-	const { hideAvailableUpdate } = useInterfaceStore.getState();
-
 	const update = useInterfaceStore((s) => s.availableUpdate);
 
 	const [phase, setPhase] = useState<Phase>("idle");
@@ -92,7 +109,6 @@ export function useDesktopUpdater() {
 		confirmProps: { variant: "gradient" },
 		dismissText: "Don't update now",
 		onConfirm: () => installUpdate(),
-		onDismiss: () => hideAvailableUpdate(),
 	});
 
 	const startUpdate = useStable(() => {
@@ -103,7 +119,13 @@ export function useDesktopUpdater() {
 		}
 	});
 
-	const progress = packageTotal > 0 ? ((packageProgress / packageTotal) * 100).toFixed(0) : "0";
+	const dismissUpdate = useStable(() => {
+		if (!update) return;
+
+		useConfigStore.getState().setDismissedUpdateVersion(update.version);
+	});
+
+	const progress = packageTotal > 0 ? (packageProgress / packageTotal) * 100 : 0;
 	const version = update?.version || "";
 
 	return {
@@ -111,5 +133,6 @@ export function useDesktopUpdater() {
 		progress,
 		version,
 		startUpdate,
+		dismissUpdate,
 	} as const;
 }

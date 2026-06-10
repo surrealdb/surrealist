@@ -1,15 +1,12 @@
 import {
-	Box,
 	type BoxProps,
-	Button,
 	Center,
+	Divider,
 	Drawer,
 	Group,
 	Image,
 	Modal,
 	Stack,
-	Text,
-	ThemeIcon,
 	Title,
 } from "@mantine/core";
 import {
@@ -25,7 +22,6 @@ import {
 	iconServer,
 	iconTransfer,
 	iconTune,
-	Spinner,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import { isDesktop } from "~/adapter";
@@ -36,10 +32,10 @@ import { useBoolean } from "~/hooks/boolean";
 import { useLogoUrl } from "~/hooks/brand";
 import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useDesktopUpdater } from "~/hooks/updater";
-import { useInterfaceStore } from "~/stores/interface";
+import { useDesktopUpdateState } from "~/hooks/updater";
 import type { Assign, FeatureCondition } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
+import { dispatchIntent } from "~/util/intents";
 import { AboutTab } from "./tabs/About";
 import { FeatureFlagsTab } from "./tabs/FeatureFlags";
 import { KeybindingsTab } from "./tabs/Keybindings";
@@ -117,6 +113,7 @@ interface SettingsSidebarProps extends BoxProps {
 	categories: OptionalCategory[];
 	withBorder?: boolean;
 	setActiveTab: (tab: string) => void;
+	onClose?: () => void;
 }
 
 function SettingsSidebar({
@@ -124,12 +121,16 @@ function SettingsSidebar({
 	categories,
 	withBorder,
 	setActiveTab,
+	onClose,
 	...other
 }: SettingsSidebarProps) {
 	const logoUrl = useLogoUrl();
+	const { hasUpdate } = useDesktopUpdateState();
 
-	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
-	const { phase, progress, version, startUpdate } = useDesktopUpdater();
+	const openUpdate = useStable(() => {
+		dispatchIntent("open-update");
+		onClose?.();
+	});
 
 	const sidebarCategories = categories.filter((c) => !c.disabled || c.id === activeTab);
 
@@ -158,6 +159,17 @@ function SettingsSidebar({
 				gap="xs"
 				flex={1}
 			>
+				{hasUpdate && (
+					<>
+						<Entry
+							leftSection={<Icon path={iconDownload} />}
+							onClick={openUpdate}
+						>
+							Update Surrealist
+						</Entry>
+						<Divider />
+					</>
+				)}
 				{sidebarCategories.map(({ id, name, icon }) => (
 					<Entry
 						key={id}
@@ -170,11 +182,8 @@ function SettingsSidebar({
 					</Entry>
 				))}
 
-				{availableUpdate && (
-					<>
-						<Spacer />
-						<Button
-							onClick={startUpdate}
+				{/* <Button
+							onClick={openUpdate}
 							color="violet"
 							variant="filled"
 							radius="sm"
@@ -194,11 +203,7 @@ function SettingsSidebar({
 									variant="outline"
 									color="white"
 								>
-									{phase === "downloading" ? (
-										<Spinner color="white" />
-									) : (
-										<Icon path={iconDownload} />
-									)}
+									<Icon path={iconDownload} />
 								</ThemeIcon>
 								<Box ta="start">
 									<Text
@@ -208,34 +213,16 @@ function SettingsSidebar({
 									>
 										Update Surrealist
 									</Text>
-									{phase === "downloading" ? (
-										<Text
-											c="white"
-											fz="sm"
-										>
-											Installing... ({progress}%)
-										</Text>
-									) : phase === "error" ? (
-										<Text
-											c="white"
-											fz="sm"
-										>
-											Failed to install update
-										</Text>
-									) : (
-										<Text
-											c="white"
-											fz="sm"
-											opacity={0.75}
-										>
-											Click to install v{version || "???"}
-										</Text>
-									)}
+									<Text
+										c="white"
+										fz="sm"
+										opacity={0.75}
+									>
+										Version {version} available
+									</Text>
 								</Box>
 							</Group>
-						</Button>
-					</>
-				)}
+						</Button> */}
 			</Stack>
 		</Stack>
 	);
@@ -302,6 +289,11 @@ export function Settings() {
 			onClose={openHandle.close}
 			padding={0}
 			size={1200}
+			styles={{
+				content: {
+					overflow: "hidden",
+				},
+			}}
 		>
 			<Group
 				h="calc(100vh - 100px)"
@@ -310,13 +302,18 @@ export function Settings() {
 				align="stretch"
 				wrap="nowrap"
 				pos="relative"
-				id="settings"
 			>
+				<div id="settings" />
 				<SettingsSidebar
 					activeTab={activeTab}
 					categories={categories}
 					setActiveTab={updateActiveTab}
 					withBorder
+					visibleFrom="md"
+					onClose={openHandle.close}
+				/>
+				<Divider
+					orientation="vertical"
 					visibleFrom="md"
 				/>
 				<Drawer
@@ -335,6 +332,10 @@ export function Settings() {
 						setActiveTab={updateActiveTab}
 						w="100%"
 						h="100%"
+						onClose={() => {
+							overlaySidebarHandle.close();
+							openHandle.close();
+						}}
 					/>
 				</Drawer>
 				<Stack

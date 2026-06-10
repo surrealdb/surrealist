@@ -17,7 +17,7 @@ import { useState } from "react";
 import { BreadcrumbCrumb } from "~/components/BreadcrumbCrumb";
 import { SANDBOX } from "~/constants";
 import { useConnection, useRequireDatabase } from "~/hooks/connection";
-import { useConnectionAndView } from "~/hooks/routing";
+import { useConnectionFromRoute } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openConnectionDiagnosticsModal } from "~/modals/connection-diagnostics";
 import { openConnectionEditModal } from "~/modals/edit-connection";
@@ -32,7 +32,7 @@ import { closeConnection, openConnection } from "../connection/connection";
 export function ConnectionCrumb() {
 	const [isDropped, setIsDropped] = useState(false);
 
-	const [connection] = useConnectionAndView();
+	const connection = useConnectionFromRoute();
 	const [connectionId, name, icon, instance] = useConnection((c) => [
 		c?.id ?? "",
 		c?.name ?? "",

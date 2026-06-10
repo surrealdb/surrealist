@@ -21,7 +21,6 @@ import { showNotification } from "@mantine/notifications";
 import {
 	Icon,
 	iconCheck,
-	iconChevronDown,
 	iconChevronRight,
 	iconCopy,
 	pictoDocument,
@@ -42,12 +41,11 @@ import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { CloudGuard } from "~/components/CloudGuard";
-import { InstanceActions } from "~/components/InstanceActions";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
-import { useBoolean } from "~/hooks/boolean";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
+import { useConnectionSettingsNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openBillingRequiredModal } from "~/modals/billing-required";
 import { PageContainer } from "~/screens/surrealist/components/PageContainer";
@@ -69,17 +67,14 @@ import { ViewPageProps } from "../../../types";
 import { MonitorMetricOptions } from "../../monitor/helpers";
 import { MetricActions } from "../../monitor/MetricPane/actions";
 import { BackupsBlock } from "../BackupsBlock";
-import { BackupsDrawer } from "../BackupsDrawer";
 import { ComputeHoursBlock } from "../ComputeHoursBlock";
 import { ConfigurationBlock } from "../ConfigurationBlock";
-import { ConfiguratorDrawer } from "../ConfiguratorDrawer";
 import { ConnectBlock } from "../ConnectBlock";
 import { DiskUsageBlock } from "../DiskUsageBlock";
 import { MajorUpdateSection } from "../MajorUpdateSection";
 import { NavigationBlock } from "../NavigationBlock";
 import { ResumeBlock } from "../ResumeBlock";
 import { UpdateBlock } from "../UpdateBlock";
-import { UpgradeDrawer } from "../UpgradeDrawer";
 import classes from "./style.module.scss";
 
 const MajorUpdateSectionLazy = memo(MajorUpdateSection);
@@ -90,9 +85,6 @@ const ConnectBlockLazy = memo(ConnectBlock);
 const ComputeUsageBlockLazy = memo(ComputeHoursBlock);
 const DiskUsageBlockLazy = memo(DiskUsageBlock);
 const BackupsBlockLazy = memo(BackupsBlock);
-const ConfiguratorDrawerLazy = memo(ConfiguratorDrawer);
-const BackupsDrawerLazy = memo(BackupsDrawer);
-const UpgradeDrawerLazy = memo(UpgradeDrawer);
 const MemoryUsageChartLazy = memo(MemoryUsageChart);
 const ComputeUsageChartLazy = memo(ComputeUsageChart);
 const NetworkIngressChartLazy = memo(NetworkIngressChart);
@@ -100,19 +92,14 @@ const NetworkEgressChartLazy = memo(NetworkEgressChart);
 
 export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProps) {
 	const isConnected = useIsConnected();
-	const [conn, isCloud, instanceId] = useConnection((c) => [
+	const [conn, isCloud, instanceId, connectionId] = useConnection((c) => [
 		c,
 		c?.authentication.mode === "cloud",
 		c?.authentication.cloudInstance,
+		c?.id ?? "",
 	]);
 
-	const [upgrading, upgradingHandle] = useBoolean();
-	const [configuring, configuringHandle] = useBoolean();
-	const [backupsOpened, backupsHandle] = useBoolean();
-
-	const [upgradeTab, setUpgradeTab] = useState("type");
-	const [configuratorTab, setConfiguratorTab] = useState("capabilities");
-	const [backupsTab, setBackupsTab] = useState("backups");
+	const navigateSettings = useConnectionSettingsNavigator();
 
 	const [metricOptions, setMetricOptions] = useImmer<MonitorMetricOptions>({
 		duration: "hour",
@@ -265,68 +252,49 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 		}
 	}, [details?.state, details, isConnected, importDatabase]);
 
-	const handleUpgradeType = useStable(() => {
-		if (!organisation) return;
+	const navigateUpgrade = useStable(() => {
+		if (!organisation || !connectionId) return;
 
-		setUpgradeTab("type");
-
-		if (organisation.resources_locked) {
-			openResourcesLockedModal(organisation);
-		} else {
-			if (isOrganisationBillable(organisation)) {
-				upgradingHandle.open();
-			} else {
-				openBillingRequiredModal({
-					organization: organisation,
-					onClose: () => {},
-					onContinue: () => {
-						upgradingHandle.open();
-					},
-				});
-			}
-		}
-	});
-
-	const handleUpgradeStorage = useStable(() => {
-		if (!organisation) return;
-
-		setUpgradeTab("disk");
+		const go = () => navigateSettings(connectionId, "compute");
 
 		if (organisation.resources_locked) {
 			openResourcesLockedModal(organisation);
+		} else if (isOrganisationBillable(organisation)) {
+			go();
 		} else {
-			if (isOrganisationBillable(organisation)) {
-				upgradingHandle.open();
-			} else {
-				openBillingRequiredModal({
-					organization: organisation,
-					onClose: () => {},
-					onContinue: () => {
-						upgradingHandle.open();
-					},
-				});
-			}
+			openBillingRequiredModal({
+				organization: organisation,
+				onClose: () => {},
+				onContinue: go,
+			});
 		}
 	});
+
+	const handleUpgradeType = navigateUpgrade;
+	const handleUpgradeStorage = navigateUpgrade;
 
 	const handleConfigure = useStable(() => {
-		setConfiguratorTab("capabilities");
-		configuringHandle.open();
+		if (connectionId) {
+			navigateSettings(connectionId, "configuration");
+		}
 	});
 
 	const handleVersions = useStable(() => {
-		setConfiguratorTab("version");
-		configuringHandle.open();
+		if (connectionId) {
+			navigateSettings(connectionId, "configuration");
+		}
 	});
 
 	const handleOpenBackups = useStable(() => {
-		setBackupsTab("backups");
-		backupsHandle.open();
+		if (connectionId) {
+			navigateSettings(connectionId, "backups");
+		}
 	});
 
 	const handleBackupPolicy = useStable(() => {
-		setBackupsTab("retention");
-		backupsHandle.open();
+		if (connectionId) {
+			navigateSettings(connectionId, "backups");
+		}
 	});
 
 	const publicAccess = details?.access_type === "public" || details?.access_type === "dual";
@@ -370,21 +338,6 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 											size={14}
 											state={details.state}
 										/>
-									)}
-									<Spacer />
-									{details && organisation && (
-										<InstanceActions
-											instance={details}
-											organisation={organisation}
-										>
-											<Button
-												color="violet"
-												variant="light"
-												rightSection={<Icon path={iconChevronDown} />}
-											>
-												Instance actions
-											</Button>
-										</InstanceActions>
 									)}
 								</Group>
 							)}
@@ -452,6 +405,7 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 										<ResumeBlockLazy
 											instance={details}
 											organisation={organisation}
+											connectionId={connectionId}
 										/>
 									) : (
 										<ConnectBlockLazy
@@ -583,35 +537,6 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 								mt={96}
 							/>
 						)}
-					</>
-				)}
-				{details && organisation && (
-					<>
-						<BackupsDrawerLazy
-							opened={backupsOpened}
-							tab={backupsTab}
-							backups={backups}
-							instance={details}
-							onChangeTab={setBackupsTab}
-							onClose={backupsHandle.close}
-						/>
-						<ConfiguratorDrawerLazy
-							opened={configuring}
-							tab={configuratorTab}
-							organisation={organisation}
-							instance={details}
-							onChangeTab={setConfiguratorTab}
-							onClose={configuringHandle.close}
-							onUpdate={handleUpdate}
-						/>
-						<UpgradeDrawerLazy
-							opened={upgrading}
-							instance={details}
-							organisation={organisation}
-							tab={upgradeTab}
-							onChangeTab={setUpgradeTab}
-							onClose={upgradingHandle.close}
-						/>
 					</>
 				)}
 			</PageContainer>

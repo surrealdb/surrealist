@@ -9,7 +9,6 @@ export type InterfaceStore = {
 	toolbarInset: ReactNode;
 	colorScheme: ColorScheme;
 	availableUpdate: null | Update;
-	showAvailableUpdate: boolean;
 	showTableCreator: boolean;
 	liveTabs: Set<string>;
 	liveQueryMessages: Record<string, LiveMessage[]>;
@@ -23,8 +22,7 @@ export type InterfaceStore = {
 	setPageBreadcrumbs: (items: BreadcrumbItem[]) => void;
 	setToolbarInset: (inset: ReactNode) => void;
 	setColorScheme: (colorScheme: ColorScheme) => void;
-	setAvailableUpdate: (update: Update, alert: boolean) => void;
-	hideAvailableUpdate: () => void;
+	setAvailableUpdate: (update: Update) => void;
 	setIsLive: (id: string, live: boolean) => void;
 	openTableCreator: () => void;
 	closeTableCreator: () => void;
@@ -44,7 +42,6 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 	toolbarInset: null,
 	colorScheme: "dark",
 	availableUpdate: null,
-	showAvailableUpdate: false,
 	showConnectionEditor: false,
 	isCreatingConnection: false,
 	editingConnectionId: "",
@@ -71,15 +68,9 @@ export const useInterfaceStore = create<InterfaceStore>((set) => ({
 			colorScheme,
 		})),
 
-	setAvailableUpdate: (availableUpdate, showAvailableUpdate) =>
+	setAvailableUpdate: (availableUpdate) =>
 		set(() => ({
 			availableUpdate,
-			showAvailableUpdate,
-		})),
-
-	hideAvailableUpdate: () =>
-		set(() => ({
-			showAvailableUpdate: false,
 		})),
 
 	openTableCreator: () =>

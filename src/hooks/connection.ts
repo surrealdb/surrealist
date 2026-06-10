@@ -20,7 +20,7 @@ import {
 } from "~/types";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { fuzzyMatch } from "~/util/helpers";
-import { useConnectionAndView } from "./routing";
+import { useConnectionAndView, useConnectionFromRoute } from "./routing";
 import { useStable } from "./stable";
 
 export type ConnectionType = "cloud" | "local" | "sandbox";
@@ -54,7 +54,7 @@ export function useConnectionList() {
  * @param selector A function to select fields from the connection
  */
 export function useConnection<T>(selector: (con?: Connection) => T): T {
-	const [connection] = useConnectionAndView();
+	const connection = useConnectionFromRoute();
 
 	return useConfigStore(
 		useShallow((s) => {

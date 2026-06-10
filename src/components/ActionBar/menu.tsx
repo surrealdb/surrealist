@@ -1,8 +1,10 @@
-import { Box, Button, Group, Menu, Text } from "@mantine/core";
+import { ActionIcon, Box, Group, Menu, Text } from "@mantine/core";
 import {
 	Icon,
+	iconAccount,
 	iconBook,
-	iconChevronRight,
+	iconChat,
+	iconCog,
 	iconCommand,
 	iconExitToAp,
 	iconMoon,
@@ -10,41 +12,25 @@ import {
 	iconStar,
 	iconSun,
 	iconTune,
+	iconViewList,
 } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import { useSetting } from "~/hooks/config";
+import { useAbsoluteLocation } from "~/hooks/routing";
 import { useTheme } from "~/hooks/theme";
 import { useAuthentication } from "~/providers/Auth";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { dispatchIntent } from "~/util/intents";
 import { AccountAvatar } from "../AccountAvatar";
+import { Shortcut } from "../Shortcut";
 
-export function CloudAccount() {
-	const {
-		user,
-		signIn,
-		signOut,
-		isAuthenticated,
-		isLoading: isAuthLoading,
-	} = useAuthentication();
+export function AccountMenu() {
+	const { user, signOut, signIn, isAuthenticated, isLoading } = useAuthentication();
+	const [, navigate] = useAbsoluteLocation();
 
 	const [{ themes }] = useFeatureFlags();
 	const [, setColorSchemePref] = useSetting("appearance", "colorScheme");
 	const effectiveScheme = useTheme();
-
-	if (!isAuthenticated) {
-		return (
-			<Button
-				variant="gradient"
-				size="xs"
-				disabled={isAuthLoading}
-				onClick={() => signIn()}
-				rightSection={<Icon path={iconChevronRight} />}
-			>
-				Sign in
-			</Button>
-		);
-	}
 
 	const name = user?.name || "Unknown";
 
@@ -52,42 +38,50 @@ export function CloudAccount() {
 		<Menu
 			position="bottom-end"
 			trigger="click-hover"
-			disabled={isAuthLoading}
+			disabled={isLoading}
 			transitionProps={{
 				transition: "scale-y",
 			}}
 		>
 			<Menu.Target>
-				<Box>
+				{isAuthenticated ? (
 					<AccountAvatar />
-				</Box>
+				) : (
+					<ActionIcon>
+						<Icon path={iconViewList} />
+					</ActionIcon>
+				)}
 			</Menu.Target>
 			<Menu.Dropdown miw={200}>
-				<Box
-					p="sm"
-					mb="xs"
-				>
-					<Group>
-						<AccountAvatar />
-						<Box>
-							<Text
-								fz="md"
-								fw={500}
-								c="bright"
-							>
-								{name}
-							</Text>
-							<Text
-								fz="sm"
-								c="obsidian"
-								mt={-3}
-							>
-								{user?.email}
-							</Text>
+				{isAuthenticated && (
+					<>
+						<Box
+							p="sm"
+							mb="xs"
+						>
+							<Group>
+								<AccountAvatar />
+								<Box>
+									<Text
+										fz="md"
+										fw={500}
+										c="bright"
+									>
+										{name}
+									</Text>
+									<Text
+										fz="sm"
+										c="obsidian"
+										mt={-3}
+									>
+										{user?.email}
+									</Text>
+								</Box>
+							</Group>
 						</Box>
-					</Group>
-				</Box>
-				<Menu.Divider />
+						<Menu.Divider />
+					</>
+				)}
 				<Menu.Item
 					leftSection={<Icon path={iconStar} />}
 					onClick={() => dispatchIntent("open-changelog")}
@@ -114,6 +108,25 @@ export function CloudAccount() {
 				)}
 				<Menu.Divider />
 				<Menu.Item
+					leftSection={<Icon path={iconCog} />}
+					rightSection={
+						<Shortcut
+							value={["mod", ","]}
+							size="xs"
+						/>
+					}
+					onClick={() => dispatchIntent("open-settings")}
+				>
+					Settings
+				</Menu.Item>
+				<Menu.Item
+					leftSection={<Icon path={iconChat} />}
+					onClick={() => navigate("/support")}
+				>
+					Support centre
+				</Menu.Item>
+				<Menu.Divider />
+				<Menu.Item
 					leftSection={<Icon path={iconBook} />}
 					rightSection={<Icon path={iconOpen} />}
 					onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
@@ -128,12 +141,21 @@ export function CloudAccount() {
 					Account settings
 				</Menu.Item>
 				<Menu.Divider />
-				<Menu.Item
-					leftSection={<Icon path={iconExitToAp} />}
-					onClick={() => signOut()}
-				>
-					Sign out
-				</Menu.Item>
+				{isAuthenticated ? (
+					<Menu.Item
+						leftSection={<Icon path={iconExitToAp} />}
+						onClick={() => signOut()}
+					>
+						Sign out
+					</Menu.Item>
+				) : (
+					<Menu.Item
+						leftSection={<Icon path={iconAccount} />}
+						onClick={() => signIn()}
+					>
+						Sign in
+					</Menu.Item>
+				)}
 			</Menu.Dropdown>
 		</Menu>
 	);

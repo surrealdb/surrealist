@@ -1,4 +1,4 @@
-import { isDesktop } from "~/adapter";
+import { adapter } from "~/adapter";
 import { DesignerProvider } from "~/providers/Designer";
 import { InspectorProvider } from "~/providers/Inspector";
 import { SurrealistScreen } from "~/screens/surrealist";
@@ -22,7 +22,7 @@ import { SandboxModal } from "./modals/sandbox";
 import { SidekickDrawer } from "./modals/sidekick";
 import { AccessSignupModal } from "./modals/signup";
 import { TableCreatorModal } from "./modals/table";
-import { UpdaterDialog } from "./modals/updater";
+import { UpdateModal } from "./modals/updater";
 import { Settings } from "./settings";
 
 function Surrealist() {
@@ -63,7 +63,7 @@ export function App() {
 			<CloudUpdateRequiredDialog />
 			<FailedConnectDialog />
 
-			{isDesktop && <UpdaterDialog />}
+			{adapter.isUpdateCheckSupported && <UpdateModal />}
 		</Scaffold>
 	);
 }

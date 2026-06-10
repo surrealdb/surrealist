@@ -1,80 +1,126 @@
-import { ActionIcon, Box, Dialog, Group, Text, ThemeIcon } from "@mantine/core";
-import { Icon, iconClose, iconDownload } from "@surrealdb/ui";
-import type { MouseEvent } from "react";
+import { Box, Button, Center, Modal, RingProgress, Stack, Text, ThemeIcon } from "@mantine/core";
+import { Icon, iconDownload, SectionTitle } from "@surrealdb/ui";
+import { useBoolean } from "~/hooks/boolean";
+import { useIntent } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useDesktopUpdater } from "~/hooks/updater";
 import { useInterfaceStore } from "~/stores/interface";
 import classes from "../style.module.scss";
 
-export function UpdaterDialog() {
-	const { hideAvailableUpdate } = useInterfaceStore.getState();
-	const showUpdate = useInterfaceStore((s) => s.showAvailableUpdate);
+export function UpdateModal() {
+	const [isOpen, openedHandle] = useBoolean();
+	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
 
-	const { phase, progress, version, startUpdate } = useDesktopUpdater();
+	const { phase, progress, version, startUpdate, dismissUpdate } = useDesktopUpdater();
 
-	const hideUpdate = useStable((e: MouseEvent) => {
-		e.stopPropagation();
-		hideAvailableUpdate();
+	useIntent("open-update", () => {
+		if (useInterfaceStore.getState().availableUpdate) {
+			openedHandle.open();
+		}
 	});
 
-	// TODO Use notification
+	const installLater = useStable(() => {
+		dismissUpdate();
+		openedHandle.close();
+	});
+
+	const installNow = useStable(() => {
+		startUpdate();
+	});
 
 	return (
-		<Dialog
-			opened={showUpdate}
-			onClose={hideAvailableUpdate}
-			size="lg"
-			shadow="sm"
-			onClick={startUpdate}
-			position={{
-				bottom: "var(--mantine-spacing-xl)",
-				left: "var(--mantine-spacing-xl)",
-			}}
-			transitionProps={{
-				transition: "slide-up",
-				timingFunction: "ease",
-				duration: 200,
-			}}
-			classNames={{
-				root: classes.updateDialog,
+		<Modal
+			opened={isOpen && !!availableUpdate}
+			onClose={openedHandle.close}
+			size="sm"
+			radius="md"
+			padding={0}
+			styles={{
+				content: { borderRadius: "var(--paper-radius)", overflow: "hidden" },
 			}}
 		>
-			<ActionIcon
-				onClick={hideUpdate}
-				pos="absolute"
-				variant="subtle"
-				top={8}
-				right={8}
-			>
-				<Icon path={iconClose} />
-			</ActionIcon>
-			<Group>
-				<ThemeIcon
-					variant="gradient"
-					size={38}
+			<Box className={classes.updateHeader}>
+				<Center
+					pt="xl"
+					pb="xlg"
 				>
-					<Icon
-						path={iconDownload}
-						size="lg"
-					/>
-				</ThemeIcon>
-				<Box miw={200}>
-					<Text
-						c="white"
-						fw={500}
-						fz="lg"
+					<ThemeIcon
+						color="var(--surreal-paper-background)"
+						variant="filled"
+						size={96}
+						radius={100}
+						mb={-80}
+						style={{ zIndex: 2 }}
 					>
-						New version available
-					</Text>
-					{phase === "downloading" ? (
-						<Text>Installing... ({progress}%)</Text>
-					) : phase === "error" ? (
-						<Text c="red">Failed to install update</Text>
-					) : (
-						<Text>Click to install version {version}</Text>
-					)}
+						{phase === "downloading" ? (
+							<RingProgress
+								rootColor="var(--mantine-color-violet-light)"
+								sections={[
+									{ value: progress, color: "var(--mantine-color-violet-text)" },
+								]}
+								thickness={6}
+								size={80}
+								label={`${progress.toFixed(0)}%`}
+								styles={{
+									label: {
+										textAlign: "center",
+									},
+								}}
+							/>
+						) : (
+							<Icon
+								path={iconDownload}
+								size={52}
+								c="bright"
+							/>
+						)}
+					</ThemeIcon>
+				</Center>
+				<Box
+					component="svg"
+					viewBox="0 0 1440 125"
+					preserveAspectRatio="none"
+					display="block"
+					style={{ zIndex: 1 }}
+					pos="relative"
+				>
+					<path
+						d="M 0 60 Q 350 120 720 120 T 1440 60 L 1440 250 L 0 250 Z"
+						fill="var(--surreal-paper-background)"
+					/>
 				</Box>
-			</Group>
-		</Dialog>
+			</Box>
+			<Stack
+				p="xl"
+				ta="center"
+				pt="3xl"
+			>
+				<SectionTitle order={2}>Update available</SectionTitle>
+				<Text inherit>
+					Updating ensures you have access to the latest features, the best performance,
+					and important security or bug fixes.
+				</Text>
+				{phase === "error" && (
+					<Text c="red">Failed to install the update automatically</Text>
+				)}
+
+				<Button
+					mt="xl"
+					variant="gradient"
+					onClick={installNow}
+					disabled={phase === "downloading"}
+				>
+					Install Surrealist {version}
+				</Button>
+
+				<Button
+					variant="transparent"
+					onClick={installLater}
+					disabled={phase === "downloading"}
+				>
+					Skip this version
+				</Button>
+			</Stack>
+		</Modal>
 	);
 }

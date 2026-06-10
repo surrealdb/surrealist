@@ -20,7 +20,6 @@ import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionButton } from "~/components/ActionButton";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { StarSparkles } from "~/components/StarSparkles";
 import { REGION_FLAGS, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
@@ -366,132 +365,128 @@ export function ConnectionToolbarActions() {
 				</Badge>
 			)}
 
-			{isConnected && isSandbox && sandbox_deploy && (
-				<StarSparkles>
-					{isAuthenticated && (
-						<Menu
-							disabled={isDeploying}
-							opened={opened}
-							onChange={openHandle.set}
-							transitionProps={{
-								transition: "scale-y",
-							}}
-							closeOnItemClick={false}
-							clickOutsideEvents={[]}
-							trigger="click"
-						>
-							<Menu.Target>
-								<Button
-									variant="gradient"
-									size="xs"
-									loading={isDeploying}
-								>
-									Deploy to Cloud
-								</Button>
-							</Menu.Target>
-							<Menu.Dropdown p="md">
-								<Stack gap="md">
-									{organizations.length > 1 && (
-										<Select
-											label="Select organization"
-											placeholder="Loading organizations..."
-											description="Select the organization to deploy to"
-											data={organizations.map((org) => ({
-												label: org.name,
-												value: org.id,
-											}))}
-											value={organization?.id}
-											onChange={(value) =>
-												setOrganization(
-													value
-														? (organizations.find(
-																(org) => org.id === value,
-															) ?? null)
-														: null,
-												)
-											}
-										/>
-									)}
-
-									<Select
-										label="Region"
-										placeholder="Loading regions..."
-										description="Select the region where your instance will be deployed"
-										data={regionList}
-										value={region?.slug}
-										onChange={(value) => {
-											const foundRegion = supportedRegions.find(
-												(r) => r.slug === value,
-											);
-
-											if (foundRegion) {
-												setRegion(foundRegion);
-											}
-										}}
-										leftSection={
-											region && (
-												<Image
-													src={REGION_FLAGS[region.slug]}
-													w={18}
-												/>
-											)
-										}
-										disabled={!organization}
-										renderOption={(org) => (
-											<Group>
-												<Image
-													src={REGION_FLAGS[org.option.value]}
-													w={24}
-												/>
-												{org.option.label}
-												{org.checked && (
-													<Icon
-														path={iconCheck}
-														c="bright"
-													/>
-												)}
-											</Group>
-										)}
-									/>
-
-									<Group gap="md">
-										<Button
-											flex={1}
-											color="obsidian"
-											variant="light"
-											size="xs"
-											onClick={() => {
-												openHandle.close();
-											}}
-										>
-											Close
-										</Button>
-										<Button
-											flex={1}
-											variant="gradient"
-											size="xs"
-											disabled={!organization || !region}
-											loading={isDeploying}
-											rightSection={<Icon path={iconCloud} />}
-											onClick={handleDeploy}
-										>
-											Deploy
-										</Button>
-									</Group>
-								</Stack>
-							</Menu.Dropdown>
-						</Menu>
-					)}
-					{!isAuthenticated && (
+			{isConnected && isSandbox && sandbox_deploy && isAuthenticated && (
+				<Menu
+					disabled={isDeploying}
+					opened={opened}
+					onChange={openHandle.set}
+					transitionProps={{
+						transition: "scale-y",
+					}}
+					closeOnItemClick={false}
+					clickOutsideEvents={[]}
+					trigger="click"
+				>
+					<Menu.Target>
 						<Button
 							variant="gradient"
 							size="xs"
-							onClick={() => signIn()}
+							loading={isDeploying}
 						>
 							Deploy to Cloud
 						</Button>
-					)}
-				</StarSparkles>
+					</Menu.Target>
+					<Menu.Dropdown p="md">
+						<Stack gap="md">
+							{organizations.length > 1 && (
+								<Select
+									label="Select organization"
+									placeholder="Loading organizations..."
+									description="Select the organization to deploy to"
+									data={organizations.map((org) => ({
+										label: org.name,
+										value: org.id,
+									}))}
+									value={organization?.id}
+									onChange={(value) =>
+										setOrganization(
+											value
+												? (organizations.find((org) => org.id === value) ??
+														null)
+												: null,
+										)
+									}
+								/>
+							)}
+
+							<Select
+								label="Region"
+								placeholder="Loading regions..."
+								description="Select the region where your instance will be deployed"
+								data={regionList}
+								value={region?.slug}
+								onChange={(value) => {
+									const foundRegion = supportedRegions.find(
+										(r) => r.slug === value,
+									);
+
+									if (foundRegion) {
+										setRegion(foundRegion);
+									}
+								}}
+								leftSection={
+									region && (
+										<Image
+											src={REGION_FLAGS[region.slug]}
+											w={18}
+										/>
+									)
+								}
+								disabled={!organization}
+								renderOption={(org) => (
+									<Group>
+										<Image
+											src={REGION_FLAGS[org.option.value]}
+											w={24}
+										/>
+										{org.option.label}
+										{org.checked && (
+											<Icon
+												path={iconCheck}
+												c="bright"
+											/>
+										)}
+									</Group>
+								)}
+							/>
+
+							<Group gap="md">
+								<Button
+									flex={1}
+									color="obsidian"
+									variant="light"
+									size="xs"
+									onClick={() => {
+										openHandle.close();
+									}}
+								>
+									Close
+								</Button>
+								<Button
+									flex={1}
+									variant="gradient"
+									size="xs"
+									disabled={!organization || !region}
+									loading={isDeploying}
+									rightSection={<Icon path={iconCloud} />}
+									onClick={handleDeploy}
+								>
+									Deploy
+								</Button>
+							</Group>
+						</Stack>
+					</Menu.Dropdown>
+				</Menu>
+			)}
+
+			{!isAuthenticated && (
+				<Button
+					variant="gradient"
+					size="xs"
+					onClick={() => signIn()}
+				>
+					Deploy to Cloud
+				</Button>
 			)}
 
 			{isConnected && !isSupported && (

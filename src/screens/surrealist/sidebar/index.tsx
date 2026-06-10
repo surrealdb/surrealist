@@ -1,23 +1,20 @@
 import {
-	Box,
 	type BoxProps,
-	Flex,
+	Divider,
 	Image,
 	ScrollArea,
 	Stack,
 	Transition,
 	UnstyledButton,
 } from "@mantine/core";
-import { iconCog, iconHelp, iconSearch, pictoSurrealist } from "@surrealdb/ui";
+import { iconDownload, iconSearch, pictoSurrealist } from "@surrealdb/ui";
 import clsx from "clsx";
-import { useCloudUnreadConversationsQuery } from "~/cloud/queries/context";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
 import { useLogoUrl } from "~/hooks/brand";
 import { useSetting } from "~/hooks/config";
-import { useAbsoluteLocation } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
-import { useInterfaceStore } from "~/stores/interface";
+import { useDesktopUpdateState } from "~/hooks/updater";
 import { isMobile } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
@@ -30,15 +27,16 @@ export interface SurrealistSidebarProps extends BoxProps {
 
 export function SurrealistSidebar({ className, fill, ...other }: SurrealistSidebarProps) {
 	const logoUrl = useLogoUrl();
-	const [, navigate] = useAbsoluteLocation();
+	// const [, navigate] = useAbsoluteLocation();
 	const { mode, setLocation } = useSidebar();
 
-	const availableUpdate = useInterfaceStore((s) => s.availableUpdate);
-	const { data: unreadConversations } = useCloudUnreadConversationsQuery();
+	// const { data: unreadConversations } = useCloudUnreadConversationsQuery();
 	const [hasGreeting] = useSetting("appearance", "logoGreetAnimation");
+	const { showInNavigation } = useDesktopUpdateState();
 
-	const openSettings = useStable(() => dispatchIntent("open-settings"));
+	// const openSettings = useStable(() => dispatchIntent("open-settings"));
 	const openCommands = useStable(() => dispatchIntent("open-command-palette"));
+	const openUpdate = useStable(() => dispatchIntent("open-update"));
 
 	const isCompact = !fill && mode === "compact";
 
@@ -47,102 +45,116 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 	});
 
 	return (
-		<Box
+		<Stack
 			pos="fixed"
 			component="aside"
+			gap={0}
 			top={0}
 			left={0}
 			bottom={0}
-			display="flex"
-			className={classes.sidebarWrapper}
+			className={clsx(classes.sidebar, className)}
+			mod={{
+				fill,
+				isCompact,
+			}}
+			{...other}
 		>
+			<Stack
+				gap={0}
+				px={16}
+				pt={12}
+			>
+				<UnstyledButton
+					onClick={goHome}
+					className={classes.logo}
+					pos="relative"
+					h={42}
+				>
+					<Image
+						src={pictoSurrealist}
+						w={36}
+						className={classes.logoHat}
+						pos="absolute"
+						top={0}
+						left={3}
+						mod={{ greet: hasGreeting && !isCompact }}
+					/>
+					<Transition
+						mounted={!isCompact}
+						keepMounted
+						timingFunction="ease-out"
+						transition={hasGreeting ? "scale-x" : "fade-right"}
+						duration={150}
+					>
+						{(style) => (
+							<Image
+								src={logoUrl}
+								style={{ flexShrink: 0, ...style }}
+								w={125}
+								ml={hasGreeting ? "sm" : 48}
+								mt="-xs"
+							/>
+						)}
+					</Transition>
+				</UnstyledButton>
+			</Stack>
+
 			<ScrollArea
+				flex={1}
 				scrollbars="y"
 				type="never"
-				className={clsx(
-					classes.sidebar,
-					isCompact && classes.sidebarCollapsed,
-					fill && classes.sidebarFill,
-					className,
-				)}
-				{...other}
+				className={classes.sidebarNavigation}
 			>
-				<Flex
-					className={classes.sidebarInner}
-					direction="column"
+				<Stack
 					px={16}
-					pt={12}
+					py="lg"
 				>
-					<UnstyledButton
-						onClick={goHome}
-						className={classes.logo}
-						mb="lg"
-						pos="relative"
-						h={42}
-					>
-						<Image
-							src={pictoSurrealist}
-							w={36}
-							className={classes.logoHat}
-							pos="absolute"
-							top={0}
-							left={3}
-							mod={{ greet: hasGreeting && !isCompact }}
-						/>
-						<Transition
-							mounted={!isCompact}
-							keepMounted
-							timingFunction="ease-out"
-							transition={hasGreeting ? "scale-x" : "fade-right"}
-							duration={150}
-						>
-							{(style) => (
-								<Image
-									src={logoUrl}
-									style={{ flexShrink: 0, ...style }}
-									w={125}
-									ml={hasGreeting ? "sm" : 48}
-									mt="-xs"
-								/>
-							)}
-						</Transition>
-					</UnstyledButton>
-
 					<SidebarTarget />
-
-					<Stack
-						gap="sm"
-						mt={hasGreeting ? undefined : 22}
-						pb={18}
-					>
-						<NavigationIcon
-							name="Support"
-							icon={iconHelp}
-							match={["/support", "/support/*"]}
-							onClick={() => navigate("/support")}
-							withTooltip={isCompact}
-							indicator={unreadConversations}
-						/>
-
-						<NavigationIcon
-							name="Search"
-							rightSection={!isMobile() && <Shortcut value={["mod", "K"]} />}
-							icon={iconSearch}
-							onClick={openCommands}
-							withTooltip={isCompact}
-						/>
-
-						<NavigationIcon
-							name="Settings"
-							rightSection={!isMobile() && <Shortcut value={["mod", ","]} />}
-							icon={iconCog}
-							onClick={openSettings}
-							withTooltip={isCompact}
-							indicator={!!availableUpdate}
-						/>
-					</Stack>
-				</Flex>
+				</Stack>
 			</ScrollArea>
-		</Box>
+
+			<Stack
+				px={16}
+				pb={18}
+			>
+				<Divider />
+
+				{/* <NavigationIcon
+					name="Support"
+					icon={iconHelp}
+					match={["/support", "/support/*"]}
+					onClick={() => navigate("/support")}
+					withTooltip={isCompact}
+					indicator={unreadConversations}
+				/> */}
+
+				{showInNavigation && (
+					<NavigationIcon
+						name="Update Surrealist"
+						icon={iconDownload}
+						onClick={openUpdate}
+						withTooltip={isCompact}
+						className={classes.sidebarUpdate}
+					/>
+				)}
+
+				<NavigationIcon
+					name="Search"
+					rightSection={!isMobile() && <Shortcut value={["mod", "K"]} />}
+					icon={iconSearch}
+					onClick={openCommands}
+					withTooltip={isCompact}
+				/>
+
+				{/* <NavigationIcon
+					name="Settings"
+					rightSection={!isMobile() && <Shortcut value={["mod", ","]} />}
+					icon={iconCog}
+					onClick={openSettings}
+					withTooltip={isCompact}
+					indicator={!!availableUpdate}
+				/> */}
+			</Stack>
+		</Stack>
 	);
 }

@@ -75,7 +75,7 @@ export function SupportPage() {
 							placeholder="Search for a collection or article"
 							leftSection={<Icon path={iconSearch} />}
 							flex={1}
-							size="lg"
+							size="md"
 							onChange={(e) => setSearch(e.target.value)}
 						/>
 

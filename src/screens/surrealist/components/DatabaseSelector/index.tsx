@@ -3,6 +3,7 @@ import { Icon, iconList, iconPlus, iconSearch } from "@surrealdb/ui";
 import { useQuery } from "@tanstack/react-query";
 import { ChangeEvent, Fragment, useEffect, useMemo, useRef } from "react";
 import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnectionSettingsNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openNewDatabaseModal } from "~/modals/new-database";
 import { useInterfaceStore } from "~/stores/interface";
@@ -72,8 +73,12 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 		openNewDatabaseModal();
 	});
 
+	const navigateSettings = useConnectionSettingsNavigator();
+
 	const openSettings = useStable(() => {
-		// TODO Link to /c/id/settings/databases
+		if (connectionId) {
+			navigateSettings(connectionId, "databases");
+		}
 	});
 
 	const searchRef = useRef<HTMLInputElement>(null);

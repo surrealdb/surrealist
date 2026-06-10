@@ -15,7 +15,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { LearnMore } from "~/components/LearnMore";
 import { Spacer } from "~/components/Spacer";
-import { StarSparkles } from "~/components/StarSparkles";
 import { useConnection } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
 import { getSurreal } from "~/screens/surrealist/pages/Connection/connection/connection";
@@ -172,16 +171,11 @@ export function MigrationView() {
 							mb="md"
 						>
 							<Box mx="auto">
-								<StarSparkles
-									offsetBase={0}
-									offsetModifier={0}
-								>
-									<Image
-										src={pictoBadgeAccess}
-										alt="SurrealDB"
-										w={52}
-									/>
-								</StarSparkles>
+								<Image
+									src={pictoBadgeAccess}
+									alt="SurrealDB"
+									w={52}
+								/>
 							</Box>
 							<Title
 								ta="center"

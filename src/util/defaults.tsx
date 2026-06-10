@@ -23,6 +23,7 @@ export function createBaseConfig(): SurrealistConfig {
 		sandbox: createSandboxConnection(settings),
 		savedQueries: [],
 		lastPromptedVersion: null,
+		dismissedUpdateVersion: null,
 		featureFlags: {},
 		commandHistory: [],
 		lastViewedNewsAt: null,

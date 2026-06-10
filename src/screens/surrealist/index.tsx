@@ -86,6 +86,7 @@ export function SurrealistScreen() {
 				style={{
 					"--bg-image": `url(${globulesImg})`,
 					"--bg-opacity": "0.35",
+					"--titlebar-offset": `${adapter.titlebarOffset}px`,
 				}}
 			>
 				{isOtherOS && <AppTitleBar />}
@@ -321,6 +322,22 @@ export function SurrealistScreen() {
 											</Route>
 										</>
 									)}
+
+									{/* Connection settings */}
+									<Route path="/c/:connection/settings/:tab">
+										{({ tab }) => (
+											<>
+												<ConnectionSidebar />
+												<ConnectionPageLazy settingsTab={tab} />
+											</>
+										)}
+									</Route>
+
+									<Route path="/c/:connection/settings">
+										{({ connection }) => (
+											<Redirect to={`/c/${connection}/settings/general`} />
+										)}
+									</Route>
 
 									{/* Connection view page */}
 									<Route path="/c/:connection/:view">

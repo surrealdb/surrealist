@@ -19,6 +19,7 @@ import {
 	iconEyeOff,
 	iconFunction,
 	iconGraphql,
+	iconGrid,
 	iconHelp,
 	iconKey,
 	iconLive,
@@ -33,7 +34,6 @@ import {
 	iconTable,
 	iconTag,
 	iconTransfer,
-	iconTune,
 	iconVariable,
 	iconWarning,
 	iconXml,
@@ -44,6 +44,7 @@ import flagIN from "flag-icons/flags/4x3/in.svg";
 import flagUS from "flag-icons/flags/4x3/us.svg";
 import type {
 	AuthMode,
+	ConnectionSettingsTab,
 	ContextViewPage,
 	ContextViewPageInfo,
 	DiagramAlgorithm,
@@ -250,7 +251,7 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 	},
 	"/referrals": {
 		id: "/referrals",
-		name: "Referrals",
+		name: "Referral Program",
 		icon: iconReferral,
 		disabled: ({ flags }) => !flags.cloud_enabled,
 	},
@@ -259,13 +260,19 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Embed Creator",
 		icon: iconXml,
 	},
+	"/support": {
+		id: "/support",
+		name: "Support Centre",
+		aliases: ["/support/*"],
+		icon: iconChat,
+	},
 };
 
 export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 	dashboard: {
 		id: "dashboard",
 		name: "Dashboard",
-		icon: iconTune,
+		icon: iconGrid,
 		disabled: ({ isCloud }) => !isCloud,
 	},
 	monitor: {
@@ -335,11 +342,38 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 	},
 };
 
+export const CONNECTION_SETTINGS_TABS = [
+	"general",
+	"databases",
+	"import-export",
+	"configuration",
+	"compute",
+	"backups",
+	"lifecycle",
+] as const satisfies readonly ConnectionSettingsTab[];
+
+export const CLOUD_CONNECTION_SETTINGS_TABS = [
+	"configuration",
+	"compute",
+	"backups",
+	"lifecycle",
+] as const satisfies readonly ConnectionSettingsTab[];
+
+export const CONNECTION_SETTINGS_TAB_LABELS: Record<ConnectionSettingsTab, string> = {
+	general: "General",
+	databases: "Databases",
+	"import-export": "Import & export",
+	configuration: "Configuration",
+	compute: "Compute & storage",
+	backups: "Backups",
+	lifecycle: "Lifecycle",
+};
+
 export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = {
 	dashboard: {
 		id: "dashboard",
 		name: "Dashboard",
-		icon: iconTune,
+		icon: iconGrid,
 	},
 	playground: {
 		id: "playground",
