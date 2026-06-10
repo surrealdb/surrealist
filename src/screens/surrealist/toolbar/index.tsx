@@ -36,56 +36,60 @@ export function SurrealistToolbar() {
 
 	return (
 		<Box className={classes.root}>
-			<Box className={classes.primary}>
-				<ActionButton
-					label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
-					onClick={toggleSidebarMode}
-					size="md"
+			<ActionButton
+				className={classes.sidebarToggle}
+				label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
+				onClick={toggleSidebarMode}
+				size="md"
+			>
+				<Icon path={iconSidebar} />
+			</ActionButton>
+
+			<Box
+				className={classes.breadcrumbs}
+				{...scroller.fadeProps}
+			>
+				<UnstyledButton
+					className={classes.scrollerControl}
+					data-position="start"
+					data-hidden={!scroller.canScrollStart || undefined}
+					aria-label="Scroll breadcrumbs left"
+					tabIndex={scroller.canScrollStart ? 0 : -1}
+					onClick={scroller.scrollStart}
 				>
-					<Icon path={iconSidebar} />
-				</ActionButton>
+					<Icon path={iconChevronLeft} />
+				</UnstyledButton>
 
 				<Box
-					className={classes.breadcrumbs}
-					{...scroller.fadeProps}
+					ref={scroller.ref}
+					className={classes.scroller}
+					data-dragging={scroller.isDragging || undefined}
+					{...scroller.dragHandlers}
 				>
-					<UnstyledButton
-						className={classes.scrollerControl}
-						data-position="start"
-						data-hidden={!scroller.canScrollStart || undefined}
-						aria-label="Scroll breadcrumbs left"
-						tabIndex={scroller.canScrollStart ? 0 : -1}
-						onClick={scroller.scrollStart}
-					>
-						<Icon path={iconChevronLeft} />
-					</UnstyledButton>
-
-					<Box
-						ref={scroller.ref}
-						className={classes.scroller}
-						data-dragging={scroller.isDragging || undefined}
-						{...scroller.dragHandlers}
-					>
-						<Box className={classes.scrollerContent}>
-							<ToolbarBreadcrumbs />
-						</Box>
+					<Box className={classes.scrollerContent}>
+						<ToolbarBreadcrumbs />
 					</Box>
-
-					<UnstyledButton
-						className={classes.scrollerControl}
-						data-position="end"
-						data-hidden={!scroller.canScrollEnd || undefined}
-						aria-label="Scroll breadcrumbs right"
-						tabIndex={scroller.canScrollEnd ? 0 : -1}
-						onClick={scroller.scrollEnd}
-					>
-						<Icon path={iconChevronRight} />
-					</UnstyledButton>
 				</Box>
+
+				<UnstyledButton
+					className={classes.scrollerControl}
+					data-position="end"
+					data-hidden={!scroller.canScrollEnd || undefined}
+					aria-label="Scroll breadcrumbs right"
+					tabIndex={scroller.canScrollEnd ? 0 : -1}
+					onClick={scroller.scrollEnd}
+				>
+					<Icon path={iconChevronRight} />
+				</UnstyledButton>
 			</Box>
 
-			<Box className={classes.secondary}>
+			<Box
+				className={classes.trailing}
+				data-has-inset={toolbarInset ? true : undefined}
+			>
 				{toolbarInset && <Box className={classes.inset}>{toolbarInset}</Box>}
+
+				{toolbarInset && <Box className={classes.spacer} />}
 
 				<Group
 					className={classes.actions}

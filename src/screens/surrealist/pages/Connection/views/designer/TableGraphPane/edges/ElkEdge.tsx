@@ -7,6 +7,7 @@ import {
 } from "@xyflow/react";
 import type { ElkEdgeSection } from "elkjs/lib/elk-api";
 import { useContext, useMemo } from "react";
+import { computeLodLevel } from "~/util/designer-lod";
 import { DiagramContext } from "../nodes/BaseTableNode";
 
 export type ElkEdge = Edge<
@@ -26,7 +27,8 @@ export function ElkStepEdge({
 	label,
 	...rest
 }: EdgeProps<ElkEdge>) {
-	const { zoomLevel = 1 } = useContext(DiagramContext);
+	const { zoomLevel = 1, lodSettings = { enabled: true, threshold: 0.2 } } =
+		useContext(DiagramContext);
 	const bendSection = data?.path;
 
 	const edgePath = useMemo(() => {
@@ -171,7 +173,7 @@ export function ElkStepEdge({
 	}
 
 	const labelScale = Math.min(2, 1 / zoomLevel);
-	const showLabel = zoomLevel > 0.2; // Hide labels in LOD Level 4
+	const showLabel = computeLodLevel(zoomLevel, lodSettings) < 4;
 
 	return (
 		<>

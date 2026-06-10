@@ -7,12 +7,8 @@
 	min-width: 0;
 }
 
-.primary {
-	display: flex;
-	align-items: center;
-	gap: var(--mantine-spacing-md);
-	flex: 1 1 auto;
-	min-width: 0;
+.sidebar-toggle {
+	flex: 0 0 auto;
 }
 
 .breadcrumbs {
@@ -25,8 +21,8 @@
 	position: relative;
 	display: flex;
 	align-items: center;
-	flex: 1 1 auto;
-	min-width: 0;
+	flex: 0 1 auto;
+	min-width: min-content;
 	overflow: hidden;
 
 	&[data-scroll-start] {
@@ -108,20 +104,39 @@
 	white-space: nowrap;
 }
 
-.secondary {
+.trailing {
 	display: flex;
 	align-items: center;
-	flex-wrap: wrap;
+	flex: 0 0 auto;
+	flex-wrap: nowrap;
 	gap: var(--mantine-spacing-md);
-	flex: 0 1 auto;
+	min-width: min-content;
 	margin-left: auto;
+
+	&[data-has-inset] {
+		flex: 1 1 auto;
+		min-width: min-content;
+		margin-left: 0;
+	}
+}
+
+.inset {
+	display: flex;
+	align-items: center;
+	flex: 0 0 auto;
+	flex-wrap: nowrap;
+	gap: var(--mantine-spacing-md);
+}
+
+.spacer {
+	flex: 1 1 auto;
 	min-width: 0;
 }
 
-.inset,
 .actions {
 	display: flex;
 	align-items: center;
+	flex: 0 0 auto;
 	flex-wrap: nowrap;
 	gap: var(--mantine-spacing-md);
 	min-width: 0;
@@ -129,18 +144,6 @@
 
 .changelog-label {
 	white-space: nowrap;
-}
-
-@container toolbar (width < 720px) {
-	.primary {
-		flex-basis: 100%;
-	}
-
-	.secondary {
-		flex-basis: 100%;
-		margin-left: 0;
-		justify-content: space-between;
-	}
 }
 
 @container toolbar (width < 560px) {

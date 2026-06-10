@@ -70,8 +70,10 @@ interface NormalizedTable {
 }
 
 function normalizeTables(tables: TableInfo[]): NormalizedTable[] {
+	const tableNames = new Set(tables.map((table) => table.schema.name));
+
 	return tables.map((table) => {
-		const [from, to] = extractEdgeRecords(table);
+		const [from, to] = extractEdgeRecords(table, tableNames);
 		const variant = getTableVariant(table);
 
 		return {

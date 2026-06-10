@@ -249,6 +249,8 @@ export interface SurrealistAppearanceSettings {
 	defaultDiagramLinkMode: DiagramLinks;
 	defaultDiagramMode: DiagramMode;
 	defaultDiagramHoverFocus: DiagramHoverFocus;
+	diagramLodEnabled: boolean;
+	diagramLodThreshold: number;
 	sidebarMode: SidebarMode;
 	queryOrientation: Orientation;
 	sidebarViews: Flags<ViewPage>;

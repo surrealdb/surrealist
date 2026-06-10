@@ -96,9 +96,7 @@ export function TablesPane({
 		skippable: true,
 		onConfirm: async (table: string) => {
 			await executeQuery(`REMOVE TABLE ${escapeIdent(table)}`);
-			await syncConnectionSchema({
-				tables: [table],
-			});
+			await syncConnectionSchema();
 
 			if (activeTable === table) {
 				onTableSelect("");

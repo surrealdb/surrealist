@@ -46,6 +46,7 @@ import {
 	type MouseEvent,
 	useEffect,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from "react";
@@ -140,7 +141,18 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	const ref = useRef<ElementRef<"div">>(null);
 	const isLight = useIsLight();
 
-	const { fitView, zoomIn, zoomOut, getViewport, setViewport } = useReactFlow();
+	const [diagramLodEnabled] = useSetting("appearance", "diagramLodEnabled");
+	const [diagramLodThreshold] = useSetting("appearance", "diagramLodThreshold");
+
+	const lodSettings = useMemo(
+		() => ({
+			enabled: diagramLodEnabled,
+			threshold: diagramLodThreshold,
+		}),
+		[diagramLodEnabled, diagramLodThreshold],
+	);
+
+	const { fitView, getViewport, setViewport } = useReactFlow();
 	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
 	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
 	const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
@@ -362,11 +374,17 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	const handleZoomIn = useStable(() => {
-		zoomIn({ duration: 150 });
+		const { zoom, x, y } = getViewport();
+		const nextZoom = Math.min(zoom * 1.2, 2);
+
+		setViewport({ x, y, zoom: nextZoom }, { duration: 150 });
 	});
 
 	const handleZoomOut = useStable(() => {
-		zoomOut({ duration: 150 });
+		const { zoom, x, y } = getViewport();
+		const nextZoom = Math.max(zoom / 1.2, 0.05);
+
+		setViewport({ x, y, zoom: nextZoom }, { duration: 150 });
 	});
 
 	const handleResetZoom = useStable(() => {
@@ -562,7 +580,9 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	});
 
 	return (
-		<DiagramContext.Provider value={{ warnings, isTiny: isTiny && !isExporting, zoomLevel }}>
+		<DiagramContext.Provider
+			value={{ warnings, isTiny: isTiny && !isExporting, zoomLevel, lodSettings }}
+		>
 			<ContentPane
 				title="Table Graph"
 				icon={iconRelation}

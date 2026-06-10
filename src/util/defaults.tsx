@@ -74,6 +74,8 @@ export function createBaseSettings(): SurrealistSettings {
 			defaultDiagramLinkMode: "visible",
 			defaultDiagramMode: "fields",
 			defaultDiagramHoverFocus: "none",
+			diagramLodEnabled: true,
+			diagramLodThreshold: 0.2,
 			sidebarMode: "wide",
 			queryOrientation: "vertical",
 			sidebarViews: {},
