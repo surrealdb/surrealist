@@ -1,12 +1,32 @@
-.hero {
-	position: relative;
-	overflow: hidden;
+.root {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.workspace {
+	flex: 1;
+	min-height: 0;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: minmax(0, 1.15fr) minmax(0, 1fr);
+	gap: var(--mantine-spacing-md);
+	padding: var(--mantine-spacing-md);
+	height: 100%;
+
+	@include lg-and-up {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		grid-template-rows: minmax(0, 1fr);
+	}
 }
 
 .chatPaper {
 	display: flex;
 	flex-direction: column;
-	min-height: 540px;
+	min-height: 0;
+	height: 100%;
 	overflow: hidden;
 }
 
@@ -113,8 +133,16 @@
 // ─── Memory activity panel ───
 
 .activityPaper {
-	position: sticky;
-	top: var(--mantine-spacing-md);
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	height: 100%;
+	overflow: hidden;
+}
+
+.activityScroll {
+	flex: 1;
+	min-height: 0;
 }
 
 .activitySection {

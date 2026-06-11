@@ -8,7 +8,6 @@ import {
 	Loader,
 	Paper,
 	ScrollArea,
-	SimpleGrid,
 	Skeleton,
 	Stack,
 	Text,
@@ -30,12 +29,10 @@ import {
 	iconSend,
 	iconTag,
 	iconWarning,
-	pictoChatHeart,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { showErrorNotification } from "~/util/helpers";
-import { ContextHero } from "../../components/ContextHero";
 import { EmptyState, SpectronGate } from "../../components/feedback";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
@@ -78,14 +75,7 @@ const EXAMPLE_PROMPTS = [
 
 export default function PlaygroundView({ context }: ContextViewProps) {
 	return (
-		<Stack gap={48}>
-			<ContextHero
-				kicker="Playground"
-				title="Chat with your agent"
-				description="Talk to the agent and watch its memory form in real time — see the memories it recalls for each message, and the entities, attributes and relations it learns from the exchange."
-				art={pictoChatHeart}
-			/>
-
+		<Box className={classes.root}>
 			<SpectronGate loadingMessage="Connecting to the playground…">
 				{(client) => (
 					<Playground
@@ -94,7 +84,7 @@ export default function PlaygroundView({ context }: ContextViewProps) {
 					/>
 				)}
 			</SpectronGate>
-		</Stack>
+		</Box>
 	);
 }
 
@@ -211,12 +201,7 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 	const hasConversation = messages.length > 0 || recalled.length > 0 || learned !== null;
 
 	return (
-		<SimpleGrid
-			cols={{ base: 1, lg: 2 }}
-			spacing="lg"
-			style={{ alignItems: "start" }}
-		>
-			{/* CHAT */}
+		<Box className={classes.workspace}>
 			<Paper
 				withBorder
 				radius="md"
@@ -340,33 +325,40 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 				</Group>
 			</Paper>
 
-			{/* MEMORY ACTIVITY */}
 			<Paper
 				withBorder
 				radius="md"
-				p="lg"
 				className={classes.activityPaper}
 			>
-				<SectionTitle
-					kicker="Glass box"
-					order={3}
+				<Box
+					px="lg"
+					pt="lg"
+					pb="sm"
 				>
-					Memory activity
-				</SectionTitle>
+					<SectionTitle
+						kicker="Glass box"
+						order={3}
+					>
+						Memory activity
+					</SectionTitle>
+				</Box>
 
-				<Stack
-					mt="lg"
-					gap="xl"
+				<ScrollArea
+					className={classes.activityScroll}
+					px="lg"
+					pb="lg"
 				>
-					<RecalledSection
-						hits={recalled}
-						recalling={recalling}
-					/>
-					<Divider color="obsidian.5" />
-					<LearnedSection learned={learned} />
-				</Stack>
+					<Stack gap="xl">
+						<RecalledSection
+							hits={recalled}
+							recalling={recalling}
+						/>
+						<Divider color="obsidian.5" />
+						<LearnedSection learned={learned} />
+					</Stack>
+				</ScrollArea>
 			</Paper>
-		</SimpleGrid>
+		</Box>
 	);
 }
 
