@@ -34,12 +34,46 @@ export function compareIdents(a: string, b: string) {
 	return parseIdent(a) === parseIdent(b);
 }
 
+const DATASETS_CDN = "https://datasets.surrealdb.com";
+
 /**
- * This is hard coded to the deal-store dataset and bad,
- * but will be replaced in Surrealist 4.0 with a fully dynamic system
+ * Known dataset identifiers passed to the mini embed (not filesystem paths).
+ * Course content and docs use `/learn/...` paths instead; see `parseDatasetURL`.
+ */
+const NAMED_EMBED_DATASETS: Record<string, string> = {
+	"surreal-deal-store-mini": "/surreal-deal-store-mini.surql",
+};
+
+/**
+ * Resolve a dataset reference from a mini-embed URL parameter to a fetchable URL.
+ *
+ * - Absolute paths (`/learn/book/book-part-7-dataset.surql`) are served from
+ *   [datasets.surrealdb.com](https://datasets.surrealdb.com).
+ * - Named aliases (`surreal-deal-store-mini`) map to files on the same CDN.
+ * - Full `http(s)://` URLs are passed through unchanged.
+ */
+export function parseDatasetURL(source: string): string {
+	if (source.startsWith("http://") || source.startsWith("https://")) {
+		return source;
+	}
+
+	const path = source.startsWith("/") ? source : NAMED_EMBED_DATASETS[source];
+
+	if (!path) {
+		throw new Error(`Invalid dataset source: ${source}`);
+	}
+
+	return new URL(path, DATASETS_CDN).href;
+}
+
+/**
+ * Default in-app sample dataset for the sandbox, keyed by the embedded engine version.
+ *
+ * Used by the connection toolbar "Load dataset" action — not for mini-embed `dataset=`
+ * parameters (those use `parseDatasetURL`).
  */
 export function getDatasetURL(version: string) {
-	const base = `https://datasets.surrealdb.com/datasets/surreal-deal-store`;
+	const base = `${DATASETS_CDN}/datasets/surreal-deal-store`;
 	const isV3 = compareVersions(version, SDB_3_0_0) >= 0;
 
 	if (isV3) {
