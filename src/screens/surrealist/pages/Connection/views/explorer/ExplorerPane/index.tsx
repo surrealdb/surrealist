@@ -47,7 +47,7 @@ import {
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { showInfo } from "~/util/helpers";
+import { showInfo, writeClipboard } from "~/util/helpers";
 import { getTableVariant } from "~/util/schema";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 import classes from "./style.module.scss";
@@ -165,14 +165,18 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	});
 
 	const copySelectedRecords = useStable(() => {
-		navigator.clipboard.writeText(Array.from(selected).join("\n"));
+		writeClipboard(Array.from(selected).join("\n"));
 	});
 
-	const copySelectedRecordsJSON = useStable(async () => {
-		const records = Array.from(selected).map((id) => new StringRecordId(id));
-		const result = await executeQueryFirst("SELECT * FROM $records", { records });
+	const copySelectedRecordsJSON = useStable(() => {
+		writeClipboard(
+			(async () => {
+				const records = Array.from(selected).map((id) => new StringRecordId(id));
+				const result = await executeQueryFirst("SELECT * FROM $records", { records });
 
-		navigator.clipboard.writeText(await getSurrealQL().formatValue(result, true, true));
+				return getSurrealQL().formatValue(result, true, true);
+			})(),
+		);
 	});
 
 	const removeRecord = useConfirmation<RecordId>({
@@ -235,27 +239,33 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			{
 				key: "copy-id",
 				title: "Copy Record ID",
-				onClick: async () => {
-					navigator.clipboard.writeText(await getSurrealQL().formatValue(record.id));
+				onClick: () => {
+					const formatted = getSurrealQL().formatValue(record.id);
 
-					showInfo({
-						title: "Record ID copied",
-						subtitle: `Copied ${getSurrealQL().formatValue(record.id)}`,
+					writeClipboard(formatted);
+
+					formatted.then((value) => {
+						showInfo({
+							title: "Record ID copied",
+							subtitle: `Copied ${value}`,
+						});
 					});
 				},
 			},
 			{
 				key: "copy-json",
 				title: "Copy as JSON",
-				onClick: async () => {
-					navigator.clipboard.writeText(
-						await getSurrealQL().formatValue(record, true, true),
-					);
+				onClick: () => {
+					writeClipboard(getSurrealQL().formatValue(record, true, true));
 
-					showInfo({
-						title: "Record contents copied",
-						subtitle: `Copied ${getSurrealQL().formatValue(record.id)}`,
-					});
+					getSurrealQL()
+						.formatValue(record.id)
+						.then((value) => {
+							showInfo({
+								title: "Record contents copied",
+								subtitle: `Copied ${value}`,
+							});
+						});
 				},
 			},
 			{
