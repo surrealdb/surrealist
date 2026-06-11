@@ -4,9 +4,11 @@ Categories={{categories}}
 Comment={{comment}}
 {{/if}}
 Exec={{exec}} %U
+StartupWMClass={{exec}}
 Icon={{icon}}
 Name={{name}}
-Type=Application
 Terminal=false
-# Keep this in sync with tauri.conf.json bundle.fileAssociations and the deep-link scheme.
-MimeType=text/x-surrealql;x-scheme-handler/surrealist;
+Type=Application
+{{#if mime_type}}
+MimeType={{mime_type}}
+{{/if}}
