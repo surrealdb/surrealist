@@ -313,12 +313,7 @@ export async function buildFlowNodes(
 
 		for (const table of tables) {
 			for (const field of table.fields) {
-				if (
-					!field.kind ||
-					field.name === "id" ||
-					field.name === "in" ||
-					field.name === "out"
-				) {
+				if (!field.kind || field.name === "in" || field.name === "out") {
 					continue;
 				}
 
