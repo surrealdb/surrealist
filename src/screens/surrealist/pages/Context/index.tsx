@@ -1,4 +1,4 @@
-import { Center, Loader, Skeleton } from "@mantine/core";
+import { Box, Center, Loader, Skeleton } from "@mantine/core";
 import { type ComponentType, lazy, memo, Suspense } from "react";
 import { Redirect } from "wouter";
 import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
@@ -93,6 +93,43 @@ export function ContextPage({ view }: ContextPageProps) {
 	const Component =
 		viewPage === "settings" ? null : WORKSPACE_COMPONENTS[viewPage as WorkspacePage];
 
+	const isFullHeightView = viewPage === "playground";
+
+	const viewContent = (
+		<>
+			{isLoading && (
+				<Skeleton
+					width={200}
+					h={50}
+					mt="sm"
+				/>
+			)}
+			{contextQuery.data && (
+				<SpectronProvider
+					context={contextQuery.data}
+					organizationId={organizationId ?? contextQuery.data.organization_id}
+				>
+					<Suspense
+						fallback={
+							<Center flex={1}>
+								<Loader />
+							</Center>
+						}
+					>
+						{viewPage === "settings" ? (
+							<SettingsComponent
+								context={contextQuery.data}
+								tab={settingsTab ?? "general"}
+							/>
+						) : Component ? (
+							<Component context={contextQuery.data} />
+						) : null}
+					</Suspense>
+				</SpectronProvider>
+			)}
+		</>
+	);
+
 	return (
 		<>
 			<PageBreadcrumbs
@@ -114,38 +151,19 @@ export function ContextPage({ view }: ContextPageProps) {
 					contextId={contextId ?? ""}
 					organizationId={organizationId ?? ""}
 				/>
-				<PageContainer>
-					{isLoading && (
-						<Skeleton
-							width={200}
-							h={50}
-							mt="sm"
-						/>
-					)}
-					{contextQuery.data && (
-						<SpectronProvider
-							context={contextQuery.data}
-							organizationId={organizationId ?? contextQuery.data.organization_id}
-						>
-							<Suspense
-								fallback={
-									<Center flex={1}>
-										<Loader />
-									</Center>
-								}
-							>
-								{viewPage === "settings" ? (
-									<SettingsComponent
-										context={contextQuery.data}
-										tab={settingsTab ?? "general"}
-									/>
-								) : Component ? (
-									<Component context={contextQuery.data} />
-								) : null}
-							</Suspense>
-						</SpectronProvider>
-					)}
-				</PageContainer>
+				{isFullHeightView ? (
+					<Box
+						flex={1}
+						mih={0}
+						miw={0}
+						display="flex"
+						style={{ flexDirection: "column" }}
+					>
+						{viewContent}
+					</Box>
+				) : (
+					<PageContainer>{viewContent}</PageContainer>
+				)}
 			</CloudGuard>
 		</>
 	);
