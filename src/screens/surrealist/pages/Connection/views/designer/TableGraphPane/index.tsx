@@ -152,6 +152,14 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		[diagramLodEnabled, diagramLodThreshold],
 	);
 
+	const exportLodSettings = useMemo(
+		() => ({
+			enabled: false,
+			threshold: diagramLodThreshold,
+		}),
+		[diagramLodThreshold],
+	);
+
 	const { fitView, getViewport, setViewport } = useReactFlow();
 	const [warnings, setWarnings] = useState<GraphWarning[]>([]);
 	const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -269,7 +277,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const saveImage = useStable(async (type: "png" | "svg") => {
 		const viewport = getViewport();
-		const nodesBounds = getNodesBounds(getNodes());
 
 		const isSuccess = await adapter.saveFile(
 			"Save snapshot",
@@ -288,6 +295,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				await sleep(50);
 
 				fitView();
+
+				await sleep(50);
+
+				const nodesBounds = getNodesBounds(getNodes());
 
 				// Reactflow expects to use the viewport element for snapshotting.
 				const el = ref.current.querySelector<HTMLDivElement>(".react-flow__viewport");
@@ -581,7 +592,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	return (
 		<DiagramContext.Provider
-			value={{ warnings, isTiny: isTiny && !isExporting, zoomLevel, lodSettings }}
+			value={{
+				warnings,
+				isTiny: isTiny && !isExporting,
+				zoomLevel,
+				lodSettings: isExporting ? exportLodSettings : lodSettings,
+			}}
 		>
 			<ContentPane
 				title="Table Graph"
