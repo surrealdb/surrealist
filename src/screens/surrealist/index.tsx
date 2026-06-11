@@ -75,6 +75,7 @@ export function SurrealistScreen() {
 	const title = useInterfaceStore((s) => s.title);
 
 	const [storedSidebarMode] = useSetting("appearance", "sidebarMode");
+	const [backgroundGlobulesOpacity] = useSetting("appearance", "backgroundGlobulesOpacity");
 	const sidebarMode = storedSidebarMode === "compact" ? "compact" : "wide";
 	const isMacos = adapter.platform === "darwin" && isDesktop;
 	const isOtherOS = adapter.platform !== "darwin" && isDesktop;
@@ -85,7 +86,7 @@ export function SurrealistScreen() {
 				className={classes.root}
 				style={{
 					"--bg-image": `url(${globulesImg})`,
-					"--bg-opacity": "0.35",
+					"--bg-opacity": backgroundGlobulesOpacity,
 					"--titlebar-offset": `${adapter.titlebarOffset}px`,
 				}}
 			>

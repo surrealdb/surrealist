@@ -30,6 +30,7 @@ interface ReaderWriter<T> {
 export type PreferenceController =
 	| CheckboxController
 	| NumberController
+	| SliderController
 	| TextController
 	| SelectionController<any>
 	| FlagSetController<any, any>;
@@ -59,6 +60,20 @@ export class CheckboxController {
  */
 export class NumberController {
 	constructor(public options: ReaderWriter<number> & { min?: number; max?: number }) {}
+}
+
+/**
+ * A preference controller for a slider
+ */
+export class SliderController {
+	constructor(
+		public options: ReaderWriter<number> & {
+			min?: number;
+			max?: number;
+			step?: number;
+			label?: (value: number) => string;
+		},
+	) {}
 }
 
 /**
@@ -198,6 +213,25 @@ export function useComputedPreferences(): PreferenceSection[] {
 							reader: (config) => config.settings.appearance.logoGreetAnimation,
 							writer: (config, value) => {
 								config.settings.appearance.logoGreetAnimation = value;
+							},
+						}),
+					},
+					{
+						id: "background-globules-opacity",
+						name: "Background lights opacity",
+						description: "Adjust the opacity of the background lights in dark mode",
+						controller: new SliderController({
+							min: 0,
+							max: 1,
+							step: 0.05,
+							label: (value) => `${Math.round(value * 100)}%`,
+							reader: (config) =>
+								config.settings.appearance.backgroundGlobulesOpacity,
+							writer: (config, value) => {
+								config.settings.appearance.backgroundGlobulesOpacity = Math.max(
+									0,
+									Math.min(1, value),
+								);
 							},
 						}),
 					},

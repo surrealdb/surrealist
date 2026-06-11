@@ -84,6 +84,7 @@ export function createBaseSettings(): SurrealistSettings {
 			formatIndentMode: "space",
 			formatMaxLineLength: 120,
 			logoGreetAnimation: false,
+			backgroundGlobulesOpacity: 0.35,
 		},
 		templates: {
 			list: [],

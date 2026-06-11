@@ -1,4 +1,12 @@
-import { type BoxProps, Checkbox, NumberInput, Select, SimpleGrid, TextInput } from "@mantine/core";
+import {
+	type BoxProps,
+	Checkbox,
+	NumberInput,
+	Select,
+	SimpleGrid,
+	Slider,
+	TextInput,
+} from "@mantine/core";
 import { Icon } from "@surrealdb/ui";
 import { isNumber } from "radash";
 import { useConfigStore } from "~/stores/config";
@@ -8,6 +16,7 @@ import {
 	NumberController,
 	type PreferenceController,
 	SelectionController,
+	SliderController,
 	TextController,
 } from "~/util/preferences";
 import { Option } from "../Option";
@@ -46,6 +55,24 @@ export function PreferenceInput({ controller, compact, ...other }: PreferenceInp
 						controller.options.writer,
 						isNumber(input) ? input : Number.parseInt(input),
 					);
+				}}
+			/>
+		);
+	}
+
+	if (controller instanceof SliderController) {
+		return (
+			<Slider
+				{...other}
+				w={200}
+				min={controller.options.min ?? 0}
+				max={controller.options.max ?? 1}
+				step={controller.options.step ?? 0.05}
+				value={value}
+				color="violet"
+				label={controller.options.label}
+				onChange={(input) => {
+					applyPreference(controller.options.writer, input);
 				}}
 			/>
 		);
