@@ -1,49 +1,42 @@
-import { Box, Button, Group, UnstyledButton } from "@mantine/core";
-import { Icon, iconChevronLeft, iconChevronRight, iconSidebar, iconStar } from "@surrealdb/ui";
-import { ActionBar } from "~/components/ActionBar";
+import { Box, UnstyledButton } from "@mantine/core";
+import { Icon, iconChevronLeft, iconChevronRight, iconSidebar } from "@surrealdb/ui";
 import { ActionButton } from "~/components/ActionButton";
 import { useSetting } from "~/hooks/config";
+import { useIsDesktop } from "~/hooks/responsive";
 import { useScroller } from "~/hooks/scroller";
 import { useStable } from "~/hooks/stable";
 import { useInterfaceStore } from "~/stores/interface";
-import { useFeatureFlags } from "~/util/feature-flags";
-import { dispatchIntent } from "~/util/intents";
 import { ToolbarBreadcrumbs } from "../components/ToolbarBreadcrumbs";
+import { ToolbarActions } from "./actions";
 import classes from "./style.module.scss";
 
 export function SurrealistToolbar() {
-	const { readChangelog } = useInterfaceStore.getState();
-	const [{ changelog }] = useFeatureFlags();
 	const scroller = useScroller();
 
-	const showChangelog = useInterfaceStore((s) => s.showChangelogAlert);
-	const hasReadChangelog = useInterfaceStore((s) => s.hasReadChangelog);
 	const toolbarInset = useInterfaceStore((s) => s.toolbarInset);
 
 	const [sidebarMode, setSidebarMode] = useSetting("appearance", "sidebarMode");
+
+	const isDesktop = useIsDesktop();
 
 	const toggleSidebarMode = useStable(() => {
 		setSidebarMode(sidebarMode === "compact" ? "wide" : "compact");
 	});
 
-	const openChangelog = useStable(() => {
-		dispatchIntent("open-changelog");
-		readChangelog();
-	});
-
 	const isCompact = sidebarMode === "compact";
-	const isChangelogVisible = changelog === "auto" ? showChangelog : changelog !== "hidden";
 
 	return (
 		<Box className={classes.root}>
-			<ActionButton
-				className={classes.sidebarToggle}
-				label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
-				onClick={toggleSidebarMode}
-				size="md"
-			>
-				<Icon path={iconSidebar} />
-			</ActionButton>
+			{isDesktop && (
+				<ActionButton
+					className={classes.sidebarToggle}
+					label={isCompact ? "Expand sidebar" : "Collapse sidebar"}
+					onClick={toggleSidebarMode}
+					size="md"
+				>
+					<Icon path={iconSidebar} />
+				</ActionButton>
+			)}
 
 			<Box
 				className={classes.breadcrumbs}
@@ -83,47 +76,18 @@ export function SurrealistToolbar() {
 				</UnstyledButton>
 			</Box>
 
-			<Box
-				className={classes.trailing}
-				data-has-inset={toolbarInset ? true : undefined}
-			>
-				{toolbarInset && <Box className={classes.inset}>{toolbarInset}</Box>}
-
-				{toolbarInset && <Box className={classes.spacer} />}
-
-				<Group
-					className={classes.actions}
-					gap="md"
-					wrap="nowrap"
+			{(toolbarInset || isDesktop) && (
+				<Box
+					className={classes.trailing}
+					data-has-inset={toolbarInset ? true : undefined}
 				>
-					{isChangelogVisible && (
-						<Button
-							className={classes.changelog}
-							h={34}
-							size="xs"
-							variant={
-								(changelog === "auto" ? hasReadChangelog : changelog === "read")
-									? "light"
-									: "gradient"
-							}
-							style={{ border: "none" }}
-							onClick={openChangelog}
-							leftSection={
-								<Icon
-									path={iconStar}
-									size="lg"
-								/>
-							}
-						>
-							<span className={classes.changelogLabel}>
-								What's new in {import.meta.env.VERSION}
-							</span>
-						</Button>
-					)}
+					{toolbarInset && <Box className={classes.inset}>{toolbarInset}</Box>}
 
-					<ActionBar />
-				</Group>
-			</Box>
+					{toolbarInset && <Box className={classes.spacer} />}
+
+					{isDesktop && <ToolbarActions />}
+				</Box>
+			)}
 		</Box>
 	);
 }

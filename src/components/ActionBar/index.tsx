@@ -2,6 +2,7 @@ import { Button } from "@mantine/core";
 import { Icon, iconChevronRight } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import { useIsCloudEnabled } from "~/hooks/cloud";
+import { useIsDesktop } from "~/hooks/responsive";
 import { useAuthentication } from "~/providers/Auth";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { AccountMenu } from "./menu";
@@ -12,7 +13,10 @@ import { SidekickAction } from "./sidekick";
 export function ActionBar() {
 	const [flags] = useFeatureFlags();
 	const showCloud = useIsCloudEnabled();
+	const isDesktop = useIsDesktop();
 	const { signIn, isAuthenticated, isLoading } = useAuthentication();
+
+	const hasAccountMenu = showCloud && flags.cloud_access;
 
 	return (
 		<>
@@ -22,9 +26,9 @@ export function ActionBar() {
 
 			{flags.newsfeed && <NewsFeed />}
 
-			{showCloud && flags.cloud_access && <AccountMenu />}
+			{hasAccountMenu && <AccountMenu />}
 
-			{!isAuthenticated && (
+			{!isAuthenticated && (isDesktop || !hasAccountMenu) && (
 				<Button
 					variant="gradient"
 					size="xs"

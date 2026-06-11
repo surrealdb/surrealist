@@ -1,0 +1,113 @@
+$bar-height: 64px;
+
+.bar {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: $bar-height;
+	z-index: 202;
+	display: flex;
+	align-items: center;
+	gap: var(--mantine-spacing-sm);
+	padding: 0 var(--mantine-spacing-md);
+	padding-bottom: env(safe-area-inset-bottom);
+	box-sizing: content-box;
+
+	background-color: var(--surreal-menu-background);
+	border-top: 1px solid var(--surreal-glass-subtle);
+	box-shadow: var(--surreal-menu-shadow);
+
+	@include background-blur;
+
+	@include light {
+		background-color: rgba(255, 255, 255, 0.85);
+		border-color: var(--mantine-color-obsidian-2);
+	}
+}
+
+.menu-button {
+	flex: 0 0 auto;
+	touch-action: none;
+}
+
+.actions {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--mantine-spacing-sm);
+}
+
+.sheet {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: $bar-height;
+	height: min(70vh, 560px);
+	z-index: 201;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transform: translateY(calc(100% + #{$bar-height}));
+	transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+
+	border-top-left-radius: var(--mantine-radius-lg);
+	border-top-right-radius: var(--mantine-radius-lg);
+	background-color: var(--surreal-menu-background);
+	border: 1px solid var(--surreal-glass-subtle);
+	border-bottom: none;
+	box-shadow: var(--surreal-menu-shadow);
+
+	@include background-blur;
+
+	@include light {
+		background-color: rgba(255, 255, 255, 0.92);
+		border-color: var(--mantine-color-obsidian-2);
+	}
+}
+
+.grabber {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 28px;
+	cursor: grab;
+	touch-action: none;
+
+	&:active {
+		cursor: grabbing;
+	}
+}
+
+.grab-handle {
+	width: 36px;
+	height: 4px;
+	border-radius: 999px;
+	background-color: var(--mantine-color-obsidian-4);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-3);
+	}
+}
+
+.sheet-body {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.backdrop {
+	position: fixed;
+	inset: 0;
+	z-index: 200;
+	background-color: rgba(0, 0, 0, 0.5);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+
+	&[data-interactive] {
+		pointer-events: auto;
+	}
+}
