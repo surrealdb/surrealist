@@ -9,6 +9,7 @@ import { CloudGuard } from "~/components/CloudGuard";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
 import { useIsDesktop } from "~/hooks/responsive";
+import { useConnectionFromRoute } from "~/hooks/routing";
 import { useCloud } from "~/providers/Cloud";
 import { useInterfaceStore } from "~/stores/interface";
 import { ViewPage } from "~/types";
@@ -78,7 +79,13 @@ export function SurrealistScreen() {
 	const showCloud = useIsCloudEnabled();
 	const { isLoading: isProcessingAuth } = useCloud();
 	const title = useInterfaceStore((s) => s.title);
+	const toolbarInset = useInterfaceStore((s) => s.toolbarInset);
 	const isDesktopLayout = useIsDesktop();
+	const connectionFromRoute = useConnectionFromRoute();
+
+	// On mobile, hide the top bar on global pages that have no connection context
+	// and no page inset — the bottom dock pill already conveys the current page.
+	const showToolbar = isDesktopLayout || !!connectionFromRoute || !!toolbarInset;
 
 	const [storedSidebarMode] = useSetting("appearance", "sidebarMode");
 	const [backgroundGlobulesOpacity] = useSetting("appearance", "backgroundGlobulesOpacity");
@@ -125,9 +132,11 @@ export function SurrealistScreen() {
 							pos="relative"
 							gap={0}
 						>
-							<Box className={classes.toolbar}>
-								<SurrealistToolbar />
-							</Box>
+							{showToolbar && (
+								<Box className={classes.toolbar}>
+									<SurrealistToolbar />
+								</Box>
+							)}
 
 							<Box
 								flex={1}
