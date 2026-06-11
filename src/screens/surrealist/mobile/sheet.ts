@@ -1,59 +1,73 @@
 import { type PointerEvent as ReactPointerEvent, useRef, useState } from "react";
 
-/** Height of the always-visible bottom bar, in pixels. */
-export const BAR_HEIGHT = 64;
+/** Which panel the bottom card is currently showing (null = collapsed dock). */
+export type CardPanel = "nav" | "account" | "sidekick" | "news";
+
+/** Height of the collapsed dock, in pixels. */
+export const DOCK_HEIGHT = 72;
+
+/** Fraction of the viewport height the expanded card occupies. */
+const EXPAND_RATIO = 0.85;
 
 /** Movement (px) before a press is treated as a drag rather than a tap. */
 const DRAG_THRESHOLD = 4;
 
-export interface BottomSheetHandleProps {
+/** Fraction of the drag range past which a release snaps open. */
+const SNAP_RATIO = 0.35;
+
+export interface CardHandleProps {
 	onPointerDown: (event: ReactPointerEvent) => void;
 	onPointerMove: (event: ReactPointerEvent) => void;
 	onPointerUp: (event: ReactPointerEvent) => void;
 	onClick: () => void;
 }
 
-export interface BottomSheet {
-	opened: boolean;
-	/** Live drag distance in px (0 = fully open) while dragging, otherwise null. */
-	offset: number | null;
-	/** Ref to attach to the sheet element so its height can be measured. */
-	sheetRef: React.RefObject<HTMLDivElement | null>;
-	open: () => void;
-	close: () => void;
-	/** Props to spread onto a drag handle (the menu button or the sheet grabber). */
-	getHandleProps: () => BottomSheetHandleProps;
-	/** Fraction the sheet is revealed (0 = closed, 1 = fully open). */
+export interface BottomCard {
+	panel: CardPanel | null;
+	setPanel: (panel: CardPanel | null) => void;
+	open: (panel: CardPanel) => void;
+	collapse: () => void;
+	/** Live drag height in px while dragging, otherwise null. */
+	height: number | null;
+	dragging: boolean;
+	/** Reveal fraction: 0 = collapsed, 1 = fully expanded. */
 	progress: number;
+	/** Props to spread on a drag handle (grab pill or the dock view pill). */
+	getHandleProps: () => CardHandleProps;
 }
 
 interface DragState {
 	startY: number;
-	startOffset: number;
-	closedOffset: number;
+	startHeight: number;
+	dock: number;
+	expanded: number;
 	dragging: boolean;
 }
 
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+
 /**
- * A small bottom-sheet controller supporting both a tap-to-toggle button and a
- * finger-following drag gesture. The sheet sits directly above the bottom bar,
- * so the closed offset is the sheet's own height plus the bar height.
+ * Controller for the mobile bottom card: a single sheet that morphs between a
+ * collapsed dock and one expanded panel, driven by either taps or a
+ * finger-following drag gesture.
  */
-export function useBottomSheet(): BottomSheet {
-	const [opened, setOpened] = useState(false);
-	const [offset, setOffset] = useState<number | null>(null);
-	const sheetRef = useRef<HTMLDivElement>(null);
+export function useBottomCard(): BottomCard {
+	const [panel, setPanel] = useState<CardPanel | null>(null);
+	const [height, setHeight] = useState<number | null>(null);
 	const drag = useRef<DragState | null>(null);
-	const liveOffset = useRef<number | null>(null);
+	const liveHeight = useRef<number | null>(null);
 	const suppressClick = useRef(false);
 
-	const closedOffset = () => (sheetRef.current?.offsetHeight ?? window.innerHeight) + BAR_HEIGHT;
+	const expandedPx = () => Math.round(window.innerHeight * EXPAND_RATIO);
 
 	const onPointerDown = (event: ReactPointerEvent) => {
+		const expanded = expandedPx();
+
 		drag.current = {
 			startY: event.clientY,
-			startOffset: opened ? 0 : closedOffset(),
-			closedOffset: closedOffset(),
+			startHeight: panel ? expanded : DOCK_HEIGHT,
+			dock: DOCK_HEIGHT,
+			expanded,
 			dragging: false,
 		};
 	};
@@ -62,17 +76,22 @@ export function useBottomSheet(): BottomSheet {
 		const state = drag.current;
 		if (!state) return;
 
-		const delta = event.clientY - state.startY;
+		const delta = state.startY - event.clientY; // upward drag is positive
 
 		if (!state.dragging && Math.abs(delta) > DRAG_THRESHOLD) {
 			state.dragging = true;
 			event.currentTarget.setPointerCapture?.(event.pointerId);
+
+			// Reveal the navigation panel while dragging up from the dock
+			if (!panel) {
+				setPanel("nav");
+			}
 		}
 
 		if (state.dragging) {
-			const next = Math.min(state.closedOffset, Math.max(0, state.startOffset + delta));
-			liveOffset.current = next;
-			setOffset(next);
+			const next = clamp(state.startHeight + delta, state.dock, state.expanded);
+			liveHeight.current = next;
+			setHeight(next);
 		}
 	};
 
@@ -85,9 +104,14 @@ export function useBottomSheet(): BottomSheet {
 		}
 
 		suppressClick.current = true;
-		setOpened((liveOffset.current ?? state.startOffset) < state.closedOffset / 2);
-		liveOffset.current = null;
-		setOffset(null);
+
+		const finalHeight = liveHeight.current ?? state.startHeight;
+		const threshold = state.dock + (state.expanded - state.dock) * SNAP_RATIO;
+		const shouldOpen = finalHeight > threshold;
+
+		setPanel((current) => (shouldOpen ? (current ?? "nav") : null));
+		liveHeight.current = null;
+		setHeight(null);
 	};
 
 	const onClick = () => {
@@ -95,18 +119,24 @@ export function useBottomSheet(): BottomSheet {
 			suppressClick.current = false;
 			return;
 		}
-		setOpened((value) => !value);
+		setPanel((current) => (current ? null : "nav"));
 	};
 
-	const progress = offset !== null ? 1 - offset / closedOffset() : opened ? 1 : 0;
+	const progress =
+		height !== null
+			? clamp((height - DOCK_HEIGHT) / (expandedPx() - DOCK_HEIGHT), 0, 1)
+			: panel
+				? 1
+				: 0;
 
 	return {
-		opened,
-		offset,
-		sheetRef,
-		open: () => setOpened(true),
-		close: () => setOpened(false),
-		getHandleProps: () => ({ onPointerDown, onPointerMove, onPointerUp, onClick }),
+		panel,
+		setPanel,
+		open: (next) => setPanel(next),
+		collapse: () => setPanel(null),
+		height,
+		dragging: height !== null,
 		progress,
+		getHandleProps: () => ({ onPointerDown, onPointerMove, onPointerUp, onClick }),
 	};
 }

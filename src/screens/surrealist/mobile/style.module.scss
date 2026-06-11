@@ -1,56 +1,18 @@
-$bar-height: 64px;
+.card {
+	--card-dock: 72px;
+	--card-expanded: 85vh;
 
-.bar {
 	position: fixed;
 	left: 0;
 	right: 0;
 	bottom: 0;
-	height: $bar-height;
-	z-index: 202;
-	display: flex;
-	align-items: center;
-	gap: var(--mantine-spacing-sm);
-	padding: 0 var(--mantine-spacing-md);
-	padding-bottom: env(safe-area-inset-bottom);
-	box-sizing: content-box;
-
-	background-color: var(--surreal-menu-background);
-	border-top: 1px solid var(--surreal-glass-subtle);
-	box-shadow: var(--surreal-menu-shadow);
-
-	@include background-blur;
-
-	@include light {
-		background-color: rgba(255, 255, 255, 0.85);
-		border-color: var(--mantine-color-obsidian-2);
-	}
-}
-
-.menu-button {
-	flex: 0 0 auto;
-	touch-action: none;
-}
-
-.actions {
-	flex: 1 1 auto;
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	gap: var(--mantine-spacing-sm);
-}
-
-.sheet {
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: $bar-height;
-	height: min(70vh, 560px);
 	z-index: 201;
+	height: var(--card-dock);
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
-	transform: translateY(calc(100% + #{$bar-height}));
-	transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+	padding-bottom: env(safe-area-inset-bottom);
+	transition: height 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 
 	border-top-left-radius: var(--mantine-radius-lg);
 	border-top-right-radius: var(--mantine-radius-lg);
@@ -62,17 +24,21 @@ $bar-height: 64px;
 	@include background-blur;
 
 	@include light {
-		background-color: rgba(255, 255, 255, 0.92);
+		background-color: rgba(255, 255, 255, 0.85);
 		border-color: var(--mantine-color-obsidian-2);
 	}
 }
 
-.grabber {
-	flex: 0 0 auto;
+.handle {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 2;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	height: 28px;
+	height: 24px;
 	cursor: grab;
 	touch-action: none;
 
@@ -81,7 +47,7 @@ $bar-height: 64px;
 	}
 }
 
-.grab-handle {
+.grip {
 	width: 36px;
 	height: 4px;
 	border-radius: 999px;
@@ -92,10 +58,91 @@ $bar-height: 64px;
 	}
 }
 
-.sheet-body {
+.body {
+	position: relative;
 	flex: 1 1 auto;
 	min-height: 0;
+}
+
+.dock {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	gap: var(--mantine-spacing-sm);
+	padding: 0 var(--mantine-spacing-md);
+	transition: opacity 0.2s ease;
+}
+
+.pill {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	gap: var(--mantine-spacing-xs);
+	height: 38px;
+	padding: 0 var(--mantine-spacing-md);
+	border-radius: 999px;
+	color: var(--mantine-color-violet-4);
+	background-color: color-mix(in srgb, var(--mantine-color-violet-5) 20%, transparent);
+	touch-action: none;
+	max-width: 55%;
+
+	@include light {
+		color: var(--mantine-color-violet-6);
+		background-color: color-mix(in srgb, var(--mantine-color-violet-5) 14%, transparent);
+	}
+}
+
+.pill-label {
+	font-weight: 600;
+	white-space: nowrap;
 	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.dock-actions {
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.dock-action {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--mantine-color-slate-2);
+	transition: color 0.15s ease;
+
+	&:hover {
+		color: var(--mantine-color-bright);
+	}
+
+	@include light {
+		color: var(--mantine-color-slate-6);
+	}
+}
+
+.panel {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-top: 24px; // clear the floating grab handle
+	transition: opacity 0.2s ease;
+}
+
+.nav-panel {
+	flex: 1 1 auto;
+	min-height: 0;
+}
+
+.panel-fill {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 .backdrop {
@@ -107,7 +154,7 @@ $bar-height: 64px;
 	pointer-events: none;
 	transition: opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 
-	&[data-interactive] {
+	&[data-active] {
 		pointer-events: auto;
 	}
 }
