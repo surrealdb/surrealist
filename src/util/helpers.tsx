@@ -170,12 +170,11 @@ export function showInfo(info: { title: ReactNode; subtitle: ReactNode }) {
  * Accepts either a resolved string or a promise of one. When given a promise
  * the value is written through a `ClipboardItem` carrying that promise, which
  * preserves the originating user gesture. Awaiting the value before calling
- * `writeText` drops the transient activation, causing the write to be rejected
- * on WebKit (including the desktop app's web view).
+ * `writeText` drops the transient activation, causing the write to be rejected.
  *
  * @param text The text, or a promise resolving to the text, to copy
  */
-export function writeClipboard(text: string | Promise<string>): Promise<void> {
+export function writeClipboardText(text: string | Promise<string>): Promise<void> {
 	if (typeof text === "string") {
 		return navigator.clipboard.writeText(text);
 	}
@@ -188,7 +187,7 @@ export function writeClipboard(text: string | Promise<string>): Promise<void> {
 		return navigator.clipboard.write([item]);
 	}
 
-	return text.then((value) => navigator.clipboard.writeText(value));
+	return Promise.reject(new Error("Clipboard not supported"));
 }
 
 /**

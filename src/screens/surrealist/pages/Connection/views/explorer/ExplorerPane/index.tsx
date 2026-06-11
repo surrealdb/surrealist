@@ -47,7 +47,7 @@ import {
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { showInfo, writeClipboard } from "~/util/helpers";
+import { showInfo, writeClipboardText } from "~/util/helpers";
 import { getTableVariant } from "~/util/schema";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 import classes from "./style.module.scss";
@@ -165,11 +165,11 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	});
 
 	const copySelectedRecords = useStable(() => {
-		writeClipboard(Array.from(selected).join("\n"));
+		writeClipboardText(Array.from(selected).join("\n"));
 	});
 
 	const copySelectedRecordsJSON = useStable(() => {
-		writeClipboard(
+		writeClipboardText(
 			(async () => {
 				const records = Array.from(selected).map((id) => new StringRecordId(id));
 				const result = await executeQueryFirst("SELECT * FROM $records", { records });
@@ -242,7 +242,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				onClick: () => {
 					const formatted = getSurrealQL().formatValue(record.id);
 
-					writeClipboard(formatted);
+					writeClipboardText(formatted);
 
 					formatted.then((value) => {
 						showInfo({
@@ -256,7 +256,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				key: "copy-json",
 				title: "Copy as JSON",
 				onClick: () => {
-					writeClipboard(getSurrealQL().formatValue(record, true, true));
+					writeClipboardText(getSurrealQL().formatValue(record, true, true));
 
 					getSurrealQL()
 						.formatValue(record.id)
