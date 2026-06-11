@@ -896,9 +896,15 @@ export function composeHttpConnection(
 	const isSecure = protocol === "https" || protocol === "wss";
 	const endpoint = new URL(path, `${isSecure ? "https" : "http"}://${hostname}`).toString();
 
+	// Prefer the access token held by the live connection. The configured
+	// `token` is only populated for token authentication, so signing in with
+	// any other method would otherwise leave these raw HTTP requests (GraphQL,
+	// export, ML import) unauthenticated.
+	const token = instance.accessToken ?? authentication.token;
+
 	const headers: Record<string, string> = {
 		...extraHeaders,
-		Authorization: `Bearer ${authentication.token}`,
+		Authorization: `Bearer ${token}`,
 	};
 
 	if (authentication.namespace) {
