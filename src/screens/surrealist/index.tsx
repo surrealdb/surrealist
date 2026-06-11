@@ -7,9 +7,11 @@ import { AppTitleBar } from "~/components/AppTitleBar";
 import { CloudGuard } from "~/components/CloudGuard";
 import { useIsCloudEnabled } from "~/hooks/cloud";
 import { useSetting } from "~/hooks/config";
+import { useIsDesktop } from "~/hooks/responsive";
 import { useCloud } from "~/providers/Cloud";
 import { useInterfaceStore } from "~/stores/interface";
 import { ViewPage } from "~/types";
+import { MobileNavigation } from "./mobile";
 import { ConnectionPage } from "./pages/Connection";
 import { ConnectionSidebar } from "./pages/Connection/sidebar";
 import { ContextPage } from "./pages/Context";
@@ -73,6 +75,7 @@ export function SurrealistScreen() {
 	const showCloud = useIsCloudEnabled();
 	const { isLoading: isProcessingAuth } = useCloud();
 	const title = useInterfaceStore((s) => s.title);
+	const isDesktopLayout = useIsDesktop();
 
 	const [storedSidebarMode] = useSetting("appearance", "sidebarMode");
 	const sidebarMode = storedSidebarMode === "compact" ? "compact" : "wide";
@@ -95,7 +98,7 @@ export function SurrealistScreen() {
 					flex={1}
 					pos="relative"
 				>
-					<DatabaseSidebarLazy visibleFrom="md" />
+					{isDesktopLayout && <DatabaseSidebarLazy />}
 
 					<Box
 						className={classes.wrapper}
@@ -364,12 +367,7 @@ export function SurrealistScreen() {
 					</Box>
 				</Flex>
 
-				{/* <Drawer
-					withCloseButton={false}
-					size={215}
-				>
-					<DatabaseSidebarLazy fill />
-				</Drawer> */}
+				{!isDesktopLayout && <MobileNavigation />}
 
 				<LoadingOverlay
 					visible={isProcessingAuth}
