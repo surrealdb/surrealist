@@ -3,7 +3,6 @@ import type {
 	CloudContext,
 	ContextApiKey,
 	OrganizationContextPackage,
-	SpectronContextConfig,
 	SpectronGrants,
 	SpectronPrincipal,
 	SpectronPrincipalKind,
@@ -23,10 +22,6 @@ export interface UpdateContextRequest {
 	body: {
 		name?: string;
 	};
-}
-
-export interface CreateContextApiKeyRequest {
-	name: string;
 }
 
 export function useCreateContextMutation(organization: string | undefined) {
@@ -99,35 +94,6 @@ export function useDeleteContextMutation(organization: string | undefined) {
 			client.invalidateQueries({
 				queryKey: ["cloud", "contexts"],
 			});
-		},
-	});
-}
-
-export function useCreateContextApiKeyMutation(
-	organization: string | undefined,
-	contextId: string | undefined,
-) {
-	const client = useQueryClient();
-
-	return useMutation({
-		mutationFn: async (body: CreateContextApiKeyRequest) => {
-			if (!organization || !contextId) {
-				throw new Error("Organization and context ID are required");
-			}
-
-			const result = await fetchAPI<ContextApiKey>(
-				`/organizations/${organization}/spectron_contexts/${contextId}/api_keys`,
-				{
-					method: "POST",
-					body: JSON.stringify(body),
-				},
-			);
-
-			client.invalidateQueries({
-				queryKey: ["cloud", "context", organization, contextId, "api-keys"],
-			});
-
-			return result;
 		},
 	});
 }
@@ -373,42 +339,6 @@ export function useAddContextUserMutation(
 			});
 
 			invalidatePrincipals(client, organization, contextId);
-		},
-	});
-}
-
-/**
- * Applies a partial config update (deep-merge) to the context. Mirrors the
- * Spectron management `PATCH /contexts/{id}` config surface; the Cloud API
- * proxies it through the `spectron_contexts/{id}` PATCH endpoint.
- */
-export function usePatchContextConfigMutation(
-	organization: string | undefined,
-	contextId: string | undefined,
-) {
-	const client = useQueryClient();
-
-	return useMutation({
-		mutationFn: async (config: Partial<SpectronContextConfig>) => {
-			if (!organization || !contextId) {
-				throw new Error("Organization and context ID are required");
-			}
-
-			const result = await fetchAPI<CloudContext>(
-				`${spectronBase(organization, contextId)}`,
-				{
-					method: "PATCH",
-					body: JSON.stringify({ config }),
-				},
-			);
-
-			client.invalidateQueries({
-				queryKey: ["cloud", "context", organization, contextId, "config"],
-			});
-			client.invalidateQueries({
-				queryKey: ["cloud", "context", organization, contextId, "providers"],
-			});
-			return result;
 		},
 	});
 }

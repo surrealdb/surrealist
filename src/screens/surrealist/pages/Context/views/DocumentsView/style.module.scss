@@ -8,14 +8,6 @@
 	}
 }
 
-.crumb {
-	transition: color 120ms ease;
-
-	&:hover {
-		color: var(--mantine-color-bright);
-	}
-}
-
 .snippet {
 	color: var(--mantine-color-text);
 	line-height: 1.55;

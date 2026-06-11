@@ -118,7 +118,12 @@ export type ContextViewPage =
 	| "api-keys"
 	| "settings";
 
-export type ContextSettingsTab = "general" | "principals" | "configuration" | "usage";
+export type ContextSettingsTab =
+	| "general"
+	| "users"
+	| "service-accounts"
+	| "configuration"
+	| "usage";
 
 export type AppMenuItemType =
 	| "Separator"
@@ -782,17 +787,19 @@ export interface ContextApiKey {
 /**
  * A Cloud-brokered, TTL-bounded access token used to authenticate the
  * Spectron SDK as the calling user's own principal. Minted by
- * `POST /organizations/{org}/spectron_contexts/{id}/access_tokens`.
- *
- * NOTE: the staging Cloud API spec hides the exact field names behind auth,
- * so the SDK provider reads this defensively (`token` / `access_token` / `key`).
+ * `POST /organizations/{org}/spectron_contexts/{id}/access_tokens`. `key` is
+ * the bearer secret (shown once) and `principal_id` identifies the caller's
+ * own principal — used when minting self-service scoped keys.
  */
 export interface SpectronAccessToken {
-	token?: string;
-	access_token?: string;
-	key?: string;
-	expires_at?: string;
-	expires_in?: number;
+	key: string;
+	principal_id: string;
+	valid_until?: string;
+}
+
+/** Request body for minting an access token (lifetime is server-clamped). */
+export interface MintSpectronAccessToken {
+	ttl_seconds?: number;
 }
 
 /** The seven Spectron grant verbs (design-scope-model §6.1). */
@@ -825,24 +832,20 @@ export interface SpectronPrincipal {
 	id: string;
 	kind: SpectronPrincipalKind;
 	display_name: string;
-	grants: SpectronGrants;
-	metadata?: Record<string, unknown> | null;
+	grants?: SpectronGrants;
 }
 
-/** A registered scope node, mirroring the management `ScopeResponse` (camelCase). */
+/** A registered scope node (Cloud `SpectronScope`, snake_case). */
 export interface SpectronScope {
 	path: string;
 	name: string;
 	depth: number;
-	valuePolicy: "open" | "closed";
-	childrenCount: number;
-	createdAt: string;
-	createdBy?: string | null;
-	displayName?: string | null;
-	description?: string | null;
-	maxChildren?: number | null;
+	value_policy: string;
+	children_count: number;
+	created_at: string;
 	parent?: string | null;
-	tombstonedAt?: string | null;
+	display_name?: string | null;
+	tombstoned_at?: string | null;
 }
 
 export type SpectronTokenKind = "input" | "output" | "embedding";
@@ -850,8 +853,10 @@ export type SpectronCallOrigin = "public" | "system";
 
 export interface SpectronUsageRow {
 	model: string;
-	token_kind: SpectronTokenKind;
-	origin: SpectronCallOrigin;
+	/** Plain string on the wire (e.g. `input` / `output` / `embedding`). */
+	token_kind: string;
+	/** Plain string on the wire (e.g. `public` / `system`). */
+	origin: string;
 	tokens: number;
 }
 
@@ -864,47 +869,28 @@ export interface SpectronContextUsage {
 	breakdown: SpectronUsageRow[];
 }
 
-export type SpectronModelProvider = "openai" | "anthropic" | "google";
-
+/** One available provider and the model ids selectable for it. */
 export interface SpectronProviderModels {
-	provider: SpectronModelProvider;
+	provider: string;
 	models: string[];
 }
 
-export interface SpectronProviders {
-	providers: SpectronProviderModels[];
-}
+/** Providers/models catalog — the Cloud `SpectronProviders` is a bare array. */
+export type SpectronProviders = SpectronProviderModels[];
 
-export interface SpectronStageModel {
-	provider: SpectronModelProvider;
-	model: string;
-}
-
-export interface SpectronContextModels {
-	extraction?: SpectronStageModel | null;
-	reconciliation?: SpectronStageModel | null;
-	synthesis?: SpectronStageModel | null;
-	elaboration_consolidation?: SpectronStageModel | null;
-	embedding?: string | null;
-}
-
-export interface SpectronLabelDimension {
-	key: string;
-	value_policy?: "open" | "closed";
-	max_values?: number | null;
-	description?: string | null;
-}
-
+/**
+ * Read-only context configuration summary (Cloud `SpectronContextConfig`).
+ * The Cloud surface does not expose per-stage model assignment or label
+ * dimensions, so the UI only ever displays these fields — never edits them.
+ */
 export interface SpectronContextConfig {
+	reject_unbound_keys: boolean;
+	llm_extraction_enabled: boolean;
+	pii_redaction_enabled: boolean;
 	token_limit?: number | null;
-	models?: SpectronContextModels;
-	providers_configured?: string[];
-	ingestion_profile?: string | null;
-	llm_extraction_enabled?: boolean;
-	pii_redaction_enabled?: boolean;
-	reject_unbound_keys?: boolean;
-	label_dimensions?: SpectronLabelDimension[];
 	billing_anchor_day?: number | null;
+	ingestion_profile?: string | null;
+	providers_configured?: string[];
 }
 
 export interface ContextPackage {

@@ -12,6 +12,8 @@ export interface SpectronContextValue {
 	endpoint: string;
 	/** The Spectron context id. */
 	contextId: string;
+	/** The caller's own principal id (from the access token), once known. */
+	principalId: string | null;
 	status: SpectronStatus;
 	error: Error | null;
 	/** Force a re-mint of the access token and rebuild the client. */
@@ -38,13 +40,8 @@ export function SpectronProvider({ context, organizationId, children }: Spectron
 	const endpoint = `https://${context.host}`;
 	const tokenQuery = useSpectronAccessTokenQuery(organizationId, context.id);
 
-	const token = useMemo(() => {
-		const data = tokenQuery.data;
-		if (!data) return null;
-		// The Cloud API field name is not exposed in the public spec, so accept
-		// the common shapes for a brokered bearer token.
-		return data.token ?? data.access_token ?? data.key ?? null;
-	}, [tokenQuery.data]);
+	const token = tokenQuery.data?.key ?? null;
+	const principalId = tokenQuery.data?.principal_id ?? null;
 
 	const client = useMemo(() => {
 		if (!token) return null;
@@ -63,13 +60,14 @@ export function SpectronProvider({ context, organizationId, children }: Spectron
 			client,
 			endpoint,
 			contextId: context.id,
+			principalId,
 			status,
 			error: (tokenQuery.error as Error | null) ?? null,
 			refresh: () => {
 				tokenQuery.refetch();
 			},
 		}),
-		[client, endpoint, context.id, status, tokenQuery.error, tokenQuery.refetch],
+		[client, endpoint, context.id, principalId, status, tokenQuery.error, tokenQuery.refetch],
 	);
 
 	return <SpectronCtx.Provider value={value}>{children}</SpectronCtx.Provider>;
