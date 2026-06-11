@@ -2,7 +2,6 @@ import {
 	ActionIcon,
 	Badge,
 	Box,
-	Breadcrumbs,
 	Button,
 	CloseButton,
 	Divider,
@@ -25,11 +24,9 @@ import type { Spectron } from "@surrealdb/spectron";
 import {
 	Icon,
 	iconBraces,
-	iconChevronRight,
 	iconEye,
 	iconFile,
 	iconImage,
-	iconOpenFolder,
 	iconSearch,
 	iconText,
 	iconTrash,
@@ -37,7 +34,7 @@ import {
 	pictoDocument,
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { formatFileSize, showErrorNotification, showInfo } from "~/util/helpers";
 import { ContextHero } from "../../components/ContextHero";
 import { EmptyState, PageError, SpectronGate } from "../../components/feedback";
@@ -92,7 +89,6 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 	const queryClient = useQueryClient();
 
 	const [page, setPage] = useState(1);
-	const [path, setPath] = useState<string[]>([]);
 	const [searchInput, setSearchInput] = useState("");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [uploadOpened, { open: openUpload, close: closeUpload }] = useDisclosure(false);
@@ -237,25 +233,28 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 				/>
 			) : (
 				<>
-					<Browser
-						documents={documents}
-						path={path}
-						onNavigate={setPath}
-						onInspect={setInspecting}
-						onDelete={(id) => deleteMutation.mutate(id)}
-						deletingId={
-							deleteMutation.isPending ? (deleteMutation.variables ?? null) : null
-						}
-					/>
+					<SimpleGrid
+						cols={{ base: 1, sm: 2, lg: 3 }}
+						spacing="md"
+					>
+						{documents.map((doc) => (
+							<DocumentCard
+								key={doc.id}
+								document={doc}
+								onInspect={() => setInspecting(doc)}
+								onDelete={() => deleteMutation.mutate(doc.id)}
+								deleting={
+									deleteMutation.isPending && deleteMutation.variables === doc.id
+								}
+							/>
+						))}
+					</SimpleGrid>
 					{pageCount > 1 && (
 						<Group justify="center">
 							<Pagination
 								total={pageCount}
 								value={page}
-								onChange={(next) => {
-									setPage(next);
-									setPath([]);
-								}}
+								onChange={setPage}
 							/>
 						</Group>
 					)}
@@ -336,185 +335,6 @@ function Toolbar({
 	);
 }
 
-// ─── Browse mode (virtual file explorer) ───
-
-interface FolderNode {
-	name: string;
-	path: string[];
-}
-
-interface BrowserProps {
-	documents: DocumentEntry[];
-	path: string[];
-	onNavigate: (path: string[]) => void;
-	onInspect: (document: DocumentEntry) => void;
-	onDelete: (id: string) => void;
-	deletingId: string | null;
-}
-
-/**
- * Splits a document's `source` into virtual path segments. Anything without a
- * separator lives at the root. Trailing/leading slashes are tolerated.
- */
-function sourceSegments(source: string): string[] {
-	return source
-		.split("/")
-		.map((part) => part.trim())
-		.filter(Boolean);
-}
-
-function Browser({ documents, path, onNavigate, onInspect, onDelete, deletingId }: BrowserProps) {
-	// Derive the folders and files visible at the current path. A document with
-	// path segments [a, b, file] shows folder "a" at root, then "b", then the file.
-	const { folders, files } = useMemo(() => {
-		const folderMap = new Map<string, FolderNode>();
-		const filesHere: DocumentEntry[] = [];
-
-		for (const doc of documents) {
-			const segments = sourceSegments(doc.source);
-			// The final segment is the file itself; everything before it is folders.
-			const dirs = segments.slice(0, -1);
-
-			// Is this document inside the folder the user is currently viewing?
-			const insideCurrent = path.every((segment, i) => dirs[i] === segment);
-			if (!insideCurrent) continue;
-
-			if (dirs.length > path.length) {
-				const folderName = dirs[path.length];
-				const folderPath = dirs.slice(0, path.length + 1);
-				if (!folderMap.has(folderName)) {
-					folderMap.set(folderName, { name: folderName, path: folderPath });
-				}
-			} else {
-				filesHere.push(doc);
-			}
-		}
-
-		return {
-			folders: Array.from(folderMap.values()).sort((a, b) => a.name.localeCompare(b.name)),
-			files: filesHere,
-		};
-	}, [documents, path]);
-
-	return (
-		<Stack gap="md">
-			<Breadcrumbs
-				separator={
-					<Icon
-						path={iconChevronRight}
-						size="xs"
-						c="slate"
-					/>
-				}
-			>
-				<BreadcrumbButton
-					label="All documents"
-					onClick={() => onNavigate([])}
-					active={path.length === 0}
-				/>
-				{path.map((segment, index) => (
-					<BreadcrumbButton
-						key={`${segment}-${index}`}
-						label={segment}
-						onClick={() => onNavigate(path.slice(0, index + 1))}
-						active={index === path.length - 1}
-					/>
-				))}
-			</Breadcrumbs>
-
-			<SimpleGrid
-				cols={{ base: 1, sm: 2, lg: 3 }}
-				spacing="md"
-			>
-				{folders.map((folder) => (
-					<FolderCard
-						key={folder.name}
-						folder={folder}
-						onOpen={() => onNavigate(folder.path)}
-					/>
-				))}
-				{files.map((doc) => (
-					<DocumentCard
-						key={doc.id}
-						document={doc}
-						onInspect={() => onInspect(doc)}
-						onDelete={() => onDelete(doc.id)}
-						deleting={deletingId === doc.id}
-					/>
-				))}
-			</SimpleGrid>
-		</Stack>
-	);
-}
-
-function BreadcrumbButton({
-	label,
-	onClick,
-	active,
-}: {
-	label: string;
-	onClick: () => void;
-	active: boolean;
-}) {
-	return (
-		<UnstyledButton
-			onClick={onClick}
-			disabled={active}
-		>
-			<Text
-				fz="sm"
-				fw={active ? 600 : 400}
-				c={active ? "bright" : "slate"}
-				className={active ? undefined : classes.crumb}
-			>
-				{label}
-			</Text>
-		</UnstyledButton>
-	);
-}
-
-function FolderCard({ folder, onOpen }: { folder: FolderNode; onOpen: () => void }) {
-	return (
-		<UnstyledButton onClick={onOpen}>
-			<Paper
-				p="md"
-				radius="md"
-				withBorder
-				className={classes.fileCard}
-			>
-				<Group
-					gap="sm"
-					wrap="nowrap"
-				>
-					<ThemeIcon
-						size={40}
-						radius="md"
-						variant="light"
-						color="violet"
-					>
-						<Icon
-							path={iconOpenFolder}
-							size="lg"
-						/>
-					</ThemeIcon>
-					<Text
-						fw={600}
-						c="bright"
-						truncate
-						flex={1}
-					>
-						{folder.name}
-					</Text>
-					<Icon
-						path={iconChevronRight}
-						c="slate"
-					/>
-				</Group>
-			</Paper>
-		</UnstyledButton>
-	);
-}
-
 // ─── Mime-type icon mapping ───
 
 function mimeIcon(mimeType: string): string {
@@ -587,8 +407,7 @@ interface DocumentCardProps {
 }
 
 function DocumentCard({ document: doc, onInspect, onDelete, deleting }: DocumentCardProps) {
-	const segments = sourceSegments(doc.source);
-	const fileName = doc.title || segments.at(-1) || doc.id;
+	const fileName = doc.title || doc.source || doc.id;
 
 	return (
 		<Paper

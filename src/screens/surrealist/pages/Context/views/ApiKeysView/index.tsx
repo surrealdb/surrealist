@@ -3,6 +3,7 @@ import {
 	Alert,
 	Box,
 	Button,
+	Collapse,
 	CopyButton,
 	Group,
 	Image,
@@ -11,6 +12,7 @@ import {
 	SimpleGrid,
 	Stack,
 	Table,
+	TagsInput,
 	Text,
 	TextInput,
 	ThemeIcon,
@@ -25,6 +27,7 @@ import {
 	Icon,
 	iconAPI,
 	iconCheck,
+	iconChevronDown,
 	iconChevronRight,
 	iconCopy,
 	iconKey,
@@ -36,14 +39,20 @@ import {
 import { useState } from "react";
 import { Link } from "wouter";
 import {
-	useCreateContextApiKeyMutation,
 	useDeleteContextApiKeyMutation,
+	useMintScopedKeyMutation,
 	useRotateContextApiKeyMutation,
 } from "~/cloud/mutations/spectron";
 import { useCloudContextApiKeysQuery } from "~/cloud/queries/contexts";
-import type { ContextApiKey } from "~/types";
+import {
+	type ContextApiKey,
+	SPECTRON_VERBS,
+	type SpectronGrants,
+	type SpectronVerb,
+} from "~/types";
 import { ON_FOCUS_SELECT, showErrorNotification, showInfo } from "~/util/helpers";
 import { ContextHero } from "../../components/ContextHero";
+import { useSpectron } from "../../provider";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
 
@@ -80,20 +89,72 @@ const INTEGRATION_QUICK_LINKS: IntegrationQuickLink[] = [
 
 export default function ApiKeysView({ context }: ContextViewProps) {
 	const organization = context.organization_id;
+	const { principalId } = useSpectron();
 	const { data: apiKeys } = useCloudContextApiKeysQuery(organization, context.id);
-	const createKeyMutation = useCreateContextApiKeyMutation(organization, context.id);
+	const mintKeyMutation = useMintScopedKeyMutation(organization, context.id);
 	const deleteKeyMutation = useDeleteContextApiKeyMutation(organization, context.id);
 	const rotateKeyMutation = useRotateContextApiKeyMutation(organization, context.id);
 
 	const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure(false);
+	const [restrictOpened, { toggle: toggleRestrict, close: closeRestrict }] = useDisclosure(false);
 	const [newKeyName, setNewKeyName] = useState("");
+	// Optional attenuation: per-verb scope patterns. Empty verbs are omitted so
+	// the minted key inherits the principal's full grants.
+	const [grantDraft, setGrantDraft] = useState<Record<SpectronVerb, string[]>>(() => {
+		const seeded = {} as Record<SpectronVerb, string[]>;
+		for (const verb of SPECTRON_VERBS) {
+			seeded[verb] = [];
+		}
+		return seeded;
+	});
 	const [createdKey, setCreatedKey] = useState<ContextApiKey | null>(null);
 
-	const handleCreateKey = async () => {
-		const result = await createKeyMutation.mutateAsync({ name: newKeyName });
-		setCreatedKey(result);
+	const resetCreateForm = () => {
 		setNewKeyName("");
-		closeModal();
+		setGrantDraft(() => {
+			const seeded = {} as Record<SpectronVerb, string[]>;
+			for (const verb of SPECTRON_VERBS) {
+				seeded[verb] = [];
+			}
+			return seeded;
+		});
+		closeRestrict();
+	};
+
+	const handleCreateKey = async () => {
+		if (!principalId) return;
+
+		const trimmed = newKeyName.trim();
+		if (!trimmed) return;
+
+		// Build attenuating grants only from non-empty verbs. If the section is
+		// collapsed or every verb is empty, omit `grants` entirely so the key
+		// inherits the caller's full access.
+		const grants: SpectronGrants = {};
+		if (restrictOpened) {
+			for (const verb of SPECTRON_VERBS) {
+				const patterns = grantDraft[verb]?.filter((p) => p.trim().length > 0) ?? [];
+				if (patterns.length > 0) {
+					grants[verb] = patterns;
+				}
+			}
+		}
+
+		try {
+			const result = await mintKeyMutation.mutateAsync({
+				name: trimmed,
+				principal_id: principalId,
+				...(Object.keys(grants).length > 0 ? { grants } : {}),
+			});
+			setCreatedKey(result);
+			resetCreateForm();
+			closeModal();
+		} catch (err) {
+			showErrorNotification({
+				title: "Failed to create API key",
+				content: err,
+			});
+		}
 	};
 
 	const handleDismissCreatedKey = () => {
@@ -127,7 +188,7 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 			<ContextHero
 				kicker="Access"
 				title="API keys"
-				description="These keys authenticate you — your principal — to this context. Use them to connect your own SDK, REST, and MCP clients. Manage your keys here, then follow the integration guide for your stack."
+				description="These are scoped keys bound to your own principal, used to connect your SDK, REST, and MCP clients to this context. By default a key inherits your full access; you can optionally add attenuating grants to narrow what it can do. The secret is shown only once when the key is created."
 				art={pictoKey}
 			/>
 
@@ -414,8 +475,8 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 						fz="sm"
 						className="selectable"
 					>
-						Give your key a name so you can identify it later. You will see the secret
-						value only once.
+						This mints a scoped key bound to your principal. Give it a name so you can
+						identify it later. You will see the secret value only once.
 					</Text>
 					<TextInput
 						label="Name"
@@ -428,15 +489,94 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 						}
 						onChange={(e) => setNewKeyName(e.currentTarget.value)}
 					/>
+
+					{/* OPTIONAL ATTENUATING GRANTS */}
+					<Box>
+						<Button
+							size="compact-sm"
+							variant="subtle"
+							color="slate"
+							px={0}
+							onClick={toggleRestrict}
+							rightSection={
+								<Icon
+									path={iconChevronDown}
+									style={{
+										transition: "transform 0.15s ease",
+										transform: restrictOpened ? "rotate(180deg)" : undefined,
+									}}
+								/>
+							}
+						>
+							Restrict this key's access (optional)
+						</Button>
+						<Collapse expanded={restrictOpened}>
+							<Stack
+								gap="sm"
+								mt="sm"
+							>
+								<Text
+									fz="xs"
+									c="slate"
+								>
+									A scoped key can only narrow (attenuate) your own access — it
+									can never grant more than you already have. Leave a verb empty
+									to inherit your full access for it.
+								</Text>
+								{SPECTRON_VERBS.map((verb) => (
+									<Group
+										key={verb}
+										align="flex-start"
+										wrap="nowrap"
+										gap="sm"
+									>
+										<Text
+											fz="sm"
+											ff="monospace"
+											w={110}
+											mt={6}
+											style={{ flexShrink: 0 }}
+										>
+											{verb}
+										</Text>
+										<TagsInput
+											flex={1}
+											placeholder="Add scope pattern…"
+											value={grantDraft[verb]}
+											onChange={(value) =>
+												setGrantDraft((prev) => ({
+													...prev,
+													[verb]: value,
+												}))
+											}
+											clearable
+										/>
+									</Group>
+								))}
+							</Stack>
+						</Collapse>
+					</Box>
+
+					{!principalId && (
+						<Text
+							fz="xs"
+							c="slate"
+						>
+							Connecting… your principal is required to mint a key.
+						</Text>
+					)}
+
 					<Group justify="flex-end">
 						<Button onClick={closeModal}>Cancel</Button>
 						<Button
 							variant="gradient"
 							onClick={handleCreateKey}
 							disabled={
-								!newKeyName.trim() || apiKeys?.some((it) => it.name === newKeyName)
+								!principalId ||
+								!newKeyName.trim() ||
+								apiKeys?.some((it) => it.name === newKeyName)
 							}
-							loading={createKeyMutation.isPending}
+							loading={mintKeyMutation.isPending}
 						>
 							Create key
 						</Button>

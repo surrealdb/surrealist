@@ -44,8 +44,6 @@ export function ContextHero({ kicker, title, description, art, children }: Conte
 			</SectionTitle>
 			{description && (
 				<Text
-					c="dimmed"
-					mt="xs"
 					maw={640}
 					className="selectable"
 				>

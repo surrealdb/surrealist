@@ -29,7 +29,13 @@ const WORKSPACE_PAGES: ContextViewPage[] = [
 ];
 
 /** Admin-only settings sub-pages, grouped under a single "Settings" entry. */
-const SETTINGS_TABS: ContextSettingsTab[] = ["general", "principals", "configuration", "usage"];
+const SETTINGS_TABS: ContextSettingsTab[] = [
+	"general",
+	"users",
+	"service-accounts",
+	"configuration",
+	"usage",
+];
 
 export function ContextSidebar({ contextId, organizationId }: ContextSidebarProps) {
 	const { setLocation } = useSidebar();

@@ -436,7 +436,8 @@ export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = 
 
 export const CONTEXT_SETTINGS_TAB_LABELS: Record<ContextSettingsTab, string> = {
 	general: "General",
-	principals: "Principals",
+	users: "Users",
+	"service-accounts": "Service Accounts",
 	configuration: "Configuration",
 	usage: "Usage",
 };
