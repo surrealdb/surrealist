@@ -1,12 +1,12 @@
 import {
 	Box,
 	Button,
-	Divider,
+	Group,
 	Image,
 	Paper,
+	Scroller,
 	SimpleGrid,
 	Stack,
-	Tabs,
 	Text,
 	Timeline,
 	Title,
@@ -23,7 +23,7 @@ import {
 	iconAPI,
 	iconArrowUpRight,
 	iconMCP,
-	pictoSDKs,
+	pictoIntegrations,
 } from "@surrealdb/ui";
 import { useEffect, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
@@ -269,8 +269,47 @@ export default function IntegrationView({ context }: ContextViewProps) {
 				kicker="Quick start"
 				title="Connect to your context"
 				description="Wire this context into your agent — through the Python and JavaScript SDKs, the REST API, MCP, or a framework like LangChain, n8n, and the OpenAI and Vercel AI toolkits."
-				art={pictoSDKs}
+				art={pictoIntegrations}
 			/>
+
+			<Scroller
+				className={classes.integrationScroller}
+				edgeGradientColor="default"
+			>
+				<Group
+					wrap="nowrap"
+					pb="xs"
+				>
+					{INTEGRATION_TABS.map((tab) => (
+						<Button
+							key={tab}
+							size="md"
+							className={classes.integrationCard}
+							aria-pressed={activeTab === tab}
+							variant={activeTab === tab ? "light" : "surreal"}
+							onClick={() => setActiveTab(tab)}
+							leftSection={
+								TAB_META[tab].img ? (
+									<Image
+										src={TAB_META[tab].img}
+										w={16}
+										h={16}
+										alt=""
+									/>
+								) : TAB_META[tab].icon ? (
+									<Icon
+										path={TAB_META[tab].icon}
+										c="bright"
+										size="sm"
+									/>
+								) : null
+							}
+						>
+							{TAB_META[tab].label}
+						</Button>
+					))}
+				</Group>
+			</Scroller>
 
 			<Paper
 				p="lg"
@@ -278,52 +317,6 @@ export default function IntegrationView({ context }: ContextViewProps) {
 				className={classes.integrationPane}
 			>
 				<Stack gap="lg">
-					<Tabs
-						value={activeTab}
-						onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
-					>
-						<Box
-							style={{
-								overflowX: "auto",
-								marginInline: -4,
-								paddingInline: 4,
-							}}
-						>
-							<Tabs.List
-								style={{
-									flexWrap: "nowrap",
-									width: "max-content",
-									gap: 4,
-								}}
-							>
-								{INTEGRATION_TABS.map((tab) => (
-									<Tabs.Tab
-										key={tab}
-										value={tab}
-										leftSection={
-											TAB_META[tab].img ? (
-												<Image
-													src={TAB_META[tab].img}
-													w={14}
-													alt=""
-												/>
-											) : TAB_META[tab].icon ? (
-												<Icon
-													path={TAB_META[tab].icon}
-													c="bright"
-													size="sm"
-												/>
-											) : undefined
-										}
-									>
-										{TAB_META[tab].label}
-									</Tabs.Tab>
-								))}
-							</Tabs.List>
-						</Box>
-						<Divider />
-					</Tabs>
-
 					<Timeline
 						mt="md"
 						bulletSize={24}
@@ -352,29 +345,27 @@ export default function IntegrationView({ context }: ContextViewProps) {
 								<SimpleGrid cols={2}>
 									<Box>
 										<Title
-											order={3}
+											order={2}
 											fz="lg"
 										>
 											{step.title}
 										</Title>
-										<Text>{step.description}</Text>
-										{step.action === "api_keys" ? (
+										<Text mt="xs">{step.description}</Text>
+									</Box>
+									{step.action === "api_keys" ? (
+										<Box>
 											<Button
-												mt="sm"
-												ml="-xs"
-												size="xs"
-												color="violet"
+												variant="gradient"
 												rightSection={<Icon path={iconArrowUpRight} />}
 												onClick={() => goToPage("api-keys")}
 											>
 												Get API key
 											</Button>
-										) : step.action === "documentation" ? (
+										</Box>
+									) : step.action === "documentation" ? (
+										<Box>
 											<Button
-												mt="sm"
-												ml="-xs"
-												size="xs"
-												color="violet"
+												variant="gradient"
 												rightSection={<Icon path={iconArrowUpRight} />}
 												onClick={() =>
 													adapter.openUrl(
@@ -384,14 +375,13 @@ export default function IntegrationView({ context }: ContextViewProps) {
 											>
 												Read the documentation
 											</Button>
-										) : undefined}
-									</Box>
-									{step.code && (
+										</Box>
+									) : step.code ? (
 										<CodeBlock
 											value={step.code}
 											lang={step.lang}
 										/>
-									)}
+									) : null}
 								</SimpleGrid>
 							</Timeline.Item>
 						))}

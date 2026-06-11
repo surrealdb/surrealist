@@ -276,7 +276,7 @@ export function UsageTab({ context }: ContextViewProps) {
 																	radius="xl"
 																	color={
 																		TOKEN_KIND_COLORS[
-																			row.token_kind
+																			row.token_kind as SpectronTokenKind
 																		] ?? "violet"
 																	}
 																/>
@@ -287,8 +287,9 @@ export function UsageTab({ context }: ContextViewProps) {
 														<Badge
 															variant="light"
 															color={
-																TOKEN_KIND_COLORS[row.token_kind] ??
-																"slate"
+																TOKEN_KIND_COLORS[
+																	row.token_kind as SpectronTokenKind
+																] ?? "slate"
 															}
 															tt="none"
 														>
@@ -299,7 +300,9 @@ export function UsageTab({ context }: ContextViewProps) {
 														<Badge
 															variant="dot"
 															color={
-																ORIGIN_COLORS[row.origin] ?? "slate"
+																ORIGIN_COLORS[
+																	row.origin as SpectronCallOrigin
+																] ?? "slate"
 															}
 															tt="none"
 														>
