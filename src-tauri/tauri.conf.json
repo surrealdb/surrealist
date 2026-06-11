@@ -41,7 +41,11 @@
 		],
 		"linux": {
 			"deb": {
-				"depends": []
+				"depends": [],
+				"desktopTemplate": "res/desktop-template.desktop.hbs"
+			},
+			"rpm": {
+				"desktopTemplate": "res/desktop-template.desktop.hbs"
 			}
 		},
 		"macOS": {
