@@ -1,7 +1,7 @@
 import { Center, Loader, SimpleGrid, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { useDatasetsCatalogQuery } from "~/hooks/datasets";
-import { resolveDatasetVersion } from "~/util/datasets";
+import { getVisibleSizes, resolveDatasetVersion } from "~/util/datasets";
 import { DatasetCatalogCard } from "./card";
 
 export interface DatasetCatalogBrowserProps {
@@ -24,9 +24,13 @@ export function DatasetCatalogBrowser({ surrealVersion, variant }: DatasetCatalo
 				return [];
 			}
 
+			if (variant === "download" && getVisibleSizes(version).length === 0) {
+				return [];
+			}
+
 			return [{ dataset, version }];
 		});
-	}, [datasets, surrealVersion]);
+	}, [datasets, surrealVersion, variant]);
 
 	if (isPending) {
 		return (

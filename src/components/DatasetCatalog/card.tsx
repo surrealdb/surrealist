@@ -50,7 +50,7 @@ export function DatasetCatalogCard({ dataset, version, variant }: DatasetCatalog
 	const hasQueries = sampleQueries.length > 0;
 	const canApplyDataset = hasSizes && !!activeSizePath;
 	const canApplyQueries = hasQueries && includeQueries;
-	const canSubmit = canApplyDataset || canApplyQueries;
+	const canSubmit = variant === "download" ? canApplyDataset : canApplyDataset || canApplyQueries;
 	const isLoading = variant === "apply" ? isApplying : isDownloading;
 
 	const handleApply = useRequireDatabase(
@@ -92,7 +92,7 @@ export function DatasetCatalogCard({ dataset, version, variant }: DatasetCatalog
 		setIsDownloading(true);
 
 		try {
-			await downloadDataset(dataset, version, activeSize, includeQueries);
+			await downloadDataset(dataset, version, activeSize, false);
 		} catch (error) {
 			showErrorNotification({
 				title: "Failed to download dataset",
@@ -135,15 +135,16 @@ export function DatasetCatalogCard({ dataset, version, variant }: DatasetCatalog
 					gap="lg"
 					mt="auto"
 				>
-					{hasQueries ? (
-						<Checkbox
-							label="Include sample queries"
-							checked={includeQueries}
-							onChange={(event) => setIncludeQueries(event.currentTarget.checked)}
-						/>
-					) : (
-						<Text fz="sm">No sample queries available</Text>
-					)}
+					{variant === "apply" &&
+						(hasQueries ? (
+							<Checkbox
+								label="Include sample queries"
+								checked={includeQueries}
+								onChange={(event) => setIncludeQueries(event.currentTarget.checked)}
+							/>
+						) : (
+							<Text fz="sm">No sample queries available</Text>
+						))}
 
 					<Group
 						gap="lg"
