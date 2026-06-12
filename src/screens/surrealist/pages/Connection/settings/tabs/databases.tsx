@@ -124,7 +124,6 @@ function DatabaseHierarchySection({
 	const queryClient = useQueryClient();
 	const [supportsDefaultConfig] = useMinimumVersion(SDB_DEFINE_CONFIG_DEFAULT);
 	const [expanded, setExpanded] = useState<string[]>([]);
-	const hasInitialized = useRef(false);
 	const previousSearch = useRef("");
 
 	const level = getAuthLevel(authentication);
@@ -154,25 +153,9 @@ function DatabaseHierarchySection({
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: reset expand state when switching connections
 	useEffect(() => {
-		hasInitialized.current = false;
 		previousSearch.current = "";
 		setExpanded([]);
 	}, [connectionId]);
-
-	useEffect(() => {
-		if (!filteredHierarchy?.length || hasInitialized.current) {
-			return;
-		}
-
-		hasInitialized.current = true;
-
-		if (namespace) {
-			setExpanded([namespace]);
-			return;
-		}
-
-		setExpanded(filteredHierarchy.map((entry) => entry.namespace.name));
-	}, [filteredHierarchy, namespace]);
 
 	useEffect(() => {
 		if (search === previousSearch.current) {
