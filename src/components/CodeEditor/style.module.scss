@@ -191,6 +191,29 @@
 		margin-left: var(--mantine-spacing-xs);
 	}
 
+	:global(.cm-vim-panel) {
+		padding: 2px var(--mantine-spacing-xs);
+		font-family: var(--mantine-font-family-monospace);
+		color: var(--mantine-color-bright);
+
+		input {
+			font-family: var(--mantine-font-family-monospace);
+			background-color: transparent;
+			padding: 0;
+			outline: 1px solid var(--mantine-color-obsidian-light);
+			outline-offset: -1px !important;
+		}
+	}
+
+	:global(.cm-fat-cursor) {
+		background-color: var(--mantine-color-obsidian-filled) !important;
+	}
+
+	:global(.cm-editor:not(.cm-focused)) :global(.cm-fat-cursor) {
+		background: none !important;
+		outline: solid 1px var(--mantine-color-obsidian-light) !important;
+	}
+
 	$icons: (
 		"class",
 		"constant",

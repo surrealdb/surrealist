@@ -6,7 +6,7 @@ import {
 	iconList,
 	iconPin,
 	iconPinOff,
-	pictoSidekick,
+	pictoSidekickGradient,
 } from "@surrealdb/ui";
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from "react";
 import glowImg from "~/assets/images/radial-glow.png";
@@ -110,7 +110,7 @@ export const Sidekick = forwardRef<SidekickHandle, SidekickProps>(
 								/>
 								<Image
 									pos="relative"
-									src={pictoSidekick}
+									src={pictoSidekickGradient}
 									w={36}
 									h={36}
 								/>

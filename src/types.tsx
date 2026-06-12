@@ -43,6 +43,7 @@ export type SidebarMode = "compact" | "wide";
 export type InstancePlan = "free" | "start" | "scale" | "enterprise";
 export type SourceMode = "schema" | "infer";
 export type SyntaxTheme = "default" | "vivid";
+export type EditorKeymap = "default" | "vim";
 export type TableType = "ANY" | "NORMAL" | "RELATION";
 export type TableVariant = "normal" | "relation" | "view";
 export type UrlTarget = "internal" | "external";
@@ -185,6 +186,7 @@ export interface Connection {
 	queryHistory: HistoryQuery[];
 	authentication: Authentication;
 	pinnedTables: string[];
+	designerHiddenTables: string[];
 	diagramAlgorithm: DiagramAlgorithm;
 	diagramDirection: DiagramDirection;
 	diagramStrategy: DiagramStrategy;
@@ -227,6 +229,7 @@ export interface SurrealistBehaviorSettings {
 	sidekickPanel: boolean;
 	recordDiagnostics: boolean;
 	diagnosticsHistorySize: number;
+	editorKeymap: EditorKeymap;
 }
 
 export interface SurrealistAppearanceSettings {
@@ -259,6 +262,7 @@ export interface SurrealistAppearanceSettings {
 	formatIndentMode: "space" | "tab";
 	formatMaxLineLength: number;
 	logoGreetAnimation: boolean;
+	backgroundGlobulesOpacity: number;
 }
 
 export interface SurrealistTemplateSettings {

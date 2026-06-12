@@ -135,6 +135,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		c?.diagramHoverFocus,
 	]);
 
+	const hiddenTables = useConnection((c) => c?.designerHiddenTables ?? []);
+
 	const [isExporting, setIsExporting] = useState(false);
 	const [isTiny, setIsTiny] = useState(false);
 	const [zoomLevel, setZoomLevel] = useState(1);
@@ -150,6 +152,14 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 			threshold: diagramLodThreshold,
 		}),
 		[diagramLodEnabled, diagramLodThreshold],
+	);
+
+	const exportLodSettings = useMemo(
+		() => ({
+			enabled: false,
+			threshold: diagramLodThreshold,
+		}),
+		[diagramLodThreshold],
 	);
 
 	const { fitView, getViewport, setViewport } = useReactFlow();
@@ -206,12 +216,16 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [nodesInitialized, algorithm, direction, strategy]);
 
 	const renderGraph = useStable(async () => {
+		const hidden = new Set(hiddenTables);
+		const visibleTables = props.tables.filter((table) => !hidden.has(table.schema.name));
+
 		const [nodes, edges, warnings] = await buildFlowNodes(
-			props.tables,
+			visibleTables,
 			nodeMode,
 			direction,
 			linkMode,
 			lineStyle,
+			hidden,
 		);
 
 		setWarnings(warnings);
@@ -269,7 +283,6 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	const saveImage = useStable(async (type: "png" | "svg") => {
 		const viewport = getViewport();
-		const nodesBounds = getNodesBounds(getNodes());
 
 		const isSuccess = await adapter.saveFile(
 			"Save snapshot",
@@ -288,6 +301,10 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 				await sleep(50);
 
 				fitView();
+
+				await sleep(50);
+
+				const nodesBounds = getNodesBounds(getNodes());
 
 				// Reactflow expects to use the viewport element for snapshotting.
 				const el = ref.current.querySelector<HTMLDivElement>(".react-flow__viewport");
@@ -421,6 +438,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		lineStyle,
 		linkMode,
 		nodeMode,
+		hiddenTables,
 	]);
 
 	useEffect(() => {
@@ -581,7 +599,12 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 
 	return (
 		<DiagramContext.Provider
-			value={{ warnings, isTiny: isTiny && !isExporting, zoomLevel, lodSettings }}
+			value={{
+				warnings,
+				isTiny: isTiny && !isExporting,
+				zoomLevel,
+				lodSettings: isExporting ? exportLodSettings : lodSettings,
+			}}
 		>
 			<ContentPane
 				title="Table Graph"

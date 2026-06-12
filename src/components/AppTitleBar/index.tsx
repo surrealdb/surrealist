@@ -5,7 +5,7 @@ import {
 	iconMaximize,
 	iconMinimize,
 	iconRestore,
-	pictoSurrealist,
+	pictoSurrealistGradient,
 } from "@surrealdb/ui";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useState } from "react";
@@ -47,7 +47,7 @@ export function AppTitleBar() {
 		<Box className={classes.titleBar}>
 			<Group gap={0}>
 				<Image
-					src={pictoSurrealist}
+					src={pictoSurrealistGradient}
 					w={23}
 					m="md"
 					data-tauri-drag-region

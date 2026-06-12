@@ -1,5 +1,5 @@
 import { Anchor, Box, Group, Image, Paper, Text } from "@mantine/core";
-import { pictoSurrealDB } from "@surrealdb/ui";
+import { pictoSurrealDBGradient } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { IntercomSupportCollectionShallow } from "~/types";
 
@@ -22,7 +22,7 @@ export function SupportCollection({ collection }: SupportCollectionProps) {
 					gap="lg"
 				>
 					<Image
-						src={collection.image ?? pictoSurrealDB}
+						src={collection.image ?? pictoSurrealDBGradient}
 						w={35}
 						h={35}
 					/>

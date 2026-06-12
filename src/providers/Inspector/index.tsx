@@ -10,11 +10,18 @@ import { RecordsChangedEvent } from "~/util/global-events";
 import { InspectorDrawer } from "./drawer";
 
 type InspectFunction = (record: RecordId | string) => Promise<void>;
+type CreateFunction = (table?: string, content?: any) => void;
 type StopInspectFunction = () => void;
+
+export interface CreateState {
+	table: string;
+	content?: any;
+}
 
 const InspectorContext = createContext<{
 	history: HistoryHandle<RecordId>;
 	inspect: InspectFunction;
+	create: CreateFunction;
 	stopInspect: StopInspectFunction;
 } | null>(null);
 
@@ -28,6 +35,7 @@ export function useInspector() {
 		ctx ?? {
 			history: [],
 			inspect: noop,
+			create: noop,
 			stopInspect: noop,
 		}
 	);
@@ -35,6 +43,7 @@ export function useInspector() {
 
 export function InspectorProvider({ children }: PropsWithChildren) {
 	const [historyItems, setHistoryItems] = useState<RecordId[]>([]);
+	const [createState, setCreateState] = useState<CreateState | null>(null);
 	const [isInspecting, isInspectingHandle] = useDisclosure();
 
 	const history = useHistory({
@@ -52,6 +61,7 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 			throw new TypeError("Invalid record id");
 		}
 
+		setCreateState(null);
 		isInspectingHandle.open();
 
 		if (isInspecting) {
@@ -63,7 +73,23 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 		tagEvent("record_inspector_open");
 	});
 
+	const create = useStable((table?: string, content?: any) => {
+		const resolvedTable =
+			table ?? (content?.id instanceof RecordId ? content.id.table.name : undefined);
+
+		if (!resolvedTable) {
+			throw new TypeError("Table required for record creation");
+		}
+
+		setHistoryItems([]);
+		setCreateState({ table: resolvedTable, content });
+		isInspectingHandle.open();
+
+		tagEvent("record_creator_open");
+	});
+
 	const stopInspect = useStable(() => {
+		setCreateState(null);
 		isInspectingHandle.close();
 	});
 
@@ -72,13 +98,14 @@ export function InspectorProvider({ children }: PropsWithChildren) {
 	});
 
 	return (
-		<InspectorContext.Provider value={{ history, inspect, stopInspect }}>
+		<InspectorContext.Provider value={{ history, inspect, create, stopInspect }}>
 			{children}
 
 			<InspectorDrawer
 				opened={isInspecting}
 				history={history}
-				onClose={isInspectingHandle.close}
+				createState={createState}
+				onClose={stopInspect}
 				onRefresh={dispatchEvent}
 			/>
 		</InspectorContext.Provider>

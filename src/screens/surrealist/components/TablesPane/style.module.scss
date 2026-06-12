@@ -1,4 +1,25 @@
-.scroller > div {
+.scroller>div {
 	width: 100%;
-    table-layout: fixed;
+	table-layout: fixed;
+}
+
+.visibility-icon {
+	display: none;
+	cursor: pointer;
+}
+
+.table {
+	&[data-hidden] {
+		opacity: 0.5;
+	}
+
+	&[data-toggleable]:hover {
+		.variant-icon {
+			display: none;
+		}
+
+		.visibility-icon {
+			display: block;
+		}
+	}
 }

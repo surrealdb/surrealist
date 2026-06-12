@@ -24,10 +24,10 @@ import {
 	iconSend,
 	iconSpectron,
 	MarkdownViewer,
-	pictoBrain,
-	pictoMemory,
-	pictoSpectron,
-	pictoVectorSearch,
+	pictoBrainGradient,
+	pictoMemoryGradient,
+	pictoSpectronGradient,
+	pictoVectorSearchGradient,
 } from "@surrealdb/ui";
 import { useCallback, useRef, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
@@ -222,7 +222,7 @@ export default function PlaygroundView(_props: ContextViewProps) {
 				className={classes.header}
 			>
 				<Image
-					src={pictoSpectron}
+					src={pictoSpectronGradient}
 					className={classes.headerArt}
 					alt=""
 					aria-hidden
@@ -340,7 +340,7 @@ export default function PlaygroundView(_props: ContextViewProps) {
 												gap="md"
 											>
 												<Image
-													src={pictoBrain}
+													src={pictoBrainGradient}
 													w={96}
 													h={96}
 													alt=""
@@ -537,7 +537,7 @@ export default function PlaygroundView(_props: ContextViewProps) {
 										{newMemories.length === 0 ? (
 											<Box className={classes.emptyState}>
 												<Image
-													src={pictoMemory}
+													src={pictoMemoryGradient}
 													w={64}
 													h={64}
 													alt=""
@@ -598,7 +598,7 @@ export default function PlaygroundView(_props: ContextViewProps) {
 										{MOCK_RETRIEVED_MEMORIES.length === 0 ? (
 											<Box className={classes.emptyState}>
 												<Image
-													src={pictoVectorSearch}
+													src={pictoVectorSearchGradient}
 													w={64}
 													h={64}
 													alt=""

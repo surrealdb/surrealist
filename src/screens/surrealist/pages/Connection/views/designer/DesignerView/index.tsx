@@ -24,9 +24,10 @@ const TableGraphPaneLazy = memo(TableGraphPane);
 
 export function DesignerView() {
 	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
-	const { updateConnection } = useConfigStore.getState();
+	const { updateConnection, toggleTableVisibility } = useConfigStore.getState();
 	const { design, stopDesign, active, isDesigning } = useDesigner();
 	const designerTableList = useConnection((c) => c?.designerTableList);
+	const designerHiddenTables = useConnection((c) => c?.designerHiddenTables ?? []);
 	const openTableCreator = useRequireDatabase(_openTableCreator);
 
 	const [connection] = useConnectionAndView();
@@ -55,6 +56,12 @@ export function DesignerView() {
 			id: connection,
 			designerTableList: false,
 		});
+	});
+
+	const toggleTableVisible = useStable((table: string) => {
+		if (!connection) return;
+
+		toggleTableVisibility(connection, table);
 	});
 
 	useEffect(() => {
@@ -96,8 +103,10 @@ export function DesignerView() {
 							<TablesPane
 								icon={iconDesigner}
 								closeDisabled={emptySchema}
+								hiddenTables={designerHiddenTables}
 								onTableSelect={design}
 								onTableContextMenu={buildContextMenu}
+								onToggleHidden={toggleTableVisible}
 								onClose={closeTableList}
 							/>
 						</Panel>

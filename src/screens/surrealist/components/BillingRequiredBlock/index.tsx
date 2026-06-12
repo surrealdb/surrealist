@@ -1,5 +1,5 @@
 import { BoxProps, Image, Paper, Stack, Text } from "@mantine/core";
-import { pictoSDBCloud } from "@surrealdb/ui";
+import { pictoSDBCloudGradient } from "@surrealdb/ui";
 import { PropsWithChildren, ReactNode } from "react";
 import glowImage from "~/assets/images/glow.png";
 import classes from "./style.module.scss";
@@ -33,7 +33,7 @@ export function BillingRequiredBlock({
 				{subtitle}
 			</Stack>
 			<Image
-				src={pictoSDBCloud}
+				src={pictoSDBCloudGradient}
 				className={classes.cloudImage}
 			/>
 			<Image

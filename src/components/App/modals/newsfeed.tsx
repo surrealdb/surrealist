@@ -7,7 +7,6 @@ import {
 	Group,
 	Image,
 	Loader,
-	Paper,
 	ScrollArea,
 	Stack,
 	Text,
@@ -210,7 +209,7 @@ export function NewsFeedDrawer() {
 					)}
 				</ScrollArea>
 				{!newsQuery.isPending && !isEmpty && pagination.pageCount > 1 && (
-					<Paper
+					<Box
 						pos="absolute"
 						left={0}
 						right={0}
@@ -228,7 +227,7 @@ export function NewsFeedDrawer() {
 								withResultsPerPage={false}
 							/>
 						</Group>
-					</Paper>
+					</Box>
 				)}
 			</Box>
 		</Drawer>

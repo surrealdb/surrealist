@@ -25,8 +25,8 @@ import {
 	iconProgressClock,
 	iconSpectron,
 	iconSurreal,
-	pictoSpectron,
-	pictoSurrealDB,
+	pictoSpectronGradient,
+	pictoSurrealDBGradient,
 } from "@surrealdb/ui";
 import { Fragment, useMemo } from "react";
 import {
@@ -388,7 +388,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 					subject="instance"
 					description="SurrealDB Cloud database instances"
 					icon={iconSurreal}
-					image={pictoSurrealDB}
+					image={pictoSurrealDBGradient}
 					color="violet"
 					count={instanceCount}
 					onClick={() => setLocation(`${base}/instances`)}
@@ -399,7 +399,7 @@ export function OrganizationOverviewTab({ organization }: OrganizationTabProps) 
 						subject="context"
 						description="Spectron memory and context stores for AI agents"
 						icon={iconSpectron}
-						image={pictoSpectron}
+						image={pictoSpectronGradient}
 						color="violet"
 						count={contextCount}
 						onClick={() => setLocation(`${base}/contexts`)}

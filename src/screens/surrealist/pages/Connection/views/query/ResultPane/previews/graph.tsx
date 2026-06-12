@@ -235,7 +235,7 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 	// Fetch and apply node labels
 	const applyLabels = useStable(async () => {
 		const groups = new Map<string, RecordId[]>();
-		let labels: Record<string, string> = {};
+		const labels: Record<string, string> = {};
 		let queries = "";
 
 		// Group nodes per table
@@ -270,12 +270,15 @@ export function GraphPreview({ responses, selected }: PreviewProps) {
 				}
 			}
 
-			const [response] = await executeQuery(
-				`object::from_entries(array::flatten([${queries}]))`,
-				params,
-			);
+			// Resolve labels into [id, label] pairs and key them by the record id
+			// string client-side, matching how nodes are keyed (record.toString()).
+			// This avoids relying on database-side key serialization, which differs
+			// for complex record ids such as those backed by a UUID.
+			const [response] = await executeQuery(`array::flatten([${queries}])`, params);
 
-			labels = response.result;
+			for (const [id, label] of (response.result ?? []) as [RecordId, string][]) {
+				labels[id.toString()] = label;
+			}
 		}
 
 		// Update universe nodes

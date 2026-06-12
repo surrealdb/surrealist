@@ -11,7 +11,7 @@ import {
 } from "surrealdb";
 import { adapter } from "~/adapter";
 import { fetchAPI } from "~/cloud/api";
-import { MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
+import { LQ_SUPPORTED, MAX_HISTORY_QUERY_LENGTH, SANDBOX } from "~/constants";
 import { hasCompletedOnboarding } from "~/hooks/onboarding";
 import { getCloudSessionStatus } from "~/providers/Cloud";
 import { useConfigStore } from "~/stores/config";
@@ -22,7 +22,6 @@ import type {
 	Authentication,
 	CloudInstance,
 	Connection,
-	Protocol,
 	QueryResponse,
 	SchemaInfoKV,
 	SchemaInfoNS,
@@ -82,7 +81,6 @@ let openedConnection: Connection;
 let instance = new Surreal();
 let surrealql: SurrealQL | null = null;
 
-const LQ_SUPPORTED = new Set<Protocol>(["ws", "wss", "mem", "indxdb"]);
 const LIVE_QUERIES = new Map<string, Set<Uuid>>();
 
 /**
@@ -896,9 +894,15 @@ export function composeHttpConnection(
 	const isSecure = protocol === "https" || protocol === "wss";
 	const endpoint = new URL(path, `${isSecure ? "https" : "http"}://${hostname}`).toString();
 
+	// Prefer the access token held by the live connection. The configured
+	// `token` is only populated for token authentication, so signing in with
+	// any other method would otherwise leave these raw HTTP requests (GraphQL,
+	// export, ML import) unauthenticated.
+	const token = instance.accessToken ?? authentication.token;
+
 	const headers: Record<string, string> = {
 		...extraHeaders,
-		Authorization: `Bearer ${authentication.token}`,
+		Authorization: `Bearer ${token}`,
 	};
 
 	if (authentication.namespace) {

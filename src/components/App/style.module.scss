@@ -43,13 +43,10 @@
 }
 
 .update-dialog {
-	background: var(--surreal-menu-background-color);
-	background-color: var(--surreal-menu-background);
-	border: 1px solid var(--surreal-glass-subtle);
+	background-color: var(--surreal-floater-background);
+	box-shadow: var(--surreal-floater-shadow);
 	transition-property: transform, opacity, background-color !important;
 	cursor: pointer;
-
-	@include background-blur;
 
 	@include light {
 		background-color: white;

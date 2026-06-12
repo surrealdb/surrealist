@@ -18,10 +18,10 @@ import {
 	iconRelation,
 	iconSearch,
 	iconTag,
-	pictoBrain,
-	pictoKnowledgeGraph,
-	pictoMemory,
-	pictoTimeline,
+	pictoBarsGradient,
+	pictoBrainGradient,
+	pictoKnowledgeGraphGradient,
+	pictoMemoryGradient,
 } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
@@ -43,7 +43,7 @@ const MEMORY_TYPES: MemoryTypeCard[] = [
 		description:
 			"Every conversation turn is captured and classified, so agents pick up where they left off instead of starting from zero.",
 		icon: iconClock,
-		picto: pictoTimeline,
+		picto: pictoBarsGradient,
 	},
 	{
 		type: "Semantic",
@@ -51,7 +51,7 @@ const MEMORY_TYPES: MemoryTypeCard[] = [
 		description:
 			"Structured knowledge extracted from interactions - people, places, preferences, and the relationships between them.",
 		icon: iconRelation,
-		picto: pictoKnowledgeGraph,
+		picto: pictoKnowledgeGraphGradient,
 	},
 	{
 		type: "Procedural",
@@ -59,7 +59,7 @@ const MEMORY_TYPES: MemoryTypeCard[] = [
 		description:
 			"Recurring user preferences, feedback, and behavioural patterns surface from episodic memory without explicit annotation.",
 		icon: iconTag,
-		picto: pictoBrain,
+		picto: pictoBrainGradient,
 	},
 ];
 
@@ -115,7 +115,7 @@ export default function MemoriesView({ context }: ContextViewProps) {
 				className={classes.hero}
 			>
 				<Image
-					src={pictoMemory}
+					src={pictoMemoryGradient}
 					className={classes.heroArt}
 					alt=""
 					aria-hidden
@@ -350,7 +350,7 @@ export default function MemoriesView({ context }: ContextViewProps) {
 					<Box className={classes.graphIllustration}>
 						<Box className={classes.graphArt}>
 							<Image
-								src={pictoKnowledgeGraph}
+								src={pictoKnowledgeGraphGradient}
 								w={220}
 								alt=""
 								aria-hidden

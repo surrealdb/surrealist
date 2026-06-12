@@ -19,7 +19,7 @@ import {
 	iconCloudClock,
 	iconRelation,
 	iconServerSecure,
-	pictoSpectron,
+	pictoSpectronGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { useId, useState } from "react";
@@ -172,11 +172,10 @@ function PageContent({ organisation }: PageContentProps) {
 					<Paper
 						p="xl"
 						radius="lg"
-						variant="glass"
 						className={classes.hero}
 					>
 						<Image
-							src={pictoSpectron}
+							src={pictoSpectronGradient}
 							className={classes.heroArt}
 							alt=""
 							aria-hidden

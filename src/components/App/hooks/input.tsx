@@ -57,9 +57,19 @@ export function useKeybindListener() {
 export function useEscapeKeyListener() {
 	useEffect(() => {
 		const onKeyDown = (e: KeyboardEvent) => {
-			if (e.code === "Escape") {
-				e.preventDefault();
+			if (e.code !== "Escape") {
+				return;
 			}
+
+			// Let CodeMirror editors handle Escape themselves, such as exiting
+			// Vim insert mode or closing autocompletion. Calling preventDefault
+			// here runs before the editor and causes CodeMirror to skip its own
+			// key handlers for the event.
+			if (e.target instanceof Element && e.target.closest(".cm-editor")) {
+				return;
+			}
+
+			e.preventDefault();
 		};
 
 		document.addEventListener("keydown", onKeyDown, true);

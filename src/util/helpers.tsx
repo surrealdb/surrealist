@@ -165,6 +165,32 @@ export function showInfo(info: { title: ReactNode; subtitle: ReactNode }) {
 }
 
 /**
+ * Write text to the system clipboard.
+ *
+ * Accepts either a resolved string or a promise of one. When given a promise
+ * the value is written through a `ClipboardItem` carrying that promise, which
+ * preserves the originating user gesture. Awaiting the value before calling
+ * `writeText` drops the transient activation, causing the write to be rejected.
+ *
+ * @param text The text, or a promise resolving to the text, to copy
+ */
+export function writeClipboardText(text: string | Promise<string>): Promise<void> {
+	if (typeof text === "string") {
+		return navigator.clipboard.writeText(text);
+	}
+
+	if (typeof ClipboardItem !== "undefined" && navigator.clipboard.write) {
+		const item = new ClipboardItem({
+			"text/plain": text.then((value) => new Blob([value], { type: "text/plain" })),
+		});
+
+		return navigator.clipboard.write([item]);
+	}
+
+	return Promise.reject(new Error("Clipboard not supported"));
+}
+
+/**
  * Returns the mod of the given numbers, even if the result is negative
  *
  * @param n The number to mod

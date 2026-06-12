@@ -53,6 +53,7 @@ export function createBaseSettings(): SurrealistSettings {
 			sidekickPanel: false,
 			recordDiagnostics: false,
 			diagnosticsHistorySize: 300,
+			editorKeymap: "default",
 		},
 		appearance: {
 			colorScheme: "dark",
@@ -84,6 +85,7 @@ export function createBaseSettings(): SurrealistSettings {
 			formatIndentMode: "space",
 			formatMaxLineLength: 120,
 			logoGreetAnimation: false,
+			backgroundGlobulesOpacity: 0.35,
 		},
 		templates: {
 			list: [],
@@ -144,6 +146,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		activeQuery: baseTab.id,
 		authentication: createBaseAuthentication(),
 		pinnedTables: [],
+		designerHiddenTables: [],
 		queryHistory: [],
 		lastNamespace: "",
 		lastDatabase: "",

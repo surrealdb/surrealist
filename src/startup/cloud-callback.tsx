@@ -14,7 +14,7 @@ import {
 	Text,
 	v8CssVariablesResolver,
 } from "@mantine/core";
-import { pictoDownload } from "@surrealdb/ui";
+import { pictoDownloadGradient } from "@surrealdb/ui";
 import { createRoot } from "react-dom/client";
 import { useThemePreference } from "~/hooks/theme";
 import authReturnClasses from "~/screens/auth-return/style.module.scss";
@@ -39,7 +39,7 @@ function AuthCallbackScreen() {
 				p="xl"
 			>
 				<Image
-					src={pictoDownload}
+					src={pictoDownloadGradient}
 					alt="Download Surrealist"
 					w={100}
 				/>

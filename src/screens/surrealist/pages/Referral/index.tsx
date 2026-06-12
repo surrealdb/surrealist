@@ -21,7 +21,7 @@ import {
 	iconChevronRight,
 	iconCopy,
 	iconHelp,
-	pictoChatHeart,
+	pictoChatHeartGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { ReactNode } from "react";
@@ -135,7 +135,7 @@ export function ReferralPage() {
 								}}
 							/>
 							<Image
-								src={pictoChatHeart}
+								src={pictoChatHeartGradient}
 								w={100}
 								style={{
 									position: "relative",
@@ -256,7 +256,6 @@ export function ReferralPage() {
 							},
 							section: {
 								background: "var(--surrealist-gradient)",
-								boxShadow: "var(--surrealist-glow)",
 							},
 						}}
 					/>

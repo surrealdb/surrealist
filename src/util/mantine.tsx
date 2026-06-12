@@ -1,8 +1,7 @@
-import { Alert, Drawer, type MantineThemeOverride } from "@mantine/core";
+import { Alert, Drawer, mergeThemeOverrides } from "@mantine/core";
 import { MANTINE_THEME } from "@surrealdb/ui";
 
-export const SURREALIST_THEME: MantineThemeOverride = {
-	...MANTINE_THEME,
+export const SURREALIST_THEME = mergeThemeOverrides(MANTINE_THEME, {
 	components: {
 		...MANTINE_THEME.components,
 		Alert: Alert.extend({
@@ -16,7 +15,7 @@ export const SURREALIST_THEME: MantineThemeOverride = {
 			},
 		}),
 	},
-};
+});
 
 /**
  * Returns the variable for a Mantine color

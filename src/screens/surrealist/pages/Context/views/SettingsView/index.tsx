@@ -22,7 +22,7 @@ import {
 	iconServer,
 	iconTag,
 	iconWarning,
-	pictoCapabilites,
+	pictoCapabilitesGradient,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import { useDeleteContextMutation } from "~/cloud/mutations/spectron";
@@ -63,7 +63,7 @@ export default function SettingsView({ context }: ContextViewProps) {
 				className={classes.hero}
 			>
 				<Image
-					src={pictoCapabilites}
+					src={pictoCapabilitesGradient}
 					className={classes.heroArt}
 					alt=""
 					aria-hidden

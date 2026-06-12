@@ -66,6 +66,7 @@ export type ConfigStore = SurrealistConfig & {
 	setDismissedUpdateVersion: (dismissedUpdateVersion: string) => void;
 	addHistoryEntry: (connectionId: string, entry: HistoryQuery) => void;
 	toggleTablePin: (connectionId: string, table: string) => void;
+	toggleTableVisibility: (connectionId: string, table: string) => void;
 	updateBehaviorSettings: (settings: Partial<SurrealistBehaviorSettings>) => void;
 	updateAppearanceSettings: (settings: Partial<SurrealistAppearanceSettings>) => void;
 	updateTemplateSettings: (settings: Partial<SurrealistTemplateSettings>) => void;
@@ -251,6 +252,24 @@ export const useConfigStore = create<ConfigStore>()(
 
 					return {
 						pinnedTables,
+					};
+				}),
+			),
+
+		toggleTableVisibility: (connectionId, table) =>
+			set((state) =>
+				modifyConnection(state, connectionId, (current) => {
+					const designerHiddenTables = [...(current.designerHiddenTables ?? [])];
+					const index = designerHiddenTables.indexOf(table);
+
+					if (index < 0) {
+						designerHiddenTables.push(table);
+					} else {
+						designerHiddenTables.splice(index, 1);
+					}
+
+					return {
+						designerHiddenTables,
 					};
 				}),
 			),

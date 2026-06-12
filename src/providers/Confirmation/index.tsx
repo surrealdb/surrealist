@@ -28,7 +28,8 @@ interface ConfirmOptions<T> {
 	verification?: string;
 	verifyText?: ReactNode;
 	onDismiss?: () => void;
-	onConfirm: (value: T) => void;
+	onConfirm: (value: T) => Result<void>;
+	onError?: (error: any) => void;
 }
 
 const ConfirmContext = createContext<{
@@ -41,16 +42,23 @@ function applyNode<T>(node: DynamicNode<T>, value: T) {
 
 /**
  * Returns a function which can be used to trigger a confirmation dialog
+ *
+ * @param options The options for the confirmation dialog
+ * @return A function which can be used to trigger the confirmation dialog.
+ * You can pass an optional value to pass to the confirmation dialog, and
+ * optional options to override the default options.
  */
-export function useConfirmation<T>(options: ConfirmOptions<T>): (value?: T) => void {
+export function useConfirmation<T>(
+	options: ConfirmOptions<T>,
+): (value?: T, overrideOptions?: ConfirmOptions<T>) => void {
 	const ctx = useContext(ConfirmContext);
 
 	if (!ctx) {
 		throw new Error("useConfirmation must be used within an ConfirmationProvider");
 	}
 
-	return useStable((value) => {
-		ctx.setConfirmation(value, options);
+	return useStable((value, overrideOptions) => {
+		ctx.setConfirmation(value, { ...options, ...overrideOptions });
 	});
 }
 
@@ -60,6 +68,7 @@ const DEFAULT_CONFIRM = "Continue";
 
 export function ConfirmationProvider({ children }: PropsWithChildren) {
 	const [isConfirming, setIsConfirming] = useState(false);
+	const [isPending, setIsPending] = useState(false);
 	const [options, setOptions] = useState<ConfirmOptions<any>>();
 	const [confirm, setConfirm] = useInputState("");
 	const [value, setValue] = useState<any>();
@@ -89,9 +98,16 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 		options?.onDismiss?.();
 	});
 
-	const onConfirm = useStable(() => {
-		setIsConfirming(false);
-		options?.onConfirm?.(value);
+	const onConfirm = useStable(async () => {
+		try {
+			setIsPending(true);
+			await options?.onConfirm?.(value);
+		} catch (error) {
+			options?.onError?.(error);
+		} finally {
+			setIsConfirming(false);
+			setIsPending(false);
+		}
 	});
 
 	const isVerified = options?.verification ? isSimilar(confirm, options.verification) : true;
@@ -156,6 +172,7 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 						variant="filled"
 						onClick={onConfirm}
 						disabled={!isVerified}
+						loading={isPending}
 						{...options?.confirmProps}
 					>
 						{applyNode(options?.confirmText ?? DEFAULT_CONFIRM, value)}

@@ -7,7 +7,7 @@ import {
 	Transition,
 	UnstyledButton,
 } from "@mantine/core";
-import { iconDownload, iconSearch, pictoSurrealist } from "@surrealdb/ui";
+import { iconDownload, iconSearch, pictoSurrealistGradient } from "@surrealdb/ui";
 import clsx from "clsx";
 import { NavigationIcon } from "~/components/NavigationIcon";
 import { Shortcut } from "~/components/Shortcut";
@@ -71,7 +71,7 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 					h={42}
 				>
 					<Image
-						src={pictoSurrealist}
+						src={pictoSurrealistGradient}
 						w={36}
 						className={classes.logoHat}
 						pos="absolute"
@@ -119,15 +119,6 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 			>
 				<Divider />
 
-				{/* <NavigationIcon
-					name="Support"
-					icon={iconHelp}
-					match={["/support", "/support/*"]}
-					onClick={() => navigate("/support")}
-					withTooltip={isCompact}
-					indicator={unreadConversations}
-				/> */}
-
 				{showInNavigation && (
 					<NavigationIcon
 						name="Update Surrealist"
@@ -145,15 +136,6 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 					onClick={openCommands}
 					withTooltip={isCompact}
 				/>
-
-				{/* <NavigationIcon
-					name="Settings"
-					rightSection={!isMobile() && <Shortcut value={["mod", ","]} />}
-					icon={iconCog}
-					onClick={openSettings}
-					withTooltip={isCompact}
-					indicator={!!availableUpdate}
-				/> */}
 			</Stack>
 		</Stack>
 	);

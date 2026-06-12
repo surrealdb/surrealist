@@ -9,8 +9,17 @@ import {
 	Select,
 	Stack,
 	Text,
+	ThemeIcon,
 } from "@mantine/core";
-import { Icon, iconCheck, iconCircleFilled, iconCloud, iconReset, iconTable } from "@surrealdb/ui";
+import {
+	Icon,
+	iconCheck,
+	iconCircleFilled,
+	iconCloud,
+	iconCursor,
+	iconReset,
+	iconTable,
+} from "@surrealdb/ui";
 import { compareVersions } from "compare-versions";
 import { useEffect, useState } from "react";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
@@ -379,9 +388,20 @@ export function ConnectionToolbarActions() {
 				>
 					<Menu.Target>
 						<Button
-							variant="gradient"
+							variant="light"
+							color="violet"
 							size="xs"
+							pr={4}
 							loading={isDeploying}
+							rightSection={
+								<ThemeIcon
+									variant="gradient"
+									size="xs"
+									ml="xs"
+								>
+									<Icon path={iconCursor} />
+								</ThemeIcon>
+							}
 						>
 							Deploy to Cloud
 						</Button>

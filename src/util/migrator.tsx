@@ -83,6 +83,8 @@ export function applyMigrations(config: any): SurrealistConfig {
 
 	config.dismissedUpdateVersion ??= null;
 
+	config.settings.appearance.backgroundGlobulesOpacity ??= 0.35;
+
 	return config;
 }
 

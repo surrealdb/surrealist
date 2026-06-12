@@ -55,6 +55,7 @@ import type {
 	DiagramMode,
 	DiagramStrategy,
 	Driver,
+	EditorKeymap,
 	GlobalPage,
 	GlobalPageInfo,
 	Listable,
@@ -100,6 +101,7 @@ export const INSTANCE_CONFIG = "instance.json";
 export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
+export const LQ_SUPPORTED = new Set<Protocol>(["ws", "wss", "mem", "indxdb"]);
 export const CLOUD_ROLES = [
 	"restricted_member",
 	"member",
@@ -123,6 +125,11 @@ export const THEMES: Selectable<MantineColorScheme>[] = [
 	{ label: "Automatic", value: "auto" },
 	{ label: "Light", value: "light" },
 	{ label: "Dark", value: "dark" },
+];
+
+export const EDITOR_KEYMAPS: Selectable<EditorKeymap>[] = [
+	{ label: "Default", value: "default" },
+	{ label: "Vim", value: "vim" },
 ];
 
 export const SYNTAX_THEMES: Selectable<SyntaxTheme>[] = [

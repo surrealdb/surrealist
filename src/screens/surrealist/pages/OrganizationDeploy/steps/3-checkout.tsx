@@ -24,7 +24,7 @@ import {
 	iconQuery,
 	iconRelation,
 	iconTag,
-	pictoSDBCloud,
+	pictoSDBCloudGradient,
 } from "@surrealdb/ui";
 import { ChangeEvent } from "react";
 import { navigate } from "wouter/use-browser-location";
@@ -311,7 +311,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 						</Box>
 					</Stack>
 					<Image
-						src={pictoSDBCloud}
+						src={pictoSDBCloudGradient}
 						className={classes.cloudImage}
 					/>
 					<Image
