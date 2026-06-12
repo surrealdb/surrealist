@@ -91,7 +91,8 @@ export async function openConnection(options?: ConnectOptions) {
 		throw new Error("No connection available");
 	}
 
-	const strictSandbox = getSetting("behavior", "strictSandbox");
+	// FIXME currently unused due to defaults
+	const _strictSandbox = getSetting("behavior", "strictSandbox");
 	const newState = options?.isRetry ? "retrying" : "connecting";
 	const surreal = await createSurreal();
 
@@ -213,15 +214,7 @@ export async function openConnection(options?: ConnectOptions) {
 		setLatestError("");
 
 		if (connection.id === SANDBOX) {
-			await instance.use({
-				namespace: "sandbox",
-				database: "sandbox",
-			});
-
-			await instance.query(`
-				DEFINE NAMESPACE OVERWRITE sandbox;
-				DEFINE DATABASE OVERWRITE sandbox ${strictSandbox ? "STRICT" : ""};
-			`);
+			await instance.use();
 
 			if (!hasCompletedSandboxOnboarding && adapter.isSampleSandboxEnabled) {
 				const queries = await loadDatasetSampleQueries("surreal-start", version);
