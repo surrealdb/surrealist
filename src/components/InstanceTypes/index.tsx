@@ -120,7 +120,7 @@ function InstanceTypeRow({
 			radius="md"
 			withBorder={true}
 			style={{
-				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
+				borderColor: selected ? "var(--mantine-color-violet-text)" : undefined,
 				cursor: active ? "not-allowed" : "pointer",
 			}}
 			onClick={() => !active && onSelect(instanceType)}

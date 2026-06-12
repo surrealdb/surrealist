@@ -20,7 +20,7 @@ export function InstanceBackup({ selected, backup, onSelect }: InstanceBackupPro
 			withBorder
 			radius="md"
 			style={{
-				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
+				borderColor: selected ? "var(--mantine-color-violet-text)" : undefined,
 				cursor: "pointer",
 			}}
 			onClick={() => onSelect()}
