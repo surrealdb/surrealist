@@ -39,7 +39,7 @@ export function HelpSearchModal() {
 
 	const [handleKeyDown, selected] = useKeyNavigation(data ?? [], openArticle);
 
-	useIntent("open-help-centre", ({ search }) => {
+	useIntent("open-support-centre", ({ search }) => {
 		openHandle.open();
 
 		if (search) {
@@ -72,7 +72,7 @@ export function HelpSearchModal() {
 						path={iconHelp}
 						size="sm"
 					/>
-					<Text>Help Centre</Text>
+					<Text>Support Centre</Text>
 					{isFetching && (
 						<Loader
 							ml="sm"
@@ -82,7 +82,7 @@ export function HelpSearchModal() {
 				</Group>
 				<TextInput
 					flex={1}
-					placeholder="Search the help centre..."
+					placeholder="Search the support centre..."
 					variant="unstyled"
 					className={classes.listingSearch}
 					autoFocus
