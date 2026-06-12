@@ -1,19 +1,61 @@
-import { Alert, Box, Button, Divider, Group, ScrollArea, Slider, Stack, Text } from "@mantine/core";
+import {
+	Alert,
+	Box,
+	Button,
+	Divider,
+	Group,
+	Paper,
+	ScrollArea,
+	Slider,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { Icon, iconChevronRight, iconClock, iconHelp, iconWarning } from "@surrealdb/ui";
 import { add, formatDistance } from "date-fns";
 import { useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceStorageMutation } from "~/cloud/mutations/storage";
+import { Label } from "~/components/Label";
 import { Link } from "~/components/Link";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { CloudInstance } from "~/types";
 import classes from "../style.module.scss";
+
+export function getStorageConstraints(instance: CloudInstance) {
+	const { storage_size, storage_size_update_cooloff_hours, storage_size_updated_at } = instance;
+	const maximum = instance.type.max_storage_size;
+	const isMaximized = storage_size >= maximum;
+
+	if (!storage_size_updated_at) {
+		return { isMaximized, isCoolingDown: false, timeLeft: "" };
+	}
+
+	const now = new Date();
+	const lastUpdate = new Date(storage_size_updated_at);
+	const cooldownPeriod = add(lastUpdate, {
+		hours: storage_size_update_cooloff_hours,
+	});
+
+	if (cooldownPeriod > now) {
+		return {
+			isMaximized,
+			isCoolingDown: true,
+			timeLeft: formatDistance(cooldownPeriod, now),
+		};
+	}
+
+	return { isMaximized, isCoolingDown: false, timeLeft: "" };
+}
 
 export interface ConfigurationStorageProps {
 	instance: CloudInstance;
 	onClose: () => void;
 	onUpgrade: () => void;
 	variant?: "drawer" | "page";
+	value?: number;
+	onValueChange?: (value: number) => void;
+	hideFooter?: boolean;
 }
 
 export function ConfigurationStorage({
@@ -21,37 +63,33 @@ export function ConfigurationStorage({
 	onClose,
 	onUpgrade,
 	variant = "drawer",
+	value: controlledValue,
+	onValueChange,
+	hideFooter = false,
 }: ConfigurationStorageProps) {
-	const { storage_size, storage_size_update_cooloff_hours, storage_size_updated_at } = instance;
+	const isLight = useIsLight();
+	const { storage_size } = instance;
 
-	const [value, setValue] = useState(storage_size);
+	const [internalValue, setInternalValue] = useState(storage_size);
+	const value = controlledValue ?? internalValue;
+
+	const setValue = useStable((next: number) => {
+		if (onValueChange) {
+			onValueChange(next);
+		} else {
+			setInternalValue(next);
+		}
+	});
 
 	const minimum = 0;
 	const maximum = instance.type.max_storage_size;
 	const midpoint = maximum / 2;
-	const isMaximized = storage_size >= maximum;
+	const { isMaximized, isCoolingDown, timeLeft } = useMemo(
+		() => getStorageConstraints(instance),
+		[instance],
+	);
 	const isTooLow = value < storage_size;
 	const isFree = instance.type.category === "free";
-
-	const [isCoolingDown, timeLeft] = useMemo(() => {
-		if (!storage_size_updated_at) {
-			return [false, ""] as const;
-		}
-
-		const now = new Date();
-		const lastUpdate = new Date(storage_size_updated_at);
-		const cooldownPeroid = add(lastUpdate, {
-			hours: storage_size_update_cooloff_hours,
-		});
-
-		if (cooldownPeroid > now) {
-			const timeLeft = formatDistance(cooldownPeroid, now);
-
-			return [true, timeLeft] as const;
-		}
-
-		return [false, ""] as const;
-	}, [storage_size_updated_at, storage_size_update_cooloff_hours]);
 
 	const isDisabled = isMaximized || isCoolingDown;
 
@@ -142,30 +180,72 @@ export function ConfigurationStorage({
 						)
 					)}
 
-					<Slider
-						mx={variant === "drawer" ? "xl" : undefined}
-						color="violet"
-						min={minimum}
-						max={maximum}
-						step={1}
-						value={value}
-						onChange={setValue}
-						marks={marks}
-						label={(value) => `${value} GB`}
-						disabled={isDisabled}
-						styles={{
-							label: {
-								paddingInline: 10,
-								fontSize: "var(--mantine-font-size-lg)",
-								fontWeight: 600,
-							},
-							bar: {
-								background: isDisabled
-									? "var(--mantine-color-obsidian-4)"
-									: undefined,
-							},
-						}}
-					/>
+					<Paper
+						p={variant === "drawer" ? 42 : "lg"}
+						withBorder={false}
+						bg={isLight ? "obsidian.1" : "obsidian.8"}
+					>
+						<Group
+							gap="xl"
+							mb="lg"
+						>
+							<Box flex={1}>
+								<Label>Current allocation</Label>
+								<Text
+									fz="xl"
+									fw={600}
+									c="bright"
+									className="selectable"
+								>
+									{storage_size} GB
+								</Text>
+							</Box>
+							<Divider orientation="vertical" />
+							<Box
+								flex={1}
+								ta="right"
+							>
+								<Label>Maximum capacity</Label>
+								<Text
+									fz="xl"
+									fw={600}
+									c="bright"
+									className="selectable"
+								>
+									{maximum} GB
+								</Text>
+							</Box>
+						</Group>
+
+						<Divider mb="lg" />
+
+						<Label mb="md">New storage size</Label>
+						<Slider
+							mx={variant === "drawer" ? "xl" : undefined}
+							h={40}
+							color="violet"
+							min={minimum}
+							max={maximum}
+							step={1}
+							value={value}
+							onChange={setValue}
+							marks={marks}
+							label={(value) => `${value} GB`}
+							disabled={isDisabled}
+							styles={{
+								label: {
+									paddingInline: 10,
+									fontSize: "var(--mantine-font-size-lg)",
+									fontWeight: 600,
+								},
+								bar: {
+									background: isDisabled
+										? "var(--mantine-color-obsidian-4)"
+										: undefined,
+								},
+							}}
+						/>
+					</Paper>
 
 					{isTooLow && (
 						<Alert
@@ -182,7 +262,7 @@ export function ConfigurationStorage({
 		</Stack>
 	);
 
-	const footer = !isFree && (
+	const footer = !isFree && !hideFooter && (
 		<Group p={variant === "drawer" ? "xl" : undefined}>
 			{variant === "drawer" && (
 				<Button

@@ -13,6 +13,9 @@ export interface ConfigurationInstanceTypeProps {
 	organisation: CloudOrganization;
 	onClose: () => void;
 	variant?: "drawer" | "page";
+	selectedType?: string;
+	onSelectedTypeChange?: (type: string) => void;
+	hideFooter?: boolean;
 }
 
 export function ConfigurationInstanceType({
@@ -20,8 +23,20 @@ export function ConfigurationInstanceType({
 	organisation,
 	onClose,
 	variant = "drawer",
+	selectedType: controlledSelected,
+	onSelectedTypeChange,
+	hideFooter = false,
 }: ConfigurationInstanceTypeProps) {
-	const [selected, setSelected] = useState("");
+	const [internalSelected, setInternalSelected] = useState("");
+	const selected = controlledSelected ?? internalSelected;
+
+	const setSelected = useStable((type: string) => {
+		if (onSelectedTypeChange) {
+			onSelectedTypeChange(type);
+		} else {
+			setInternalSelected(type);
+		}
+	});
 
 	const { mutateAsync } = useUpdateInstanceTypeMutation(instance);
 	const instanceType = instance.type.slug;
@@ -75,7 +90,7 @@ export function ConfigurationInstanceType({
 		</Stack>
 	);
 
-	const footer = (
+	const footer = !hideFooter && (
 		<Group p={variant === "drawer" ? "xl" : undefined}>
 			{variant === "drawer" && (
 				<Button

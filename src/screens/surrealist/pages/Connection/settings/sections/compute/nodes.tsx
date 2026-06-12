@@ -11,15 +11,30 @@ export interface ConfigurationNodesProps {
 	instance: CloudInstance;
 	onClose: () => void;
 	variant?: "drawer" | "page";
+	value?: number;
+	onValueChange?: (value: number) => void;
+	hideFooter?: boolean;
 }
 
 export function ConfigurationNodes({
 	instance,
 	onClose,
 	variant = "drawer",
+	value: controlledValue,
+	onValueChange,
+	hideFooter = false,
 }: ConfigurationNodesProps) {
 	const { compute_units } = instance;
-	const [value, setValue] = useState<number>(compute_units);
+	const [internalValue, setInternalValue] = useState<number>(compute_units);
+	const value = controlledValue ?? internalValue;
+
+	const setValue = useStable((next: number) => {
+		if (onValueChange) {
+			onValueChange(next);
+		} else {
+			setInternalValue(next);
+		}
+	});
 
 	const minimum = instance.type.compute_units.min ?? 1;
 	const maximum = instance.type.compute_units.max ?? 1;
@@ -99,7 +114,7 @@ export function ConfigurationNodes({
 		</Stack>
 	);
 
-	const footer = (
+	const footer = !hideFooter && (
 		<Group p={variant === "drawer" ? "xl" : undefined}>
 			{variant === "drawer" && (
 				<Button
