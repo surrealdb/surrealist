@@ -3,19 +3,23 @@ import {
 	Box,
 	Button,
 	Center,
+	Divider,
 	Group,
 	Loader,
 	NumberInput,
+	Paper,
 	ScrollArea,
 	Stack,
 	Text,
 } from "@mantine/core";
 import equal from "fast-deep-equal";
-import { useEffect, useMemo, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useMemo, useState } from "react";
 import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
 import { useUpdateInstanceBackupPolicyMutation } from "~/cloud/mutations/backup-policy";
 import { useCloudBackupPolicyQuery } from "~/cloud/queries/backup-policy";
+import { Form } from "~/components/Form";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
 import { CloudBackupPolicyResponse, CloudInstance, CloudUpdateBackupPolicyRequest } from "~/types";
 import { dispatchIntent } from "~/util/intents";
 import classes from "../style.module.scss";
@@ -125,82 +129,40 @@ export function BackupRetention({ instance, variant = "drawer", onClose }: Backu
 
 	const applyDisabled = !hasEditableTier || isUnchanged || isPending || !values;
 
-	const tierFields = policy && values && (
-		<>
-			<BackupTierInput
-				title="Daily backups"
-				description="Automated daily backups retained for the specified number of days."
-				value={values.daily_retention_days}
-				min={policy.daily.min_days}
-				max={policy.daily.max_days}
-				unit="days"
-				editable={policy.daily.editable}
-				onContact={handleContactSales}
-				onChange={(daily_retention_days) =>
-					setValues((current) =>
-						current ? { ...current, daily_retention_days } : current,
-					)
-				}
+	const retentionForm =
+		policy && values ? (
+			<RetentionPolicyForm
+				policy={policy}
+				values={values}
+				onContactSales={handleContactSales}
+				onChange={setValues}
 			/>
+		) : null;
 
-			<BackupTierInput
-				title="Weekly backups"
-				description="Backups taken each Sunday and retained for the specified number of weeks."
-				value={values.weekly_retention_weeks}
-				min={policy.weekly.min_weeks}
-				max={policy.weekly.max_weeks}
-				unit="weeks"
-				editable={policy.weekly.editable}
-				onContact={handleContactSales}
-				onChange={(weekly_retention_weeks) =>
-					setValues((current) =>
-						current ? { ...current, weekly_retention_weeks } : current,
-					)
-				}
-			/>
-
-			<BackupTierInput
-				title="Monthly backups"
-				description="Backups taken on the 1st of each month and retained for the specified number of months."
-				value={values.monthly_retention_months}
-				min={policy.monthly.min_months}
-				max={policy.monthly.max_months}
-				unit="months"
-				editable={policy.monthly.editable}
-				onContact={handleContactSales}
-				onChange={(monthly_retention_months) =>
-					setValues((current) =>
-						current ? { ...current, monthly_retention_months } : current,
-					)
-				}
-			/>
-		</>
+	const saveButton = (
+		<Button
+			type="submit"
+			variant="gradient"
+			disabled={applyDisabled}
+		>
+			Save changes
+		</Button>
 	);
 
 	if (variant === "page") {
 		return (
-			<Stack gap="xl">
-				{isPending || !policy || !values ? (
+			<Form onSubmit={handleUpdate}>
+				{isPending || !retentionForm ? (
 					<Center py="xl">
 						<Loader type="dots" />
 					</Center>
 				) : (
-					<>
-						{tierFields}
-
-						<Group mt="xl">
-							<Button
-								type="submit"
-								variant="gradient"
-								disabled={applyDisabled}
-								onClick={handleUpdate}
-							>
-								Apply retention
-							</Button>
-						</Group>
-					</>
+					<Stack gap="md">
+						{retentionForm}
+						<Group>{saveButton}</Group>
+					</Stack>
 				)}
-			</Stack>
+			</Form>
 		);
 	}
 
@@ -213,7 +175,7 @@ export function BackupRetention({ instance, variant = "drawer", onClose }: Backu
 				pos="relative"
 				flex={1}
 			>
-				{isPending || !policy || !values ? (
+				{isPending || !retentionForm ? (
 					<Center h="100%">
 						<Loader type="dots" />
 					</Center>
@@ -246,7 +208,7 @@ export function BackupRetention({ instance, variant = "drawer", onClose }: Backu
 								</Text>
 							</Box>
 
-							{tierFields}
+							{retentionForm}
 						</Stack>
 					</ScrollArea>
 				)}
@@ -267,60 +229,146 @@ export function BackupRetention({ instance, variant = "drawer", onClose }: Backu
 					onClick={handleUpdate}
 					flex={1}
 				>
-					Apply retention
+					Save changes
 				</Button>
 			</Group>
 		</Stack>
 	);
 }
 
-interface BackupTierInputProps {
+interface RetentionPolicyFormProps {
+	policy: CloudBackupPolicyResponse;
+	values: BackupPolicyFormValues;
+	onContactSales: () => void;
+	onChange: Dispatch<SetStateAction<BackupPolicyFormValues | null>>;
+}
+
+function RetentionPolicyForm({
+	policy,
+	values,
+	onContactSales,
+	onChange,
+}: RetentionPolicyFormProps) {
+	const isLight = useIsLight();
+
+	const hasLockedTier =
+		!policy.daily.editable || !policy.weekly.editable || !policy.monthly.editable;
+
+	const tiers = [
+		{
+			title: "Daily",
+			schedule: "Automated every day",
+			value: values.daily_retention_days,
+			min: policy.daily.min_days,
+			max: policy.daily.max_days,
+			unit: "days",
+			editable: policy.daily.editable,
+			onChange: (daily_retention_days: number) =>
+				onChange((current) => (current ? { ...current, daily_retention_days } : current)),
+		},
+		{
+			title: "Weekly",
+			schedule: "Snapshots each Sunday",
+			value: values.weekly_retention_weeks,
+			min: policy.weekly.min_weeks,
+			max: policy.weekly.max_weeks,
+			unit: "weeks",
+			editable: policy.weekly.editable,
+			onChange: (weekly_retention_weeks: number) =>
+				onChange((current) => (current ? { ...current, weekly_retention_weeks } : current)),
+		},
+		{
+			title: "Monthly",
+			schedule: "Snapshots on the 1st of each month",
+			value: values.monthly_retention_months,
+			min: policy.monthly.min_months,
+			max: policy.monthly.max_months,
+			unit: "months",
+			editable: policy.monthly.editable,
+			onChange: (monthly_retention_months: number) =>
+				onChange((current) =>
+					current ? { ...current, monthly_retention_months } : current,
+				),
+		},
+	] as const;
+
+	return (
+		<Paper
+			p="lg"
+			withBorder={false}
+			bg={isLight ? "obsidian.1" : "obsidian.8"}
+		>
+			<Stack gap="md">
+				{tiers.map((tier, index) => (
+					<Box key={tier.title}>
+						{index > 0 && <Divider mb="md" />}
+						<BackupTierRow {...tier} />
+					</Box>
+				))}
+			</Stack>
+
+			{hasLockedTier && (
+				<Text
+					fz="sm"
+					mt="lg"
+				>
+					Some retention tiers are fixed on your current plan.{" "}
+					<Anchor
+						variant="vibrant"
+						fz="sm"
+						onClick={onContactSales}
+					>
+						Contact us
+					</Anchor>{" "}
+					to make changes.
+				</Text>
+			)}
+		</Paper>
+	);
+}
+
+interface BackupTierRowProps {
 	title: string;
-	description: string;
+	schedule: string;
 	value: number;
 	min: number;
 	max: number;
 	unit: string;
 	editable: boolean;
-	onContact: () => void;
 	onChange: (value: number) => void;
 }
 
-function BackupTierInput({
+function BackupTierRow({
 	title,
-	description,
+	schedule,
 	value,
 	min,
 	max,
 	unit,
 	editable,
-	onContact,
 	onChange,
-}: BackupTierInputProps) {
+}: BackupTierRowProps) {
+	const scheduleDetail = editable
+		? `${schedule} · Allowed range: ${min}–${max} ${unit}`
+		: `${schedule} · Not configurable`;
+
 	return (
-		<Stack gap="xs">
-			<Text
-				c="bright"
-				fw={600}
-			>
-				{title}
-			</Text>
-			<Text>{description}</Text>
-			{editable ? (
-				<Text fz="sm">{`Allowed range: ${min}–${max} ${unit}`}</Text>
-			) : (
-				<Group gap="xs">
-					<Text fz="sm">Need to make changes?</Text>
-					<Anchor
-						variant="vibrant"
-						fz="sm"
-						onClick={onContact}
-					>
-						Contact us
-					</Anchor>
-				</Group>
-			)}
+		<Group
+			align="center"
+			wrap="nowrap"
+			gap="lg"
+		>
+			<Box flex={1}>
+				<Text
+					c="bright"
+					fw={600}
+				>
+					{title}
+				</Text>
+				<Text fz="sm">{scheduleDetail}</Text>
+			</Box>
 			<NumberInput
+				w={160}
 				value={value}
 				min={min}
 				max={max}
@@ -335,6 +383,6 @@ function BackupTierInput({
 					}
 				}}
 			/>
-		</Stack>
+		</Group>
 	);
 }
