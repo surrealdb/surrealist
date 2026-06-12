@@ -28,14 +28,92 @@ export interface DatabaseHierarchyEntry {
 	databases: NamespaceOrDatabase[];
 }
 
-export async function fetchDatabaseHierarchy(): Promise<DatabaseHierarchyEntry[]> {
-	const namespaces = await fetchNamespaceList();
+export interface InstanceDefaults {
+	namespace?: string;
+	database?: string;
+}
 
-	return Promise.all(
+export interface DatabaseHierarchy {
+	entries: DatabaseHierarchyEntry[];
+	defaults: InstanceDefaults;
+}
+
+export async function fetchDatabaseHierarchy(): Promise<DatabaseHierarchy> {
+	const { namespaces, defaults } = await fetchNamespaceListWithDefaults();
+
+	const entries = await Promise.all(
 		namespaces.map(async (namespace) => ({
 			namespace,
 			databases: await fetchDatabaseList(namespace.name),
 		})),
+	);
+
+	return { entries, defaults };
+}
+
+export async function fetchInstanceDefaults(): Promise<InstanceDefaults> {
+	const { defaults } = await fetchNamespaceListWithDefaults();
+
+	return defaults;
+}
+
+async function fetchNamespaceListWithDefaults(): Promise<{
+	namespaces: NamespaceOrDatabase[];
+	defaults: InstanceDefaults;
+}> {
+	const { currentState } = useDatabaseStore.getState();
+	const connection = getConnection();
+
+	if (!connection || currentState !== "connected") {
+		return { namespaces: [], defaults: {} };
+	}
+
+	const authNS = getAuthNS(connection.authentication);
+
+	if (authNS) {
+		return { namespaces: [authNS], defaults: {} };
+	}
+
+	try {
+		const info = await executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE");
+
+		return {
+			namespaces: info.namespaces.map((ns) => ({
+				name: parseIdent(ns.name),
+				comment: ns.comment,
+			})),
+			defaults: {
+				namespace: info.defaults?.namespace,
+				database: info.defaults?.database,
+			},
+		};
+	} catch {
+		return { namespaces: [], defaults: {} };
+	}
+}
+
+export async function setInstanceDefaults(namespace: string, database: string) {
+	await executeQuery(/* surql */ `
+		DEFINE CONFIG OVERWRITE DEFAULT
+			NAMESPACE ${escapeIdent(namespace)}
+			DATABASE ${escapeIdent(database)};
+	`);
+}
+
+export async function setNamespaceComment(name: string, comment?: string) {
+	await executeQuery(
+		/* surql */ `DEFINE NAMESPACE OVERWRITE ${escapeIdent(name)} COMMENT $comment`,
+		{ comment },
+	);
+}
+
+export async function setDatabaseComment(namespace: string, database: string, comment?: string) {
+	await executeQuery(
+		/* surql */ `
+			USE NS ${escapeIdent(namespace)};
+			DEFINE DATABASE OVERWRITE ${escapeIdent(database)} COMMENT $comment;
+		`,
+		{ comment },
 	);
 }
 
@@ -43,25 +121,9 @@ export async function fetchDatabaseHierarchy(): Promise<DatabaseHierarchyEntry[]
  * Fetch a list of available namespaces
  */
 export async function fetchNamespaceList(): Promise<NamespaceOrDatabase[]> {
-	const { currentState } = useDatabaseStore.getState();
-	const connection = getConnection();
+	const { namespaces } = await fetchNamespaceListWithDefaults();
 
-	if (!connection || currentState !== "connected") {
-		return [];
-	}
-
-	const authNS = getAuthNS(connection.authentication);
-
-	if (authNS) {
-		return [authNS];
-	}
-
-	const { namespaces } = await executeQuerySingle<SchemaInfoKV>("INFO FOR KV STRUCTURE");
-
-	return namespaces.map((ns) => ({
-		name: parseIdent(ns.name),
-		comment: ns.comment,
-	}));
+	return namespaces;
 }
 
 /**

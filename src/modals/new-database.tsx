@@ -54,7 +54,13 @@ function NewDatabaseModal() {
 
 	const [namespace, setNamespace] = useInputState(currentNamespace);
 	const [database, setDatabase] = useInputState("");
-	const [description, setDescription] = useInputState("");
+	const [namespaceDescription, setNamespaceDescription] = useInputState("");
+	const [databaseDescription, setDatabaseDescription] = useInputState("");
+
+	const isNewNamespace = useMemo(
+		() => !!namespace && !existingNamespaces.includes(namespace),
+		[existingNamespaces, namespace],
+	);
 
 	const [debouncedDatabase] = useDebouncedValue(database, 300);
 
@@ -83,12 +89,15 @@ function NewDatabaseModal() {
 
 			await executeQuery(
 				`
-				DEFINE NAMESPACE IF NOT EXISTS ${escapeIdent(namespace)};
+				DEFINE NAMESPACE IF NOT EXISTS ${escapeIdent(namespace)} COMMENT $namespaceComment;
 				USE NS ${escapeIdent(namespace)};
-				DEFINE DATABASE IF NOT EXISTS ${escapeIdent(debouncedDatabase)} COMMENT $comment;
+				DEFINE DATABASE IF NOT EXISTS ${escapeIdent(debouncedDatabase)} COMMENT $databaseComment;
 			`,
 				{
-					comment: description || undefined,
+					namespaceComment: isNewNamespace
+						? namespaceDescription.trim() || undefined
+						: undefined,
+					databaseComment: databaseDescription.trim() || undefined,
 				},
 			);
 
@@ -141,11 +150,21 @@ function NewDatabaseModal() {
 					/>
 				</SimpleGrid>
 
+				{isNewNamespace && (
+					<Textarea
+						label="Namespace description"
+						description="Only applied when creating a new namespace"
+						placeholder="A description of the namespace (optional)"
+						value={namespaceDescription}
+						onChange={setNamespaceDescription}
+					/>
+				)}
+
 				<Textarea
-					label="Description"
+					label="Database description"
 					placeholder="A description of the database (optional)"
-					value={description}
-					onChange={setDescription}
+					value={databaseDescription}
+					onChange={setDatabaseDescription}
 				/>
 
 				<Divider mx="-xl" />
