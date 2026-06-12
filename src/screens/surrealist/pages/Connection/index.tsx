@@ -15,9 +15,9 @@ import { connectionSettingsRedirect, resolveConnectionSettingsTab } from "./sett
 import { ConnectionBackupsTab } from "./settings/tabs/backups";
 import { ConnectionCapabilitiesTab } from "./settings/tabs/capabilities";
 import { ConnectionComputeTab } from "./settings/tabs/compute";
+import { ConnectionDataTab } from "./settings/tabs/data";
 import { ConnectionDatabasesTab } from "./settings/tabs/databases";
 import { ConnectionGeneralTab } from "./settings/tabs/general";
-import { ConnectionImportExportTab } from "./settings/tabs/import-export";
 import { ConnectionVersionTab } from "./settings/tabs/version";
 import { ConnectionSettingsTabProps } from "./settings/types";
 import { ViewPageProps } from "./types";
@@ -56,7 +56,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 const SETTINGS_PORTALS: Record<ConnectionSettingsTab, HtmlPortalNode> = {
 	general: createHtmlPortalNode(PORTAL_OPTIONS),
 	databases: createHtmlPortalNode(PORTAL_OPTIONS),
-	"import-export": createHtmlPortalNode(PORTAL_OPTIONS),
+	data: createHtmlPortalNode(PORTAL_OPTIONS),
 	capabilities: createHtmlPortalNode(PORTAL_OPTIONS),
 	version: createHtmlPortalNode(PORTAL_OPTIONS),
 	compute: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -80,7 +80,7 @@ const VIEW_COMPONENTS: Record<ViewPage, FC<ViewPageProps>> = {
 const SETTINGS_COMPONENTS: Record<ConnectionSettingsTab, FC<ConnectionSettingsTabProps>> = {
 	general: memo(ConnectionGeneralTab),
 	databases: memo(ConnectionDatabasesTab),
-	"import-export": memo(ConnectionImportExportTab),
+	data: memo(ConnectionDataTab),
 	capabilities: memo(ConnectionCapabilitiesTab),
 	version: memo(ConnectionVersionTab),
 	compute: memo(ConnectionComputeTab),

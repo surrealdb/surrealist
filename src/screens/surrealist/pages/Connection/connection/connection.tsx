@@ -35,14 +35,7 @@ import {
 	getConnection,
 	getConnectionVariant,
 } from "~/util/connection";
-import {
-	SURREAL_START_BASICS,
-	SURREAL_START_GRAPH_V2,
-	SURREAL_START_GRAPH_V3,
-	SURREAL_START_VECTOR_V2,
-	SURREAL_START_VECTOR_V3,
-} from "~/util/dataset";
-import { createBaseQuery } from "~/util/defaults";
+import { appendQueriesToConnection, loadDatasetSampleQueries } from "~/util/datasets";
 import { surqlDurationToSeconds } from "~/util/duration";
 import { CloudError } from "~/util/errors";
 import { ActivateDatabaseEvent, ConnectedEvent, DisconnectedEvent } from "~/util/global-events";
@@ -93,8 +86,6 @@ export async function openConnection(options?: ConnectOptions) {
 	const currentConnection = getConnection();
 	const hasCompletedSandboxOnboarding = hasCompletedOnboarding("sandbox");
 	const connection = options?.connection || currentConnection;
-
-	const { settings, updateConnection } = useConfigStore.getState();
 
 	if (!connection) {
 		throw new Error("No connection available");
@@ -233,42 +224,14 @@ export async function openConnection(options?: ConnectOptions) {
 			`);
 
 			if (!hasCompletedSandboxOnboarding && adapter.isSampleSandboxEnabled) {
-				const queries = [SURREAL_START_BASICS];
+				const queries = await loadDatasetSampleQueries("surreal-start", version);
 
-				const canUse30Queries = compareVersions(version, "3.0.0") >= 0;
-
-				if (canUse30Queries) {
-					queries.push(SURREAL_START_GRAPH_V3);
-					queries.push(SURREAL_START_VECTOR_V3);
-				} else {
-					queries.push(SURREAL_START_GRAPH_V2);
-					queries.push(SURREAL_START_VECTOR_V2);
+				if (queries.length > 0) {
+					appendQueriesToConnection(
+						queries,
+						queries.map((query) => query.name),
+					);
 				}
-
-				const configs = queries.map((query) => ({
-					...createBaseQuery(settings, "config"),
-					name: query.name,
-					query: query.query,
-				}));
-
-				// Clear empty queries and existing sample queries
-				const existingQueries = connection.queries.filter(
-					(it) =>
-						it.query.length > 0 &&
-						![
-							SURREAL_START_BASICS.name,
-							SURREAL_START_GRAPH_V2.name,
-							SURREAL_START_GRAPH_V3.name,
-							SURREAL_START_VECTOR_V2.name,
-							SURREAL_START_VECTOR_V3.name,
-						].includes(it.name ?? ""),
-				);
-
-				updateConnection({
-					id: connection.id,
-					activeQuery: configs[0].id,
-					queries: [...configs, ...existingQueries],
-				});
 
 				params.delete("queries");
 			}

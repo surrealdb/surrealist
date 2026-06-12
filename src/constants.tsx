@@ -352,7 +352,7 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 export const CONNECTION_SETTINGS_TABS = [
 	"general",
 	"databases",
-	"import-export",
+	"data",
 	"capabilities",
 	"version",
 	"compute",
@@ -368,7 +368,7 @@ export const CLOUD_CONNECTION_SETTINGS_TABS = [
 export const CONNECTION_SETTINGS_TAB_LABELS: Record<ConnectionSettingsTab, string> = {
 	general: "General",
 	databases: "Databases",
-	"import-export": "Import & export",
+	data: "Data",
 	capabilities: "Capabilities",
 	version: "Version",
 	compute: "Instance configuration",

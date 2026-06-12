@@ -102,7 +102,7 @@ export type ViewPage =
 export type ConnectionSettingsTab =
 	| "general"
 	| "databases"
-	| "import-export"
+	| "data"
 	| "capabilities"
 	| "version"
 	| "compute"

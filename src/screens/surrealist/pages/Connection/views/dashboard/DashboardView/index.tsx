@@ -62,6 +62,7 @@ import {
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
+import { resolveDefaultDeployDatasetPath } from "~/util/datasets";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
@@ -172,7 +173,16 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 			);
 
 			await activateDatabase("demo", "surreal_deal_store");
-			await applyDataset(version);
+			const datasetPath =
+				(details?.id
+					? sessionStorage.getItem(`${APPLY_DATASET_KEY}:${details.id}`)
+					: null) ?? (await resolveDefaultDeployDatasetPath(version));
+
+			if (!datasetPath) {
+				throw new Error("No dataset path available");
+			}
+
+			await applyDataset(datasetPath);
 		} catch (error) {
 			showErrorNotification({
 				title: "Failed to apply dataset",

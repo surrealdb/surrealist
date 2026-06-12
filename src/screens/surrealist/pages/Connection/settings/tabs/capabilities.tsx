@@ -5,6 +5,7 @@ import { Section } from "~/components/Section";
 import type { CloudInstance, CloudOrganization } from "~/types";
 import { ConfigurationCapabilities } from "../sections/capabilities/capabilities";
 import { ConfigurationNetwork } from "../sections/capabilities/network";
+import { CapabilitiesImportExport } from "../sections/capabilities-import-export";
 import type { ConnectionSettingsTabProps } from "../types";
 
 export function ConnectionCapabilitiesTab({
@@ -53,7 +54,14 @@ function CapabilitiesContent({ instance, organisation }: CapabilitiesContentProp
 			<PrimaryTitle fz={32}>Capabilities</PrimaryTitle>
 
 			<Section
-				title="Capabilities"
+				title="Import & export from file"
+				description="Save or restore your instance's capabilities configuration to or from a json file"
+			>
+				<CapabilitiesImportExport instance={instance} />
+			</Section>
+
+			<Section
+				title="Granular configuration"
 				description="Configure SurrealDB capability flags for this instance"
 			>
 				<ConfigurationCapabilities

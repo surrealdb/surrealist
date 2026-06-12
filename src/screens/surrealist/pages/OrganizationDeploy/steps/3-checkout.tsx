@@ -48,10 +48,12 @@ import { Spacer } from "~/components/Spacer";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
-import { useConfigStore } from "~/stores/config";
 import { getTypeCategoryName } from "~/util/cloud";
-import { SAMPLE_QUERIES } from "~/util/dataset";
-import { createBaseQuery } from "~/util/defaults";
+import {
+	appendQueriesToConnection,
+	loadDatasetSampleQueries,
+	resolveDefaultDeployDatasetPath,
+} from "~/util/datasets";
 import { formatMemory, plural, showErrorNotification } from "~/util/helpers";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
 import { STARTING_DATA } from "../constants";
@@ -69,26 +71,26 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 
 	const handleDeploy = useStable(async () => {
 		try {
-			const { settings, updateConnection } = useConfigStore.getState();
 			const [instance, connection] = await deployMutation.mutateAsync(details);
 
 			if (details.startingData.type === "dataset") {
-				sessionStorage.setItem(
-					`${APPLY_DATASET_KEY}:${instance.id}`,
-					"surreal-deal-store-mini",
+				const datasetPath = await resolveDefaultDeployDatasetPath(details.version);
+
+				if (datasetPath) {
+					sessionStorage.setItem(`${APPLY_DATASET_KEY}:${instance.id}`, datasetPath);
+				}
+
+				const queries = await loadDatasetSampleQueries(
+					"surreal-deal-store",
+					details.version,
 				);
 
-				const queries = SAMPLE_QUERIES.map((query) => ({
-					...createBaseQuery(settings, "config"),
-					name: query.name,
-					query: query.query,
-				}));
-
-				updateConnection({
-					id: connection.id,
-					activeQuery: queries[0].id,
-					queries,
-				});
+				if (queries.length > 0) {
+					appendQueriesToConnection(
+						queries,
+						queries.map((query) => query.name),
+					);
+				}
 			} else if (details.startingData.type === "upload") {
 				sessionStorage.setItem(`${APPLY_DATA_FILE_KEY}:${instance.id}`, "true");
 			}

@@ -1,8 +1,8 @@
 import { sleep } from "radash";
 import { useState } from "react";
 import { getSurreal } from "~/screens/surrealist/pages/Connection/connection/connection";
+import { getDatasetAssetUrl } from "~/util/datasets";
 import { showInfo } from "~/util/helpers";
-import { getDatasetURL } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
 import { useStable } from "./stable";
 
@@ -12,12 +12,11 @@ import { useStable } from "./stable";
 export function useDatasets() {
 	const [isLoading, setIsLoading] = useState(false);
 
-	const applyDataset = useStable(async (version: string) => {
+	const applyDataset = useStable(async (path: string) => {
 		setIsLoading(true);
 
 		try {
-			const source = getDatasetURL(version);
-			const response = await fetch(source);
+			const response = await fetch(getDatasetAssetUrl(path));
 			const dataset = await response.blob();
 
 			await sleep(50);
@@ -26,7 +25,7 @@ export function useDatasets() {
 
 			showInfo({
 				title: "Dataset loaded",
-				subtitle: `The dataset has been applied`,
+				subtitle: "The dataset has been applied",
 			});
 		} finally {
 			setIsLoading(false);

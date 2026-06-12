@@ -27,7 +27,8 @@ export function resolveConnectionSettingsTab(
 	instance?: CloudInstance,
 	organisation?: CloudOrganization,
 ): ConnectionSettingsTab | null {
-	const normalizedTab = tab === "configuration" ? "capabilities" : tab;
+	const normalizedTab =
+		tab === "configuration" ? "capabilities" : tab === "import-export" ? "data" : tab;
 
 	if (!CONNECTION_SETTINGS_TABS.includes(normalizedTab as ConnectionSettingsTab)) {
 		return null;

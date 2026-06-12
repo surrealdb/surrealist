@@ -25,7 +25,7 @@ const VIEW_NAVIGATION: ViewPage[][] = [
 	["designer", "authentication", "parameters", "functions"],
 ];
 
-const ALWAYS_SETTINGS_TABS: ConnectionSettingsTab[] = ["general", "databases", "import-export"];
+const ALWAYS_SETTINGS_TABS: ConnectionSettingsTab[] = ["general", "databases", "data"];
 
 const ADMIN_CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = ["compute"];
 
