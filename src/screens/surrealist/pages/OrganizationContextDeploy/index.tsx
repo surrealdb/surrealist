@@ -172,7 +172,6 @@ function PageContent({ organisation }: PageContentProps) {
 					<Paper
 						p="xl"
 						radius="lg"
-						variant="glass"
 						className={classes.hero}
 					>
 						<Image

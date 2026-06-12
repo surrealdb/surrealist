@@ -27,9 +27,9 @@ import {
 	pictoHTTPGradient,
 	pictoImageGradient,
 	pictoJSONFileGradient,
-	pictoMediaFileGradient,
 	pictoPDFGradient,
 	pictoTextGradient,
+	pictoVideoFileGradient,
 } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
@@ -91,7 +91,7 @@ const SOURCES: SourceType[] = [
 	{ label: "Web pages", picto: pictoHTTPGradient },
 	{ label: "Images", picto: pictoImageGradient },
 	{ label: "Audio", picto: pictoAudioClipGradient },
-	{ label: "Media", picto: pictoMediaFileGradient },
+	{ label: "Media", picto: pictoVideoFileGradient },
 ];
 
 export default function KnowledgeView({ context }: ContextViewProps) {

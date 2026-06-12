@@ -18,10 +18,10 @@ import {
 	iconRelation,
 	iconSearch,
 	iconTag,
+	pictoBarsGradient,
 	pictoBrainGradient,
 	pictoKnowledgeGraphGradient,
 	pictoMemoryGradient,
-	pictoTimelineGradient,
 } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
@@ -43,7 +43,7 @@ const MEMORY_TYPES: MemoryTypeCard[] = [
 		description:
 			"Every conversation turn is captured and classified, so agents pick up where they left off instead of starting from zero.",
 		icon: iconClock,
-		picto: pictoTimelineGradient,
+		picto: pictoBarsGradient,
 	},
 	{
 		type: "Semantic",

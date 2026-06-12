@@ -79,7 +79,6 @@ export default function DashboardView({ context }: ContextViewProps) {
 			<Paper
 				p="xl"
 				radius="lg"
-				variant="glass"
 				className={classes.hero}
 			>
 				<Image

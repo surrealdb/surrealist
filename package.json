@@ -150,6 +150,9 @@
 		"vite-plugin-markdown": "^2.2.0"
 	},
 	"packageManager": "bun@1.2.8",
+	"overrides": {
+		"@codemirror/view": "6.43.0"
+	},
 	"patchedDependencies": {
 		"graphql@16.10.0": "patches/graphql@16.10.0.patch"
 	}
