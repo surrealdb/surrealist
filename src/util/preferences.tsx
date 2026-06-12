@@ -8,6 +8,7 @@ import {
 	DESIGNER_LINKS,
 	DESIGNER_NODE_MODES,
 	DESIGNER_STRATEGIES,
+	EDITOR_KEYMAPS,
 	NONE_RESULT_MODES,
 	ORIENTATIONS,
 	RESULT_MODES,
@@ -297,6 +298,18 @@ export function useComputedPreferences(): PreferenceSection[] {
 				id: "editors",
 				name: "Editors",
 				preferences: [
+					{
+						id: "editor-keymap",
+						name: "Keybindings",
+						description: "The keybinding preset used in all code editors",
+						controller: new SelectionController({
+							options: EDITOR_KEYMAPS,
+							reader: (config) => config.settings.behavior.editorKeymap,
+							writer: (config, value) => {
+								config.settings.behavior.editorKeymap = value;
+							},
+						}),
+					},
 					{
 						id: "suggest-table-names",
 						name: "Suggest table names",

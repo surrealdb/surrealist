@@ -10,3 +10,4 @@ export * from "./surrealql";
 export * from "./tables";
 export * from "./theme";
 export * from "./variables";
+export * from "./vim";

@@ -6,7 +6,7 @@ import { Box, type BoxProps } from "@mantine/core";
 import clsx from "clsx";
 import equal from "fast-deep-equal";
 import { useEffect, useMemo, useRef } from "react";
-import { applyAutoFolding, editorBase, editorTheme } from "~/editor";
+import { applyAutoFolding, editorBase, editorTheme, vimMode } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import { useStable } from "~/hooks/stable";
 import { useTheme } from "~/hooks/theme";
@@ -54,6 +54,7 @@ export function CodeEditor(props: CodeEditorProps) {
 	const initializedRef = useRef(false);
 	const preventChangeNotificationsRef = useRef(true);
 	const [editorScale] = useSetting("appearance", "editorScale");
+	const [editorKeymap] = useSetting("behavior", "editorKeymap");
 	const [defaultAutoCollapseDepth] = useSetting("appearance", "autoCollapseDepth");
 	const effectiveAutoCollapseDepth = autoCollapseDepth ?? defaultAutoCollapseDepth;
 	const textSize = Math.floor(15 * (editorScale / 100));
@@ -71,6 +72,9 @@ export function CodeEditor(props: CodeEditorProps) {
 	// The internally controlled extensions
 	const internalExtensions = useMemo(
 		() => [
+			// Vim must precede the base keymaps so its bindings win in normal mode.
+			// Skipped for read-only editors to avoid a status bar on result previews.
+			editorKeymap === "vim" && !readOnly ? vimMode() : [],
 			editorBase(),
 			history({ newGroupDelay: 250 }),
 			EditorState.readOnly.of(!!readOnly),
@@ -82,7 +86,7 @@ export function CodeEditor(props: CodeEditorProps) {
 				}
 			}),
 		],
-		[readOnly, colorScheme, syntaxTheme, lineNumbers],
+		[readOnly, colorScheme, syntaxTheme, lineNumbers, editorKeymap],
 	);
 
 	// Create the editor

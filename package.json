@@ -56,6 +56,7 @@
 		"@mantine/notifications": "9.0.2",
 		"@mdi/js": "^7.4.47",
 		"@replit/codemirror-indentation-markers": "^6.5.3",
+		"@replit/codemirror-vim": "^6.3.0",
 		"@sigma/edge-curve": "^3.1.0",
 		"@sigma/node-border": "^3.0.0",
 		"@surrealdb/cbor": "^2.0.0-alpha.1",

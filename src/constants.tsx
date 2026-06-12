@@ -55,6 +55,7 @@ import type {
 	DiagramMode,
 	DiagramStrategy,
 	Driver,
+	EditorKeymap,
 	GlobalPage,
 	GlobalPageInfo,
 	Listable,
@@ -123,6 +124,11 @@ export const THEMES: Selectable<MantineColorScheme>[] = [
 	{ label: "Automatic", value: "auto" },
 	{ label: "Light", value: "light" },
 	{ label: "Dark", value: "dark" },
+];
+
+export const EDITOR_KEYMAPS: Selectable<EditorKeymap>[] = [
+	{ label: "Default", value: "default" },
+	{ label: "Vim", value: "vim" },
 ];
 
 export const SYNTAX_THEMES: Selectable<SyntaxTheme>[] = [
