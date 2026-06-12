@@ -1,4 +1,6 @@
 import { compareVersions } from "compare-versions";
+import { adapter } from "~/adapter";
+import { SURQL_FILTER } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import { getConnection } from "~/util/connection";
 import type { DatasetQuery } from "~/util/dataset";
@@ -58,6 +60,26 @@ export async function fetchDatasetsCatalog() {
 
 export function getVisibleDatasets(catalog: DatasetCatalogEntry[]) {
 	return catalog.filter((dataset) => !dataset.hidden);
+}
+
+export function getCatalogSurrealVersions(catalog: DatasetCatalogEntry[]) {
+	const versions = new Set<string>();
+
+	for (const dataset of getVisibleDatasets(catalog)) {
+		for (const version of dataset.versions) {
+			if (!version.hidden) {
+				versions.add(version.minimumVersion);
+			}
+		}
+	}
+
+	return [...versions].sort((a, b) => compareVersions(b, a));
+}
+
+export function resolveDefaultCatalogSurrealVersion(catalog: DatasetCatalogEntry[]) {
+	const versions = getCatalogSurrealVersions(catalog);
+
+	return versions[0] ?? import.meta.env.SDB_VERSION;
 }
 
 export function resolveDatasetVersion(dataset: DatasetCatalogEntry, dbVersion: string) {
@@ -157,6 +179,54 @@ export function appendQueriesToConnection(queries: DatasetQuery[], replaceNames:
 		activeQuery: configs[0].id,
 		queries: [...configs, ...existingQueries],
 	});
+}
+
+export async function buildDatasetDownloadContent(
+	dataset: DatasetCatalogEntry,
+	version: DatasetCatalogVersion,
+	sizeId: string | null,
+	includeQueries: boolean,
+) {
+	const parts: string[] = [];
+	const sizes = getVisibleSizes(version);
+	const activeSize = sizes.find((size) => size.id === sizeId) ?? sizes[0];
+
+	if (activeSize?.path) {
+		parts.push(await fetchDatasetText(activeSize.path));
+	}
+
+	if (includeQueries) {
+		const queries = await fetchSampleQueries(getVisibleSampleQueries(version));
+
+		if (queries.length > 0) {
+			parts.push(queries.map((query) => query.query).join("\n\n"));
+		}
+	}
+
+	return {
+		content: parts.join("\n\n"),
+		filename: `${dataset.id}${activeSize ? `-${activeSize.id}` : ""}.surql`,
+	};
+}
+
+export async function downloadDataset(
+	dataset: DatasetCatalogEntry,
+	version: DatasetCatalogVersion,
+	sizeId: string | null,
+	includeQueries: boolean,
+) {
+	const { content, filename } = await buildDatasetDownloadContent(
+		dataset,
+		version,
+		sizeId,
+		includeQueries,
+	);
+
+	if (!content) {
+		return false;
+	}
+
+	return adapter.saveFile("Save dataset", filename, [SURQL_FILTER], async () => content);
 }
 
 export async function loadDatasetSampleQueries(datasetId: string, dbVersion: string) {

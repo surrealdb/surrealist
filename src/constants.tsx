@@ -30,6 +30,7 @@ import {
 	iconReferral,
 	iconRefresh,
 	iconRelation,
+	iconSandbox,
 	iconSearch,
 	iconTable,
 	iconTag,
@@ -272,6 +273,11 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		name: "Support Centre",
 		aliases: ["/support/*"],
 		icon: iconChat,
+	},
+	"/datasets": {
+		id: "/datasets",
+		name: "Datasets",
+		icon: iconSandbox,
 	},
 };
 
