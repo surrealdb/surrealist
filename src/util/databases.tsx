@@ -92,11 +92,15 @@ async function fetchNamespaceListWithDefaults(): Promise<{
 	}
 }
 
-export async function setInstanceDefaults(namespace: string, database: string) {
+export async function setDefaultNamespace(namespace: string) {
 	await executeQuery(/* surql */ `
-		DEFINE CONFIG OVERWRITE DEFAULT
-			NAMESPACE ${escapeIdent(namespace)}
-			DATABASE ${escapeIdent(database)};
+		DEFINE CONFIG OVERWRITE DEFAULT NAMESPACE ${escapeIdent(namespace)}
+	`);
+}
+
+export async function setDefaultDatabase(namespace: string, database: string) {
+	await executeQuery(/* surql */ `
+		DEFINE CONFIG OVERWRITE DEFAULT NAMESPACE ${escapeIdent(namespace)} DATABASE ${escapeIdent(database)}
 	`);
 }
 

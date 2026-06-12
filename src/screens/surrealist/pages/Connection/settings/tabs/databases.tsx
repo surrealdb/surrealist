@@ -6,6 +6,7 @@ import {
 	Center,
 	Group,
 	Loader,
+	Menu,
 	Paper,
 	Stack,
 	Text,
@@ -19,6 +20,7 @@ import { useInputState } from "@mantine/hooks";
 import {
 	Icon,
 	iconDatabase,
+	iconDotsVertical,
 	iconEdit,
 	iconNamespace,
 	iconPlus,
@@ -49,10 +51,11 @@ import {
 	fetchDatabaseHierarchy,
 	invalidateDatabaseHierarchy,
 	type NamespaceOrDatabase,
-	setInstanceDefaults,
+	setDefaultDatabase,
+	setDefaultNamespace,
 } from "~/util/databases";
 import { createBaseAuthentication } from "~/util/defaults";
-import { fuzzyMatch } from "~/util/helpers";
+import { fuzzyMatch, ON_STOP_PROPAGATION } from "~/util/helpers";
 import { SDB_DEFINE_CONFIG_DEFAULT } from "~/util/versions";
 import type { ConnectionSettingsTabProps } from "../types";
 
@@ -191,15 +194,16 @@ function DatabaseHierarchySection({
 		}
 	});
 
-	const activateNamespace = useStable(async (ns: string) => {
-		if (namespace !== ns || database) {
-			await activateDatabase(ns, "");
-		}
+	const defaultNamespaceMutation = useMutation({
+		mutationFn: async (ns: string) => {
+			await setDefaultNamespace(ns);
+		},
+		onSuccess: () => invalidateDatabaseHierarchy(queryClient, connectionId),
 	});
 
-	const setDefault = useMutation({
+	const defaultDatabaseMutation = useMutation({
 		mutationFn: async ({ ns, db }: { ns: string; db: string }) => {
-			await setInstanceDefaults(ns, db);
+			await setDefaultDatabase(ns, db);
 		},
 		onSuccess: () => invalidateDatabaseHierarchy(queryClient, connectionId),
 	});
@@ -271,7 +275,11 @@ function DatabaseHierarchySection({
 									count={entry.databases.length}
 									isActive={namespace === entry.namespace.name}
 									canManage={canManageNamespaces}
-									onSelect={() => activateNamespace(entry.namespace.name)}
+									canSetDefault={canSetDefault}
+									defaults={defaults}
+									onSetDefault={() =>
+										defaultNamespaceMutation.mutate(entry.namespace.name)
+									}
 									onEdit={() =>
 										openEditResourceDescriptionModal({
 											kind: "namespace",
@@ -292,9 +300,13 @@ function DatabaseHierarchySection({
 									defaults={defaults}
 									canManage={canManageDatabases}
 									canSetDefault={canSetDefault}
-									isSettingDefault={setDefault.isPending}
 									onActivate={activate}
-									onSetDefault={(ns, db) => setDefault.mutate({ ns, db })}
+									onSetDefault={(db) =>
+										defaultDatabaseMutation.mutate({
+											ns: entry.namespace.name,
+											db,
+										})
+									}
 									onEdit={(database) =>
 										openEditResourceDescriptionModal({
 											kind: "database",
@@ -325,7 +337,6 @@ interface NamespaceDatabaseTreeProps {
 	};
 	canManage: boolean;
 	canSetDefault: boolean;
-	isSettingDefault: boolean;
 	onActivate: (ns: string, db: string) => void;
 	onSetDefault: (ns: string, db: string) => void;
 	onEdit: (database: NamespaceOrDatabase) => void;
@@ -340,7 +351,6 @@ function NamespaceDatabaseTree({
 	defaults,
 	canManage,
 	canSetDefault,
-	isSettingDefault,
 	onActivate,
 	onSetDefault,
 	onEdit,
@@ -415,7 +425,6 @@ function NamespaceDatabaseTree({
 				return (
 					<Box
 						{...payload.elementProps}
-						w="100%"
 						onClick={stopPropagation}
 						style={{
 							...payload.elementProps.style,
@@ -468,7 +477,6 @@ function NamespaceDatabaseTree({
 								}
 								canManage={canManage}
 								canSetDefault={canSetDefault}
-								isSettingDefault={isSettingDefault}
 								onActivate={() =>
 									onActivate(nodeProps.namespace, nodeProps.database.name)
 								}
@@ -491,9 +499,14 @@ interface NamespaceHeaderProps {
 	count: number;
 	isActive: boolean;
 	canManage: boolean;
-	onSelect: () => void;
+	defaults: {
+		namespace?: string;
+		database?: string;
+	};
+	canSetDefault: boolean;
 	onEdit: () => void;
 	onRemove: () => void;
+	onSetDefault: () => void;
 }
 
 function NamespaceHeader({
@@ -501,12 +514,12 @@ function NamespaceHeader({
 	count,
 	isActive,
 	canManage,
-	onSelect,
+	defaults,
+	canSetDefault,
 	onEdit,
+	onSetDefault,
 	onRemove,
 }: NamespaceHeaderProps) {
-	const isLight = useIsLight();
-
 	const remove = useConfirmation({
 		message: () => (
 			<Stack className="selectable">
@@ -540,16 +553,13 @@ function NamespaceHeader({
 		},
 	});
 
+	const isDefault = defaults.namespace === namespace.name;
+
 	return (
 		<Paper
 			p="md"
 			radius="md"
 			w="100%"
-			bg={isLight ? "obsidian.2" : "obsidian.8"}
-			withBorder={isActive}
-			style={{
-				borderColor: isActive ? "var(--mantine-color-violet-6)" : undefined,
-			}}
 		>
 			<Group
 				wrap="nowrap"
@@ -560,7 +570,7 @@ function NamespaceHeader({
 				<ThemeIcon
 					size="md"
 					color="obsidian"
-					variant="light"
+					variant={isActive ? "gradient" : "light"}
 				>
 					<Icon path={iconNamespace} />
 				</ThemeIcon>
@@ -589,6 +599,17 @@ function NamespaceHeader({
 						>
 							{count}
 						</Badge>
+
+						{isDefault && (
+							<Badge
+								size="xs"
+								color="obsidian"
+								variant="light"
+								leftSection={<Icon path={iconStar} />}
+							>
+								Default
+							</Badge>
+						)}
 					</Group>
 					{namespace.comment && (
 						<Text
@@ -601,55 +622,40 @@ function NamespaceHeader({
 					)}
 				</Box>
 
-				{canManage && (
-					<Group
-						gap="xs"
-						wrap="nowrap"
-						onClick={stopPropagation}
-					>
-						{isActive ? (
-							<Badge
-								size="sm"
-								variant="gradient"
+				<Box onClick={ON_STOP_PROPAGATION}>
+					<Menu>
+						<Menu.Target>
+							<ActionButton label="Namespace actions">
+								<Icon path={iconDotsVertical} />
+							</ActionButton>
+						</Menu.Target>
+						<Menu.Dropdown>
+							<Menu.Item
+								leftSection={<Icon path={iconStar} />}
+								disabled={!canSetDefault || isDefault}
+								onClick={onSetDefault}
 							>
-								Active
-							</Badge>
-						) : (
-							<Button
-								size="xs"
-								variant="light"
-								color="violet"
-								onClick={onSelect}
+								Set default
+							</Menu.Item>
+							<Menu.Item
+								leftSection={<Icon path={iconEdit} />}
+								disabled={!canManage}
+								onClick={onEdit}
 							>
-								Select
-							</Button>
-						)}
-
-						<ActionButton
-							variant="subtle"
-							color="obsidian"
-							label="Edit description"
-							onClick={onEdit}
-						>
-							<Icon
-								path={iconEdit}
-								size="sm"
-							/>
-						</ActionButton>
-
-						<ActionButton
-							variant="subtle"
-							color="red"
-							label="Delete namespace"
-							onClick={remove}
-						>
-							<Icon
-								path={iconTrash}
-								size="sm"
-							/>
-						</ActionButton>
-					</Group>
-				)}
+								Edit description
+							</Menu.Item>
+							<Menu.Divider />
+							<Menu.Item
+								leftSection={<Icon path={iconTrash} />}
+								disabled={!canManage}
+								onClick={remove}
+								color="red"
+							>
+								Delete namespace...
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
+				</Box>
 			</Group>
 		</Paper>
 	);
@@ -662,7 +668,6 @@ interface DatabaseRowProps {
 	isDefault: boolean;
 	canManage: boolean;
 	canSetDefault: boolean;
-	isSettingDefault: boolean;
 	onActivate: () => void;
 	onSetDefault: () => void;
 	onEdit: () => void;
@@ -676,7 +681,6 @@ function DatabaseRow({
 	isDefault,
 	canManage,
 	canSetDefault,
-	isSettingDefault,
 	onActivate,
 	onSetDefault,
 	onEdit,
@@ -736,7 +740,7 @@ function DatabaseRow({
 			<ThemeIcon
 				size="md"
 				color="obsidian"
-				variant="light"
+				variant={isActive ? "gradient" : "light"}
 			>
 				<Icon path={iconDatabase} />
 			</ThemeIcon>
@@ -780,30 +784,15 @@ function DatabaseRow({
 				)}
 			</Box>
 
-			{canSetDefault && !isDefault && (
-				<Button
-					size="xs"
-					variant="subtle"
-					color="obsidian"
-					leftSection={<Icon path={iconStar} />}
-					loading={isSettingDefault}
-					onClick={onSetDefault}
-				>
-					Set default
-				</Button>
-			)}
-
-			<Group
-				gap="xs"
-				wrap="nowrap"
-			>
+			<Group wrap="nowrap">
 				{isActive ? (
-					<Badge
-						size="sm"
-						variant="gradient"
+					<Button
+						size="xs"
+						variant="light"
+						disabled
 					>
-						Active
-					</Badge>
+						Selected
+					</Button>
 				) : (
 					<Button
 						size="xs"
@@ -815,33 +804,38 @@ function DatabaseRow({
 					</Button>
 				)}
 
-				{canManage && (
-					<>
-						<ActionButton
-							variant="subtle"
-							color="obsidian"
-							label="Edit description"
+				<Menu>
+					<Menu.Target>
+						<ActionButton label="Database actions">
+							<Icon path={iconDotsVertical} />
+						</ActionButton>
+					</Menu.Target>
+					<Menu.Dropdown>
+						<Menu.Item
+							leftSection={<Icon path={iconStar} />}
+							disabled={!canSetDefault || isDefault}
+							onClick={onSetDefault}
+						>
+							Set default
+						</Menu.Item>
+						<Menu.Item
+							leftSection={<Icon path={iconEdit} />}
+							disabled={!canManage}
 							onClick={onEdit}
 						>
-							<Icon
-								path={iconEdit}
-								size="sm"
-							/>
-						</ActionButton>
-
-						<ActionButton
-							variant="subtle"
-							color="red"
-							label="Delete database"
+							Edit description
+						</Menu.Item>
+						<Menu.Divider />
+						<Menu.Item
+							leftSection={<Icon path={iconTrash} />}
+							disabled={!canManage}
 							onClick={remove}
+							color="red"
 						>
-							<Icon
-								path={iconTrash}
-								size="sm"
-							/>
-						</ActionButton>
-					</>
-				)}
+							Delete database...
+						</Menu.Item>
+					</Menu.Dropdown>
+				</Menu>
 			</Group>
 		</Group>
 	);
