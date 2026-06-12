@@ -118,7 +118,7 @@ function InstanceTypeRow({
 			bg={isLight ? "obsidian.1" : "obsidian.8"}
 			p="lg"
 			radius="md"
-			withBorder={selected}
+			withBorder={true}
 			style={{
 				borderColor: selected ? "var(--mantine-color-violet-6)" : undefined,
 				cursor: active ? "not-allowed" : "pointer",
