@@ -1,7 +1,7 @@
-import { Paper, ScrollArea, Stack } from "@mantine/core";
+import { ScrollArea, Stack } from "@mantine/core";
 import { iconRelationIn, iconRelationOut } from "@surrealdb/ui";
 import { RecordId } from "surrealdb";
-import { RecordCollection } from "./collection";
+import { RecordCollection } from "../components";
 
 export function normalizeRelations(relations: unknown): RecordId[] {
 	if (!relations) {

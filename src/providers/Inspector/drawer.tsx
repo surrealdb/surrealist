@@ -23,6 +23,7 @@ import {
 	iconDotsVertical,
 	iconLive,
 	iconPlus,
+	iconQuery,
 	iconRefresh,
 	iconRelation,
 	iconSearch,
@@ -396,43 +397,38 @@ export function InspectorDrawer({
 									Copy as JSON
 								</Menu.Item>
 
-								<Menu.Divider pl="xl" />
-
-								<Menu.Item
-									leftSection={<Space w="lg" />}
-									disabled={!currentRecord.exists}
-									onClick={() => createQuery(activeRecordId, "SELECT * FROM")}
-								>
-									Use in SELECT query
-								</Menu.Item>
-								<Menu.Item
-									leftSection={<Space w="lg" />}
-									disabled={!currentRecord.exists}
-									onClick={() => createQuery(activeRecordId, "UPDATE")}
-								>
-									Use in UPDATE query
-								</Menu.Item>
-								<Menu.Item
-									leftSection={<Space w="lg" />}
-									disabled={!currentRecord.exists}
-									onClick={() => createQuery(activeRecordId, "DELETE")}
-								>
-									Use in DELETE query
-								</Menu.Item>
-
 								<Menu.Sub
 									openDelay={120}
 									closeDelay={150}
 									withinPortal={false}
 								>
 									<Menu.Sub.Target>
-										<Menu.Sub.Item>Use in query...</Menu.Sub.Item>
+										<Menu.Sub.Item
+											leftSection={<Icon path={iconQuery} />}
+											disabled={!currentRecord.exists}
+										>
+											Use in query...
+										</Menu.Sub.Item>
 									</Menu.Sub.Target>
 
 									<Menu.Sub.Dropdown>
-										<Menu.Item>SELECT</Menu.Item>
-										<Menu.Item>UPDATE</Menu.Item>
-										<Menu.Item>DELETE</Menu.Item>
+										<Menu.Item
+											onClick={() =>
+												createQuery(activeRecordId, "SELECT * FROM")
+											}
+										>
+											New SELECT query
+										</Menu.Item>
+										<Menu.Item
+											onClick={() => createQuery(activeRecordId, "UPDATE")}
+										>
+											New UPDATE query
+										</Menu.Item>
+										<Menu.Item
+											onClick={() => createQuery(activeRecordId, "DELETE")}
+										>
+											New DELETE query
+										</Menu.Item>
 									</Menu.Sub.Dropdown>
 								</Menu.Sub>
 
@@ -572,9 +568,7 @@ export function InspectorDrawer({
 							<Tabs.Panel value="live">
 								<LiveFeedTab
 									messages={messages}
-									syncContent={syncContent}
 									liveSupported={liveSupported}
-									onSyncChange={setSyncContent}
 								/>
 							</Tabs.Panel>
 						</Tabs>

@@ -2,7 +2,48 @@ import { Badge, Box, Group, Paper, Stack, Text, ThemeIcon } from "@mantine/core"
 import { Icon } from "@surrealdb/ui";
 import type { RecordId } from "surrealdb";
 import { RecordLink } from "~/components/RecordLink";
-import classes from "../style.module.scss";
+import classes from "./style.module.scss";
+
+export interface InspectorSectionProps {
+	icon: string;
+	title: string;
+	description: string;
+	count?: number;
+}
+
+export function InspectorSection({ icon, title, description, count }: InspectorSectionProps) {
+	return (
+		<Group mb="sm">
+			<ThemeIcon
+				variant="gradient"
+				radius="sm"
+				size="md"
+			>
+				<Icon path={icon} />
+			</ThemeIcon>
+			<Box>
+				<Group gap="xs">
+					<Text
+						c="bright"
+						fw={600}
+						fz="lg"
+					>
+						{title}
+					</Text>
+					{count && count > 0 && (
+						<Badge
+							variant="light"
+							px={6}
+						>
+							{count}
+						</Badge>
+					)}
+				</Group>
+				<Text fz="sm">{description}</Text>
+			</Box>
+		</Group>
+	);
+}
 
 export interface RecordCollectionProps {
 	title: string;
@@ -25,39 +66,16 @@ export function RecordCollection({
 }: RecordCollectionProps) {
 	return (
 		<Box>
-			<Group mb="sm">
-				<ThemeIcon
-					variant="gradient"
-					radius="sm"
-					size="md"
-				>
-					<Icon path={icon} />
-				</ThemeIcon>
-				<Box>
-					<Group gap="xs">
-						<Text
-							c="bright"
-							fw={600}
-							fz="lg"
-						>
-							{title}
-						</Text>
-						{records.length > 0 && (
-							<Badge
-								variant="light"
-								px={6}
-							>
-								{records.length}
-							</Badge>
-						)}
-					</Group>
-					<Text fz="sm">{description}</Text>
-				</Box>
-			</Group>
+			<InspectorSection
+				icon={icon}
+				title={title}
+				description={description}
+				count={records.length}
+			/>
 
 			{records.length === 0 ? (
 				<Paper
-					className={classes.emptyCollection}
+					className={classes.emptyList}
 					p="lg"
 				>
 					<Text

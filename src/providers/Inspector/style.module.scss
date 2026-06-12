@@ -38,12 +38,16 @@
 	transition: border-color 0.1s ease;
 }
 
-.empty-collection {
+.empty-list {
 	background-color: var(--mantine-color-obsidian-7);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-2);
+	}
 }
 
 .content :global(.cm-content) {
-	padding-block: var(--mantine-spacing-xl);
+	padding-bottom: var(--mantine-spacing-xl);
 }
 
 .create-tab {
