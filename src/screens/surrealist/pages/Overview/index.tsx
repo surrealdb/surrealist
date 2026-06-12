@@ -3,11 +3,11 @@ import {
 	Icon,
 	iconArrowUpRight,
 	iconPlus,
-	pictoCloud,
-	pictoHandsOn,
-	pictoSidekick,
-	pictoSurrealDB,
-	pictoUniversity,
+	pictoCloudGradient,
+	pictoHandsOnGradient,
+	pictoSidekickGradient,
+	pictoSurrealDBGradient,
+	pictoUniversityGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
@@ -151,7 +151,7 @@ export function OverviewPage() {
 								{!isAuthenticated ? (
 									<StartCloud
 										action="View your organizations"
-										image={pictoCloud}
+										image={pictoCloudGradient}
 										onClick={() => signIn()}
 										mt="sm"
 									>
@@ -250,13 +250,13 @@ export function OverviewPage() {
 							<StartResource
 								title="Documentation"
 								subtitle="Explore the SurrealDB documentation"
-								image={pictoSurrealDB}
+								image={pictoSurrealDBGradient}
 								onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
 							/>
 							<StartResource
 								title="Community"
 								subtitle="Join the discussion on Discord"
-								image={pictoHandsOn}
+								image={pictoHandsOnGradient}
 								onClick={() =>
 									adapter.openUrl("https://discord.com/invite/surrealdb")
 								}
@@ -264,13 +264,13 @@ export function OverviewPage() {
 							<StartResource
 								title="University"
 								subtitle="Learn the SurrealDB fundamentals in 3 hours"
-								image={pictoUniversity}
+								image={pictoUniversityGradient}
 								onClick={() => adapter.openUrl("https://surrealdb.com/learn")}
 							/>
 							<StartResource
 								title="Sidekick"
 								subtitle="Get support from your personal Surreal AI assistant"
-								image={pictoSidekick}
+								image={pictoSidekickGradient}
 								onClick={() => dispatchIntent("open-sidekick")}
 							/>
 						</SimpleGrid>

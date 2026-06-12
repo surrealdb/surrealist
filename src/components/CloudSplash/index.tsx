@@ -1,5 +1,5 @@
 import { Button, Center, Group, Image, Stack, Text } from "@mantine/core";
-import { Icon, iconChevronRight, iconOpen, pictoSDBCloud } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconOpen, pictoSDBCloudGradient } from "@surrealdb/ui";
 import { adapter } from "~/adapter";
 import logoDarkImg from "~/assets/images/dark/cloud-logo.svg";
 import logoLightImg from "~/assets/images/light/cloud-logo.svg";
@@ -21,7 +21,7 @@ export function CloudSplash() {
 		>
 			<Stack align="center">
 				<Image
-					src={pictoSDBCloud}
+					src={pictoSDBCloudGradient}
 					alt=""
 					maw={125}
 				/>

@@ -1,7 +1,7 @@
 import type { SelectionRange } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { Box, Group, Image, noop, SegmentedControl, Stack } from "@mantine/core";
-import { pictoSurrealist } from "@surrealdb/ui";
+import { pictoSurrealistGradient } from "@surrealdb/ui";
 import { memo, useState } from "react";
 import { Panel, PanelGroup } from "react-resizable-panels";
 import { createHtmlPortalNode, InPortal } from "react-reverse-portal";
@@ -106,7 +106,7 @@ export function MiniQueryView() {
 									h={32}
 									my={-9}
 									w="auto"
-									src={pictoSurrealist}
+									src={pictoSurrealistGradient}
 								/>
 								<Image
 									src={logoUrl}

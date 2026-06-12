@@ -20,16 +20,16 @@ import {
 	iconSearch,
 	iconTarget,
 	iconUpload,
-	pictoAudioClip,
-	pictoConnect,
-	pictoDocument,
-	pictoGraphRAG,
-	pictoHTTP,
-	pictoImage,
-	pictoJSONFile,
-	pictoMediaFile,
-	pictoPDF,
-	pictoText,
+	pictoAudioClipGradient,
+	pictoConnectGradient,
+	pictoDocumentGradient,
+	pictoGraphRAGGradient,
+	pictoHTTPGradient,
+	pictoImageGradient,
+	pictoJSONFileGradient,
+	pictoMediaFileGradient,
+	pictoPDFGradient,
+	pictoTextGradient,
 } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useContextNavigator } from "~/hooks/routing";
@@ -84,14 +84,14 @@ interface SourceType {
 }
 
 const SOURCES: SourceType[] = [
-	{ label: "PDF", picto: pictoPDF },
-	{ label: "Markdown", picto: pictoText },
-	{ label: "JSON", picto: pictoJSONFile },
-	{ label: "Documents", picto: pictoDocument },
-	{ label: "Web pages", picto: pictoHTTP },
-	{ label: "Images", picto: pictoImage },
-	{ label: "Audio", picto: pictoAudioClip },
-	{ label: "Media", picto: pictoMediaFile },
+	{ label: "PDF", picto: pictoPDFGradient },
+	{ label: "Markdown", picto: pictoTextGradient },
+	{ label: "JSON", picto: pictoJSONFileGradient },
+	{ label: "Documents", picto: pictoDocumentGradient },
+	{ label: "Web pages", picto: pictoHTTPGradient },
+	{ label: "Images", picto: pictoImageGradient },
+	{ label: "Audio", picto: pictoAudioClipGradient },
+	{ label: "Media", picto: pictoMediaFileGradient },
 ];
 
 export default function KnowledgeView({ context }: ContextViewProps) {
@@ -106,7 +106,7 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 				className={classes.hero}
 			>
 				<Image
-					src={pictoGraphRAG}
+					src={pictoGraphRAGGradient}
 					className={classes.heroArt}
 					alt=""
 					aria-hidden
@@ -268,7 +268,7 @@ export default function KnowledgeView({ context }: ContextViewProps) {
 					</Box>
 					<Group gap="xs">
 						<Image
-							src={pictoConnect}
+							src={pictoConnectGradient}
 							w={36}
 							alt=""
 							aria-hidden

@@ -13,7 +13,7 @@ import {
 	ThemeIcon,
 	Title,
 } from "@mantine/core";
-import { Icon, iconChevronRight, iconCursor, iconOpen, pictoSidekick } from "@surrealdb/ui";
+import { Icon, iconChevronRight, iconCursor, iconOpen, pictoSidekickGradient } from "@surrealdb/ui";
 import { shuffle } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import { adapter } from "~/adapter";
@@ -125,7 +125,7 @@ export function SidekickChat({ isAuthed, padding, stream }: ChatConversationProp
 							/>
 							<Image
 								pos="relative"
-								src={pictoSidekick}
+								src={pictoSidekickGradient}
 								w={55}
 								h={55}
 							/>

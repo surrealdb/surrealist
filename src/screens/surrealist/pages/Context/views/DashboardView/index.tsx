@@ -18,7 +18,7 @@ import {
 	iconArrowUpRight,
 	iconPackageClosed,
 	iconPlay,
-	pictoSpectron,
+	pictoSpectronGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { useMemo } from "react";
@@ -83,7 +83,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 				className={classes.hero}
 			>
 				<Image
-					src={pictoSpectron}
+					src={pictoSpectronGradient}
 					className={classes.heroArt}
 					alt=""
 					aria-hidden

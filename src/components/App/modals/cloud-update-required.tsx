@@ -1,5 +1,5 @@
 import { ActionIcon, Box, Dialog, Group, Image, Text } from "@mantine/core";
-import { Icon, iconClose, pictoSDBCloud } from "@surrealdb/ui";
+import { Icon, iconClose, pictoSDBCloudGradient } from "@surrealdb/ui";
 import { type MouseEvent, useMemo } from "react";
 import { isDesktop } from "~/adapter";
 import { useStable } from "~/hooks/stable";
@@ -52,7 +52,7 @@ export function CloudUpdateRequiredDialog() {
 		>
 			<Group>
 				<Image
-					src={pictoSDBCloud}
+					src={pictoSDBCloudGradient}
 					alt="SurrealDB Cloud"
 					w={48}
 				/>

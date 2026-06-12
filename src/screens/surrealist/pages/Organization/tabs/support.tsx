@@ -1,5 +1,5 @@
 import { Box, Button, Group, Paper, Stack, Text } from "@mantine/core";
-import { Icon, iconOpen, iconPlus, pictoHealthChat } from "@surrealdb/ui";
+import { Icon, iconOpen, iconPlus, pictoHealthChatGradient } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { adapter } from "~/adapter";
 import { useCloudOrganizationTicketsQuery } from "~/cloud/queries/context";
@@ -71,7 +71,7 @@ export function OrganizationSupportTab({ organization }: OrganizationTabProps) {
 					{!hasSupportPlan && (!tickets?.length || tickets?.length === 0) && (
 						<StartCloud
 							action="View plans"
-							image={pictoHealthChat}
+							image={pictoHealthChatGradient}
 							onClick={() => {
 								navigate(`/o/${organization.id}/support-plans`);
 							}}

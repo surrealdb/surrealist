@@ -29,7 +29,7 @@ import {
 	iconDollar,
 	iconOpen,
 	iconUpload,
-	pictoSpectron,
+	pictoSpectronGradient,
 } from "@surrealdb/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistance } from "date-fns";
@@ -401,7 +401,7 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 								</Anchor>
 							</Group>
 							<Image
-								src={pictoSpectron}
+								src={pictoSpectronGradient}
 								className={classes.spectronImage}
 							/>
 							<Image

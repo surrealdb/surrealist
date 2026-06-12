@@ -30,7 +30,7 @@ import {
 	iconKey,
 	iconPlus,
 	iconServer,
-	pictoKey,
+	pictoKeyGradient,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import {
@@ -153,7 +153,7 @@ curl -X POST ${endpoint}/memories/search \\
 				className={classes.hero}
 			>
 				<Image
-					src={pictoKey}
+					src={pictoKeyGradient}
 					className={classes.heroArt}
 					alt=""
 					aria-hidden

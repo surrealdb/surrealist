@@ -23,10 +23,10 @@ import {
 	iconCheck,
 	iconChevronRight,
 	iconCopy,
-	pictoDocument,
-	pictoHandsOn,
-	pictoPlay,
-	pictoSDBCloud,
+	pictoDocumentGradient,
+	pictoHandsOnGradient,
+	pictoPlayGradient,
+	pictoSDBCloudGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { memo, useEffect, useRef, useState } from "react";
@@ -563,7 +563,7 @@ function LoadingScreen() {
 				/>
 				<Image
 					className={classes.provisionIcon}
-					src={pictoSDBCloud}
+					src={pictoSDBCloudGradient}
 					mt={-8}
 				/>
 			</Center>
@@ -592,19 +592,19 @@ function LoadingScreen() {
 				<GettingStartedLink
 					title="Cloud Documentation"
 					description="Learn more about SurrealDB Cloud features and capabilities."
-					image={pictoDocument}
+					image={pictoDocumentGradient}
 					href="https://surrealdb.com/docs/manage/cloud"
 				/>
 				<GettingStartedLink
 					title="Join the Community"
 					description="Get help from the community and share your experiences."
-					image={pictoHandsOn}
+					image={pictoHandsOnGradient}
 					href="https://surrealdb.com/community"
 				/>
 				<GettingStartedLink
 					title="Quick Start Tutorial"
 					description="Watch a quick tutorial to get started with SurrealDB Cloud."
-					image={pictoPlay}
+					image={pictoPlayGradient}
 					href="https://www.youtube.com/watch?v=S04qOKkVcmE"
 				/>
 			</SimpleGrid>

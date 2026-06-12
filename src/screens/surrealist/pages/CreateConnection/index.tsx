@@ -4,7 +4,7 @@ import {
 	iconChevronDown,
 	iconChevronRight,
 	iconHomePlus,
-	pictoSDBCloud,
+	pictoSDBCloudGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { useMemo } from "react";
@@ -238,7 +238,7 @@ export function CreateConnectionPage() {
 							</Group>
 						</Stack>
 						<Image
-							src={pictoSDBCloud}
+							src={pictoSDBCloudGradient}
 							className={classes.cloudImage}
 						/>
 						<Image

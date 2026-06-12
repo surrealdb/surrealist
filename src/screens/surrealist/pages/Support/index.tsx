@@ -15,14 +15,19 @@ import {
 	Icon,
 	iconPlus,
 	iconSearch,
-	pictoDiscord,
-	pictoDocument,
-	pictoGitHub,
-	pictoHealthChat,
-	pictoPlay,
-	pictoSidekick,
-	pictoSurrealDB,
-	pictoUniversity,
+	pictoBankGradient,
+	pictoBookGradient,
+	pictoDiscordGradient,
+	pictoGitHubGradient,
+	pictoHandsOnGradient,
+	pictoHealthChatGradient,
+	pictoPlayGradient,
+	pictoRedditGradient,
+	pictoSidekickGradient,
+	pictoSpectronGradient,
+	pictoSurrealDBGradient,
+	pictoSurrealistGradient,
+	pictoUniversityGradient,
 } from "@surrealdb/ui";
 import { useEffect } from "react";
 import { navigate } from "wouter/use-browser-location";
@@ -135,7 +140,7 @@ export function SupportPage() {
 								(!isAuthenticated || !chats || chats.length === 0) && (
 									<StartCloud
 										action={isAuthenticated ? "Explore plans" : "Sign in"}
-										image={pictoHealthChat}
+										image={pictoHealthChatGradient}
 										onClick={() => {
 											if (isAuthenticated) {
 												openSelectOrganizationModal({
@@ -179,7 +184,7 @@ export function SupportPage() {
 						{!isLoading && (
 							<SimpleGrid
 								mt="md"
-								cols={{ base: 1, md: 2 }}
+								cols={{ base: 1, sm: 2, lg: 3 }}
 								spacing="md"
 								mx="auto"
 							>
@@ -204,28 +209,44 @@ export function SupportPage() {
 
 						<SimpleGrid
 							mt="md"
-							cols={{ base: 1, md: 2 }}
+							cols={{ base: 1, sm: 2, lg: 3 }}
 							spacing="md"
 							mx="auto"
 						>
 							<ResourceTile
 								name="SurrealDB Documentation"
-								description="Learn everything there is to know about all SurrealDB products"
-								image={pictoSurrealDB}
+								description="Learn everything you need to know about the SurrealDB database, query language, and tooling"
+								image={pictoSurrealDBGradient}
 								onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
 							/>
 							<ResourceTile
+								name="Spectron Documentation"
+								description="Learn how to use Spectron - persistent agent memory built on knowledge graphs"
+								image={pictoSpectronGradient}
+								onClick={() =>
+									adapter.openUrl("https://surrealdb.com/docs/spectron")
+								}
+							/>
+							<ResourceTile
+								name="Surrealist Documentation"
+								description="Learn all of the tips and tricks for using Surrealist to its full potential"
+								image={pictoSurrealistGradient}
+								onClick={() =>
+									adapter.openUrl("https://surrealdb.com/docs/explore/surrealist")
+								}
+							/>
+							<ResourceTile
 								name="SurrealDB YouTube"
-								description="Learn about SurrealDB through live streams and video tutorials"
-								image={pictoPlay}
+								description="Learn more by watching our video tutorials and attending live events on YouTube"
+								image={pictoPlayGradient}
 								onClick={() =>
 									adapter.openUrl("https://www.youtube.com/@SurrealDB")
 								}
 							/>
 							<ResourceTile
 								name="University: Fundamentals"
-								description="Learn the fundamentals of SurrealDB in as little as 3 hours"
-								image={pictoUniversity}
+								description="Learn the fundamentals of SurrealDB in as little as 3 hours through our interactive course"
+								image={pictoUniversityGradient}
 								onClick={() =>
 									adapter.openUrl("https://surrealdb.com/learn/fundamentals")
 								}
@@ -233,7 +254,7 @@ export function SupportPage() {
 							<ResourceTile
 								name="University: Book"
 								description="Become a SurrealQL expert through Aeon's Surreal Renaissance"
-								image={pictoDocument}
+								image={pictoBookGradient}
 								onClick={() => adapter.openUrl("https://surrealdb.com/learn/book")}
 							/>
 						</SimpleGrid>
@@ -248,52 +269,62 @@ export function SupportPage() {
 
 						<SimpleGrid
 							mt="md"
-							cols={{ base: 1, md: 2 }}
+							cols={{ base: 1, sm: 2, lg: 3 }}
 							spacing="md"
 							mx="auto"
 						>
 							<ResourceTile
 								name="Discord Community"
-								description="Join our active community for ideas, discussions, and support"
-								image={pictoDiscord}
+								description="Join us on Discord to discuss SurrealDB, showcase your projects, and get help from the community"
+								image={pictoDiscordGradient}
 								onClick={() =>
 									adapter.openUrl("https://discord.com/invite/dc4JNWrrMc")
 								}
 							/>
 							<ResourceTile
-								name="Sidekick"
-								description="Chat with Sidekick for the quickest answers to your questions"
-								image={pictoSidekick}
-								onClick={() => dispatchIntent("open-sidekick")}
+								name="Reddit Community"
+								description="Join us on Reddit to discuss SurrealDB and connect with other SurrealDB users"
+								image={pictoRedditGradient}
+								onClick={() =>
+									adapter.openUrl("https://www.reddit.com/r/surrealdb/")
+								}
 							/>
 							<ResourceTile
 								name="GitHub"
-								description="Report issues or submit feature requests"
-								image={pictoGitHub}
+								description="Report issues, submit feature requests, or contribute to our projects on GitHub"
+								image={pictoGitHubGradient}
 								onClick={() => adapter.openUrl("https://github.com/surrealdb")}
 							/>
-							{flags.support_tickets && (
-								<ResourceTile
-									name="Account Support"
-									description="Contact us for account and billing issues"
-									image={pictoHealthChat}
-									onClick={() =>
-										dispatchIntent("create-message", {
-											type: "conversation",
-											conversationType: "general",
-											subject: "Account / billing enquiry",
-										})
-									}
-								/>
-							)}
-							{!flags.support_tickets && (
-								<ResourceTile
-									name="Contact Support"
-									description="For account and billing issues, email support"
-									image={pictoHealthChat}
-									onClick={() => adapter.openUrl("mailto:support@surrealdb.com")}
-								/>
-							)}
+							<ResourceTile
+								name="Sidekick"
+								description="Chat with Sidekick to get quick and personalized answers to your questions"
+								image={pictoSidekickGradient}
+								onClick={() => dispatchIntent("open-sidekick")}
+							/>
+							<ResourceTile
+								name="Contact: Account Support"
+								description="Have an account or billing question and need to speak with us? Click here to start a conversation"
+								image={pictoHandsOnGradient}
+								onClick={() =>
+									dispatchIntent("create-message", {
+										type: "conversation",
+										conversationType: "general",
+										subject: "Account / billing enquiry",
+									})
+								}
+							/>
+							<ResourceTile
+								name="Contact: Sales Enquiry"
+								description="Interested in learning how SurrealDB can benefit your business? Click here to start chatting"
+								image={pictoBankGradient}
+								onClick={() =>
+									dispatchIntent("create-message", {
+										type: "conversation",
+										conversationType: "sales-enquiry",
+										subject: "Sales enquiry",
+									})
+								}
+							/>
 						</SimpleGrid>
 					</Box>
 				</Stack>
