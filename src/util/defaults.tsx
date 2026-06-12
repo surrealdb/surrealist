@@ -146,6 +146,7 @@ export function createBaseConnection(settings: SurrealistSettings): Connection {
 		activeQuery: baseTab.id,
 		authentication: createBaseAuthentication(),
 		pinnedTables: [],
+		designerHiddenTables: [],
 		queryHistory: [],
 		lastNamespace: "",
 		lastDatabase: "",

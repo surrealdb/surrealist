@@ -1,10 +1,12 @@
-import { Badge, Divider, ScrollArea, Stack, Text, TextInput } from "@mantine/core";
+import { Badge, Box, Divider, ScrollArea, Stack, Text, TextInput, Tooltip } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import {
 	Icon,
 	iconAPI,
 	iconChevronLeft,
 	iconDelete,
+	iconEye,
+	iconEyeOff,
 	iconPin,
 	iconPinOff,
 	iconPlus,
@@ -42,9 +44,11 @@ export interface TablesPaneProps {
 	activeTable?: string | undefined;
 	closeDisabled?: boolean;
 	extraSection?: React.ReactNode;
+	hiddenTables?: string[];
 	onClose?: () => void;
 	onTableSelect: (table: string) => void;
 	onTableContextMenu?: (table: string) => ContextMenuItemOptions[];
+	onToggleHidden?: (table: string) => void;
 }
 
 export function TablesPane({
@@ -52,9 +56,11 @@ export function TablesPane({
 	activeTable,
 	closeDisabled,
 	extraSection,
+	hiddenTables,
 	onClose,
 	onTableSelect,
 	onTableContextMenu,
+	onToggleHidden,
 }: TablesPaneProps) {
 	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
 
@@ -203,12 +209,22 @@ export function TablesPane({
 						{tablesFiltered.map((table) => {
 							const isActive = activeTable === table.schema.name;
 							const isPinned = pinnedTables.includes(table.schema.name);
+							const isHidden = hiddenTables?.includes(table.schema.name) ?? false;
 							const variant = getTableVariant(table);
+
+							const variantIcon = (
+								<Icon
+									path={TABLE_VARIANT_ICONS[variant]}
+									className={classes.variantIcon}
+								/>
+							);
 
 							return (
 								<Entry
 									key={table.schema.name}
 									isActive={isActive}
+									className={classes.table}
+									mod={{ hidden: isHidden, toggleable: !!onToggleHidden }}
 									onClick={() => onTableSelect(table.schema.name)}
 									onContextMenu={showContextMenu([
 										...(onTableContextMenu?.(table.schema.name) || []),
@@ -221,6 +237,25 @@ export function TablesPane({
 											icon: <Icon path={isPinned ? iconPinOff : iconPin} />,
 											onClick: () => togglePinned(table.schema.name),
 										},
+										...(onToggleHidden
+											? [
+													{
+														key: "visibility",
+														title: isHidden
+															? "Show table"
+															: "Hide table",
+														icon: (
+															<Icon
+																path={
+																	isHidden ? iconEye : iconEyeOff
+																}
+															/>
+														),
+														onClick: () =>
+															onToggleHidden(table.schema.name),
+													},
+												]
+											: []),
 										{
 											key: "definition",
 											title: "Show definition",
@@ -246,7 +281,27 @@ export function TablesPane({
 											onClick: () => removeTable(table.schema.name),
 										},
 									])}
-									leftSection={<Icon path={TABLE_VARIANT_ICONS[variant]} />}
+									leftSection={
+										onToggleHidden ? (
+											<Tooltip label="Toggle visibility">
+												<Box>
+													{variantIcon}
+													<Icon
+														path={isHidden ? iconEyeOff : iconEye}
+														className={classes.visibilityIcon}
+														role="button"
+														tabIndex={0}
+														onClick={(e) => {
+															e.stopPropagation();
+															onToggleHidden?.(table.schema.name);
+														}}
+													/>
+												</Box>
+											</Tooltip>
+										) : (
+											variantIcon
+										)
+									}
 									rightSection={
 										isPinned && (
 											<Icon

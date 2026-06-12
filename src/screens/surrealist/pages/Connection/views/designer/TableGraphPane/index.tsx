@@ -135,6 +135,8 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		c?.diagramHoverFocus,
 	]);
 
+	const hiddenTables = useConnection((c) => c?.designerHiddenTables ?? []);
+
 	const [isExporting, setIsExporting] = useState(false);
 	const [isTiny, setIsTiny] = useState(false);
 	const [zoomLevel, setZoomLevel] = useState(1);
@@ -214,12 +216,16 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 	}, [nodesInitialized, algorithm, direction, strategy]);
 
 	const renderGraph = useStable(async () => {
+		const hidden = new Set(hiddenTables);
+		const visibleTables = props.tables.filter((table) => !hidden.has(table.schema.name));
+
 		const [nodes, edges, warnings] = await buildFlowNodes(
-			props.tables,
+			visibleTables,
 			nodeMode,
 			direction,
 			linkMode,
 			lineStyle,
+			hidden,
 		);
 
 		setWarnings(warnings);
@@ -432,6 +438,7 @@ export function TableGraphPane(props: TableGraphPaneProps) {
 		lineStyle,
 		linkMode,
 		nodeMode,
+		hiddenTables,
 	]);
 
 	useEffect(() => {

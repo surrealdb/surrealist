@@ -91,6 +91,7 @@ export async function buildFlowNodes(
 	direction: DiagramDirection,
 	linkMode: DiagramLinks,
 	lineStyle: DiagramLineStyle,
+	hiddenTables: ReadonlySet<string> = new Set(),
 ): Promise<[Node<SharedNodeData>[], Edge[], GraphWarning[]]> {
 	const items = normalizeTables(tables);
 	const nodeIndex = new Map<string, Node<SharedNodeData>>();
@@ -321,12 +322,16 @@ export async function buildFlowNodes(
 
 				for (const target of targets) {
 					if (!nodeIndex.has(target)) {
-						warnings.push({
-							type: "link",
-							table: table.schema.name,
-							foreign: target,
-							field: field.name,
-						});
+						// A hidden table still exists in the schema, so links to
+						// it are silently dropped rather than flagged as missing.
+						if (!hiddenTables.has(target)) {
+							warnings.push({
+								type: "link",
+								table: table.schema.name,
+								foreign: target,
+								field: field.name,
+							});
+						}
 						continue;
 					}
 

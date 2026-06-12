@@ -186,6 +186,7 @@ export interface Connection {
 	queryHistory: HistoryQuery[];
 	authentication: Authentication;
 	pinnedTables: string[];
+	designerHiddenTables: string[];
 	diagramAlgorithm: DiagramAlgorithm;
 	diagramDirection: DiagramDirection;
 	diagramStrategy: DiagramStrategy;
