@@ -6,10 +6,15 @@ import { DatasetCatalogCard } from "./card";
 
 export interface DatasetCatalogBrowserProps {
 	surrealVersion: string;
+	disabled?: boolean;
 	variant: "apply" | "download";
 }
 
-export function DatasetCatalogBrowser({ surrealVersion, variant }: DatasetCatalogBrowserProps) {
+export function DatasetCatalogBrowser({
+	surrealVersion,
+	disabled,
+	variant,
+}: DatasetCatalogBrowserProps) {
 	const { data: datasets, isPending, isError } = useDatasetsCatalogQuery();
 
 	const compatibleDatasets = useMemo(() => {
@@ -59,6 +64,7 @@ export function DatasetCatalogBrowser({ surrealVersion, variant }: DatasetCatalo
 					dataset={dataset}
 					version={version}
 					variant={variant}
+					disabled={disabled}
 				/>
 			))}
 		</SimpleGrid>

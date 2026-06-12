@@ -1,4 +1,4 @@
-import { Button, Checkbox, Group, Paper, Select, Stack, Text } from "@mantine/core";
+import { Button, Checkbox, Group, Paper, Select, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon, iconDownload, iconSandbox } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
@@ -22,9 +22,15 @@ export interface DatasetCatalogCardProps {
 	dataset: DatasetCatalogEntry;
 	version: DatasetCatalogVersion;
 	variant: "apply" | "download";
+	disabled?: boolean;
 }
 
-export function DatasetCatalogCard({ dataset, version, variant }: DatasetCatalogCardProps) {
+export function DatasetCatalogCard({
+	dataset,
+	version,
+	variant,
+	disabled,
+}: DatasetCatalogCardProps) {
 	const connectionId = useConnection((c) => c?.id ?? "");
 	const navigateConnection = useConnectionNavigator();
 	const [applyDataset, isApplying] = useDatasets();
@@ -161,18 +167,25 @@ export function DatasetCatalogCard({ dataset, version, variant }: DatasetCatalog
 							allowDeselect={false}
 							disabled={!hasSizes}
 						/>
-						<Button
-							w="50%"
-							variant="gradient"
-							onClick={handleSubmit}
-							loading={isLoading}
-							disabled={!canSubmit}
-							leftSection={
-								variant === "download" ? <Icon path={iconDownload} /> : undefined
-							}
+						<Tooltip
+							disabled={!disabled}
+							label="You can only apply datasets to an empty database"
 						>
-							{variant === "apply" ? "Apply" : "Download"}
-						</Button>
+							<Button
+								w="50%"
+								variant="gradient"
+								onClick={handleSubmit}
+								loading={isLoading}
+								disabled={!canSubmit || disabled}
+								leftSection={
+									variant === "download" ? (
+										<Icon path={iconDownload} />
+									) : undefined
+								}
+							>
+								{variant === "apply" ? "Apply" : "Download"}
+							</Button>
+						</Tooltip>
 					</Group>
 				</Stack>
 			</Stack>

@@ -1,5 +1,5 @@
-import { Alert, Button, Group, SimpleGrid, Stack, Text } from "@mantine/core";
-import { Icon, iconDatabase, iconDownload, iconInfo, iconUpload, iconWarning } from "@surrealdb/ui";
+import { Alert, Badge, Button, Group, SimpleGrid, Stack, Text } from "@mantine/core";
+import { Icon, iconDatabase, iconDownload, iconInfo, iconUpload } from "@surrealdb/ui";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
@@ -50,9 +50,17 @@ export function ConnectionDataTab(_props: ConnectionSettingsTabProps) {
 	return (
 		<Stack>
 			<Group justify="space-between">
-				<PrimaryTitle fz={32}>
-					Data{namespace && database ? ` (${namespace}/${database})` : ""}
-				</PrimaryTitle>
+				<Group>
+					<PrimaryTitle fz={32}>Data</PrimaryTitle>
+					{namespace && database ? (
+						<Badge
+							variant="light"
+							color="violet"
+						>
+							{namespace} / {database}
+						</Badge>
+					) : null}
+				</Group>
 				<Button
 					size="xs"
 					variant="light"
@@ -90,25 +98,7 @@ export function ConnectionDataTab(_props: ConnectionSettingsTabProps) {
 						title="Official datasets"
 						description="Browse official SurrealDB datasets and sample queries for your selected database"
 					>
-						<Stack gap="md">
-							{hasExistingData && (
-								<Alert
-									icon={<Icon path={iconWarning} />}
-									color="orange"
-									variant="light"
-									title="This database already contains data"
-								>
-									<Text
-										fz="sm"
-										className="selectable"
-									>
-										Applying a dataset may overwrite or conflict with existing
-										records and schema definitions in {namespace}/{database}.
-									</Text>
-								</Alert>
-							)}
-							<DatasetBrowser />
-						</Stack>
+						<DatasetBrowser disabled={hasExistingData} />
 					</Section>
 				</>
 			) : (
