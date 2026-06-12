@@ -1,14 +1,4 @@
-import {
-	Accordion,
-	Badge,
-	Box,
-	Center,
-	Group,
-	Paper,
-	ScrollArea,
-	Stack,
-	Text,
-} from "@mantine/core";
+import { Accordion, Badge, Box, Group, Paper, ScrollArea, Stack, Text } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import {
 	Icon,
