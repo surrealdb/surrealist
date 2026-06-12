@@ -256,7 +256,6 @@ export function ReferralPage() {
 							},
 							section: {
 								background: "var(--surrealist-gradient)",
-								boxShadow: "var(--surrealist-glow)",
 							},
 						}}
 					/>

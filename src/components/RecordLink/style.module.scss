@@ -1,0 +1,7 @@
+.root[data-with-open] {
+	cursor: pointer;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}

@@ -1,30 +1,41 @@
 .database {
-	border-radius: var(--mantine-radius-sm);
+	border-radius: 15px;
 	position: relative;
-	padding-left: var(--mantine-spacing-lg);
+	padding-left: 14px;
 	transition: background-color 0.1s;
+	min-width: 0;
 
-	&::before {
-		content: "";
-		position: absolute;
-		left: 5px;
-		top: 4px;
-		width: 4px;
-		bottom: 4px;
-		background-color: transparent;
-		border-radius: var(--mantine-radius-sm);
-		transition: background-color 0.1s;
+	--text-left: oklch(from var(--surreal-color-primary) calc(l + 0.1) c h);
+	--text-right: oklch(from var(--surreal-color-secondary) calc(l + 0.15) c h);
+
+	:global(.mantine-Menu-itemLabel) {
+		min-width: 0;
+	}
+
+	.database-name {
+		font-weight: 500 !important;
 	}
 
 	&[data-active] {
-		background-color: var(--mantine-color-violet-light);
+		background-color: var(--mantine-color-obsidian-8);
+
+		@include light {
+			background-color: var(--mantine-color-obsidian-2);
+		}
 
 		.database-name {
-			font-weight: 600 !important;
-		}
+			color: var(--mantine-color-violet-2);
 
-		&::before {
-			background-color: var(--mantine-color-violet-text);
+			@include light {
+				color: var(--mantine-color-violet-7);
+			}
 		}
 	}
+}
+
+.active-indicator {
+	width: var(--mantine-spacing-md);
+	height: var(--mantine-spacing-md);
+	background: var(--surreal-gradient);
+	border-radius: var(--mantine-radius-xl);
 }

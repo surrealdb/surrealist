@@ -1,4 +1,5 @@
-import { Box, Center, Flex, Loader, LoadingOverlay, Stack } from "@mantine/core";
+import { Box, Center, Flex, Loader, Overlay, Stack, Transition } from "@mantine/core";
+import { Spinner } from "@surrealdb/ui";
 import { memo } from "react";
 import { Redirect, Route, Switch } from "wouter";
 import { adapter, isDesktop } from "~/adapter";
@@ -367,11 +368,27 @@ export function SurrealistScreen() {
 					<DatabaseSidebarLazy fill />
 				</Drawer> */}
 
-				<LoadingOverlay
-					visible={isProcessingAuth}
-					zIndex={1000}
-					overlayProps={{ blur: 4 }}
-				/>
+				<Transition
+					transition="fade"
+					mounted={isProcessingAuth}
+					duration={0}
+					exitDuration={150}
+				>
+					{(styles) => (
+						<Center
+							pos="fixed"
+							inset={0}
+							style={styles}
+						>
+							<Spinner
+								style={{ zIndex: 300 }}
+								size="xl"
+								color="violet"
+							/>
+							<Overlay blur={4} />
+						</Center>
+					)}
+				</Transition>
 			</Box>
 		</SidebarProvider>
 	);

@@ -1,7 +1,7 @@
-import { Group, Paper, ScrollArea, Text } from "@mantine/core";
-import { Icon, iconCircle } from "@surrealdb/ui";
+import { Paper, ScrollArea, Stack } from "@mantine/core";
+import { iconRelationIn, iconRelationOut } from "@surrealdb/ui";
 import { RecordId } from "surrealdb";
-import { RecordLink } from "~/components/RecordLink";
+import { RecordCollection } from "./collection";
 
 export function normalizeRelations(relations: unknown): RecordId[] {
 	if (!relations) {
@@ -15,48 +15,7 @@ export function normalizeRelations(relations: unknown): RecordId[] {
 	return relations instanceof RecordId ? [relations] : [];
 }
 
-interface RelationsListProps {
-	name: string;
-	relations: RecordId[];
-}
-
-function RelationsList({ name, relations }: RelationsListProps) {
-	const items = normalizeRelations(relations);
-
-	return (
-		<Paper
-			p="xs"
-			bg="var(--mantine-color-body)"
-			mt={6}
-		>
-			{items.length === 0 && (
-				<Text
-					pl={6}
-					c="dimmed"
-				>
-					No {name} relations found
-				</Text>
-			)}
-
-			{items.map((relation) => (
-				<Group
-					key={relation.toString()}
-					gap="xs"
-					wrap="nowrap"
-				>
-					<Icon
-						path={iconCircle}
-						size="lg"
-					/>
-					<RecordLink value={relation} />
-				</Group>
-			))}
-		</Paper>
-	);
-}
-
 export interface RelationsTabProps {
-	isLight: boolean;
 	inputs: RecordId[];
 	outputs: RecordId[];
 }
@@ -64,33 +23,26 @@ export interface RelationsTabProps {
 export function RelationsTab({ inputs, outputs }: RelationsTabProps) {
 	return (
 		<ScrollArea flex="1 0 0">
-			<Text
-				c="bright"
-				size="lg"
-				fw={600}
-				mt={4}
+			<Stack
+				p="md"
+				gap="xl"
 			>
-				Incoming relations
-			</Text>
+				<RecordCollection
+					title="Incoming relations"
+					description="Relations that point to this record"
+					icon={iconRelationIn}
+					records={inputs}
+					emptyText="No incoming relations point to this record"
+				/>
 
-			<RelationsList
-				name="incoming"
-				relations={inputs}
-			/>
-
-			<Text
-				c="bright"
-				size="lg"
-				fw={600}
-				mt="xl"
-			>
-				Outgoing relations
-			</Text>
-
-			<RelationsList
-				name="outgoing"
-				relations={outputs}
-			/>
+				<RecordCollection
+					title="Outgoing relations"
+					description="Relations that this record points to"
+					icon={iconRelationOut}
+					records={outputs}
+					emptyText="This record has no outgoing relations"
+				/>
+			</Stack>
 		</ScrollArea>
 	);
 }

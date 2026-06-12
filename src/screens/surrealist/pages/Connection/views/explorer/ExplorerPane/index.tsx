@@ -33,13 +33,14 @@ import { LoadingContainer } from "~/components/LoadingContainer";
 import { Pagination } from "~/components/Pagination";
 import { usePagination } from "~/components/Pagination/hook";
 import { ContentPane } from "~/components/Pane";
-import { RecordLink } from "~/components/RecordLink";
 import { useConnection } from "~/hooks/connection";
 import { useEventSubscription } from "~/hooks/event";
-import { useConnectionAndView, useConnectionNavigator } from "~/hooks/routing";
+import { useConnectionAndView } from "~/hooks/routing";
 import { useTables } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
 import { useConfirmation } from "~/providers/Confirmation";
+import { useInspector } from "~/providers/Inspector";
+import { useRecordActions } from "~/providers/Inspector/use-record-actions";
 import {
 	executeQuery,
 	executeQueryFirst,
@@ -47,23 +48,22 @@ import {
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useConfigStore } from "~/stores/config";
 import { RecordsChangedEvent } from "~/util/global-events";
-import { showInfo, writeClipboardText } from "~/util/helpers";
+import { showErrorNotification, writeClipboardText } from "~/util/helpers";
 import { getTableVariant } from "~/util/schema";
 import { type SortMode, usePaginationQuery, useRecordQuery } from "./hooks";
 import classes from "./style.module.scss";
 
 export interface ExplorerPaneProps {
 	activeTable: string;
-	onCreateRecord: (table?: string, content?: any) => void;
 }
 
-export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps) {
-	const { addQueryTab, updateConnection } = useConfigStore.getState();
+export function ExplorerPane({ activeTable }: ExplorerPaneProps) {
+	const { create } = useInspector();
+	const { updateConnection } = useConfigStore.getState();
 	const { showContextMenu } = useContextMenu();
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
 	const pagination = usePagination();
 	const [connection] = useConnectionAndView();
-	const navigateConnection = useConnectionNavigator();
 	const schema = useTables().find((t) => t.schema.name === activeTable);
 
 	const allowCreate = schema && getTableVariant(schema) !== "view";
@@ -118,7 +118,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	});
 
 	const openCreator = useStable(() => {
-		onCreateRecord();
+		create(activeTable);
 	});
 
 	const openTableList = useStable(() => {
@@ -134,6 +134,17 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		recordQuery.refetch();
 		paginationQuery.refetch();
 	});
+
+	const { duplicateRecord, copyRecordId, copyRecordJson, openQuery, deleteRecord } =
+		useRecordActions({
+			onRefresh: refetch,
+			onError: (err) => {
+				showErrorNotification({
+					title: "Record action failed",
+					content: err,
+				});
+			},
+		});
 
 	const selectAllRecords = useStable(async () => {
 		let fetchQuery = `SELECT id FROM ${escapeIdent(activeTable)}`;
@@ -179,25 +190,6 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 		);
 	});
 
-	const removeRecord = useConfirmation<RecordId>({
-		title: "Delete record",
-		skippable: true,
-		message: (value) => (
-			<Box>
-				Are you sure you want to delete this record?
-				<RecordLink
-					mt="sm"
-					value={value}
-					withOpen={false}
-				/>
-			</Box>
-		),
-		onConfirm: async (id) => {
-			await executeQuery(`DELETE ${await getSurrealQL().formatValue(id)}`);
-			refetch();
-		},
-	});
-
 	const removeSelectedRecords = useConfirmation({
 		title: "Bulk delete records",
 		message: `Are you sure you want to delete all ${selected.size} records?`,
@@ -215,13 +207,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 	const onRecordContextMenu = useStable((e: MouseEvent, record: any) => {
 		if (!(record.id instanceof RecordId) || !connection) return;
 
-		const openQuery = (id: RecordId, prefix: string) => {
-			navigateConnection(connection, "query");
-			addQueryTab(connection, {
-				type: "config",
-				query: `${prefix} ${getSurrealQL().formatValue(id)}`,
-			});
-		};
+		const id = record.id;
 
 		showContextMenu([
 			{
@@ -229,9 +215,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				title: "Duplicate record",
 				disabled: !allowCreate,
 				icon: <Icon path={iconCopy} />,
-				onClick: () => {
-					onCreateRecord(undefined, record);
-				},
+				onClick: () => duplicateRecord(id),
 			},
 			{
 				key: "divider-1",
@@ -239,34 +223,12 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			{
 				key: "copy-id",
 				title: "Copy Record ID",
-				onClick: () => {
-					const formatted = getSurrealQL().formatValue(record.id);
-
-					writeClipboardText(formatted);
-
-					formatted.then((value) => {
-						showInfo({
-							title: "Record ID copied",
-							subtitle: `Copied ${value}`,
-						});
-					});
-				},
+				onClick: () => copyRecordId(id),
 			},
 			{
 				key: "copy-json",
 				title: "Copy as JSON",
-				onClick: () => {
-					writeClipboardText(getSurrealQL().formatValue(record, true, true));
-
-					getSurrealQL()
-						.formatValue(record.id)
-						.then((value) => {
-							showInfo({
-								title: "Record contents copied",
-								subtitle: `Copied ${value}`,
-							});
-						});
-				},
+				onClick: () => copyRecordJson(id),
 			},
 			{
 				key: "divider-2",
@@ -274,17 +236,17 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 			{
 				key: "select-query",
 				title: "Use in SELECT query",
-				onClick: () => openQuery(record.id, "SELECT * FROM"),
+				onClick: () => openQuery(id, "SELECT * FROM"),
 			},
 			{
 				key: "update-query",
 				title: "Use in UPDATE query",
-				onClick: () => openQuery(record.id, "UPDATE"),
+				onClick: () => openQuery(id, "UPDATE"),
 			},
 			{
 				key: "delete-query",
 				title: "Use in DELETE query",
-				onClick: () => openQuery(record.id, "DELETE"),
+				onClick: () => openQuery(id, "DELETE"),
 			},
 			{
 				key: "divider-3",
@@ -294,11 +256,7 @@ export function ExplorerPane({ activeTable, onCreateRecord }: ExplorerPaneProps)
 				title: "Delete record",
 				color: "pink.7",
 				icon: <Icon path={iconDelete} />,
-				onClick: async () => {
-					if (record.id instanceof RecordId) {
-						removeRecord(record.id);
-					}
-				},
+				onClick: () => deleteRecord(id),
 			},
 		])(e);
 	});

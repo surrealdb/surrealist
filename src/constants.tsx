@@ -101,6 +101,7 @@ export const INSTANCE_CONFIG = "instance.json";
 export const SENSITIVE_ACCESS_FIELDS = new Set(["password", "pass", "secret"]);
 export const ML_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
 export const GQL_SUPPORTED = new Set<Protocol>(["ws", "wss", "http", "https"]);
+export const LQ_SUPPORTED = new Set<Protocol>(["ws", "wss", "mem", "indxdb"]);
 export const CLOUD_ROLES = [
 	"restricted_member",
 	"member",

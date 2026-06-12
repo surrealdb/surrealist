@@ -1,5 +1,15 @@
-import { Box, Center, Group, Loader, Menu, ScrollArea, Text, TextInput } from "@mantine/core";
-import { Icon, iconList, iconPlus, iconSearch } from "@surrealdb/ui";
+import {
+	Box,
+	Center,
+	Group,
+	Loader,
+	Menu,
+	ScrollArea,
+	Text,
+	TextInput,
+	ThemeIcon,
+} from "@mantine/core";
+import { Icon, iconCheck, iconList, iconPlus, iconSearch } from "@surrealdb/ui";
 import { useQuery } from "@tanstack/react-query";
 import { ChangeEvent, Fragment, useEffect, useMemo, useRef } from "react";
 import { useConnection, useIsConnected } from "~/hooks/connection";
@@ -7,11 +17,18 @@ import { useConnectionSettingsNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openNewDatabaseModal } from "~/modals/new-database";
 import { useInterfaceStore } from "~/stores/interface";
-import { fetchDatabaseList, fetchNamespaceList } from "~/util/databases";
+import { fetchDatabaseList, fetchNamespaceList, NamespaceOrDatabase } from "~/util/databases";
 import { createBaseAuthentication } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
 import { activateDatabase } from "../../pages/Connection/connection/connection";
 import classes from "./style.module.scss";
+
+function searchDatabase(search: string, database: NamespaceOrDatabase) {
+	return (
+		fuzzyMatch(search, database.name) ||
+		(database.comment && fuzzyMatch(search, database.comment))
+	);
+}
 
 export interface DatabaseSelectorProps {
 	opened: boolean;
@@ -49,7 +66,7 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 		const hierarchy = hierarchyQuery.data ?? [];
 
 		return hierarchy.flatMap((entry) => {
-			const databases = entry.databases.filter((db) => fuzzyMatch(search, db.name));
+			const databases = entry.databases.filter((db) => searchDatabase(search, db));
 
 			if (databases.length === 0) {
 				return [];
@@ -82,14 +99,35 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 	});
 
 	const searchRef = useRef<HTMLInputElement>(null);
+	const activeItemRef = useRef<HTMLButtonElement>(null);
+	const hasScrolledRef = useRef(false);
 
 	useEffect(() => {
 		if (opened) {
 			setTimeout(() => {
 				searchRef.current?.focus();
 			}, 10);
+		} else {
+			hasScrolledRef.current = false;
 		}
 	}, [opened]);
+
+	useEffect(() => {
+		if (!opened || hierarchyQuery.isPending || hasScrolledRef.current) {
+			return;
+		}
+
+		const timeout = setTimeout(() => {
+			if (!activeItemRef.current) {
+				return;
+			}
+
+			hasScrolledRef.current = true;
+			activeItemRef.current.scrollIntoView({ block: "center" });
+		}, 10);
+
+		return () => clearTimeout(timeout);
+	}, [opened, hierarchyQuery.isPending]);
 
 	return (
 		<>
@@ -136,38 +174,56 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 									</Menu.Label>
 								</Group>
 								<Box px="xs">
-									{entry.databases.map((db) => (
-										<Menu.Item
-											key={`${entry.namespace.name}-${db.name}`}
-											className={classes.database}
-											mod={{
-												active:
-													namespace === entry.namespace.name &&
-													database === db.name,
-											}}
-											onClick={() =>
-												selectDatabase(entry.namespace.name, db.name)
-											}
-										>
-											<Text
-												truncate
+									{entry.databases.map((db) => {
+										const isActive =
+											namespace === entry.namespace.name &&
+											database === db.name;
+
+										return (
+											<Menu.Item
+												key={`${entry.namespace.name}-${db.name}`}
+												ref={isActive ? activeItemRef : undefined}
+												className={classes.database}
+												mod={{ active: isActive }}
+												onClick={() =>
+													selectDatabase(entry.namespace.name, db.name)
+												}
+												pl="sm"
 												maw={400}
-												className={classes.databaseName}
+												rightSection={
+													isActive && (
+														<ThemeIcon
+															variant="gradient"
+															size="xs"
+														>
+															<Icon
+																path={iconCheck}
+																opacity={1}
+																size="sm"
+															/>
+														</ThemeIcon>
+													)
+												}
 											>
-												{db.name}
-											</Text>
-											{db.comment && (
 												<Text
 													truncate
-													maw={400}
-													fz="xs"
-													opacity={0.5}
+													className={classes.databaseName}
 												>
-													{db.comment}
+													{db.name}
 												</Text>
-											)}
-										</Menu.Item>
-									))}
+												{db.comment && (
+													<Text
+														truncate
+														fz="xs"
+														opacity={0.5}
+														mt={-2}
+													>
+														{db.comment}
+													</Text>
+												)}
+											</Menu.Item>
+										);
+									})}
 								</Box>
 							</Fragment>
 						))}

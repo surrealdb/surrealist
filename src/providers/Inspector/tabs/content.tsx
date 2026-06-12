@@ -1,4 +1,4 @@
-import { Alert, Paper } from "@mantine/core";
+import { Alert, Divider, Stack } from "@mantine/core";
 import { surrealql } from "@surrealdb/codemirror";
 import { Icon, iconWarning } from "@surrealdb/ui";
 import { useMemo } from "react";
@@ -8,6 +8,7 @@ import { surqlLinting, surqlRecordLinks } from "~/editor";
 import { useSetting } from "~/hooks/config";
 import type { SaveableHandle } from "~/hooks/save";
 import { useInspector } from "..";
+import classes from "../style.module.scss";
 
 export interface ContentTabProps {
 	value: string;
@@ -30,7 +31,8 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 			{error && (
 				<Alert
 					icon={<Icon path={iconWarning} />}
-					color="red.5"
+					color="red"
+					mt="md"
 					style={{
 						whiteSpace: "pre-wrap",
 					}}
@@ -39,20 +41,24 @@ export function ContentTab({ value, error, onChange, saveHandle }: ContentTabPro
 				</Alert>
 			)}
 
-			<Paper
+			<Stack
+				gap={0}
 				flex="1 0 0"
-				mih={0}
-				p="xs"
-				withBorder
 			>
 				<CodeEditor
-					h="100%"
+					flex="1 0 0"
 					value={value}
 					onChange={onChange}
 					lineNumbers={hasLineNumbers}
 					extensions={extensions}
+					className={classes.content}
 				/>
-			</Paper>
+
+				<Divider
+					mx="-md"
+					mt={0}
+				/>
+			</Stack>
 
 			<SaveBox
 				handle={saveHandle}

@@ -206,10 +206,10 @@ function CompactGroup({ group }: { group: SidebarGroup }) {
 	return (
 		<Menu
 			position="right-start"
-			offset={14}
+			offset={{ mainAxis: 14, crossAxis: 18 }}
 			trigger="click-hover"
 			openDelay={150}
-			transitionProps={{ transition: "scale-x" }}
+			transitionProps={{ transition: "pop-top-left" }}
 		>
 			<Menu.Target>
 				<Box w="100%">
@@ -222,7 +222,7 @@ function CompactGroup({ group }: { group: SidebarGroup }) {
 					/>
 				</Box>
 			</Menu.Target>
-			<Menu.Dropdown>
+			<Menu.Dropdown miw={175}>
 				<Menu.Label>{group.name}</Menu.Label>
 				{group.items.map((item) => (
 					<CompactSubItem

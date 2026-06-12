@@ -119,15 +119,6 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 			>
 				<Divider />
 
-				{/* <NavigationIcon
-					name="Support"
-					icon={iconHelp}
-					match={["/support", "/support/*"]}
-					onClick={() => navigate("/support")}
-					withTooltip={isCompact}
-					indicator={unreadConversations}
-				/> */}
-
 				{showInNavigation && (
 					<NavigationIcon
 						name="Update Surrealist"
@@ -145,15 +136,6 @@ export function SurrealistSidebar({ className, fill, ...other }: SurrealistSideb
 					onClick={openCommands}
 					withTooltip={isCompact}
 				/>
-
-				{/* <NavigationIcon
-					name="Settings"
-					rightSection={!isMobile() && <Shortcut value={["mod", ","]} />}
-					icon={iconCog}
-					onClick={openSettings}
-					withTooltip={isCompact}
-					indicator={!!availableUpdate}
-				/> */}
 			</Stack>
 		</Stack>
 	);

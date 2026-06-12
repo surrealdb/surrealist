@@ -1,5 +1,4 @@
 import { Box, Button, Group, Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import {
 	Icon,
 	iconChevronRight,
@@ -24,13 +23,13 @@ import { usePanelMinSize } from "~/hooks/panels";
 import { useConnectionAndView, useIntent, useViewFocus } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { useDesigner } from "~/providers/Designer";
+import { useInspector } from "~/providers/Inspector";
 import { TablesPane } from "~/screens/surrealist/components/TablesPane";
 import { useConfigStore } from "~/stores/config";
 import { useInterfaceStore } from "~/stores/interface";
 import { ActivateDatabaseEvent, DisconnectedEvent } from "~/util/global-events";
 import { dispatchIntent } from "~/util/intents";
 import { syncConnectionSchema } from "~/util/schema";
-import { CreatorDrawer } from "../CreatorDrawer";
 import { ExplorerPane } from "../ExplorerPane";
 
 const TablesPaneLazy = memo(TablesPane);
@@ -40,6 +39,7 @@ export function ExplorerView() {
 	const { updateConnection } = useConfigStore.getState();
 	const { openTableCreator: _openTableCreator } = useInterfaceStore.getState();
 	const { design } = useDesigner();
+	const { create } = useInspector();
 
 	const isConnected = useIsConnected();
 	const explorerTableList = useConnection((c) => c?.explorerTableList);
@@ -49,14 +49,9 @@ export function ExplorerView() {
 	const exportDatabase = useRequireDatabase(() => dispatchIntent("export-database"));
 
 	const [activeTable, setActiveTable] = useState<string>();
-	const [isCreating, isCreatingHandle] = useDisclosure();
-	const [creatorTable, setCreatorTable] = useState<string>();
-	const [creatorContent, setCreatorContent] = useState<any>();
 
-	const openCreator = useStable((table?: string, content?: any) => {
-		setCreatorTable(table || activeTable);
-		setCreatorContent(content);
-		isCreatingHandle.open();
+	const openCreator = useStable((table?: string) => {
+		create(table || activeTable);
 	});
 
 	const buildContextMenu = useStable((table: string) => [
@@ -90,7 +85,6 @@ export function ExplorerView() {
 	});
 
 	const resetTable = useStable(() => {
-		isCreatingHandle.close();
 		setActiveTable(undefined);
 	});
 
@@ -108,127 +102,115 @@ export function ExplorerView() {
 	const [minSize, ref] = usePanelMinSize(275);
 
 	return (
-		<>
-			<Box
-				h="100%"
-				ref={ref}
-				p="sm"
+		<Box
+			h="100%"
+			ref={ref}
+			p="sm"
+		>
+			<PanelGroup
+				direction="horizontal"
+				style={{ opacity: minSize === 0 ? 0 : 1 }}
 			>
-				<PanelGroup
-					direction="horizontal"
-					style={{ opacity: minSize === 0 ? 0 : 1 }}
-				>
-					{(explorerTableList || !activeTable) && (
-						<>
-							<Panel
-								defaultSize={minSize}
-								minSize={minSize}
-								maxSize={35}
-								id="tables"
-								order={1}
-							>
-								<TablesPaneLazy
-									icon={iconExplorer}
-									activeTable={activeTable}
-									closeDisabled={!activeTable}
-									onTableSelect={setActiveTable}
-									onTableContextMenu={buildContextMenu}
-									onClose={closeTableList}
-									extraSection={
-										<>
-											<Entry
-												leftSection={<Icon path={iconUpload} />}
-												rightSection={<Icon path={iconChevronRight} />}
-												onClick={importDatabase}
-												style={{ flexShrink: 0 }}
-												bg="transparent"
-											>
-												Import database
-											</Entry>
-											<Entry
-												leftSection={<Icon path={iconDownload} />}
-												rightSection={<Icon path={iconChevronRight} />}
-												onClick={exportDatabase}
-												style={{ flexShrink: 0 }}
-												bg="transparent"
-											>
-												Export database
-											</Entry>
-										</>
-									}
-								/>
-							</Panel>
-							<PanelDragger />
-						</>
-					)}
-					<Panel
-						id="explorer"
-						order={2}
-						minSize={minSize}
-					>
-						{activeTable ? (
-							<ExplorerPaneLazy
-								activeTable={activeTable}
-								onCreateRecord={openCreator}
-							/>
-						) : (
-							<Introduction
-								title="Explorer"
+				{(explorerTableList || !activeTable) && (
+					<>
+						<Panel
+							defaultSize={minSize}
+							minSize={minSize}
+							maxSize={35}
+							id="tables"
+							order={1}
+						>
+							<TablesPaneLazy
 								icon={iconExplorer}
-								snippet={{
-									language: "surrealql",
-									title: "SurrealQL",
-									code: `
+								activeTable={activeTable}
+								closeDisabled={!activeTable}
+								onTableSelect={setActiveTable}
+								onTableContextMenu={buildContextMenu}
+								onClose={closeTableList}
+								extraSection={
+									<>
+										<Entry
+											leftSection={<Icon path={iconUpload} />}
+											rightSection={<Icon path={iconChevronRight} />}
+											onClick={importDatabase}
+											style={{ flexShrink: 0 }}
+											bg="transparent"
+										>
+											Import database
+										</Entry>
+										<Entry
+											leftSection={<Icon path={iconDownload} />}
+											rightSection={<Icon path={iconChevronRight} />}
+											onClick={exportDatabase}
+											style={{ flexShrink: 0 }}
+											bg="transparent"
+										>
+											Export database
+										</Entry>
+									</>
+								}
+							/>
+						</Panel>
+						<PanelDragger />
+					</>
+				)}
+				<Panel
+					id="explorer"
+					order={2}
+					minSize={minSize}
+				>
+					{activeTable ? (
+						<ExplorerPaneLazy activeTable={activeTable} />
+					) : (
+						<Introduction
+							title="Explorer"
+							icon={iconExplorer}
+							snippet={{
+								language: "surrealql",
+								title: "SurrealQL",
+								code: `
 										-- Declare a new table
 										DEFINE TABLE person;
 										
 										-- Fetch table records
 										SELECT * FROM person;
 									`,
-								}}
-							>
-								<Text>
-									The explorer view provides an easy way to browse your tables and
-									records without writing any queries.
-								</Text>
-								<Group>
-									<Button
-										flex={1}
-										variant="gradient"
-										leftSection={<Icon path={iconPlus} />}
-										disabled={!isConnected}
-										onClick={openTableCreator}
-									>
-										Create table
-									</Button>
-									<Button
-										flex={1}
-										color="obsidian"
-										variant="light"
-										rightSection={<Icon path={iconOpen} />}
-										onClick={() =>
-											adapter.openUrl(
-												"https://surrealdb.com/docs/reference/query-language/statements/define/table",
-											)
-										}
-									>
-										Learn more
-									</Button>
-								</Group>
-							</Introduction>
-						)}
-					</Panel>
-					<SidekickPanel />
-				</PanelGroup>
-			</Box>
-
-			<CreatorDrawer
-				opened={isCreating}
-				table={creatorTable || ""}
-				content={creatorContent}
-				onClose={isCreatingHandle.close}
-			/>
-		</>
+							}}
+						>
+							<Text>
+								The explorer view provides an easy way to browse your tables and
+								records without writing any queries.
+							</Text>
+							<Group>
+								<Button
+									flex={1}
+									variant="gradient"
+									leftSection={<Icon path={iconPlus} />}
+									disabled={!isConnected}
+									onClick={openTableCreator}
+								>
+									Create table
+								</Button>
+								<Button
+									flex={1}
+									color="obsidian"
+									variant="light"
+									rightSection={<Icon path={iconOpen} />}
+									onClick={() =>
+										adapter.openUrl(
+											"https://surrealdb.com/docs/reference/query-language/statements/define/table",
+										)
+									}
+								>
+									Learn more
+								</Button>
+							</Group>
+						</Introduction>
+					)}
+				</Panel>
+				<SidekickPanel />
+			</PanelGroup>
+		</Box>
 	);
 }
 
