@@ -3,7 +3,7 @@ import { matchRoute, PathPattern, useRouter, useSearch } from "wouter";
 import { adapter } from "~/adapter";
 import { MiniAdapter } from "~/adapter/mini";
 import { SANDBOX } from "~/constants";
-import type { ConnectionSettingsTab, ContextViewPage, ViewPage } from "~/types";
+import type { ConnectionSettingsTab, ContextSettingsTab, ContextViewPage, ViewPage } from "~/types";
 import { getConnectionById } from "~/util/connection";
 import { connectionSettingsPath } from "~/util/connection-settings";
 import { IntentEvent } from "~/util/global-events";
@@ -130,16 +130,42 @@ export function useConnectionNavigator() {
 }
 
 /**
- * Returns the active organisation id, context id, and view
+ * Returns the active organisation id, context id, and view. Resolves both the
+ * top-level view route and the nested settings route to the correct view id.
  */
 export function useContextAndView() {
-	const [match, params] = useAbsoluteRoute("/s/:organization/:context/:view");
+	const [settingsMatch, settingsParams] = useAbsoluteRoute(
+		"/s/:organization/:context/settings/:tab",
+	);
+	const [viewMatch, viewParams] = useAbsoluteRoute("/s/:organization/:context/:view");
 
-	if (!match) {
-		return [null, null, null] as const;
+	if (settingsMatch) {
+		return [settingsParams.organization, settingsParams.context, "settings"] as const;
 	}
 
-	return [params.organization, params.context, params.view as ContextViewPage] as const;
+	if (viewMatch) {
+		return [
+			viewParams.organization,
+			viewParams.context,
+			viewParams.view as ContextViewPage,
+		] as const;
+	}
+
+	return [null, null, null] as const;
+}
+
+/**
+ * Returns the active context settings tab, if the current route is a context
+ * settings sub-page.
+ */
+export function useContextSettingsTab() {
+	const [match, params] = useAbsoluteRoute("/s/:organization/:context/settings/:tab");
+
+	if (!match) {
+		return null;
+	}
+
+	return params.tab as ContextSettingsTab;
 }
 
 /**
@@ -148,9 +174,18 @@ export function useContextAndView() {
 export function useContextNavigator() {
 	const [, navigate] = useAbsoluteLocation();
 
-	return useStable((organizationId: string, contextId: string, view?: ContextViewPage) => {
-		navigate(`/s/${organizationId}/${contextId}/${view ?? "dashboard"}`);
-	});
+	return useStable(
+		(
+			organizationId: string,
+			contextId: string,
+			view?: ContextViewPage,
+			params?: URLSearchParams,
+		) => {
+			const search = params ? `?${params.toString()}` : "";
+
+			navigate(`/s/${organizationId}/${contextId}/${view ?? "dashboard"}${search}`);
+		},
+	);
 }
 
 /**

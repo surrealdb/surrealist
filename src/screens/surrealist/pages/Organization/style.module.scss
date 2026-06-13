@@ -91,3 +91,39 @@
 		opacity: 0.5;
 	}
 }
+
+.featured-card {
+	border-color: color-mix(in srgb, var(--mantine-color-violet-5) 38%, transparent);
+
+	&:hover .featured-image {
+		transform: scale(1.05);
+	}
+}
+
+.featured-image {
+	transition: transform 280ms ease;
+}
+
+@keyframes new-badge-pulse {
+
+	0%,
+	100% {
+		opacity: 0.4;
+		transform: scale(0.92);
+	}
+
+	50% {
+		opacity: 0.95;
+		transform: scale(1.12);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.featured-image {
+		transition: none;
+	}
+
+	.new-badge::before {
+		animation: none;
+	}
+}

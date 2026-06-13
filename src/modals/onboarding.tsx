@@ -1,4 +1,16 @@
-import { Box, Button, Divider, Group, Image, List, Modal, Paper, Stack, Text } from "@mantine/core";
+import {
+	Anchor,
+	Box,
+	Button,
+	Divider,
+	Group,
+	Image,
+	List,
+	Modal,
+	Paper,
+	Stack,
+	Text,
+} from "@mantine/core";
 import { Icon, iconCheck, iconChevronRight, iconClose, iconOpen, Spacer } from "@surrealdb/ui";
 import type { PropsWithChildren, ReactNode } from "react";
 import { useEffect } from "react";
@@ -112,7 +124,7 @@ function OnboardingModal({
 
 					<Group>
 						{learnMoreHref && (
-							<Link href={learnMoreHref}>
+							<Anchor href={learnMoreHref}>
 								<Button
 									color="obsidian"
 									variant="light"
@@ -120,7 +132,7 @@ function OnboardingModal({
 								>
 									Learn more
 								</Button>
-							</Link>
+							</Anchor>
 						)}
 						<Spacer />
 						{deployAction &&
@@ -223,7 +235,7 @@ export function ContextsOnboarding({ deployHref }: ContextsOnboardingProps) {
 			title="Spectron"
 			subtitle="Agent Memory That Actually Works"
 			description="Spectron gives your AI agents persistent, queryable memory powered by knowledge graphs, entity extraction, temporal facts, and hybrid retrieval - built directly into SurrealDB rather than bolted on top."
-			learnMoreHref="https://surrealdb.com/platform/spectron"
+			learnMoreHref="https://surrealdb.com/docs/spectron"
 			deployAction={{ label: "Get started", href: deployHref }}
 			media={<Image src={spectronBanner} />}
 		>

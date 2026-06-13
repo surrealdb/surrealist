@@ -1,14 +1,16 @@
 import { Alert, Stack, Text } from "@mantine/core";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchAPI } from "~/cloud/api";
+import { useDeleteContextMutation } from "~/cloud/mutations/spectron";
 import { useCloud } from "~/providers/Cloud";
 import { useConfirmation } from "~/providers/Confirmation";
 import { useCloudStore } from "~/stores/cloud";
 import { useConfigStore } from "~/stores/config";
-import { CloudInstance, Connection } from "~/types";
+import { CloudContext, CloudInstance, Connection } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification, showInfo } from "~/util/helpers";
+import { useAbsoluteLocation } from "./routing";
 
 /**
  * Returns whether cloud functionality is enabled
@@ -204,6 +206,76 @@ export function useDeleteInstance(instance: CloudInstance, connection?: Connecti
 			} catch (err: any) {
 				showErrorNotification({
 					title: "Failed to delete instance",
+					content: err,
+				});
+			}
+		},
+	});
+}
+
+/**
+ * Prompt the deletion of a cloud context
+ */
+export function useDeleteContext(context: CloudContext, returnPath?: string): () => void {
+	const client = useQueryClient();
+	const [, navigate] = useAbsoluteLocation();
+	const deleteContextMutation = useDeleteContextMutation(context.organization_id);
+
+	return useConfirmation({
+		message: (
+			<Stack>
+				<Text>
+					You are about to delete this context. This will cause all associated resources
+					to be destroyed.
+				</Text>
+				<Alert
+					title="Important"
+					color="red"
+				>
+					Data stored within this context will be permanently deleted and cannot be
+					recovered.
+				</Alert>
+			</Stack>
+		),
+		confirmText: "Delete",
+		title: `Delete ${context.name}`,
+		verification: context.name,
+		verifyText: "Type the context name to confirm",
+		onConfirm: async () => {
+			try {
+				await deleteContextMutation.mutateAsync(context.id);
+
+				showInfo({
+					title: "Deleting context",
+					subtitle: (
+						<>
+							<Text
+								span
+								c="bright"
+							>
+								{context.name}
+							</Text>{" "}
+							is being deleted
+						</>
+					),
+				});
+
+				client.invalidateQueries({
+					queryKey: ["cloud", "contexts"],
+				});
+
+				tagEvent("cloud_context_deleted", {
+					context: context.id,
+					region: context.region,
+					organisation: context.organization_id,
+				});
+
+				if (returnPath) {
+					navigate(returnPath);
+				}
+			} catch (err: any) {
+				showErrorNotification({
+					title: "Failed to delete context",
 					content: err,
 				});
 			}

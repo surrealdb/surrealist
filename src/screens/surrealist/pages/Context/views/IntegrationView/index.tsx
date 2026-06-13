@@ -1,312 +1,393 @@
 import {
 	Box,
 	Button,
-	Divider,
 	Group,
 	Image,
 	Paper,
+	Scroller,
 	SimpleGrid,
 	Stack,
-	Tabs,
 	Text,
+	Timeline,
+	Title,
 } from "@mantine/core";
 import {
 	brandJavaScript,
+	brandLangchain,
+	brandN8N,
+	brandOpenAi,
 	brandPython,
+	brandVercel,
 	CodeBlock,
 	Icon,
 	iconAPI,
 	iconArrowUpRight,
-	iconCheckCircle,
-	iconOpen,
+	iconMCP,
+	pictoIntegrations,
 } from "@surrealdb/ui";
-import { useState } from "react";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
-import { useContextNavigator } from "~/hooks/routing";
-import type { ContextViewPage } from "~/types";
+import { useEffect, useMemo, useState } from "react";
+import { adapter } from "~/adapter";
+import { useContextNavigator, useSearchParams } from "~/hooks/routing";
+import type { CloudContext, ContextViewPage } from "~/types";
+import { ContextHero } from "../../components/ContextHero";
 import type { ContextViewProps } from "../../types";
+import { buildClaudeCodeSteps } from "./integrations/claude-code";
+import { buildLangChainSteps } from "./integrations/langchain";
+import { buildN8nSteps } from "./integrations/n8n";
+import { buildOpenAiAgentsSteps } from "./integrations/openai-agents";
+import { getSpectronUrls } from "./integrations/spectron-urls";
+import type { IntegrationStep } from "./integrations/types";
+import { buildVercelAiSteps } from "./integrations/vercel-ai";
 import classes from "./style.module.scss";
 
-type IntegrationTab = "python" | "javascript" | "api";
+type IntegrationTab =
+	| "python"
+	| "javascript"
+	| "api"
+	| "claude-code"
+	| "n8n"
+	| "langchain"
+	| "openai-agents"
+	| "vercel-ai";
 
-interface IntegrationStep {
-	title: string;
-	description: string;
-	code: string;
-	lang: string;
-}
-
-const INTEGRATION_STEPS: Record<IntegrationTab, IntegrationStep[]> = {
-	python: [
-		{
-			title: "Install the SDK",
-			description: "Add the Python package to your project.",
-			code: "pip install surrealdb-context",
-			lang: "bash",
-		},
-		{
-			title: "Initialise the client",
-			description: "Authenticate with an API key to reach your context.",
-			code: `from surrealdb_context import ContextClient
-
-client = ContextClient(api_key="your-api-key")`,
-			lang: "python",
-		},
-		{
-			title: "Ingest a memory",
-			description: "Store a turn that the agent should remember.",
-			code: `messages = [
-    {"role": "user", "content": "Hi, I'm Alex. I prefer dark mode."},
-    {"role": "assistant", "content": "Got it, Alex - noted."},
-]
-
-client.add(messages, user_id="alex")`,
-			lang: "python",
-		},
-		{
-			title: "Retrieve with hybrid search",
-			description: "Combine graph, vector, and structured filters in one call.",
-			code: `results = client.search(
-    "What are the user's preferences?",
-    user_id="alex",
-)`,
-			lang: "python",
-		},
-	],
-	javascript: [
-		{
-			title: "Install the SDK",
-			description: "Add the npm package to your project.",
-			code: "npm install @surrealdb/context",
-			lang: "bash",
-		},
-		{
-			title: "Initialise the client",
-			description: "Authenticate with an API key to reach your context.",
-			code: `import { ContextClient } from "@surrealdb/context";
-
-const client = new ContextClient({ apiKey: "your-api-key" });`,
-			lang: "javascript",
-		},
-		{
-			title: "Ingest a memory",
-			description: "Store a turn that the agent should remember.",
-			code: `const messages = [
-    { role: "user", content: "Hi, I'm Alex. I prefer dark mode." },
-    { role: "assistant", content: "Got it, Alex - noted." },
+const INTEGRATION_TABS: IntegrationTab[] = [
+	"python",
+	"javascript",
+	"api",
+	"claude-code",
+	"n8n",
+	"langchain",
+	"openai-agents",
+	"vercel-ai",
 ];
 
-await client.add(messages, { userId: "alex" });`,
-			lang: "javascript",
-		},
-		{
-			title: "Retrieve with hybrid search",
-			description: "Combine graph, vector, and structured filters in one call.",
-			code: `const results = await client.search(
-    "What are the user's preferences?",
-    { userId: "alex" },
-);`,
-			lang: "javascript",
-		},
-	],
-	api: [
-		{
-			title: "Ingest a memory",
-			description: "POST a conversation turn to the memories endpoint.",
-			code: `curl -X POST https://api.surrealdb.com/v1/context/memories \\
-    -H "Authorization: Bearer your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{
-        "messages": [{"role": "user", "content": "Hi, I'm Alex."}],
-        "user_id": "alex"
-    }'`,
-			lang: "bash",
-		},
-		{
-			title: "Search across memory",
-			description: "Run hybrid retrieval using a natural-language query.",
-			code: `curl -X POST https://api.surrealdb.com/v1/context/search \\
-    -H "Authorization: Bearer your-api-key" \\
-    -H "Content-Type: application/json" \\
-    -d '{
-        "query": "What are the user preferences?",
-        "user_id": "alex"
-    }'`,
-			lang: "bash",
-		},
-		{
-			title: "List stored memories",
-			description: "Fetch everything attributed to a specific user.",
-			code: `curl https://api.surrealdb.com/v1/context/memories?user_id=alex \\
-    -H "Authorization: Bearer your-api-key"`,
-			lang: "bash",
-		},
-	],
-};
-
-const LANGUAGES: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
+const TAB_META: Record<IntegrationTab, { label: string; img?: string; icon?: string }> = {
 	python: { label: "Python", img: brandPython },
 	javascript: { label: "JavaScript", img: brandJavaScript },
 	api: { label: "REST API", icon: iconAPI },
+	"claude-code": { label: "Claude Code", icon: iconMCP },
+	n8n: { label: "n8n", img: brandN8N },
+	langchain: { label: "LangChain", img: brandLangchain },
+	"openai-agents": { label: "OpenAI Agents", img: brandOpenAi },
+	"vercel-ai": { label: "Vercel AI", img: brandVercel },
 };
 
+function buildIntegrationSteps(context: CloudContext): Record<IntegrationTab, IntegrationStep[]> {
+	const { endpoint, restRoot } = getSpectronUrls(context);
+
+	return {
+		python: [
+			{
+				title: "Install the SDK",
+				description: "Pull the official Python package into your environment.",
+				code: "pip install surrealdb",
+				lang: "bash",
+			},
+			{
+				title: "Initialise the client",
+				description:
+					"Create a Spectron client pointing at this context. The endpoint and context id are pre-filled from your selection.",
+				code: `from surrealdb import Spectron
+
+client = Spectron(
+    context="${context.id}",
+    endpoint="${endpoint}",
+    api_key="your-api-key",
+)`,
+				lang: "python",
+				action: "api_keys",
+			},
+			{
+				title: "Capture a memory",
+				description:
+					"Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.",
+				code: `from surrealdb import SpectronTurnRole
+
+session = client.sessions.create(scope={"user": "alex"})
+session.turn(SpectronTurnRole.USER, "Hi, I'm Alex. I prefer dark mode.")
+session.turn(SpectronTurnRole.ASSISTANT, "Got it, Alex — noted.")`,
+				lang: "python",
+			},
+			{
+				title: "Recall with hybrid search",
+				description:
+					"Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.",
+				code: `results = client.query("What are the user's preferences?", k=10)
+
+for hit in results.hits:
+    print(hit.score, hit.text)`,
+				lang: "python",
+			},
+			{
+				title: "Explore Spectron",
+				description:
+					"Discover the full potential of Spectron with the official documentation.",
+				action: "documentation",
+			},
+		],
+		javascript: [
+			{
+				title: "Install the SDK",
+				description: "Add the Spectron npm package to your project.",
+				code: "npm install @surrealdb/spectron",
+				lang: "bash",
+			},
+			{
+				title: "Initialise the client",
+				description:
+					"Create a Spectron client pointing at this context. The base URL and context id are pre-filled from your selection.",
+				code: `import { Spectron } from "@surrealdb/spectron";
+
+const client = new Spectron({
+    context: "${context.id}",
+    endpoint: "${endpoint}",
+    apiKey: "your-api-key",
+});`,
+				lang: "javascript",
+				action: "api_keys",
+			},
+			{
+				title: "Capture a memory",
+				description:
+					"Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.",
+				code: `import { TurnRole } from "@surrealdb/spectron";
+
+const session = await client.sessions.create({
+    scope: { user: "alex" },
+});
+
+await session.turn({ role: TurnRole.user, content: "Hi, I'm Alex. I prefer dark mode." });
+await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted." });`,
+				lang: "javascript",
+			},
+			{
+				title: "Recall with hybrid search",
+				description:
+					"Run a single query that blends graph traversal, vector similarity, and structured filters, returning the most relevant memories ranked for the agent in one round-trip.",
+				code: `const results = await client.query({
+    query: "What are the user's preferences?",
+    k: 10,
+});`,
+				lang: "javascript",
+			},
+			{
+				title: "Explore Spectron",
+				description:
+					"Discover the full potential of Spectron with the official documentation.",
+				action: "documentation",
+			},
+		],
+		api: [
+			{
+				title: "Create an API key",
+				description: "Request a new API key to authenticate your requests to the API.",
+				action: "api_keys",
+			},
+			{
+				title: "Open a session",
+				description:
+					"Create a session scoped to a user. The response includes an `id` you'll pass to subsequent calls when recording turns.",
+				code: `curl -X POST ${restRoot}/sessions \\
+    -H "API-KEY: your-api-key" \\
+    -H "Content-Type: application/json" \\
+    -d '{"scope":[{"key":"user","value":"alex"}]}'`,
+				lang: "bash",
+			},
+			{
+				title: "Capture a memory",
+				description:
+					"Record a conversation turn against the session you just created. Replace `$SESSION_ID` with the `id` returned from the previous call.",
+				code: `curl -X POST ${restRoot}/sessions/$SESSION_ID/turns \\
+    -H "API-KEY: your-api-key" \\
+    -H "Content-Type: application/json" \\
+    -d '{"role":"user","content":"Hi, I am Alex. I prefer dark mode."}'`,
+				lang: "bash",
+			},
+			{
+				title: "Recall with hybrid search",
+				description:
+					"Issue a natural-language query against your stored memories and let the hybrid retrieval pipeline combine vector similarity with graph traversal behind a single endpoint.",
+				code: `curl -X POST ${restRoot}/query \\
+    -H "API-KEY: your-api-key" \\
+    -H "Content-Type: application/json" \\
+    -d '{"query":"What are the user preferences?","k":10}'`,
+				lang: "bash",
+			},
+			{
+				title: "Explore Spectron",
+				description:
+					"Discover the full potential of Spectron with the official documentation.",
+				action: "documentation",
+			},
+		],
+		"claude-code": buildClaudeCodeSteps(context),
+		n8n: buildN8nSteps(context),
+		langchain: buildLangChainSteps(context),
+		"openai-agents": buildOpenAiAgentsSteps(context),
+		"vercel-ai": buildVercelAiSteps(context),
+	};
+}
+
+function isIntegrationTab(v: string | undefined): v is IntegrationTab {
+	return (
+		v === "python" ||
+		v === "javascript" ||
+		v === "api" ||
+		v === "claude-code" ||
+		v === "n8n" ||
+		v === "langchain" ||
+		v === "openai-agents" ||
+		v === "vercel-ai"
+	);
+}
+
+const DOCS_FALLBACK = "https://surrealdb.com/docs/learn/context";
+
 export default function IntegrationView({ context }: ContextViewProps) {
-	const [activeTab, setActiveTab] = useState<IntegrationTab>("python");
+	const search = useSearchParams();
+	const tabFromSearch = search.tab;
+	const [activeTab, setActiveTab] = useState<IntegrationTab>(() =>
+		isIntegrationTab(tabFromSearch) ? tabFromSearch : "python",
+	);
 	const navigateContext = useContextNavigator();
-	const steps = INTEGRATION_STEPS[activeTab];
+	const integrationSteps = useMemo(() => buildIntegrationSteps(context), [context]);
+	const steps = integrationSteps[activeTab];
+
+	useEffect(() => {
+		if (isIntegrationTab(tabFromSearch)) {
+			setActiveTab(tabFromSearch);
+		}
+	}, [tabFromSearch]);
 
 	const goToPage = (page: ContextViewPage) => {
 		navigateContext(context.organization_id, context.id, page);
 	};
 
 	return (
-		<Paper
-			p="lg"
-			radius="md"
-			className={classes.integrationPane}
-		>
-			<Group
-				justify="space-between"
-				align="flex-end"
-				wrap="wrap"
-				mb="md"
-				gap="md"
-			>
-				<Box>
-					<Text
-						fz="xs"
-						fw={600}
-						c="violet.4"
-						tt="uppercase"
-						style={{ letterSpacing: "0.08em" }}
-					>
-						Quick start
-					</Text>
-					<PrimaryTitle
-						fz={22}
-						mt={4}
-					>
-						Connect an agent in four steps
-					</PrimaryTitle>
-				</Box>
-				<Group gap="xs">
-					<Button
-						component="a"
-						href="https://surrealdb.com/docs/spectron"
-						target="_blank"
-						rel="noopener noreferrer"
-						variant="subtle"
-						size="sm"
-						color="slate"
-						rightSection={<Icon path={iconOpen} />}
-					>
-						Documentation
-					</Button>
-					<Button
-						variant="light"
-						color="violet"
-						size="sm"
-						onClick={() => goToPage("api-keys")}
-						rightSection={<Icon path={iconArrowUpRight} />}
-					>
-						Get API key
-					</Button>
-				</Group>
-			</Group>
+		<Stack gap={32}>
+			<ContextHero
+				kicker="Quick start"
+				title="Connect to your context"
+				description="Wire this context into your agent — through the Python and JavaScript SDKs, the REST API, MCP, or a framework like LangChain, n8n, and the OpenAI and Vercel AI toolkits."
+				art={pictoIntegrations}
+			/>
 
-			<Tabs
-				value={activeTab}
-				onChange={(v) => setActiveTab((v as IntegrationTab) ?? "python")}
+			<Scroller
+				className={classes.integrationScroller}
+				edgeGradientColor="default"
 			>
-				<Tabs.List>
-					{(Object.keys(LANGUAGES) as IntegrationTab[]).map((tab) => (
-						<Tabs.Tab
+				<Group
+					wrap="nowrap"
+					pb="xs"
+				>
+					{INTEGRATION_TABS.map((tab) => (
+						<Button
 							key={tab}
-							value={tab}
+							size="md"
+							className={classes.integrationCard}
+							aria-pressed={activeTab === tab}
+							variant={activeTab === tab ? "light" : "surreal"}
+							onClick={() => setActiveTab(tab)}
 							leftSection={
-								LANGUAGES[tab].img ? (
+								TAB_META[tab].img ? (
 									<Image
-										src={LANGUAGES[tab].img}
-										w={14}
+										src={TAB_META[tab].img}
+										w={16}
+										h={16}
 										alt=""
 									/>
-								) : LANGUAGES[tab].icon ? (
+								) : TAB_META[tab].icon ? (
 									<Icon
-										path={LANGUAGES[tab].icon}
+										path={TAB_META[tab].icon}
 										c="bright"
 										size="sm"
 									/>
-								) : undefined
+								) : null
 							}
 						>
-							{LANGUAGES[tab].label}
-						</Tabs.Tab>
+							{TAB_META[tab].label}
+						</Button>
 					))}
-				</Tabs.List>
-				<Divider mt="sm" />
-			</Tabs>
+				</Group>
+			</Scroller>
 
-			<SimpleGrid
-				cols={{ base: 1, md: 2 }}
-				spacing="xl"
-				mt="lg"
+			<Paper
+				p="lg"
+				radius="md"
+				className={classes.integrationPane}
 			>
 				<Stack gap="lg">
-					{steps.map((step, idx) => (
-						<Box
-							key={step.title}
-							className={classes.stepRow}
-						>
-							<Box
-								className={classes.stepBullet}
-								aria-hidden
-							>
-								{idx + 1}
-							</Box>
-							<Text
-								fw={600}
-								c="bright"
-								fz="md"
-							>
-								{step.title}
-							</Text>
-							<Text
-								fz="sm"
-								mt={4}
-								lh={1.55}
-								className="selectable"
-							>
-								{step.description}
-							</Text>
-						</Box>
-					))}
-					<Group
-						gap="sm"
-						mt="xs"
+					<Timeline
+						mt="md"
+						bulletSize={24}
+						lineWidth={2}
+						styles={{
+							itemTitle: {
+								color: "var(--mantine-color-bright)",
+								fontWeight: 600,
+								fontSize: "14px",
+							},
+							itemBullet: {
+								backgroundColor: "var(--mantine-color-obsidian-filled)",
+								color: "var(--mantine-color-white)",
+								border: "none",
+							},
+							item: {
+								"--item-border-color": "var(--mantine-color-obsidian-7)",
+							},
+						}}
 					>
-						<Icon
-							path={iconCheckCircle}
-							c="violet.4"
-							size="sm"
-						/>
-						<Text
-							fz="sm"
-							className="selectable"
-						>
-							Your agent now has persistent, queryable memory.
-						</Text>
-					</Group>
+						{steps.map((step, idx) => (
+							<Timeline.Item
+								key={idx}
+								bullet={idx + 1}
+							>
+								<SimpleGrid cols={2}>
+									<Box>
+										<Title
+											order={2}
+											fz="lg"
+										>
+											{step.title}
+										</Title>
+										<Text mt="xs">{step.description}</Text>
+									</Box>
+									{step.action === "api_keys" ? (
+										<Box>
+											<Button
+												variant="gradient"
+												rightSection={<Icon path={iconArrowUpRight} />}
+												onClick={() => goToPage("api-keys")}
+											>
+												Get API key
+											</Button>
+										</Box>
+									) : step.action === "documentation" ? (
+										<Box>
+											<Button
+												variant="gradient"
+												rightSection={<Icon path={iconArrowUpRight} />}
+												onClick={() =>
+													adapter.openUrl(
+														step.documentationUrl ?? DOCS_FALLBACK,
+													)
+												}
+											>
+												Read the documentation
+											</Button>
+										</Box>
+									) : step.code ? (
+										<CodeBlock
+											value={step.code}
+											lang={step.lang}
+										/>
+									) : null}
+								</SimpleGrid>
+							</Timeline.Item>
+						))}
+					</Timeline>
 				</Stack>
-				<Stack gap="sm">
-					{steps.map((step) => (
-						<CodeBlock
-							key={step.title}
-							value={step.code}
-							lang={step.lang}
-						/>
-					))}
-				</Stack>
-			</SimpleGrid>
-		</Paper>
+			</Paper>
+		</Stack>
 	);
 }

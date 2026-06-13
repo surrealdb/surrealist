@@ -1,5 +1,34 @@
-.integration-pane {
-	// background: var(--mantine-color-obsidian-light);
+.integration-scroller {
+	margin-inline: calc(var(--mantine-spacing-lg) * -1);
+	padding-inline: var(--mantine-spacing-lg);
+}
+
+// .integration-card {
+// 	flex-shrink: 0;
+// 	padding: var(--mantine-spacing-md) var(--mantine-spacing-xl);
+// 	border-radius: var(--mantine-radius-md);
+// 	border: 1px solid var(--surreal-glass-subtle);
+// 	background-color: var(--mantine-color-obsidian-7);
+// 	cursor: pointer;
+// 	transition:
+// 		border-color 120ms ease,
+// 		background-color 120ms ease;
+
+// 	&:hover {
+// 		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 40%, var(--mantine-color-default-border));
+// 		background-color: var(--mantine-color-obsidian-6);
+// 	}
+
+// 	&[data-active] {
+// 		border-color: var(--mantine-color-violet-5);
+// 		background-color: var(--mantine-color-violet-light);
+// 	}
+// }
+
+@media (prefers-reduced-motion: reduce) {
+	.integration-card {
+		transition: none;
+	}
 }
 
 .step-row {

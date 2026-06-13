@@ -392,7 +392,7 @@ function SpectronContextSection({ organization }: OrganizationTabProps) {
 									<Button variant="gradient">Select a plan</Button>
 								</Link>
 								<Anchor
-									href="https://surrealdb.com/platform/spectron"
+									href="https://surrealdb.com/docs/spectron"
 									variant="glow"
 								>
 									<Button rightSection={<Icon path={iconOpen} />}>

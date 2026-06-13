@@ -1,116 +1,219 @@
-.header {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--mantine-color-violet-5) 18%, transparent);
-    background:
-        radial-gradient(
-            90% 130% at 100% 0%,
-            color-mix(in srgb, var(--mantine-color-violet-6) 14%, transparent) 0%,
-            transparent 55%
-        ),
-        var(--mantine-color-obsidian-light);
+.root {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
 }
 
-.header-art {
-    position: absolute;
-    top: -18px;
-    right: -14px;
-    width: 140px;
-    height: 140px;
-    pointer-events: none;
-    opacity: 0.4;
-    mix-blend-mode: plus-lighter;
-    mask-image: radial-gradient(closest-side, black 55%, transparent 100%);
+.workspace {
+	flex: 1;
+	min-height: 0;
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-rows: minmax(0, 1.15fr) minmax(0, 1fr);
+	gap: var(--mantine-spacing-md);
+	padding: var(--mantine-spacing-md);
+	height: 100%;
+
+	@include lg-and-up {
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		grid-template-rows: minmax(0, 1fr);
+	}
 }
 
-.pulse-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--mantine-color-violet-4);
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--mantine-color-violet-4) 60%, transparent);
-    animation: pulse 1.8s ease-in-out infinite;
+.chatPaper {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	height: 100%;
+	overflow: hidden;
 }
 
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 color-mix(in srgb, var(--mantine-color-violet-4) 60%, transparent);
-    }
-    70% {
-        box-shadow: 0 0 0 8px color-mix(in srgb, var(--mantine-color-violet-4) 0%, transparent);
-    }
-    100% {
-        box-shadow: 0 0 0 0 color-mix(in srgb, var(--mantine-color-violet-4) 0%, transparent);
-    }
+.thread {
+	flex: 1;
+	min-height: 0;
 }
 
-.assistant-bubble {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--mantine-color-violet-6) 30%, var(--mantine-color-obsidian-7));
-    border: 1px solid color-mix(in srgb, var(--mantine-color-violet-5) 40%, transparent);
-    flex-shrink: 0;
+.threadInner {
+	display: flex;
+	flex-direction: column;
+	gap: var(--mantine-spacing-md);
+	padding: var(--mantine-spacing-md);
 }
 
-.user-bubble {
-    background: color-mix(in srgb, var(--mantine-color-violet-6) 35%, var(--mantine-color-obsidian-light));
-    border: 1px solid color-mix(in srgb, var(--mantine-color-violet-5) 40%, transparent);
-    color: var(--mantine-color-bright);
-    border-radius: var(--mantine-radius-md);
-    padding: 10px 12px;
+.composer {
+	border-top: 1px solid var(--mantine-color-obsidian-5);
+
+	@include light {
+		border-top-color: var(--mantine-color-slate-2);
+	}
 }
 
-.assistant-bubble-content {
-    background: var(--mantine-color-obsidian-7);
-    border: 1px solid var(--mantine-color-obsidian-5);
-    border-radius: var(--mantine-radius-md);
-    padding: 10px 12px;
+// ─── Chat bubbles ───
+
+.bubbleRow {
+	display: flex;
+	gap: var(--mantine-spacing-sm);
+	align-items: flex-end;
+	max-width: 100%;
 }
 
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 28px 16px;
-    gap: 10px;
-    opacity: 0.9;
+.bubbleRowUser {
+	justify-content: flex-end;
 }
 
-.memory-card {
-    position: relative;
-    border: 1px solid var(--mantine-color-obsidian-5);
-    background: color-mix(in srgb, var(--mantine-color-obsidian-6) 50%, transparent);
-    transition: border-color 180ms ease, background-color 180ms ease;
+.userBubble {
+	max-width: 80%;
+	padding: 10px 13px;
+	border-radius: var(--mantine-radius-md);
+	border-bottom-right-radius: 4px;
+	background: color-mix(in srgb, var(--mantine-color-violet-6) 32%, var(--mantine-color-obsidian-light));
+	border: 1px solid color-mix(in srgb, var(--mantine-color-violet-5) 40%, transparent);
+	color: var(--mantine-color-bright);
+	overflow-wrap: anywhere;
 
-    &:hover {
-        border-color: color-mix(in srgb, var(--mantine-color-violet-5) 45%, transparent);
-        background: var(--mantine-color-obsidian-light);
-    }
+	@include light {
+		background: color-mix(in srgb, var(--mantine-color-violet-5) 16%, var(--mantine-color-white));
+		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 35%, transparent);
+	}
 }
 
-.memory-card-new {
-    border-color: color-mix(in srgb, var(--mantine-color-violet-5) 45%, transparent);
-    background:
-        linear-gradient(
-            to right,
-            color-mix(in srgb, var(--mantine-color-violet-6) 18%, transparent) 0%,
-            transparent 60%
-        ),
-        var(--mantine-color-obsidian-light);
+.assistantBubble {
+	max-width: 84%;
+	padding: 10px 13px;
+	border-radius: var(--mantine-radius-md);
+	border-bottom-left-radius: 4px;
+	background: var(--mantine-color-obsidian-7);
+	border: 1px solid var(--mantine-color-obsidian-5);
+	color: var(--mantine-color-bright);
+	overflow-wrap: anywhere;
+
+	@include light {
+		background: var(--mantine-color-white);
+		border-color: var(--mantine-color-slate-2);
+	}
+}
+
+.avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	background: color-mix(in srgb, var(--mantine-color-violet-6) 28%, var(--mantine-color-obsidian-7));
+	border: 1px solid color-mix(in srgb, var(--mantine-color-violet-5) 40%, transparent);
+}
+
+.trace {
+	font-family: var(--mantine-font-family-monospace);
+	font-size: 10px;
+	letter-spacing: 0.02em;
+	color: var(--mantine-color-slate-5);
+	overflow-wrap: anywhere;
+}
+
+.fadeIn {
+	animation: bubble-in 220ms ease-out;
+}
+
+@keyframes bubble-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+// ─── Memory activity panel ───
+
+.activityPaper {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	height: 100%;
+	overflow: hidden;
+}
+
+.activityScroll {
+	flex: 1;
+	min-height: 0;
+}
+
+.activitySection {
+	min-height: 0;
+}
+
+.hitCard {
+	border: 1px solid var(--mantine-color-obsidian-5);
+	background: color-mix(in srgb, var(--mantine-color-obsidian-6) 50%, transparent);
+	transition:
+		border-color 180ms ease,
+		background-color 180ms ease;
+
+	&:hover {
+		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 45%, transparent);
+	}
+
+	@include light {
+		border-color: var(--mantine-color-slate-2);
+		background: var(--mantine-color-slate-0);
+	}
+}
+
+.clamp {
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.pulseDot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--mantine-color-violet-4);
+	box-shadow: 0 0 0 0 color-mix(in srgb, var(--mantine-color-violet-4) 60%, transparent);
+	animation: playground-pulse 1.8s ease-in-out infinite;
+	flex-shrink: 0;
+}
+
+@keyframes playground-pulse {
+	0% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--mantine-color-violet-4) 55%, transparent);
+	}
+	70% {
+		box-shadow: 0 0 0 7px color-mix(in srgb, var(--mantine-color-violet-4) 0%, transparent);
+	}
+	100% {
+		box-shadow: 0 0 0 0 color-mix(in srgb, var(--mantine-color-violet-4) 0%, transparent);
+	}
+}
+
+.promptChip {
+	transition: border-color 160ms ease;
+
+	&:hover {
+		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 50%, transparent);
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .pulse-dot {
-        animation: none;
-    }
+	.pulseDot {
+		animation: none;
+	}
 
-    .memory-card {
-        transition: none;
-    }
+	.fadeIn {
+		animation: none;
+	}
+
+	.hitCard {
+		transition: none;
+	}
 }
