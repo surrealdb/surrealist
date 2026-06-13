@@ -1,10 +1,11 @@
-import { Button, Center, Loader, Stack, Text } from "@mantine/core";
+import { Button, Center, Loader, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Icon, iconArrowLeft } from "@surrealdb/ui";
 import { navigate } from "wouter/use-browser-location";
 import { useSupportCollectionQuery } from "~/cloud/queries/context";
 import { PageBreadcrumbs } from "~/components/PageBreadcrumbs";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { loadingCrumb, supportBreadcrumbs } from "~/util/breadcrumbs";
+import { plural } from "~/util/helpers";
 import { PageContainer } from "../../../components/PageContainer";
 import { ArticleCard } from "../ArticleCard";
 import classes from "../style.module.scss";
@@ -15,6 +16,8 @@ export interface CollectionPageProps {
 
 export function CollectionPage({ id }: CollectionPageProps) {
 	const { data: collection, isLoading } = useSupportCollectionQuery(id);
+
+	const articles = collection?.articles.sort((a, b) => a.created_at - b.created_at) ?? [];
 
 	return (
 		<>
@@ -52,23 +55,36 @@ export function CollectionPage({ id }: CollectionPageProps) {
 				</Center>
 			)}
 
-			{!isLoading && collection && collection.articles.length > 0 && (
+			{!isLoading && collection && articles.length > 0 && (
 				<PageContainer>
-					<PrimaryTitle fz={32}>{collection.name}</PrimaryTitle>
+					<Stack gap="xs">
+						<PrimaryTitle fz={32}>{collection.name}</PrimaryTitle>
+						{collection.description && (
+							<Text
+								maw={720}
+								className="selectable"
+							>
+								{collection.description}
+							</Text>
+						)}
+						<Text fz="sm">
+							{articles.length} {plural(articles.length, "article")}
+						</Text>
+					</Stack>
 
-					<Stack
-						gap="lg"
+					<SimpleGrid
+						mt="xl"
+						cols={{ base: 1, sm: 2 }}
+						spacing="lg"
 						className={classes.content}
 					>
-						{collection.articles
-							.sort((a, b) => a.created_at - b.created_at)
-							.map((article) => (
-								<ArticleCard
-									key={article.id}
-									article={article}
-								/>
-							))}
-					</Stack>
+						{articles.map((article) => (
+							<ArticleCard
+								key={article.id}
+								article={article}
+							/>
+						))}
+					</SimpleGrid>
 				</PageContainer>
 			)}
 		</>

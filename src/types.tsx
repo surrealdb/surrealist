@@ -85,7 +85,7 @@ export type AuthMode =
 	| "access"
 	| "access-signup"
 	| "cloud";
-export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new" | "/support";
+export type GlobalPage = "/" | "/signin" | "/referrals" | "/mini/new" | "/support" | "/datasets";
 export type ViewPage =
 	| "dashboard"
 	| "monitor"
@@ -102,11 +102,11 @@ export type ViewPage =
 export type ConnectionSettingsTab =
 	| "general"
 	| "databases"
-	| "import-export"
-	| "configuration"
+	| "data"
+	| "capabilities"
+	| "version"
 	| "compute"
-	| "backups"
-	| "lifecycle";
+	| "backups";
 
 export type ContextViewPage =
 	| "dashboard"

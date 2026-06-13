@@ -17,6 +17,7 @@ import {
 	type SidebarSubLink,
 	useSidebar,
 } from "../../sidebar/portal";
+import { canChangeInstanceVersion } from "./settings/helpers";
 
 const VIEW_NAVIGATION: ViewPage[][] = [
 	["dashboard", "monitor", "migrations", "documentation"],
@@ -24,13 +25,9 @@ const VIEW_NAVIGATION: ViewPage[][] = [
 	["designer", "authentication", "parameters", "functions"],
 ];
 
-const ALWAYS_SETTINGS_TABS: ConnectionSettingsTab[] = ["general", "databases", "import-export"];
+const ALWAYS_SETTINGS_TABS: ConnectionSettingsTab[] = ["general", "databases", "data"];
 
-const ADMIN_CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = [
-	"configuration",
-	"compute",
-	"lifecycle",
-];
+const ADMIN_CLOUD_SETTINGS_TABS: ConnectionSettingsTab[] = ["compute"];
 
 export function ConnectionSidebar() {
 	const { setLocation } = useSidebar();
@@ -74,8 +71,15 @@ export function ConnectionSidebar() {
 			return items.length > 0 ? [items] : [];
 		});
 
+		const canChangeVersion =
+			instanceQuery.data &&
+			organisation &&
+			canChangeInstanceVersion(instanceQuery.data, organisation);
+
 		const settingsTabs = [
 			...ALWAYS_SETTINGS_TABS,
+			...optional(isCloud && isAdmin && "capabilities"),
+			...optional(isCloud && canChangeVersion && "version"),
 			...optional(isCloud && isAdmin && ADMIN_CLOUD_SETTINGS_TABS),
 			...optional(isCloud && "backups"),
 		];
@@ -95,7 +99,16 @@ export function ConnectionSidebar() {
 		];
 
 		return [...viewGroups, settingsGroup];
-	}, [views, sidebarViews, connection, isCloud, isAdmin, setLocation]);
+	}, [
+		views,
+		sidebarViews,
+		connection,
+		isCloud,
+		isAdmin,
+		instanceQuery.data,
+		organisation,
+		setLocation,
+	]);
 
 	const backButton = instanceId
 		? {

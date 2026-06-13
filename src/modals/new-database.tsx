@@ -12,7 +12,7 @@ import {
 import { useDebouncedValue, useInputState } from "@mantine/hooks";
 import { closeModal, openModal } from "@mantine/modals";
 import { Icon, iconDatabase, iconNamespace } from "@surrealdb/ui";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { escapeIdent } from "surrealdb";
 import { Form } from "~/components/Form";
@@ -26,6 +26,7 @@ import {
 	executeQuery,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { SchemaInfoNS } from "~/types";
+import { invalidateDatabaseHierarchy } from "~/util/databases";
 import { parseIdent } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -39,8 +40,12 @@ export function openNewDatabaseModal() {
 }
 
 function NewDatabaseModal() {
+	const queryClient = useQueryClient();
 	const rootSchema = useRootSchema();
-	const [currentNamespace] = useConnection((c) => [c?.lastNamespace ?? ""]);
+	const [connectionId, currentNamespace] = useConnection((c) => [
+		c?.id ?? "",
+		c?.lastNamespace ?? "",
+	]);
 
 	const existingNamespaces = useMemo(
 		() => rootSchema.namespaces.map((ns) => parseIdent(ns.name)),
@@ -49,7 +54,13 @@ function NewDatabaseModal() {
 
 	const [namespace, setNamespace] = useInputState(currentNamespace);
 	const [database, setDatabase] = useInputState("");
-	const [description, setDescription] = useInputState("");
+	const [namespaceDescription, setNamespaceDescription] = useInputState("");
+	const [databaseDescription, setDatabaseDescription] = useInputState("");
+
+	const isNewNamespace = useMemo(
+		() => !!namespace && !existingNamespaces.includes(namespace),
+		[existingNamespaces, namespace],
+	);
 
 	const [debouncedDatabase] = useDebouncedValue(database, 300);
 
@@ -78,12 +89,15 @@ function NewDatabaseModal() {
 
 			await executeQuery(
 				`
-				DEFINE NAMESPACE IF NOT EXISTS ${escapeIdent(namespace)};
+				DEFINE NAMESPACE IF NOT EXISTS ${escapeIdent(namespace)} COMMENT $namespaceComment;
 				USE NS ${escapeIdent(namespace)};
-				DEFINE DATABASE IF NOT EXISTS ${escapeIdent(debouncedDatabase)} COMMENT $comment;
+				DEFINE DATABASE IF NOT EXISTS ${escapeIdent(debouncedDatabase)} COMMENT $databaseComment;
 			`,
 				{
-					comment: description || undefined,
+					namespaceComment: isNewNamespace
+						? namespaceDescription.trim() || undefined
+						: undefined,
+					databaseComment: databaseDescription.trim() || undefined,
 				},
 			);
 
@@ -94,6 +108,8 @@ function NewDatabaseModal() {
 			});
 
 			await activateDatabase(namespace, debouncedDatabase);
+
+			await invalidateDatabaseHierarchy(queryClient, connectionId);
 
 			handleClose();
 		},
@@ -134,11 +150,21 @@ function NewDatabaseModal() {
 					/>
 				</SimpleGrid>
 
+				{isNewNamespace && (
+					<Textarea
+						label="Namespace description"
+						description="Only applied when creating a new namespace"
+						placeholder="A description of the namespace (optional)"
+						value={namespaceDescription}
+						onChange={setNamespaceDescription}
+					/>
+				)}
+
 				<Textarea
-					label="Description"
+					label="Database description"
 					placeholder="A description of the database (optional)"
-					value={description}
-					onChange={setDescription}
+					value={databaseDescription}
+					onChange={setDatabaseDescription}
 				/>
 
 				<Divider mx="-xl" />

@@ -1,59 +1,175 @@
-import { Button, Center, Group, Loader, Paper, Stack, Table, Text, TextInput } from "@mantine/core";
+import {
+	Accordion,
+	Badge,
+	Box,
+	Button,
+	Center,
+	Group,
+	Loader,
+	Menu,
+	Paper,
+	Stack,
+	Text,
+	TextInput,
+	ThemeIcon,
+	Tree,
+	type TreeNodeData,
+	useTree,
+} from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { Icon, iconDatabase, iconPlus, iconSearch, iconTrash } from "@surrealdb/ui";
-import { useQuery } from "@tanstack/react-query";
-import { Fragment, type SyntheticEvent } from "react";
+import {
+	Icon,
+	iconDatabase,
+	iconDotsVertical,
+	iconEdit,
+	iconNamespace,
+	iconPlus,
+	iconSearch,
+	iconStar,
+	iconTrash,
+} from "@surrealdb/ui";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { type MouseEvent, useEffect, useMemo, useRef, useState } from "react";
 import { escapeIdent } from "surrealdb";
 import { ActionButton } from "~/components/ActionButton";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Section } from "~/components/Section";
-import { useConnection, useIsConnected } from "~/hooks/connection";
+import { useConnection, useIsConnected, useMinimumVersion } from "~/hooks/connection";
 import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { openEditResourceDescriptionModal } from "~/modals/edit-resource-description";
 import { openNewDatabaseModal } from "~/modals/new-database";
 import { useConfirmation } from "~/providers/Confirmation";
 import {
 	activateDatabase,
 	executeQuery,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
-import { fetchDatabaseList, fetchNamespaceList } from "~/util/databases";
-import { fuzzyMatch } from "~/util/helpers";
-import classes from "../style.module.scss";
+import type { Authentication } from "~/types";
+import { getAuthLevel } from "~/util/connection";
+import {
+	databaseHierarchyQueryKey,
+	fetchDatabaseHierarchy,
+	invalidateDatabaseHierarchy,
+	type NamespaceOrDatabase,
+	setDefaultDatabase,
+	setDefaultNamespace,
+} from "~/util/databases";
+import { createBaseAuthentication } from "~/util/defaults";
+import { fuzzyMatch, ON_STOP_PROPAGATION } from "~/util/helpers";
+import { SDB_DEFINE_CONFIG_DEFAULT } from "~/util/versions";
 import type { ConnectionSettingsTabProps } from "../types";
+
+function stopPropagation(event: MouseEvent) {
+	event.stopPropagation();
+}
+
+interface DatabaseNodeProps {
+	namespace: string;
+	database: NamespaceOrDatabase;
+	isFirst: boolean;
+	isLast: boolean;
+}
+
+const namespaceTreeGroup = (name: string) => `ns:${name}`;
+const databaseBranchArm = "calc(var(--mantine-spacing-xl) / 2)";
+const databaseBranchColumn = `calc(-1 * ${databaseBranchArm})`;
 
 export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
 	const connected = useIsConnected();
 	const [search, setSearch] = useInputState("");
 
-	const [connectionId, namespace, database] = useConnection((c) => [
+	const [connectionId, namespace, database, authentication] = useConnection((c) => [
 		c?.id ?? "",
 		c?.lastNamespace ?? "",
 		c?.lastDatabase ?? "",
+		c?.authentication ?? createBaseAuthentication(),
 	]);
 
-	const hierarchyQuery = useQuery({
-		queryKey: ["settings-database-hierarchy", connectionId],
-		queryFn: async () => {
-			const namespaces = await fetchNamespaceList();
+	return (
+		<Stack>
+			<PrimaryTitle fz={32}>Databases</PrimaryTitle>
+			<DatabaseHierarchySection
+				key={connectionId}
+				connectionId={connectionId}
+				connected={connected}
+				search={search}
+				onSearchChange={setSearch}
+				namespace={namespace}
+				database={database}
+				authentication={authentication}
+			/>
+		</Stack>
+	);
+}
 
-			return Promise.all(
-				namespaces.map(async (ns) => ({
-					namespace: ns.name,
-					databases: await fetchDatabaseList(ns.name),
-				})),
-			);
-		},
+interface DatabaseHierarchySectionProps {
+	connectionId: string;
+	connected: boolean;
+	search: string;
+	onSearchChange: (value: string) => void;
+	namespace: string;
+	database: string;
+	authentication: Authentication;
+}
+
+function DatabaseHierarchySection({
+	connectionId,
+	connected,
+	search,
+	onSearchChange,
+	namespace,
+	database,
+	authentication,
+}: DatabaseHierarchySectionProps) {
+	const queryClient = useQueryClient();
+	const [supportsDefaultConfig] = useMinimumVersion(SDB_DEFINE_CONFIG_DEFAULT);
+	const [expanded, setExpanded] = useState<string[]>([]);
+	const previousSearch = useRef("");
+
+	const level = getAuthLevel(authentication);
+	const canManageNamespaces = level === "root";
+	const canManageDatabases = level === "root" || level === "namespace";
+
+	const hierarchyQuery = useQuery({
+		queryKey: databaseHierarchyQueryKey(connectionId),
+		queryFn: fetchDatabaseHierarchy,
 		enabled: connected,
 	});
 
-	const filteredHierarchy = hierarchyQuery.data?.flatMap((entry) => {
-		const databases = entry.databases.filter((db) => fuzzyMatch(search, db.name));
+	const filteredHierarchy = useMemo(() => {
+		return hierarchyQuery.data?.entries.flatMap((entry) => {
+			const namespaceMatch = fuzzyMatch(search, entry.namespace.name);
+			const databases = entry.databases.filter(
+				(db) => namespaceMatch || fuzzyMatch(search, db.name),
+			);
 
-		if (databases.length === 0) {
-			return [];
+			if (databases.length === 0) {
+				return [];
+			}
+
+			return [{ namespace: entry.namespace, databases }];
+		});
+	}, [hierarchyQuery.data?.entries, search]);
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: reset expand state when switching connections
+	useEffect(() => {
+		previousSearch.current = "";
+		setExpanded([]);
+	}, [connectionId]);
+
+	useEffect(() => {
+		if (search === previousSearch.current) {
+			return;
 		}
 
-		return [{ namespace: entry.namespace, databases }];
-	});
+		previousSearch.current = search;
+
+		if (!search || !filteredHierarchy?.length) {
+			return;
+		}
+
+		setExpanded(filteredHierarchy.map((entry) => entry.namespace.name));
+	}, [search, filteredHierarchy]);
 
 	const activate = useStable(async (ns: string, db: string) => {
 		if (namespace !== ns || database !== db) {
@@ -61,134 +177,498 @@ export function ConnectionDatabasesTab(_props: ConnectionSettingsTabProps) {
 		}
 	});
 
+	const defaultNamespaceMutation = useMutation({
+		mutationFn: async (ns: string) => {
+			await setDefaultNamespace(ns);
+		},
+		onSuccess: () => invalidateDatabaseHierarchy(queryClient, connectionId),
+	});
+
+	const defaultDatabaseMutation = useMutation({
+		mutationFn: async ({ ns, db }: { ns: string; db: string }) => {
+			await setDefaultDatabase(ns, db);
+		},
+		onSuccess: () => invalidateDatabaseHierarchy(queryClient, connectionId),
+	});
+
 	const openCreator = useStable(() => {
 		openNewDatabaseModal();
 	});
 
+	const defaults = hierarchyQuery.data?.defaults ?? {};
+	const canSetDefault = supportsDefaultConfig && canManageNamespaces;
+	const invalidate = useStable(() => invalidateDatabaseHierarchy(queryClient, connectionId));
+
 	return (
-		<Stack>
-			<PrimaryTitle fz={32}>Databases</PrimaryTitle>
+		<Section
+			title="Namespaces and databases"
+			description="Browse the namespace hierarchy, switch context, or manage namespaces and databases"
+			rightSection={
+				<Button
+					size="xs"
+					variant="gradient"
+					leftSection={<Icon path={iconPlus} />}
+					disabled={!connected || !canManageDatabases}
+					onClick={openCreator}
+				>
+					Create
+				</Button>
+			}
+		>
+			<TextInput
+				mb="md"
+				placeholder="Search namespaces and databases"
+				leftSection={<Icon path={iconSearch} />}
+				value={search}
+				onChange={(event) => onSearchChange(event.currentTarget.value)}
+			/>
 
-			<Section
-				title="Active selection"
-				description="The namespace and database used for queries and explorer views"
-				rightSection={
-					<Button
-						size="xs"
-						variant="gradient"
-						leftSection={<Icon path={iconPlus} />}
-						disabled={!connected}
-						onClick={openCreator}
-					>
-						Create database
-					</Button>
-				}
-			>
-				<Paper p="md">
-					<Group gap="xl">
-						<Stack gap={4}>
-							<Text
-								fz="xs"
-								fw={600}
-								tt="uppercase"
-							>
-								Namespace
-							</Text>
-							<Text className="selectable">{namespace || "None selected"}</Text>
-						</Stack>
-						<Stack gap={4}>
-							<Text
-								fz="xs"
-								fw={600}
-								tt="uppercase"
-							>
-								Database
-							</Text>
-							<Text className="selectable">{database || "None selected"}</Text>
-						</Stack>
-					</Group>
-				</Paper>
-			</Section>
-
-			<Section
-				title="Namespaces and databases"
-				description="Manage, activate, or remove namespaces and databases on this connection"
-			>
-				<Paper p="md">
-					<TextInput
-						mb="md"
-						placeholder="Search databases"
-						leftSection={<Icon path={iconSearch} />}
-						value={search}
-						onChange={setSearch}
-					/>
-
-					{!connected ? (
-						<Center py="xl">
-							<Text>Connect to manage databases</Text>
-						</Center>
-					) : hierarchyQuery.isPending ? (
-						<Center py="xl">
-							<Loader size="sm" />
-						</Center>
-					) : filteredHierarchy?.length === 0 ? (
-						<Center py="xl">
-							<Text fz="sm">No databases found</Text>
-						</Center>
-					) : (
-						<Table
-							className={classes.table}
-							verticalSpacing="md"
+			{!connected ? (
+				<Center py="xl">
+					<Text>Connect to manage namespaces and databases</Text>
+				</Center>
+			) : hierarchyQuery.isPending ? (
+				<Center py="xl">
+					<Loader size="sm" />
+				</Center>
+			) : filteredHierarchy?.length === 0 ? (
+				<Center py="xl">
+					<Text fz="sm">No namespaces or databases found</Text>
+				</Center>
+			) : (
+				<Accordion
+					multiple
+					variant="surreal"
+					value={expanded}
+					onChange={setExpanded}
+					styles={{
+						label: { paddingBlock: 8, flex: 1 },
+						control: { gap: "var(--mantine-spacing-md)" },
+					}}
+				>
+					{filteredHierarchy?.map((entry) => (
+						<Accordion.Item
+							key={entry.namespace.name}
+							value={entry.namespace.name}
+							bg="none"
 						>
-							<Table.Thead>
-								<Table.Tr>
-									<Table.Th>Namespace</Table.Th>
-									<Table.Th>Database</Table.Th>
-									<Table.Th>Comment</Table.Th>
-									<Table.Th w={120} />
-								</Table.Tr>
-							</Table.Thead>
-							<Table.Tbody>
-								{filteredHierarchy?.map((entry) => (
-									<Fragment key={entry.namespace}>
-										{entry.databases.map((db) => {
-											const isActive =
-												namespace === entry.namespace &&
-												database === db.name;
+							<Accordion.Control p={0}>
+								<NamespaceHeader
+									namespace={entry.namespace}
+									count={entry.databases.length}
+									isActive={namespace === entry.namespace.name}
+									canManage={canManageNamespaces}
+									canSetDefault={canSetDefault}
+									defaults={defaults}
+									onSetDefault={() =>
+										defaultNamespaceMutation.mutate(entry.namespace.name)
+									}
+									onEdit={() =>
+										openEditResourceDescriptionModal({
+											kind: "namespace",
+											name: entry.namespace.name,
+											comment: entry.namespace.comment,
+										})
+									}
+									onRemove={invalidate}
+								/>
+							</Accordion.Control>
 
-											return (
-												<DatabaseRow
-													key={`${entry.namespace}-${db.name}`}
-													namespace={entry.namespace}
-													database={db.name}
-													comment={db.comment}
-													isActive={isActive}
-													onActivate={() =>
-														activate(entry.namespace, db.name)
-													}
-												/>
-											);
-										})}
-									</Fragment>
-								))}
-							</Table.Tbody>
-						</Table>
+							<Accordion.Panel pt="xs">
+								<NamespaceDatabaseTree
+									namespaceName={entry.namespace.name}
+									databases={entry.databases}
+									activeNamespace={namespace}
+									activeDatabase={database}
+									defaults={defaults}
+									canManage={canManageDatabases}
+									canSetDefault={canSetDefault}
+									onActivate={activate}
+									onSetDefault={(db) =>
+										defaultDatabaseMutation.mutate({
+											ns: entry.namespace.name,
+											db,
+										})
+									}
+									onEdit={(database) =>
+										openEditResourceDescriptionModal({
+											kind: "database",
+											name: database.name,
+											namespace: entry.namespace.name,
+											comment: database.comment,
+										})
+									}
+									onRemove={invalidate}
+								/>
+							</Accordion.Panel>
+						</Accordion.Item>
+					))}
+				</Accordion>
+			)}
+		</Section>
+	);
+}
+
+interface NamespaceDatabaseTreeProps {
+	namespaceName: string;
+	databases: NamespaceOrDatabase[];
+	activeNamespace: string;
+	activeDatabase: string;
+	defaults: {
+		namespace?: string;
+		database?: string;
+	};
+	canManage: boolean;
+	canSetDefault: boolean;
+	onActivate: (ns: string, db: string) => void;
+	onSetDefault: (ns: string, db: string) => void;
+	onEdit: (database: NamespaceOrDatabase) => void;
+	onRemove: () => void;
+}
+
+function NamespaceDatabaseTree({
+	namespaceName,
+	databases,
+	activeNamespace,
+	activeDatabase,
+	defaults,
+	canManage,
+	canSetDefault,
+	onActivate,
+	onSetDefault,
+	onEdit,
+	onRemove,
+}: NamespaceDatabaseTreeProps) {
+	const isLight = useIsLight();
+	const lineColor = isLight
+		? "var(--mantine-color-obsidian-6)"
+		: "var(--mantine-color-obsidian-5)";
+
+	const groupKey = namespaceTreeGroup(namespaceName);
+
+	const tree = useTree({
+		initialExpandedState: { [groupKey]: true },
+	});
+
+	const data = useMemo((): TreeNodeData[] => {
+		return [
+			{
+				value: groupKey,
+				label: namespaceName,
+				children: databases.map((db, index) => ({
+					value: `${namespaceName}/${db.name}`,
+					label: db.name,
+					nodeProps: {
+						namespace: namespaceName,
+						database: db,
+						isFirst: index === 0,
+						isLast: index === databases.length - 1,
+					} satisfies DatabaseNodeProps,
+				})),
+			},
+		];
+	}, [namespaceName, databases, groupKey]);
+
+	return (
+		<Tree
+			data={data}
+			tree={tree}
+			levelOffset="xl"
+			expandOnClick={false}
+			selectOnClick={false}
+			allowRangeSelection={false}
+			expandOnSpace={false}
+			styles={{
+				label: {
+					paddingBlock: 0,
+					backgroundColor: "transparent",
+				},
+			}}
+			renderNode={(payload) => {
+				if (payload.hasChildren) {
+					return (
+						<Box
+							{...payload.elementProps}
+							aria-hidden
+							h={1}
+							m={0}
+							p={0}
+							style={{
+								...payload.elementProps.style,
+								opacity: 0,
+								overflow: "hidden",
+								pointerEvents: "none",
+							}}
+						/>
+					);
+				}
+
+				const nodeProps = payload.node.nodeProps as DatabaseNodeProps;
+
+				return (
+					<Box
+						{...payload.elementProps}
+						onClick={stopPropagation}
+						style={{
+							...payload.elementProps.style,
+							backgroundColor: "transparent",
+						}}
+					>
+						<Box
+							pos="relative"
+							mb={nodeProps.isLast ? undefined : "md"}
+						>
+							<Box
+								aria-hidden
+								pos="absolute"
+								left={databaseBranchColumn}
+								top={nodeProps.isFirst ? "calc(-1 * var(--mantine-spacing-xs))" : 0}
+								bottom="50%"
+								w={0}
+								style={{ borderLeft: `1px solid ${lineColor}` }}
+							/>
+							{!nodeProps.isLast && (
+								<Box
+									aria-hidden
+									pos="absolute"
+									left={databaseBranchColumn}
+									top="50%"
+									bottom="calc(-1 * var(--mantine-spacing-md))"
+									w={0}
+									style={{ borderLeft: `1px solid ${lineColor}` }}
+								/>
+							)}
+							<Box
+								aria-hidden
+								pos="absolute"
+								left={databaseBranchColumn}
+								top="50%"
+								w={databaseBranchArm}
+								h={0}
+								style={{ borderTop: `1px solid ${lineColor}` }}
+							/>
+							<DatabaseRow
+								namespace={nodeProps.namespace}
+								database={nodeProps.database}
+								isActive={
+									activeNamespace === nodeProps.namespace &&
+									activeDatabase === nodeProps.database.name
+								}
+								isDefault={
+									defaults.namespace === nodeProps.namespace &&
+									defaults.database === nodeProps.database.name
+								}
+								canManage={canManage}
+								canSetDefault={canSetDefault}
+								onActivate={() =>
+									onActivate(nodeProps.namespace, nodeProps.database.name)
+								}
+								onSetDefault={() =>
+									onSetDefault(nodeProps.namespace, nodeProps.database.name)
+								}
+								onEdit={() => onEdit(nodeProps.database)}
+								onRemove={onRemove}
+							/>
+						</Box>
+					</Box>
+				);
+			}}
+		/>
+	);
+}
+
+interface NamespaceHeaderProps {
+	namespace: NamespaceOrDatabase;
+	count: number;
+	isActive: boolean;
+	canManage: boolean;
+	defaults: {
+		namespace?: string;
+		database?: string;
+	};
+	canSetDefault: boolean;
+	onEdit: () => void;
+	onRemove: () => void;
+	onSetDefault: () => void;
+}
+
+function NamespaceHeader({
+	namespace,
+	count,
+	isActive,
+	canManage,
+	defaults,
+	canSetDefault,
+	onEdit,
+	onSetDefault,
+	onRemove,
+}: NamespaceHeaderProps) {
+	const remove = useConfirmation({
+		message: () => (
+			<Stack className="selectable">
+				<Text>
+					You are about to delete the namespace{" "}
+					<Text
+						span
+						c="bright"
+						fw={600}
+					>
+						{namespace.name}
+					</Text>
+					.
+				</Text>
+				<Text>
+					This action cannot be undone. All databases and their data in this namespace
+					will be permanently deleted.
+				</Text>
+			</Stack>
+		),
+		confirmText: "Delete namespace",
+		verification: "delete",
+		onConfirm: async () => {
+			await executeQuery(/* surql */ `REMOVE NAMESPACE ${escapeIdent(namespace.name)}`);
+
+			if (isActive) {
+				await activateDatabase("", "");
+			}
+
+			onRemove();
+		},
+	});
+
+	const isDefault = defaults.namespace === namespace.name;
+
+	return (
+		<Paper
+			p="md"
+			radius="md"
+			w="100%"
+		>
+			<Group
+				wrap="nowrap"
+				gap="sm"
+				miw={0}
+				w="100%"
+			>
+				<ThemeIcon
+					size="md"
+					color="obsidian"
+					variant={isActive ? "gradient" : "light"}
+				>
+					<Icon path={iconNamespace} />
+				</ThemeIcon>
+
+				<Box
+					flex={1}
+					miw={0}
+				>
+					<Group
+						gap="sm"
+						wrap="nowrap"
+					>
+						<Text
+							fw={600}
+							truncate
+							className="selectable"
+						>
+							{namespace.name}
+						</Text>
+
+						<Badge
+							size="sm"
+							color="obsidian"
+							variant="light"
+							radius="sm"
+						>
+							{count}
+						</Badge>
+
+						{isDefault && (
+							<Badge
+								size="xs"
+								color="obsidian"
+								variant="light"
+								leftSection={<Icon path={iconStar} />}
+							>
+								Default
+							</Badge>
+						)}
+					</Group>
+					{namespace.comment && (
+						<Text
+							fz="xs"
+							truncate
+							className="selectable"
+						>
+							{namespace.comment}
+						</Text>
 					)}
-				</Paper>
-			</Section>
-		</Stack>
+				</Box>
+
+				<Box onClick={ON_STOP_PROPAGATION}>
+					<Menu>
+						<Menu.Target>
+							<ActionButton label="Namespace actions">
+								<Icon path={iconDotsVertical} />
+							</ActionButton>
+						</Menu.Target>
+						<Menu.Dropdown>
+							<Menu.Item
+								leftSection={<Icon path={iconStar} />}
+								disabled={!canSetDefault || isDefault}
+								onClick={onSetDefault}
+							>
+								Set default
+							</Menu.Item>
+							<Menu.Item
+								leftSection={<Icon path={iconEdit} />}
+								disabled={!canManage}
+								onClick={onEdit}
+							>
+								Edit description
+							</Menu.Item>
+							<Menu.Divider />
+							<Menu.Item
+								leftSection={<Icon path={iconTrash} />}
+								disabled={!canManage}
+								onClick={remove}
+								color="red"
+							>
+								Delete namespace...
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
+				</Box>
+			</Group>
+		</Paper>
 	);
 }
 
 interface DatabaseRowProps {
 	namespace: string;
-	database: string;
-	comment?: string;
+	database: NamespaceOrDatabase;
 	isActive: boolean;
+	isDefault: boolean;
+	canManage: boolean;
+	canSetDefault: boolean;
 	onActivate: () => void;
+	onSetDefault: () => void;
+	onEdit: () => void;
+	onRemove: () => void;
 }
 
-function DatabaseRow({ namespace, database, comment, isActive, onActivate }: DatabaseRowProps) {
+function DatabaseRow({
+	namespace,
+	database,
+	isActive,
+	isDefault,
+	canManage,
+	canSetDefault,
+	onActivate,
+	onSetDefault,
+	onEdit,
+	onRemove,
+}: DatabaseRowProps) {
 	const remove = useConfirmation({
 		message: () => (
 			<Stack className="selectable">
@@ -199,7 +679,7 @@ function DatabaseRow({ namespace, database, comment, isActive, onActivate }: Dat
 						c="bright"
 						fw={600}
 					>
-						{database}
+						{database.name}
 					</Text>{" "}
 					in namespace{" "}
 					<Text
@@ -222,64 +702,124 @@ function DatabaseRow({ namespace, database, comment, isActive, onActivate }: Dat
 		onConfirm: async () => {
 			await executeQuery(/* surql */ `
 				USE NS ${escapeIdent(namespace)};
-				REMOVE DATABASE ${escapeIdent(database)};
+				REMOVE DATABASE ${escapeIdent(database.name)};
 			`);
+
+			if (isActive) {
+				await activateDatabase(namespace, "");
+			}
+
+			onRemove();
 		},
 	});
 
-	const requestRemove = useStable((e: SyntheticEvent) => {
-		e.stopPropagation();
-		remove();
-	});
-
 	return (
-		<Table.Tr
-			mod={{ active: isActive }}
-			onClick={onActivate}
-			style={{ cursor: "pointer" }}
+		<Group
+			wrap="nowrap"
+			gap="md"
+			align="center"
+			py="sm"
 		>
-			<Table.Td className="selectable">{namespace}</Table.Td>
-			<Table.Td>
-				<Group gap="xs">
-					<Icon
-						path={iconDatabase}
-						size="sm"
-					/>
-					<Text
-						className="selectable"
-						fw={isActive ? 600 : undefined}
-					>
-						{database}
-					</Text>
-				</Group>
-			</Table.Td>
-			<Table.Td className="selectable">{comment ?? "—"}</Table.Td>
-			<Table.Td>
+			<ThemeIcon
+				size="md"
+				color="obsidian"
+				variant={isActive ? "gradient" : "light"}
+			>
+				<Icon path={iconDatabase} />
+			</ThemeIcon>
+
+			<Box
+				flex={1}
+				miw={0}
+			>
 				<Group
 					gap="xs"
-					justify="flex-end"
+					wrap="nowrap"
+					miw={0}
 				>
-					{isActive && (
-						<Text
-							fz="xs"
-							c="violet"
-						>
-							Active
-						</Text>
-					)}
-					<ActionButton
-						variant="subtle"
-						color="red"
-						label="Delete database"
-						onClick={requestRemove}
+					<Text
+						c="bright"
+						fw={isActive ? 600 : 500}
+						truncate
+						className="selectable"
 					>
-						<Icon
-							path={iconTrash}
-							size="sm"
-						/>
-					</ActionButton>
+						{database.name}
+					</Text>
+					{isDefault && (
+						<Badge
+							size="xs"
+							color="obsidian"
+							variant="light"
+							leftSection={<Icon path={iconStar} />}
+						>
+							Default
+						</Badge>
+					)}
 				</Group>
-			</Table.Td>
-		</Table.Tr>
+				{database.comment && (
+					<Text
+						fz="sm"
+						truncate
+						className="selectable"
+					>
+						{database.comment}
+					</Text>
+				)}
+			</Box>
+
+			<Group wrap="nowrap">
+				{isActive ? (
+					<Button
+						size="xs"
+						variant="light"
+						disabled
+					>
+						Selected
+					</Button>
+				) : (
+					<Button
+						size="xs"
+						variant="light"
+						color="violet"
+						onClick={onActivate}
+					>
+						Select
+					</Button>
+				)}
+
+				<Menu>
+					<Menu.Target>
+						<ActionButton label="Database actions">
+							<Icon path={iconDotsVertical} />
+						</ActionButton>
+					</Menu.Target>
+					<Menu.Dropdown>
+						<Menu.Item
+							leftSection={<Icon path={iconStar} />}
+							disabled={!canSetDefault || isDefault}
+							onClick={onSetDefault}
+						>
+							Set default
+						</Menu.Item>
+						<Menu.Item
+							leftSection={<Icon path={iconEdit} />}
+							disabled={!canManage}
+							onClick={onEdit}
+						>
+							Edit description
+						</Menu.Item>
+						<Menu.Divider />
+						<Menu.Item
+							leftSection={<Icon path={iconTrash} />}
+							disabled={!canManage}
+							onClick={remove}
+							color="red"
+						>
+							Delete database...
+						</Menu.Item>
+					</Menu.Dropdown>
+				</Menu>
+			</Group>
+		</Group>
 	);
 }

@@ -1,6 +1,4 @@
 import { Tree } from "@lezer/common";
-import { compareVersions } from "compare-versions";
-import { SDB_3_0_0 } from "./versions";
 
 /**
  * Parse an indent and strip any escape characters
@@ -32,21 +30,6 @@ export function parseIdent(ident: string) {
  */
 export function compareIdents(a: string, b: string) {
 	return parseIdent(a) === parseIdent(b);
-}
-
-/**
- * This is hard coded to the deal-store dataset and bad,
- * but will be replaced in Surrealist 4.0 with a fully dynamic system
- */
-export function getDatasetURL(version: string) {
-	const base = `https://datasets.surrealdb.com/datasets/surreal-deal-store`;
-	const isV3 = compareVersions(version, SDB_3_0_0) >= 0;
-
-	if (isV3) {
-		return `${base}/mini-v3.surql`;
-	}
-
-	return `${base}/mini-v2.surql`;
 }
 
 const RESERVED_VARIABLES = new Set([

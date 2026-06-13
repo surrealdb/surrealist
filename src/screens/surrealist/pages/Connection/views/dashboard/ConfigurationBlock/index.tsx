@@ -17,7 +17,7 @@ import { useStable } from "~/hooks/stable";
 import { useCloudStore } from "~/stores/cloud";
 import { CloudInstance, CloudOrganization } from "~/types";
 import { tagEvent } from "~/util/analytics";
-import { formatBackupPolicySummary, getTypeCategoryName } from "~/util/cloud";
+import { getTypeCategoryName } from "~/util/cloud";
 import { formatMemory, plural } from "~/util/helpers";
 
 export interface ConfigurationBlockProps {
@@ -46,8 +46,7 @@ export function ConfigurationBlock({
 	const typeCategory = instance?.type.category ?? "";
 
 	const isFree = instance?.type.category === "free";
-	const backupSummary = formatBackupPolicySummary(instance?.backup_policy);
-	const backupText = isFree ? "Upgrade required" : (backupSummary ?? "Active");
+	const backupText = isFree ? "Upgrade required" : "Active";
 	const typeText = isFree ? "Free" : `${typeName} (${getTypeCategoryName(typeCategory)})`;
 	const computeText = `${cpuCount} ${plural(cpuCount, "vCPU")}`;
 	const storageText = formatMemory(storageSize * 1000, true);

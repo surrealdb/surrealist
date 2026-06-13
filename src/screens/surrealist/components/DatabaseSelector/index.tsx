@@ -17,7 +17,11 @@ import { useConnectionSettingsNavigator } from "~/hooks/routing";
 import { useStable } from "~/hooks/stable";
 import { openNewDatabaseModal } from "~/modals/new-database";
 import { useInterfaceStore } from "~/stores/interface";
-import { fetchDatabaseList, fetchNamespaceList, NamespaceOrDatabase } from "~/util/databases";
+import {
+	databaseHierarchyQueryKey,
+	fetchDatabaseHierarchy,
+	NamespaceOrDatabase,
+} from "~/util/databases";
 import { createBaseAuthentication } from "~/util/defaults";
 import { fuzzyMatch } from "~/util/helpers";
 import { activateDatabase } from "../../pages/Connection/connection/connection";
@@ -48,22 +52,13 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 	]);
 
 	const hierarchyQuery = useQuery({
-		queryKey: ["database-hierarchy", connectionId],
-		queryFn: async () => {
-			const namespaces = await fetchNamespaceList();
-
-			return Promise.all(
-				namespaces.map(async (ns) => ({
-					namespace: ns,
-					databases: await fetchDatabaseList(ns.name),
-				})),
-			);
-		},
+		queryKey: databaseHierarchyQueryKey(connectionId),
+		queryFn: fetchDatabaseHierarchy,
 		enabled: opened && connected,
 	});
 
 	const filteredHierarchy = useMemo(() => {
-		const hierarchy = hierarchyQuery.data ?? [];
+		const hierarchy = hierarchyQuery.data?.entries ?? [];
 
 		return hierarchy.flatMap((entry) => {
 			const databases = entry.databases.filter((db) => searchDatabase(search, db));
@@ -149,7 +144,7 @@ export function DatabaseSelector({ opened }: DatabaseSelectorProps) {
 				<Center h={72}>
 					<Loader size="sm" />
 				</Center>
-			) : hierarchyQuery.data?.length === 0 ? (
+			) : hierarchyQuery.data?.entries.length === 0 ? (
 				<Center h={72}>
 					<Text fz="xs">No databases available</Text>
 				</Center>

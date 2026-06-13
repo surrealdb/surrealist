@@ -7,10 +7,10 @@ import {
 	executeUserQuery,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { MiniAppearance, Orientation, ResultMode, SurrealistConfig } from "~/types";
+import { getDatasetAssetUrl, resolveDefaultDeployDatasetPath } from "~/util/datasets";
 import { dedent } from "~/util/dedent";
 import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
-import { getDatasetURL } from "~/util/language";
 import { broadcastMessage } from "~/util/messaging";
 import { createSurrealQL } from "~/util/surql";
 import { BrowserAdapter } from "./browser";
@@ -111,9 +111,10 @@ export class MiniAdapter extends BrowserAdapter {
 
 		// Premade dataset loading
 		if (dataset) {
-			const datasetUrl = getDatasetURL(version);
+			const datasetPath = await resolveDefaultDeployDatasetPath(version);
 
-			if (datasetUrl) {
+			if (datasetPath) {
+				const datasetUrl = getDatasetAssetUrl(datasetPath);
 				this.#datasetQuery = await fetch(datasetUrl).then((res) => res.text());
 			} else {
 				showErrorNotification({

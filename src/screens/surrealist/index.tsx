@@ -16,6 +16,7 @@ import { ConnectionSidebar } from "./pages/Connection/sidebar";
 import { ContextPage } from "./pages/Context";
 import { CreateConnectionPage } from "./pages/CreateConnection";
 import { CreateOrganizationPage } from "./pages/CreateOrganization";
+import { DatasetsPage } from "./pages/Datasets";
 import { NewEmbedPage } from "./pages/NewEmbed";
 import { OrganizationPage } from "./pages/Organization";
 import { OrganisationSidebar } from "./pages/Organization/sidebar";
@@ -42,6 +43,7 @@ const DatabaseSidebarLazy = memo(SurrealistSidebar);
 const OverviewPageLazy = memo(OverviewPage);
 const ConnectionPageLazy = memo(ConnectionPage);
 const NewEmbedPageLazy = memo(NewEmbedPage);
+const DatasetsPageLazy = memo(DatasetsPage);
 const OrganizationPageLazy = memo(OrganizationPage);
 const OrganizationDeployPageLazy = memo(OrganizationDeployPage);
 const OrganizationContextDeployPageLazy = memo(OrganizationContextDeployPage);
@@ -150,6 +152,12 @@ export function SurrealistScreen() {
 									<Route path="/mini/new">
 										<GlobalSidebar />
 										<NewEmbedPageLazy />
+									</Route>
+
+									{/* Datasets page */}
+									<Route path="/datasets">
+										<GlobalSidebar />
+										<DatasetsPageLazy />
 									</Route>
 
 									{/* Create connection page */}

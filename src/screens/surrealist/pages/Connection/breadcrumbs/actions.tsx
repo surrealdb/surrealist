@@ -20,8 +20,7 @@ import {
 	iconReset,
 	iconTable,
 } from "@surrealdb/ui";
-import { compareVersions } from "compare-versions";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
@@ -34,6 +33,7 @@ import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
 import { useConnection, useMinimumVersion, useRequireDatabase } from "~/hooks/connection";
 import { useDatasets } from "~/hooks/dataset";
+import { useDatasetsCatalogQuery } from "~/hooks/datasets";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
@@ -45,15 +45,16 @@ import { useConfigStore } from "~/stores/config";
 import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
 import { CloudDeployConfig } from "~/types";
-import { getConnection, getConnectionById } from "~/util/connection";
+import { getConnectionById } from "~/util/connection";
 import {
-	SURREAL_START_BASICS,
-	SURREAL_START_GRAPH_V2,
-	SURREAL_START_GRAPH_V3,
-	SURREAL_START_VECTOR_V2,
-	SURREAL_START_VECTOR_V3,
-} from "~/util/dataset";
-import { createBaseQuery } from "~/util/defaults";
+	appendQueriesToConnection,
+	findDataset,
+	getVisibleSampleQueries,
+	getVisibleSizes,
+	loadDatasetSampleQueries,
+	resolveDatasetSizePath,
+	resolveDatasetVersion,
+} from "~/util/datasets";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
 import { generateRandomName } from "~/util/random";
@@ -281,42 +282,81 @@ export function ConnectionToolbarActions() {
 	const [isSupported, version] = useMinimumVersion(import.meta.env.SDB_VERSION);
 	const isSandbox = id === SANDBOX;
 
-	const [dataset, setDataset] = useState("surreal-deal-store-mini");
+	const { data: datasets = [] } = useDatasetsCatalogQuery();
+
+	const datasetOptions = useMemo(() => {
+		const dbVersion = version || import.meta.env.SDB_VERSION;
+
+		return datasets.flatMap((entry) => {
+			const datasetVersion = resolveDatasetVersion(entry, dbVersion);
+
+			if (!datasetVersion) {
+				return [];
+			}
+
+			const sizes = getVisibleSizes(datasetVersion);
+
+			if (sizes.length > 0) {
+				return sizes.map((size) => ({
+					value: `${entry.id}:${size.id}`,
+					label: sizes.length > 1 ? `${entry.label} (${size.label})` : entry.label,
+				}));
+			}
+
+			if (getVisibleSampleQueries(datasetVersion).length > 0) {
+				return [
+					{
+						value: `${entry.id}:queries`,
+						label: `${entry.label} (sample queries)`,
+					},
+				];
+			}
+
+			return [];
+		});
+	}, [datasets, version]);
+
+	const [dataset, setDataset] = useState("");
 	const selectDataset = useRequireDatabase(() => datasetModalOpenHandle.open());
 
+	useEffect(() => {
+		if (!dataset && datasetOptions.length > 0) {
+			setDataset(datasetOptions[0].value);
+		}
+	}, [dataset, datasetOptions]);
+
 	const handleApplyDataset = useStable(async () => {
-		if (dataset === "surreal-deal-store-mini") {
-			await applyDataset(version);
-		} else if (dataset === "surreal-start") {
-			const { settings, updateConnection } = useConfigStore.getState();
-			const connection = getConnection();
-			const queries = [SURREAL_START_BASICS];
+		const [datasetId, action] = dataset.split(":");
 
-			if (!connection) {
-				return;
-			}
+		if (!datasetId || !action) {
+			return;
+		}
 
-			const canUse30Queries = compareVersions(version, "3.0.0") >= 0;
+		const dbVersion = version || import.meta.env.SDB_VERSION;
 
-			if (canUse30Queries) {
-				queries.push(SURREAL_START_GRAPH_V3);
-				queries.push(SURREAL_START_VECTOR_V3);
+		try {
+			if (action === "queries") {
+				const queries = await loadDatasetSampleQueries(datasetId, dbVersion);
+				appendQueriesToConnection(
+					queries,
+					queries.map((query) => query.name),
+				);
 			} else {
-				queries.push(SURREAL_START_GRAPH_V2);
-				queries.push(SURREAL_START_VECTOR_V2);
+				const entry = findDataset(datasets, datasetId);
+				const path = entry ? resolveDatasetSizePath(entry, action, dbVersion) : null;
+
+				if (!path) {
+					return;
+				}
+
+				await applyDataset(path);
 			}
-
-			const configs = queries.map((query) => ({
-				...createBaseQuery(settings, "config"),
-				name: query.name,
-				query: query.query,
-			}));
-
-			updateConnection({
-				id: connection.id,
-				activeQuery: configs[0].id,
-				queries: [...connection.queries, ...configs],
+		} catch (error) {
+			showErrorNotification({
+				title: "Failed to apply dataset",
+				content: error,
 			});
+			return;
 		}
 
 		datasetModalOpenHandle.close();
@@ -566,16 +606,7 @@ export function ConnectionToolbarActions() {
 						placeholder="Select a dataset"
 						value={dataset}
 						onChange={(value) => setDataset(value || "")}
-						data={[
-							{
-								label: "Surreal Deal Store (Mini)",
-								value: "surreal-deal-store-mini",
-							},
-							{
-								label: "Surreal Start",
-								value: "surreal-start",
-							},
-						]}
+						data={datasetOptions}
 					/>
 
 					<Group>

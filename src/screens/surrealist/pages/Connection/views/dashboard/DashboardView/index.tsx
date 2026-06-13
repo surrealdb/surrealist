@@ -21,6 +21,7 @@ import { showNotification } from "@mantine/notifications";
 import {
 	Icon,
 	iconCheck,
+	iconChevronDown,
 	iconChevronRight,
 	iconCopy,
 	pictoDocumentGradient,
@@ -41,6 +42,7 @@ import { useCloudInstanceQuery } from "~/cloud/queries/instances";
 import { useCloudUsageQuery } from "~/cloud/queries/usage";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { CloudGuard } from "~/components/CloudGuard";
+import { InstanceActions } from "~/components/InstanceActions";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { Spacer } from "~/components/Spacer";
 import { useConnection, useIsConnected, useRequireDatabase } from "~/hooks/connection";
@@ -60,6 +62,7 @@ import {
 import { StateBadge } from "~/screens/surrealist/pages/Overview/badge";
 import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
+import { resolveDefaultDeployDatasetPath } from "~/util/datasets";
 import { showErrorNotification, showInfo } from "~/util/helpers";
 import { dispatchIntent } from "~/util/intents";
 import { APPLY_DATA_FILE_KEY, APPLY_DATASET_KEY } from "~/util/storage";
@@ -170,7 +173,16 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 			);
 
 			await activateDatabase("demo", "surreal_deal_store");
-			await applyDataset(version);
+			const datasetPath =
+				(details?.id
+					? sessionStorage.getItem(`${APPLY_DATASET_KEY}:${details.id}`)
+					: null) ?? (await resolveDefaultDeployDatasetPath(version));
+
+			if (!datasetPath) {
+				throw new Error("No dataset path available");
+			}
+
+			await applyDataset(datasetPath);
 		} catch (error) {
 			showErrorNotification({
 				title: "Failed to apply dataset",
@@ -275,13 +287,13 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 
 	const handleConfigure = useStable(() => {
 		if (connectionId) {
-			navigateSettings(connectionId, "configuration");
+			navigateSettings(connectionId, "capabilities");
 		}
 	});
 
 	const handleVersions = useStable(() => {
 		if (connectionId) {
-			navigateSettings(connectionId, "configuration");
+			navigateSettings(connectionId, "version");
 		}
 	});
 
@@ -338,6 +350,21 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 											size={14}
 											state={details.state}
 										/>
+									)}
+									<Spacer />
+									{details && organisation && (
+										<InstanceActions
+											instance={details}
+											organisation={organisation}
+										>
+											<Button
+												color="violet"
+												variant="light"
+												rightSection={<Icon path={iconChevronDown} />}
+											>
+												Instance actions
+											</Button>
+										</InstanceActions>
 									)}
 								</Group>
 							)}
@@ -405,7 +432,6 @@ export function DashboardView({ instanceQuery, organisationQuery }: ViewPageProp
 										<ResumeBlockLazy
 											instance={details}
 											organisation={organisation}
-											connectionId={connectionId}
 										/>
 									) : (
 										<ConnectBlockLazy

@@ -119,7 +119,6 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 			<Modal
 				opened={isConfirming}
 				onClose={onDissmiss}
-				trapFocus={false}
 				zIndex={210}
 				title={
 					<PrimaryTitle>{applyNode(options?.title ?? DEFAULT_TITLE, value)}</PrimaryTitle>
@@ -147,12 +146,12 @@ export function ConfirmationProvider({ children }: PropsWithChildren) {
 									<>Please type "{options.verification}" to confirm</>
 								)
 							}
-							autoFocus
 							onKeyDown={(event) => {
 								if (event.key === "Enter" && isVerified) {
 									onConfirm();
 								}
 							}}
+							autoFocus
 						/>
 					</>
 				)}

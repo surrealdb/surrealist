@@ -1,0 +1,322 @@
+import {
+	Alert,
+	Box,
+	Button,
+	Divider,
+	Group,
+	Paper,
+	ScrollArea,
+	Slider,
+	Stack,
+	Text,
+} from "@mantine/core";
+import { Icon, iconChevronRight, iconClock, iconHelp, iconWarning } from "@surrealdb/ui";
+import { add, formatDistance } from "date-fns";
+import { useMemo, useState } from "react";
+import { useUpdateConfirmation } from "~/cloud/hooks/confirm";
+import { useUpdateInstanceStorageMutation } from "~/cloud/mutations/storage";
+import { Label } from "~/components/Label";
+import { Link } from "~/components/Link";
+import { useStable } from "~/hooks/stable";
+import { useIsLight } from "~/hooks/theme";
+import { CloudInstance } from "~/types";
+import classes from "../style.module.scss";
+
+export function getStorageConstraints(instance: CloudInstance) {
+	const { storage_size, storage_size_update_cooloff_hours, storage_size_updated_at } = instance;
+	const maximum = instance.type.max_storage_size;
+	const isMaximized = storage_size >= maximum;
+
+	if (!storage_size_updated_at) {
+		return { isMaximized, isCoolingDown: false, timeLeft: "" };
+	}
+
+	const now = new Date();
+	const lastUpdate = new Date(storage_size_updated_at);
+	const cooldownPeriod = add(lastUpdate, {
+		hours: storage_size_update_cooloff_hours,
+	});
+
+	if (cooldownPeriod > now) {
+		return {
+			isMaximized,
+			isCoolingDown: true,
+			timeLeft: formatDistance(cooldownPeriod, now),
+		};
+	}
+
+	return { isMaximized, isCoolingDown: false, timeLeft: "" };
+}
+
+export interface ConfigurationStorageProps {
+	instance: CloudInstance;
+	onClose: () => void;
+	onUpgrade: () => void;
+	variant?: "drawer" | "page";
+	value?: number;
+	onValueChange?: (value: number) => void;
+	hideFooter?: boolean;
+}
+
+export function ConfigurationStorage({
+	instance,
+	onClose,
+	onUpgrade,
+	variant = "drawer",
+	value: controlledValue,
+	onValueChange,
+	hideFooter = false,
+}: ConfigurationStorageProps) {
+	const isLight = useIsLight();
+	const { storage_size } = instance;
+
+	const [internalValue, setInternalValue] = useState(storage_size);
+	const value = controlledValue ?? internalValue;
+
+	const setValue = useStable((next: number) => {
+		if (onValueChange) {
+			onValueChange(next);
+		} else {
+			setInternalValue(next);
+		}
+	});
+
+	const minimum = 0;
+	const maximum = instance.type.max_storage_size;
+	const midpoint = maximum / 2;
+	const { isMaximized, isCoolingDown, timeLeft } = useMemo(
+		() => getStorageConstraints(instance),
+		[instance],
+	);
+	const isTooLow = value < storage_size;
+	const isFree = instance.type.category === "free";
+
+	const isDisabled = isMaximized || isCoolingDown;
+
+	const marks = [minimum, midpoint, maximum].map((value) => ({
+		value,
+		label: `${value} GB`,
+	}));
+
+	const { mutateAsync } = useUpdateInstanceStorageMutation(instance);
+	const confirmUpdate = useUpdateConfirmation(mutateAsync);
+
+	const handleUpdate = useStable(() => {
+		if (variant === "drawer") {
+			onClose();
+		}
+
+		confirmUpdate(value);
+	});
+
+	const content = (
+		<Stack
+			gap="sm"
+			p={variant === "drawer" ? "xl" : undefined}
+			mih={variant === "drawer" ? "100%" : undefined}
+		>
+			{variant === "drawer" && (
+				<Box mb="xl">
+					<Text
+						fz="xl"
+						c="bright"
+						fw={600}
+					>
+						Increase storage capacity
+					</Text>
+
+					<Text
+						mt="sm"
+						fz="lg"
+					>
+						You can increase your storage size to accommodate more data within your
+						database.
+					</Text>
+				</Box>
+			)}
+
+			{isFree ? (
+				<Alert
+					title="Upgrade your instance"
+					color="red"
+				>
+					<Box>
+						Storage expansion is unavailable for free instances. Upgrade your instance
+						to unlock the ability to increase your storage capacity.
+					</Box>
+					<Button
+						mt="md"
+						size="xs"
+						rightSection={<Icon path={iconChevronRight} />}
+						variant="gradient"
+						onClick={onUpgrade}
+					>
+						Upgrade instance type
+					</Button>
+				</Alert>
+			) : (
+				<>
+					{isMaximized ? (
+						<Alert
+							mb="md"
+							color="obsidian"
+							title="Maximum storage capacity reached"
+							icon={<Icon path={iconHelp} />}
+						>
+							If you require more storage space, please contact support at{" "}
+							<Link href="mailto:support@surrealdb.com">support@surrealdb.com</Link>
+						</Alert>
+					) : (
+						isCoolingDown && (
+							<Alert
+								mb="md"
+								color="orange"
+								title="Please wait"
+								icon={<Icon path={iconClock} />}
+							>
+								You have recently updated your storage capacity. You can update it
+								again in {timeLeft}.
+							</Alert>
+						)
+					)}
+
+					<Paper
+						p={variant === "drawer" ? 42 : "lg"}
+						withBorder={false}
+						bg={isLight ? "obsidian.1" : "obsidian.8"}
+					>
+						<Group
+							gap="xl"
+							mb="lg"
+						>
+							<Box flex={1}>
+								<Label>Current allocation</Label>
+								<Text
+									fz="xl"
+									fw={600}
+									c="bright"
+									className="selectable"
+								>
+									{storage_size} GB
+								</Text>
+							</Box>
+							<Divider orientation="vertical" />
+							<Box
+								flex={1}
+								ta="right"
+							>
+								<Label>Maximum capacity</Label>
+								<Text
+									fz="xl"
+									fw={600}
+									c="bright"
+									className="selectable"
+								>
+									{maximum} GB
+								</Text>
+							</Box>
+						</Group>
+
+						<Divider mb="lg" />
+
+						<Label mb="md">New storage size</Label>
+						<Slider
+							mx={variant === "drawer" ? "xl" : undefined}
+							h={40}
+							color="violet"
+							min={minimum}
+							max={maximum}
+							step={1}
+							value={value}
+							onChange={setValue}
+							marks={marks}
+							label={(value) => `${value} GB`}
+							disabled={isDisabled}
+							styles={{
+								label: {
+									paddingInline: 10,
+									fontSize: "var(--mantine-font-size-lg)",
+									fontWeight: 600,
+								},
+								bar: {
+									background: isDisabled
+										? "var(--mantine-color-obsidian-4)"
+										: undefined,
+								},
+							}}
+						/>
+					</Paper>
+
+					{isTooLow && (
+						<Alert
+							mt="md"
+							color="red"
+							title="Warning"
+							icon={<Icon path={iconWarning} />}
+						>
+							You cannot decrease the storage capacity of your instance
+						</Alert>
+					)}
+				</>
+			)}
+		</Stack>
+	);
+
+	const footer = !isFree && !hideFooter && (
+		<Group p={variant === "drawer" ? "xl" : undefined}>
+			{variant === "drawer" && (
+				<Button
+					onClick={onClose}
+					color="obsidian"
+					variant="light"
+					flex={1}
+				>
+					Close
+				</Button>
+			)}
+			<Button
+				mt="xl"
+				type="submit"
+				variant="gradient"
+				disabled={isMaximized || isTooLow || value === instance.storage_size}
+				onClick={handleUpdate}
+				flex={variant === "drawer" ? 1 : undefined}
+			>
+				Apply storage expansion
+			</Button>
+		</Group>
+	);
+
+	if (variant === "page") {
+		return (
+			<Stack gap="md">
+				{content}
+				{footer}
+			</Stack>
+		);
+	}
+
+	return (
+		<Stack
+			h="100%"
+			gap={0}
+		>
+			<Divider />
+
+			<Box
+				pos="relative"
+				flex={1}
+			>
+				<ScrollArea
+					pos="absolute"
+					inset={0}
+					className={classes.scrollArea}
+				>
+					{content}
+				</ScrollArea>
+			</Box>
+
+			{footer}
+		</Stack>
+	);
+}

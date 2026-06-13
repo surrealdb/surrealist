@@ -15,6 +15,10 @@ export async function createSurreal() {
 		...createRemoteEngines(),
 		...createWasmWorkerEngines({
 			createWorker: () => new WasmWorker({ name: "surrealist-wasm" }),
+			defaults: {
+				namespace: "sandbox",
+				database: "sandbox",
+			},
 			capabilities: {
 				experimental: true,
 				functions: true,

@@ -3,6 +3,12 @@ import { FileFilter } from "~/adapter/base";
 export type SaveContent = Blob | string | Response | null;
 export type SaveContentProvider = () => Result<SaveContent>;
 
+export function filtersToAccept(filters: FileFilter[]): string {
+	return filters
+		.flatMap((filter) => filter.extensions.map((extension) => `.${extension}`))
+		.join(",");
+}
+
 function mapFileFilter(filters: FileFilter[]): FilePickerAcceptType[] {
 	return filters.map((f) => ({
 		description: f.name,

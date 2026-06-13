@@ -30,6 +30,7 @@ import {
 	iconReferral,
 	iconRefresh,
 	iconRelation,
+	iconSandbox,
 	iconSearch,
 	iconTable,
 	iconTag,
@@ -273,6 +274,11 @@ export const GLOBAL_PAGES: Record<GlobalPage, GlobalPageInfo> = {
 		aliases: ["/support/*"],
 		icon: iconChat,
 	},
+	"/datasets": {
+		id: "/datasets",
+		name: "Datasets",
+		icon: iconSandbox,
+	},
 };
 
 export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
@@ -352,28 +358,27 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 export const CONNECTION_SETTINGS_TABS = [
 	"general",
 	"databases",
-	"import-export",
-	"configuration",
+	"data",
+	"capabilities",
+	"version",
 	"compute",
 	"backups",
-	"lifecycle",
 ] as const satisfies readonly ConnectionSettingsTab[];
 
 export const CLOUD_CONNECTION_SETTINGS_TABS = [
-	"configuration",
+	"capabilities",
 	"compute",
 	"backups",
-	"lifecycle",
 ] as const satisfies readonly ConnectionSettingsTab[];
 
 export const CONNECTION_SETTINGS_TAB_LABELS: Record<ConnectionSettingsTab, string> = {
 	general: "General",
 	databases: "Databases",
-	"import-export": "Import & export",
-	configuration: "Configuration",
-	compute: "Compute & storage",
+	data: "Data",
+	capabilities: "Capabilities",
+	version: "Version",
+	compute: "Instance configuration",
 	backups: "Backups",
-	lifecycle: "Lifecycle",
 };
 
 export const CONTEXT_VIEW_PAGES: Record<ContextViewPage, ContextViewPageInfo> = {

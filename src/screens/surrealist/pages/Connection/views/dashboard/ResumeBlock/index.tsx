@@ -1,19 +1,17 @@
-import { ActionIcon, Anchor, Button, Center, Paper, Stack, Text, Tooltip } from "@mantine/core";
+import { ActionIcon, Button, Center, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon, iconPause, iconPlay } from "@surrealdb/ui";
 import { hasOrganizationRoles, ORG_ROLES_OWNER } from "~/cloud/helpers";
 import { openResourcesLockedModal } from "~/components/App/modals/resources-locked";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useResumeInstance } from "~/hooks/cloud";
 import { CloudInstance, CloudOrganization } from "~/types";
-import { connectionSettingsPath } from "~/util/connection-settings";
 
 export interface ResumelockProps {
 	instance: CloudInstance;
 	organisation: CloudOrganization;
-	connectionId?: string;
 }
 
-export function ResumeBlock({ instance, organisation, connectionId }: ResumelockProps) {
+export function ResumeBlock({ instance, organisation }: ResumelockProps) {
 	const canResume = hasOrganizationRoles(organisation, ORG_ROLES_OWNER);
 	const resumeInstance = useResumeInstance(instance);
 
@@ -59,15 +57,6 @@ export function ResumeBlock({ instance, organisation, connectionId }: Resumelock
 							Resume instance
 						</Button>
 					</Tooltip>
-					{connectionId && (
-						<Anchor
-							mt="md"
-							fz="sm"
-							href={connectionSettingsPath(connectionId, "lifecycle")}
-						>
-							Manage in settings
-						</Anchor>
-					)}
 				</Stack>
 			</Center>
 		</Paper>
