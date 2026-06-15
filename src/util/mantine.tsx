@@ -13,6 +13,11 @@ export const SURREALIST_THEME = mergeThemeOverrides(MANTINE_THEME, {
 			defaultProps: {
 				withCloseButton: false,
 			},
+			styles: {
+				inner: {
+					top: "var(--titlebar-offset, 0px)",
+				},
+			},
 		}),
 	},
 });

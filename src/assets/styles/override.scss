@@ -2,6 +2,7 @@
 	--surreal-focus-outline: color-mix(in srgb, var(--mantine-color-violet-3) 75%, var(--surreal-glass-subtle));
 	--surreal-focus-background: color-mix(in srgb, var(--mantine-color-violet-3) 7%, var(--surreal-glass-subtle));
 	--surrealist-divider-size: var(--mantine-spacing-sm);
+	--titlebar-offset: 0px;
 
 	--mantine-color-error: var(--mantine-color-red-text);
 }
@@ -20,8 +21,4 @@
 
 .mantine-Menu-item[data-variant="gradient"] {
 	background: var(--surreal-gradient);
-}
-
-.mantine-Drawer-inner {
-	margin-top: var(--titlebar-offset);
 }

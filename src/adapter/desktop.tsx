@@ -103,6 +103,8 @@ export class DesktopAdapter implements SurrealistAdapter {
 			this.titlebarOffset = 32;
 		}
 
+		document.documentElement.style.setProperty("--titlebar-offset", `${this.titlebarOffset}px`);
+
 		watchStore({
 			initial: true,
 			store: useConfigStore,
