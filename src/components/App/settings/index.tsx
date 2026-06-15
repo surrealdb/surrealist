@@ -23,7 +23,7 @@ import {
 	iconTransfer,
 	iconTune,
 } from "@surrealdb/ui";
-import { useState } from "react";
+import { type FC, useState } from "react";
 import { isDesktop } from "~/adapter";
 import { ActionButton } from "~/components/ActionButton";
 import { Entry } from "~/components/Entry";
@@ -49,7 +49,7 @@ interface Category {
 	id: string;
 	name: string;
 	icon: string;
-	component: () => JSX.Element;
+	component: FC;
 	disabled?: FeatureCondition;
 }
 

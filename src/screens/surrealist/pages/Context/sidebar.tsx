@@ -1,7 +1,9 @@
-import { iconBook } from "@surrealdb/ui";
+import { iconCog } from "@surrealdb/ui";
 import { useMemo } from "react";
-import { CONTEXT_VIEW_PAGES } from "~/constants";
-import type { ContextViewPage } from "~/types";
+import { hasOrganizationRoles, ORG_ROLES_ADMIN } from "~/cloud/helpers";
+import { useCloudOrganizationQuery } from "~/cloud/queries/organizations";
+import { CONTEXT_SETTINGS_TAB_LABELS, CONTEXT_VIEW_PAGES } from "~/constants";
+import type { ContextSettingsTab, ContextViewPage } from "~/types";
 import {
 	type SidebarEntry,
 	SidebarNavigation,
@@ -15,8 +17,31 @@ export interface ContextSidebarProps {
 	organizationId: string;
 }
 
+/** Workspace pages available to every principal in the context. */
+const WORKSPACE_PAGES: ContextViewPage[] = [
+	"dashboard",
+	"playground",
+	"memory",
+	"documents",
+	"scopes",
+	"api-keys",
+	"integration",
+];
+
+/** Admin-only settings sub-pages, grouped under a single "Settings" entry. */
+const SETTINGS_TABS: ContextSettingsTab[] = [
+	"general",
+	"users",
+	"service-accounts",
+	"configuration",
+	"usage",
+];
+
 export function ContextSidebar({ contextId, organizationId }: ContextSidebarProps) {
 	const { setLocation } = useSidebar();
+	const { data: organization } = useCloudOrganizationQuery(organizationId);
+
+	const isAdmin = organization ? hasOrganizationRoles(organization, ORG_ROLES_ADMIN) : false;
 
 	const navigation: SidebarEntry[][] = useMemo(() => {
 		const base = `/s/${organizationId}/${contextId}`;
@@ -32,31 +57,28 @@ export function ContextSidebar({ contextId, organizationId }: ContextSidebarProp
 			};
 		};
 
-		const subLink = (id: ContextViewPage): SidebarSubLink => {
-			const info = CONTEXT_VIEW_PAGES[id];
+		const workspaceGroup = WORKSPACE_PAGES.map(link);
 
-			return {
-				name: info.name,
-				match: [`${base}/${info.id}`],
-				onClick: () => setLocation(`${base}/${info.id}`),
-			};
-		};
+		const settingsSubLink = (tab: ContextSettingsTab): SidebarSubLink => ({
+			name: CONTEXT_SETTINGS_TAB_LABELS[tab],
+			match: [`${base}/settings/${tab}`],
+			onClick: () => setLocation(`${base}/settings/${tab}`),
+		});
 
-		return [
-			[link("dashboard"), link("integration")],
-			[
-				link("playground"),
-				{
-					name: "Knowledge base",
-					icon: iconBook,
-					items: [subLink("memories"), subLink("knowledge")],
-				},
-			],
-			[link("api-keys"), link("settings")],
-		];
-	}, [contextId, organizationId, setLocation]);
+		const settingsGroup: SidebarEntry[] = isAdmin
+			? [
+					{
+						name: "Settings",
+						icon: iconCog,
+						items: SETTINGS_TABS.map(settingsSubLink),
+					},
+				]
+			: [];
 
-	const backPath = organizationId ? `/o/${organizationId}/overview` : "/";
+		return [workspaceGroup, settingsGroup].filter((group) => group.length > 0);
+	}, [contextId, organizationId, isAdmin, setLocation]);
+
+	const backPath = organizationId ? `/o/${organizationId}/overview` : "/overview";
 
 	return (
 		<SidebarPortal>

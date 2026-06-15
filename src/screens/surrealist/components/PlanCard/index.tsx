@@ -3,6 +3,7 @@ import clsx from "clsx";
 import type { ReactNode } from "react";
 import { Label } from "~/components/Label";
 import { PLAN_PERIOD_LABELS } from "~/constants";
+import { useIsLight } from "~/hooks/theme";
 import { PlanPeriod } from "~/types";
 import classes from "./style.module.scss";
 
@@ -27,6 +28,7 @@ export interface PlanCardProps {
 	priceMillcents: number;
 	pricePeriod: PlanPeriod;
 	contents: PlanCardContent[];
+	trialDays?: number;
 	disabled?: boolean;
 	footer?: ReactNode;
 }
@@ -36,11 +38,13 @@ export function PlanCard({
 	description,
 	priceMillcents,
 	pricePeriod,
+	trialDays,
 	contents,
 	disabled = false,
 	footer,
 }: PlanCardProps) {
 	const priceLabel = formatPrice(priceMillcents);
+	const isLight = useIsLight();
 
 	return (
 		<Paper
@@ -66,32 +70,44 @@ export function PlanCard({
 
 						<Text>{description}</Text>
 					</Box>
-					<Group
-						gap={8}
-						align="center"
-						wrap="nowrap"
-						className="selectable"
-					>
-						<Title
-							order={2}
-							c="bright"
-							fz={32}
-							lh={1.1}
+
+					<Stack gap="sm">
+						<Group
+							gap={8}
+							align="center"
+							wrap="nowrap"
+							className="selectable"
 						>
-							{priceLabel}
-						</Title>
-						{priceMillcents > 0 && (
-							<Text
-								c="obsidian.4"
-								fz="xs"
+							<Title
+								order={2}
+								c="bright"
+								fz={32}
 								lh={1.1}
 							>
-								per
-								<br />
-								{PLAN_PERIOD_LABELS[pricePeriod]}
+								{priceLabel}
+							</Title>
+							{priceMillcents > 0 && (
+								<Text
+									c="obsidian.4"
+									fz="xs"
+									lh={1.1}
+								>
+									per
+									<br />
+									{PLAN_PERIOD_LABELS[pricePeriod]}
+								</Text>
+							)}
+						</Group>
+						{trialDays !== undefined && trialDays > 0 && (
+							<Text
+								c={!isLight ? "violet.3" : "violet.7"}
+								fz="sm"
+								lh={1}
+							>
+								{trialDays} day free trial
 							</Text>
 						)}
-					</Group>
+					</Stack>
 				</Group>
 
 				{contents.map((content) => (

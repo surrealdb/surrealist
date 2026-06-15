@@ -24,7 +24,6 @@ export function SupportCollection({ collection }: SupportCollectionProps) {
 					<Image
 						src={collection.image ?? pictoSurrealDBGradient}
 						w={35}
-						h={35}
 					/>
 					<Box>
 						<Text

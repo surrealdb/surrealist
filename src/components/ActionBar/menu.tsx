@@ -1,38 +1,12 @@
-import { ActionIcon, Box, Group, Menu, Text } from "@mantine/core";
-import {
-	Icon,
-	iconAccount,
-	iconBook,
-	iconChat,
-	iconCog,
-	iconCommand,
-	iconExitToAp,
-	iconMoon,
-	iconOpen,
-	iconStar,
-	iconSun,
-	iconTune,
-	iconViewList,
-} from "@surrealdb/ui";
-import { adapter } from "~/adapter";
-import { useSetting } from "~/hooks/config";
-import { useAbsoluteLocation } from "~/hooks/routing";
-import { useTheme } from "~/hooks/theme";
+import { ActionIcon, Box, Menu } from "@mantine/core";
+import { Icon, iconViewList } from "@surrealdb/ui";
 import { useAuthentication } from "~/providers/Auth";
-import { useFeatureFlags } from "~/util/feature-flags";
-import { dispatchIntent } from "~/util/intents";
 import { AccountAvatar } from "../AccountAvatar";
-import { Shortcut } from "../Shortcut";
+import { useAccountActions } from "./account-actions";
 
 export function AccountMenu() {
-	const { user, signOut, signIn, isAuthenticated, isLoading } = useAuthentication();
-	const [, navigate] = useAbsoluteLocation();
-
-	const [{ themes }] = useFeatureFlags();
-	const [, setColorSchemePref] = useSetting("appearance", "colorScheme");
-	const effectiveScheme = useTheme();
-
-	const name = user?.name || "Unknown";
+	const { isAuthenticated, isLoading } = useAuthentication();
+	const { profile, rows } = useAccountActions();
 
 	return (
 		<Menu
@@ -59,102 +33,24 @@ export function AccountMenu() {
 							p="sm"
 							mb="xs"
 						>
-							<Group>
-								<AccountAvatar />
-								<Box>
-									<Text
-										fz="md"
-										fw={500}
-										c="bright"
-									>
-										{name}
-									</Text>
-									<Text
-										fz="sm"
-										c="obsidian"
-										mt={-3}
-									>
-										{user?.email}
-									</Text>
-								</Box>
-							</Group>
+							{profile}
 						</Box>
 						<Menu.Divider />
 					</>
 				)}
-				<Menu.Item
-					leftSection={<Icon path={iconStar} />}
-					onClick={() => dispatchIntent("open-changelog")}
-				>
-					What&apos;s new?
-				</Menu.Item>
-				<Menu.Item
-					leftSection={<Icon path={iconCommand} />}
-					onClick={() => dispatchIntent("open-settings", { tab: "keybindings" })}
-				>
-					Keyboard shortcuts
-				</Menu.Item>
-				{themes && (
-					<Menu.Item
-						leftSection={
-							<Icon path={effectiveScheme === "light" ? iconMoon : iconSun} />
-						}
-						onClick={() =>
-							setColorSchemePref(effectiveScheme === "light" ? "dark" : "light")
-						}
-					>
-						{effectiveScheme === "light" ? "Dark" : "Light"} theme
-					</Menu.Item>
-				)}
-				<Menu.Divider />
-				<Menu.Item
-					leftSection={<Icon path={iconCog} />}
-					rightSection={
-						<Shortcut
-							value={["mod", ","]}
-							size="xs"
-						/>
-					}
-					onClick={() => dispatchIntent("open-settings")}
-				>
-					Settings
-				</Menu.Item>
-				<Menu.Item
-					leftSection={<Icon path={iconChat} />}
-					onClick={() => navigate("/support")}
-				>
-					Support centre
-				</Menu.Item>
-				<Menu.Divider />
-				<Menu.Item
-					leftSection={<Icon path={iconBook} />}
-					rightSection={<Icon path={iconOpen} />}
-					onClick={() => adapter.openUrl("https://surrealdb.com/docs")}
-				>
-					Documentation
-				</Menu.Item>
-				<Menu.Item
-					leftSection={<Icon path={iconTune} />}
-					rightSection={<Icon path={iconOpen} />}
-					onClick={() => adapter.openUrl("https://account.surrealdb.com")}
-				>
-					Account settings
-				</Menu.Item>
-				<Menu.Divider />
-				{isAuthenticated ? (
-					<Menu.Item
-						leftSection={<Icon path={iconExitToAp} />}
-						onClick={() => signOut()}
-					>
-						Sign out
-					</Menu.Item>
-				) : (
-					<Menu.Item
-						leftSection={<Icon path={iconAccount} />}
-						onClick={() => signIn()}
-					>
-						Sign in
-					</Menu.Item>
+				{rows.map((row, index) =>
+					row.kind === "divider" ? (
+						<Menu.Divider key={index} />
+					) : (
+						<Menu.Item
+							key={index}
+							leftSection={<Icon path={row.icon} />}
+							rightSection={row.right}
+							onClick={row.onClick}
+						>
+							{row.label}
+						</Menu.Item>
+					),
 				)}
 			</Menu.Dropdown>
 		</Menu>

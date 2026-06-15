@@ -2,7 +2,7 @@ import { Avatar, AvatarProps, Loader, UnstyledButton } from "@mantine/core";
 import { Icon, iconAccount } from "@surrealdb/ui";
 import { useAuthentication } from "~/providers/Auth";
 
-export function AccountAvatar(props: AvatarProps) {
+export function AccountAvatar(props: AvatarProps & { onClick?: () => void }) {
 	const { user, isLoading: isAuthLoading } = useAuthentication();
 
 	return (

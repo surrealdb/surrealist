@@ -1,0 +1,82 @@
+.fact-row {
+	background-color: var(--mantine-color-obsidian-7);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-0);
+	}
+}
+
+.state-notes {
+	overflow: hidden;
+}
+
+.state-notes-header {
+	background-color: var(--mantine-color-obsidian-7);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-0);
+	}
+}
+
+.state-fact-table {
+	:global(td) {
+		vertical-align: top;
+	}
+}
+
+.fact-group-row {
+	padding-top: var(--mantine-spacing-xs) !important;
+	padding-bottom: var(--mantine-spacing-xs) !important;
+	background-color: var(--mantine-color-obsidian-7);
+
+	@include light {
+		background-color: var(--mantine-color-obsidian-0);
+	}
+}
+
+.fact-label-cell {
+	width: 34%;
+	padding-left: var(--mantine-spacing-md) !important;
+}
+
+.fact-value-cell {
+	padding-right: var(--mantine-spacing-md) !important;
+	word-break: break-word;
+}
+
+.entity-card {
+	display: block;
+	width: 100%;
+	text-align: left;
+	cursor: pointer;
+
+	&:focus-visible {
+		outline: 2px solid var(--mantine-color-violet-5);
+		outline-offset: 2px;
+		border-radius: var(--mantine-radius-md);
+	}
+}
+
+.entity-card-surface {
+	height: 100%;
+	transition: border-color 180ms ease, transform 180ms ease;
+
+	.entity-card:hover & {
+		transform: translateY(-1px);
+		border-color: color-mix(in srgb, var(--mantine-color-violet-4) 45%, transparent);
+	}
+}
+
+.history-current {
+	border: 1px solid color-mix(in srgb, var(--mantine-color-green-5) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.entity-card-surface {
+		transition: none;
+	}
+
+	.entity-card:hover .entity-card-surface {
+		transform: none;
+	}
+}

@@ -24,6 +24,7 @@ export function ContextPlanCard({ pkg, footer }: ContextPlanCardProps) {
 			description={pkg.description}
 			priceMillcents={pkg.cost_millcents}
 			pricePeriod={pricePeriod}
+			trialDays={pkg.trial_days}
 			footer={footer}
 			contents={[
 				{

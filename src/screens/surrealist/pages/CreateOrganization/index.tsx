@@ -74,7 +74,7 @@ export function CreateOrganizationPage() {
 					</Stack>
 
 					<Group mt="xl">
-						<Link to="/">
+						<Link to="/overview">
 							<Button
 								color="obsidian"
 								variant="light"

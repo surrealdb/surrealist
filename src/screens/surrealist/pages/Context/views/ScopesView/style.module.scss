@@ -1,0 +1,53 @@
+.row {
+	border-radius: var(--mantine-radius-md);
+	padding-block: 6px;
+	padding-right: 6px;
+	transition: background-color 140ms ease;
+
+	&:hover {
+		background-color: color-mix(in srgb, var(--mantine-color-violet-4) 8%, transparent);
+	}
+
+	.actions {
+		opacity: 0;
+		transition: opacity 140ms ease;
+	}
+
+	&:hover .actions,
+	&:focus-within .actions {
+		opacity: 1;
+	}
+}
+
+.disclosure {
+	min-width: 0;
+	cursor: pointer;
+
+	&[data-leaf="true"] {
+		cursor: default;
+	}
+}
+
+.chevron {
+	flex-shrink: 0;
+	transition: transform 160ms ease;
+
+	&[data-open="true"] {
+		transform: rotate(90deg);
+	}
+}
+
+.path {
+	font-family: var(--mantine-font-family-monospace);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.row,
+	.chevron,
+	.row .actions {
+		transition: none;
+	}
+}
