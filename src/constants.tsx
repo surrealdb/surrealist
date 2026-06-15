@@ -355,6 +355,48 @@ export const VIEW_PAGES: Record<ViewPage, ViewPageInfo> = {
 		disabled: ({ flags, version }) =>
 			!flags.v3_migration_tooling || !version || !satisfies(version, ">=2.6.1 <3.0.0-0"),
 	},
+	"settings/general": {
+		id: "settings/general",
+		name: "General",
+		icon: iconCog,
+		disabled: () => true,
+	},
+	"settings/databases": {
+		id: "settings/databases",
+		name: "Databases",
+		icon: iconCog,
+		disabled: () => true,
+	},
+	"settings/data": {
+		id: "settings/data",
+		name: "Data",
+		icon: iconCog,
+		disabled: () => true,
+	},
+	"settings/capabilities": {
+		id: "settings/capabilities",
+		name: "Capabilities",
+		icon: iconCog,
+		disabled: () => true,
+	},
+	"settings/version": {
+		id: "settings/version",
+		name: "Version",
+		icon: iconCog,
+		disabled: () => true,
+	},
+	"settings/compute": {
+		id: "settings/compute",
+		name: "Instance configuration",
+		icon: iconCog,
+		disabled: () => true,
+	},
+	"settings/backups": {
+		id: "settings/backups",
+		name: "Backups",
+		icon: iconCog,
+		disabled: () => true,
+	},
 };
 
 export const CONNECTION_SETTINGS_TABS = [
