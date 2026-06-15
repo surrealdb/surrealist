@@ -43,6 +43,38 @@
 	}
 }
 
+.principals-accordion {
+	display: flex;
+	flex-direction: column;
+	gap: var(--mantine-spacing-sm);
+
+	:global(.mantine-Accordion-item) {
+		background-color: unset;
+		border: none;
+	}
+
+	:global(.mantine-Accordion-control) {
+		background-color: var(--mantine-color-obsidian-7);
+		border-radius: var(--mantine-radius-md);
+
+		@include light {
+			background-color: var(--mantine-color-obsidian-0);
+		}
+
+		&:hover {
+			background-color: var(--mantine-color-obsidian-6);
+
+			@include light {
+				background-color: var(--mantine-color-obsidian-1);
+			}
+		}
+	}
+
+	:global(.mantine-Accordion-panel) {
+		padding-top: var(--mantine-spacing-sm);
+	}
+}
+
 .nested-principal {
 	border-left: 2px solid color-mix(in srgb, var(--mantine-color-violet-5) 35%, transparent);
 	margin-left: var(--mantine-spacing-md);

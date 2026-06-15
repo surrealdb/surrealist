@@ -17,6 +17,7 @@ import {
 	TagsInput,
 	Text,
 	TextInput,
+	ThemeIcon,
 	Tooltip,
 } from "@mantine/core";
 import { useDisclosure, useInputState } from "@mantine/hooks";
@@ -64,6 +65,7 @@ import { ON_FOCUS_SELECT, showErrorNotification, showInfo } from "~/util/helpers
 import { ContextHero } from "../../../components/ContextHero";
 import { EmptyState, PageError, PageLoading } from "../../../components/feedback";
 import type { ContextViewProps } from "../../../types";
+import classes from "../style.module.scss";
 
 /**
  * Agents have no parent/owner field on the Cloud API, so ownership is encoded
@@ -211,9 +213,8 @@ export function PrincipalsTab({ context, kind }: ContextViewProps & { kind: Owne
 					/>
 				) : (
 					<Accordion
-						variant="separated"
 						multiple
-						radius="md"
+						className={classes.principalsAccordion}
 					>
 						{owners.map((owner) => (
 							<PrincipalCard
@@ -511,10 +512,14 @@ function PrincipalCard({
 		<Accordion.Item value={principal.id}>
 			<Accordion.Control
 				icon={
-					<Icon
-						path={kind === "human" ? iconAccount : iconServer}
-						c="violet.4"
-					/>
+					<ThemeIcon
+						size={28}
+						radius="md"
+						variant="light"
+						color="violet"
+					>
+						<Icon path={kind === "human" ? iconAccount : iconServer} />
+					</ThemeIcon>
 				}
 			>
 				<Group
@@ -705,10 +710,14 @@ function AgentItem({
 					gap="sm"
 					wrap="nowrap"
 				>
-					<Icon
-						path={iconAutoFix}
-						c="violet.4"
-					/>
+					<ThemeIcon
+						size={28}
+						radius="md"
+						variant="light"
+						color="violet"
+					>
+						<Icon path={iconAutoFix} />
+					</ThemeIcon>
 					<Box>
 						<Text
 							fw={500}
@@ -1148,7 +1157,7 @@ function ContextKeysSection({
 			</SectionTitle>
 			<Paper
 				withBorder
-				radius="md"
+				radius="sm"
 				style={{ overflow: "hidden" }}
 			>
 				<Table.ScrollContainer minWidth={420}>
@@ -1171,10 +1180,14 @@ function ContextKeysSection({
 											gap="sm"
 											wrap="nowrap"
 										>
-											<Icon
-												path={iconKey}
-												c="violet.4"
-											/>
+											<ThemeIcon
+												size={28}
+												radius="md"
+												variant="light"
+												color="violet"
+											>
+												<Icon path={iconKey} />
+											</ThemeIcon>
 											<Text
 												c="bright"
 												className="selectable"

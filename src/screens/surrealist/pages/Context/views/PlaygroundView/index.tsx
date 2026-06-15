@@ -3,8 +3,10 @@ import {
 	Badge,
 	Box,
 	Button,
+	Center,
 	Divider,
 	Group,
+	Image,
 	Loader,
 	Paper,
 	ScrollArea,
@@ -12,28 +14,29 @@ import {
 	Stack,
 	Text,
 	Textarea,
-	ThemeIcon,
+	Title,
 	Tooltip,
 } from "@mantine/core";
 import type { Spectron } from "@surrealdb/spectron";
 import {
 	Icon,
-	iconAccount,
-	iconAutoFix,
 	iconBookmark,
 	iconChat,
+	iconCursor,
 	iconHistory,
 	iconMemory,
 	iconRefresh,
 	iconRelation,
-	iconSend,
 	iconTag,
 	iconWarning,
+	pictoSpectronGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { ContentPane } from "~/components/Pane";
+import { useIsLight } from "~/hooks/theme";
 import { showErrorNotification } from "~/util/helpers";
-import { EmptyState, SpectronGate } from "../../components/feedback";
+import { SpectronGate } from "../../components/feedback";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
 
@@ -91,6 +94,9 @@ export default function PlaygroundView({ context }: ContextViewProps) {
 // ─── Live playground (client guaranteed ready) ───
 
 function Playground({ client }: { client: Spectron; context: ContextViewProps["context"] }) {
+	const isLight = useIsLight();
+	const glassColor = isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)";
+
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [input, setInput] = useState("");
 	const [recalled, setRecalled] = useState<MemoryHit[]>([]);
@@ -199,35 +205,18 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 	);
 
 	const hasConversation = messages.length > 0 || recalled.length > 0 || learned !== null;
+	const showWelcome = messages.length === 0 && !busy;
+	const canSend = !busy && input.trim().length > 0;
 
 	return (
 		<Box className={classes.workspace}>
-			<Paper
-				withBorder
-				radius="md"
-				className={classes.chatPaper}
-			>
-				<Group
-					justify="space-between"
-					px="md"
-					py="sm"
-				>
-					<Group gap="xs">
-						<ThemeIcon
-							size={28}
-							radius="md"
-							variant="light"
-							color="violet"
-						>
-							<Icon path={iconChat} />
-						</ThemeIcon>
-						<Text
-							fw={600}
-							c="bright"
-						>
-							Conversation
-						</Text>
-					</Group>
+			<ContentPane
+				className={classes.chatPane}
+				title="Playground"
+				icon={iconChat}
+				p={0}
+				withTopPadding={false}
+				rightSection={
 					<Tooltip label="Start a fresh session">
 						<Button
 							size="xs"
@@ -240,95 +229,171 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 							New session
 						</Button>
 					</Tooltip>
-				</Group>
-
-				<Divider color="obsidian.5" />
-
-				<ScrollArea
-					className={classes.thread}
-					viewportRef={viewportRef}
-				>
-					<Box className={classes.threadInner}>
-						{messages.length === 0 ? (
-							<EmptyState
-								icon={iconChat}
-								title="Say something to your agent"
-								description="Tell it about yourself, then ask what it remembers. Each message is grounded in recalled memory and may teach it something new."
-								action={
-									<Group
-										justify="center"
-										gap="xs"
-										mt="xs"
+				}
+			>
+				<Box className={classes.chatBody}>
+					<Box
+						flex={1}
+						pos="relative"
+						className={classes.thread}
+					>
+						{showWelcome ? (
+							<Center
+								pos="absolute"
+								inset={0}
+							>
+								<Stack
+									align="center"
+									maw={420}
+									px="xl"
+								>
+									<Image
+										pos="relative"
+										src={pictoSpectronGradient}
+										w={55}
+										h={55}
+										alt="Spectron"
+										aria-hidden
+										mb="sm"
+									/>
+									<Title
+										c="bright"
+										fw="bold"
+										fz={30}
+										ta="center"
+									>
+										Try your agent
+									</Title>
+									<Text
+										fz="sm"
+										ta="center"
+										className="selectable"
+									>
+										Tell it about yourself, then ask what it remembers. Each
+										reply is grounded in recalled memory and may teach it
+										something new.
+									</Text>
+									<Stack
+										mt={36}
+										w={375}
+										gap="sm"
 									>
 										{EXAMPLE_PROMPTS.map((prompt) => (
-											<Button
+											<Paper
 												key={prompt}
-												size="xs"
-												variant="default"
-												className={classes.promptChip}
+												p="sm"
+												role="button"
+												radius={100}
+												tabIndex={0}
 												onClick={() => setInput(prompt)}
+												onKeyDown={(e) => {
+													if (e.key === "Enter" || e.key === " ") {
+														e.preventDefault();
+														setInput(prompt);
+													}
+												}}
+												style={{
+													cursor: "pointer",
+													backgroundColor: glassColor,
+												}}
 											>
-												{prompt}
-											</Button>
+												<Text
+													c="bright"
+													fw={500}
+													fz="md"
+													ta="center"
+												>
+													{prompt}
+												</Text>
+											</Paper>
 										))}
-									</Group>
-								}
-							/>
+									</Stack>
+								</Stack>
+							</Center>
 						) : (
-							messages.map((msg) => (
-								<ChatBubble
-									key={msg.id}
-									message={msg}
-								/>
-							))
+							<ScrollArea
+								pos="absolute"
+								inset={0}
+								viewportRef={viewportRef}
+							>
+								<Box className={classes.threadInner}>
+									{messages.map((msg) => (
+										<ChatBubble
+											key={msg.id}
+											message={msg}
+											isLight={isLight}
+										/>
+									))}
+									{busy && <PendingBubble />}
+								</Box>
+							</ScrollArea>
 						)}
-						{busy && <PendingBubble />}
 					</Box>
-				</ScrollArea>
 
-				<Group
-					className={classes.composer}
-					gap="sm"
-					p="md"
-					align="flex-end"
-					wrap="nowrap"
-				>
-					<Textarea
-						flex={1}
-						placeholder="Message your agent…"
-						value={input}
-						onChange={(e) => setInput(e.currentTarget.value)}
-						onKeyDown={handleKeyDown}
-						autosize
-						minRows={1}
-						maxRows={5}
-						disabled={busy}
-						aria-label="Message"
-					/>
-					<ActionIcon
-						size={38}
-						radius="md"
-						variant="gradient"
-						onClick={() => void send(input)}
-						disabled={busy || !input.trim()}
-						aria-label="Send message"
+					<Box
+						className={classes.composer}
+						px="xl"
+						pb="xl"
 					>
-						{busy ? (
-							<Loader
-								size="xs"
-								color="white"
+						<Group
+							gap="sm"
+							align="end"
+							wrap="nowrap"
+						>
+							<Textarea
+								mt="lg"
+								bg={glassColor}
+								bdrs="xl"
+								flex={1}
+								placeholder="Message your agent…"
+								value={input}
+								onChange={(e) => setInput(e.currentTarget.value)}
+								onKeyDown={handleKeyDown}
+								autosize
+								minRows={1}
+								maxRows={5}
+								disabled={busy}
+								aria-label="Message"
+								variant="unstyled"
+								styles={{
+									input: {
+										color: "var(--mantine-color-bright)",
+										padding: "0.5rem 1rem",
+									},
+								}}
+								style={{
+									border: "1px solid rgba(255, 255, 255, 0.25)",
+								}}
 							/>
-						) : (
-							<Icon path={iconSend} />
-						)}
-					</ActionIcon>
-				</Group>
-			</Paper>
+							<ActionIcon
+								size="xl"
+								variant="gradient"
+								onClick={() => void send(input)}
+								disabled={!canSend}
+								loading={busy}
+								aria-label="Send message"
+								style={{
+									backgroundOrigin: "border-box",
+									filter: canSend ? undefined : "saturate(0%)",
+									transition: "all 0.1s",
+								}}
+							>
+								<Icon
+									size="lg"
+									path={iconCursor}
+									c="white"
+								/>
+							</ActionIcon>
+						</Group>
+					</Box>
+				</Box>
+			</ContentPane>
 
-			<Paper
-				withBorder
-				radius="md"
-				className={classes.activityPaper}
+			<ContentPane
+				className={classes.activityPane}
+				p={0}
+				withTopPadding={false}
+				withDivider={false}
 			>
 				<Box
 					px="lg"
@@ -353,101 +418,72 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 							hits={recalled}
 							recalling={recalling}
 						/>
-						<Divider color="obsidian.5" />
+						<Divider />
 						<LearnedSection learned={learned} />
 					</Stack>
 				</ScrollArea>
-			</Paper>
+			</ContentPane>
 		</Box>
 	);
 }
 
 // ─── Chat bubbles ───
 
-function ChatBubble({ message }: { message: ChatMessage }) {
+function ChatBubble({ message, isLight }: { message: ChatMessage; isLight: boolean }) {
 	if (message.role === "user") {
 		return (
-			<Box className={`${classes.bubbleRow} ${classes.bubbleRowUser}`}>
-				<Box className={`${classes.userBubble} selectable`}>
-					<Text
-						fz="sm"
-						style={{ whiteSpace: "pre-wrap" }}
-					>
-						{message.content}
-					</Text>
-				</Box>
-				<ThemeIcon
-					size={28}
-					radius="xl"
-					variant="light"
-					color="slate"
-				>
-					<Icon path={iconAccount} />
-				</ThemeIcon>
-			</Box>
+			<Paper
+				p="md"
+				bg={isLight ? "obsidian.1" : "obsidian.6"}
+				className="selectable"
+			>
+				<Text style={{ whiteSpace: "pre-wrap" }}>{message.content}</Text>
+			</Paper>
 		);
 	}
 
 	return (
-		<Box className={classes.bubbleRow}>
-			<Box className={classes.avatar}>
-				<Icon
-					path={iconAutoFix}
-					c="violet.3"
-				/>
-			</Box>
-			<Stack
-				gap={4}
-				maw="84%"
+		<Box
+			mb="md"
+			className={message.fresh ? classes.fadeIn : undefined}
+		>
+			<Text
+				className="selectable"
+				style={{ whiteSpace: "pre-wrap" }}
 			>
-				<Box
-					className={`${classes.assistantBubble} ${message.fresh ? classes.fadeIn : ""} selectable`}
+				{message.content}
+			</Text>
+			{message.traceId && (
+				<Text
+					mt={4}
+					className={`${classes.trace} selectable`}
+					title="Retrieval trace for this reply"
 				>
-					<Text
-						fz="sm"
-						style={{ whiteSpace: "pre-wrap" }}
-					>
-						{message.content}
-					</Text>
-				</Box>
-				{message.traceId && (
-					<Text
-						className={`${classes.trace} selectable`}
-						title="Retrieval trace for this reply"
-					>
-						trace: {message.traceId}
-					</Text>
-				)}
-			</Stack>
+					trace: {message.traceId}
+				</Text>
+			)}
 		</Box>
 	);
 }
 
 function PendingBubble() {
 	return (
-		<Box className={classes.bubbleRow}>
-			<Box className={classes.avatar}>
-				<Icon
-					path={iconAutoFix}
-					c="violet.3"
-				/>
-			</Box>
-			<Box className={classes.assistantBubble}>
-				<Group gap="xs">
-					<Loader
-						size="xs"
-						type="dots"
-						color="violet"
-					/>
-					<Text
-						fz="sm"
-						c="slate"
-					>
-						Thinking…
-					</Text>
-				</Group>
-			</Box>
-		</Box>
+		<Group
+			gap="xs"
+			mb="md"
+			c="obsidian"
+		>
+			<Loader
+				size={14}
+				color="currentColor"
+			/>
+			<Text
+				fz="lg"
+				inherit
+			>
+				Thinking…
+			</Text>
+		</Group>
 	);
 }
 
@@ -472,7 +508,7 @@ function SectionHeader({
 			<Group gap="xs">
 				<Icon
 					path={icon}
-					c="violet.3"
+					c="violet"
 				/>
 				<Text
 					fw={600}
@@ -485,7 +521,7 @@ function SectionHeader({
 				{live && (
 					<Box
 						className={classes.pulseDot}
-						aria-hidden
+						aria-hidden={true}
 					/>
 				)}
 				<Badge
@@ -547,6 +583,7 @@ function HitCard({ hit }: { hit: MemoryHit }) {
 		<Paper
 			p="sm"
 			radius="md"
+			withBorder
 			className={classes.hitCard}
 		>
 			<Group

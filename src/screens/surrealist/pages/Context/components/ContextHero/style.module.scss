@@ -4,15 +4,44 @@
 }
 
 .art {
-	position: absolute;
-	bottom: -58px;
-	right: 10px;
 	width: 220px;
+	height: 220px;
+	position: absolute;
+	right: 0;
+	bottom: -70px;
+	z-index: 0;
 	pointer-events: none;
+	transition: bottom 0.5s ease;
+	filter: grayscale(100%);
 	mix-blend-mode: plus-lighter;
-	opacity: 0.1;
+	opacity: 0.2;
 
-	@include md-and-up {
-		opacity: 0.45;
+	@include sm-and-up {
+		right: 24px;
+		opacity: 1;
+		filter: none;
+		mix-blend-mode: normal;
+	}
+}
+
+.art-glow {
+	width: 900px;
+	height: 900px;
+	position: absolute;
+	right: -400px;
+	bottom: -450px;
+	z-index: 0;
+	opacity: 0.3;
+	pointer-events: none;
+	transition: opacity 0.5s ease;
+}
+
+.hero:hover {
+	.art {
+		bottom: -60px;
+	}
+
+	.art-glow {
+		opacity: 0.5;
 	}
 }
