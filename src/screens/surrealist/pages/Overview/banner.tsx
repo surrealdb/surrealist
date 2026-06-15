@@ -1,5 +1,5 @@
 import { Alert, MantineColor } from "@mantine/core";
-import { Icon, iconBullhorn, iconWarning, Markdown } from "@surrealdb/ui";
+import { Icon, iconBullhorn, iconWarning, MarkdownViewer } from "@surrealdb/ui";
 import { useConfigStore } from "~/stores/config";
 import { BannerType, CloudBanner } from "~/types";
 
@@ -26,7 +26,7 @@ export function CloudAlert({ banner }: CloudAlertProps) {
 			withCloseButton
 			onClose={() => dismissBanner(banner.timestamp)}
 		>
-			<Markdown content={banner.message} />
+			<MarkdownViewer content={banner.message} />
 		</Alert>
 	);
 }
