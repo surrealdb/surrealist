@@ -29,7 +29,7 @@ import {
 	iconFolderPlus,
 	iconFolderSecure,
 	iconOpenFolder,
-	pictoBadgeAccess,
+	pictoBadgeAccessGradient,
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -167,7 +167,7 @@ export default function ScopesView({ context }: ContextViewProps) {
 				kicker="Scopes"
 				title="Scope hierarchy"
 				description="Scopes are hierarchical slash-path folders that partition your memory and gate which principals can see which facts. Register the folders you need, then grant principals access to the branches they should reach."
-				art={pictoBadgeAccess}
+				art={pictoBadgeAccessGradient}
 			/>
 
 			<Alert

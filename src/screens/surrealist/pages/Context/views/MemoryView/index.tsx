@@ -35,7 +35,7 @@ import {
 	iconSearch,
 	iconTag,
 	iconWarning,
-	pictoBrain,
+	pictoBrainGradient,
 } from "@surrealdb/ui";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
@@ -116,7 +116,7 @@ export default function MemoryView({ context }: ContextViewProps) {
 				kicker="Memory"
 				title="Memory graph"
 				description={`Everything ${context.name} remembers — its structured state, the entities and facts it has learned, and the queries it has resolved.`}
-				art={pictoBrain}
+				art={pictoBrainGradient}
 			/>
 
 			<Tabs

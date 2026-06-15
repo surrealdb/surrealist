@@ -33,8 +33,8 @@ import {
 	iconRefresh,
 	iconServer,
 	iconTrash,
-	pictoBadgeAccess,
-	pictoFingerPrints,
+	pictoBadgeAccessGradient,
+	pictoFingerPrintsGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { useMemo, useState } from "react";
@@ -159,7 +159,7 @@ export function PrincipalsTab({ context, kind }: ContextViewProps & { kind: Owne
 						? "Organisation members with access to this context, and the agents that act on their behalf."
 						: "Non-human service principals for integrations and pipelines, and the agents that run under them."
 				}
-				art={isHuman ? pictoFingerPrints : pictoBadgeAccess}
+				art={isHuman ? pictoFingerPrintsGradient : pictoBadgeAccessGradient}
 			>
 				<PrimaryAction
 					context={context}

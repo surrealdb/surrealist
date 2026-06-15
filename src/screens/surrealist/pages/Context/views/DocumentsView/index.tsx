@@ -31,7 +31,7 @@ import {
 	iconText,
 	iconTrash,
 	iconUpload,
-	pictoDocument,
+	pictoDocumentGradient,
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
@@ -73,7 +73,7 @@ export default function DocumentsView({ context: _context }: ContextViewProps) {
 				kicker="Documents"
 				title="Knowledge & documents"
 				description="Ground your agent in real source material. Upload files and Spectron parses, chunks, embeds, and links them so retrieval can cite the exact passage it came from."
-				art={pictoDocument}
+				art={pictoDocumentGradient}
 			/>
 
 			<SpectronGate loadingMessage="Connecting to the document store…">

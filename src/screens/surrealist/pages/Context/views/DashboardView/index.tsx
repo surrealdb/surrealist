@@ -28,7 +28,7 @@ import {
 	iconOpen,
 	iconPackageClosed,
 	iconPlay,
-	pictoSpectron,
+	pictoSpectronGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { useQuery } from "@tanstack/react-query";
@@ -65,7 +65,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 				kicker="Context"
 				title={context.name}
 				description="Your agent's memory and knowledge layer. Connect an SDK, ground it in documents, and watch its memory grow."
-				art={pictoSpectron}
+				art={pictoSpectronGradient}
 			>
 				<Button
 					variant="gradient"
