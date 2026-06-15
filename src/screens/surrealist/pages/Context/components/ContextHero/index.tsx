@@ -25,7 +25,6 @@ export function ContextHero({ kicker, title, description, art, children }: Conte
 		<Paper
 			p="xl"
 			radius="lg"
-			variant="glass"
 			className={classes.hero}
 		>
 			{art && (
