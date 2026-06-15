@@ -1,5 +1,4 @@
 import { adapter } from "~/adapter";
-import { useCloudStore } from "~/stores/cloud";
 import { CloudBackupPolicySummary, CloudMeasurement } from "~/types";
 import { plural } from "./helpers";
 
@@ -36,42 +35,37 @@ export function measureStorageUsage(measurements: CloudMeasurement[]) {
 	return (entry?.disk_used_bytes ?? 0) / 1024 / 1024;
 }
 
-interface Charge {
-	name: string;
-	hours: number;
-	cost: number;
+const BYTE_SIZES = ["B", "KB", "MB", "GB", "TB"] as const;
+
+/**
+ * Format a millcent value as a USD currency string
+ */
+export function formatMillcents(millcents: number) {
+	return new Intl.NumberFormat("en-US", {
+		style: "currency",
+		currency: "USD",
+	}).format(millcents / 1000);
 }
 
 /**
- * Measure the total compute cost
+ * Format a byte count as a human-readable size string
  */
-export function measureComputeCost(measurements: CloudMeasurement[]) {
-	const { instanceTypes } = useCloudStore.getState();
+export function formatBytesUsage(bytes: number) {
+	if (bytes === 0) return "0 B";
 
-	const entries = measurements.filter(
-		({ metric_type, instance_type }) => metric_type === "compute" && instance_type,
-	);
+	const i = Math.floor(Math.log(bytes) / Math.log(1024));
 
-	const summary = entries.reduce((acc, { instance_type, compute_hours }) => {
-		const info = instanceTypes.find((t) => t.slug === instance_type);
-		const hourlyPriceThousandth = info?.price_hour ?? 0;
-		const totalComputeHours = compute_hours ?? 0;
-		const instanceCharge = (hourlyPriceThousandth / 1000) * totalComputeHours;
+	return `${Math.round((bytes / 1024 ** i) * 100) / 100} ${BYTE_SIZES[i]}`;
+}
 
-		acc.push({
-			name: info?.display_name ?? "",
-			hours: totalComputeHours,
-			cost: instanceCharge,
-		});
+/**
+ * Format a minute count as hours with one decimal place
+ */
+export function formatMinutesAsHours(minutes: number) {
+	const hours = minutes / 60;
+	const rounded = Math.round(hours * 100) / 100;
 
-		return acc;
-	}, [] as Charge[]);
-
-	const total = summary.reduce((curr, { cost }) => {
-		return curr + cost;
-	}, 0);
-
-	return { summary, total };
+	return `${new Intl.NumberFormat("en-US").format(rounded)}h`;
 }
 
 /**
