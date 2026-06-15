@@ -77,8 +77,8 @@ export function OrganizationUsageTab({ organization }: OrganizationTabProps) {
 					value={period}
 					onChange={(v) => setPeriod(v as SpendPeriod)}
 					data={[
-						{ label: "Current month", value: "current" },
 						{ label: "Previous month", value: "previous" },
+						{ label: "Current month", value: "current" },
 					]}
 				/>
 			</Group>
