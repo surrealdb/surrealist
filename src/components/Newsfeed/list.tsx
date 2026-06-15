@@ -72,6 +72,8 @@ export function NewsfeedList() {
 			<ScrollArea
 				viewportRef={viewportRef}
 				flex={1}
+				mih={0}
+				scrollbars="y"
 				p="lg"
 			>
 				{newsQuery.isPending ? (
