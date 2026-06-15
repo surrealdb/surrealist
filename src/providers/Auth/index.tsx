@@ -18,7 +18,7 @@ import { showErrorNotification } from "~/util/helpers";
 import { callback, computeReturnPath } from "./helpers";
 import { useAuthCallbackFlow } from "./hooks/use-auth-callback-flow";
 import { useAuthWindowSync } from "./hooks/use-auth-window-sync";
-import type { SignInOptions, SignOutOptions } from "./types";
+import type { SignInOptions } from "./types";
 
 export type { SignInOptions };
 
@@ -40,7 +40,7 @@ export interface AuthContext {
 	isLoading: boolean;
 	getAccessToken: AccessTokenFn;
 	signIn: (options?: SignInOptions) => Promise<void>;
-	signOut: (options?: SignOutOptions) => Promise<void>;
+	signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -109,31 +109,14 @@ function TokenBridge({ children }: PropsWithChildren) {
 		});
 	});
 
-	const signOut = useStable(async (options?: SignOutOptions) => {
-		const { localOnly } = options ?? {};
-
+	const signOut = useStable(async () => {
 		shutdown();
 		navigate("/");
 
 		await broadcastAuthEvent("signout");
 
-		await logout({
-			openUrl: localOnly
-				? undefined
-				: async (url) => {
-						const opened = await adapter.openUrl(url);
-
-						if (!opened) {
-							showErrorNotification({
-								title: "Failed to open authentication",
-								content: "Please make sure popup blockers are disabled.",
-							});
-						}
-					},
-			logoutParams: {
-				returnTo: isDesktop ? AUTH_LAUNCH_URL : AUTH_RETURN_URL,
-			},
-		});
+		// Clear the local Auth0 session without navigating to the logout endpoint.
+		await logout({ openUrl: false });
 	});
 
 	const handleSignIn = useStable((user: User) => {

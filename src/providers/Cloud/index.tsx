@@ -201,7 +201,7 @@ export function CloudProvider({ children }: PropsWithChildren) {
 		} catch (err: unknown) {
 			console.error("Failed to acquire session", err);
 
-			await signOut({ localOnly: true });
+			await signOut();
 
 			const message = err instanceof Error ? err.message : String(err);
 
