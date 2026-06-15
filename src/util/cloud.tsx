@@ -1,5 +1,4 @@
 import { adapter } from "~/adapter";
-import { useCloudStore } from "~/stores/cloud";
 import { CloudBackupPolicySummary, CloudMeasurement } from "~/types";
 import { plural } from "./helpers";
 
