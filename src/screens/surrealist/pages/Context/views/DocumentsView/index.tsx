@@ -857,12 +857,7 @@ function InspectorBody({
 								gap="xs"
 								mb={6}
 							>
-								<Badge
-									variant="default"
-									size="xs"
-								>
-									#{chunk.position}
-								</Badge>
+								<Badge size="xs">#{chunk.position}</Badge>
 								{chunk.section && (
 									<Text
 										fz="xs"
@@ -1223,14 +1218,7 @@ function UploadStatus({ item }: { item: UploadItem }) {
 			</Tooltip>
 		);
 	}
-	return (
-		<Badge
-			variant="default"
-			size="sm"
-		>
-			Pending
-		</Badge>
-	);
+	return <Badge size="sm">Pending</Badge>;
 }
 
 // ─── Helpers ───

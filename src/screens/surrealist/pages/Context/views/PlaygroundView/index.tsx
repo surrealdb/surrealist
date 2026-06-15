@@ -833,7 +833,6 @@ function LearnedGroup({
 				</Text>
 				<Badge
 					size="xs"
-					variant="default"
 					color="slate"
 				>
 					{items.length}

@@ -550,10 +550,7 @@ function PrincipalCard({
 								{agents.length}
 							</Badge>
 						)}
-						<Badge
-							variant="default"
-							size="sm"
-						>
+						<Badge size="sm">
 							{summary.length} grant{summary.length === 1 ? "" : "s"}
 						</Badge>
 					</Group>

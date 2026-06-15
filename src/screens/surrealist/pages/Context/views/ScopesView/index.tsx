@@ -451,7 +451,6 @@ function ScopeRow({
 							<Tooltip label="Implied ancestor — not registered on its own">
 								<Badge
 									size="xs"
-									variant="default"
 									color="slate"
 								>
 									Implied

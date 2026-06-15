@@ -190,7 +190,7 @@ await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted.
 				code: `curl -X POST ${restRoot}/sessions \\
     -H "API-KEY: your-api-key" \\
     -H "Content-Type: application/json" \\
-    -d '{"scope":[{"key":"user","value":"alex"}]}'`,
+    -d '{"scope":["user/alex"]}'`,
 				lang: "bash",
 			},
 			{

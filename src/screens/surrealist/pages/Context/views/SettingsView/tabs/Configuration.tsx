@@ -258,7 +258,6 @@ export function ConfigurationTab({ context }: ContextViewProps) {
 										{provider.models.map((model) => (
 											<Badge
 												key={model}
-												variant="default"
 												tt="none"
 											>
 												{model}

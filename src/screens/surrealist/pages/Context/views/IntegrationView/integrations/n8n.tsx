@@ -22,7 +22,7 @@ Headers:
   Content-Type: application/json
 Body:
 {
-  "scope": [{ "key": "user", "value": "{{ $json.userId }}" }]
+  "scope": ["user/{{ $json.userId }}"]
 }`,
 			lang: "text",
 		},
