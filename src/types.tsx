@@ -97,7 +97,14 @@ export type ViewPage =
 	| "functions"
 	| "parameters"
 	| "documentation"
-	| "migrations";
+	| "migrations"
+	| "settings/general"
+	| "settings/databases"
+	| "settings/data"
+	| "settings/capabilities"
+	| "settings/version"
+	| "settings/compute"
+	| "settings/backups";
 
 export type ConnectionSettingsTab =
 	| "general"
