@@ -1,0 +1,8 @@
+.item-arrow {
+	transition: transform 0.2s;
+	transform: scaleX(-1);
+}
+
+.item:hover .item-arrow {
+	transform: scaleX(-1) translateX(-0.25rem);
+}

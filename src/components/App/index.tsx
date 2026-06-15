@@ -1,4 +1,5 @@
 import { adapter } from "~/adapter";
+import { useIsDesktop } from "~/hooks/responsive";
 import { DesignerProvider } from "~/providers/Designer";
 import { InspectorProvider } from "~/providers/Inspector";
 import { SurrealistScreen } from "~/screens/surrealist";
@@ -36,6 +37,8 @@ function Surrealist() {
 }
 
 export function App() {
+	const isDesktop = useIsDesktop();
+
 	return (
 		<Scaffold authentication>
 			<Globals />
@@ -57,8 +60,8 @@ export function App() {
 			<DataImportModal />
 			<RegisterUserModal />
 			<ConsoleDrawer />
-			<NewsFeedDrawer />
-			<SidekickDrawer />
+			{isDesktop && <NewsFeedDrawer />}
+			{isDesktop && <SidekickDrawer />}
 			<CreateMessageModal />
 			<CloudUpdateRequiredDialog />
 			<FailedConnectDialog />

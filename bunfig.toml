@@ -14,5 +14,5 @@ minimumReleaseAgeExcludes = [
 	"@surrealdb/ql-wasm",
 	"@surrealdb/cbor",
 	"@surrealdb/ui",
-	"@surrealdb/spectron",
+	"@surrealdb/spectron"
 ]
