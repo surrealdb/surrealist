@@ -23,7 +23,7 @@ import {
 	iconAPI,
 	iconArrowUpRight,
 	iconMCP,
-	pictoIntegrations,
+	pictoIntegrationsGradient,
 } from "@surrealdb/ui";
 import { useEffect, useMemo, useState } from "react";
 import { adapter } from "~/adapter";
@@ -190,7 +190,7 @@ await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted.
 				code: `curl -X POST ${restRoot}/sessions \\
     -H "API-KEY: your-api-key" \\
     -H "Content-Type: application/json" \\
-    -d '{"scope":[{"key":"user","value":"alex"}]}'`,
+    -d '{"scope":["user/alex"]}'`,
 				lang: "bash",
 			},
 			{
@@ -269,7 +269,7 @@ export default function IntegrationView({ context }: ContextViewProps) {
 				kicker="Quick start"
 				title="Connect to your context"
 				description="Wire this context into your agent — through the Python and JavaScript SDKs, the REST API, MCP, or a framework like LangChain, n8n, and the OpenAI and Vercel AI toolkits."
-				art={pictoIntegrations}
+				art={pictoIntegrationsGradient}
 			/>
 
 			<Scroller

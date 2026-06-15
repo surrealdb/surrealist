@@ -10,7 +10,7 @@ import {
 	Text,
 	ThemeIcon,
 } from "@mantine/core";
-import { Icon, iconChart, iconClock, pictoPieChart, SectionTitle } from "@surrealdb/ui";
+import { Icon, iconChart, iconClock, pictoPieChartGradient, SectionTitle } from "@surrealdb/ui";
 import { format } from "date-fns";
 import { useCloudContextUsageQuery } from "~/cloud/queries/contexts";
 import type { SpectronCallOrigin, SpectronTokenKind, SpectronUsageRow } from "~/types";
@@ -68,7 +68,7 @@ export function UsageTab({ context }: ContextViewProps) {
 				kicker="Settings"
 				title="Usage"
 				description="Token consumption for this context's current billing period, broken down by model and call type."
-				art={pictoPieChart}
+				art={pictoPieChartGradient}
 			/>
 
 			{usageQuery.isError ? (

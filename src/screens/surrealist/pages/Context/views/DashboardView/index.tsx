@@ -28,7 +28,7 @@ import {
 	iconOpen,
 	iconPackageClosed,
 	iconPlay,
-	pictoSpectron,
+	pictoSpectronGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import { useQuery } from "@tanstack/react-query";
@@ -41,7 +41,6 @@ import type { ContextViewPage } from "~/types";
 import { ContextHero } from "../../components/ContextHero";
 import { useSpectron } from "../../provider";
 import type { ContextViewProps } from "../../types";
-import classes from "./style.module.scss";
 
 const EXPLORE_PAGES: ContextViewPage[] = ["playground", "memory", "documents", "scopes"];
 const INTEGRATE_PAGES: ContextViewPage[] = ["integration", "api-keys"];
@@ -65,7 +64,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 				kicker="Context"
 				title={context.name}
 				description="Your agent's memory and knowledge layer. Connect an SDK, ground it in documents, and watch its memory grow."
-				art={pictoSpectron}
+				art={pictoSpectronGradient}
 			>
 				<Button
 					variant="gradient"
@@ -196,7 +195,6 @@ function DetailTile({ label, children }: { label: string; children: React.ReactN
 		<Paper
 			p="md"
 			radius="md"
-			withBorder
 		>
 			<Text
 				fz="xs"
@@ -221,7 +219,6 @@ function CopyableDetail({ label, value }: { label: string; value: string }) {
 				align="center"
 			>
 				<Box
-					className={`${classes.detailValue} selectable`}
 					c="bright"
 					flex={1}
 				>
@@ -336,7 +333,6 @@ function StatCard({ icon, label, queryKey, client, resolve }: StatCardProps) {
 		<Paper
 			p="md"
 			radius="md"
-			withBorder
 		>
 			<Group
 				gap="sm"
@@ -399,8 +395,6 @@ function NavCard({ page, onNavigate }: NavCardProps) {
 				<Paper
 					p="lg"
 					radius="md"
-					withBorder
-					className={classes.navCard}
 				>
 					<Group
 						gap="md"

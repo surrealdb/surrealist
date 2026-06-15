@@ -34,7 +34,7 @@ import {
 	iconPlus,
 	iconRefresh,
 	iconTrash,
-	pictoKey,
+	pictoKeyGradient,
 } from "@surrealdb/ui";
 import { useState } from "react";
 import { Link } from "wouter";
@@ -189,7 +189,7 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 				kicker="Access"
 				title="API keys"
 				description="These are scoped keys bound to your own principal, used to connect your SDK, REST, and MCP clients to this context. By default a key inherits your full access; you can optionally add attenuating grants to narrow what it can do. The secret is shown only once when the key is created."
-				art={pictoKey}
+				art={pictoKeyGradient}
 			/>
 
 			{createdKey?.key && (

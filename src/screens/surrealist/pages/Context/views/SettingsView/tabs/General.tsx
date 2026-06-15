@@ -17,7 +17,7 @@ import {
 	iconCheck,
 	iconCopy,
 	iconWarning,
-	pictoSettings,
+	pictoSettingsGradient,
 	useStable,
 } from "@surrealdb/ui";
 import { useUpdateContextMutation } from "~/cloud/mutations/spectron";
@@ -70,7 +70,7 @@ export function GeneralTab({ context }: ContextViewProps) {
 				kicker="Settings"
 				title="General"
 				description="Metadata for this context and destructive actions. Update the display name or copy the identifiers your tooling needs."
-				art={pictoSettings}
+				art={pictoSettingsGradient}
 			/>
 
 			{/* CONTEXT DETAILS */}

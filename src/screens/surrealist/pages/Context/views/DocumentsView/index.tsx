@@ -31,7 +31,7 @@ import {
 	iconText,
 	iconTrash,
 	iconUpload,
-	pictoDocument,
+	pictoDocumentGradient,
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
@@ -73,7 +73,7 @@ export default function DocumentsView({ context: _context }: ContextViewProps) {
 				kicker="Documents"
 				title="Knowledge & documents"
 				description="Ground your agent in real source material. Upload files and Spectron parses, chunks, embeds, and links them so retrieval can cite the exact passage it came from."
-				art={pictoDocument}
+				art={pictoDocumentGradient}
 			/>
 
 			<SpectronGate loadingMessage="Connecting to the document store…">
@@ -857,12 +857,7 @@ function InspectorBody({
 								gap="xs"
 								mb={6}
 							>
-								<Badge
-									variant="default"
-									size="xs"
-								>
-									#{chunk.position}
-								</Badge>
+								<Badge size="xs">#{chunk.position}</Badge>
 								{chunk.section && (
 									<Text
 										fz="xs"
@@ -1223,14 +1218,7 @@ function UploadStatus({ item }: { item: UploadItem }) {
 			</Tooltip>
 		);
 	}
-	return (
-		<Badge
-			variant="default"
-			size="sm"
-		>
-			Pending
-		</Badge>
-	);
+	return <Badge size="sm">Pending</Badge>;
 }
 
 // ─── Helpers ───

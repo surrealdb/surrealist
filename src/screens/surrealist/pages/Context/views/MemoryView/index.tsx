@@ -2,14 +2,14 @@ import {
 	ActionIcon,
 	Badge,
 	Box,
+	Button,
 	Center,
+	CloseButton,
 	Divider,
 	Drawer,
-	Grid,
 	Group,
 	Loader,
 	Paper,
-	ScrollArea,
 	Select,
 	SimpleGrid,
 	Skeleton,
@@ -20,6 +20,7 @@ import {
 	TextInput,
 	ThemeIcon,
 	Tooltip,
+	UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import type { Spectron } from "@surrealdb/spectron";
@@ -29,17 +30,15 @@ import {
 	iconChevronRight,
 	iconClock,
 	iconHistory,
-	iconList,
 	iconMemory,
 	iconRelation,
 	iconSearch,
-	iconTag,
-	iconWarning,
-	pictoBrain,
+	pictoSpectronGradient,
+	SectionTitle,
 } from "@surrealdb/ui";
 import { useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { ContextHero } from "../../components/ContextHero";
 import { EmptyState, PageError, PageLoading, SpectronGate } from "../../components/feedback";
 import type { ContextViewProps } from "../../types";
@@ -111,18 +110,17 @@ export default function MemoryView({ context }: ContextViewProps) {
 	const [tab, setTab] = useState<string | null>("state");
 
 	return (
-		<Stack gap={32}>
+		<Stack gap={48}>
 			<ContextHero
 				kicker="Memory"
 				title="Memory graph"
 				description={`Everything ${context.name} remembers — its structured state, the entities and facts it has learned, and the queries it has resolved.`}
-				art={pictoBrain}
+				art={pictoSpectronGradient}
 			/>
 
 			<Tabs
 				value={tab}
 				onChange={setTab}
-				variant="default"
 				keepMounted={false}
 			>
 				<Tabs.List>
@@ -208,11 +206,17 @@ function StateTab({ client }: { client: Spectron }) {
 
 	const totalEntities = categories.reduce((acc, c) => acc + c.data.entities.length, 0);
 	const totalAttributes = categories.reduce((acc, c) => acc + c.data.attributes.length, 0);
+	const hasProfileEntries =
+		!!profile &&
+		(profile.static.length > 0 || profile.dynamic.length > 0 || profile.preferences.length > 0);
+	const showProfileColumn = hasProfileEntries || state.instructions.length > 0;
+	const showUnknowns = state.unknowns.length > 0;
 	const hasAnything =
 		totalEntities > 0 ||
 		totalAttributes > 0 ||
 		state.instructions.length > 0 ||
-		state.unknowns.length > 0;
+		state.unknowns.length > 0 ||
+		hasProfileEntries;
 
 	if (!hasAnything) {
 		return (
@@ -225,7 +229,15 @@ function StateTab({ client }: { client: Spectron }) {
 	}
 
 	return (
-		<Stack gap="xl">
+		<Stack gap="lg">
+			<SectionTitle
+				kicker="Overview"
+				order={3}
+				description="Counts by memory type. Browse the Entities tab for the full graph."
+			>
+				Memory state
+			</SectionTitle>
+
 			<SimpleGrid
 				cols={{ base: 1, md: 3 }}
 				spacing="md"
@@ -240,112 +252,33 @@ function StateTab({ client }: { client: Spectron }) {
 				))}
 			</SimpleGrid>
 
-			{profile && <ProfileCard profile={profile} />}
-
-			{state.instructions.length > 0 && (
-				<Box>
-					<SectionLabel
-						icon={iconList}
-						title="Instructions"
-						count={state.instructions.length}
-					/>
-					<Paper
-						mt="sm"
-						p="md"
-						radius="md"
-						withBorder
-					>
-						<Stack gap="sm">
-							{state.instructions.map((instruction) => (
-								<Group
-									key={instruction.id}
-									gap="sm"
-									wrap="nowrap"
-									align="flex-start"
-								>
-									<ThemeIcon
-										size={26}
-										radius="md"
-										variant="light"
-										color="violet"
-										mt={2}
-									>
-										<Icon
-											path={iconList}
-											size="sm"
-										/>
-									</ThemeIcon>
-									<Box flex={1}>
-										<Text
-											fw={500}
-											c="bright"
-											className="selectable"
-										>
-											{instruction.label}
-										</Text>
-										<Text
-											fz="sm"
-											className="selectable"
-										>
-											{instruction.description}
-										</Text>
-									</Box>
-								</Group>
-							))}
-						</Stack>
-					</Paper>
-				</Box>
-			)}
-
-			{state.unknowns.length > 0 && (
-				<Box>
-					<SectionLabel
-						icon={iconWarning}
-						title="Unknowns"
-						count={state.unknowns.length}
-					/>
-					<Paper
-						mt="sm"
-						p="md"
-						radius="md"
-						withBorder
-						className={classes.unknownsCard}
-					>
-						<Stack gap="sm">
-							{state.unknowns.map((unknown, index) => (
-								<Group
-									key={`${unknown.about}-${index}`}
-									gap="sm"
-									wrap="nowrap"
-									align="flex-start"
-								>
-									<Icon
-										path={iconWarning}
-										c="slate"
-										size="sm"
-										style={{ marginTop: 4, flexShrink: 0 }}
-									/>
-									<Box flex={1}>
-										<Text
-											fw={500}
-											c="slate"
-											className="selectable"
-										>
-											{unknown.about}
-										</Text>
-										<Text
-											fz="sm"
-											c="slate"
-											className="selectable"
-										>
-											{unknown.reason}
-										</Text>
-									</Box>
-								</Group>
-							))}
-						</Stack>
-					</Paper>
-				</Box>
+			{(showProfileColumn || showUnknowns) && (
+				<Paper
+					radius="md"
+					withBorder
+					className={classes.stateNotes}
+				>
+					{showProfileColumn && (
+						<StateFactBlock
+							title={hasProfileEntries && profile ? "Profile" : "Instructions"}
+							rows={buildProfileRows(
+								hasProfileEntries && profile ? profile : null,
+								state.instructions,
+							)}
+						/>
+					)}
+					{showProfileColumn && showUnknowns && <Divider />}
+					{showUnknowns && (
+						<StateFactBlock
+							title="Unknowns"
+							rows={state.unknowns.map((unknown, index) => ({
+								key: `${unknown.about}-${index}`,
+								label: unknown.about,
+								value: unknown.reason,
+							}))}
+						/>
+					)}
+				</Paper>
 			)}
 		</Stack>
 	);
@@ -366,36 +299,32 @@ function CategoryCard({
 		<Paper
 			p="md"
 			radius="md"
-			withBorder
 			h="100%"
 		>
 			<Group
-				justify="space-between"
-				align="flex-start"
+				gap="sm"
+				mb="sm"
 			>
-				<Group gap="sm">
-					<ThemeIcon
-						size={32}
-						radius="md"
-						variant="light"
-						color={color}
-					>
-						<Icon path={iconRelation} />
-					</ThemeIcon>
-					<Text
-						fw={600}
-						fz="md"
-						c="bright"
-					>
-						{label}
-					</Text>
-				</Group>
+				<ThemeIcon
+					size={28}
+					radius="md"
+					variant="light"
+					color={color}
+				>
+					<Icon
+						path={iconRelation}
+						size="sm"
+					/>
+				</ThemeIcon>
+				<Text
+					fw={600}
+					c="bright"
+				>
+					{label}
+				</Text>
 			</Group>
 
-			<Group
-				gap="lg"
-				mt="md"
-			>
+			<Group gap="lg">
 				<CountStat
 					value={data.entities.length}
 					label="Entities"
@@ -409,156 +338,130 @@ function CategoryCard({
 					label="Relations"
 				/>
 			</Group>
-
-			{data.entities.length > 0 && (
-				<Box mt="md">
-					<MiniLabel>Entities</MiniLabel>
-					<Stack
-						gap={4}
-						mt={4}
-					>
-						{data.entities.slice(0, 6).map((entity) => (
-							<Group
-								key={entity.id}
-								gap={6}
-								wrap="nowrap"
-							>
-								<Text
-									fz="sm"
-									c="bright"
-									truncate
-									className="selectable"
-								>
-									{entity.name}
-								</Text>
-								<Text
-									fz="xs"
-									c="slate"
-									style={{ flexShrink: 0 }}
-								>
-									· {entity.entityType}
-								</Text>
-							</Group>
-						))}
-						{data.entities.length > 6 && (
-							<Text
-								fz="xs"
-								c="slate"
-							>
-								+{data.entities.length - 6} more
-							</Text>
-						)}
-					</Stack>
-				</Box>
-			)}
-
-			{data.attributes.length > 0 && (
-				<Box mt="md">
-					<MiniLabel>Key facts</MiniLabel>
-					<Stack
-						gap={4}
-						mt={4}
-					>
-						{data.attributes.slice(0, 6).map((attribute) => (
-							<Text
-								key={attribute.id}
-								fz="sm"
-								truncate
-								className="selectable"
-							>
-								<Text
-									span
-									c="slate"
-								>
-									{attribute.key}
-								</Text>{" "}
-								={" "}
-								<Text
-									span
-									c="bright"
-								>
-									{attribute.value}
-								</Text>
-							</Text>
-						))}
-						{data.attributes.length > 6 && (
-							<Text
-								fz="xs"
-								c="slate"
-							>
-								+{data.attributes.length - 6} more
-							</Text>
-						)}
-					</Stack>
-				</Box>
-			)}
 		</Paper>
 	);
 }
 
-function ProfileCard({ profile }: { profile: ProfileResponse }) {
-	const groups: { label: string; entries: ProfileResponse["static"] }[] = [
-		{ label: "Static", entries: profile.static },
-		{ label: "Dynamic", entries: profile.dynamic },
-		{ label: "Preferences", entries: profile.preferences },
-	];
+type FactRow = {
+	key: string;
+	label: string;
+	value: string;
+	group?: string;
+};
 
-	const hasEntries = groups.some((group) => group.entries.length > 0);
-	if (!hasEntries) return null;
+function buildProfileRows(
+	profile: ProfileResponse | null,
+	instructions: StateResponse["instructions"],
+): FactRow[] {
+	const rows: FactRow[] = [];
+
+	if (profile) {
+		const groups = [
+			{ label: "Static", entries: profile.static },
+			{ label: "Dynamic", entries: profile.dynamic },
+			{ label: "Preferences", entries: profile.preferences },
+		].filter((group) => group.entries.length > 0);
+
+		for (const group of groups) {
+			const groupLabel = groups.length > 1 ? group.label : undefined;
+			for (const entry of group.entries) {
+				rows.push({
+					key: entry.key,
+					label: entry.key,
+					value: entry.value,
+					group: groupLabel,
+				});
+			}
+		}
+	}
+
+	const instructionGroup = rows.length > 0 ? "Instructions" : undefined;
+	for (const instruction of instructions) {
+		rows.push({
+			key: instruction.id,
+			label: instruction.label,
+			value: instruction.description,
+			group: instructionGroup,
+		});
+	}
+
+	return rows;
+}
+
+function StateFactBlock({ title, rows }: { title: string; rows: FactRow[] }) {
+	if (rows.length === 0) return null;
+
+	const items: { row: FactRow; showGroup: boolean }[] = [];
+	let lastGroup: string | undefined;
+	for (const row of rows) {
+		const showGroup = row.group !== undefined && row.group !== lastGroup;
+		if (showGroup) lastGroup = row.group;
+		items.push({ row, showGroup });
+	}
 
 	return (
 		<Box>
-			<SectionLabel
-				icon={iconTag}
-				title="Profile"
-			/>
-			<Paper
-				mt="sm"
-				p="md"
-				radius="md"
-				withBorder
+			<Box
+				px="md"
+				py="xs"
+				className={classes.stateNotesHeader}
 			>
-				<Stack gap="lg">
-					{groups
-						.filter((group) => group.entries.length > 0)
-						.map((group) => (
-							<Box key={group.label}>
-								<MiniLabel>{group.label}</MiniLabel>
-								<Stack
-									gap={6}
-									mt={6}
-								>
-									{group.entries.map((entry) => (
-										<Group
-											key={entry.key}
-											gap="md"
-											wrap="nowrap"
-											align="flex-start"
+				<Text
+					fw={600}
+					fz="sm"
+					c="bright"
+				>
+					{title}
+				</Text>
+			</Box>
+			<Table
+				verticalSpacing={6}
+				horizontalSpacing="md"
+				layout="fixed"
+				className={classes.stateFactTable}
+			>
+				<Table.Tbody>
+					{items.map(({ row, showGroup }) => (
+						<Fragment key={row.key}>
+							{showGroup && (
+								<Table.Tr>
+									<Table.Td
+										colSpan={2}
+										className={classes.factGroupRow}
+									>
+										<Text
+											fz="xs"
+											c="slate"
+											tt="uppercase"
 										>
-											<Text
-												fz="sm"
-												c="slate"
-												w={160}
-												style={{ flexShrink: 0 }}
-												className="selectable"
-											>
-												{entry.key}
-											</Text>
-											<Text
-												fz="sm"
-												c="bright"
-												flex={1}
-												className="selectable"
-											>
-												{entry.value}
-											</Text>
-										</Group>
-									))}
-								</Stack>
-							</Box>
-						))}
-				</Stack>
-			</Paper>
+											{row.group}
+										</Text>
+									</Table.Td>
+								</Table.Tr>
+							)}
+							<Table.Tr>
+								<Table.Td className={classes.factLabelCell}>
+									<Text
+										fz="sm"
+										className="selectable"
+									>
+										{row.label}
+									</Text>
+								</Table.Td>
+								<Table.Td className={classes.factValueCell}>
+									<Text
+										fz="sm"
+										c="bright"
+										className="selectable"
+									>
+										{row.value}
+									</Text>
+								</Table.Td>
+							</Table.Tr>
+						</Fragment>
+					))}
+				</Table.Tbody>
+			</Table>
 		</Box>
 	);
 }
@@ -592,385 +495,573 @@ function EntitiesTab({ client }: { client: Spectron }) {
 		});
 	}, [entities, search, typeFilter]);
 
+	const isFiltering = search.trim().length > 0 || typeFilter !== null;
+
 	if (listQuery.isPending) {
-		return <PageLoading message="Loading entities…" />;
+		return (
+			<Stack gap="lg">
+				<SectionTitle
+					kicker="Graph"
+					order={3}
+					mb="md"
+					description="People, places, and things this context has learned about. Select an entity to explore its facts and connections."
+				>
+					Entities
+				</SectionTitle>
+				<EntityToolbar
+					search={search}
+					onSearchChange={setSearch}
+					onClearSearch={() => setSearch("")}
+					typeFilter={typeFilter}
+					onTypeFilterChange={setTypeFilter}
+					types={types}
+					total={0}
+					filtered={0}
+					disabled
+				/>
+				<SimpleGrid
+					cols={{ base: 1, sm: 2, lg: 3 }}
+					spacing="md"
+				>
+					{Array.from({ length: 6 }).map((_, index) => (
+						<Skeleton
+							key={index}
+							h={112}
+							radius="md"
+						/>
+					))}
+				</SimpleGrid>
+			</Stack>
+		);
 	}
 
 	if (listQuery.isError) {
 		return (
-			<QueryError
-				error={listQuery.error}
-				onRetry={() => listQuery.refetch()}
-			/>
+			<Stack gap="lg">
+				<SectionTitle
+					kicker="Graph"
+					order={3}
+					mb="md"
+				>
+					Entities
+				</SectionTitle>
+				<QueryError
+					error={listQuery.error}
+					onRetry={() => listQuery.refetch()}
+				/>
+			</Stack>
 		);
 	}
 
 	if (entities.length === 0) {
 		return (
-			<EmptyState
-				icon={iconRelation}
-				title="No entities yet"
-				description="As this context learns about people, places, and things, they'll show up here as a browsable graph."
-			/>
+			<Stack gap="lg">
+				<SectionTitle
+					kicker="Graph"
+					order={3}
+					mb="md"
+				>
+					Entities
+				</SectionTitle>
+				<EmptyState
+					icon={iconRelation}
+					title="No entities yet"
+					description="As this context learns about people, places, and things, they'll show up here as a browsable graph."
+				/>
+			</Stack>
 		);
 	}
 
 	return (
-		<Grid gap="lg">
-			<Grid.Col span={{ base: 12, md: 5 }}>
-				<Stack gap="sm">
-					<TextInput
-						placeholder="Search entities…"
-						value={search}
-						onChange={(event) => setSearch(event.currentTarget.value)}
-						leftSection={<Icon path={iconSearch} />}
-					/>
-					<Select
-						placeholder="All types"
-						data={types}
-						value={typeFilter}
-						onChange={setTypeFilter}
-						clearable
-						leftSection={<Icon path={iconTag} />}
-						comboboxProps={{ withinPortal: true }}
-					/>
-					<Paper
-						radius="md"
-						withBorder
-						style={{ overflow: "hidden" }}
+		<Stack gap="lg">
+			<SectionTitle
+				kicker="Graph"
+				order={3}
+				description="People, places, and things this context has learned about. Select an entity to explore its facts and connections."
+			>
+				Entities
+			</SectionTitle>
+
+			<EntityToolbar
+				search={search}
+				onSearchChange={setSearch}
+				onClearSearch={() => setSearch("")}
+				typeFilter={typeFilter}
+				onTypeFilterChange={setTypeFilter}
+				types={types}
+				total={entities.length}
+				filtered={filtered.length}
+			/>
+
+			{filtered.length === 0 ? (
+				<Paper
+					p="xl"
+					radius="md"
+				>
+					<Stack
+						align="center"
+						gap="xs"
+						maw={360}
+						mx="auto"
 					>
-						<ScrollArea.Autosize mah={520}>
-							{filtered.length === 0 ? (
-								<Text
-									p="md"
-									fz="sm"
-									c="slate"
-									ta="center"
-								>
-									No entities match your filters.
-								</Text>
-							) : (
-								<Stack gap={0}>
-									{filtered.map((entity) => {
-										const active =
-											selected?.entityType === entity.entityType &&
-											selected?.name === entity.name;
-										return (
-											<EntityRow
-												key={entity.id}
-												entity={entity}
-												active={active}
-												onSelect={() =>
-													setSelected({
-														entityType: entity.entityType,
-														name: entity.name,
-													})
-												}
-											/>
-										);
-									})}
-								</Stack>
-							)}
-						</ScrollArea.Autosize>
-					</Paper>
-				</Stack>
-			</Grid.Col>
-			<Grid.Col span={{ base: 12, md: 7 }}>
-				{selected ? (
-					<EntityDetailPanel
-						client={client}
-						entityType={selected.entityType}
-						name={selected.name}
-					/>
-				) : (
-					<Paper
-						p={48}
-						radius="md"
-						withBorder
-						h="100%"
-					>
-						<Center h="100%">
-							<Stack
-								align="center"
-								gap="xs"
+						<ThemeIcon
+							size={44}
+							radius="xl"
+							variant="light"
+							color="slate"
+						>
+							<Icon path={iconSearch} />
+						</ThemeIcon>
+						<Text
+							fw={600}
+							c="bright"
+							ta="center"
+						>
+							No entities match your filters
+						</Text>
+						<Text
+							fz="sm"
+							ta="center"
+						>
+							{isFiltering
+								? "Try a different name or clear the type filter to see all entities."
+								: "No entities are available right now."}
+						</Text>
+						{isFiltering && (
+							<Button
+								variant="light"
+								color="slate"
+								size="xs"
+								mt="xs"
+								onClick={() => {
+									setSearch("");
+									setTypeFilter(null);
+								}}
 							>
-								<ThemeIcon
-									size={48}
-									radius="xl"
-									variant="light"
-									color="violet"
-								>
-									<Icon
-										path={iconRelation}
-										size="lg"
-									/>
-								</ThemeIcon>
-								<Text
-									fw={600}
-									c="bright"
-								>
-									Select an entity
-								</Text>
-								<Text
-									fz="sm"
-									c="slate"
-									ta="center"
-								>
-									Pick an entity from the list to see its attributes and
-									relations.
-								</Text>
-							</Stack>
-						</Center>
-					</Paper>
-				)}
-			</Grid.Col>
-		</Grid>
+								Clear filters
+							</Button>
+						)}
+					</Stack>
+				</Paper>
+			) : (
+				<SimpleGrid
+					cols={{ base: 1, sm: 2, lg: 3 }}
+					spacing="md"
+				>
+					{filtered.map((entity) => (
+						<EntityCard
+							key={entity.id}
+							entity={entity}
+							onSelect={() =>
+								setSelected({
+									entityType: entity.entityType,
+									name: entity.name,
+								})
+							}
+						/>
+					))}
+				</SimpleGrid>
+			)}
+
+			<EntityInspectorDrawer
+				client={client}
+				selection={selected}
+				onClose={() => setSelected(null)}
+			/>
+		</Stack>
 	);
 }
 
-function EntityRow({
-	entity,
-	active,
-	onSelect,
-}: {
-	entity: EntityDetail;
-	active: boolean;
-	onSelect: () => void;
-}) {
+interface EntityToolbarProps {
+	search: string;
+	onSearchChange: (value: string) => void;
+	onClearSearch: () => void;
+	typeFilter: string | null;
+	onTypeFilterChange: (value: string | null) => void;
+	types: string[];
+	total: number;
+	filtered: number;
+	disabled?: boolean;
+}
+
+function EntityToolbar({
+	search,
+	onSearchChange,
+	onClearSearch,
+	typeFilter,
+	onTypeFilterChange,
+	types,
+	total,
+	filtered,
+	disabled,
+}: EntityToolbarProps) {
+	const isFiltering = search.trim().length > 0 || typeFilter !== null;
+	const countLabel = isFiltering
+		? `${filtered.toLocaleString()} of ${total.toLocaleString()}`
+		: total.toLocaleString();
+
 	return (
-		<Box
-			component="button"
-			type="button"
-			onClick={onSelect}
-			className={classes.entityRow}
-			data-active={active || undefined}
+		<Group
+			justify="space-between"
+			gap="md"
+			wrap="wrap"
 		>
 			<Group
 				gap="sm"
 				wrap="nowrap"
+				style={{ flex: 1, minWidth: 280 }}
 			>
-				<Box flex={1}>
-					<Text
-						fw={500}
-						c="bright"
-						truncate
-					>
-						{entity.name}
-					</Text>
-					<Group gap={6}>
-						<Text
-							fz="xs"
-							c="slate"
-						>
-							{entity.entityType}
-						</Text>
-						<Badge
-							size="xs"
-							variant="light"
-							color={CATEGORY_COLOR[entity.memoryCategory]}
-						>
-							{entity.memoryCategory}
-						</Badge>
-					</Group>
-				</Box>
-				<Icon
-					path={iconChevronRight}
-					c="slate"
-					size="sm"
+				<TextInput
+					placeholder="Search by name…"
+					value={search}
+					disabled={disabled}
+					onChange={(event) => onSearchChange(event.currentTarget.value)}
+					leftSection={<Icon path={iconSearch} />}
+					rightSection={
+						search ? (
+							<CloseButton
+								size="sm"
+								aria-label="Clear search"
+								onClick={onClearSearch}
+							/>
+						) : undefined
+					}
+					style={{ flex: 1, maxWidth: 360 }}
+				/>
+				<Select
+					placeholder="All types"
+					data={types}
+					value={typeFilter}
+					onChange={onTypeFilterChange}
+					clearable
+					disabled={disabled || types.length === 0}
+					w={180}
+					comboboxProps={{ withinPortal: true }}
 				/>
 			</Group>
-		</Box>
+			<Text
+				fz="sm"
+				c="slate"
+				className="selectable"
+			>
+				{countLabel} {total === 1 ? "entity" : "entities"}
+			</Text>
+		</Group>
 	);
 }
 
-function EntityDetailPanel({
+function EntityCard({ entity, onSelect }: { entity: EntityDetail; onSelect: () => void }) {
+	const color = CATEGORY_COLOR[entity.memoryCategory];
+
+	return (
+		<UnstyledButton
+			onClick={onSelect}
+			className={classes.entityCard}
+			aria-label={`View ${entity.name}`}
+		>
+			<Paper
+				p="md"
+				radius="md"
+				withBorder
+				className={classes.entityCardSurface}
+			>
+				<Group
+					gap="sm"
+					wrap="nowrap"
+					align="flex-start"
+				>
+					<ThemeIcon
+						size={40}
+						radius="md"
+						variant="light"
+						color={color}
+					>
+						<Icon
+							path={iconRelation}
+							size="lg"
+						/>
+					</ThemeIcon>
+					<Box
+						flex={1}
+						miw={0}
+					>
+						<Text
+							fw={600}
+							c="bright"
+							truncate
+							title={entity.name}
+							className="selectable"
+						>
+							{entity.name}
+						</Text>
+						<Group
+							gap={6}
+							mt={4}
+							wrap="wrap"
+						>
+							<Badge
+								size="sm"
+								variant="light"
+								color="slate"
+							>
+								{entity.entityType}
+							</Badge>
+							<Badge
+								size="sm"
+								variant="light"
+								color={color}
+							>
+								{entity.memoryCategory}
+							</Badge>
+						</Group>
+						<Text
+							fz="xs"
+							c="slate"
+							mt={6}
+						>
+							Updated {relativeTime(entity.updatedAt)}
+						</Text>
+					</Box>
+					<Icon
+						path={iconChevronRight}
+						c="slate"
+						size="sm"
+					/>
+				</Group>
+			</Paper>
+		</UnstyledButton>
+	);
+}
+
+function EntityInspectorDrawer({
 	client,
-	entityType,
-	name,
+	selection,
+	onClose,
 }: {
 	client: Spectron;
-	entityType: string;
-	name: string;
+	selection: { entityType: string; name: string } | null;
+	onClose: () => void;
 }) {
-	const query = useQuery({
-		queryKey: ["spectron", client.contextId, "memory", "entity", entityType, name],
-		queryFn: () => client.entities.get(entityType, name),
-		retry: false,
-	});
-
 	const [historyKey, setHistoryKey] = useState<string | null>(null);
 	const [historyOpened, { open: openHistory, close: closeHistory }] = useDisclosure(false);
 
-	if (query.isPending) {
-		return (
-			<Paper
-				p="lg"
-				radius="md"
-				withBorder
-				h="100%"
-			>
-				<Stack gap="md">
-					<Skeleton
-						h={28}
-						w="60%"
-					/>
-					<Skeleton h={80} />
-					<Skeleton h={120} />
-				</Stack>
-			</Paper>
-		);
-	}
-
-	if (query.isError) {
-		return (
-			<QueryError
-				error={query.error}
-				onRetry={() => query.refetch()}
-			/>
-		);
-	}
-
-	const { entity, attributes, relations } = query.data;
+	const query = useQuery({
+		queryKey: [
+			"spectron",
+			client.contextId,
+			"memory",
+			"entity",
+			selection?.entityType,
+			selection?.name,
+		],
+		queryFn: () => {
+			if (!selection) {
+				throw new Error("No entity selected");
+			}
+			return client.entities.get(selection.entityType, selection.name);
+		},
+		enabled: selection !== null,
+		retry: false,
+	});
 
 	const showHistory = (key: string) => {
 		setHistoryKey(key);
 		openHistory();
 	};
 
+	const entity = query.data?.entity;
+
 	return (
-		<Paper
-			p="lg"
-			radius="md"
-			withBorder
-			h="100%"
-		>
-			<Group
-				gap="sm"
-				align="flex-start"
-			>
-				<ThemeIcon
-					size={40}
-					radius="md"
-					variant="light"
-					color={CATEGORY_COLOR[entity.memoryCategory]}
-				>
-					<Icon path={iconRelation} />
-				</ThemeIcon>
-				<Box flex={1}>
-					<Text
-						fw={700}
-						fz="lg"
-						c="bright"
-						className="selectable"
-					>
-						{entity.name}
-					</Text>
-					<Group gap="xs">
-						<Badge
-							size="sm"
-							variant="light"
-							color="slate"
+		<>
+			<Drawer
+				opened={selection !== null}
+				onClose={onClose}
+				position="right"
+				size="lg"
+				title={
+					query.isPending || !entity ? (
+						<Skeleton
+							h={28}
+							w={200}
+						/>
+					) : (
+						<Group
+							gap="sm"
+							wrap="nowrap"
 						>
-							{entity.entityType}
-						</Badge>
-						<Badge
-							size="sm"
-							variant="light"
-							color={CATEGORY_COLOR[entity.memoryCategory]}
-						>
-							{entity.memoryCategory}
-						</Badge>
-						<Tooltip label={`Updated ${absoluteTime(entity.updatedAt)}`}>
-							<Text
-								fz="xs"
-								c="slate"
+							<ThemeIcon
+								size={32}
+								radius="md"
+								variant="light"
+								color={CATEGORY_COLOR[entity.memoryCategory]}
 							>
-								updated {relativeTime(entity.updatedAt)}
+								<Icon path={iconRelation} />
+							</ThemeIcon>
+							<Text
+								fw={600}
+								c="bright"
+								truncate
+								className="selectable"
+							>
+								{entity.name}
 							</Text>
-						</Tooltip>
-					</Group>
-				</Box>
-			</Group>
-
-			<Divider my="md" />
-
-			<SectionLabel
-				icon={iconTag}
-				title="Attributes"
-				count={attributes.length}
-			/>
-			{attributes.length === 0 ? (
-				<Text
-					mt="xs"
-					fz="sm"
-					c="slate"
-				>
-					No attributes recorded for this entity.
-				</Text>
-			) : (
-				<Stack
-					gap="sm"
-					mt="sm"
-				>
-					{attributes.map((attribute) => (
-						<AttributeRow
-							key={attribute.id}
-							attribute={attribute}
-							onHistory={() => showHistory(attribute.key)}
+						</Group>
+					)
+				}
+			>
+				{selection &&
+					(query.isPending ? (
+						<Stack gap="md">
+							<Skeleton
+								h={24}
+								w="40%"
+							/>
+							<Skeleton h={80} />
+							<Skeleton h={120} />
+						</Stack>
+					) : query.isError ? (
+						<QueryError
+							error={query.error}
+							onRetry={() => query.refetch()}
+						/>
+					) : (
+						<EntityDetailBody
+							entity={query.data.entity}
+							attributes={query.data.attributes}
+							relations={query.data.relations}
+							onShowHistory={showHistory}
 						/>
 					))}
-				</Stack>
-			)}
-
-			<Divider my="md" />
-
-			<SectionLabel
-				icon={iconRelation}
-				title="Relations"
-				count={relations.length}
-			/>
-			{relations.length === 0 ? (
-				<Text
-					mt="xs"
-					fz="sm"
-					c="slate"
-				>
-					No relations recorded for this entity.
-				</Text>
-			) : (
-				<Stack
-					gap="xs"
-					mt="sm"
-				>
-					{relations.map((relation) => (
-						<RelationRow
-							key={relation.id}
-							relation={relation}
-						/>
-					))}
-				</Stack>
-			)}
+			</Drawer>
 
 			<Drawer
 				opened={historyOpened}
 				onClose={closeHistory}
 				position="right"
+				size="md"
 				title={
 					<Text fw={600}>
-						History · <Text span>{historyKey}</Text>
+						Attribute history · <Text span>{historyKey}</Text>
 					</Text>
 				}
 			>
-				{historyKey && (
+				{historyKey && selection && (
 					<AttributeHistory
 						client={client}
-						entityType={entityType}
-						name={name}
+						entityType={selection.entityType}
+						name={selection.name}
 						attributeKey={historyKey}
 					/>
 				)}
 			</Drawer>
-		</Paper>
+		</>
+	);
+}
+
+function EntityDetailBody({
+	entity,
+	attributes,
+	relations,
+	onShowHistory,
+}: {
+	entity: EntityDetail;
+	attributes: AttributeDetail[];
+	relations: RelationDetail[];
+	onShowHistory: (key: string) => void;
+}) {
+	return (
+		<Stack gap="lg">
+			<Group
+				gap="xs"
+				wrap="wrap"
+			>
+				<Badge
+					size="sm"
+					variant="light"
+					color="slate"
+				>
+					{entity.entityType}
+				</Badge>
+				<Badge
+					size="sm"
+					variant="light"
+					color={CATEGORY_COLOR[entity.memoryCategory]}
+				>
+					{entity.memoryCategory}
+				</Badge>
+				<Tooltip label={`Updated ${absoluteTime(entity.updatedAt)}`}>
+					<Text
+						fz="xs"
+						c="slate"
+					>
+						Updated {relativeTime(entity.updatedAt)}
+					</Text>
+				</Tooltip>
+			</Group>
+
+			<Box>
+				<SectionTitle
+					kicker="Facts"
+					order={4}
+					mb="sm"
+					description="Key-value properties recorded about this entity."
+				>
+					Attributes
+				</SectionTitle>
+				{attributes.length === 0 ? (
+					<Text
+						fz="sm"
+						c="slate"
+					>
+						No attributes recorded for this entity yet.
+					</Text>
+				) : (
+					<Stack
+						gap="sm"
+						mt="sm"
+					>
+						{attributes.map((attribute) => (
+							<AttributeRow
+								key={attribute.id}
+								attribute={attribute}
+								onHistory={() => onShowHistory(attribute.key)}
+							/>
+						))}
+					</Stack>
+				)}
+			</Box>
+
+			<Box>
+				<SectionTitle
+					kicker="Graph"
+					order={4}
+					mb="sm"
+					description="How this entity connects to others in the memory graph."
+				>
+					Relations
+				</SectionTitle>
+				{relations.length === 0 ? (
+					<Text
+						fz="sm"
+						c="slate"
+					>
+						No relations recorded for this entity yet.
+					</Text>
+				) : (
+					<Stack
+						gap="sm"
+						mt="sm"
+					>
+						{relations.map((relation) => (
+							<RelationRow
+								key={relation.id}
+								relation={relation}
+							/>
+						))}
+					</Stack>
+				)}
+			</Box>
+		</Stack>
 	);
 }
 
@@ -987,7 +1078,7 @@ function AttributeRow({
 		<Paper
 			p="sm"
 			radius="sm"
-			withBorder
+			className={classes.factRow}
 		>
 			<Group
 				justify="space-between"
@@ -1073,37 +1164,45 @@ function AttributeRow({
 
 function RelationRow({ relation }: { relation: RelationDetail }) {
 	return (
-		<Group
-			gap="xs"
-			wrap="nowrap"
-			className="selectable"
+		<Paper
+			p="sm"
+			radius="sm"
+			className={classes.factRow}
 		>
-			<Text
-				fz="sm"
-				c="bright"
+			<Group
+				gap="xs"
+				wrap="wrap"
+				className="selectable"
 			>
-				{relation.subject}
-			</Text>
-			<Badge
-				size="sm"
-				variant="light"
-				color="violet"
-				leftSection={
-					<Icon
-						path={iconChevronRight}
-						size="xs"
-					/>
-				}
-			>
-				{relation.label}
-			</Badge>
-			<Text
-				fz="sm"
-				c="bright"
-			>
-				{relation.object}
-			</Text>
-		</Group>
+				<Text
+					fz="sm"
+					c="bright"
+					fw={500}
+				>
+					{relation.subject}
+				</Text>
+				<Badge
+					size="sm"
+					variant="light"
+					color="violet"
+					leftSection={
+						<Icon
+							path={iconChevronRight}
+							size="xs"
+						/>
+					}
+				>
+					{relation.label}
+				</Badge>
+				<Text
+					fz="sm"
+					c="bright"
+					fw={500}
+				>
+					{relation.object}
+				</Text>
+			</Group>
+		</Paper>
 	);
 }
 
@@ -1179,8 +1278,7 @@ function AttributeHistory({
 						key={entry.id}
 						p="sm"
 						radius="sm"
-						withBorder
-						className={current ? classes.historyCurrent : undefined}
+						className={current ? classes.historyCurrent : classes.factRow}
 					>
 						<Group
 							justify="space-between"
@@ -1273,7 +1371,7 @@ function TracesTab({ client }: { client: Spectron }) {
 	}
 
 	const stats = statsQuery.data;
-	const traces = tracesQuery.data;
+	const traces = tracesQuery.data ?? [];
 
 	if (traces.length === 0 && stats.totalQueries === 0) {
 		return (
@@ -1289,128 +1387,177 @@ function TracesTab({ client }: { client: Spectron }) {
 
 	return (
 		<Stack gap="xl">
-			<SimpleGrid
-				cols={{ base: 2, md: 4 }}
-				spacing="md"
-			>
-				<TraceStat
-					label="Total queries"
-					value={stats.totalQueries.toLocaleString()}
-				/>
-				<TraceStat
-					label="Avg latency"
-					value={`${Math.round(stats.avgLatencyMs).toLocaleString()} ms`}
-				/>
-				<TraceStat
-					label="Cache hit rate"
-					value={`${(stats.cacheHitRate * 100).toFixed(1)}%`}
-				/>
-				<TraceStat
-					label="Cache hits"
-					value={stats.cacheHits.toLocaleString()}
-				/>
-				<TraceStat
-					label="Direct"
-					value={stats.tierCounts.direct.toLocaleString()}
-				/>
-				<TraceStat
-					label="Hybrid"
-					value={stats.tierCounts.hybrid.toLocaleString()}
-				/>
-				<TraceStat
-					label="Full context"
-					value={stats.tierCounts.fullContext.toLocaleString()}
-				/>
-				<TraceStat
-					label="Window"
-					value={`${stats.windowHours.toLocaleString()} h`}
-				/>
-			</SimpleGrid>
+			<Box>
+				<SectionTitle
+					kicker="Retrieval"
+					order={3}
+					mb="md"
+				>
+					Query statistics
+				</SectionTitle>
+				<SimpleGrid
+					cols={{ base: 2, md: 4 }}
+					spacing="md"
+				>
+					<TraceStat
+						label="Total queries"
+						value={stats.totalQueries.toLocaleString()}
+					/>
+					<TraceStat
+						label="Avg latency"
+						value={`${Math.round(stats.avgLatencyMs).toLocaleString()} ms`}
+					/>
+					<TraceStat
+						label="Cache hit rate"
+						value={`${(stats.cacheHitRate * 100).toFixed(1)}%`}
+					/>
+					<TraceStat
+						label="Cache hits"
+						value={stats.cacheHits.toLocaleString()}
+					/>
+					<TraceStat
+						label="Direct"
+						value={stats.tierCounts.direct.toLocaleString()}
+					/>
+					<TraceStat
+						label="Hybrid"
+						value={stats.tierCounts.hybrid.toLocaleString()}
+					/>
+					<TraceStat
+						label="Full context"
+						value={stats.tierCounts.fullContext.toLocaleString()}
+					/>
+					<TraceStat
+						label="Window"
+						value={`${stats.windowHours.toLocaleString()} h`}
+					/>
+				</SimpleGrid>
+			</Box>
 
 			<Box>
-				<SectionLabel
-					icon={iconHistory}
-					title="Recent queries"
-					count={traces.length}
-				/>
-				<Paper
-					mt="sm"
-					radius="md"
-					withBorder
-					style={{ overflow: "hidden" }}
+				<SectionTitle
+					kicker="Activity"
+					order={3}
+					mb="md"
+					description="Individual retrieval decisions from the Playground or integrated agents. Click a row for details."
 				>
-					<Table.ScrollContainer minWidth={640}>
-						<Table
-							striped
-							highlightOnHover
-							verticalSpacing="sm"
-							horizontalSpacing="md"
+					Recent queries
+				</SectionTitle>
+				{traces.length === 0 ? (
+					<Paper
+						p="xl"
+						radius="md"
+					>
+						<Stack
+							align="center"
+							gap="xs"
+							maw={360}
+							mx="auto"
 						>
-							<Table.Thead>
-								<Table.Tr>
-									<Table.Th>Query</Table.Th>
-									<Table.Th>Tier</Table.Th>
-									<Table.Th>Latency</Table.Th>
-									<Table.Th>Cached</Table.Th>
-									<Table.Th>When</Table.Th>
-								</Table.Tr>
-							</Table.Thead>
-							<Table.Tbody>
-								{traces.map((trace) => (
-									<Table.Tr
-										key={trace.id}
-										onClick={() => setOpenTrace(trace.id)}
-										style={{ cursor: "pointer" }}
-									>
-										<Table.Td>
-											<Text
-												fz="sm"
-												c="bright"
-												lineClamp={1}
-												maw={280}
-											>
-												{trace.queryText}
-											</Text>
-										</Table.Td>
-										<Table.Td>
-											<Badge
-												size="sm"
-												variant="light"
-												color="violet"
-											>
-												{trace.resolutionTier}
-											</Badge>
-										</Table.Td>
-										<Table.Td>
-											<Text fz="sm">
-												{trace.latencyMs.toLocaleString()} ms
-											</Text>
-										</Table.Td>
-										<Table.Td>
-											<Badge
-												size="sm"
-												variant="light"
-												color={trace.cached ? "green" : "slate"}
-											>
-												{trace.cached ? "hit" : "miss"}
-											</Badge>
-										</Table.Td>
-										<Table.Td>
-											<Tooltip label={absoluteTime(trace.createdAt)}>
+							<ThemeIcon
+								size={44}
+								radius="xl"
+								variant="light"
+								color="slate"
+							>
+								<Icon path={iconHistory} />
+							</ThemeIcon>
+							<Text
+								fw={600}
+								c="bright"
+								ta="center"
+							>
+								No recent queries in this window
+							</Text>
+							<Text
+								fz="sm"
+								ta="center"
+							>
+								Statistics reflect activity in the current time window, but no
+								individual trace records are available to list right now.
+							</Text>
+						</Stack>
+					</Paper>
+				) : (
+					<Paper
+						radius="md"
+						withBorder
+						style={{ overflow: "hidden" }}
+					>
+						<Table.ScrollContainer minWidth={640}>
+							<Table
+								striped
+								highlightOnHover
+								verticalSpacing="sm"
+								horizontalSpacing="md"
+							>
+								<Table.Thead>
+									<Table.Tr>
+										<Table.Th>Query</Table.Th>
+										<Table.Th>Tier</Table.Th>
+										<Table.Th>Latency</Table.Th>
+										<Table.Th>Cached</Table.Th>
+										<Table.Th>When</Table.Th>
+									</Table.Tr>
+								</Table.Thead>
+								<Table.Tbody>
+									{traces.map((trace) => (
+										<Table.Tr
+											key={trace.id}
+											onClick={() => setOpenTrace(trace.id)}
+											style={{ cursor: "pointer" }}
+										>
+											<Table.Td>
 												<Text
 													fz="sm"
-													c="slate"
+													c="bright"
+													lineClamp={1}
+													maw={280}
+													className="selectable"
 												>
-													{relativeTime(trace.createdAt)}
+													{trace.queryText}
 												</Text>
-											</Tooltip>
-										</Table.Td>
-									</Table.Tr>
-								))}
-							</Table.Tbody>
-						</Table>
-					</Table.ScrollContainer>
-				</Paper>
+											</Table.Td>
+											<Table.Td>
+												<Badge
+													size="sm"
+													variant="light"
+													color="violet"
+												>
+													{trace.resolutionTier}
+												</Badge>
+											</Table.Td>
+											<Table.Td>
+												<Text fz="sm">
+													{trace.latencyMs.toLocaleString()} ms
+												</Text>
+											</Table.Td>
+											<Table.Td>
+												<Badge
+													size="sm"
+													variant="light"
+													color={trace.cached ? "green" : "slate"}
+												>
+													{trace.cached ? "hit" : "miss"}
+												</Badge>
+											</Table.Td>
+											<Table.Td>
+												<Tooltip label={absoluteTime(trace.createdAt)}>
+													<Text
+														fz="sm"
+														c="slate"
+													>
+														{relativeTime(trace.createdAt)}
+													</Text>
+												</Tooltip>
+											</Table.Td>
+										</Table.Tr>
+									))}
+								</Table.Tbody>
+							</Table>
+						</Table.ScrollContainer>
+					</Paper>
+				)}
 			</Box>
 
 			<Drawer
@@ -1486,36 +1633,6 @@ type TraceRecord = Awaited<ReturnType<Spectron["traces"]["list"]>>[number];
 
 // ─── Small shared bits ───
 
-function SectionLabel({ icon, title, count }: { icon: string; title: string; count?: number }) {
-	return (
-		<Group gap="xs">
-			<Icon
-				path={icon}
-				c="slate"
-				size="sm"
-			/>
-			<Text
-				fw={600}
-				fz="sm"
-				c="bright"
-				tt="uppercase"
-				style={{ letterSpacing: "0.05em" }}
-			>
-				{title}
-			</Text>
-			{count !== undefined && (
-				<Badge
-					size="sm"
-					variant="light"
-					color="slate"
-				>
-					{count}
-				</Badge>
-			)}
-		</Group>
-	);
-}
-
 function MiniLabel({ children }: { children: React.ReactNode }) {
 	return (
 		<Text
@@ -1534,7 +1651,7 @@ function CountStat({ value, label }: { value: number; label: string }) {
 	return (
 		<Box>
 			<Text
-				fz={22}
+				fz={20}
 				fw={700}
 				c="bright"
 				lh={1.1}
@@ -1556,13 +1673,13 @@ function TraceStat({ label, value }: { label: string; value: string }) {
 		<Paper
 			p="md"
 			radius="md"
-			withBorder
 		>
 			<Text
 				fz={24}
 				fw={700}
 				c="bright"
 				lh={1.1}
+				className="selectable"
 			>
 				{value}
 			</Text>

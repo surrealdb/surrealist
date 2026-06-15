@@ -16,7 +16,7 @@ import {
 	iconCog,
 	iconList,
 	iconTune,
-	pictoCapabilites,
+	pictoCapabilitesGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
 import {
@@ -73,7 +73,7 @@ export function ConfigurationTab({ context }: ContextViewProps) {
 				kicker="Settings"
 				title="Configuration"
 				description="A read-only summary of the models, providers, and ingestion behaviour provisioned for this context's memory pipeline."
-				art={pictoCapabilites}
+				art={pictoCapabilitesGradient}
 			/>
 
 			{/* CONFIGURATION */}
@@ -258,7 +258,6 @@ export function ConfigurationTab({ context }: ContextViewProps) {
 										{provider.models.map((model) => (
 											<Badge
 												key={model}
-												variant="default"
 												tt="none"
 											>
 												{model}

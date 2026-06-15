@@ -1,5 +1,6 @@
-import { Spectron } from "@surrealdb/spectron";
-import { createContext, type PropsWithChildren, useContext, useMemo } from "react";
+import { Spectron, type WhoamiResponseJson } from "@surrealdb/spectron";
+import { useQuery } from "@tanstack/react-query";
+import { createContext, type PropsWithChildren, useCallback, useContext, useMemo } from "react";
 import { useSpectronAccessTokenQuery } from "~/cloud/queries/contexts";
 import type { CloudContext } from "~/types";
 
@@ -12,12 +13,19 @@ export interface SpectronContextValue {
 	endpoint: string;
 	/** The Spectron context id. */
 	contextId: string;
-	/** The caller's own principal id (from the access token), once known. */
+	/** The caller's own principal id, once known (`whoami` with token fallback). */
 	principalId: string | null;
+	/** Resolved identity and grants for the calling principal (`GET /me`). */
+	whoami: WhoamiResponseJson | null;
 	status: SpectronStatus;
 	error: Error | null;
 	/** Force a re-mint of the access token and rebuild the client. */
 	refresh: () => void;
+	/**
+	 * Returns a client that sends `X-Spectron-On-Behalf-Of` for `principalId`.
+	 * Requires the `manage` grant. The original client is unchanged.
+	 */
+	onBehalfOf: (principalId: string) => Spectron | null;
 }
 
 const SpectronCtx = createContext<SpectronContextValue | null>(null);
@@ -41,7 +49,6 @@ export function SpectronProvider({ context, organizationId, children }: Spectron
 	const tokenQuery = useSpectronAccessTokenQuery(organizationId, context.id);
 
 	const token = tokenQuery.data?.key ?? null;
-	const principalId = tokenQuery.data?.principal_id ?? null;
 
 	const client = useMemo(() => {
 		if (!token) return null;
@@ -53,6 +60,25 @@ export function SpectronProvider({ context, organizationId, children }: Spectron
 		});
 	}, [token, context.id, endpoint]);
 
+	const whoamiQuery = useQuery({
+		queryKey: ["spectron", context.id, "whoami"],
+		enabled: !!client,
+		queryFn: async () => {
+			if (!client) {
+				throw new Error("Spectron client is not ready");
+			}
+			return client.whoami();
+		},
+		staleTime: 60_000,
+	});
+
+	const principalId = whoamiQuery.data?.principalId ?? tokenQuery.data?.principal_id ?? null;
+
+	const onBehalfOf = useCallback(
+		(delegatePrincipalId: string) => client?.onBehalfOf(delegatePrincipalId) ?? null,
+		[client],
+	);
+
 	const status: SpectronStatus = client ? "ready" : tokenQuery.isError ? "error" : "loading";
 
 	const value = useMemo<SpectronContextValue>(
@@ -61,13 +87,27 @@ export function SpectronProvider({ context, organizationId, children }: Spectron
 			endpoint,
 			contextId: context.id,
 			principalId,
+			whoami: whoamiQuery.data ?? null,
 			status,
 			error: (tokenQuery.error as Error | null) ?? null,
 			refresh: () => {
 				tokenQuery.refetch();
+				whoamiQuery.refetch();
 			},
+			onBehalfOf,
 		}),
-		[client, endpoint, context.id, principalId, status, tokenQuery.error, tokenQuery.refetch],
+		[
+			client,
+			endpoint,
+			context.id,
+			principalId,
+			whoamiQuery.data,
+			status,
+			tokenQuery.error,
+			tokenQuery.refetch,
+			whoamiQuery.refetch,
+			onBehalfOf,
+		],
 	);
 
 	return <SpectronCtx.Provider value={value}>{children}</SpectronCtx.Provider>;

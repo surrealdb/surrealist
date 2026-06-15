@@ -43,7 +43,6 @@ import { Section } from "~/components/Section";
 import { useHasCloudFeature } from "~/hooks/cloud";
 import { plural } from "~/util/helpers";
 import { useSidebar } from "../../../sidebar/portal";
-import classes from "../style.module.scss";
 import type { OrganizationTabProps } from "../types";
 
 interface ResourceCardProps {
@@ -76,10 +75,7 @@ function ResourceCard({
 			onClick={onClick}
 			style={{ cursor: "pointer" }}
 		>
-			<Paper
-				p="xl"
-				className={featured ? classes.featuredCard : undefined}
-			>
+			<Paper p="xl">
 				<Group
 					gap="md"
 					pos="relative"
@@ -177,15 +173,14 @@ function ResourceCard({
 							src={image}
 							alt=""
 							aria-hidden
-							className={featured ? classes.featuredImage : undefined}
 							w={150}
 							pos="absolute"
-							bottom={featured ? -40 : -45}
-							right={featured ? -25 : -32}
+							bottom={-45}
+							right={-32}
 							style={{
 								mixBlendMode: "plus-lighter",
-								filter: featured ? undefined : "grayscale(100%)",
-								opacity: featured ? 0.55 : 0.2,
+								filter: "grayscale(100%)",
+								opacity: 0.2,
 							}}
 						/>
 					</Box>

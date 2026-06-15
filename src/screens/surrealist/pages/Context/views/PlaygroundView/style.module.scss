@@ -22,12 +22,20 @@
 	}
 }
 
-.chatPaper {
+.chat-pane,
+.activity-pane {
 	display: flex;
 	flex-direction: column;
 	min-height: 0;
 	height: 100%;
 	overflow: hidden;
+}
+
+.chat-body {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 .thread {
@@ -35,133 +43,28 @@
 	min-height: 0;
 }
 
-.threadInner {
+.thread-inner {
 	display: flex;
 	flex-direction: column;
 	gap: var(--mantine-spacing-md);
-	padding: var(--mantine-spacing-md);
+	padding: var(--mantine-spacing-xl);
 }
 
 .composer {
-	border-top: 1px solid var(--mantine-color-obsidian-5);
-
-	@include light {
-		border-top-color: var(--mantine-color-slate-2);
-	}
-}
-
-// ─── Chat bubbles ───
-
-.bubbleRow {
-	display: flex;
-	gap: var(--mantine-spacing-sm);
-	align-items: flex-end;
-	max-width: 100%;
-}
-
-.bubbleRowUser {
-	justify-content: flex-end;
-}
-
-.userBubble {
-	max-width: 80%;
-	padding: 10px 13px;
-	border-radius: var(--mantine-radius-md);
-	border-bottom-right-radius: 4px;
-	background: color-mix(in srgb, var(--mantine-color-violet-6) 32%, var(--mantine-color-obsidian-light));
-	border: 1px solid color-mix(in srgb, var(--mantine-color-violet-5) 40%, transparent);
-	color: var(--mantine-color-bright);
-	overflow-wrap: anywhere;
-
-	@include light {
-		background: color-mix(in srgb, var(--mantine-color-violet-5) 16%, var(--mantine-color-white));
-		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 35%, transparent);
-	}
-}
-
-.assistantBubble {
-	max-width: 84%;
-	padding: 10px 13px;
-	border-radius: var(--mantine-radius-md);
-	border-bottom-left-radius: 4px;
-	background: var(--mantine-color-obsidian-7);
-	border: 1px solid var(--mantine-color-obsidian-5);
-	color: var(--mantine-color-bright);
-	overflow-wrap: anywhere;
-
-	@include light {
-		background: var(--mantine-color-white);
-		border-color: var(--mantine-color-slate-2);
-	}
-}
-
-.avatar {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 28px;
-	height: 28px;
-	border-radius: 50%;
 	flex-shrink: 0;
-	background: color-mix(in srgb, var(--mantine-color-violet-6) 28%, var(--mantine-color-obsidian-7));
-	border: 1px solid color-mix(in srgb, var(--mantine-color-violet-5) 40%, transparent);
 }
 
-.trace {
-	font-family: var(--mantine-font-family-monospace);
-	font-size: 10px;
-	letter-spacing: 0.02em;
-	color: var(--mantine-color-slate-5);
-	overflow-wrap: anywhere;
-}
-
-.fadeIn {
-	animation: bubble-in 220ms ease-out;
-}
-
-@keyframes bubble-in {
-	from {
-		opacity: 0;
-		transform: translateY(4px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-// ─── Memory activity panel ───
-
-.activityPaper {
-	display: flex;
-	flex-direction: column;
-	min-height: 0;
-	height: 100%;
-	overflow: hidden;
-}
-
-.activityScroll {
+.activity-scroll {
 	flex: 1;
 	min-height: 0;
 }
 
-.activitySection {
+.activity-section {
 	min-height: 0;
 }
 
-.hitCard {
-	border: 1px solid var(--mantine-color-obsidian-5);
-	background: color-mix(in srgb, var(--mantine-color-obsidian-6) 50%, transparent);
-	transition:
-		border-color 180ms ease,
-		background-color 180ms ease;
-
-	&:hover {
-		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 45%, transparent);
-	}
-
+.hit-card {
 	@include light {
-		border-color: var(--mantine-color-slate-2);
 		background: var(--mantine-color-slate-0);
 	}
 }
@@ -174,7 +77,7 @@
 	overflow: hidden;
 }
 
-.pulseDot {
+.pulse-dot {
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
@@ -184,36 +87,47 @@
 	flex-shrink: 0;
 }
 
+.trace {
+	font-family: var(--mantine-font-family-monospace);
+	font-size: 10px;
+	letter-spacing: 0.02em;
+	overflow-wrap: anywhere;
+}
+
+.fade-in {
+	animation: bubble-in 220ms ease-out;
+}
+
+@keyframes bubble-in {
+	from {
+		opacity: 0;
+		transform: translateY(4px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 @keyframes playground-pulse {
 	0% {
 		box-shadow: 0 0 0 0 color-mix(in srgb, var(--mantine-color-violet-4) 55%, transparent);
 	}
+
 	70% {
 		box-shadow: 0 0 0 7px color-mix(in srgb, var(--mantine-color-violet-4) 0%, transparent);
 	}
+
 	100% {
 		box-shadow: 0 0 0 0 color-mix(in srgb, var(--mantine-color-violet-4) 0%, transparent);
 	}
 }
 
-.promptChip {
-	transition: border-color 160ms ease;
-
-	&:hover {
-		border-color: color-mix(in srgb, var(--mantine-color-violet-5) 50%, transparent);
-	}
-}
-
 @media (prefers-reduced-motion: reduce) {
-	.pulseDot {
-		animation: none;
-	}
 
-	.fadeIn {
+	.pulse-dot,
+	.fade-in {
 		animation: none;
-	}
-
-	.hitCard {
-		transition: none;
 	}
 }

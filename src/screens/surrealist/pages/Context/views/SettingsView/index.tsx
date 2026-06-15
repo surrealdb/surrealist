@@ -7,8 +7,8 @@ import { UsageTab } from "./tabs/Usage";
 /**
  * Admin-only Settings surface for a context. The router guarantees that only
  * organization admins/owners reach this view; it simply dispatches to the tab
- * selected by the URL. Each tab uses the Cloud API hooks (control plane), not
- * the Spectron data-plane SDK.
+ * selected by the URL. Principal management uses the Cloud control plane; the
+ * Spectron SDK (`whoami`, `onBehalfOf`) is used for data-plane identity only.
  *
  * The "Users" and "Service Accounts" tabs share one component, parameterised by
  * the principal kind each manages; both nest the agent principals owned by their
