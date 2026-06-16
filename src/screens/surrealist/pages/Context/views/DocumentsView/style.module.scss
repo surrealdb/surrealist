@@ -1,13 +1,3 @@
-.file-card {
-	height: 100%;
-	transition: border-color 180ms ease, transform 180ms ease;
-
-	&:hover {
-		transform: translateY(-1px);
-		border-color: color-mix(in srgb, var(--mantine-color-violet-4) 45%, transparent);
-	}
-}
-
 .snippet {
 	color: var(--mantine-color-text);
 	line-height: 1.55;
@@ -33,15 +23,5 @@
 	&[data-dragging] {
 		border-color: color-mix(in srgb, var(--mantine-color-violet-4) 60%, transparent);
 		background: color-mix(in srgb, var(--mantine-color-violet-6) 12%, transparent);
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.file-card {
-		transition: none;
-	}
-
-	.file-card:hover {
-		transform: none;
 	}
 }
