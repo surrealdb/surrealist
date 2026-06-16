@@ -34,7 +34,8 @@ import {
 	pictoDocumentGradient,
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
+import type { SpectronScopeSets } from "~/types";
 import { formatFileSize, showErrorNotification, showInfo } from "~/util/helpers";
 import { ContextHero } from "../../components/ContextHero";
 import { EmptyState, PageError, SpectronGate } from "../../components/feedback";
@@ -98,7 +99,8 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 
 	const listQuery = useQuery({
 		queryKey: listQueryKey,
-		queryFn: () => client.documents.list({ page, pageSize: PAGE_SIZE }),
+		// Mantine's Pagination is 1-based; the API expects a 0-indexed page.
+		queryFn: () => client.documents.list({ page: page - 1, pageSize: PAGE_SIZE }),
 		retry: false,
 		placeholderData: (prev) => prev,
 		// Poll while anything is still being processed so statuses advance live.
@@ -738,7 +740,8 @@ function InspectorBody({
 	const chunksQuery = useQuery({
 		queryKey: ["spectron", client.contextId, "documents", "chunks", doc.id, chunkPage],
 		queryFn: () =>
-			client.documents.chunks(doc.id, { page: chunkPage, pageSize: CHUNK_PAGE_SIZE }),
+			// Mantine's Pagination is 1-based; the API expects a 0-indexed page.
+			client.documents.chunks(doc.id, { page: chunkPage - 1, pageSize: CHUNK_PAGE_SIZE }),
 		retry: false,
 		placeholderData: (prev) => prev,
 		enabled: doc.status === "ready",
@@ -956,6 +959,179 @@ interface UploadItem {
 	error?: string;
 }
 
+// ─── Scope selector (DNF) ───
+
+/**
+ * Builds a DNF scope selector to narrow a document's visibility. Each "set" is a
+ * space-separated list of scope paths that are ANDed together; the sets are ORed.
+ * e.g. set 1 `org/apple` + set 2 `team/x clearance/secret` ⇒
+ * `"org/apple" OR ("team/x" AND "clearance/secret")`. Empty inherits the
+ * uploader's full write region.
+ */
+function ScopeSetsField({
+	value,
+	onChange,
+	disabled,
+}: {
+	value: SpectronScopeSets;
+	onChange: (value: SpectronScopeSets) => void;
+	disabled?: boolean;
+}) {
+	const [draft, setDraft] = useState("");
+
+	const addSet = () => {
+		const paths = Array.from(new Set(draft.trim().split(/\s+/).filter(Boolean)));
+		if (paths.length === 0) return;
+		onChange([...value, paths]);
+		setDraft("");
+	};
+
+	const removeSet = (index: number) => {
+		onChange(value.filter((_, i) => i !== index));
+	};
+
+	const removePath = (setIndex: number, pathIndex: number) => {
+		const next = value
+			.map((set, i) => (i === setIndex ? set.filter((_, j) => j !== pathIndex) : set))
+			.filter((set) => set.length > 0);
+		onChange(next);
+	};
+
+	const expression = value
+		.map((set) =>
+			set.length > 1 ? `(${set.map((p) => `"${p}"`).join(" AND ")})` : `"${set[0]}"`,
+		)
+		.join(" OR ");
+
+	return (
+		<Stack gap="xs">
+			<Box>
+				<Text
+					fz="sm"
+					fw={500}
+					c="bright"
+				>
+					Limit visibility (optional)
+				</Text>
+				<Text
+					fz="xs"
+					c="slate"
+				>
+					Add one or more scope sets to narrow who can see this document. Paths within a
+					set are ANDed; each set is ORed. Leave empty to inherit your full write region.
+				</Text>
+			</Box>
+
+			<Group
+				gap="xs"
+				wrap="nowrap"
+				align="flex-end"
+			>
+				<TextInput
+					flex={1}
+					label="Scope set"
+					placeholder="e.g. team/x clearance/secret"
+					value={draft}
+					disabled={disabled}
+					onChange={(event) => setDraft(event.currentTarget.value)}
+					onKeyDown={(event) => {
+						if (event.key === "Enter") {
+							event.preventDefault();
+							addSet();
+						}
+					}}
+				/>
+				<Button
+					variant="light"
+					onClick={addSet}
+					disabled={disabled || draft.trim().length === 0}
+				>
+					Add set
+				</Button>
+			</Group>
+
+			{value.length > 0 && (
+				<Stack gap={4}>
+					{value.map((set, setIndex) => (
+						<Fragment key={setIndex}>
+							{setIndex > 0 && (
+								<Text
+									fz={11}
+									fw={500}
+									c="slate"
+									ta="center"
+									style={{ letterSpacing: "0.08em" }}
+								>
+									OR
+								</Text>
+							)}
+							<Paper
+								radius="sm"
+								withBorder
+								px="xs"
+								py={4}
+							>
+								<Group
+									gap="xs"
+									wrap="nowrap"
+									align="center"
+								>
+									<Group
+										gap={6}
+										flex={1}
+									>
+										{set.map((path, pathIndex) => (
+											<Badge
+												key={pathIndex}
+												variant="light"
+												color="violet"
+												tt="none"
+												rightSection={
+													disabled ? undefined : (
+														<CloseButton
+															size={14}
+															aria-label={`Remove ${path}`}
+															onClick={() =>
+																removePath(setIndex, pathIndex)
+															}
+														/>
+													)
+												}
+											>
+												{path}
+											</Badge>
+										))}
+									</Group>
+									<Tooltip label="Remove set">
+										<ActionIcon
+											variant="subtle"
+											color="red"
+											size="sm"
+											aria-label={`Remove scope set ${setIndex + 1}`}
+											disabled={disabled}
+											onClick={() => removeSet(setIndex)}
+										>
+											<Icon path={iconTrash} />
+										</ActionIcon>
+									</Tooltip>
+								</Group>
+							</Paper>
+						</Fragment>
+					))}
+					<Text
+						fz="xs"
+						c="slate"
+						ff="monospace"
+						style={{ wordBreak: "break-word" }}
+					>
+						{expression}
+					</Text>
+				</Stack>
+			)}
+		</Stack>
+	);
+}
+
 function UploadModal({
 	client,
 	opened,
@@ -971,11 +1147,13 @@ function UploadModal({
 	const [items, setItems] = useState<UploadItem[]>([]);
 	const [busy, setBusy] = useState(false);
 	const [dragging, setDragging] = useState(false);
+	const [scopes, setScopes] = useState<SpectronScopeSets>([]);
 
 	const reset = () => {
 		setItems([]);
 		setBusy(false);
 		setDragging(false);
+		setScopes([]);
 	};
 
 	const handleClose = () => {
@@ -1008,6 +1186,7 @@ function UploadModal({
 					filename: file.name,
 					title: file.name,
 					contentType: file.type || undefined,
+					scopes: scopes.length > 0 ? scopes : undefined,
 				});
 				update(itemIndex, { state: "done", deduplicated: result.deduplicated });
 				anySucceeded = true;
@@ -1059,6 +1238,12 @@ function UploadModal({
 						handleFiles(event.currentTarget.files);
 						event.currentTarget.value = "";
 					}}
+				/>
+
+				<ScopeSetsField
+					value={scopes}
+					onChange={setScopes}
+					disabled={busy}
 				/>
 
 				<UnstyledButton

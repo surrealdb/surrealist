@@ -78,13 +78,13 @@ const SEP = " / ";
 type OwnerKind = "human" | "service";
 
 const VERB_HELP: Record<SpectronVerb, string> = {
-	read: "Read facts in the granted scopes",
-	write: "Create and supersede facts in the granted scopes",
-	create_scope: "Register new scope nodes",
-	delete_scope: "Tombstone scope nodes",
-	grant: "Share access with other principals",
-	manage: "Manage principals, keys, and configuration",
-	forget: "Permanently erase facts (GDPR)",
+	"memory:read": "Read facts and documents in the granted scopes",
+	"memory:write": "Create and supersede facts, and ingest documents, in the granted scopes",
+	"memory:forget": "Permanently erase facts and documents (GDPR)",
+	"scope:read": "Browse the scope vocabulary and node metadata",
+	"scope:create": "Register new scope nodes",
+	"scope:delete": "Tombstone scope nodes",
+	"grant:manage": "List, grant, and revoke access on principals",
 };
 
 // ─── Grant helpers ───

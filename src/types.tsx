@@ -802,24 +802,24 @@ export interface MintSpectronAccessToken {
 	ttl_seconds?: number;
 }
 
-/** The seven Spectron grant verbs (design-scope-model §6.1). */
+/** The seven Spectron grant verbs in `<noun>:<verb>` form (design-scope-model §6.1). */
 export type SpectronVerb =
-	| "read"
-	| "write"
-	| "create_scope"
-	| "delete_scope"
-	| "grant"
-	| "manage"
-	| "forget";
+	| "memory:read"
+	| "memory:write"
+	| "memory:forget"
+	| "scope:read"
+	| "scope:create"
+	| "scope:delete"
+	| "grant:manage";
 
 export const SPECTRON_VERBS: SpectronVerb[] = [
-	"read",
-	"write",
-	"create_scope",
-	"delete_scope",
-	"grant",
-	"manage",
-	"forget",
+	"memory:read",
+	"memory:write",
+	"memory:forget",
+	"scope:read",
+	"scope:create",
+	"scope:delete",
+	"grant:manage",
 ];
 
 /** Identity kind for a principal (design-scope-model §5.2). */
@@ -827,6 +827,15 @@ export type SpectronPrincipalKind = "human" | "agent" | "service" | "unknown";
 
 /** Per-verb scope-pattern map carried by a principal or key. */
 export type SpectronGrants = Partial<Record<SpectronVerb, string[]>>;
+
+/**
+ * A DNF scope selector for tagging writes (documents, facts, sessions): an OR of
+ * conjunctive clauses. Each inner array is a set of scope paths that are ANDed;
+ * the outer array ORs the clauses. E.g. `[["team/a"], ["team/b", "clearance/secret"]]`
+ * means `team/a OR (team/b AND clearance/secret)`. Empty inherits the caller's full
+ * write region. Mirrors the SDK `ScopeSets` wire type.
+ */
+export type SpectronScopeSets = string[][];
 
 export interface SpectronPrincipal {
 	id: string;

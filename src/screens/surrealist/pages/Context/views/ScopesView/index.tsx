@@ -245,7 +245,7 @@ function ScopeManager({ client }: { client: Spectron }) {
 			if (error instanceof ScopeError) {
 				showErrorNotification({
 					title: "Permission required",
-					content: new Error("You need the delete_scope grant to tombstone scopes here."),
+					content: new Error("You need the scope:delete grant to tombstone scopes here."),
 				});
 			} else {
 				showErrorNotification({
@@ -623,7 +623,7 @@ function RegisterModal({
 						variant="light"
 						title="Permission required"
 					>
-						You need the create_scope grant to register scopes here.
+						You need the scope:create grant to register scopes here.
 					</Alert>
 				)}
 
