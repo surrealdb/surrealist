@@ -45,7 +45,7 @@
         "@surrealdb/lezer": "1.0.3",
         "@surrealdb/ql-wasm-2": "npm:@surrealdb/ql-wasm@0.2.0-beta.11",
         "@surrealdb/ql-wasm-3": "npm:@surrealdb/ql-wasm@0.3.1",
-        "@surrealdb/spectron": "1.0.0-alpha.3",
+        "@surrealdb/spectron": "1.0.0-alpha.4",
         "@surrealdb/surql-fmt": "^0.1.0-beta.2",
         "@surrealdb/ui": "^1.2.3",
         "@surrealdb/wasm": "^3.0.3",
@@ -525,7 +525,7 @@
 
     "@surrealdb/ql-wasm-3": ["@surrealdb/ql-wasm@0.3.1", "", {}, "sha512-0fRDqhibbbzSrSIw4ertFsN7xgOI8nBx0CipDnMeCYN8Vb9Sc5/ZMahpS2ZTQt1po+k1TmayjlH5CHtx41Iegw=="],
 
-    "@surrealdb/spectron": ["@surrealdb/spectron@1.0.0-alpha.3", "", { "peerDependencies": { "typescript": "^5.0.0 || ^6.0.0" } }, "sha512-p6W2Jbd/iBd7GJttqmIhyfeoIRrPmw+twh41VTz5KiTVbFP3QJHNb8J6/rPho7aFmkmrgN+D70JHKLOFt65Pyw=="],
+    "@surrealdb/spectron": ["@surrealdb/spectron@1.0.0-alpha.4", "", { "peerDependencies": { "typescript": "^5.0.0 || ^6.0.0" } }, "sha512-2X9nmZ2YnIeM8ZuZRCjODkqEmPw3GOfsb3lNKplji3kr2UlxNSWNKwXE/av20H7t64KFjvHnWB6ZR4Z1PruQDw=="],
 
     "@surrealdb/surql-fmt": ["@surrealdb/surql-fmt@0.1.0-beta.2", "", { "dependencies": { "@lezer/common": "^1.5.1", "@surrealdb/lezer": "^1.0.4" }, "peerDependencies": { "typescript": "^5.9.3" }, "bin": { "surqlfmt": "dist/surql-fmt-cli.js" } }, "sha512-uibW3TucV9/P99LtAOpBPnDiN4joPqlCiLEUpK7EOWrrH2T2jWg6uPMI1JlgVun65lBmi4xloxvdeMMNxa2uKA=="],
 
