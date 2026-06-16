@@ -47,7 +47,7 @@ import {
 	showErrorNotification,
 	showWarning,
 } from "~/util/helpers";
-import { parseIdent } from "~/util/language";
+import { countQueryStatements, parseIdent } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
 import { createSurrealQL } from "~/util/surql";
 import { SurrealQL } from "~/util/surql/surrealql";
@@ -326,13 +326,6 @@ export async function authenticate(auth: ProvidedAuth, surreal?: Surreal) {
 			}
 		});
 	}
-}
-
-/**
- * Execute a query against the active connection
- */
-function countQueryStatements(query: string) {
-	return Math.max(1, query.split(";").filter((statement) => statement.trim().length > 0).length);
 }
 
 export async function executeQuery(
