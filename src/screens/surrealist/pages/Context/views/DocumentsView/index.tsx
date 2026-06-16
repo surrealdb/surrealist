@@ -34,7 +34,8 @@ import {
 	pictoDocumentGradient,
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
+import type { SpectronScopeSets } from "~/types";
 import { formatFileSize, showErrorNotification, showInfo } from "~/util/helpers";
 import { ContextHero } from "../../components/ContextHero";
 import { EmptyState, PageError, SpectronGate } from "../../components/feedback";
@@ -98,7 +99,8 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 
 	const listQuery = useQuery({
 		queryKey: listQueryKey,
-		queryFn: () => client.documents.list({ page, pageSize: PAGE_SIZE }),
+		// Mantine's Pagination is 1-based; the API expects a 0-indexed page.
+		queryFn: () => client.documents.list({ page: page - 1, pageSize: PAGE_SIZE }),
 		retry: false,
 		placeholderData: (prev) => prev,
 		// Poll while anything is still being processed so statuses advance live.
@@ -738,7 +740,8 @@ function InspectorBody({
 	const chunksQuery = useQuery({
 		queryKey: ["spectron", client.contextId, "documents", "chunks", doc.id, chunkPage],
 		queryFn: () =>
-			client.documents.chunks(doc.id, { page: chunkPage, pageSize: CHUNK_PAGE_SIZE }),
+			// Mantine's Pagination is 1-based; the API expects a 0-indexed page.
+			client.documents.chunks(doc.id, { page: chunkPage - 1, pageSize: CHUNK_PAGE_SIZE }),
 		retry: false,
 		placeholderData: (prev) => prev,
 		enabled: doc.status === "ready",
@@ -956,6 +959,179 @@ interface UploadItem {
 	error?: string;
 }
 
+// ─── Scope selector (DNF) ───
+
+/**
+ * Builds a DNF scope selector to narrow a document's visibility. Each "set" is a
+ * space-separated list of scope paths that are ANDed together; the sets are ORed.
+ * e.g. set 1 `org/apple` + set 2 `team/x clearance/secret` ⇒
+ * `"org/apple" OR ("team/x" AND "clearance/secret")`. Empty inherits the
+ * uploader's full write region.
+ */
+function ScopeSetsField({
+	value,
+	onChange,
+	disabled,
+}: {
+	value: SpectronScopeSets;
+	onChange: (value: SpectronScopeSets) => void;
+	disabled?: boolean;
+}) {
+	const [draft, setDraft] = useState("");
+
+	const addSet = () => {
+		const paths = Array.from(new Set(draft.trim().split(/\s+/).filter(Boolean)));
+		if (paths.length === 0) return;
+		onChange([...value, paths]);
+		setDraft("");
+	};
+
+	const removeSet = (index: number) => {
+		onChange(value.filter((_, i) => i !== index));
+	};
+
+	const removePath = (setIndex: number, pathIndex: number) => {
+		const next = value
+			.map((set, i) => (i === setIndex ? set.filter((_, j) => j !== pathIndex) : set))
+			.filter((set) => set.length > 0);
+		onChange(next);
+	};
+
+	const expression = value
+		.map((set) =>
+			set.length > 1 ? `(${set.map((p) => `"${p}"`).join(" AND ")})` : `"${set[0]}"`,
+		)
+		.join(" OR ");
+
+	return (
+		<Stack gap="xs">
+			<Box>
+				<Text
+					fz="sm"
+					fw={500}
+					c="bright"
+				>
+					Limit visibility (optional)
+				</Text>
+				<Text
+					fz="xs"
+					c="slate"
+				>
+					Add one or more scope sets to narrow who can see this document. Paths within a
+					set are ANDed; each set is ORed. Leave empty to inherit your full write region.
+				</Text>
+			</Box>
+
+			<Group
+				gap="xs"
+				wrap="nowrap"
+				align="flex-end"
+			>
+				<TextInput
+					flex={1}
+					label="Scope set"
+					placeholder="e.g. team/x clearance/secret"
+					value={draft}
+					disabled={disabled}
+					onChange={(event) => setDraft(event.currentTarget.value)}
+					onKeyDown={(event) => {
+						if (event.key === "Enter") {
+							event.preventDefault();
+							addSet();
+						}
+					}}
+				/>
+				<Button
+					variant="light"
+					onClick={addSet}
+					disabled={disabled || draft.trim().length === 0}
+				>
+					Add set
+				</Button>
+			</Group>
+
+			{value.length > 0 && (
+				<Stack gap={4}>
+					{value.map((set, setIndex) => (
+						<Fragment key={setIndex}>
+							{setIndex > 0 && (
+								<Text
+									fz={11}
+									fw={500}
+									c="slate"
+									ta="center"
+									style={{ letterSpacing: "0.08em" }}
+								>
+									OR
+								</Text>
+							)}
+							<Paper
+								radius="sm"
+								withBorder
+								px="xs"
+								py={4}
+							>
+								<Group
+									gap="xs"
+									wrap="nowrap"
+									align="center"
+								>
+									<Group
+										gap={6}
+										flex={1}
+									>
+										{set.map((path, pathIndex) => (
+											<Badge
+												key={pathIndex}
+												variant="light"
+												color="violet"
+												tt="none"
+												rightSection={
+													disabled ? undefined : (
+														<CloseButton
+															size={14}
+															aria-label={`Remove ${path}`}
+															onClick={() =>
+																removePath(setIndex, pathIndex)
+															}
+														/>
+													)
+												}
+											>
+												{path}
+											</Badge>
+										))}
+									</Group>
+									<Tooltip label="Remove set">
+										<ActionIcon
+											variant="subtle"
+											color="red"
+											size="sm"
+											aria-label={`Remove scope set ${setIndex + 1}`}
+											disabled={disabled}
+											onClick={() => removeSet(setIndex)}
+										>
+											<Icon path={iconTrash} />
+										</ActionIcon>
+									</Tooltip>
+								</Group>
+							</Paper>
+						</Fragment>
+					))}
+					<Text
+						fz="xs"
+						c="slate"
+						ff="monospace"
+						style={{ wordBreak: "break-word" }}
+					>
+						{expression}
+					</Text>
+				</Stack>
+			)}
+		</Stack>
+	);
+}
+
 function UploadModal({
 	client,
 	opened,
@@ -971,11 +1147,13 @@ function UploadModal({
 	const [items, setItems] = useState<UploadItem[]>([]);
 	const [busy, setBusy] = useState(false);
 	const [dragging, setDragging] = useState(false);
+	const [scopes, setScopes] = useState<SpectronScopeSets>([]);
 
 	const reset = () => {
 		setItems([]);
 		setBusy(false);
 		setDragging(false);
+		setScopes([]);
 	};
 
 	const handleClose = () => {
@@ -984,12 +1162,28 @@ function UploadModal({
 		onClose();
 	};
 
-	const runUploads = async (files: File[]) => {
+	// Selecting/dropping files only stages them; the actual upload waits for the
+	// explicit "Upload" action so the user can set scopes first.
+	const stageFiles = (files: File[]) => {
 		if (files.length === 0) return;
+		setItems((prev) => [
+			...prev,
+			...files.map((file): UploadItem => ({ file, state: "pending" })),
+		]);
+	};
 
-		const queued: UploadItem[] = files.map((file) => ({ file, state: "pending" }));
-		const startIndex = items.length;
-		setItems((prev) => [...prev, ...queued]);
+	const removeItem = (index: number) => {
+		setItems((prev) => prev.filter((_, i) => i !== index));
+	};
+
+	const runUploads = async () => {
+		// Upload everything not already uploaded — staged files, plus any that
+		// failed (so the button retries them).
+		const queue = items
+			.map((item, index) => ({ item, index }))
+			.filter(({ item }) => item.state === "pending" || item.state === "failed");
+		if (queue.length === 0) return;
+
 		setBusy(true);
 
 		const update = (index: number, patch: Partial<UploadItem>) => {
@@ -998,21 +1192,20 @@ function UploadModal({
 
 		let anySucceeded = false;
 
-		for (let i = 0; i < files.length; i++) {
-			const file = files[i];
-			const itemIndex = startIndex + i;
-			update(itemIndex, { state: "uploading" });
+		for (const { item, index } of queue) {
+			update(index, { state: "uploading", error: undefined });
 			try {
 				const result = await client.documents.upload({
-					file,
-					filename: file.name,
-					title: file.name,
-					contentType: file.type || undefined,
+					file: item.file,
+					filename: item.file.name,
+					title: item.file.name,
+					contentType: item.file.type || undefined,
+					scopes: scopes.length > 0 ? scopes : undefined,
 				});
-				update(itemIndex, { state: "done", deduplicated: result.deduplicated });
+				update(index, { state: "done", deduplicated: result.deduplicated });
 				anySucceeded = true;
 			} catch (err) {
-				update(itemIndex, {
+				update(index, {
 					state: "failed",
 					error: err instanceof Error ? err.message : String(err),
 				});
@@ -1032,14 +1225,18 @@ function UploadModal({
 
 	const handleFiles = (fileList: FileList | null) => {
 		if (!fileList) return;
-		runUploads(Array.from(fileList));
+		stageFiles(Array.from(fileList));
 	};
 
 	const onDrop = (event: React.DragEvent) => {
 		event.preventDefault();
 		setDragging(false);
-		runUploads(Array.from(event.dataTransfer.files));
+		stageFiles(Array.from(event.dataTransfer.files));
 	};
+
+	const pendingCount = items.filter(
+		(item) => item.state === "pending" || item.state === "failed",
+	).length;
 
 	return (
 		<Drawer
@@ -1110,10 +1307,21 @@ function UploadModal({
 							<UploadRow
 								key={`${item.file.name}-${index}`}
 								item={item}
+								onRemove={
+									busy || item.state === "uploading" || item.state === "done"
+										? undefined
+										: () => removeItem(index)
+								}
 							/>
 						))}
 					</Stack>
 				)}
+
+				<ScopeSetsField
+					value={scopes}
+					onChange={setScopes}
+					disabled={busy}
+				/>
 
 				<Group justify="flex-end">
 					<Button
@@ -1125,12 +1333,22 @@ function UploadModal({
 						{items.some((item) => item.state === "done") ? "Done" : "Cancel"}
 					</Button>
 					<Button
-						variant="gradient"
+						variant="default"
 						leftSection={<Icon path={iconUpload} />}
 						onClick={() => inputRef.current?.click()}
-						loading={busy}
+						disabled={busy}
 					>
-						Choose files
+						Add files
+					</Button>
+					<Button
+						variant="gradient"
+						onClick={runUploads}
+						loading={busy}
+						disabled={pendingCount === 0}
+					>
+						{pendingCount > 0
+							? `Upload ${pendingCount} file${pendingCount === 1 ? "" : "s"}`
+							: "Upload"}
 					</Button>
 				</Group>
 			</Stack>
@@ -1138,7 +1356,7 @@ function UploadModal({
 	);
 }
 
-function UploadRow({ item }: { item: UploadItem }) {
+function UploadRow({ item, onRemove }: { item: UploadItem; onRemove?: () => void }) {
 	return (
 		<Paper
 			p="xs"
@@ -1173,6 +1391,13 @@ function UploadRow({ item }: { item: UploadItem }) {
 					</Text>
 				</Box>
 				<UploadStatus item={item} />
+				{onRemove && (
+					<CloseButton
+						size="sm"
+						aria-label={`Remove ${item.file.name}`}
+						onClick={onRemove}
+					/>
+				)}
 			</Group>
 		</Paper>
 	);
