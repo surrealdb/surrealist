@@ -3,11 +3,28 @@ import { escapeIdent } from "surrealdb";
 import {
 	executeQuery,
 	executeQuerySingle,
+	getSurrealQL,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { useDatabaseStore } from "~/stores/database";
 import { SchemaInfoKV, SchemaInfoNS } from "~/types";
 import { getAuthDB, getAuthNS, getConnection } from "./connection";
 import { parseIdent } from "./language";
+
+/**
+ * Format an optional COMMENT clause for DEFINE statements.
+ *
+ * SurrealDB 2.x does not accept query parameters in COMMENT clauses, so the
+ * comment must be inlined as a literal strand via the SurrealQL formatter.
+ */
+export async function formatCommentClause(comment?: string | null) {
+	const trimmed = comment?.trim();
+
+	if (!trimmed) {
+		return "";
+	}
+
+	return ` COMMENT ${await getSurrealQL().formatValue(trimmed)}`;
+}
 
 export const databaseHierarchyQueryKey = (connectionId: string) =>
 	["database-hierarchy", connectionId] as const;
@@ -106,8 +123,7 @@ export async function setDefaultDatabase(namespace: string, database: string) {
 
 export async function setNamespaceComment(name: string, comment?: string) {
 	await executeQuery(
-		/* surql */ `DEFINE NAMESPACE OVERWRITE ${escapeIdent(name)} COMMENT $comment`,
-		{ comment },
+		/* surql */ `DEFINE NAMESPACE OVERWRITE ${escapeIdent(name)}${await formatCommentClause(comment)}`,
 	);
 }
 
@@ -115,9 +131,8 @@ export async function setDatabaseComment(namespace: string, database: string, co
 	await executeQuery(
 		/* surql */ `
 			USE NS ${escapeIdent(namespace)};
-			DEFINE DATABASE OVERWRITE ${escapeIdent(database)} COMMENT $comment;
+			DEFINE DATABASE OVERWRITE ${escapeIdent(database)}${await formatCommentClause(comment)};
 		`,
-		{ comment },
 	);
 }
 

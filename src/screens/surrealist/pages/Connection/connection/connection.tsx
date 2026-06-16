@@ -755,12 +755,7 @@ export async function activateDatabase(namespace: string, database: string) {
 
 	// Select the default namespace and database
 	if (invalidNS || !namespace) {
-		console.log("Selecting default namespace and database");
-
 		const { namespace, database } = await instance.use({});
-
-		console.log("namespace", namespace);
-		console.log("database", database);
 
 		updateConnection({
 			id: connection,
