@@ -39,7 +39,7 @@ const spectron = createSpectron({
 			code: `import { openai } from "@ai-sdk/openai";
 
 const session = await spectron.createSession({
-    scope: { org: "acme", agent: "web-assistant", user: "alex" },
+    scopes: [["org/acme", "agent/web-assistant", "user/alex"]],
 });
 
 const result = await session.streamText({

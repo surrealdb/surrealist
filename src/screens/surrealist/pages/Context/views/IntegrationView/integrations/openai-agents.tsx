@@ -35,11 +35,11 @@ memory = Spectron(
 )
 
 async def main() -> None:
-    session = await memory.sessions.create(scope={"user": "alex"})
+    session = await memory.sessions.create(scopes=["user/alex"])
     ctx = await memory.context(
         query="What should the assistant know about this user?",
         k=10,
-        scope=session.scope,
+        scopes=session.scopes,
     )
     agent = Agent(
         name="Assistant",

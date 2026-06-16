@@ -30,7 +30,7 @@ from spectron_langchain import SpectronMemory
 memory = SpectronMemory(
     api_key="your-api-key",
     endpoint="${endpoint}",
-    scope={"user": "alex", "org": "acme"},
+    scopes=[["user/alex", "org/acme"]],
 )
 
 chain = ConversationChain(
@@ -54,7 +54,7 @@ llm = ChatOpenAI(model="gpt-4o")
 memory = SpectronMemory(
     api_key="your-api-key",
     endpoint="${endpoint}",
-    scope={"user": "alex", "org": "acme"},
+    scopes=[["user/alex", "org/acme"]],
 )
 retriever = SpectronRetriever(
     api_key="your-api-key",

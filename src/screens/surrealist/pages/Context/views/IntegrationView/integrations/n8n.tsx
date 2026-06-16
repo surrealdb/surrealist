@@ -15,14 +15,14 @@ export function buildN8nSteps(context: CloudContext): IntegrationStep[] {
 		{
 			title: "Open a session (HTTP Request)",
 			description:
-				"Use an HTTP Request node against this context’s REST root. POST JSON with a scope array; store the session id from the response for later nodes.",
+				"Use an HTTP Request node against this context’s REST root. POST JSON with a scopes array; store the session id from the response for later nodes.",
 			code: `POST ${restRoot}/sessions
 Headers:
   API-KEY: {{ $env.SPECTRON_API_KEY }}
   Content-Type: application/json
 Body:
 {
-  "scope": ["user/{{ $json.userId }}"]
+  "scopes": ["user/{{ $json.userId }}"]
 }`,
 			lang: "text",
 		},
