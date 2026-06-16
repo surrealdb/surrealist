@@ -103,7 +103,7 @@ client = Spectron(
 					"Open a session scoped to a user and record conversation turns. Spectron extracts entities, attributes, and relations on every turn so the memory graph grows automatically.",
 				code: `from surrealdb import SpectronTurnRole
 
-session = client.sessions.create(scope={"user": "alex"})
+session = client.sessions.create(scopes=["user/alex"])
 session.turn(SpectronTurnRole.USER, "Hi, I'm Alex. I prefer dark mode.")
 session.turn(SpectronTurnRole.ASSISTANT, "Got it, Alex — noted.")`,
 				lang: "python",
@@ -153,7 +153,7 @@ const client = new Spectron({
 				code: `import { TurnRole } from "@surrealdb/spectron";
 
 const session = await client.sessions.create({
-    scope: { user: "alex" },
+    scopes: ["user/alex"],
 });
 
 await session.turn({ role: TurnRole.user, content: "Hi, I'm Alex. I prefer dark mode." });
@@ -190,7 +190,7 @@ await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted.
 				code: `curl -X POST ${restRoot}/sessions \\
     -H "API-KEY: your-api-key" \\
     -H "Content-Type: application/json" \\
-    -d '{"scope":["user/alex"]}'`,
+    -d '{"scopes":["user/alex"]}'`,
 				lang: "bash",
 			},
 			{
