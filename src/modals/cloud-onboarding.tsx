@@ -47,6 +47,9 @@ import classes from "./cloud-onboarding.module.scss";
 
 export const CLOUD_ONBOARDING_MODAL_ID = "cloud-onboarding";
 
+/** Must exceed the onboarding modal z-index so Select dropdowns are visible. */
+const ONBOARDING_COMBOBOX_Z_INDEX = 1200;
+
 type OnboardingStep = "verify" | "terms" | "about";
 
 /**
@@ -425,8 +428,10 @@ function AboutStep({ questions, onCompleted }: AboutStepProps) {
 								<Select
 									key={question.id}
 									label={question.question}
+									placeholder="Select an option"
 									data={options}
 									value={(values[question.id] as string) || null}
+									comboboxProps={{ zIndex: ONBOARDING_COMBOBOX_Z_INDEX }}
 									onChange={(value) =>
 										setValues((draft) => {
 											draft[question.id] = value;
