@@ -1,6 +1,7 @@
 import {
 	ActionIcon,
 	Alert,
+	Badge,
 	Box,
 	Button,
 	Collapse,
@@ -290,22 +291,30 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 											<Group
 												gap="sm"
 												wrap="nowrap"
+												align="flex-start"
 											>
 												<ThemeIcon
 													size={28}
 													radius="md"
 													variant="light"
 													color="violet"
+													mt={2}
 												>
 													<Icon path={iconKey} />
 												</ThemeIcon>
-												<Text
-													fw={500}
-													c="bright"
-													className="selectable"
+												<Stack
+													gap={6}
+													miw={0}
 												>
-													{apiKey.name}
-												</Text>
+													<Text
+														fw={500}
+														c="bright"
+														className="selectable"
+													>
+														{apiKey.name}
+													</Text>
+													<KeyGrants grants={apiKey.grants} />
+												</Stack>
 											</Group>
 										</Table.Td>
 										<Table.Td w={0}>
@@ -583,6 +592,61 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 					</Group>
 				</Stack>
 			</Modal>
+		</Stack>
+	);
+}
+
+/**
+ * Renders a key's attenuating grants as a per-verb scope-pattern summary. Empty
+ * or absent grants mean the key inherits the principal's full access.
+ */
+function KeyGrants({ grants }: { grants?: SpectronGrants }) {
+	const summary = SPECTRON_VERBS.map((verb) => ({
+		verb,
+		patterns: grants?.[verb] ?? [],
+	})).filter((entry) => entry.patterns.length > 0);
+
+	if (summary.length === 0) {
+		return (
+			<Text
+				fz="xs"
+				c="slate"
+			>
+				Inherits your full access
+			</Text>
+		);
+	}
+
+	return (
+		<Stack gap={4}>
+			{summary.map(({ verb, patterns }) => (
+				<Group
+					key={verb}
+					gap={6}
+					wrap="nowrap"
+					align="center"
+				>
+					<Badge
+						variant="light"
+						color="violet"
+						size="sm"
+						tt="none"
+						ff="monospace"
+						style={{ flexShrink: 0 }}
+					>
+						{verb}
+					</Badge>
+					<Text
+						fz="xs"
+						c="slate"
+						ff="monospace"
+						className="selectable"
+						style={{ wordBreak: "break-all" }}
+					>
+						{patterns.join("  ·  ")}
+					</Text>
+				</Group>
+			))}
 		</Stack>
 	);
 }

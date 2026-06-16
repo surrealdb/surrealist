@@ -493,17 +493,6 @@ function DocumentCard({ document: doc, onInspect, onDelete, deleting }: Document
 								{formatFileSize(doc.sizeBytes)}
 							</Text>
 						</Group>
-						{doc.status === "ready" && (
-							<Text
-								fz="xs"
-								c="slate"
-								mt={4}
-							>
-								{(doc.chunkCount ?? 0).toLocaleString()} chunks
-								{doc.keywordCount != null &&
-									` · ${doc.keywordCount.toLocaleString()} keywords`}
-							</Text>
-						)}
 						<Text
 							fz="xs"
 							c="slate"
@@ -780,19 +769,9 @@ function InspectorBody({
 					label="Size"
 					value={formatFileSize(doc.sizeBytes)}
 				/>
-				{doc.language && (
-					<MetaRow
-						label="Language"
-						value={doc.language}
-					/>
-				)}
 				<MetaRow
 					label="Chunks"
-					value={(doc.chunkCount ?? 0).toLocaleString()}
-				/>
-				<MetaRow
-					label="Keywords"
-					value={(doc.keywordCount ?? 0).toLocaleString()}
+					value={chunksQuery.data ? chunksQuery.data.total.toLocaleString() : "—"}
 				/>
 				<MetaRow
 					label="Created"

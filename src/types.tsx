@@ -789,6 +789,12 @@ export interface ContextApiKey {
 	spectron_context_id: string;
 	name: string;
 	key?: string;
+	/**
+	 * The key's attenuating grants (per-verb scope patterns). Absent/empty means
+	 * the key inherits the principal's full access. Only present on the list
+	 * response once the API surfaces it.
+	 */
+	grants?: SpectronGrants;
 }
 
 /**
