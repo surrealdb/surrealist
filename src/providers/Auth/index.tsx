@@ -18,9 +18,9 @@ import { showErrorNotification } from "~/util/helpers";
 import { callback, computeReturnPath } from "./helpers";
 import { useAuthCallbackFlow } from "./hooks/use-auth-callback-flow";
 import { useAuthWindowSync } from "./hooks/use-auth-window-sync";
-import type { SignInOptions } from "./types";
+import type { SignInOptions, SignOutOptions } from "./types";
 
-export type { SignInOptions };
+export type { SignInOptions, SignOutOptions };
 
 const CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID ?? "";
 const AUTH_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN ?? "";
@@ -40,7 +40,7 @@ export interface AuthContext {
 	isLoading: boolean;
 	getAccessToken: AccessTokenFn;
 	signIn: (options?: SignInOptions) => Promise<void>;
-	signOut: () => Promise<void>;
+	signOut: (options?: SignOutOptions) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContext | null>(null);
@@ -109,14 +109,34 @@ function TokenBridge({ children }: PropsWithChildren) {
 		});
 	});
 
-	const signOut = useStable(async () => {
+	const signOut = useStable(async (options?: SignOutOptions) => {
+		const { localOnly } = options ?? {};
+
 		shutdown();
 		navigate("/");
 
 		await broadcastAuthEvent("signout");
 
-		// Clear the local Auth0 session without navigating to the logout endpoint.
-		await logout({ openUrl: false });
+		if (localOnly) {
+			await logout({ openUrl: false });
+			return;
+		}
+
+		await logout({
+			openUrl: async (url) => {
+				const opened = await adapter.openUrl(url);
+
+				if (!opened) {
+					showErrorNotification({
+						title: "Failed to open authentication",
+						content: "Please make sure popup blockers are disabled.",
+					});
+				}
+			},
+			logoutParams: {
+				returnTo: isDesktop ? AUTH_LAUNCH_URL : AUTH_RETURN_URL,
+			},
+		});
 	});
 
 	const handleSignIn = useStable((user: User) => {
