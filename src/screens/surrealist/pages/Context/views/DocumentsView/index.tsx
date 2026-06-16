@@ -1162,12 +1162,28 @@ function UploadModal({
 		onClose();
 	};
 
-	const runUploads = async (files: File[]) => {
+	// Selecting/dropping files only stages them; the actual upload waits for the
+	// explicit "Upload" action so the user can set scopes first.
+	const stageFiles = (files: File[]) => {
 		if (files.length === 0) return;
+		setItems((prev) => [
+			...prev,
+			...files.map((file): UploadItem => ({ file, state: "pending" })),
+		]);
+	};
 
-		const queued: UploadItem[] = files.map((file) => ({ file, state: "pending" }));
-		const startIndex = items.length;
-		setItems((prev) => [...prev, ...queued]);
+	const removeItem = (index: number) => {
+		setItems((prev) => prev.filter((_, i) => i !== index));
+	};
+
+	const runUploads = async () => {
+		// Upload everything not already uploaded — staged files, plus any that
+		// failed (so the button retries them).
+		const queue = items
+			.map((item, index) => ({ item, index }))
+			.filter(({ item }) => item.state === "pending" || item.state === "failed");
+		if (queue.length === 0) return;
+
 		setBusy(true);
 
 		const update = (index: number, patch: Partial<UploadItem>) => {
@@ -1176,22 +1192,20 @@ function UploadModal({
 
 		let anySucceeded = false;
 
-		for (let i = 0; i < files.length; i++) {
-			const file = files[i];
-			const itemIndex = startIndex + i;
-			update(itemIndex, { state: "uploading" });
+		for (const { item, index } of queue) {
+			update(index, { state: "uploading", error: undefined });
 			try {
 				const result = await client.documents.upload({
-					file,
-					filename: file.name,
-					title: file.name,
-					contentType: file.type || undefined,
+					file: item.file,
+					filename: item.file.name,
+					title: item.file.name,
+					contentType: item.file.type || undefined,
 					scopes: scopes.length > 0 ? scopes : undefined,
 				});
-				update(itemIndex, { state: "done", deduplicated: result.deduplicated });
+				update(index, { state: "done", deduplicated: result.deduplicated });
 				anySucceeded = true;
 			} catch (err) {
-				update(itemIndex, {
+				update(index, {
 					state: "failed",
 					error: err instanceof Error ? err.message : String(err),
 				});
@@ -1211,14 +1225,18 @@ function UploadModal({
 
 	const handleFiles = (fileList: FileList | null) => {
 		if (!fileList) return;
-		runUploads(Array.from(fileList));
+		stageFiles(Array.from(fileList));
 	};
 
 	const onDrop = (event: React.DragEvent) => {
 		event.preventDefault();
 		setDragging(false);
-		runUploads(Array.from(event.dataTransfer.files));
+		stageFiles(Array.from(event.dataTransfer.files));
 	};
+
+	const pendingCount = items.filter(
+		(item) => item.state === "pending" || item.state === "failed",
+	).length;
 
 	return (
 		<Drawer
@@ -1238,12 +1256,6 @@ function UploadModal({
 						handleFiles(event.currentTarget.files);
 						event.currentTarget.value = "";
 					}}
-				/>
-
-				<ScopeSetsField
-					value={scopes}
-					onChange={setScopes}
-					disabled={busy}
 				/>
 
 				<UnstyledButton
@@ -1295,10 +1307,21 @@ function UploadModal({
 							<UploadRow
 								key={`${item.file.name}-${index}`}
 								item={item}
+								onRemove={
+									busy || item.state === "uploading" || item.state === "done"
+										? undefined
+										: () => removeItem(index)
+								}
 							/>
 						))}
 					</Stack>
 				)}
+
+				<ScopeSetsField
+					value={scopes}
+					onChange={setScopes}
+					disabled={busy}
+				/>
 
 				<Group justify="flex-end">
 					<Button
@@ -1310,12 +1333,22 @@ function UploadModal({
 						{items.some((item) => item.state === "done") ? "Done" : "Cancel"}
 					</Button>
 					<Button
-						variant="gradient"
+						variant="default"
 						leftSection={<Icon path={iconUpload} />}
 						onClick={() => inputRef.current?.click()}
-						loading={busy}
+						disabled={busy}
 					>
-						Choose files
+						Add files
+					</Button>
+					<Button
+						variant="gradient"
+						onClick={runUploads}
+						loading={busy}
+						disabled={pendingCount === 0}
+					>
+						{pendingCount > 0
+							? `Upload ${pendingCount} file${pendingCount === 1 ? "" : "s"}`
+							: "Upload"}
 					</Button>
 				</Group>
 			</Stack>
@@ -1323,7 +1356,7 @@ function UploadModal({
 	);
 }
 
-function UploadRow({ item }: { item: UploadItem }) {
+function UploadRow({ item, onRemove }: { item: UploadItem; onRemove?: () => void }) {
 	return (
 		<Paper
 			p="xs"
@@ -1358,6 +1391,13 @@ function UploadRow({ item }: { item: UploadItem }) {
 					</Text>
 				</Box>
 				<UploadStatus item={item} />
+				{onRemove && (
+					<CloseButton
+						size="sm"
+						aria-label={`Remove ${item.file.name}`}
+						onClick={onRemove}
+					/>
+				)}
 			</Group>
 		</Paper>
 	);
