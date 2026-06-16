@@ -26,7 +26,7 @@ import {
 	executeQuery,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { SchemaInfoNS } from "~/types";
-import { invalidateDatabaseHierarchy } from "~/util/databases";
+import { formatCommentClause, invalidateDatabaseHierarchy } from "~/util/databases";
 import { parseIdent } from "~/util/language";
 import { syncConnectionSchema } from "~/util/schema";
 
@@ -87,18 +87,17 @@ function NewDatabaseModal() {
 		mutationFn: async () => {
 			if (existsQuery.isPending) return;
 
+			const namespaceComment = isNewNamespace
+				? await formatCommentClause(namespaceDescription)
+				: "";
+			const databaseComment = await formatCommentClause(databaseDescription);
+
 			await executeQuery(
 				`
-				DEFINE NAMESPACE IF NOT EXISTS ${escapeIdent(namespace)} COMMENT $namespaceComment;
+				DEFINE NAMESPACE IF NOT EXISTS ${escapeIdent(namespace)}${namespaceComment};
 				USE NS ${escapeIdent(namespace)};
-				DEFINE DATABASE IF NOT EXISTS ${escapeIdent(debouncedDatabase)} COMMENT $databaseComment;
+				DEFINE DATABASE IF NOT EXISTS ${escapeIdent(debouncedDatabase)}${databaseComment};
 			`,
-				{
-					namespaceComment: isNewNamespace
-						? namespaceDescription.trim() || undefined
-						: undefined,
-					databaseComment: databaseDescription.trim() || undefined,
-				},
 			);
 
 			await syncConnectionSchema({
