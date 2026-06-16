@@ -140,16 +140,16 @@ export async function syncConnectionSchema(
 
 				const response = tbInfoMap[idx];
 
-				if (!response.success) {
+				if (!response?.success) {
 					hasFailures = true;
 					adapter.log(
 						"Schema",
-						`Failed to get table structure for ${tableName}: ${response.result}`,
+						`Failed to get table structure for ${tableName}: ${response?.result ?? "No response"}`,
 					);
 					continue;
 				}
 
-				const tableStruct = jsonify(tbInfoMap[idx].result) as SchemaInfoTB;
+				const tableStruct = jsonify(response.result) as SchemaInfoTB;
 				const tableInfo = (tables ?? []).find((t) => t.name === tableName);
 				const existingIndex = schema.database.tables.findIndex(
 					(t) => t.schema.name === tableName,

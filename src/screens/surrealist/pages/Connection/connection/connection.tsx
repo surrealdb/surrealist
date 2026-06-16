@@ -331,42 +331,48 @@ export async function authenticate(auth: ProvidedAuth, surreal?: Surreal) {
 /**
  * Execute a query against the active connection
  */
+function countQueryStatements(query: string) {
+	return Math.max(1, query.split(";").filter((statement) => statement.trim().length > 0).length);
+}
+
 export async function executeQuery(
 	query: string,
 	bindings?: Record<string, unknown>,
 ): Promise<QueryResponse[]> {
 	try {
-		const results: QueryResponse[] = [];
-		const queryResponses: Map<number, any> = new Map();
+		const resultsByQuery = new Map<number, QueryResponse>();
+		const queryValues = new Map<number, any>();
+		let maxQueryIndex = -1;
 		const stream = instance.query(query, bindings).stream();
 
 		for await (const frame of stream) {
+			const queryIndex = frame.query;
+			maxQueryIndex = Math.max(maxQueryIndex, queryIndex);
+
 			if (frame.isValue<any>()) {
 				if (frame.isSingle) {
-					queryResponses.set(frame.query, frame.value);
+					queryValues.set(queryIndex, frame.value);
 				} else {
-					let queryResults = queryResponses.get(frame.query);
+					let queryResults = queryValues.get(queryIndex);
 
 					if (!queryResults) {
 						queryResults = [];
-						queryResponses.set(frame.query, queryResults);
+						queryValues.set(queryIndex, queryResults);
 					}
 
 					queryResults.push(frame.value);
 				}
 			} else if (frame.isDone()) {
-				const result = queryResponses.has(frame.query)
-					? queryResponses.get(frame.query)
-					: [];
+				const result = queryValues.has(queryIndex) ? queryValues.get(queryIndex) : [];
 
-				results.push({
+				resultsByQuery.set(queryIndex, {
 					success: true,
 					duration: frame.stats?.duration,
 					type: frame.type,
 					result,
 				});
 			} else if (frame.isError()) {
-				results.push({
+				resultsByQuery.set(queryIndex, {
 					success: false,
 					result: frame.error.message,
 					duration: frame.stats?.duration,
@@ -374,14 +380,29 @@ export async function executeQuery(
 			}
 		}
 
+		if (maxQueryIndex === -1) {
+			return [];
+		}
+
+		const results: QueryResponse[] = [];
+
+		for (let i = 0; i <= maxQueryIndex; i++) {
+			results.push(
+				resultsByQuery.get(i) ?? {
+					success: false,
+					result: "Query did not return a response",
+				},
+			);
+		}
+
 		return results;
 	} catch (err: any) {
-		return [
-			{
-				success: false,
-				result: typeof err === "string" ? err : err.message,
-			},
-		];
+		const errorResponse: QueryResponse = {
+			success: false,
+			result: typeof err === "string" ? err : err.message,
+		};
+
+		return Array.from({ length: countQueryStatements(query) }, () => errorResponse);
 	}
 }
 
