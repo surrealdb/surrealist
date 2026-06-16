@@ -3,6 +3,7 @@ import WasmWorker from "@surrealdb/wasm/worker?worker";
 import { applyDiagnostics, createRemoteEngines, Surreal } from "surrealdb";
 import { useDatabaseStore } from "~/stores/database";
 import { getSetting } from "~/util/config";
+import { createImportAwareFetch } from "~/util/import";
 
 /**
  * Create a new configured Surreal instance
@@ -30,6 +31,7 @@ export async function createSurreal() {
 	};
 
 	return new Surreal({
+		fetchImpl: createImportAwareFetch(),
 		engines: applyDiagnostics(engines, (diagnostic) => {
 			if (getSetting("behavior", "recordDiagnostics")) {
 				pushDiagnostic(diagnostic, maxSize);

@@ -72,7 +72,10 @@ export function NewsFeedDrawer() {
 					<Icon path={iconClose} />
 				</ActionButton>
 			</Group>
-			<Box flex={1}>
+			<Box
+				flex={1}
+				mih={0}
+			>
 				<NewsfeedList />
 			</Box>
 		</Drawer>

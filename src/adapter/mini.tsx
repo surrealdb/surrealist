@@ -7,7 +7,7 @@ import {
 	executeUserQuery,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import type { MiniAppearance, Orientation, ResultMode, SurrealistConfig } from "~/types";
-import { getDatasetAssetUrl, resolveDefaultDeployDatasetPath } from "~/util/datasets";
+import { fetchDatasetFromUrl, resolveMiniEmbedDatasetUrl } from "~/util/datasets";
 import { dedent } from "~/util/dedent";
 import { createBaseQuery, createBaseSettings, createSandboxConnection } from "~/util/defaults";
 import { showErrorNotification } from "~/util/helpers";
@@ -109,17 +109,15 @@ export class MiniAdapter extends BrowserAdapter {
 			}
 		}
 
-		// Premade dataset loading
+		// Premade dataset loading (CDN paths or catalog dataset references)
 		if (dataset) {
-			const datasetPath = await resolveDefaultDeployDatasetPath(version);
-
-			if (datasetPath) {
-				const datasetUrl = getDatasetAssetUrl(datasetPath);
-				this.#datasetQuery = await fetch(datasetUrl).then((res) => res.text());
-			} else {
+			try {
+				const datasetUrl = await resolveMiniEmbedDatasetUrl(dataset, version);
+				this.#datasetQuery = await fetchDatasetFromUrl(datasetUrl);
+			} catch (err) {
 				showErrorNotification({
 					title: "Startup error",
-					content: "Dataset not recognised",
+					content: err instanceof Error ? err.message : "Dataset not recognised",
 				});
 			}
 		}
@@ -189,17 +187,17 @@ export class MiniAdapter extends BrowserAdapter {
 		// noop
 	}
 
-	public initializeContent() {
+	public async initializeContent() {
 		if (this.#datasetQuery) {
-			executeQuery(this.#datasetQuery);
+			await executeQuery(this.#datasetQuery);
 		}
 
 		if (this.#setupQuery) {
-			executeQuery(this.#setupQuery);
+			await executeQuery(this.#setupQuery);
 		}
 
 		if (this.autorun) {
-			executeUserQuery();
+			await executeUserQuery();
 		}
 	}
 

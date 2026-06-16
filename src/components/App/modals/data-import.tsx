@@ -11,8 +11,8 @@ import {
 	TextInput,
 } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
-import { showNotification, updateNotification } from "@mantine/notifications";
-import { Icon, iconCheck, iconFile, iconUpload, iconWarning } from "@surrealdb/ui";
+import { hideNotification, showNotification, updateNotification } from "@mantine/notifications";
+import { Icon, iconCheck, iconFile, iconUpload } from "@surrealdb/ui";
 import papaparse from "papaparse";
 import { cluster, isArray, isObject, unique } from "radash";
 import { ChangeEvent, MutableRefObject, useEffect, useMemo, useRef, useState } from "react";
@@ -33,7 +33,8 @@ import {
 	getSurrealQL,
 } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { tagEvent } from "~/util/analytics";
-import { formatFileSize, showErrorNotification, showWarning } from "~/util/helpers";
+import { formatFileSize, showErrorNotification } from "~/util/helpers";
+import { shouldFallbackStreamImport } from "~/util/import";
 import { syncConnectionSchema } from "~/util/schema";
 
 type DataFileFormat = "csv" | "json" | "ndjson";
@@ -61,33 +62,27 @@ const SqlImportForm = ({
 
 	const submit = () => {
 		const execute = async () => {
+			const file = importFile.current;
+			const surreal = getSurreal();
+
+			if (!file) return;
+
+			// Attempt stream based import first, fallback to a blob based approach
+			// if the engine does not support streaming or a transport error occurs.
+			// Import failures must not be retried to avoid partial imports.
 			try {
-				const file = importFile.current;
-				const surreal = getSurreal();
-
-				if (!file) return;
-
-				// Attempt stream based import first, fallback to a blob based approach
-				// if the engine does not support streaming or a network error occurs
-				try {
-					adapter.log("import", "Attempting to import file using stream");
-					await surreal.import(file.stream());
-				} catch {
-					try {
-						adapter.log("import", "Falling back to blob based import");
-						await surreal.import(file);
-					} catch (err: any) {
-						throw typeof err === "string" ? new Error(err) : err;
-					}
+				adapter.log("import", "Attempting to import file using stream");
+				await surreal.import(file.stream());
+			} catch (err: unknown) {
+				if (!shouldFallbackStreamImport(err)) {
+					throw err instanceof Error ? err : new Error(String(err));
 				}
 
-				await syncConnectionSchema();
-			} catch (err: any) {
-				showErrorNotification({
-					title: "Import failed",
-					content: err.message,
-				});
+				adapter.log("import", "Falling back to blob based import");
+				await surreal.import(file);
 			}
+
+			await syncConnectionSchema();
 		};
 
 		confirmImport(execute);
@@ -344,16 +339,14 @@ const completeBatchImport = async (
 ) => {
 	if (errorImportCount > 0) {
 		if (successImportCount > 0) {
-			showWarning({
-				title: "Import partially failed",
-				subtitle: `Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. Error: ${errorMessage}`,
-			});
-		} else {
-			showErrorNotification({
-				title: "Import failed",
-				content: `Failed to insert ${errorImportCount} records. Error: ${errorMessage}`,
-			});
+			await syncConnectionSchema();
+
+			throw new Error(
+				`Failed to insert ${errorImportCount} records but ${successImportCount} records were successfully inserted. ${errorMessage}`,
+			);
 		}
+
+		throw new Error(`Failed to insert ${errorImportCount} records. ${errorMessage}`);
 	}
 
 	await syncConnectionSchema();
@@ -1107,13 +1100,11 @@ export function DataImportModal() {
 					color: "green",
 				});
 			} catch (err: any) {
-				updateNotification({
-					id: messageId,
+				hideNotification(messageId);
+
+				showErrorNotification({
 					title: "Import failed",
-					message: err.message,
-					icon: <Icon path={iconWarning} />,
-					autoClose: 2000,
-					color: "red",
+					content: err instanceof Error ? err : new Error(String(err)),
 				});
 			}
 		},

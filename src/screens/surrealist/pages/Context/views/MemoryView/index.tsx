@@ -364,9 +364,9 @@ function buildProfileRows(
 
 		for (const group of groups) {
 			const groupLabel = groups.length > 1 ? group.label : undefined;
-			for (const entry of group.entries) {
+			for (const [index, entry] of group.entries.entries()) {
 				rows.push({
-					key: entry.key,
+					key: `${group.label}:${entry.key}:${index}`,
 					label: entry.key,
 					value: entry.value,
 					group: groupLabel,

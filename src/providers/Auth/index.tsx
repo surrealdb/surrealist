@@ -20,7 +20,7 @@ import { useAuthCallbackFlow } from "./hooks/use-auth-callback-flow";
 import { useAuthWindowSync } from "./hooks/use-auth-window-sync";
 import type { SignInOptions, SignOutOptions } from "./types";
 
-export type { SignInOptions };
+export type { SignInOptions, SignOutOptions };
 
 const CLIENT_ID = import.meta.env.VITE_AUTH0_CLIENT_ID ?? "";
 const AUTH_DOMAIN = import.meta.env.VITE_AUTH0_DOMAIN ?? "";
@@ -117,19 +117,22 @@ function TokenBridge({ children }: PropsWithChildren) {
 
 		await broadcastAuthEvent("signout");
 
-		await logout({
-			openUrl: localOnly
-				? undefined
-				: async (url) => {
-						const opened = await adapter.openUrl(url);
+		if (localOnly) {
+			await logout({ openUrl: false });
+			return;
+		}
 
-						if (!opened) {
-							showErrorNotification({
-								title: "Failed to open authentication",
-								content: "Please make sure popup blockers are disabled.",
-							});
-						}
-					},
+		await logout({
+			openUrl: async (url) => {
+				const opened = await adapter.openUrl(url);
+
+				if (!opened) {
+					showErrorNotification({
+						title: "Failed to open authentication",
+						content: "Please make sure popup blockers are disabled.",
+					});
+				}
+			},
 			logoutParams: {
 				returnTo: isDesktop ? AUTH_LAUNCH_URL : AUTH_RETURN_URL,
 			},

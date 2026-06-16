@@ -39,6 +39,22 @@ const PORTAL_OPTIONS = {
 	},
 };
 
+type ConnectionSettingsViewPage = `settings/${ConnectionSettingsTab}`;
+
+const SETTINGS_PORTALS: Record<ConnectionSettingsTab, HtmlPortalNode> = {
+	general: createHtmlPortalNode(PORTAL_OPTIONS),
+	databases: createHtmlPortalNode(PORTAL_OPTIONS),
+	data: createHtmlPortalNode(PORTAL_OPTIONS),
+	capabilities: createHtmlPortalNode(PORTAL_OPTIONS),
+	version: createHtmlPortalNode(PORTAL_OPTIONS),
+	compute: createHtmlPortalNode(PORTAL_OPTIONS),
+	backups: createHtmlPortalNode(PORTAL_OPTIONS),
+};
+
+const SETTINGS_VIEW_PORTALS = Object.fromEntries(
+	CONNECTION_SETTINGS_TABS.map((tab) => [`settings/${tab}`, SETTINGS_PORTALS[tab]]),
+) as Record<ConnectionSettingsViewPage, HtmlPortalNode>;
+
 const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	dashboard: createHtmlPortalNode(PORTAL_OPTIONS),
 	monitor: createHtmlPortalNode(PORTAL_OPTIONS),
@@ -51,30 +67,7 @@ const VIEW_PORTALS: Record<ViewPage, HtmlPortalNode> = {
 	parameters: createHtmlPortalNode(PORTAL_OPTIONS),
 	documentation: createHtmlPortalNode(PORTAL_OPTIONS),
 	migrations: createHtmlPortalNode(PORTAL_OPTIONS),
-};
-
-const SETTINGS_PORTALS: Record<ConnectionSettingsTab, HtmlPortalNode> = {
-	general: createHtmlPortalNode(PORTAL_OPTIONS),
-	databases: createHtmlPortalNode(PORTAL_OPTIONS),
-	data: createHtmlPortalNode(PORTAL_OPTIONS),
-	capabilities: createHtmlPortalNode(PORTAL_OPTIONS),
-	version: createHtmlPortalNode(PORTAL_OPTIONS),
-	compute: createHtmlPortalNode(PORTAL_OPTIONS),
-	backups: createHtmlPortalNode(PORTAL_OPTIONS),
-};
-
-const VIEW_COMPONENTS: Record<ViewPage, FC<ViewPageProps>> = {
-	dashboard: memo(DashboardView),
-	monitor: memo(MonitorView),
-	query: memo(QueryView),
-	explorer: memo(ExplorerView),
-	graphql: memo(GraphqlView),
-	designer: memo(DesignerView),
-	authentication: memo(AuthenticationView),
-	functions: memo(FunctionsView),
-	parameters: memo(ParametersView),
-	documentation: memo(DocumentationView),
-	migrations: memo(MigrationView),
+	...SETTINGS_VIEW_PORTALS,
 };
 
 const SETTINGS_COMPONENTS: Record<ConnectionSettingsTab, FC<ConnectionSettingsTabProps>> = {
@@ -86,11 +79,6 @@ const SETTINGS_COMPONENTS: Record<ConnectionSettingsTab, FC<ConnectionSettingsTa
 	compute: memo(ConnectionComputeTab),
 	backups: memo(ConnectionBackupsTab),
 };
-
-export interface ConnectionPageProps {
-	view?: ViewPage;
-	settingsTab?: string;
-}
 
 function SettingsTabPortal({
 	tab,
@@ -115,6 +103,42 @@ function SettingsTabPortal({
 			/>
 		</PageContainer>
 	);
+}
+
+const SETTINGS_VIEW_COMPONENTS = CONNECTION_SETTINGS_TABS.reduce(
+	(components, tab) => {
+		const view = `settings/${tab}` as ConnectionSettingsViewPage;
+
+		components[view] = memo((props: ViewPageProps) => (
+			<SettingsTabPortal
+				tab={tab}
+				{...props}
+			/>
+		));
+
+		return components;
+	},
+	{} as Record<ConnectionSettingsViewPage, FC<ViewPageProps>>,
+);
+
+const VIEW_COMPONENTS: Record<ViewPage, FC<ViewPageProps>> = {
+	dashboard: memo(DashboardView),
+	monitor: memo(MonitorView),
+	query: memo(QueryView),
+	explorer: memo(ExplorerView),
+	graphql: memo(GraphqlView),
+	designer: memo(DesignerView),
+	authentication: memo(AuthenticationView),
+	functions: memo(FunctionsView),
+	parameters: memo(ParametersView),
+	documentation: memo(DocumentationView),
+	migrations: memo(MigrationView),
+	...SETTINGS_VIEW_COMPONENTS,
+};
+
+export interface ConnectionPageProps {
+	view?: ViewPage;
+	settingsTab?: string;
 }
 
 export function ConnectionPage({ view, settingsTab }: ConnectionPageProps) {

@@ -113,6 +113,7 @@
 		"indentWidth": 4,
 		"indentStyle": "tab",
 		"lineWidth": 100,
+		"lineEnding": "lf",
 		"attributePosition": "multiline",
 		"includes": ["**", "!**/src/util/icons.tsx"]
 	},

@@ -5,7 +5,6 @@ import {
 	HoverCard,
 	Image,
 	Menu,
-	Modal,
 	Select,
 	Stack,
 	Text,
@@ -20,20 +19,17 @@ import {
 	iconReset,
 	iconTable,
 } from "@surrealdb/ui";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 import { INSTANCE_PLAN_SUGGESTIONS, isOrganisationBillable } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useInstanceDeployMutation } from "~/cloud/mutations/deploy";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { useCloudOrganizationsQuery } from "~/cloud/queries/organizations";
 import { ActionButton } from "~/components/ActionButton";
-import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { REGION_FLAGS, SANDBOX } from "~/constants";
 import { useBoolean } from "~/hooks/boolean";
 import { useAvailableInstanceVersions } from "~/hooks/cloud";
-import { useConnection, useMinimumVersion, useRequireDatabase } from "~/hooks/connection";
-import { useDatasets } from "~/hooks/dataset";
-import { useDatasetsCatalogQuery } from "~/hooks/datasets";
+import { useConnection, useMinimumVersion } from "~/hooks/connection";
 import { useConnectionNavigator } from "~/hooks/routing";
 import { useDatabaseSchema } from "~/hooks/schema";
 import { useStable } from "~/hooks/stable";
@@ -46,15 +42,6 @@ import { useDatabaseStore } from "~/stores/database";
 import { useDeployStore } from "~/stores/deploy";
 import { CloudDeployConfig } from "~/types";
 import { getConnectionById } from "~/util/connection";
-import {
-	appendQueriesToConnection,
-	findDataset,
-	getVisibleSampleQueries,
-	getVisibleSizes,
-	loadDatasetSampleQueries,
-	resolveDatasetSizePath,
-	resolveDatasetVersion,
-} from "~/util/datasets";
 import { useFeatureFlags } from "~/util/feature-flags";
 import { showErrorNotification } from "~/util/helpers";
 import { generateRandomName } from "~/util/random";
@@ -130,8 +117,6 @@ export function ConnectionToolbarActions() {
 			setRegion(supportedRegions[0] ?? null);
 		}
 	}, [organization, region, organizations, supportedRegions]);
-
-	const [datasetModalOpen, datasetModalOpenHandle] = useBoolean();
 
 	const resetSandbox = useConfirmation({
 		title: "Reset sandbox environment",
@@ -277,90 +262,8 @@ export function ConnectionToolbarActions() {
 		}
 	});
 
-	const [applyDataset, isDatasetLoading] = useDatasets();
-
 	const [isSupported, version] = useMinimumVersion(import.meta.env.SDB_VERSION);
 	const isSandbox = id === SANDBOX;
-
-	const { data: datasets = [] } = useDatasetsCatalogQuery();
-
-	const datasetOptions = useMemo(() => {
-		const dbVersion = version || import.meta.env.SDB_VERSION;
-
-		return datasets.flatMap((entry) => {
-			const datasetVersion = resolveDatasetVersion(entry, dbVersion);
-
-			if (!datasetVersion) {
-				return [];
-			}
-
-			const sizes = getVisibleSizes(datasetVersion);
-
-			if (sizes.length > 0) {
-				return sizes.map((size) => ({
-					value: `${entry.id}:${size.id}`,
-					label: sizes.length > 1 ? `${entry.label} (${size.label})` : entry.label,
-				}));
-			}
-
-			if (getVisibleSampleQueries(datasetVersion).length > 0) {
-				return [
-					{
-						value: `${entry.id}:queries`,
-						label: `${entry.label} (sample queries)`,
-					},
-				];
-			}
-
-			return [];
-		});
-	}, [datasets, version]);
-
-	const [dataset, setDataset] = useState("");
-	const selectDataset = useRequireDatabase(() => datasetModalOpenHandle.open());
-
-	useEffect(() => {
-		if (!dataset && datasetOptions.length > 0) {
-			setDataset(datasetOptions[0].value);
-		}
-	}, [dataset, datasetOptions]);
-
-	const handleApplyDataset = useStable(async () => {
-		const [datasetId, action] = dataset.split(":");
-
-		if (!datasetId || !action) {
-			return;
-		}
-
-		const dbVersion = version || import.meta.env.SDB_VERSION;
-
-		try {
-			if (action === "queries") {
-				const queries = await loadDatasetSampleQueries(datasetId, dbVersion);
-				appendQueriesToConnection(
-					queries,
-					queries.map((query) => query.name),
-				);
-			} else {
-				const entry = findDataset(datasets, datasetId);
-				const path = entry ? resolveDatasetSizePath(entry, action, dbVersion) : null;
-
-				if (!path) {
-					return;
-				}
-
-				await applyDataset(path);
-			}
-		} catch (error) {
-			showErrorNotification({
-				title: "Failed to apply dataset",
-				content: error,
-			});
-			return;
-		}
-
-		datasetModalOpenHandle.close();
-	});
 
 	return (
 		<>
@@ -385,12 +288,11 @@ export function ConnectionToolbarActions() {
 				</ActionButton>
 			)}
 
-			{isConnected && isSchemaEmpty && namespace && database && !isSyncingSchema && (
+			{isConnected && isSchemaEmpty && namespace && database && !isSyncingSchema && id && (
 				<Button
 					size="xs"
 					variant="light"
-					loading={isDatasetLoading}
-					onClick={selectDataset}
+					onClick={() => navigateConnection(id, "settings/data")}
 					leftSection={<Icon path={iconTable} />}
 				>
 					Import sample data
@@ -582,54 +484,6 @@ export function ConnectionToolbarActions() {
 					</HoverCard.Dropdown>
 				</HoverCard>
 			)}
-
-			<Modal
-				opened={datasetModalOpen}
-				onClose={datasetModalOpenHandle.close}
-				title={
-					<Group>
-						<Icon
-							path={iconTable}
-							size="lg"
-						/>
-						<PrimaryTitle>Import sample data</PrimaryTitle>
-					</Group>
-				}
-			>
-				<Stack gap="xl">
-					<Text>
-						Initialize your empty database with an official sample dataset to provide a
-						starting point for your project.
-					</Text>
-
-					<Select
-						placeholder="Select a dataset"
-						value={dataset}
-						onChange={(value) => setDataset(value || "")}
-						data={datasetOptions}
-					/>
-
-					<Group>
-						<Button
-							onClick={datasetModalOpenHandle.close}
-							color="obsidian"
-							variant="light"
-							flex={1}
-						>
-							Close
-						</Button>
-						<Button
-							type="submit"
-							variant="gradient"
-							flex={1}
-							onClick={handleApplyDataset}
-							loading={isDatasetLoading}
-						>
-							Apply
-						</Button>
-					</Group>
-				</Stack>
-			</Modal>
 		</>
 	);
 }

@@ -35,6 +35,7 @@ import {
 } from "@surrealdb/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Fragment, useRef, useState } from "react";
+import { useConfirmation } from "~/providers/Confirmation";
 import type { SpectronScopeSets } from "~/types";
 import { formatFileSize, showErrorNotification, showInfo } from "~/util/helpers";
 import { ContextHero } from "../../components/ContextHero";
@@ -133,6 +134,15 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 		onError: (err) => {
 			showErrorNotification({ title: "Failed to delete document", content: err });
 		},
+	});
+
+	const confirmDelete = useConfirmation<DocumentEntry>({
+		title: "Delete document",
+		message: (doc) =>
+			`Are you sure you want to delete "${doc.title || doc.source || doc.id}"? It will be removed from this context.`,
+		confirmText: "Delete",
+		skippable: true,
+		onConfirm: (doc) => deleteMutation.mutateAsync(doc.id),
 	});
 
 	const handleSearchSubmit = (event: React.FormEvent) => {
@@ -244,7 +254,7 @@ function DocumentExplorer({ client }: { client: Spectron }) {
 								key={doc.id}
 								document={doc}
 								onInspect={() => setInspecting(doc)}
-								onDelete={() => deleteMutation.mutate(doc.id)}
+								onDelete={() => confirmDelete(doc)}
 								deleting={
 									deleteMutation.isPending && deleteMutation.variables === doc.id
 								}
@@ -412,103 +422,99 @@ function DocumentCard({ document: doc, onInspect, onDelete, deleting }: Document
 	const fileName = doc.title || doc.source || doc.id;
 
 	return (
-		<Paper
-			p="md"
-			radius="md"
-			withBorder
-			className={classes.fileCard}
+		<Box
+			pos="relative"
+			h="100%"
 		>
-			<Group
-				gap="sm"
-				wrap="nowrap"
-				align="flex-start"
+			<Paper
+				p="md"
+				radius="md"
+				withBorder
+				h="100%"
+				onClick={onInspect}
 			>
-				<ThemeIcon
-					size={40}
-					radius="md"
-					variant="light"
-					color="violet"
+				<Group
+					gap="sm"
+					wrap="nowrap"
+					align="flex-start"
 				>
-					<Icon
-						path={mimeIcon(doc.mimeType)}
-						size="lg"
-					/>
-				</ThemeIcon>
-				<Box
-					flex={1}
-					miw={0}
-				>
-					<Text
-						fw={600}
-						c="bright"
-						truncate
-						title={fileName}
-						className="selectable"
+					<ThemeIcon
+						size={40}
+						radius="md"
+						variant="light"
+						color="violet"
 					>
-						{fileName}
-					</Text>
-					<Group
-						gap={6}
-						mt={4}
-						wrap="wrap"
-					>
-						<StatusBadge
-							status={doc.status}
-							error={doc.error}
+						<Icon
+							path={mimeIcon(doc.mimeType)}
+							size="lg"
 						/>
-						<Text
-							fz="xs"
-							c="slate"
-						>
-							{formatFileSize(doc.sizeBytes)}
-						</Text>
-					</Group>
-					{doc.status === "ready" && (
-						<Text
-							fz="xs"
-							c="slate"
-							mt={4}
-						>
-							{(doc.chunkCount ?? 0).toLocaleString()} chunks
-							{doc.keywordCount != null &&
-								` · ${doc.keywordCount.toLocaleString()} keywords`}
-						</Text>
-					)}
-					<Text
-						fz="xs"
-						c="slate"
-						mt={2}
+					</ThemeIcon>
+					<Box
+						flex={1}
+						miw={0}
 					>
-						{formatDate(doc.createdAt)}
-					</Text>
-				</Box>
-				<Stack gap={4}>
-					<Tooltip label="Inspect">
-						<ActionIcon
-							variant="subtle"
-							color="slate"
-							size="sm"
-							aria-label={`Inspect ${fileName}`}
-							onClick={onInspect}
+						<Group justify="space-between">
+							<Text
+								fw={600}
+								c="bright"
+								truncate
+								title={fileName}
+								className="selectable"
+							>
+								{fileName}
+							</Text>
+
+							<Tooltip label="Delete">
+								<ActionIcon
+									variant="subtle"
+									color="red"
+									size="sm"
+									aria-label={`Delete ${fileName}`}
+									onClick={onDelete}
+									loading={deleting}
+								>
+									<Icon path={iconTrash} />
+								</ActionIcon>
+							</Tooltip>
+						</Group>
+						<Group
+							gap={6}
+							mt={4}
+							wrap="wrap"
 						>
-							<Icon path={iconEye} />
-						</ActionIcon>
-					</Tooltip>
-					<Tooltip label="Delete">
-						<ActionIcon
-							variant="subtle"
-							color="red"
-							size="sm"
-							aria-label={`Delete ${fileName}`}
-							onClick={onDelete}
-							loading={deleting}
+							<StatusBadge
+								status={doc.status}
+								error={doc.error}
+							/>
+							<Text
+								fz="xs"
+								c="slate"
+							>
+								{formatFileSize(doc.sizeBytes)}
+							</Text>
+						</Group>
+						{doc.status === "ready" && (
+							<Text
+								fz="xs"
+								c="slate"
+								mt={4}
+							>
+								{(doc.chunkCount ?? 0).toLocaleString()} chunks
+								{doc.keywordCount != null &&
+									` · ${doc.keywordCount.toLocaleString()} keywords`}
+							</Text>
+						)}
+						<Text
+							fz="xs"
+							c="slate"
+							mt={2}
 						>
-							<Icon path={iconTrash} />
-						</ActionIcon>
-					</Tooltip>
-				</Stack>
-			</Group>
-		</Paper>
+							{formatDate(doc.createdAt)}
+						</Text>
+					</Box>
+				</Group>
+			</Paper>
+		</Box>
 	);
 }
 

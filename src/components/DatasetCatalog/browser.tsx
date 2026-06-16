@@ -1,19 +1,27 @@
 import { Center, Loader, SimpleGrid, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { useDatasetsCatalogQuery } from "~/hooks/datasets";
-import { getVisibleSizes, resolveDatasetVersion } from "~/util/datasets";
+import {
+	getVisibleSizes,
+	resolveDatasetVersionForCatalog,
+	resolveDatasetVersionForDatabase,
+} from "~/util/datasets";
 import { DatasetCatalogCard } from "./card";
+
+export type DatasetVersionResolution = "catalog" | "database";
 
 export interface DatasetCatalogBrowserProps {
 	surrealVersion: string;
 	disabled?: boolean;
 	variant: "apply" | "download";
+	versionResolution?: DatasetVersionResolution;
 }
 
 export function DatasetCatalogBrowser({
 	surrealVersion,
 	disabled,
 	variant,
+	versionResolution = "catalog",
 }: DatasetCatalogBrowserProps) {
 	const { data: datasets, isPending, isError } = useDatasetsCatalogQuery();
 
@@ -23,7 +31,10 @@ export function DatasetCatalogBrowser({
 		}
 
 		return datasets.flatMap((dataset) => {
-			const version = resolveDatasetVersion(dataset, surrealVersion);
+			const version =
+				versionResolution === "database"
+					? resolveDatasetVersionForDatabase(dataset, surrealVersion)
+					: resolveDatasetVersionForCatalog(dataset, surrealVersion);
 
 			if (!version) {
 				return [];
@@ -35,7 +46,7 @@ export function DatasetCatalogBrowser({
 
 			return [{ dataset, version }];
 		});
-	}, [datasets, surrealVersion, variant]);
+	}, [datasets, surrealVersion, variant, versionResolution]);
 
 	if (isPending) {
 		return (

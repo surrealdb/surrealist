@@ -40,11 +40,11 @@ import type { MiniAdapter } from "../adapter/mini";
 
 	// Connect and initialize the dataset
 	openConnection().then(() => {
-		setTimeout(() => {
+		setTimeout(async () => {
 			const adp = adapter as MiniAdapter;
 
-			// Initialize the mini
-			adp.initializeContent();
+			// Load dataset / setup queries, then autorun (if configured)
+			await adp.initializeContent();
 
 			// Notify the parent window that the app is ready
 			adp.broadcastReady();

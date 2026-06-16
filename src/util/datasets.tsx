@@ -82,17 +82,47 @@ export function resolveDefaultCatalogSurrealVersion(catalog: DatasetCatalogEntry
 	return versions[0] ?? import.meta.env.SDB_VERSION;
 }
 
-export function resolveDatasetVersion(dataset: DatasetCatalogEntry, dbVersion: string) {
+export function resolveDatasetVersionForCatalog(
+	dataset: DatasetCatalogEntry,
+	catalogSurrealVersion: string,
+) {
+	if (!catalogSurrealVersion) {
+		return null;
+	}
+
+	return (
+		dataset.versions.find(
+			(version) => !version.hidden && version.minimumVersion === catalogSurrealVersion,
+		) ?? null
+	);
+}
+
+function datasetMajorVersion(version: string) {
+	return version.split(/[.-]/)[0];
+}
+
+function isDatasetVersionCompatible(dbVersion: string, minimumVersion: string) {
+	return (
+		datasetMajorVersion(dbVersion) === datasetMajorVersion(minimumVersion) &&
+		compareVersions(dbVersion, minimumVersion) >= 0
+	);
+}
+
+export function resolveDatasetVersionForDatabase(dataset: DatasetCatalogEntry, dbVersion: string) {
 	if (!dbVersion) {
 		return null;
 	}
 
 	const compatible = dataset.versions
 		.filter((version) => !version.hidden)
-		.filter((version) => compareVersions(dbVersion, version.minimumVersion) >= 0)
+		.filter((version) => isDatasetVersionCompatible(dbVersion, version.minimumVersion))
 		.sort((a, b) => compareVersions(b.minimumVersion, a.minimumVersion));
 
 	return compatible[0] ?? null;
+}
+
+export function resolveDatasetVersion(dataset: DatasetCatalogEntry, dbVersion: string) {
+	return resolveDatasetVersionForDatabase(dataset, dbVersion);
 }
 
 export function getVisibleSizes(version: DatasetCatalogVersion) {
@@ -137,6 +167,120 @@ export function resolveDatasetSizePath(
 	);
 
 	return size?.path ?? null;
+}
+
+function getCatalogSizeIds(catalog: DatasetCatalogEntry[]) {
+	const sizeIds = new Set<string>();
+
+	for (const dataset of catalog) {
+		for (const version of dataset.versions) {
+			for (const size of getVisibleSizes(version)) {
+				sizeIds.add(size.id);
+			}
+		}
+	}
+
+	return [...sizeIds].sort((a, b) => b.length - a.length);
+}
+
+function parseCatalogDatasetSource(source: string, catalog: DatasetCatalogEntry[]) {
+	if (findDataset(catalog, source)) {
+		return { datasetId: source };
+	}
+
+	for (const sizeId of getCatalogSizeIds(catalog)) {
+		const suffix = `-${sizeId}`;
+
+		if (!source.endsWith(suffix)) {
+			continue;
+		}
+
+		const datasetId = source.slice(0, -suffix.length);
+
+		if (findDataset(catalog, datasetId)) {
+			return { datasetId, sizeId };
+		}
+	}
+
+	return null;
+}
+
+function resolveDatasetImportPath(
+	datasetId: string,
+	sizeId: string | undefined,
+	dbVersion: string,
+	catalog: DatasetCatalogEntry[],
+) {
+	const dataset = findDataset(catalog, datasetId);
+
+	if (!dataset) {
+		return null;
+	}
+
+	const version = resolveDatasetVersion(dataset, dbVersion);
+	const sizes = getVisibleSizes(version ?? { id: "", hidden: false, minimumVersion: "0" });
+
+	if (sizes.length === 0) {
+		throw new Error(`Dataset "${datasetId}" has no importable data files`);
+	}
+
+	if (sizeId) {
+		const size = sizes.find((entry) => entry.id === sizeId);
+
+		if (!size?.path) {
+			throw new Error(`Dataset "${datasetId}" has no "${sizeId}" size`);
+		}
+
+		return size.path;
+	}
+
+	const path = sizes[0]?.path;
+
+	if (!path) {
+		throw new Error(`Dataset "${datasetId}" has no importable data files`);
+	}
+
+	return path;
+}
+
+/**
+ * Resolve a dataset reference from a mini-embed URL `dataset` parameter to a fetchable URL.
+ *
+ * - Full `http(s)://` URLs are returned unchanged.
+ * - CDN paths (e.g. `/learn/fundamentals/fundamentals-part-1.surql`) are served from datasets.surrealdb.com.
+ * - Catalog references resolve via datasets.json using `{datasetId}` or `{datasetId}-{sizeId}`.
+ */
+export async function resolveMiniEmbedDatasetUrl(source: string, dbVersion: string) {
+	if (source.startsWith("http://") || source.startsWith("https://")) {
+		return source;
+	}
+
+	if (source.startsWith("/") || source.endsWith(".surql")) {
+		return getDatasetAssetUrl(source);
+	}
+
+	const catalog = await fetchDatasetsCatalog();
+	const parsed = parseCatalogDatasetSource(source, catalog);
+
+	if (parsed) {
+		const path = resolveDatasetImportPath(parsed.datasetId, parsed.sizeId, dbVersion, catalog);
+
+		if (path) {
+			return getDatasetAssetUrl(path);
+		}
+	}
+
+	throw new Error(`Invalid dataset source: ${source}`);
+}
+
+export async function fetchDatasetFromUrl(url: string) {
+	const response = await fetch(url);
+
+	if (!response.ok) {
+		throw new Error(`Failed to fetch dataset (${response.status})`);
+	}
+
+	return response.text();
 }
 
 export async function resolveDefaultDeployDatasetPath(dbVersion: string) {
