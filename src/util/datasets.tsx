@@ -82,17 +82,47 @@ export function resolveDefaultCatalogSurrealVersion(catalog: DatasetCatalogEntry
 	return versions[0] ?? import.meta.env.SDB_VERSION;
 }
 
-export function resolveDatasetVersion(dataset: DatasetCatalogEntry, dbVersion: string) {
+export function resolveDatasetVersionForCatalog(
+	dataset: DatasetCatalogEntry,
+	catalogSurrealVersion: string,
+) {
+	if (!catalogSurrealVersion) {
+		return null;
+	}
+
+	return (
+		dataset.versions.find(
+			(version) => !version.hidden && version.minimumVersion === catalogSurrealVersion,
+		) ?? null
+	);
+}
+
+function datasetMajorVersion(version: string) {
+	return version.split(/[.-]/)[0];
+}
+
+function isDatasetVersionCompatible(dbVersion: string, minimumVersion: string) {
+	return (
+		datasetMajorVersion(dbVersion) === datasetMajorVersion(minimumVersion) &&
+		compareVersions(dbVersion, minimumVersion) >= 0
+	);
+}
+
+export function resolveDatasetVersionForDatabase(dataset: DatasetCatalogEntry, dbVersion: string) {
 	if (!dbVersion) {
 		return null;
 	}
 
 	const compatible = dataset.versions
 		.filter((version) => !version.hidden)
-		.filter((version) => compareVersions(dbVersion, version.minimumVersion) >= 0)
+		.filter((version) => isDatasetVersionCompatible(dbVersion, version.minimumVersion))
 		.sort((a, b) => compareVersions(b.minimumVersion, a.minimumVersion));
 
 	return compatible[0] ?? null;
+}
+
+export function resolveDatasetVersion(dataset: DatasetCatalogEntry, dbVersion: string) {
+	return resolveDatasetVersionForDatabase(dataset, dbVersion);
 }
 
 export function getVisibleSizes(version: DatasetCatalogVersion) {

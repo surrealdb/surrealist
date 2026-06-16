@@ -13,6 +13,7 @@ export function DatasetBrowser({ disabled }: DatasetBrowserProps) {
 		<DatasetCatalogBrowser
 			surrealVersion={dbVersion}
 			variant="apply"
+			versionResolution="database"
 			disabled={disabled}
 		/>
 	);

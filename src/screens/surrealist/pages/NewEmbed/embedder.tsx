@@ -17,7 +17,11 @@ import { Spacer } from "~/components/Spacer";
 import { ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
 import { useDatasetsCatalogQuery } from "~/hooks/datasets";
 import type { ColorScheme, Orientation, ResultMode } from "~/types";
-import { getVisibleDatasets, getVisibleSizes, resolveDatasetVersion } from "~/util/datasets";
+import {
+	getVisibleDatasets,
+	getVisibleSizes,
+	resolveDatasetVersionForDatabase,
+} from "~/util/datasets";
 import { isDevelopment, isProduction } from "~/util/environment";
 
 export const DEFAULT_STATE: EmbedState = {
@@ -105,7 +109,7 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 		const dbVersion = import.meta.env.SDB_VERSION;
 
 		for (const dataset of getVisibleDatasets(catalog)) {
-			const version = resolveDatasetVersion(dataset, dbVersion);
+			const version = resolveDatasetVersionForDatabase(dataset, dbVersion);
 
 			if (!version) {
 				continue;
