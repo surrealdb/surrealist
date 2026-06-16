@@ -26,7 +26,10 @@ export function CloudAlert({ banner }: CloudAlertProps) {
 			withCloseButton
 			onClose={() => dismissBanner(banner.timestamp)}
 		>
-			<MarkdownViewer content={banner.message} />
+			<MarkdownViewer
+				content={banner.message}
+				style={{ padding: 0, color: "unset" }}
+			/>
 		</Alert>
 	);
 }
