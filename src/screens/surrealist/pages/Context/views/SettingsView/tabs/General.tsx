@@ -1,21 +1,8 @@
-import {
-	ActionIcon,
-	Box,
-	Button,
-	CopyButton,
-	Group,
-	Paper,
-	Stack,
-	Text,
-	TextInput,
-	ThemeIcon,
-} from "@mantine/core";
+import { Box, Button, Group, Paper, Stack, Text, TextInput, ThemeIcon } from "@mantine/core";
 import { useInputState } from "@mantine/hooks";
 import {
 	SectionTitle as Heading,
 	Icon,
-	iconCheck,
-	iconCopy,
 	iconWarning,
 	pictoSettingsGradient,
 	useStable,
@@ -84,24 +71,6 @@ export function GeneralTab({ context }: ContextViewProps) {
 					description="The display name of your context"
 					onChange={setName}
 					maw={400}
-				/>
-
-				<CopyableField
-					label="Context ID"
-					description="This ID may be requested by the SurrealDB support team"
-					value={context.id}
-				/>
-
-				<CopyableField
-					label="Host"
-					description="The base URL agents and SDKs connect to"
-					value={context.host}
-				/>
-
-				<CopyableField
-					label="Region"
-					description="Where this context is hosted"
-					value={context.region}
 				/>
 
 				<Box mt="sm">
@@ -181,43 +150,5 @@ export function GeneralTab({ context }: ContextViewProps) {
 				</Paper>
 			</Box>
 		</Stack>
-	);
-}
-
-interface CopyableFieldProps {
-	label: string;
-	description?: string;
-	value: string;
-}
-
-function CopyableField({ label, description, value }: CopyableFieldProps) {
-	return (
-		<TextInput
-			maw={400}
-			label={label}
-			description={description}
-			value={value}
-			readOnly
-			rightSection={
-				<CopyButton value={value}>
-					{({ copied, copy }) => (
-						<ActionIcon
-							variant={copied ? "gradient" : undefined}
-							aria-label={`Copy ${label}`}
-							radius="xs"
-							size="md"
-							onClick={copy}
-						>
-							<Icon path={copied ? iconCheck : iconCopy} />
-						</ActionIcon>
-					)}
-				</CopyButton>
-			}
-			styles={{
-				input: {
-					fontFamily: "var(--mantine-font-family-monospace)",
-				},
-			}}
-		/>
 	);
 }
