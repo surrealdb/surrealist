@@ -15,7 +15,9 @@ import { useImmer } from "use-immer";
 import { CodeInput } from "~/components/Inputs";
 import { Spacer } from "~/components/Spacer";
 import { ORIENTATIONS, RESULT_MODES, THEMES } from "~/constants";
+import { useDatasetsCatalogQuery } from "~/hooks/datasets";
 import type { ColorScheme, Orientation, ResultMode } from "~/types";
+import { getVisibleDatasets, getVisibleSizes, resolveDatasetVersion } from "~/util/datasets";
 import { isDevelopment, isProduction } from "~/util/environment";
 
 export const DEFAULT_STATE: EmbedState = {
@@ -91,6 +93,34 @@ export interface EmbedderProps {
 
 export function Embedder({ value, onChangeURL }: EmbedderProps) {
 	const [state, setState] = useImmer({ ...DEFAULT_STATE, ...value });
+	const { data: catalog } = useDatasetsCatalogQuery();
+
+	const datasetOptions = useMemo(() => {
+		const options = [{ label: "None", value: "none" }];
+
+		if (!catalog) {
+			return options;
+		}
+
+		const dbVersion = import.meta.env.SDB_VERSION;
+
+		for (const dataset of getVisibleDatasets(catalog)) {
+			const version = resolveDatasetVersion(dataset, dbVersion);
+
+			if (!version) {
+				continue;
+			}
+
+			for (const size of getVisibleSizes(version)) {
+				options.push({
+					label: `${dataset.label} (${size.label})`,
+					value: `${dataset.id}-${size.id}`,
+				});
+			}
+		}
+
+		return options;
+	}, [catalog]);
 
 	useEffect(() => {
 		if (value) {
@@ -226,16 +256,11 @@ export function Embedder({ value, onChangeURL }: EmbedderProps) {
 					Dataset
 				</SectionTitle>
 				<Select
-					data={[
-						{
-							label: "Surreal Deal Store (Mini)",
-							value: "surreal-deal-store-mini",
-						},
-					]}
+					data={datasetOptions}
 					value={state.dataset}
 					onChange={(e) => {
 						setState((draft) => {
-							draft.dataset = e || "";
+							draft.dataset = e || "none";
 						});
 					}}
 				/>
