@@ -88,7 +88,7 @@ async function fetchNamespaceListWithDefaults(): Promise<{
 	const authNS = getAuthNS(connection.authentication);
 
 	if (authNS) {
-		return { namespaces: [authNS], defaults: {} };
+		return { namespaces: [{ name: authNS }], defaults: {} };
 	}
 
 	try {

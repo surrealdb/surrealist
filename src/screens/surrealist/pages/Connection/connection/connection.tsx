@@ -913,6 +913,13 @@ function scheduleReconnect(timeout: number) {
 }
 
 async function isNamespaceValid(namespace: string) {
+	const connection = getConnection();
+	const authNS = connection && getAuthNS(connection.authentication);
+
+	if (authNS === namespace) {
+		return true;
+	}
+
 	try {
 		const [result] = await instance.query("INFO FOR KV").collect<[SchemaInfoKV]>();
 		const namespaces = Object.keys(result?.namespaces ?? {}).map((ns) => parseIdent(ns));
