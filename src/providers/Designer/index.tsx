@@ -10,7 +10,7 @@ import type { TableInfo } from "~/types";
 import { tagEvent } from "~/util/analytics";
 import { showErrorNotification } from "~/util/helpers";
 import { syncConnectionSchema } from "~/util/schema";
-import { SDB_2_0_0 } from "~/util/versions";
+import { SDB_2_0_0, SDB_3_1_0 } from "~/util/versions";
 import { DesignDrawer } from "./drawer";
 import { buildDefinitionQueries, isSchemaValid } from "./helpers";
 
@@ -67,6 +67,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 	const [errors, setErrors] = useState<string[]>([]);
 	const [data, setData] = useImmer<TableInfo>(DEFAULT_DEF);
 	const [useOverwrite] = useMinimumVersion(SDB_2_0_0);
+	const [useAlter] = useMinimumVersion(SDB_3_1_0);
 
 	const design = useStable((table: string) => {
 		const schema = tables.find((t) => t.schema.name === table);
@@ -109,6 +110,7 @@ export function DesignerProvider({ children }: PropsWithChildren) {
 				previous: previous,
 				current: data,
 				useOverwrite,
+				useAlter,
 			});
 
 			try {

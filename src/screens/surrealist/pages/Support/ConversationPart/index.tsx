@@ -75,7 +75,7 @@ export function ConversationPartBody({ part }: ConversationPartProps) {
 					</Group>
 				)}
 				<div
-					className={styles.intercomContainer}
+					className={`selectable ${styles.intercomContainer}`}
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required since Intercom returns HTML
 					dangerouslySetInnerHTML={{ __html: part.body ?? "" }}
 				/>

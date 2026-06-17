@@ -1,12 +1,12 @@
 import { Alert, MantineColor } from "@mantine/core";
-import { Icon, iconBullhorn, iconWarning } from "@surrealdb/ui";
+import { Icon, iconBullhorn, iconWarning, MarkdownViewer } from "@surrealdb/ui";
 import { useConfigStore } from "~/stores/config";
 import { BannerType, CloudBanner } from "~/types";
 
 const BANNER_INFO: Record<BannerType, [MantineColor, string, string]> = {
 	info: ["violet", "Service Update", iconBullhorn],
 	warning: ["orange", "Service Update", iconWarning],
-	important: ["red", "Important Service Update", iconWarning],
+	error: ["red", "Important Service Update", iconWarning],
 };
 
 export interface CloudAlertProps {
@@ -26,7 +26,10 @@ export function CloudAlert({ banner }: CloudAlertProps) {
 			withCloseButton
 			onClose={() => dismissBanner(banner.timestamp)}
 		>
-			{banner.message}
+			<MarkdownViewer
+				content={banner.message}
+				style={{ padding: 0, color: "unset" }}
+			/>
 		</Alert>
 	);
 }
