@@ -17,7 +17,6 @@ import { useMemo } from "react";
 import { Updater } from "use-immer";
 import { CONNECTION_PROTOCOLS } from "~/constants";
 import { useStable } from "~/hooks/stable";
-import { useIsLight } from "~/hooks/theme";
 import { createSurreal } from "~/screens/surrealist/pages/Connection/connection/surreal";
 import { Connection, Protocol } from "~/types";
 import { connectionUri, isHostLocal } from "~/util/helpers";
@@ -37,8 +36,6 @@ export function ConnectionAddressDetails({
 	withHostname,
 	onChange,
 }: ConnectionAddressDetailsProps) {
-	const isLight = useIsLight();
-
 	const { protocol, hostname } = value.authentication;
 
 	const protocols = useMemo(() => {
@@ -191,7 +188,6 @@ export function ConnectionAddressDetails({
 					<Button
 						size="xs"
 						mt="md"
-						color={isLight ? "obsidian.9" : "obsidian.0"}
 						variant="light"
 						onClick={() =>
 							onChange((draft) => {
