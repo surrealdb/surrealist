@@ -54,6 +54,7 @@ export function createBaseSettings(): SurrealistSettings {
 			recordDiagnostics: false,
 			diagnosticsHistorySize: 300,
 			editorKeymap: "default",
+			timeZone: "system",
 		},
 		appearance: {
 			colorScheme: "dark",

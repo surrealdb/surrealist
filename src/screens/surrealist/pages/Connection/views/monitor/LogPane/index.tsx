@@ -1,7 +1,7 @@
 import { Box, BoxProps, Center, Group, Loader, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Icon, iconChevronRight, iconHelp, iconList } from "@surrealdb/ui";
-import { formatDate, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { capitalize } from "radash";
 import { useEffect, useMemo, useRef } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -12,6 +12,7 @@ import { ActionButton } from "~/components/ActionButton";
 import { ContentPane } from "~/components/Pane";
 import { MONITOR_LOG_LEVEL_INFO } from "~/constants";
 import { useConnection } from "~/hooks/connection";
+import { useFormatDateTime } from "~/hooks/timezone";
 import { CloudLogLine } from "~/types";
 import { fuzzyMatch } from "~/util/helpers";
 import { MonitorContentProps } from "../helpers";
@@ -168,6 +169,7 @@ interface LogLine extends BoxProps {
 }
 
 export function LogLine({ line, count, index, ...other }: LogLine) {
+	const formatDateTime = useFormatDateTime();
 	const [icon, color, severity] = MONITOR_LOG_LEVEL_INFO[line.level] || [
 		iconHelp,
 		"blue",
@@ -175,7 +177,13 @@ export function LogLine({ line, count, index, ...other }: LogLine) {
 	];
 
 	const relativeTime = capitalize(formatDistanceToNow(line.timestamp, { addSuffix: true }));
-	const absoluteTime = formatDate(line.timestamp, "MMMM d, yyyy - h:mm a");
+	const absoluteTime = formatDateTime(line.timestamp, {
+		month: "long",
+		day: "numeric",
+		year: "numeric",
+		hour: "numeric",
+		minute: "2-digit",
+	});
 
 	return (
 		<Paper

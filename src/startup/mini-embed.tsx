@@ -10,18 +10,17 @@ import "../assets/styles/variants.scss";
 
 import "../adapter";
 
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { MiniRunScreen } from "~/screens/mini-embed";
 import { openConnection } from "~/screens/surrealist/pages/Connection/connection/connection";
 import { startConfigSync } from "~/util/config";
 import { handleWindowMessage } from "~/util/messaging";
+import { configureDayjs } from "~/util/timezone";
 import { adapter } from "../adapter";
 import type { MiniAdapter } from "../adapter/mini";
 
 (async () => {
-	dayjs.extend(relativeTime);
+	configureDayjs();
 
 	// Synchronize the config to the store
 	await startConfigSync();

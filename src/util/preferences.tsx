@@ -22,6 +22,7 @@ import { useSetting } from "~/hooks/config";
 import { Flags, type Listable, Selectable, type SurrealistConfig } from "~/types";
 import { useFeatureFlags } from "./feature-flags";
 import { optional } from "./helpers";
+import { getTimeZoneOptions } from "./timezone";
 
 interface ReaderWriter<T> {
 	reader: (config: SurrealistConfig) => T;
@@ -88,7 +89,12 @@ export class TextController {
  * A preference controller for a selection dropdown
  */
 export class SelectionController<T extends string> {
-	constructor(public options: ReaderWriter<T> & { options: Selectable<T>[] }) {}
+	constructor(
+		public options: ReaderWriter<T> & {
+			options: Selectable<T>[];
+			searchable?: boolean;
+		},
+	) {}
 }
 
 /**
@@ -242,6 +248,20 @@ export function useComputedPreferences(): PreferenceSection[] {
 				id: "behavior",
 				name: "Behavior",
 				preferences: [
+					{
+						id: "time-zone",
+						name: "Time zone",
+						description:
+							"Display dates and times in a specific time zone instead of your system default",
+						controller: new SelectionController({
+							options: getTimeZoneOptions(),
+							searchable: true,
+							reader: (config) => config.settings.behavior.timeZone,
+							writer: (config, value) => {
+								config.settings.behavior.timeZone = value;
+							},
+						}),
+					},
 					{
 						id: "enter-confirms",
 						name: "Enter to confirm",
