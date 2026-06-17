@@ -159,7 +159,7 @@ export async function fetchDatabaseList(namespace: string): Promise<NamespaceOrD
 	const authDB = getAuthDB(connection.authentication);
 
 	if (authDB) {
-		return [authDB];
+		return [{ name: authDB }];
 	}
 
 	const [_, result] = await executeQuery(

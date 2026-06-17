@@ -931,6 +931,13 @@ async function isNamespaceValid(namespace: string) {
 }
 
 async function isDatabaseValid(database: string) {
+	const connection = getConnection();
+	const authDB = connection && getAuthDB(connection.authentication);
+
+	if (authDB === database) {
+		return true;
+	}
+
 	try {
 		const [result] = await instance.query("INFO FOR NS").collect<[SchemaInfoNS]>();
 		const databases = Object.keys(result?.databases ?? {}).map((db) => parseIdent(db));
