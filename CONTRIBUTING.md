@@ -1,80 +1,121 @@
 # Contributing
 
-We would &nbsp;<img width="15" alt="Love" src="https://github.com/surrealdb/surrealdb/blob/main/img/love.svg?raw=true">&nbsp; for you to contribute to SurrealDB and help make it better! We want to ensure contributing to SurrealDB is fun, enjoyable, and educational for anyone and everyone. All contributions are welcome, including features, bug fixes, and documentation changes, as well as updates and tweaks, blog posts, workshops, and everything else.
+We would &nbsp;<img width="15" alt="Love" src="https://github.com/surrealdb/surrealdb/blob/main/img/love.svg?raw=true">&nbsp; for you to contribute to Surrealist and help make it better! We want to ensure contributing to Surrealist is fun, enjoyable, and educational for anyone and everyone. All contributions are welcome, including features, bug fixes, and documentation changes, as well as updates and tweaks, blog posts, workshops, and everything else.
 
 ## How to start
 
-If you are worried or don’t know where to start, check out our next section explaining what kind of help we could use and where can you get involved. You can ask us a question on [GitHub Discussions](https://github.com/surrealdb/surrealdb/discussions), or the [SurrealDB Discord Server](https://surrealdb.com/discord). Alternatively, you can message us on any channel in the [SurrealDB Community](https://surrealdb.com/community)!
+If you are worried or don’t know where to start, check out our next section explaining what kind of help we could use and where can you get involved. You can ask us a question in the [SurrealDB Discord Server](https://surrealdb.com/discord).
 
 ## Code of conduct
 
-Please help us keep SurrealDB open and inclusive. Kindly read and follow our [Code of Conduct](/CODE_OF_CONDUCT.md).
+Please help us keep this project open and inclusive. Kindly read and follow our [Code of Conduct](/CODE_OF_CONDUCT.md).
 
-<!--
---------------------------------------------------
-ONLY RELEVANT FOR CLIENT SDK REPOSITORIES
---------------------------------------------------
--->
+## Building and running locally
 
-## Coding standards
+Surrealist is a Vite + React web app with an optional Tauri desktop shell. All commands below are run from the repository root unless noted otherwise.
 
-We aim to develop according to coding standards in-line with each programming language. We suggest you go through the prerequisite reading section below before proceeding with a contribution!
+### Prerequisites
 
-<details>
-  <summary>Prerequisite Reading</summary>
+- [Bun](https://bun.sh/) (see `.github/workflows/check.yml` for the version used in CI)
+- [Rust](https://www.rust-lang.org/tools/install) (stable toolchain, for the desktop app)
+- Platform libraries for Tauri:
+  - **Linux:** `libwebkit2gtk-4.1-dev`, `libappindicator3-dev`, `librsvg2-dev`, `patchelf`
+  - **macOS:** Xcode command line tools
+  - **Windows:** Microsoft C++ Build Tools and the WebView2 runtime
 
-  ## What is a Database Driver?
-  
-  A database driver (also known as a client library), is a module for a programming language that is implemented to provide access to SurrealDB, and enables access to the wide range of functionality the database offers.
-  
-  Its focus is primarily on network protocol correctness, performance, access to distinct database features, error handling, and in due course, transaction handling and retriability.
-  
-  Drivers are not designed to be a one-size-fits-all, as we cannot make assumptions about how users will use the drivers. JDBC? Async? ORM? DSL? Due to the many different features and functionalities in each language, we are unable to provide all this functionality in a single driver.
-  
-  We want users to have very clear expectations about how our software works. It’s very important for us that when users move between languages or compare implementations, the SurrealDB integration is as familiar as possible across all languages.
-  
-  ## Driver architecture
-  
-  We would recommend following the API of the [Rust driver](https://github.com/surrealdb/surrealdb/tree/main/lib), as the Rust driver is fully utilising our capabilities and is the de-facto reference implementation. In the future, it will also be the underlying implementation as we begin to share a common API (either via foreign function interfaces or WASM), with native language-specific bindings.
-  
-  Drivers connect to SurrealDB using either REST, a text-based WebSocket protocol, or a binary-based WebSocket protocol. Each of the protocols aims to support as many of the SurrealDB features as possible, ensuring that similar functionality and similar performance are supported regardless of the protocol being used.
-  
-  Beyond baseline protocol support, error handling is also a key feature. This is tied with both custom SurrealQL protocol status codes included in the response itself, or with HTTP status codes in some cases.
-  
-  There isn't any specific configuration per driver. We may introduce configuration options in due course, and we will update this guide if we change those configurations.
-  
-  <!--
-  --------------------------------------------------
-  END
-  --------------------------------------------------
-  -->
-</details>
+Install frontend dependencies once:
+
+```bash
+bun install
+```
+
+### Web app
+
+Run the web app in development mode (hot reload at http://localhost:1420):
+
+```bash
+bun run dev
+```
+
+Build the static web assets into `dist/`:
+
+```bash
+bun run build
+```
+
+Preview a production build locally:
+
+```bash
+bun run preview
+```
+
+### Desktop app (development)
+
+Run Surrealist inside the Tauri shell with hot reload:
+
+```bash
+bun run tauri:dev
+```
+
+### Desktop app (release build)
+
+Build installers and bundles for your current platform (`.dmg`, `.app`, `.deb`, `.rpm`, `.AppImage`, `.msi`, and so on):
+
+```bash
+bun run tauri:build
+```
+
+Output is written under `src-tauri/target/release/bundle/`.
+
+To compile the desktop binary without creating installers, pass `--no-bundle`:
+
+```bash
+bun run tauri build -- --no-bundle
+```
+
+The compiled executable is then available at:
+
+| Platform | Path |
+| --- | --- |
+| Linux / macOS | `src-tauri/target/release/surrealist` |
+| Windows | `src-tauri/target/release/surrealist.exe` |
+
+Run it from the command line, for example:
+
+```bash
+./src-tauri/target/release/surrealist
+```
+
+On macOS you can also open the generated `.app` bundle from `src-tauri/target/release/bundle/macos/`.
+
+Cross-compiling (for example `aarch64-apple-darwin` from an Intel Mac) is supported via Tauri’s `--target` flag. See `bun run tauri build -- --help` for options.
+
+### Code quality
+
+Before opening a pull request, run:
+
+```bash
+bun run qa   # format and lint (applies fixes)
+bun run qc   # verify formatting and lint
+bun run qts  # TypeScript type check
+```
 
 ## Introducing new features
 
-We would &nbsp;<img width="15" alt="Love" src="https://github.com/surrealdb/surrealdb/blob/main/img/love.svg?raw=true">&nbsp; for you to contribute to SurrealDB, but we would also like to make sure SurrealDB is as great as possible and loyal to its vision and mission statement. For us to find the right balance, please open a question on [GitHub discussions](https://github.com/surrealdb/surrealdb/discussions) with any ideas before creating a [**GitHub Issue**](/issues). This will allow the SurrealDB community to have sufficient discussion about the new feature value and how it fits in the product roadmap and vision, before introducing a new pull request
-
-This is also important for the SurrealDB lead developers to be able to give technical input and different emphasis regarding the feature design and architecture. Some bigger features might need to go through our [RFC process](https://github.com/surrealdb/rfcs).
+We would &nbsp;<img width="15" alt="Love" src="https://github.com/surrealdb/surrealdb/blob/main/img/love.svg?raw=true">&nbsp; for you to contribute to Surrealist, but we would also like to make sure Surrealist is as great as possible and loyal to SurrealDB's vision and mission statement. For us to find the right balance, please chat with us on Discord about any ideas before creating a [**GitHub Issue**](/issues). This will allow the community and team to have sufficient discussion about the new feature value and how it fits in the product roadmap and vision, before introducing a new pull request
 
 ## Submitting a pull request
 
 The **branch name** is your first opportunity to give your task context.
 Branch naming convention is as follows 
 
-`TYPE-ISSUE_ID-DESCRIPTION`
-
-It is recommended to combine the relevant [**GitHub Issue**](/issues) with a short description that describes the task resolved in this branch. If you don't have GitHub issue for your PR, then you may avoid the prefix, but keep in mind that more likely you have to create the issue first. For example:
-```
-bugfix-548-ensure-queries-execute-sequentially
-```
+`type/brief-title`
 
 Where `TYPE` can be one of the following:
 
 - **refactor** - code change that neither fixes a bug nor adds a feature
-- **feature** - code changes that add a new feature
-- **bugfix** - code changes that fix a bug
-- **docs** - documentation only changes
-- **ci** - changes related to CI system
+- **feat** - code changes that add a new feature
+- **fix** - code changes that fix a bug
 
 ### Commit your changes
 
@@ -92,7 +133,7 @@ Where `TYPE` can be one of the following:
 
 - Describe the scene and provide everything that will help to understand the background and a context for the reviewers by adding related GitHub issues to the description, and links to the related PRs, projects or third-party documentation. If there are any potential drawbacks or trade-offs to your changes, be sure to mention them too.
 
-- Be sure to **request reviews** from the appropriate people. This might include the project maintainers, other contributors, or anyone else who is familiar with the codebase and can provide valuable feedback. You can also join our [Weekly Developer Office Hours](https://github.com/orgs/surrealdb/discussions/2118) to chat with the maintainers who will review your code! 
+- Be sure to **request reviews** from the appropriate people. This might include the project maintainers, other contributors, or anyone else who is familiar with the codebase and can provide valuable feedback. You can also join our Developer Office Hours on Discord to chat with the maintainers who will review your code! 
 
 ### Getting a better review
 
@@ -103,11 +144,7 @@ https://github.blog/2019-02-14-introducing-draft-pull-requests/
 
 - By using the [**re-request review** feature](https://github.blog/changelog/2019-02-21-re-request-review-on-a-pull-request/), you can prompt the reviewer to take another look at your changes and provide feedback if necessary.  
 
-- The [**CODEOWNERS** file](https://github.com/surrealdb/surrealdb/blob/main/.github/CODEOWNERS) in GitHub allows you to specify who is responsible for code in a specific part of your repository. You can use this file to automatically assign pull requests to the appropriate people or teams and to ensure that the right people are notified when changes are made to certain files or directories.  
-
-<!--
-**[OPTIONAL - can be removed]** We use [**scheduled reminders** to Slack](https://docs.github.com/en/organizations/organizing-members-into-teams/managing-scheduled-reminders-for-your-team) for abandoned pull requests to will receive reminders to the team's channel for PRs that are non-draft and have no activity for a couple of days.
--->
+- The [**CODEOWNERS** file](https://github.com/surrealdb/surrealist/blob/main/.github/CODEOWNERS) in GitHub allows you to specify who is responsible for code in a specific part of your repository. You can use this file to automatically assign pull requests to the appropriate people or teams and to ensure that the right people are notified when changes are made to certain files or directories.  
 
 ### Finalize the change
 
@@ -123,7 +160,7 @@ To summarize, fork the project and use the `git clone` command to download the r
  
 2. Pull all changes from the upstream `main` branch, before creating a new branch - to ensure that your `main` branch is up-to-date with the latest changes.
 
-3. Create a new branch from `main` like: `bugfix-548-ensure-queries-execute-sequentially`.
+3. Create a new branch from `main` like `fix/bug-description`.
 
 4. Make changes to the code, and ensure all code changes are formatted correctly.
 
@@ -139,21 +176,6 @@ To summarize, fork the project and use the `git clone` command to download the r
 
 10. Wait for code review and approval.
 
-## Scalability and Performance
-
-SurrealDB is designed to be fast and to scale. It is built to work in both a single-node setup and as a distributed cluster. In distributed mode, SurrealDB builds upon [TiKV](https://tikv.org). Please keep in mind that SurrealDB and the Client SDKs are designed to be run in different environments, with different configurations, and at differing scales.
-
-When contributing code to the database or the Client SDKs, please take into account the following considerations:
-
-- SurrealDB startup time
-- Query execution time
-- Query response times
-- Query throughput
-- Requests per second
-- Websocket connections
-- Network usage
-- Memory usage
-
 ## Security and Privacy
 
 We take the security of SurrealDB code, software, cloud platform, and client SDKs very seriously. If you believe you have found a security vulnerability in SurrealDB, we encourage you to let us know right away. We will investigate all legitimate reports and do our best to quickly fix the problem.
@@ -164,7 +186,7 @@ When developing, make sure to follow the best industry standards and practices.
 
 ## External dependencies
 
-Please avoid introducing new dependencies to SurrealDB or the Client SDKs without consulting the team. New dependencies can be very helpful but also introduce new security and privacy issues, complexity, and impact total docker image size. Adding a new dependency should have vital value on the product with minimum possible risk.
+Please avoid introducing new dependencies without consulting the team. New dependencies can be very helpful but also introduce new security and privacy issues, complexity, and impact total docker image size. Adding a new dependency should have vital value on the project with minimum possible risk.
 
 ## Other Ways to Help
 
@@ -172,7 +194,7 @@ Pull requests are great, but there are many other areas where you can help.
 
 ### Blogging and speaking
 
-Blogging, speaking about, or creating tutorials about one of SurrealDB's many features. Mention [@surrealdb](https://twitter.com/surrealdb) on Twitter, and email community@surrealdb.com so we can give pointers and tips and help you spread the word by promoting your content on the different SurrealDB communication channels. Please add your blog posts and videos of talks to our [showcase](https://github.com/surrealdb/showcase) repo on GitHub.
+Blogging, speaking about, or creating tutorials about one of SurrealDB's many features. Mention [@surrealdb](https://x.com/surrealdb) on X, and email community@surrealdb.com so we can give pointers and tips and help you spread the word by promoting your content on the different SurrealDB communication channels. Please add your blog posts and videos of talks to SurrealDB Labs via the [docs.surrealdb.com](https://github.com/surrealdb/docs.surrealdb.com) repo on GitHub.
 
 ### Presenting at meetups
 
@@ -191,7 +213,7 @@ Submitting [documentation](https://surrealdb.com/docs) updates, enhancements, de
 Join the growing [SurrealDB Community](https://surrealdb.com/community) around the world, for help, ideas, and discussions regarding SurrealDB.
 
 - View our official [Blog](https://surrealdb.com/blog)
-- Follow us on [Twitter](https://twitter.com/surrealdb)
+- Follow us on [X](https://x.com/surrealdb)
 - Connect with us on [LinkedIn](https://www.linkedin.com/company/surrealdb/)
 - Join our [Dev community](https://dev.to/surrealdb)
 - Chat live with us on [Discord](https://discord.gg/surrealdb)
