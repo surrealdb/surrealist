@@ -119,4 +119,4 @@ We welcome any issues and PRs submitted to Surrealist. Before you open an issue 
 
 Source code for Surrealist is licensed under the [MIT license](LICENSE).
 
-Copyright © 2025 SurrealDB Ltd
+Copyright © 2026 SurrealDB Ltd
