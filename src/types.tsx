@@ -245,6 +245,7 @@ export interface SurrealistBehaviorSettings {
 	recordDiagnostics: boolean;
 	diagnosticsHistorySize: number;
 	editorKeymap: EditorKeymap;
+	timeZone: string;
 }
 
 export interface SurrealistAppearanceSettings {

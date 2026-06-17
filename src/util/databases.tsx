@@ -88,7 +88,7 @@ async function fetchNamespaceListWithDefaults(): Promise<{
 	const authNS = getAuthNS(connection.authentication);
 
 	if (authNS) {
-		return { namespaces: [authNS], defaults: {} };
+		return { namespaces: [{ name: authNS }], defaults: {} };
 	}
 
 	try {
@@ -159,7 +159,7 @@ export async function fetchDatabaseList(namespace: string): Promise<NamespaceOrD
 	const authDB = getAuthDB(connection.authentication);
 
 	if (authDB) {
-		return [authDB];
+		return [{ name: authDB }];
 	}
 
 	const [_, result] = await executeQuery(

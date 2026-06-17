@@ -27,6 +27,7 @@ import {
 	Uuid,
 } from "surrealdb";
 import { useFormatter } from "~/hooks/formatter";
+import { useFormatDateTime } from "~/hooks/timezone";
 import { TRUNCATE_STYLE } from "~/util/helpers";
 import { GeographyLink } from "../GeographyLink";
 import { RecordLink } from "../RecordLink";
@@ -109,8 +110,13 @@ function ThingCell(props: { value: RecordId }) {
 }
 
 function DateTimeCell(props: { value: DateTime }) {
+	const formatDateTime = useFormatDateTime();
 	const date = props.value.toDate();
 	const relative = dayjs(date).fromNow();
+	const formatted = formatDateTime(date, {
+		dateStyle: "medium",
+		timeStyle: "medium",
+	});
 
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
@@ -118,14 +124,19 @@ function DateTimeCell(props: { value: DateTime }) {
 				path={iconExplorer}
 				mt={-3}
 			/>
-			{date.toLocaleString()}
+			{formatted}
 		</Text>
 	);
 }
 
 function DateCell(props: { value: Date }) {
+	const formatDateTime = useFormatDateTime();
 	const date = props.value;
 	const relative = dayjs(date).fromNow();
+	const formatted = formatDateTime(date, {
+		dateStyle: "medium",
+		timeStyle: "medium",
+	});
 
 	return (
 		<Text title={`${date.toISOString()} (${relative})`}>
@@ -133,7 +144,7 @@ function DateCell(props: { value: Date }) {
 				path={iconExplorer}
 				mt={-3}
 			/>
-			{date.toLocaleString()}
+			{formatted}
 		</Text>
 	);
 }

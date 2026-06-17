@@ -100,6 +100,8 @@ export function PreferenceInput({ controller, compact, ...other }: PreferenceInp
 				data={controller.options.options}
 				value={value}
 				size={compact ? "xs" : undefined}
+				searchable={controller.options.searchable}
+				nothingFoundMessage="No matches"
 				onChange={(input) => {
 					applyPreference(controller.options.writer, input);
 				}}

@@ -14,20 +14,19 @@ import "../assets/styles/variants.scss";
 
 import "../adapter";
 
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { createRoot } from "react-dom/client";
 import { clearCachedConnections } from "~/cloud/helpers";
 import { startConfigSync } from "~/util/config";
 import { exposeDebug } from "~/util/helpers";
 import { preloadImages } from "~/util/preloader";
+import { configureDayjs } from "~/util/timezone";
 import { adapter } from "../adapter";
 import { App } from "../components/App";
 import { generateEditorIcons } from "../editor/icons";
 import { promptChangelog } from "../util/changelogs";
 
 (async () => {
-	dayjs.extend(relativeTime);
+	configureDayjs();
 
 	// Synchronize the config to the store
 	await startConfigSync();

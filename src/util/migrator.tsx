@@ -80,6 +80,7 @@ export function applyMigrations(config: any): SurrealistConfig {
 
 	config.settings.behavior.recordDiagnostics ??= false;
 	config.settings.behavior.diagnosticsHistorySize ??= 300;
+	config.settings.behavior.timeZone ??= "system";
 
 	config.dismissedUpdateVersion ??= null;
 
