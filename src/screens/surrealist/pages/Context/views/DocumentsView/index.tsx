@@ -1318,7 +1318,6 @@ function UploadModal({
 						{items.some((item) => item.state === "done") ? "Done" : "Cancel"}
 					</Button>
 					<Button
-						variant="default"
 						leftSection={<Icon path={iconUpload} />}
 						onClick={() => inputRef.current?.click()}
 						disabled={busy}
