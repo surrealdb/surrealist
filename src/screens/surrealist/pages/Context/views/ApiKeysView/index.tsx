@@ -37,7 +37,8 @@ import {
 	iconTrash,
 	pictoKeyGradient,
 } from "@surrealdb/ui";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
 	useDeleteContextApiKeyMutation,
@@ -55,6 +56,7 @@ import { ON_FOCUS_SELECT, showErrorNotification, showInfo } from "~/util/helpers
 import { ContextHero } from "../../components/ContextHero";
 import { useSpectron } from "../../provider";
 import type { ContextViewProps } from "../../types";
+import { normalizeScopePath } from "../../utils/scope-validation";
 import classes from "./style.module.scss";
 
 type IntegrationTab = "javascript" | "python" | "api";
@@ -90,7 +92,7 @@ const INTEGRATION_QUICK_LINKS: IntegrationQuickLink[] = [
 
 export default function ApiKeysView({ context }: ContextViewProps) {
 	const organization = context.organization_id;
-	const { principalId } = useSpectron();
+	const { client, principalId } = useSpectron();
 	const { data: apiKeys } = useCloudContextApiKeysQuery(organization, context.id);
 	const mintKeyMutation = useMintScopedKeyMutation(organization, context.id);
 	const deleteKeyMutation = useDeleteContextApiKeyMutation(organization, context.id);
@@ -109,6 +111,27 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 		return seeded;
 	});
 	const [createdKey, setCreatedKey] = useState<ContextApiKey | null>(null);
+
+	// Registered scopes power autocomplete for the per-verb grant patterns. Only
+	// fetched while the create modal is open. (Shares the cache key used by the
+	// Scopes and Documents views.)
+	const scopesQuery = useQuery({
+		queryKey: ["spectron", context.id, "scopes", "list"],
+		enabled: !!client && modalOpened,
+		retry: false,
+		queryFn: async () => {
+			if (!client) {
+				throw new Error("Spectron client is not ready");
+			}
+			return client.scopes.list();
+		},
+	});
+
+	const availableScopes = useMemo(
+		() =>
+			(scopesQuery.data ?? []).map((scope) => normalizeScopePath(scope.path)).filter(Boolean),
+		[scopesQuery.data],
+	);
 
 	const resetCreateForm = () => {
 		setNewKeyName("");
@@ -551,6 +574,7 @@ export default function ApiKeysView({ context }: ContextViewProps) {
 										<TagsInput
 											flex={1}
 											placeholder="Add scope pattern…"
+											data={availableScopes}
 											value={grantDraft[verb]}
 											onChange={(value) =>
 												setGrantDraft((prev) => ({
