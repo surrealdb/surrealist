@@ -391,13 +391,10 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 					>
 						<Group
 							gap="sm"
-							align="end"
+							align="center"
 							wrap="nowrap"
 						>
 							<Textarea
-								mt="lg"
-								bg={glassColor}
-								bdrs="xl"
 								flex={1}
 								placeholder="Message your agent…"
 								value={input}
@@ -408,16 +405,6 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 								maxRows={5}
 								disabled={busy}
 								aria-label="Message"
-								variant="unstyled"
-								styles={{
-									input: {
-										color: "var(--mantine-color-bright)",
-										padding: "0.5rem 1rem",
-									},
-								}}
-								style={{
-									border: "1px solid rgba(255, 255, 255, 0.25)",
-								}}
 							/>
 							<ActionIcon
 								size="xl"
