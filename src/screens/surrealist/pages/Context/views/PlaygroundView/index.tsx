@@ -31,6 +31,7 @@ import {
 	iconText,
 	iconUpload,
 	iconWarning,
+	MarkdownViewer,
 	pictoSpectronGradient,
 	SectionTitle,
 } from "@surrealdb/ui";
@@ -519,7 +520,9 @@ function ChatBubble({
 					gap="xs"
 					wrap="nowrap"
 				>
-					<Text style={{ whiteSpace: "pre-wrap" }}>{message.content}</Text>
+					<Box flex={1}>
+						<MarkdownViewer content={message.content} />
+					</Box>
 					{saveAction}
 				</Group>
 			</Paper>
@@ -537,12 +540,12 @@ function ChatBubble({
 				gap="xs"
 				wrap="nowrap"
 			>
-				<Text
+				<Box
+					flex={1}
 					className="selectable"
-					style={{ whiteSpace: "pre-wrap" }}
 				>
-					{message.content}
-				</Text>
+					<MarkdownViewer content={message.content} />
+				</Box>
 				{saveAction}
 			</Group>
 			{message.traceId && (
