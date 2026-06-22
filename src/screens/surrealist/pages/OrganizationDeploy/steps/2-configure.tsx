@@ -11,9 +11,11 @@ import {
 } from "@mantine/core";
 import { Icon, iconChevronRight, iconWarning } from "@surrealdb/ui";
 import { useMemo } from "react";
+import { isScalePlan } from "~/cloud/helpers";
 import { EstimatedCost } from "~/components/EstimatedCost";
 import { Spacer } from "~/components/Spacer";
 import { ClusterOptionsSection } from "../sections/cluster";
+import { ComputeNodesSection } from "../sections/compute-nodes";
 import { DataOptionsSection } from "../sections/data-opts";
 import { DeploymentSection } from "../sections/instance";
 import { NetworkAccessSection } from "../sections/network-access";
@@ -52,6 +54,7 @@ export function ConfigureStep({
 }: StepProps) {
 	const isNotFree = details.computeType !== "free";
 	const isDedicated = details.plan === "enterprise";
+	const isScale = isScalePlan(details.plan);
 	const regionMismatch =
 		details.startingData.type === "restore" &&
 		details.startingData.backupOptions?.instance &&
@@ -90,8 +93,13 @@ export function ConfigureStep({
 			if (!details.storageAmount) return true;
 		}
 
+		if (isScale) {
+			if (!details.computeUnits) return true;
+			if (!details.storageAmount) return true;
+		}
+
 		return false;
-	}, [details, isNotFree, regionMismatch, storageMismatch, restoreBlocked]);
+	}, [details, isNotFree, isScale, regionMismatch, storageMismatch, restoreBlocked]);
 
 	return (
 		<>
@@ -149,6 +157,16 @@ export function ConfigureStep({
 							setDetails={setDetails}
 							setStep={setStep}
 						/>
+
+						{isScale && (
+							<ComputeNodesSection
+								organisation={organisation}
+								instances={instances}
+								details={details}
+								setDetails={setDetails}
+								setStep={setStep}
+							/>
+						)}
 
 						{organisation.privatelink_enabled && (
 							<NetworkAccessSection

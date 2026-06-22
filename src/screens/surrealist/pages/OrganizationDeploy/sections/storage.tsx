@@ -1,6 +1,6 @@
 import { Box, Slider, Text, Tooltip } from "@mantine/core";
-import { list } from "radash";
 import { useMemo } from "react";
+import { isEnterprisePlan, isScalePlan } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
@@ -9,26 +9,36 @@ import { DeploySectionProps } from "../types";
 
 export function StorageOptionsSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
-	const isDedicated = details.plan === "enterprise";
+	const isDedicated = isEnterprisePlan(details.plan);
+	const isScale = isScalePlan(details.plan);
 
 	const instanceType = instanceTypes.get(details.computeType);
-	const storageMin = isDedicated ? 100 : (instanceType?.default_storage_size ?? 0);
-	const storageMax = isDedicated ? 6000 : (instanceType?.max_storage_size ?? 0);
-
+	const storageMin = isDedicated || isScale ? 100 : (instanceType?.default_storage_size ?? 0);
+	const storageMax = isDedicated || isScale ? 6000 : (instanceType?.max_storage_size ?? 0);
 	const marks = useMemo(() => {
-		if (storageMin === 0 && storageMax === 0) {
+		if (storageMin >= storageMax) {
 			return [];
 		}
 
-		return list(
-			storageMin,
-			storageMax,
-			(value) => ({
-				value,
-				label: formatMemory(value * 1000, true),
-			}),
-			(storageMax - storageMin) / 4,
-		);
+		const range = storageMax - storageMin;
+		const step =
+			storageMax >= 2000 ? 1000 : range > 400 ? 100 : range > 80 ? 50 : range > 40 ? 10 : 1;
+		const values = [storageMin];
+
+		for (let value = Math.ceil(storageMin / step) * step; value < storageMax; value += step) {
+			if (value > storageMin) {
+				values.push(value);
+			}
+		}
+
+		if (values[values.length - 1] !== storageMax) {
+			values.push(storageMax);
+		}
+
+		return values.map((value) => ({
+			value,
+			label: value >= 1000 && value % 1000 === 0 ? `${value / 1000} TB` : `${value} GB`,
+		}));
 	}, [storageMin, storageMax]);
 
 	const updateAmount = useStable((value: number) => {

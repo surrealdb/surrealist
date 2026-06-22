@@ -32,6 +32,7 @@ import glow from "~/assets/images/glow.png";
 import {
 	getBillingProviderAction,
 	isBillingManaged,
+	isEnterprisePlan,
 	isOrganisationBillable,
 } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
@@ -62,7 +63,8 @@ import { StepProps } from "../types";
 
 export function CheckoutStep({ organisation, details, setDetails, setStep }: StepProps) {
 	const navigateConnection = useConnectionNavigator();
-	const isDedicated = details.plan === "enterprise";
+	const isDedicated = isEnterprisePlan(details.plan);
+	const isScale = details.plan === "scale";
 	const deployMutation = useInstanceDeployMutation(organisation);
 	const computeTypes = useInstanceTypeRegistry(organisation, "compute");
 	const storageTypes = useInstanceTypeRegistry(organisation, "storage");
@@ -105,7 +107,7 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 	});
 
 	const isFree = instanceType?.category === "free";
-	const isDistributed = details.plan === "enterprise";
+	const isDistributed = isDedicated;
 	const isManaged = isBillingManaged(organisation);
 	const isBillable = isOrganisationBillable(organisation);
 	const isBlocked = !isFree && !isBillable;
@@ -127,9 +129,13 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 		? "Free"
 		: `${computeTypeName} (${getTypeCategoryName(computeTypeCategory)})`;
 	const storageTypeText = `${storageTypeName} (${getTypeCategoryName(storageTypeCategory)})`;
-	const computeText = `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
-	const computeNodesText = isDedicated ? details.computeUnits : "Single-node";
+	const computeText = isScale
+		? `${computeCores} ${plural(computeCores, "vCPU", "vCPUs")}`
+		: `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
+	const computeNodesText =
+		isDedicated || isScale ? `${details.computeUnits} Nodes` : "Single-node";
 	const storageNodesText = `${formatMemory(details.storageAmount * 1000, true)} x ${details.storageUnits} Nodes`;
+	const storageText = formatMemory(details.storageAmount * 1000, true);
 	const startingDataText = STARTING_DATA[details.startingData.type].title;
 
 	const updateMigration = useStable((e: ChangeEvent<HTMLInputElement>) => {
@@ -224,6 +230,66 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 								title="Version"
 								icon={iconTag}
 								value={`SurrealDB ${details?.version}`}
+							/>
+						</SimpleGrid>
+					) : isScale ? (
+						<SimpleGrid
+							cols={{ base: 1, sm: 2, xl: 3 }}
+							spacing="xl"
+							verticalSpacing="xs"
+						>
+							<PropertyValue
+								title="Type"
+								icon={iconPackageClosed}
+								value={computeTypeText}
+							/>
+
+							<PropertyValue
+								title="Region"
+								icon={iconMarker}
+								value={regionName}
+							/>
+
+							<PropertyValue
+								title="Version"
+								icon={iconTag}
+								value={`SurrealDB ${details?.version}`}
+							/>
+
+							<PropertyValue
+								title="Backups"
+								icon={iconHistory}
+								value={<Text c={isFree ? "orange" : undefined}>{backupText}</Text>}
+							/>
+
+							<PropertyValue
+								title="Memory"
+								icon={iconMemory}
+								value={formatMemory(memoryMax)}
+							/>
+
+							<PropertyValue
+								title="Compute"
+								icon={iconQuery}
+								value={computeText}
+							/>
+
+							<PropertyValue
+								title="Nodes"
+								icon={iconRelation}
+								value={computeNodesText}
+							/>
+
+							<PropertyValue
+								title="Storage"
+								icon={iconDatabase}
+								value={storageText}
+							/>
+
+							<PropertyValue
+								title="Starting data"
+								icon={iconDatabase}
+								value={startingDataText}
 							/>
 						</SimpleGrid>
 					) : (

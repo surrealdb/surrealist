@@ -1,7 +1,7 @@
 import { Alert, Box, Button, Group, Select, Stack, Text } from "@mantine/core";
 import { Icon, iconArrowDownFat, iconHelp, iconInfo, useStable } from "@surrealdb/ui";
 import dayjs from "dayjs";
-import { isDistributedPlan } from "~/cloud/helpers";
+import { INSTANCE_CATEGORY_PLANS } from "~/cloud/helpers";
 import { DeploySectionProps } from "../types";
 
 export function DataOptionsSection({
@@ -11,14 +11,11 @@ export function DataOptionsSection({
 	setDetails,
 	setStep,
 }: DeploySectionProps) {
-	const isDistributed = isDistributedPlan(details.plan);
-
 	const restorableInstances = instances
 		.filter((instance) => {
-			return (
-				!!instance.distributed_storage_specs === isDistributed &&
-				instance.region === details.region
-			);
+			const instancePlan = INSTANCE_CATEGORY_PLANS[instance.type.category] ?? "start";
+
+			return instancePlan === details.plan && instance.region === details.region;
 		})
 		.map((it) => ({
 			value: it.id,

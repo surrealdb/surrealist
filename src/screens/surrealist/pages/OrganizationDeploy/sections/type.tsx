@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Anchor,
 	Box,
 	Button,
@@ -15,7 +16,12 @@ import {
 import { closeModal, openModal } from "@mantine/modals";
 import { Icon, iconArrowLeft, iconArrowUpRight } from "@surrealdb/ui";
 import { Fragment, ReactNode, useEffect, useLayoutEffect, useMemo } from "react";
-import { INSTANCE_PLAN_ARCHITECTURES, INSTANCE_PLAN_SUGGESTIONS } from "~/cloud/helpers";
+import {
+	getInstanceTypesForPlan,
+	INSTANCE_PLAN_ARCHITECTURES,
+	INSTANCE_PLAN_SUGGESTIONS,
+	isScalePlan,
+} from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useCloudOrganizationInstancesQuery } from "~/cloud/queries/instances";
 import { InstanceTypes } from "~/components/InstanceTypes";
@@ -33,11 +39,20 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 	const { isPending } = useCloudOrganizationInstancesQuery(organisation.id);
 
 	const recommendations = useMemo(() => {
-		return INSTANCE_PLAN_SUGGESTIONS[details.plan]
+		const suggested = INSTANCE_PLAN_SUGGESTIONS[details.plan]
+			.flatMap((slug) => optional(instanceTypes.get(slug)))
+			.slice(0, 3);
+
+		if (suggested.length > 0) {
+			return suggested.toReversed();
+		}
+
+		return getInstanceTypesForPlan(instanceTypes.values(), details.plan)
 			.slice(0, 3)
-			.reverse()
-			.flatMap((slug) => optional(instanceTypes.get(slug)));
+			.toReversed();
 	}, [instanceTypes, details.plan]);
+
+	const hasAvailableTypes = recommendations.length > 0;
 
 	const handleUpdate = useStable((type: CloudInstanceType) => {
 		closeModal("instance-type");
@@ -89,9 +104,13 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 		if (selected) {
 			setDetails((draft) => {
 				draft.storageAmount = selected.default_storage_size;
+
+				if (isScalePlan(details.plan)) {
+					draft.computeUnits = selected.compute_units.min ?? 3;
+				}
 			});
 		}
-	}, [selected, setDetails]);
+	}, [selected, setDetails, details.plan]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: Not necessary
 	useLayoutEffect(() => {
@@ -104,6 +123,18 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 
 	return (
 		<Box>
+			{!hasAvailableTypes && (
+				<Alert
+					color="orange"
+					title="No instance types available"
+					mb="xl"
+				>
+					<Text className="selectable">
+						No instance types are available for this plan on your organisation. Contact
+						support if you believe this is an error.
+					</Text>
+				</Alert>
+			)}
 			<SimpleGrid
 				cols={{ base: 1, xs: 2, md: 3 }}
 				spacing="xl"
@@ -160,6 +191,7 @@ export function InstanceTypeSection({ organisation, details, setDetails }: Deplo
 						size="xs"
 						variant="gradient"
 						onClick={openComputeInstanceTypeSelector}
+						disabled={!hasAvailableTypes}
 						rightSection={
 							<Icon
 								path={iconArrowLeft}

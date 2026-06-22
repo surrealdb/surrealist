@@ -4,6 +4,7 @@ import { CLOUD_ROLES } from "~/constants";
 import { useConfigStore } from "~/stores/config";
 import {
 	CloudDeployConfig,
+	CloudInstanceType,
 	CloudOrganization,
 	CloudPlanCategories,
 	InstancePlan,
@@ -32,11 +33,18 @@ export const DEFAULT_DEPLOY_CONFIG = Object.freeze<CloudDeployConfig>({
 	},
 });
 
+export const SCALE_INSTANCE_CATEGORIES = [
+	"large-scale",
+	"xlarge-scale",
+	"2xlarge-scale",
+	"4xlarge-scale",
+] as const;
+
 export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, CloudPlanCategories> = {
 	free: { compute: ["free", "development", "production"], storage: [] },
 	start: { compute: ["development", "production"], storage: [] },
 	scale: {
-		compute: ["production-memory", "production-compute"],
+		compute: [...SCALE_INSTANCE_CATEGORIES],
 		storage: [],
 	},
 	enterprise: {
@@ -58,12 +66,16 @@ export const INSTANCE_CATEGORY_PLANS: Record<string, InstancePlan> = {
 	production: "start",
 	"production-memory": "enterprise",
 	"production-compute": "enterprise",
+	"large-scale": "scale",
+	"xlarge-scale": "scale",
+	"2xlarge-scale": "scale",
+	"4xlarge-scale": "scale",
 };
 
 export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	free: ["free", "small-dev", "medium"],
 	start: ["small-dev", "medium", "xlarge"],
-	scale: ["medium-compute", "large-compute", "xlarge-memory"],
+	scale: ["large-scale", "xlarge-scale", "2xlarge-scale"],
 	enterprise: ["medium-memory", "large-memory", "xlarge-memory"],
 };
 
@@ -147,7 +159,7 @@ export function compileDeployConfig(
 		}
 	}
 
-	if (isDistributedPlan(config.plan)) {
+	if (isEnterprisePlan(config.plan)) {
 		configuration.storage = (config.storageAmount * config.storageUnits) / 3;
 		configuration.distributed_storage_specs = {
 			slug: config.storageType,
@@ -164,8 +176,29 @@ export function isInstancePlan(plan: string): plan is InstancePlan {
 	return Object.keys(INSTANCE_PLAN_CATEGORIES).includes(plan);
 }
 
+export function isScalePlan(plan: InstancePlan): boolean {
+	return plan === "scale";
+}
+
+export function isEnterprisePlan(plan: InstancePlan): boolean {
+	return plan === "enterprise";
+}
+
 export function isDistributedPlan(plan: InstancePlan): boolean {
-	return plan === "scale" || plan === "enterprise";
+	return isScalePlan(plan) || isEnterprisePlan(plan);
+}
+
+export function getInstanceTypesForPlan(
+	registry: Iterable<CloudInstanceType>,
+	plan: InstancePlan,
+	variant: keyof CloudPlanCategories = "compute",
+): CloudInstanceType[] {
+	const categories = INSTANCE_PLAN_CATEGORIES[plan][variant];
+
+	return [...registry]
+		.filter((type) => categories.includes(type.category))
+		.filter((type) => type.restricted !== true)
+		.sort((a, b) => a.price_hour - b.price_hour);
 }
 
 export function normalizeRole(role: string): string {

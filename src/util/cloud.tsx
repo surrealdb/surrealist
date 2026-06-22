@@ -90,6 +90,11 @@ export function getTypeCategoryName(category: string) {
 			return "General purpose";
 		case "production-compute":
 			return "Compute intensive";
+		case "large-scale":
+		case "xlarge-scale":
+		case "2xlarge-scale":
+		case "4xlarge-scale":
+			return "Scale";
 		default:
 			return category;
 	}
@@ -107,6 +112,11 @@ export function getTypeCategoryDescription(category: string) {
 			return "General purpose instances for high performance workloads";
 		case "production-compute":
 			return "Distributed compute intensive instances for high performance";
+		case "large-scale":
+		case "xlarge-scale":
+		case "2xlarge-scale":
+		case "4xlarge-scale":
+			return "Shared cluster instances for production workloads";
 		default:
 			return category;
 	}

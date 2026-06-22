@@ -1,7 +1,7 @@
 import { Badge, Box, Divider, Group, Paper, SimpleGrid, Stack, Text, Tooltip } from "@mantine/core";
 import { Icon, iconAuth } from "@surrealdb/ui";
 import { useMemo } from "react";
-import { INSTANCE_PLAN_CATEGORIES } from "~/cloud/helpers";
+import { INSTANCE_PLAN_CATEGORIES, SCALE_INSTANCE_CATEGORIES } from "~/cloud/helpers";
 import { TypeVariant, useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { useIsLight } from "~/hooks/theme";
 import { CloudInstanceType, CloudOrganization, InstancePlan } from "~/types";
@@ -10,7 +10,14 @@ import { CURRENCY_FORMAT, formatMemory } from "~/util/helpers";
 import { Label } from "../Label";
 import { PrimaryTitle } from "../PrimaryTitle";
 
-const CATEGORIES = ["free", "development", "production", "production-compute", "production-memory"];
+const CATEGORIES = [
+	"free",
+	"development",
+	"production",
+	"production-compute",
+	"production-memory",
+	...SCALE_INSTANCE_CATEGORIES,
+];
 
 export interface InstanceTypesProps {
 	variant?: TypeVariant;
@@ -38,24 +45,43 @@ export function InstanceTypes({
 
 	const categories = useMemo(() => {
 		const typeList = [...instanceTypes.values()];
+		const grouped = new Map<string, { labelCategory: string; types: CloudInstanceType[] }>();
+		const groupOrder: string[] = [];
 
-		return CATEGORIES.flatMap((category) => {
+		for (const category of CATEGORIES) {
 			if (!available.includes(category)) {
-				return [];
+				continue;
 			}
 
 			const types = typeList
 				.filter((type) => type.category === category)
-				.filter((type) => type.restricted !== true)
-				.sort((a, b) => {
-					return a.price_hour - b.price_hour;
-				});
+				.filter((type) => type.restricted !== true);
 
 			if (types.length === 0) {
-				return [];
+				continue;
 			}
 
-			return [{ category, types }];
+			const groupKey = (SCALE_INSTANCE_CATEGORIES as readonly string[]).includes(category)
+				? "scale"
+				: category;
+
+			if (!grouped.has(groupKey)) {
+				grouped.set(groupKey, { labelCategory: category, types: [] });
+				groupOrder.push(groupKey);
+			}
+
+			grouped.get(groupKey)?.types.push(...types);
+		}
+
+		return groupOrder.map((groupKey) => {
+			const group = grouped.get(groupKey);
+			if (!group) {
+				return { category: groupKey, types: [] };
+			}
+
+			group.types.sort((a, b) => a.price_hour - b.price_hour);
+
+			return { category: group.labelCategory, types: group.types };
 		});
 	}, [instanceTypes, available]);
 

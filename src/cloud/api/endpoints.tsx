@@ -17,7 +17,8 @@ export function getCloudEndpoints() {
 export function getWebsiteBase() {
 	const { urlWebsiteBase } = useConfigStore.getState().settings.cloud;
 	const isCustom = featureFlags.get("website_base") === "custom";
-	const defaultWebsiteBase = import.meta.env.VITE_SURREALIST_WEBSITE_BASE ?? "";
+	const defaultWebsiteBase =
+		import.meta.env.VITE_SURREALIST_WEBSITE_BASE ?? "https://surrealdb.com";
 
 	return isCustom ? urlWebsiteBase : defaultWebsiteBase;
 }

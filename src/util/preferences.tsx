@@ -696,11 +696,11 @@ export function useComputedPreferences(): PreferenceSection[] {
 			},
 		);
 
-		if (cloud_endpoints === "custom") {
-			sections.push({
-				id: "cloud-endpoints",
-				name: "Custom Cloud endpoints",
-				preferences: [
+		if (cloud_endpoints === "custom" || website_base === "custom") {
+			const preferences: Preference[] = [];
+
+			if (cloud_endpoints === "custom") {
+				preferences.push(
 					{
 						id: "auth-base",
 						name: "Auth base",
@@ -737,25 +737,29 @@ export function useComputedPreferences(): PreferenceSection[] {
 							},
 						}),
 					},
-				],
-			});
+				);
+			}
 
 			if (website_base === "custom") {
-				sections
-					.find((section) => section.id === "cloud-endpoints")
-					?.preferences.push({
-						id: "website-base",
-						name: "Website base",
-						description: "The base URL for the website",
-						controller: new TextController({
-							placeholder: "https://surrealdb.com",
-							reader: (config) => config.settings.cloud.urlWebsiteBase,
-							writer: (config, value) => {
-								config.settings.cloud.urlWebsiteBase = value;
-							},
-						}),
-					});
+				preferences.push({
+					id: "website-base",
+					name: "Website base",
+					description: "The base URL for the marketing website (e.g. pricing.json)",
+					controller: new TextController({
+						placeholder: "https://surrealdb.com",
+						reader: (config) => config.settings.cloud.urlWebsiteBase,
+						writer: (config, value) => {
+							config.settings.cloud.urlWebsiteBase = value;
+						},
+					}),
+				});
 			}
+
+			sections.push({
+				id: "cloud-endpoints",
+				name: "Custom Cloud endpoints",
+				preferences,
+			});
 		}
 
 		if (gtm_debug) {
