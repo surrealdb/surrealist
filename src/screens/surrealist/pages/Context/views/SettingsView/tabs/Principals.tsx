@@ -1323,12 +1323,7 @@ function MintedKeyModal({
 							fresh key from the API Keys view to get a value you can copy.
 						</Alert>
 						<Group justify="flex-end">
-							<Button
-								variant="default"
-								onClick={onClose}
-							>
-								Close
-							</Button>
+							<Button onClick={onClose}>Close</Button>
 						</Group>
 					</Stack>
 				))}
