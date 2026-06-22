@@ -135,7 +135,7 @@ export default function DashboardView({ context }: ContextViewProps) {
 					What's in this context
 				</SectionTitle>
 				<Box mt="xl">
-					<OverviewStats />
+					<OverviewStats onNavigate={goToPage} />
 				</Box>
 			</Box>
 
@@ -246,7 +246,7 @@ function CopyableDetail({ label, value }: { label: string; value: string }) {
 
 // ─── At-a-glance stats (SDK-powered) ───
 
-function OverviewStats() {
+function OverviewStats({ onNavigate }: { onNavigate: (page: ContextViewPage) => void }) {
 	const { client, status } = useSpectron();
 
 	if (status !== "ready" || !client) {
@@ -277,6 +277,8 @@ function OverviewStats() {
 				queryKey="documents"
 				client={client}
 				resolve={async (c) => (await c.documents.list({ pageSize: 1 })).total}
+				navigateTo="documents"
+				onNavigate={onNavigate}
 			/>
 			<StatCard
 				icon={iconMemory}
@@ -291,6 +293,8 @@ function OverviewStats() {
 						(state.context?.entities?.length ?? 0)
 					);
 				}}
+				navigateTo="memory"
+				onNavigate={onNavigate}
 			/>
 			<StatCard
 				icon={iconFolderSecure}
@@ -301,6 +305,8 @@ function OverviewStats() {
 					const scopes = await c.scopes.list();
 					return Array.isArray(scopes) ? scopes.length : 0;
 				}}
+				navigateTo="scopes"
+				onNavigate={onNavigate}
 			/>
 			<StatCard
 				icon={iconHistory}
@@ -308,6 +314,8 @@ function OverviewStats() {
 				queryKey="queries"
 				client={client}
 				resolve={async (c) => (await c.traces.stats()).totalQueries}
+				navigateTo="memory"
+				onNavigate={onNavigate}
 			/>
 		</SimpleGrid>
 	);
@@ -319,9 +327,19 @@ interface StatCardProps {
 	queryKey: string;
 	client: Spectron;
 	resolve: (client: Spectron) => Promise<number>;
+	navigateTo: ContextViewPage;
+	onNavigate: (page: ContextViewPage) => void;
 }
 
-function StatCard({ icon, label, queryKey, client, resolve }: StatCardProps) {
+function StatCard({
+	icon,
+	label,
+	queryKey,
+	client,
+	resolve,
+	navigateTo,
+	onNavigate,
+}: StatCardProps) {
 	const query = useQuery({
 		queryKey: ["spectron", client.contextId, "overview-stat", queryKey],
 		queryFn: () => resolve(client),
@@ -330,48 +348,55 @@ function StatCard({ icon, label, queryKey, client, resolve }: StatCardProps) {
 	});
 
 	return (
-		<Paper
-			p="md"
-			radius="md"
+		<UnstyledButton
+			onClick={() => onNavigate(navigateTo)}
+			w="100%"
+			style={{ cursor: "pointer" }}
+			aria-label={`View ${label}`}
 		>
-			<Group
-				gap="sm"
-				wrap="nowrap"
+			<Paper
+				p="md"
+				radius="md"
 			>
-				<ThemeIcon
-					size={36}
-					radius="md"
-					variant="light"
-					color="violet"
+				<Group
+					gap="sm"
+					wrap="nowrap"
 				>
-					<Icon path={icon} />
-				</ThemeIcon>
-				<Box>
-					{query.isPending ? (
-						<Skeleton
-							h={24}
-							w={48}
-							mb={4}
-						/>
-					) : (
-						<Text
-							fz={24}
-							fw={700}
-							c="bright"
-							lh={1.1}
-						>
-							{query.isError ? "—" : (query.data ?? 0).toLocaleString()}
-						</Text>
-					)}
-					<Text
-						fz="xs"
-						c="slate"
+					<ThemeIcon
+						size={36}
+						radius="md"
+						variant="light"
+						color="violet"
 					>
-						{label}
-					</Text>
-				</Box>
-			</Group>
-		</Paper>
+						<Icon path={icon} />
+					</ThemeIcon>
+					<Box>
+						{query.isPending ? (
+							<Skeleton
+								h={24}
+								w={48}
+								mb={4}
+							/>
+						) : (
+							<Text
+								fz={24}
+								fw={700}
+								c="bright"
+								lh={1.1}
+							>
+								{query.isError ? "—" : (query.data ?? 0).toLocaleString()}
+							</Text>
+						)}
+						<Text
+							fz="xs"
+							c="slate"
+						>
+							{label}
+						</Text>
+					</Box>
+				</Group>
+			</Paper>
+		</UnstyledButton>
 	);
 }
 

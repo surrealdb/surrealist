@@ -134,7 +134,7 @@ export function OrganisationSidebar({ organizationId }: OrganisationSidebarProps
 			<SidebarNavigation
 				items={navigation}
 				backButton={{
-					name: "Overview",
+					name: "Back",
 					onClick: () => setLocation("/"),
 				}}
 			/>

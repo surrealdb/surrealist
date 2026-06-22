@@ -28,6 +28,8 @@ import {
 	iconRefresh,
 	iconRelation,
 	iconTag,
+	iconText,
+	iconUpload,
 	iconWarning,
 	pictoSpectronGradient,
 	SectionTitle,
@@ -35,37 +37,17 @@ import {
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { ContentPane } from "~/components/Pane";
 import { useIsLight } from "~/hooks/theme";
-import { showErrorNotification } from "~/util/helpers";
+import { useConfirmation } from "~/providers/Confirmation";
+import {
+	type ChatMessage,
+	type ExtractionResult,
+	type MemoryHit,
+	usePlaygroundStore,
+} from "~/stores/playground";
+import { showErrorNotification, showInfo } from "~/util/helpers";
 import { SpectronGate } from "../../components/feedback";
 import type { ContextViewProps } from "../../types";
 import classes from "./style.module.scss";
-
-// ─── SDK-derived types (inferred from method returns) ───
-
-// `chat` is overloaded (non-streaming vs `{ stream: true }`). A plain
-// `ReturnType` collapses to the last (streaming) overload, so this matches the
-// FIRST call signature to recover the non-streaming `ChatResponseJson` shape —
-// the one that carries `memoryUpdates`.
-type FirstChatReturn<T> = T extends {
-	(message: string, options?: infer _O): infer R;
-	(message: string, options: infer _O2): infer _R2;
-}
-	? R
-	: never;
-
-type ChatResponse = Awaited<FirstChatReturn<Spectron["chat"]>>;
-type RecallResult = Awaited<ReturnType<Spectron["recall"]>>;
-type MemoryHit = RecallResult["hits"][number];
-type ExtractionResult = ChatResponse["memoryUpdates"];
-type SessionHandle = Awaited<ReturnType<Spectron["sessions"]["create"]>>;
-
-interface ChatMessage {
-	id: string;
-	role: "user" | "assistant";
-	content: string;
-	traceId?: string;
-	fresh?: boolean;
-}
 
 const EXAMPLE_PROMPTS = [
 	"My name is Alex and I prefer dark mode.",
@@ -73,6 +55,11 @@ const EXAMPLE_PROMPTS = [
 	"What do you know about me?",
 	"Remind me to review the Q3 roadmap on Friday.",
 ];
+
+// Stable empty fallbacks so selecting a not-yet-seeded conversation doesn't
+// return a fresh array on every render (which would thrash memoised children).
+const EMPTY_MESSAGES: ChatMessage[] = [];
+const EMPTY_HITS: MemoryHit[] = [];
 
 // ─── Page shell ───
 
@@ -96,15 +83,23 @@ export default function PlaygroundView({ context }: ContextViewProps) {
 function Playground({ client }: { client: Spectron; context: ContextViewProps["context"] }) {
 	const isLight = useIsLight();
 	const glassColor = isLight ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)";
+	const contextId = client.contextId;
 
-	const [messages, setMessages] = useState<ChatMessage[]>([]);
-	const [input, setInput] = useState("");
-	const [recalled, setRecalled] = useState<MemoryHit[]>([]);
-	const [learned, setLearned] = useState<ExtractionResult | null>(null);
-	const [busy, setBusy] = useState(false);
-	const [recalling, setRecalling] = useState(false);
+	// Conversation state lives in a store keyed by context id, so leaving the
+	// Playground and returning restores the thread — and a reply that is still
+	// processing lands in the store instead of being discarded. (#734)
+	const conversation = usePlaygroundStore((s) => s.conversations[contextId]);
+	const setInputStore = usePlaygroundStore((s) => s.setInput);
+	const sendMessage = usePlaygroundStore((s) => s.send);
+	const resetConversation = usePlaygroundStore((s) => s.reset);
 
-	const sessionRef = useRef<SessionHandle | null>(null);
+	const messages = conversation?.messages ?? EMPTY_MESSAGES;
+	const input = conversation?.input ?? "";
+	const recalled = conversation?.recalled ?? EMPTY_HITS;
+	const learned = conversation?.learned ?? null;
+	const busy = conversation?.busy ?? false;
+	const recalling = conversation?.recalling ?? false;
+
 	const viewportRef = useRef<HTMLDivElement>(null);
 
 	const scrollToBottom = useCallback(() => {
@@ -124,85 +119,114 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 		}
 	}, [scrollToBottom, threadLength, busy]);
 
-	const resetSession = useCallback(() => {
-		const previous = sessionRef.current;
-		sessionRef.current = null;
-		setMessages([]);
-		setRecalled([]);
-		setLearned(null);
-		setInput("");
-		// Best-effort server-side cleanup; ignore failures.
-		previous?.close().catch(() => {});
-	}, []);
+	// When the user switches to a different context while the Playground stays
+	// mounted, close the previous context's session so handles don't accumulate.
+	// Navigating to another view in the SAME context unmounts this component
+	// without changing contextId, so the conversation still survives. (#734)
+	const previousContextId = useRef(contextId);
+	useEffect(() => {
+		if (previousContextId.current !== contextId) {
+			resetConversation(previousContextId.current);
+			previousContextId.current = contextId;
+		}
+	}, [contextId, resetConversation]);
+
+	const setInput = useCallback(
+		(value: string) => setInputStore(contextId, value),
+		[setInputStore, contextId],
+	);
+
+	const resetSession = useCallback(
+		() => resetConversation(contextId),
+		[resetConversation, contextId],
+	);
 
 	const send = useCallback(
-		async (raw: string) => {
-			const text = raw.trim();
-			if (!text || busy) return;
-
-			setInput("");
-			setMessages((prev) => [
-				...prev,
-				{ id: crypto.randomUUID(), role: "user", content: text },
-			]);
-			setLearned(null);
-			setBusy(true);
-			setRecalling(true);
-
-			try {
-				// Lazily open a session on first send.
-				if (!sessionRef.current) {
-					sessionRef.current = await client.sessions.create({});
-				}
-				const sessionId = sessionRef.current.id;
-
-				// Recall (what the agent retrieves) + chat (the reply + what it
-				// learns) run concurrently. Non-streaming chat is used so the
-				// `memoryUpdates` payload — the whole point of the Learned panel —
-				// is always populated.
-				const recallPromise = client
-					.recall(text, { k: 6, sessionId })
-					.then((res) => {
-						setRecalled(res.hits);
-					})
-					.finally(() => setRecalling(false));
-
-				const chatPromise = client.chat(text, { sessionId });
-
-				// `res.sessionId` echoes the id we attached the turn to; the
-				// session handle already carries it, so no reassignment needed.
-				const [, res] = await Promise.all([recallPromise, chatPromise]);
-
-				setMessages((prev) => [
-					...prev,
-					{
-						id: crypto.randomUUID(),
-						role: "assistant",
-						content: res.reply,
-						traceId: res.traceId,
-						fresh: true,
-					},
-				]);
-				setLearned(res.memoryUpdates);
-			} catch (err) {
-				showErrorNotification({ title: "Chat failed", content: err });
-			} finally {
-				setBusy(false);
-				setRecalling(false);
-			}
+		(raw: string) => {
+			void sendMessage(contextId, client, raw);
 		},
-		[busy, client],
+		[sendMessage, contextId, client],
 	);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent) => {
 			if (e.key === "Enter" && !e.shiftKey) {
 				e.preventDefault();
-				void send(input);
+				send(input);
 			}
 		},
 		[input, send],
 	);
+
+	// ── Add documents straight from the chat: drag-and-drop a file (#751) or
+	// save a message as an authoritative document (#753). Both go to the
+	// context's document store via the same upload path the Documents view uses.
+	const [dragging, setDragging] = useState(false);
+
+	const uploadFiles = useCallback(
+		async (files: File[]) => {
+			if (files.length === 0) return;
+			let uploaded = 0;
+			for (const file of files) {
+				try {
+					await client.documents.upload({
+						file,
+						filename: file.name,
+						title: file.name,
+						contentType: file.type || undefined,
+					});
+					uploaded++;
+				} catch (err) {
+					showErrorNotification({
+						title: `Couldn't upload ${file.name}`,
+						content: err,
+					});
+				}
+			}
+			if (uploaded > 0) {
+				showInfo({
+					title: uploaded === 1 ? "Document uploaded" : `${uploaded} documents uploaded`,
+					subtitle: "Spectron is processing it and will ground future answers in it.",
+				});
+			}
+		},
+		[client],
+	);
+
+	const confirmSaveAsDocument = useConfirmation<string>({
+		title: "Save as document",
+		message:
+			"Add this message to the context as an authoritative document? Spectron will parse, embed, and use it to ground future answers.",
+		confirmText: "Save",
+		confirmProps: { variant: "gradient" },
+		skippable: true,
+		onConfirm: async (content) => {
+			const file = new File([content], `chat-message-${Date.now()}.md`, {
+				type: "text/markdown",
+			});
+			await uploadFiles([file]);
+		},
+	});
+
+	const handleDragOver = (event: React.DragEvent) => {
+		if (!event.dataTransfer.types.includes("Files")) return;
+		event.preventDefault();
+		setDragging(true);
+	};
+
+	const handleDragLeave = (event: React.DragEvent) => {
+		// Ignore moves between children; only clear when the cursor truly leaves.
+		if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+			setDragging(false);
+		}
+	};
+
+	const handleDrop = (event: React.DragEvent) => {
+		if (!event.dataTransfer.types.includes("Files")) return;
+		event.preventDefault();
+		setDragging(false);
+		void uploadFiles(Array.from(event.dataTransfer.files));
+	};
 
 	const hasConversation = messages.length > 0 || recalled.length > 0 || learned !== null;
 	const showWelcome = messages.length === 0 && !busy;
@@ -231,7 +255,33 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 					</Tooltip>
 				}
 			>
-				<Box className={classes.chatBody}>
+				<Box
+					className={classes.chatBody}
+					pos="relative"
+					onDragOver={handleDragOver}
+					onDragLeave={handleDragLeave}
+					onDrop={handleDrop}
+				>
+					{dragging && (
+						<Center className={classes.dropOverlay}>
+							<Stack
+								align="center"
+								gap="xs"
+							>
+								<Icon
+									path={iconUpload}
+									size="xl"
+									c="violet"
+								/>
+								<Text
+									fw={600}
+									c="bright"
+								>
+									Drop files to add them to this context
+								</Text>
+							</Stack>
+						</Center>
+					)}
 					<Box
 						flex={1}
 						pos="relative"
@@ -322,6 +372,9 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 											key={msg.id}
 											message={msg}
 											isLight={isLight}
+											onSaveAsDocument={() =>
+												confirmSaveAsDocument(msg.content)
+											}
 										/>
 									))}
 									{busy && <PendingBubble />}
@@ -429,15 +482,46 @@ function Playground({ client }: { client: Spectron; context: ContextViewProps["c
 
 // ─── Chat bubbles ───
 
-function ChatBubble({ message, isLight }: { message: ChatMessage; isLight: boolean }) {
+function ChatBubble({
+	message,
+	isLight,
+	onSaveAsDocument,
+}: {
+	message: ChatMessage;
+	isLight: boolean;
+	onSaveAsDocument: () => void;
+}) {
+	const saveAction = (
+		<Tooltip label="Save as document">
+			<ActionIcon
+				variant="subtle"
+				color="slate"
+				size="sm"
+				className={classes.messageAction}
+				aria-label="Save this message as a document"
+				onClick={onSaveAsDocument}
+			>
+				<Icon path={iconText} />
+			</ActionIcon>
+		</Tooltip>
+	);
+
 	if (message.role === "user") {
 		return (
 			<Paper
 				p="md"
 				bg={isLight ? "obsidian.1" : "obsidian.6"}
-				className="selectable"
+				className={`${classes.message} selectable`}
 			>
-				<Text style={{ whiteSpace: "pre-wrap" }}>{message.content}</Text>
+				<Group
+					justify="space-between"
+					align="flex-start"
+					gap="xs"
+					wrap="nowrap"
+				>
+					<Text style={{ whiteSpace: "pre-wrap" }}>{message.content}</Text>
+					{saveAction}
+				</Group>
 			</Paper>
 		);
 	}
@@ -445,14 +529,22 @@ function ChatBubble({ message, isLight }: { message: ChatMessage; isLight: boole
 	return (
 		<Box
 			mb="md"
-			className={message.fresh ? classes.fadeIn : undefined}
+			className={`${classes.message} ${message.fresh ? classes.fadeIn : ""}`}
 		>
-			<Text
-				className="selectable"
-				style={{ whiteSpace: "pre-wrap" }}
+			<Group
+				justify="space-between"
+				align="flex-start"
+				gap="xs"
+				wrap="nowrap"
 			>
-				{message.content}
-			</Text>
+				<Text
+					className="selectable"
+					style={{ whiteSpace: "pre-wrap" }}
+				>
+					{message.content}
+				</Text>
+				{saveAction}
+			</Group>
 			{message.traceId && (
 				<Text
 					mt={4}

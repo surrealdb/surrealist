@@ -32,7 +32,9 @@ import type { CloudContext, ContextViewPage } from "~/types";
 import { ContextHero } from "../../components/ContextHero";
 import type { ContextViewProps } from "../../types";
 import { buildClaudeCodeSteps } from "./integrations/claude-code";
+import { buildCursorSteps } from "./integrations/cursor";
 import { buildLangChainSteps } from "./integrations/langchain";
+import { buildMcpSteps } from "./integrations/mcp";
 import { buildN8nSteps } from "./integrations/n8n";
 import { buildOpenAiAgentsSteps } from "./integrations/openai-agents";
 import { getSpectronUrls } from "./integrations/spectron-urls";
@@ -45,6 +47,8 @@ type IntegrationTab =
 	| "javascript"
 	| "api"
 	| "claude-code"
+	| "cursor"
+	| "mcp"
 	| "n8n"
 	| "langchain"
 	| "openai-agents"
@@ -55,6 +59,8 @@ const INTEGRATION_TABS: IntegrationTab[] = [
 	"javascript",
 	"api",
 	"claude-code",
+	"cursor",
+	"mcp",
 	"n8n",
 	"langchain",
 	"openai-agents",
@@ -66,6 +72,8 @@ const TAB_META: Record<IntegrationTab, { label: string; img?: string; icon?: str
 	javascript: { label: "JavaScript", img: brandJavaScript },
 	api: { label: "REST API", icon: iconAPI },
 	"claude-code": { label: "Claude Code", icon: iconMCP },
+	cursor: { label: "Cursor", icon: iconMCP },
+	mcp: { label: "MCP", icon: iconMCP },
 	n8n: { label: "n8n", img: brandN8N },
 	langchain: { label: "LangChain", img: brandLangchain },
 	"openai-agents": { label: "OpenAI Agents", img: brandOpenAi },
@@ -221,6 +229,8 @@ await session.turn({ role: TurnRole.assistant, content: "Got it, Alex — noted.
 			},
 		],
 		"claude-code": buildClaudeCodeSteps(context),
+		cursor: buildCursorSteps(context),
+		mcp: buildMcpSteps(context),
 		n8n: buildN8nSteps(context),
 		langchain: buildLangChainSteps(context),
 		"openai-agents": buildOpenAiAgentsSteps(context),
@@ -234,6 +244,8 @@ function isIntegrationTab(v: string | undefined): v is IntegrationTab {
 		v === "javascript" ||
 		v === "api" ||
 		v === "claude-code" ||
+		v === "cursor" ||
+		v === "mcp" ||
 		v === "n8n" ||
 		v === "langchain" ||
 		v === "openai-agents" ||
