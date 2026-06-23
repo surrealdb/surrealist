@@ -15,7 +15,6 @@ export const SDB_3_0_0 = "3.0.0-alpha.1";
  */
 export const SDB_3_1_0 = "3.1.0";
 
-
 export function isSurrealDBv3(version: string): boolean {
 	try {
 		return satisfies(version, `>= ${SDB_3_0_0}`);

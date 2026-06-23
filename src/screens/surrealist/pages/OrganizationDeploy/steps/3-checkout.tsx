@@ -125,12 +125,12 @@ export function CheckoutStep({ organisation, details, setDetails, setStep }: Ste
 	const computeTypeText = isFree
 		? "Free"
 		: `${computeTypeName} (${getTypeCategoryName(computeTypeCategory)})`;
-	const storageTypeText = `${storageTypeName} (${getTypeCategoryName(storageTypeCategory)})`;
+	const _storageTypeText = `${storageTypeName} (${getTypeCategoryName(storageTypeCategory)})`;
 	const computeText = isScale
 		? `${computeCores} ${plural(computeCores, "vCPU", "vCPUs")}`
 		: `${computeMax} vCPU${plural(computeMax, "", "s")} (${computeCores} ${plural(computeCores, "Core", "Cores")})`;
 	const computeNodesText = isScale ? `${details.computeUnits} Nodes` : "Single-node";
-	const storageNodesText = `${formatMemory(details.storageAmount * 1000, true)} x ${details.storageUnits} Nodes`;
+	const _storageNodesText = `${formatMemory(details.storageAmount * 1000, true)} x ${details.storageUnits} Nodes`;
 	const storageText = formatMemory(details.storageAmount * 1000, true);
 	const startingDataText = STARTING_DATA[details.startingData.type].title;
 

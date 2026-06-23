@@ -275,7 +275,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 					{type.default_storage_size} GB
 				</Text>
 				<Text c="obsidian.3">Storage</Text>
-			</Fragment>
+			</Fragment>,
 		);
 	}
 
