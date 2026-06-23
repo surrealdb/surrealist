@@ -52,11 +52,7 @@ export function ConfigurationBlock({
 	const storageText = formatMemory(storageSize * 1000, true);
 	const instancePlan = instance ? INSTANCE_CATEGORY_PLANS[instance.type.category] : undefined;
 	const nodeText =
-		instancePlan === "enterprise"
-			? "Dedicated"
-			: instancePlan === "scale"
-				? `${instance?.compute_units ?? 0} Nodes`
-				: "Single-node";
+		instancePlan === "scale" ? `${instance?.compute_units ?? 0} Nodes` : "Single-node";
 
 	const isIdle = instance?.state !== "ready" && instance?.state !== "paused";
 	const canModify = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);

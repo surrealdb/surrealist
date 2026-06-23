@@ -236,7 +236,7 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 	});
 
 	const features: ReactNode[] = [
-		<Fragment key="cluster">
+		<Fragment key="kind">
 			<Text
 				fw={500}
 				c="bright"
@@ -263,16 +263,21 @@ function InstanceTypeCard({ type, details, onChange }: IntanceTypeCardProps) {
 			</Text>
 			<Text c="obsidian.3">Memory</Text>
 		</Fragment>,
-		<Fragment key="cluster">
-			<Text
-				fw={500}
-				c="bright"
-			>
-				{type.default_storage_size} GB
-			</Text>
-			<Text c="obsidian.3">Storage</Text>
-		</Fragment>,
 	];
+
+	if (!isScalePlan(details.plan)) {
+		features.push(
+			<Fragment key="storage">
+				<Text
+					fw={500}
+					c="bright"
+				>
+					{type.default_storage_size} GB
+				</Text>
+				<Text c="obsidian.3">Storage</Text>
+			</Fragment>
+		);
+	}
 
 	const isActive = details.computeType === type.slug;
 

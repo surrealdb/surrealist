@@ -1,6 +1,6 @@
 import { Box, Slider, Text, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
-import { isEnterprisePlan, isScalePlan } from "~/cloud/helpers";
+import { isScalePlan } from "~/cloud/helpers";
 import { useInstanceTypeRegistry } from "~/cloud/hooks/types";
 import { PrimaryTitle } from "~/components/PrimaryTitle";
 import { useStable } from "~/hooks/stable";
@@ -9,12 +9,11 @@ import { DeploySectionProps } from "../types";
 
 export function StorageOptionsSection({ organisation, details, setDetails }: DeploySectionProps) {
 	const instanceTypes = useInstanceTypeRegistry(organisation);
-	const isDedicated = isEnterprisePlan(details.plan);
 	const isScale = isScalePlan(details.plan);
 
 	const instanceType = instanceTypes.get(details.computeType);
-	const storageMin = isDedicated || isScale ? 100 : (instanceType?.default_storage_size ?? 0);
-	const storageMax = isDedicated || isScale ? 6000 : (instanceType?.max_storage_size ?? 0);
+	const storageMin = isScale ? 100 : (instanceType?.default_storage_size ?? 0);
+	const storageMax = isScale ? 6000 : (instanceType?.max_storage_size ?? 0);
 	const marks = useMemo(() => {
 		if (storageMin >= storageMax) {
 			return [];

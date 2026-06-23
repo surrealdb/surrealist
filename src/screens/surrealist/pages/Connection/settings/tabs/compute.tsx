@@ -34,7 +34,7 @@ export function ConnectionComputeTab({
 	const isAdmin = hasOrganizationRoles(organisation, ORG_ROLES_ADMIN);
 	const isIdle = instance.state !== "ready" && instance.state !== "paused";
 	const guessedPlan = INSTANCE_CATEGORY_PLANS[instance.type.category];
-	const showComputeNodes = guessedPlan === "scale" || guessedPlan === "enterprise";
+	const showComputeNodes = guessedPlan === "scale";
 
 	if (!isAdmin || isIdle) {
 		return (

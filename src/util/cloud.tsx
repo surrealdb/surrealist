@@ -116,7 +116,7 @@ export function getTypeCategoryDescription(category: string) {
 		case "xlarge-scale":
 		case "2xlarge-scale":
 		case "4xlarge-scale":
-			return "Shared cluster instances for production workloads";
+			return "Distributed instances for scalable production workloads";
 		default:
 			return category;
 	}

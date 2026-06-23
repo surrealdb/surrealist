@@ -47,25 +47,18 @@ export const INSTANCE_PLAN_CATEGORIES: Record<InstancePlan, CloudPlanCategories>
 		compute: [...SCALE_INSTANCE_CATEGORIES],
 		storage: [],
 	},
-	enterprise: {
-		compute: ["production-memory"],
-		storage: ["production"],
-	},
 };
 
 export const INSTANCE_PLAN_ARCHITECTURES: Record<InstancePlan, [string, string]> = {
 	free: ["Single-node", "Instance"],
 	start: ["Single-node", "Instance"],
-	scale: ["Shared", "Cluster"],
-	enterprise: ["Dedicated", "Cluster"],
+	scale: ["Multi-node", "Cluster"],
 };
 
 export const INSTANCE_CATEGORY_PLANS: Record<string, InstancePlan> = {
 	free: "start",
 	development: "start",
 	production: "start",
-	"production-memory": "enterprise",
-	"production-compute": "enterprise",
 	"large-scale": "scale",
 	"xlarge-scale": "scale",
 	"2xlarge-scale": "scale",
@@ -76,7 +69,6 @@ export const INSTANCE_PLAN_SUGGESTIONS: Record<InstancePlan, string[]> = {
 	free: ["free", "small-dev", "medium"],
 	start: ["small-dev", "medium", "xlarge"],
 	scale: ["large-scale", "xlarge-scale", "2xlarge-scale"],
-	enterprise: ["medium-memory", "large-memory", "xlarge-memory"],
 };
 
 export const BILLING_PROVIDER_ACTIONS: Record<OrganisationBillingProvider, string> = {
@@ -159,16 +151,6 @@ export function compileDeployConfig(
 		}
 	}
 
-	if (isEnterprisePlan(config.plan)) {
-		configuration.storage = (config.storageAmount * config.storageUnits) / 3;
-		configuration.distributed_storage_specs = {
-			slug: config.storageType,
-			units: config.storageUnits,
-			autoscaling: false,
-			max_compute_units: config.computeUnits,
-		};
-	}
-
 	return configuration;
 }
 
@@ -178,14 +160,6 @@ export function isInstancePlan(plan: string): plan is InstancePlan {
 
 export function isScalePlan(plan: InstancePlan): boolean {
 	return plan === "scale";
-}
-
-export function isEnterprisePlan(plan: InstancePlan): boolean {
-	return plan === "enterprise";
-}
-
-export function isDistributedPlan(plan: InstancePlan): boolean {
-	return isScalePlan(plan) || isEnterprisePlan(plan);
 }
 
 export function getInstanceTypesForPlan(

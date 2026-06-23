@@ -36,8 +36,8 @@ export function ComputeNodesSection({ organisation, details, setDetails }: Deplo
 	return (
 		<Box>
 			<Box>
-				<PrimaryTitle>Compute nodes</PrimaryTitle>
-				<Text>Configure the number of compute nodes in your shared cluster</Text>
+				<PrimaryTitle>Node count</PrimaryTitle>
+				<Text>Configure the number of nodes in your cluster</Text>
 			</Box>
 
 			<Tooltip

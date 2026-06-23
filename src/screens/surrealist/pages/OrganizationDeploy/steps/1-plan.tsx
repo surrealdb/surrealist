@@ -2,7 +2,7 @@ import { Box, Button, Group, SimpleGrid, Skeleton, Stack, Text } from "@mantine/
 import { Icon, iconArrowUpRight } from "@surrealdb/ui";
 import { useLayoutEffect } from "react";
 import { useSearchParams } from "wouter";
-import { isEnterprisePlan, isInstancePlan, isScalePlan } from "~/cloud/helpers";
+import { isInstancePlan, isScalePlan } from "~/cloud/helpers";
 import { PricingConfigCloud, useCloudPricingQuery } from "~/cloud/queries/pricing";
 import { Spacer } from "~/components/Spacer";
 import { useHasCloudFeature } from "~/hooks/cloud";
@@ -18,12 +18,10 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 
 	const freeCount = instances.filter((instance) => instance.type.price_hour === 0).length;
 	const showFree = freeCount < organisation.max_free_instances;
-	const showEnterprise = useHasCloudFeature("distributed_storage");
 	const canDeployScale = useHasCloudFeature("create_instances_scale");
 	const pricingQuery = useCloudPricingQuery();
 	const cloudPlans = pricingQuery.data?.cloud;
 	const scaleConfig = cloudPlans?.find((plan) => plan.surrealist?.plan === "scale");
-	const enterpriseConfig = cloudPlans?.find((plan) => plan.surrealist?.plan === "enterprise");
 
 	const onClickPlan = useStable((config: PricingConfigCloud) => {
 		setStep(1);
@@ -52,17 +50,13 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 				return;
 			}
 
-			if (isEnterprisePlan(initialPlan) && !showEnterprise) {
-				return;
-			}
-
 			const config = cloudPlans?.find((plan) => plan.surrealist?.plan === initialPlan);
 
 			if (config) {
 				onClickPlan(config);
 			}
 		}
-	}, [showFree, canDeployScale, showEnterprise, search, cloudPlans]);
+	}, [showFree, canDeployScale, search, cloudPlans]);
 
 	return (
 		<>
@@ -97,15 +91,6 @@ export function PlanStep({ organisation, instances, setDetails, setStep }: StepP
 								ctaText="Configure instance"
 								onClick={(config) => onClickPlan(config as PricingConfigCloud)}
 								config={scaleConfig}
-							/>
-						)}
-
-						{enterpriseConfig && (
-							<PricingCard
-								state={showEnterprise ? "available" : "contact"}
-								ctaText="Configure instance"
-								onClick={(config) => onClickPlan(config as PricingConfigCloud)}
-								config={enterpriseConfig}
 							/>
 						)}
 					</>
